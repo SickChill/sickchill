@@ -8,109 +8,107 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/36.0.1985.67 Safari/537.36']
     method: GET
-    uri: https://ilcorsaronero.info/advsearch.php?search=Game%20of%20Thrones%20S05E08&order=data&by=DESC&page=0&category=15,5,1,20,19
+    uri: https://ilcorsaronero.ch/argh.php?search=Game%20of%20Thrones%20S05E08&order=data&by=DESC&page=0&category=15,5,1,20,19
   response:
     body: {string: !!python/unicode "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0
-        Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\r\n<html
-        xmlns='http://www.w3.org/1999/xhtml'>\r\n<head>\r\n<meta http-equiv='Content-Type'
-        content='text/html; charset=utf-8' />\r\n<title>ilCorSaRoNeRo.info - just
-        Torrent iTALiANi - Game of Thrones S05E08 ita torrent</title>\r\n<META NAME=\"Description\"
-        CONTENT=\"Game of Thrones S05E08\">\r\n<META NAME=\"Keywords\" CONTENT=\"Game
-        of Thrones S05E08 ita torrent\">\r\n<meta name=\"googlebot\" content=\"noindex\"
-        />\r\n\r\n\t<link href='//s.ilcorsaronero.info/css/main.css' rel='stylesheet'
-        type='text/css' />\r\n\t<link rel='shortcut icon' href='//s.ilcorsaronero.info/favicon.ico'/>\r\n
+        Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n<html xmlns='http://www.w3.org/1999/xhtml'>\n<head>\n<meta
+        http-equiv='Content-Type' content='text/html; charset=utf-8' />\n<title>ilCorSaRoNeRo.ch
+        - iTALiAN Torrent Search Engine - Game of Thrones S05E08 ita torrent</title>\r\n<META
+        NAME=\"Description\" CONTENT=\"Game of Thrones S05E08\">\r\n<META NAME=\"Keywords\"
+        CONTENT=\"Game of Thrones S05E08 ita torrent\">\r\n<meta name=\"googlebot\"
+        content=\"noindex\" />\r\n\r\n<script type=\"text/javascript\" src=\"//s.ilcorsaronero.ch/js/nopopup.js\"></script>\n\t<link
+        href='//s.ilcorsaronero.ch/css/main.css' rel='stylesheet' type='text/css'
+        />\n\t<link rel='shortcut icon' href='//s.ilcorsaronero.ch/favicon.ico'/>\n
         \   <link rel='alternate' type='application/rss+xml' title='RSS' href='/rss'
-        />\r\n\r\n<script type=\"text/javascript\">\r\n(function(){\r\n    var arrElms
-        = {};\r\n    var ppblkUtil = {\r\n\tinit: function(){},\r\n\t\r\n\tonMouseEvent:
-        function(evt){ \r\n\t    switch (ppblkUtil.isMyClick(evt.target)){\r\n\t\tcase
-        0 : \r\n\t\t    var target = evt.target.id || 'body';\r\n\t\t    if(typeof
-        evt.target.id != 'string') target = 'body';\r\n\t\t    \r\n\t\t    if(window.currList[target]
-        && window.currList[target][evt.type])\r\n\t\t\tfor(var i = 0 ; i < window.currList[target][evt.type].length
-        ; i++)\r\n\t\t\t    window.currList[target][evt.type][i](evt); \r\n\t\t    break;\r\n\t\tcase
-        1: \r\n\t\t    evt.stopPropagation();\r\n\t\t    evt.cancelBubble = true;\r\n\t\t
-        \   break;\r\n\t    }\r\n\t}, \r\n\t\r\n\taddEvent: function(elm, name, handler){\r\n\t
-        \   if (document.addEventListener) document.addEventListener(name, handler,
-        false);\r\n\t    else if (document.attachEvent) document.attachEvent(\"on\"
-        + name, handler); \r\n\t},\r\n\t\r\n\tremoveEvent: function(name, handler){\r\n\t
+        />\n\n<script type=\"text/javascript\">\n(function(){\n    var arrElms = {};\n
+        \   var ppblkUtil = {\n\tinit: function(){},\n\t\n\tonMouseEvent: function(evt){
+        \n\t    switch (ppblkUtil.isMyClick(evt.target)){\n\t\tcase 0 : \n\t\t    var
+        target = evt.target.id || 'body';\n\t\t    if(typeof evt.target.id != 'string')
+        target = 'body';\n\t\t    \n\t\t    if(window.currList[target] && window.currList[target][evt.type])\n\t\t\tfor(var
+        i = 0 ; i < window.currList[target][evt.type].length ; i++)\n\t\t\t    window.currList[target][evt.type][i](evt);
+        \n\t\t    break;\n\t\tcase 1: \n\t\t    evt.stopPropagation();\n\t\t    evt.cancelBubble
+        = true;\n\t\t    break;\n\t    }\n\t}, \n\t\n\taddEvent: function(elm, name,
+        handler){\n\t    if (document.addEventListener) document.addEventListener(name,
+        handler, false);\n\t    else if (document.attachEvent) document.attachEvent(\"on\"
+        + name, handler); \n\t},\n\t\n\tremoveEvent: function(name, handler){\n\t
         \   if (document.addEventListener) document.removeEventListener(name, handler,
-        false);\r\n\t    else if (document.attachEvent) document.detachEvent(\"on\"
-        + name, handler); \r\n\t    else document[\"on\" + name] = null;\r\n\t},\r\n\t\r\n\tisMyClick:
-        function(elm){\r\n\t    if(typeof arrElms[elm] != 'undefined') return arrElms[elm];\r\n\t
-        \   var e = elm;\r\n\t    while(e && e.tagName != 'BODY'){\r\n\t\tif(e.tagName
+        false);\n\t    else if (document.attachEvent) document.detachEvent(\"on\"
+        + name, handler); \n\t    else document[\"on\" + name] = null;\n\t},\n\t\n\tisMyClick:
+        function(elm){\n\t    if(typeof arrElms[elm] != 'undefined') return arrElms[elm];\n\t
+        \   var e = elm;\n\t    while(e && e.tagName != 'BODY'){\n\t\tif(e.tagName
         == \"BUTTON\" && e.getAttribute('name') && e.getAttribute('name').indexOf('coolmir')
-        > -1){\r\n\t\t    arrElms[elm] = 1;\r\n\t\t    return 1;\r\n\t\t}\r\n\t\te
-        = e.parentNode;\r\n\t    }\r\n\t    arrElms[elm] = 0;\r\n\t    return 0;\r\n\t}\r\n
-        \   };\r\n    ppblkUtil.init();\r\n    \r\n    window.currList = {'body':
-        {'mouseup': new Array(),'click': new Array(),'mousedown': new Array()}};\r\n
-        \   var isAddExist = document.addEventListener ? true : false;\r\n    document.originalAddEventListener
-        = document.addEventListener || document.attachEvent;\r\n    document[isAddExist
-        ? 'addEventListener' : 'attachEvent'] = function(e, a, b){\r\n\tif(e == 'mouseup'
-        || e == 'click' || e == 'mousedown'){\r\n\t    window.currList['body'][e].push(a);\r\n\t
-        \   return document.originalAddEventListener(e, ppblkUtil.onMouseEvent, true);\r\n\t}\r\n\telse
-        return document.originalAddEventListener(e,a,b);\r\n    };\r\n    \r\n    ppblkUtil.addEvent(document,
-        navigator.userAgent.indexOf('Chrome') > -1 ? 'mouseup' : 'click', function(){});\r\n
-        \   ppblkUtil.addEvent(document, 'mousedown', function(){});\r\n    \r\n})();\r\n</script>\r\n\r\n</head>\r\n\r\n<body>\r\n<script
+        > -1){\n\t\t    arrElms[elm] = 1;\n\t\t    return 1;\n\t\t}\n\t\te = e.parentNode;\n\t
+        \   }\n\t    arrElms[elm] = 0;\n\t    return 0;\n\t}\n    };\n    ppblkUtil.init();\n
+        \   \n    window.currList = {'body': {'mouseup': new Array(),'click': new
+        Array(),'mousedown': new Array()}};\n    var isAddExist = document.addEventListener
+        ? true : false;\n    document.originalAddEventListener = document.addEventListener
+        || document.attachEvent;\n    document[isAddExist ? 'addEventListener' : 'attachEvent']
+        = function(e, a, b){\n\tif(e == 'mouseup' || e == 'click' || e == 'mousedown'){\n\t
+        \   window.currList['body'][e].push(a);\n\t    return document.originalAddEventListener(e,
+        ppblkUtil.onMouseEvent, true);\n\t}\n\telse return document.originalAddEventListener(e,a,b);\n
+        \   };\n    \n    ppblkUtil.addEvent(document, navigator.userAgent.indexOf('Chrome')
+        > -1 ? 'mouseup' : 'click', function(){});\n    ppblkUtil.addEvent(document,
+        'mousedown', function(){});\n    \n})();\n</script>\n\n</head>\n\n<body>\n<script
         type=\"text/javascript\">\n\n  var _gaq = _gaq || [];\n  _gaq.push(['_setAccount',
         'UA-16396970-1']);\n  _gaq.push(['_trackPageview']);\n\n  (function() {\n
         \   var ga = document.createElement('script'); ga.type = 'text/javascript';
         ga.async = true;\n    ga.src = ('https:' == document.location.protocol ? 'https://ssl'
         : 'http://www') + '.google-analytics.com/ga.js';\n    var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(ga, s);\n  })();\n\n</script>\r\n<div class='network'>\r\n\t<div
-        class='network_links'>\r\n\t</div>\r\n</div>\r\n\t<div id='container'>\r\n\r\n\t\t<div
-        id='header'>\r\n\r\n\t\t\t<div id='logo'>\r\n\t\t\t\t<h1><a href='/'><img
-        src='//s.ilcorsaronero.info/images/h_logo.gif' alt='Torrent Italiano' title='Torrent
-        Italiano' /></a></h1>\r\n\t\t\t</div>\r\n\r\n\t\t\t<div id='call'>\r\n\t\t\t\r\n\t\t\t\t<h3><form
-        action='/argh.php' method='get'>\r\n\t\t\t\t\r\n      &nbsp;Cerca : <input
-        name='search' size='42' value='Game of Thrones S05E08' type='text'>  \r\n
-        \      <input type=\"submit\" value='cerca' alt=\"Submit\">\r\n</form></h3>\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
-        href='/torrent-ita/iTALiAN.html'><img src='//s.ilcorsaronero.info/images/h_logo2.gif'
-        alt='' border='0'/></a>\r\n\t\t\t</div>\r\n\r\n\r\n\r\n\t\t\t<div id='menu'>\r\n\r\n\t\t\t\t<ul>\r\n\t\t\t\t\t<li
-        id='menu_home'><span></span></li>\r\n\t\t\t\t\t<li id='menu_stills'><a href='/cat/3'>giochi</a></li>\r\n\t\t\t\t\t<li
-        id='menu_video'><a href='/cat/1'>film</a></li>\r\n\t\t\t\t\t<li id='menu_audio'><a
-        href='/cat/2'>musica</a></li>\r\n\t\t\t\t\t<li id='menu_identity'><a href='/cat/7'>app</a></li>\r\n\t\t\t\t\t<li
-        id='menu_web'><a href='/sfoglia'>sfoglia</a></li>\r\n\t\t\t\t\t<li id='menu_gallery'><a
-        href='/recenti'>recenti</a></li>\r\n\t\t\t\t\t<li id='menu_about'><a href='/searchcloud'>cloud</a></li>\r\n\t\t\t\t\t<li
-        id='menu_contact'><a href='/upload'>upload</a></li>\r\n\t\t\t\t</ul>\r\n\t\t\t</div>\r\n\r\n\t\t\t<div
-        class='clear'></div>\r\n\r\n\t  </div>\r\n\r\n<div id=\"content\">\r\n    <div
-        id=\"body\">\r\n        <table width=100% border=0 cellpadding=0 cellspacing=0>\r\n
-        \           <tr>\r\n                <td>\r\n                    <font size=+1
-        color=\"#CC0000\">&nbsp;<b>* Ultimi Torrent</b></font>&nbsp;\r\n                </td>\r\n
-        \               <td align=right>\r\n                    <h3><span style=\"color:
-        yellow;\">iCN<br /></span></h3>                </td>\r\n            </tr>\r\n
-        \       </table>\r\n        <br/>\r\n        <span id=\"searchincat\"><a href=\"https://ilcorsaronero.info/rss\"><img
-        src=\"//s.ilcorsaronero.info/images/rss_icon.png\" border=\"0\"></a>filtra
-        risultati per categoria:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br><br></span><br><ul
-        id=\"tabs\" ><li><a href='https://ilcorsaronero.info/adv/Game%20of%20Thrones%20S05E08.html'>All</a></li>
-        <li><a href='https://ilcorsaronero.info/adv/7/Game%20of%20Thrones%20S05E08.html'>App
-        Win</a></li> <li><a href='https://ilcorsaronero.info/adv/3/Game%20of%20Thrones%20S05E08.html'>PC
-        Games</a></li> <li><a href='https://ilcorsaronero.info/adv/2/Game%20of%20Thrones%20S05E08.html'>Musica</a></li>
-        <li><a href='https://ilcorsaronero.info/adv/19/Game%20of%20Thrones%20S05E08.html'>Screener</a></li>
-        <li><a href='https://ilcorsaronero.info/adv/1/Game%20of%20Thrones%20S05E08.html'>BDRiP</a></li>
-        <li><a href='https://ilcorsaronero.info/adv/20/Game%20of%20Thrones%20S05E08.html'>DVD</a></li>
-        <li><a href='https://ilcorsaronero.info/adv/13/Game%20of%20Thrones%20S05E08.html'>PlayStation</a></li>
-        <li><a href='https://ilcorsaronero.info/adv/14/Game%20of%20Thrones%20S05E08.html'>XboX</a></li>
-        <li><a href='https://ilcorsaronero.info/adv/6/Game%20of%20Thrones%20S05E08.html'>eBooks</a></li>
-        <li><a href='https://ilcorsaronero.info/adv/15/Game%20of%20Thrones%20S05E08.html'>SerieTv</a></li></ul>
+        s.parentNode.insertBefore(ga, s);\n  })();\n\n</script>\n<div class='network'>\n\t<div
+        class='network_links'>\n\t</div>\n</div>\n\t<div id='container'>\n\n\t\t<div
+        id='header'>\n\n\t\t\t<div id='logo'>\n\t\t\t\t<h1><a href='/'><img src='//s.ilcorsaronero.ch/images/h_logo.gif'
+        alt='Torrent Italiano' title='Torrent Italiano' /></a></h1>\n\t\t\t</div>\n\n\t\t\t<div
+        id='call'>\n\t\t\t\n\t\t\t\t<h3><form action='/argh.php' method='get'>\n\t\t\t\t\n
+        \     &nbsp;Cerca : <input name='search' size='42' value='Game of Thrones
+        S05E08' type='text'>  \n       <input type=\"submit\" value='cerca' alt=\"Submit\">\n</form></h3>\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
+        href='/torrent-ita/iTALiAN.html'><img src='//s.ilcorsaronero.ch/images/h_logo2.gif'
+        alt='' border='0'/></a>\n\t\t\t</div>\n\n\n\n\t\t\t<div id='menu'>\n\n\t\t\t\t<ul>\n\t\t\t\t\t<li
+        id='menu_home'><span></span></li>\n\t\t\t\t\t<li id='menu_stills'><a href='/cat/3'>giochi</a></li>\n\t\t\t\t\t<li
+        id='menu_video'><a href='/cat/1'>film</a></li>\n\t\t\t\t\t<li id='menu_audio'><a
+        href='/cat/2'>musica</a></li>\n\t\t\t\t\t<li id='menu_identity'><a href='/cat/7'>app</a></li>\n\t\t\t\t\t<li
+        id='menu_web'><a href='/sfoglia'>sfoglia</a></li>\n\t\t\t\t\t<li id='menu_gallery'><a
+        href='/recenti'>recenti</a></li>\n\t\t\t\t\t<li id='menu_about'><a href='/searchcloud'>cloud</a></li>\n\t\t\t\t\t<li
+        id='menu_contact'><a href='/upload'>upload</a></li>\n\t\t\t\t</ul>\n\t\t\t</div>\n\n\t\t\t<div
+        class='clear'></div>\n\n\t  </div>\n\n<div id=\"content\">\r\n    <div id=\"body\">\r\n
+        \       <table width=100% border=0 cellpadding=0 cellspacing=0>\r\n            <tr>\r\n
+        \               <td>\r\n                    <font size=+1 color=\"#CC0000\">&nbsp;<b>*
+        Ultimi Torrent</b></font>&nbsp;\r\n                </td>\r\n                <td
+        align=right>\r\n                    <h3><strong>Cambiate i DNS con DNS Jumper<br
+        /></strong></h3>                </td>\r\n            </tr>\r\n        </table>\r\n
+        \       <br/>\r\n        <span id=\"searchincat\"><a href=\"https://ilcorsaronero.ch/rss\"><img
+        src=\"//s.ilcorsaronero.ch/images/rss_icon.png\" border=\"0\"></a>filtra risultati
+        per categoria:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br><br></span><br><ul
+        id=\"tabs\" ><li><a href='https://ilcorsaronero.ch/torrent-ita/Game%20of%20Thrones%20S05E08.html'>All</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/7/Game%20of%20Thrones%20S05E08.html'>App
+        Win</a></li> <li><a href='https://ilcorsaronero.ch/torrent-ita/3/Game%20of%20Thrones%20S05E08.html'>PC
+        Games</a></li> <li><a href='https://ilcorsaronero.ch/torrent-ita/2/Game%20of%20Thrones%20S05E08.html'>Musica</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/19/Game%20of%20Thrones%20S05E08.html'>Screener</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/1/Game%20of%20Thrones%20S05E08.html'>BDRiP</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/20/Game%20of%20Thrones%20S05E08.html'>DVD</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/13/Game%20of%20Thrones%20S05E08.html'>PlayStation</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/14/Game%20of%20Thrones%20S05E08.html'>XboX</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/6/Game%20of%20Thrones%20S05E08.html'>eBooks</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/15/Game%20of%20Thrones%20S05E08.html'>SerieTv</a></li></ul>
         <br><br>\r\n        <div id=\"left\" class=\"left\">\r\n            <table>\r\n
         \               <tr>\r\n                    <td VALIGN=\"top\">\r\n                        <ul>\r\n
         \                       </ul>\r\n                        <br/>\r\n                        <ul>\r\n
-        \                           <li><a href=\"https://ilcorsaronero.info/tagmovie\">Movie
-        Tag</a></li>\r\n                        </ul>\r\n                                                <br>\r\n\r\n
+        \                           <li><a href=\"https://ilcorsaronero.ch/tagmovie\">Movie
+        Tag</a></li>\r\n                        </ul>\r\n                                                <br/>\r\n
         \                       <ul>\r\n                            <li><a href=\"https://feeds.feedburner.com/ilCorSaRoNero\"
         target=\"_blank\"><img\r\n                                        src=\"https://feeds.feedburner.com/~fc/ilCorSaRoNero?bg=000000&amp;fg=FFFF00&amp;anim=0\"\r\n
         \                                       height=\"26\" width=\"88\" style=\"border:0\"
         alt=\"stai aggiornato via email\"\r\n                                        title=\"stai
         aggiornato via email\"/></a></li>\r\n                        </ul>\r\n                        <center>\r\n
         \                           <br/>\r\n                            <table><tbody><tr
-        attr=\"0\"><td><a href=\"/torrent-ita/pirati dei caraibi.html\"><img style=\"border-color:
-        black\" src=\"//s.ilcorsaronero.info/imgcp/piratesofthecaribbean5.jpg\" alt=\"pirati
-        dei caraibi\" title=\"pirati dei caraibi\" height=\"130\" width=\"90\" border=\"2\"></a></td><td><a
+        attr=\"0\"><td><a href=\"/torrent-ita/infinity war.html\"><img style=\"border-color:
+        black\" src=\"//s.ilcorsaronero.info/imgcp/img005.jpg\" alt=\"infinity war\"
+        title=\"infinity war\" height=\"130\" width=\"90\" border=\"2\"></a></td><td><a
         href=\"/torrent-ita/wonder woman.html\"><img style=\"border-color: black\"
         src=\"//s.ilcorsaronero.info/imgcp/wonderwoman.jpg\" alt=\"wonder woman\"
         title=\"wonder woman\" height=\"130\" width=\"90\" border=\"2\"></a></td></tr
-        attr=\\\"$pic\\\"><tr attr=\"2\"><td><a href=\"/torrent-ita/baywatch.html\"><img
-        style=\"border-color: black\" src=\"//s.ilcorsaronero.info/imgcp/53169.jpg\"
-        alt=\"baywatch\" title=\"baywatch\" height=\"130\" width=\"90\" border=\"2\"></a></td><td><a
+        attr=\\\"$pic\\\"><tr attr=\"2\"><td><a href=\"/torrent-ita/assassinio.html\"><img
+        style=\"border-color: black\" src=\"//s.ilcorsaronero.info/imgcp/assassiniosullorientexpress2017.jpg\"
+        alt=\"assassinio\" title=\"assassinio\" height=\"130\" width=\"90\" border=\"2\"></a></td><td><a
         href=\"/torrent-ita/mummia.html\"><img style=\"border-color: black\" src=\"//s.ilcorsaronero.info/imgcp/lamummia.jpg\"
         alt=\"mummia\" title=\"mummia\" height=\"130\" width=\"90\" border=\"2\"></a></td></tr
         attr=\\\"$pic\\\"><tr attr=\"4\"><td><a href=\"/torrent-ita/transformers.html\"><img
@@ -118,75 +116,85 @@ interactions:
         alt=\"transformers\" title=\"transformers\" height=\"130\" width=\"90\" border=\"2\"></a></td><td><a
         href=\"/torrent-ita/homecoming.html\"><img style=\"border-color: black\" src=\"//s.ilcorsaronero.info/imgcp/spider-man-homecoming-poster.jpg\"
         alt=\"homecoming\" title=\"homecoming\" height=\"130\" width=\"90\" border=\"2\"></a></td></tr
-        attr=\\\"$pic\\\"></tbody></table>                        </center>\r\n                        <br/>\r\n
-        \                       <ul>\r\n                            <li><a href=\"https://ilcorsaronero.info/link\">Link</a></li>\r\n
-        \                       </ul>\r\n\r\n                        <img src=\"//s.ilcorsaronero.info/images/lloca.gif\"
-        alt=\"\">\r\n        </div>\r\n\r\n        \r\n\r\n        </td>\r\n        <td
-        VALIGN=\"top\">\r\n            <div align=\"left\">\r\n            </div>\r\n\r\n
-        \           <TABLE>\r\n                <tr>\r\n                    <td colspan='10'>\r\n
-        \                       <center>\r\n\r\n                        </center>\r\n\r\n\r\n
-        \                   </td>\r\n                </tr>\r\n\r\n                <TR
-        class=\"bordo\">\r\n\r\n\r\n                    <TD align=\"center\" class=\"header2\">\r\n
-        \                       Cat&nbsp;<br><img src='//s.ilcorsaronero.info/images/linean.gif'
-        border='0' alt=\"_\"></TD>\r\n\r\n                    <TD align=\"center\"
-        class=\"header2\">&nbsp;Name<br><img src='//s.ilcorsaronero.info/images/linean4.gif'\r\n
-        \                                                                         border='0'
-        alt=\"_\"></TD>\r\n\r\n                    <TD align=\"center\" class=\"header2\">Size<br><img
-        src='//s.ilcorsaronero.info/images/linean.gif' border='0'\r\n                                                                    alt=\"_\"></TD>\r\n\r\n
+        attr=\\\"$pic\\\"></tbody></table>                        </center>\r\n                        <br/>\r\n\r\n
+        \                       <ul>\r\n                            <li><a href=\"https://ilcorsaronero.ch/link\">Link</a></li>\r\n
+        \                       </ul>\r\n                        <ul>\r\n                            <br>\r\n\r\n
+        \                           <div align=\"left\">\r\n                                <table>\r\n\r\n
+        \                                   <div id=\"lws_0\">\r\n                                        <div
+        style=\"margin: 0pt; border: 0pt none; padding: 0pt; clear: both;\"\r\n                                             class=\"linkwithin_outer\">\r\n
+        \                                           <div style=\"margin: 0pt; border:
+        0pt none; padding: 0pt; width: 190px;\"\r\n                                                 class=\"linkwithin_inner\">\r\n
+        \                                           </div>\r\n                                        </div>\r\n
+        \                                   </div>\r\n\r\n                                </table>\r\n
+        \                           </div>\r\n                            <br>\r\n
+        \                       </ul>\r\n\r\n                        <img src=\"//s.ilcorsaronero.ch/images/lloca.gif\"
+        alt=\"\">\r\n\r\n        </div>\r\n\r\n        \r\n\r\n        </td>\r\n        <td
+        VALIGN=\"top\">\r\n            <TABLE>\r\n                <tr>\r\n                    <td
+        colspan='10'>\r\n                        <center>\r\n\r\n                                                        \r\n
+        \                       </center>\r\n                    </td>\r\n                </tr>\r\n\r\n
+        \               <TR class=\"bordo\">\r\n\r\n\r\n                    <TD align=\"center\"
+        class=\"header2\">\r\n                        Cat&nbsp;<br><img src='//s.ilcorsaronero.ch/images/linean.gif'
+        border='0' alt=\"_\">\r\n                    </TD>\r\n\r\n                    <TD
+        align=\"center\" class=\"header2\">&nbsp;Name<br><img\r\n                            src='//s.ilcorsaronero.ch/images/linean4.gif'
+        border='0' alt=\"_\">\r\n                    </TD>\r\n\r\n                    <TD
+        align=\"center\" class=\"header2\">Size<br><img src='//s.ilcorsaronero.ch/images/linean.gif'
+        border='0'\r\n                                                                    alt=\"_\"></TD>\r\n\r\n
         \                   <TD align=\"center\" class=\"header2\">Azione<br><img
-        src='//s.ilcorsaronero.info/images/linean2.gif'\r\n                                                                      border='0'
+        src='//s.ilcorsaronero.ch/images/linean2.gif'\r\n                                                                      border='0'
         alt=\"_\"></TD>\r\n\r\n                    <TD align=\"center\" class=\"header2\">Data&nbsp;&#8595<br><img\r\n
-        \                           src='//s.ilcorsaronero.info/images/linean1.gif'
+        \                           src='//s.ilcorsaronero.ch/images/linean1.gif'
         border='0' alt=\"_\"></TD>\r\n\r\n                    <TD align=\"center\"
-        class=\"header2\">S<br><img src='//s.ilcorsaronero.info/images/linean1.gif'
+        class=\"header2\">S<br><img src='//s.ilcorsaronero.ch/images/linean1.gif'
         border='0'\r\n                                                                 alt=\"_\"></TD>\r\n\r\n
-        \                   <TD align=\"center\" class=\"header2\">L<br><img src='//s.ilcorsaronero.info/images/linean1.gif'
+        \                   <TD align=\"center\" class=\"header2\">L<br><img src='//s.ilcorsaronero.ch/images/linean1.gif'
         border='0'\r\n                                                                 alt=\"_\"></TD>\r\n
         \                                   </TR>\r\n\r\n                <tr class=\"odd\">\t<td
-        align=\"center\" class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/107632/Game_Of_Thrones___Il_Trono_Di_Spade_S05e08_09_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux__\"
+        align=\"center\" class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/107632/Game_Of_Thrones___Il_Trono_Di_Spade_S05e08_09_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux__\"
         >Game Of Thrones - Il Trono Di Spade S05e08-09[Mux - 720..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>3.51 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/107632/Game_Of_Thrones___Il_Trono_Di_Spade_S05e08_09_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux__\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/107632/Game_Of_Thrones___Il_Trono_Di_Spade_S05e08_09_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux__\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"8c14f66e8634ec43937742f67f3c34a8e0d1d439\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/107632/Game_Of_Thrones___Il_Trono_Di_Spade_S05e08_09_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux__><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
-        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>18.06.15</font></td>\n\t<td
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/107632/Game_Of_Thrones___Il_Trono_Di_Spade_S05e08_09_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux__><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
+        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>17.06.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>192</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>309</font></td></TR><tr class=\"odd2\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/107482/Trono_Di_Spade_Game_Of_Thrones_S05e08_Aspra_Dimora_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/107482/Trono_Di_Spade_Game_Of_Thrones_S05e08_Aspra_Dimora_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
         >Trono.Di.Spade-Game.Of.Thrones.S05e08.Aspra.Dimora.ITA...</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>2.30 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/107482/Trono_Di_Spade_Game_Of_Thrones_S05e08_Aspra_Dimora_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/107482/Trono_Di_Spade_Game_Of_Thrones_S05e08_Aspra_Dimora_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"be3ec6eed35aaa1f3466d3c84441cd68de97366a\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/107482/Trono_Di_Spade_Game_Of_Thrones_S05e08_Aspra_Dimora_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/107482/Trono_Di_Spade_Game_Of_Thrones_S05e08_Aspra_Dimora_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
         alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>10.06.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>445</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>59</font></td></TR><div align='left'>Torrent trovati
-        per <i>Game of Thrones S05E08</i> - 2 </div>\r\n<tr><td colspan='10'>\r\n<br>\r\n\r\n
-        \               <br/>\r\n\r\n                </TR>\r\n\r\n                <tr>\r\n
-        \                   <td colspan=\"5\" align=\"center\">\r\n                        <table>\r\n
-        \                           <TR>\r\n                                <TD> <p
-        align=\"center\"><b>0&nbsp;</b><br /><b>&lt;&lt; pagine precedenti&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pagine
-        successive &gt;&gt</b></p>\n\r\n\r\n                                </td>\r\n
-        \                           </TR>\r\n\r\n                        </table>\r\n\r\n
-        \                   </td>\r\n                </tr>\r\n\r\n\r\n            </TABLE>\r\n\r\n\r\n
-        \       </td>\r\n        </table>\r\n\r\n    </div>\r\n\r\n\r\n    <div class=\"clear\"></div>\r\n\r\n</div>\r\n\r\n<br>\r\n\r\n\r\n\r\n</div
-        >\r\n\r\n</div>\r\n\r\n</div>\r\n</div>\r\n\r\n\t<div id='footer'>\r\n\r\n\r\n\t\t<div
-        id='copyright'>\r\n\r\n\t\t<div id='logos'>\r\n\r\n\t\t\t\t<ul>\r\n\t\t\t\t\t<li></li>\r\n\t\t\t\t</ul>\r\n\r\n\t\t\t</div>\r\n\r\n\t\t\t<div
-        id='copy'>\r\n\r\n\t\t\t\t<ul>\r\n\t\t\t\t\t<li><a href='http://torrent-finder.info/torrent-finder-domain-seizure.php'
-        target='_blank'>Salva Internet</a></li>\r\n\t\t\t\t\t<li><a href='/contatti'>Contatti</a></li>\r\n\t\t\t\t\t<li><a
-        href='/removal'>Removal</a></li>\r\n\t\t\t\t</ul>\r\n\r\n\t\t\t</div>\r\n\r\n\t\t\t<div
-        class='clear'></div>\r\n\r\n\t\t</div>\r\n\r\n\t\t<div class='clear'></div>\r\n\r\n\t</div>\r\n\r\n</body>\r\n</html>\r\n"}
+        per <i>Game of Thrones S05E08</i> - (max 40) usate la <a rel='nofollow' href='http://ilcorsaronero.info/adv/Game%20of%20Thrones%20S05E08.html'>Ricerca
+        Avanzata</a> per piu' risultati </div>                <tr>\r\n                    <td
+        colspan='10'>\r\n                        <br>\r\n                        \r\n
+        \                                                   <center>\r\n\r\n                            </center>\r\n\r\n
+        \                           <br/>\r\n                                            </TR>\r\n\r\n
+        \               <tr>\r\n                    <td colspan=\"5\" align=\"center\">\r\n
+        \                       <table>\r\n                            <TR>\r\n                                <TD>
+        \r\n\r\n                                </td>\r\n                            </TR>\r\n\r\n
+        \                       </table>\r\n\r\n                    </td>\r\n                </tr>\r\n\r\n\r\n
+        \           </TABLE>\r\n\r\n\r\n        </td>\r\n        </table>\r\n\r\n
+        \   </div>\r\n\r\n\r\n    <div class=\"clear\"></div>\r\n\r\n</div>\r\n\r\n<br>\r\n\r\n\n</div
+        >\n\n</div>\n\n</div>\n</div>\n\n\t<div id='footer'>\n\n\t\t<div id='copyright'>\n\n\t\t<div
+        id='logos'>\n\n\t\t\t\t<ul>\n\t\t\t\t\t<li></li>\n\t\t\t\t</ul>\n\n\t\t\t</div>\n\n\t\t\t<div
+        id='copy'>\n\n\t\t\t\t<ul>\n\t\t\t\t\t<li><a href='http://torrent-finder.info/torrent-finder-domain-seizure.php'
+        target='_blank'>Salva Internet</a></li>\n\t\t\t\t\t<li><a href='/contatti'>Contatti</a></li>\n\t\t\t\t\t<li><a
+        href='/removal'>Removal</a></li>\n\t\t\t\t</ul>\n\n\t\t\t</div>\n\n\t\t\t<div
+        class='clear'></div>\n\n\t\t</div>\n\n\t\t<div class='clear'></div>\n\n\t</div>\n\n</body>\n</html>\n"}
     headers:
-      content-type: [text/html]
-      date: ['Wed, 05 Jul 2017 19:43:37 GMT']
+      content-type: [text/html; charset=UTF-8]
+      date: ['Sat, 27 Oct 2018 06:20:15 GMT']
       server: [lighttpd/1.4.35]
-      x-powered-by: [PHP/5.5.38]
+      transfer-encoding: [chunked]
     status: {code: 200, message: OK}
 - request:
     body: null
@@ -197,109 +205,107 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36
           (KHTML, like Gecko) Chrome/36.0.1985.67 Safari/537.36']
     method: GET
-    uri: https://ilcorsaronero.info/advsearch.php?search=Game%20of%20Thrones%20S05&order=data&by=DESC&page=0&category=15,5,1,20,19
+    uri: https://ilcorsaronero.ch/argh.php?search=Game%20of%20Thrones%20S05&order=data&by=DESC&page=0&category=15,5,1,20,19
   response:
     body: {string: !!python/unicode "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0
-        Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\r\n<html
-        xmlns='http://www.w3.org/1999/xhtml'>\r\n<head>\r\n<meta http-equiv='Content-Type'
-        content='text/html; charset=utf-8' />\r\n<title>ilCorSaRoNeRo.info - just
-        Torrent iTALiANi - Game of Thrones S05 ita torrent</title>\r\n<META NAME=\"Description\"
-        CONTENT=\"Game of Thrones S05\">\r\n<META NAME=\"Keywords\" CONTENT=\"Game
-        of Thrones S05 ita torrent\">\r\n<meta name=\"googlebot\" content=\"noindex\"
-        />\r\n\r\n\t<link href='//s.ilcorsaronero.info/css/main.css' rel='stylesheet'
-        type='text/css' />\r\n\t<link rel='shortcut icon' href='//s.ilcorsaronero.info/favicon.ico'/>\r\n
+        Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n<html xmlns='http://www.w3.org/1999/xhtml'>\n<head>\n<meta
+        http-equiv='Content-Type' content='text/html; charset=utf-8' />\n<title>ilCorSaRoNeRo.ch
+        - iTALiAN Torrent Search Engine - Game of Thrones S05 ita torrent</title>\r\n<META
+        NAME=\"Description\" CONTENT=\"Game of Thrones S05\">\r\n<META NAME=\"Keywords\"
+        CONTENT=\"Game of Thrones S05 ita torrent\">\r\n<meta name=\"googlebot\" content=\"noindex\"
+        />\r\n\r\n<script type=\"text/javascript\" src=\"//s.ilcorsaronero.ch/js/nopopup.js\"></script>\n\t<link
+        href='//s.ilcorsaronero.ch/css/main.css' rel='stylesheet' type='text/css'
+        />\n\t<link rel='shortcut icon' href='//s.ilcorsaronero.ch/favicon.ico'/>\n
         \   <link rel='alternate' type='application/rss+xml' title='RSS' href='/rss'
-        />\r\n\r\n<script type=\"text/javascript\">\r\n(function(){\r\n    var arrElms
-        = {};\r\n    var ppblkUtil = {\r\n\tinit: function(){},\r\n\t\r\n\tonMouseEvent:
-        function(evt){ \r\n\t    switch (ppblkUtil.isMyClick(evt.target)){\r\n\t\tcase
-        0 : \r\n\t\t    var target = evt.target.id || 'body';\r\n\t\t    if(typeof
-        evt.target.id != 'string') target = 'body';\r\n\t\t    \r\n\t\t    if(window.currList[target]
-        && window.currList[target][evt.type])\r\n\t\t\tfor(var i = 0 ; i < window.currList[target][evt.type].length
-        ; i++)\r\n\t\t\t    window.currList[target][evt.type][i](evt); \r\n\t\t    break;\r\n\t\tcase
-        1: \r\n\t\t    evt.stopPropagation();\r\n\t\t    evt.cancelBubble = true;\r\n\t\t
-        \   break;\r\n\t    }\r\n\t}, \r\n\t\r\n\taddEvent: function(elm, name, handler){\r\n\t
-        \   if (document.addEventListener) document.addEventListener(name, handler,
-        false);\r\n\t    else if (document.attachEvent) document.attachEvent(\"on\"
-        + name, handler); \r\n\t},\r\n\t\r\n\tremoveEvent: function(name, handler){\r\n\t
+        />\n\n<script type=\"text/javascript\">\n(function(){\n    var arrElms = {};\n
+        \   var ppblkUtil = {\n\tinit: function(){},\n\t\n\tonMouseEvent: function(evt){
+        \n\t    switch (ppblkUtil.isMyClick(evt.target)){\n\t\tcase 0 : \n\t\t    var
+        target = evt.target.id || 'body';\n\t\t    if(typeof evt.target.id != 'string')
+        target = 'body';\n\t\t    \n\t\t    if(window.currList[target] && window.currList[target][evt.type])\n\t\t\tfor(var
+        i = 0 ; i < window.currList[target][evt.type].length ; i++)\n\t\t\t    window.currList[target][evt.type][i](evt);
+        \n\t\t    break;\n\t\tcase 1: \n\t\t    evt.stopPropagation();\n\t\t    evt.cancelBubble
+        = true;\n\t\t    break;\n\t    }\n\t}, \n\t\n\taddEvent: function(elm, name,
+        handler){\n\t    if (document.addEventListener) document.addEventListener(name,
+        handler, false);\n\t    else if (document.attachEvent) document.attachEvent(\"on\"
+        + name, handler); \n\t},\n\t\n\tremoveEvent: function(name, handler){\n\t
         \   if (document.addEventListener) document.removeEventListener(name, handler,
-        false);\r\n\t    else if (document.attachEvent) document.detachEvent(\"on\"
-        + name, handler); \r\n\t    else document[\"on\" + name] = null;\r\n\t},\r\n\t\r\n\tisMyClick:
-        function(elm){\r\n\t    if(typeof arrElms[elm] != 'undefined') return arrElms[elm];\r\n\t
-        \   var e = elm;\r\n\t    while(e && e.tagName != 'BODY'){\r\n\t\tif(e.tagName
+        false);\n\t    else if (document.attachEvent) document.detachEvent(\"on\"
+        + name, handler); \n\t    else document[\"on\" + name] = null;\n\t},\n\t\n\tisMyClick:
+        function(elm){\n\t    if(typeof arrElms[elm] != 'undefined') return arrElms[elm];\n\t
+        \   var e = elm;\n\t    while(e && e.tagName != 'BODY'){\n\t\tif(e.tagName
         == \"BUTTON\" && e.getAttribute('name') && e.getAttribute('name').indexOf('coolmir')
-        > -1){\r\n\t\t    arrElms[elm] = 1;\r\n\t\t    return 1;\r\n\t\t}\r\n\t\te
-        = e.parentNode;\r\n\t    }\r\n\t    arrElms[elm] = 0;\r\n\t    return 0;\r\n\t}\r\n
-        \   };\r\n    ppblkUtil.init();\r\n    \r\n    window.currList = {'body':
-        {'mouseup': new Array(),'click': new Array(),'mousedown': new Array()}};\r\n
-        \   var isAddExist = document.addEventListener ? true : false;\r\n    document.originalAddEventListener
-        = document.addEventListener || document.attachEvent;\r\n    document[isAddExist
-        ? 'addEventListener' : 'attachEvent'] = function(e, a, b){\r\n\tif(e == 'mouseup'
-        || e == 'click' || e == 'mousedown'){\r\n\t    window.currList['body'][e].push(a);\r\n\t
-        \   return document.originalAddEventListener(e, ppblkUtil.onMouseEvent, true);\r\n\t}\r\n\telse
-        return document.originalAddEventListener(e,a,b);\r\n    };\r\n    \r\n    ppblkUtil.addEvent(document,
-        navigator.userAgent.indexOf('Chrome') > -1 ? 'mouseup' : 'click', function(){});\r\n
-        \   ppblkUtil.addEvent(document, 'mousedown', function(){});\r\n    \r\n})();\r\n</script>\r\n\r\n</head>\r\n\r\n<body>\r\n<script
+        > -1){\n\t\t    arrElms[elm] = 1;\n\t\t    return 1;\n\t\t}\n\t\te = e.parentNode;\n\t
+        \   }\n\t    arrElms[elm] = 0;\n\t    return 0;\n\t}\n    };\n    ppblkUtil.init();\n
+        \   \n    window.currList = {'body': {'mouseup': new Array(),'click': new
+        Array(),'mousedown': new Array()}};\n    var isAddExist = document.addEventListener
+        ? true : false;\n    document.originalAddEventListener = document.addEventListener
+        || document.attachEvent;\n    document[isAddExist ? 'addEventListener' : 'attachEvent']
+        = function(e, a, b){\n\tif(e == 'mouseup' || e == 'click' || e == 'mousedown'){\n\t
+        \   window.currList['body'][e].push(a);\n\t    return document.originalAddEventListener(e,
+        ppblkUtil.onMouseEvent, true);\n\t}\n\telse return document.originalAddEventListener(e,a,b);\n
+        \   };\n    \n    ppblkUtil.addEvent(document, navigator.userAgent.indexOf('Chrome')
+        > -1 ? 'mouseup' : 'click', function(){});\n    ppblkUtil.addEvent(document,
+        'mousedown', function(){});\n    \n})();\n</script>\n\n</head>\n\n<body>\n<script
         type=\"text/javascript\">\n\n  var _gaq = _gaq || [];\n  _gaq.push(['_setAccount',
         'UA-16396970-1']);\n  _gaq.push(['_trackPageview']);\n\n  (function() {\n
         \   var ga = document.createElement('script'); ga.type = 'text/javascript';
         ga.async = true;\n    ga.src = ('https:' == document.location.protocol ? 'https://ssl'
         : 'http://www') + '.google-analytics.com/ga.js';\n    var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(ga, s);\n  })();\n\n</script>\r\n<div class='network'>\r\n\t<div
-        class='network_links'>\r\n\t</div>\r\n</div>\r\n\t<div id='container'>\r\n\r\n\t\t<div
-        id='header'>\r\n\r\n\t\t\t<div id='logo'>\r\n\t\t\t\t<h1><a href='/'><img
-        src='//s.ilcorsaronero.info/images/h_logo.gif' alt='Torrent Italiano' title='Torrent
-        Italiano' /></a></h1>\r\n\t\t\t</div>\r\n\r\n\t\t\t<div id='call'>\r\n\t\t\t\r\n\t\t\t\t<h3><form
-        action='/argh.php' method='get'>\r\n\t\t\t\t\r\n      &nbsp;Cerca : <input
-        name='search' size='42' value='Game of Thrones S05' type='text'>  \r\n       <input
-        type=\"submit\" value='cerca' alt=\"Submit\">\r\n</form></h3>\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
-        href='/torrent-ita/iTALiAN.html'><img src='//s.ilcorsaronero.info/images/h_logo2.gif'
-        alt='' border='0'/></a>\r\n\t\t\t</div>\r\n\r\n\r\n\r\n\t\t\t<div id='menu'>\r\n\r\n\t\t\t\t<ul>\r\n\t\t\t\t\t<li
-        id='menu_home'><span></span></li>\r\n\t\t\t\t\t<li id='menu_stills'><a href='/cat/3'>giochi</a></li>\r\n\t\t\t\t\t<li
-        id='menu_video'><a href='/cat/1'>film</a></li>\r\n\t\t\t\t\t<li id='menu_audio'><a
-        href='/cat/2'>musica</a></li>\r\n\t\t\t\t\t<li id='menu_identity'><a href='/cat/7'>app</a></li>\r\n\t\t\t\t\t<li
-        id='menu_web'><a href='/sfoglia'>sfoglia</a></li>\r\n\t\t\t\t\t<li id='menu_gallery'><a
-        href='/recenti'>recenti</a></li>\r\n\t\t\t\t\t<li id='menu_about'><a href='/searchcloud'>cloud</a></li>\r\n\t\t\t\t\t<li
-        id='menu_contact'><a href='/upload'>upload</a></li>\r\n\t\t\t\t</ul>\r\n\t\t\t</div>\r\n\r\n\t\t\t<div
-        class='clear'></div>\r\n\r\n\t  </div>\r\n\r\n<div id=\"content\">\r\n    <div
-        id=\"body\">\r\n        <table width=100% border=0 cellpadding=0 cellspacing=0>\r\n
-        \           <tr>\r\n                <td>\r\n                    <font size=+1
-        color=\"#CC0000\">&nbsp;<b>* Ultimi Torrent</b></font>&nbsp;\r\n                </td>\r\n
-        \               <td align=right>\r\n                    <h3><span style=\"color:
-        yellow;\">iCN<br /></span></h3>                </td>\r\n            </tr>\r\n
-        \       </table>\r\n        <br/>\r\n        <span id=\"searchincat\"><a href=\"https://ilcorsaronero.info/rss\"><img
-        src=\"//s.ilcorsaronero.info/images/rss_icon.png\" border=\"0\"></a>filtra
-        risultati per categoria:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br><br></span><br><ul
-        id=\"tabs\" ><li><a href='https://ilcorsaronero.info/adv/Game%20of%20Thrones%20S05.html'>All</a></li>
-        <li><a href='https://ilcorsaronero.info/adv/7/Game%20of%20Thrones%20S05.html'>App
-        Win</a></li> <li><a href='https://ilcorsaronero.info/adv/3/Game%20of%20Thrones%20S05.html'>PC
-        Games</a></li> <li><a href='https://ilcorsaronero.info/adv/2/Game%20of%20Thrones%20S05.html'>Musica</a></li>
-        <li><a href='https://ilcorsaronero.info/adv/19/Game%20of%20Thrones%20S05.html'>Screener</a></li>
-        <li><a href='https://ilcorsaronero.info/adv/1/Game%20of%20Thrones%20S05.html'>BDRiP</a></li>
-        <li><a href='https://ilcorsaronero.info/adv/20/Game%20of%20Thrones%20S05.html'>DVD</a></li>
-        <li><a href='https://ilcorsaronero.info/adv/13/Game%20of%20Thrones%20S05.html'>PlayStation</a></li>
-        <li><a href='https://ilcorsaronero.info/adv/14/Game%20of%20Thrones%20S05.html'>XboX</a></li>
-        <li><a href='https://ilcorsaronero.info/adv/6/Game%20of%20Thrones%20S05.html'>eBooks</a></li>
-        <li><a href='https://ilcorsaronero.info/adv/15/Game%20of%20Thrones%20S05.html'>SerieTv</a></li></ul>
+        s.parentNode.insertBefore(ga, s);\n  })();\n\n</script>\n<div class='network'>\n\t<div
+        class='network_links'>\n\t</div>\n</div>\n\t<div id='container'>\n\n\t\t<div
+        id='header'>\n\n\t\t\t<div id='logo'>\n\t\t\t\t<h1><a href='/'><img src='//s.ilcorsaronero.ch/images/h_logo.gif'
+        alt='Torrent Italiano' title='Torrent Italiano' /></a></h1>\n\t\t\t</div>\n\n\t\t\t<div
+        id='call'>\n\t\t\t\n\t\t\t\t<h3><form action='/argh.php' method='get'>\n\t\t\t\t\n
+        \     &nbsp;Cerca : <input name='search' size='42' value='Game of Thrones
+        S05' type='text'>  \n       <input type=\"submit\" value='cerca' alt=\"Submit\">\n</form></h3>\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
+        href='/torrent-ita/iTALiAN.html'><img src='//s.ilcorsaronero.ch/images/h_logo2.gif'
+        alt='' border='0'/></a>\n\t\t\t</div>\n\n\n\n\t\t\t<div id='menu'>\n\n\t\t\t\t<ul>\n\t\t\t\t\t<li
+        id='menu_home'><span></span></li>\n\t\t\t\t\t<li id='menu_stills'><a href='/cat/3'>giochi</a></li>\n\t\t\t\t\t<li
+        id='menu_video'><a href='/cat/1'>film</a></li>\n\t\t\t\t\t<li id='menu_audio'><a
+        href='/cat/2'>musica</a></li>\n\t\t\t\t\t<li id='menu_identity'><a href='/cat/7'>app</a></li>\n\t\t\t\t\t<li
+        id='menu_web'><a href='/sfoglia'>sfoglia</a></li>\n\t\t\t\t\t<li id='menu_gallery'><a
+        href='/recenti'>recenti</a></li>\n\t\t\t\t\t<li id='menu_about'><a href='/searchcloud'>cloud</a></li>\n\t\t\t\t\t<li
+        id='menu_contact'><a href='/upload'>upload</a></li>\n\t\t\t\t</ul>\n\t\t\t</div>\n\n\t\t\t<div
+        class='clear'></div>\n\n\t  </div>\n\n<div id=\"content\">\r\n    <div id=\"body\">\r\n
+        \       <table width=100% border=0 cellpadding=0 cellspacing=0>\r\n            <tr>\r\n
+        \               <td>\r\n                    <font size=+1 color=\"#CC0000\">&nbsp;<b>*
+        Ultimi Torrent</b></font>&nbsp;\r\n                </td>\r\n                <td
+        align=right>\r\n                    <h3><strong>Cambiate i DNS con DNS Jumper<br
+        /></strong></h3>                </td>\r\n            </tr>\r\n        </table>\r\n
+        \       <br/>\r\n        <span id=\"searchincat\"><a href=\"https://ilcorsaronero.ch/rss\"><img
+        src=\"//s.ilcorsaronero.ch/images/rss_icon.png\" border=\"0\"></a>filtra risultati
+        per categoria:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br><br></span><br><ul
+        id=\"tabs\" ><li><a href='https://ilcorsaronero.ch/torrent-ita/Game%20of%20Thrones%20S05.html'>All</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/7/Game%20of%20Thrones%20S05.html'>App
+        Win</a></li> <li><a href='https://ilcorsaronero.ch/torrent-ita/3/Game%20of%20Thrones%20S05.html'>PC
+        Games</a></li> <li><a href='https://ilcorsaronero.ch/torrent-ita/2/Game%20of%20Thrones%20S05.html'>Musica</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/19/Game%20of%20Thrones%20S05.html'>Screener</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/1/Game%20of%20Thrones%20S05.html'>BDRiP</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/20/Game%20of%20Thrones%20S05.html'>DVD</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/13/Game%20of%20Thrones%20S05.html'>PlayStation</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/14/Game%20of%20Thrones%20S05.html'>XboX</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/6/Game%20of%20Thrones%20S05.html'>eBooks</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/15/Game%20of%20Thrones%20S05.html'>SerieTv</a></li></ul>
         <br><br>\r\n        <div id=\"left\" class=\"left\">\r\n            <table>\r\n
         \               <tr>\r\n                    <td VALIGN=\"top\">\r\n                        <ul>\r\n
         \                       </ul>\r\n                        <br/>\r\n                        <ul>\r\n
-        \                           <li><a href=\"https://ilcorsaronero.info/tagmovie\">Movie
-        Tag</a></li>\r\n                        </ul>\r\n                                                <br>\r\n\r\n
+        \                           <li><a href=\"https://ilcorsaronero.ch/tagmovie\">Movie
+        Tag</a></li>\r\n                        </ul>\r\n                                                <br/>\r\n
         \                       <ul>\r\n                            <li><a href=\"https://feeds.feedburner.com/ilCorSaRoNero\"
         target=\"_blank\"><img\r\n                                        src=\"https://feeds.feedburner.com/~fc/ilCorSaRoNero?bg=000000&amp;fg=FFFF00&amp;anim=0\"\r\n
         \                                       height=\"26\" width=\"88\" style=\"border:0\"
         alt=\"stai aggiornato via email\"\r\n                                        title=\"stai
         aggiornato via email\"/></a></li>\r\n                        </ul>\r\n                        <center>\r\n
         \                           <br/>\r\n                            <table><tbody><tr
-        attr=\"0\"><td><a href=\"/torrent-ita/pirati dei caraibi.html\"><img style=\"border-color:
-        black\" src=\"//s.ilcorsaronero.info/imgcp/piratesofthecaribbean5.jpg\" alt=\"pirati
-        dei caraibi\" title=\"pirati dei caraibi\" height=\"130\" width=\"90\" border=\"2\"></a></td><td><a
+        attr=\"0\"><td><a href=\"/torrent-ita/infinity war.html\"><img style=\"border-color:
+        black\" src=\"//s.ilcorsaronero.info/imgcp/img005.jpg\" alt=\"infinity war\"
+        title=\"infinity war\" height=\"130\" width=\"90\" border=\"2\"></a></td><td><a
         href=\"/torrent-ita/wonder woman.html\"><img style=\"border-color: black\"
         src=\"//s.ilcorsaronero.info/imgcp/wonderwoman.jpg\" alt=\"wonder woman\"
         title=\"wonder woman\" height=\"130\" width=\"90\" border=\"2\"></a></td></tr
-        attr=\\\"$pic\\\"><tr attr=\"2\"><td><a href=\"/torrent-ita/baywatch.html\"><img
-        style=\"border-color: black\" src=\"//s.ilcorsaronero.info/imgcp/53169.jpg\"
-        alt=\"baywatch\" title=\"baywatch\" height=\"130\" width=\"90\" border=\"2\"></a></td><td><a
+        attr=\\\"$pic\\\"><tr attr=\"2\"><td><a href=\"/torrent-ita/assassinio.html\"><img
+        style=\"border-color: black\" src=\"//s.ilcorsaronero.info/imgcp/assassiniosullorientexpress2017.jpg\"
+        alt=\"assassinio\" title=\"assassinio\" height=\"130\" width=\"90\" border=\"2\"></a></td><td><a
         href=\"/torrent-ita/mummia.html\"><img style=\"border-color: black\" src=\"//s.ilcorsaronero.info/imgcp/lamummia.jpg\"
         alt=\"mummia\" title=\"mummia\" height=\"130\" width=\"90\" border=\"2\"></a></td></tr
         attr=\\\"$pic\\\"><tr attr=\"4\"><td><a href=\"/torrent-ita/transformers.html\"><img
@@ -307,327 +313,335 @@ interactions:
         alt=\"transformers\" title=\"transformers\" height=\"130\" width=\"90\" border=\"2\"></a></td><td><a
         href=\"/torrent-ita/homecoming.html\"><img style=\"border-color: black\" src=\"//s.ilcorsaronero.info/imgcp/spider-man-homecoming-poster.jpg\"
         alt=\"homecoming\" title=\"homecoming\" height=\"130\" width=\"90\" border=\"2\"></a></td></tr
-        attr=\\\"$pic\\\"></tbody></table>                        </center>\r\n                        <br/>\r\n
-        \                       <ul>\r\n                            <li><a href=\"https://ilcorsaronero.info/link\">Link</a></li>\r\n
-        \                       </ul>\r\n\r\n                        <img src=\"//s.ilcorsaronero.info/images/lloca.gif\"
-        alt=\"\">\r\n        </div>\r\n\r\n        \r\n\r\n        </td>\r\n        <td
-        VALIGN=\"top\">\r\n            <div align=\"left\">\r\n            </div>\r\n\r\n
-        \           <TABLE>\r\n                <tr>\r\n                    <td colspan='10'>\r\n
-        \                       <center>\r\n\r\n                        </center>\r\n\r\n\r\n
-        \                   </td>\r\n                </tr>\r\n\r\n                <TR
-        class=\"bordo\">\r\n\r\n\r\n                    <TD align=\"center\" class=\"header2\">\r\n
-        \                       Cat&nbsp;<br><img src='//s.ilcorsaronero.info/images/linean.gif'
-        border='0' alt=\"_\"></TD>\r\n\r\n                    <TD align=\"center\"
-        class=\"header2\">&nbsp;Name<br><img src='//s.ilcorsaronero.info/images/linean4.gif'\r\n
-        \                                                                         border='0'
-        alt=\"_\"></TD>\r\n\r\n                    <TD align=\"center\" class=\"header2\">Size<br><img
-        src='//s.ilcorsaronero.info/images/linean.gif' border='0'\r\n                                                                    alt=\"_\"></TD>\r\n\r\n
+        attr=\\\"$pic\\\"></tbody></table>                        </center>\r\n                        <br/>\r\n\r\n
+        \                       <ul>\r\n                            <li><a href=\"https://ilcorsaronero.ch/link\">Link</a></li>\r\n
+        \                       </ul>\r\n                        <ul>\r\n                            <br>\r\n\r\n
+        \                           <div align=\"left\">\r\n                                <table>\r\n\r\n
+        \                                   <div id=\"lws_0\">\r\n                                        <div
+        style=\"margin: 0pt; border: 0pt none; padding: 0pt; clear: both;\"\r\n                                             class=\"linkwithin_outer\">\r\n
+        \                                           <div style=\"margin: 0pt; border:
+        0pt none; padding: 0pt; width: 190px;\"\r\n                                                 class=\"linkwithin_inner\">\r\n
+        \                                           </div>\r\n                                        </div>\r\n
+        \                                   </div>\r\n\r\n                                </table>\r\n
+        \                           </div>\r\n                            <br>\r\n
+        \                       </ul>\r\n\r\n                        <img src=\"//s.ilcorsaronero.ch/images/lloca.gif\"
+        alt=\"\">\r\n\r\n        </div>\r\n\r\n        \r\n\r\n        </td>\r\n        <td
+        VALIGN=\"top\">\r\n            <TABLE>\r\n                <tr>\r\n                    <td
+        colspan='10'>\r\n                        <center>\r\n\r\n                                                        \r\n
+        \                       </center>\r\n                    </td>\r\n                </tr>\r\n\r\n
+        \               <TR class=\"bordo\">\r\n\r\n\r\n                    <TD align=\"center\"
+        class=\"header2\">\r\n                        Cat&nbsp;<br><img src='//s.ilcorsaronero.ch/images/linean.gif'
+        border='0' alt=\"_\">\r\n                    </TD>\r\n\r\n                    <TD
+        align=\"center\" class=\"header2\">&nbsp;Name<br><img\r\n                            src='//s.ilcorsaronero.ch/images/linean4.gif'
+        border='0' alt=\"_\">\r\n                    </TD>\r\n\r\n                    <TD
+        align=\"center\" class=\"header2\">Size<br><img src='//s.ilcorsaronero.ch/images/linean.gif'
+        border='0'\r\n                                                                    alt=\"_\"></TD>\r\n\r\n
         \                   <TD align=\"center\" class=\"header2\">Azione<br><img
-        src='//s.ilcorsaronero.info/images/linean2.gif'\r\n                                                                      border='0'
+        src='//s.ilcorsaronero.ch/images/linean2.gif'\r\n                                                                      border='0'
         alt=\"_\"></TD>\r\n\r\n                    <TD align=\"center\" class=\"header2\">Data&nbsp;&#8595<br><img\r\n
-        \                           src='//s.ilcorsaronero.info/images/linean1.gif'
+        \                           src='//s.ilcorsaronero.ch/images/linean1.gif'
         border='0' alt=\"_\"></TD>\r\n\r\n                    <TD align=\"center\"
-        class=\"header2\">S<br><img src='//s.ilcorsaronero.info/images/linean1.gif'
+        class=\"header2\">S<br><img src='//s.ilcorsaronero.ch/images/linean1.gif'
         border='0'\r\n                                                                 alt=\"_\"></TD>\r\n\r\n
-        \                   <TD align=\"center\" class=\"header2\">L<br><img src='//s.ilcorsaronero.info/images/linean1.gif'
+        \                   <TD align=\"center\" class=\"header2\">L<br><img src='//s.ilcorsaronero.ch/images/linean1.gif'
         border='0'\r\n                                                                 alt=\"_\"></TD>\r\n
         \                                   </TR>\r\n\r\n                <tr class=\"odd\">\t<td
-        align=\"center\" class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/113071/Game_Of_Thrones_S05e01_10__H264___Ita_Eng_Ac3_5_1_Subs__BDMux_by_Fratposa_COMPLETA_Il_Trono_di_Spade\"
+        align=\"center\" class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/113071/Game_Of_Thrones_S05e01_10__H264___Ita_Eng_Ac3_5_1_Subs__BDMux_by_Fratposa_COMPLETA_Il_Trono_di_Spade\"
         >Game Of Thrones S05e01-10 [H264 - Ita Eng Ac3 5.1-Subs]..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>6.07 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/113071/Game_Of_Thrones_S05e01_10__H264___Ita_Eng_Ac3_5_1_Subs__BDMux_by_Fratposa_COMPLETA_Il_Trono_di_Spade\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/113071/Game_Of_Thrones_S05e01_10__H264___Ita_Eng_Ac3_5_1_Subs__BDMux_by_Fratposa_COMPLETA_Il_Trono_di_Spade\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"70d10dc5efb7d4be13f0825f2f962540e5dd253c\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/113071/Game_Of_Thrones_S05e01_10__H264___Ita_Eng_Ac3_5_1_Subs__BDMux_by_Fratposa_COMPLETA_Il_Trono_di_Spade><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/113071/Game_Of_Thrones_S05e01_10__H264___Ita_Eng_Ac3_5_1_Subs__BDMux_by_Fratposa_COMPLETA_Il_Trono_di_Spade><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
         alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>14.01.16</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>147</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>137</font></td></TR><tr class=\"odd2\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/107795/Game_Of_Thrones_Trono_Di_Spade_S05e10_Madre_Misericordiosa_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/107795/Game_Of_Thrones_Trono_Di_Spade_S05e10_Madre_Misericordiosa_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
         >Game.Of.Thrones-Trono.Di.Spade.S05e10.Madre.Misericordi..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>6.04 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/107795/Game_Of_Thrones_Trono_Di_Spade_S05e10_Madre_Misericordiosa_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/107795/Game_Of_Thrones_Trono_Di_Spade_S05e10_Madre_Misericordiosa_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"e68277a86c9062daccb0afffa7a1aa2813be5b51\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/107795/Game_Of_Thrones_Trono_Di_Spade_S05e10_Madre_Misericordiosa_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/107795/Game_Of_Thrones_Trono_Di_Spade_S05e10_Madre_Misericordiosa_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
         alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>24.06.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>189</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>81</font></td></TR><tr class=\"odd\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/107792/Game_Of_Thrones___Il_Trono_Di_Spade_S05e10_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/107792/Game_Of_Thrones___Il_Trono_Di_Spade_S05e10_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
         >Game Of Thrones - Il Trono Di Spade S05e10[Mux - 720p -..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>1.88 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/107792/Game_Of_Thrones___Il_Trono_Di_Spade_S05e10_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/107792/Game_Of_Thrones___Il_Trono_Di_Spade_S05e10_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"7a259e01cfcc94ff118a823559219f997281e11b\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/107792/Game_Of_Thrones___Il_Trono_Di_Spade_S05e10_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/107792/Game_Of_Thrones___Il_Trono_Di_Spade_S05e10_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
         alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>24.06.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>313</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>81</font></td></TR><tr class=\"odd2\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/107632/Game_Of_Thrones___Il_Trono_Di_Spade_S05e08_09_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux__\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/107632/Game_Of_Thrones___Il_Trono_Di_Spade_S05e08_09_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux__\"
         >Game Of Thrones - Il Trono Di Spade S05e08-09[Mux - 720..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>3.51 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/107632/Game_Of_Thrones___Il_Trono_Di_Spade_S05e08_09_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux__\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/107632/Game_Of_Thrones___Il_Trono_Di_Spade_S05e08_09_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux__\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"8c14f66e8634ec43937742f67f3c34a8e0d1d439\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/107632/Game_Of_Thrones___Il_Trono_Di_Spade_S05e08_09_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux__><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
-        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>18.06.15</font></td>\n\t<td
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/107632/Game_Of_Thrones___Il_Trono_Di_Spade_S05e08_09_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux__><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
+        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>17.06.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>192</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>309</font></td></TR><tr class=\"odd\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/107617/Il_Trono_Di_Spade_Game_Of_Thrones_S05e09_La_Danza_Dei_Draghi_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/107617/Il_Trono_Di_Spade_Game_Of_Thrones_S05e09_La_Danza_Dei_Draghi_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
         >Il.Trono.Di.Spade-Game.Of.Thrones.S05e09.La.Danza.Dei.D..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>4.56 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/107617/Il_Trono_Di_Spade_Game_Of_Thrones_S05e09_La_Danza_Dei_Draghi_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/107617/Il_Trono_Di_Spade_Game_Of_Thrones_S05e09_La_Danza_Dei_Draghi_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"36cf4d3e909989e3ef87eba06ec0b12caa250d46\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/107617/Il_Trono_Di_Spade_Game_Of_Thrones_S05e09_La_Danza_Dei_Draghi_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/107617/Il_Trono_Di_Spade_Game_Of_Thrones_S05e09_La_Danza_Dei_Draghi_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
         alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>17.06.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>501</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>262</font></td></TR><tr class=\"odd2\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/107482/Trono_Di_Spade_Game_Of_Thrones_S05e08_Aspra_Dimora_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/107482/Trono_Di_Spade_Game_Of_Thrones_S05e08_Aspra_Dimora_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
         >Trono.Di.Spade-Game.Of.Thrones.S05e08.Aspra.Dimora.ITA...</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>2.30 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/107482/Trono_Di_Spade_Game_Of_Thrones_S05e08_Aspra_Dimora_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/107482/Trono_Di_Spade_Game_Of_Thrones_S05e08_Aspra_Dimora_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"be3ec6eed35aaa1f3466d3c84441cd68de97366a\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/107482/Trono_Di_Spade_Game_Of_Thrones_S05e08_Aspra_Dimora_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/107482/Trono_Di_Spade_Game_Of_Thrones_S05e08_Aspra_Dimora_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
         alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>10.06.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>445</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>59</font></td></TR><tr class=\"odd\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/107345/Trono_Di_Spade_Game_Of_Thrones_Il_Dono_S05e07_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/107345/Trono_Di_Spade_Game_Of_Thrones_Il_Dono_S05e07_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
         >Trono.Di.Spade-Game.Of.Thrones.Il.Dono.S05e07.ITA.ENG.1..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>5.44 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/107345/Trono_Di_Spade_Game_Of_Thrones_Il_Dono_S05e07_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/107345/Trono_Di_Spade_Game_Of_Thrones_Il_Dono_S05e07_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"84a532eab6aeab142b8ae9390e855a9d65391095\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/107345/Trono_Di_Spade_Game_Of_Thrones_Il_Dono_S05e07_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/107345/Trono_Di_Spade_Game_Of_Thrones_Il_Dono_S05e07_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
         alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>03.06.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>298</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>130</font></td></TR><tr class=\"odd2\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/107339/Game_Of_Thrones___Il_Trono_Di_Spade_S05e07_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/107339/Game_Of_Thrones___Il_Trono_Di_Spade_S05e07_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
         >Game Of Thrones - Il Trono Di Spade S05e07[Mux - 720p -..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>1.38 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/107339/Game_Of_Thrones___Il_Trono_Di_Spade_S05e07_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/107339/Game_Of_Thrones___Il_Trono_Di_Spade_S05e07_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"2485dcbc9fdbe8e56936f097ffb05fa2a6893a4f\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/107339/Game_Of_Thrones___Il_Trono_Di_Spade_S05e07_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
-        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>03.06.15</font></td>\n\t<td
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/107339/Game_Of_Thrones___Il_Trono_Di_Spade_S05e07_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
+        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>02.06.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>460</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>115</font></td></TR><tr class=\"odd\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/107184/Game_Of_Thrones_Trono_Di_Spade_S05e06_Le_Serpi_Delle_Sabbie_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/107184/Game_Of_Thrones_Trono_Di_Spade_S05e06_Le_Serpi_Delle_Sabbie_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
         >Game.Of.Thrones-Trono.Di.Spade.S05e06.Le.Serpi.Delle.Sa..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>4.36 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/107184/Game_Of_Thrones_Trono_Di_Spade_S05e06_Le_Serpi_Delle_Sabbie_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/107184/Game_Of_Thrones_Trono_Di_Spade_S05e06_Le_Serpi_Delle_Sabbie_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"9bf0ac1e169f0e1b7fa38b2c9ebad0ea4bede80f\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/107184/Game_Of_Thrones_Trono_Di_Spade_S05e06_Le_Serpi_Delle_Sabbie_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/107184/Game_Of_Thrones_Trono_Di_Spade_S05e06_Le_Serpi_Delle_Sabbie_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
         alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>27.05.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>180</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>77</font></td></TR><tr class=\"odd2\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/107181/Game_Of_Thrones___Il_Trono_Di_Spade_S05e06_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/107181/Game_Of_Thrones___Il_Trono_Di_Spade_S05e06_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
         >Game Of Thrones - Il Trono Di Spade S05e06[Mux - 720p -..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>1.35 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/107181/Game_Of_Thrones___Il_Trono_Di_Spade_S05e06_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/107181/Game_Of_Thrones___Il_Trono_Di_Spade_S05e06_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"e626d0ef6d1f1473295c943d83dbd211ae427fd9\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/107181/Game_Of_Thrones___Il_Trono_Di_Spade_S05e06_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/107181/Game_Of_Thrones___Il_Trono_Di_Spade_S05e06_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
         alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>27.05.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>283</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>117</font></td></TR><tr class=\"odd\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/107029/Game_Of_Thrones___Il_Trono_Di_Spade_S05e05_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/107029/Game_Of_Thrones___Il_Trono_Di_Spade_S05e05_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
         >Game Of Thrones - Il Trono Di Spade S05e05[Mux - 720p -..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>1.21 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/107029/Game_Of_Thrones___Il_Trono_Di_Spade_S05e05_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/107029/Game_Of_Thrones___Il_Trono_Di_Spade_S05e05_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"5fcc21a394b972bac3958474f508d2d5afe9ffce\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/107029/Game_Of_Thrones___Il_Trono_Di_Spade_S05e05_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
-        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>21.05.15</font></td>\n\t<td
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/107029/Game_Of_Thrones___Il_Trono_Di_Spade_S05e05_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
+        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>20.05.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>270</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>59</font></td></TR><tr class=\"odd2\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/106989/Game_Of_Thrones_Trono_Di_Spade_S05e05_Uccidi_Il_Ragazzo_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/106989/Game_Of_Thrones_Trono_Di_Spade_S05e05_Uccidi_Il_Ragazzo_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
         >Game.Of.Thrones-Trono.Di.Spade.S05e05.Uccidi.Il.Ragazzo..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>4.32 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/106989/Game_Of_Thrones_Trono_Di_Spade_S05e05_Uccidi_Il_Ragazzo_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/106989/Game_Of_Thrones_Trono_Di_Spade_S05e05_Uccidi_Il_Ragazzo_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"48a3370b90db566365c6469864abc1bb02a8ec23\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/106989/Game_Of_Thrones_Trono_Di_Spade_S05e05_Uccidi_Il_Ragazzo_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
-        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>20.05.15</font></td>\n\t<td
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/106989/Game_Of_Thrones_Trono_Di_Spade_S05e05_Uccidi_Il_Ragazzo_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
+        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>19.05.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>235</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>45</font></td></TR><tr class=\"odd\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/106828/Game_Of_Thrones_Trono_Di_Spade_S05e04_I_Figli_DellArpia_ITA_ENG_1080p_x264_Subs_HDTVMux_BlackBIT\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/106828/Game_Of_Thrones_Trono_Di_Spade_S05e04_I_Figli_DellArpia_ITA_ENG_1080p_x264_Subs_HDTVMux_BlackBIT\"
         >Game.Of.Thrones-Trono.Di.Spade.S05e04.I.Figli.DellArpia..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>4.10 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/106828/Game_Of_Thrones_Trono_Di_Spade_S05e04_I_Figli_DellArpia_ITA_ENG_1080p_x264_Subs_HDTVMux_BlackBIT\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/106828/Game_Of_Thrones_Trono_Di_Spade_S05e04_I_Figli_DellArpia_ITA_ENG_1080p_x264_Subs_HDTVMux_BlackBIT\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"d4430af58fb2c70fe11ee172fb8db2e927bd734b\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/106828/Game_Of_Thrones_Trono_Di_Spade_S05e04_I_Figli_DellArpia_ITA_ENG_1080p_x264_Subs_HDTVMux_BlackBIT><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/106828/Game_Of_Thrones_Trono_Di_Spade_S05e04_I_Figli_DellArpia_ITA_ENG_1080p_x264_Subs_HDTVMux_BlackBIT><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
         alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>14.05.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>214</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>46</font></td></TR><tr class=\"odd2\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/106793/Game_Of_Thrones___Il_Trono_Di_Spade_S05e04_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/106793/Game_Of_Thrones___Il_Trono_Di_Spade_S05e04_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
         >Game Of Thrones - Il Trono Di Spade S05e04[Mux - 720p -..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>1.09 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/106793/Game_Of_Thrones___Il_Trono_Di_Spade_S05e04_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/106793/Game_Of_Thrones___Il_Trono_Di_Spade_S05e04_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"9ef7b3da26b477ef2c106f8fc1cf879d165fa113\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/106793/Game_Of_Thrones___Il_Trono_Di_Spade_S05e04_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
-        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>13.05.15</font></td>\n\t<td
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/106793/Game_Of_Thrones___Il_Trono_Di_Spade_S05e04_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
+        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>12.05.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>247</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>70</font></td></TR><tr class=\"odd\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/106622/Game_Of_Thrones___Il_Trono_Di_spade_S05e03_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/106622/Game_Of_Thrones___Il_Trono_Di_spade_S05e03_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
         >Game Of Thrones - Il Trono Di spade S05e03[Mux - 720p -..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>1.13 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/106622/Game_Of_Thrones___Il_Trono_Di_spade_S05e03_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/106622/Game_Of_Thrones___Il_Trono_Di_spade_S05e03_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"1df354eb1d44e09484db0c19cd459315eb41e567\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/106622/Game_Of_Thrones___Il_Trono_Di_spade_S05e03_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
-        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>07.05.15</font></td>\n\t<td
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/106622/Game_Of_Thrones___Il_Trono_Di_spade_S05e03_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
+        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>06.05.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>128</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>9</font></td></TR><tr class=\"odd2\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/106572/Il_Trono_Di_Spade_Game_Of_Thrones_S05e03_Lalto_Passero_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/106572/Il_Trono_Di_Spade_Game_Of_Thrones_S05e03_Lalto_Passero_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
         >Il.Trono.Di.Spade-Game.Of.Thrones.S05e03.Lalto.Passero...</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>4.85 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/106572/Il_Trono_Di_Spade_Game_Of_Thrones_S05e03_Lalto_Passero_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/106572/Il_Trono_Di_Spade_Game_Of_Thrones_S05e03_Lalto_Passero_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"80900b7120bc75434779a9931db3a185714ffe85\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/106572/Il_Trono_Di_Spade_Game_Of_Thrones_S05e03_Lalto_Passero_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/106572/Il_Trono_Di_Spade_Game_Of_Thrones_S05e03_Lalto_Passero_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
         alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>05.05.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>371</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>232</font></td></TR><tr class=\"odd\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/106352/Game_of_Thrones___Il_Trono_di_Spade_S05e02_XviD___Ita_Eng_Mp3___Sub_Ita_Eng__DLMux_By_UnLEGIT\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/106352/Game_of_Thrones___Il_Trono_di_Spade_S05e02_XviD___Ita_Eng_Mp3___Sub_Ita_Eng__DLMux_By_UnLEGIT\"
         >Game of Thrones - Il Trono di Spade S05e02[XviD - Ita E..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>639.19 MB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/106352/Game_of_Thrones___Il_Trono_di_Spade_S05e02_XviD___Ita_Eng_Mp3___Sub_Ita_Eng__DLMux_By_UnLEGIT\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/106352/Game_of_Thrones___Il_Trono_di_Spade_S05e02_XviD___Ita_Eng_Mp3___Sub_Ita_Eng__DLMux_By_UnLEGIT\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"254f5d47b2753476a07858f1810dcae0d0a695ad\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/106352/Game_of_Thrones___Il_Trono_di_Spade_S05e02_XviD___Ita_Eng_Mp3___Sub_Ita_Eng__DLMux_By_UnLEGIT><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
-        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>29.04.15</font></td>\n\t<td
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/106352/Game_of_Thrones___Il_Trono_di_Spade_S05e02_XviD___Ita_Eng_Mp3___Sub_Ita_Eng__DLMux_By_UnLEGIT><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
+        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>28.04.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>610</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>67</font></td></TR><tr class=\"odd2\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/106351/Game_Of_Thrones___Il_Trono_Di_spade_S05e02_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/106351/Game_Of_Thrones___Il_Trono_Di_spade_S05e02_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
         >Game Of Thrones - Il Trono Di spade S05e02[Mux - 720p -..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>1.55 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/106351/Game_Of_Thrones___Il_Trono_Di_spade_S05e02_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/106351/Game_Of_Thrones___Il_Trono_Di_spade_S05e02_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"bf43e494bc9c521d0b1f9f1a90c43ad100ca07ec\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/106351/Game_Of_Thrones___Il_Trono_Di_spade_S05e02_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
-        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>29.04.15</font></td>\n\t<td
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/106351/Game_Of_Thrones___Il_Trono_Di_spade_S05e02_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng__DLMux___Gi><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
+        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>28.04.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>141</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>65</font></td></TR><tr class=\"odd\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/106335/Game_Of_Thrones_Trono_Di_Spade_S05e02_Il_Nuovo_Commandante_ITA_ENG_1080p_x264_Subs_HDTVMux_BlackBIT\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/106335/Game_Of_Thrones_Trono_Di_Spade_S05e02_Il_Nuovo_Commandante_ITA_ENG_1080p_x264_Subs_HDTVMux_BlackBIT\"
         >Game.Of.Thrones-Trono.Di.Spade.S05e02.Il.Nuovo.Commanda..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>2.93 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/106335/Game_Of_Thrones_Trono_Di_Spade_S05e02_Il_Nuovo_Commandante_ITA_ENG_1080p_x264_Subs_HDTVMux_BlackBIT\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/106335/Game_Of_Thrones_Trono_Di_Spade_S05e02_Il_Nuovo_Commandante_ITA_ENG_1080p_x264_Subs_HDTVMux_BlackBIT\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"1472f31b276f34dc5c7a07b49bc6149dc558c3e6\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/106335/Game_Of_Thrones_Trono_Di_Spade_S05e02_Il_Nuovo_Commandante_ITA_ENG_1080p_x264_Subs_HDTVMux_BlackBIT><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/106335/Game_Of_Thrones_Trono_Di_Spade_S05e02_Il_Nuovo_Commandante_ITA_ENG_1080p_x264_Subs_HDTVMux_BlackBIT><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
         alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>28.04.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>371</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>83</font></td></TR><tr class=\"odd2\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/106112/Game_Of_Thrones_Trono_Di_Spade_S05e01_Guerre_Imminenti_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/106112/Game_Of_Thrones_Trono_Di_Spade_S05e01_Guerre_Imminenti_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
         >Game.Of.Thrones-Trono.Di.Spade.S05e01.Guerre.Imminenti...</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>1.99 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/106112/Game_Of_Thrones_Trono_Di_Spade_S05e01_Guerre_Imminenti_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/106112/Game_Of_Thrones_Trono_Di_Spade_S05e01_Guerre_Imminenti_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"88d8222bd3b5c69497b74191621daa2ee2ab4353\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/106112/Game_Of_Thrones_Trono_Di_Spade_S05e01_Guerre_Imminenti_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/106112/Game_Of_Thrones_Trono_Di_Spade_S05e01_Guerre_Imminenti_ITA_ENG_1080p_x264_Subs_DLMux_BlackBIT><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
         alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>21.04.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>262</font></td>\t<td align=\"center\"
-        ><font color='#0066CC'>72</font></td></TR>\r\n<tr><td colspan='10'>\r\n\r\n
-        \                           </td></tr><tr class=\"odd\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/106106/Game_of_Thrones___Il_Trono_di_Spade_S05e01_XviD___Ita_Eng_Mp3___Sub_Ita_Eng__DLMux_By_UnLEGIT\"
+        ><font color='#0066CC'>72</font></td></TR>\r\n<tr><td colspan='10'>\r\n                                                        </td></tr><tr
+        class=\"odd\">\t<td align=\"center\" class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/106106/Game_of_Thrones___Il_Trono_di_Spade_S05e01_XviD___Ita_Eng_Mp3___Sub_Ita_Eng__DLMux_By_UnLEGIT\"
         >Game of Thrones - Il Trono di Spade S05e01[XviD - Ita E..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>600.54 MB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/106106/Game_of_Thrones___Il_Trono_di_Spade_S05e01_XviD___Ita_Eng_Mp3___Sub_Ita_Eng__DLMux_By_UnLEGIT\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/106106/Game_of_Thrones___Il_Trono_di_Spade_S05e01_XviD___Ita_Eng_Mp3___Sub_Ita_Eng__DLMux_By_UnLEGIT\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"a0c4f322db22131734f01f78b41e0b5fc12f55e8\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/106106/Game_of_Thrones___Il_Trono_di_Spade_S05e01_XviD___Ita_Eng_Mp3___Sub_Ita_Eng__DLMux_By_UnLEGIT><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/106106/Game_of_Thrones___Il_Trono_di_Spade_S05e01_XviD___Ita_Eng_Mp3___Sub_Ita_Eng__DLMux_By_UnLEGIT><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
         alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>21.04.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>455</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>105</font></td></TR><tr class=\"odd2\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/106103/Game_Of_Thrones___Il_Trono_Di_spade_S05e01_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng_DLMux_iGM_C\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/106103/Game_Of_Thrones___Il_Trono_Di_spade_S05e01_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng_DLMux_iGM_C\"
         >Game Of Thrones - Il Trono Di spade S05e01[Mux - 720p -..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>1.68 GB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/106103/Game_Of_Thrones___Il_Trono_Di_spade_S05e01_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng_DLMux_iGM_C\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/106103/Game_Of_Thrones___Il_Trono_Di_spade_S05e01_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng_DLMux_iGM_C\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"8213c08cf979a9e589762e7205362f3b3dfa245d\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/106103/Game_Of_Thrones___Il_Trono_Di_spade_S05e01_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng_DLMux_iGM_C><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
-        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>21.04.15</font></td>\n\t<td
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/106103/Game_Of_Thrones___Il_Trono_Di_spade_S05e01_Mux___720p___H264___Ita_Eng_Ac3___Sub_Ita_Eng_DLMux_iGM_C><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
+        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>20.04.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>162</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>45</font></td></TR><tr class=\"odd\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.info/cat/15>SerieTv</td>\t<TD
-        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.info/tor/104023/Game_of_Thrones___Il_Trono_di_Spade_S05e00_720p___H264___Eng_Ac3_5_0___Sub_Ita_Eng_\"
+        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/104023/Game_of_Thrones___Il_Trono_di_Spade_S05e00_720p___H264___Eng_Ac3_5_0___Sub_Ita_Eng_\"
         >Game of Thrones - Il Trono di Spade S05e00[720p - H264 ..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>926.10 MB</font></td>\n\t<TD
-        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.info/tor/104023/Game_of_Thrones___Il_Trono_di_Spade_S05e00_720p___H264___Eng_Ac3_5_0___Sub_Ita_Eng_\"
+        align=\"center\" class=\"lista\" ><form action=\"https://ilcorsaronero.ch/tor/104023/Game_of_Thrones___Il_Trono_di_Spade_S05e00_720p___H264___Eng_Ac3_5_0___Sub_Ita_Eng_\"
         method=\"post\" target=\"_blank\" class=\"action\"><input type=\"submit\"
         class=\"downarrow\" name=\"cerca\" value=\"10c6b15ed4545d59913465685690e898746afcd3\"
-        title=\"Download\" /><A HREF=https://ilcorsaronero.info/tor/104023/Game_of_Thrones___Il_Trono_di_Spade_S05e00_720p___H264___Eng_Ac3_5_0___Sub_Ita_Eng_><img
-        src='//s.ilcorsaronero.info/images/details.gif' class='details' title='Descrizione'
-        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>15.02.15</font></td>\n\t<td
+        title=\"Download\" /><A HREF=https://ilcorsaronero.ch/tor/104023/Game_of_Thrones___Il_Trono_di_Spade_S05e00_720p___H264___Eng_Ac3_5_0___Sub_Ita_Eng_><img
+        src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
+        alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>14.02.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>105</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>7</font></td></TR><div align='left'>Torrent trovati
-        per <i>Game of Thrones S05</i> - 23 </div>\r\n<tr><td colspan='10'>\r\n<br>\r\n\r\n
-        \               <br/>\r\n\r\n                </TR>\r\n\r\n                <tr>\r\n
+        per <i>Game of Thrones S05</i> - (max 40) usate la <a rel='nofollow' href='http://ilcorsaronero.info/adv/Game%20of%20Thrones%20S05.html'>Ricerca
+        Avanzata</a> per piu' risultati </div>                <tr>\r\n                    <td
+        colspan='10'>\r\n                        <br>\r\n                        \r\n
+        \                                       </TR>\r\n\r\n                <tr>\r\n
         \                   <td colspan=\"5\" align=\"center\">\r\n                        <table>\r\n
-        \                           <TR>\r\n                                <TD> <p
-        align=\"center\"><b>0&nbsp;</b><br /><b>&lt;&lt; pagine precedenti&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pagine
-        successive &gt;&gt</b></p>\n\r\n\r\n                                </td>\r\n
-        \                           </TR>\r\n\r\n                        </table>\r\n\r\n
-        \                   </td>\r\n                </tr>\r\n\r\n\r\n            </TABLE>\r\n\r\n\r\n
-        \       </td>\r\n        </table>\r\n\r\n    </div>\r\n\r\n\r\n    <div class=\"clear\"></div>\r\n\r\n</div>\r\n\r\n<br>\r\n\r\n\r\n\r\n</div
-        >\r\n\r\n</div>\r\n\r\n</div>\r\n</div>\r\n\r\n\t<div id='footer'>\r\n\r\n\r\n\t\t<div
-        id='copyright'>\r\n\r\n\t\t<div id='logos'>\r\n\r\n\t\t\t\t<ul>\r\n\t\t\t\t\t<li></li>\r\n\t\t\t\t</ul>\r\n\r\n\t\t\t</div>\r\n\r\n\t\t\t<div
-        id='copy'>\r\n\r\n\t\t\t\t<ul>\r\n\t\t\t\t\t<li><a href='http://torrent-finder.info/torrent-finder-domain-seizure.php'
-        target='_blank'>Salva Internet</a></li>\r\n\t\t\t\t\t<li><a href='/contatti'>Contatti</a></li>\r\n\t\t\t\t\t<li><a
-        href='/removal'>Removal</a></li>\r\n\t\t\t\t</ul>\r\n\r\n\t\t\t</div>\r\n\r\n\t\t\t<div
-        class='clear'></div>\r\n\r\n\t\t</div>\r\n\r\n\t\t<div class='clear'></div>\r\n\r\n\t</div>\r\n\r\n</body>\r\n</html>\r\n"}
+        \                           <TR>\r\n                                <TD> \r\n\r\n
+        \                               </td>\r\n                            </TR>\r\n\r\n
+        \                       </table>\r\n\r\n                    </td>\r\n                </tr>\r\n\r\n\r\n
+        \           </TABLE>\r\n\r\n\r\n        </td>\r\n        </table>\r\n\r\n
+        \   </div>\r\n\r\n\r\n    <div class=\"clear\"></div>\r\n\r\n</div>\r\n\r\n<br>\r\n\r\n\n</div
+        >\n\n</div>\n\n</div>\n</div>\n\n\t<div id='footer'>\n\n\t\t<div id='copyright'>\n\n\t\t<div
+        id='logos'>\n\n\t\t\t\t<ul>\n\t\t\t\t\t<li></li>\n\t\t\t\t</ul>\n\n\t\t\t</div>\n\n\t\t\t<div
+        id='copy'>\n\n\t\t\t\t<ul>\n\t\t\t\t\t<li><a href='http://torrent-finder.info/torrent-finder-domain-seizure.php'
+        target='_blank'>Salva Internet</a></li>\n\t\t\t\t\t<li><a href='/contatti'>Contatti</a></li>\n\t\t\t\t\t<li><a
+        href='/removal'>Removal</a></li>\n\t\t\t\t</ul>\n\n\t\t\t</div>\n\n\t\t\t<div
+        class='clear'></div>\n\n\t\t</div>\n\n\t\t<div class='clear'></div>\n\n\t</div>\n\n</body>\n</html>\n"}
     headers:
-      content-type: [text/html]
-      date: ['Wed, 05 Jul 2017 19:43:39 GMT']
+      content-type: [text/html; charset=UTF-8]
+      date: ['Sat, 27 Oct 2018 06:20:21 GMT']
       server: [lighttpd/1.4.35]
-      x-powered-by: [PHP/5.5.38]
+      transfer-encoding: [chunked]
     status: {code: 200, message: OK}
 version: 1

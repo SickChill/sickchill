@@ -22,6 +22,8 @@ from __future__ import print_function, unicode_literals
 
 import re
 
+from requests.compat import urljoin
+
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickchill.helper.common import try_int
@@ -41,10 +43,10 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         self.minseed = None
         self.minleech = None
 
-        self.url = 'http://horriblesubs.info/'
+        self.url = 'https://horriblesubs.info'
         self.urls = {
-            'search': self.url + 'api.php',
-            'rss': self.url + 'rss.php'
+            'search': urljoin(self.url, 'api.php'),
+            'rss': 'http://www.horriblesubs.info/rss.php'
         }
 
         self.cache = tvcache.TVCache(self, min_time=15)  # only poll HorribleSubs every 15 minutes max
@@ -143,7 +145,7 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
             for list_item in list_items:
                 title = '{0}{1}'.format(str(list_item.find('span').next_sibling),str(list_item.find('strong').text))
                 logger.log('Found title {0}'.format(title), logger.DEBUG)
-                episode_url = list_item.find('a')['href']
+                episode_url = '/#'.join(list_item.find('a')['href'].rsplit('#', 1))
                 episode = episode_url.split('#', 1)[1]
 
                 page_url = '{0}{1}'.format(self.url, episode_url)

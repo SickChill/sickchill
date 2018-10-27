@@ -48,7 +48,6 @@ To run SickChill you will need Python 2.7.10
 
 * [Issue Tracker](https://github.com/SickChill/SickChill/issues)
 
-
 #### Important notes on switching from other forks
 
 Before using this with your existing database (`sickbeard.db`) please make a backup copy of it and delete any other database files such as cache.db and failed.db if present.

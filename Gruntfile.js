@@ -380,7 +380,7 @@ module.exports = function(grunt) {
                     if (!file) {
                         grunt.fatal('Missing file path.');
                     }
-                    var path = file.slice(0, -24); // slices 'sickchill-news/CHANGES.md' (len=24)
+                    var path = file.slice(0, -25); // slices 'sickchill-news/CHANGES.md' (len=25)
                     if (!path) {
                         grunt.fatal('path = "' + path + '"');
                     }

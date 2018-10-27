@@ -1267,7 +1267,7 @@ def backup_config_zip(fileList, archive, arcname=None):
         a.close()
         return True
     except Exception as error:
-        logger.log("Zip creation error: {0} ".format(error), logger.ERROR)
+        logger.log("Zip creation error: {0} ".format(error), logger.WARNING)
         return False
 
 
@@ -1569,6 +1569,8 @@ def handle_requests_exception(requests_exception):  # pylint: disable=too-many-b
         logger.log('headers are {0}'.format(repr(requests_exception.request.headers)))
         logger.log('params are {0}'.format(repr(requests_exception.request.params)))
         logger.log('post_data is {0}'.format(repr(requests_exception.request.data)))
+    except ValueError as error:
+        logger.log(default.format(error), logger.WARNING)
     except Exception as error:
         logger.log(default.format(error), logger.ERROR)
         logger.log(traceback.format_exc(), logger.DEBUG)
