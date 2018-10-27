@@ -19,13 +19,12 @@
 
 from __future__ import unicode_literals
 
-import re
-
 import validators
 from requests.compat import urljoin
 
 from sickbeard import logger, tvcache
-from sickchill.helper.common import convert_size, try_int
+from sickbeard.bs4_parser import BS4Parser
+from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -41,29 +40,15 @@ class SkyTorrents(TorrentProvider):  # pylint: disable=too-many-instance-attribu
         self.minleech = None
 
         self.url = "https://www.skytorrents.lol"
-        self.urls = {"search": urljoin(self.url, "/rss/all/{sorting}/{page}/{search_string}")}
+        # https://www.skytorrents.lol/rss?query=game+of+thrones&type=video&sort=seeders
+        self.urls = {"search": urljoin(self.url, "/rss")}
 
         self.custom_url = None
 
         self.cache = tvcache.TVCache(self, search_params={"RSS": [""]})
 
-        self.regex = re.compile('(?P<seeders>\d+) seeder\(s\), (?P<leechers>\d+) leecher\(s\), (\d+) file\(s\) (?P<size>[^\]]*)')
-
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals, too-many-statements
         results = []
-
-        """
-            sorting
-            ss: relevance
-            ed: seeds desc
-            ea: seeds asc
-            pd: peers desc
-            pa: peers asc
-            sd: big > small
-            sa: small > big
-            ad: added desc (latest)
-            aa: added asc (oldest)
-        """
         for mode in search_strings:
             items = []
             logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
@@ -72,53 +57,51 @@ class SkyTorrents(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                     logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
-                search_url = self.urls["search"].format(sorting=("ed", "ad")[mode == "RSS"], page=1, search_string=search_string)
+                search_url = self.urls["search"]
                 if self.custom_url:
                     if not validators.url(self.custom_url):
                         logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
-                data = self.cache.get_rss_feed(search_url)['entries']
+                search_params = {'query': search_string, 'sort': ('seeders', 'created')[mode == 'RSS'], 'type': 'video', 'tag': 'hd'}
+                data = self.get_url(search_url, params=search_params, returns='text')
                 if not data:
                     logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
                     continue
 
-                for item in data:
-                    try:
-                        title = item.title
-                        download_url = item.link
-                        if not (title and download_url):
-                            continue
+                with BS4Parser(data, 'html5lib') as html:
+                    for item in html('item'):
+                        try:
+                            title = item.title.get_text(strip=True)
+                            download_url = item.magneturl.get_text(strip=True)
+                            if not (title and download_url):
+                                continue
 
-                        info = self.regex.search(item.description)
-                        if not info:
-                            continue
+                            size = try_int(item.size.get_text(strip=True))
+                            seeders = leechers = 0
+                            info_hash = None
 
-                        seeders = try_int(info.group("seeders"))
-                        leechers = try_int(info.group("leechers"))
-                        if seeders < self.minseed or leechers < self.minleech:
+                            for attr in item.find_all(['newznab:attr', 'torznab:attr']):
+                                seeders = try_int(attr['value']) if attr['name'] == 'seeders' else seeders
+                                leechers = try_int(attr['value']) if attr['name'] == 'peers' else leechers
+                                info_hash = attr['value'] if attr['name'] == 'infohash' else info_hash
+
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != "RSS":
+                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                               (title, seeders, leechers), logger.DEBUG)
+                                continue
+
+                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
                             if mode != "RSS":
-                                logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                           (title, seeders, leechers), logger.DEBUG)
+                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers),
+                                           logger.DEBUG)
+
+                            items.append(item)
+
+                        except (AttributeError, TypeError, KeyError, ValueError):
                             continue
-
-                        category = item.category
-                        if category != 'all':
-                            logger.log('skytorrents.in has added categories! Please report this so it can be updated: Category={cat}, '
-                                       'Title={title}'.format(cat=category, title=title), logger.ERROR)
-
-                        size = convert_size(info.group('size')) or -1
-                        info_hash = item.guid.rsplit('/', 2)[1]
-
-                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
-                        if mode != "RSS":
-                            logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
-
-                        items.append(item)
-
-                    except (AttributeError, TypeError, KeyError, ValueError):
-                        continue
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

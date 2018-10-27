@@ -31,6 +31,7 @@ import os
 import re
 import sys
 
+import mock
 import unittest
 from vcr_unittest import VCRTestCase
 
@@ -52,9 +53,9 @@ disabled_provider_tests = {
     'TorrentProject': ['test_rss_search', 'test_episode_search', 'test_season_search'],
     # Have to trick it into thinking is an anime search, and add string overrides
     'TokyoToshokan': ['test_rss_search', 'test_episode_search', 'test_season_search'],
-    # 'Torrrentz': ['test_rss_search', 'test_episode_search', 'test_season_search'],
-    # RSS search is broken (site's fault)
     'LimeTorrents': ['test_rss_search', 'test_episode_search', 'test_season_search'],
+    'Torrentz': ['test_rss_search', 'test_episode_search', 'test_season_search'],
+    'ThePirateBay': ['test_rss_search', 'test_episode_search', 'test_season_search', 'test_cache_update'],
 }
 test_string_overrides = {
     'Cpasbien': {'Episode': ['The 100 S02E16'], 'Season': ['The 100 S02']},
@@ -126,7 +127,8 @@ class BaseParser(type):
         @magic_skip
         def test_rss_search(self):
             """Check that the provider parses rss search results"""
-            results = self.provider.search(self.search_strings('RSS'))
+            with mock.patch('sickbeard.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
+                results = self.provider.search(self.search_strings('RSS'))
 
             if self.provider.enable_daily:
                 self.assertTrue(self.cassette.requests)
@@ -136,7 +138,8 @@ class BaseParser(type):
         @magic_skip
         def test_episode_search(self):
             """Check that the provider parses episode search results"""
-            results = self.provider.search(self.search_strings('Episode'))
+            with mock.patch('sickbeard.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
+                results = self.provider.search(self.search_strings('Episode'))
 
             self.assertTrue(self.cassette.requests)
             self.assertTrue(results, results)
@@ -146,7 +149,8 @@ class BaseParser(type):
         @magic_skip
         def test_season_search(self):
             """Check that the provider parses season search results"""
-            results = self.provider.search(self.search_strings('Season'))
+            with mock.patch('sickbeard.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
+                results = self.provider.search(self.search_strings('Season'))
 
             self.assertTrue(self.cassette.requests)
             self.assertTrue(results, self.cassette.requests[-1].url)
@@ -157,6 +161,7 @@ class BaseParser(type):
             """Check that the provider's cache parses rss search results"""
             self.provider.cache.update_cache()
 
+        @magic_skip
         def test_result_values(self):
             """Check that the provider returns results in proper format"""
             results = self.provider.search(self.search_strings('Episode'))
