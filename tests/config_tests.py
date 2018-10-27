@@ -297,40 +297,40 @@ class ConfigTestChanges(unittest.TestCase):
         self.assertFalse(config.change_https_key('/:/server.key')) # INVALID
         sickbeard.HTTPS_KEY = ''
 
-    def test_change_unrar_tool(self):
-        """
-        Test change_unrar_tool
-        """
-        sickbeard.PROG_DIR = ''
-        custom_check_mock = mock.patch('rarfile.custom_check', mock.MagicMock())
-
-        if platform.system() != 'Windows':
-            custom_check_mock.new.side_effect = [RarExecError(), RarExecError(), RarExecError(), RarExecError(), True]
-            with custom_check_mock:
-                self.assertTrue(config.change_unrar_tool('UNKNOWN', 'UNKNOWN'))
-
-            # Test when none are installed, even defaults, that we return false
-            custom_check_mock.new.side_effect = RarExecError()
-            with custom_check_mock:
-                self.assertFalse(config.change_unrar_tool('unrar', 'bsdtar'))
-
-        else:
-            # Test removing bad unrar
-            custom_check_mock.new.side_effect = [True, True]
-            with custom_check_mock, \
-                 mock.patch('os.path.exists', mock.MagicMock(return_value=True)), \
-                 mock.patch('os.path.getsize', mock.MagicMock(return_value=447440)), \
-                 mock.patch('os.remove'):
-                self.assertTrue(config.change_unrar_tool('unrar', 'bsdtar'))
-
-            my_environ = mock.patch.dict(os.environ,
-                                         {'ProgramFiles': 'C:\\Program Files (x86)\\',
-                                          'ProgramFiles(x86)': 'C:\\Program Files (x86)\\',
-                                          'ProgramW6432': 'C:\\Program Files\\'}, clear=True)
-            with custom_check_mock, my_environ, mock.patch('rarfile.ORIG_UNRAR_TOOL', 'UNKNOWN'), mock.patch('rarfile.UNRAR_TOOL', 'UNKNOWN'), \
-                 mock.patch('rarfile.ALT_TOOL', 'UNKNOWN'), mock.patch('sickbeard.UNRAR_TOOL', 'UNKNOWN'), mock.patch('sickbeard.ALT_UNRAR_TOOL', 'UNKNOWN'):
-                # Test that on windows it downloads unrar for them.
-                self.assertTrue(config.change_unrar_tool('NOPE', 'NOWAY'))
+    # def test_change_unrar_tool(self):
+    #     """
+    #     Test change_unrar_tool
+    #     """
+    #     sickbeard.PROG_DIR = ''
+    #     custom_check_mock = mock.patch('rarfile.custom_check', mock.MagicMock())
+    #
+    #     if platform.system() != 'Windows':
+    #         custom_check_mock.new.side_effect = [RarExecError(), RarExecError(), RarExecError(), RarExecError(), True]
+    #         with custom_check_mock:
+    #             self.assertTrue(config.change_unrar_tool('UNKNOWN', 'UNKNOWN'))
+    #
+    #         # Test when none are installed, even defaults, that we return false
+    #         custom_check_mock.new.side_effect = RarExecError()
+    #         with custom_check_mock:
+    #             self.assertFalse(config.change_unrar_tool('unrar', 'bsdtar'))
+    #
+    #     else:
+    #         # Test removing bad unrar
+    #         custom_check_mock.new.side_effect = [True, True]
+    #         with custom_check_mock, \
+    #              mock.patch('os.path.exists', mock.MagicMock(return_value=True)), \
+    #              mock.patch('os.path.getsize', mock.MagicMock(return_value=447440)), \
+    #              mock.patch('os.remove'):
+    #             self.assertTrue(config.change_unrar_tool('unrar', 'bsdtar'))
+    #
+    #         my_environ = mock.patch.dict(os.environ,
+    #                                      {'ProgramFiles': 'C:\\Program Files (x86)\\',
+    #                                       'ProgramFiles(x86)': 'C:\\Program Files (x86)\\',
+    #                                       'ProgramW6432': 'C:\\Program Files\\'}, clear=True)
+    #         with custom_check_mock, my_environ, mock.patch('rarfile.ORIG_UNRAR_TOOL', 'UNKNOWN'), mock.patch('rarfile.UNRAR_TOOL', 'UNKNOWN'), \
+    #              mock.patch('rarfile.ALT_TOOL', 'UNKNOWN'), mock.patch('sickbeard.UNRAR_TOOL', 'UNKNOWN'), mock.patch('sickbeard.ALT_UNRAR_TOOL', 'UNKNOWN'):
+    #             # Test that on windows it downloads unrar for them.
+    #             self.assertTrue(config.change_unrar_tool('NOPE', 'NOWAY'))
 
     def test_change_sickchill_background(self):
         """
