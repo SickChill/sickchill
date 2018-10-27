@@ -46,7 +46,7 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
         ]
         categories = ','.join(map(six.text_type, categories))
 
-        self.url = 'https://ilcorsaronero.info'
+        self.url = 'https://ilcorsaronero.ch'
         self.urls = {
             'search': urljoin(self.url, 'advsearch.php?search={0}&order=data&by=DESC&page={1}&category=' + categories),
         }
