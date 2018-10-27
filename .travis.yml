@@ -51,3 +51,9 @@ notifications:
   email:
     on_success: change
     on_failure: change
+  webhooks:
+    urls:
+      - "https://webhooks.gitter.im/e/a5955679aa0a8ab5d1b7"
+    on_success: change
+    on_failure: change
+    on_start: never

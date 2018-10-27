@@ -80,18 +80,43 @@ class qbittorrentAPI(GenericClient):
 
     def _add_torrent_uri(self, result):
 
-        self.url = urljoin(self.host, 'command/download')
         data = {'urls': result.url}
+
+        if self.api > 6:
+            if sickbeard.TORRENT_PATH:
+                data['savepath'] = sickbeard.TORRENT_PATH
+
+            label = sickbeard.TORRENT_LABEL
+            if result.show.is_anime:
+                label = sickbeard.TORRENT_LABEL_ANIME
+
+            if label:
+                data['category'] = label.replace(' ', '_')
+
+        self.url = urljoin(self.host, 'command/download')
         if self._request(method='post', data=data, cookies=self.session.cookies):
-            sleep(1)  # The client always needs to fetch the torrent/magnet
+            sleep(2)  # The client always needs to fetch the torrent/magnet
             return self._verify_added(result.hash)
         return False
 
     def _add_torrent_file(self, result):
 
-        self.url = urljoin(self.host, 'command/upload')
         files = {'torrents': (result.name + '.torrent', result.content)}
-        if self._request(method='post', files=files, cookies=self.session.cookies):
+
+        data = {}
+        if self.api > 6:
+            if sickbeard.TORRENT_PATH:
+                data['savepath'] = sickbeard.TORRENT_PATH
+
+            label = sickbeard.TORRENT_LABEL
+            if result.show.is_anime:
+                label = sickbeard.TORRENT_LABEL_ANIME
+
+            if label:
+                data['category'] = label.replace(' ', '_')
+
+        self.url = urljoin(self.host, 'command/upload')
+        if self._request(method='post', files=files, data=data, cookies=self.session.cookies):
             return self._verify_added(result.hash)
         return False
 
@@ -131,7 +156,7 @@ class qbittorrentAPI(GenericClient):
         data = {'hash': result.hash.lower()}
         return self._request(method='post', data=data, cookies=self.session.cookies)
 
-    def _verify_added(self, torrent_hash, attempts=5):
+    def _verify_added(self, torrent_hash, attempts=10):
         self.url = urljoin(self.host, 'query/propertiesGeneral/{}'.format(torrent_hash.lower()))
         for i in range(attempts):
             if self._request(method='get', cookies=self.session.cookies):
