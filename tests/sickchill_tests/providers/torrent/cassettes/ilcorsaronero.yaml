@@ -5,19 +5,20 @@ interactions:
       Accept: ['*/*']
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
-      User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.2; rv:22.0) Gecko/20130405
-          Firefox/23.0']
+      User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36
+          (KHTML, like Gecko) Chrome/36.0.1985.67 Safari/537.36']
     method: GET
-    uri: https://ilcorsaronero.ch/advsearch.php?search=Game%20of%20Thrones%20S05E08&order=data&by=DESC&page=0&category=15,5,1,20,19
+    uri: https://ilcorsaronero.ch/argh.php?search=Game%20of%20Thrones%20S05E08&order=data&by=DESC&page=0&category=15,5,1,20,19
   response:
     body: {string: !!python/unicode "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0
         Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n<html xmlns='http://www.w3.org/1999/xhtml'>\n<head>\n<meta
-        http-equiv='Content-Type' content='text/html; charset=utf-8' />\n<title>ilCorSaRoNeRo.info
-        - just Torrent iTALiANi - Game of Thrones S05E08 ita torrent</title>\r\n<META
+        http-equiv='Content-Type' content='text/html; charset=utf-8' />\n<title>ilCorSaRoNeRo.ch
+        - iTALiAN Torrent Search Engine - Game of Thrones S05E08 ita torrent</title>\r\n<META
         NAME=\"Description\" CONTENT=\"Game of Thrones S05E08\">\r\n<META NAME=\"Keywords\"
         CONTENT=\"Game of Thrones S05E08 ita torrent\">\r\n<meta name=\"googlebot\"
-        content=\"noindex\" />\r\n\n\t<link href='//s.ilcorsaronero.ch/css/main.css'
-        rel='stylesheet' type='text/css' />\n\t<link rel='shortcut icon' href='//s.ilcorsaronero.ch/favicon.ico'/>\n
+        content=\"noindex\" />\r\n\r\n<script type=\"text/javascript\" src=\"//s.ilcorsaronero.ch/js/nopopup.js\"></script>\n\t<link
+        href='//s.ilcorsaronero.ch/css/main.css' rel='stylesheet' type='text/css'
+        />\n\t<link rel='shortcut icon' href='//s.ilcorsaronero.ch/favicon.ico'/>\n
         \   <link rel='alternate' type='application/rss+xml' title='RSS' href='/rss'
         />\n\n<script type=\"text/javascript\">\n(function(){\n    var arrElms = {};\n
         \   var ppblkUtil = {\n\tinit: function(){},\n\t\n\tonMouseEvent: function(evt){
@@ -77,22 +78,22 @@ interactions:
         \       <br/>\r\n        <span id=\"searchincat\"><a href=\"https://ilcorsaronero.ch/rss\"><img
         src=\"//s.ilcorsaronero.ch/images/rss_icon.png\" border=\"0\"></a>filtra risultati
         per categoria:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br><br></span><br><ul
-        id=\"tabs\" ><li><a href='https://ilcorsaronero.ch/adv/Game%20of%20Thrones%20S05E08.html'>All</a></li>
-        <li><a href='https://ilcorsaronero.ch/adv/7/Game%20of%20Thrones%20S05E08.html'>App
-        Win</a></li> <li><a href='https://ilcorsaronero.ch/adv/3/Game%20of%20Thrones%20S05E08.html'>PC
-        Games</a></li> <li><a href='https://ilcorsaronero.ch/adv/2/Game%20of%20Thrones%20S05E08.html'>Musica</a></li>
-        <li><a href='https://ilcorsaronero.ch/adv/19/Game%20of%20Thrones%20S05E08.html'>Screener</a></li>
-        <li><a href='https://ilcorsaronero.ch/adv/1/Game%20of%20Thrones%20S05E08.html'>BDRiP</a></li>
-        <li><a href='https://ilcorsaronero.ch/adv/20/Game%20of%20Thrones%20S05E08.html'>DVD</a></li>
-        <li><a href='https://ilcorsaronero.ch/adv/13/Game%20of%20Thrones%20S05E08.html'>PlayStation</a></li>
-        <li><a href='https://ilcorsaronero.ch/adv/14/Game%20of%20Thrones%20S05E08.html'>XboX</a></li>
-        <li><a href='https://ilcorsaronero.ch/adv/6/Game%20of%20Thrones%20S05E08.html'>eBooks</a></li>
-        <li><a href='https://ilcorsaronero.ch/adv/15/Game%20of%20Thrones%20S05E08.html'>SerieTv</a></li></ul>
+        id=\"tabs\" ><li><a href='https://ilcorsaronero.ch/torrent-ita/Game%20of%20Thrones%20S05E08.html'>All</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/7/Game%20of%20Thrones%20S05E08.html'>App
+        Win</a></li> <li><a href='https://ilcorsaronero.ch/torrent-ita/3/Game%20of%20Thrones%20S05E08.html'>PC
+        Games</a></li> <li><a href='https://ilcorsaronero.ch/torrent-ita/2/Game%20of%20Thrones%20S05E08.html'>Musica</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/19/Game%20of%20Thrones%20S05E08.html'>Screener</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/1/Game%20of%20Thrones%20S05E08.html'>BDRiP</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/20/Game%20of%20Thrones%20S05E08.html'>DVD</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/13/Game%20of%20Thrones%20S05E08.html'>PlayStation</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/14/Game%20of%20Thrones%20S05E08.html'>XboX</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/6/Game%20of%20Thrones%20S05E08.html'>eBooks</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/15/Game%20of%20Thrones%20S05E08.html'>SerieTv</a></li></ul>
         <br><br>\r\n        <div id=\"left\" class=\"left\">\r\n            <table>\r\n
         \               <tr>\r\n                    <td VALIGN=\"top\">\r\n                        <ul>\r\n
         \                       </ul>\r\n                        <br/>\r\n                        <ul>\r\n
         \                           <li><a href=\"https://ilcorsaronero.ch/tagmovie\">Movie
-        Tag</a></li>\r\n                        </ul>\r\n                                                <br>\r\n\r\n
+        Tag</a></li>\r\n                        </ul>\r\n                                                <br/>\r\n
         \                       <ul>\r\n                            <li><a href=\"https://feeds.feedburner.com/ilCorSaRoNero\"
         target=\"_blank\"><img\r\n                                        src=\"https://feeds.feedburner.com/~fc/ilCorSaRoNero?bg=000000&amp;fg=FFFF00&amp;anim=0\"\r\n
         \                                       height=\"26\" width=\"88\" style=\"border:0\"
@@ -115,21 +116,29 @@ interactions:
         alt=\"transformers\" title=\"transformers\" height=\"130\" width=\"90\" border=\"2\"></a></td><td><a
         href=\"/torrent-ita/homecoming.html\"><img style=\"border-color: black\" src=\"//s.ilcorsaronero.info/imgcp/spider-man-homecoming-poster.jpg\"
         alt=\"homecoming\" title=\"homecoming\" height=\"130\" width=\"90\" border=\"2\"></a></td></tr
-        attr=\\\"$pic\\\"></tbody></table>                        </center>\r\n                        <br/>\r\n
+        attr=\\\"$pic\\\"></tbody></table>                        </center>\r\n                        <br/>\r\n\r\n
         \                       <ul>\r\n                            <li><a href=\"https://ilcorsaronero.ch/link\">Link</a></li>\r\n
+        \                       </ul>\r\n                        <ul>\r\n                            <br>\r\n\r\n
+        \                           <div align=\"left\">\r\n                                <table>\r\n\r\n
+        \                                   <div id=\"lws_0\">\r\n                                        <div
+        style=\"margin: 0pt; border: 0pt none; padding: 0pt; clear: both;\"\r\n                                             class=\"linkwithin_outer\">\r\n
+        \                                           <div style=\"margin: 0pt; border:
+        0pt none; padding: 0pt; width: 190px;\"\r\n                                                 class=\"linkwithin_inner\">\r\n
+        \                                           </div>\r\n                                        </div>\r\n
+        \                                   </div>\r\n\r\n                                </table>\r\n
+        \                           </div>\r\n                            <br>\r\n
         \                       </ul>\r\n\r\n                        <img src=\"//s.ilcorsaronero.ch/images/lloca.gif\"
-        alt=\"\">\r\n        </div>\r\n\r\n        \r\n\r\n        </td>\r\n        <td
-        VALIGN=\"top\">\r\n            <div align=\"left\">\r\n            </div>\r\n\r\n
-        \           <TABLE>\r\n                <tr>\r\n                    <td colspan='10'>\r\n
-        \                       <center>\r\n\r\n                        </center>\r\n\r\n\r\n
-        \                   </td>\r\n                </tr>\r\n\r\n                <TR
-        class=\"bordo\">\r\n\r\n\r\n                    <TD align=\"center\" class=\"header2\">\r\n
-        \                       Cat&nbsp;<br><img src='//s.ilcorsaronero.ch/images/linean.gif'
-        border='0' alt=\"_\"></TD>\r\n\r\n                    <TD align=\"center\"
-        class=\"header2\">&nbsp;Name<br><img src='//s.ilcorsaronero.ch/images/linean4.gif'\r\n
-        \                                                                         border='0'
-        alt=\"_\"></TD>\r\n\r\n                    <TD align=\"center\" class=\"header2\">Size<br><img
-        src='//s.ilcorsaronero.ch/images/linean.gif' border='0'\r\n                                                                    alt=\"_\"></TD>\r\n\r\n
+        alt=\"\">\r\n\r\n        </div>\r\n\r\n        \r\n\r\n        </td>\r\n        <td
+        VALIGN=\"top\">\r\n            <TABLE>\r\n                <tr>\r\n                    <td
+        colspan='10'>\r\n                        <center>\r\n\r\n                                                        \r\n
+        \                       </center>\r\n                    </td>\r\n                </tr>\r\n\r\n
+        \               <TR class=\"bordo\">\r\n\r\n\r\n                    <TD align=\"center\"
+        class=\"header2\">\r\n                        Cat&nbsp;<br><img src='//s.ilcorsaronero.ch/images/linean.gif'
+        border='0' alt=\"_\">\r\n                    </TD>\r\n\r\n                    <TD
+        align=\"center\" class=\"header2\">&nbsp;Name<br><img\r\n                            src='//s.ilcorsaronero.ch/images/linean4.gif'
+        border='0' alt=\"_\">\r\n                    </TD>\r\n\r\n                    <TD
+        align=\"center\" class=\"header2\">Size<br><img src='//s.ilcorsaronero.ch/images/linean.gif'
+        border='0'\r\n                                                                    alt=\"_\"></TD>\r\n\r\n
         \                   <TD align=\"center\" class=\"header2\">Azione<br><img
         src='//s.ilcorsaronero.ch/images/linean2.gif'\r\n                                                                      border='0'
         alt=\"_\"></TD>\r\n\r\n                    <TD align=\"center\" class=\"header2\">Data&nbsp;&#8595<br><img\r\n
@@ -164,15 +173,17 @@ interactions:
         alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>10.06.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>445</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>59</font></td></TR><div align='left'>Torrent trovati
-        per <i>Game of Thrones S05E08</i> - 2 </div>\r\n<tr><td colspan='10'>\r\n<br>\r\n\r\n
-        \               <br/>\r\n\r\n                </TR>\r\n\r\n                <tr>\r\n
-        \                   <td colspan=\"5\" align=\"center\">\r\n                        <table>\r\n
-        \                           <TR>\r\n                                <TD> <p
-        align=\"center\"><b>0&nbsp;</b><br /><b>&lt;&lt; pagine precedenti&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pagine
-        successive &gt;&gt</b></p>\n\r\n\r\n                                </td>\r\n
-        \                           </TR>\r\n\r\n                        </table>\r\n\r\n
-        \                   </td>\r\n                </tr>\r\n\r\n\r\n            </TABLE>\r\n\r\n\r\n
-        \       </td>\r\n        </table>\r\n\r\n    </div>\r\n\r\n\r\n    <div class=\"clear\"></div>\r\n\r\n</div>\r\n\r\n<br>\r\n\r\n\r\n\n</div
+        per <i>Game of Thrones S05E08</i> - (max 40) usate la <a rel='nofollow' href='http://ilcorsaronero.info/adv/Game%20of%20Thrones%20S05E08.html'>Ricerca
+        Avanzata</a> per piu' risultati </div>                <tr>\r\n                    <td
+        colspan='10'>\r\n                        <br>\r\n                        \r\n
+        \                                                   <center>\r\n\r\n                            </center>\r\n\r\n
+        \                           <br/>\r\n                                            </TR>\r\n\r\n
+        \               <tr>\r\n                    <td colspan=\"5\" align=\"center\">\r\n
+        \                       <table>\r\n                            <TR>\r\n                                <TD>
+        \r\n\r\n                                </td>\r\n                            </TR>\r\n\r\n
+        \                       </table>\r\n\r\n                    </td>\r\n                </tr>\r\n\r\n\r\n
+        \           </TABLE>\r\n\r\n\r\n        </td>\r\n        </table>\r\n\r\n
+        \   </div>\r\n\r\n\r\n    <div class=\"clear\"></div>\r\n\r\n</div>\r\n\r\n<br>\r\n\r\n\n</div
         >\n\n</div>\n\n</div>\n</div>\n\n\t<div id='footer'>\n\n\t\t<div id='copyright'>\n\n\t\t<div
         id='logos'>\n\n\t\t\t\t<ul>\n\t\t\t\t\t<li></li>\n\t\t\t\t</ul>\n\n\t\t\t</div>\n\n\t\t\t<div
         id='copy'>\n\n\t\t\t\t<ul>\n\t\t\t\t\t<li><a href='http://torrent-finder.info/torrent-finder-domain-seizure.php'
@@ -181,7 +192,7 @@ interactions:
         class='clear'></div>\n\n\t\t</div>\n\n\t\t<div class='clear'></div>\n\n\t</div>\n\n</body>\n</html>\n"}
     headers:
       content-type: [text/html; charset=UTF-8]
-      date: ['Sat, 27 Oct 2018 04:19:13 GMT']
+      date: ['Sat, 27 Oct 2018 06:20:15 GMT']
       server: [lighttpd/1.4.35]
       transfer-encoding: [chunked]
     status: {code: 200, message: OK}
@@ -191,19 +202,20 @@ interactions:
       Accept: ['*/*']
       Accept-Encoding: [!!python/unicode 'gzip,deflate']
       Connection: [keep-alive]
-      User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.2; rv:22.0) Gecko/20130405
-          Firefox/23.0']
+      User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36
+          (KHTML, like Gecko) Chrome/36.0.1985.67 Safari/537.36']
     method: GET
-    uri: https://ilcorsaronero.ch/advsearch.php?search=Game%20of%20Thrones%20S05&order=data&by=DESC&page=0&category=15,5,1,20,19
+    uri: https://ilcorsaronero.ch/argh.php?search=Game%20of%20Thrones%20S05&order=data&by=DESC&page=0&category=15,5,1,20,19
   response:
     body: {string: !!python/unicode "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0
         Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n<html xmlns='http://www.w3.org/1999/xhtml'>\n<head>\n<meta
-        http-equiv='Content-Type' content='text/html; charset=utf-8' />\n<title>ilCorSaRoNeRo.info
-        - just Torrent iTALiANi - Game of Thrones S05 ita torrent</title>\r\n<META
+        http-equiv='Content-Type' content='text/html; charset=utf-8' />\n<title>ilCorSaRoNeRo.ch
+        - iTALiAN Torrent Search Engine - Game of Thrones S05 ita torrent</title>\r\n<META
         NAME=\"Description\" CONTENT=\"Game of Thrones S05\">\r\n<META NAME=\"Keywords\"
         CONTENT=\"Game of Thrones S05 ita torrent\">\r\n<meta name=\"googlebot\" content=\"noindex\"
-        />\r\n\n\t<link href='//s.ilcorsaronero.ch/css/main.css' rel='stylesheet'
-        type='text/css' />\n\t<link rel='shortcut icon' href='//s.ilcorsaronero.ch/favicon.ico'/>\n
+        />\r\n\r\n<script type=\"text/javascript\" src=\"//s.ilcorsaronero.ch/js/nopopup.js\"></script>\n\t<link
+        href='//s.ilcorsaronero.ch/css/main.css' rel='stylesheet' type='text/css'
+        />\n\t<link rel='shortcut icon' href='//s.ilcorsaronero.ch/favicon.ico'/>\n
         \   <link rel='alternate' type='application/rss+xml' title='RSS' href='/rss'
         />\n\n<script type=\"text/javascript\">\n(function(){\n    var arrElms = {};\n
         \   var ppblkUtil = {\n\tinit: function(){},\n\t\n\tonMouseEvent: function(evt){
@@ -263,22 +275,22 @@ interactions:
         \       <br/>\r\n        <span id=\"searchincat\"><a href=\"https://ilcorsaronero.ch/rss\"><img
         src=\"//s.ilcorsaronero.ch/images/rss_icon.png\" border=\"0\"></a>filtra risultati
         per categoria:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br><br></span><br><ul
-        id=\"tabs\" ><li><a href='https://ilcorsaronero.ch/adv/Game%20of%20Thrones%20S05.html'>All</a></li>
-        <li><a href='https://ilcorsaronero.ch/adv/7/Game%20of%20Thrones%20S05.html'>App
-        Win</a></li> <li><a href='https://ilcorsaronero.ch/adv/3/Game%20of%20Thrones%20S05.html'>PC
-        Games</a></li> <li><a href='https://ilcorsaronero.ch/adv/2/Game%20of%20Thrones%20S05.html'>Musica</a></li>
-        <li><a href='https://ilcorsaronero.ch/adv/19/Game%20of%20Thrones%20S05.html'>Screener</a></li>
-        <li><a href='https://ilcorsaronero.ch/adv/1/Game%20of%20Thrones%20S05.html'>BDRiP</a></li>
-        <li><a href='https://ilcorsaronero.ch/adv/20/Game%20of%20Thrones%20S05.html'>DVD</a></li>
-        <li><a href='https://ilcorsaronero.ch/adv/13/Game%20of%20Thrones%20S05.html'>PlayStation</a></li>
-        <li><a href='https://ilcorsaronero.ch/adv/14/Game%20of%20Thrones%20S05.html'>XboX</a></li>
-        <li><a href='https://ilcorsaronero.ch/adv/6/Game%20of%20Thrones%20S05.html'>eBooks</a></li>
-        <li><a href='https://ilcorsaronero.ch/adv/15/Game%20of%20Thrones%20S05.html'>SerieTv</a></li></ul>
+        id=\"tabs\" ><li><a href='https://ilcorsaronero.ch/torrent-ita/Game%20of%20Thrones%20S05.html'>All</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/7/Game%20of%20Thrones%20S05.html'>App
+        Win</a></li> <li><a href='https://ilcorsaronero.ch/torrent-ita/3/Game%20of%20Thrones%20S05.html'>PC
+        Games</a></li> <li><a href='https://ilcorsaronero.ch/torrent-ita/2/Game%20of%20Thrones%20S05.html'>Musica</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/19/Game%20of%20Thrones%20S05.html'>Screener</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/1/Game%20of%20Thrones%20S05.html'>BDRiP</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/20/Game%20of%20Thrones%20S05.html'>DVD</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/13/Game%20of%20Thrones%20S05.html'>PlayStation</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/14/Game%20of%20Thrones%20S05.html'>XboX</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/6/Game%20of%20Thrones%20S05.html'>eBooks</a></li>
+        <li><a href='https://ilcorsaronero.ch/torrent-ita/15/Game%20of%20Thrones%20S05.html'>SerieTv</a></li></ul>
         <br><br>\r\n        <div id=\"left\" class=\"left\">\r\n            <table>\r\n
         \               <tr>\r\n                    <td VALIGN=\"top\">\r\n                        <ul>\r\n
         \                       </ul>\r\n                        <br/>\r\n                        <ul>\r\n
         \                           <li><a href=\"https://ilcorsaronero.ch/tagmovie\">Movie
-        Tag</a></li>\r\n                        </ul>\r\n                                                <br>\r\n\r\n
+        Tag</a></li>\r\n                        </ul>\r\n                                                <br/>\r\n
         \                       <ul>\r\n                            <li><a href=\"https://feeds.feedburner.com/ilCorSaRoNero\"
         target=\"_blank\"><img\r\n                                        src=\"https://feeds.feedburner.com/~fc/ilCorSaRoNero?bg=000000&amp;fg=FFFF00&amp;anim=0\"\r\n
         \                                       height=\"26\" width=\"88\" style=\"border:0\"
@@ -301,21 +313,29 @@ interactions:
         alt=\"transformers\" title=\"transformers\" height=\"130\" width=\"90\" border=\"2\"></a></td><td><a
         href=\"/torrent-ita/homecoming.html\"><img style=\"border-color: black\" src=\"//s.ilcorsaronero.info/imgcp/spider-man-homecoming-poster.jpg\"
         alt=\"homecoming\" title=\"homecoming\" height=\"130\" width=\"90\" border=\"2\"></a></td></tr
-        attr=\\\"$pic\\\"></tbody></table>                        </center>\r\n                        <br/>\r\n
+        attr=\\\"$pic\\\"></tbody></table>                        </center>\r\n                        <br/>\r\n\r\n
         \                       <ul>\r\n                            <li><a href=\"https://ilcorsaronero.ch/link\">Link</a></li>\r\n
+        \                       </ul>\r\n                        <ul>\r\n                            <br>\r\n\r\n
+        \                           <div align=\"left\">\r\n                                <table>\r\n\r\n
+        \                                   <div id=\"lws_0\">\r\n                                        <div
+        style=\"margin: 0pt; border: 0pt none; padding: 0pt; clear: both;\"\r\n                                             class=\"linkwithin_outer\">\r\n
+        \                                           <div style=\"margin: 0pt; border:
+        0pt none; padding: 0pt; width: 190px;\"\r\n                                                 class=\"linkwithin_inner\">\r\n
+        \                                           </div>\r\n                                        </div>\r\n
+        \                                   </div>\r\n\r\n                                </table>\r\n
+        \                           </div>\r\n                            <br>\r\n
         \                       </ul>\r\n\r\n                        <img src=\"//s.ilcorsaronero.ch/images/lloca.gif\"
-        alt=\"\">\r\n        </div>\r\n\r\n        \r\n\r\n        </td>\r\n        <td
-        VALIGN=\"top\">\r\n            <div align=\"left\">\r\n            </div>\r\n\r\n
-        \           <TABLE>\r\n                <tr>\r\n                    <td colspan='10'>\r\n
-        \                       <center>\r\n\r\n                        </center>\r\n\r\n\r\n
-        \                   </td>\r\n                </tr>\r\n\r\n                <TR
-        class=\"bordo\">\r\n\r\n\r\n                    <TD align=\"center\" class=\"header2\">\r\n
-        \                       Cat&nbsp;<br><img src='//s.ilcorsaronero.ch/images/linean.gif'
-        border='0' alt=\"_\"></TD>\r\n\r\n                    <TD align=\"center\"
-        class=\"header2\">&nbsp;Name<br><img src='//s.ilcorsaronero.ch/images/linean4.gif'\r\n
-        \                                                                         border='0'
-        alt=\"_\"></TD>\r\n\r\n                    <TD align=\"center\" class=\"header2\">Size<br><img
-        src='//s.ilcorsaronero.ch/images/linean.gif' border='0'\r\n                                                                    alt=\"_\"></TD>\r\n\r\n
+        alt=\"\">\r\n\r\n        </div>\r\n\r\n        \r\n\r\n        </td>\r\n        <td
+        VALIGN=\"top\">\r\n            <TABLE>\r\n                <tr>\r\n                    <td
+        colspan='10'>\r\n                        <center>\r\n\r\n                                                        \r\n
+        \                       </center>\r\n                    </td>\r\n                </tr>\r\n\r\n
+        \               <TR class=\"bordo\">\r\n\r\n\r\n                    <TD align=\"center\"
+        class=\"header2\">\r\n                        Cat&nbsp;<br><img src='//s.ilcorsaronero.ch/images/linean.gif'
+        border='0' alt=\"_\">\r\n                    </TD>\r\n\r\n                    <TD
+        align=\"center\" class=\"header2\">&nbsp;Name<br><img\r\n                            src='//s.ilcorsaronero.ch/images/linean4.gif'
+        border='0' alt=\"_\">\r\n                    </TD>\r\n\r\n                    <TD
+        align=\"center\" class=\"header2\">Size<br><img src='//s.ilcorsaronero.ch/images/linean.gif'
+        border='0'\r\n                                                                    alt=\"_\"></TD>\r\n\r\n
         \                   <TD align=\"center\" class=\"header2\">Azione<br><img
         src='//s.ilcorsaronero.ch/images/linean2.gif'\r\n                                                                      border='0'
         alt=\"_\"></TD>\r\n\r\n                    <TD align=\"center\" class=\"header2\">Data&nbsp;&#8595<br><img\r\n
@@ -565,9 +585,8 @@ interactions:
         src='//s.ilcorsaronero.ch/images/details.gif' class='details' title='Descrizione'
         alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>21.04.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>262</font></td>\t<td align=\"center\"
-        ><font color='#0066CC'>72</font></td></TR>\r\n<tr><td colspan='10'>\r\n\r\n
-        \                           </td></tr><tr class=\"odd\">\t<td align=\"center\"
-        class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
+        ><font color='#0066CC'>72</font></td></TR>\r\n<tr><td colspan='10'>\r\n                                                        </td></tr><tr
+        class=\"odd\">\t<td align=\"center\" class=\"lista\" ><a class=\"red\" href=https://ilcorsaronero.ch/cat/15>SerieTv</td>\t<TD
         align=\"left\" ><A class=\"tab\" HREF=\"https://ilcorsaronero.ch/tor/106106/Game_of_Thrones___Il_Trono_di_Spade_S05e01_XviD___Ita_Eng_Mp3___Sub_Ita_Eng__DLMux_By_UnLEGIT\"
         >Game of Thrones - Il Trono di Spade S05e01[XviD - Ita E..</A> <span style=\"color:red\"></span>
         \t<td align=\"center\"   ><font size='-2' color='#FF6600'>600.54 MB</font></td>\n\t<TD
@@ -603,15 +622,16 @@ interactions:
         alt='Descrizione'></A></form></TD>\n\t<td align=\"center\"  ><font color='#669999'>14.02.15</font></td>\n\t<td
         align=\"center\" ><font color='#00CC00'>105</font></td>\t<td align=\"center\"
         ><font color='#0066CC'>7</font></td></TR><div align='left'>Torrent trovati
-        per <i>Game of Thrones S05</i> - 23 </div>\r\n<tr><td colspan='10'>\r\n<br>\r\n\r\n
-        \               <br/>\r\n\r\n                </TR>\r\n\r\n                <tr>\r\n
+        per <i>Game of Thrones S05</i> - (max 40) usate la <a rel='nofollow' href='http://ilcorsaronero.info/adv/Game%20of%20Thrones%20S05.html'>Ricerca
+        Avanzata</a> per piu' risultati </div>                <tr>\r\n                    <td
+        colspan='10'>\r\n                        <br>\r\n                        \r\n
+        \                                       </TR>\r\n\r\n                <tr>\r\n
         \                   <td colspan=\"5\" align=\"center\">\r\n                        <table>\r\n
-        \                           <TR>\r\n                                <TD> <p
-        align=\"center\"><b>0&nbsp;</b><br /><b>&lt;&lt; pagine precedenti&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pagine
-        successive &gt;&gt</b></p>\n\r\n\r\n                                </td>\r\n
-        \                           </TR>\r\n\r\n                        </table>\r\n\r\n
-        \                   </td>\r\n                </tr>\r\n\r\n\r\n            </TABLE>\r\n\r\n\r\n
-        \       </td>\r\n        </table>\r\n\r\n    </div>\r\n\r\n\r\n    <div class=\"clear\"></div>\r\n\r\n</div>\r\n\r\n<br>\r\n\r\n\r\n\n</div
+        \                           <TR>\r\n                                <TD> \r\n\r\n
+        \                               </td>\r\n                            </TR>\r\n\r\n
+        \                       </table>\r\n\r\n                    </td>\r\n                </tr>\r\n\r\n\r\n
+        \           </TABLE>\r\n\r\n\r\n        </td>\r\n        </table>\r\n\r\n
+        \   </div>\r\n\r\n\r\n    <div class=\"clear\"></div>\r\n\r\n</div>\r\n\r\n<br>\r\n\r\n\n</div
         >\n\n</div>\n\n</div>\n</div>\n\n\t<div id='footer'>\n\n\t\t<div id='copyright'>\n\n\t\t<div
         id='logos'>\n\n\t\t\t\t<ul>\n\t\t\t\t\t<li></li>\n\t\t\t\t</ul>\n\n\t\t\t</div>\n\n\t\t\t<div
         id='copy'>\n\n\t\t\t\t<ul>\n\t\t\t\t\t<li><a href='http://torrent-finder.info/torrent-finder-domain-seizure.php'
@@ -620,7 +640,7 @@ interactions:
         class='clear'></div>\n\n\t\t</div>\n\n\t\t<div class='clear'></div>\n\n\t</div>\n\n</body>\n</html>\n"}
     headers:
       content-type: [text/html; charset=UTF-8]
-      date: ['Sat, 27 Oct 2018 04:19:31 GMT']
+      date: ['Sat, 27 Oct 2018 06:20:21 GMT']
       server: [lighttpd/1.4.35]
       transfer-encoding: [chunked]
     status: {code: 200, message: OK}
