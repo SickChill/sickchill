@@ -28,17 +28,13 @@ Automatic Video Library Manager for TV Shows. It watches for new episodes of you
  - Real SSL certificate validation
  - Supports Anime shows
 
-#### Screenshots
-- [Desktop (Full-HD)](http://imgur.com/a/4fpBk)
-- [Mobile](http://imgur.com/a/WPyG6)
-
 #### Installation/Setup
 
 Visit the [Installation & Configuration guides page](https://github.com/SickChill/SickChill/wiki/Installation-&-Configuration-Guides) on our wiki
 
 #### Dependencies
 
-To run SickChill you will need Python 2.7.10
+To run SickChill you will need Python 2.7.10+
 
 #### More info
 
@@ -59,12 +55,12 @@ We HIGHLY recommend starting out with no database files at all to make this a fr
 A full list can be found here: [Link](https://github.com/SickChill/SickChill/wiki/SickChill-Search-Providers)
 
 #### Special Thanks to:
-![image](https://rarbg.com/favicon.ico)[RARBG](https://rarbg.to) <br/>
-![image](https://torrentproject2.se/favicon.ico)[TorrentProject](https://torrentproject.se/about) <br/>
-![image](https://thepiratebay.org/favicon.ico)[ThePirateBay](https://thepiratebay.se/) <br/>
-![image](https://nzb.cat/favicon.ico)[NZB.cat](https://nzb.cat/) <br/>
-![image](https://nzbgeek.info/favicon.ico)[NZBGeek](https://nzbgeek.info) <br/>
-![image](https://raw.githubusercontent.com/SickChill/SickChill/master/gui/slick/images/providers/dognzb.png)[DOGnzb](dognzb.cr) <br/>
+![image](https://rarbg.com/favicon.ico)[RARBG](https://rarbg.to)  
+![image](https://torrentproject2.se/favicon.ico)[TorrentProject](https://torrentproject.se/about)  
+![image](https://thepiratebay.org/favicon.ico)[ThePirateBay](https://thepiratebay.se/)  
+![image](https://nzb.cat/favicon.ico)[NZB.cat](https://nzb.cat/)  
+![image](https://nzbgeek.info/favicon.ico)[NZBGeek](https://nzbgeek.info)  
+![image](https://raw.githubusercontent.com/SickChill/SickChill/master/gui/slick/images/providers/dognzb.png)[DOGnzb](dognzb.cr)  
 
 #### News and Changelog
 [news.md and CHANGES.md have moved to a separate repo, click here](https://github.com/SickChill/SickChill.github.io)
