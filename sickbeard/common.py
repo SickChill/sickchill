@@ -1,22 +1,22 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io/
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sickchill.github.io/
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 """
 Common interface for Quality and Status
@@ -37,10 +37,10 @@ from fake_useragent import settings as UA_SETTINGS, UserAgent
 from six.moves import reduce
 
 from sickbeard.numdict import NumDict
-from sickrage.helper import video_screen_size
-from sickrage.helper.encoding import ek
-from sickrage.recompiled import tags
-from sickrage.tagger.episode import EpisodeTags
+from sickchill.helper import video_screen_size
+from sickchill.helper.encoding import ek
+from sickchill.recompiled import tags
+from sickchill.tagger.episode import EpisodeTags
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 
@@ -49,7 +49,7 @@ gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 # This is disabled, was only added for testing, and has no config.ini or web ui setting. To enable, set SPOOF_USER_AGENT = True
 SPOOF_USER_AGENT = False
 INSTANCE_ID = str(uuid.uuid1())
-USER_AGENT = ('Sick-Rage.CE.1/(' + platform.system() + '; ' + platform.release() + '; ' + INSTANCE_ID + ')')
+USER_AGENT = ('SickChill.CE.1/(' + platform.system() + '; ' + platform.release() + '; ' + INSTANCE_ID + ')')
 UA_SETTINGS.DB = ek(path.abspath, ek(path.join, ek(path.dirname, __file__), '../lib/fake_useragent/ua.json'))
 UA_POOL = UserAgent()
 if SPOOF_USER_AGENT:
@@ -77,11 +77,11 @@ NOTIFY_LOGIN_TEXT = 7
 notifyStrings = NumDict({
     # pylint: disable=undefined-variable
     NOTIFY_SNATCH: _("Started Download"),
-    NOTIFY_DOWNLOAD: _("Download Finished"),
+    NOTIFY_DOWNLOAD: _("Finished Download"),
     NOTIFY_SUBTITLE_DOWNLOAD: _("Subtitle Download Finished"),
-    NOTIFY_GIT_UPDATE: _("SickRage Updated"),
-    NOTIFY_GIT_UPDATE_TEXT: _("SickRage Updated To Commit#: "),
-    NOTIFY_LOGIN: _("SickRage new login"),
+    NOTIFY_GIT_UPDATE: _("SickChill Updated"),
+    NOTIFY_GIT_UPDATE_TEXT: _("SickChill Updated To Commit#: "),
+    NOTIFY_LOGIN: _("SickChill new login"),
     NOTIFY_LOGIN_TEXT: _("New login from IP: {0}. http://geomaplookup.net/?ip={0}")
 })
 
@@ -270,7 +270,7 @@ class Quality(object):
     @staticmethod
     def nameQuality(name, anime=False):
         """
-        Return The quality from an episode File renamed by SickRage
+        Return The quality from an episode File renamed by SickChill
         If no quality is achieved it will try scene_quality regex
 
         :param name: to parse

@@ -1,22 +1,22 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sickchill.github.io
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
 
@@ -28,7 +28,7 @@ from six.moves import http_client, xmlrpc_client
 import sickbeard
 from sickbeard import logger
 from sickbeard.common import Quality
-from sickrage.helper.common import try_int
+from sickchill.helper.common import try_int
 
 
 def sendNZB(nzb, proper=False):  # pylint: disable=too-many-locals, too-many-statements, too-many-branches, too-many-return-statements
@@ -56,7 +56,7 @@ def sendNZB(nzb, proper=False):  # pylint: disable=too-many-locals, too-many-sta
 
     nzbGetRPC = xmlrpc_client.ServerProxy(url)
     try:
-        if nzbGetRPC.writelog('INFO', 'SickRage connected to drop off {0} any moment now.'.format(nzb.name + '.nzb')):
+        if nzbGetRPC.writelog('INFO', 'SickChill connected to drop off {0} any moment now.'.format(nzb.name + '.nzb')):
             logger.log('Successful connected to NZBget', logger.DEBUG)
         else:
             logger.log('Successful connected to NZBget, but unable to send a message', logger.WARNING)
@@ -80,9 +80,9 @@ def sendNZB(nzb, proper=False):  # pylint: disable=too-many-locals, too-many-sta
     for curEp in nzb.episodes:
         if dupekey == '':
             if curEp.show.indexer == 1:
-                dupekey = 'SickRage-' + str(curEp.show.indexerid)
+                dupekey = 'SickChill-' + str(curEp.show.indexerid)
             elif curEp.show.indexer == 2:
-                dupekey = 'SickRage-tvr' + str(curEp.show.indexerid)
+                dupekey = 'SickChill-tvr' + str(curEp.show.indexerid)
         dupekey += '-' + str(curEp.season) + '.' + str(curEp.episode)
         if datetime.date.today() - curEp.airdate <= datetime.timedelta(days=7):
             addToTop = True

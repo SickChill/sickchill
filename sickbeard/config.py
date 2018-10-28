@@ -1,22 +1,22 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sickchill.github.io
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -33,8 +33,8 @@ from tornado.escape import xhtml_unescape
 
 import sickbeard
 from sickbeard import db, helpers, logger, naming
-from sickrage.helper.common import try_int
-from sickrage.helper.encoding import ek
+from sickchill.helper.common import try_int
+from sickchill.helper.encoding import ek
 
 # Address poor support for scgi over unix domain sockets
 # this is not nicely handled by python currently
@@ -112,89 +112,86 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
     if os.path.exists(bad_unrar) and os.path.getsize(bad_unrar) == 447440:
         try:
             os.remove(bad_unrar)
+            logger.log('Removed a bad copy of unrar')
         except OSError as e:
             logger.log("Unable to delete bad unrar.exe file {0}: {1}. You should delete it manually".format(bad_unrar, e.strerror), logger.WARNING)
 
-    try:
-        rarfile.custom_check(unrar_tool)
-    except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-        # Let's just return right now if the defaults work
+    for tool in (unrar_tool, alt_unrar_tool, rarfile.UNRAR_TOOL, rarfile.ALT_TOOL):
         try:
+            rarfile.custom_check([tool])
+            set_requested = tool in (unrar_tool, alt_unrar_tool)
+            sickbeard.UNRAR_TOOL = rarfile.UNRAR_TOOL = sickbeard.ALT_UNRAR_TOOL = rarfile.ALT_TOOL = rarfile.ORIG_UNRAR_TOOL = tool
             # noinspection PyProtectedMember
-            test = rarfile._check_unrar_tool()
-            if test:
-                # These must always be set to something before returning
-                sickbeard.UNRAR_TOOL = rarfile.UNRAR_TOOL
-                sickbeard.ALT_UNRAR_TOOL = rarfile.ALT_TOOL
-                return True
+            rarfile._check_unrar_tool()
+            if not set_requested:
+                logger.log('Unrar tool set to `{}`. Your selection was not found so we reverted to a working default.'.format(tool))
+            return True
         except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
             pass
 
-        if platform.system() == 'Windows':
-            # Look for WinRAR installations
-            found = False
-            winrar_path = 'WinRAR\\UnRAR.exe'
-            # Make a set of unique paths to check from existing environment variables
-            check_locations = {
-                os.path.join(location, winrar_path) for location in (
-                    os.environ.get("ProgramW6432"), os.environ.get("ProgramFiles(x86)"),
-                    os.environ.get("ProgramFiles"), re.sub(r'\s?\(x86\)', '', os.environ["ProgramFiles"])
-                ) if location
-            }
-            check_locations.add(os.path.join(sickbeard.PROG_DIR, 'unrar\\unrar.exe'))
+    if platform.system() == 'Windows':
+        # Look for WinRAR installations
+        found = False
+        winrar_path = 'WinRAR\\UnRAR.exe'
+        # Make a set of unique paths to check from existing environment variables
+        check_locations = {
+            os.path.join(location, winrar_path) for location in (
+                os.environ.get("ProgramW6432"), os.environ.get("ProgramFiles(x86)"),
+                os.environ.get("ProgramFiles"), re.sub(r'\s?\(x86\)', '', os.environ["ProgramFiles"])
+            ) if location
+        }
+        check_locations.add(os.path.join(sickbeard.PROG_DIR, 'unrar\\unrar.exe'))
 
-            for check in check_locations:
-                if ek(os.path.isfile, check):
-                    # Can use it?
-                    try:
-                        rarfile.custom_check(check)
-                        unrar_tool = check
-                        found = True
-                        break
-                    except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-                        found = False
+        for check in check_locations:
+            if ek(os.path.isfile, check):
+                # Can use it?
+                try:
+                    rarfile.custom_check(check)
+                    unrar_tool = check
+                    found = True
+                    break
+                except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
+                    found = False
 
-            # Download
-            if not found:
-                logger.log('Trying to download unrar.exe and set the path')
-                unrar_store = ek(os.path.join, sickbeard.PROG_DIR, 'unrar')  # ./unrar (folder)
-                unrar_zip = ek(os.path.join, sickbeard.PROG_DIR, 'unrar_win.zip')  # file download
+        # Download
+        if not found:
+            logger.log('Trying to download unrar.exe and set the path')
+            unrar_store = ek(os.path.join, sickbeard.PROG_DIR, 'unrar')  # ./unrar (folder)
+            unrar_zip = ek(os.path.join, sickbeard.PROG_DIR, 'unrar_win.zip')  # file download
 
-                if (helpers.download_file(
-                    "http://sickrage.github.io/unrar/unrar_win.zip", filename=unrar_zip, session=helpers.make_session()
-                ) and helpers.extractZip(archive=unrar_zip, targetDir=unrar_store)):
-                    try:
-                        ek(os.remove, unrar_zip)
-                    except OSError as e:
-                        logger.log("Unable to delete downloaded file {0}: {1}. You may delete it manually".format(unrar_zip, e.strerror))
+            if (helpers.download_file(
+                "http://sickchill.github.io/unrar/unrar_win.zip", filename=unrar_zip, session=helpers.make_session()
+            ) and helpers.extractZip(archive=unrar_zip, targetDir=unrar_store)):
+                try:
+                    ek(os.remove, unrar_zip)
+                except OSError as e:
+                    logger.log("Unable to delete downloaded file {0}: {1}. You may delete it manually".format(unrar_zip, e.strerror))
 
-                    check = os.path.join(unrar_store, "unrar.exe")
-                    try:
-                        rarfile.custom_check(check)
-                        unrar_tool = check
-                        logger.log('Successfully downloaded unrar.exe and set as unrar tool', )
-                    except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-                        logger.log('Sorry, unrar was not set up correctly. Try installing WinRAR and make sure it is on the system PATH')
-                else:
-                    logger.log('Unable to download unrar.exe')
+                check = os.path.join(unrar_store, "unrar.exe")
+                try:
+                    rarfile.custom_check(check)
+                    unrar_tool = check
+                    logger.log('Successfully downloaded unrar.exe and set as unrar tool')
+                except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
+                    logger.log('Sorry, unrar was not set up correctly. Try installing WinRAR and make sure it is on the system PATH')
+            else:
+                logger.log('Unable to download unrar.exe')
 
     # These must always be set to something before returning
     sickbeard.UNRAR_TOOL = rarfile.UNRAR_TOOL = rarfile.ORIG_UNRAR_TOOL = unrar_tool
     sickbeard.ALT_UNRAR_TOOL = rarfile.ALT_TOOL = alt_unrar_tool
 
     try:
-        # noinspection PyProtectedMember
-        test = rarfile._check_unrar_tool()
+        rarfile.custom_check([rarfile.UNRAR_TOOL])
+        return True
     except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
         if sickbeard.UNPACK == 1:
             logger.log('Disabling UNPACK setting because no unrar is installed.')
             sickbeard.UNPACK = 0
-        test = False
-
-    return test
+        return False
 
 
-def change_sickrage_background(background):
+def change_sickchill_background(background):
     """
     Replace background image file path
 
@@ -202,7 +199,7 @@ def change_sickrage_background(background):
     :return: True on success, False on failure
     """
     if not background:
-        sickbeard.SICKRAGE_BACKGROUND_PATH = ''
+        sickbeard.SICKCHILL_BACKGROUND_PATH = ''
         return True
 
     background = ek(os.path.normpath, background)
@@ -210,7 +207,7 @@ def change_sickrage_background(background):
         logger.log("Background image does not exist: {0}".format(background))
         return False
 
-    sickbeard.SICKRAGE_BACKGROUND_PATH = background
+    sickbeard.SICKCHILL_BACKGROUND_PATH = background
 
     return True
 
@@ -952,8 +949,8 @@ class ConfigMigrator(object):
 
         if self.config_version > self.expected_config_version:
             logger.log_error_and_exit(
-                """Your config version ({0:d}) has been incremented past what this version of SickRage supports ({1:d}).
-                If you have used other forks or a newer version of SickRage, your config file may be unusable due to their modifications.""".format(
+                """Your config version ({0:d}) has been incremented past what this version of SickChill supports ({1:d}).
+                If you have used other forks or a newer version of SickChill, your config file may be unusable due to their modifications.""".format(
                     self.config_version, self.expected_config_version
                 )
             )

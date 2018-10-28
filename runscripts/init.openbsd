@@ -1,8 +1,8 @@
 #!/bin/sh
 #
-daemon_home="/path/to/sickrage_homedir"
-daemon_user="sickrage"
-daemon="/usr/local/bin/python2.7 $daemon_home/SickRage/SickBeard.py"
+daemon_home="/path/to/sickchill_homedir"
+daemon_user="sickchill"
+daemon="/usr/local/bin/python2.7 $daemon_home/SickChill/SickBeard.py"
 daemon_flags="-q --daemon --nolaunch --datadir=$daemon_home"
 daemon_timeout=5
 

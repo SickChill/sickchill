@@ -1,22 +1,22 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sickchill.github.io
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -29,9 +29,9 @@ import traceback
 import sickbeard
 from sickbeard import clients, common, db, failed_history, helpers, history, logger, notifiers, nzbget, nzbSplitter, sab, show_name_helpers, ui
 from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import AuthException, ex
-from sickrage.providers.GenericProvider import GenericProvider
+from sickchill.helper.encoding import ek
+from sickchill.helper.exceptions import AuthException, ex
+from sickchill.providers.GenericProvider import GenericProvider
 
 
 def _downloadResult(result):
@@ -413,7 +413,7 @@ def searchForNeededEpisodes():
 
     if not didSearch:
         logger.log(
-            "No NZB/Torrent providers found or enabled in the sickrage config for daily searches. Please check your settings.",
+            "No NZB/Torrent providers found or enabled in the sickchill config for daily searches. Please check your settings.",
             logger.INFO)
 
     return foundResults.values()
@@ -697,7 +697,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
             break
 
     if not didSearch:
-        logger.log("No NZB/Torrent providers found or enabled in the sickrage config for backlog searches. Please check your settings.",
+        logger.log("No NZB/Torrent providers found or enabled in the sickchill config for backlog searches. Please check your settings.",
                    logger.INFO)
 
     # Remove provider from thread name before return results

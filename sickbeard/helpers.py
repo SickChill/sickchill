@@ -1,22 +1,22 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sickchill.github.io
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty    of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint:disable=too-many-lines
 
 from __future__ import print_function, unicode_literals
@@ -62,11 +62,11 @@ from tornado._locale_data import LOCALE_NAMES
 import sickbeard
 from sickbeard import classes, db, logger
 from sickbeard.common import USER_AGENT
-from sickrage.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS
-from sickrage.helper.common import replace_extension
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import ex
-from sickrage.show.Show import Show
+from sickchill.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS
+from sickchill.helper.common import replace_extension
+from sickchill.helper.encoding import ek
+from sickchill.helper.exceptions import ex
+from sickchill.show.Show import Show
 
 # Add some missing languages
 LOCALE_NAMES.update({
@@ -81,7 +81,7 @@ orig_getaddrinfo = socket.getaddrinfo
 
 
 # Patches getaddrinfo so that resolving domains like thetvdb do not return ip6 addresses that no longer work on thetvdb.
-# This will not effect SickRage itself from being accessed through ip6
+# This will not effect SickChill itself from being accessed through ip6
 def getaddrinfo_wrapper(host, port, family=socket.AF_INET, socktype=0, proto=0, flags=0):
     return orig_getaddrinfo(host, port, family, socktype, proto, flags)
 
@@ -864,7 +864,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     careq = createCertRequest(cakey, CN='Certificate Authority')
     cacert = createCertificate(careq, (careq, cakey), serial, validity_period, b'sha256')
 
-    cname = 'SickRage'
+    cname = 'SickChill'
     pkey = createKeyPair(TYPE_RSA, 4096)
     req = createCertRequest(pkey, CN=cname)
     cert = createCertificate(req, (cacert, cakey), serial, validity_period, b'sha256')
@@ -1095,7 +1095,7 @@ def get_show(name, tryIndexers=False):
         if showObj and not fromCache:
             sickbeard.name_cache.addNameToCache(name, showObj.indexerid)
     except Exception as error:
-        logger.log("Error when attempting to find show: {0} in SickRage. Error: {1} ".format(name, error), logger.DEBUG)
+        logger.log("Error when attempting to find show: {0} in SickChill. Error: {1} ".format(name, error), logger.DEBUG)
 
     return showObj
 
@@ -1267,7 +1267,7 @@ def backup_config_zip(fileList, archive, arcname=None):
         a.close()
         return True
     except Exception as error:
-        logger.log("Zip creation error: {0} ".format(error), logger.ERROR)
+        logger.log("Zip creation error: {0} ".format(error), logger.WARNING)
         return False
 
 
@@ -1569,6 +1569,8 @@ def handle_requests_exception(requests_exception):  # pylint: disable=too-many-b
         logger.log('headers are {0}'.format(repr(requests_exception.request.headers)))
         logger.log('params are {0}'.format(repr(requests_exception.request.params)))
         logger.log('post_data is {0}'.format(repr(requests_exception.request.data)))
+    except ValueError as error:
+        logger.log(default.format(error), logger.WARNING)
     except Exception as error:
         logger.log(default.format(error), logger.ERROR)
         logger.log(traceback.format_exc(), logger.DEBUG)

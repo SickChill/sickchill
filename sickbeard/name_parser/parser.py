@@ -1,21 +1,21 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -32,9 +32,9 @@ import six
 import sickbeard
 from sickbeard import common, db, helpers, logger, scene_exceptions, scene_numbering
 from sickbeard.name_parser import regexes
-from sickrage.helper.common import remove_extension
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import ex
+from sickchill.helper.common import remove_extension
+from sickchill.helper.encoding import ek
+from sickchill.helper.exceptions import ex
 
 
 class NameParser(object):
@@ -314,7 +314,7 @@ class NameParser(object):
             if len(new_season_numbers) > 1:
                 raise InvalidNameException(("Scene numbering results episodes from "
                                             "seasons %s, (i.e. more than one) and "
-                                            "sickrage does not support this.  "
+                                            "sickchill does not support this.  "
                                             "Sorry.").format(six.text_type(new_season_numbers)))
 
             # I guess it's possible that we'd have duplicate episodes too, so lets

@@ -1,21 +1,21 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 # all regexes are case insensitive
 
@@ -93,6 +93,16 @@ normal_regexes = [
      ((?<![. _-])(?<!WEB)                          # Make sure this is really the release group
      -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
      '''),
+    ('verbose',
+     # Show Name Season 1 Episode 2 Ep Name
+     r'''
+     ^(?P<series_name>.+?)[. _-]+                # Show Name and separator
+     (season|series)[. _-]+                      # season and separator
+     (?P<season_num>\d+)[. _-]+                  # 1
+     episode[. _-]+                              # episode and separator
+     (?P<ep_num>\d+)[. _-]+                      # 02 and separator
+     (?P<extra_info>.+)$                         # Source_Quality_Etc-
+     '''),
     ('scene_date_format',
      # Show.Name.2010.11.23.Source.Quality.Etc-Group
      # Show Name - 2010-11-23 - Ep Name
@@ -130,16 +140,6 @@ normal_regexes = [
      (?!264)                                                            # don't count x264
      (?P<season_num>\d{1,2})                                            # 1
      (?P<ep_num>\d{2})$                                                 # 02
-     '''),
-    ('verbose',
-     # Show Name Season 1 Episode 2 Ep Name
-     r'''
-     ^(?P<series_name>.+?)[. _-]+                # Show Name and separator
-     (season|series)[. _-]+                      # season and separator
-     (?P<season_num>\d+)[. _-]+                  # 1
-     episode[. _-]+                              # episode and separator
-     (?P<ep_num>\d+)[. _-]+                      # 02 and separator
-     (?P<extra_info>.+)$                         # Source_Quality_Etc-
      '''),
     ('season_only',
      # Show.Name.S01.Source.Quality.Etc-Group

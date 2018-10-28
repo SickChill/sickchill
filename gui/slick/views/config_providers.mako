@@ -3,7 +3,7 @@
     import sickbeard
     from sickbeard.filters import hide
     from sickbeard.helpers import anon_url
-    from sickrage.providers.GenericProvider import GenericProvider
+    from sickchill.providers.GenericProvider import GenericProvider
 %>
 
 <%block name="scripts">
@@ -180,11 +180,13 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curNewznabProvider.get_id("_enable_daily")}"
                                                    id="${curNewznabProvider.get_id("_enable_daily")}"
-                                                   ${('', 'checked="checked"')[curNewznabProvider.enable_daily]}
+                                                   ${('', 'checked="checked"')[curNewznabProvider.daily_enabled]}
                                                    ${('disabled', '')[curNewznabProvider.can_daily]}
                                             />
                                             <label for="${curNewznabProvider.get_id("_enable_daily")}">${_('enable provider to perform daily searches.')}</label>
-                                            ${('<span class="red-text"></span>'.format(_('Daily search is currently not working on this provider')), '')[curNewznabProvider.can_daily]}
+                                            % if not curNewznabProvider.can_daily:
+                                              <p class="note"><span class="red-text">${_('Daily search is currently not working on this provider')}</span></p>
+                                            % endif
                                         </div>
                                     </div>
                                 % endif
@@ -197,11 +199,13 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curNewznabProvider.get_id("_enable_backlog")}"
                                                    id="${curNewznabProvider.get_id("_enable_backlog")}"
-                                                   ${('', 'checked="checked"')[curNewznabProvider.enable_backlog and curNewznabProvider.can_backlog]}
+                                                   ${('', 'checked="checked"')[curNewznabProvider.backlog_enabled]}
                                                    ${('disabled', '')[curNewznabProvider.can_backlog]}
                                             />
                                             <label for="${curNewznabProvider.get_id("_enable_backlog")}">${_('enable provider to perform backlog searches.')}</label>
-                                            ${('<span class="red-text"></span>'.format(_('Backlog search is currently not working on this provider')), '')[curNewznabProvider.can_backlog]}
+                                            % if not curNewznabProvider.can_backlog:
+                                              <p class="note"><span class="red-text">${_('Backlog search is currently not working on this provider')}</span></p>
+                                            % endif
                                         </div>
                                     </div>
                                 % endif
@@ -244,7 +248,7 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curNewznabProvider.get_id("_search_fallback")}"
-                                                   id="${curNewznabProvider.get_id("_search_fallback")}" ${('', 'checked="checked"')[curNewznabProvider.search_fallback]}/>
+                                                   id="${curNewznabProvider.get_id("_search_fallback")}" ${('', 'checked="checked"')[curNewznabProvider.search_fallback_enabled]}/>
                                             <label for="${curNewznabProvider.get_id("_search_fallback")}">${_('when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.')}</label>
                                         </div>
                                     </div>
@@ -289,11 +293,13 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curNzbProvider.get_id("_enable_daily")}"
                                                    id="${curNzbProvider.get_id("_enable_daily")}"
-                                                   ${('', 'checked="checked"')[curNzbProvider.enable_daily]}
+                                                   ${('', 'checked="checked"')[curNzbProvider.daily_enabled]}
                                                    ${('disabled', '')[curNzbProvider.can_daily]}
                                             />
                                             <label for="${curNzbProvider.get_id("_enable_daily")}">${_('enable provider to perform daily searches.')}</label>
-                                            ${('<span class="red-text"></span>'.format(_('Daily search is currently not working on this provider')), '')[curNzbProvider.can_daily]}
+                                            % if not curNzbProvider.can_daily:
+                                              <p class="note"><span class="red-text">${_('Daily search is currently not working on this provider')}</span></p>
+                                            % endif
                                         </div>
                                     </div>
                                 % endif
@@ -306,11 +312,13 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curNzbProvider.get_id("_enable_backlog")}"
                                                    id="${curNzbProvider.get_id("_enable_backlog")}"
-                                                   ${('', ' checked="checked"')[curNzbProvider.enable_backlog and curNzbProvider.can_backlog]}
+                                                   ${('', ' checked="checked"')[curNzbProvider.backlog_enabled]}
                                                    ${('disabled', ' ')[curNzbProvider.can_backlog]}
                                             />
                                             <label for="${curNzbProvider.get_id("_enable_backlog")}">${_('enable provider to perform backlog searches.')}</label>
-                                            ${('<span class="red-text"></span>'.format(_('Backlog search is currently not working on this provider')), '')[curNzbProvider.can_backlog]}
+                                            % if not curNzbProvider.can_backlog:
+                                              <p class="note"><span class="red-text">${_('Backlog search is currently not working on this provider')}</span></p>
+                                            % endif
                                         </div>
                                     </div>
                                 % endif
@@ -353,7 +361,7 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curNzbProvider.get_id("_search_fallback")}"
-                                                   id="${curNzbProvider.get_id("_search_fallback")}" ${('', 'checked="checked"')[curNzbProvider.search_fallback]}/>
+                                                   id="${curNzbProvider.get_id("_search_fallback")}" ${('', 'checked="checked"')[curNzbProvider.search_fallback_enabled]}/>
                                             <label for="${curNzbProvider.get_id("_search_fallback")}">${_('when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.')}</label>
                                         </div>
                                     </div>
@@ -522,7 +530,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <label for="${curTorrentProvider.get_id("_ratio")}">${_('stop transfer when ratio is reached<br>(-1 SickRage default to seed forever, or leave blank for downloader default)')}</label>
+                                                    <label for="${curTorrentProvider.get_id("_ratio")}">${_('stop transfer when ratio is reached<br>(-1 SickChill default to seed forever, or leave blank for downloader default)')}</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -644,11 +652,13 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curTorrentProvider.get_id("_enable_daily")}"
                                                    id="${curTorrentProvider.get_id("_enable_daily")}"
-                                                   ${('', 'checked="checked"')[curTorrentProvider.enable_daily]}
+                                                   ${('', 'checked="checked"')[curTorrentProvider.daily_enabled]}
                                                    ${('disabled', ' ')[curTorrentProvider.can_daily]}
                                             />
                                             <label for="${curTorrentProvider.get_id("_enable_daily")}">${_('enable provider to perform daily searches.')}</label>
-                                            ${('<span class="red-text"></span>'.format(_('Daily search is currently not working on this provider')), '')[curTorrentProvider.can_daily]}
+                                            % if not curTorrentProvider.can_daily:
+                                              <p class="note"><span class="red-text">${_('Daily search is currently not working on this provider')}</span></p>
+                                            % endif
                                         </div>
                                     </div>
                                 % endif
@@ -661,12 +671,14 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curTorrentProvider.get_id("_enable_backlog")}"
                                                    id="${curTorrentProvider.get_id("_enable_backlog")}"
-                                                   ${('', 'checked="checked"')[curTorrentProvider.enable_backlog and curTorrentProvider.can_backlog]}
+                                                   ${('', 'checked="checked"')[curTorrentProvider.backlog_enabled]}
                                                    ${('disabled', '')[curTorrentProvider.can_backlog]}
                                             />
 
                                             <label for="${curTorrentProvider.get_id("_enable_backlog")}">${_('enable provider to perform backlog searches.')}</label>
-                                           ${('<span class="red-text"></span>'.format(_('Backlog search is currently not working on this provider')), '')[curTorrentProvider.can_backlog]}
+                                            % if not curTorrentProvider.can_backlog:
+                                              <p class="note"><span class="red-text">${_('Backlog search is currently not working on this provider')}</span></p>
+                                            % endif
                                         </div>
                                     </div>
                                 % endif
@@ -709,7 +721,7 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curTorrentProvider.get_id("_search_fallback")}"
-                                                   id="${curTorrentProvider.get_id("_search_fallback")}" ${('', 'checked="checked"')[curTorrentProvider.search_fallback]}/>
+                                                   id="${curTorrentProvider.get_id("_search_fallback")}" ${('', 'checked="checked"')[curTorrentProvider.search_fallback_enabled]}/>
                                             <label for="${curTorrentProvider.get_id("_search_fallback")}">${_('when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.')}</label>
                                         </div>
                                     </div>

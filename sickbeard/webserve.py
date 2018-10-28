@@ -1,21 +1,21 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
 from __future__ import print_function, unicode_literals
@@ -70,20 +70,20 @@ from sickbeard.scene_numbering import (get_scene_absolute_numbering, get_scene_a
 from sickbeard.traktTrending import trakt_trending
 from sickbeard.versionChecker import CheckVersion
 from sickbeard.webapi import function_mapper
-from sickrage.helper import episode_num, sanitize_filename, setup_github, try_int
-from sickrage.helper.common import pretty_file_size
-from sickrage.helper.encoding import ek, ss
-from sickrage.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex, NoNFOException, ShowDirectoryNotFoundException
-from sickrage.media.ShowBanner import ShowBanner
-from sickrage.media.ShowFanArt import ShowFanArt
-from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
-from sickrage.media.ShowPoster import ShowPoster
-from sickrage.providers.GenericProvider import GenericProvider
-from sickrage.show.ComingEpisodes import ComingEpisodes
-from sickrage.show.History import History as HistoryTool
-from sickrage.show.Show import Show
-from sickrage.system.Restart import Restart
-from sickrage.system.Shutdown import Shutdown
+from sickchill.helper import episode_num, sanitize_filename, setup_github, try_int
+from sickchill.helper.common import pretty_file_size
+from sickchill.helper.encoding import ek, ss
+from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex, NoNFOException, ShowDirectoryNotFoundException
+from sickchill.media.ShowBanner import ShowBanner
+from sickchill.media.ShowFanArt import ShowFanArt
+from sickchill.media.ShowNetworkLogo import ShowNetworkLogo
+from sickchill.media.ShowPoster import ShowPoster
+from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.show.ComingEpisodes import ComingEpisodes
+from sickchill.show.History import History as HistoryTool
+from sickchill.show.Show import Show
+from sickchill.system.Restart import Restart
+from sickchill.system.Shutdown import Shutdown
 
 try:
     import json
@@ -240,7 +240,7 @@ class BaseHandler(RequestHandler):
 
     def get_current_user(self):
         if not isinstance(self, UI) and sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
-            return self.get_secure_cookie('sickrage_user')
+            return self.get_secure_cookie('sickchill_user')
         else:
             return True
 
@@ -309,17 +309,17 @@ class LoginHandler(BaseHandler):
 
         if self.get_argument('username', '') == sickbeard.WEB_USERNAME and self.get_argument('password', '') == sickbeard.WEB_PASSWORD:
             remember_me = (None, 30)[try_int(self.get_argument('remember_me', default=0), 0) > 0]
-            self.set_secure_cookie('sickrage_user', sickbeard.API_KEY, expires_days=remember_me)
-            logger.log('User logged into the SickRage web interface', logger.INFO)
+            self.set_secure_cookie('sickchill_user', sickbeard.API_KEY, expires_days=remember_me)
+            logger.log('User logged into the SickChill web interface', logger.INFO)
         else:
-            logger.log('User attempted a failed login to the SickRage web interface from IP: ' + self.request.remote_ip, logger.WARNING)
+            logger.log('User attempted a failed login to the SickChill web interface from IP: ' + self.request.remote_ip, logger.WARNING)
 
         self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
 
 class LogoutHandler(BaseHandler):
     def get(self, *args, **kwargs):
-        self.clear_cookie("sickrage_user")
+        self.clear_cookie("sickchill_user")
         self.redirect('/login/')
 
 
@@ -517,8 +517,8 @@ class CalendarHandler(BaseHandler):
         # Create a iCal string
         ical = 'BEGIN:VCALENDAR\r\n'
         ical += 'VERSION:2.0\r\n'
-        ical += 'X-WR-CALNAME:SickRage\r\n'
-        ical += 'X-WR-CALDESC:SickRage\r\n'
+        ical += 'X-WR-CALNAME:SickChill\r\n'
+        ical += 'X-WR-CALDESC:SickChill\r\n'
         ical += 'PRODID://Sick-Beard Upcoming Episodes//\r\n'
 
         future_weeks = try_int(self.get_argument('future', 52), 52)
@@ -557,12 +557,12 @@ class CalendarHandler(BaseHandler):
                         "%H%M%S") + 'Z\r\n'
                 if sickbeard.CALENDAR_ICONS:
                     # noinspection PyPep8
-                    ical += 'X-GOOGLE-CALENDAR-CONTENT-ICON:https://lh3.googleusercontent.com/-Vp_3ZosvTgg/VjiFu5BzQqI/AAAAAAAA_TY/3ZL_1bC0Pgw/s16-Ic42/SickRage.png\r\n'
+                    ical += 'X-GOOGLE-CALENDAR-CONTENT-ICON:https://lh3.googleusercontent.com/-Vp_3ZosvTgg/VjiFu5BzQqI/AAAAAAAA_TY/3ZL_1bC0Pgw/s16-Ic42/SickChill.png\r\n'
                     ical += 'X-GOOGLE-CALENDAR-CONTENT-DISPLAY:CHIP\r\n'
                 ical += 'SUMMARY: {0} - {1}x{2} - {3}\r\n'.format(
                     show[b'show_name'], episode[b'season'], episode[b'episode'], episode[b'name']
                 )
-                ical += 'UID:SickRage-' + str(datetime.date.today().isoformat()) + '-' + \
+                ical += 'UID:SickChill-' + str(datetime.date.today().isoformat()) + '-' + \
                     show[b'show_name'].replace(" ", "-") + '-E' + str(episode[b'episode']) + \
                     'S' + str(episode[b'season']) + '\r\n'
                 if episode[b'description']:
@@ -643,10 +643,10 @@ class UI(WebRoot):
         helpers.remove_site_message(key=index)
         return sickbeard.SITE_MESSAGES
 
-    def sickrage_background(self):
-        if sickbeard.SICKRAGE_BACKGROUND_PATH and ek(os.path.isfile, sickbeard.SICKRAGE_BACKGROUND_PATH):
-            self.set_header(b'Content-Type', guess_type(sickbeard.SICKRAGE_BACKGROUND_PATH)[0])
-            with open(sickbeard.SICKRAGE_BACKGROUND_PATH, 'rb') as content:
+    def sickchill_background(self):
+        if sickbeard.SICKCHILL_BACKGROUND_PATH and ek(os.path.isfile, sickbeard.SICKCHILL_BACKGROUND_PATH):
+            self.set_header(b'Content-Type', guess_type(sickbeard.SICKCHILL_BACKGROUND_PATH)[0])
+            with open(sickbeard.SICKCHILL_BACKGROUND_PATH, 'rb') as content:
                 return content.read()
         return None
 
@@ -1260,7 +1260,7 @@ class Home(WebRoot):
             return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
         title = "Shutting down"
-        message = "SickRage is shutting down..."
+        message = "SickChill is shutting down..."
 
         return self._genericMessage(title, message)
 
@@ -1270,7 +1270,7 @@ class Home(WebRoot):
 
         t = PageTemplate(rh=self, filename="restart.mako")
 
-        return t.render(title=_("Home"), header=_("Restarting SickRage"), topmenu="system",
+        return t.render(title=_("Home"), header=_("Restarting SickChill"), topmenu="system",
                         controller="home", action="restart")
 
     def updateCheck(self, pid=None):
@@ -1300,7 +1300,7 @@ class Home(WebRoot):
                 sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
 
                 t = PageTemplate(rh=self, filename="restart.mako")
-                return t.render(title=_("Home"), header=_("Restarting SickRage"), topmenu="home",
+                return t.render(title=_("Home"), header=_("Restarting SickChill"), topmenu="home",
                                 controller="home", action="restart")
             else:
                 return self._genericMessage(_("Update Failed"),
@@ -1360,7 +1360,7 @@ class Home(WebRoot):
     def displayShow(self, show=None):
         # todo: add more comprehensive show validation
         try:
-            show = int(show)  # fails if show id ends in a period SickRage/SickRage#65
+            show = int(show)  # fails if show id ends in a period SickChill/SickChill#65
             show_obj = Show.find(sickbeard.showList, show)
         except (ValueError, TypeError):
             return self._genericMessage(_("Error"), _("Invalid show ID: {show}").format(show=str(show)))
@@ -1724,7 +1724,7 @@ class Home(WebRoot):
                     except NoNFOException:
                         # noinspection PyPep8
                         errors.append(
-                            "The folder at <tt>{0}</tt> doesn't contain a tvshow.nfo - copy your files to that folder before you change the directory in SickRage.".format(location))
+                            "The folder at <tt>{0}</tt> doesn't contain a tvshow.nfo - copy your files to that folder before you change the directory in SickChill.".format(location))
 
             # save it to the DB
             show_obj.saveToDB()
@@ -2453,11 +2453,11 @@ class HomeChangeLog(Home):
     def index(self, *args_, **kwargs_):
         # noinspection PyBroadException
         try:
-            changes = helpers.getURL('http://sickrage.github.io/sickrage-news/CHANGES.md', session=helpers.make_session(), returns='text')
+            changes = helpers.getURL('http://sickchill.github.io/sickchill-news/CHANGES.md', session=helpers.make_session(), returns='text')
         except Exception:
             logger.log('Could not load changes from repo, giving a link!', logger.DEBUG)
             changes = _('Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})').format(
-                changes_url='http://sickrage.github.io/sickrage-news/CHANGES.md'
+                changes_url='http://sickchill.github.io/sickchill-news/CHANGES.md'
             )
 
         t = PageTemplate(rh=self, filename="markdown.mako")
@@ -2480,7 +2480,7 @@ class HomePostProcess(Home):
                        is_priority=None, delete_on="0", failed="0", proc_type="manual", force_next=False, *args_, **kwargs):
 
         mode = kwargs.get('type', proc_type)
-        process_path = ss(kwargs.get('dir', xhtml_unescape(proc_dir)) or '')
+        process_path = ss(xhtml_unescape(kwargs.get('dir', proc_dir or '') or ''))
         if not process_path:
             return self.redirect("/home/postprocess/")
 
@@ -3909,8 +3909,8 @@ class Config(WebRoot):
                 sr_version = updater.get_cur_version()
 
         return t.render(
-            submenu=self.ConfigMenu(), title=_('SickRage Configuration'),
-            header=_('SickRage Configuration'), topmenu="config",
+            submenu=self.ConfigMenu(), title=_('SickChill Configuration'),
+            header=_('SickChill Configuration'), topmenu="config",
             sr_user=sr_user, sr_locale=sr_locale, ssl_version=ssl_version,
             sr_version=sr_version
         )
@@ -4018,7 +4018,7 @@ class ConfigGeneral(Config):
             calendar_unprotected=None, calendar_icons=None, debug=None, ssl_verify=None, no_restart=None, coming_eps_missed_range=None,
             fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
             indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None, fanart_background=None, fanart_background_opacity=None,
-            sickrage_background=None, sickrage_background_path=None, custom_css=None, custom_css_path=None,
+            sickchill_background=None, sickchill_background_path=None, custom_css=None, custom_css_path=None,
             git_reset=None, git_auth_type=0, git_username=None, git_password=None, git_token=None,
             display_all_seasons=None, gui_language=None, ignore_broken_symlinks=None):
 
@@ -4131,8 +4131,8 @@ class ConfigGeneral(Config):
         sickbeard.HANDLE_REVERSE_PROXY = config.checkbox_to_value(handle_reverse_proxy)
 
         sickbeard.THEME_NAME = theme_name
-        sickbeard.SICKRAGE_BACKGROUND = config.checkbox_to_value(sickrage_background)
-        config.change_sickrage_background(sickrage_background_path)
+        sickbeard.SICKCHILL_BACKGROUND = config.checkbox_to_value(sickchill_background)
+        config.change_sickchill_background(sickchill_background_path)
         sickbeard.FANART_BACKGROUND = config.checkbox_to_value(fanart_background)
         sickbeard.FANART_BACKGROUND_OPACITY = fanart_background_opacity
         sickbeard.CUSTOM_CSS = config.checkbox_to_value(custom_css)
@@ -4175,7 +4175,7 @@ class ConfigBackupRestore(Config):
             source = [ek(os.path.join, sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE,
                       ek(os.path.join, sickbeard.DATA_DIR, 'failed.db'),
                       ek(os.path.join, sickbeard.DATA_DIR, 'cache.db')]
-            target = ek(os.path.join, backupDir, 'sickrage-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
+            target = ek(os.path.join, backupDir, 'sickchill-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
 
             for (path, dirs, files) in ek(os.walk, sickbeard.CACHE_DIR, topdown=True):
                 for dirname in dirs:
@@ -4206,7 +4206,7 @@ class ConfigBackupRestore(Config):
 
             if helpers.restore_config_zip(source, target_dir):
                 finalResult += "Successfully extracted restore files to " + target_dir
-                finalResult += "<br>Restart sickrage to complete the restore."
+                finalResult += "<br>Restart sickchill to complete the restore."
             else:
                 finalResult += "Restore FAILED"
         else:
@@ -4890,7 +4890,7 @@ class ConfigNotifications(Config):
             use_nmj=None, nmj_host=None, nmj_database=None, nmj_mount=None, use_synoindex=None,
             use_nmjv2=None, nmjv2_host=None, nmjv2_dbloc=None, nmjv2_database=None,
             use_trakt=None, trakt_username=None, trakt_pin=None,
-            trakt_remove_watchlist=None, trakt_sync_watchlist=None, trakt_remove_show_from_sickrage=None, trakt_method_add=None,
+            trakt_remove_watchlist=None, trakt_sync_watchlist=None, trakt_remove_show_from_sickchill=None, trakt_method_add=None,
             trakt_start_paused=None, trakt_use_recommended=None, trakt_sync=None, trakt_sync_remove=None,
             trakt_default_indexer=None, trakt_remove_serieslist=None, trakt_timeout=None, trakt_blacklist_name=None,
             use_synologynotifier=None, synologynotifier_notify_onsnatch=None,
@@ -5054,7 +5054,7 @@ class ConfigNotifications(Config):
         sickbeard.TRAKT_USERNAME = trakt_username
         sickbeard.TRAKT_REMOVE_WATCHLIST = config.checkbox_to_value(trakt_remove_watchlist)
         sickbeard.TRAKT_REMOVE_SERIESLIST = config.checkbox_to_value(trakt_remove_serieslist)
-        sickbeard.TRAKT_REMOVE_SHOW_FROM_SICKRAGE = config.checkbox_to_value(trakt_remove_show_from_sickrage)
+        sickbeard.TRAKT_REMOVE_SHOW_FROM_SICKCHILL = config.checkbox_to_value(trakt_remove_show_from_sickchill)
         sickbeard.TRAKT_SYNC_WATCHLIST = config.checkbox_to_value(trakt_sync_watchlist)
         sickbeard.TRAKT_METHOD_ADD = int(trakt_method_add)
         sickbeard.TRAKT_START_PAUSED = config.checkbox_to_value(trakt_start_paused)

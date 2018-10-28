@@ -1,21 +1,21 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=too-many-lines
 
 from __future__ import print_function, unicode_literals
@@ -53,10 +53,10 @@ from sickbeard.indexers.indexer_exceptions import (indexer_attributenotfound, in
                                                    indexer_showincomplete, indexer_shownotfound, indexer_userabort)
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.providers.rsstorrent import TorrentRssProvider
-from sickrage.helper import setup_github
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import ex
-from sickrage.system.Shutdown import Shutdown
+from sickchill.helper import setup_github
+from sickchill.helper.encoding import ek
+from sickchill.helper.exceptions import ex
+from sickchill.system.Shutdown import Shutdown
 
 from sickbeard import scene_exceptions
 
@@ -142,8 +142,8 @@ GIT_RESET = True
 GIT_REMOTE = ''
 GIT_REMOTE_URL = ''
 CUR_COMMIT_BRANCH = ''
-GIT_ORG = 'SickRage'
-GIT_REPO = 'SickRage'
+GIT_ORG = 'SickChill'
+GIT_REPO = 'SickChill'
 GIT_AUTH_TYPE = 0
 GIT_USERNAME = None
 GIT_PASSWORD = None
@@ -151,8 +151,8 @@ GIT_TOKEN = None
 GIT_PATH = None
 DEVELOPER = False
 
-NEWS_URL = 'http://sickrage.github.io/sickrage-news/news.md'
-LOGO_URL = 'http://sickrage.github.io/images/ico/favicon-64.png'
+NEWS_URL = 'http://sickchill.github.io/sickchill-news/news.md'
+LOGO_URL = 'http://sickchill.github.io/images/ico/favicon-64.png'
 
 NEWS_LAST_READ = None
 NEWS_LATEST = None
@@ -424,7 +424,7 @@ PROWL_NOTIFY_ONDOWNLOAD = False
 PROWL_NOTIFY_ONSUBTITLEDOWNLOAD = False
 PROWL_API = None
 PROWL_PRIORITY = 0
-PROWL_MESSAGE_TITLE = 'SickRage'
+PROWL_MESSAGE_TITLE = 'SickChill'
 
 USE_TWITTER = False
 TWITTER_NOTIFY_ONSNATCH = False
@@ -503,8 +503,8 @@ DISCORD_NOTIFY_SNATCH = None
 DISCORD_NOTIFY_DOWNLOAD = None
 DISCORD_NOTIFY_SUBTITLEDOWNLOAD = None
 DISCORD_WEBHOOK = None
-DISCORD_NAME = 'SickRage'
-DISCORD_AVATAR_URL = 'https://raw.githubusercontent.com/SickRage/SickRage/master/gui/slick/images/sickrage-shark-mascot.png'
+DISCORD_NAME = 'SickChill'
+DISCORD_AVATAR_URL = 'https://raw.githubusercontent.com/SickChill/SickChill/master/gui/slick/images/sickchill-sc.png'
 DISCORD_TTS = False
 
 USE_TRAKT = False
@@ -513,7 +513,7 @@ TRAKT_ACCESS_TOKEN = None
 TRAKT_REFRESH_TOKEN = None
 TRAKT_REMOVE_WATCHLIST = False
 TRAKT_REMOVE_SERIESLIST = False
-TRAKT_REMOVE_SHOW_FROM_SICKRAGE = False
+TRAKT_REMOVE_SHOW_FROM_SICKCHILL = False
 TRAKT_SYNC_WATCHLIST = False
 TRAKT_METHOD_ADD = None
 TRAKT_START_PAUSED = False
@@ -588,8 +588,8 @@ TIMEZONE_DISPLAY = None
 THEME_NAME = None
 POSTER_SORTBY = None
 POSTER_SORTDIR = None
-SICKRAGE_BACKGROUND = None
-SICKRAGE_BACKGROUND_PATH = None
+SICKCHILL_BACKGROUND = None
+SICKCHILL_BACKGROUND_PATH = None
 FANART_BACKGROUND = None
 FANART_BACKGROUND_OPACITY = None
 CUSTOM_CSS = None
@@ -672,7 +672,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             TORRENT_LABEL, TORRENT_LABEL_ANIME, TORRENT_VERIFY_CERT, TORRENT_RPCURL, TORRENT_AUTH_TYPE, USE_KODI, KODI_ALWAYS_ON, KODI_NOTIFY_ONSNATCH, \
             KODI_NOTIFY_ONDOWNLOAD, KODI_NOTIFY_ONSUBTITLEDOWNLOAD, KODI_UPDATE_FULL, KODI_UPDATE_ONLYFIRST, KODI_UPDATE_LIBRARY, KODI_HOST, KODI_USERNAME, \
             KODI_PASSWORD, BACKLOG_FREQUENCY,  USE_TRAKT, TRAKT_USERNAME, TRAKT_ACCESS_TOKEN, TRAKT_REFRESH_TOKEN, TRAKT_REMOVE_WATCHLIST, \
-            TRAKT_SYNC_WATCHLIST, TRAKT_REMOVE_SHOW_FROM_SICKRAGE, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktCheckerScheduler, TRAKT_USE_RECOMMENDED,\
+            TRAKT_SYNC_WATCHLIST, TRAKT_REMOVE_SHOW_FROM_SICKCHILL, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktCheckerScheduler, TRAKT_USE_RECOMMENDED,\
             TRAKT_SYNC, TRAKT_SYNC_REMOVE, TRAKT_DEFAULT_INDEXER, TRAKT_REMOVE_SERIESLIST, TRAKT_TIMEOUT, TRAKT_BLACKLIST_NAME, USE_PLEX_SERVER, \
             PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, USE_PLEX_CLIENT, PLEX_CLIENT_USERNAME,\
             PLEX_CLIENT_PASSWORD, PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_CLIENT_HOST, PLEX_SERVER_USERNAME, PLEX_SERVER_PASSWORD, PLEX_SERVER_HTTPS, \
@@ -717,8 +717,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             DEBUG, DBDEBUG, DEFAULT_PAGE, PROXY_SETTING, PROXY_INDEXERS, AUTOPOSTPROCESSOR_FREQUENCY, SHOWUPDATE_HOUR, ANIME_DEFAULT, NAMING_ANIME, \
             ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, ANIME_SPLIT_HOME, ANIME_SPLIT_HOME_IN_TABS, SCENE_DEFAULT, \
             DOWNLOAD_URL, BACKLOG_DAYS, GIT_AUTH_TYPE, GIT_USERNAME, GIT_PASSWORD, GIT_TOKEN, DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, \
-            NEWS_LATEST, SOCKET_TIMEOUT, SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKRAGE_BACKGROUND, \
-            SICKRAGE_BACKGROUND_PATH, FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, \
+            NEWS_LATEST, SOCKET_TIMEOUT, SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKCHILL_BACKGROUND, \
+            SICKCHILL_BACKGROUND_PATH, FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, \
             SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK, USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK
 
         if __INITIALIZED__:
@@ -770,7 +770,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
 
         ACTUAL_LOG_DIR = check_setting_str(CFG, 'General', 'log_dir', 'Logs')
         LOG_DIR = ek(os.path.normpath, ek(os.path.join, DATA_DIR, ACTUAL_LOG_DIR))
-        LOG_NR = check_setting_int(CFG, 'General', 'log_nr', 5, min_val=1)  # Default to 5 backup file (sickrage.log.x)
+        LOG_NR = check_setting_int(CFG, 'General', 'log_nr', 5, min_val=1)  # Default to 5 backup file (sickchill.log.x)
         LOG_SIZE = check_setting_float(CFG, 'General', 'log_size', 10.0, min_val=0.5)  # Default to max 10MB per logfile
 
         if LOG_SIZE > 100:
@@ -798,8 +798,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         GIT_REMOTE_URL = check_setting_str(CFG, 'General', 'git_remote_url',
                                            'https://github.com/{0}/{1}.git'.format(GIT_ORG, GIT_REPO))
 
-        if 'sickragetv' in GIT_REMOTE_URL.lower():
-            GIT_REMOTE_URL = 'https://github.com/SickRage/SickRage.git'
+        if 'rage' in GIT_REMOTE_URL.lower():
+            GIT_REMOTE_URL = 'https://github.com/{0}/{1}.git'.format(GIT_ORG, GIT_REPO)
 
         # current commit hash
         CUR_COMMIT_HASH = check_setting_str(CFG, 'General', 'cur_commit_hash')
@@ -861,8 +861,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                             logger.log("Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
 
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
-        SICKRAGE_BACKGROUND = check_setting_bool(CFG, 'GUI', 'sickrage_background')
-        SICKRAGE_BACKGROUND_PATH = check_setting_str(CFG, 'GUI', 'sickrage_background_path')
+        SICKCHILL_BACKGROUND = check_setting_bool(CFG, 'GUI', 'sickchill_background')
+        SICKCHILL_BACKGROUND_PATH = check_setting_str(CFG, 'GUI', 'sickchill_background_path')
         FANART_BACKGROUND = check_setting_bool(CFG, 'GUI', 'fanart_background', True)
         FANART_BACKGROUND_OPACITY = check_setting_float(CFG, 'GUI', 'fanart_background_opacity', 0.4, min_val=0.1, max_val=1.0)
         CUSTOM_CSS = check_setting_bool(CFG, 'GUI', 'custom_css')
@@ -1172,7 +1172,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         PROWL_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(CFG, 'Prowl', 'prowl_notify_onsubtitledownload')
         PROWL_API = check_setting_str(CFG, 'Prowl', 'prowl_api', censor_log=True)
         PROWL_PRIORITY = check_setting_str(CFG, 'Prowl', 'prowl_priority', "0")
-        PROWL_MESSAGE_TITLE = check_setting_str(CFG, 'Prowl', 'prowl_message_title', "SickRage")
+        PROWL_MESSAGE_TITLE = check_setting_str(CFG, 'Prowl', 'prowl_message_title', "SickChill")
 
         USE_TWITTER = check_setting_bool(CFG, 'Twitter', 'use_twitter')
         TWITTER_NOTIFY_ONSNATCH = check_setting_bool(CFG, 'Twitter', 'twitter_notify_onsnatch')
@@ -1247,7 +1247,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TRAKT_REFRESH_TOKEN = check_setting_str(CFG, 'Trakt', 'trakt_refresh_token', censor_log=True)
         TRAKT_REMOVE_WATCHLIST = check_setting_bool(CFG, 'Trakt', 'trakt_remove_watchlist')
         TRAKT_REMOVE_SERIESLIST = check_setting_bool(CFG, 'Trakt', 'trakt_remove_serieslist')
-        TRAKT_REMOVE_SHOW_FROM_SICKRAGE = check_setting_bool(CFG, 'Trakt', 'trakt_remove_show_from_sickrage')
+        TRAKT_REMOVE_SHOW_FROM_SICKCHILL = check_setting_bool(CFG, 'Trakt', 'trakt_remove_show_from_sickchill')
         TRAKT_SYNC_WATCHLIST = check_setting_bool(CFG, 'Trakt', 'trakt_sync_watchlist')
         TRAKT_METHOD_ADD = check_setting_int(CFG, 'Trakt', 'trakt_method_add', min_val=0, max_val=2)
         TRAKT_START_PAUSED = check_setting_bool(CFG, 'Trakt', 'trakt_start_paused')
@@ -1450,10 +1450,10 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             if hasattr(curProvider, 'search_fallback'):
                 curProvider.search_fallback = check_setting_bool(CFG, curProvider.get_id().upper(), curProvider.get_id('_search_fallback'))
             if hasattr(curProvider, 'enable_daily'):
-                curProvider.enable_daily =  curProvider.can_daily and check_setting_bool(CFG, curProvider.get_id().upper(), curProvider.get_id(
+                curProvider.enable_daily = curProvider.can_daily and check_setting_bool(CFG, curProvider.get_id().upper(), curProvider.get_id(
                     '_enable_daily'), True)
             if hasattr(curProvider, 'enable_backlog'):
-                curProvider.enable_backlog =  curProvider.can_backlog and check_setting_bool(
+                curProvider.enable_backlog = curProvider.can_backlog and check_setting_bool(
                     CFG, curProvider.get_id().upper(), curProvider.get_id('_enable_backlog'), curProvider.can_backlog
                 )
             if hasattr(curProvider, 'cat'):
@@ -2161,7 +2161,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'trakt_refresh_token': TRAKT_REFRESH_TOKEN,
             'trakt_remove_watchlist': int(TRAKT_REMOVE_WATCHLIST),
             'trakt_remove_serieslist': int(TRAKT_REMOVE_SERIESLIST),
-            'trakt_remove_show_from_sickrage': int(TRAKT_REMOVE_SHOW_FROM_SICKRAGE),
+            'trakt_remove_show_from_sickchill': int(TRAKT_REMOVE_SHOW_FROM_SICKCHILL),
             'trakt_sync_watchlist': int(TRAKT_SYNC_WATCHLIST),
             'trakt_method_add': int(TRAKT_METHOD_ADD),
             'trakt_start_paused': int(TRAKT_START_PAUSED),
@@ -2238,8 +2238,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'gui_name': GUI_NAME,
             'language': GUI_LANG,
             'theme_name': THEME_NAME,
-            'sickrage_background': int(SICKRAGE_BACKGROUND),
-            'sickrage_background_path': SICKRAGE_BACKGROUND_PATH,
+            'sickchill_background': int(SICKCHILL_BACKGROUND),
+            'sickchill_background_path': SICKCHILL_BACKGROUND_PATH,
             'fanart_background': int(FANART_BACKGROUND),
             'fanart_background_opacity': FANART_BACKGROUND_OPACITY,
             'custom_css': int(CUSTOM_CSS),

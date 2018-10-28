@@ -1,22 +1,22 @@
 # coding=utf-8
 
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -26,7 +26,7 @@ import warnings
 
 import sickbeard
 from sickbeard import common
-from sickrage.helper.encoding import ek
+from sickchill.helper.encoding import ek
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
@@ -44,7 +44,7 @@ class Notifier(object):
     def __init__(self):
         self.notify_initialized = None
         if Notify:
-            self.notify_initialized = Notify.init('SickRage')
+            self.notify_initialized = Notify.init('SickChill')
 
     @staticmethod
     def diagnose():
@@ -59,7 +59,7 @@ class Notifier(object):
 
         if 'DISPLAY' not in os.environ and 'DBUS_SESSION_BUS_ADDRESS' not in os.environ:
             return ("<p>Error: Environment variables DISPLAY and DBUS_SESSION_BUS_ADDRESS "
-                    "aren't set.  libnotify will only work when you run SickRage "
+                    "aren't set.  libnotify will only work when you run SickChill "
                     "from a desktop login.")
 
         try:
@@ -72,7 +72,7 @@ class Notifier(object):
                 bus = dbus.SessionBus()
             except dbus.DBusException as e:
                 return ("<p>Error: unable to connect to D-Bus session bus: <code>{}</code>."
-                        "<p>Are you running SickRage in a desktop session?").format(cgi.escape(e))
+                        "<p>Are you running SickChill in a desktop session?").format(cgi.escape(e))
             try:
                 bus.get_object('org.freedesktop.Notifications',
                                '/org/freedesktop/Notifications')
@@ -107,7 +107,7 @@ class Notifier(object):
             self._notify(title, update_text.format(ipaddress))
 
     def test_notify(self):
-        return self._notify('Test notification', "This is a test notification from SickRage", force=True)
+        return self._notify('Test notification', "This is a test notification from SickChill", force=True)
 
     def _notify(self, title, message, force=False):
         if self.notify_initialized and sickbeard.USE_LIBNOTIFY | force:

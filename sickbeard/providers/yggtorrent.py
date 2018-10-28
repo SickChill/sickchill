@@ -1,35 +1,35 @@
 # coding=utf-8
 # Author: adaur <adaur.underground@gmail.com>
-# Contributor: PHD <phd59fr@gmail.com>
+# Contributor: PHD <phd59fr@gmail.com>, pluzun <pluzun59@gmail.com>
 #
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
 
 import re
 
+import validators
 from requests.compat import urljoin
-from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.helper.common import convert_size, try_int
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from sickchill.helper.common import convert_size, try_int
+from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
@@ -48,7 +48,8 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.minleech = None
 
         # URLs
-        self.url = 'https://yggtorrent.is/'
+        self.custom_url = None
+        self.url = 'https://www.yggtorrent.is/'
         self.urls = {
             'login': urljoin(self.url, 'user/login'),
             'search': urljoin(self.url, 'engine/search')
@@ -60,13 +61,41 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         # Cache
         self.cache = tvcache.TVCache(self, min_time=30)
 
+    def update_urls(self, new_url, custom=False):
+        if custom and not new_url:
+            return True
+
+        if not validators.url(new_url):
+            if custom:
+                logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+            else:
+                logger.log('Url changing has failed!', logger.DEBUG)
+
+            return False
+
+        self.url = new_url
+        self.urls = {
+            'login': urljoin(self.url, 'user/login'),
+            'search': urljoin(self.url, 'engine/search')
+        }
+        return True
+
     def login(self):
         login_params = {
             'id': self.username,
             'pass': self.password,
         }
 
+        self.update_urls(self.custom_url, True)
+
         response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
+        if self.url not in response.url:
+            new_url = response.url.split('user/login')[0]
+            logger.log('Changing base url from {} to {}'.format(self.url, new_url), logger.DEBUG)
+            if not self.update_urls(new_url):
+                return False
+
+            response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
 
         # The login is now an AJAX call (401 : Bad credentials, 200 : Logged in, other : server failure)
         if not response or response.status_code != 200:
@@ -117,6 +146,10 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         'name': re.sub(r'[()]', '', search_string),
                         'do': 'search'
                     }
+
+                    if self.show and self.show.is_anime:
+                        search_params['sub_category'] = "2179"
+
                     data = self.get_url(self.urls['search'], params=search_params, returns='text')
                     if not data:
                         continue

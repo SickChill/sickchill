@@ -20,7 +20,7 @@
         <!-- iOS -->
         <meta name="apple-mobile-web-app-status-bar-style" content="${themeColors[sickbeard.THEME_NAME]}">
 
-        <title>SickRage - ${title}</title>
+        <title>SickChill - ${title}</title>
 
         <!--[if lt IE 9]>
             <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -92,8 +92,8 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="${static_url("apibuilder/", include_version=False)}" title="SickRage">
-                        <img alt="SickRage" src="${static_url('images/sickrage.png')}" style="height: 50px;padding: 3px;" class="img-responsive pull-left" />
+                    <a class="navbar-brand" href="${static_url("apibuilder/", include_version=False)}" title="SickChill">
+                        <img alt="SickChill" src="${static_url('images/sickchill.png')}" style="height: 50px;padding: 3px;" class="img-responsive pull-left" />
                         <p class="navbar-text hidden-xs">${title}</p>
                     </a>
                 </div>
@@ -109,7 +109,7 @@
                     </div>
 
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="${static_url("home/", include_version=False)}">${_('Back to SickRage')}</a></li>
+                        <li><a href="${static_url("home/", include_version=False)}">${_('Back to SickChill')}</a></li>
                     </ul>
 
                     <form class="navbar-form navbar-right">

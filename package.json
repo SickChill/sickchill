@@ -1,15 +1,15 @@
 {
-  "name": "sickrage",
+  "name": "sickchill",
   "version": "4.0.72",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SickRage/SickRage.git"
+    "url": "git+https://github.com/SickChill/SickChill.git"
   },
   "bugs": {
-    "url": "https://github.com/SickRage/SickRage/issues"
+    "url": "https://github.com/SickChill/SickChill/issues"
   },
-  "homepage": "https://github.com/SickRage/SickRage#readme",
+  "homepage": "https://github.com/SickChill/SickChill#readme",
   "scripts": {
     "test": "xo --verbose && ava --verbose",
     "security": "snyk test"
