@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-10-29 13:09+0000\n"
+"POT-Creation-Date: 2018-10-29 14:23+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: ar_SA\n"
@@ -290,6 +290,294 @@ msgstr ""
 
 #: sickbeard/db.py:353
 msgid "Control dict to upsert cannot have values of None!"
+msgstr ""
+
+#: sickbeard/helpers.py:90
+msgid "Patching socket to IPv4 only"
+msgstr ""
+
+#: sickbeard/helpers.py:240
+msgid "Invalid filename. Filename must be a string. {0}"
+msgstr ""
+
+#: sickbeard/helpers.py:316
+msgid "Trying to find {} on {}"
+msgstr ""
+
+#: sickbeard/helpers.py:447
+msgid "Failed to create hardlink of {0} at {1}. Error: {2}. Copying instead"
+msgstr ""
+
+#: sickbeard/helpers.py:484
+msgid "Failed to create symlink of {0} at {1}. Error: {2}. Copying instead"
+msgstr ""
+
+#: sickbeard/helpers.py:495
+msgid "Checking if the path {0} already exists"
+msgstr ""
+
+#: sickbeard/helpers.py:501 sickbeard/helpers.py:521
+msgid "Folder {0} didn't exist, creating it"
+msgstr ""
+
+#: sickbeard/helpers.py:504 sickbeard/helpers.py:528
+msgid "Failed creating {0} : {1}"
+msgstr ""
+
+#: sickbeard/helpers.py:569
+msgid "Renaming file from {0} to {1}"
+msgstr ""
+
+#: sickbeard/helpers.py:572
+msgid "Failed renaming {0} to {1} : {2}"
+msgstr ""
+
+#: sickbeard/helpers.py:592
+msgid "Trying to clean any empty folders under "
+msgstr ""
+
+#: sickbeard/helpers.py:602
+#, fuzzy
+#| msgid "Don't delete empty folders"
+msgid "Deleting empty folder: "
+msgstr "لا تقم بحذف المجلدات الفارغة"
+
+#: sickbeard/helpers.py:608
+#, fuzzy
+#| msgid "Unable to update show: {error}"
+msgid "Unable to delete {0}. Error: {1}"
+msgstr "غير قادر على تحديث المسلسل: {error}"
+
+#: sickbeard/helpers.py:644
+msgid "No parent path provided in {location} unable to get permissions from it"
+msgstr ""
+
+#: sickbeard/helpers.py:667
+msgid "Not running as root or owner of {location}, not trying to set permissions"
+msgstr ""
+
+#: sickbeard/helpers.py:673
+msgid "Failed to set permission for {0} to {1:o}, parent directory has {2:o}"
+msgstr ""
+
+#: sickbeard/helpers.py:705
+msgid "Not running as root or owner of {}, not trying to set the set-group-ID"
+msgstr ""
+
+#: sickbeard/helpers.py:710
+msgid "Respecting the set-group-ID bit on the parent directory for {0}"
+msgstr ""
+
+#: sickbeard/helpers.py:755
+msgid "Found absolute number {absolute} for show {show} {ep}"
+msgstr ""
+
+#: sickbeard/helpers.py:759
+msgid "No entries for absolute number for show {show} {ep}"
+msgstr ""
+
+#: sickbeard/helpers.py:841
+msgid "pyopenssl module missing, please install for https access"
+msgstr ""
+
+#: sickbeard/helpers.py:865
+msgid "Error creating SSL key and certificate"
+msgstr ""
+
+#: sickbeard/helpers.py:886
+msgid "Not creating backup, {0} doesn't exist"
+msgstr ""
+
+#: sickbeard/helpers.py:890
+msgid "Trying to back up {0} to {1}"
+msgstr ""
+
+#: sickbeard/helpers.py:892
+msgid "Backup done"
+msgstr ""
+
+#: sickbeard/helpers.py:895
+msgid "Error while trying to back up {0} to {1} : {2}"
+msgstr ""
+
+#: sickbeard/helpers.py:898
+msgid "Trying again."
+msgstr ""
+
+#: sickbeard/helpers.py:901
+msgid "Unable to back up {0} to {1} please do it manually."
+msgstr ""
+
+#: sickbeard/helpers.py:922 sickbeard/helpers.py:937
+msgid "Not restoring, {0} doesn't exist"
+msgstr ""
+
+#: sickbeard/helpers.py:926
+msgid "Trying to backup {0} to {1}.r{2} before restoring backup"
+msgstr ""
+
+#: sickbeard/helpers.py:931
+msgid ""
+"Error while trying to backup DB file {0} before proceeding with restore: "
+"{1}"
+msgstr ""
+
+#: sickbeard/helpers.py:941
+msgid "Trying to restore file {0} to {1}"
+msgstr ""
+
+#: sickbeard/helpers.py:943
+#, fuzzy
+#| msgid "Restore"
+msgid "Restore done"
+msgstr "الإستعادة"
+
+#: sickbeard/helpers.py:946
+msgid "Error while trying to restore file {0}. Error: {1}"
+msgstr ""
+
+#: sickbeard/helpers.py:949
+msgid "Trying again. Attempt #: {0}"
+msgstr ""
+
+#: sickbeard/helpers.py:952
+msgid "Unable to restore file {0} to {1}"
+msgstr ""
+
+#: sickbeard/helpers.py:1086
+msgid "Error when attempting to find show: {0} in SickChill. Error: {1} "
+msgstr ""
+
+#: sickbeard/helpers.py:1163
+msgid "Usage of anidb disabled. Skiping"
+msgstr ""
+
+#: sickbeard/helpers.py:1167
+msgid "anidb username and/or password are not set. Aborting anidb lookup."
+msgstr ""
+
+#: sickbeard/helpers.py:1172
+msgid "anidb: {0} "
+msgstr ""
+
+#: sickbeard/helpers.py:1177 sickbeard/helpers.py:1186
+msgid "anidb exception msg: {0} "
+msgstr ""
+
+#: sickbeard/helpers.py:1207 sickbeard/helpers.py:1260
+msgid "Zip creation error: {0} "
+msgstr ""
+
+#: sickbeard/helpers.py:1239
+msgid "Zip extraction error: {0} "
+msgstr ""
+
+#: sickbeard/helpers.py:1289
+msgid "Zip extraction error: {0}"
+msgstr ""
+
+#: sickbeard/helpers.py:1311
+msgid "Found indexer mapping in cache for show: "
+msgstr ""
+
+#: sickbeard/helpers.py:1329
+msgid "Unable to map {} -> {} for show: {}, skipping it"
+msgstr ""
+
+#: sickbeard/helpers.py:1334
+msgid "Mapping {} -> {} for show: {}"
+msgstr ""
+
+#: sickbeard/helpers.py:1339
+msgid "Adding indexer mapping to DB for show: {}"
+msgstr ""
+
+#: sickbeard/helpers.py:1386
+msgid "Using global proxy: {}"
+msgstr ""
+
+#: sickbeard/helpers.py:1466
+msgid "Requested a json response but response was not json, check the url: {0}"
+msgstr ""
+
+#: sickbeard/helpers.py:1505
+msgid ""
+"Problem downloading file, setting permissions or writing file to {0} - "
+"ERROR: {1}"
+msgstr ""
+
+#: sickbeard/helpers.py:1519
+msgid "Request failed: {0} ({1})"
+msgstr ""
+
+#: sickbeard/helpers.py:1524
+msgid ""
+"SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to "
+"1.0.1e+"
+msgstr ""
+
+#: sickbeard/helpers.py:1526
+msgid ""
+"SSL Error requesting url: '{0}' Try disabling Cert Verification on the "
+"advanced tab of /config/general"
+msgstr ""
+
+#: sickbeard/helpers.py:1566
+msgid "url is {0}"
+msgstr ""
+
+#: sickbeard/helpers.py:1593
+msgid "Unable to get size for file {0} because the link to the file is not valid"
+msgstr ""
+
+#: sickbeard/helpers.py:1599
+msgid "Unable to get size for file {0} Error: {1}"
+msgstr ""
+
+#: sickbeard/helpers.py:1606
+msgid "Generating New API key"
+msgstr ""
+
+#: sickbeard/helpers.py:1663
+msgid "Trying to determine free space on the destination drive"
+msgstr ""
+
+#: sickbeard/helpers.py:1666
+msgid "A path to a file is required for the source. {0} is not a file."
+msgstr ""
+
+#: sickbeard/helpers.py:1670
+msgid ""
+"A path is required for the destination. Check that the root dir and show "
+"locations are correct for {0} (I got '{1}')"
+msgstr ""
+
+#: sickbeard/helpers.py:1680
+msgid ""
+"Process method is 'move' and src and destination are on the same device, "
+"skipping free space check"
+msgstr ""
+
+#: sickbeard/helpers.py:1686
+msgid "Unable to determine free space, so I will assume there is enough."
+msgstr ""
+
+#: sickbeard/helpers.py:1687 sickbeard/helpers.py:1720
+msgid "Error: {error}"
+msgstr ""
+
+#: sickbeard/helpers.py:1705
+msgid "Not enough free space: Needed: {0} bytes ( {1} ), found: {2} bytes ( {3} )"
+msgstr ""
+
+#: sickbeard/helpers.py:1719
+#, fuzzy
+#| msgid "Unable to verify key"
+msgid "Unable to determine free space"
+msgstr "غير قادر على التحقق من المفتاح"
+
+#: sickbeard/helpers.py:1842
+msgid "Show id {} not found on {}, not adding the show: {}"
 msgstr ""
 
 #: sickbeard/logger.py:473
