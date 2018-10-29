@@ -22,9 +22,9 @@ from __future__ import unicode_literals
 
 import os
 
-from sickchill.metadata import generic, kodi_12plus
 from sickchill.helper.common import replace_extension
 from sickchill.helper.encoding import ek
+from sickchill.metadata import generic, kodi_12plus
 
 
 class KODIMetadata(kodi_12plus.KODI_12PlusMetadata):

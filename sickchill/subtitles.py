@@ -37,9 +37,9 @@ from subliminal import Episode, provider_manager, ProviderPool
 import sickchill
 from sickchill import db, history, logger
 from sickchill.common import Quality
-from sickchill.helpers import is_media_file
 from sickchill.helper.common import dateTimeFormat, episode_num
 from sickchill.helper.exceptions import ex
+from sickchill.helpers import is_media_file
 from sickchill.show.Show import Show
 
 # https://github.com/Diaoul/subliminal/issues/536

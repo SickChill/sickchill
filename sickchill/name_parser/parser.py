@@ -31,10 +31,10 @@ import six
 
 import sickchill
 from sickchill import common, db, helpers, logger, scene_exceptions, scene_numbering
-from sickchill.name_parser import regexes
 from sickchill.helper.common import remove_extension
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
+from sickchill.name_parser import regexes
 
 
 class NameParser(object):

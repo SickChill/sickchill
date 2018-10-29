@@ -32,13 +32,13 @@ import sickchill
 from sickchill import generic_queue, logger, name_cache, notifiers, scene_numbering, ui
 from sickchill.blackandwhitelist import BlackAndWhiteList
 from sickchill.common import WANTED
-from sickchill.helpers import chmodAsParent, get_showname_from_indexer, makeDir, sortable_name
-from sickchill.tv import TVShow
 from sickchill.helper.common import sanitize_filename
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import (CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, EpisodeDeletedException,
                                          MultipleShowObjectsException, ShowDirectoryNotFoundException)
+from sickchill.helpers import chmodAsParent, get_showname_from_indexer, makeDir, sortable_name
 from sickchill.show.Show import Show
+from sickchill.tv import TVShow
 
 
 class ShowQueue(generic_queue.GenericQueue):

@@ -25,9 +25,9 @@ from __future__ import print_function, unicode_literals
 import re
 
 from sickchill import classes, helpers, logger
-from sickchill.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper.encoding import ek, ss
 from sickchill.helper.exceptions import ex
+from sickchill.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 try:
     import xml.etree.cElementTree as ETree

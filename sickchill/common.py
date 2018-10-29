@@ -36,9 +36,9 @@ from fake_useragent import settings as UA_SETTINGS, UserAgent
 # noinspection PyUnresolvedReferences
 from six.moves import reduce
 
-from sickchill.numdict import NumDict
 from sickchill.helper import video_screen_size
 from sickchill.helper.encoding import ek
+from sickchill.numdict import NumDict
 from sickchill.recompiled import tags
 from sickchill.tagger.episode import EpisodeTags
 

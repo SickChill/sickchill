@@ -21,8 +21,8 @@ from __future__ import print_function, unicode_literals
 
 import sickchill
 from sickchill import logger, search_queue, show_name_helpers
-from sickchill.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper.exceptions import FailedPostProcessingFailedException
+from sickchill.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 
 class FailedProcessor(object):

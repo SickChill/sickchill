@@ -27,8 +27,10 @@ import codecs
 import datetime
 import io
 import locale
-import platform
+# Fix mimetypes on misconfigured systems
+import mimetypes
 import os
+import platform
 import shutil
 import signal
 import subprocess
@@ -50,8 +52,6 @@ if sys.version_info >= (2, 7, 9):
     ssl._create_default_https_context = ssl._create_unverified_context  # pylint: disable=protected-access
 
 
-# Fix mimetypes on misconfigured systems
-import mimetypes
 mimetypes.add_type("text/css", ".css")
 mimetypes.add_type("application/sfont", ".otf")
 mimetypes.add_type("application/sfont", ".ttf")
@@ -66,20 +66,19 @@ if os.path.isdir(OLD_TORNADO):
     shutil.move(OLD_TORNADO, OLD_TORNADO + '_kill')
     shutil.rmtree(OLD_TORNADO + '_kill')
 
-import sickchill
-from sickchill import db, logger, network_timezones, failed_history, name_cache
-from sickchill.tv import TVShow
-from sickchill.webserveInit import SRWebServer
-from sickchill.event_queue import Events
-from sickchill.versionChecker import SourceUpdateManager, GitUpdateManager
+
 from configobj import ConfigObj  # pylint: disable=import-error
-
-from sickchill.helper.encoding import ek
-from sickchill.helper.argument_parser import SickChillArgumentParser
-
 # noinspection PyUnresolvedReferences
 from six.moves import reload_module
 
+import sickchill
+from sickchill import db, failed_history, logger, name_cache, network_timezones
+from sickchill.event_queue import Events
+from sickchill.helper.argument_parser import SickChillArgumentParser
+from sickchill.helper.encoding import ek
+from sickchill.tv import TVShow
+from sickchill.versionChecker import GitUpdateManager, SourceUpdateManager
+from sickchill.webserveInit import SRWebServer
 
 # http://bugs.python.org/issue7980#msg221094
 THROWAWAY = datetime.datetime.strptime('20110101', '%Y%m%d')

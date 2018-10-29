@@ -25,8 +25,8 @@ import traceback
 
 import sickchill
 from sickchill import common, config, generic_queue, logger, processTV
-from sickchill.processTV import log_helper, process_dir
 from sickchill.helper.encoding import ek
+from sickchill.processTV import log_helper, process_dir
 
 MANUAL_POST_PROCESS = 120
 AUTO_POST_PROCESS = 100

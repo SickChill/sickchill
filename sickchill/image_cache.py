@@ -28,9 +28,9 @@ from hachoir_parser import createParser
 
 import sickchill
 from sickchill import helpers, logger
-from sickchill.metadata.generic import GenericMetadata
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ShowDirectoryNotFoundException
+from sickchill.metadata.generic import GenericMetadata
 
 log.use_print = False
 

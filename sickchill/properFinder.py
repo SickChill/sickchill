@@ -29,10 +29,10 @@ import traceback
 
 import sickchill
 from sickchill import db, helpers, logger
-from sickchill.common import DOWNLOADED, Quality, SNATCHED, SNATCHED_PROPER, cpu_presets
+from sickchill.common import cpu_presets, DOWNLOADED, Quality, SNATCHED, SNATCHED_PROPER
+from sickchill.helper.exceptions import AuthException, ex
 from sickchill.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.search import pickBestResult, snatchEpisode
-from sickchill.helper.exceptions import AuthException, ex
 from sickchill.show.History import History
 
 

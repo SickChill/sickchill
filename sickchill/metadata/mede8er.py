@@ -28,10 +28,10 @@ import six
 
 import sickchill
 from sickchill import helpers, logger
-from sickchill.metadata import mediabrowser
 from sickchill.helper.common import dateFormat, replace_extension
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex, ShowNotFoundException
+from sickchill.metadata import mediabrowser
 
 try:
     import xml.etree.cElementTree as etree

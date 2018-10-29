@@ -31,11 +31,11 @@ from tmdb_api.tmdb_api import TMDB
 
 import sickchill
 from sickchill import helpers, logger
-from sickchill.metadata import helpers as metadata_helpers
-from sickchill.show_name_helpers import allPossibleShowNames
 from sickchill.helper.common import replace_extension, try_int
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
+from sickchill.metadata import helpers as metadata_helpers
+from sickchill.show_name_helpers import allPossibleShowNames
 
 try:
     import xml.etree.cElementTree as etree

@@ -26,8 +26,8 @@ import os
 import sickchill
 from sickchill import common, logger, tv
 from sickchill.common import DOWNLOADED, Quality
-from sickchill.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper.encoding import ek
+from sickchill.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 name_presets = (
     '%SN - %Sx%0E',

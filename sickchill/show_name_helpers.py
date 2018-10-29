@@ -27,9 +27,9 @@ import six
 
 import sickchill
 from sickchill import common, logger
+from sickchill.helper.encoding import ek
 from sickchill.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.scene_exceptions import get_scene_exceptions
-from sickchill.helper.encoding import ek
 
 resultFilters = [
     "sub(bed|ed|pack|s)",

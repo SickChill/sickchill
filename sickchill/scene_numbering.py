@@ -31,8 +31,8 @@ import traceback
 
 import sickchill
 from sickchill import db, logger
-from sickchill.scene_exceptions import xem_session
 from sickchill.helper.exceptions import ex
+from sickchill.scene_exceptions import xem_session
 from sickchill.show.Show import Show
 
 

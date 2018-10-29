@@ -41,8 +41,6 @@ import sickchill
 from sickchill import classes, db, helpers, image_cache, logger, network_timezones, sbdatetime, search_queue, ui
 from sickchill.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN,
                               WANTED)
-from sickchill.postProcessor import PROCESS_METHODS
-from sickchill.versionChecker import CheckVersion
 from sickchill.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import CantUpdateShowException, ex, ShowDirectoryNotFoundException
@@ -51,11 +49,13 @@ from sickchill.media.ShowBanner import ShowBanner
 from sickchill.media.ShowFanArt import ShowFanArt
 from sickchill.media.ShowNetworkLogo import ShowNetworkLogo
 from sickchill.media.ShowPoster import ShowPoster
+from sickchill.postProcessor import PROCESS_METHODS
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.show.History import History
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
+from sickchill.versionChecker import CheckVersion
 
 try:
     import json

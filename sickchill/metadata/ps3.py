@@ -22,8 +22,8 @@ from __future__ import unicode_literals
 
 import os
 
-from sickchill.metadata import generic
 from sickchill.helper.encoding import ek
+from sickchill.metadata import generic
 
 
 class PS3Metadata(generic.GenericMetadata):

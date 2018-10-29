@@ -32,12 +32,12 @@ import six
 
 import sickchill
 from sickchill import common, db, failed_history, helpers, history, logger, notifiers, show_name_helpers
-from sickchill.helpers import verify_freespace
-from sickchill.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper import glob
 from sickchill.helper.common import remove_extension, replace_extension, SUBTITLE_EXTENSIONS
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ex, ShowDirectoryNotFoundException
+from sickchill.helpers import verify_freespace
+from sickchill.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.show.Show import Show
 
 METHOD_COPY = "copy"

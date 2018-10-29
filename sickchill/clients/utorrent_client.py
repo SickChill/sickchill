@@ -22,9 +22,10 @@ from __future__ import unicode_literals
 import re
 from collections import OrderedDict
 
-import sickchill
 import six
 from requests.compat import urljoin
+
+import sickchill
 from sickchill.clients import GenericClient
 
 

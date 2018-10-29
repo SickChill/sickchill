@@ -34,12 +34,12 @@ from sickchill import logger
 from sickchill.classes import Proper, SearchResult
 from sickchill.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, UA_POOL
 from sickchill.db import DBConnection
+from sickchill.helper.common import sanitize_filename
+from sickchill.helper.encoding import ek
 from sickchill.helpers import download_file, getURL, make_session, remove_file_failed
 from sickchill.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.show_name_helpers import allPossibleShowNames
 from sickchill.tvcache import TVCache
-from sickchill.helper.common import sanitize_filename
-from sickchill.helper.encoding import ek
 
 
 class GenericProvider(object):  # pylint: disable=too-many-instance-attributes

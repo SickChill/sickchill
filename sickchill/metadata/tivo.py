@@ -27,9 +27,9 @@ import os
 
 import sickchill
 from sickchill import helpers, logger
-from sickchill.metadata import generic
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex, ShowNotFoundException
+from sickchill.metadata import generic
 
 
 class TIVOMetadata(generic.GenericMetadata):

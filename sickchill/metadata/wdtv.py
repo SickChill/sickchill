@@ -26,10 +26,10 @@ import re
 
 import sickchill
 from sickchill import helpers, logger
-from sickchill.metadata import generic
 from sickchill.helper.common import dateFormat, replace_extension
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex, ShowNotFoundException
+from sickchill.metadata import generic
 
 try:
     import xml.etree.cElementTree as etree

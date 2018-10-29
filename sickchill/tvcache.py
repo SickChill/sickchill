@@ -27,9 +27,9 @@ import six
 
 import sickchill
 from sickchill import db, logger, show_name_helpers
+from sickchill.helper.exceptions import AuthException, ex
 from sickchill.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.rssfeeds import getFeed
-from sickchill.helper.exceptions import AuthException, ex
 from sickchill.show.Show import Show
 
 

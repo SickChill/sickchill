@@ -27,8 +27,8 @@ from requests.compat import quote_plus, urljoin
 from sickchill import db, logger, tvcache
 from sickchill.bs4_parser import BS4Parser
 from sickchill.common import Quality
-from sickchill.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper.common import convert_size, try_int
+from sickchill.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 

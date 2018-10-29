@@ -10,9 +10,9 @@ from libtrakt.trakt import TraktAPI
 
 import sickchill
 from sickchill import helpers, logger
-from sickchill.indexers.indexer_config import INDEXER_TVDB
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex, MultipleShowObjectsException
+from sickchill.indexers.indexer_config import INDEXER_TVDB
 
 
 class traktTrending(object):

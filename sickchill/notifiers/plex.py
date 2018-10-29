@@ -26,8 +26,8 @@ import six
 
 import sickchill
 from sickchill import common, logger
-from sickchill.helpers import getURL, make_session
 from sickchill.helper.exceptions import ex
+from sickchill.helpers import getURL, make_session
 
 try:
     import xml.etree.cElementTree as etree

@@ -31,9 +31,9 @@ import six
 import sickchill
 from sickchill import classes, logger, scene_exceptions, tvcache
 from sickchill.common import cpu_presets
-from sickchill.helpers import sanitizeSceneName
 from sickchill.helper.common import episode_num
 from sickchill.helper.exceptions import AuthException, ex
+from sickchill.helpers import sanitizeSceneName
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 

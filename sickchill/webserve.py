@@ -27,14 +27,13 @@ import os
 import re
 import time
 import traceback
+from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
 from operator import attrgetter
 
 import adba
 import markdown2
-import sickchill
 import six
-from concurrent.futures import ThreadPoolExecutor
 from dateutil import tz
 from github.GithubException import GithubException
 from libtrakt import TraktAPI
@@ -43,37 +42,6 @@ from mako.lookup import TemplateLookup
 from mako.runtime import UNDEFINED
 from mako.template import Template as MakoTemplate
 from requests.compat import urljoin
-from sickchill import (classes, config, db, filters, helpers, logger, naming, network_timezones, notifiers, sab, search_queue,
-                       subtitles as subtitle_module, ui)
-from sickchill.blackandwhitelist import BlackAndWhiteList, short_group_names
-from sickchill.browser import foldersAtPath
-from sickchill.common import FAILED, IGNORED, NAMING_LIMITED_EXTEND_E_PREFIXED, Overview, Quality, SKIPPED, SNATCHED, UNAIRED, WANTED, cpu_presets, \
-    statusStrings
-from sickchill.helpers import get_showname_from_indexer
-from sickchill.imdbPopular import imdb_popular
-from sickchill.providers.nzb import newznab
-from sickchill.providers.torrent import rsstorrent
-from sickchill.routes import route
-from sickchill.scene_numbering import (get_scene_absolute_numbering, get_scene_absolute_numbering_for_show, get_scene_numbering, get_scene_numbering_for_show,
-                                       get_xem_absolute_numbering_for_show, get_xem_numbering_for_show, set_scene_numbering)
-from sickchill.traktTrending import trakt_trending
-from sickchill.versionChecker import CheckVersion
-from sickchill.webapi import function_mapper
-from sickchill import clients
-from sickchill.helper import episode_num, sanitize_filename, setup_github, try_int
-from sickchill.helper.common import pretty_file_size
-from sickchill.helper.encoding import ek, ss
-from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException, ex
-from sickchill.media.ShowBanner import ShowBanner
-from sickchill.media.ShowFanArt import ShowFanArt
-from sickchill.media.ShowNetworkLogo import ShowNetworkLogo
-from sickchill.media.ShowPoster import ShowPoster
-from sickchill.providers.GenericProvider import GenericProvider
-from sickchill.show.ComingEpisodes import ComingEpisodes
-from sickchill.show.History import History as HistoryTool
-from sickchill.show.Show import Show
-from sickchill.system.Restart import Restart
-from sickchill.system.Shutdown import Shutdown
 from six.moves import urllib
 from six.moves.urllib.parse import unquote_plus
 from tornado.concurrent import run_on_executor
@@ -81,7 +49,39 @@ from tornado.escape import utf8, xhtml_escape, xhtml_unescape
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
 from tornado.process import cpu_count
-from tornado.web import HTTPError, RequestHandler, addslash, authenticated
+from tornado.web import addslash, authenticated, HTTPError, RequestHandler
+
+import sickchill
+from sickchill import (classes, clients, config, db, filters, helpers, logger, naming, network_timezones, notifiers, sab, search_queue,
+                       subtitles as subtitle_module, ui)
+from sickchill.blackandwhitelist import BlackAndWhiteList, short_group_names
+from sickchill.browser import foldersAtPath
+from sickchill.common import (cpu_presets, FAILED, IGNORED, NAMING_LIMITED_EXTEND_E_PREFIXED, Overview, Quality, SKIPPED, SNATCHED, statusStrings, UNAIRED,
+                              WANTED)
+from sickchill.helper import episode_num, sanitize_filename, setup_github, try_int
+from sickchill.helper.common import pretty_file_size
+from sickchill.helper.encoding import ek, ss
+from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex, NoNFOException, ShowDirectoryNotFoundException
+from sickchill.helpers import get_showname_from_indexer
+from sickchill.imdbPopular import imdb_popular
+from sickchill.media.ShowBanner import ShowBanner
+from sickchill.media.ShowFanArt import ShowFanArt
+from sickchill.media.ShowNetworkLogo import ShowNetworkLogo
+from sickchill.media.ShowPoster import ShowPoster
+from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.providers.nzb import newznab
+from sickchill.providers.torrent import rsstorrent
+from sickchill.routes import route
+from sickchill.scene_numbering import (get_scene_absolute_numbering, get_scene_absolute_numbering_for_show, get_scene_numbering, get_scene_numbering_for_show,
+                                       get_xem_absolute_numbering_for_show, get_xem_numbering_for_show, set_scene_numbering)
+from sickchill.show.ComingEpisodes import ComingEpisodes
+from sickchill.show.History import History as HistoryTool
+from sickchill.show.Show import Show
+from sickchill.system.Restart import Restart
+from sickchill.system.Shutdown import Shutdown
+from sickchill.traktTrending import trakt_trending
+from sickchill.versionChecker import CheckVersion
+from sickchill.webapi import function_mapper
 
 try:
     import json

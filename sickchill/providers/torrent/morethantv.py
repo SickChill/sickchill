@@ -27,10 +27,10 @@ from requests.utils import dict_from_cookiejar
 
 from sickchill import logger, tvcache
 from sickchill.bs4_parser import BS4Parser
-from sickchill.show_name_helpers import allPossibleShowNames
 from sickchill.helper.common import convert_size, try_int
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+from sickchill.show_name_helpers import allPossibleShowNames
 
 
 class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes

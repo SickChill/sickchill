@@ -29,9 +29,9 @@ import six
 
 import sickchill
 from sickchill import common, db, helpers, logger, subtitles
-from sickchill.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper.common import dateTimeFormat, episode_num
 from sickchill.helper.encoding import ek
+from sickchill.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
 MAX_DB_VERSION = 44

@@ -26,8 +26,9 @@
 
 from __future__ import print_function, unicode_literals
 
-import sickchill
 from rtorrent import RTorrent  # pylint: disable=import-error
+
+import sickchill
 from sickchill import ex, logger
 from sickchill.clients import GenericClient
 

@@ -11,11 +11,11 @@ from tornado.web import Application, RedirectHandler, StaticFileHandler
 
 import sickchill
 from sickchill import logger
+from sickchill.helper.encoding import ek
 from sickchill.helpers import create_https_certificates, generateApiKey
 from sickchill.routes import route
 from sickchill.webapi import ApiHandler
 from sickchill.webserve import CalendarHandler, KeyHandler, LoginHandler, LogoutHandler
-from sickchill.helper.encoding import ek
 
 
 class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attributes

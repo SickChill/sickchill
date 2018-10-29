@@ -25,8 +25,8 @@ import time
 
 import sickchill
 from sickchill import db, helpers, logger, network_timezones, ui
-from sickchill.indexers.indexer_config import INDEXER_TVDB, INDEXER_TVRAGE
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
+from sickchill.indexers.indexer_config import INDEXER_TVDB, INDEXER_TVRAGE
 
 try:
     import xml.etree.cElementTree as etree

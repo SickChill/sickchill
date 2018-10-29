@@ -27,9 +27,9 @@ from babelfish import Country
 
 import sickchill
 from sickchill import helpers, logger
-from sickchill.metadata import generic
 from sickchill.helper.common import dateFormat
 from sickchill.helper.exceptions import ex, ShowNotFoundException
+from sickchill.metadata import generic
 
 try:
     import xml.etree.cElementTree as etree

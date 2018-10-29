@@ -26,8 +26,8 @@ import time
 import sickchill
 from sickchill import logger, tvcache
 from sickchill.common import cpu_presets
-from sickchill.indexers.indexer_config import INDEXER_TVDB
 from sickchill.helper.common import convert_size, try_int
+from sickchill.indexers.indexer_config import INDEXER_TVDB
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
