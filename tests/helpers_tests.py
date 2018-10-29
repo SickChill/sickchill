@@ -19,7 +19,7 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 """
-Test sickbeard.helpers
+Test sickchill.helpers
 
 Public Methods:
     indentXML
@@ -97,9 +97,9 @@ from shutil import rmtree
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import sickbeard
+import sickchill
 from bencode.BTL import BTFailure
-from sickbeard import helpers
+from sickchill import helpers
 from sickchill.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
 
 import six
@@ -773,7 +773,7 @@ class HelpersMiscTests(unittest.TestCase):
             ('An Unexpected Journey', True, 'an unexpected journey'),
         ]
         for raw_name, option, expected in cases:
-            sickbeard.SORT_ARTICLE = option
+            sickchill.SORT_ARTICLE = option
             self.assertEqual(helpers.sortable_name(raw_name), expected)
 
     @unittest.skip('Not yet implemented')

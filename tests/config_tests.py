@@ -1,6 +1,6 @@
 # coding=utf-8
 """
-Test sickbeard.config's classes and methods
+Test sickchill.config's classes and methods
 
 Classes:
     ConfigMigrator
@@ -65,15 +65,15 @@ from collections import namedtuple
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard import config, scheduler
+from sickchill import config, scheduler
 from configobj import ConfigObj
 from rarfile import RarExecError
-import sickbeard
+import sickchill
 
 
 class ConfigTestBasic(unittest.TestCase):
     """
-    Test basic methods in sickbeard.config
+    Test basic methods in sickchill.config
     """
 
     def test_check_section(self):
@@ -274,34 +274,34 @@ class ConfigTestBasic(unittest.TestCase):
 
 class ConfigTestChanges(unittest.TestCase):
     """
-    Test change methods in sickbeard.config
+    Test change methods in sickchill.config
     """
 
     def test_change_https_cert(self):
         """
         Test change_https_cert
         """
-        sickbeard.HTTPS_CERT = 'server.crt' # Initialize
+        sickchill.HTTPS_CERT = 'server.crt' # Initialize
         self.assertTrue(config.change_https_cert(''))
         self.assertTrue(config.change_https_cert('server.crt'))
         self.assertFalse(config.change_https_cert('/:/server.crt')) # INVALID
-        sickbeard.HTTPS_CERT = ''
+        sickchill.HTTPS_CERT = ''
 
     def test_change_https_key(self):
         """
         Test change_https_key
         """
-        sickbeard.HTTPS_KEY = 'server.key'  # Initialize
+        sickchill.HTTPS_KEY = 'server.key'  # Initialize
         self.assertTrue(config.change_https_key(''))
         self.assertTrue(config.change_https_key('server.key'))
         self.assertFalse(config.change_https_key('/:/server.key')) # INVALID
-        sickbeard.HTTPS_KEY = ''
+        sickchill.HTTPS_KEY = ''
 
     # def test_change_unrar_tool(self):
     #     """
     #     Test change_unrar_tool
     #     """
-    #     sickbeard.PROG_DIR = ''
+    #     sickchill.PROG_DIR = ''
     #     custom_check_mock = mock.patch('rarfile.custom_check', mock.MagicMock())
     #
     #     if platform.system() != 'Windows':
@@ -328,7 +328,7 @@ class ConfigTestChanges(unittest.TestCase):
     #                                       'ProgramFiles(x86)': 'C:\\Program Files (x86)\\',
     #                                       'ProgramW6432': 'C:\\Program Files\\'}, clear=True)
     #         with custom_check_mock, my_environ, mock.patch('rarfile.ORIG_UNRAR_TOOL', 'UNKNOWN'), mock.patch('rarfile.UNRAR_TOOL', 'UNKNOWN'), \
-    #              mock.patch('rarfile.ALT_TOOL', 'UNKNOWN'), mock.patch('sickbeard.UNRAR_TOOL', 'UNKNOWN'), mock.patch('sickbeard.ALT_UNRAR_TOOL', 'UNKNOWN'):
+    #              mock.patch('rarfile.ALT_TOOL', 'UNKNOWN'), mock.patch('sickchill.UNRAR_TOOL', 'UNKNOWN'), mock.patch('sickchill.ALT_UNRAR_TOOL', 'UNKNOWN'):
     #             # Test that on windows it downloads unrar for them.
     #             self.assertTrue(config.change_unrar_tool('NOPE', 'NOWAY'))
 
@@ -336,7 +336,7 @@ class ConfigTestChanges(unittest.TestCase):
         """
         Test change_sickchill_background
         """
-        sickbeard.SICKCHILL_BACKGROUND_PATH = ''  # Initialize
+        sickchill.SICKCHILL_BACKGROUND_PATH = ''  # Initialize
         self.assertTrue(config.change_sickchill_background(__file__))
         self.assertFalse(config.change_sickchill_background('not_real.jpg'))
         self.assertTrue(config.change_sickchill_background(''))
@@ -345,7 +345,7 @@ class ConfigTestChanges(unittest.TestCase):
         """
         Test change_custom_css
         """
-        sickbeard.CUSTOM_CSS_PATH = ''  # Initialize
+        sickchill.CUSTOM_CSS_PATH = ''  # Initialize
         self.assertFalse(config.change_custom_css(__file__)) # not a css file
         self.assertFalse(config.change_custom_css('not_real.jpg')) # doesn't exist
         self.assertFalse(config.change_custom_css('sickchill_tests')) # isn't a file
@@ -360,10 +360,10 @@ class ConfigTestChanges(unittest.TestCase):
         """
         Test change_log_dir
         """
-        sickbeard.DATA_DIR = os.path.dirname(__file__)
-        sickbeard.ACTUAL_LOG_DIR = ''
-        sickbeard.LOG_DIR = os.path.join(sickbeard.DATA_DIR, sickbeard.ACTUAL_LOG_DIR)
-        sickbeard.WEB_LOG = False
+        sickchill.DATA_DIR = os.path.dirname(__file__)
+        sickchill.ACTUAL_LOG_DIR = ''
+        sickchill.LOG_DIR = os.path.join(sickchill.DATA_DIR, sickchill.ACTUAL_LOG_DIR)
+        sickchill.WEB_LOG = False
 
         self.assertFalse(config.change_log_dir('/:/Logs', True))
         self.assertTrue(config.change_log_dir('Logs', True))
@@ -372,7 +372,7 @@ class ConfigTestChanges(unittest.TestCase):
         """
         Test change_nzb_dir
         """
-        sickbeard.NZB_DIR = ''
+        sickchill.NZB_DIR = ''
         self.assertTrue(config.change_nzb_dir('cache'))
         self.assertFalse(config.change_nzb_dir('/:/NZB_Downloads')) # INVALID
         self.assertTrue(config.change_nzb_dir(''))
@@ -381,7 +381,7 @@ class ConfigTestChanges(unittest.TestCase):
         """
         Test change_torrent_dir
         """
-        sickbeard.TORRENT_DIR = ''
+        sickchill.TORRENT_DIR = ''
         self.assertTrue(config.change_torrent_dir('cache'))
         self.assertFalse(config.change_torrent_dir('/:/Downloads')) # INVALID
         self.assertTrue(config.change_torrent_dir(''))
@@ -390,18 +390,18 @@ class ConfigTestChanges(unittest.TestCase):
         """
         Test change_tv_download_dir
         """
-        sickbeard.TV_DOWNLOAD_DIR = ''
+        sickchill.TV_DOWNLOAD_DIR = ''
         self.assertTrue(config.change_tv_download_dir('cache'))
         self.assertFalse(config.change_tv_download_dir('/:/Downloads/Completed')) # INVALID
 
         self.assertTrue(config.change_tv_download_dir(''))
-        self.assertEqual(sickbeard.TV_DOWNLOAD_DIR, '')
+        self.assertEqual(sickchill.TV_DOWNLOAD_DIR, '')
 
     def test_change_unpack_dir(self):
         """
         Test change_unpack_dir
         """
-        sickbeard.UNPACK_DIR = ''
+        sickchill.UNPACK_DIR = ''
         self.assertTrue(config.change_unpack_dir('cache'))
         self.assertFalse(config.change_unpack_dir('/:/Extract')) # INVALID
         self.assertTrue(config.change_unpack_dir(''))
@@ -410,80 +410,80 @@ class ConfigTestChanges(unittest.TestCase):
         """
         Test change_postprocessor_frequency
         """
-        sickbeard.autoPostProcessorScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickchill.autoPostProcessorScheduler = scheduler.Scheduler(lambda:None) # dummy
 
         config.change_postprocessor_frequency(0)
-        self.assertEqual(sickbeard.AUTOPOSTPROCESSOR_FREQUENCY, sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY)
+        self.assertEqual(sickchill.AUTOPOSTPROCESSOR_FREQUENCY, sickchill.MIN_AUTOPOSTPROCESSOR_FREQUENCY)
         config.change_postprocessor_frequency('s')
-        self.assertEqual(sickbeard.AUTOPOSTPROCESSOR_FREQUENCY, sickbeard.DEFAULT_AUTOPOSTPROCESSOR_FREQUENCY)
+        self.assertEqual(sickchill.AUTOPOSTPROCESSOR_FREQUENCY, sickchill.DEFAULT_AUTOPOSTPROCESSOR_FREQUENCY)
         config.change_postprocessor_frequency(60)
-        self.assertEqual(sickbeard.AUTOPOSTPROCESSOR_FREQUENCY, 60)
+        self.assertEqual(sickchill.AUTOPOSTPROCESSOR_FREQUENCY, 60)
 
     def test_change_daily_search_freq(self):
         """
         Test change_daily_search_frequency
         """
-        sickbeard.dailySearchScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickchill.dailySearchScheduler = scheduler.Scheduler(lambda:None) # dummy
 
         config.change_daily_search_frequency(0)
-        self.assertEqual(sickbeard.DAILYSEARCH_FREQUENCY, sickbeard.MIN_DAILYSEARCH_FREQUENCY)
+        self.assertEqual(sickchill.DAILYSEARCH_FREQUENCY, sickchill.MIN_DAILYSEARCH_FREQUENCY)
         config.change_daily_search_frequency('s')
-        self.assertEqual(sickbeard.DAILYSEARCH_FREQUENCY, sickbeard.DEFAULT_DAILYSEARCH_FREQUENCY)
+        self.assertEqual(sickchill.DAILYSEARCH_FREQUENCY, sickchill.DEFAULT_DAILYSEARCH_FREQUENCY)
         config.change_daily_search_frequency(60)
-        self.assertEqual(sickbeard.DAILYSEARCH_FREQUENCY, 60)
+        self.assertEqual(sickchill.DAILYSEARCH_FREQUENCY, 60)
 
     def test_change_backlog_freq(self):
         """
         Test change_backlog_frequency
         """
-        sickbeard.backlogSearchScheduler = scheduler.Scheduler(lambda:None) # dummy
-        sickbeard.DAILYSEARCH_FREQUENCY = sickbeard.DEFAULT_DAILYSEARCH_FREQUENCY # needed
+        sickchill.backlogSearchScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickchill.DAILYSEARCH_FREQUENCY = sickchill.DEFAULT_DAILYSEARCH_FREQUENCY # needed
 
         config.change_backlog_frequency(0)
-        self.assertEqual(sickbeard.BACKLOG_FREQUENCY, sickbeard.MIN_BACKLOG_FREQUENCY)
+        self.assertEqual(sickchill.BACKLOG_FREQUENCY, sickchill.MIN_BACKLOG_FREQUENCY)
         config.change_backlog_frequency('s')
-        self.assertEqual(sickbeard.BACKLOG_FREQUENCY, sickbeard.MIN_BACKLOG_FREQUENCY)
+        self.assertEqual(sickchill.BACKLOG_FREQUENCY, sickchill.MIN_BACKLOG_FREQUENCY)
         config.change_backlog_frequency(1440)
-        self.assertEqual(sickbeard.BACKLOG_FREQUENCY, 1440)
+        self.assertEqual(sickchill.BACKLOG_FREQUENCY, 1440)
 
     def test_change_update_freq(self):
         """
         Test change_update_frequency
         """
-        sickbeard.versionCheckScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickchill.versionCheckScheduler = scheduler.Scheduler(lambda:None) # dummy
 
         config.change_update_frequency(0)
-        self.assertEqual(sickbeard.UPDATE_FREQUENCY, sickbeard.MIN_UPDATE_FREQUENCY)
+        self.assertEqual(sickchill.UPDATE_FREQUENCY, sickchill.MIN_UPDATE_FREQUENCY)
         config.change_update_frequency('s')
-        self.assertEqual(sickbeard.UPDATE_FREQUENCY, sickbeard.DEFAULT_UPDATE_FREQUENCY)
+        self.assertEqual(sickchill.UPDATE_FREQUENCY, sickchill.DEFAULT_UPDATE_FREQUENCY)
         config.change_update_frequency(60)
-        self.assertEqual(sickbeard.UPDATE_FREQUENCY, 60)
+        self.assertEqual(sickchill.UPDATE_FREQUENCY, 60)
 
     def test_change_show_update_hour(self):
         """
         Test change_showupdate_hour
         """
-        sickbeard.showUpdateScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickchill.showUpdateScheduler = scheduler.Scheduler(lambda:None) # dummy
 
         config.change_showupdate_hour(-2)
-        self.assertEqual(sickbeard.SHOWUPDATE_HOUR, 0)
+        self.assertEqual(sickchill.SHOWUPDATE_HOUR, 0)
         config.change_showupdate_hour('s')
-        self.assertEqual(sickbeard.SHOWUPDATE_HOUR, sickbeard.DEFAULT_SHOWUPDATE_HOUR)
+        self.assertEqual(sickchill.SHOWUPDATE_HOUR, sickchill.DEFAULT_SHOWUPDATE_HOUR)
         config.change_showupdate_hour(60)
-        self.assertEqual(sickbeard.SHOWUPDATE_HOUR, 0)
+        self.assertEqual(sickchill.SHOWUPDATE_HOUR, 0)
         config.change_showupdate_hour(12)
-        self.assertEqual(sickbeard.SHOWUPDATE_HOUR, 12)
+        self.assertEqual(sickchill.SHOWUPDATE_HOUR, 12)
 
     def test_change_sub_finder_freq(self):
         """
         Test change_subtitle_finder_frequency
         """
         config.change_subtitle_finder_frequency('')
-        self.assertEqual(sickbeard.SUBTITLES_FINDER_FREQUENCY, 1)
+        self.assertEqual(sickchill.SUBTITLES_FINDER_FREQUENCY, 1)
         config.change_subtitle_finder_frequency('s')
-        self.assertEqual(sickbeard.SUBTITLES_FINDER_FREQUENCY, 1)
+        self.assertEqual(sickchill.SUBTITLES_FINDER_FREQUENCY, 1)
         config.change_subtitle_finder_frequency(8)
-        self.assertEqual(sickbeard.SUBTITLES_FINDER_FREQUENCY, 8)
+        self.assertEqual(sickchill.SUBTITLES_FINDER_FREQUENCY, 8)
 
     def test_change_version_notify(self):
         """
@@ -493,76 +493,76 @@ class ConfigTestChanges(unittest.TestCase):
             def __init__(self):
                 self.amActive = False
 
-        sickbeard.versionCheckScheduler = scheduler.Scheduler(dummy_action()) # dummy
-        sickbeard.VERSION_NOTIFY = True
+        sickchill.versionCheckScheduler = scheduler.Scheduler(dummy_action()) # dummy
+        sickchill.VERSION_NOTIFY = True
 
         config.change_version_notify(True) # no change
-        self.assertTrue(sickbeard.VERSION_NOTIFY)
+        self.assertTrue(sickchill.VERSION_NOTIFY)
         config.change_version_notify('stop') # = defaults to False
-        self.assertFalse(sickbeard.VERSION_NOTIFY and sickbeard.versionCheckScheduler.enable)
+        self.assertFalse(sickchill.VERSION_NOTIFY and sickchill.versionCheckScheduler.enable)
         config.change_version_notify('on')
-        self.assertTrue(sickbeard.VERSION_NOTIFY and sickbeard.versionCheckScheduler.enable)
+        self.assertTrue(sickchill.VERSION_NOTIFY and sickchill.versionCheckScheduler.enable)
 
     def test_change_download_propers(self):
         """
         Test change_download_propers
         """
-        sickbeard.properFinderScheduler = scheduler.Scheduler(lambda:None) # dummy
-        sickbeard.DOWNLOAD_PROPERS = True
+        sickchill.properFinderScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickchill.DOWNLOAD_PROPERS = True
 
         config.change_download_propers(True) # no change
-        self.assertTrue(sickbeard.DOWNLOAD_PROPERS)
+        self.assertTrue(sickchill.DOWNLOAD_PROPERS)
         config.change_download_propers('stop') # = defaults to False
-        self.assertFalse(sickbeard.DOWNLOAD_PROPERS and sickbeard.properFinderScheduler.enable)
+        self.assertFalse(sickchill.DOWNLOAD_PROPERS and sickchill.properFinderScheduler.enable)
         config.change_download_propers('on')
-        self.assertTrue(sickbeard.DOWNLOAD_PROPERS and sickbeard.properFinderScheduler.enable)
+        self.assertTrue(sickchill.DOWNLOAD_PROPERS and sickchill.properFinderScheduler.enable)
 
     def test_change_use_trakt(self):
         """
         Test change_use_trakt
         """
-        sickbeard.traktCheckerScheduler = scheduler.Scheduler(lambda:None) # dummy
-        sickbeard.USE_TRAKT = True
+        sickchill.traktCheckerScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickchill.USE_TRAKT = True
 
         config.change_use_trakt(True) # no change
-        self.assertTrue(sickbeard.USE_TRAKT)
+        self.assertTrue(sickchill.USE_TRAKT)
         config.change_use_trakt('stop') # = defaults to False
-        self.assertFalse(sickbeard.USE_TRAKT and sickbeard.traktCheckerScheduler.enable)
+        self.assertFalse(sickchill.USE_TRAKT and sickchill.traktCheckerScheduler.enable)
         config.change_use_trakt('on')
-        self.assertTrue(sickbeard.USE_TRAKT and sickbeard.traktCheckerScheduler.enable)
+        self.assertTrue(sickchill.USE_TRAKT and sickchill.traktCheckerScheduler.enable)
 
     def test_change_use_subtitles(self):
         """
         Test change_use_subtitles
         """
-        sickbeard.subtitlesFinderScheduler = scheduler.Scheduler(lambda:None) # dummy
-        sickbeard.USE_SUBTITLES = True
+        sickchill.subtitlesFinderScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickchill.USE_SUBTITLES = True
 
         config.change_use_subtitles(True) # no change
-        self.assertTrue(sickbeard.USE_SUBTITLES)
+        self.assertTrue(sickchill.USE_SUBTITLES)
         config.change_use_subtitles('stop') # = defaults to False
-        self.assertFalse(sickbeard.USE_SUBTITLES and sickbeard.subtitlesFinderScheduler.enable)
+        self.assertFalse(sickchill.USE_SUBTITLES and sickchill.subtitlesFinderScheduler.enable)
         config.change_use_subtitles('on')
-        self.assertTrue(sickbeard.USE_SUBTITLES and sickbeard.subtitlesFinderScheduler.enable)
+        self.assertTrue(sickchill.USE_SUBTITLES and sickchill.subtitlesFinderScheduler.enable)
 
     def test_change_process_auto(self):
         """
         Test change_process_automatically
         """
-        sickbeard.autoPostProcessorScheduler = scheduler.Scheduler(lambda:None) # dummy
-        sickbeard.PROCESS_AUTOMATICALLY = True
+        sickchill.autoPostProcessorScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickchill.PROCESS_AUTOMATICALLY = True
 
         config.change_process_automatically(True) # no change
-        self.assertTrue(sickbeard.PROCESS_AUTOMATICALLY)
+        self.assertTrue(sickchill.PROCESS_AUTOMATICALLY)
         config.change_process_automatically('stop') # = defaults to False
-        self.assertFalse(sickbeard.PROCESS_AUTOMATICALLY and sickbeard.autoPostProcessorScheduler.enable)
+        self.assertFalse(sickchill.PROCESS_AUTOMATICALLY and sickchill.autoPostProcessorScheduler.enable)
         config.change_process_automatically('on')
-        self.assertTrue(sickbeard.PROCESS_AUTOMATICALLY and sickbeard.autoPostProcessorScheduler.enable)
+        self.assertTrue(sickchill.PROCESS_AUTOMATICALLY and sickchill.autoPostProcessorScheduler.enable)
 
 
 class ConfigTestMigrator(unittest.TestCase):
     """
-    Test the sickbeard.config.ConfigMigrator class
+    Test the sickchill.config.ConfigMigrator class
     """
     @unittest.expectedFailure # Not fully implemented
     def test_config_migrator(self):
@@ -574,8 +574,8 @@ class ConfigTestMigrator(unittest.TestCase):
         CFG = ConfigObj('config.ini', encoding='UTF-8')
         config.check_section(CFG, 'General')
         CFG['General']['config_version'] = 0
-        sickbeard.CONFIG_VERSION = 11
-        sickbeard.CONFIG_FILE = 'config.ini'
+        sickchill.CONFIG_VERSION = 11
+        sickchill.CONFIG_FILE = 'config.ini'
 
         migrator = config.ConfigMigrator(CFG)
         migrator.migrate_config()

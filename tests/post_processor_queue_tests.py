@@ -32,13 +32,13 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../l
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import tests.test_lib as test
-import sickbeard
-from sickbeard.post_processing_queue import ProcessingQueue, PostProcessorTask
+import sickchill
+from sickchill.post_processing_queue import ProcessingQueue, PostProcessorTask
 
 CHECK_CLEARS = False
 
 
-class PostProcessorQueueTests(test.SickbeardTestPostProcessorCase):
+class PostProcessorQueueTests(test.SickChillTestPostProcessorCase):
     """
     Test the post processor queue
     """
@@ -49,7 +49,7 @@ class PostProcessorQueueTests(test.SickbeardTestPostProcessorCase):
 
     def setUp(self):
         super(PostProcessorQueueTests, self).setUp()
-        self.queue = sickbeard.scheduler.Scheduler(
+        self.queue = sickchill.scheduler.Scheduler(
             ProcessingQueue(),
             run_delay=datetime.timedelta(seconds=0),
             cycleTime=datetime.timedelta(seconds=1),
@@ -63,9 +63,9 @@ class PostProcessorQueueTests(test.SickbeardTestPostProcessorCase):
         super(PostProcessorQueueTests, self).tearDown()
 
     def test_post_processor_queue_spam(self):
-        sickbeard.TV_DOWNLOAD_DIR = os.path.abspath('.')
+        sickchill.TV_DOWNLOAD_DIR = os.path.abspath('.')
         for i in range(100):
-            result = self.queue.action.add_item(sickbeard.TV_DOWNLOAD_DIR, method='move', mode=('manual', 'auto')[i % 2])
+            result = self.queue.action.add_item(sickchill.TV_DOWNLOAD_DIR, method='move', mode=('manual', 'auto')[i % 2])
             self.assertIsNotNone(result)
             self.assertTrue(self.queue.action.queue_length()['auto'] <= 1)
             self.assertTrue(self.queue.action.queue_length()['manual'] <= 1)

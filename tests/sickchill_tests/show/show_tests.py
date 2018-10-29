@@ -32,11 +32,11 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-import sickbeard
+import sickchill
 import six
 
-from sickbeard.common import Quality
-from sickbeard.tv import TVShow
+from sickchill.common import Quality
+from sickchill.tv import TVShow
 from sickchill.helper.exceptions import MultipleShowObjectsException
 from sickchill.show.Show import Show
 
@@ -50,9 +50,9 @@ class ShowTests(unittest.TestCase):
         """
         Test find tv shows by indexer_id
         """
-        sickbeard.QUALITY_DEFAULT = Quality.FULLHDTV
+        sickchill.QUALITY_DEFAULT = Quality.FULLHDTV
 
-        sickbeard.showList = []
+        sickchill.showList = []
 
         show123 = TestTVShow(0, 123)
         show456 = TestTVShow(0, 456)
@@ -96,14 +96,14 @@ class ShowTests(unittest.TestCase):
         """
         Tests if the indexer_id is valid and if so if it returns the right show
         """
-        sickbeard.QUALITY_DEFAULT = Quality.FULLHDTV
+        sickchill.QUALITY_DEFAULT = Quality.FULLHDTV
 
-        sickbeard.showList = []
+        sickchill.showList = []
 
         show123 = TestTVShow(0, 123)
         show456 = TestTVShow(0, 456)
         show789 = TestTVShow(0, 789)
-        sickbeard.showList = [
+        sickchill.showList = [
             show123,
             show456,
             show789,

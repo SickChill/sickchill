@@ -30,10 +30,10 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard.tv import TVEpisode, TVShow
-import sickbeard
-import sickbeard.search as search
-import sickbeard.common as common
+from sickchill.tv import TVEpisode, TVShow
+import sickchill
+import sickchill.search as search
+import sickchill.common as common
 import tests.test_lib as test
 
 import six
@@ -64,7 +64,7 @@ def _create_fake_xml(items):
 search_items = []
 
 
-class SearchTest(test.SickbeardTestDBCase):
+class SearchTest(test.SickChillTestDBCase):
     """
     Perform search tests
     """
@@ -96,7 +96,7 @@ class SearchTest(test.SickbeardTestDBCase):
         :return:
         """
 
-        for provider in sickbeard.providers.sortedProviderList():
+        for provider in sickchill.providers.sortedProviderList():
             provider.get_url = self._fake_get_url
             provider.is_active = self._fake_is_active
 
@@ -123,7 +123,7 @@ def generator(tvdb_id, show_name, cur_data, force_search):
         show.name = show_name
         show.quality = cur_data["q"]
         show.saveToDB()
-        sickbeard.showList.append(show)
+        sickchill.showList.append(show)
         episode = None
 
         for epNumber in cur_data["e"]:

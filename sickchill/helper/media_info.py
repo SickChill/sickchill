@@ -27,7 +27,7 @@ import six
 from enzyme import MKV
 from pkg_resources import DistributionNotFound, get_distribution
 
-import sickbeard
+import sickchill
 
 try:
     get_distribution('pymediainfo')
@@ -115,7 +115,7 @@ def video_screen_size(filename):
     :returns tuple: (width, height)
     """
 
-    if filename in bad_files or not sickbeard.helpers.is_media_file(filename):
+    if filename in bad_files or not sickchill.helpers.is_media_file(filename):
         return None, None
 
     # Need to implement mediainfo another way, pymediainfo 2.0 causes segfaults

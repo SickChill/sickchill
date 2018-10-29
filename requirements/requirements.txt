@@ -15,7 +15,7 @@ git+https://bitbucket.org/zzzeek/dogpile.cache.git@229615be466d00c9c135a90d89656
 dogpile.core == 0.4.1
 enum34 == 1.0.4
 enzyme == 0.4.1
-fake-useragent == 0.1.2  # [NOTE] there's a `ua.json` file that's used by sickbeard.common, should be moved to a better location.
+fake-useragent == 0.1.2  # [NOTE] there's a `ua.json` file that's used by sickchill.common, should be moved to a better location.
 git+https://github.com/kurtmckee/feedparser.git@f1dd1bb923ebfe6482fc2521c1f150b4032289ec#egg=feedparser
 futures == 3.1.1
 git+https://github.com/guessit-io/guessit.git@a4fb2865d4b697397aa976388bbd0edf558a24fb#egg=guessit

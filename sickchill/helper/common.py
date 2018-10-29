@@ -32,7 +32,7 @@ import six
 from github import Github
 from github.GithubException import BadCredentialsException, TwoFactorException
 
-import sickbeard
+import sickchill
 
 dateFormat = '%Y-%m-%d'
 dateTimeFormat = '%Y-%m-%d %H:%M:%S'
@@ -149,9 +149,9 @@ def is_sync_file(filename):
     if isinstance(filename, six.string_types):
         extension = filename.rpartition('.')[2].lower()
 
-        return extension in sickbeard.SYNC_FILES.split(',') or \
+        return extension in sickchill.SYNC_FILES.split(',') or \
             filename.startswith('.syncthing') or \
-            any(fnmatch(filename, match) for match in sickbeard.SYNC_FILES.split(','))
+            any(fnmatch(filename, match) for match in sickchill.SYNC_FILES.split(','))
 
     return False
 
@@ -365,37 +365,37 @@ def setup_github():
     """
 
     try:
-        if sickbeard.GIT_AUTH_TYPE == 0 and sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD:
+        if sickchill.GIT_AUTH_TYPE == 0 and sickchill.GIT_USERNAME and sickchill.GIT_PASSWORD:
             # Basic Username/Password Auth
-            sickbeard.gh = Github(
-                login_or_token=sickbeard.GIT_USERNAME,
-                password=sickbeard.GIT_PASSWORD, user_agent="SickChill")
+            sickchill.gh = Github(
+                login_or_token=sickchill.GIT_USERNAME,
+                password=sickchill.GIT_PASSWORD, user_agent="SickChill")
             # This will trigger BadCredentialsException if user/pass are wrong
-            sickbeard.gh.get_organization(sickbeard.GIT_ORG)
+            sickchill.gh.get_organization(sickchill.GIT_ORG)
 
-        elif sickbeard.GIT_AUTH_TYPE == 1 and sickbeard.GIT_TOKEN:
+        elif sickchill.GIT_AUTH_TYPE == 1 and sickchill.GIT_TOKEN:
             # Token Auth - allows users with Two-Factor Authorization (2FA) enabled on Github to connect their account.
-            sickbeard.gh = Github(
-                login_or_token=sickbeard.GIT_TOKEN, user_agent="SickChill")
+            sickchill.gh = Github(
+                login_or_token=sickchill.GIT_TOKEN, user_agent="SickChill")
             # This will trigger:
             # * BadCredentialsException if token is invalid
             # * TwoFactorException if user has enabled Github-2FA
             #   but didn't set a personal token in the configuration.
-            sickbeard.gh.get_organization(sickbeard.GIT_ORG)
+            sickchill.gh.get_organization(sickchill.GIT_ORG)
 
             # Update GIT_USERNAME if it's not the same, so we don't run into problems later on.
-            gh_user = sickbeard.gh.get_user().login
-            sickbeard.GIT_USERNAME = gh_user if sickbeard.GIT_USERNAME != gh_user else sickbeard.GIT_USERNAME
+            gh_user = sickchill.gh.get_user().login
+            sickchill.GIT_USERNAME = gh_user if sickchill.GIT_USERNAME != gh_user else sickchill.GIT_USERNAME
 
     except (Exception, BadCredentialsException, TwoFactorException) as error:
-        sickbeard.gh = None
-        sickbeard.logger.log('Unable to setup GitHub properly with your github login. Please'
-                             ' check your credentials. Error: {0}'.format(error), sickbeard.logger.WARNING)
+        sickchill.gh = None
+        sickchill.logger.log('Unable to setup GitHub properly with your github login. Please'
+                             ' check your credentials. Error: {0}'.format(error), sickchill.logger.WARNING)
 
-    if not sickbeard.gh:
+    if not sickchill.gh:
         try:
-            sickbeard.gh = Github(user_agent="SickChill")
+            sickchill.gh = Github(user_agent="SickChill")
         except Exception as error:
-            sickbeard.gh = None
-            sickbeard.logger.log('Unable to setup GitHub properly. GitHub will not be '
-                                 'available. Error: {0}'.format(error), sickbeard.logger.WARNING)
+            sickchill.gh = None
+            sickchill.logger.log('Unable to setup GitHub properly. GitHub will not be '
+                                 'available. Error: {0}'.format(error), sickchill.logger.WARNING)

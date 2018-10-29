@@ -1,9 +1,9 @@
 import requests
 import certifi
 import json
-import sickbeard
+import sickchill
 import time
-from sickbeard import logger
+from sickchill import logger
 
 from exceptions import traktException, traktAuthException, traktServerBusy
 
@@ -13,31 +13,31 @@ class TraktAPI:
         self.session = requests.Session()
         self.verify = certifi.where() if ssl_verify else False
         self.timeout = timeout if timeout else None
-        self.auth_url = sickbeard.TRAKT_OAUTH_URL
-        self.api_url = sickbeard.TRAKT_API_URL
+        self.auth_url = sickchill.TRAKT_OAUTH_URL
+        self.api_url = sickchill.TRAKT_API_URL
         self.headers = {
           'Content-Type': 'application/json',
           'trakt-api-version': '2',
-          'trakt-api-key': sickbeard.TRAKT_API_KEY
+          'trakt-api-key': sickchill.TRAKT_API_KEY
         }
 
     def traktToken(self, trakt_pin=None, refresh=False, count=0):
 
         if count > 3:
-            sickbeard.TRAKT_ACCESS_TOKEN = ''
+            sickchill.TRAKT_ACCESS_TOKEN = ''
             return False
         elif count > 0:
             time.sleep(2)
 
         data = {
-            'client_id': sickbeard.TRAKT_API_KEY,
-            'client_secret': sickbeard.TRAKT_API_SECRET,
+            'client_id': sickchill.TRAKT_API_KEY,
+            'client_secret': sickchill.TRAKT_API_SECRET,
             'redirect_uri': 'urn:ietf:wg:oauth:2.0:oob'
         }
 
         if refresh:
             data['grant_type'] = 'refresh_token'
-            data['refresh_token'] = sickbeard.TRAKT_REFRESH_TOKEN
+            data['refresh_token'] = sickchill.TRAKT_REFRESH_TOKEN
         else:
             data['grant_type'] = 'authorization_code'
             if not None == trakt_pin:
@@ -50,9 +50,9 @@ class TraktAPI:
         resp = self.traktRequest('oauth/token', data=data,  headers=headers, url=self.auth_url , method='POST', count=count)
 
         if 'access_token' in resp:
-            sickbeard.TRAKT_ACCESS_TOKEN  = resp['access_token']
+            sickchill.TRAKT_ACCESS_TOKEN  = resp['access_token']
             if 'refresh_token' in resp:
-                sickbeard.TRAKT_REFRESH_TOKEN = resp['refresh_token']
+                sickchill.TRAKT_REFRESH_TOKEN = resp['refresh_token']
             return True
         return False
 
@@ -73,12 +73,12 @@ class TraktAPI:
         if headers is None:
             headers = self.headers
 
-        if sickbeard.TRAKT_ACCESS_TOKEN == '' and count >= 2:
+        if sickchill.TRAKT_ACCESS_TOKEN == '' and count >= 2:
             logger.log(u'You must get a Trakt TOKEN. Check your Trakt settings', logger.WARNING)
             return {}
 
-        if sickbeard.TRAKT_ACCESS_TOKEN != '':
-            headers['Authorization'] = 'Bearer ' + sickbeard.TRAKT_ACCESS_TOKEN
+        if sickchill.TRAKT_ACCESS_TOKEN != '':
+            headers['Authorization'] = 'Bearer ' + sickchill.TRAKT_ACCESS_TOKEN
 
         try:
             resp = self.session.request(method, url + path, headers=headers, timeout=self.timeout,

@@ -25,7 +25,7 @@ from os import name
 import six
 from chardet import detect
 
-import sickbeard
+import sickchill
 
 
 def ek(function, *args, **kwargs):
@@ -63,13 +63,13 @@ def ss(var):
     var = _to_unicode(var)
 
     try:
-        var = var.encode(sickbeard.SYS_ENCODING)
+        var = var.encode(sickchill.SYS_ENCODING)
     except Exception:
         try:
             var = var.encode('utf-8')
         except Exception:
             try:
-                var = var.encode(sickbeard.SYS_ENCODING, 'replace')
+                var = var.encode(sickchill.SYS_ENCODING, 'replace')
             except Exception:
                 var = var.encode('utf-8', 'ignore')
 
@@ -109,12 +109,12 @@ def _to_unicode(var):
                     var = six.text_type(var, 'latin-1')
                 except Exception:
                     try:
-                        var = six.text_type(var, sickbeard.SYS_ENCODING)
+                        var = six.text_type(var, sickchill.SYS_ENCODING)
                     except Exception:
                         try:
                             # Chardet can be wrong, so try it last
                             var = six.text_type(var, detect(var).get('encoding'))
                         except Exception:
-                            var = six.text_type(var, sickbeard.SYS_ENCODING, 'replace')
+                            var = six.text_type(var, sickchill.SYS_ENCODING, 'replace')
 
     return var

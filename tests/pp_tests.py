@@ -31,11 +31,11 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import sickbeard
-from sickbeard.helpers import make_dirs
-from sickbeard.name_cache import addNameToCache
-from sickbeard.postProcessor import PostProcessor
-from sickbeard.tv import TVEpisode, TVShow
+import sickchill
+from sickchill.helpers import make_dirs
+from sickchill.name_cache import addNameToCache
+from sickchill.postProcessor import PostProcessor
+from sickchill.tv import TVEpisode, TVShow
 
 import tests.test_lib as test
 
@@ -63,7 +63,7 @@ class PPInitTests(unittest.TestCase):
         self.assertEqual(self.post_processor.folder_name, test.SHOW_NAME)
 
 
-class PPBasicTests(test.SickbeardTestDBCase):
+class PPBasicTests(test.SickChillTestDBCase):
     """
     Basic tests
     """
@@ -76,13 +76,13 @@ class PPBasicTests(test.SickbeardTestDBCase):
         show.location = test.SHOW_DIR
         show.saveToDB()
 
-        sickbeard.showList = [show]
+        sickchill.showList = [show]
         episode = TVEpisode(show, test.SEASON, test.EPISODE)
         episode.name = "some episode name"
         episode.saveToDB()
 
         addNameToCache('show name', 3)
-        sickbeard.PROCESS_METHOD = 'move'
+        sickchill.PROCESS_METHOD = 'move'
 
         post_processor = PostProcessor(test.FILE_PATH)
         self.assertTrue(post_processor.process())
@@ -106,8 +106,8 @@ class ListAssociatedFiles(unittest.TestCase):
         self.file_list = [os.path.join('Show Name', f) for f in file_names] + [os.path.join(self.test_tree, f) for f in file_names]
         self.post_processor = PostProcessor('Show Name')
         self.maxDiff = None
-        sickbeard.MOVE_ASSOCIATED_FILES = True
-        sickbeard.ALLOWED_EXTENSIONS = u''
+        sickchill.MOVE_ASSOCIATED_FILES = True
+        sickchill.ALLOWED_EXTENSIONS = u''
 
     def setUp(self):
         make_dirs(self.test_tree)

@@ -26,8 +26,8 @@ from __future__ import print_function, unicode_literals
 import os
 import posixpath
 
-import sickbeard
-from sickbeard import helpers
+import sickchill
+from sickchill import helpers
 from sickchill.helper.encoding import ek
 
 
@@ -61,7 +61,7 @@ class RecommendedShow(object):
         self.image_src = image_src
 
         # Check if the show is currently already in the db
-        self.show_in_list = self.indexer_id in {show.indexerid for show in sickbeard.showList if show.indexerid}
+        self.show_in_list = self.indexer_id in {show.indexerid for show in sickchill.showList if show.indexerid}
         self.session = helpers.make_session()
 
     def cache_image(self, image_url):
@@ -75,7 +75,7 @@ class RecommendedShow(object):
 
         self.image_src = ek(posixpath.join, 'images', self.cache_subfolder, ek(os.path.basename, image_url))
 
-        path = ek(os.path.abspath, ek(os.path.join, sickbeard.CACHE_DIR, 'images', self.cache_subfolder))
+        path = ek(os.path.abspath, ek(os.path.join, sickchill.CACHE_DIR, 'images', self.cache_subfolder))
 
         if not ek(os.path.exists, path):
             ek(os.makedirs, path)

@@ -19,7 +19,7 @@
 
 from __future__ import unicode_literals
 
-from sickbeard.image_cache import ImageCache
+from sickchill.image_cache import ImageCache
 from sickchill.media.GenericMedia import GenericMedia
 
 

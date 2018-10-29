@@ -32,10 +32,10 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard import ex
+from sickchill import ex
 import certifi  # pylint: disable=import-error
 import requests  # pylint: disable=import-error
-import sickbeard.providers as providers
+import sickchill.providers as providers
 
 
 def generator(_provider):

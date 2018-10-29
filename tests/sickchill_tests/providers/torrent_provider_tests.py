@@ -30,7 +30,7 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-import sickbeard
+import sickchill
 import six
 
 from generic_provider_tests import GenericProviderTests
@@ -66,7 +66,7 @@ class TorrentProviderTests(GenericProviderTests):
         }
 
         for ((use_torrents, enabled), result) in six.iteritems(test_cases):
-            sickbeard.USE_TORRENTS = use_torrents
+            sickchill.USE_TORRENTS = use_torrents
 
             provider = TorrentProvider('Test Provider')
             provider.enabled = enabled
@@ -133,7 +133,7 @@ class TorrentProviderTests(GenericProviderTests):
         ]
 
         for torrent_dir in test_cases:
-            sickbeard.TORRENT_DIR = torrent_dir
+            sickchill.TORRENT_DIR = torrent_dir
 
             self.assertEqual(TorrentProvider('Test Provider')._get_storage_dir(), torrent_dir)
 

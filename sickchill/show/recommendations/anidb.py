@@ -5,7 +5,7 @@ from anidbhttp import anidbquery
 from anidbhttp.query import QUERY_HOT
 from recommended import RecommendedShow
 
-from sickbeard import helpers
+from sickchill import helpers
 from sickchill.helper.common import try_int
 
 

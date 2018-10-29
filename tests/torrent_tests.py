@@ -31,15 +31,15 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../l
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from bs4 import BeautifulSoup
-from sickbeard.helpers import getURL, make_session
-from sickbeard.providers.bitcannon import BitCannonProvider
-from sickbeard.tv import TVEpisode, TVShow
+from sickchill.helpers import getURL, make_session
+from sickchill.providers import BitCannonProvider
+from sickchill.tv import TVEpisode, TVShow
 import tests.test_lib as test
 
 from six.moves import urllib
 
 
-class TorrentBasicTests(test.SickbeardTestDBCase):
+class TorrentBasicTests(test.SickChillTestDBCase):
     """
     Test torrents
     """

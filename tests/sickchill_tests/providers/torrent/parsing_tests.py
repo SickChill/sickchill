@@ -25,22 +25,22 @@ When recording new cassettes:
 """
 
 from __future__ import print_function, unicode_literals
-from functools import wraps
 
 import os
 import re
 import sys
+import unittest
+from functools import wraps
 
 import mock
-import unittest
 from vcr_unittest import VCRTestCase
 
-# Have to do this before importing sickbeard
+# Have to do this before importing sickchill
 sys.path.insert(1, 'lib')
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../lib')))
 
-import sickbeard
-sickbeard.CPU_PRESET = 'NORMAL'
+import sickchill
+sickchill.CPU_PRESET = 'NORMAL'
 
 import validators
 
@@ -127,7 +127,7 @@ class BaseParser(type):
         @magic_skip
         def test_rss_search(self):
             """Check that the provider parses rss search results"""
-            with mock.patch('sickbeard.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
+            with mock.patch('sickchill.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
                 results = self.provider.search(self.search_strings('RSS'))
 
             if self.provider.enable_daily:
@@ -138,7 +138,7 @@ class BaseParser(type):
         @magic_skip
         def test_episode_search(self):
             """Check that the provider parses episode search results"""
-            with mock.patch('sickbeard.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
+            with mock.patch('sickchill.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
                 results = self.provider.search(self.search_strings('Episode'))
 
             self.assertTrue(self.cassette.requests)
@@ -149,7 +149,7 @@ class BaseParser(type):
         @magic_skip
         def test_season_search(self):
             """Check that the provider parses season search results"""
-            with mock.patch('sickbeard.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
+            with mock.patch('sickchill.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
                 results = self.provider.search(self.search_strings('Season'))
 
             self.assertTrue(self.cassette.requests)
@@ -159,13 +159,13 @@ class BaseParser(type):
         @magic_skip
         def test_cache_update(self):
             """Check that the provider's cache parses rss search results"""
-            with mock.patch('sickbeard.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
+            with mock.patch('sickchill.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
                 self.provider.cache.update_cache()
 
         @magic_skip
         def test_result_values(self):
             """Check that the provider returns results in proper format"""
-            with mock.patch('sickbeard.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
+            with mock.patch('sickchill.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
                 results = self.provider.search(self.search_strings('Episode'))
             for result in results:
                 self.assertIsInstance(result, dict)
@@ -210,8 +210,8 @@ def generate_test_cases():
     """
     Auto Generate TestCases from providers and add them to globals()
     """
-    for p in sickbeard.providers.__all__:
-        provider = sickbeard.providers.getProviderModule(p).provider
+    for p in sickchill.providers.__all__:
+        provider = sickchill.providers.getProviderModule(p).provider
         if provider.can_backlog and provider.provider_type == 'torrent' and provider.public:
             generated_class = type(str(provider.name), (BaseParser.TestCase,), {'provider': provider})
             globals()[generated_class.__name__] = generated_class
@@ -228,7 +228,7 @@ if __name__ == '__main__':
         _ = args, kwargs
         print(msg)
 
-    sickbeard.logger.log = override_log
+    sickchill.logger.log = override_log
 
     suite = unittest.TestSuite()
     members = inspect.getmembers(sys.modules[__name__], inspect.isclass)

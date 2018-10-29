@@ -19,8 +19,8 @@
 
 from __future__ import unicode_literals
 
-import sickbeard
-from sickbeard.event_queue import Events
+import sickchill
+from sickchill.event_queue import Events
 
 
 class Shutdown(object):
@@ -29,9 +29,9 @@ class Shutdown(object):
 
     @staticmethod
     def stop(pid):
-        if str(pid) != str(sickbeard.PID):
+        if str(pid) != str(sickchill.PID):
             return False
 
-        sickbeard.events.put(Events.SystemEvent.SHUTDOWN)
+        sickchill.events.put(Events.SystemEvent.SHUTDOWN)
 
         return True

@@ -5,17 +5,17 @@ from __future__ import print_function, unicode_literals
 
 import unittest
 
-import sickbeard
-from sickbeard.show_name_helpers import filter_bad_releases
-from sickbeard.tv import TVShow as Show
+import sickchill
+from sickchill.show_name_helpers import filter_bad_releases
+from sickchill.tv import TVShow as Show
 
 
 class ReleaseWordFilterTests(unittest.TestCase):
     def setUp(self):
-        sickbeard.QUALITY_DEFAULT = 2
+        sickchill.QUALITY_DEFAULT = 2
         self.show = Show(1, 1)
-        sickbeard.REQUIRE_WORDS = 'REQUIRED'
-        sickbeard.IGNORE_WORDS = 'IGNORED'
+        sickchill.REQUIRE_WORDS = 'REQUIRED'
+        sickchill.IGNORE_WORDS = 'IGNORED'
 
         # These are opposite of global, to prove they override
         self.show.rls_ignore_words = 'REQUIRED'

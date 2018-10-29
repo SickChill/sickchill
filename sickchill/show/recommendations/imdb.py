@@ -9,8 +9,8 @@ from datetime import date
 
 from bs4 import BeautifulSoup
 
-import sickbeard
-from sickbeard import helpers
+import sickchill
+from sickchill import helpers
 from sickchill.helper.encoding import ek
 
 
@@ -114,7 +114,7 @@ class imdbPopular(object):
         Store cache of image in cache dir
         :param image_url: Source URL
         """
-        path = ek(os.path.abspath, ek(os.path.join, sickbeard.CACHE_DIR, 'images', 'imdb_popular'))
+        path = ek(os.path.abspath, ek(os.path.join, sickchill.CACHE_DIR, 'images', 'imdb_popular'))
 
         if not ek(os.path.exists, path):
             ek(os.makedirs, path)

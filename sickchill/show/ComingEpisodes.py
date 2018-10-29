@@ -22,11 +22,11 @@ from __future__ import unicode_literals
 from datetime import date, timedelta
 from operator import itemgetter
 
-import sickbeard
-from sickbeard.common import Quality, UNAIRED, WANTED
-from sickbeard.db import DBConnection
-from sickbeard.network_timezones import parse_date_time
-from sickbeard.sbdatetime import sbdatetime
+import sickchill
+from sickchill.common import Quality, UNAIRED, WANTED
+from sickchill.db import DBConnection
+from sickchill.network_timezones import parse_date_time
+from sickchill.sbdatetime import sbdatetime
 from sickchill.helper.common import dateFormat, timeFormat
 from sickchill.helper.quality import get_quality_string
 
@@ -35,7 +35,7 @@ SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  #
 class ComingEpisodes(object):
     """
     Snatched: snatched but not yet processed (no re-downloads)
-    Missed:   yesterday...(less than sickbeard.COMING_EPS_MISSED_RANGE)
+    Missed:   yesterday...(less than sickchill.COMING_EPS_MISSED_RANGE)
     Today:    today
     Soon:     tomorrow till next week
     Later:    later than next week
@@ -51,7 +51,7 @@ class ComingEpisodes(object):
         pass
 
     @staticmethod
-    def get_coming_episodes(categories, sort, group, paused=sickbeard.COMING_EPS_DISPLAY_PAUSED):
+    def get_coming_episodes(categories, sort, group, paused=sickchill.COMING_EPS_DISPLAY_PAUSED):
         """
         :param categories: The categories of coming episodes. See ``ComingEpisodes.categories``
         :param sort: The sort to apply to the coming episodes. See ``ComingEpisodes.sorts``
@@ -64,7 +64,7 @@ class ComingEpisodes(object):
         sort = ComingEpisodes._get_sort(sort)
 
         today = date.today().toordinal()
-        recently = (date.today() - timedelta(days=sickbeard.COMING_EPS_MISSED_RANGE)).toordinal()
+        recently = (date.today() - timedelta(days=sickchill.COMING_EPS_MISSED_RANGE)).toordinal()
         next_week = (date.today() + timedelta(days=7)).toordinal()
 
         db = DBConnection(row_type='dict')
@@ -77,7 +77,7 @@ class ComingEpisodes(object):
         status_list = [WANTED, UNAIRED] + SNATCHED
 
         sql_l = []
-        for show_obj in sickbeard.showList:
+        for show_obj in sickchill.showList:
             next_air_date = show_obj.nextEpisode()
             sql_l.append(
                 [

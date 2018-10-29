@@ -15,8 +15,8 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import sickbeard
-from sickbeard import ek, ex
+import sickchill
+from sickchill import ek, ex
 from sickchill.helper.common import sanitize_filename
 
 
@@ -34,17 +34,17 @@ class EncodingTests(unittest.TestCase):
         root_dir = 'C:\\Temp\\TV'
         strings = ['Les Enfants De La T\xe9l\xe9', 'RT� One']
 
-        sickbeard.SYS_ENCODING = None
+        sickchill.SYS_ENCODING = None
 
         try:
             locale.setlocale(locale.LC_ALL, "")
-            sickbeard.SYS_ENCODING = locale.getpreferredencoding()
+            sickchill.SYS_ENCODING = locale.getpreferredencoding()
         except (locale.Error, IOError):
             pass
 
         # For OSes that are poorly configured I'll just randomly force UTF-8
-        if not sickbeard.SYS_ENCODING or sickbeard.SYS_ENCODING in ('ANSI_X3.4-1968', 'US-ASCII', 'ASCII'):
-            sickbeard.SYS_ENCODING = 'UTF-8'
+        if not sickchill.SYS_ENCODING or sickchill.SYS_ENCODING in ('ANSI_X3.4-1968', 'US-ASCII', 'ASCII'):
+            sickchill.SYS_ENCODING = 'UTF-8'
 
         for test in strings:
             try:

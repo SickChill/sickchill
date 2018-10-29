@@ -9,11 +9,11 @@ import sys
 import unittest
 
 import tests.test_lib as test
-from sickbeard import common, db, name_cache, scene_exceptions, show_name_helpers
-from sickbeard.tv import TVShow as Show
+from sickchill import common, db, name_cache, scene_exceptions, show_name_helpers
+from sickchill.tv import TVShow as Show
 
 
-class SceneTests(test.SickbeardTestDBCase):
+class SceneTests(test.SickChillTestDBCase):
     """
     Test Scene
     """
@@ -71,7 +71,7 @@ class SceneTests(test.SickbeardTestDBCase):
         self._test_filter_bad_releases('Show.S02.This.Is.German', False)
 
 
-class SceneExceptionTestCase(test.SickbeardTestDBCase):
+class SceneExceptionTestCase(test.SickChillTestDBCase):
     """
     Test scene exceptions test case
     """

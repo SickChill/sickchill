@@ -17,7 +17,7 @@ from subliminal.subtitle import fix_line_ending, guess_matches, Subtitle
 from subliminal.utils import sanitize
 from subliminal.video import Episode, Movie
 
-import sickbeard
+import sickchill
 
 logger = logging.getLogger(__name__)
 
@@ -106,7 +106,7 @@ class WizdomProvider(Provider):
         title = title.replace('\'', '')
         # get TMDB ID first
         r = self.session.get('http://api.tmdb.org/3/search/{}?api_key={}&query={}{}&language=en'.format(
-            category, sickbeard.TMDB_API_KEY, title, '' if not year else '&year={}'.format(year)))
+            category, sickchill.TMDB_API_KEY, title, '' if not year else '&year={}'.format(year)))
         r.raise_for_status()
         tmdb_results = r.json().get('results')
         if tmdb_results:
@@ -114,7 +114,7 @@ class WizdomProvider(Provider):
             if tmdb_id:
                 # get actual IMDB ID from TMDB
                 r = self.session.get('http://api.tmdb.org/3/{}/{}{}?api_key={}&language=en'.format(
-                    category, tmdb_id, '' if is_movie else '/external_ids', sickbeard.TMDB_API_KEY))
+                    category, tmdb_id, '' if is_movie else '/external_ids', sickchill.TMDB_API_KEY))
                 r.raise_for_status()
                 return str(r.json().get('imdb_id', '')) or None
         return None

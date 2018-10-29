@@ -39,7 +39,7 @@ if babel:
 
 setup(
     name="sickchill",
-    version="0.0.1",
+    version="0.0.2",
 
     description="Automatic Video Library Manager for TV Shows",
     long_description=long_description,
@@ -89,6 +89,5 @@ setup(
             ('**/js/*.js', 'javascript', {'input_encoding': 'utf-8'})
         ],
         'sickchill': [('**.py', 'python', None)],
-        'sickbeard': [('**.py', 'python', None)],
     },
 )

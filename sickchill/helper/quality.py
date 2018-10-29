@@ -19,7 +19,7 @@
 
 from __future__ import unicode_literals
 
-from sickbeard.common import Quality, qualityPresetStrings
+from sickchill.common import Quality, qualityPresetStrings
 
 
 def get_quality_string(quality):

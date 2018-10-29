@@ -30,7 +30,7 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-from sickbeard.common import ANY, HD, HD1080p, HD720p, Quality, SD
+from sickchill.common import ANY, HD, HD1080p, HD720p, Quality, SD
 from sickchill.helper.quality import get_quality_string
 
 

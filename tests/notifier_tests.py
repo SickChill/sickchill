@@ -37,16 +37,16 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard import db
-from sickbeard.tv import TVEpisode, TVShow
-from sickbeard.webserve import Home
-from sickbeard.notifiers.emailnotify import Notifier as EmailNotifier
-from sickbeard.notifiers.prowl import Notifier as ProwlNotifier
+from sickchill import db
+from sickchill.tv import TVEpisode, TVShow
+from sickchill.webserve import Home
+from sickchill.notifiers.emailnotify import Notifier as EmailNotifier
+from sickchill.notifiers.prowl import Notifier as ProwlNotifier
 from sickchill.helper.encoding import ss
 import tests.test_lib as test
 
 
-class NotifierTests(test.SickbeardTestDBCase):  # pylint: disable=too-many-public-methods
+class NotifierTests(test.SickChillTestDBCase):  # pylint: disable=too-many-public-methods
     """
     Test notifiers
     """

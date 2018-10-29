@@ -28,12 +28,12 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard.tv import TVEpisode, TVShow
-import sickbeard
+from sickchill.tv import TVEpisode, TVShow
+import sickchill
 import tests.test_lib as test
 
 
-class TVShowTests(test.SickbeardTestDBCase):
+class TVShowTests(test.SickChillTestDBCase):
     """
     Test tv shows
     """
@@ -42,7 +42,7 @@ class TVShowTests(test.SickbeardTestDBCase):
         Set up tests
         """
         super(TVShowTests, self).setUp()
-        sickbeard.showList = []
+        sickchill.showList = []
 
     def test_init_indexerid(self):
         """
@@ -85,7 +85,7 @@ class TVShowTests(test.SickbeardTestDBCase):
         self.assertEqual(show.name, "newName")
 
 
-class TVEpisodeTests(test.SickbeardTestDBCase):
+class TVEpisodeTests(test.SickChillTestDBCase):
     """
     Test tv episode
     """
@@ -94,7 +94,7 @@ class TVEpisodeTests(test.SickbeardTestDBCase):
         Set up
         """
         super(TVEpisodeTests, self).setUp()
-        sickbeard.showList = []
+        sickchill.showList = []
 
     def test_init_empty_db(self):
         """
@@ -108,7 +108,7 @@ class TVEpisodeTests(test.SickbeardTestDBCase):
         self.assertEqual(episode.name, "asdasdasdajkaj")
 
 
-class TVTests(test.SickbeardTestDBCase):
+class TVTests(test.SickChillTestDBCase):
     """
     Test tv
     """
@@ -117,7 +117,7 @@ class TVTests(test.SickbeardTestDBCase):
         Set up
         """
         super(TVTests, self).setUp()
-        sickbeard.showList = []
+        sickchill.showList = []
 
     @staticmethod
     def test_get_episode():
@@ -134,7 +134,7 @@ class TVTests(test.SickbeardTestDBCase):
         show.airs = "monday"
         show.startyear = 1987
         show.saveToDB()
-        sickbeard.showList = [show]
+        sickchill.showList = [show]
         # TODO: implement
 
 

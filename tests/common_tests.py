@@ -1,7 +1,7 @@
 # coding=utf-8
 
 """
-Unit Tests for sickbeard/common.py
+Unit Tests for sickchill/common.py
 
 Classes:
     Quality
@@ -33,7 +33,7 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard import common
+from sickchill import common
 
 
 import six
@@ -153,7 +153,7 @@ class QualityStringTests(unittest.TestCase):
             "Test.Show.S01E02.1080p.HDDVD.x264-GROUP"
         ],
         'unknown': [
-            "Test.Show.S01E02-SiCKBEARD",
+            "Test.Show.S01E02-SiCKCHiLL",
             "Test.Show.S01E01-20.1080i.[Mux.-.1080i.-.H264.-.Ac3.].HDTVMux.GROUP",
         ],
     }
@@ -355,7 +355,7 @@ class QualityTests(unittest.TestCase):
             (common.Quality.FULLHDWEBDL, "Test Show - S01E02 - 1080p WEB-DL - GROUP"),
             (common.Quality.HDBLURAY, "Test Show - S01E02 - 720p BluRay - GROUP"),
             (common.Quality.FULLHDBLURAY, "Test Show - S01E02 - 1080p BluRay - GROUP"),
-            (common.Quality.UNKNOWN, "Test Show - S01E02 - Unknown - SiCKBEARD"),
+            (common.Quality.UNKNOWN, "Test Show - S01E02 - Unknown - SiCKCHiLL"),
         ]
         for test in tests:
             quality, test = test

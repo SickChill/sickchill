@@ -46,7 +46,7 @@ To run SickChill you will need Python 2.7.10+
 
 #### Important notes on switching from other forks
 
-Before using this with your existing database (`sickbeard.db`) please make a backup copy of it and delete any other database files such as cache.db and failed.db if present.
+Before using this with your existing database (`sickchill.db`) please make a backup copy of it and delete any other database files such as cache.db and failed.db if present.
 
 We HIGHLY recommend starting out with no database files at all to make this a fresh start but the choice is at your own risk.
 
@@ -55,12 +55,12 @@ We HIGHLY recommend starting out with no database files at all to make this a fr
 A full list can be found here: [Link](https://github.com/SickChill/SickChill/wiki/SickChill-Search-Providers)
 
 #### Special Thanks to:
-![image](https://rarbg.com/favicon.ico)[RARBG](https://rarbg.to)  
-![image](https://torrentproject2.se/favicon.ico)[TorrentProject](https://torrentproject.se/about)  
-![image](https://thepiratebay.org/favicon.ico)[ThePirateBay](https://thepiratebay.se/)  
-![image](https://nzb.cat/favicon.ico)[NZB.cat](https://nzb.cat/)  
-![image](https://nzbgeek.info/favicon.ico)[NZBGeek](https://nzbgeek.info)  
-![image](https://raw.githubusercontent.com/SickChill/SickChill/master/gui/slick/images/providers/dognzb.png)[DOGnzb](dognzb.cr)  
+![image](https://rarbg.com/favicon.ico)[RARBG](https://rarbg.to)
+![image](https://torrentproject2.se/favicon.ico)[TorrentProject](https://torrentproject.se/about)
+![image](https://thepiratebay.org/favicon.ico)[ThePirateBay](https://thepiratebay.se/)
+![image](https://nzb.cat/favicon.ico)[NZB.cat](https://nzb.cat/)
+![image](https://nzbgeek.info/favicon.ico)[NZBGeek](https://nzbgeek.info)
+![image](https://raw.githubusercontent.com/SickChill/SickChill/master/gui/slick/images/providers/dognzb.png)[DOGnzb](dognzb.cr)
 
 #### News and Changelog
 [news.md and CHANGES.md have moved to a separate repo, click here](https://github.com/SickChill/SickChill.github.io)

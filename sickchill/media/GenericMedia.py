@@ -23,7 +23,7 @@ from abc import abstractmethod
 from mimetypes import guess_type
 from os.path import isfile, join, normpath
 
-import sickbeard
+import sickchill
 from sickchill.helper.common import try_int
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import MultipleShowObjectsException
@@ -79,7 +79,7 @@ class GenericMedia(object):
         :return: The root folder containing the media
         """
 
-        return ek(join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME or 'slick')
+        return ek(join, sickchill.PROG_DIR, 'gui', sickchill.GUI_NAME or 'slick')
 
     def get_media_type(self):
         """
@@ -99,7 +99,7 @@ class GenericMedia(object):
         """
 
         try:
-            return Show.find(sickbeard.showList, self.indexer_id)
+            return Show.find(sickchill.showList, self.indexer_id)
         except MultipleShowObjectsException:
             return None
 

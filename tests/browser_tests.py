@@ -1,6 +1,6 @@
 # coding=utf-8
 """
-Test sickbeard.browser's methods
+Test sickchill.browser's methods
 
 Methods
     getWinDrives
@@ -16,12 +16,12 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard import browser
+from sickchill import browser
 
 
 class BrowserTestAll(unittest.TestCase):
     """
-    Test methods in sickbeard.browser
+    Test methods in sickchill.browser
     """
     def setUp(self):
         self.here = os.path.normpath(os.path.dirname(__file__))

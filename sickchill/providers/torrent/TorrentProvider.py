@@ -24,11 +24,11 @@ from datetime import datetime
 from feedparser.util import FeedParserDict
 from hachoir_parser import createParser
 
-import sickbeard
-from sickbeard import logger
-from sickbeard.classes import Proper, TorrentSearchResult
-from sickbeard.common import Quality
-from sickbeard.db import DBConnection
+import sickchill
+from sickchill import logger
+from sickchill.classes import Proper, TorrentSearchResult
+from sickchill.common import Quality
+from sickchill.db import DBConnection
 from sickchill.helper.common import try_int
 from sickchill.helper.exceptions import ex
 from sickchill.providers.GenericProvider import GenericProvider
@@ -54,7 +54,7 @@ class TorrentProvider(GenericProvider):
         )
 
         for result in sql_results or []:
-            show = Show.find(sickbeard.showList, int(result[b'showid']))
+            show = Show.find(sickchill.showList, int(result[b'showid']))
 
             if show:
                 episode = show.getEpisode(result[b'season'], result[b'episode'])
@@ -72,14 +72,14 @@ class TorrentProvider(GenericProvider):
 
     @property
     def is_active(self):
-        return bool(sickbeard.USE_TORRENTS) and self.is_enabled
+        return bool(sickchill.USE_TORRENTS) and self.is_enabled
 
     @property
     def _custom_trackers(self):
-        if not (sickbeard.TRACKERS_LIST and self.public):
+        if not (sickchill.TRACKERS_LIST and self.public):
             return ''
 
-        return '&tr=' + '&tr='.join({x.strip() for x in sickbeard.TRACKERS_LIST.split(',') if x.strip()})
+        return '&tr=' + '&tr='.join({x.strip() for x in sickchill.TRACKERS_LIST.split(',') if x.strip()})
 
     def _get_result(self, episodes):
         return TorrentSearchResult(episodes)
@@ -99,7 +99,7 @@ class TorrentProvider(GenericProvider):
         return try_int(size, -1)
 
     def _get_storage_dir(self):
-        return sickbeard.TORRENT_DIR
+        return sickchill.TORRENT_DIR
 
     def _get_title_and_url(self, item):
         if isinstance(item, (dict, FeedParserDict)):

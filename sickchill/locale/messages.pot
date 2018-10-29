@@ -1,0 +1,1728 @@
+# Translations template for sickchill.
+# Copyright (C) 2018 SickChill
+# This file is distributed under the same license as the sickchill project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: sickchill 0.0.2\n"
+"Report-Msgid-Bugs-To: miigotu@gmail.com\n"
+"POT-Creation-Date: 2018-10-29 10:52-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+
+#: sickchill/__init__.py:64
+msgid "Drama"
+msgstr ""
+
+#: sickchill/__init__.py:64
+msgid "Mystery"
+msgstr ""
+
+#: sickchill/__init__.py:64 sickchill/__init__.py:69
+msgid "Science-Fiction"
+msgstr ""
+
+#: sickchill/__init__.py:64
+msgid "Crime"
+msgstr ""
+
+#: sickchill/__init__.py:64
+msgid "Action"
+msgstr ""
+
+#: sickchill/__init__.py:65
+msgid "Comedy"
+msgstr ""
+
+#: sickchill/__init__.py:65
+msgid "Thriller"
+msgstr ""
+
+#: sickchill/__init__.py:65
+msgid "Animation"
+msgstr ""
+
+#: sickchill/__init__.py:65
+msgid "Family"
+msgstr ""
+
+#: sickchill/__init__.py:65
+msgid "Fantasy"
+msgstr ""
+
+#: sickchill/__init__.py:66
+msgid "Adventure"
+msgstr ""
+
+#: sickchill/__init__.py:66
+msgid "Horror"
+msgstr ""
+
+#: sickchill/__init__.py:66
+msgid "Film-Noir"
+msgstr ""
+
+#: sickchill/__init__.py:66
+msgid "Sci-Fi"
+msgstr ""
+
+#: sickchill/__init__.py:66
+msgid "Romance"
+msgstr ""
+
+#: sickchill/__init__.py:67
+msgid "Sport"
+msgstr ""
+
+#: sickchill/__init__.py:67
+msgid "War"
+msgstr ""
+
+#: sickchill/__init__.py:67
+msgid "Biography"
+msgstr ""
+
+#: sickchill/__init__.py:67 sickchill/webserve.py:3820
+msgid "History"
+msgstr ""
+
+#: sickchill/__init__.py:67
+msgid "Music"
+msgstr ""
+
+#: sickchill/__init__.py:67
+msgid "Western"
+msgstr ""
+
+#: sickchill/__init__.py:68 sickchill/webserve.py:2443
+msgid "News"
+msgstr ""
+
+#: sickchill/__init__.py:68
+msgid "Sitcom"
+msgstr ""
+
+#: sickchill/__init__.py:68
+msgid "Reality-TV"
+msgstr ""
+
+#: sickchill/__init__.py:68
+msgid "Documentary"
+msgstr ""
+
+#: sickchill/__init__.py:68
+msgid "Game-Show"
+msgstr ""
+
+#: sickchill/__init__.py:68
+msgid "Musical"
+msgstr ""
+
+#: sickchill/__init__.py:69
+msgid "Talk-Show"
+msgstr ""
+
+#: sickchill/common.py:79
+msgid "Started Download"
+msgstr ""
+
+#: sickchill/common.py:80
+msgid "Finished Download"
+msgstr ""
+
+#: sickchill/common.py:81
+msgid "Subtitle Download Finished"
+msgstr ""
+
+#: sickchill/common.py:82
+msgid "SickChill Updated"
+msgstr ""
+
+#: sickchill/common.py:83
+msgid "SickChill Updated To Commit#: "
+msgstr ""
+
+#: sickchill/common.py:84
+msgid "SickChill new login"
+msgstr ""
+
+#: sickchill/common.py:85
+msgid "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
+msgstr ""
+
+#: sickchill/common.py:110
+msgid "Repeat"
+msgstr ""
+
+#: sickchill/common.py:111
+msgid "Repeat (Separated)"
+msgstr ""
+
+#: sickchill/common.py:113
+msgid "Extend"
+msgstr ""
+
+#: sickchill/common.py:114
+msgid "Extend (Limited)"
+msgstr ""
+
+#: sickchill/common.py:115
+msgid "Extend (Limited, E-prefixed)"
+msgstr ""
+
+#: sickchill/common.py:219 sickchill/common.py:606
+msgid "Downloaded"
+msgstr ""
+
+#: sickchill/common.py:220 sickchill/common.py:605
+msgid "Snatched"
+msgstr ""
+
+#: sickchill/common.py:221 sickchill/common.py:608
+msgid "Snatched (Proper)"
+msgstr ""
+
+#: sickchill/common.py:222 sickchill/common.py:613
+msgid "Failed"
+msgstr ""
+
+#: sickchill/common.py:223 sickchill/common.py:614
+msgid "Snatched (Best)"
+msgstr ""
+
+#: sickchill/common.py:224 sickchill/common.py:610
+msgid "Archived"
+msgstr ""
+
+#: sickchill/common.py:603
+msgid "Unknown"
+msgstr ""
+
+#: sickchill/common.py:604
+msgid "Unaired"
+msgstr ""
+
+#: sickchill/common.py:607
+msgid "Skipped"
+msgstr ""
+
+#: sickchill/common.py:609
+msgid "Wanted"
+msgstr ""
+
+#: sickchill/common.py:611
+msgid "Ignored"
+msgstr ""
+
+#: sickchill/common.py:612
+msgid "Subtitled"
+msgstr ""
+
+#: sickchill/db.py:86
+msgid "Please check your database owner/permissions: {db_filename}"
+msgstr ""
+
+#: sickchill/db.py:96
+msgid ""
+"{exception_severity} error executing query with {method} in database "
+"{db_location}: "
+msgstr ""
+
+#: sickchill/db.py:103
+msgid ""
+"If this happened in cache.db, you can safely stop SickChill, and delete the "
+"cache.db file without losing any data"
+msgstr ""
+
+#: sickchill/db.py:106
+msgid ""
+"Here is the arguments that were passed to this function (This is what the "
+"developers need to know): {local_variables:s}"
+msgstr ""
+
+#: sickchill/db.py:114
+msgid "unable to open database file"
+msgstr ""
+
+#: sickchill/db.py:114
+msgid "database is locked"
+msgstr ""
+
+#: sickchill/db.py:208
+msgid "You passed a non-iterable to mass_action: {0!r}"
+msgstr ""
+
+#: sickchill/db.py:224
+msgid "{filename}: {query}"
+msgstr ""
+
+#: sickchill/db.py:228
+msgid "{filename}: {query} with args {args:s}"
+msgstr ""
+
+#: sickchill/db.py:232
+msgid "Transaction with {count:d} of queries executed successfully"
+msgstr ""
+
+#: sickchill/db.py:269
+msgid "Cannot fetch all and only one at the same time!"
+msgstr ""
+
+#: sickchill/db.py:353
+msgid "Control dict to upsert cannot have values of None!"
+msgstr ""
+
+#: sickchill/helpers.py:90
+msgid "Patching socket to IPv4 only"
+msgstr ""
+
+#: sickchill/helpers.py:240
+msgid "Invalid filename. Filename must be a string. {0}"
+msgstr ""
+
+#: sickchill/helpers.py:316
+msgid "Trying to find {} on {}"
+msgstr ""
+
+#: sickchill/helpers.py:447
+msgid "Failed to create hardlink of {0} at {1}. Error: {2}. Copying instead"
+msgstr ""
+
+#: sickchill/helpers.py:484
+msgid "Failed to create symlink of {0} at {1}. Error: {2}. Copying instead"
+msgstr ""
+
+#: sickchill/helpers.py:495
+msgid "Checking if the path {0} already exists"
+msgstr ""
+
+#: sickchill/helpers.py:501 sickchill/helpers.py:521
+msgid "Folder {0} didn't exist, creating it"
+msgstr ""
+
+#: sickchill/helpers.py:504 sickchill/helpers.py:528
+msgid "Failed creating {0} : {1}"
+msgstr ""
+
+#: sickchill/helpers.py:569
+msgid "Renaming file from {0} to {1}"
+msgstr ""
+
+#: sickchill/helpers.py:572
+msgid "Failed renaming {0} to {1} : {2}"
+msgstr ""
+
+#: sickchill/helpers.py:592
+msgid "Trying to clean any empty folders under "
+msgstr ""
+
+#: sickchill/helpers.py:602
+msgid "Deleting empty folder: "
+msgstr ""
+
+#: sickchill/helpers.py:608
+msgid "Unable to delete {0}. Error: {1}"
+msgstr ""
+
+#: sickchill/helpers.py:644
+msgid "No parent path provided in {location} unable to get permissions from it"
+msgstr ""
+
+#: sickchill/helpers.py:667
+msgid "Not running as root or owner of {location}, not trying to set permissions"
+msgstr ""
+
+#: sickchill/helpers.py:673
+msgid "Failed to set permission for {0} to {1:o}, parent directory has {2:o}"
+msgstr ""
+
+#: sickchill/helpers.py:705
+msgid "Not running as root or owner of {}, not trying to set the set-group-ID"
+msgstr ""
+
+#: sickchill/helpers.py:710
+msgid "Respecting the set-group-ID bit on the parent directory for {0}"
+msgstr ""
+
+#: sickchill/helpers.py:755
+msgid "Found absolute number {absolute} for show {show} {ep}"
+msgstr ""
+
+#: sickchill/helpers.py:759
+msgid "No entries for absolute number for show {show} {ep}"
+msgstr ""
+
+#: sickchill/helpers.py:841
+msgid "pyopenssl module missing, please install for https access"
+msgstr ""
+
+#: sickchill/helpers.py:865
+msgid "Error creating SSL key and certificate"
+msgstr ""
+
+#: sickchill/helpers.py:886
+msgid "Not creating backup, {0} doesn't exist"
+msgstr ""
+
+#: sickchill/helpers.py:890
+msgid "Trying to back up {0} to {1}"
+msgstr ""
+
+#: sickchill/helpers.py:892
+msgid "Backup done"
+msgstr ""
+
+#: sickchill/helpers.py:895
+msgid "Error while trying to back up {0} to {1} : {2}"
+msgstr ""
+
+#: sickchill/helpers.py:898
+msgid "Trying again."
+msgstr ""
+
+#: sickchill/helpers.py:901
+msgid "Unable to back up {0} to {1} please do it manually."
+msgstr ""
+
+#: sickchill/helpers.py:922 sickchill/helpers.py:937
+msgid "Not restoring, {0} doesn't exist"
+msgstr ""
+
+#: sickchill/helpers.py:926
+msgid "Trying to backup {0} to {1}.r{2} before restoring backup"
+msgstr ""
+
+#: sickchill/helpers.py:931
+msgid "Error while trying to backup DB file {0} before proceeding with restore: {1}"
+msgstr ""
+
+#: sickchill/helpers.py:941
+msgid "Trying to restore file {0} to {1}"
+msgstr ""
+
+#: sickchill/helpers.py:943
+msgid "Restore done"
+msgstr ""
+
+#: sickchill/helpers.py:946
+msgid "Error while trying to restore file {0}. Error: {1}"
+msgstr ""
+
+#: sickchill/helpers.py:949
+msgid "Trying again. Attempt #: {0}"
+msgstr ""
+
+#: sickchill/helpers.py:952
+msgid "Unable to restore file {0} to {1}"
+msgstr ""
+
+#: sickchill/helpers.py:1086
+msgid "Error when attempting to find show: {0} in SickChill. Error: {1} "
+msgstr ""
+
+#: sickchill/helpers.py:1163
+msgid "Usage of anidb disabled. Skiping"
+msgstr ""
+
+#: sickchill/helpers.py:1167
+msgid "anidb username and/or password are not set. Aborting anidb lookup."
+msgstr ""
+
+#: sickchill/helpers.py:1172
+msgid "anidb: {0} "
+msgstr ""
+
+#: sickchill/helpers.py:1177 sickchill/helpers.py:1186
+msgid "anidb exception msg: {0} "
+msgstr ""
+
+#: sickchill/helpers.py:1207 sickchill/helpers.py:1260
+msgid "Zip creation error: {0} "
+msgstr ""
+
+#: sickchill/helpers.py:1239
+msgid "Zip extraction error: {0} "
+msgstr ""
+
+#: sickchill/helpers.py:1289
+msgid "Zip extraction error: {0}"
+msgstr ""
+
+#: sickchill/helpers.py:1311
+msgid "Found indexer mapping in cache for show: "
+msgstr ""
+
+#: sickchill/helpers.py:1329
+msgid "Unable to map {} -> {} for show: {}, skipping it"
+msgstr ""
+
+#: sickchill/helpers.py:1334
+msgid "Mapping {} -> {} for show: {}"
+msgstr ""
+
+#: sickchill/helpers.py:1339
+msgid "Adding indexer mapping to DB for show: {}"
+msgstr ""
+
+#: sickchill/helpers.py:1386
+msgid "Using global proxy: {}"
+msgstr ""
+
+#: sickchill/helpers.py:1466
+msgid "Requested a json response but response was not json, check the url: {0}"
+msgstr ""
+
+#: sickchill/helpers.py:1505
+msgid ""
+"Problem downloading file, setting permissions or writing file to {0} - ERROR:"
+" {1}"
+msgstr ""
+
+#: sickchill/helpers.py:1519
+msgid "Request failed: {0} ({1})"
+msgstr ""
+
+#: sickchill/helpers.py:1524
+msgid "SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to 1.0.1e+"
+msgstr ""
+
+#: sickchill/helpers.py:1526
+msgid ""
+"SSL Error requesting url: '{0}' Try disabling Cert Verification on the "
+"advanced tab of /config/general"
+msgstr ""
+
+#: sickchill/helpers.py:1566
+msgid "url is {0}"
+msgstr ""
+
+#: sickchill/helpers.py:1593
+msgid "Unable to get size for file {0} because the link to the file is not valid"
+msgstr ""
+
+#: sickchill/helpers.py:1599
+msgid "Unable to get size for file {0} Error: {1}"
+msgstr ""
+
+#: sickchill/helpers.py:1606
+msgid "Generating New API key"
+msgstr ""
+
+#: sickchill/helpers.py:1663
+msgid "Trying to determine free space on the destination drive"
+msgstr ""
+
+#: sickchill/helpers.py:1666
+msgid "A path to a file is required for the source. {0} is not a file."
+msgstr ""
+
+#: sickchill/helpers.py:1670
+msgid ""
+"A path is required for the destination. Check that the root dir and show "
+"locations are correct for {0} (I got '{1}')"
+msgstr ""
+
+#: sickchill/helpers.py:1680
+msgid ""
+"Process method is 'move' and src and destination are on the same device, "
+"skipping free space check"
+msgstr ""
+
+#: sickchill/helpers.py:1686
+msgid "Unable to determine free space, so I will assume there is enough."
+msgstr ""
+
+#: sickchill/helpers.py:1687 sickchill/helpers.py:1720
+msgid "Error: {error}"
+msgstr ""
+
+#: sickchill/helpers.py:1705
+msgid "Not enough free space: Needed: {0} bytes ( {1} ), found: {2} bytes ( {3} )"
+msgstr ""
+
+#: sickchill/helpers.py:1719
+msgid "Unable to determine free space"
+msgstr ""
+
+#: sickchill/helpers.py:1842
+msgid "Show id {} not found on {}, not adding the show: {}"
+msgstr ""
+
+#: sickchill/logger.py:473
+msgid "&lt;No Filter&gt;"
+msgstr ""
+
+#: sickchill/logger.py:474
+msgid "Daily Searcher"
+msgstr ""
+
+#: sickchill/logger.py:475
+msgid "Backlog"
+msgstr ""
+
+#: sickchill/logger.py:476
+msgid "Show Updater"
+msgstr ""
+
+#: sickchill/logger.py:477
+msgid "Check Version"
+msgstr ""
+
+#: sickchill/logger.py:478
+msgid "Show Queue"
+msgstr ""
+
+#: sickchill/logger.py:479
+msgid "Search Queue (All)"
+msgstr ""
+
+#: sickchill/logger.py:480
+msgid "Search Queue (Daily Searcher)"
+msgstr ""
+
+#: sickchill/logger.py:481
+msgid "Search Queue (Backlog)"
+msgstr ""
+
+#: sickchill/logger.py:482
+msgid "Search Queue (Manual)"
+msgstr ""
+
+#: sickchill/logger.py:483
+msgid "Search Queue (Retry/Failed)"
+msgstr ""
+
+#: sickchill/logger.py:484
+msgid "Search Queue (RSS)"
+msgstr ""
+
+#: sickchill/logger.py:485
+msgid "Find Propers"
+msgstr ""
+
+#: sickchill/logger.py:486
+msgid "Postprocessor"
+msgstr ""
+
+#: sickchill/logger.py:487
+msgid "Find Subtitles"
+msgstr ""
+
+#: sickchill/logger.py:488
+msgid "Trakt Checker"
+msgstr ""
+
+#: sickchill/logger.py:489
+msgid "Event"
+msgstr ""
+
+#: sickchill/logger.py:490 sickchill/webserve.py:1364 sickchill/webserve.py:1367
+#: sickchill/webserve.py:1552 sickchill/webserve.py:1559 sickchill/webserve.py:1766
+#: sickchill/webserve.py:1779 sickchill/webserve.py:1802 sickchill/webserve.py:1815
+#: sickchill/webserve.py:1820 sickchill/webserve.py:1836 sickchill/webserve.py:1841
+#: sickchill/webserve.py:1905 sickchill/webserve.py:1908 sickchill/webserve.py:1914
+#: sickchill/webserve.py:1917 sickchill/webserve.py:1924 sickchill/webserve.py:1927
+#: sickchill/webserve.py:1949 sickchill/webserve.py:2054 sickchill/webserve.py:2059
+#: sickchill/webserve.py:2064 sickchill/webserve.py:2091 sickchill/webserve.py:2095
+#: sickchill/webserve.py:2100
+msgid "Error"
+msgstr ""
+
+#: sickchill/logger.py:491
+msgid "Tornado"
+msgstr ""
+
+#: sickchill/logger.py:492
+msgid "Thread"
+msgstr ""
+
+#: sickchill/logger.py:493
+msgid "Main"
+msgstr ""
+
+#: sickchill/show_queue.py:300
+msgid "Loading"
+msgstr ""
+
+#: sickchill/versionChecker.py:70
+msgid "New update found for SickChill, starting auto-updater"
+msgstr ""
+
+#: sickchill/versionChecker.py:74
+msgid "Update was successful"
+msgstr ""
+
+#: sickchill/versionChecker.py:78
+msgid "Update failed!"
+msgstr ""
+
+#: sickchill/versionChecker.py:90 sickchill/versionChecker.py:98
+#: sickchill/versionChecker.py:102 sickchill/versionChecker.py:106
+msgid "Backup"
+msgstr ""
+
+#: sickchill/versionChecker.py:90
+msgid "Config backup in progress..."
+msgstr ""
+
+#: sickchill/versionChecker.py:98
+msgid "Config backup successful, updating..."
+msgstr ""
+
+#: sickchill/versionChecker.py:102 sickchill/versionChecker.py:106
+msgid "Config backup failed, aborting update"
+msgstr ""
+
+#: sickchill/versionChecker.py:271
+msgid "No update needed"
+msgstr ""
+
+#: sickchill/versionChecker.py:418
+msgid ""
+"Unable to find your git executable - Shutdown SickChill and EITHER set "
+"git_path in your config.ini OR delete your .git folder and run from source to"
+" enable updates."
+msgstr ""
+
+#: sickchill/versionChecker.py:569 sickchill/versionChecker.py:772
+msgid "(you're {num_commits} commit behind)"
+msgstr ""
+
+#: sickchill/versionChecker.py:570 sickchill/versionChecker.py:773
+msgid ""
+"There is a <a href=\"{compare_url}\" onclick=\"window.open(this.href); return"
+" false;\">newer version available</a> {commits_behind} &mdash; <a "
+"href=\"{update_url}\">Update Now</a>"
+msgstr ""
+
+#: sickchill/versionChecker.py:760
+msgid ""
+"Unknown current version number: If you've never used the SickChill upgrade "
+"system before then current version is not set. &mdash; <a "
+"href=\"{update_url}\">Update Now</a>"
+msgstr ""
+
+#: sickchill/webserve.py:162
+msgid "Mako Error"
+msgstr ""
+
+#: sickchill/webserve.py:191
+msgid "Oops"
+msgstr ""
+
+#: sickchill/webserve.py:193
+msgid "Wrong API key used"
+msgstr ""
+
+#: sickchill/webserve.py:303
+msgid "Login"
+msgstr ""
+
+#: sickchill/webserve.py:378
+msgid "API Key not generated"
+msgstr ""
+
+#: sickchill/webserve.py:381
+msgid "API Builder"
+msgstr ""
+
+#: sickchill/webserve.py:490
+msgid "Schedule"
+msgstr ""
+
+#: sickchill/webserve.py:603
+msgid "Test 1"
+msgstr ""
+
+#: sickchill/webserve.py:603
+msgid "This is test number 1"
+msgstr ""
+
+#: sickchill/webserve.py:604
+msgid "Test 2"
+msgstr ""
+
+#: sickchill/webserve.py:604
+msgid "This is test number 2"
+msgstr ""
+
+#: sickchill/webserve.py:629
+msgid ""
+"You're using the {branch} branch. Please use 'master' unless specifically "
+"asked"
+msgstr ""
+
+#: sickchill/webserve.py:694 sickchill/webserve.py:699
+msgid "Invalid show parameters"
+msgstr ""
+
+#: sickchill/webserve.py:706
+msgid "Invalid parameters"
+msgstr ""
+
+#: sickchill/webserve.py:709 sickchill/webserve.py:1949
+msgid "Episode couldn't be retrieved"
+msgstr ""
+
+#: sickchill/webserve.py:757 sickchill/webserve.py:1271 sickchill/webserve.py:1301
+msgid "Home"
+msgstr ""
+
+#: sickchill/webserve.py:757
+msgid "Show List"
+msgstr ""
+
+#: sickchill/webserve.py:807
+msgid ""
+"Error: Unsupported Request. Send jsonp request with 'callback' variable in "
+"the query string."
+msgstr ""
+
+#: sickchill/webserve.py:852
+msgid "Success. Connected and authenticated"
+msgstr ""
+
+#: sickchill/webserve.py:854
+msgid "Authentication failed. SABnzbd expects"
+msgstr ""
+
+#: sickchill/webserve.py:854
+msgid "as authentication method"
+msgstr ""
+
+#: sickchill/webserve.py:856
+msgid "Unable to connect to host"
+msgstr ""
+
+#: sickchill/webserve.py:876
+msgid "SMS sent successfully"
+msgstr ""
+
+#: sickchill/webserve.py:878
+msgid "Problem sending SMS: {message}"
+msgstr ""
+
+#: sickchill/webserve.py:885
+msgid ""
+"Telegram notification succeeded. Check your Telegram clients to make sure it "
+"worked"
+msgstr ""
+
+#: sickchill/webserve.py:887
+msgid "Error sending Telegram notification: {message}"
+msgstr ""
+
+#: sickchill/webserve.py:894
+msgid "join notification succeeded. Check your join clients to make sure it worked"
+msgstr ""
+
+#: sickchill/webserve.py:896
+msgid "Error sending join notification: {message}"
+msgstr ""
+
+#: sickchill/webserve.py:906
+msgid " with password"
+msgstr ""
+
+#: sickchill/webserve.py:908
+msgid "Registered and Tested growl successfully {growl_host}"
+msgstr ""
+
+#: sickchill/webserve.py:910
+msgid "Registration and Testing of growl failed {growl_host}"
+msgstr ""
+
+#: sickchill/webserve.py:917
+msgid "Test prowl notice sent successfully"
+msgstr ""
+
+#: sickchill/webserve.py:919
+msgid "Test prowl notice failed"
+msgstr ""
+
+#: sickchill/webserve.py:926
+msgid ""
+"Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure it "
+"worked"
+msgstr ""
+
+#: sickchill/webserve.py:928
+msgid "Error sending Boxcar2 notification"
+msgstr ""
+
+#: sickchill/webserve.py:935
+msgid ""
+"Pushover notification succeeded. Check your Pushover clients to make sure it "
+"worked"
+msgstr ""
+
+#: sickchill/webserve.py:937
+msgid "Error sending Pushover notification"
+msgstr ""
+
+#: sickchill/webserve.py:951
+msgid "Key verification successful"
+msgstr ""
+
+#: sickchill/webserve.py:953
+msgid "Unable to verify key"
+msgstr ""
+
+#: sickchill/webserve.py:960
+msgid "Tweet successful, check your twitter to make sure it worked"
+msgstr ""
+
+#: sickchill/webserve.py:962
+msgid "Error sending tweet"
+msgstr ""
+
+#: sickchill/webserve.py:967
+msgid "Please enter a valid account sid"
+msgstr ""
+
+#: sickchill/webserve.py:970
+msgid "Please enter a valid auth token"
+msgstr ""
+
+#: sickchill/webserve.py:973
+msgid "Please enter a valid phone sid"
+msgstr ""
+
+#: sickchill/webserve.py:976
+msgid "Please format the phone number as \"+1-###-###-####\""
+msgstr ""
+
+#: sickchill/webserve.py:980
+msgid "Authorization successful and number ownership verified"
+msgstr ""
+
+#: sickchill/webserve.py:982
+msgid "Error sending sms"
+msgstr ""
+
+#: sickchill/webserve.py:988
+msgid "Slack message successful"
+msgstr ""
+
+#: sickchill/webserve.py:990
+msgid "Slack message failed"
+msgstr ""
+
+#: sickchill/webserve.py:996
+msgid "Discord message successful"
+msgstr ""
+
+#: sickchill/webserve.py:998
+msgid "Discord message failed"
+msgstr ""
+
+#: sickchill/webserve.py:1009
+msgid "Test KODI notice sent successfully to {kodi_host}"
+msgstr ""
+
+#: sickchill/webserve.py:1011
+msgid "Test KODI notice failed to {kodi_host}"
+msgstr ""
+
+#: sickchill/webserve.py:1025
+msgid "Successful test notice sent to Plex Home Theater ... {plex_clients}"
+msgstr ""
+
+#: sickchill/webserve.py:1027
+msgid "Test failed for Plex Home Theater ... {plex_clients}"
+msgstr ""
+
+#: sickchill/webserve.py:1030
+msgid "Tested Plex Home Theater(s)"
+msgstr ""
+
+#: sickchill/webserve.py:1043
+msgid "Successful test of Plex Media Server(s) ... {plex_servers}"
+msgstr ""
+
+#: sickchill/webserve.py:1045
+msgid "Test failed, No Plex Media Server host specified"
+msgstr ""
+
+#: sickchill/webserve.py:1047
+msgid "Test failed for Plex Media Server(s) ... {plex_servers}"
+msgstr ""
+
+#: sickchill/webserve.py:1050
+msgid "Tested Plex Media Server host(s)"
+msgstr ""
+
+#: sickchill/webserve.py:1058
+msgid "Tried sending desktop notification via libnotify"
+msgstr ""
+
+#: sickchill/webserve.py:1067
+msgid "Test notice sent successfully to {emby_host}"
+msgstr ""
+
+#: sickchill/webserve.py:1069
+msgid "Test notice failed to {emby_host}"
+msgstr ""
+
+#: sickchill/webserve.py:1077
+msgid "Successfully started the scan update"
+msgstr ""
+
+#: sickchill/webserve.py:1079
+msgid "Test failed to start the scan update"
+msgstr ""
+
+#: sickchill/webserve.py:1099
+msgid "Test notice sent successfully to {nmj2_host}"
+msgstr ""
+
+#: sickchill/webserve.py:1101
+msgid "Test notice failed to {nmj2_host}"
+msgstr ""
+
+#: sickchill/webserve.py:1122
+msgid "Trakt Authorized"
+msgstr ""
+
+#: sickchill/webserve.py:1123
+msgid "Trakt Not Authorized!"
+msgstr ""
+
+#: sickchill/webserve.py:1187
+msgid "Test email sent successfully! Check inbox."
+msgstr ""
+
+#: sickchill/webserve.py:1189
+msgid "ERROR: {last_error}"
+msgstr ""
+
+#: sickchill/webserve.py:1196
+msgid "Test NMA notice sent successfully"
+msgstr ""
+
+#: sickchill/webserve.py:1198
+msgid "Test NMA notice failed"
+msgstr ""
+
+#: sickchill/webserve.py:1205
+msgid ""
+"Pushalot notification succeeded. Check your Pushalot clients to make sure it "
+"worked"
+msgstr ""
+
+#: sickchill/webserve.py:1207
+msgid "Error sending Pushalot notification"
+msgstr ""
+
+#: sickchill/webserve.py:1214
+msgid "Pushbullet notification succeeded. Check your device to make sure it worked"
+msgstr ""
+
+#: sickchill/webserve.py:1216 sickchill/webserve.py:1226 sickchill/webserve.py:1235
+msgid "Error sending Pushbullet notification"
+msgstr ""
+
+#: sickchill/webserve.py:1252
+msgid "Status"
+msgstr ""
+
+#: sickchill/webserve.py:1271 sickchill/webserve.py:1301
+msgid "Restarting SickChill"
+msgstr ""
+
+#: sickchill/webserve.py:1304
+msgid "Update Failed"
+msgstr ""
+
+#: sickchill/webserve.py:1305
+msgid "Update wasn't successful, not restarting. Check your log for more information."
+msgstr ""
+
+#: sickchill/webserve.py:1333
+msgid "Checking out branch"
+msgstr ""
+
+#: sickchill/webserve.py:1336
+msgid "Already on branch"
+msgstr ""
+
+#: sickchill/webserve.py:1364
+msgid "Invalid show ID: {show}"
+msgstr ""
+
+#: sickchill/webserve.py:1367 sickchill/webserve.py:1922 sickchill/webserve.py:2059
+#: sickchill/webserve.py:2095
+msgid "Show not in show list"
+msgstr ""
+
+#: sickchill/webserve.py:1383 sickchill/webserve.py:2082
+msgid "Edit"
+msgstr ""
+
+#: sickchill/webserve.py:1394
+msgid ""
+"This show is in the process of being downloaded - the info below is "
+"incomplete."
+msgstr ""
+
+#: sickchill/webserve.py:1397
+msgid "The information on this page is in the process of being updated."
+msgstr ""
+
+#: sickchill/webserve.py:1400
+msgid "The episodes below are currently being refreshed from disk"
+msgstr ""
+
+#: sickchill/webserve.py:1403
+msgid "Currently downloading subtitles for this show"
+msgstr ""
+
+#: sickchill/webserve.py:1406
+msgid "This show is queued to be refreshed."
+msgstr ""
+
+#: sickchill/webserve.py:1409
+msgid "This show is queued and awaiting an update."
+msgstr ""
+
+#: sickchill/webserve.py:1412
+msgid "This show is queued and awaiting subtitles download."
+msgstr ""
+
+#: sickchill/webserve.py:1417
+msgid "Resume"
+msgstr ""
+
+#: sickchill/webserve.py:1419
+msgid "Pause"
+msgstr ""
+
+#: sickchill/webserve.py:1422
+msgid "Remove"
+msgstr ""
+
+#: sickchill/webserve.py:1423
+msgid "Re-scan files"
+msgstr ""
+
+#: sickchill/webserve.py:1425
+msgid "Force Full Update"
+msgstr ""
+
+#: sickchill/webserve.py:1427
+msgid "Update show in KODI"
+msgstr ""
+
+#: sickchill/webserve.py:1429
+msgid "Update show in Emby"
+msgstr ""
+
+#: sickchill/webserve.py:1433
+msgid "Hide specials"
+msgstr ""
+
+#: sickchill/webserve.py:1436
+msgid "Show specials"
+msgstr ""
+
+#: sickchill/webserve.py:1438 sickchill/webserve.py:2085 sickchill/webserve.py:2086
+msgid "Preview Rename"
+msgstr ""
+
+#: sickchill/webserve.py:1442
+msgid "Download Subtitles"
+msgstr ""
+
+#: sickchill/webserve.py:1527
+msgid "No scene exceptions"
+msgstr ""
+
+#: sickchill/webserve.py:1548 sickchill/webserve.py:1815 sickchill/webserve.py:1836
+msgid "Invalid show ID"
+msgstr ""
+
+#: sickchill/webserve.py:1555 sickchill/webserve.py:1820 sickchill/webserve.py:1841
+msgid "Unable to find the specified show"
+msgstr ""
+
+#: sickchill/webserve.py:1585
+msgid "Unable to retreive Fansub Groups from AniDB."
+msgstr ""
+
+#: sickchill/webserve.py:1594 sickchill/webserve.py:1597
+msgid "Edit Show"
+msgstr ""
+
+#: sickchill/webserve.py:1683 sickchill/webserve.py:1718
+msgid "Unable to refresh this show: {error}"
+msgstr ""
+
+#: sickchill/webserve.py:1710
+msgid "New location <tt>{location}</tt> does not exist"
+msgstr ""
+
+#: sickchill/webserve.py:1736
+msgid "Unable to update show: {error}"
+msgstr ""
+
+#: sickchill/webserve.py:1742
+msgid "Unable to force an update on scene exceptions of the show."
+msgstr ""
+
+#: sickchill/webserve.py:1749
+msgid "Unable to force an update on scene numbering of the show."
+msgstr ""
+
+#: sickchill/webserve.py:1756 sickchill/webserve.py:3577
+msgid "{num_errors:d} error{plural} while saving changes:"
+msgstr ""
+
+#: sickchill/webserve.py:1769
+msgid "{show_name} has been {paused_resumed}"
+msgstr ""
+
+#: sickchill/webserve.py:1769
+msgid "resumed"
+msgstr ""
+
+#: sickchill/webserve.py:1769
+msgid "paused"
+msgstr ""
+
+#: sickchill/webserve.py:1782
+msgid "{show_name} has been {deleted_trashed} {was_deleted}"
+msgstr ""
+
+#: sickchill/webserve.py:1784
+msgid "deleted"
+msgstr ""
+
+#: sickchill/webserve.py:1784
+msgid "trashed"
+msgstr ""
+
+#: sickchill/webserve.py:1785
+msgid "(media untouched)"
+msgstr ""
+
+#: sickchill/webserve.py:1785
+msgid "(with all related media)"
+msgstr ""
+
+#: sickchill/webserve.py:1806
+msgid "Unable to refresh this show."
+msgstr ""
+
+#: sickchill/webserve.py:1826
+msgid "Unable to update this show."
+msgstr ""
+
+#: sickchill/webserve.py:1865
+msgid "Library update command sent to KODI host(s)): {kodi_hosts}"
+msgstr ""
+
+#: sickchill/webserve.py:1867
+msgid "Unable to contact one or more KODI host(s)): {kodi_hosts}"
+msgstr ""
+
+#: sickchill/webserve.py:1876
+msgid "Library update command sent to Plex Media Server host: {plex_server}"
+msgstr ""
+
+#: sickchill/webserve.py:1879
+msgid "Unable to contact Plex Media Server host: {plex_server}"
+msgstr ""
+
+#: sickchill/webserve.py:1891
+msgid "Library update command sent to Emby host: {emby_host}"
+msgstr ""
+
+#: sickchill/webserve.py:1893
+msgid "Unable to contact Emby host: {emby_host}"
+msgstr ""
+
+#: sickchill/webserve.py:1903 sickchill/webserve.py:2091
+msgid "You must specify a show and at least one episode"
+msgstr ""
+
+#: sickchill/webserve.py:1912
+msgid "Invalid status"
+msgstr ""
+
+#: sickchill/webserve.py:2011
+msgid ""
+"Backlog was automatically started for the following seasons of "
+"<b>{show_name}</b>"
+msgstr ""
+
+#: sickchill/webserve.py:2018 sickchill/webserve.py:2037
+msgid "Season"
+msgstr ""
+
+#: sickchill/webserve.py:2025
+msgid "Backlog started"
+msgstr ""
+
+#: sickchill/webserve.py:2030
+msgid ""
+"Retrying Search was automatically started for the following season of "
+"<b>{show_name}</b>"
+msgstr ""
+
+#: sickchill/webserve.py:2044
+msgid "Retry Search started"
+msgstr ""
+
+#: sickchill/webserve.py:2054
+msgid "You must specify a show"
+msgstr ""
+
+#: sickchill/webserve.py:2064 sickchill/webserve.py:2100
+msgid "Can't rename episodes when the show dir is missing."
+msgstr ""
+
+#: sickchill/webserve.py:2270 sickchill/webserve.py:2291
+msgid "New subtitles downloaded: {new_subtitle_languages}"
+msgstr ""
+
+#: sickchill/webserve.py:2273 sickchill/webserve.py:2294
+msgid "No subtitles downloaded"
+msgstr ""
+
+#: sickchill/webserve.py:2420
+msgid "IRC"
+msgstr ""
+
+#: sickchill/webserve.py:2434
+msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
+msgstr ""
+
+#: sickchill/webserve.py:2441 sickchill/webserve.py:2462
+msgid "The was a problem connecting to github, please refresh and try again"
+msgstr ""
+
+#: sickchill/webserve.py:2457
+msgid ""
+"Could not load changes from the repo. [Click here for "
+"CHANGES.md]({changes_url})"
+msgstr ""
+
+#: sickchill/webserve.py:2464
+msgid "Changelog"
+msgstr ""
+
+#: sickchill/webserve.py:2475 sickchill/webserve.py:3868 sickchill/webserve.py:4366
+msgid "Post Processing"
+msgstr ""
+
+#: sickchill/webserve.py:2507
+msgid "Add Shows"
+msgstr ""
+
+#: sickchill/webserve.py:2574
+msgid "No folders selected."
+msgstr ""
+
+#: sickchill/webserve.py:2698
+msgid "New Show"
+msgstr ""
+
+#: sickchill/webserve.py:2713
+msgid "Trending Shows"
+msgstr ""
+
+#: sickchill/webserve.py:2715 sickchill/webserve.py:2798
+msgid "Popular Shows"
+msgstr ""
+
+#: sickchill/webserve.py:2717 sickchill/webserve.py:2731
+msgid "Most Anticipated Shows"
+msgstr ""
+
+#: sickchill/webserve.py:2719
+msgid "Most Collected Shows"
+msgstr ""
+
+#: sickchill/webserve.py:2721
+msgid "Most Watched Shows"
+msgstr ""
+
+#: sickchill/webserve.py:2723
+msgid "Most Played Shows"
+msgstr ""
+
+#: sickchill/webserve.py:2725
+msgid "Recommended Shows"
+msgstr ""
+
+#: sickchill/webserve.py:2727
+msgid "New Shows"
+msgstr ""
+
+#: sickchill/webserve.py:2729
+msgid "Season Premieres"
+msgstr ""
+
+#: sickchill/webserve.py:2818 sickchill/webserve.py:2819
+msgid "Existing Show"
+msgstr ""
+
+#: sickchill/webserve.py:2898
+msgid "No root directories setup, please go back and add one."
+msgstr ""
+
+#: sickchill/webserve.py:2904 sickchill/webserve.py:2988 sickchill/webserve.py:2998
+msgid "Unable to add show"
+msgstr ""
+
+#: sickchill/webserve.py:2914 sickchill/webserve.py:3033
+msgid "Show added"
+msgstr ""
+
+#: sickchill/webserve.py:2914
+msgid "Adding the specified show {show_name}"
+msgstr ""
+
+#: sickchill/webserve.py:2955
+msgid ""
+"Missing params, no Indexer ID or folder: {show_to_add} and "
+"{root_dir}/{show_path}"
+msgstr ""
+
+#: sickchill/webserve.py:2964
+msgid "Unknown error. Unable to add show due to problem with show selection."
+msgstr ""
+
+#: sickchill/webserve.py:2988
+msgid "Folder {show_dir} exists already"
+msgstr ""
+
+#: sickchill/webserve.py:2999
+msgid "Unable to create the folder {show_dir}, can't add the show"
+msgstr ""
+
+#: sickchill/webserve.py:3033
+msgid "Adding the specified show into {show_dir}"
+msgstr ""
+
+#: sickchill/webserve.py:3109
+msgid "Shows Added"
+msgstr ""
+
+#: sickchill/webserve.py:3110
+msgid "Automatically added {num_shows} from their existing metadata files"
+msgstr ""
+
+#: sickchill/webserve.py:3127
+msgid "Mass Update"
+msgstr ""
+
+#: sickchill/webserve.py:3165 sickchill/webserve.py:3192 sickchill/webserve.py:3268
+#: sickchill/webserve.py:3269
+msgid "Episode Overview"
+msgstr ""
+
+#: sickchill/webserve.py:3301
+msgid "Missing Subtitles"
+msgstr ""
+
+#: sickchill/webserve.py:3387 sickchill/webserve.py:3388
+msgid "Backlog Overview"
+msgstr ""
+
+#: sickchill/webserve.py:3513
+msgid "Mass Edit"
+msgstr ""
+
+#: sickchill/webserve.py:3624
+msgid "Unable to update show: {excption_format}"
+msgstr ""
+
+#: sickchill/webserve.py:3632
+msgid "Unable to refresh show {show_name}: {excption_format}"
+msgstr ""
+
+#: sickchill/webserve.py:3643
+msgid "Errors encountered"
+msgstr ""
+
+#: sickchill/webserve.py:3649
+msgid "Updates"
+msgstr ""
+
+#: sickchill/webserve.py:3654
+msgid "Refreshes"
+msgstr ""
+
+#: sickchill/webserve.py:3659
+msgid "Renames"
+msgstr ""
+
+#: sickchill/webserve.py:3664 sickchill/webserve.py:5132
+msgid "Subtitles"
+msgstr ""
+
+#: sickchill/webserve.py:3669
+msgid "The following actions were queued"
+msgstr ""
+
+#: sickchill/webserve.py:3693
+msgid "Failed Downloads"
+msgstr ""
+
+#: sickchill/webserve.py:3713
+msgid "Manage Searches"
+msgstr ""
+
+#: sickchill/webserve.py:3721
+msgid "Backlog search started"
+msgstr ""
+
+#: sickchill/webserve.py:3731
+msgid "Daily search started"
+msgstr ""
+
+#: sickchill/webserve.py:3740
+msgid "Find propers search started"
+msgstr ""
+
+#: sickchill/webserve.py:3749
+msgid "Subtitle search started"
+msgstr ""
+
+#: sickchill/webserve.py:3814
+msgid "Remove Selected"
+msgstr ""
+
+#: sickchill/webserve.py:3815
+msgid "Clear History"
+msgstr ""
+
+#: sickchill/webserve.py:3816
+msgid "Trim History"
+msgstr ""
+
+#: sickchill/webserve.py:3836
+msgid "Selected history entries removed"
+msgstr ""
+
+#: sickchill/webserve.py:3843
+msgid "History cleared"
+msgstr ""
+
+#: sickchill/webserve.py:3850
+msgid "Removed history entries older than 30 days"
+msgstr ""
+
+#: sickchill/webserve.py:3863
+msgid "General"
+msgstr ""
+
+#: sickchill/webserve.py:3864 sickchill/webserve.py:4164
+msgid "Backup/Restore"
+msgstr ""
+
+#: sickchill/webserve.py:3865 sickchill/webserve.py:4228
+msgid "Search Settings"
+msgstr ""
+
+#: sickchill/webserve.py:3866 sickchill/webserve.py:4544
+msgid "Search Providers"
+msgstr ""
+
+#: sickchill/webserve.py:3867
+msgid "Subtitles Settings"
+msgstr ""
+
+#: sickchill/webserve.py:3869 sickchill/webserve.py:4852
+msgid "Notifications"
+msgstr ""
+
+#: sickchill/webserve.py:3870 sickchill/webserve.py:5203
+msgid "Anime"
+msgstr ""
+
+#: sickchill/webserve.py:3910 sickchill/webserve.py:3911
+msgid "SickChill Configuration"
+msgstr ""
+
+#: sickchill/webserve.py:3926
+msgid "Config - Shares"
+msgstr ""
+
+#: sickchill/webserve.py:3926
+msgid "Windows Shares Configuration"
+msgstr ""
+
+#: sickchill/webserve.py:3954
+msgid "Saved Shares"
+msgstr ""
+
+#: sickchill/webserve.py:3954
+msgid "Your Windows share settings have been saved"
+msgstr ""
+
+#: sickchill/webserve.py:3966
+msgid "Config - General"
+msgstr ""
+
+#: sickchill/webserve.py:3966
+msgid "General Configuration"
+msgstr ""
+
+#: sickchill/webserve.py:4006
+msgid "Saved Defaults"
+msgstr ""
+
+#: sickchill/webserve.py:4006
+msgid "Your \"add show\" defaults have been set to your current selections."
+msgstr ""
+
+#: sickchill/webserve.py:4115
+msgid "Unable to create directory {directory}, log directory not changed."
+msgstr ""
+
+#: sickchill/webserve.py:4123
+msgid "Unable to create directory {directory}, https cert directory not changed."
+msgstr ""
+
+#: sickchill/webserve.py:4127
+msgid "Unable to create directory {directory}, https key directory not changed."
+msgstr ""
+
+#: sickchill/webserve.py:4146 sickchill/webserve.py:4348 sickchill/webserve.py:4481
+#: sickchill/webserve.py:5114
+msgid "Error(s) Saving Configuration"
+msgstr ""
+
+#: sickchill/webserve.py:4149 sickchill/webserve.py:4351 sickchill/webserve.py:4483
+#: sickchill/webserve.py:4837 sickchill/webserve.py:5117 sickchill/webserve.py:5187
+#: sickchill/webserve.py:5217
+msgid "Configuration Saved"
+msgstr ""
+
+#: sickchill/webserve.py:4163
+msgid "Config - Backup/Restore"
+msgstr ""
+
+#: sickchill/webserve.py:4227
+msgid "Config - Episode Search"
+msgstr ""
+
+#: sickchill/webserve.py:4365
+msgid "Config - Post Processing"
+msgstr ""
+
+#: sickchill/webserve.py:4405
+msgid "Unpacking Not Supported, disabling unpack setting"
+msgstr ""
+
+#: sickchill/webserve.py:4456
+msgid ""
+"You tried saving an invalid normal naming config, not saving your naming "
+"settings"
+msgstr ""
+
+#: sickchill/webserve.py:4464
+msgid ""
+"You tried saving an invalid anime naming config, not saving your naming "
+"settings"
+msgstr ""
+
+#: sickchill/webserve.py:4543
+msgid "Config - Providers"
+msgstr ""
+
+#: sickchill/webserve.py:4573
+msgid "No Provider Name specified"
+msgstr ""
+
+#: sickchill/webserve.py:4575
+msgid "No Provider Url specified"
+msgstr ""
+
+#: sickchill/webserve.py:4577
+msgid "No Provider Api key specified"
+msgstr ""
+
+#: sickchill/webserve.py:4851
+msgid "Config - Notifications"
+msgstr ""
+
+#: sickchill/webserve.py:5131
+msgid "Config - Subtitles"
+msgstr ""
+
+#: sickchill/webserve.py:5202
+msgid "Config - Anime"
+msgstr ""
+
+#: sickchill/webserve.py:5230
+msgid "Clear Errors"
+msgstr ""
+
+#: sickchill/webserve.py:5236
+msgid "Clear Warnings"
+msgstr ""
+
+#: sickchill/webserve.py:5242
+msgid "Submit Errors"
+msgstr ""
+
+#: sickchill/webserve.py:5258
+msgid "Logs &amp; Errors"
+msgstr ""
+
+#: sickchill/webserve.py:5283
+msgid "Log File"
+msgstr ""
+
+#: sickchill/webserve.py:5283
+msgid "Logs"
+msgstr ""
+
+#: sickchill/notifiers/twilio_notify.py:68
+msgid "This is a test notification from SickChill"
+msgstr ""
+
+#: sickchill/providers/GenericProvider.py:56
+msgid "Not working"
+msgstr ""
+
+#: sickchill/providers/GenericProvider.py:57
+msgid "Daily/RSS only"
+msgstr ""
+
+#: sickchill/providers/GenericProvider.py:58
+msgid "Backlog/Manual Search only"
+msgstr ""
+
+#: sickchill/providers/GenericProvider.py:59
+msgid "Daily/RSS and Backlog/Manual Searches working"
+msgstr ""
+
+#: sickchill/providers/__init__.py:111
+msgid "daily searches and backlog searches"
+msgstr ""
+
+#: sickchill/providers/__init__.py:111
+msgid "daily searches"
+msgstr ""
+
+#: sickchill/providers/__init__.py:112
+msgid "backlog searches"
+msgstr ""
+
+#: sickchill/providers/__init__.py:113
+msgid ""
+"No NZB/Torrent providers found or enabled for {searches}.<br/>Please <a "
+"href=\"{web_root}/config/providers/\">check your settings</a>."
+msgstr ""
+

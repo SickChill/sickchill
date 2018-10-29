@@ -1,7 +1,7 @@
 # coding=utf-8
 
 """
-Unit Tests for sickbeard/numdict.py
+Unit Tests for sickchill/numdict.py
 """
 
 # pylint: disable=line-too-long
@@ -15,7 +15,7 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard.numdict import NumDict
+from sickchill.numdict import NumDict
 
 import six
 from six.moves import UserDict

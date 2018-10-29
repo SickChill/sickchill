@@ -19,8 +19,8 @@
 
 from __future__ import unicode_literals
 
-import sickbeard
-from sickbeard.event_queue import Events
+import sickchill
+from sickchill.event_queue import Events
 
 
 class Restart(object):
@@ -29,9 +29,9 @@ class Restart(object):
 
     @staticmethod
     def restart(pid):
-        if str(pid) != str(sickbeard.PID):
+        if str(pid) != str(sickchill.PID):
             return False
 
-        sickbeard.events.put(Events.SystemEvent.RESTART)
+        sickchill.events.put(Events.SystemEvent.RESTART)
 
         return True

@@ -30,8 +30,8 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-import sickbeard
-from sickbeard.event_queue import Events
+import sickchill
+from sickchill.event_queue import Events
 from sickchill.system.Shutdown import Shutdown
 
 
@@ -46,8 +46,8 @@ class ShutdownTests(unittest.TestCase):
         """
         Test shutdown
         """
-        sickbeard.PID = 123456
-        sickbeard.events = Events(None)
+        sickchill.PID = 123456
+        sickchill.events = Events(None)
 
         test_cases = {
             0: False,

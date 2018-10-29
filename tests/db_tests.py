@@ -36,7 +36,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import tests.test_lib as test
 
 
-class DBBasicTests(test.SickbeardTestDBCase):
+class DBBasicTests(test.SickChillTestDBCase):
     """
     Perform basic database tests.
 
@@ -58,7 +58,7 @@ class DBBasicTests(test.SickbeardTestDBCase):
         self.sr_db.select("SELECT * FROM tv_episodes WHERE showid = ? AND location != ''", [0000])
 
 
-class DBMultiTests(test.SickbeardTestDBCase):
+class DBMultiTests(test.SickChillTestDBCase):
     """
     Perform multi-threaded test of the database
 

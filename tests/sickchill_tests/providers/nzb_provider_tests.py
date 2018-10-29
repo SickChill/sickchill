@@ -30,7 +30,7 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-import sickbeard
+import sickchill
 import six
 
 from generic_provider_tests import GenericProviderTests
@@ -66,7 +66,7 @@ class NZBProviderTests(GenericProviderTests):
         }
 
         for ((use_nzb, enabled), result) in six.iteritems(test_cases):
-            sickbeard.USE_NZBS = use_nzb
+            sickchill.USE_NZBS = use_nzb
 
             provider = NZBProvider('Test Provider')
             provider.enabled = enabled
@@ -141,7 +141,7 @@ class NZBProviderTests(GenericProviderTests):
         ]
 
         for nzb_dir in test_cases:
-            sickbeard.NZB_DIR = nzb_dir
+            sickchill.NZB_DIR = nzb_dir
 
             self.assertEqual(NZBProvider('Test Provider')._get_storage_dir(), nzb_dir)
 
