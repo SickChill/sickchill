@@ -1026,8 +1026,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                     except Exception as error:
                         logger.log('Unable to change permissions of {0}: {1}'.format(self._location, error), logger.WARNING)
 
-                shows_in_folder = main_db_con.select("SELECT location from tv_shows WHERE location LIKE '{showloc}%' AND indexer_id != ?".format(
-                    showloc=self.location), [self.indexerid])
+                shows_in_folder = main_db_con.select("SELECT location from tv_shows WHERE location LIKE ? AND indexer_id != ?",
+                                                     ["{}%".format(self.location), self.indexerid])
+
                 num_shows_in_folder = len(shows_in_folder)
                 if num_shows_in_folder:
                     logger.log('Cannot delete the show folder from disk, because this location is the root dir for {num} other shows!'.format(num=num_shows_in_folder))
@@ -1884,10 +1885,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         # delete myself from the DB
         logger.log("Deleting myself from the database", logger.DEBUG)
         main_db_con = db.DBConnection()
-        sql = "DELETE FROM tv_episodes WHERE showid=" + str(self.show.indexerid) + " AND season=" + str(
-            self.season) + " AND episode=" + str(self.episode)
-        main_db_con.action(sql)
-
+        main_db_con.action("DELETE FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?", [self.show.indexerid, self.season, self.episode])
         raise EpisodeDeletedException()
 
     def get_sql(self, forceSave=False):
@@ -1922,8 +1920,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                         "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
                         [self.indexerid, self.indexer, self.name, self.description, ",".join(self.subtitles),
                          self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
-                         self.hastbn,
-                         self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
+                         self.hastbn, self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
                          self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
                 else:
                     # Don't update the subtitle language when the srt file doesn't contain the alpha2 code, keep value from subliminal
@@ -1934,8 +1931,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                         "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
                         [self.indexerid, self.indexer, self.name, self.description,
                          self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
-                         self.hastbn,
-                         self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
+                         self.hastbn, self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
                          self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
             else:
                 # use a custom insert method to get the data into the DB.
