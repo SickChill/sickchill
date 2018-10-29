@@ -48,7 +48,7 @@ class SubtitulamosConverter(LanguageReverseConverter):
         return self.name_converter.reverse(subtitulamos)
 
 
-language_converters.register('subtitulamos = sickrage.providers.subtitle.subtitulamos:SubtitulamosConverter')
+language_converters.register('subtitulamos = sickchill.providers.subtitle.subtitulamos:SubtitulamosConverter')
 
 
 class SubtitulamosSubtitle(Subtitle):

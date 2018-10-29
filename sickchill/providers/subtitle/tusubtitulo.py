@@ -47,7 +47,7 @@ class TuSubtituloConverter(LanguageReverseConverter):
         return self.name_converter.reverse(tusubtitulo)
 
 
-language_converters.register('tusubtitulo = sickrage.providers.subtitle.tusubtitulo:TuSubtituloConverter')
+language_converters.register('tusubtitulo = sickchill.providers.subtitle.tusubtitulo:TuSubtituloConverter')
 
 
 #: Release parsing regex
