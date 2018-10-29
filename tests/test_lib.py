@@ -52,7 +52,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from configobj import ConfigObj
 from sickchill import db, providers
 from sickchill.databases import cache_db, failed_db, mainDB
-from sickchill.providers import NewznabProvider
+from sickchill.providers.nzb.newznab import NewznabProvider
 from sickchill.tv import TVEpisode, TVShow
 import sickchill
 

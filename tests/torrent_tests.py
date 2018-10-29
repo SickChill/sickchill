@@ -32,7 +32,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from bs4 import BeautifulSoup
 from sickchill.helpers import getURL, make_session
-from sickchill.providers import BitCannonProvider
+from sickchill.providers.torrent.bitcannon import BitCannonProvider
 from sickchill.tv import TVEpisode, TVShow
 import tests.test_lib as test
 
