@@ -47,7 +47,6 @@ Public Methods:
     get_absolute_number_from_season_and_episode
     get_all_episodes_from_absolute_number
     sanitizeSceneName
-    arithmeticEval
     create_https_certificates
     backupVersionedFile
     restoreVersionedFile
@@ -736,13 +735,6 @@ class HelpersMiscTests(unittest.TestCase):
     def test_sanitize_scene_name(self):
         """
         Test sanitizeSceneName
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
-    def test_arithmetic_eval(self):
-        """
-        Test arithmeticEval
         """
         pass
 
