@@ -146,7 +146,7 @@ class SickChill(object):
         sickchill.MY_FULLNAME = ek(os.path.normpath, ek(os.path.abspath, __file__))
         sickchill.MY_NAME = ek(os.path.basename, sickchill.MY_FULLNAME)
         sickchill.PROG_DIR = ek(os.path.dirname, sickchill.MY_FULLNAME)
-        sickchill.LOCALE_DIR = ek(os.path.join, sickchill.PROG_DIR, 'locale')
+        sickchill.LOCALE_DIR = ek(os.path.join, sickchill.PROG_DIR, 'sickchill', 'locale')
         sickchill.DATA_DIR = sickchill.PROG_DIR
         sickchill.MY_ARGS = sys.argv[1:]
 

@@ -88,7 +88,7 @@ ENCRYPTION_SECRET = None
 
 PROG_DIR = '.'
 MY_FULLNAME = None
-LOCALE_DIR = 'sickchill/locale'
+LOCALE_DIR = 'locale'
 MY_NAME = None
 MY_ARGS = []
 SYS_ENCODING = ''
