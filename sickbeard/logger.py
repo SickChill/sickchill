@@ -1,25 +1,25 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sickchill.github.io
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 """
-Custom Logger for SickRage
+Custom Logger for SickChill
 """
 
 from __future__ import print_function, unicode_literals
@@ -44,9 +44,9 @@ from six.moves.urllib.parse import quote
 
 import sickbeard
 from sickbeard import classes
-from sickrage.helper.common import dateTimeFormat
-from sickrage.helper.encoding import ek, ss
-from sickrage.helper.exceptions import ex
+from sickchill.helper.common import dateTimeFormat
+from sickchill.helper.encoding import ek, ss
+from sickchill.helper.exceptions import ex
 
 # pylint: disable=line-too-long
 
@@ -114,10 +114,10 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
     Logger to create log entries
     """
     def __init__(self):
-        self.logger = logging.getLogger('sickrage')
+        self.logger = logging.getLogger('sickchill')
 
         self.loggers = [
-            logging.getLogger('sickrage'),
+            logging.getLogger('sickchill'),
             logging.getLogger('tornado.general'),
             logging.getLogger('tornado.application'),
             # logging.getLogger('subliminal'),
@@ -143,7 +143,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         :param debug_logging: True if debug logging is enabled
         :param database_logging: True if logging database access
         """
-        self.log_file = self.log_file or ek(os.path.join, sickbeard.LOG_DIR, 'sickrage.log')
+        self.log_file = self.log_file or ek(os.path.join, sickbeard.LOG_DIR, 'sickchill.log')
 
         global log_file
         log_file = self.log_file
@@ -280,11 +280,11 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             checkversion.check_for_new_version()
             commits_behind = checkversion.updater.get_num_commits_behind()
         except Exception:  # pylint: disable=broad-except
-            submitter_result = 'Could not check if your SickRage is updated, unable to submit issue ticket to GitHub!'
+            submitter_result = 'Could not check if your SickChill is updated, unable to submit issue ticket to GitHub!'
             return submitter_result, issue_id
 
         if commits_behind is None or commits_behind > 0:
-            submitter_result = 'Please update SickRage, unable to submit issue ticket to GitHub with an outdated version!'
+            submitter_result = 'Please update SickChill, unable to submit issue ticket to GitHub with an outdated version!'
             return submitter_result, issue_id
 
         if self.submitter_running:
@@ -324,15 +324,15 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                     title_error = 'UNKNOWN'
 
                 gist = None
-                regex = r'^({0})\s+([A-Z]+)\s+[A-Za-z0-9\-\[\] :]+::\s(?:\[[\w]{{7}}\]).*$'.format(re.escape(cur_error.time))
+                regex = r'^(?P<time>{time})\s+(?P<level>[A-Z]+)\s+[A-Za-z0-9\-\[\] :]+::.*$'.format(time=re.escape(cur_error.time))
                 for i, data in enumerate(__log_data):
                     match = re.match(regex, data)
                     if match:
-                        level = match.group(1)
+                        level = match.group('level')
                         if LOGGING_LEVELS[level] == ERROR:
                             paste_data = ''.join(__log_data[i:i + 50])
                             if paste_data:
-                                gist = sickbeard.gh.get_user().create_gist(False, {'sickrage.log': InputFileContent(paste_data)})
+                                gist = sickbeard.gh.get_user().create_gist(False, {'sickchill.log': InputFileContent(paste_data)})
                             break
                     else:
                         gist = 'No ERROR found'
@@ -353,14 +353,14 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                     'Operating System: **{0}**'.format(platform.platform()),
                     'Locale: {0}'.format(locale_name),
                     'Branch: **{0}**'.format(sickbeard.BRANCH),
-                    'Commit: SickRage/SickRage@{0}'.format(sickbeard.CUR_COMMIT_HASH),
+                    'Commit: SickChill/SickChill@{0}'.format(sickbeard.CUR_COMMIT_HASH),
                     log_link,
                     '### ERROR',
                     '```',
                     cur_error.message,
                     '```',
                     '---',
-                    '_STAFF NOTIFIED_: @SickRage/owners @SickRage/moderators',
+                    '_STAFF NOTIFIED_: @SickChill/owners @SickChill/moderators',
                 ]
 
                 message = '\n'.join(msg)

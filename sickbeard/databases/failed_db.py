@@ -1,22 +1,22 @@
 # coding=utf-8
 
 # Author: Tyler Fenby <tylerfenby@gmail.com>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
 
@@ -27,7 +27,7 @@ from sickbeard.common import Quality
 # Add new migrations at the bottom of the list; subclass the previous migration.
 class InitialSchema(db.SchemaUpgrade):
     def test(self):
-        return self.hasTable('db_version')
+        return self.has_table('db_version')
 
     def execute(self):
         queries = [
@@ -45,18 +45,18 @@ class InitialSchema(db.SchemaUpgrade):
 
 class SizeAndProvider(InitialSchema):
     def test(self):
-        return self.hasColumn('failed', 'size') and self.hasColumn('failed', 'provider')
+        return self.has_column('failed', 'size') and self.has_column('failed', 'provider')
 
     def execute(self):
-        self.addColumn('failed', 'size', 'NUMERIC')
-        self.addColumn('failed', 'provider', 'TEXT', '')
+        self.add_column('failed', 'size', 'NUMERIC')
+        self.add_column('failed', 'provider', 'TEXT', '')
 
 
 class History(SizeAndProvider):
     """Snatch history that can't be modified by the user"""
 
     def test(self):
-        return self.hasTable('history')
+        return self.has_table('history')
 
     def execute(self):
         self.connection.action('CREATE TABLE history (date NUMERIC, ' +
@@ -67,10 +67,10 @@ class HistoryStatus(History):
     """Store episode status before snatch to revert to if necessary"""
 
     def test(self):
-        return self.hasColumn('history', 'old_status')
+        return self.has_column('history', 'old_status')
 
     def execute(self):
-        self.addColumn('history', 'old_status', 'NUMERIC', Quality.NONE)
-        self.addColumn('history', 'showid', 'NUMERIC', '-1')
-        self.addColumn('history', 'season', 'NUMERIC', '-1')
-        self.addColumn('history', 'episode', 'NUMERIC', '-1')
+        self.add_column('history', 'old_status', 'NUMERIC', Quality.NONE)
+        self.add_column('history', 'showid', 'NUMERIC', '-1')
+        self.add_column('history', 'season', 'NUMERIC', '-1')
+        self.add_column('history', 'episode', 'NUMERIC', '-1')

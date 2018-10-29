@@ -21,7 +21,7 @@ import weakref
 
 class Template(object):
 
-    """Represents a compiled template.
+    r"""Represents a compiled template.
 
     :class:`.Template` includes a reference to the original
     template source (via the :attr:`.source` attribute)

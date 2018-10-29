@@ -4,7 +4,7 @@ from __future__ import print_function, unicode_literals
 from feedparser.api import parse
 
 from sickbeard import logger
-from sickrage.helper.exceptions import ex
+from sickchill.helper.exceptions import ex
 
 
 def getFeed(url, params=None, request_hook=None):

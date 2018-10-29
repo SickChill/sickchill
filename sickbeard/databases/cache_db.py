@@ -1,22 +1,22 @@
 # coding=utf-8
 
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
 
@@ -26,7 +26,7 @@ from sickbeard import db
 # Add new migrations at the bottom of the list; subclass the previous migration.
 class InitialSchema(db.SchemaUpgrade):
     def test(self):
-        return self.hasTable("db_version")
+        return self.has_table("db_version")
 
     def execute(self):
         queries = [
@@ -48,7 +48,7 @@ class InitialSchema(db.SchemaUpgrade):
 
 class AddSceneExceptions(InitialSchema):
     def test(self):
-        return self.hasTable("scene_exceptions")
+        return self.has_table("scene_exceptions")
 
     def execute(self):
         self.connection.action(
@@ -57,7 +57,7 @@ class AddSceneExceptions(InitialSchema):
 
 class AddSceneNameCache(AddSceneExceptions):
     def test(self):
-        return self.hasTable("scene_names")
+        return self.has_table("scene_names")
 
     def execute(self):
         self.connection.action("CREATE TABLE scene_names (indexer_id INTEGER, name TEXT);")
@@ -65,7 +65,7 @@ class AddSceneNameCache(AddSceneExceptions):
 
 class AddNetworkTimezones(AddSceneNameCache):
     def test(self):
-        return self.hasTable("network_timezones")
+        return self.has_table("network_timezones")
 
     def execute(self):
         self.connection.action("CREATE TABLE network_timezones (network_name TEXT PRIMARY KEY, timezone TEXT);")
@@ -73,7 +73,7 @@ class AddNetworkTimezones(AddSceneNameCache):
 
 class AddLastSearch(AddNetworkTimezones):
     def test(self):
-        return self.hasTable("lastSearch")
+        return self.has_table("lastSearch")
 
     def execute(self):
         self.connection.action("CREATE TABLE lastSearch (provider TEXT, time NUMERIC);")
@@ -81,23 +81,23 @@ class AddLastSearch(AddNetworkTimezones):
 
 class AddSceneExceptionsSeasons(AddLastSearch):
     def test(self):
-        return self.hasColumn("scene_exceptions", "season")
+        return self.has_column("scene_exceptions", "season")
 
     def execute(self):
-        self.addColumn("scene_exceptions", "season", "NUMERIC", -1)
+        self.add_column("scene_exceptions", "season", "NUMERIC", -1)
 
 
 class AddSceneExceptionsCustom(AddSceneExceptionsSeasons):  # pylint:disable=too-many-ancestors
     def test(self):
-        return self.hasColumn("scene_exceptions", "custom")
+        return self.has_column("scene_exceptions", "custom")
 
     def execute(self):
-        self.addColumn("scene_exceptions", "custom", "NUMERIC", 0)
+        self.add_column("scene_exceptions", "custom", "NUMERIC", 0)
 
 
 class AddSceneExceptionsRefresh(AddSceneExceptionsCustom):  # pylint:disable=too-many-ancestors
     def test(self):
-        return self.hasTable("scene_exceptions_refresh")
+        return self.has_table("scene_exceptions_refresh")
 
     def execute(self):
         self.connection.action(
@@ -106,7 +106,7 @@ class AddSceneExceptionsRefresh(AddSceneExceptionsCustom):  # pylint:disable=too
 
 class ConvertSceneExeptionsToIndexerScheme(AddSceneExceptionsRefresh):  # pylint:disable=too-many-ancestors
     def test(self):
-        return self.hasColumn("scene_exceptions", "indexer_id")
+        return self.has_column("scene_exceptions", "indexer_id")
 
     def execute(self):
         self.connection.action("DROP TABLE IF EXISTS tmp_scene_exceptions;")
@@ -118,7 +118,7 @@ class ConvertSceneExeptionsToIndexerScheme(AddSceneExceptionsRefresh):  # pylint
 
 class ConvertSceneNamesToIndexerScheme(AddSceneExceptionsRefresh):  # pylint:disable=too-many-ancestors
     def test(self):
-        return self.hasColumn("scene_names", "indexer_id")
+        return self.has_column("scene_names", "indexer_id")
 
     def execute(self):
         self.connection.action("DROP TABLE IF EXISTS tmp_scene_names;")

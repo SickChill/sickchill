@@ -98,7 +98,28 @@ class QualityStringTests(unittest.TestCase):
             "Test Show S01E02 720p WEB-DL AAC2 0 H 264-GROUP",
             "Test_Show.S01E02_720p_WEB-DL_AAC2.0_H264-GROUP",
             "Test.Show.S01E02.720p.WEB-DL.AAC2.0.H264-GROUP",
-            "Test.Show.S01E02.720p.iTunes.Rip.H264.AAC-GROUP"
+            "Test.Show.S01E02.720p.iTunes.Rip.H264.AAC-GROUP",
+            "Test.Show.S01E02.Episode.Name.Itunes.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.ItunesHD.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.ItunesUHD.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.720p.Itunes.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.720p.ItunesHD.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.720p.ItunesUHD.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.AMZN.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.Amazon.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.AmazonHD.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.AmazonUHD.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.720p.AMZN.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.720p.Amazon.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.720p.AmazonHD.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.720p.AmazonUHD.WEB-DL.x264",
+
+            # German dubs
+            "Test.Show.S01E02.Episode.Name.German.DD51.Synced.DL.iTunesHD.AVC",
+            "Test.Show.S01E02.Episode.Name.German.DD51.Synced.DL.AmazonHD.x264",
+            "Test.Show.S01E02.Episode.Name.German.Dubbed.DL.iTunesHD.x264",
+            "Test.Show.S01E02.Episode.Name.German.DD51.DL.NetflixHD.x264",
+            "Test.Show.S01E02.Episode.Name.German.DD51.DL.NetflixUHD.x264"
         ],
         'full_hd_web_dl': [
             "Test.Show.S01E02.1080p.WEB-DL-GROUP",
@@ -107,7 +128,21 @@ class QualityStringTests(unittest.TestCase):
             "Test.Show.S01E02.WEBRip.1080p.H264.AAC.2.0-GROUP",
             "Test.Show.S01E02.1080p.iTunes.H.264.AAC-GROUP",
             "Test Show S01E02 1080p iTunes H 264 AAC-GROUP",
-            "Test_Show_S01E02_1080p_iTunes_H_264_AAC-GROUP"
+            "Test_Show_S01E02_1080p_iTunes_H_264_AAC-GROUP",
+            "Test.Show.S01E02.Episode.Name.1080p.Itunes.WEB-DL.x264"
+            "Test.Show.S01E02.Episode.Name.1080p.ItunesHD.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.1080p.ItunesUHD.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.1080p.AMZN.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.1080p.Amazon.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.1080p.AmazonUHD.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.1080p.AmazonHD.WEB-DL.x264",
+
+            # German dubs
+            "Test.Show.S01E02.Episode.Name.German.DD51.Synced.DL.1080p.iTunesHD.AVC",
+            "Test.Show.S01E02.Episode.Name.German.DD51.Synced.DL.1080p.AmazonHD.x264",
+            "Test.Show.S01E02.Episode.Name.German.Dubbed.DL.1080p.iTunesHD.x264",
+            "Test.Show.S01E02.Episode.Name.German.DD51.DL.1080p.NetflixHD.x264",
+            "Test.Show.S01E02.Episode.Name.German.DD51.DL.1080p.NetflixUHD.x264"
         ],
         'hd_bluray': [
             "Test.Show.S01E02.720p.BluRay.x264-GROUP",

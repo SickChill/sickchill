@@ -1,29 +1,29 @@
 # coding=utf-8
 # Author: Jordon Smith <smith@jordon.me.uk>
 #
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
 
 import sickbeard
 from sickbeard import logger, tvcache
-from sickrage.helper.common import try_int
-from sickrage.providers.nzb.NZBProvider import NZBProvider
+from sickchill.helper.common import try_int
+from sickchill.providers.nzb.NZBProvider import NZBProvider
 
 
 class OmgwtfnzbsProvider(NZBProvider):
@@ -85,7 +85,7 @@ class OmgwtfnzbsProvider(NZBProvider):
             'user': self.username,
             'api': self.api_key,
             'eng': 1,
-            'catid': '19,20',  # SD,HD
+            'catid': '19,20,30',  # SD,HD,UHD
             'retention': sickbeard.USENET_RETENTION,
         }
 
@@ -135,7 +135,7 @@ class OmgwtfnzbsCache(tvcache.TVCache):
             'user': provider.username,
             'api': provider.api_key,
             'eng': 1,
-            'catid': '19,20'  # SD,HD
+            'catid': '19,20,30',  # SD,HD,UHD
         }
         return self.get_rss_feed(self.provider.urls['rss'], params=search_params)
 

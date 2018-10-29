@@ -1,22 +1,22 @@
 # coding=utf-8
 
 # Author: Mr_Orange <mr_orange@hotmail.it>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
 
@@ -80,18 +80,43 @@ class qbittorrentAPI(GenericClient):
 
     def _add_torrent_uri(self, result):
 
-        self.url = urljoin(self.host, 'command/download')
         data = {'urls': result.url}
+
+        if self.api > 6:
+            if sickbeard.TORRENT_PATH:
+                data['savepath'] = sickbeard.TORRENT_PATH
+
+            label = sickbeard.TORRENT_LABEL
+            if result.show.is_anime:
+                label = sickbeard.TORRENT_LABEL_ANIME
+
+            if label:
+                data['category'] = label.replace(' ', '_')
+
+        self.url = urljoin(self.host, 'command/download')
         if self._request(method='post', data=data, cookies=self.session.cookies):
-            sleep(1)  # The client always needs to fetch the torrent/magnet
+            sleep(2)  # The client always needs to fetch the torrent/magnet
             return self._verify_added(result.hash)
         return False
 
     def _add_torrent_file(self, result):
 
-        self.url = urljoin(self.host, 'command/upload')
         files = {'torrents': (result.name + '.torrent', result.content)}
-        if self._request(method='post', files=files, cookies=self.session.cookies):
+
+        data = {}
+        if self.api > 6:
+            if sickbeard.TORRENT_PATH:
+                data['savepath'] = sickbeard.TORRENT_PATH
+
+            label = sickbeard.TORRENT_LABEL
+            if result.show.is_anime:
+                label = sickbeard.TORRENT_LABEL_ANIME
+
+            if label:
+                data['category'] = label.replace(' ', '_')
+
+        self.url = urljoin(self.host, 'command/upload')
+        if self._request(method='post', files=files, data=data, cookies=self.session.cookies):
             return self._verify_added(result.hash)
         return False
 
@@ -131,7 +156,7 @@ class qbittorrentAPI(GenericClient):
         data = {'hash': result.hash.lower()}
         return self._request(method='post', data=data, cookies=self.session.cookies)
 
-    def _verify_added(self, torrent_hash, attempts=5):
+    def _verify_added(self, torrent_hash, attempts=10):
         self.url = urljoin(self.host, 'query/propertiesGeneral/{}'.format(torrent_hash.lower()))
         for i in range(attempts):
             if self._request(method='get', cookies=self.session.cookies):

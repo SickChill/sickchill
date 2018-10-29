@@ -3,18 +3,17 @@
 oauthlib.oauth2.rfc6749.grant_types.openid_connect
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
-from __future__ import unicode_literals, absolute_import
-
-from json import loads
-import logging
+from __future__ import absolute_import, unicode_literals
 
 import datetime
+import logging
+from json import loads
 
-from .base import GrantTypeBase
-from .authorization_code import AuthorizationCodeGrant
-from .implicit import ImplicitGrant
-from ..errors import InvalidRequestError, LoginRequired, ConsentRequired
+from ..errors import ConsentRequired, InvalidRequestError, LoginRequired
 from ..request_validator import RequestValidator
+from .authorization_code import AuthorizationCodeGrant
+from .base import GrantTypeBase
+from .implicit import ImplicitGrant
 
 log = logging.getLogger(__name__)
 
@@ -141,6 +140,13 @@ class OpenIDConnectBase(object):
 
     def openid_authorization_validator(self, request):
         """Perform OpenID Connect specific authorization request validation.
+
+        nonce
+                OPTIONAL. String value used to associate a Client session with
+                an ID Token, and to mitigate replay attacks. The value is
+                passed through unmodified from the Authentication Request to
+                the ID Token. Sufficient entropy MUST be present in the nonce
+                values used to prevent attackers from guessing values
 
         display
                 OPTIONAL. ASCII string value that specifies how the
@@ -275,14 +281,26 @@ class OpenIDConnectBase(object):
         if not request.scopes or 'openid' not in request.scopes:
             return {}
 
-        # prompt other than 'none' should be handled by the server code that uses oauthlib
-        if request.prompt == 'none' and not request.id_token_hint:
-            msg = "Prompt is set to none yet id_token_hint is missing."
-            raise InvalidRequestError(request=request, description=msg)
+        prompt = request.prompt if request.prompt else []
+        if hasattr(prompt, 'split'):
+            prompt = prompt.strip().split()
+        prompt = set(prompt)
 
-        if request.prompt == 'none':
+        if 'none' in prompt:
+
+            if len(prompt) > 1:
+                msg = "Prompt none is mutually exclusive with other values."
+                raise InvalidRequestError(request=request, description=msg)
+
+            # prompt other than 'none' should be handled by the server code that
+            # uses oauthlib
+            if not request.id_token_hint:
+                msg = "Prompt is set to none yet id_token_hint is missing."
+                raise InvalidRequestError(request=request, description=msg)
+
             if not self.request_validator.validate_silent_login(request):
                 raise LoginRequired(request=request)
+
             if not self.request_validator.validate_silent_authorization(request):
                 raise ConsentRequired(request=request)
 
@@ -293,14 +311,9 @@ class OpenIDConnectBase(object):
             msg = "Session user does not match client supplied user."
             raise LoginRequired(request=request, description=msg)
 
-        prompt = []
-        if request.prompt:
-            prompt = request.prompt
-            if hasattr(prompt, 'split'):
-                prompt = prompt.split()
-
         request_info = {
             'display': request.display,
+            'nonce': request.nonce,
             'prompt': prompt,
             'ui_locales': request.ui_locales.split() if request.ui_locales else [],
             'id_token_hint': request.id_token_hint,
@@ -331,9 +344,8 @@ class OpenIDConnectBase(object):
             desc = 'Request is missing mandatory nonce parameter.'
             raise InvalidRequestError(request=request, description=desc)
 
-        self._inflate_claims(request)
+        return {}
 
-        return {'nonce': request.nonce, 'claims': request.claims}
 
 class OpenIDConnectAuthCode(OpenIDConnectBase):
 
@@ -364,6 +376,8 @@ class OpenIDConnectHybrid(OpenIDConnectBase):
 
         self.proxy_target = AuthorizationCodeGrant(
             request_validator=request_validator, **kwargs)
+        # All hybrid response types should be fragment-encoded.
+        self.proxy_target.default_response_mode = "fragment"
         self.register_response_type('code id_token')
         self.register_response_type('code token')
         self.register_response_type('code id_token token')

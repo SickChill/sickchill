@@ -7,7 +7,7 @@ from rebulk.remodule import re
 
 from rebulk import Rebulk, Rule, RemoveMatch
 from ..common.validators import seps_surround
-from ..common import dash
+from ..common import dash, seps
 
 
 def screen_size():
@@ -29,7 +29,7 @@ def screen_size():
             return other
         return '__default__'
 
-    rebulk = Rebulk().regex_defaults(flags=re.IGNORECASE)
+    rebulk = Rebulk().string_defaults(ignore_case=True).regex_defaults(flags=re.IGNORECASE)
     rebulk.defaults(name="screen_size", validator=seps_surround, conflict_solver=conflict_solver)
 
     rebulk.regex(r"(?:\d{3,}(?:x|\*))?360(?:i|p?x?)", value="360p")
@@ -45,6 +45,7 @@ def screen_size():
     rebulk.regex(r"(?:\d{3,}(?:x|\*))?1080(?:p(?:50|60)?x?)", value="1080p")
     rebulk.regex(r"(?:\d{3,}(?:x|\*))?1080p?hd", value="1080p")
     rebulk.regex(r"(?:\d{3,}(?:x|\*))?2160(?:i|p?x?)", value="4K")
+    rebulk.string('4k', value='4K')
 
     _digits_re = re.compile(r'\d+')
 
@@ -55,7 +56,7 @@ def screen_size():
                  tags=['resolution'],
                  conflict_solver=lambda match, other: '__default__' if other.name == 'screen_size' else other)
 
-    rebulk.rules(ScreenSizeOnlyOne)
+    rebulk.rules(ScreenSizeOnlyOne, RemoveScreenSizeConflicts)
 
     return rebulk
 
@@ -73,5 +74,35 @@ class ScreenSizeOnlyOne(Rule):
                                                      lambda match: match.name == 'screen_size')))
             if len(screensize) > 1:
                 to_remove.extend(screensize[1:])
+
+        return to_remove
+
+
+class RemoveScreenSizeConflicts(Rule):
+    """
+    Remove season and episode matches which conflicts with screen_size match.
+    """
+    consequence = RemoveMatch
+
+    def when(self, matches, context):
+        to_remove = []
+        for filepart in matches.markers.named('path'):
+            screensize = matches.range(filepart.start, filepart.end, lambda match: match.name == 'screen_size', 0)
+            if not screensize:
+                continue
+
+            conflicts = matches.conflicting(screensize, lambda match: match.name in ('season', 'episode'))
+            if not conflicts:
+                continue
+
+            video_profile = matches.range(screensize.end, filepart.end, lambda match: match.name == 'video_profile', 0)
+            if video_profile and not matches.holes(screensize.end, video_profile.start,
+                                                   predicate=lambda h: h.value and h.value.strip(seps)):
+                to_remove.extend(conflicts)
+
+            date = matches.previous(screensize, lambda match: match.name == 'date', 0)
+            if date and not matches.holes(date.end, screensize.start,
+                                          predicate=lambda h: h.value and h.value.strip(seps)):
+                to_remove.extend(conflicts)
 
         return to_remove

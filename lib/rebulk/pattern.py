@@ -25,7 +25,7 @@ class Pattern(object):
     def __init__(self, name=None, tags=None, formatter=None, value=None, validator=None, children=False, every=False,
                  private_parent=False, private_children=False, private=False, private_names=None, ignore_names=None,
                  marker=False, format_all=False, validate_all=False, disabled=lambda context: False, log_level=None,
-                 properties=None):
+                 properties=None, post_processor=None, **kwargs):
         """
         :param name: Name of this pattern
         :type name: str
@@ -66,8 +66,10 @@ class Pattern(object):
         :type disabled: bool|function
         :param log_lvl: Log level associated to this pattern
         :type log_lvl: int
+        :param post_process: Post processing function
+        :type post_processor: func
         """
-        # pylint:disable=too-many-locals
+        # pylint:disable=too-many-locals,unused-argument
         self.name = name
         self.tags = ensure_list(tags)
         self.formatters, self._default_formatter = ensure_dict(formatter, lambda x: x)
@@ -90,6 +92,10 @@ class Pattern(object):
         self._log_level = log_level
         self._properties = properties
         self.defined_at = debug.defined_at()
+        if not callable(post_processor):
+            self.post_processor = None
+        else:
+            self.post_processor = post_processor
 
     @property
     def log_level(self):
@@ -130,7 +136,7 @@ class Pattern(object):
         :return:
         :rtype:
         """
-        if len(match) < 0 or match.value == "":
+        if not match or match.value == "":
             return False
 
         pattern_value = get_first_defined(self.values, [match.name, '__parent__', None],
@@ -158,7 +164,7 @@ class Pattern(object):
         :return:
         :rtype:
         """
-        if len(child) < 0 or child.value == "":
+        if not child or child.value == "":
             return False
 
         pattern_value = get_first_defined(self.values, [child.name, '__children__', None],
@@ -221,10 +227,23 @@ class Pattern(object):
                         for child in match.children:
                             child.match_index = match_index
                             matches.append(child)
+        matches = self._matches_post_process(matches)
         self._matches_privatize(matches)
         self._matches_ignore(matches)
         if with_raw_matches:
             return matches, raw_matches
+        return matches
+
+    def _matches_post_process(self, matches):
+        """
+        Post process matches with user defined function
+        :param matches:
+        :type matches:
+        :return:
+        :rtype:
+        """
+        if self.post_processor:
+            return self.post_processor(matches, self)
         return matches
 
     def _matches_privatize(self, matches):
@@ -316,7 +335,7 @@ class StringPattern(Pattern):
     """
 
     def __init__(self, *patterns, **kwargs):
-        call(super(StringPattern, self).__init__, **kwargs)
+        super(StringPattern, self).__init__(**kwargs)
         self._patterns = patterns
         self._kwargs = kwargs
         self._match_kwargs = filter_match_kwargs(kwargs)
@@ -330,9 +349,8 @@ class StringPattern(Pattern):
         return self._match_kwargs
 
     def _match(self, pattern, input_string, context=None):
-        for index in call(find_all, input_string, pattern, **self._kwargs):
-            yield call(Match, index, index + len(pattern), pattern=self, input_string=input_string,
-                       **self._match_kwargs)
+        for index in find_all(input_string, pattern, **self._kwargs):
+            yield Match(index, index + len(pattern), pattern=self, input_string=input_string, **self._match_kwargs)
 
 
 class RePattern(Pattern):
@@ -341,7 +359,7 @@ class RePattern(Pattern):
     """
 
     def __init__(self, *patterns, **kwargs):
-        call(super(RePattern, self).__init__, **kwargs)
+        super(RePattern, self).__init__(**kwargs)
         self.repeated_captures = REGEX_AVAILABLE
         if 'repeated_captures' in kwargs:
             self.repeated_captures = kwargs.get('repeated_captures')
@@ -384,21 +402,21 @@ class RePattern(Pattern):
         for match_object in pattern.finditer(input_string):
             start = match_object.start()
             end = match_object.end()
-            main_match = call(Match, start, end, pattern=self, input_string=input_string, **self._match_kwargs)
+            main_match = Match(start, end, pattern=self, input_string=input_string, **self._match_kwargs)
 
             if pattern.groups:
                 for i in range(1, pattern.groups + 1):
                     name = names.get(i, main_match.name)
                     if self.repeated_captures:
                         for start, end in match_object.spans(i):
-                            child_match = call(Match, start, end, name=name, parent=main_match, pattern=self,
-                                               input_string=input_string, **self._children_match_kwargs)
+                            child_match = Match(start, end, name=name, parent=main_match, pattern=self,
+                                                input_string=input_string, **self._children_match_kwargs)
                             main_match.children.append(child_match)
                     else:
                         start, end = match_object.span(i)
                         if start > -1 and end > -1:
-                            child_match = call(Match, start, end, name=name, parent=main_match, pattern=self,
-                                               input_string=input_string, **self._children_match_kwargs)
+                            child_match = Match(start, end, name=name, parent=main_match, pattern=self,
+                                                input_string=input_string, **self._children_match_kwargs)
                             main_match.children.append(child_match)
 
             yield main_match
@@ -410,7 +428,7 @@ class FunctionalPattern(Pattern):
     """
 
     def __init__(self, *patterns, **kwargs):
-        call(super(FunctionalPattern, self).__init__, **kwargs)
+        super(FunctionalPattern, self).__init__(**kwargs)
         self._patterns = patterns
         self._kwargs = kwargs
         self._match_kwargs = filter_match_kwargs(kwargs)
@@ -439,14 +457,14 @@ class FunctionalPattern(Pattern):
                     if self._match_kwargs:
                         options = self._match_kwargs.copy()
                         options.update(args)
-                    yield call(Match, pattern=self, input_string=input_string, **options)
+                    yield Match(pattern=self, input_string=input_string, **options)
                 else:
                     kwargs = self._match_kwargs
                     if isinstance(args[-1], dict):
                         kwargs = dict(kwargs)
                         kwargs.update(args[-1])
                         args = args[:-1]
-                    yield call(Match, *args, pattern=self, input_string=input_string, **kwargs)
+                    yield Match(*args, pattern=self, input_string=input_string, **kwargs)
 
 
 def filter_match_kwargs(kwargs, children=False):

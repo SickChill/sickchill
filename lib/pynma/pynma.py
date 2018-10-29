@@ -14,7 +14,7 @@ except ImportError:
 
 __version__ = "1.0"
 
-API_SERVER = 'www.notifymyandroid.com'
+API_SERVER = 'notifymyandroid.appspot.com'
 ADD_PATH   = '/publicapi/notify'
 
 USER_AGENT="PyNMA/v%s"%__version__

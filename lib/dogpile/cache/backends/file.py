@@ -7,10 +7,10 @@ Provides backends that deal with local filesystem access.
 """
 
 from __future__ import with_statement
-from dogpile.cache.api import CacheBackend, NO_VALUE
+from ..api import CacheBackend, NO_VALUE
 from contextlib import contextmanager
-from dogpile.cache import compat
-from dogpile.cache import util
+from ...util import compat
+from ... import util
 import os
 
 __all__ = 'DBMBackend', 'FileLock', 'AbstractFileLock'

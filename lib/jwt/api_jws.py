@@ -1,14 +1,16 @@
 import binascii
 import json
 import warnings
-
 from collections import Mapping
 
 from .algorithms import (
     Algorithm, get_default_algorithms, has_crypto, requires_cryptography  # NOQA
 )
 from .compat import binary_type, string_types, text_type
-from .exceptions import DecodeError, InvalidAlgorithmError, InvalidTokenError
+from .exceptions import (
+    DecodeError, InvalidAlgorithmError, InvalidSignatureError,
+    InvalidTokenError
+)
 from .utils import base64url_decode, base64url_encode, force_bytes, merge_dict
 
 
@@ -117,16 +119,27 @@ class PyJWS(object):
 
     def decode(self, jws, key='', verify=True, algorithms=None, options=None,
                **kwargs):
+
+        merged_options = merge_dict(self.options, options)
+        verify_signature = merged_options['verify_signature']
+
+        if verify_signature and not algorithms:
+            warnings.warn(
+                'It is strongly recommended that you pass in a ' +
+                'value for the "algorithms" argument when calling decode(). ' +
+                'This argument will be mandatory in a future version.',
+                DeprecationWarning
+            )
+
         payload, signing_input, header, signature = self._load(jws)
 
-        if verify:
-            merged_options = merge_dict(self.options, options)
-            if merged_options.get('verify_signature'):
-                self._verify_signature(payload, signing_input, header, signature,
-                                       key, algorithms)
-        else:
+        if not verify:
             warnings.warn('The verify parameter is deprecated. '
-                          'Please use options instead.', DeprecationWarning)
+                          'Please use verify_signature in options instead.',
+                          DeprecationWarning, stacklevel=2)
+        elif verify_signature:
+            self._verify_signature(payload, signing_input, header, signature,
+                                   key, algorithms)
 
         return payload
 
@@ -193,7 +206,7 @@ class PyJWS(object):
             key = alg_obj.prepare_key(key)
 
             if not alg_obj.verify(signing_input, key, signature):
-                raise DecodeError('Signature verification failed')
+                raise InvalidSignatureError('Signature verification failed')
 
         except KeyError:
             raise InvalidAlgorithmError('Algorithm not supported')

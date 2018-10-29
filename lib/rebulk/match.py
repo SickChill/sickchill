@@ -3,8 +3,10 @@
 """
 Classes and functions related to matches
 """
-from collections import defaultdict, MutableSequence
 import copy
+import itertools
+from collections import defaultdict, MutableSequence
+
 try:
     from collections import OrderedDict  # pylint:disable=ungrouped-imports
 except ImportError:  # pragma: no cover
@@ -20,6 +22,7 @@ class MatchesDict(OrderedDict):
     """
     A custom dict with matches property.
     """
+
     def __init__(self):
         super(MatchesDict, self).__init__()
         self.matches = defaultdict(list)
@@ -33,18 +36,66 @@ class _BaseMatches(MutableSequence):
     _base = list
     _base_add = _base.append
     _base_remove = _base.remove
+    _base_extend = _base.extend
 
-    def __init__(self, matches=None, input_string=None):
+    def __init__(self, matches=None, input_string=None):  # pylint: disable=super-init-not-called
         self.input_string = input_string
         self._max_end = 0
         self._delegate = []
-        self._name_dict = defaultdict(_BaseMatches._base)
-        self._tag_dict = defaultdict(_BaseMatches._base)
-        self._start_dict = defaultdict(_BaseMatches._base)
-        self._end_dict = defaultdict(_BaseMatches._base)
-        self._index_dict = defaultdict(_BaseMatches._base)
+        self.__name_dict = None
+        self.__tag_dict = None
+        self.__start_dict = None
+        self.__end_dict = None
+        self.__index_dict = None
         if matches:
             self.extend(matches)
+
+    @property
+    def _name_dict(self):
+        if self.__name_dict is None:
+            self.__name_dict = defaultdict(_BaseMatches._base)
+            for name, values in itertools.groupby([m for m in self._delegate if m.name], lambda item: item.name):
+                _BaseMatches._base_extend(self.__name_dict[name], values)
+
+        return self.__name_dict
+
+    @property
+    def _start_dict(self):
+        if self.__start_dict is None:
+            self.__start_dict = defaultdict(_BaseMatches._base)
+            for start, values in itertools.groupby([m for m in self._delegate], lambda item: item.start):
+                _BaseMatches._base_extend(self.__start_dict[start], values)
+
+        return self.__start_dict
+
+    @property
+    def _end_dict(self):
+        if self.__end_dict is None:
+            self.__end_dict = defaultdict(_BaseMatches._base)
+            for start, values in itertools.groupby([m for m in self._delegate], lambda item: item.end):
+                _BaseMatches._base_extend(self.__end_dict[start], values)
+
+        return self.__end_dict
+
+    @property
+    def _tag_dict(self):
+        if self.__tag_dict is None:
+            self.__tag_dict = defaultdict(_BaseMatches._base)
+            for match in self._delegate:
+                for tag in match.tags:
+                    _BaseMatches._base_add(self.__tag_dict[tag], match)
+
+        return self.__tag_dict
+
+    @property
+    def _index_dict(self):
+        if self.__index_dict is None:
+            self.__index_dict = defaultdict(_BaseMatches._base)
+            for match in self._delegate:
+                for index in range(*match.span):
+                    _BaseMatches._base_add(self.__index_dict[index], match)
+
+        return self.__index_dict
 
     def _add_match(self, match):
         """
@@ -52,14 +103,19 @@ class _BaseMatches(MutableSequence):
         :param match:
         :type match: Match
         """
-        if match.name:
-            _BaseMatches._base_add(self._name_dict[match.name], (match))
-        for tag in match.tags:
-            _BaseMatches._base_add(self._tag_dict[tag], match)
-        _BaseMatches._base_add(self._start_dict[match.start], match)
-        _BaseMatches._base_add(self._end_dict[match.end], match)
-        for index in range(*match.span):
-            _BaseMatches._base_add(self._index_dict[index], match)
+        if self.__name_dict is not None:
+            if match.name:
+                _BaseMatches._base_add(self._name_dict[match.name], (match))
+        if self.__tag_dict is not None:
+            for tag in match.tags:
+                _BaseMatches._base_add(self._tag_dict[tag], match)
+        if self.__start_dict is not None:
+            _BaseMatches._base_add(self._start_dict[match.start], match)
+        if self.__end_dict is not None:
+            _BaseMatches._base_add(self._end_dict[match.end], match)
+        if self.__index_dict is not None:
+            for index in range(*match.span):
+                _BaseMatches._base_add(self._index_dict[index], match)
         if match.end > self._max_end:
             self._max_end = match.end
 
@@ -69,14 +125,19 @@ class _BaseMatches(MutableSequence):
         :param match:
         :type match: Match
         """
-        if match.name:
-            _BaseMatches._base_remove(self._name_dict[match.name], match)
-        for tag in match.tags:
-            _BaseMatches._base_remove(self._tag_dict[tag], match)
-        _BaseMatches._base_remove(self._start_dict[match.start], match)
-        _BaseMatches._base_remove(self._end_dict[match.end], match)
-        for index in range(*match.span):
-            _BaseMatches._base_remove(self._index_dict[index], match)
+        if self.__name_dict is not None:
+            if match.name:
+                _BaseMatches._base_remove(self._name_dict[match.name], match)
+        if self.__tag_dict is not None:
+            for tag in match.tags:
+                _BaseMatches._base_remove(self._tag_dict[tag], match)
+        if self.__start_dict is not None:
+            _BaseMatches._base_remove(self._start_dict[match.start], match)
+        if self.__end_dict is not None:
+            _BaseMatches._base_remove(self._end_dict[match.end], match)
+        if self.__index_dict is not None:
+            for index in range(*match.span):
+                _BaseMatches._base_remove(self._index_dict[index], match)
         if match.end >= self._max_end and not self._end_dict[match.end]:
             self._max_end = max(self._end_dict.keys())
 
@@ -311,7 +372,8 @@ class _BaseMatches(MutableSequence):
                     return rindex
         return self.max_end
 
-    def holes(self, start=0, end=None, formatter=None, ignore=None, seps=None, predicate=None, index=None):  # pylint: disable=too-many-branches,too-many-locals
+    def holes(self, start=0, end=None, formatter=None, ignore=None, seps=None, predicate=None,
+              index=None):  # pylint: disable=too-many-branches,too-many-locals
         """
         Retrieves a set of Match objects that are not defined in given range.
         :param start:
@@ -431,14 +493,17 @@ class _BaseMatches(MutableSequence):
         """
         return self._tag_dict.keys()
 
-    def to_dict(self, details=False, implicit=False):
+    def to_dict(self, details=False, first_value=False, enforce_list=False):
         """
         Converts matches to a dict object.
         :param details if True, values will be complete Match object, else it will be only string Match.value property
         :type details: bool
-        :param implicit if True, multiple values will be set as a list in the dict. Else, only the first value
-        will be kept.
-        :type implicit: bool
+        :param first_value if True, only the first value will be kept. Else, multiple values will be set as a list in
+        the dict.
+        :type first_value: bool
+        :param enforce_list: if True, value is wrapped in a list even when a single value is found. Else, list values
+        are available under `values_list` property of the returned dict object.
+        :type enforce_list: bool
         :return:
         :rtype: dict
         """
@@ -446,10 +511,10 @@ class _BaseMatches(MutableSequence):
         for match in sorted(self):
             value = match if details else match.value
             ret.matches[match.name].append(match)
-            if value not in ret.values_list[match.name]:
+            if not enforce_list and value not in ret.values_list[match.name]:
                 ret.values_list[match.name].append(value)
             if match.name in ret.keys():
-                if implicit:
+                if not first_value:
                     if not isinstance(ret[match.name], list):
                         if ret[match.name] == value:
                             continue
@@ -459,7 +524,10 @@ class _BaseMatches(MutableSequence):
                             continue
                     ret[match.name].append(value)
             else:
-                ret[match.name] = value
+                if enforce_list and not isinstance(value, list):
+                    ret[match.name] = [value]
+                else:
+                    ret[match.name] = value
         return ret
 
     if six.PY2:  # pragma: no cover
@@ -499,15 +567,16 @@ class _BaseMatches(MutableSequence):
     def __repr__(self):
         return self._delegate.__repr__()
 
-    def insert(self, index, match):
-        self._delegate.insert(index, match)
-        self._add_match(match)
+    def insert(self, index, value):
+        self._delegate.insert(index, value)
+        self._add_match(value)
 
 
 class Matches(_BaseMatches):
     """
     A custom list[Match] contains matches list.
     """
+
     def __init__(self, matches=None, input_string=None):
         self.markers = Markers(input_string=input_string)
         super(Matches, self).__init__(matches=matches, input_string=input_string)
@@ -521,6 +590,7 @@ class Markers(_BaseMatches):
     """
     A custom list[Match] containing markers list.
     """
+
     def __init__(self, matches=None, input_string=None):
         super(Markers, self).__init__(matches=None, input_string=input_string)
 
@@ -533,8 +603,10 @@ class Match(object):
     """
     Object storing values related to a single match
     """
+
     def __init__(self, start, end, value=None, name=None, tags=None, marker=None, parent=None, private=None,
-                 pattern=None, input_string=None, formatter=None, conflict_solver=None):
+                 pattern=None, input_string=None, formatter=None, conflict_solver=None, **kwargs):
+        # pylint: disable=unused-argument
         self.start = start
         self.end = end
         self.name = name
@@ -547,7 +619,7 @@ class Match(object):
         self.pattern = pattern
         self.private = private
         self.conflict_solver = conflict_solver
-        self.children = Matches([], input_string)
+        self._children = None
         self._raw_start = None
         self._raw_end = None
         self.defined_at = pattern.defined_at if pattern else defined_at()
@@ -558,6 +630,19 @@ class Match(object):
         2-tuple with start and end indices of the match
         """
         return self.start, self.end
+
+    @property
+    def children(self):
+        """
+        Children matches.
+        """
+        if self._children is None:
+            self._children = Matches(None, self.input_string)
+        return self._children
+
+    @children.setter
+    def children(self, value):
+        self._children = value
 
     @property
     def value(self):
@@ -592,12 +677,11 @@ class Match(object):
         """
         if not self.children:
             return set([self.name])
-        else:
-            ret = set()
-            for child in self.children:
-                for name in child.names:
-                    ret.add(name)
-            return ret
+        ret = set()
+        for child in self.children:
+            for name in child.names:
+                ret.add(name)
+        return ret
 
     @property
     def raw_start(self):
@@ -689,10 +773,10 @@ class Match(object):
                     # crop is included in self, split current ...
                     right = copy.deepcopy(current)
                     current.end = start
-                    if len(current) <= 0:
+                    if not current:
                         ret.remove(current)
                     right.start = end
-                    if len(right) > 0:
+                    if right:
                         ret.append(right)
                 elif end <= current.end and end > current.start:
                     current.start = end
@@ -736,13 +820,13 @@ class Match(object):
     def __eq__(self, other):
         if isinstance(other, Match):
             return self.span == other.span and self.value == other.value and self.name == other.name and \
-                self.parent == other.parent
+                   self.parent == other.parent
         return NotImplemented
 
     def __ne__(self, other):
         if isinstance(other, Match):
             return self.span != other.span or self.value != other.value or self.name != other.name or \
-                self.parent != other.parent
+                   self.parent != other.parent
         return NotImplemented
 
     def __lt__(self, other):

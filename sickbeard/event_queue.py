@@ -8,7 +8,7 @@ import traceback
 from six.moves.queue import Empty, Queue
 
 from sickbeard import logger
-from sickrage.helper.exceptions import ex
+from sickchill.helper.exceptions import ex
 
 
 class Event(object):

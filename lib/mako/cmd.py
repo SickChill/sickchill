@@ -58,7 +58,7 @@ def cmdline(argv=None):
 
     kw = dict([varsplit(var) for var in options.var])
     try:
-        print(template.render(**kw))
+        sys.stdout.write(template.render(**kw))
     except:
         _exit()
 

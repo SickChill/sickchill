@@ -51,6 +51,7 @@ class ConflictSolver(Rule):
         return _default_conflict_solver
 
     def when(self, matches, context):
+        # pylint:disable=too-many-nested-blocks
         to_remove_matches = IdentitySet()
 
         public_matches = [match for match in matches if not match.private]

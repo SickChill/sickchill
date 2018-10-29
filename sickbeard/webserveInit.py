@@ -7,24 +7,24 @@ import threading
 from socket import errno, error as SocketError
 
 from tornado.ioloop import IOLoop
-from tornado.routes import route
 from tornado.web import Application, RedirectHandler, StaticFileHandler
 
 import sickbeard
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates, generateApiKey
+from sickbeard.routes import route
 from sickbeard.webapi import ApiHandler
 from sickbeard.webserve import CalendarHandler, KeyHandler, LoginHandler, LogoutHandler
-from sickrage.helper.encoding import ek
+from sickchill.helper.encoding import ek
 
 
 class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attributes
-    def __init__(self, options=None, io_loop=None):
+    def __init__(self, options=None):
         threading.Thread.__init__(self)
         self.daemon = True
         self.alive = True
         self.name = "TORNADO"
-        self.io_loop = io_loop or IOLoop.current()
+        self.io_loop = IOLoop.current()
 
         self.options = options or {}
         self.options.setdefault('port', 8081)
@@ -146,7 +146,7 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
             protocol = "http"
             ssl_options = None
 
-        logger.log("Starting SickRage on " + protocol + "://" + str(self.options['host']) + ":" + str(
+        logger.log("Starting SickChill on " + protocol + "://" + str(self.options['host']) + ":" + str(
             self.options['port']) + "/")
 
         try:

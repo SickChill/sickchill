@@ -54,21 +54,18 @@ gen_log = logging.getLogger("tornado.general")
 
 
 def _stderr_supports_color():
-    try:
-        if hasattr(sys.stderr, 'isatty') and sys.stderr.isatty():
-            if curses:
+    color = False
+    if hasattr(sys.stderr, 'isatty') and sys.stderr.isatty():
+        if curses:
+            try:
                 curses.setupterm()
                 if curses.tigetnum("colors") > 0:
-                    return True
-            elif colorama:
-                if sys.stderr is getattr(colorama.initialise, 'wrapped_stderr',
-                                         object()):
-                    return True
-    except Exception:
-        # Very broad exception handling because it's always better to
-        # fall back to non-colored logs than to break at startup.
-        pass
-    return False
+                    color = True
+            except Exception:
+                pass
+        elif colorama:
+            color = True
+    return color
 
 
 def _safe_unicode(s):
@@ -149,12 +146,12 @@ class LogFormatter(logging.Formatter):
                 for levelno, code in colors.items():
                     self._colors[levelno] = unicode_type(curses.tparm(fg_color, code), "ascii")
                 self._normal = unicode_type(curses.tigetstr("sgr0"), "ascii")
-            else:
-                # If curses is not present (currently we'll only get here for
-                # colorama on windows), assume hard-coded ANSI color codes.
+            elif sys.stderr is getattr(colorama, 'wrapped_stderr', object()):
                 for levelno, code in colors.items():
                     self._colors[levelno] = '\033[2;3%dm' % code
                 self._normal = '\033[0m'
+            else:
+                raise RuntimeError("No supported color terminal library")
         else:
             self._normal = ''
 
