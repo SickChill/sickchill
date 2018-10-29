@@ -53,9 +53,9 @@ if 'wizdom' not in provider_manager.names():
 # We disabled the original subscenter in lib/subliminal/extensions.py since it's outdated.
 # Until it gets an update in subliminal, we'll use a fixed provider.
 if 'subscenter' not in provider_manager.names():
-    provider_manager.register('subscenter = sickrage.providers.subtitle.subscenter:SubsCenterProvider')
+    provider_manager.register('subscenter = sickchill.providers.subtitle.subscenter:SubsCenterProvider')
 if 'subtitulamos' not in provider_manager.names():
-    provider_manager.register('subtitulamos = sickrage.providers.subtitle.subtitulamos:SubtitulamosProvider')
+    provider_manager.register('subtitulamos = sickchill.providers.subtitle.subtitulamos:SubtitulamosProvider')
 
 subliminal.region.configure('dogpile.cache.memory')
 
