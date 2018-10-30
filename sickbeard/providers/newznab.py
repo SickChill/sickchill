@@ -174,6 +174,11 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
             return False, return_categories, error_string
 
         with BS4Parser(data, 'html5lib') as html:
+            try:
+                self.torznab = html.find('server').get('title') == 'Jackett'
+            except AttributeError:
+                self.torznab = False
+
             if not html.find('categories'):
                 error_string = 'Error parsing caps xml for [{0}]'.format(self.name)
                 logger.log(error_string, logger.DEBUG)
@@ -311,6 +316,10 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 if mode == 'Season':
                     search_params.pop('ep', '')
 
+            if self.torznab:
+                search_params.pop('ep', '')
+                search_params.pop('season', '')
+
             items = []
             logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
             for search_string in search_strings[mode]:
@@ -330,10 +339,10 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                     if not self._check_auth_from_data(html):
                         break
 
-                    try:
-                        self.torznab = 'xmlns:torznab' in html.rss.attrs
-                    except AttributeError:
-                        self.torznab = False
+                    # try:
+                    #     self.torznab = 'xmlns:torznab' in html.rss.attrs
+                    # except AttributeError:
+                    #     self.torznab = False
 
                     for item in html('item'):
                         try:
