@@ -46,7 +46,7 @@ from requests.compat import urljoin
 # noinspection PyUnresolvedReferences
 from six.moves import urllib
 # noinspection PyUnresolvedReferences
-from six.moves.urllib.parse import unquote_plus
+from requests.compat unquote_plus
 from tornado.concurrent import run_on_executor
 from tornado.escape import utf8, xhtml_escape, xhtml_unescape
 from tornado.gen import coroutine

@@ -23,7 +23,7 @@ from __future__ import print_function, unicode_literals
 import re
 
 from requests.utils import dict_from_cookiejar
-from six.moves.urllib.parse import quote_plus
+from requests.compat quote_plus
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser

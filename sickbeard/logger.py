@@ -40,7 +40,7 @@ import six
 from github import InputFileContent
 from github.GithubException import RateLimitExceededException, TwoFactorException
 # noinspection PyUnresolvedReferences
-from six.moves.urllib.parse import quote
+from requests.compat quote
 
 import sickbeard
 from sickbeard import classes

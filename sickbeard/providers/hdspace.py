@@ -25,7 +25,7 @@ import re
 
 from bs4 import BeautifulSoup
 from requests.utils import dict_from_cookiejar
-from six.moves.urllib.parse import quote_plus
+from requests.compat quote_plus
 
 from sickbeard import logger, tvcache
 from sickchill.helper.common import convert_size, try_int

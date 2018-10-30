@@ -23,7 +23,7 @@ from __future__ import unicode_literals
 import re
 
 import validators
-from requests.compat import quote_plus, urljoin
+from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
@@ -132,7 +132,7 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                 get_params = {}
                 get_params.update(self.categories[mode])
-                get_params["q"] = quote_plus(search_string.decode('utf-8', 'ignore'))
+                get_params["q"] = search_string.decode('utf-8', 'ignore')
 
                 try:
                     torrents = self.get_url(search_url, params=get_params, returns='json')
