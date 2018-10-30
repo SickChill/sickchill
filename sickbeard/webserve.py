@@ -42,11 +42,10 @@ from mako.exceptions import RichTraceback
 from mako.lookup import TemplateLookup
 from mako.runtime import UNDEFINED
 from mako.template import Template as MakoTemplate
-from requests.compat import urljoin
+# noinspection PyUnresolvedReferences
+from requests.compat import unquote_plus, urljoin
 # noinspection PyUnresolvedReferences
 from six.moves import urllib
-# noinspection PyUnresolvedReferences
-from requests.compat unquote_plus
 from tornado.concurrent import run_on_executor
 from tornado.escape import utf8, xhtml_escape, xhtml_unescape
 from tornado.gen import coroutine
