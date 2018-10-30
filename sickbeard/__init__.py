@@ -719,7 +719,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             DOWNLOAD_URL, BACKLOG_DAYS, GIT_AUTH_TYPE, GIT_USERNAME, GIT_PASSWORD, GIT_TOKEN, DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, \
             NEWS_LATEST, SOCKET_TIMEOUT, SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKCHILL_BACKGROUND, \
             SICKCHILL_BACKGROUND_PATH, FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, \
-            SLACK_NOTIFY_DOWNLOAD, SLACK_WEBHOOK, USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK
+            SLACK_NOTIFY_DOWNLOAD, SLACK_NOTIFY_SUBTITLEDOWNLOAD, SLACK_WEBHOOK, USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK
 
         if __INITIALIZED__:
             return False
@@ -1234,6 +1234,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         USE_SLACK = check_setting_bool(CFG, 'Slack', 'use_slack')
         SLACK_NOTIFY_SNATCH = check_setting_bool(CFG, 'Slack', 'slack_notify_snatch')
         SLACK_NOTIFY_DOWNLOAD = check_setting_bool(CFG, 'Slack', 'slack_notify_download')
+        SLACK_NOTIFY_SUBTITLEDOWNLOAD = check_setting_bool(CFG, 'Slack', 'slack_notify_subtitledownload')
         SLACK_WEBHOOK = check_setting_str(CFG, 'Slack', 'slack_webhook')
 
         USE_DISCORD = check_setting_bool(CFG, 'Discord', 'use_discord')
@@ -2144,6 +2145,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'use_slack': int(USE_SLACK),
             'slack_notify_snatch': int(SLACK_NOTIFY_SNATCH),
             'slack_notify_download': int(SLACK_NOTIFY_DOWNLOAD),
+            'slack_notify_subtitledownload': int(SLACK_NOTIFY_SUBTITLEDOWNLOAD),
             'slack_webhook': SLACK_WEBHOOK
         },
 

@@ -3178,6 +3178,16 @@
                                     <label for="slack_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
+                            
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on subtitle download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="slack_notify_subtitledownload" id="clack_notify_subtitledownload" ${('', 'checked="checked"')[bool(sickbeard.SLACK_NOTIFY_SUBTITLEDOWNLOAD)]}/>
+                                    <label for="slack_notify_subtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                </div>
+                            </div>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
