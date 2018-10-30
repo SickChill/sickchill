@@ -1,15 +1,15 @@
 {
-  "name": "sickrage",
+  "name": "sickchill",
   "version": "4.0.72",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SickRage/SickRage.git"
+    "url": "git+https://github.com/SickChill/SickChill.git"
   },
   "bugs": {
-    "url": "https://github.com/SickRage/SickRage/issues"
+    "url": "https://github.com/SickChill/SickChill/issues"
   },
-  "homepage": "https://github.com/SickRage/SickRage#readme",
+  "homepage": "https://github.com/SickChill/SickChill#readme",
   "scripts": {
     "test": "xo --verbose && ava --verbose",
     "security": "snyk test"
@@ -27,8 +27,8 @@
     "grunt-contrib-cssmin": "^2.0.0",
     "grunt-contrib-jshint": "^1.1.0",
     "grunt-contrib-sass": "^1.0.0",
-    "grunt-contrib-uglify": "git+https://github.com/gruntjs/grunt-contrib-uglify.git#harmony",
-    "grunt-contrib-uglify-es": "git+https://github.com/gruntjs/grunt-contrib-uglify.git#harmony",
+    "grunt-contrib-uglify": "^3.3.0",
+    "grunt-contrib-uglify-es": "^3.3.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-exec": "^3.0.0",
     "grunt-po2json": "git+https://github.com/rockykitamura/grunt-po2json.git",

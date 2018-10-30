@@ -24,8 +24,18 @@ def edition():
                  conflict_solver=lambda match, other: other
                  if other.name == 'episode_details' and other.value == 'Special'
                  else '__default__')
+    rebulk.string('se', value='Special Edition', tags='has-neighbor')
     rebulk.regex('criterion-edition', 'edition-criterion', value='Criterion Edition')
     rebulk.regex('deluxe', 'deluxe-edition', 'edition-deluxe', value='Deluxe Edition')
-    rebulk.regex('director\'?s?-cut', 'director\'?s?-cut-edition', 'edition-director\'?s?-cut', value='Director\'s cut')
+    rebulk.regex('limited', 'limited-edition', value='Limited Edition', tags=['has-neighbor', 'release-group-prefix'])
+    rebulk.regex(r'theatrical-cut', r'theatrical-edition', r'theatrical', value='Theatrical Edition')
+    rebulk.regex(r"director'?s?-cut", r"director'?s?-cut-edition", r"edition-director'?s?-cut", 'DC',
+                 value="Director's Cut")
+    rebulk.regex('extended', 'extended-?cut', 'extended-?version',
+                 value='Extended', tags=['has-neighbor', 'release-group-prefix'])
+    rebulk.regex('alternat(e|ive)(?:-?Cut)?', value='Alternative Cut', tags=['has-neighbor', 'release-group-prefix'])
+    for value in ('Remastered', 'Uncensored', 'Uncut', 'Unrated'):
+        rebulk.string(value, value=value, tags=['has-neighbor', 'release-group-prefix'])
+    rebulk.string('Festival', value='Festival', tags=['has-neighbor-before', 'has-neighbor-after'])
 
     return rebulk

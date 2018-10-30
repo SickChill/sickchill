@@ -1,22 +1,22 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sickchill.github.io
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -29,9 +29,9 @@ import traceback
 import sickbeard
 from sickbeard import clients, common, db, failed_history, helpers, history, logger, notifiers, nzbget, nzbSplitter, sab, show_name_helpers, ui
 from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import AuthException, ex
-from sickrage.providers.GenericProvider import GenericProvider
+from sickchill.helper.encoding import ek
+from sickchill.helper.exceptions import AuthException, ex
+from sickchill.providers.GenericProvider import GenericProvider
 
 
 def _downloadResult(result):
@@ -54,18 +54,18 @@ def _downloadResult(result):
     elif result.resultType == GenericProvider.NZBDATA:
 
         # get the final file path to the nzb
-        fileName = ek(os.path.join, sickbeard.NZB_DIR, result.name + ".nzb")
+        file_name = ek(os.path.join, sickbeard.NZB_DIR, result.name + ".nzb")
 
-        logger.log("Saving NZB to " + fileName)
+        logger.log("Saving NZB to " + file_name)
 
         newResult = True
 
         # save the data to disk
         try:
-            with ek(open, fileName, 'w') as fileOut:
+            with ek(open, file_name, 'w') as fileOut:
                 fileOut.write(result.extraInfo[0])
 
-            helpers.chmodAsParent(fileName)
+            helpers.chmodAsParent(file_name)
 
         except EnvironmentError as e:
             logger.log("Error trying to save NZB to black hole: " + ex(e), logger.ERROR)
@@ -371,14 +371,13 @@ def searchForNeededEpisodes():
 
     origThreadName = threading.currentThread().name
 
-    providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active() and x.enable_daily]
+    providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active and x.enable_daily and x.can_daily]
     for curProvider in providers:
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
         curProvider.cache.update_cache()
 
     for curProvider in providers:
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
-        curFoundResults = {}
         try:
             curFoundResults = curProvider.search_rss(episodes)
         except AuthException as e:
@@ -394,14 +393,14 @@ def searchForNeededEpisodes():
         # pick a single result for each episode, respecting existing results
         for curEp in curFoundResults:
             if not curEp.show or curEp.show.paused:
-                logger.log("Skipping {0} because the show is paused ".format(curEp.prettyName()), logger.DEBUG)
+                logger.log("Skipping {0} because the show is paused ".format(curEp.pretty_name()), logger.DEBUG)
                 continue
 
             bestResult = pickBestResult(curFoundResults[curEp], curEp.show)
 
             # if all results were rejected move on to the next episode
             if not bestResult:
-                logger.log("All found results for " + curEp.prettyName() + " were rejected.", logger.DEBUG)
+                logger.log("All found results for " + curEp.pretty_name() + " were rejected.", logger.DEBUG)
                 continue
 
             # if it's already in the list (from another provider) and the newly found quality is no better then skip it
@@ -414,7 +413,7 @@ def searchForNeededEpisodes():
 
     if not didSearch:
         logger.log(
-            "No NZB/Torrent providers found or enabled in the sickrage config for daily searches. Please check your settings.",
+            "No NZB/Torrent providers found or enabled in the sickchill config for daily searches. Please check your settings.",
             logger.INFO)
 
     return foundResults.values()
@@ -440,7 +439,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
 
     origThreadName = threading.currentThread().name
 
-    providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active() and x.enable_backlog]
+    providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog]
     for curProvider in providers:
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
         curProvider.cache.update_cache()
@@ -698,7 +697,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
             break
 
     if not didSearch:
-        logger.log("No NZB/Torrent providers found or enabled in the sickrage config for backlog searches. Please check your settings.",
+        logger.log("No NZB/Torrent providers found or enabled in the sickchill config for backlog searches. Please check your settings.",
                    logger.INFO)
 
     # Remove provider from thread name before return results

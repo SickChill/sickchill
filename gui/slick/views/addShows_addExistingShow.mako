@@ -40,7 +40,7 @@
                         <br>
                         <div class="row">
                             <div class="col-md-12">
-                                <p>${_('SickRage can add existing shows, using the current options, by using locally stored NFO/XML metadata to eliminate user interaction. If you would rather have SickRage prompt you to customize each show, then use the checkbox below.')}</p>
+                                <p>${_('SickChill can add existing shows, using the current options, by using locally stored NFO/XML metadata to eliminate user interaction. If you would rather have SickChill prompt you to customize each show, then use the checkbox below.')}</p>
                             </div>
                         </div>
                         <div class="row">
@@ -52,7 +52,7 @@
                         <br>
                         <div class="row">
                             <div class="col-md-12">
-                                <h5>${_('Displaying folders within these directories which aren\'t already added to SickRage')}</h5>
+                                <h5>${_('Displaying folders within these directories which aren\'t already added to SickChill')}</h5>
                             </div>
                         </div>
                         <div class="row">

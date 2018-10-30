@@ -6,13 +6,14 @@ import platform
 import sys
 import ssl
 
+import idna
 import urllib3
 import chardet
 
 from . import __version__ as requests_version
 
 try:
-    from .packages.urllib3.contrib import pyopenssl
+    from urllib3.contrib import pyopenssl
 except ImportError:
     pyopenssl = None
     OpenSSL = None
@@ -84,18 +85,25 @@ def info():
     cryptography_info = {
         'version': getattr(cryptography, '__version__', ''),
     }
+    idna_info = {
+        'version': getattr(idna, '__version__', ''),
+    }
+
+    system_ssl = ssl.OPENSSL_VERSION_NUMBER
+    system_ssl_info = {
+        'version': '%x' % system_ssl if system_ssl is not None else ''
+    }
 
     return {
         'platform': platform_info,
         'implementation': implementation_info,
-        'system_ssl': {
-            'version': '%x' % ssl.OPENSSL_VERSION_NUMBER,
-        },
+        'system_ssl': system_ssl_info,
         'using_pyopenssl': pyopenssl is not None,
         'pyOpenSSL': pyopenssl_info,
         'urllib3': urllib3_info,
         'chardet': chardet_info,
         'cryptography': cryptography_info,
+        'idna': idna_info,
         'requests': {
             'version': requests_version,
         },

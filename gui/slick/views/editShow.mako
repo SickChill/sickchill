@@ -130,7 +130,7 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" id="subtitles_sr_metadata" name="subtitles_sr_metadata" ${('', 'checked="checked"')[show.subtitles_sr_metadata == 1 ]} />
-                                            <label for="subtitles_sr_metadata">${_('use SickRage metadata when searching for subtitle, this will override the autodiscovered metadata')}</label>
+                                            <label for="subtitles_sr_metadata">${_('use SickChill metadata when searching for subtitle, this will override the autodiscovered metadata')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -141,7 +141,7 @@
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <input type="checkbox" id="paused" name="paused" ${('', 'checked="checked"')[show.paused == 1]}  title="paused"/>
-                                        <label for="paused">${_('pause this show (SickRage will not download episodes)')}</label>
+                                        <label for="paused">${_('pause this show (SickChill will not download episodes)')}</label>
                                     </div>
                                 </div>
 
@@ -381,7 +381,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label>${_('disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href="//github.com/sickrage/sickrage.github.io/issues">here</a>.')}</label>
+                                                <label>${_('disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href="//github.com/sickchill/sickchill.github.io/issues">here</a>.')}</label>
                                             </div>
                                         </div>
                                     </div>

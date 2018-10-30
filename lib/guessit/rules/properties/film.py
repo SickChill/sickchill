@@ -3,10 +3,11 @@
 """
 film property
 """
+from rebulk import Rebulk, AppendMatch, Rule
 from rebulk.remodule import re
 
-from rebulk import Rebulk, AppendMatch, Rule
 from ..common.formatters import cleanup
+from ..common.validators import seps_surround
 
 
 def film():
@@ -15,7 +16,7 @@ def film():
     :return: Created Rebulk object
     :rtype: Rebulk
     """
-    rebulk = Rebulk().regex_defaults(flags=re.IGNORECASE)
+    rebulk = Rebulk().regex_defaults(flags=re.IGNORECASE, validate_all=True, validator={'__parent__': seps_surround})
 
     rebulk.regex(r'f(\d{1,2})', name='film', private_parent=True, children=True, formatter=int)
 

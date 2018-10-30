@@ -1,21 +1,21 @@
 # coding=UTF-8
 # Author: Dennis Lutter <lad1337@gmail.com>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 # pylint: disable=line-too-long
 
@@ -81,8 +81,8 @@ class SearchTest(test.SickbeardTestDBCase):
         _ = url, headers
         return _create_fake_xml(search_items)
 
-    @staticmethod
-    def _fake_is_active():
+    @property
+    def _fake_is_active(self):
         """
         Fake is active
         """
@@ -98,7 +98,7 @@ class SearchTest(test.SickbeardTestDBCase):
 
         for provider in sickbeard.providers.sortedProviderList():
             provider.get_url = self._fake_get_url
-            # provider.is_active = self._fake_is_active
+            provider.is_active = self._fake_is_active
 
         super(SearchTest, self).__init__(something)
 

@@ -68,6 +68,7 @@ class Rebulk(object):
         self._regex_defaults = {}
         self._string_defaults = {}
         self._functional_defaults = {}
+        self._chain_defaults = {}
         self._rebulks = []
 
     def pattern(self, *pattern):
@@ -207,6 +208,17 @@ class Rebulk(object):
         set_defaults(self._defaults, kwargs)
         return FunctionalPattern(*pattern, **kwargs)
 
+    def chain_defaults(self, **kwargs):
+        """
+        Define default keyword arguments for patterns chain.
+        :param kwargs:
+        :type kwargs:
+        :return:
+        :rtype:
+        """
+        self._chain_defaults = kwargs
+        return self
+
     def chain(self, **kwargs):
         """
         Add patterns chain, using configuration of this rebulk
@@ -233,6 +245,7 @@ class Rebulk(object):
         :return:
         :rtype:
         """
+        set_defaults(self._chain_defaults, kwargs)
         set_defaults(self._defaults, kwargs)
         return Chain(self, **kwargs)
 

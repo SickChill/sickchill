@@ -88,7 +88,7 @@ window._ = function(str) {
     return str;
 };
 
-var SICKRAGE = {
+var SICKCHILL = {
     common: {
         init: function() {
             (function() {
@@ -98,8 +98,8 @@ var SICKRAGE = {
                         imgDefer[i].setAttribute('src', imgDefer[i].getAttribute('data-src'));
                     }
                 }
-                if (metaToBool('sickbeard.SICKRAGE_BACKGROUND')) {
-                    $.backstretch(srRoot + '/ui/sickrage_background');
+                if (metaToBool('sickbeard.SICKCHILL_BACKGROUND')) {
+                    $.backstretch(srRoot + '/ui/sickchill_background');
                     $('.backstretch').css('opacity', getMeta('sickbeard.FANART_BACKGROUND_OPACITY')).fadeIn('500');
                 }
             })();
@@ -118,12 +118,12 @@ var SICKRAGE = {
 
             $('a.shutdown').confirm({
                 title: 'Shutdown',
-                text: 'Are you sure you want to shutdown SickRage?'
+                text: 'Are you sure you want to shutdown SickChill?'
             });
 
             $('a.restart').confirm({
                 title: 'Restart',
-                text: 'Are you sure you want to restart SickRage?'
+                text: 'Are you sure you want to restart SickChill?'
             });
 
             $('a.removeshow').confirm({
@@ -149,7 +149,7 @@ var SICKRAGE = {
 
             $('a.submiterrors').confirm({
                 title: 'Submit Errors',
-                text: 'Are you sure you want to submit these errors ?<br><br><span class="red-text">Make sure SickRage is updated and trigger<br> this error with debug enabled before submitting</span>'
+                text: 'Are you sure you want to submit these errors ?<br><br><span class="red-text">Make sure SickChill is updated and trigger<br> this error with debug enabled before submitting</span>'
             });
 
             $('#config-components').tabs({
@@ -416,7 +416,7 @@ var SICKRAGE = {
             $('#create_access_token').on('click', function() {
                 notifyModal(
                     '<p>Copy the generated token and paste it in the token input box.</p>' +
-                    '<p><a href="' + anonURL + 'https://github.com/settings/tokens/new?description=SickRage&scopes=user,gist,public_repo" target="_blank">' +
+                    '<p><a href="' + anonURL + 'https://github.com/settings/tokens/new?description=SickChill&scopes=user,gist,public_repo" target="_blank">' +
                     '<input class="btn" type="button" value="Continue to Github..."></a></p>');
                 $('#git_token').select();
             });
@@ -427,7 +427,7 @@ var SICKRAGE = {
         },
         index: function() {
             $('#log_dir').fileBrowser({title: _('Select log file folder location')});
-            $('#sickrage_background_path').fileBrowser({title: _('Select Background Image'), key: 'sickrage_background_path', includeFiles: 1, fileTypes: ['images']});
+            $('#sickchill_background_path').fileBrowser({title: _('Select Background Image'), key: 'sickchill_background_path', includeFiles: 1, fileTypes: ['images']});
             $('#custom_css_path').fileBrowser({title: _('Select CSS file'), key: 'custom_css_path', includeFiles: 1, fileTypes: ['css']});
 
             // List remote branches available for checkout
@@ -1196,17 +1196,17 @@ var SICKRAGE = {
 
             function loadShowNotifyLists() {
                 $.getJSON(srRoot + '/home/loadShowNotifyLists', function(list) {
-                    let html = null;
-                    let s = null; // @TODO: What is an "s"?
                     if (list._size === 0) {
                         return;
                     }
 
                     // Convert the 'list' object to a js array of objects so that we can sort it
                     const _list = [];
-                    for (s in list) {
-                        if (s.charAt(0) !== '_') {
-                            _list.push(list[s]);
+                    for (let _show in list) {
+                        if ({}.hasOwnProperty.call(list, _show)) {
+                            if (_show.charAt(0) !== '_') {
+                                _list.push(list[_show]);
+                            }
                         }
                     }
                     const sortedList = _list.sort(function(a, b) {
@@ -1218,10 +1218,12 @@ var SICKRAGE = {
                         }
                         return 0;
                     });
-                    html = '<option value="-1">-- Select --</option>';
-                    for (s in sortedList) {
-                        if (sortedList[s].id && sortedList[s].name) {
-                            html += '<option value="' + sortedList[s].id + '">' + $('<div/>').text(sortedList[s].name).html() + '</option>';
+                    let html = '<option value="-1">-- Select --</option>';
+                    for (let _show in sortedList) {
+                        if ({}.hasOwnProperty.call(sortedList, _show)) {
+                            if (sortedList[_show].id && sortedList[_show].name) {
+                                html += '<option value="' + sortedList[_show].id + '">' + $('<div>').text(sortedList[_show].name).html() + '</option>';
+                            }
                         }
                     }
                     $('#email_show').html(html);
@@ -1231,7 +1233,7 @@ var SICKRAGE = {
                     $('#prowl_show_list').val('');
                 });
             }
-            // Load the per show notify lists everytime this page is loaded
+            // Load the per show notify lists every time this page is loaded
             loadShowNotifyLists();
 
             // Update the internal data struct anytime settings are saved to the server
@@ -2237,7 +2239,7 @@ var SICKRAGE = {
                         return $(node).find('time').attr('datetime');
                     },
                     3: function(node) {
-                        return $(node).find('span').prop('title').toLowerCase();
+                        return ($(node).find('span').prop('title') || 'zunknown').toLowerCase();
                     },
                     4: function(node) {
                         return $(node).find('span').text().toLowerCase();
@@ -2249,7 +2251,7 @@ var SICKRAGE = {
                         return $(node).data('show-size');
                     },
                     7: function(node) {
-                        return $(node).find('span').attr('title').toLowerCase();
+                        return ($(node).find('span').attr('title') || 'No').toLowerCase();
                     }
                 },
                 widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
@@ -2266,7 +2268,7 @@ var SICKRAGE = {
                     filter_columnFilters: true, // eslint-disable-line camelcase
                     filter_hideFilters: true, // eslint-disable-line camelcase
                     stickyHeaders_offset: 50, // eslint-disable-line camelcase
-                    filter_saveFilters: true, // eslint-disable-line camelcase
+                    filter_saveFilters: false, // eslint-disable-line camelcase
                     filter_functions: { // eslint-disable-line camelcase
                         // HOWTO: https://mottie.github.io/tablesorter/docs/example-widget-filter-custom.html#notes
                         5: function(exact, normalized, filterInput) {
@@ -2861,11 +2863,11 @@ var SICKRAGE = {
         editShow: function() {
             $('#location').fileBrowser({title: _('Select Show Location')});
 
-            SICKRAGE.common.QualityChooser.init();
+            SICKCHILL.common.QualityChooser.init();
 
             // @TODO: Make anime button work like in addShow (opens the groups list without a refresh)
             /* $('#anime').change (function() {
-                SICKRAGE.common.updateBlackWhiteList(getMeta('show.name'));
+                SICKCHILL.common.updateBlackWhiteList(getMeta('show.name'));
             }); */
 
             $('#submit').on('click', function() {
@@ -3325,7 +3327,7 @@ var SICKRAGE = {
                 $('#display_new_root_dir_' + curIndex).html('<b>' + _('DELETED') + '</b>');
             });
 
-            SICKRAGE.common.QualityChooser.init();
+            SICKCHILL.common.QualityChooser.init();
         },
         episodeStatuses: function() {
             $('.allCheck').on('click', function() {
@@ -3511,8 +3513,7 @@ var SICKRAGE = {
             });
 
             $('#history_limit').on('change', function() {
-                const url = srRoot + '/history/?limit=' + $(this).val();
-                window.location.href = url;
+                window.location.href = srRoot + '/history/?limit=' + $(this).val();
             });
 
             $('a.removehistory').on('click', function() {
@@ -3666,7 +3667,7 @@ var SICKRAGE = {
                     widgetOptions: {
                         filter_columnFilters: true, // eslint-disable-line camelcase
                         filter_hideFilters: true, // eslint-disable-line camelcase
-                        filter_saveFilters: true, // eslint-disable-line camelcase
+                        filter_saveFilters: false, // eslint-disable-line camelcase
                         columnSelector_mediaquery: false, // eslint-disable-line camelcase
                         stickyHeaders_offset: 50 // eslint-disable-line camelcase
                     }
@@ -3823,7 +3824,7 @@ var SICKRAGE = {
                 $('#saveDefaultsButton').attr('disabled', false);
             });
 
-            SICKRAGE.common.QualityChooser.init();
+            SICKCHILL.common.QualityChooser.init();
         },
         index: function() {
 
@@ -3844,7 +3845,7 @@ var SICKRAGE = {
                     object.showName = $('#providedName').val();
                 }
 
-                SICKRAGE.common.updateBlackWhiteList(object.showName);
+                SICKCHILL.common.updateBlackWhiteList(object.showName);
 
                 // If we have a root dir selected, figure out the path
                 if ($('#rootDirs option:selected').length) {
@@ -3905,7 +3906,7 @@ var SICKRAGE = {
                     '</tr>' +
                     '<thead>';
 
-                const selectedIndex = shows.findIndex(function(show) {
+                const selectedIndex = shows.indexOf(function(show) {
                     return !show.inShowList;
                 });
 
@@ -3944,12 +3945,11 @@ var SICKRAGE = {
 
             let searchRequestXhr = null;
             const searchIndexers = function() {
-                if (!$('#show-name').val()) {
-                    return;
-                }
-
                 if (searchRequestXhr) {
                     searchRequestXhr.abort();
+                }
+                if (!$('#show-name').val()) {
+                    return;
                 }
 
                 const searchingFor = _($('#show-name').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect option:selected').text());
@@ -3973,7 +3973,6 @@ var SICKRAGE = {
                     },
                     success: function(data) {
                         let resultStr = '<legend class="legendStep">#2 Pick a Show</legend>';
-
                         if (data.results.length === 0) {
                             resultStr += '<b>No results found, try a different search.</b>';
                             $('.next-steps').hide();
@@ -4172,7 +4171,7 @@ var SICKRAGE = {
 
 const UTIL = {
     exec: function(controller, action) {
-        const ns = SICKRAGE;
+        const ns = SICKCHILL;
         action = (action === undefined) ? 'init' : action;
 
         if (controller !== '' && ns[controller] && typeof ns[controller][action] === 'function') {

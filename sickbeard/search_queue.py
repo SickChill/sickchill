@@ -1,21 +1,21 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -171,7 +171,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         super(ManualSearchQueueItem, self).run()
 
         try:
-            logger.log("Beginning manual search for: [" + self.segment.prettyName() + "]")
+            logger.log("Beginning manual search for: [" + self.segment.pretty_name() + "]")
             self.started = True
 
             searchResult = search.searchProviders(self.show, [self.segment], True, self.downCurQuality)
@@ -186,9 +186,9 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
             else:
                 ui.notifications.message('No downloads were found',
-                                         "Couldn't find a download for <i>{0}</i>".format(self.segment.prettyName()))
+                                         "Couldn't find a download for <i>{0}</i>".format(self.segment.pretty_name()))
 
-                logger.log("Unable to find a download for: [" + self.segment.prettyName() + "]")
+                logger.log("Unable to find a download for: [" + self.segment.pretty_name() + "]")
 
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
@@ -255,7 +255,7 @@ class FailedQueueItem(generic_queue.QueueItem):
         try:
             for epObj in self.segment:
 
-                logger.log("Marking episode as bad: [" + epObj.prettyName() + "]")
+                logger.log("Marking episode as bad: [" + epObj.pretty_name() + "]")
 
                 failed_history.markFailed(epObj)
 
@@ -265,7 +265,7 @@ class FailedQueueItem(generic_queue.QueueItem):
                     history.logFailed(epObj, release, provider)
 
                 failed_history.revertEpisode(epObj)
-                logger.log("Beginning failed download search for: [" + epObj.prettyName() + "]")
+                logger.log("Beginning failed download search for: [" + epObj.pretty_name() + "]")
 
             # If it is wanted, self.downCurQuality doesnt matter
             # if it isnt wanted, we need to make sure to not overwrite the existing ep that we reverted to!
@@ -281,7 +281,7 @@ class FailedQueueItem(generic_queue.QueueItem):
                     time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
             else:
                 pass
-                # logger.log(u"No valid episode found to retry for: [" + self.segment.prettyName() + "]")
+                # logger.log(u"No valid episode found to retry for: [" + self.segment.pretty_name() + "]")
         except Exception:
             logger.log(traceback.format_exc(), logger.DEBUG)
 

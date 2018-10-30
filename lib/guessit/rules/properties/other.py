@@ -5,14 +5,14 @@ other property
 """
 import copy
 
+from rebulk import Rebulk, Rule, RemoveMatch, POST_PROCESS, AppendMatch
 from rebulk.remodule import re
 
-from rebulk import Rebulk, Rule, RemoveMatch, POST_PROCESS, AppendMatch
 from ..common import dash
 from ..common import seps
-from ..common.validators import seps_surround, compose
-from ...rules.common.formatters import raw_cleanup
+from ..common.validators import seps_after, seps_before, seps_surround, compose
 from ...reutils import build_or_pattern
+from ...rules.common.formatters import raw_cleanup
 
 
 def other():
@@ -26,12 +26,15 @@ def other():
 
     rebulk.regex('Audio-?Fix', 'Audio-?Fixed', value='AudioFix')
     rebulk.regex('Sync-?Fix', 'Sync-?Fixed', value='SyncFix')
-    rebulk.regex('Dual-?Audio', value='DualAudio')
+    rebulk.regex('Dual', 'Dual-?Audio', value='DualAudio')
     rebulk.regex('ws', 'wide-?screen', value='WideScreen')
-    rebulk.string('Netflix', 'NF', value='Netflix')
+    rebulk.regex('Re-?Enc(?:oded)?', value='ReEncoded')
 
     rebulk.string('Real', 'Fix', 'Fixed', value='Proper', tags=['has-neighbor-before', 'has-neighbor-after'])
-    rebulk.string('Proper', 'Repack', 'Rerip', value='Proper')
+    rebulk.string('Proper', 'Repack', 'Rerip', 'Dirfix', 'Nfofix', 'Prooffix', value='Proper',
+                  tags=['streaming_service.prefix', 'streaming_service.suffix'])
+    rebulk.regex('(?:Proof-?)?Sample-?Fix', value='Proper',
+                 tags=['streaming_service.prefix', 'streaming_service.suffix'])
     rebulk.string('Fansub', value='Fansub', tags='has-neighbor')
     rebulk.string('Fastsub', value='Fastsub', tags='has-neighbor')
 
@@ -60,22 +63,45 @@ def other():
                  validator={'__parent__': compose(seps_surround, validate_complete)})
     rebulk.string('R5', 'RC', value='R5')
     rebulk.regex('Pre-?Air', value='Preair')
+    rebulk.regex('(?:PS-?)?Vita', value='PS Vita')
 
     for value in (
-            'Screener', 'Remux', 'Remastered', '3D', 'HD', 'mHD', 'HDLight', 'HQ', 'DDC', 'HR', 'PAL', 'SECAM', 'NTSC',
+            'Screener', 'Remux', '3D', 'mHD', 'HDLight', 'HQ', 'DDC', 'HR', 'PAL', 'SECAM', 'NTSC',
             'CC', 'LD', 'MD', 'XXX'):
         rebulk.string(value, value=value)
 
-    for value in ('Limited', 'Complete', 'Classic', 'Unrated', 'LiNE', 'Bonus', 'Trailer', 'FINAL', 'Retail', 'Uncut',
-                  'Extended', 'Extended Cut'):
+    rebulk.string('LDTV', value='LD')
+    rebulk.string('HD', value='HD', validator=None,
+                  tags=['streaming_service.prefix', 'streaming_service.suffix'])
+    rebulk.regex('Full-?HD', 'FHD', value='FullHD', validator=None,
+                 tags=['streaming_service.prefix', 'streaming_service.suffix'])
+    rebulk.regex('Ultra-?(?:HD)?', 'UHD', value='UltraHD', validator=None,
+                 tags=['streaming_service.prefix', 'streaming_service.suffix'])
+
+    for value in ('Complete', 'Classic', 'LiNE', 'Bonus', 'Trailer', 'FINAL', 'Retail',
+                  'Colorized', 'Internal'):
         rebulk.string(value, value=value, tags=['has-neighbor', 'release-group-prefix'])
+    rebulk.regex('Read-?NFO', value='Read NFO')
+    rebulk.string('CONVERT', value='Converted', tags='has-neighbor')
+    rebulk.string('DOCU', value='Documentary', tags='has-neighbor')
+    rebulk.string('OM', value='Open Matte', tags='has-neighbor')
+    rebulk.string('STV', value='Straight to Video', tags='has-neighbor')
+    rebulk.string('OAR', value='Original Aspect Ratio', tags='has-neighbor')
+    rebulk.string('Complet', value='Complete', tags=['has-neighbor', 'release-group-prefix'])
+
+    for coast in ('East', 'West'):
+        rebulk.regex(r'(?:Live-)?(?:Episode-)?' + coast + '-?(?:Coast-)?Feed', value=coast + ' Coast Feed')
 
     rebulk.string('VO', 'OV', value='OV', tags='has-neighbor')
 
-    rebulk.regex('Scr(?:eener)?', value='Screener', validator=None, tags='other.validate.screener')
+    rebulk.regex('Scr(?:eener)?', value='Screener', validator=None,
+                 tags=['other.validate.screener', 'format-prefix', 'format-suffix'])
+    rebulk.string('Mux', value='Mux', validator=seps_after,
+                  tags=['other.validate.mux', 'video-codec-prefix', 'format-suffix'])
+    rebulk.string('HC', value='Hardcoded Subtitles')
 
     rebulk.rules(ValidateHasNeighbor, ValidateHasNeighborAfter, ValidateHasNeighborBefore, ValidateScreenerRule,
-                 ProperCountRule)
+                 ValidateMuxRule, ValidateHardcodedSubs, ValidateStreamingServiceNeighbor, ProperCountRule)
 
     return rebulk
 
@@ -179,3 +205,77 @@ class ValidateScreenerRule(Rule):
             if not format_match or matches.input_string[format_match.end:screener.start].strip(seps):
                 ret.append(screener)
         return ret
+
+
+class ValidateMuxRule(Rule):
+    """
+    Validate tag other.validate.mux
+    """
+    consequence = RemoveMatch
+    priority = 64
+
+    def when(self, matches, context):
+        ret = []
+        for mux in matches.named('other', lambda match: 'other.validate.mux' in match.tags):
+            format_match = matches.previous(mux, lambda match: match.name == 'format', 0)
+            if not format_match:
+                ret.append(mux)
+        return ret
+
+
+class ValidateHardcodedSubs(Rule):
+    """Validate HC matches."""
+
+    priority = 32
+    consequence = RemoveMatch
+
+    def when(self, matches, context):
+        to_remove = []
+        for hc_match in matches.named('other', predicate=lambda match: match.value == 'Hardcoded Subtitles'):
+            next_match = matches.next(hc_match, predicate=lambda match: match.name == 'subtitle_language', index=0)
+            if next_match and not matches.holes(hc_match.end, next_match.start,
+                                                predicate=lambda match: match.value.strip(seps)):
+                continue
+
+            previous_match = matches.previous(hc_match,
+                                              predicate=lambda match: match.name == 'subtitle_language', index=0)
+            if previous_match and not matches.holes(previous_match.end, hc_match.start,
+                                                    predicate=lambda match: match.value.strip(seps)):
+                continue
+
+            to_remove.append(hc_match)
+
+        return to_remove
+
+
+class ValidateStreamingServiceNeighbor(Rule):
+    """Validate streaming service's neighbors."""
+
+    priority = 32
+    consequence = RemoveMatch
+
+    def when(self, matches, context):
+        to_remove = []
+        for match in matches.named('other',
+                                   predicate=lambda m: ('streaming_service.prefix' in m.tags or
+                                                        'streaming_service.suffix' in m.tags)):
+
+            if not seps_after(match):
+                if 'streaming_service.prefix' in match.tags:
+                    next_match = matches.next(match, lambda m: m.name == 'streaming_service', 0)
+                    if next_match and not matches.holes(match.end, next_match.start,
+                                                        predicate=lambda m: m.value.strip(seps)):
+                        continue
+
+                to_remove.append(match)
+
+            elif not seps_before(match):
+                if 'streaming_service.suffix' in match.tags:
+                    previous_match = matches.previous(match, lambda m: m.name == 'streaming_service', 0)
+                    if previous_match and not matches.holes(previous_match.end, match.start,
+                                                            predicate=lambda m: m.value.strip(seps)):
+                        continue
+
+                to_remove.append(match)
+
+        return to_remove

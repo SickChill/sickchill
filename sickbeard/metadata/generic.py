@@ -1,22 +1,22 @@
 # coding=utf-8
 
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -33,20 +33,14 @@ import sickbeard
 from sickbeard import helpers, logger
 from sickbeard.metadata import helpers as metadata_helpers
 from sickbeard.show_name_helpers import allPossibleShowNames
-from sickrage.helper.common import replace_extension, try_int
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import ex
+from sickchill.helper.common import replace_extension, try_int
+from sickchill.helper.encoding import ek
+from sickchill.helper.exceptions import ex
 
 try:
     import xml.etree.cElementTree as etree
 except ImportError:
     import xml.etree.ElementTree as etree
-
-
-
-
-
-
 
 
 class GenericMetadata(object):
@@ -261,7 +255,7 @@ class GenericMetadata(object):
 
     def create_episode_metadata(self, ep_obj):
         if self.episode_metadata and ep_obj and not self._has_episode_metadata(ep_obj):
-            logger.log("Metadata provider " + self.name + " creating episode metadata for " + ep_obj.prettyName(),
+            logger.log("Metadata provider " + self.name + " creating episode metadata for " + ep_obj.pretty_name(),
                        logger.DEBUG)
             return self.write_ep_file(ep_obj)
         return False
@@ -283,6 +277,8 @@ class GenericMetadata(object):
 
                 root = showXML.getroot()
                 if indexerid is not None:
+                    if indexerid.text == str(show_obj.indexerid):
+                        return True
                     indexerid.text = str(show_obj.indexerid)
                 else:
                     etree.SubElement(root, "id").text = str(show_obj.indexerid)
@@ -319,7 +315,7 @@ class GenericMetadata(object):
 
     def create_episode_thumb(self, ep_obj):
         if self.episode_thumbnails and ep_obj and not self._has_episode_thumb(ep_obj):
-            logger.log("Metadata provider " + self.name + " creating episode thumbnail for " + ep_obj.prettyName(),
+            logger.log("Metadata provider " + self.name + " creating episode thumbnail for " + ep_obj.pretty_name(),
                        logger.DEBUG)
             return self.save_thumbnail(ep_obj)
         return False

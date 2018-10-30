@@ -1,0 +1,1060 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: [!!python/unicode 'gzip,deflate']
+      Connection: [keep-alive]
+      User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36
+          (KHTML, like Gecko) Chrome/36.0.1985.67 Safari/537.36']
+    method: GET
+    uri: https://nyaa.si/?s=id&c=1_0&page=rss&o=desc&f=0
+  response:
+    body: {string: "<rss xmlns:atom=\"http://www.w3.org/2005/Atom\" xmlns:nyaa=\"https://nyaa.si/xmlns/nyaa\"
+        version=\"2.0\">\n\t<channel>\n\t\t<title>Nyaa - Home - Torrent File RSS</title>\n\t\t<description>RSS
+        Feed for Home</description>\n\t\t<link>https://nyaa.si/</link>\n\t\t<atom:link
+        href=\"https://nyaa.si/?page=rss\" rel=\"self\" type=\"application/rss+xml\"
+        />\n\t\t<item>\n\t\t\t<title>[PuyaSubs!] Kishuku Gakkou no Juliet - 03 [1080p][F78DA8D5].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088369.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088369</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 03:56:08 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>9</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>5</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>7</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>78d36ab399da31ba6f16cd68cf7b443402d89108</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>485.9 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088369\">#1088369 | [PuyaSubs!] Kishuku Gakkou
+        no Juliet - 03 [1080p][F78DA8D5].mkv</a> | 485.9 MiB | Anime - Non-English-translated
+        | 78D36AB399DA31BA6F16CD68CF7B443402D89108]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Kishuku Gakkou no Juliet - 03 [720p][3373B209].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088368.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088368</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 03:56:04 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>11</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>6</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>8</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>fc1b0967cf91a4850a360333b1a2cf1f59b2ec3c</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>220.1 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088368\">#1088368 | [PuyaSubs!] Kishuku Gakkou
+        no Juliet - 03 [720p][3373B209].mkv</a> | 220.1 MiB | Anime - Non-English-translated
+        | FC1B0967CF91A4850A360333B1A2CF1F59B2EC3C]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Irozuku Sekai no Ashita kara - 03 [1080p][6450CF35].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088367.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088367</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 03:56:01 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>9</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>10</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>5</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>09f4a560bc1fd2db1ca42ee0d71e85905ed0104c</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>458.3 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088367\">#1088367 | [PuyaSubs!] Irozuku Sekai
+        no Ashita kara - 03 [1080p][6450CF35].mkv</a> | 458.3 MiB | Anime - Non-English-translated
+        | 09F4A560BC1FD2DB1CA42EE0D71E85905ED0104C]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Irozuku Sekai no Ashita kara - 03 [720p][3DA44E92].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088366.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088366</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 03:55:57 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>9</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>7</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>7</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>5bc41cb0e27feac3c4f9e9f12cae3e607b8de66b</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>198.0 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088366\">#1088366 | [PuyaSubs!] Irozuku Sekai
+        no Ashita kara - 03 [720p][3DA44E92].mkv</a> | 198.0 MiB | Anime - Non-English-translated
+        | 5BC41CB0E27FEAC3C4F9E9F12CAE3E607B8DE66B]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>DCM-13
+        Ar-SUB</title>\n\t\t\t\t<link>https://nyaa.si/download/1088364.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088364</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 02:31:42 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>1</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>5</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>5ad750a1254057d0acb4c2040f453759263925e3</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>5.7 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088364\">#1088364 | DCM-13 Ar-SUB</a> | 5.7 GiB
+        | Anime - Non-English-translated | 5AD750A1254057D0ACB4C2040F453759263925E3]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[LowPower-Raws]
+        Sayonara no Asa ni Yakusoku no Hana o Kazarou - MOVIE (BD 1080P x264 FLACx2).mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088363.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088363</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 02:20:44 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>1</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>69</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>98a05b7bb35192f23a2340c0680456ff86fe7489</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_4</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Raw</nyaa:category>\n\t\t\t<nyaa:size>13.1 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088363\">#1088363 | [LowPower-Raws] Sayonara
+        no Asa ni Yakusoku no Hana o Kazarou - MOVIE (BD 1080P x264 FLACx2).mkv</a>
+        | 13.1 GiB | Anime - Raw | 98A05B7BB35192F23A2340C0680456FF86FE7489]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>\u3010\u56FD\u6F2B\u3011[\u5168\u804C\u6CD5\u5E08
+        \u7B2C\u4E09\u5B63][Quanzhi Fashi S3][04][1080P]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088362.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088362</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 02:13:19 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>82</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>41</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>59</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>61c278ee364b45cbde3570b0682b04ec68215a4f</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>223.4 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088362\">#1088362 | \u3010\u56FD\u6F2B\u3011[\u5168\u804C\u6CD5\u5E08
+        \u7B2C\u4E09\u5B63][Quanzhi Fashi S3][04][1080P]</a> | 223.4 MiB | Anime -
+        Non-English-translated | 61C278EE364B45CBDE3570B0682B04EC68215A4F]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Gakuen Basara - 04 [1080p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088360.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088360</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 02:03:08 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>111</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>22</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>192</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>02983604802f30973c2b5925d0272fc879980883</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>429.6 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088360\">#1088360 | [HorribleSubs] Gakuen Basara
+        - 04 [1080p].mkv</a> | 429.6 MiB | Anime - English-translated | 02983604802F30973C2B5925D0272FC879980883]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Gakuen Basara - 04 [720p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088359.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088359</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 02:02:18 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>170</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>46</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>268</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>e55a608f0ebbd45ff0e0754f81d3b4724f077f98</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>214.5 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088359\">#1088359 | [HorribleSubs] Gakuen Basara
+        - 04 [720p].mkv</a> | 214.5 MiB | Anime - English-translated | E55A608F0EBBD45FF0E0754F81D3B4724F077F98]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Gakuen Basara - 04 [480p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088358.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088358</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 02:02:16 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>60</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>37</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>95</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>57112eba5cacee5a841f132a6400428c8bb1eb56</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>125.9 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088358\">#1088358 | [HorribleSubs] Gakuen Basara
+        - 04 [480p].mkv</a> | 125.9 MiB | Anime - English-translated | 57112EBA5CACEE5A841F132A6400428C8BB1EB56]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[RATS]
+        Kishuku Gakkou no Juliet - s01e03 [720p]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088354.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088354</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 01:48:11 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>5</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>1</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>7</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>05372808d4149f362f62ea94d7a0d4557aeececc</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>165.7 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088354\">#1088354 | [RATS] Kishuku Gakkou no
+        Juliet - s01e03 [720p]</a> | 165.7 MiB | Anime - English-translated | 05372808D4149F362F62EA94D7A0D4557AEECECC]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>\u3010\u55B5\u840C\u5976\u8336\u5C4B&amp;\u5343\u590F\u5B57\u5E55\u7D44\u3011\u3010\u7D42\u5C07\u6210\u70BA\u4F60_Yagate
+        Kimi ni Naru \u3011[\u7B2C04\u8A71][1080p][\u7E41\u9AD4]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088353.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088353</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 01:27:46 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>71</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>21</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>75</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>4054f8e23714b8ff96107a93f8c9f516ad7fa105</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>272.0 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088353\">#1088353 | \u3010\u55B5\u840C\u5976\u8336\u5C4B&amp;\u5343\u590F\u5B57\u5E55\u7D44\u3011\u3010\u7D42\u5C07\u6210\u70BA\u4F60_Yagate
+        Kimi ni Naru \u3011[\u7B2C04\u8A71][1080p][\u7E41\u9AD4]</a> | 272.0 MiB |
+        Anime - Non-English-translated | 4054F8E23714B8FF96107A93F8C9F516AD7FA105]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>\u3010\u55B5\u840C\u5976\u8336\u5C4B&amp;\u5343\u590F\u5B57\u5E55\u7EC4\u3011\u3010\u7EC8\u5C06\u6210\u4E3A\u4F60_Yagate
+        Kimi ni Naru \u3011[\u7B2C04\u8BDD][1080p][\u7B80\u4F53]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088352.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088352</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 01:27:25 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>29</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>5</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>35</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>22b3d3abe509e3f3aab38de61c782471ce246e66</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>272.1 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088352\">#1088352 | \u3010\u55B5\u840C\u5976\u8336\u5C4B&amp;\u5343\u590F\u5B57\u5E55\u7EC4\u3011\u3010\u7EC8\u5C06\u6210\u4E3A\u4F60_Yagate
+        Kimi ni Naru \u3011[\u7B2C04\u8BDD][1080p][\u7B80\u4F53]</a> | 272.1 MiB |
+        Anime - Non-English-translated | 22B3D3ABE509E3F3AAB38DE61C782471CE246E66]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Bonobono - 132 [1080p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088342.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088342</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 00:33:32 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>54</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>7</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>106</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>7879c9173e36c43acc5ea25b039f48b02750112d</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>230.5 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088342\">#1088342 | [HorribleSubs] Bonobono -
+        132 [1080p].mkv</a> | 230.5 MiB | Anime - English-translated | 7879C9173E36C43ACC5EA25B039F48B02750112D]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Bono Bono 3 - 30 [720p][41C2F39B].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088341.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088341</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 00:32:48 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>5</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>2</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>10</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>fea1c154f002d04c57f8178421ccaf026ba52406</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>91.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088341\">#1088341 | [PuyaSubs!] Bono Bono 3 -
+        30 [720p][41C2F39B].mkv</a> | 91.8 MiB | Anime - Non-English-translated |
+        FEA1C154F002D04C57F8178421CCAF026BA52406]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Bonobono - 132 [720p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088340.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088340</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 00:32:11 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>74</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>5</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>125</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>feaf9e5ce9c1a323fab0b7b94ddaeefafa67f375</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>91.9 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088340\">#1088340 | [HorribleSubs] Bonobono -
+        132 [720p].mkv</a> | 91.9 MiB | Anime - English-translated | FEAF9E5CE9C1A323FAB0B7B94DDAEEFAFA67F375]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Bonobono - 132 [480p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088339.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088339</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 00:32:06 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>17</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>8</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>49</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>89d8808ac251008d7bb830246c429eabc7f114d8</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>30.9 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088339\">#1088339 | [HorribleSubs] Bonobono -
+        132 [480p].mkv</a> | 30.9 MiB | Anime - English-translated | 89D8808AC251008D7BB830246C429EABC7F114D8]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Ohys-Raws]
+        Bonobono (2016) - 132 (CX 1280x720 x264 AAC).mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/1088338.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088338</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 00:26:15 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>39</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>13</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>103</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>b4d8cf304930edc648ab0f681305e377005178c0</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_4</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Raw</nyaa:category>\n\t\t\t<nyaa:size>70.4 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088338\">#1088338 | [Ohys-Raws] Bonobono (2016)
+        - 132 (CX 1280x720 x264 AAC).mp4</a> | 70.4 MiB | Anime - Raw | B4D8CF304930EDC648AB0F681305E377005178C0]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Ohys-Raws]
+        Sayonara no Asa ni Yakusoku no Hana o Kazarou (BD 1280x720 x264 AAC).mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/1088337.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088337</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 00:20:33 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>355</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>300</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>499</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>5a665b261f695b1629b2ce21f0698cb1d2beb812</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_4</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Raw</nyaa:category>\n\t\t\t<nyaa:size>1.7 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088337\">#1088337 | [Ohys-Raws] Sayonara no Asa
+        ni Yakusoku no Hana o Kazarou (BD 1280x720 x264 AAC).mp4</a> | 1.7 GiB | Anime
+        - Raw | 5A665B261F695B1629B2CE21F0698CB1D2BEB812]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>Overlord
+        S1-S3 (UnOfficial Batch) - [HorribleSubs]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088336.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088336</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 00:16:27 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>3</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>32</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>39223ac2c41649d7c90580338661f8da322e7d33</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>29.2 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088336\">#1088336 | Overlord S1-S3 (UnOfficial
+        Batch) - [HorribleSubs]</a> | 29.2 GiB | Anime - English-translated | 39223AC2C41649D7C90580338661F8DA322E7D33]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Erai-raws]
+        Gakuen Basara - 04 [1080p][Multiple Subtitle].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088335.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088335</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 00:10:32 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>10</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>2</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>24</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>62f36f336ff59bc91d133ff849dd894b2fb609f3</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>885.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088335\">#1088335 | [Erai-raws] Gakuen Basara
+        - 04 [1080p][Multiple Subtitle].mkv</a> | 885.8 MiB | Anime - English-translated
+        | 62F36F336FF59BC91D133FF849DD894B2FB609F3]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Erai-raws]
+        Gakuen Basara - 04 [720p][Multiple Subtitle].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088334.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088334</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 00:10:32 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>12</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>3</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>21</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>d5e1e055349f45a1b578f873da48376f1cebac49</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>540.6 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088334\">#1088334 | [Erai-raws] Gakuen Basara
+        - 04 [720p][Multiple Subtitle].mkv</a> | 540.6 MiB | Anime - English-translated
+        | D5E1E055349F45A1B578F873DA48376F1CEBAC49]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Alorks
+        l Subtitle] Lost Song - 01v2 (BD 1920x1080 x.264 FLAC TH)</title>\n\t\t\t\t<link>https://nyaa.si/download/1088326.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088326</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Oct 2018 00:02:05 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>3</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>4aa4896be6d465a73856f125b4fba63b40210f99</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>1.0 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088326\">#1088326 | [Alorks l Subtitle] Lost
+        Song - 01v2 (BD 1920x1080 x.264 FLAC TH)</a> | 1.0 GiB | Anime - Non-English-translated
+        | 4AA4896BE6D465A73856F125B4FBA63B40210F99]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>Amanchu!
+        x Aria Drama CD (RAW)</title>\n\t\t\t\t<link>https://nyaa.si/download/1088324.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088324</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 23:51:06 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>19</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>6</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>49</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>87298627ebef93da6a4b9cc99619ef2400ece61f</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_4</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Raw</nyaa:category>\n\t\t\t<nyaa:size>53.1 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088324\">#1088324 | Amanchu! x Aria Drama CD
+        (RAW)</a> | 53.1 MiB | Anime - Raw | 87298627EBEF93DA6A4B9CC99619EF2400ECE61F]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[\u685C\u90FD\u5B57\u5E55\u7D44][\u6BBA\u622E\u5929\u4F7F][Angels
+        of Death][16][BIG5][720P]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088323.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088323</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 23:40:16 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>31</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>16</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>54</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>61edec7c1ad6f09782add5d52bc9cb22b4592467</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>227.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088323\">#1088323 | [\u685C\u90FD\u5B57\u5E55\u7D44][\u6BBA\u622E\u5929\u4F7F][Angels
+        of Death][16][BIG5][720P]</a> | 227.8 MiB | Anime - Non-English-translated
+        | 61EDEC7C1AD6F09782ADD5D52BC9CB22B4592467]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[\u685C\u90FD\u5B57\u5E55\u7EC4][\u6740\u622E\u5929\u4F7F][Angels
+        of Death][16][GB][720P]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088322.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088322</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 23:39:24 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>10</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>18</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>12</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>1ef239462d08d613fe4b2e1f9e8598d876a28f57</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>227.7 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088322\">#1088322 | [\u685C\u90FD\u5B57\u5E55\u7EC4][\u6740\u622E\u5929\u4F7F][Angels
+        of Death][16][GB][720P]</a> | 227.7 MiB | Anime - Non-English-translated |
+        1EF239462D08D613FE4B2E1F9E8598D876A28F57]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Anku
+        &amp; mutagenb] Jojo&#39;s Bizarre Adventure Golden Wind - 04 [720p rus].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088319.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088319</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 23:06:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>5</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>5</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>10</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>6c3e5714246dd665506325f14961a6441b7dd631</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>512.3 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088319\">#1088319 | [Anku &amp; mutagenb] Jojo&#39;s
+        Bizarre Adventure Golden Wind - 04 [720p rus].mkv</a> | 512.3 MiB | Anime
+        - Non-English-translated | 6C3E5714246DD665506325F14961A6441B7DD631]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Natsumi
+        no Sekai] Karakuri Circus - 03 VOSTFR (1280x720 10bit AAC).mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088318.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088318</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 23:05:31 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>14</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>5</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>25</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>bd54eb54d292c59c2032ae7dc8e32ff63deaa086</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>499.2 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088318\">#1088318 | [Natsumi no Sekai] Karakuri
+        Circus - 03 VOSTFR (1280x720 10bit AAC).mkv</a> | 499.2 MiB | Anime - Non-English-translated
+        | BD54EB54D292C59C2032AE7DC8E32FF63DEAA086]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>JoJo&#39;s
+        Bizarre Adventure - Golden Wind - 04 [HorribleSubs][FavriteFixNames].srt</title>\n\t\t\t\t<link>https://nyaa.si/download/1088317.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088317</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 22:41:10 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>18</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>81</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>c63e3fe3f73d1e43d3c3960b232a8db625be9a3c</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>22.5 KiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088317\">#1088317 | JoJo&#39;s Bizarre Adventure
+        - Golden Wind - 04 [HorribleSubs][FavriteFixNames].srt</a> | 22.5 KiB | Anime
+        - English-translated | C63E3FE3F73D1E43D3C3960B232A8DB625BE9A3C]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[MCR]
+        Goblin Slayer - 01 [1080p - Dual Audio - x.265 10bit - multi-sub]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088316.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088316</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 22:33:02 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>10</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>1</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>22</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>34c4df769ff79f2fb0d5040b4eba3ab8975e9e90</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>344.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088316\">#1088316 | [MCR] Goblin Slayer - 01
+        [1080p - Dual Audio - x.265 10bit - multi-sub]</a> | 344.8 MiB | Anime - English-translated
+        | 34C4DF769FF79F2FB0D5040B4EBA3AB8975E9E90]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Kuruje]
+        JoJo&#39;s Bizarre Adventure - Golden Wind - 04 [1080p].mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/1088315.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088315</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 22:31:44 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>27</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>5</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>78</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>889dc464044a9ea5fc21b38835b3124149dbebc8</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>386.9 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088315\">#1088315 | [Kuruje] JoJo&#39;s Bizarre
+        Adventure - Golden Wind - 04 [1080p].mp4</a> | 386.9 MiB | Anime - English-translated
+        | 889DC464044A9EA5FC21B38835B3124149DBEBC8]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[BBF]
+        SSSS.Gridman - 03 [720p SUB ITA][8597FC65].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088314.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088314</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 22:26:05 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>11</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>1</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>11</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>faa3f1a42270b2b70451eb7e7eee2c972b0d7a09</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>351.4 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088314\">#1088314 | [BBF] SSSS.Gridman - 03 [720p
+        SUB ITA][8597FC65].mkv</a> | 351.4 MiB | Anime - Non-English-translated |
+        FAA3F1A42270B2B70451EB7E7EEE2C972B0D7A09]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[LostYears]
+        Steins;Gate 0 (WEB 720p Hi444PP AAC) [Dual Audio]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088313.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088313</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 21:56:31 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>14</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>16</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>16</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>72f414f34178faf37d020cd39172ca9809b4dc9a</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>11.0 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088313\">#1088313 | [LostYears] Steins;Gate 0
+        (WEB 720p Hi444PP AAC) [Dual Audio]</a> | 11.0 GiB | Anime - English-translated
+        | 72F414F34178FAF37D020CD39172CA9809B4DC9A]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[kingtqi-Raws]
+        Inazuma Eleven Orion no Kokuin CH-04 (TX 1280x720 x264 AAC).mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/1088312.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088312</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 21:36:24 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>14</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>6</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>53</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>47c27cf9714ebb916bae8619c4b0987f93e6fa3b</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_4</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Raw</nyaa:category>\n\t\t\t<nyaa:size>312.7 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088312\">#1088312 | [kingtqi-Raws] Inazuma Eleven
+        Orion no Kokuin CH-04 (TX 1280x720 x264 AAC).mp4</a> | 312.7 MiB | Anime -
+        Raw | 47C27CF9714EBB916BAE8619C4B0987F93E6FA3B]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>\u3010\u6F84\u7A7A\u5B66\u56ED&amp;\u52A8\u6F2B\u56FD\u5B57\u5E55\u7EC4\u3011\u260510\u6708\u65B0\u756A[\u9B54\u6CD5\u7981\u4E66\u76EE\u5F55\u2162][04][720P][\u7B80\u4F53][MP4]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088310.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088310</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 20:55:08 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>305</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>139</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>163</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>a5ebcc9f4a551228cc98daa60cbcf8508a6dba49</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>218.5 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088310\">#1088310 | \u3010\u6F84\u7A7A\u5B66\u56ED&amp;\u52A8\u6F2B\u56FD\u5B57\u5E55\u7EC4\u3011\u260510\u6708\u65B0\u756A[\u9B54\u6CD5\u7981\u4E66\u76EE\u5F55\u2162][04][720P][\u7B80\u4F53][MP4]</a>
+        | 218.5 MiB | Anime - Non-English-translated | A5EBCC9F4A551228CC98DAA60CBCF8508A6DBA49]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>\u3010\u6F84\u7A7A\u5B78\u5712&amp;\u52D5\u6F2B\u570B\u5B57\u5E55\u7D44\u3011\u260510\u6708\u65B0\u756A[\u9B54\u6CD5\u7981\u66F8\u76EE\u9304\u2162][04][720P][\u7E41\u9AD4][MP4]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088309.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088309</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 20:54:32 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>459</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>122</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>927</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>59987ffb8429cda3a92fcef47f50404e1b2f147f</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>218.4 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088309\">#1088309 | \u3010\u6F84\u7A7A\u5B78\u5712&amp;\u52D5\u6F2B\u570B\u5B57\u5E55\u7D44\u3011\u260510\u6708\u65B0\u756A[\u9B54\u6CD5\u7981\u66F8\u76EE\u9304\u2162][04][720P][\u7E41\u9AD4][MP4]</a>
+        | 218.4 MiB | Anime - Non-English-translated | 59987FFB8429CDA3A92FCEF47F50404E1B2F147F]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Beatrice-Raws]
+        Sword Art Online II [BDRip 1920x1080 x264 FLAC]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088308.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088308</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 20:52:45 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>11</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>64</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>4</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>267a0e4d27551e01013ef8cde707f4caf40abdea</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>58.8 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088308\">#1088308 | [Beatrice-Raws] Sword Art
+        Online II [BDRip 1920x1080 x264 FLAC]</a> | 58.8 GiB | Anime - English-translated
+        | 267A0E4D27551E01013EF8CDE707F4CAF40ABDEA]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Beatrice-Raws]
+        Sword Art Online II [BDRip 1280x720 x264 Vorbis]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088307.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088307</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 20:52:38 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>3</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>29</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>3</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>9bab9313d71dcdc0fca3ee55c01b358adfd6ed92</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>24.1 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088307\">#1088307 | [Beatrice-Raws] Sword Art
+        Online II [BDRip 1280x720 x264 Vorbis]</a> | 24.1 GiB | Anime - English-translated
+        | 9BAB9313D71DCDC0FCA3EE55C01B358ADFD6ED92]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Ruffy]
+        Detective Conan 340 [GER] - 315 [JAP][DVDRip][H.265][800x592].mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/1088306.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088306</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 20:50:02 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>1</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>3</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>3</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>9144981a4face1e12a4356438e0b678862f1b81b</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_4</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Raw</nyaa:category>\n\t\t\t<nyaa:size>449.2 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088306\">#1088306 | [Ruffy] Detective Conan 340
+        [GER] - 315 [JAP][DVDRip][H.265][800x592].mp4</a> | 449.2 MiB | Anime - Raw
+        | 9144981A4FACE1E12A4356438E0B678862F1B81B]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PCNet]
+        Release the Spyce [01-03]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088305.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088305</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 20:12:32 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>3</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>5</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>5</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>3db40959cfd0cd988633aa652e33f9dacb891946</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>1.0 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088305\">#1088305 | [PCNet] Release the Spyce
+        [01-03]</a> | 1.0 GiB | Anime - Non-English-translated | 3DB40959CFD0CD988633AA652E33F9DACB891946]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Commie]
+        Gurazeni - 16 [1DDA1E0A].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088304.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088304</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 20:08:56 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>26</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>2</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>98</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>dca7d344bc5863bb2b4fa9b60f8117f9d488476e</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>295.2 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088304\">#1088304 | [Commie] Gurazeni - 16 [1DDA1E0A].mkv</a>
+        | 295.2 MiB | Anime - English-translated | DCA7D344BC5863BB2B4FA9B60F8117F9D488476E]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Hanasaku-Owari]
+        Kaze ga Tsuyoku Fuiteiru - 04 [5BB0B2C6]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088303.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088303</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 19:58:09 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>12</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>1</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>18</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>2de11c7feb8307ea69b32c5acf56d85a16a09dc0</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>320.9 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088303\">#1088303 | [Hanasaku-Owari] Kaze ga
+        Tsuyoku Fuiteiru - 04 [5BB0B2C6]</a> | 320.9 MiB | Anime - Non-English-translated
+        | 2DE11C7FEB8307EA69B32C5ACF56D85A16A09DC0]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>Umamusume
+        Episode 01 Ger</title>\n\t\t\t\t<link>https://nyaa.si/download/1088302.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088302</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 19:51:12 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>1</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>5a013e7263194036a8c3341cbe91121ca9eb8ca3</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>1.5 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088302\">#1088302 | Umamusume Episode 01 Ger</a>
+        | 1.5 GiB | Anime - Non-English-translated | 5A013E7263194036A8C3341CBE91121CA9EB8CA3]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Anime
+        Land] JoJo no Kimyou na Bouken - Ougon no Kaze 04 (WEBRip 720p Hi444PP AAC)
+        RAW [1FD10144].mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/1088300.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088300</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 19:29:15 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>33</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>7</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>80</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>41f9fa3fd51bed2cb2ca2a6566eea7debbf18bc9</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_4</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Raw</nyaa:category>\n\t\t\t<nyaa:size>526.1 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088300\">#1088300 | [Anime Land] JoJo no Kimyou
+        na Bouken - Ougon no Kaze 04 (WEBRip 720p Hi444PP AAC) RAW [1FD10144].mp4</a>
+        | 526.1 MiB | Anime - Raw | 41F9FA3FD51BED2CB2CA2A6566EEA7DEBBF18BC9]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>Detective
+        Conan - 474 - Attorney Eri Kisaki In Love [Baaro][720p][5DF4EEE7].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088299.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088299</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 19:29:01 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>30</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>2</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>46</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>1507a171af3ec048827bf68c45b0ba11b0d6872f</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>295.7 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088299\">#1088299 | Detective Conan - 474 - Attorney
+        Eri Kisaki In Love [Baaro][720p][5DF4EEE7].mkv</a> | 295.7 MiB | Anime - English-translated
+        | 1507A171AF3EC048827BF68C45B0BA11B0D6872F]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>Lady
+        Lady!! (1987) - 10 RAW [WEBRip 720p][9A2BB3DD].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088298.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088298</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 19:22:58 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>40</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>fe755362f81d5b7b46a17d59f2e1af3c7de228b0</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_4</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Raw</nyaa:category>\n\t\t\t<nyaa:size>277.7 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088298\">#1088298 | Lady Lady!! (1987) - 10 RAW
+        [WEBRip 720p][9A2BB3DD].mkv</a> | 277.7 MiB | Anime - Raw | FE755362F81D5B7B46A17D59F2E1AF3C7DE228B0]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>Lady
+        Lady!! (1987) - 09 RAW [WEBRip 720p][2DF79C0A].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088297.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088297</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 19:21:09 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>36</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>41aef9ef83b5060e20c0cba5c90eafa029e76ea2</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_4</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Raw</nyaa:category>\n\t\t\t<nyaa:size>275.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088297\">#1088297 | Lady Lady!! (1987) - 09 RAW
+        [WEBRip 720p][2DF79C0A].mkv</a> | 275.8 MiB | Anime - Raw | 41AEF9EF83B5060E20C0CBA5C90EAFA029E76EA2]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>Lady
+        Lady!! (1987) - 08 RAW [WEBRip 720p][6AF7BB9D].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088295.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088295</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 19:18:18 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>34</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>b5c7221b287683839de192733a64fc5632d17489</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_4</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Raw</nyaa:category>\n\t\t\t<nyaa:size>277.7 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088295\">#1088295 | Lady Lady!! (1987) - 08 RAW
+        [WEBRip 720p][6AF7BB9D].mkv</a> | 277.7 MiB | Anime - Raw | B5C7221B287683839DE192733A64FC5632D17489]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>Lady
+        Lady!! (1987) - 07 RAW [WEBRip 720p][238DA0AF].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088294.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088294</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 19:15:49 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>38</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>27bf9e430ebc5f3bcb4cdd7863b2ee951100e3fa</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_4</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Raw</nyaa:category>\n\t\t\t<nyaa:size>277.6 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088294\">#1088294 | Lady Lady!! (1987) - 07 RAW
+        [WEBRip 720p][238DA0AF].mkv</a> | 277.6 MiB | Anime - Raw | 27BF9E430EBC5F3BCB4CDD7863B2EE951100E3FA]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>Lady
+        Lady!! (1987) - 06 RAW [WEBRip 720p][AD55DE30].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088293.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088293</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 19:13:22 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>41</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>dfd037485771b000217b7a8607b0602b523a8bed</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_4</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Raw</nyaa:category>\n\t\t\t<nyaa:size>277.4 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088293\">#1088293 | Lady Lady!! (1987) - 06 RAW
+        [WEBRip 720p][AD55DE30].mkv</a> | 277.4 MiB | Anime - Raw | DFD037485771B000217B7A8607B0602B523A8BED]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[AnimePirate]
+        JoJo&#39;s Bizarre Adventure: Golden Wind - 04 - Joining the Gang [1080p]
+        [ENG-Sub] [HEVC] [x265] [DulE]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088292.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088292</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 19:13:05 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>23</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>3</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>89</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>aec98127c36dacbbde725f6da2041a7cb2b3f565</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>304.0 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088292\">#1088292 | [AnimePirate] JoJo&#39;s
+        Bizarre Adventure: Golden Wind - 04 - Joining the Gang [1080p] [ENG-Sub] [HEVC]
+        [x265] [DulE]</a> | 304.0 MiB | Anime - English-translated | AEC98127C36DACBBDE725F6DA2041A7CB2B3F565]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[\u685C\u90FD\u5B57\u5E55\u7EC4][\u95EA\u4E71\u795E\u4E50
+        SHINOVI MASTER -\u4E1C\u4EAC\u5996\u9B54\u7BC7-/Senran Kagura Shinovi Master
+        - Tokyo Youma Hen[03][BIG5][720P]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088288.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088288</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 19:03:42 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>81</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>60</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>27</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>8cc39f5311f97c48975ddc60e81ffd243ce5bece</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>216.4 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088288\">#1088288 | [\u685C\u90FD\u5B57\u5E55\u7EC4][\u95EA\u4E71\u795E\u4E50
+        SHINOVI MASTER -\u4E1C\u4EAC\u5996\u9B54\u7BC7-/Senran Kagura Shinovi Master
+        - Tokyo Youma Hen[03][BIG5][720P]</a> | 216.4 MiB | Anime - Non-English-translated
+        | 8CC39F5311F97C48975DDC60E81FFD243CE5BECE]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[\u685C\u90FD\u5B57\u5E55\u7EC4][\u95EA\u4E71\u795E\u4E50
+        SHINOVI MASTER -\u4E1C\u4EAC\u5996\u9B54\u7BC7-/Senran Kagura Shinovi Master
+        - Tokyo Youma Hen[03][GB][720P]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088287.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088287</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 19:02:22 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>3</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>52</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>025e2f545e4f7227d5e281f624a99dfd5872056f</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>216.5 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088287\">#1088287 | [\u685C\u90FD\u5B57\u5E55\u7EC4][\u95EA\u4E71\u795E\u4E50
+        SHINOVI MASTER -\u4E1C\u4EAC\u5996\u9B54\u7BC7-/Senran Kagura Shinovi Master
+        - Tokyo Youma Hen[03][GB][720P]</a> | 216.5 MiB | Anime - Non-English-translated
+        | 025E2F545E4F7227D5E281F624A99DFD5872056F]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>Gakuen
+        Basara 03 VOSTFR (1080p) .mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/1088286.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088286</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:46:15 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>10</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>5</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>20</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>14d47a99fdf9cc18f4c4c7ff5eba73f2eef1b1c4</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>590.1 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088286\">#1088286 | Gakuen Basara 03 VOSTFR (1080p)
+        .mp4</a> | 590.1 MiB | Anime - Non-English-translated | 14D47A99FDF9CC18F4C4C7FF5EBA73F2EEF1B1C4]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>Gakuen
+        Basara 02 VOSTFR (1080p) .mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/1088285.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088285</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:44:02 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>11</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>5</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>18</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>88dc71dd5e6544799ffeb8afda2530861743cafc</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>601.5 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088285\">#1088285 | Gakuen Basara 02 VOSTFR (1080p)
+        .mp4</a> | 601.5 MiB | Anime - Non-English-translated | 88DC71DD5E6544799FFEB8AFDA2530861743CAFC]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>Gakuen
+        Basara 01 VOSTFR (1080p) .mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/1088284.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088284</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:36:12 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>8</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>6</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>14</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>1f163e08e42d2bb504416b5d597f06362b977e03</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>646.4 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088284\">#1088284 | Gakuen Basara 01 VOSTFR (1080p)
+        .mp4</a> | 646.4 MiB | Anime - Non-English-translated | 1F163E08E42D2BB504416B5D597F06362B977E03]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Senran Kagura - Shinovi Master - 03 [720p][2DECE37D].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088283.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088283</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:34:19 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>26</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>7</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>53</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>d12bc8f45e20aa20d66536d31c67863f0854d1a0</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>517.1 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088283\">#1088283 | [PuyaSubs!] Senran Kagura
+        - Shinovi Master - 03 [720p][2DECE37D].mkv</a> | 517.1 MiB | Anime - Non-English-translated
+        | D12BC8F45E20AA20D66536D31C67863F0854D1A0]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Senran Kagura - Shinovi Master - 03 [1080p][7A73B06E].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088282.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088282</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:32:54 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>22</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>9</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>24</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>f0fb1a919ca68fb9cb02191a49fecbbab7c32564</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>1.3 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088282\">#1088282 | [PuyaSubs!] Senran Kagura
+        - Shinovi Master - 03 [1080p][7A73B06E].mkv</a> | 1.3 GiB | Anime - Non-English-translated
+        | F0FB1A919CA68FB9CB02191A49FECBBAB7C32564]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Castlevania S2 (01-08) [1080p] (Batch)</title>\n\t\t\t\t<link>https://nyaa.si/download/1088281.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088281</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:27:04 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>548</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>379</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>852</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>c237b0b8c42ce019cdfc68daff888cdd565348d7</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>8.4 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088281\">#1088281 | [HorribleSubs] Castlevania
+        S2 (01-08) [1080p] (Batch)</a> | 8.4 GiB | Anime - English-translated | C237B0B8C42CE019CDFC68DAFF888CDD565348D7]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Castlevania S2 (01-08) [720p] (Batch)</title>\n\t\t\t\t<link>https://nyaa.si/download/1088280.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088280</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:26:53 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>604</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>402</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>1079</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>8b2527c506a7e1f91f44cb2ae6cb0965505188cd</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>3.9 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088280\">#1088280 | [HorribleSubs] Castlevania
+        S2 (01-08) [720p] (Batch)</a> | 3.9 GiB | Anime - English-translated | 8B2527C506A7E1F91F44CB2AE6CB0965505188CD]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Castlevania S2 (01-08) [480p] (Batch)</title>\n\t\t\t\t<link>https://nyaa.si/download/1088279.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088279</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:26:48 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>270</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>265</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>371</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>d75d14cb0296b4d237868b652105d721693db3fe</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>2.5 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088279\">#1088279 | [HorribleSubs] Castlevania
+        S2 (01-08) [480p] (Batch)</a> | 2.5 GiB | Anime - English-translated | D75D14CB0296B4D237868B652105D721693DB3FE]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[USP]
+        Puzzle &amp; Dragons Cross - 46 [956BA05B].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088278.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088278</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:26:04 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>3</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>1</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>6</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>fddc9400da9abc5cfc0438da7875b13bec66e448</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>371.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088278\">#1088278 | [USP] Puzzle &amp; Dragons
+        Cross - 46 [956BA05B].mkv</a> | 371.8 MiB | Anime - Non-English-translated
+        | FDDC9400DA9ABC5CFC0438DA7875B13BEC66E448]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Senran Kagura Shinovi Master - Tokyo Youma-hen - 03 [1080p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088277.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088277</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:24:19 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>269</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>66</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>807</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>0174cf541960a1658011c82f8ca83a704854579a</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>1.3 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088277\">#1088277 | [HorribleSubs] Senran Kagura
+        Shinovi Master - Tokyo Youma-hen - 03 [1080p].mkv</a> | 1.3 GiB | Anime -
+        English-translated | 0174CF541960A1658011C82F8CA83A704854579A]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Senran Kagura Shinovi Master - Tokyo Youma-hen - 03 [720p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088275.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088275</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:22:36 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>433</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>108</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>1337</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>b5cfae3c8d19989721141ddad7e9821a81a2ac57</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>517.4 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088275\">#1088275 | [HorribleSubs] Senran Kagura
+        Shinovi Master - Tokyo Youma-hen - 03 [720p].mkv</a> | 517.4 MiB | Anime -
+        English-translated | B5CFAE3C8D19989721141DDAD7E9821A81A2AC57]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Senran Kagura Shinovi Master - Tokyo Youma-hen - 03 [480p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088274.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088274</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:21:56 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>180</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>56</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>474</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>866729e89d740b638f92c77b5a5fc9a47d3cccd2</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>181.4 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088274\">#1088274 | [HorribleSubs] Senran Kagura
+        Shinovi Master - Tokyo Youma-hen - 03 [480p].mkv</a> | 181.4 MiB | Anime -
+        English-translated | 866729E89D740B638F92C77B5A5FC9A47D3CCCD2]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Erai-raws]
+        Senran Kagura Shinovi Master - Tokyo Youma-hen - 03 [1080p][Multiple Subtitle].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088273.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088273</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:19:21 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>28</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>7</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>61</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>711663ce09e8f0078cd727bb430b912a0e66dbd1</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>1.3 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088273\">#1088273 | [Erai-raws] Senran Kagura
+        Shinovi Master - Tokyo Youma-hen - 03 [1080p][Multiple Subtitle].mkv</a> |
+        1.3 GiB | Anime - English-translated | 711663CE09E8F0078CD727BB430B912A0E66DBD1]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Erai-raws]
+        Senran Kagura Shinovi Master - Tokyo Youma-hen - 03 [720p][Multiple Subtitle].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088272.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088272</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:17:31 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>17</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>7</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>68</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>00925dd3ffd33b4e03eca1c1fbb740f0fd5ef9ba</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>517.3 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088272\">#1088272 | [Erai-raws] Senran Kagura
+        Shinovi Master - Tokyo Youma-hen - 03 [720p][Multiple Subtitle].mkv</a> |
+        517.3 MiB | Anime - English-translated | 00925DD3FFD33B4E03ECA1C1FBB740F0FD5EF9BA]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[USP]
+        Puzzle &amp; Dragons Cross - 45 [32D67645].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088271.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088271</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:16:04 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>3</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>5</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>5c195cb920f196eef34ba2a4687a01adb21b46ac</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>180.7 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088271\">#1088271 | [USP] Puzzle &amp; Dragons
+        Cross - 45 [32D67645].mkv</a> | 180.7 MiB | Anime - Non-English-translated
+        | 5C195CB920F196EEF34BA2A4687A01ADB21B46AC]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>\u3010\u685C\u90FD\u5B57\u5E55\u7EC4&amp;\u5E7B\u4E4B\u5B57\u5E55\u7EC4\u3011\u671D\u82B1\u5915\u8A93
+        ~\u8BA9\u8A93\u7EA6\u7684\u82B1\u513F\u70B9\u7F00\u8D77\u522B\u79BB\u7684\u6668\u66E6~
+        [Movie][GB][720P][AVC yuv420p10 AAC][MP4]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088270.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088270</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:06:44 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>71</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>54</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>36</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>6879cccffb4494351c08346e78cd4322caa6e4d1</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>2.0 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088270\">#1088270 | \u3010\u685C\u90FD\u5B57\u5E55\u7EC4&amp;\u5E7B\u4E4B\u5B57\u5E55\u7EC4\u3011\u671D\u82B1\u5915\u8A93
+        ~\u8BA9\u8A93\u7EA6\u7684\u82B1\u513F\u70B9\u7F00\u8D77\u522B\u79BB\u7684\u6668\u66E6~
+        [Movie][GB][720P][AVC yuv420p10 AAC][MP4]</a> | 2.0 GiB | Anime - Non-English-translated
+        | 6879CCCFFB4494351C08346E78CD4322CAA6E4D1]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Wasurenai]
+        Kamisama Minarai Himitsu no Cocotama - 106 [H264 1280x720] [1DB8AB57].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088269.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088269</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:05:20 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>16</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>3</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>45</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>9f55bb981655b4679637f6537ffc22a3b1549b8b</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>252.2 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088269\">#1088269 | [Wasurenai] Kamisama Minarai
+        Himitsu no Cocotama - 106 [H264 1280x720] [1DB8AB57].mkv</a> | 252.2 MiB |
+        Anime - English-translated | 9F55BB981655B4679637F6537FFC22A3B1549B8B]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Wasurenai]
+        Kamisama Minarai Himitsu no Cocotama - 105 [H264 1280x720] [436B6564].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088268.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088268</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:05:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>15</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>3</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>41</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>6b2daa4e95b643c902a81040d746773df7403e28</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>244.5 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088268\">#1088268 | [Wasurenai] Kamisama Minarai
+        Himitsu no Cocotama - 105 [H264 1280x720] [436B6564].mkv</a> | 244.5 MiB |
+        Anime - English-translated | 6B2DAA4E95B643C902A81040D746773DF7403E28]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Wasurenai]
+        Kamisama Minarai Himitsu no Cocotama - 104 [H264 1280x720] [980152AB].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/1088267.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088267</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:04:37 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>14</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>2</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>40</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>1cba35757b05aa8ce865658cece60dfdf40efac5</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>234.2 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088267\">#1088267 | [Wasurenai] Kamisama Minarai
+        Himitsu no Cocotama - 104 [H264 1280x720] [980152AB].mkv</a> | 234.2 MiB |
+        Anime - English-translated | 1CBA35757B05AA8CE865658CECE60DFDF40EFAC5]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Lumpstud]
+        Youkai Watch 188 [English Hardsub]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088266.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088266</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:03:47 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>7</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>3</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>13</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>ba76f7ad1a03954f4bc22d936c3186d81b0bcdc4</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>230.0 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088266\">#1088266 | [Lumpstud] Youkai Watch 188
+        [English Hardsub]</a> | 230.0 MiB | Anime - English-translated | BA76F7AD1A03954F4BC22D936C3186D81B0BCDC4]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Lumpstud]
+        Youkai Watch 188 [English Softsub]</title>\n\t\t\t\t<link>https://nyaa.si/download/1088265.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088265</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:03:44 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>12</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>1</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>29</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>47cf1803429abaa014986670bc5304b0c607c386</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>348.2 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088265\">#1088265 | [Lumpstud] Youkai Watch 188
+        [English Softsub]</a> | 348.2 MiB | Anime - English-translated | 47CF1803429ABAA014986670BC5304B0C607C386]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Prout]
+        JoJo&#39;s Bizarre Adventure - Golden Wind - Episode 4 VOSTFR.ass</title>\n\t\t\t\t<link>https://nyaa.si/download/1088264.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1088264</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Oct 2018 18:03:43 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>1</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>13</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>f06172998ece5f3987f893cd30a22ce7beaa694c</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>29.4 KiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1088264\">#1088264 | [Prout] JoJo&#39;s Bizarre
+        Adventure - Golden Wind - Episode 4 VOSTFR.ass</a> | 29.4 KiB | Anime - Non-English-translated
+        | F06172998ECE5F3987F893CD30A22CE7BEAA694C]]></description>\n\t\t</item>\n\t</channel>\n</rss>"}
+    headers:
+      cache-control: [max-age=300, 'no-cache, no-store, must-revalidate']
+      connection: [keep-alive]
+      content-length: ['64546']
+      content-security-policy: [upgrade-insecure-requests;]
+      content-type: [application/xml]
+      date: ['Sat, 27 Oct 2018 04:14:28 GMT']
+      referrer-policy: [same-origin]
+      server: [Sucuri/Cloudproxy]
+      x-proxy-cache: [HIT]
+      x-sucuri-cache: [MISS]
+      x-sucuri-id: ['11008']
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: [!!python/unicode 'gzip,deflate']
+      Connection: [keep-alive]
+      User-Agent: [!!python/unicode 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36
+          (KHTML, like Gecko) Chrome/36.0.1985.67 Safari/537.36']
+    method: GET
+    uri: https://nyaa.si/?c=1_0&f=0&o=desc&q=Fairy+Tail+S2&s=id&page=rss
+  response:
+    body: {string: !!python/unicode "<rss xmlns:atom=\"http://www.w3.org/2005/Atom\"
+        xmlns:nyaa=\"https://nyaa.si/xmlns/nyaa\" version=\"2.0\">\n\t<channel>\n\t\t<title>Nyaa
+        - &#34;Fairy Tail S2&#34; - Torrent File RSS</title>\n\t\t<description>RSS
+        Feed for &#34;Fairy Tail S2&#34;</description>\n\t\t<link>https://nyaa.si/</link>\n\t\t<atom:link
+        href=\"https://nyaa.si/?page=rss\" rel=\"self\" type=\"application/rss+xml\"
+        />\n\t\t<item>\n\t\t\t<title>[3asq Upload Team] Fairy Tail S1+S2+Movies [720p]</title>\n\t\t\t\t<link>https://nyaa.si/download/1084363.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1084363</guid>\n\t\t\t\t<pubDate>Sun,
+        14 Oct 2018 16:36:35 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>5</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>2</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>17</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>a05a6eb63467b416d14af93ea885452762905ba6</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>86.4 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1084363\">#1084363 | [3asq Upload Team] Fairy
+        Tail S1+S2+Movies [720p]</a> | 86.4 GiB | Anime - Non-English-translated |
+        a05a6eb63467b416d14af93ea885452762905ba6]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Ranger]
+        Fairy Tail (2014) | Fairy Tail S2 [Dual Audio 10bit BD720p][HEVC-x265]</title>\n\t\t\t\t<link>https://nyaa.si/download/1020243.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/1020243</guid>\n\t\t\t\t<pubDate>Tue,
+        27 Mar 2018 15:44:30 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>6</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>3</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>402</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>2c5b85bba831504005747fb9a035aa680516d5f5</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>19.6 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/1020243\">#1020243 | [Ranger] Fairy Tail (2014)
+        | Fairy Tail S2 [Dual Audio 10bit BD720p][HEVC-x265]</a> | 19.6 GiB | Anime
+        - English-translated | 2c5b85bba831504005747fb9a035aa680516d5f5]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Hayaisubs]
+        Fairy Tail S2 -  001 (176) a 102 (277) [720p AAC]</title>\n\t\t\t\t<link>https://nyaa.si/download/969147.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/969147</guid>\n\t\t\t\t<pubDate>Sun,
+        15 Oct 2017 04:12:32 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>2</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>44</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>c69a86fc218ff43029233668b6788c4bcfbbda44</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>22.2 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/969147\">#969147 | [Hayaisubs] Fairy Tail S2 -
+        \ 001 (176) a 102 (277) [720p AAC]</a> | 22.2 GiB | Anime - Non-English-translated
+        | c69a86fc218ff43029233668b6788c4bcfbbda44]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Super-Down]
+        Fairy Tail s2 - OVA 2 (8)[4B12989B][Arabic-sub].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/933746.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/933746</guid>\n\t\t\t\t<pubDate>Mon,
+        26 Jun 2017 10:49:34 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>16</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>6edd6526e6ed237b38d576d443b682299a00a113</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>348.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/933746\">#933746 | [Super-Down] Fairy Tail s2
+        - OVA 2 (8)[4B12989B][Arabic-sub].mkv</a> | 348.8 MiB | Anime - Non-English-translated
+        | 6edd6526e6ed237b38d576d443b682299a00a113]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Naruto-Kun.Hu]
+        Fairy Tail 176-277 (S2 001-102) [720p]</title>\n\t\t\t\t<link>https://nyaa.si/download/888260.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/888260</guid>\n\t\t\t\t<pubDate>Wed,
+        11 Jan 2017 14:30:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>39</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>9c9b1c1803d1d9b9a41cd01feea94e9061ae41a4</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>29.9 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/888260\">#888260 | [Naruto-Kun.Hu] Fairy Tail
+        176-277 (S2 001-102) [720p]</a> | 29.9 GiB | Anime - Non-English-translated
+        | 9c9b1c1803d1d9b9a41cd01feea94e9061ae41a4]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HcLs]
+        Fairy Tail 2014 | S2 240-252 | Season 7 065-077 [720p][English Dubbed][RJ]</title>\n\t\t\t\t<link>https://nyaa.si/download/871160.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/871160</guid>\n\t\t\t\t<pubDate>Tue,
+        15 Nov 2016 06:59:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>6</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>1314</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>4b28e18864436f2dfca75302a4a9cc0b3f5517ab</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>1.6 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/871160\">#871160 | [HcLs] Fairy Tail 2014 | S2
+        240-252 | Season 7 065-077 [720p][English Dubbed][RJ]</a> | 1.6 GiB | Anime
+        - English-translated | 4b28e18864436f2dfca75302a4a9cc0b3f5517ab]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HcLs]
+        Fairy Tail 2014 | S2 227-239 | Season 7 052-064 [720p][English Dubbed][RJ]</title>\n\t\t\t\t<link>https://nyaa.si/download/870599.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/870599</guid>\n\t\t\t\t<pubDate>Sun,
+        13 Nov 2016 19:45:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>6</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>1203</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>948fa1798014ac85da785b881223f36801a6eccd</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>1.3 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/870599\">#870599 | [HcLs] Fairy Tail 2014 | S2
+        227-239 | Season 7 052-064 [720p][English Dubbed][RJ]</a> | 1.3 GiB | Anime
+        - English-translated | 948fa1798014ac85da785b881223f36801a6eccd]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HcLs]
+        Fairy Tail 2014 | S2 200-212 | Season 7 025-037 [720p][English Dubbed][RJ]</title>\n\t\t\t\t<link>https://nyaa.si/download/870181.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/870181</guid>\n\t\t\t\t<pubDate>Sat,
+        12 Nov 2016 22:13:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>3</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>150</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>a6c72f8994a1e862a5689860c8a374be3b9bedc2</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>1.8 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/870181\">#870181 | [HcLs] Fairy Tail 2014 | S2
+        200-212 | Season 7 025-037 [720p][English Dubbed][RJ]</a> | 1.8 GiB | Anime
+        - English-translated | a6c72f8994a1e862a5689860c8a374be3b9bedc2]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HcLs]
+        Fairy Tail 2014 | S2 176-199 | Season 7 001-024 [720p][English Dubbed][RJ]</title>\n\t\t\t\t<link>https://nyaa.si/download/869537.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/869537</guid>\n\t\t\t\t<pubDate>Fri,
+        11 Nov 2016 09:18:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>4</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>480</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>6b284002c8d06f06fc7b3e26b526d6c12dbd4946</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>3.2 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/869537\">#869537 | [HcLs] Fairy Tail 2014 | S2
+        176-199 | Season 7 001-024 [720p][English Dubbed][RJ]</a> | 3.2 GiB | Anime
+        - English-translated | 6b284002c8d06f06fc7b3e26b526d6c12dbd4946]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HcLs]
+        Fairy Tail 2014 | S2 213-226 | Season 7 038-051 [720p][English Dubbed][RJ]</title>\n\t\t\t\t<link>https://nyaa.si/download/869176.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/869176</guid>\n\t\t\t\t<pubDate>Thu,
+        10 Nov 2016 09:38:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>2</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>51</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>4c911229f29a8b43564ee7e8b5a4c46645ba6ffb</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>1.2 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/869176\">#869176 | [HcLs] Fairy Tail 2014 | S2
+        213-226 | Season 7 038-051 [720p][English Dubbed][RJ]</a> | 1.2 GiB | Anime
+        - English-translated | 4c911229f29a8b43564ee7e8b5a4c46645ba6ffb]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 (01-102) [1080p] (Batch)</title>\n\t\t\t\t<link>https://nyaa.si/download/810972.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/810972</guid>\n\t\t\t\t<pubDate>Thu,
+        12 May 2016 01:22:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>12</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>4</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>940</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>fb17372a84aa20d0dab64453aafa0bf9c223fcd6</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>55.6 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/810972\">#810972 | [HorribleSubs] Fairy Tail S2
+        (01-102) [1080p] (Batch)</a> | 55.6 GiB | Anime - English-translated | fb17372a84aa20d0dab64453aafa0bf9c223fcd6]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 (01-102) [720p] (Batch)</title>\n\t\t\t\t<link>https://nyaa.si/download/810971.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/810971</guid>\n\t\t\t\t<pubDate>Thu,
+        12 May 2016 01:22:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>16</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>6</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>1097</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>04b6b1623b2e2ca43354677084a038a5efb3319c</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>33.1 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/810971\">#810971 | [HorribleSubs] Fairy Tail S2
+        (01-102) [720p] (Batch)</a> | 33.1 GiB | Anime - English-translated | 04b6b1623b2e2ca43354677084a038a5efb3319c]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 (01-102) [480p] (Batch)</title>\n\t\t\t\t<link>https://nyaa.si/download/810970.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/810970</guid>\n\t\t\t\t<pubDate>Thu,
+        12 May 2016 01:22:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>3</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>1</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>436</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>9a5f75ffd2d760a1bbd77236752c5098e94f44b9</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>15.1 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/810970\">#810970 | [HorribleSubs] Fairy Tail S2
+        (01-102) [480p] (Batch)</a> | 15.1 GiB | Anime - English-translated | 9a5f75ffd2d760a1bbd77236752c5098e94f44b9]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[NotWCP]
+        Fairy Tail 2014 S2 Tenrou Jade Arc + The Avatar Arc [Dual-Audio] [HDTV-720p]</title>\n\t\t\t\t<link>https://nyaa.si/download/808355.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/808355</guid>\n\t\t\t\t<pubDate>Mon,
+        02 May 2016 18:13:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>5</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>1dd119fb163babb49889684b6d4c82e0eb04410e</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>5.1 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/808355\">#808355 | [NotWCP] Fairy Tail 2014 S2
+        Tenrou Jade Arc + The Avatar Arc [Dual-Audio] [HDTV-720p]</a> | 5.1 GiB |
+        Anime - English-translated | 1dd119fb163babb49889684b6d4c82e0eb04410e]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Fairy Tail S2 [1080p][Batch]</title>\n\t\t\t\t<link>https://nyaa.si/download/798860.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/798860</guid>\n\t\t\t\t<pubDate>Thu,
+        31 Mar 2016 18:23:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>2</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>e77d31d84a4c1e56372f85a27e803a59b9ab7695</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>55.4 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/798860\">#798860 | [PuyaSubs!] Fairy Tail S2 [1080p][Batch]</a>
+        | 55.4 GiB | Anime - Non-English-translated | e77d31d84a4c1e56372f85a27e803a59b9ab7695]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Fairy Tail S2 [720p][Batch]</title>\n\t\t\t\t<link>https://nyaa.si/download/798858.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/798858</guid>\n\t\t\t\t<pubDate>Thu,
+        31 Mar 2016 18:23:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>6</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>f40035026572f81af585419deec3c71189d384e8</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>33.1 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/798858\">#798858 | [PuyaSubs!] Fairy Tail S2 [720p][Batch]</a>
+        | 33.1 GiB | Anime - Non-English-translated | f40035026572f81af585419deec3c71189d384e8]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Chinurarete
+        Subs]Fairy Tail - S2 (2014) [10BIT][GERSUB][BATCH]</title>\n\t\t\t\t<link>https://nyaa.si/download/798346.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/798346</guid>\n\t\t\t\t<pubDate>Tue,
+        29 Mar 2016 13:05:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>1</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>23</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>1464fca54500682091f105d1a18496e8ea8341be</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>46.6 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/798346\">#798346 | [Chinurarete Subs]Fairy Tail
+        - S2 (2014) [10BIT][GERSUB][BATCH]</a> | 46.6 GiB | Anime - Non-English-translated
+        | 1464fca54500682091f105d1a18496e8ea8341be]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Chinurarete
+        Subs]Fairy Tail - S2 (2014) [8BIT][GERSUB][BATCH]</title>\n\t\t\t\t<link>https://nyaa.si/download/798345.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/798345</guid>\n\t\t\t\t<pubDate>Tue,
+        29 Mar 2016 13:05:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>2</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>1</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>11</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>d63f2fca2a32e999af4fd27aeaf1e4b0f0dad2e9</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>46.4 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/798345\">#798345 | [Chinurarete Subs]Fairy Tail
+        - S2 (2014) [8BIT][GERSUB][BATCH]</a> | 46.4 GiB | Anime - Non-English-translated
+        | d63f2fca2a32e999af4fd27aeaf1e4b0f0dad2e9]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Chinurarete
+        Subs]Fairy Tail - S2 (2014) - 102 [10BIT][GERSUB]</title>\n\t\t\t\t<link>https://nyaa.si/download/798294.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/798294</guid>\n\t\t\t\t<pubDate>Tue,
+        29 Mar 2016 08:17:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>624c8c4493a89dcfdd940b02802704f9f3d14d75</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>438.2 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/798294\">#798294 | [Chinurarete Subs]Fairy Tail
+        - S2 (2014) - 102 [10BIT][GERSUB]</a> | 438.2 MiB | Anime - Non-English-translated
+        | 624c8c4493a89dcfdd940b02802704f9f3d14d75]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Chinurarete
+        Subs]Fairy Tail - S2 (2014) - 102 [8BIT][GERSUB]</title>\n\t\t\t\t<link>https://nyaa.si/download/798293.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/798293</guid>\n\t\t\t\t<pubDate>Tue,
+        29 Mar 2016 08:17:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>8474594dfea41fe02218aba9e0afeedcdbf1cb7e</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>408.5 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/798293\">#798293 | [Chinurarete Subs]Fairy Tail
+        - S2 (2014) - 102 [8BIT][GERSUB]</a> | 408.5 MiB | Anime - Non-English-translated
+        | 8474594dfea41fe02218aba9e0afeedcdbf1cb7e]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Naruto-Kun.Hu]
+        Fairy Tail 277 (s2-102) [720p].mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/797265.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/797265</guid>\n\t\t\t\t<pubDate>Sat,
+        26 Mar 2016 07:41:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>1a88eb66d11bdf616bf895113f9f5a9436bff551</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>293.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/797265\">#797265 | [Naruto-Kun.Hu] Fairy Tail
+        277 (s2-102) [720p].mp4</a> | 293.8 MiB | Anime - Non-English-translated |
+        1a88eb66d11bdf616bf895113f9f5a9436bff551]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[SOFCJ-Raws]
+        Fairy Tail S2 - 92 (277) END (TVA 1280x720 x264 AAC).mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/797131.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/797131</guid>\n\t\t\t\t<pubDate>Sat,
+        26 Mar 2016 02:18:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>2</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>62</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>4fd9b74ea202c206aad6dcd2093ea10ee49e9832</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_4</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Raw</nyaa:category>\n\t\t\t<nyaa:size>423.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/797131\">#797131 | [SOFCJ-Raws] Fairy Tail S2
+        - 92 (277) END (TVA 1280x720 x264 AAC).mp4</a> | 423.8 MiB | Anime - Raw |
+        4fd9b74ea202c206aad6dcd2093ea10ee49e9832]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Fairy Tail S2 - 102 [1080p][97CD00E0].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/797057.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/797057</guid>\n\t\t\t\t<pubDate>Fri,
+        25 Mar 2016 21:42:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>731aa8c63023969ac361619e08bc0ec50704df46</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>547.0 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/797057\">#797057 | [PuyaSubs!] Fairy Tail S2 -
+        102 [1080p][97CD00E0].mkv</a> | 547.0 MiB | Anime - Non-English-translated
+        | 731aa8c63023969ac361619e08bc0ec50704df46]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Fairy Tail S2 - 102 [720p][F824CF43].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/797056.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/797056</guid>\n\t\t\t\t<pubDate>Fri,
+        25 Mar 2016 21:42:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>4e93c4e53da583ca112310fb954397cd8d793098</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>326.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/797056\">#797056 | [PuyaSubs!] Fairy Tail S2 -
+        102 [720p][F824CF43].mkv</a> | 326.8 MiB | Anime - Non-English-translated
+        | 4e93c4e53da583ca112310fb954397cd8d793098]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 - 102 [1080p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/797034.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/797034</guid>\n\t\t\t\t<pubDate>Fri,
+        25 Mar 2016 21:08:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>1</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>59</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>e3f130d47729a5ad261f7edbc47e0c23670e4c98</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>546.5 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/797034\">#797034 | [HorribleSubs] Fairy Tail S2
+        - 102 [1080p].mkv</a> | 546.5 MiB | Anime - English-translated | e3f130d47729a5ad261f7edbc47e0c23670e4c98]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 - 102 [720p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/797032.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/797032</guid>\n\t\t\t\t<pubDate>Fri,
+        25 Mar 2016 21:05:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>1</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>61</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>cc576656b5765f0f8d055ec6a11eb27f679d25d4</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>326.3 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/797032\">#797032 | [HorribleSubs] Fairy Tail S2
+        - 102 [720p].mkv</a> | 326.3 MiB | Anime - English-translated | cc576656b5765f0f8d055ec6a11eb27f679d25d4]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 - 102 [480p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/797031.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/797031</guid>\n\t\t\t\t<pubDate>Fri,
+        25 Mar 2016 21:02:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>21</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>118397c9ed12a4e2c1064867048597a1786c370f</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>148.1 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/797031\">#797031 | [HorribleSubs] Fairy Tail S2
+        - 102 [480p].mkv</a> | 148.1 MiB | Anime - English-translated | 118397c9ed12a4e2c1064867048597a1786c370f]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Chinurarete
+        Subs]Fairy Tail - S2 (2014) - 101 [10BIT][GERSUB]</title>\n\t\t\t\t<link>https://nyaa.si/download/796843.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/796843</guid>\n\t\t\t\t<pubDate>Fri,
+        25 Mar 2016 09:05:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>91e11bf5d303410f7cbf4a88fc87e5a478d1e7dc</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>505.2 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/796843\">#796843 | [Chinurarete Subs]Fairy Tail
+        - S2 (2014) - 101 [10BIT][GERSUB]</a> | 505.2 MiB | Anime - Non-English-translated
+        | 91e11bf5d303410f7cbf4a88fc87e5a478d1e7dc]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Chinurarete
+        Subs]Fairy Tail - S2 (2014) - 101 [8BIT][GERSUB]</title>\n\t\t\t\t<link>https://nyaa.si/download/796842.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/796842</guid>\n\t\t\t\t<pubDate>Fri,
+        25 Mar 2016 09:05:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>61f2e1ba62ce6f792abb86c9e781cede447db794</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>481.0 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/796842\">#796842 | [Chinurarete Subs]Fairy Tail
+        - S2 (2014) - 101 [8BIT][GERSUB]</a> | 481.0 MiB | Anime - Non-English-translated
+        | 61f2e1ba62ce6f792abb86c9e781cede447db794]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Naruto-Kun.Hu]
+        Fairy Tail 276 (s2-101) [720p].mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/795177.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/795177</guid>\n\t\t\t\t<pubDate>Sat,
+        19 Mar 2016 11:13:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>d71326e05bfacfde4907e929bac0f5d270061cd7</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>299.9 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/795177\">#795177 | [Naruto-Kun.Hu] Fairy Tail
+        276 (s2-101) [720p].mp4</a> | 299.9 MiB | Anime - Non-English-translated |
+        d71326e05bfacfde4907e929bac0f5d270061cd7]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Chinurarete
+        Subs]Fairy Tail - S2 (2014) - 100 [10BIT][GERSUB]</title>\n\t\t\t\t<link>https://nyaa.si/download/795089.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/795089</guid>\n\t\t\t\t<pubDate>Sat,
+        19 Mar 2016 05:37:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>6462380d3c994b22b8e3e5aa253b79b693b42688</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>404.9 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/795089\">#795089 | [Chinurarete Subs]Fairy Tail
+        - S2 (2014) - 100 [10BIT][GERSUB]</a> | 404.9 MiB | Anime - Non-English-translated
+        | 6462380d3c994b22b8e3e5aa253b79b693b42688]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Chinurarete
+        Subs]Fairy Tail - S2 (2014) - 100 [8BIT][GERSUB]</title>\n\t\t\t\t<link>https://nyaa.si/download/795088.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/795088</guid>\n\t\t\t\t<pubDate>Sat,
+        19 Mar 2016 05:37:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>8421696352ce9cedbaa75c066934fdfd88babf93</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>371.4 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/795088\">#795088 | [Chinurarete Subs]Fairy Tail
+        - S2 (2014) - 100 [8BIT][GERSUB]</a> | 371.4 MiB | Anime - Non-English-translated
+        | 8421696352ce9cedbaa75c066934fdfd88babf93]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[SOFCJ-Raws]
+        Fairy Tail S2 - 91 (276) (TVA 1280x720 x264 AAC).mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/795075.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/795075</guid>\n\t\t\t\t<pubDate>Sat,
+        19 Mar 2016 03:34:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>2</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>21</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>12bd587e92c7f95589b8b2ebca4af2a2cf8b37a7</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_4</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Raw</nyaa:category>\n\t\t\t<nyaa:size>540.4 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/795075\">#795075 | [SOFCJ-Raws] Fairy Tail S2
+        - 91 (276) (TVA 1280x720 x264 AAC).mp4</a> | 540.4 MiB | Anime - Raw | 12bd587e92c7f95589b8b2ebca4af2a2cf8b37a7]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Fairy Tail S2 - 101 [1080p][7D5C4D4F].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/795024.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/795024</guid>\n\t\t\t\t<pubDate>Fri,
+        18 Mar 2016 21:29:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>ea8fd6cb5788e4552e9f33683cc573075d40b208</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>559.5 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/795024\">#795024 | [PuyaSubs!] Fairy Tail S2 -
+        101 [1080p][7D5C4D4F].mkv</a> | 559.5 MiB | Anime - Non-English-translated
+        | ea8fd6cb5788e4552e9f33683cc573075d40b208]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Fairy Tail S2 - 101 [720p][86029F0A].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/795022.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/795022</guid>\n\t\t\t\t<pubDate>Fri,
+        18 Mar 2016 21:29:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>1</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>e0fd86b88fcbd46e9d1c64d9842205f48f9fbf69</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>332.7 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/795022\">#795022 | [PuyaSubs!] Fairy Tail S2 -
+        101 [720p][86029F0A].mkv</a> | 332.7 MiB | Anime - Non-English-translated
+        | e0fd86b88fcbd46e9d1c64d9842205f48f9fbf69]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 - 101 [1080p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/795019.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/795019</guid>\n\t\t\t\t<pubDate>Fri,
+        18 Mar 2016 21:24:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>2</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>70</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>d412c75cbc9b7796a20135761a27945b44e61851</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>559.4 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/795019\">#795019 | [HorribleSubs] Fairy Tail S2
+        - 101 [1080p].mkv</a> | 559.4 MiB | Anime - English-translated | d412c75cbc9b7796a20135761a27945b44e61851]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 - 101 [720p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/795016.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/795016</guid>\n\t\t\t\t<pubDate>Fri,
+        18 Mar 2016 21:05:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>45</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>82dae45ba14d424403d739af0e6883fb930a06a3</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>332.7 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/795016\">#795016 | [HorribleSubs] Fairy Tail S2
+        - 101 [720p].mkv</a> | 332.7 MiB | Anime - English-translated | 82dae45ba14d424403d739af0e6883fb930a06a3]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 - 101 [480p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/795015.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/795015</guid>\n\t\t\t\t<pubDate>Fri,
+        18 Mar 2016 21:02:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>14</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>7a0c575408410c6abe46805df28e859d62d82385</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>151.1 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/795015\">#795015 | [HorribleSubs] Fairy Tail S2
+        - 101 [480p].mkv</a> | 151.1 MiB | Anime - English-translated | 7a0c575408410c6abe46805df28e859d62d82385]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[AE]
+        Fairy Tail Zero - 10 / Fairy Tail (2014) / S2 - 100 [720p].mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/794043.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/794043</guid>\n\t\t\t\t<pubDate>Tue,
+        15 Mar 2016 17:10:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>168146f74ca540c3a0fe4b90085c4cae21d33cde</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>145.1 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/794043\">#794043 | [AE] Fairy Tail Zero - 10 /
+        Fairy Tail (2014) / S2 - 100 [720p].mp4</a> | 145.1 MiB | Anime - English-translated
+        | 168146f74ca540c3a0fe4b90085c4cae21d33cde]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Naruto-Kun.Hu]
+        Fairy Tail 275 (s2-100) FT-Zer0 [720p].mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/793329.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/793329</guid>\n\t\t\t\t<pubDate>Sun,
+        13 Mar 2016 09:00:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>1</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>3960f1545807d1bf45e1e0883d68b0f640f7af91</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>299.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/793329\">#793329 | [Naruto-Kun.Hu] Fairy Tail
+        275 (s2-100) FT-Zer0 [720p].mp4</a> | 299.8 MiB | Anime - Non-English-translated
+        | 3960f1545807d1bf45e1e0883d68b0f640f7af91]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Fairy Tail S2 - 100 [1080p][0F9721ED].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/792891.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/792891</guid>\n\t\t\t\t<pubDate>Fri,
+        11 Mar 2016 21:32:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>bb35fd1ffd7421b6b6b6b579165153b86c2e4d8c</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>557.0 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/792891\">#792891 | [PuyaSubs!] Fairy Tail S2 -
+        100 [1080p][0F9721ED].mkv</a> | 557.0 MiB | Anime - Non-English-translated
+        | bb35fd1ffd7421b6b6b6b579165153b86c2e4d8c]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Fairy Tail S2 - 100 [720p][9775B731].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/792890.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/792890</guid>\n\t\t\t\t<pubDate>Fri,
+        11 Mar 2016 21:32:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>a9131ecdda21d353c37b5e82d99dd9c4377a2743</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>332.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/792890\">#792890 | [PuyaSubs!] Fairy Tail S2 -
+        100 [720p][9775B731].mkv</a> | 332.8 MiB | Anime - Non-English-translated
+        | a9131ecdda21d353c37b5e82d99dd9c4377a2743]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 - 100 [1080p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/792868.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/792868</guid>\n\t\t\t\t<pubDate>Fri,
+        11 Mar 2016 20:21:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>2</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>43</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>b4abb12d3e149f5aa1ce2e7d3e2ea0b89141167e</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>556.9 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/792868\">#792868 | [HorribleSubs] Fairy Tail S2
+        - 100 [1080p].mkv</a> | 556.9 MiB | Anime - English-translated | b4abb12d3e149f5aa1ce2e7d3e2ea0b89141167e]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 - 100 [720p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/792865.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/792865</guid>\n\t\t\t\t<pubDate>Fri,
+        11 Mar 2016 20:05:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>44</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>d8f740916259234653fe5ff22bb2e791c37b45b7</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>332.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/792865\">#792865 | [HorribleSubs] Fairy Tail S2
+        - 100 [720p].mkv</a> | 332.8 MiB | Anime - English-translated | d8f740916259234653fe5ff22bb2e791c37b45b7]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 - 100 [480p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/792864.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/792864</guid>\n\t\t\t\t<pubDate>Fri,
+        11 Mar 2016 20:02:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>13</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>bb4c4d5d48b979e3d0079f394b2ce2fb93f991b6</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>151.1 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/792864\">#792864 | [HorribleSubs] Fairy Tail S2
+        - 100 [480p].mkv</a> | 151.1 MiB | Anime - English-translated | bb4c4d5d48b979e3d0079f394b2ce2fb93f991b6]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Chinurarete
+        Subs]Fairy Tail - S2 (2014) - 99 [10BIT][GERSUB]</title>\n\t\t\t\t<link>https://nyaa.si/download/791648.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/791648</guid>\n\t\t\t\t<pubDate>Mon,
+        07 Mar 2016 05:05:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>1</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>dcf4015d6e06395a9397df13a1a5471aaaa572a0</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>461.9 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/791648\">#791648 | [Chinurarete Subs]Fairy Tail
+        - S2 (2014) - 99 [10BIT][GERSUB]</a> | 461.9 MiB | Anime - Non-English-translated
+        | dcf4015d6e06395a9397df13a1a5471aaaa572a0]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Chinurarete
+        Subs]Fairy Tail - S2 (2014) - 99 [8BIT][GERSUB]</title>\n\t\t\t\t<link>https://nyaa.si/download/791647.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/791647</guid>\n\t\t\t\t<pubDate>Mon,
+        07 Mar 2016 05:05:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>1</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>a390c4bf8a61efb7025948ce96debdf3eef926ac</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>432.6 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/791647\">#791647 | [Chinurarete Subs]Fairy Tail
+        - S2 (2014) - 99 [8BIT][GERSUB]</a> | 432.6 MiB | Anime - Non-English-translated
+        | a390c4bf8a61efb7025948ce96debdf3eef926ac]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Naruto-Kun.Hu]
+        Fairy Tail 274 (s2-099) FT-Zer0 [720p].mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/791105.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/791105</guid>\n\t\t\t\t<pubDate>Sat,
+        05 Mar 2016 13:34:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>1</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>2bddb9cc0f3adc20ca5c6eb6a1c0b159d3947d59</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>299.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/791105\">#791105 | [Naruto-Kun.Hu] Fairy Tail
+        274 (s2-099) FT-Zer0 [720p].mp4</a> | 299.8 MiB | Anime - Non-English-translated
+        | 2bddb9cc0f3adc20ca5c6eb6a1c0b159d3947d59]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[AE]
+        Fairy Tail Zero - 09 / Fairy Tail (2014) / S2 - 99 [720p].mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/790921.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/790921</guid>\n\t\t\t\t<pubDate>Sat,
+        05 Mar 2016 01:25:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>b5a9fe563e2c4e19a4a944b3955075eafeab803c</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>171.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/790921\">#790921 | [AE] Fairy Tail Zero - 09 /
+        Fairy Tail (2014) / S2 - 99 [720p].mp4</a> | 171.8 MiB | Anime - English-translated
+        | b5a9fe563e2c4e19a4a944b3955075eafeab803c]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Fairy Tail S2 - 99 [1080p][50B8335C].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/790814.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/790814</guid>\n\t\t\t\t<pubDate>Fri,
+        04 Mar 2016 20:19:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>18b4ee8ddd57d4f343058af45a7241eb6fb6a4e6</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>558.7 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/790814\">#790814 | [PuyaSubs!] Fairy Tail S2 -
+        99 [1080p][50B8335C].mkv</a> | 558.7 MiB | Anime - Non-English-translated
+        | 18b4ee8ddd57d4f343058af45a7241eb6fb6a4e6]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Fairy Tail S2 - 99 [720p][2AF27688].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/790812.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/790812</guid>\n\t\t\t\t<pubDate>Fri,
+        04 Mar 2016 20:18:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>685bdfc46184a536d37253a5ab8446605405e01e</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>331.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/790812\">#790812 | [PuyaSubs!] Fairy Tail S2 -
+        99 [720p][2AF27688].mkv</a> | 331.8 MiB | Anime - Non-English-translated |
+        685bdfc46184a536d37253a5ab8446605405e01e]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 - 99 [1080p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/790809.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/790809</guid>\n\t\t\t\t<pubDate>Fri,
+        04 Mar 2016 20:11:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>1</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>39</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>cbdebbf936238008ac6985e452b82c560c72241c</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>558.7 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/790809\">#790809 | [HorribleSubs] Fairy Tail S2
+        - 99 [1080p].mkv</a> | 558.7 MiB | Anime - English-translated | cbdebbf936238008ac6985e452b82c560c72241c]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 - 99 [720p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/790808.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/790808</guid>\n\t\t\t\t<pubDate>Fri,
+        04 Mar 2016 20:07:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>34</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>ee2f2cd34efc68c3a8b3d9e5e57c61689d8492b1</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>331.7 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/790808\">#790808 | [HorribleSubs] Fairy Tail S2
+        - 99 [720p].mkv</a> | 331.7 MiB | Anime - English-translated | ee2f2cd34efc68c3a8b3d9e5e57c61689d8492b1]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 - 99 [480p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/790807.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/790807</guid>\n\t\t\t\t<pubDate>Fri,
+        04 Mar 2016 20:05:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>10</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>817f3fb1fb6399a993bd45bcf404b3e6cb6ab5c0</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>151.2 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/790807\">#790807 | [HorribleSubs] Fairy Tail S2
+        - 99 [480p].mkv</a> | 151.2 MiB | Anime - English-translated | 817f3fb1fb6399a993bd45bcf404b3e6cb6ab5c0]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Chinurarete
+        Subs]Fairy Tail - S2 (2014) - 98 [10BIT][GERSUB]</title>\n\t\t\t\t<link>https://nyaa.si/download/790718.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/790718</guid>\n\t\t\t\t<pubDate>Fri,
+        04 Mar 2016 13:14:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>82d3034cf2100410497db2f166ba0cc527c632a7</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>472.4 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/790718\">#790718 | [Chinurarete Subs]Fairy Tail
+        - S2 (2014) - 98 [10BIT][GERSUB]</a> | 472.4 MiB | Anime - Non-English-translated
+        | 82d3034cf2100410497db2f166ba0cc527c632a7]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Chinurarete
+        Subs]Fairy Tail - S2 (2014) - 98 [8BIT][GERSUB]</title>\n\t\t\t\t<link>https://nyaa.si/download/790717.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/790717</guid>\n\t\t\t\t<pubDate>Fri,
+        04 Mar 2016 13:14:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>1</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>d7282ee3bbdc6ea3252f2491ad6d124e59bce318</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>447.9 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/790717\">#790717 | [Chinurarete Subs]Fairy Tail
+        - S2 (2014) - 98 [8BIT][GERSUB]</a> | 447.9 MiB | Anime - Non-English-translated
+        | d7282ee3bbdc6ea3252f2491ad6d124e59bce318]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[AE]
+        Fairy Tail Zero - 08 / Fairy Tail (2014) / S2 - 98 [720p].mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/789023.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/789023</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Feb 2016 10:43:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>0694625eae28b62d029e9e0993bc8ebb864ebcf7</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>181.0 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/789023\">#789023 | [AE] Fairy Tail Zero - 08 /
+        Fairy Tail (2014) / S2 - 98 [720p].mp4</a> | 181.0 MiB | Anime - English-translated
+        | 0694625eae28b62d029e9e0993bc8ebb864ebcf7]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Naruto-Kun.Hu]
+        Fairy Tail 272-273 (s2-097-098) FT-Zer0 [720p]</title>\n\t\t\t\t<link>https://nyaa.si/download/788915.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/788915</guid>\n\t\t\t\t<pubDate>Sat,
+        27 Feb 2016 05:45:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>1</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>934204847800e989d8fc08ba3fc32100c8269624</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>599.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/788915\">#788915 | [Naruto-Kun.Hu] Fairy Tail
+        272-273 (s2-097-098) FT-Zer0 [720p]</a> | 599.8 MiB | Anime - Non-English-translated
+        | 934204847800e989d8fc08ba3fc32100c8269624]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Fairy Tail S2 - 98 [1080p][151B30AA].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/788835.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/788835</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Feb 2016 21:40:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>e37fe1c52c3933dfec05d55fdcbaf70d71614df0</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>557.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/788835\">#788835 | [PuyaSubs!] Fairy Tail S2 -
+        98 [1080p][151B30AA].mkv</a> | 557.8 MiB | Anime - Non-English-translated
+        | e37fe1c52c3933dfec05d55fdcbaf70d71614df0]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Fairy Tail S2 - 98 [720p][002386A4].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/788834.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/788834</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Feb 2016 21:40:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>d99523bd9064d6139f2c466217e733f548108887</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>333.0 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/788834\">#788834 | [PuyaSubs!] Fairy Tail S2 -
+        98 [720p][002386A4].mkv</a> | 333.0 MiB | Anime - Non-English-translated |
+        d99523bd9064d6139f2c466217e733f548108887]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 - 98 [720p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/788811.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/788811</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Feb 2016 20:16:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>35</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>6ae346a947f3f437e636aa9d931163028ad119ca</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>332.9 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/788811\">#788811 | [HorribleSubs] Fairy Tail S2
+        - 98 [720p].mkv</a> | 332.9 MiB | Anime - English-translated | 6ae346a947f3f437e636aa9d931163028ad119ca]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 - 98 [1080p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/788810.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/788810</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Feb 2016 20:11:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>1</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>39</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>6066476c9f722d79d26a25e3a6d4f6d32828a85f</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>557.7 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/788810\">#788810 | [HorribleSubs] Fairy Tail S2
+        - 98 [1080p].mkv</a> | 557.7 MiB | Anime - English-translated | 6066476c9f722d79d26a25e3a6d4f6d32828a85f]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 - 98 [480p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/788809.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/788809</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Feb 2016 20:05:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>10</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>25191ddb9161dbddd03bcaedbe11244a87e1dd7e</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>151.3 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/788809\">#788809 | [HorribleSubs] Fairy Tail S2
+        - 98 [480p].mkv</a> | 151.3 MiB | Anime - English-translated | 25191ddb9161dbddd03bcaedbe11244a87e1dd7e]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[AE]
+        Fairy Tail Zero - 07 / Fairy Tail (2014) / S2 - 97 [720p].mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/788561.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/788561</guid>\n\t\t\t\t<pubDate>Fri,
+        26 Feb 2016 01:04:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>80f9aa7a8fe893642d88090c4d8aa090d68e30b1</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>155.5 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/788561\">#788561 | [AE] Fairy Tail Zero - 07 /
+        Fairy Tail (2014) / S2 - 97 [720p].mp4</a> | 155.5 MiB | Anime - English-translated
+        | 80f9aa7a8fe893642d88090c4d8aa090d68e30b1]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Chinurarete
+        Subs]Fairy Tail - S2 (2014) - 97 [10BIT][GERSUB]</title>\n\t\t\t\t<link>https://nyaa.si/download/787907.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/787907</guid>\n\t\t\t\t<pubDate>Tue,
+        23 Feb 2016 13:18:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>1</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>89687bebfa336c2b96b447f4d8fd1bc8f1c3e5a6</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>430.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/787907\">#787907 | [Chinurarete Subs]Fairy Tail
+        - S2 (2014) - 97 [10BIT][GERSUB]</a> | 430.8 MiB | Anime - Non-English-translated
+        | 89687bebfa336c2b96b447f4d8fd1bc8f1c3e5a6]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Chinurarete
+        Subs]Fairy Tail - S2 (2014) - 97 [8BIT][GERSUB]</title>\n\t\t\t\t<link>https://nyaa.si/download/787906.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/787906</guid>\n\t\t\t\t<pubDate>Tue,
+        23 Feb 2016 13:17:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>aab0898f6ea0cd685557a16aad9d45452b9b0b90</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>399.6 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/787906\">#787906 | [Chinurarete Subs]Fairy Tail
+        - S2 (2014) - 97 [8BIT][GERSUB]</a> | 399.6 MiB | Anime - Non-English-translated
+        | aab0898f6ea0cd685557a16aad9d45452b9b0b90]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 - 97 [1080p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/786961.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/786961</guid>\n\t\t\t\t<pubDate>Sat,
+        20 Feb 2016 20:17:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>1</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>36</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>72f56df7e4e08e0b139f4466557bd4cdac382369</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>557.7 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/786961\">#786961 | [HorribleSubs] Fairy Tail S2
+        - 97 [1080p].mkv</a> | 557.7 MiB | Anime - English-translated | 72f56df7e4e08e0b139f4466557bd4cdac382369]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 - 97 [720p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/786960.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/786960</guid>\n\t\t\t\t<pubDate>Sat,
+        20 Feb 2016 20:17:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>33</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>130fe699c37d654e9e5ed8c2e2f4ef8272bb85f3</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>332.9 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/786960\">#786960 | [HorribleSubs] Fairy Tail S2
+        - 97 [720p].mkv</a> | 332.9 MiB | Anime - English-translated | 130fe699c37d654e9e5ed8c2e2f4ef8272bb85f3]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[HorribleSubs]
+        Fairy Tail S2 - 97 [480p].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/786959.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/786959</guid>\n\t\t\t\t<pubDate>Sat,
+        20 Feb 2016 20:17:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>7</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>13a02d7ffc1334460d2de3ffe43a4a36285a276b</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>151.0 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/786959\">#786959 | [HorribleSubs] Fairy Tail S2
+        - 97 [480p].mkv</a> | 151.0 MiB | Anime - English-translated | 13a02d7ffc1334460d2de3ffe43a4a36285a276b]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Fairy Tail S2 - 97 [1080p][A2E4D055].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/786759.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/786759</guid>\n\t\t\t\t<pubDate>Fri,
+        19 Feb 2016 22:26:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>4bdf2c446aaa25dd3bf13c05e350108eb9a9bdd8</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>557.9 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/786759\">#786759 | [PuyaSubs!] Fairy Tail S2 -
+        97 [1080p][A2E4D055].mkv</a> | 557.9 MiB | Anime - Non-English-translated
+        | 4bdf2c446aaa25dd3bf13c05e350108eb9a9bdd8]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[PuyaSubs!]
+        Fairy Tail S2 - 97 [720p][437449CB].mkv</title>\n\t\t\t\t<link>https://nyaa.si/download/786758.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/786758</guid>\n\t\t\t\t<pubDate>Fri,
+        19 Feb 2016 22:26:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>6b2de4c3bfc34b8ebd4c2eac629c22914fa1726b</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>333.0 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/786758\">#786758 | [PuyaSubs!] Fairy Tail S2 -
+        97 [720p][437449CB].mkv</a> | 333.0 MiB | Anime - Non-English-translated |
+        6b2de4c3bfc34b8ebd4c2eac629c22914fa1726b]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[WCP+NotWCP]
+        Fairy Tail 2014 S2 Tartaros Arc [HDTV-720p]</title>\n\t\t\t\t<link>https://nyaa.si/download/786271.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/786271</guid>\n\t\t\t\t<pubDate>Wed,
+        17 Feb 2016 14:55:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>4</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>065cd369ffbe723ef648714222a3afa9a2f3648c</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_2</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - English-translated</nyaa:category>\n\t\t\t<nyaa:size>11.3 GiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/786271\">#786271 | [WCP+NotWCP] Fairy Tail 2014
+        S2 Tartaros Arc [HDTV-720p]</a> | 11.3 GiB | Anime - English-translated |
+        065cd369ffbe723ef648714222a3afa9a2f3648c]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Naruto-Kun.Hu]_Fairy_Tail_271_s2-096_FT-Zer0_[720p].mp4</title>\n\t\t\t\t<link>https://nyaa.si/download/786218.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/786218</guid>\n\t\t\t\t<pubDate>Wed,
+        17 Feb 2016 12:04:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>c6027866ad24296009ea3203f5b4906b6343565a</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>299.8 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/786218\">#786218 | [Naruto-Kun.Hu]_Fairy_Tail_271_s2-096_FT-Zer0_[720p].mp4</a>
+        | 299.8 MiB | Anime - Non-English-translated | c6027866ad24296009ea3203f5b4906b6343565a]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Chinurarete
+        Subs]Fairy Tail - S2 (2014) - 96 [10BIT][GERSUB]</title>\n\t\t\t\t<link>https://nyaa.si/download/785907.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/785907</guid>\n\t\t\t\t<pubDate>Tue,
+        16 Feb 2016 06:33:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>151d4e6e3b0368c7850418f0481d5859cf9b723b</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>438.6 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/785907\">#785907 | [Chinurarete Subs]Fairy Tail
+        - S2 (2014) - 96 [10BIT][GERSUB]</a> | 438.6 MiB | Anime - Non-English-translated
+        | 151d4e6e3b0368c7850418f0481d5859cf9b723b]]></description>\n\t\t</item>\n\t\t<item>\n\t\t\t<title>[Chinurarete
+        Subs]Fairy Tail - S2 (2014) - 96 [8BIT][GERSUB]</title>\n\t\t\t\t<link>https://nyaa.si/download/785906.torrent</link>\n\t\t\t\t<guid
+        isPermaLink=\"true\">https://nyaa.si/view/785906</guid>\n\t\t\t\t<pubDate>Tue,
+        16 Feb 2016 06:33:00 -0000</pubDate>\n\n\t\t\t\t<nyaa:seeders>0</nyaa:seeders>\n\t\t\t\t<nyaa:leechers>0</nyaa:leechers>\n\t\t\t\t<nyaa:downloads>0</nyaa:downloads>\n\t\t\t\t<nyaa:infoHash>dbe2a5f57c2b1fe327c8d5893aab9cd92e99e90e</nyaa:infoHash>\n\t\t\t<nyaa:categoryId>1_3</nyaa:categoryId>\n\t\t\t<nyaa:category>Anime
+        - Non-English-translated</nyaa:category>\n\t\t\t<nyaa:size>408.9 MiB</nyaa:size>\n\t\t\t<description><![CDATA[<a
+        href=\"https://nyaa.si/view/785906\">#785906 | [Chinurarete Subs]Fairy Tail
+        - S2 (2014) - 96 [8BIT][GERSUB]</a> | 408.9 MiB | Anime - Non-English-translated
+        | dbe2a5f57c2b1fe327c8d5893aab9cd92e99e90e]]></description>\n\t\t</item>\n\t</channel>\n</rss>"}
+    headers:
+      cache-control: [max-age=300, 'no-cache, no-store, must-revalidate']
+      connection: [keep-alive]
+      content-length: ['63111']
+      content-security-policy: [upgrade-insecure-requests;]
+      content-type: [application/xml]
+      date: ['Sat, 27 Oct 2018 04:14:30 GMT']
+      referrer-policy: [same-origin]
+      server: [Sucuri/Cloudproxy]
+      x-proxy-cache: [HIT]
+      x-sucuri-cache: [MISS]
+      x-sucuri-id: ['11008']
+    status: {code: 200, message: OK}
+version: 1

@@ -208,8 +208,14 @@ def guess_matches(video, guess, partial=False):
         if video.season and 'season' in guess and guess['season'] == video.season:
             matches.add('season')
         # episode
-        if video.episode and 'episode' in guess and guess['episode'] == video.episode:
-            matches.add('episode')
+        # Currently we only have single-ep support (guessit returns a multi-ep as a list with int values)
+        # Most providers only support single-ep, so make sure it contains only 1 episode
+        # In case of multi-ep, take the lowest episode (subtitles will normally be available on lowest episode number)
+        if video.episode and 'episode' in guess:
+            episode_guess = guess['episode']
+            episode = min(episode_guess) if episode_guess and isinstance(episode_guess, list) else episode_guess
+            if episode == video.episode:
+                matches.add('episode')
         # year
         if video.year and 'year' in guess and guess['year'] == video.year:
             matches.add('year')
@@ -232,7 +238,10 @@ def guess_matches(video, guess, partial=False):
     if video.resolution and 'screen_size' in guess and guess['screen_size'] == video.resolution:
         matches.add('resolution')
     # format
-    if video.format and 'format' in guess and guess['format'].lower() == video.format.lower():
+    # Guessit may return a list for `format`, which indicates a conflict in the guessing.
+    # We should match `format` only when it returns single value to avoid false `format` matches
+    if video.format and guess.get('format') and not isinstance(guess['format'], list) \
+            and guess['format'].lower() == video.format.lower():
         matches.add('format')
     # video_codec
     if video.video_codec and 'video_codec' in guess and guess['video_codec'] == video.video_codec:

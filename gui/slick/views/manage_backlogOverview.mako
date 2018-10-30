@@ -4,7 +4,7 @@
     import sickbeard
     from sickbeard import sbdatetime, network_timezones
     from sickbeard.common import WANTED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, Overview, Quality
-    from sickrage.helper.common import episode_num
+    from sickchill.helper.common import episode_num
 %>
 <%block name="content">
     <div class="row">
