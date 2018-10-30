@@ -4,7 +4,7 @@
     import sickbeard
     from sickbeard import helpers
     from sickbeard.show_queue import ShowQueueActions
-    from sickrage.helper.common import dateTimeFormat
+    from sickchill.helper.common import dateTimeFormat
 %>
 <%block name="content">
     <%

@@ -10,15 +10,15 @@ caching for a region that is otherwise used normally.
 
 """
 
-from dogpile.cache.api import CacheBackend, NO_VALUE
+from ..api import CacheBackend, NO_VALUE
 
 
 __all__ = ['NullBackend']
 
 
 class NullLock(object):
-    def acquire(self):
-        pass
+    def acquire(self, wait=True):
+        return True
 
     def release(self):
         pass

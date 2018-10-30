@@ -232,8 +232,13 @@ class HTMLTreeBuilder(TreeBuilder):
     """
 
     preserve_whitespace_tags = HTMLAwareEntitySubstitution.preserve_whitespace_tags
-    empty_element_tags = set(['br' , 'hr', 'input', 'img', 'meta',
-                              'spacer', 'link', 'frame', 'base'])
+    empty_element_tags = set([
+        # These are from HTML5.
+        'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr',
+
+        # These are from HTML4, removed in HTML5.
+        'spacer', 'frame'
+    ])
 
     # The HTML standard defines these attributes as containing a
     # space-separated list of values, not a single value. That is,

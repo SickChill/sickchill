@@ -56,7 +56,7 @@ class GuessitCountryConverter(babelfish.CountryReverseConverter):  # pylint: dis
             return 'UK'
         return str(babelfish.Country(alpha2))
 
-    def reverse(self, name):
+    def reverse(self, name):  # pylint:disable=arguments-differ
         # exceptions come first, as they need to override a potential match
         # with any of the other guessers
         try:

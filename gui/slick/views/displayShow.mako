@@ -9,7 +9,7 @@
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, FAILED, DOWNLOADED
     from sickbeard.common import Quality, qualityPresets, statusStrings, Overview
     from sickbeard.helpers import anon_url
-    from sickrage.helper.common import pretty_file_size
+    from sickchill.helper.common import pretty_file_size
 %>
 
 <%block name="scripts">

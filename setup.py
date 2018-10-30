@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*
 """
-Use setup tools to install sickrage
+Use setup tools to install sickchill
 """
 import os
 
@@ -38,14 +38,14 @@ if babel:
     })
 
 setup(
-    name="sickrage",
+    name="sickchill",
     version="0.0.1",
 
     description="Automatic Video Library Manager for TV Shows",
     long_description=long_description,
 
-    url='https://sickrage.github.io',
-    download_url='https://github.com/SickRage/SickRage.git',
+    url='https://sickchill.github.io',
+    download_url='https://github.com/SickChill/SickChill.git',
 
     author='miigotu',
     author_email='miigotu@gmail.com',
@@ -88,7 +88,7 @@ setup(
             ('**/js/*.min.js', 'ignore', None),
             ('**/js/*.js', 'javascript', {'input_encoding': 'utf-8'})
         ],
-        'sickrage': [('**.py', 'python', None)],
+        'sickchill': [('**.py', 'python', None)],
         'sickbeard': [('**.py', 'python', None)],
     },
 )

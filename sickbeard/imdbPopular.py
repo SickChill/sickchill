@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 
 import sickbeard
 from sickbeard import helpers
-from sickrage.helper.encoding import ek
+from sickchill.helper.encoding import ek
 
 
 class imdbPopular(object):

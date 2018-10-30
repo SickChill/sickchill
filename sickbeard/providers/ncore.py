@@ -1,16 +1,16 @@
 # coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Fre$
+# SickChill is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Fre$
 # Foundation, either version 3 of the License, or (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or$
+# SickChill is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or$
 # PARTICULAR PURPOSE. See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU General Public License along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -18,8 +18,8 @@ import json
 import re
 
 from sickbeard import logger, tvcache
-from sickrage.helper.common import convert_size, try_int
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from sickchill.helper.common import convert_size, try_int
+from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class NcoreProvider(TorrentProvider): # pylint: disable=too-many-instance-attributes
@@ -31,20 +31,22 @@ class NcoreProvider(TorrentProvider): # pylint: disable=too-many-instance-attrib
         self.password = None
         self.minseed = None
         self.minleech = None
+
         categories = [
             'xvidser_hun', 'xvidser',
-            'dvd_hun', 'dvd',
-            'dvd9_hun', 'dvd9',
-            'hd_hun', 'hd'
+            'dvdser_hun', 'dvdser',
+            'hdser_hun', 'hdser'
         ]
-        categories = '&'.join(['kivalasztott_tipus[]=' + x for x in categories])
+        categories = '&kivalasztott_tipus=' + ','.join([x for x in categories])
+
         self.url = 'https://ncore.cc/'
         self.urls = {
             'login': 'https://ncore.cc/login.php',
-            'search': ('https://ncore.cc/torrents.php?{cats}&mire=%s&miben=name'
+            'search': ('https://ncore.cc/torrents.php?nyit_sorozat_resz=true&{cats}&mire=%s&miben=name'
                        '&tipus=kivalasztottak_kozott&submit.x=0&submit.y=0&submit=Ok'
                        '&tags=&searchedfrompotato=true&jsons=true').format(cats=categories),
-        }
+		}
+
         self.cache = tvcache.TVCache(self)
 
     def login(self):
@@ -120,7 +122,7 @@ class NcoreProvider(TorrentProvider): # pylint: disable=too-many-instance-attrib
                         if mode != "RSS":
                             logger.log("Found result: {0} with {1} seeders and {2} leechers with a file size {3}".format(title, seeders, leechers, size), logger.DEBUG)
 
-                            result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
+                        result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         items.append(result)
 
                     except StandardError:

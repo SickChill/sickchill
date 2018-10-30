@@ -5,7 +5,7 @@ Words utils
 """
 from collections import namedtuple
 
-from guessit.rules.common import seps
+from . import seps
 
 _Word = namedtuple('_Word', ['span', 'value'])
 
@@ -53,6 +53,8 @@ COMMON_WORDS = frozenset([
     'wa', 'ga', 'ao',
     # spanish words
     'la', 'el', 'del', 'por', 'mar', 'al',
+    # italian words
+    'un',
     # other
     'ind', 'arw', 'ts', 'ii', 'bin', 'chan', 'ss', 'san', 'oss', 'iii',
     'vi', 'ben', 'da', 'lt', 'ch', 'sr', 'ps', 'cx', 'vo',
