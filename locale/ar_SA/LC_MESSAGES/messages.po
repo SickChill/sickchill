@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-10-30 15:18+0000\n"
+"POT-Creation-Date: 2018-10-30 17:35+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: ar_SA\n"
@@ -1545,7 +1545,7 @@ msgstr "إعادة تسمية"
 #: gui/slick/views/displayShow.mako:259 gui/slick/views/displayShow.mako:434
 #: gui/slick/views/editShow.mako:119 gui/slick/views/inc_addShowOptions.mako:20
 #: gui/slick/views/manage_massEdit.mako:262 sickbeard/webserve.py:3665
-#: sickbeard/webserve.py:5133
+#: sickbeard/webserve.py:5134
 msgid "Subtitles"
 msgstr "ترجمة"
 
@@ -1633,7 +1633,7 @@ msgstr "الإشعارات"
 #: gui/slick/views/inc_home_showList.mako:183
 #: gui/slick/views/layouts/main.mako:214 gui/slick/views/manage.mako:44
 #: gui/slick/views/manage_massEdit.mako:202 sickbeard/webserve.py:3871
-#: sickbeard/webserve.py:5204
+#: sickbeard/webserve.py:5205
 msgid "Anime"
 msgstr "أنمي"
 
@@ -1686,14 +1686,14 @@ msgid "Unable to create directory {directory}, https key directory not changed."
 msgstr "غير قادر على إنشاء الدليل {directory}، دليل مفتاح https لم يتغير."
 
 #: sickbeard/webserve.py:4147 sickbeard/webserve.py:4349
-#: sickbeard/webserve.py:4482 sickbeard/webserve.py:5115
+#: sickbeard/webserve.py:4482 sickbeard/webserve.py:5116
 msgid "Error(s) Saving Configuration"
 msgstr "خطأ (أخطاء) حفظ الضبط"
 
 #: sickbeard/webserve.py:4150 sickbeard/webserve.py:4352
 #: sickbeard/webserve.py:4484 sickbeard/webserve.py:4838
-#: sickbeard/webserve.py:5118 sickbeard/webserve.py:5188
-#: sickbeard/webserve.py:5218
+#: sickbeard/webserve.py:5119 sickbeard/webserve.py:5189
+#: sickbeard/webserve.py:5219
 msgid "Configuration Saved"
 msgstr "تم حفظ الضبط"
 
@@ -1745,35 +1745,35 @@ msgstr "لم يتم تحديد مفاح Api لمقدم الخدمة"
 msgid "Config - Notifications"
 msgstr "الضبط - الإشعارات"
 
-#: sickbeard/webserve.py:5132
+#: sickbeard/webserve.py:5133
 msgid "Config - Subtitles"
 msgstr "الضبط - الترجمة"
 
-#: sickbeard/webserve.py:5203
+#: sickbeard/webserve.py:5204
 msgid "Config - Anime"
 msgstr "الضبط - أنيمي"
 
-#: sickbeard/webserve.py:5231
+#: sickbeard/webserve.py:5232
 msgid "Clear Errors"
 msgstr "مسح الأخطاء"
 
-#: sickbeard/webserve.py:5237
+#: sickbeard/webserve.py:5238
 msgid "Clear Warnings"
 msgstr "مسح التحذيرات"
 
-#: sickbeard/webserve.py:5243
+#: sickbeard/webserve.py:5244
 msgid "Submit Errors"
 msgstr "إرسال الأخطاء"
 
-#: sickbeard/webserve.py:5259
+#: sickbeard/webserve.py:5260
 msgid "Logs &amp; Errors"
 msgstr "السجلات &amp; الأخطاء"
 
-#: sickbeard/webserve.py:5284
+#: sickbeard/webserve.py:5285
 msgid "Log File"
 msgstr "ملف السجل"
 
-#: sickbeard/webserve.py:5284
+#: sickbeard/webserve.py:5285
 msgid "Logs"
 msgstr "سجلات"
 
@@ -2487,7 +2487,7 @@ msgstr "AniDB هو قاعدة بيانات غير هادفة للربح لمعل
 #: gui/slick/views/config_notifications.mako:2650
 #: gui/slick/views/config_notifications.mako:2898
 #: gui/slick/views/config_notifications.mako:3148
-#: gui/slick/views/config_notifications.mako:3225
+#: gui/slick/views/config_notifications.mako:3235
 #: gui/slick/views/config_postProcessing.mako:36 gui/slick/views/status.mako:44
 msgid "Enable"
 msgstr "تفعيل"
@@ -2765,8 +2765,8 @@ msgstr "حيث توجد ملفات المسلسلات"
 #: gui/slick/views/config_notifications.mako:2625
 #: gui/slick/views/config_notifications.mako:2875
 #: gui/slick/views/config_notifications.mako:3123
-#: gui/slick/views/config_notifications.mako:3200
-#: gui/slick/views/config_notifications.mako:3326
+#: gui/slick/views/config_notifications.mako:3210
+#: gui/slick/views/config_notifications.mako:3336
 #: gui/slick/views/config_search.mako:825
 #: gui/slick/views/config_search.mako:902
 #: gui/slick/views/config_search.mako:1161 gui/slick/views/editShow.mako:398
@@ -3399,7 +3399,7 @@ msgstr "تسجيل الأخطاء عندما يتعذر الوصول ؟"
 #: gui/slick/views/config_notifications.mako:2531
 #: gui/slick/views/config_notifications.mako:2910
 #: gui/slick/views/config_notifications.mako:3164
-#: gui/slick/views/config_notifications.mako:3241
+#: gui/slick/views/config_notifications.mako:3251
 msgid "Notify on snatch"
 msgstr "إشعار عند جلب الحلقات"
 
@@ -3418,7 +3418,7 @@ msgstr "إشعار عند جلب الحلقات"
 #: gui/slick/views/config_notifications.mako:2535
 #: gui/slick/views/config_notifications.mako:2914
 #: gui/slick/views/config_notifications.mako:3168
-#: gui/slick/views/config_notifications.mako:3245
+#: gui/slick/views/config_notifications.mako:3255
 msgid "send a notification when a download starts?"
 msgstr "إرسال إشعار عند بدء التحميل؟"
 
@@ -3440,7 +3440,7 @@ msgstr "إرسال إشعار عند بدء التحميل؟"
 #: gui/slick/views/config_notifications.mako:2541
 #: gui/slick/views/config_notifications.mako:2920
 #: gui/slick/views/config_notifications.mako:3174
-#: gui/slick/views/config_notifications.mako:3251
+#: gui/slick/views/config_notifications.mako:3261
 msgid "Notify on download"
 msgstr "إشعار عند التحميل"
 
@@ -3459,7 +3459,7 @@ msgstr "إشعار عند التحميل"
 #: gui/slick/views/config_notifications.mako:2545
 #: gui/slick/views/config_notifications.mako:2924
 #: gui/slick/views/config_notifications.mako:3178
-#: gui/slick/views/config_notifications.mako:3255
+#: gui/slick/views/config_notifications.mako:3265
 msgid "send a notification when a download finishes?"
 msgstr "إرسال إشعار عند انتهاء التحميل؟"
 
@@ -3480,6 +3480,7 @@ msgstr "إرسال إشعار عند انتهاء التحميل؟"
 #: gui/slick/views/config_notifications.mako:2394
 #: gui/slick/views/config_notifications.mako:2551
 #: gui/slick/views/config_notifications.mako:2930
+#: gui/slick/views/config_notifications.mako:3184
 msgid "Notify on subtitle download"
 msgstr "إشعار عند تحميل الترجمة"
 
@@ -3497,6 +3498,7 @@ msgstr "إشعار عند تحميل الترجمة"
 #: gui/slick/views/config_notifications.mako:2398
 #: gui/slick/views/config_notifications.mako:2555
 #: gui/slick/views/config_notifications.mako:2934
+#: gui/slick/views/config_notifications.mako:3188
 msgid "send a notification when subtitles are downloaded?"
 msgstr "إرسال إشعر عندما يتم تحميل الترجمة؟"
 
@@ -3578,8 +3580,8 @@ msgstr "كلمة المرور الخاصة بـ KODI (فارغة إذا لم ي�
 #: gui/slick/views/config_notifications.mako:2618
 #: gui/slick/views/config_notifications.mako:2868
 #: gui/slick/views/config_notifications.mako:3116
-#: gui/slick/views/config_notifications.mako:3193
-#: gui/slick/views/config_notifications.mako:3319
+#: gui/slick/views/config_notifications.mako:3203
+#: gui/slick/views/config_notifications.mako:3329
 msgid "Click below to test."
 msgstr "انقر أدناه للتحقق."
 
@@ -4826,53 +4828,53 @@ msgstr ""
 msgid "should SickChill post messages on Slack?"
 msgstr ""
 
-#: gui/slick/views/config_notifications.mako:3184
+#: gui/slick/views/config_notifications.mako:3194
 msgid "Slack Incoming Webhook"
 msgstr ""
 
-#: gui/slick/views/config_notifications.mako:3215
+#: gui/slick/views/config_notifications.mako:3225
 msgid "Discord"
 msgstr ""
 
-#: gui/slick/views/config_notifications.mako:3217
+#: gui/slick/views/config_notifications.mako:3227
 msgid ""
 "All-in-one voice and text chat for gamers that's free, secure, and works "
 "on both your desktop and phone."
 msgstr ""
 
-#: gui/slick/views/config_notifications.mako:3231
+#: gui/slick/views/config_notifications.mako:3241
 msgid "Should SickChill post messages on Discord?"
 msgstr ""
 
-#: gui/slick/views/config_notifications.mako:3261
+#: gui/slick/views/config_notifications.mako:3271
 msgid "Discord Incoming Webhook"
 msgstr ""
 
-#: gui/slick/views/config_notifications.mako:3269
+#: gui/slick/views/config_notifications.mako:3279
 msgid "Create webhook under channel settings."
 msgstr ""
 
-#: gui/slick/views/config_notifications.mako:3277
+#: gui/slick/views/config_notifications.mako:3287
 msgid "Discord Bot Name"
 msgstr ""
 
-#: gui/slick/views/config_notifications.mako:3285
+#: gui/slick/views/config_notifications.mako:3295
 msgid "Blank will use webhook default Name."
 msgstr ""
 
-#: gui/slick/views/config_notifications.mako:3293
+#: gui/slick/views/config_notifications.mako:3303
 msgid "Discord Avatar URL"
 msgstr ""
 
-#: gui/slick/views/config_notifications.mako:3301
+#: gui/slick/views/config_notifications.mako:3311
 msgid "Blank will use webhook default Avatar."
 msgstr ""
 
-#: gui/slick/views/config_notifications.mako:3309
+#: gui/slick/views/config_notifications.mako:3319
 msgid "Discord TTS"
 msgstr ""
 
-#: gui/slick/views/config_notifications.mako:3313
+#: gui/slick/views/config_notifications.mako:3323
 msgid "Send notifications using text-to-speech"
 msgstr ""
 
