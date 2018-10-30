@@ -25,7 +25,7 @@ import traceback
 
 from requests.utils import dict_from_cookiejar
 # noinspection PyUnresolvedReferences
-from requests.compat quote
+from requests.compat import quote
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser

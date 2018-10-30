@@ -25,7 +25,7 @@ import time
 
 from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
-from requests.compat quote
+from requests.compat import quote
 
 import sickbeard
 from sickbeard import logger, tvcache
