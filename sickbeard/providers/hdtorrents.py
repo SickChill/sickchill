@@ -22,8 +22,8 @@ from __future__ import print_function, unicode_literals
 
 import re
 
-from requests.utils import dict_from_cookiejar
 from requests.compat import quote_plus
+from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser

@@ -23,9 +23,8 @@ from __future__ import print_function, unicode_literals
 import re
 import time
 
-from requests.compat import urljoin
+from requests.compat import quote, urljoin
 from requests.utils import dict_from_cookiejar
-from requests.compat import quote
 
 import sickbeard
 from sickbeard import logger, tvcache

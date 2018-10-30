@@ -23,9 +23,9 @@ from __future__ import print_function, unicode_literals
 import re
 import traceback
 
-from requests.utils import dict_from_cookiejar
 # noinspection PyUnresolvedReferences
 from requests.compat import quote
+from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser

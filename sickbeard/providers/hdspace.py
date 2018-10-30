@@ -24,8 +24,8 @@ from __future__ import print_function, unicode_literals
 import re
 
 from bs4 import BeautifulSoup
-from requests.utils import dict_from_cookiejar
 from requests.compat import quote_plus
+from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 from sickchill.helper.common import convert_size, try_int
