@@ -57,7 +57,7 @@ pytz == 2016.4  # as an .egg file, loaded by pkg_resources
 git+https://github.com/markokr/rarfile.git@3e54b222c8703eea64cd07102df7bb9408b582b3#egg=rarfile  # v3.0 Github release <Modified: See https://github.com/SickChill/SickChill/commit/059dd933b9da3a0f83c6cbb4f47c198e5a957fc6#diff-c1f4e968aa545d42d2e462672169da4a>
 
 git+https://github.com/Toilal/rebulk.git@42d0a58af9d793334616a6582f2a83b0fae0dd5f#egg=rebulk
-requests == 2.18.1
+requests >= 2.20.0
 requests-oauthlib == 0.8.0
 #! rtorrent-python == 0.2.9  # <Modified: See https://github.com/SickChill/SickChill/commits/master/lib/rtorrent>
 #! send2trash == 1.3.0  # <Modified: See https://github.com/SickChill/SickChill/commit/9ad811432ab0ca3292410d29464ce2532361eb55>
