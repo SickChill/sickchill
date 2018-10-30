@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-10-29 14:23+0000\n"
+"POT-Creation-Date: 2018-10-30 12:27+0000\n"
 "PO-Revision-Date: 2018-10-10 07:47+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: hu_HU\n"
@@ -343,7 +343,6 @@ msgstr ""
 
 #: sickbeard/helpers.py:608
 #, fuzzy
-#| msgid "Unable to update show: {error}"
 msgid "Unable to delete {0}. Error: {1}"
 msgstr "Nem lehet frissíteni a sorozatot: {error}"
 
@@ -427,7 +426,6 @@ msgstr ""
 
 #: sickbeard/helpers.py:943
 #, fuzzy
-#| msgid "Restore"
 msgid "Restore done"
 msgstr "Visszaállítás"
 
@@ -571,7 +569,6 @@ msgstr ""
 
 #: sickbeard/helpers.py:1719
 #, fuzzy
-#| msgid "Unable to verify key"
 msgid "Unable to determine free space"
 msgstr "Nem sikerült a kulcs igazolása"
 

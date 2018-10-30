@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-10-29 14:23+0000\n"
+"POT-Creation-Date: 2018-10-30 12:27+0000\n"
 "PO-Revision-Date: 2018-10-10 07:47+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: it_IT\n"
@@ -337,13 +337,11 @@ msgstr ""
 
 #: sickbeard/helpers.py:602
 #, fuzzy
-#| msgid "Don't delete empty folders"
 msgid "Deleting empty folder: "
 msgstr "Non eliminare le cartelle vuote"
 
 #: sickbeard/helpers.py:608
 #, fuzzy
-#| msgid "Unable to update show: {error}"
 msgid "Unable to delete {0}. Error: {1}"
 msgstr "Impossibile aggiornare show: {error}"
 
@@ -427,7 +425,6 @@ msgstr ""
 
 #: sickbeard/helpers.py:943
 #, fuzzy
-#| msgid "Restore"
 msgid "Restore done"
 msgstr "Ripristina"
 
@@ -571,7 +568,6 @@ msgstr ""
 
 #: sickbeard/helpers.py:1719
 #, fuzzy
-#| msgid "Unable to verify key"
 msgid "Unable to determine free space"
 msgstr "Impossibile verificare la chiave"
 
