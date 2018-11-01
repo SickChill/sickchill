@@ -39,7 +39,7 @@ from dateutil import tz
 from github.GithubException import GithubException
 from libtrakt import TraktAPI
 from mako.exceptions import RichTraceback
-from mako.lookup import TemplateLookup
+from mako.lookup import Template, TemplateLookup
 from mako.runtime import UNDEFINED
 from mako.template import Template as MakoTemplate
 # noinspection PyUnresolvedReferences
@@ -286,6 +286,8 @@ class WebHandler(BaseHandler):
 
             result = function(**kwargs)
             return result
+        except OSError as e:
+            return Template("Looks like we do not have enough disk space to render the page! {error}").render_unicode(data=e.message)
         except Exception:
             logger.log('Failed doing webui callback: {0}'.format((traceback.format_exc())), logger.ERROR)
             raise
