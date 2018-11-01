@@ -31,16 +31,16 @@ from sickbeard.name_parser.parser import InvalidNameException, InvalidShowExcept
 from sickbeard.scene_exceptions import get_scene_exceptions
 from sickchill.helper.encoding import ek
 
-resultFilters = [
+resultFilters = {
     "sub(bed|ed|pack|s)",
     "(dir|sub|nfo)fix",
     "(?<!shomin.)sample",
     "(dvd)?extras",
     "dub(bed)?"
-]
+}
 
 if hasattr('General', 'ignored_subs_list') and sickbeard.IGNORED_SUBS_LIST:
-    resultFilters.append("(" + sickbeard.IGNORED_SUBS_LIST.replace(",", "|") + ")sub(bed|ed|s)?")
+    resultFilters.add("(" + sickbeard.IGNORED_SUBS_LIST.replace(",", "|") + ")sub(bed|ed|s)?")
 
 
 def containsAtLeastOneWord(name, words):
@@ -55,8 +55,13 @@ def containsAtLeastOneWord(name, words):
     if isinstance(words, six.string_types):
         words = words.split(',')
 
-    items = [(re.compile(r'(^|[\W_]){0}($|[\W_])'.format(re.escape(word.strip())), re.I), word.strip()) for word in words]
-    for regexp, word in items:
+    words = {word.strip() for word in words if word.strip()}
+    if not any(words):
+        return True
+
+    for word, regexp in six.iteritems(
+        {word: re.compile(r'(^|[\W_]){0}($|[\W_])'.format(re.escape(word)), re.I) for word in words}
+    ):
         if regexp.search(name):
             return word
     return False
@@ -84,18 +89,16 @@ def filter_bad_releases(name, parse=True, show=None):
     #    logger.log(u"{0}".format(error), logger.DEBUG)
     #    return False
 
+    def clean_set(words):
+        return {x.strip() for x in set((words or '').lower().split(',')) if x.strip()}
+
     # if any of the bad strings are in the name then say no
-    ignore_words = list(resultFilters)
-
-    if show and show.rls_ignore_words:
-        ignore_words.extend(show.rls_ignore_words.split(','))
-    elif sickbeard.IGNORE_WORDS:
-        ignore_words.extend(sickbeard.IGNORE_WORDS.split(','))
-
-    if show and show.rls_require_words:
-        ignore_words = list(set(ignore_words).difference(x.strip() for x in show.rls_require_words.split(',') if x.strip()))
-    elif sickbeard.REQUIRE_WORDS and not (show and show.rls_ignore_words):  # Only remove global require words from the list if we arent using show ignore words
-        ignore_words = list(set(ignore_words).difference(x.strip() for x in sickbeard.REQUIRE_WORDS.split(',') if x.strip()))
+    ignore_words = resultFilters
+    ignore_words = ignore_words.union(clean_set(show and show.rls_ignore_words or ''))  # Show specific ignored words
+    ignore_words = ignore_words.union(clean_set(sickbeard.IGNORE_WORDS))  # Plus Global ignored words
+    ignore_words = ignore_words.difference(clean_set(show and show.rls_require_words or ''))  # Minus show specific required words
+    if sickbeard.REQUIRE_WORDS and not (show and show.rls_ignore_words):  # Only remove global require words from the list if we arent using show ignore words
+        ignore_words = ignore_words.difference(clean_set(sickbeard.REQUIRE_WORDS))
 
     word = containsAtLeastOneWord(name, ignore_words)
     if word:
@@ -103,17 +106,12 @@ def filter_bad_releases(name, parse=True, show=None):
         return False
 
     # if any of the good strings aren't in the name then say no
-
-    require_words = []
-    if show and show.rls_require_words:
-        require_words.extend(show.rls_require_words.split(','))
-    elif sickbeard.REQUIRE_WORDS:
-        require_words.extend(sickbeard.REQUIRE_WORDS.split(','))
-
-    if show and show.rls_ignore_words:
-        require_words = list(set(require_words).difference(x.strip() for x in show.rls_ignore_words.split(',') if x.strip()))
-    elif sickbeard.IGNORE_WORDS and not (show and show.rls_require_words):  # Only remove global ignore words from the list if we arent using show require words
-        require_words = list(set(require_words).difference(x.strip() for x in sickbeard.IGNORE_WORDS.split(',') if x.strip()))
+    require_words = set()
+    require_words = require_words.union(clean_set(show and show.rls_require_words or ''))  # Show specific required words
+    require_words = require_words.union(clean_set(sickbeard.REQUIRE_WORDS))  # Plus Global required words
+    require_words = require_words.difference(clean_set(show and show.rls_ignore_words or ''))  # Minus show specific ignored words
+    if sickbeard.IGNORE_WORDS and not (show and show.rls_require_words):  # Only remove global ignore words from the list if we arent using show require words
+        require_words = require_words.difference(clean_set(sickbeard.IGNORE_WORDS))
 
     if require_words and not containsAtLeastOneWord(name, require_words):
         logger.log("Release: " + name + " doesn't contain any of " + ', '.join(set(require_words)) +
