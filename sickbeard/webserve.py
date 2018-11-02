@@ -31,6 +31,7 @@ import traceback
 from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
 from operator import attrgetter
+from uuid import uuid4
 
 import adba
 import markdown2
@@ -52,8 +53,6 @@ from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
 from tornado.process import cpu_count
 from tornado.web import addslash, authenticated, HTTPError, RequestHandler
-
-from uuid import uuid4
 
 import sickbeard
 from sickbeard import (classes, clients, config, db, filters, helpers, logger, naming, network_timezones, notifiers, sab, search_queue,
