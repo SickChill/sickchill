@@ -53,6 +53,8 @@ from tornado.ioloop import IOLoop
 from tornado.process import cpu_count
 from tornado.web import addslash, authenticated, HTTPError, RequestHandler
 
+from uuid import uuid4
+
 import sickbeard
 from sickbeard import (classes, clients, config, db, filters, helpers, logger, naming, network_timezones, notifiers, sab, search_queue,
                        subtitles as subtitle_module, ui)
@@ -92,6 +94,7 @@ except ImportError:
 
 
 mako_lookup = {}
+set_password = {'test': None}
 
 
 def get_lookup():
@@ -238,10 +241,13 @@ class BaseHandler(RequestHandler):
         self.set_header(b"Location", urljoin(utf8(self.request.uri), utf8(url)))
 
     def get_current_user(self):
-        if not isinstance(self, UI) and not helpers.is_ip_private(self.request.remote_ip) or sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
-            return self.get_secure_cookie('sickchill_user')
-        else:
+        if isinstance(self, UI):
             return True
+
+        if not helpers.is_ip_private(self.request.remote_ip) or (sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD):
+            return self.get_secure_cookie('sickchill_user')
+
+        return False
 
     def get_user_locale(self):
         return sickbeard.GUI_LANG or None
@@ -297,24 +303,37 @@ class WebHandler(BaseHandler):
 
 
 class LoginHandler(BaseHandler):
+
     def get(self, *args, **kwargs):
 
         if self.get_current_user():
             self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
+        elif helpers.is_ip_private(self.request.remote_ip) and not (sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD):
+            t = PageTemplate(rh=self, filename="login.mako")
+            set_password['test'] = str(uuid4())
+            t.arguments['set_password'] = set_password['test']
+            self.finish(t.render(title=_("Set Password"), header=_("Set Password"), topmenu="Set Password"))
         else:
             t = PageTemplate(rh=self, filename="login.mako")
+            t.arguments['set_password'] = ''
+            set_password = None
             self.finish(t.render(title=_("Login"), header=_("Login"), topmenu="login"))
 
     def post(self, *args, **kwargs):
         notifiers.notify_login(self.request.remote_ip)
 
-        if self.get_argument('username', '') == sickbeard.WEB_USERNAME and self.get_argument('password', '') == sickbeard.WEB_PASSWORD:
+        if set_password['test'] and set_password['test'] == self.get_argument('set_password', ''):
+            sickbeard.WEB_USERNAME = self.get_argument('username', '')
+            sickbeard.WEB_PASSWORD = self.get_argument('password', '')
+        elif not set_password['test'] and self.get_argument('username', '') == sickbeard.WEB_USERNAME \
+            and self.get_argument('password', '') == sickbeard.WEB_PASSWORD:
             remember_me = (None, 30)[try_int(self.get_argument('remember_me', default=0), 0) > 0]
             self.set_secure_cookie('sickchill_user', sickbeard.API_KEY, expires_days=remember_me)
             logger.log('User logged into the SickChill web interface', logger.INFO)
         else:
             logger.log('User attempted a failed login to the SickChill web interface from IP: ' + self.request.remote_ip, logger.WARNING)
 
+        set_password['test'] = None
         self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
 

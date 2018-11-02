@@ -9,6 +9,13 @@
                             <h1>SickChill</h1>
                         </div>
                     </div>
+                    % if set_password:
+                      <div class="row">
+                          <div class="col-md-12">
+                              <h3>You must set a username and password:</h3>
+                          </div>
+                      </div>
+                    % endif
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
@@ -30,10 +37,14 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="remember_me" title="${_('for 30 days')}">
-                                    <input class="inlay" id="remember_me" name="remember_me" type="checkbox" value="1" checked="checked"/>&nbsp;${_('Remember me')}
-                                </label>
-                                <input class="btn btn-default pull-right" name="submit" type="submit" value="${_('Login')}"/>
+                                % if set_password:
+                                  <input type="hidden" name="set_password" value="${set_password}">
+                                % else:
+                                  <label class="remember_me" title="${_('for 30 days')}">
+                                      <input class="inlay" id="remember_me" name="remember_me" type="checkbox" value="1" checked="checked"/>&nbsp;${_('Remember me')}
+                                  </label>
+                                % endif
+                                <input class="btn btn-default pull-right" name="submit" type="submit" value="${title}"/>
                             </div>
                         </div>
                     </div>
