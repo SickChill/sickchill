@@ -238,7 +238,7 @@ class BaseHandler(RequestHandler):
         self.set_header(b"Location", urljoin(utf8(self.request.uri), utf8(url)))
 
     def get_current_user(self):
-        if not isinstance(self, UI) and sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
+        if not isinstance(self, UI) and not helpers.is_ip_private(self.request.remote_ip) or sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
             return self.get_secure_cookie('sickchill_user')
         else:
             return True
@@ -632,6 +632,13 @@ class UI(WebRoot):
                 message = _('You\'re using the {branch} branch. '
                             'Please use \'master\' unless specifically asked').format(branch=sickbeard.BRANCH)
                 helpers.add_site_message(message, tag='not_using_master_branch', level='danger')
+            if not (sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD):
+                message = _('It is important that you set a username and password. &mdash; '
+                            '<a href="{info_url}" onclick="window.open(this.href); return false;">Click Here for Information</a>'.format(
+                    info_url='https://github.com/SickChill/SickChill/wiki/Authentication-Required-for-Public-Facing-Access')
+                )
+
+                helpers.add_site_message(message, tag='please_set_password', level='danger')
 
         return sickbeard.SITE_MESSAGES
 

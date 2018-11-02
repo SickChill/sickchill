@@ -1036,21 +1036,6 @@ def full_sanitizeSceneName(name):
     return re.sub('[. -]', ' ', sanitizeSceneName(name)).lower().strip()
 
 
-def _check_against_names(nameInQuestion, show, season=-1):
-    showNames = []
-    if season in [-1, 1]:
-        showNames = [show.name]
-
-    showNames.extend(sickbeard.scene_exceptions.get_scene_exceptions(show.indexerid, season=season))
-
-    for showName in showNames:
-        nameFromList = full_sanitizeSceneName(showName)
-        if nameFromList == nameInQuestion:
-            return True
-
-    return False
-
-
 def get_show(name, tryIndexers=False):
     if not sickbeard.showList:
         return

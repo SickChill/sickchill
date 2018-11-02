@@ -82,7 +82,6 @@ Public Methods:
     manage_torrents_url
     bdecode
 Private Methods:
-    _check_against_names
     _setUpSession
 """
 
@@ -599,13 +598,6 @@ class HelpersShowTests(unittest.TestCase):
     def test_is_anime_in_show_list(self):
         """
         Test is_anime_in_show_list
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
-    def test_check_against_names(self):
-        """
-        Test _check_against_names
         """
         pass
 
