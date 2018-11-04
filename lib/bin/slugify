@@ -1,0 +1,16 @@
+#!/home/dusted/Envs/sickchill-test/bin/python2
+# -*- coding: utf-8 -*-
+
+USAGE = """Usage: echo "Héllo Wörld" | slugify # => hello-world"""
+
+import sys
+import slugify
+
+if sys.argv[1:]:
+    print >>sys.stderr, USAGE
+    sys.exit(1)
+
+line = sys.stdin.readline()
+while line:
+    print slugify.slugify(line.decode('utf-8'))
+    line = sys.stdin.readline()
