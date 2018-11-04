@@ -1,22 +1,22 @@
 # coding=utf-8
 # Author: CristianBB
 #
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -30,8 +30,8 @@ import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
-from sickrage.helper.common import try_int
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from sickchill.helper.common import try_int
+from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class EliteTorrentProvider(TorrentProvider):
@@ -46,8 +46,8 @@ class EliteTorrentProvider(TorrentProvider):
         self.cache = tvcache.TVCache(self)  # Only poll EliteTorrent every 20 minutes max
 
         self.urls = {
-            'base_url': 'http://www.elitetorrent.net',
-            'search': 'http://www.elitetorrent.net/torrents.php'
+            'base_url': 'https://www.elitetorrent.eu',
+            'search': 'https://www.elitetorrent.eu/torrents.php'
         }
 
         self.url = self.urls['base_url']
@@ -58,7 +58,7 @@ class EliteTorrentProvider(TorrentProvider):
 
         """
         Search query:
-        http://www.elitetorrent.net/torrents.php?cat=4&modo=listado&orden=fecha&pag=1&buscar=fringe
+        https://www.elitetorrent.eu/torrents.php?cat=4&modo=listado&orden=fecha&pag=1&buscar=fringe
 
         cat = 4 => Shows
         modo = listado => display results mode
@@ -110,6 +110,16 @@ class EliteTorrentProvider(TorrentProvider):
                         for row in torrent_rows[1:]:
                             try:
                                 download_url = self.urls['base_url'] + row.find('a')['href']
+
+                                """
+                                Transform from
+                                https://elitetorrent.eu/torrent/40142/la-zona-1x02
+                                to
+                                https://elitetorrent.eu/get-torrent/40142
+                                """
+
+                                download_url = re.sub(r'/torrent/(\d*)/.*', r'/get-torrent/\1', download_url)
+
                                 """
                                 Trick for accents for this provider.
 

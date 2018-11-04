@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# pylint: disable=no-self-use, pointless-statement, missing-docstring, no-member
+# pylint: disable=no-self-use, pointless-statement, missing-docstring, no-member, len-as-condition
 import re
 
 from functools import partial
@@ -301,3 +301,111 @@ def test_matches_6():
 
     matches = rebulk.matches("Some Series E01E02E03E04E05E06")  # No validator on parent, so it should give 4 episodes.
     assert len(matches) == 4
+
+
+def test_matches_7():
+    seps_surround = partial(chars_surround, ' .-/')
+    rebulk = Rebulk()
+    rebulk.regex_defaults(flags=re.IGNORECASE)
+    rebulk.defaults(children=True, private_parent=True)
+
+    rebulk.chain(). \
+        regex(r'S(?P<season>\d+)', validate_all=True, validator={'__parent__': seps_surround}). \
+        regex(r'[ -](?P<season>\d+)', validator=seps_surround).repeater('*')
+
+    matches = rebulk.matches("Some S01")
+    assert len(matches) == 1
+    matches[0].value = 1
+
+    matches = rebulk.matches("Some S01-02")
+    assert len(matches) == 2
+    matches[0].value = 1
+    matches[1].value = 2
+
+    matches = rebulk.matches("programs4/Some S01-02")
+    assert len(matches) == 2
+    matches[0].value = 1
+    matches[1].value = 2
+
+    matches = rebulk.matches("programs4/SomeS01middle.S02-03.andS04here")
+    assert len(matches) == 2
+    matches[0].value = 2
+    matches[1].value = 3
+
+    matches = rebulk.matches("Some 02.and.S04-05.here")
+    assert len(matches) == 2
+    matches[0].value = 4
+    matches[1].value = 5
+
+
+def test_chain_breaker():
+    def chain_breaker(matches):
+        seasons = matches.named('season')
+        if len(seasons) > 1:
+            if seasons[-1].value - seasons[-2].value > 10:
+                return True
+        return False
+
+    seps_surround = partial(chars_surround, ' .-/')
+    rebulk = Rebulk()
+    rebulk.regex_defaults(flags=re.IGNORECASE)
+    rebulk.defaults(children=True, private_parent=True, formatter={'season': int})
+
+    rebulk.chain(chain_breaker=chain_breaker). \
+        regex(r'S(?P<season>\d+)', validate_all=True, validator={'__parent__': seps_surround}). \
+        regex(r'[ -](?P<season>\d+)', validator=seps_surround).repeater('*')
+
+    matches = rebulk.matches("Some S01-02-03-50-51")
+    assert len(matches) == 3
+    matches[0].value = 1
+    matches[1].value = 2
+    matches[2].value = 3
+
+
+def test_chain_breaker_defaults():
+    def chain_breaker(matches):
+        seasons = matches.named('season')
+        if len(seasons) > 1:
+            if seasons[-1].value - seasons[-2].value > 10:
+                return True
+        return False
+
+    seps_surround = partial(chars_surround, ' .-/')
+    rebulk = Rebulk()
+    rebulk.regex_defaults(flags=re.IGNORECASE)
+    rebulk.defaults(chain_breaker=chain_breaker, children=True, private_parent=True, formatter={'season': int})
+
+    rebulk.chain(). \
+        regex(r'S(?P<season>\d+)', validate_all=True, validator={'__parent__': seps_surround}). \
+        regex(r'[ -](?P<season>\d+)', validator=seps_surround).repeater('*')
+
+    matches = rebulk.matches("Some S01-02-03-50-51")
+    assert len(matches) == 3
+    matches[0].value = 1
+    matches[1].value = 2
+    matches[2].value = 3
+
+
+def test_chain_breaker_defaults2():
+    def chain_breaker(matches):
+        seasons = matches.named('season')
+        if len(seasons) > 1:
+            if seasons[-1].value - seasons[-2].value > 10:
+                return True
+        return False
+
+    seps_surround = partial(chars_surround, ' .-/')
+    rebulk = Rebulk()
+    rebulk.regex_defaults(flags=re.IGNORECASE)
+    rebulk.chain_defaults(chain_breaker=chain_breaker)
+    rebulk.defaults(children=True, private_parent=True, formatter={'season': int})
+
+    rebulk.chain(). \
+        regex(r'S(?P<season>\d+)', validate_all=True, validator={'__parent__': seps_surround}). \
+        regex(r'[ -](?P<season>\d+)', validator=seps_surround).repeater('*')
+
+    matches = rebulk.matches("Some S01-02-03-50-51")
+    assert len(matches) == 3
+    matches[0].value = 1
+    matches[1].value = 2
+    matches[2].value = 3

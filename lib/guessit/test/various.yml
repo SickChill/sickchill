@@ -191,7 +191,7 @@
   format: WEB-DL
   audio_channels: "5.1"
   video_codec: h264
-  audio_codec: DolbyDigital
+  audio_codec: AC3
   release_group: NTb
 
 ? Despicable.Me.2.2013.1080p.BluRay.x264-VeDeTT.nfo
@@ -546,13 +546,13 @@
 
 ? TEST.S01E02.2160p.NF.WEBRip.x264.DD5.1-ABC
 : audio_channels: '5.1'
-  audio_codec: DolbyDigital
+  audio_codec: AC3
   episode: 2
   format: WEBRip
-  other: Netflix
   release_group: ABC
   screen_size: 4K
   season: 1
+  streaming_service: Netflix
   title: TEST
   type: episode
   video_codec: h264
@@ -572,10 +572,10 @@
   episode: 10
   episode_title: '24'
   format: WEBRip
-  other: Netflix
   release_group: ABC
   screen_size: 1080p
   season: 1
+  streaming_service: Netflix
   title: TEST
   type: episode
   video_codec: h264
@@ -586,10 +586,10 @@
   episode: 10
   episode_title: '24'
   format: WEBRip
-  other: Netflix
   release_group: ABC
   screen_size: 1080p
   season: 1
+  streaming_service: Netflix
   title: TEST
   type: episode
   video_codec: h264
@@ -600,10 +600,10 @@
   episode: 10
   episode_title: '24'
   format: WEBRip
-  other: Netflix
   release_group: ABC
   screen_size: 1080p
   season: 1
+  streaming_service: Netflix
   title: TEST
   type: episode
   video_codec: h264
@@ -744,7 +744,7 @@
 
 ? Gangs of New York 2002 REMASTERED 1080p BluRay x264-AVCHD
 : format: BluRay
-  other: Remastered
+  edition: Remastered
   screen_size: 1080p
   title: Gangs of New York
   type: movie
@@ -761,14 +761,15 @@
   type: episode
   video_codec: h264
 
+# Episode title is indeed 'October 8, 2014'
+# https://thetvdb.com/?tab=episode&seriesid=82483&seasonid=569935&id=4997362&lid=7
 ? The Soup - 11x41 - October 8, 2014.mp4
 : container: mp4
   episode: 41
-  episode_title: October 8
+  episode_title: October 8, 2014
   season: 11
   title: The Soup
   type: episode
-  year: 2014
 
 ? Red.Rock.S02E59.WEB-DLx264-JIVE
 : episode: 59

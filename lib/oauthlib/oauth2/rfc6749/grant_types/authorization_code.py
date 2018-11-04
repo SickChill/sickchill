@@ -3,7 +3,7 @@
 oauthlib.oauth2.rfc6749.grant_types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
-from __future__ import unicode_literals, absolute_import
+from __future__ import absolute_import, unicode_literals
 
 import json
 import logging
@@ -11,8 +11,8 @@ import logging
 from oauthlib import common
 from oauthlib.uri_validate import is_absolute_uri
 
-from .base import GrantTypeBase
 from .. import errors
+from .base import GrantTypeBase
 
 log = logging.getLogger(__name__)
 
@@ -210,7 +210,10 @@ class AuthorizationCodeGrant(GrantTypeBase):
         except errors.OAuth2Error as e:
             log.debug('Client error during validation of %r. %r.', request, e)
             request.redirect_uri = request.redirect_uri or self.error_uri
-            return {'Location': common.add_params_to_uri(request.redirect_uri, e.twotuples)}, None, 302
+            redirect_uri = common.add_params_to_uri(
+                request.redirect_uri, e.twotuples,
+                fragment=request.response_mode == "fragment")
+            return {'Location': redirect_uri}, None, 302
 
         grant = self.create_authorization_code(request)
         for modifier in self._code_modifiers:
@@ -421,7 +424,7 @@ class AuthorizationCodeGrant(GrantTypeBase):
                                                            request.redirect_uri, request.client):
             log.debug('Redirect_uri (%r) invalid for client %r (%r).',
                       request.redirect_uri, request.client_id, request.client)
-            raise errors.AccessDeniedError(request=request)
+            raise errors.MismatchingRedirectURIError(request=request)
 
         for validator in self.custom_validators.post_token:
             validator(request)

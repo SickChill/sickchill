@@ -1,22 +1,22 @@
 # coding=utf-8
 # Author: Mr_Orange <mr_orange@hotmail.it>
 #
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
 
@@ -27,8 +27,8 @@ from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
-from sickrage.helper.common import convert_size, try_int
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from sickchill.helper.common import convert_size, try_int
+from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
@@ -52,14 +52,14 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.url = 'https://www.torrentday.com'
         self.urls = {
             'login': urljoin(self.url, '/t'),
-            'search': urljoin(self.url, '/V3/API/API.php'),
+            'search': urljoin(self.url, '/t.json'),
             'download': urljoin(self.url, '/download.php/')
         }
 
         self.categories = {
-            'Season': {'c14': 1},
-            'Episode': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1, 'c34': 1},
-            'RSS': {'c2': 1, 'c26': 1, 'c7': 1, 'c24': 1, 'c34': 1, 'c14': 1}
+            'Season': {'14': 1},
+            'Episode': {'2': 1, '26': 1, '7': 1, '24': 1, '34': 1},
+            'RSS': {'2': 1, '26': 1, '7': 1, '24': 1, '34': 1, '14': 1}
         }
 
         self.enable_cookies = True
@@ -130,20 +130,18 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     logger.log('Search string: {0}'.format
                                (search_string.decode('utf-8')), logger.DEBUG)
 
-                post_data = {'/browse.php?': None, 'cata': 'yes', 'jxt': 8, 'jxw': 'b', 'search': search_string}
-                post_data.update(self.categories[mode])
-
-                if self.freeleech:
-                    post_data.update({'free': 'on'})
-
-                parsed_json = self.get_url(search_url, post_data=post_data, returns='json')
-                if not parsed_json:
-                    logger.log('No data returned from provider', logger.DEBUG)
-                    self.session.cookies.clear()
-                    continue
+                get_params = {}
+                get_params.update(self.categories[mode])
+                get_params["q"] = search_string.decode('utf-8', 'ignore')
 
                 try:
-                    torrents = parsed_json.get('Fs', [])[0].get('Cn', {}).get('torrents', [])
+                    torrents = self.get_url(search_url, params=get_params, returns='json')
+                    # Handle empty string response or None #4304
+                    if not torrents:
+                        raise
+
+                    # Make sure it is iterable #4304
+                    iter(torrents)
                 except Exception:
                     logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
                     continue
@@ -151,13 +149,13 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 for torrent in torrents:
 
                     title = re.sub(r'\[.*\=.*\].*\[/.*\]', '', torrent['name']) if torrent['name'] else None
-                    torrent_url = urljoin(download_url, '{0}/{1}'.format(torrent['id'], torrent['fname'])) if torrent['id'] and torrent['fname'] else \
+                    torrent_url = urljoin(download_url, '{0}/{1}.torrent'.format(torrent['t'], torrent['name'])) if torrent['t'] and torrent['name'] else \
                         None
                     if not all([title, torrent_url]):
                         continue
 
-                    seeders = try_int(torrent['seed'])
-                    leechers = try_int(torrent['leech'])
+                    seeders = try_int(torrent['seeders'])
+                    leechers = try_int(torrent['leechers'])
 
                     # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:

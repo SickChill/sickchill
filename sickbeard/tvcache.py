@@ -1,21 +1,21 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -29,8 +29,8 @@ import sickbeard
 from sickbeard import db, logger, show_name_helpers
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickbeard.rssfeeds import getFeed
-from sickrage.helper.exceptions import AuthException, ex
-from sickrage.show.Show import Show
+from sickchill.helper.exceptions import AuthException, ex
+from sickchill.show.Show import Show
 
 
 class CacheDBConnection(db.DBConnection):
@@ -39,7 +39,7 @@ class CacheDBConnection(db.DBConnection):
 
         # Create the table if it's not already there
         try:
-            if not self.hasTable(provider_name):
+            if not self.has_table(provider_name):
                 self.action(
                     "CREATE TABLE [" + provider_name + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT, release_group TEXT)")
             else:
@@ -52,12 +52,12 @@ class CacheDBConnection(db.DBConnection):
             self.action("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON [" + provider_name + "] (url)")
 
             # add release_group column to table if missing
-            if not self.hasColumn(provider_name, 'release_group'):
-                self.addColumn(provider_name, 'release_group', "TEXT", "")
+            if not self.has_column(provider_name, 'release_group'):
+                self.add_column(provider_name, 'release_group', "TEXT", "")
 
             # add version column to table if missing
-            if not self.hasColumn(provider_name, 'version'):
-                self.addColumn(provider_name, 'version', "NUMERIC", "-1")
+            if not self.has_column(provider_name, 'version'):
+                self.add_column(provider_name, 'version', "NUMERIC", "-1")
 
         except Exception as e:
             if str(e) != "table [" + provider_name + "] already exists":
@@ -65,7 +65,7 @@ class CacheDBConnection(db.DBConnection):
 
         # Create the table if it's not already there
         try:
-            if not self.hasTable('lastUpdate'):
+            if not self.has_table('lastUpdate'):
                 self.action("CREATE TABLE lastUpdate (provider TEXT, time NUMERIC)")
         except Exception as e:
             if str(e) != "table lastUpdate already exists":
@@ -196,7 +196,7 @@ class TVCache(object):
     def set_last_update(self, to_date=None):
         """
         Sets the last update date for the current provider in the cache database
-        
+
         :param to_date: date to set to, or None for today
         """
         if not to_date:

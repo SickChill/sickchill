@@ -1,22 +1,22 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://SickRage.GitHub.io
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sickchill.github.io
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 # pylint: disable=line-too-long
 
@@ -26,8 +26,8 @@ import re
 
 from sickbeard import classes, helpers, logger
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickrage.helper.encoding import ek, ss
-from sickrage.helper.exceptions import ex
+from sickchill.helper.encoding import ek, ss
+from sickchill.helper.exceptions import ex
 
 try:
     import xml.etree.cElementTree as ETree
@@ -154,7 +154,7 @@ def split_result(obj):
     """
     url_data = helpers.getURL(obj.url, session=helpers.make_session(), returns='content')
     if url_data is None:
-        logger.log("Unable to load url " + obj.url + ", can't download season NZB", logger.ERROR)
+        logger.log("Unable to load url " + obj.url + ", can't download season NZB", logger.WARNING)
         return []
 
     # parse the season ep name

@@ -21,8 +21,8 @@ def setUpModule():
 
 class MKVTestCase(unittest.TestCase):
     def test_test1(self):
-        with io.open(os.path.join(TEST_DIR, 'test1.mkv'), 'rb') as stream:
-            mkv = MKV(stream)
+        stream = io.open(os.path.join(TEST_DIR, 'test1.mkv'), 'rb')
+        mkv = MKV(stream)
         # info
         self.assertTrue(mkv.info.title is None)
         self.assertTrue(mkv.info.duration == timedelta(minutes=1, seconds=27, milliseconds=336))
@@ -90,8 +90,8 @@ class MKVTestCase(unittest.TestCase):
         self.assertTrue(mkv.tags[0].simpletags[2].binary is None)
 
     def test_test2(self):
-        with io.open(os.path.join(TEST_DIR, 'test2.mkv'), 'rb') as stream:
-            mkv = MKV(stream)
+        stream = io.open(os.path.join(TEST_DIR, 'test2.mkv'), 'rb')
+        mkv = MKV(stream)
         # info
         self.assertTrue(mkv.info.title is None)
         self.assertTrue(mkv.info.duration == timedelta(seconds=47, milliseconds=509))
@@ -159,8 +159,8 @@ class MKVTestCase(unittest.TestCase):
         self.assertTrue(mkv.tags[0].simpletags[2].binary is None)
 
     def test_test3(self):
-        with io.open(os.path.join(TEST_DIR, 'test3.mkv'), 'rb') as stream:
-            mkv = MKV(stream)
+        stream = io.open(os.path.join(TEST_DIR, 'test3.mkv'), 'rb')
+        mkv = MKV(stream)
         # info
         self.assertTrue(mkv.info.title is None)
         self.assertTrue(mkv.info.duration == timedelta(seconds=49, milliseconds=64))
@@ -228,8 +228,8 @@ class MKVTestCase(unittest.TestCase):
         self.assertTrue(mkv.tags[0].simpletags[2].binary is None)
 
     def test_test5(self):
-        with io.open(os.path.join(TEST_DIR, 'test5.mkv'), 'rb') as stream:
-            mkv = MKV(stream)
+        stream = io.open(os.path.join(TEST_DIR, 'test5.mkv'), 'rb')
+        mkv = MKV(stream)
         # info
         self.assertTrue(mkv.info.title is None)
         self.assertTrue(mkv.info.duration == timedelta(seconds=46, milliseconds=665))
@@ -391,8 +391,8 @@ class MKVTestCase(unittest.TestCase):
         self.assertTrue(mkv.tags[0].simpletags[2].binary is None)
 
     def test_test6(self):
-        with io.open(os.path.join(TEST_DIR, 'test6.mkv'), 'rb') as stream:
-            mkv = MKV(stream)
+        stream = io.open(os.path.join(TEST_DIR, 'test6.mkv'), 'rb')
+        mkv = MKV(stream)
         # info
         self.assertTrue(mkv.info.title is None)
         self.assertTrue(mkv.info.duration == timedelta(seconds=87, milliseconds=336))
@@ -460,8 +460,8 @@ class MKVTestCase(unittest.TestCase):
         self.assertTrue(mkv.tags[0].simpletags[2].binary is None)
 
     def test_test7(self):
-        with io.open(os.path.join(TEST_DIR, 'test7.mkv'), 'rb') as stream:
-            mkv = MKV(stream)
+        stream = io.open(os.path.join(TEST_DIR, 'test7.mkv'), 'rb')
+        mkv = MKV(stream)
         # info
         self.assertTrue(mkv.info.title is None)
         self.assertTrue(mkv.info.duration == timedelta(seconds=37, milliseconds=43))
@@ -529,8 +529,8 @@ class MKVTestCase(unittest.TestCase):
         self.assertTrue(mkv.tags[0].simpletags[2].binary is None)
 
     def test_test8(self):
-        with io.open(os.path.join(TEST_DIR, 'test8.mkv'), 'rb') as stream:
-            mkv = MKV(stream)
+        stream = io.open(os.path.join(TEST_DIR, 'test8.mkv'), 'rb')
+        mkv = MKV(stream)
         # info
         self.assertTrue(mkv.info.title is None)
         self.assertTrue(mkv.info.duration == timedelta(seconds=47, milliseconds=341))

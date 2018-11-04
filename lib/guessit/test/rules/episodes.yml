@@ -116,8 +116,13 @@
 ? -A very special movie
 : episode_details: Special
 
-? A very special episode
+? -A very special episode
 : options: -t episode
+  episode_details: Special
+
+? A very special episode s06 special
+: options: -t episode
+  title: A very special episode
   episode_details: Special
 
 ? 12 Monkeys\Season 01\Episode 05\12 Monkeys - S01E05 - The Night Room.mkv
@@ -141,7 +146,7 @@
 ? Show.Name.-.Season.1.to.3.-.Mp4.1080p
 ? Show.Name.-.Season.1~3.-.Mp4.1080p
 ? Show.Name.-.Saison.1.a.3.-.Mp4.1080p
-: container: MP4
+: container: mp4
   screen_size: 1080p
   season:
   - 1
@@ -245,3 +250,23 @@
 ? epi
 : options: -t episode
   title: epi
+
+? Episode20
+? Episode 20
+: episode: 20
+
+? Episode50
+? Episode 50
+: episode: 50
+
+? Episode51
+? Episode 51
+: episode: 51
+
+? Episode70
+? Episode 70
+: episode: 70
+
+? Episode71
+? Episode 71
+: episode: 71

@@ -111,7 +111,7 @@
 ? Movies/Blade Runner (1982)/Blade.Runner.(1982).(Director's.Cut).CD1.DVDRip.XviD.AC3-WAF.avi
 : title: Blade Runner
   year: 1982
-  edition: Director's cut
+  edition: Director's Cut
   cd: 1
   format: DVD
   video_codec: XviD
@@ -147,7 +147,8 @@
   format: DVD
   video_codec: XviD
   release_group: ARROW
-  other: ['Proper', 'Limited']
+  other: Proper
+  edition: Limited Edition
   proper_count: 1
 
 ? Movies/Fr - Paris 2054, Renaissance (2005) - De Christian Volckman - (Film Divx Science Fiction Fantastique Thriller Policier N&B).avi
@@ -363,7 +364,7 @@
   video_codec: h264
   release_group: AN0NYM0US[bb]
   format: BluRay
-  other: Limited
+  edition: Limited Edition
 
 ? movies/La Science des Rêves (2006)/La.Science.Des.Reves.FRENCH.DVDRip.XviD-MP-AceBot.avi
 : title: La Science des Rêves
@@ -439,7 +440,7 @@
   format: BluRay
   video_codec: XviD
   audio_channels: "5.1"
-  audio_codec: DolbyDigital
+  audio_codec: AC3
   uuid: XD607ebb-BRc59935-5155473f-1c5f49
 
 ? Pacific.Rim.3D.2013.COMPLETE.BLURAY-PCH.avi
@@ -458,28 +459,28 @@
     - French
     - English
   format: DVD
-  other: NTSC
+  other: [Straight to Video, Read NFO, NTSC]
 
 ? Immersion.French.2011.STV.READNFO.QC.FRENCH.NTSC.DVDR.nfo
 : title: Immersion French
   year: 2011
   language: French
   format: DVD
-  other: NTSC
+  other: [Straight to Video, Read NFO, NTSC]
 
 ? Immersion.French.2011.STV.READNFO.QC.NTSC.DVDR.nfo
 : title: Immersion
   language: French
   year: 2011
   format: DVD
-  other: NTSC
+  other: [Straight to Video, Read NFO, NTSC]
 
 ? French.Immersion.2011.STV.READNFO.QC.ENGLISH.NTSC.DVDR.nfo
 : title: French Immersion
   year: 2011
   language: ENGLISH
   format: DVD
-  other: NTSC
+  other: [Straight to Video, Read NFO, NTSC]
 
 ? Howl's_Moving_Castle_(2004)_[720p,HDTV,x264,DTS]-FlexGet.avi
 : video_codec: h264
@@ -644,7 +645,7 @@
     - Timsit
     - Lindon
   screen_size: 1080p
-  container: MKV
+  container: mkv
   format: HDTV
 
 ? some.movie.720p.bluray.x264-mind
@@ -688,20 +689,18 @@
 
 ? h265 - HEVC Riddick Unrated Director Cut French 1080p DTS.mkv
 : audio_codec: DTS
-  edition: Director's cut
+  edition: [Unrated, Director's Cut]
   language: fr
   screen_size: 1080p
   title: Riddick
-  other: Unrated
   video_codec: h265
 
 ? "[h265 - HEVC] Riddick Unrated Director Cut French [1080p DTS].mkv"
 : audio_codec: DTS
-  edition: Director's cut
+  edition: [Unrated, Director's Cut]
   language: fr
   screen_size: 1080p
   title: Riddick
-  other: Unrated
   video_codec: h265
 
 ? Barbecue-2014-French-mHD-1080p
@@ -823,15 +822,287 @@
   video_codec: h264
   year: 2015
 
-? Hyena.Road.2015.German.Ep.Title.1080p.DL.DTSHD.Bluray.x264-pmHD
+? Hyena.Road.2015.German.1080p.DL.DTSHD.Bluray.x264-pmHD
 : audio_codec: DTS
   audio_profile: HD
-  episode_title: German Ep Title
   format: BluRay
-  language: mul
+  language:
+  - de
+  - mul
   release_group: pmHD
   screen_size: 1080p
   title: Hyena Road
   type: movie
   video_codec: h264
   year: 2015
+
+? Name.BDMux.720p
+? Name.BDRipMux.720p
+? Name.BRMux.720p
+? Name.BRRipMux.720p
+: title: Name
+  format: BluRay
+  other: Mux
+  screen_size: 720p
+  type: movie
+
+? Secondary Education (2013).mkv
+: options: -T Second
+  title: Secondary Education
+  year: 2013
+  type: movie
+
+? Mad Max Beyond Thunderdome ()
+: title: Mad Max Beyond Thunderdome
+  type: movie
+
+? Hacksaw Ridge 2016 Multi 2160p UHD BluRay Hevc10 HDR10 DTSHD & ATMOS 7.1 -DDR.mkv
+: title: Hacksaw Ridge
+  year: 2016
+  language: mul
+  screen_size: 4K
+  other: UltraHD
+  format: BluRay
+  video_codec: h265
+  video_profile: 10bit
+  audio_codec: [DTS, DolbyAtmos]
+  audio_profile: HD
+  audio_channels: '7.1'
+  release_group: DDR
+  container: mkv
+  type: movie
+
+? Special.Correspondents.2016.iTA.ENG.4K.2160p.NetflixUHD.TeamPremium.mp4
+: title: Special Correspondents
+  year: 2016
+  language: [it, en]
+  screen_size: 4K
+  streaming_service: Netflix
+  other: UltraHD
+  release_group: TeamPremium
+  container: mp4
+  type: movie
+
+? -Special.Correspondents.2016.iTA.ENG.4K.2160p.NetflixUHD.TeamPremium.mp4
+: alternative_title: 4K
+
+? -Special.Correspondents.2016.iTA.ENG.4K.2160p.NetflixUHD.TeamPremium.mp4
+: alternative_title: 2160p
+
+? Suicide Squad EXTENDED (2016) 2160p 4K UltraHD Blu-Ray x265 (HEVC 10bit BT709) Dolby Atmos 7.1 -DDR
+: title: Suicide Squad
+  edition: Extended
+  other: UltraHD
+  year: 2016
+  screen_size: 4K
+  format: BluRay
+  video_codec: h265
+  video_profile: 10bit
+  audio_codec: DolbyAtmos
+  audio_channels: '7.1'
+  release_group: DDR
+  type: movie
+
+? Queen - A Kind of Magic (Alternative Extended Version) 2CD 2014
+: title: Queen
+  alternative_title: A Kind of Magic
+  edition: [Alternative Cut, Extended]
+  cd_count: 2
+  year: 2014
+  type: movie
+
+? Jour.de.Fete.1949.ALTERNATiVE.CUT.1080p.BluRay.x264-SADPANDA[rarbg]
+: title: Jour de Fete
+  year: 1949
+  edition: Alternative Cut
+  screen_size: 1080p
+  format: BluRay
+  video_codec: h264
+  release_group: SADPANDA[rarbg]
+
+? The.Movie.CONVERT.720p.HDTV.x264-C4TV
+: title: The Movie
+  other: Converted
+  screen_size: 720p
+  format: HDTV
+  video_codec: h264
+  release_group: C4TV
+  type: movie
+
+? Its.A.Wonderful.Life.1946.Colorized.720p.BRRip.999MB.MkvCage.com
+: title: Its A Wonderful Life
+  year: 1946
+  other: Colorized
+  screen_size: 720p
+  format: BluRay
+  size: 999MB
+  website: MkvCage.com
+  type: movie
+
+? Alien DC (1979) [1080p]
+: title: Alien
+  edition: Director's Cut
+  year: 1979
+  screen_size: 1080p
+  type: movie
+
+? Requiem.For.A.Dream.2000.DC.1080p.BluRay.x264.anoXmous
+: title: Requiem For A Dream
+  year: 2000
+  edition: Director's Cut
+  screen_size: 1080p
+  format: BluRay
+  video_codec: h264
+  release_group: anoXmous
+  type: movie
+
+? Before.the.Flood.2016.DOCU.1080p.WEBRip.x264.DD5.1-FGT
+: title: Before the Flood
+  year: 2016
+  other: Documentary
+  screen_size: 1080p
+  format: WEBRip
+  video_codec: h264
+  audio_codec: AC3
+  audio_channels: '5.1'
+  release_group: FGT
+  type: movie
+
+? Zootopia.2016.HDRip.1.46Gb.Dub.MegaPeer
+: title: Zootopia
+  year: 2016
+  format: HDTV
+  size: 1.46GB
+  language: und
+  release_group: MegaPeer
+  type: movie
+
+? Suntan.2016.FESTiVAL.DVDRip.x264-IcHoR
+: title: Suntan
+  year: 2016
+  edition: Festival
+  format: DVD
+  video_codec: h264
+  release_group: IcHoR
+  type: movie
+
+? Hardwired.STV.NFOFiX.FRENCH.DVDRiP.XviD-SURViVAL
+: title: Hardwired
+  other: [Straight to Video, Proper]
+  language: french
+  format: DVD
+  video_codec: XviD
+  release_group: SURViVAL
+  proper_count: 1
+  type: movie
+
+? Maze.Runner.The.Scorch.Trials.OM.2015.WEB-DLRip.by.Seven
+: title: Maze Runner The Scorch Trials
+  other: Open Matte
+  year: 2015
+  format: WEBRip
+  release_group: Seven
+  type: movie
+
+? Kampen Om Tungtvannet aka The Heavy Water War COMPLETE 720p x265 HEVC-Lund
+: title: Kampen Om Tungtvannet aka The Heavy Water War
+  other: Complete
+  screen_size: 720p
+  video_codec: h265
+  release_group: Lund
+  type: movie
+
+? All.Fall.Down.x264.PROOFFIX-OUTLAWS
+: title: All Fall Down
+  video_codec: h264
+  other: Proper
+  release_group: OUTLAWS
+  proper_count: 1
+  type: movie
+
+? The.Last.Survivors.2014.PROOF.SAMPLE.FiX.BDRip.x264-TOPCAT
+: title: The Last Survivors
+  year: 2014
+  other: Proper
+  format: BluRay
+  video_codec: h264
+  release_group: TOPCAT
+  type: movie
+
+? Bad Santa 2 2016 THEATRiCAL FRENCH BDRip XviD-EXTREME
+: title: Bad Santa 2
+  year: 2016
+  edition: Theatrical Edition
+  language: french
+  format: BluRay
+  video_codec: XviD
+  release_group: EXTREME
+  type: movie
+
+? The Lord of the Rings The Fellowship of the Ring THEATRICAL EDITION (2001) [1080p]
+: title: The Lord of the Rings The Fellowship of the Ring
+  edition: Theatrical Edition
+  year: 2001
+  screen_size: 1080p
+  type: movie
+
+? World War Z (2013) Theatrical Cut 720p BluRay x264
+: title: World War Z
+  year: 2013
+  edition: Theatrical Edition
+  screen_size: 720p
+  format: BluRay
+  video_codec: h264
+  type: movie
+
+? The Heartbreak Kid (1993) UNCUT 720p WEBRip x264
+: title: The Heartbreak Kid
+  year: 1993
+  edition: Uncut
+  screen_size: 720p
+  format: WEBRip
+  video_codec: h264
+  type: movie
+
+? Mrs.Doubtfire.1993.720p.OAR.Bluray.DTS.x264-CtrlHD
+: title: Mrs Doubtfire
+  year: 1993
+  screen_size: 720p
+  other: Original Aspect Ratio
+  format: BluRay
+  audio_codec: DTS
+  video_codec: h264
+  release_group: CtrlHD
+  type: movie
+
+? Aliens.SE.1986.BDRip.1080p
+: title: Aliens
+  edition: Special Edition
+  year: 1986
+  format: BluRay
+  screen_size: 1080p
+  type: movie
+
+? 10 Cloverfield Lane.[Blu-Ray 1080p].[MULTI]
+: options: --type movie
+  title: 10 Cloverfield Lane
+  format: BluRay
+  screen_size: 1080p
+  language: Multiple languages
+  type: movie
+
+? 007.Spectre.[HDTC.MD].[TRUEFRENCH]
+: options: --type movie
+  title: 007 Spectre
+  format: HDTC
+  language: French
+  type: movie
+
+? We.Are.X.2016.LIMITED.BDRip.x264-BiPOLAR
+: title: We Are X
+  year: 2016
+  edition: Limited Edition
+  format: BluRay
+  video_codec: h264
+  release_group: BiPOLAR
+  type: movie

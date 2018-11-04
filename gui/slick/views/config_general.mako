@@ -5,6 +5,7 @@
 
     import sickbeard
     from sickbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
+    from sickbeard.filters import hide
     from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
     from sickbeard.helpers import anon_url, LOCALE_NAMES
 
@@ -59,7 +60,7 @@
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" name="launch_browser" id="launch_browser" ${('', 'checked="checked"')[bool(sickbeard.LAUNCH_BROWSER)]}/>
-                                <label for="launch_browser">${_('open the SickRage home page on startup')}</label>
+                                <label for="launch_browser">${_('open the SickChill home page on startup')}</label>
                             </div>
                         </div>
 
@@ -81,7 +82,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="default_page">${_('when launching SickRage interface')}</label>
+                                        <label for="default_page">${_('when launching SickChill interface')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -105,7 +106,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label><b>${_('note')}:</b>&nbsp;${_('minutes are randomized each time SickRage is started')}</label>
+                                        <label><b>${_('note')}:</b>&nbsp;${_('minutes are randomized each time SickChill is started')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -307,7 +308,7 @@
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" name="notify_on_update" id="notify_on_update" ${('', 'checked="checked"')[bool(sickbeard.NOTIFY_ON_UPDATE)]}/>
-                                <label for="notify_on_update">${_('send a message to all enabled notifiers when SickRage has been updated')}</label>
+                                <label for="notify_on_update">${_('send a message to all enabled notifiers when SickChill has been updated')}</label>
                             </div>
                         </div>
 
@@ -384,12 +385,12 @@
                                 <label class="component-title">${_('Use a background image')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="sickrage_background" id="sickrage_background"
-                                    ${('', 'checked="checked"')[bool(sickbeard.SICKRAGE_BACKGROUND)]} />
-                                <label for="sickrage_background">${_('use a custom image as background for SickRage')}</label>
+                                <input type="checkbox" class="enabler" name="sickchill_background" id="sickchill_background"
+                                    ${('', 'checked="checked"')[bool(sickbeard.SICKCHILL_BACKGROUND)]} />
+                                <label for="sickchill_background">${_('use a custom image as background for SickChill')}</label>
                             </div>
                         </div>
-                        <div id="content_sickrage_background">
+                        <div id="content_sickchill_background">
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Background Path')}</label>
@@ -397,13 +398,13 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="sickrage_background_path" id="sickrage_background_path"
-                                                   value="${sickbeard.SICKRAGE_BACKGROUND_PATH}" class="form-control input-sm input350" autocapitalize="off" />
+                                            <input type="text" name="sickchill_background_path" id="sickchill_background_path"
+                                                   value="${sickbeard.SICKCHILL_BACKGROUND_PATH}" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="sickrage_background_path" class="component-desc">${_('Path to the background image')}</label>
+                                            <label for="sickchill_background_path" class="component-desc">${_('Path to the background image')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -446,7 +447,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" class="enabler" name="custom_css" id="custom_css"
                                     ${('', 'checked="checked"')[bool(sickbeard.CUSTOM_CSS)]} />
-                                <label for="custom_css">${_('use a custom .css file to style SickRage (for advanced users)')}</label>
+                                <label for="custom_css">${_('use a custom .css file to style SickChill (for advanced users)')}</label>
                             </div>
                         </div>
                         <div id="content_custom_css">
@@ -636,7 +637,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <h3>${_('Web Interface')}</h3>
-                        <p>${_('it is recommended that you enable a username and password to secure SickRage from being tampered with remotely.')}</p>
+                        <p>${_('it is recommended that you enable a username and password to secure SickChill from being tampered with remotely.')}</p>
                         <p><b>${_('these options require a manual restart to take effect.')}</b></p>
                     </div>
                 </div>
@@ -656,7 +657,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="api_key">${_('used to give 3rd party programs limited access to SickRage')}</label>
+                                        <label for="api_key">${_('used to give 3rd party programs limited access to SickChill')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -702,7 +703,9 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="password" name="web_password" id="web_password" value="${sickbeard.WEB_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off"/>
+                                        <input
+                                            type="password" name="web_password" id="web_password" value="${sickbeard.WEB_PASSWORD|hide}"
+                                            class="form-control input-sm input300" autocomplete="no" autocapitalize="off"/>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -725,7 +728,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="web_port">${_('web port to browse and access SickRage (default:8081)')}</label>
+                                        <label for="web_port">${_('web port to browse and access SickChill (default:8081)')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -1150,7 +1153,8 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="password" name="git_password" id="git_password" value="${sickbeard.GIT_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
+                                            <input type="password" name="git_password" id="git_password" value="${sickbeard.GIT_PASSWORD|hide}"
+                                                   class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -1170,7 +1174,10 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="git_token" id="git_token" value="${sickbeard.GIT_TOKEN}" class="form-control input-sm input350" autocapitalize="off" autocomplete="no" />
+                                            <input
+                                                type="text" name="git_token" id="git_token" value="${sickbeard.GIT_TOKEN|hide}"
+                                                class="form-control input-sm input350" autocapitalize="off" autocomplete="no"
+                                            />
                                             % if not sickbeard.GIT_TOKEN:
                                                 <input class="btn btn-inline" type="button" id="create_access_token" value="${_('Generate Token')}">
                                             % else:

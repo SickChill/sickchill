@@ -2,26 +2,34 @@ import argparse
 import json
 import re
 
-LINE_REGEX = re.compile(r'^(?P<disabled>[#!]* *)?'
-                        r'(?P<install>(?P<name>[\w\-.\[\]]+)'
-                        r'(?:[=]{1,2}(?P<version>[\da-z.?\-]+))?)'
-                        r'(?:\s*#+\s*(?P<notes>.*))*?$',
-                        re.I)
+# package == version
+NORMAL_REGEX = re.compile(r'^(?P<disabled>[#!]* *)?'
+                          r'(?P<install>(?P<name>[\w\-.\[\]]+)'
+                          r'(?:\s*[=]{1,2}\s*(?P<version>[\da-z.?\-]+))?'
+                          r'(?:\s(?P<options>--[\s\w\d\-\'"=]+))?'
+                          r'(?:\s*;\s*(?P<markers>[\s\w\d\-\.\'"!=<>,]+))?)'
+                          r'(?:\s+#+\s*(?P<notes>.*))*?$',
+                          re.I)
+# git+https://github.com/org/package.git@tree-ish#egg=package
 VCS_REGEX = re.compile(r'^(?P<disabled>[#!]* *)?'
                        r'(?P<install>(?P<vcs>git|hg)\+(?P<repo>.*?)(?:\.git)?'
                        r'@(?P<version>[\da-z]+)'
                        r'#egg=(?P<name>[\w\-.\[\]]+)'
-                       r'(?:&subdirectory=(?P<repo_subdir>.*?))?)'
-                       r'(?:\s*#+\s*(?P<notes>.*))*?$',
+                       r'(?:&subdirectory=(?P<repo_subdir>.*?))?'
+                       r'(?:\s(?P<options>--[\s\w\d\-\'"=]+))?'
+                       r'(?:\s*;\s*(?P<markers>[\s\w\d\-\.\'"!=<>,]+))?)'
+                       r'(?:\s+#+\s*(?P<notes>.*))*?$',
                        re.I)
 
 
 def _readlines(file_path):
+    # TODO: Use io.open
     with open(file_path, 'r') as fh:
         return fh.readlines()
 
 
 def _write(file_path, string):
+    # TODO: Use io.open
     with open(file_path, 'wb') as fh:  # use 'wb' to avoid CR-LF
         fh.write(string)
 
@@ -53,7 +61,7 @@ def file_to_dict(file_path):
             continue
 
         pkg_obj = dict()
-        pkg_match = re.match(LINE_REGEX, pkg)
+        pkg_match = re.match(NORMAL_REGEX, pkg)
         pkg_vcs_match = re.match(VCS_REGEX, pkg)
 
         if not (pkg_match or pkg_vcs_match):
@@ -80,7 +88,8 @@ def file_to_dict(file_path):
                 'version': version,
                 'notes': pkg_match.group('notes') or version_warning,
                 'url': pypi_url,
-                'install': pkg_match.group('install') if not version_warning else None,
+                'install': pkg_match.group('install').strip() if not version_warning else None,
+                'markers': pkg_match.group('markers'),
             }
         elif pkg_vcs_match:
             vcs = pkg_vcs_match.group('vcs')
@@ -106,7 +115,8 @@ def file_to_dict(file_path):
                 'version': version,
                 'notes': pkg_vcs_match.group('notes'),
                 'url': repo_url,
-                'install': pkg_vcs_match.group('install'),
+                'install': pkg_vcs_match.group('install').strip(),
+                'markers': pkg_vcs_match.group('markers'),
             }
 
         if pkg_obj:

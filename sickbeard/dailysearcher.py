@@ -1,22 +1,22 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sickchill.github.io
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -25,8 +25,8 @@ import threading
 
 import sickbeard
 from sickbeard import common, db, logger, network_timezones
-from sickrage.helper.exceptions import MultipleShowObjectsException
-from sickrage.show.Show import Show
+from sickchill.helper.exceptions import MultipleShowObjectsException
+from sickchill.show.Show import Show
 
 
 class DailySearcher(object):  # pylint:disable=too-few-public-methods
@@ -90,10 +90,10 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
             ep = show.getEpisode(sqlEp[b"season"], sqlEp[b"episode"])
             with ep.lock:
                 if ep.season == 0:
-                    logger.log("New episode " + ep.prettyName() + " airs today, setting status to SKIPPED because is a special season")
+                    logger.log("New episode " + ep.pretty_name() + " airs today, setting status to SKIPPED because is a special season")
                     ep.status = common.SKIPPED
                 else:
-                    logger.log("New episode {0} airs today, setting to default episode status for this show: {1}".format(ep.prettyName(), common.statusStrings[ep.show.default_ep_status]))
+                    logger.log("New episode {0} airs today, setting to default episode status for this show: {1}".format(ep.pretty_name(), common.statusStrings[ep.show.default_ep_status]))
                     ep.status = ep.show.default_ep_status
 
                 sql_l.append(ep.get_sql())

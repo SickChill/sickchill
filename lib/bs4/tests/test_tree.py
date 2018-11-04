@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 """Tests for Beautiful Soup's tree traversal methods.
 
@@ -234,6 +235,7 @@ class TestFindAllByName(TreeTest):
         self.assertEqual('1', r3.string)
         self.assertEqual('3', r4.string)
 
+        
 class TestFindAllByAttribute(TreeTest):
 
     def test_find_all_by_attribute_name(self):
@@ -1284,6 +1286,10 @@ class TestCDAtaListAttributes(SoupTest):
         soup = self.soup("<a class='foo\tbar'>")
         self.assertEqual(b'<a class="foo bar"></a>', soup.a.encode())
 
+    def test_get_attribute_list(self):
+        soup = self.soup("<a id='abc def'>")
+        self.assertEqual(['abc def'], soup.a.get_attribute_list('id'))
+        
     def test_accept_charset(self):
         soup = self.soup('<form accept-charset="ISO-8859-1 UTF-8">')
         self.assertEqual(['ISO-8859-1', 'UTF-8'], soup.form['accept-charset'])

@@ -1,21 +1,21 @@
 # coding=UTF-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: http://github.come/SickRage/SickRage
+# URL: http://github.come/SickChill/SickChill
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 # pylint: disable=line-too-long
 
@@ -56,7 +56,7 @@ def generator(_provider):
             return
 
         try:
-            requests.head(_provider.url, verify=certifi.old_where(), timeout=10)
+            requests.head(_provider.url, verify=certifi.where(), timeout=10)
         except requests.exceptions.SSLError as error:
             if 'certificate verify failed' in str(error):
                 print('Cannot verify certificate for {0}'.format(_provider.name))

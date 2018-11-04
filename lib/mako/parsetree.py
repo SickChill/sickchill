@@ -258,7 +258,7 @@ class Tag(compat.with_metaclass(_TagMeta, Node)):
 
     def __init__(self, keyword, attributes, expressions,
                  nonexpressions, required, **kwargs):
-        """construct a new Tag instance.
+        r"""construct a new Tag instance.
 
         this constructor not called directly, and is only called
         by subclasses.

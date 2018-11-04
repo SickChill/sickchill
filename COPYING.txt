@@ -632,6 +632,7 @@ state the exclusion of warranty; and each file should have at least
 the "copyright" line and a pointer to where the full notice is found.
 
     The ultimate PVR application that downloads and manages your TV shows
+
     Copyright (C) 2010 - Nic Wolfe
     Copyright (C) 2015 - Dustyn Gibson
 
@@ -654,7 +655,9 @@ Also add information on how to contact you by electronic and paper mail.
 notice like this when it starts in an interactive mode:
 
     Sick Beard - Copyright (C) 2010 - Nic Wolfe
-    SickRage -  Copyright (C) 2015 - Dustyn Gibson
+    SickRage   - Copyright (C) 2015 - Dustyn Gibson
+    SickChill  - Copyright (C) 2018 - Dustyn Gibson
+
     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
     This is free software, and you are welcome to redistribute it
     under certain conditions; type `show c' for details.

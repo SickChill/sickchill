@@ -1,22 +1,22 @@
 # coding=utf-8
 
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -26,7 +26,7 @@ from requests_oauthlib import OAuth1Session
 
 import sickbeard
 from sickbeard import common, logger
-from sickrage.helper.exceptions import ex
+from sickchill.helper.exceptions import ex
 
 
 class Notifier(object):
@@ -64,15 +64,15 @@ class Notifier(object):
     def test_notify(self):
         """
         Tests sending notification.
-        
+
         :return: True if succeeded, False otherwise
         """
-        return self._notifyTwitter('This is a test notification from SickRage', force=True)
+        return self._notifyTwitter('This is a test notification from SickChill', force=True)
 
     def _get_authorization(self):
         """
         Step 1 of authorization - get app authorization url.
-        
+
         :param key: Authorization key received from twitter
         :return: True if succeeded, False otherwise
         """
@@ -91,7 +91,7 @@ class Notifier(object):
     def _get_credentials(self, key):
         """
         Step 2 of authorization - poll server for access token.
-        
+
         :param key: Authorization key received from twitter
         :return: True if succeeded, False otherwise
         """
@@ -116,7 +116,7 @@ class Notifier(object):
     def _send_tweet(self, message=None):
         """
         Sends a tweet.
-        
+
         :param message: Message to send
         :return: True if succeeded, False otherwise
         """
@@ -137,7 +137,7 @@ class Notifier(object):
     def _send_dm(self, message=None):
         """
         Sends a direct message.
-        
+
         :param message: Message to send
         :return: True if succeeded, False otherwise
         """

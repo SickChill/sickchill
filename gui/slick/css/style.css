@@ -815,6 +815,14 @@ home_newShow.mako
     border: 1px solid #DFDEDE;
 }
 
+#searchResults {
+    height: 100%;
+}
+
+#searchResults .legendStep {
+    margin-bottom: 5px;
+}
+
 #searchResults input[type="radio"] {
     vertical-align: -2px;
 }
@@ -1769,7 +1777,7 @@ select .selected {
     vertical-align: text-top;
 }
 
-.icon16-config-sickrage {
+.icon16-config-sickchill {
     background-position: 0 0;
 }
 

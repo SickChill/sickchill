@@ -28,7 +28,7 @@
             </div>
             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                 <input type="checkbox" id="subtitles_sr_metadata" name="subtitles_sr_metadata"  />
-                <label for="subtitles_sr_metadata">${_('use SickRage metadata when searching for subtitle, <br />this will override the autodiscovered metadata')}</label>
+                <label for="subtitles_sr_metadata">${_('use SickChill metadata when searching for subtitle, <br />this will override the autodiscovered metadata')}</label>
             </div>
         </div>
         <br>
@@ -99,7 +99,7 @@
     <div class="field-pair row">
         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
             <span class="component-title">
-                <input class="btn btn-inline" type="button" id="saveDefaultsButton" value="${_('Save Defaults')}" disabled="disabled" />
+                <input class="btn btn-inline" type="button" id="saveDefaultsButton" value="${_('Save as default')}" disabled="disabled" />
             </span>
         </div>
         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">

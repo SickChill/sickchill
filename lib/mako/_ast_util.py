@@ -187,7 +187,7 @@ def iter_fields(node):
 
 
 def get_fields(node):
-    """Like `iter_fiels` but returns a dict."""
+    """Like `iter_fields` but returns a dict."""
     return dict(iter_fields(node))
 
 

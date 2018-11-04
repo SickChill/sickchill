@@ -1,21 +1,21 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
 
@@ -24,20 +24,21 @@ import traceback
 from collections import namedtuple
 
 import six
+# noinspection PyProtectedMember
 from imdb import _exceptions as imdb_exceptions
 from libtrakt import TraktAPI
 
 import sickbeard
-from sickbeard import generic_queue, logger, name_cache, notifiers, ui
+from sickbeard import generic_queue, logger, name_cache, notifiers, scene_numbering, ui
 from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard.common import WANTED
 from sickbeard.helpers import chmodAsParent, get_showname_from_indexer, makeDir, sortable_name
 from sickbeard.tv import TVShow
-from sickrage.helper.common import sanitize_filename
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import (CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, EpisodeDeletedException,
-                                        MultipleShowObjectsException, ShowDirectoryNotFoundException)
-from sickrage.show.Show import Show
+from sickchill.helper.common import sanitize_filename
+from sickchill.helper.encoding import ek
+from sickchill.helper.exceptions import (CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, EpisodeDeletedException,
+                                         MultipleShowObjectsException, ShowDirectoryNotFoundException)
+from sickchill.show.Show import Show
 
 
 class ShowQueue(generic_queue.GenericQueue):
@@ -136,18 +137,20 @@ class ShowQueue(generic_queue.GenericQueue):
         self.add_item(queue_item_obj)
         return queue_item_obj
 
+    # noinspection PyUnusedLocal
     def rename_show_episodes(self, show, force=False):
         queue_item_obj = QueueItemRename(show)
         self.add_item(queue_item_obj)
         return queue_item_obj
 
+    # noinspection PyUnusedLocal
     def download_subtitles(self, show, force=False):
         queue_item_obj = QueueItemSubtitle(show)
         self.add_item(queue_item_obj)
         return queue_item_obj
 
-    def add_show(self,  # pylint: disable=too-many-arguments, too-many-locals
-                indexer, indexer_id, showDir, default_status=None, quality=None, season_folders=None,
+    # noinspection PyPep8Naming
+    def add_show(self, indexer, indexer_id, showDir, default_status=None, quality=None, season_folders=None,
                  lang=None, subtitles=None, subtitles_sr_metadata=None, anime=None, scene=None, paused=None,
                  blacklist=None, whitelist=None, default_status_after=None, root_dir=None):
 
@@ -158,8 +161,8 @@ class ShowQueue(generic_queue.GenericQueue):
             default_status_after = sickbeard.STATUS_DEFAULT_AFTER
 
         queue_item_obj = QueueItemAdd(indexer, indexer_id, showDir, default_status, quality, season_folders, lang,
-                                    subtitles, subtitles_sr_metadata, anime, scene, paused, blacklist, whitelist,
-                                    default_status_after, root_dir)
+                                      subtitles, subtitles_sr_metadata, anime, scene, paused, blacklist, whitelist,
+                                      default_status_after, root_dir)
 
         self.add_item(queue_item_obj)
         return queue_item_obj
@@ -238,6 +241,7 @@ class ShowQueueItem(generic_queue.QueueItem):
 
 
 class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attributes
+    # noinspection PyPep8Naming
     def __init__(self,  # pylint: disable=too-many-arguments, too-many-locals
                  indexer, indexer_id, showDir, default_status, quality, season_folders,
                  lang, subtitles, subtitles_sr_metadata, anime, scene, paused, blacklist, whitelist,
@@ -277,8 +281,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
         Returns the show name if there is a show object created, if not returns
         the dir that the show is being added to.
         """
-        return self.show.name if self.show else self.showDir.rsplit(os.sep)[-1]
-
+        return self.show.name if self.show else self.showDir.rsplit(os.sep)[-1] if self.showDir else "Loading"
 
     @property
     def is_loading(self):
@@ -293,6 +296,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
         info = namedtuple('LoadingShowInfo', 'id name sort_name network quality')
         if self.show:
             return info(id=self.show.indexerid, name=self.show.name, sort_name=self.show.sort_name, network=self.show.network, quality=self.show.quality)
+        # noinspection PyUnresolvedReferences
         return info(id=self.show_name, name=self.show_name, sort_name=sortable_name(self.show_name), network=_('Loading'), quality=0)
 
     def run(self):  # pylint: disable=too-many-branches, too-many-statements, too-many-return-statements
@@ -340,6 +344,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
 
             # this usually only happens if they have an NFO in their show dir which gave us a Indexer ID that has no proper english version of the show
             if getattr(s, 'seriesname', None) is None:
+                # noinspection PyPep8
                 error_string = 'Show in {0} has no name on {1}, probably searched with the wrong language. Delete .nfo and add manually in the correct language.'.format(
                     self.showDir, sickbeard.indexerApi(self.indexer).name)
 
@@ -381,9 +386,9 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                     ]
                 }
                 if trakt_id == 'tvdb_id':
-                    data[b'shows'][0][b'ids'][b'tvdb'] = self.indexer_id
+                    data['shows'][0]['ids']['tvdb'] = self.indexer_id
                 else:
-                    data[b'shows'][0][b'ids'][b'tvrage'] = self.indexer_id
+                    data['shows'][0]['ids']['tvrage'] = self.indexer_id
 
                 trakt_api.traktRequest('sync/watchlist/remove', data, method='POST')
 
@@ -396,6 +401,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
             except MultipleShowObjectsException as error:
                 # If we have the show in our list, but the location is wrong, lets fix it and refresh!
                 existing_show = Show.find(sickbeard.showList, self.indexer_id)
+                # noinspection PyProtectedMember
                 if existing_show and not ek(os.path.isdir, existing_show._location):  # pylint: disable=protected-access
                     newShow = existing_show
                 else:
@@ -426,7 +432,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                 if self.whitelist:
                     self.show.release_groups.set_white_keywords(self.whitelist)
 
-            # # be smartish about this
+            # # be smart-ish about this
             # if self.show.genre and 'talk show' in self.show.genre.lower():
             #     self.show.air_by_date = 1
             # if self.show.genre and 'documentary' in self.show.genre.lower():
@@ -519,11 +525,10 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                 notifiers.trakt_notifier.update_watchlist(show_obj=self.show)
 
         # Load XEM data to DB for show
-        sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=True)
+        scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=True)
 
-        # check if show has XEM mapping so we can determin if searches should go by scene numbering or indexer numbering.
-        if not self.scene and sickbeard.scene_numbering.get_xem_numbering_for_show(self.show.indexerid,
-                                                                                   self.show.indexer):
+        # check if show has XEM mapping so we can determine if searches should go by scene numbering or indexer numbering.
+        if not self.scene and scene_numbering.get_xem_numbering_for_show(self.show.indexerid, self.show.indexer):
             self.show.scene = 1
 
         # After initial add, set to default_status_after.
@@ -563,7 +568,7 @@ class QueueItemRefresh(ShowQueueItem):
         self.show.populateCache()
 
         # Load XEM data to DB for show
-        sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
+        scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
         super(QueueItemRefresh, self).finish()
         self.finish()

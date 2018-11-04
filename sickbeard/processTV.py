@@ -1,22 +1,22 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io/
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sickchill.github.io/
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -31,9 +31,9 @@ from rarfile import (BadRarFile, BadRarName, Error, NeedFirstVolume, NoCrypto, N
 import sickbeard
 from sickbeard import common, db, failedProcessor, helpers, logger, postProcessor
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickrage.helper.common import is_sync_file, is_torrent_or_nzb_file
-from sickrage.helper.encoding import ek, ss
-from sickrage.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
+from sickchill.helper.common import is_sync_file, is_torrent_or_nzb_file
+from sickchill.helper.encoding import ek, ss
+from sickchill.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
 
 
 class ProcessResult(object):  # pylint: disable=too-few-public-methods
@@ -149,7 +149,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         process_path = ek(os.path.realpath, process_path)
         result.output += log_helper("Processing in folder {0}".format(process_path), logger.DEBUG)
 
-    # if the client and SickRage are not on the same machine translate the directory into a network directory
+    # if the client and SickChill are not on the same machine translate the directory into a network directory
     elif all([sickbeard.TV_DOWNLOAD_DIR,
               ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR),
               ek(os.path.normpath, process_path) == ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)]):
@@ -159,7 +159,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
     # if we didn't find a real dir then quit
     if not ek(os.path.isdir, process_path):
         result.output += log_helper("Unable to figure out what folder to process. "
-                                    "If your downloader and SickRage aren't on the same PC "
+                                    "If your downloader and SickChill aren't on the same PC "
                                     "make sure you fill out your TV download dir in the config.",
                                     logger.DEBUG)
         return result.output

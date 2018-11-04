@@ -49,6 +49,11 @@
 ? -x264
 : video_codec: h265
 
+? hevc10
+? HEVC-YUV420P10
+: video_codec: h265
+  video_profile: 10bit
+
 ? h265-HP
 : video_codec: h265
   video_profile: HP

@@ -1,7 +1,8 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
-    from sickbeard import subtitles
     import sickbeard
+    from sickbeard import subtitles
+    from sickbeard.filters import hide
     from sickbeard.helpers import anon_url
 %>
 
@@ -41,7 +42,7 @@
             <div class="row">
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <h3>${_('Subtitles Search')}</h3>
-                    <p>${_('Settings that dictate how SickRage handles subtitles search results.')}</p>
+                    <p>${_('Settings that dictate how SickChill handles subtitles search results.')}</p>
                 </div>
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
                     <fieldset class="component-group-list">
@@ -83,7 +84,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <span>${_('the directory where SickRage should store your <i>Subtitles</i> files.')}</span>
+                                            <span>${_('the directory where SickChill should store your <i>Subtitles</i> files.')}</span>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -245,7 +246,7 @@
                                             <ul>
                                                 <li>
                                                     ${_('See')}
-                                                    <a href="https://github.com/SickRage/SickRage/wiki/Subtitle%20Scripts">
+                                                    <a href="https://github.com/SickChill/SickChill/wiki/Subtitle%20Scripts">
                                                         <span style="color:red"><b>Wiki</b></span>
                                                     </a>
                                                     ${_('for a script arguments description.')}
@@ -362,11 +363,11 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="password" name="${curService['name']}_pass"
-                                                   id="${curService['name']}_pass"
-                                                   value="${providerLoginDict[curService['name']]['pass']}"
-                                                   class="form-control input-sm input300" autocomplete="no"
-                                                   autocapitalize="off" title="Password"/>
+                                            <input
+                                                type="password" name="${curService['name']}_pass" id="${curService['name']}_pass"
+                                                value="${providerLoginDict[curService['name']]['pass']|hide}"
+                                                class="form-control input-sm input300" autocomplete="no" autocapitalize="off" title="Password"
+                                            />
                                         </div>
                                     </div>
                                 </div>

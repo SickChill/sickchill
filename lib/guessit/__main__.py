@@ -12,32 +12,36 @@ import os
 import sys
 
 import six
+from rebulk.__version__ import __version__ as __rebulk_version__
+
 from guessit import api
 from guessit.__version__ import __version__
 from guessit.jsonutils import GuessitEncoder
-from guessit.options import argument_parser
-from rebulk.__version__ import __version__ as __rebulk_version__
+from guessit.options import argument_parser, parse_options, load_config
 
 
 def guess_filename(filename, options):
     """
     Guess a single filename using given options
+    :param filename: filename to parse
+    :type filename: str
+    :param options:
+    :type options: dict
+    :return:
+    :rtype:
     """
-    if not options.yaml and not options.json and not options.show_property:
+    if not options.get('yaml') and not options.get('json') and not options.get('show_property'):
         print('For:', filename)
 
-    cmd_options = vars(options)
-    cmd_options['implicit'] = True  # Force implicit option in CLI
+    guess = api.guessit(filename, options)
 
-    guess = api.guessit(filename, vars(options))
-
-    if options.show_property:
-        print(guess.get(options.show_property, ''))
+    if options.get('show_property'):
+        print(guess.get(options.get('show_property'), ''))
         return
 
-    if options.json:
+    if options.get('json'):
         print(json.dumps(guess, cls=GuessitEncoder, ensure_ascii=False))
-    elif options.yaml:
+    elif options.get('yaml'):
         import yaml
         from guessit import yamlutils
 
@@ -62,15 +66,15 @@ def display_properties(options):
     """
     properties = api.properties(options)
 
-    if options.json:
-        if options.values:
+    if options.get('json'):
+        if options.get('values'):
             print(json.dumps(properties, cls=GuessitEncoder, ensure_ascii=False))
         else:
             print(json.dumps(list(properties.keys()), cls=GuessitEncoder, ensure_ascii=False))
-    elif options.yaml:
+    elif options.get('yaml'):
         import yaml
         from guessit import yamlutils
-        if options.values:
+        if options.get('values'):
             print(yaml.dump(properties, Dumper=yamlutils.CustomDumper, default_flow_style=False, allow_unicode=True))
         else:
             print(yaml.dump(list(properties.keys()), Dumper=yamlutils.CustomDumper, default_flow_style=False,
@@ -82,7 +86,7 @@ def display_properties(options):
         for property_name in properties_list:
             property_values = properties.get(property_name)
             print(2 * ' ' + '[+] %s' % (property_name,))
-            if property_values and options.values:
+            if property_values and options.get('values'):
                 for property_value in property_values:
                     print(4 * ' ' + '[!] %s' % (property_value,))
 
@@ -99,16 +103,17 @@ def main(args=None):  # pylint:disable=too-many-branches
             sys.argv[i] = j.decode(locale.getpreferredencoding())
 
     if args is None:  # pragma: no cover
-        options = argument_parser.parse_args()
+        options = parse_options()
     else:
-        options = argument_parser.parse_args(args)
-    if options.verbose:
+        options = parse_options(args)
+    options = load_config(options)
+    if options.get('verbose'):
         logging.basicConfig(stream=sys.stdout, format='%(message)s')
         logging.getLogger().setLevel(logging.DEBUG)
 
     help_required = True
 
-    if options.version:
+    if options.get('version'):
         print('+-------------------------------------------------------+')
         print('+                   GuessIt ' + __version__ + (28 - len(__version__)) * ' ' + '+')
         print('+-------------------------------------------------------+')
@@ -119,26 +124,26 @@ def main(args=None):  # pylint:disable=too-many-branches
         print('+-------------------------------------------------------+')
         help_required = False
 
-    if options.yaml:
+    if options.get('yaml'):
         try:
             import yaml  # pylint:disable=unused-variable
         except ImportError:  # pragma: no cover
-            options.yaml = False
+            del options['yaml']
             print('PyYAML is not installed. \'--yaml\' option will be ignored ...', file=sys.stderr)
 
-    if options.properties or options.values:
+    if options.get('properties') or options.get('values'):
         display_properties(options)
         help_required = False
 
     filenames = []
-    if options.filename:
-        for filename in options.filename:
+    if options.get('filename'):
+        for filename in options.get('filename'):
             filenames.append(filename)
-    if options.input_file:
+    if options.get('input_file'):
         if six.PY2:
-            input_file = open(options.input_file, 'r')
+            input_file = open(options.get('input_file'), 'r')
         else:
-            input_file = open(options.input_file, 'r', encoding='utf-8')
+            input_file = open(options.get('input_file'), 'r', encoding='utf-8')
         try:
             filenames.extend([line.strip() for line in input_file.readlines()])
         finally:

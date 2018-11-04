@@ -29,10 +29,6 @@
 ? +Wide Screen
 : other: WideScreen
 
-? +NF
-? +Netflix
-: other: Netflix
-
 # Fix and Real must be surround by others properties to be matched.
 ? DVD.Real.XViD
 ? DVD.fix.XViD
@@ -91,6 +87,17 @@
 ? HD
 : other: HD
 
+? FHD
+? FullHD
+? Full HD
+: other: FullHD
+
+? UHD
+? Ultra
+? UltraHD
+? Ultra HD
+: other: UltraHD
+
 ? mHD # ??
 : other: mHD
 
@@ -119,6 +126,7 @@
 : other: CC
 
 ? LD
+? LDTV
 : other: LD
 
 ? MD
@@ -135,3 +143,12 @@
 
 ? Other-HQ
 : other: HQ
+
+? reenc
+? re-enc
+? re-encoded
+? reencoded
+: other: ReEncoded
+
+? CONVERT XViD
+: other: Converted

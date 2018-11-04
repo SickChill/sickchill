@@ -52,6 +52,8 @@ see <https://github.com/trentm/python-markdown2/wiki/Extras> for details):
   implemented in other Markdown processors (tho not in Markdown.pl v1.0.1).
 * header-ids: Adds "id" attributes to headers. The id value is a slug of
   the header text.
+* highlightjs-lang: Allows specifying the language which used for syntax
+  highlighting when using fenced-code-blocks and highlightjs.
 * html-classes: Takes a dict mapping html tag names (lowercase) to a
   string to use for a "class" tag attribute. Currently only supports "img",
   "table", "pre" and "code" tags. Add an issue if you require this for other
@@ -95,17 +97,14 @@ see <https://github.com/trentm/python-markdown2/wiki/Extras> for details):
 #   not yet sure if there implications with this. Compare 'pydoc sre'
 #   and 'perldoc perlre'.
 
-__version_info__ = (2, 3, 4)
+__version_info__ = (2, 3, 5)
 __version__ = '.'.join(map(str, __version_info__))
 __author__ = "Trent Mick"
 
 import sys
 import re
 import logging
-try:
-    from hashlib import md5
-except ImportError:
-    from md5 import md5
+from hashlib import sha256
 import optparse
 from random import random, randint
 import codecs
@@ -144,12 +143,18 @@ DEFAULT_TAB_WIDTH = 4
 
 
 SECRET_SALT = bytes(randint(0, 1000000))
+# MD5 function was previously used for this; the "md5" prefix was kept for
+# backwards compatibility.
 def _hash_text(s):
-    return 'md5-' + md5(SECRET_SALT + s.encode("utf-8")).hexdigest()
+    return 'md5-' + sha256(SECRET_SALT + s.encode("utf-8")).hexdigest()[32:]
 
 # Table of hash values for escaped characters:
 g_escape_table = dict([(ch, _hash_text(ch))
     for ch in '\\`*_{}[]()>#+-.!'])
+
+# Ampersand-encoding based entirely on Nat Irons's Amputator MT plugin:
+#   http://bumppo.net/projects/amputator/
+_AMPERSAND_RE = re.compile(r'&(?!#?[xX]?(?:[0-9a-fA-F]+|\w+);)')
 
 
 # ---- exceptions
@@ -444,8 +449,8 @@ class Markdown(object):
                 return text
             tail = metadata_split[1]
 
-        kv = re.findall(self._key_val_pat, text)
-        kvm = re.findall(self._key_val_block_pat, text)
+        kv = re.findall(self._key_val_pat, metadata_content)
+        kvm = re.findall(self._key_val_block_pat, metadata_content)
         kvm = [item.replace(": >\n", ":", 1) for item in kvm]
 
         for item in kv + kvm:
@@ -1752,8 +1757,9 @@ class Markdown(object):
                 lexer_name = lexer_name[3:].strip()
                 codeblock = rest.lstrip("\n")   # Remove lexer declaration line.
                 formatter_opts = self.extras['code-color'] or {}
-
-        if lexer_name:
+        
+        # Use pygments only if not using the highlightjs-lang extra
+        if lexer_name and "highlightjs-lang" not in self.extras:
             def unhash_code(codeblock):
                 for key, sanitized in list(self.html_spans.items()):
                     codeblock = codeblock.replace(key, sanitized)
@@ -1774,7 +1780,12 @@ class Markdown(object):
 
         codeblock = self._encode_code(codeblock)
         pre_class_str = self._html_class_str_from_tag("pre")
-        code_class_str = self._html_class_str_from_tag("code")
+
+        if "highlightjs-lang" in self.extras and lexer_name:
+            code_class_str = ' class="%s"' % lexer_name
+        else:
+            code_class_str = self._html_class_str_from_tag("code")
+
         return "\n\n<pre%s><code%s>%s\n</code></pre>\n\n" % (
             pre_class_str, code_class_str, codeblock)
 
@@ -1813,7 +1824,7 @@ class Markdown(object):
 
     _fenced_code_block_re = re.compile(r'''
         (?:\n+|\A\n?)
-        ^```([\w+-]+)?[ \t]*\n      # opening fence, $1 = optional lang
+        ^```\s*?([\w+-]+)?\s*?\n    # opening fence, $1 = optional lang
         (.*?)                       # $2 = code block content
         ^```[ \t]*\n                # closing fence
         ''', re.M | re.X | re.S)
@@ -2086,16 +2097,13 @@ class Markdown(object):
         else:
             return text
 
-    # Ampersand-encoding based entirely on Nat Irons's Amputator MT plugin:
-    #   http://bumppo.net/projects/amputator/
-    _ampersand_re = re.compile(r'&(?!#?[xX]?(?:[0-9a-fA-F]+|\w+);)')
     _naked_lt_re = re.compile(r'<(?![a-z/?\$!])', re.I)
     _naked_gt_re = re.compile(r'''(?<![a-z0-9?!/'"-])>''', re.I)
 
     def _encode_amps_and_angles(self, text):
         # Smart processing for ampersands and angle brackets that need
         # to be encoded.
-        text = self._ampersand_re.sub('&amp;', text)
+        text = _AMPERSAND_RE.sub('&amp;', text)
 
         # Encode naked <'s
         text = self._naked_lt_re.sub('&lt;', text)
@@ -2474,8 +2482,9 @@ def _xml_escape_attr(attr, skip_single_quote=True):
     By default this doesn't bother with escaping `'` to `&#39;`, presuming that
     the tag attribute is surrounded by double quotes.
     """
+    escaped = _AMPERSAND_RE.sub('&amp;', attr)
+
     escaped = (attr
-        .replace('&', '&amp;')
         .replace('"', '&quot;')
         .replace('<', '&lt;')
         .replace('>', '&gt;'))

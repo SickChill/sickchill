@@ -7,17 +7,17 @@
 # 1/29 Created          Richard Powell          richard@powell.ws
 
 # You will need to create a configuration file in order for this script
-# to work properly. Please create /etc/conf.d/sickrage with the following:
+# to work properly. Please create /etc/conf.d/sickchill with the following:
 #
-# SICKRAGE_USER=<user you want sickrage to run under>
-# SICKRAGE_GROUP=<group you want sickrage to run under>
-# SICKRAGE_DIR=<path to Sickbeard.py>
+# SICKCHILL_USER=<user you want sickchill to run under>
+# SICKCHILL_GROUP=<group you want sickchill to run under>
+# SICKCHILL_DIR=<path to Sickbeard.py>
 # PATH_TO_PYTHON_2=/usr/bin/python2.7
-# SICKRAGE_DATADIR=<directory that contains sickbeard.db file>
-# SICKRAGE_CONFDIR=<directory that contains Sickrage's config.ini file>
+# SICKCHILL_DATADIR=<directory that contains sickbeard.db file>
+# SICKCHILL_CONFDIR=<directory that contains SickChill's config.ini file>
 #
 
-RUNDIR=/var/run/sickrage
+RUNDIR=/var/run/sickchill
 
 depend() {
     need net
@@ -30,31 +30,31 @@ get_pidfile() {
         -e 's/[[:space:]]*$//' \
         -e 's/^[[:space:]]*//' \
         -e "s/^\(.*\)=\([^\"']*\)$/\1=\"\2\"/" \
-       <  ${SICKRAGE_CONFDIR}/config.ini \
+       <  ${SICKCHILL_CONFDIR}/config.ini \
         | sed -n -e "/^\[General\]/,/^\s*\[/{/^[^;].*\=.*/p;}"`
 
-    echo "${RUNDIR}/sickrage-${web_port}.pid"
+    echo "${RUNDIR}/sickchill-${web_port}.pid"
 }
 
 start() {
-    ebegin "Starting Sickrage"
+    ebegin "Starting SickChill"
 
-    checkpath -q -d -o ${SICKRAGE_USER}:${SICKRAGE_GROUP} -m 0770 "${RUNDIR}"
+    checkpath -q -d -o ${SICKCHILL_USER}:${SICKCHILL_GROUP} -m 0770 "${RUNDIR}"
 
     start-stop-daemon \
         --quiet \
         --start \
-        --user ${SICKRAGE_USER} \
-        --group ${SICKRAGE_GROUP} \
+        --user ${SICKCHILL_USER} \
+        --group ${SICKCHILL_GROUP} \
         --background \
         --pidfile $(get_pidfile) \
         --exec ${PATH_TO_PYTHON_2} \
         -- \
-        ${SICKRAGE_DIR}/SickBeard.py \
+        ${SICKCHILL_DIR}/SickBeard.py \
         -d \
         --pidfile $(get_pidfile) \
-        --config ${SICKRAGE_CONFDIR}/config.ini \
-        --datadir ${SICKRAGE_DATADIR}
+        --config ${SICKCHILL_CONFDIR}/config.ini \
+        --datadir ${SICKCHILL_DATADIR}
     eend $?
 }
 
@@ -73,5 +73,5 @@ stop() {
     local pidfile=$(get_pidfile)
     local rc
 
-    ebegin "Stopping Sickrage"
+    ebegin "Stopping SickChill"
 }

@@ -1,22 +1,22 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sickchill.github.io
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=too-many-lines
 
 from __future__ import print_function, unicode_literals
@@ -34,11 +34,11 @@ import sickbeard
 from sickbeard import clients, common, db, failed_history, helpers, history, logger, notifiers, show_name_helpers
 from sickbeard.helpers import verify_freespace
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickrage.helper import glob
-from sickrage.helper.common import remove_extension, replace_extension, SUBTITLE_EXTENSIONS
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ex, ShowDirectoryNotFoundException
-from sickrage.show.Show import Show
+from sickchill.helper import glob
+from sickchill.helper.common import remove_extension, replace_extension, SUBTITLE_EXTENSIONS
+from sickchill.helper.encoding import ek
+from sickchill.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ex, ShowDirectoryNotFoundException
+from sickchill.show.Show import Show
 
 METHOD_COPY = "copy"
 METHOD_MOVE = "move"

@@ -2,7 +2,7 @@
 # Use - marker to check inputs that should not match results.
 ? Director's cut
 ? Edition Director's cut
-: edition: Director's cut
+: edition: Director's Cut
 
 ? Collector
 ? Collector Edition
@@ -23,3 +23,9 @@
 ? Deluxe Edition
 ? Edition Deluxe
 : edition: Deluxe Edition
+
+? Super Movie Alternate XViD
+? Super Movie Alternative XViD
+? Super Movie Alternate Cut XViD
+? Super Movie Alternative Cut XViD
+: edition: Alternative Cut

@@ -82,6 +82,10 @@
 
 ? +webrip
 ? +Web Rip
+? +webdlrip
+? +web dl rip
+? +webcap
+? +web cap
 : format: WEBRip
 
 ? +webdl
@@ -110,3 +114,25 @@
 
 ? XVID.NTSC.DVDR.nfo
 : format: DVD
+
+? AHDTV
+: format: AHDTV
+
+? dsr
+? dsrip
+? ds rip
+? dsrrip
+? dsr rip
+? satrip
+? sat rip
+? dth
+? dthrip
+? dth rip
+: format: SATRip
+
+? HDTC
+: format: HDTC
+
+? UHDTV
+? UHDRip
+: format: UHDTV

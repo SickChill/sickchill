@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# pylint: disable=no-self-use, pointless-statement, missing-docstring, protected-access, invalid-name
+# pylint: disable=no-self-use, pointless-statement, missing-docstring, protected-access, invalid-name, len-as-condition
 
 from ..pattern import StringPattern
 from ..rebulk import Rebulk

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# pylint: disable=no-self-use, pointless-statement, missing-docstring, unneeded-not
+# pylint: disable=no-self-use, pointless-statement, missing-docstring, unneeded-not, len-as-condition
 
 import pytest
 import six
@@ -419,7 +419,7 @@ class TestMaches(object):
         matches.extend(RePattern("Three", name="3bis", tags=["Three", "re"]).matches(input_string))
         matches.extend(RePattern(r"(\w+)", name="words").matches(input_string))
 
-        kvalues = matches.to_dict()
+        kvalues = matches.to_dict(first_value=True)
         assert kvalues == {"1": "One",
                            "2": "Two",
                            "3": "Three",
@@ -427,7 +427,10 @@ class TestMaches(object):
                            "words": "One"}
         assert kvalues.values_list["words"] == ["One", "Two", "Three"]
 
-        kvalues = matches.to_dict(details=True, implicit=True)
+        kvalues = matches.to_dict(enforce_list=True)
+        assert kvalues["words"] == ["One", "Two", "Three"]
+
+        kvalues = matches.to_dict(details=True)
         assert kvalues["1"].value == "One"
 
         assert len(kvalues["2"]) == 2

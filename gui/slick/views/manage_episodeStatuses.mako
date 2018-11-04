@@ -5,9 +5,6 @@
 %>
 
 <%block name="scripts">
-    % if whichStatus or (whichStatus and ep_counts):
-        <script type="text/javascript" src="${static_url('js/manageEpisodeStatuses.js')}"></script>
-    % endif
 </%block>
 
 <%block name="content">
