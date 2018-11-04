@@ -71,7 +71,6 @@ class MagnetDLProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
                 data = self.get_url(search_url, returns="text")
                 if not data:
-                    print(data)
                     logger.log("URL did not return results/data, if the results are on the site maybe try a custom url, or a different one", logger.DEBUG)
                     continue
 
