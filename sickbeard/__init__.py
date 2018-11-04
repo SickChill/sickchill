@@ -660,7 +660,7 @@ def get_backlog_cycle_time():
     return max([cycletime, 720])
 
 
-def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-many-branches, too-many-statem
+def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
     with INIT_LOCK:
         # pylint: disable=global-statement
         global BRANCH, GIT_RESET, GIT_REMOTE, GIT_REMOTE_URL, CUR_COMMIT_HASH, CUR_COMMIT_BRANCH, ACTUAL_LOG_DIR, LOG_DIR, LOG_NR, LOG_SIZE, WEB_PORT, WEB_LOG,\
