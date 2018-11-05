@@ -34,7 +34,7 @@ from sickchill.helper.common import dateTimeFormat, episode_num
 from sickchill.helper.encoding import ek
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
-MAX_DB_VERSION = 44
+MAX_DB_VERSION = 45
 
 
 class MainSanityCheck(db.DBSanityCheck):
@@ -324,8 +324,8 @@ class InitialSchema(db.SchemaUpgrade):
                 "CREATE TABLE imdb_info(indexer_id INTEGER PRIMARY KEY, imdb_id TEXT, title TEXT, year NUMERIC, akas TEXT, runtimes NUMERIC, genres TEXT, countries TEXT, country_codes TEXT, certificates TEXT, rating TEXT, votes INTEGER, last_update NUMERIC);",
                 "CREATE TABLE info(last_backlog NUMERIC, last_indexer NUMERIC, last_proper_search NUMERIC);",
                 "CREATE TABLE scene_numbering(indexer TEXT, indexer_id INTEGER, season INTEGER, episode INTEGER, scene_season INTEGER, scene_episode INTEGER, absolute_number NUMERIC, scene_absolute_number NUMERIC, PRIMARY KEY(indexer_id, season, episode));",
-                "CREATE TABLE tv_shows(show_id INTEGER PRIMARY KEY, indexer_id NUMERIC, indexer NUMERIC, show_name TEXT, location TEXT, network TEXT, genre TEXT, classification TEXT, runtime NUMERIC, quality NUMERIC, airs TEXT, status TEXT, flatten_folders NUMERIC, paused NUMERIC, startyear NUMERIC, air_by_date NUMERIC, lang TEXT, subtitles NUMERIC, notify_list TEXT, imdb_id TEXT, last_update_indexer NUMERIC, dvdorder NUMERIC, archive_firstmatch NUMERIC, rls_require_words TEXT, rls_ignore_words TEXT, sports NUMERIC, anime NUMERIC, scene NUMERIC, default_ep_status NUMERIC DEFAULT -1);",
-                "CREATE TABLE tv_episodes(episode_id INTEGER PRIMARY KEY, showid NUMERIC, indexerid NUMERIC, indexer TEXT, name TEXT, season NUMERIC, episode NUMERIC, description TEXT, airdate NUMERIC, hasnfo NUMERIC, hastbn NUMERIC, status NUMERIC, location TEXT, file_size NUMERIC, release_name TEXT, subtitles TEXT, subtitles_searchcount NUMERIC, subtitles_lastsearch TIMESTAMP, is_proper NUMERIC, scene_season NUMERIC, scene_episode NUMERIC, absolute_number NUMERIC, scene_absolute_number NUMERIC, version NUMERIC DEFAULT -1, release_group TEXT);",
+                "CREATE TABLE tv_shows(show_id INTEGER PRIMARY KEY, indexer_id NUMERIC, indexer NUMERIC, show_name TEXT, location TEXT, network TEXT, genre TEXT, classification TEXT, runtime NUMERIC, quality NUMERIC, airs TEXT, status TEXT, flatten_folders NUMERIC, paused NUMERIC, startyear NUMERIC, air_by_date NUMERIC, lang TEXT, subtitles NUMERIC, notify_list TEXT, imdb_id TEXT, last_update_indexer NUMERIC, dvdorder NUMERIC, archive_firstmatch NUMERIC, rls_require_words TEXT, rls_ignore_words TEXT, sports NUMERIC, anime NUMERIC, scene NUMERIC, default_ep_status NUMERIC DEFAULT -1, min_size NUMERIC DEFAULT -1, max_size NUMERIC DEFAULT -1, size NUMERIC DEFAULT -1);",
+                "CREATE TABLE tv_episodes(episode_id INTEGER PRIMARY KEY, showid NUMERIC, indexerid NUMERIC, indexer TEXT, name TEXT, season NUMERIC, episode NUMERIC, description TEXT, airdate NUMERIC, hasnfo NUMERIC, hastbn NUMERIC, status NUMERIC, location TEXT, file_size NUMERIC, release_name TEXT, subtitles TEXT, subtitles_searchcount NUMERIC, subtitles_lastsearch TIMESTAMP, is_proper NUMERIC, scene_season NUMERIC, scene_episode NUMERIC, absolute_number NUMERIC, scene_absolute_number NUMERIC, version NUMERIC DEFAULT -1, release_group TEXT client TEXT, url TEXT, hash TEXT);",
                 "CREATE TABLE blacklist (show_id INTEGER, range TEXT, keyword TEXT);",
                 "CREATE TABLE whitelist (show_id INTEGER, range TEXT, keyword TEXT);",
                 "CREATE TABLE xem_refresh (indexer TEXT, indexer_id INTEGER PRIMARY KEY, last_refreshed INTEGER);",
@@ -336,7 +336,7 @@ class InitialSchema(db.SchemaUpgrade):
                 "CREATE INDEX idx_sta_epi_sta_air ON tv_episodes(season, episode, status, airdate);",
                 "CREATE INDEX idx_status ON tv_episodes(status,season,episode,airdate);",
                 "CREATE INDEX idx_tv_episodes_showid_airdate ON tv_episodes(showid, airdate);",
-                "INSERT INTO db_version(db_version) VALUES (43);"
+                "INSERT INTO db_version(db_version) VALUES (44);"
             ]
             for query in queries:
                 self.connection.action(query)
@@ -1128,7 +1128,7 @@ class AlterTVShowsFieldTypes(AddDefaultEpStatusToTvShows):
 
 class AddMinorVersion(AlterTVShowsFieldTypes):
     def test(self):
-        return self.has_column(b'db_version', b'db_minor_version')
+        return self.has_column(b"db_version", b"db_minor_version")
 
     def increment_db_version(self):
         warnings.warn("Deprecated: Use inc_major_version or inc_minor_version instead", DeprecationWarning)
@@ -1137,11 +1137,11 @@ class AddMinorVersion(AlterTVShowsFieldTypes):
         backupDatabase(self.get_db_version())
 
         logger.log("Add minor version numbers to database")
-        self.add_column(b'db_version', b'db_minor_version')
+        self.add_column(b"db_version", b"db_minor_version")
 
         self.inc_minor_version()
 
-        logger.log('Updated to: {0:d}.{1:d}'.format(*self.connection.version))
+        logger.log("Updated to: {0:d}.{1:d}".format(*self.connection.version))
 
 
 class UseSickChillMetadataForSubtitle(AlterTVShowsFieldTypes):
@@ -1149,16 +1149,31 @@ class UseSickChillMetadataForSubtitle(AlterTVShowsFieldTypes):
     Add a minor version for adding a show setting to use SR metadata for subtitles
     """
     def test(self):
-        return self.has_column('tv_shows', 'sub_use_sr_metadata')
+        return self.has_column("tv_shows", "sub_use_sr_metadata")
 
     def execute(self):
         backupDatabase(self.get_db_version())
-        self.add_column('tv_shows', 'sub_use_sr_metadata', "NUMERIC", "0")
+        self.add_column("tv_shows", "sub_use_sr_metadata", "NUMERIC", "0")
 
 
-class ResetDBVersion(UseSickChillMetadataForSubtitle):
+class BigDBUpdate(UseSickChillMetadataForSubtitle):
     def test(self):
-        return False
+        return self.connection.version >= (45, 0)
 
     def execute(self):
-        self.connection.action("UPDATE db_version SET db_version = ?, db_minor_version = ?", [MAX_DB_VERSION, 0])
+        backupDatabase(self.get_db_version())
+        self.add_column("tv_shows", "size", "NUMERIC", "-1")
+        self.add_column("tv_shows", "min_size", "NUMERIC", "-1")
+        self.add_column("tv_shows", "max_size", "NUMERIC", "-1")
+        self.add_column("tv_episodes", "hash", "TEXT")
+        self.add_column("tv_episodes", "url", "TEXT")
+        self.add_column("tv_episodes", "client", "TEXT")
+        self.add_column("history", "type", "NUMERIC", "-1")
+        self.add_column("history", "hash", "TEXT", "-1")
+        self.add_column("history", "url", "TEXT", "-1")
+        # TODO: Add qualities and movies table before merge
+
+        # Move to DB 45
+        self.inc_major_version()
+
+        logger.log("Updated to: {0:d}.{1:d}".format(*self.connection.version))
