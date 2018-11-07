@@ -4,8 +4,13 @@ ENV PYTHONIOENCODING="UTF-8"
 
 # TODO: Handle permissions so data/config isnt owned by root
 
-RUN apk add --update git mediainfo unrar tzdata
-RUN mkdir /app /var/run/sickchill
+RUN apk add --update \
+    git \
+    mediainfo \
+    nodejs \
+    unrar \
+    tzdata \
+&&  mkdir /app /var/run/sickchill
 COPY . /app/sickchill
 
 WORKDIR /app/sickchill
