@@ -390,14 +390,18 @@ def copyFile(srcFile, destFile):
     try:
         ek(shutil.copyfile, srcFile, destFile)
     except (SpecialFileError, Error) as error:
-        logger.log('{0}'.format(error), logger.WARNING)
+        # noinspection PyProtectedMember
+        if not shutil._samefile(srcFile, destFile):
+            logger.log('{0}'.format(error), logger.WARNING)
+            return
     except Exception as error:
         logger.log('{0}'.format(error), logger.ERROR)
-    else:
-        try:
-            ek(shutil.copymode, srcFile, destFile)
-        except OSError:
-            pass
+        return
+
+    try:
+        ek(shutil.copymode, srcFile, destFile)
+    except OSError:
+        pass
 
 
 def moveFile(srcFile, destFile):
