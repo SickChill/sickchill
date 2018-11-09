@@ -74,3 +74,19 @@ class HistoryStatus(History):
         self.add_column('history', 'showid', 'NUMERIC', '-1')
         self.add_column('history', 'season', 'NUMERIC', '-1')
         self.add_column('history', 'episode', 'NUMERIC', '-1')
+
+
+class BigDBUpdate(HistoryStatus):
+    """
+    https://github.com/SickChill/SickChill/issues/5167
+    """
+    def test(self):
+        return self.has_column('failed', 'hash')
+
+    def execute(self):
+        self.add_column('failed', 'hash', 'TEXT')
+        self.add_column('failed', 'url', 'TEXT')
+        self.add_column('failed', 'type', 'NUMERIC', '-1')
+        self.add_column('history', 'hash', 'TEXT')
+        self.add_column('history', 'url', 'TEXT')
+        self.add_column('history', 'type', 'NUMERIC', '-1')
