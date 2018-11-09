@@ -43,16 +43,23 @@ class InitialSchema(db.SchemaUpgrade):
                 self.connection.action(query[0], query[1:])
 
 
-class SizeAndProvider(InitialSchema):
+class AddProvider(InitialSchema):
     def test(self):
-        return self.has_column('failed', 'size') and self.has_column('failed', 'provider')
+        return self.has_column('failed', 'provider')
 
     def execute(self):
-        self.add_column('failed', 'size', 'NUMERIC')
         self.add_column('failed', 'provider', 'TEXT', '')
 
 
-class History(SizeAndProvider):
+class AddSize(AddProvider):
+    def test(self):
+        return self.has_column('failed', 'size')
+
+    def execute(self):
+        self.add_column('failed', 'size', 'NUMERIC')
+
+
+class History(AddSize):
     """Snatch history that can't be modified by the user"""
 
     def test(self):
