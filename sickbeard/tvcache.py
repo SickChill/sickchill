@@ -41,8 +41,13 @@ class CacheDBConnection(db.DBConnection):
         try:
             if not self.has_table(provider_name):
                 self.action(
-                    "CREATE TABLE [" + provider_name + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT, release_group TEXT)")
+                    "CREATE TABLE [" + provider_name + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT, release_group TEXT, hash TEXT, type NUMERIC DEFAULT -1)")
             else:
+                if not self.has_column(provider_name, 'hash'):
+                    logger.log("Migrating Cache.db to new structure", logger.DEBUG)
+                    self.add_column(provider_name, 'hash', 'TEXT')
+                    self.add_column(provider_name, 'type', 'NUMERIC', '-1')
+
                 sql_results = self.select("SELECT url, COUNT(url) AS count FROM [" + provider_name + "] GROUP BY url HAVING count > 1")
 
                 for cur_dupe in sql_results:
