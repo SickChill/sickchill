@@ -1589,6 +1589,7 @@ def get_size(start_path='.'):
     if not ek(os.path.isdir, start_path):
         return -1
 
+    inode_list = set()
     total_size = 0
     for dirpath, dirnames_, filenames in ek(os.walk, start_path):
         for f in filenames:
@@ -1597,8 +1598,13 @@ def get_size(start_path='.'):
                 logger.log(_("Unable to get size for file {0} because the link to the file is not valid").format(fp),
                            logger.DEBUG if sickbeard.IGNORE_BROKEN_SYMLINKS else logger.WARNING)
                 continue
+            info = os.stat(fp)
+            if (info[stat.ST_INO], info[stat.ST_DEV]) in inode_list:
+                # Skip adding size of file to the total if it is a hard link that is already added to the size.
+                continue
             try:
                 total_size += ek(os.path.getsize, fp)
+                inode_list.add((info[stat.ST_INO], info[stat.ST_DEV]))
             except OSError as error:
                 logger.log(_("Unable to get size for file {0} Error: {1}").format(fp, error), logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)

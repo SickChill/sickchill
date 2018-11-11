@@ -254,7 +254,6 @@
                         cur_snatched = 0
                         cur_downloaded = 0
                         cur_total = 0
-                        show_size = 0
                         download_stat_tip = ''
 
                         if curShow.indexerid in show_stat:
@@ -272,8 +271,6 @@
                             cur_total = show_stat[curShow.indexerid]['ep_total']
                             if not cur_total:
                                 cur_total = 0
-
-                            show_size = show_stat[curShow.indexerid]['show_size']
 
                         download_stat = str(cur_downloaded)
                         download_stat_tip = _('Downloaded') + ": " + str(cur_downloaded)
@@ -368,7 +365,7 @@
                             <span class="visible-print-inline">${download_stat}</span>
                         </td>
 
-                        <td align="center" data-show-size="${show_size}">${pretty_file_size(show_size)}</td>
+                        <td align="center" data-show-size="${curShow.size}">${pretty_file_size(curShow.size)}</td>
 
                         <td align="center">
                             <span class="displayshow-icon-${("disable", "enable")[not bool(curShow.paused)]}" title="${('No', 'Yes')[not bool(curShow.paused)]}"></span>

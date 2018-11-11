@@ -99,6 +99,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         self.dirty = True
 
         self._location = ""
+        self._size = 0
+
         self.lock = threading.Lock()
         self.episodes = {}
         self.nextaired = ""
@@ -113,7 +115,6 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
     name = property(lambda self: self._name, dirty_setter("_name"))
     indexerid = property(lambda self: self._indexerid, dirty_setter("_indexerid"))
     indexer = property(lambda self: self._indexer, dirty_setter("_indexer"))
-    # location = property(lambda self: self._location, dirty_setter("_location"))
     imdbid = property(lambda self: self._imdbid, dirty_setter("_imdbid"))
     network = property(lambda self: self._network, dirty_setter("_network"))
     genre = property(lambda self: self._genre, dirty_setter("_genre"))
@@ -175,6 +176,23 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             raise NoNFOException("Invalid folder for the show!")
 
     location = property(_getLocation, _setLocation)
+
+    def _getSize(self):
+        # For now, get the size like we always would until we update this every time we post process a file or download metadata such as images or nfo/xml
+        # Remove the `True or` once fully implemented
+        if True or not ek(os.path.isdir, self._location):
+            self._size = 0
+
+        if ek(os.path.isdir, self._location) and not self._size:
+            self._size = helpers.get_size(self._location)
+            # Remove line above and uncomment line below once fully implemented
+            # dirty_setter("_size")(self, helpers.get_size(self.location))
+        return self._size
+
+    def _setSize(self, new_size):
+        dirty_setter("_size")(self, new_size)
+
+    size = property(_getSize, _setSize)
 
     # delete references to anything that's not in the internal lists
     def flushEpisodes(self):
@@ -782,10 +800,17 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             self.season_folders = int(not int(sql_results[0][b"flatten_folders"] or 0))  # FIXME: inverted until next database version
             self.paused = int(sql_results[0][b"paused"] or 0)
 
+            # noinspection PyBroadExcept
             try:
                 self._location = sql_results[0][b"location"]
             except Exception:
                 dirty_setter("_location")(self, sql_results[0][b"location"])
+
+            # noinspection PyBroadExcept
+            try:
+                self._size = int(sql_results[0][b"size"])
+            except Exception:
+                dirty_setter("_size")(self, self._getSize())
 
             if not self.lang:
                 self.lang = sql_results[0][b"lang"]
@@ -1163,6 +1188,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         newValueDict = {"indexer": self.indexer,
                         "show_name": self.name,
                         "location": self._location,
+                        "size": self.size,
                         "network": self.network,
                         "genre": self.genre,
                         "classification": self.classification,
@@ -1550,14 +1576,15 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             # logger.log("1 Status changes from " + str(self.status) + " to " + str(sql_results[0][b"status"]), logger.DEBUG)
             self.status = int(sql_results[0][b"status"] or -1)
 
-            # don't overwrite my location
-            if sql_results[0][b"location"] and not self._location:
-                self.location = ek(os.path.normpath, sql_results[0][b"location"])
-
+            # Do this before setting location, because file size is set during _setLocation
             if sql_results[0][b"file_size"]:
                 self.file_size = int(sql_results[0][b"file_size"])
             else:
                 self.file_size = 0
+
+            # don't overwrite my location
+            if sql_results[0][b"location"] and not self._location:
+                self.location = ek(os.path.normpath, sql_results[0][b"location"])
 
             self.indexerid = int(sql_results[0][b"indexerid"])
             self.indexer = int(sql_results[0][b"indexer"])

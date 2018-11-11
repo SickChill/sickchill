@@ -243,7 +243,7 @@
                                             % endif
                                             <tr>
                                                 <td class="showLegend">${_('Size')}:</td>
-                                                <td>${pretty_file_size(sickbeard.helpers.get_size(showLoc[0]))}</td>
+                                                <td>${pretty_file_size(show.size)}</td>
                                             </tr>
                                         </table>
                                     </div>

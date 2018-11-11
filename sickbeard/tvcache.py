@@ -98,15 +98,18 @@ class TVCache(object):
             cache_db_con.action("DELETE FROM [" + self.provider_id + "] WHERE 1")
 
     def _get_title_and_url(self, item):
-        return self.provider._get_title_and_url(item)  # pylint:disable=protected-access
+        # noinspection PyProtectedMember
+        return self.provider._get_title_and_url(item)
 
     def _get_rss_data(self):
         return {'entries': self.provider.search(self.search_params)} if self.search_params else None
 
-    def _check_auth(self, data):  # pylint:disable=unused-argument, no-self-use
+    # noinspection PyUnusedArgument, PyMethodMayBeStatic
+    def _check_auth(self, data):
         return True
 
-    def _check_item_auth(self, title, url):  # pylint:disable=unused-argument, no-self-use
+    # noinspection PyUnusedArgument, PyMethodMayBeStatic, PyUnusedLocal
+    def _check_item_auth(self, title, url):
         return True
 
     def update_cache(self):
@@ -264,12 +267,12 @@ class TVCache(object):
             if not parse_result or not parse_result.series_name:
                 return None
 
-        # if we made it this far then lets add the parsed result to cache for usager later on
+        # if we made it this far then lets add the parsed result to cache for usage later on
         season = parse_result.season_number if parse_result.season_number else 1
         episodes = parse_result.episode_numbers
 
         if season and episodes:
-            # store episodes as a seperated string
+            # store episodes as a separated string
             episode_text = "|" + "|".join({str(episode) for episode in episodes if episode}) + "|"
 
             # get the current timestamp
@@ -306,6 +309,7 @@ class TVCache(object):
         propers_results = cache_db_con.select(sql)
         return [x for x in propers_results if x[b'indexerid']]
 
+    # noinspection PyTypeChecker
     def find_needed_episodes(self, episode, manualSearch=False, downCurQuality=False):  # pylint:disable=too-many-locals, too-many-branches
         needed_eps = {}
         cl = []
@@ -340,7 +344,7 @@ class TVCache(object):
 
             # skip if provider is anime only and show is not anime
             if self.provider.anime_only and not show_obj.is_anime:
-                logger.log("" + str(show_obj.name) + " is not an anime, skiping", logger.DEBUG)
+                logger.log("{} is not an anime, skipping".format(show_obj.name), logger.DEBUG)
                 continue
 
             # get season and ep data (ignoring multi-eps for now)

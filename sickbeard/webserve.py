@@ -787,8 +787,6 @@ class Home(WebRoot):
         sql_statement += (' AND season > 0', '')[sickbeard.DISPLAY_SHOW_SPECIALS] + ' AND status <> ' + str(UNAIRED)
         sql_statement += ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev,'
 
-        # @TODO: Store each show_size in tv_shows. also change in displayShow.mako:250, where we use helpers.get_size()
-        sql_statement += ' (SELECT SUM(file_size) FROM tv_episodes WHERE showid=tv_eps.showid) AS show_size'
         sql_statement += ' FROM tv_episodes tv_eps GROUP BY showid'
 
         sql_result = main_db_con.select(sql_statement)
