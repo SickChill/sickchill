@@ -37,7 +37,7 @@ class Torrent9Provider(TorrentProvider):
         self.public = True
         self.minseed = None
         self.minleech = None
-        self.url = "https://www.torrent9.ph"
+        self.url = "https://www.torrent9.ch"
 
         self.proper_strings = ['PROPER', 'REPACK']
         self.cache = tvcache.TVCache(self)
@@ -71,11 +71,13 @@ class Torrent9Provider(TorrentProvider):
                     logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
-                    search_url = self.url + '/search_torrent/' + search_string.replace('.', '-').replace(' ', '-') + '.html'
+                    search_url = self.url
+                    post_data = {'torrentSearch': search_string}
                 else:
                     search_url = self.url + '/torrents_series.html'
+                    post_data = None
 
-                data = self.get_url(search_url, returns='text')
+                data = self.get_url(search_url, post_data, returns='text')
                 if not data:
                     continue
 
