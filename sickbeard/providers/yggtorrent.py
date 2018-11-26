@@ -142,13 +142,9 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 try:
                     search_params = {
                         'category': "2145",
-                        'sub_category' : "2184",
                         'name': re.sub(r'[()]', '', search_string),
                         'do': 'search'
                     }
-
-                    if self.show and self.show.is_anime:
-                        search_params['sub_category'] = "2179"
 
                     data = self.get_url(self.urls['search'], params=search_params, returns='text')
                     if not data:
