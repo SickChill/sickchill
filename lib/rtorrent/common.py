@@ -1,3 +1,9 @@
+# -------------------------------------------------------------------------------------
+# File retrieved without modification from the Medusa repository with their permission.
+# Original repository: https://github.com/pymedusa/Medusa
+# Original pull request: https://github.com/pymedusa/Medusa/pull/3333
+# Thank you Medariox and the Medusa team for their hard work.
+# -------------------------------------------------------------------------------------
 # Copyright (c) 2013 Chris Lucas, <chris@chrisjlucas.com>
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -23,7 +29,7 @@ from rtorrent.compat import is_py3
 
 
 def bool_to_int(value):
-    """Translates python booleans to RPC-safe integers"""
+    """Translate Python booleans to RPC-safe integers."""
     if value is True:
         return("1")
     elif value is False:
@@ -33,7 +39,7 @@ def bool_to_int(value):
 
 
 def cmd_exists(cmds_list, cmd):
-    """Check if given command is in list of available commands
+    """Check if given command is in list of available commands.
 
     @param cmds_list: see L{RTorrent._rpc_methods}
     @type cmds_list: list
@@ -43,12 +49,11 @@ def cmd_exists(cmds_list, cmd):
 
     @return: bool
     """
-
     return(cmd in cmds_list)
 
 
 def find_torrent(info_hash, torrent_list):
-    """Find torrent file in given list of Torrent classes
+    """Find torrent file in given list of Torrent classes.
 
     @param info_hash: info hash of torrent
     @type info_hash: str
@@ -62,9 +67,11 @@ def find_torrent(info_hash, torrent_list):
         if t.info_hash == info_hash:
             return t
 
+    return None
+
 
 def is_valid_port(port):
-    """Check if given port is valid"""
+    """Check if given port is valid."""
     return(0 <= int(port) <= 65535)
 
 
@@ -73,8 +80,7 @@ def convert_version_tuple_to_str(t):
 
 
 def safe_repr(fmt, *args, **kwargs):
-    """ Formatter that handles unicode arguments """
-
+    """Formatter that handles unicode arguments."""
     if not is_py3():
         # unicode fmt can take str args, str fmt cannot take unicode args
         fmt = fmt.decode("utf-8")

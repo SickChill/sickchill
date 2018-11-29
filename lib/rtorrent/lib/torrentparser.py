@@ -1,3 +1,9 @@
+# -------------------------------------------------------------------------------------
+# File retrieved without modification from the Medusa repository with their permission.
+# Medusa repository: https://github.com/pymedusa/Medusa
+# Medusa pull request: https://github.com/pymedusa/Medusa/pull/3333
+# Thank you Medariox and the Medusa team for their hard work.
+# -------------------------------------------------------------------------------------
 # Copyright (c) 2013 Chris Lucas, <chris@chrisjlucas.com>
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -18,11 +24,12 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from rtorrent.compat import is_py3
+import hashlib
 import os.path
 import re
+
 import rtorrent.lib.bencode as bencode
-import hashlib
+from rtorrent.compat import is_py3
 
 if is_py3():
     from urllib.request import urlopen  # @UnresolvedImport @UnusedImport
@@ -32,7 +39,7 @@ else:
 
 class TorrentParser():
     def __init__(self, torrent):
-        """Decode and parse given torrent
+        """Decode and parse given torrent.
 
         @param torrent: handles: urls, file paths, string of torrent data
         @type torrent: str
@@ -66,7 +73,7 @@ class TorrentParser():
         return(raw)
 
     def _get_raw_torrent(self):
-        """Get raw torrent data by determining what self.torrent is"""
+        """Get raw torrent data by determining what self.torrent is."""
         # already raw?
         if self._is_raw():
             self.file_type = "raw"

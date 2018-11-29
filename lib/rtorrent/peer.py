@@ -1,3 +1,9 @@
+# -------------------------------------------------------------------------------------
+# File retrieved without modification from the Medusa repository with their permission.
+# Medusa repository: https://github.com/pymedusa/Medusa
+# Medusa pull request: https://github.com/pymedusa/Medusa/pull/3333
+# Thank you Medariox and the Medusa team for their hard work.
+# -------------------------------------------------------------------------------------
 # Copyright (c) 2013 Chris Lucas, <chris@chrisjlucas.com>
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -20,7 +26,6 @@
 
 # from rtorrent.rpc import Method
 import rtorrent.rpc
-
 from rtorrent.common import safe_repr
 
 Method = rtorrent.rpc.Method
@@ -28,20 +33,21 @@ Method = rtorrent.rpc.Method
 
 class Peer:
     """Represents an individual peer within a L{Torrent} instance."""
+
     def __init__(self, _rt_obj, info_hash, **kwargs):
         self._rt_obj = _rt_obj
         self.info_hash = info_hash  # : info hash for the torrent the peer is associated with
         for k in kwargs.keys():
             setattr(self, k, kwargs.get(k, None))
 
-        self.rpc_id = "{0}:p{1}".format(
+        self.rpc_id = '{0}:p{1}'.format(
             self.info_hash, self.id)  # : unique id to pass to rTorrent
 
     def __repr__(self):
-        return safe_repr("Peer(id={0})", self.id)
+        return safe_repr('Peer(id={0})', self.id)
 
     def update(self):
-        """Refresh peer data
+        """Refresh peer data.
 
         @note: All fields are stored as attributes to self.
 
@@ -55,44 +61,44 @@ class Peer:
 
         multicall.call()
 
+
 methods = [
     # RETRIEVERS
     Method(Peer, 'is_preferred', 'p.is_preferred',
            boolean=True,
            ),
-    Method(Peer, 'get_down_rate', 'p.get_down_rate'),
+    Method(Peer, 'get_down_rate', 'p.down_rate'),
     Method(Peer, 'is_unwanted', 'p.is_unwanted',
            boolean=True,
            ),
-    Method(Peer, 'get_peer_total', 'p.get_peer_total'),
-    Method(Peer, 'get_peer_rate', 'p.get_peer_rate'),
-    Method(Peer, 'get_port', 'p.get_port'),
+    Method(Peer, 'get_peer_total', 'p.peer_total'),
+    Method(Peer, 'get_peer_rate', 'p.peer_rate'),
+    Method(Peer, 'get_port', 'p.port'),
     Method(Peer, 'is_snubbed', 'p.is_snubbed',
            boolean=True,
            ),
-    Method(Peer, 'get_id_html', 'p.get_id_html'),
-    Method(Peer, 'get_up_rate', 'p.get_up_rate'),
+    Method(Peer, 'get_id_html', 'p.id_html'),
+    Method(Peer, 'get_up_rate', 'p.up_rate'),
     Method(Peer, 'is_banned', 'p.banned',
            boolean=True,
            ),
-    Method(Peer, 'get_completed_percent', 'p.get_completed_percent'),
-    Method(Peer, 'completed_percent', 'p.completed_percent'),
-    Method(Peer, 'get_id', 'p.get_id'),
+    Method(Peer, 'get_completed_percent', 'p.completed_percent'),
+    Method(Peer, 'get_id', 'p.id'),
     Method(Peer, 'is_obfuscated', 'p.is_obfuscated',
            boolean=True,
            ),
-    Method(Peer, 'get_down_total', 'p.get_down_total'),
-    Method(Peer, 'get_client_version', 'p.get_client_version'),
-    Method(Peer, 'get_address', 'p.get_address'),
+    Method(Peer, 'get_down_total', 'p.down_total'),
+    Method(Peer, 'get_client_version', 'p.client_version'),
+    Method(Peer, 'get_address', 'p.address'),
     Method(Peer, 'is_incoming', 'p.is_incoming',
            boolean=True,
            ),
     Method(Peer, 'is_encrypted', 'p.is_encrypted',
            boolean=True,
            ),
-    Method(Peer, 'get_options_str', 'p.get_options_str'),
+    Method(Peer, 'get_options_str', 'p.options_str'),
     Method(Peer, 'get_client_version', 'p.client_version'),
-    Method(Peer, 'get_up_total', 'p.get_up_total'),
+    Method(Peer, 'get_up_total', 'p.up_total'),
 
     # MODIFIERS
 ]

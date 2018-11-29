@@ -1,3 +1,9 @@
+# -------------------------------------------------------------------------------------
+# File retrieved without modification from the Medusa repository with their permission.
+# Original repository: https://github.com/pymedusa/Medusa
+# Original pull request: https://github.com/pymedusa/Medusa/pull/3333
+# Thank you Medariox and the Medusa team for their hard work.
+# -------------------------------------------------------------------------------------
 # Copyright (c) 2013 Dean Gardiner, <gardiner91@gmail.com>
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -47,7 +53,7 @@ class Group:
         # Setup multicall_add method
         caller = lambda multicall, method, *args: \
             multicall.add(method, *args)
-        setattr(self, "multicall_add", caller)
+        setattr(self, 'multicall_add', caller)
 
     def _get_prefix(self):
         return 'group.' + self.name + '.ratio.'
@@ -76,7 +82,7 @@ class Group:
 
         m = rtorrent.rpc.Multicall(self)
         self.multicall_add(
-            m, 'system.method.set',
+            m, 'method.set', '',
             self._get_prefix() + 'command',
             *methods
         )

@@ -1,3 +1,9 @@
+# -------------------------------------------------------------------------------------
+# Parts of this code were reverse-engineered from the Medusa repository with their permission.
+# Medusa repository: https://github.com/pymedusa/Medusa
+# Medusa pull request: https://github.com/pymedusa/Medusa/pull/3333
+# Thank you Medariox and the Medusa team for their hard work.
+# -------------------------------------------------------------------------------------
 # coding=utf-8
 # Author: jkaberg <joel.kaberg@gmail.com>
 #
@@ -38,7 +44,6 @@ class rTorrentAPI(GenericClient):  # pylint: disable=invalid-name
         super(rTorrentAPI, self).__init__('rTorrent', host, username, password)
 
     def _get_auth(self):
-        self.auth = None
 
         if self.auth is not None:
             return self.auth
@@ -62,32 +67,16 @@ class rTorrentAPI(GenericClient):  # pylint: disable=invalid-name
 
     def _add_torrent_uri(self, result):
 
-        if not self.auth:
-            return False
-
-        if not result:
+        if not (self.auth and result):
             return False
 
         try:
-            # Send magnet to rTorrent
-            torrent = self.auth.load_magnet(result.url, result.hash)
+
+            # Send torrent magnet with params to rTorrent and optionally start download
+            torrent = self.auth.load_magnet(result.url, result.hash, start=not sickbeard.TORRENT_PAUSED, params=self._get_params(result))
 
             if not torrent:
                 return False
-
-            # Set label
-            label = sickbeard.TORRENT_LABEL
-            if result.show.is_anime:
-                label = sickbeard.TORRENT_LABEL_ANIME
-            if label:
-                torrent.set_custom(1, label)
-
-            if sickbeard.TORRENT_PATH:
-                torrent.set_directory(sickbeard.TORRENT_PATH)
-
-            if not sickbeard.TORRENT_PAUSED:
-                # Start torrent
-                torrent.start()
 
             return True
 
@@ -98,40 +87,16 @@ class rTorrentAPI(GenericClient):  # pylint: disable=invalid-name
 
     def _add_torrent_file(self, result):
 
-        if not self.auth:
+        if not (self.auth and result):
             return False
 
-        if not result:
-            return False
-
-            # group_name = 'sb_test'.lower() ##### Use provider instead of _test
-            # if not self._set_torrent_ratio(group_name):
-            # return False
-
-        # Send request to rTorrent
         try:
-            # Send torrent to rTorrent
-            torrent = self.auth.load_torrent(result.content)
+
+            # Send torrent file with params to rTorrent and optionally start download
+            torrent = self.auth.load_torrent(result.content, start=not sickbeard.TORRENT_PAUSED, params=self._get_params(result))
 
             if not torrent:
                 return False
-
-            # Set label
-            label = sickbeard.TORRENT_LABEL
-            if result.show.is_anime:
-                label = sickbeard.TORRENT_LABEL_ANIME
-            if label:
-                torrent.set_custom(1, label)
-
-            if sickbeard.TORRENT_PATH:
-                torrent.set_directory(sickbeard.TORRENT_PATH)
-
-            # Set Ratio Group
-            # torrent.set_visible(group_name)
-
-            if not sickbeard.TORRENT_PAUSED:
-                # Start torrent
-                torrent.start()
 
             return True
 
@@ -189,5 +154,21 @@ class rTorrentAPI(GenericClient):  # pylint: disable=invalid-name
         except Exception:  # pylint: disable=broad-except
             return False, 'Error: Unable to connect to {name}'.format(name=self.name)
 
+    @staticmethod
+    def _get_params(result):
+        params = []
+
+        # Set label
+        label = sickbeard.TORRENT_LABEL
+        if result.show.is_anime:
+            label = sickbeard.TORRENT_LABEL_ANIME
+        if label:
+            params.append('d.custom1.set={0}'.format(label))
+
+        # Set download folder
+        if sickbeard.TORRENT_PATH:
+            params.append('d.directory.set={0}'.format(sickbeard.TORRENT_PATH))
+
+        return params
 
 api = rTorrentAPI()  # pylint: disable=invalid-name
