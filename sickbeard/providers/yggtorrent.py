@@ -141,7 +141,8 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                 try:
                     search_params = {
-                        'category': "2145",
+                        'category': '2145',
+                        'sub_category' : 'all',
                         'name': re.sub(r'[()]', '', search_string),
                         'do': 'search'
                     }
