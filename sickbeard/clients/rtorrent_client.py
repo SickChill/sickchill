@@ -1,15 +1,8 @@
-# -------------------------------------------------------------------------------------
-# Parts of this code were reverse-engineered from the Medusa repository with their permission.
-# Medusa repository: https://github.com/pymedusa/Medusa
-# Medusa pull request: https://github.com/pymedusa/Medusa/pull/3333
-# Thank you Medariox and the Medusa team for their hard work.
-# -------------------------------------------------------------------------------------
 # coding=utf-8
-# Author: jkaberg <joel.kaberg@gmail.com>
+# This file is part of SickChill.
 #
 # URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
+# Git: https://github.com/SickChill/SickChill.git
 #
 # SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,11 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+# File based on work done by Medariox and Fuzeman
 
 # pylint: disable=line-too-long
-
-# based on fuzemans work
-# https://github.com/RuudBurger/CouchPotatoServer/blob/develop/couchpotato/core/downloaders/rtorrent/main.py
 
 from __future__ import print_function, unicode_literals
 
