@@ -378,7 +378,9 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                             size = convert_size(item_size) or -1
 
                             result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
-                            items.append(result)
+                            
+                            if seeders > 29:
+                                items.append(result) #Has 30 or above seeders, so lets download it aye? (I think that's how it works :o)
                         except StandardError:
                             continue
 
