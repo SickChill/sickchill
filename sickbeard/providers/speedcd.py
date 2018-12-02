@@ -153,7 +153,7 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                         try:
                             cells = result('td')
 
-                            title = cells[labels.index('Title')].find('a', class_='torrent').get_text()
+                            title = cells[labels.index('Title')].find('a').get_text()
                             download_url = urljoin(self.url, cells[labels.index('Download') - 1].a['href'])
                             if not all([title, download_url]):
                                 continue
