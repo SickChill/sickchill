@@ -95,12 +95,12 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                               'Documentari': 14,
                               'All': 0}
 
-        self.urls = {'base_url': 'http://forum.tntvillage.scambioetico.org',
-                     'login': 'http://forum.tntvillage.scambioetico.org/index.php?act=Login&CODE=01',
-                     'detail': 'http://forum.tntvillage.scambioetico.org/index.php?showtopic=%s',
-                     'search': 'http://forum.tntvillage.scambioetico.org/?act=allreleases&%s',
-                     'search_page': 'http://forum.tntvillage.scambioetico.org/?act=allreleases&st={0}&{1}',
-                     'download': 'http://forum.tntvillage.scambioetico.org/index.php?act=Attach&type=post&id=%s'}
+        self.urls = {'base_url': 'http://www.tntvillage.scambioetico.org',
+                     'login': 'http://www.tntvillage.scambioetico.org/index.php?act=Login&CODE=01',
+                     'detail': 'http://www.tntvillage.scambioetico.org/index.php?showtopic=%s',
+                     'search': 'http://www.tntvillage.scambioetico.org/?act=allreleases&%s',
+                     'search_page': 'http://www.tntvillage.scambioetico.org/?act=allreleases&st={0}&{1}',
+                     'download': 'http://www.tntvillage.scambioetico.org/index.php?act=Attach&type=post&id=%s'}
 
         self.url = self.urls['base_url']
 
