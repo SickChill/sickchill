@@ -1024,14 +1024,6 @@ msgstr ""
 msgid "ERROR: {last_error}"
 msgstr ""
 
-#: sickbeard/webserve.py:1199
-msgid "Test NMA notice sent successfully"
-msgstr ""
-
-#: sickbeard/webserve.py:1201
-msgid "Test NMA notice failed"
-msgstr ""
-
 #: sickbeard/webserve.py:1208
 msgid ""
 "Pushalot notification succeeded. Check your Pushalot clients to make sure it "
