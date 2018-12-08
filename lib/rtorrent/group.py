@@ -47,7 +47,7 @@ class Group:
         # Setup multicall_add method
         caller = lambda multicall, method, *args: \
             multicall.add(method, *args)
-        setattr(self, "multicall_add", caller)
+        setattr(self, 'multicall_add', caller)
 
     def _get_prefix(self):
         return 'group.' + self.name + '.ratio.'
@@ -76,7 +76,7 @@ class Group:
 
         m = rtorrent.rpc.Multicall(self)
         self.multicall_add(
-            m, 'system.method.set',
+            m, 'method.set', '',
             self._get_prefix() + 'command',
             *methods
         )

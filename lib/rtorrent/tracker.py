@@ -20,7 +20,6 @@
 
 # from rtorrent.rpc import Method
 import rtorrent.rpc
-
 from rtorrent.common import safe_repr
 
 Method = rtorrent.rpc.Method
@@ -37,23 +36,23 @@ class Tracker:
 
         # for clarity's sake...
         self.index = self.group  # : position of tracker within the torrent's tracker list
-        self.rpc_id = "{0}:t{1}".format(
+        self.rpc_id = '{0}:t{1}'.format(
             self.info_hash, self.index)  # : unique id to pass to rTorrent
 
     def __repr__(self):
-        return safe_repr("Tracker(index={0}, url=\"{1}\")",
-                        self.index, self.url)
+        return safe_repr('Tracker(index={0}, url="{1}")',
+                         self.index, self.url)
 
     def enable(self):
-        """Alias for set_enabled("yes")"""
-        self.set_enabled("yes")
+        """Alias for set_enabled('yes')."""
+        self.set_enabled('yes')
 
     def disable(self):
-        """Alias for set_enabled("no")"""
-        self.set_enabled("no")
+        """Alias for set_enabled('no')."""
+        self.set_enabled('no')
 
     def update(self):
-        """Refresh tracker data
+        """Refresh tracker data.
 
         @note: All fields are stored as attributes to self.
 
@@ -67,20 +66,21 @@ class Tracker:
 
         multicall.call()
 
+
 methods = [
     # RETRIEVERS
     Method(Tracker, 'is_enabled', 't.is_enabled', boolean=True),
-    Method(Tracker, 'get_id', 't.get_id'),
-    Method(Tracker, 'get_scrape_incomplete', 't.get_scrape_incomplete'),
+    Method(Tracker, 'get_id', 't.id'),
+    Method(Tracker, 'get_scrape_incomplete', 't.scrape_incomplete'),
     Method(Tracker, 'is_open', 't.is_open', boolean=True),
-    Method(Tracker, 'get_min_interval', 't.get_min_interval'),
-    Method(Tracker, 'get_scrape_downloaded', 't.get_scrape_downloaded'),
-    Method(Tracker, 'get_group', 't.get_group'),
-    Method(Tracker, 'get_scrape_time_last', 't.get_scrape_time_last'),
-    Method(Tracker, 'get_type', 't.get_type'),
-    Method(Tracker, 'get_normal_interval', 't.get_normal_interval'),
-    Method(Tracker, 'get_url', 't.get_url'),
-    Method(Tracker, 'get_scrape_complete', 't.get_scrape_complete',
+    Method(Tracker, 'get_min_interval', 't.min_interval'),
+    Method(Tracker, 'get_scrape_downloaded', 't.scrape_downloaded'),
+    Method(Tracker, 'get_group', 't.group'),
+    Method(Tracker, 'get_scrape_time_last', 't.scrape_time_last'),
+    Method(Tracker, 'get_type', 't.type'),
+    Method(Tracker, 'get_normal_interval', 't.normal_interval'),
+    Method(Tracker, 'get_url', 't.url'),
+    Method(Tracker, 'get_scrape_complete', 't.scrape_complete',
            min_version=(0, 8, 9),
            ),
     Method(Tracker, 'get_activity_time_last', 't.activity_time_last',
@@ -126,13 +126,13 @@ methods = [
            min_version=(0, 9, 1),
            boolean=True,
            ),
-    Method(Tracker, "get_latest_sum_peers", "t.latest_sum_peers",
+    Method(Tracker, 'get_latest_sum_peers', 't.latest_sum_peers',
            min_version=(0, 9, 0)
            ),
-    Method(Tracker, "get_latest_new_peers", "t.latest_new_peers",
+    Method(Tracker, 'get_latest_new_peers', 't.latest_new_peers',
            min_version=(0, 9, 0)
            ),
 
     # MODIFIERS
-    Method(Tracker, 'set_enabled', 't.set_enabled'),
+    Method(Tracker, 'set_enabled', 't.is_enabled.set'),
 ]
