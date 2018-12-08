@@ -21,8 +21,8 @@
 from __future__ import print_function, unicode_literals
 
 import sickbeard
-from sickbeard.notifiers import (boxcar2, discord, emailnotify, emby, freemobile, growl, join, kodi, libnotify, nma, nmj, nmjv2, plex, prowl, pushalot,
-                                 pushbullet, pushover, pytivo, slack, synoindex, synologynotifier, telegram, trakt, tweet, twilio_notify)
+from sickbeard.notifiers import (boxcar2, discord, emailnotify, emby, freemobile, growl, join, kodi, libnotify, nmj, nmjv2, plex, prowl, pushalot, pushbullet,
+                                 pushover, pytivo, slack, synoindex, synologynotifier, telegram, trakt, tweet, twilio_notify)
 
 # home theater / nas
 kodi_notifier = kodi.Notifier()
@@ -40,7 +40,6 @@ prowl_notifier = prowl.Notifier()
 libnotify_notifier = libnotify.Notifier()
 pushover_notifier = pushover.Notifier()
 boxcar2_notifier = boxcar2.Notifier()
-nma_notifier = nma.Notifier()
 pushalot_notifier = pushalot.Notifier()
 pushbullet_notifier = pushbullet.Notifier()
 freemobile_notifier = freemobile.Notifier()
@@ -69,7 +68,6 @@ notifiers = [
     prowl_notifier,
     pushover_notifier,
     boxcar2_notifier,
-    nma_notifier,
     pushalot_notifier,
     pushbullet_notifier,
     twitter_notifier,
