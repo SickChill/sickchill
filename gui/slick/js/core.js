@@ -1040,27 +1040,6 @@ var SICKCHILL = {
                 }
             });
 
-            $('#testNMA').on('click', function() {
-                const nma = {};
-                nma.api = $.trim($('#nma_api').val());
-                nma.priority = $('#nma_priority').val();
-                if (!nma.api) {
-                    $('#testNMA-result').html(_('Please fill out the necessary fields above.'));
-                    $('#nma_api').addClass('warning');
-                    return;
-                }
-                $('#nma_api').removeClass('warning');
-                $(this).prop('disabled', true);
-                $('#testNMA-result').html(loading);
-                $.post(srRoot + '/home/testNMA', {
-                    nma_api: nma.api, // eslint-disable-line camelcase
-                    nma_priority: nma.priority // eslint-disable-line camelcase
-                }).done(function(data) {
-                    $('#testNMA-result').html(data);
-                    $('#testNMA').prop('disabled', false);
-                });
-            });
-
             $('#testPushalot').on('click', function() {
                 const pushalot = {};
                 pushalot.authToken = $.trim($('#pushalot_authorizationtoken').val());
