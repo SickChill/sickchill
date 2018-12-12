@@ -7,7 +7,7 @@ bencode == 1.0  # Made vanilla with https://github.com/SickChill/SickChill/commi
 cachecontrol == 0.11.5
 # certgen.py == d52975cef3a36e18552aeb23de7c06aa73d76454  # Source: https://github.com/pyca/pyopenssl/blob/master/examples/certgen.py
 certifi == 2017.4.17
-cfscrape >= 1.8.0
+cfscrape >= 1.9.5
 chardet == 3.0.4
 configobj == 4.6.0
 decorator == 4.0.10
