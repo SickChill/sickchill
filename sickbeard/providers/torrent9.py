@@ -22,6 +22,8 @@ from __future__ import print_function, unicode_literals
 
 import re
 
+import validators
+
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickchill.helper.common import convert_size, try_int
@@ -37,7 +39,10 @@ class Torrent9Provider(TorrentProvider):
         self.public = True
         self.minseed = None
         self.minleech = None
-        self.url = "https://www.torrent9.ch"
+        self._original_url = "https://www.torrent9.ch"
+        self._custom_url = None
+        self._used_url = None
+        self._recheck_url = True
 
         self.proper_strings = ['PROPER', 'REPACK']
         self.cache = tvcache.TVCache(self)
@@ -57,6 +62,32 @@ class Torrent9Provider(TorrentProvider):
                 else:
                     res["torrent"] = self.url + link
         return res[type]
+
+    def _get_custom_url(self):
+        return self._custom_url
+
+    def _set_custom_url(self, url):
+        if self._custom_url != url:
+            self._custom_url = url
+            self._recheck_url = True
+
+    def _get_provider_url(self):
+        if self._recheck_url:
+            if self.custom_url:
+                if validators.url(self.custom_url):
+                    self._used_url = self.custom_url
+                else:
+                    logger.log("Invalid custom url set, please check your settings", logger.WARNING)
+
+            self._used_url = self._original_url
+
+        return self._used_url
+
+    def _set_provider_url(self, url):
+        self._used_url = url
+
+    url = property(_get_provider_url, _set_provider_url)
+    custom_url = property(_get_custom_url, _set_custom_url)
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
