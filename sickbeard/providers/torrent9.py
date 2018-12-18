@@ -48,7 +48,7 @@ class Torrent9Provider(TorrentProvider):
         self.proper_strings = ['PROPER', 'REPACK']
         self.cache = tvcache.TVCache(self)
 
-    def _retrieve_dllink_from_url(self, inner_url, type="torrent"):
+    def _retrieve_dllink_from_url(self, inner_url, _type="torrent"):
         data = self.get_url(inner_url, returns='text')
         res = {
             "torrent": "",
@@ -61,8 +61,8 @@ class Torrent9Provider(TorrentProvider):
                 if link.startswith("magnet"):
                     res["magnet"] = link
                 else:
-                    res["torrent"] = self.url + link
-        return res[type]
+                    res["torrent"] = link
+        return res[_type]
 
     def _get_custom_url(self):
         return self._custom_url
