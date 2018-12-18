@@ -74,7 +74,7 @@ tus.py == 1.2.0
 twilio == 5.7.0
 tzlocal == 1.4
 Unidecode == 0.04.21
-urllib3 == 1.21.1
+urllib3>=1.23
 validators == 0.10
 webencodings == 0.5.1
 win-inet-pton == 1.0.1 ; os.name == 'nt' and python_version < '3.0'
