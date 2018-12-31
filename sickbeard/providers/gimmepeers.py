@@ -78,9 +78,9 @@ class GimmePeersProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
             logger.log(u"Unable to connect to provider", logger.WARNING)
-            return Fals
+            return False
 
-        if re.search('Username or password incorrect', response):
+        if re.search('Username or password incorrect!', response):
             logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
             return False
 
@@ -104,6 +104,17 @@ class GimmePeersProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 data = self.get_url(self.urls['search'], params=self.search_params, returns='text')
                 if not data:
                     continue
+
+                # Checks if cookie has timed-out causing search to redirect to login page. 
+                # If text matches on loginpage we login and generate a new cookie and load the search data again.
+                if re.search('Still need help logging in?', data):
+                    logger.log(u"Login has timed out. Need to generate new cookie for GimmePeers and search again.", logger.DEBUG)
+                    self.session.cookies.clear()
+                    self.login()
+
+                    data = self.get_url(self.urls['search'], params=self.search_params, returns='text')
+                    if not data:
+                        continue
 
                 try:
                     with BS4Parser(data, "html.parser") as html:
