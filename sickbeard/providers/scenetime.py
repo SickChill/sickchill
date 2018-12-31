@@ -155,8 +155,7 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
 
             results += items
-
+        
         return results
-
 
 provider = SceneTimeProvider()
