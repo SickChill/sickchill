@@ -748,5 +748,30 @@ class QueueItemRemove(ShowQueueItem):
             except Exception as error:
                 logger.log('Unable to delete show from Trakt: {0}. Error: {1}'.format(self.show.name, error), logger.WARNING)
 
+        # If any notification fails, don't stop postProcessor
+        try:
+            # send notifications
+            notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))  # pylint: disable=protected-access
+
+            # do the library update for KODI
+            notifiers.kodi_notifier.update_library(ep_obj.show.name)
+
+            # do the library update for Plex
+            notifiers.plex_notifier.update_library(ep_obj)
+
+            # do the library update for EMBY
+            notifiers.emby_notifier.update_library(ep_obj.show)
+
+            # do the library update for NMJ
+            # nmj_notifier kicks off its library update when the notify_download is issued (inside notifiers)
+
+            # do the library update for Synology Indexer
+            notifiers.synoindex_notifier.addFile(ep_obj.location)
+
+            # do the library update for pyTivo
+            notifiers.pytivo_notifier.update_library(ep_obj)
+        except Exception:
+        logger.log("Some notifications could not be sent. Continuing with postProcessing...")
+
         super(QueueItemRemove, self).finish()
         self.finish()
