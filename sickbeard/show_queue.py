@@ -771,7 +771,7 @@ class QueueItemRemove(ShowQueueItem):
             # do the library update for pyTivo
             notifiers.pytivo_notifier.update_library(ep_obj)
         except Exception:
-        logger.log("Some notifications could not be sent. Continuing with postProcessing...")
+            logger.log("Some notifications could not be sent. Continuing with postProcessing...")
 
         super(QueueItemRemove, self).finish()
         self.finish()
