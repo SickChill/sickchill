@@ -12,6 +12,9 @@ exemptLabels:
   - Pinned
   - Security
   - "[Status] Maybe Later"
+  - "Feature Request"
+  - "In Progress"
+  - "Enhancement"
 
 # Set to true to ignore issues in a project (defaults to false)
 exemptProjects: false

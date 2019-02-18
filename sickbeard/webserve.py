@@ -1192,15 +1192,6 @@ class Home(WebRoot):
             return _('ERROR: {last_error}').format(last_error=notifiers.email_notifier.last_err)
 
     @staticmethod
-    def testNMA(nma_api=None, nma_priority=0):
-
-        result = notifiers.nma_notifier.test_notify(nma_api, nma_priority)
-        if result:
-            return _("Test NMA notice sent successfully")
-        else:
-            return _("Test NMA notice failed")
-
-    @staticmethod
     def testPushalot(authorizationToken=None):
 
         result = notifiers.pushalot_notifier.test_notify(authorizationToken)
@@ -3522,7 +3513,8 @@ class Manage(Home, WebRoot):
                        **kwargs):
         dir_map = {}
         for cur_arg in filter(lambda x: x.startswith('orig_root_dir_'), kwargs):
-            dir_map[kwargs[cur_arg]] = ek(six.text_type, kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')], 'utf-8')
+            orig_root_dir_uni = ek(six.text_type, kwargs[cur_arg], 'utf-8')
+            dir_map[orig_root_dir_uni] = ek(six.text_type, kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')], 'utf-8')
 
         showIDs = toEdit.split("|")
         errors = []
@@ -4899,8 +4891,6 @@ class ConfigNotifications(Config):
             use_pytivo=None, pytivo_notify_onsnatch=None, pytivo_notify_ondownload=None,
             pytivo_notify_onsubtitledownload=None, pytivo_update_library=None,
             pytivo_host=None, pytivo_share_name=None, pytivo_tivo_name=None,
-            use_nma=None, nma_notify_onsnatch=None, nma_notify_ondownload=None,
-            nma_notify_onsubtitledownload=None, nma_api=None, nma_priority=0,
             use_pushalot=None, pushalot_notify_onsnatch=None, pushalot_notify_ondownload=None,
             pushalot_notify_onsubtitledownload=None, pushalot_authorizationtoken=None,
             use_pushbullet=None, pushbullet_notify_onsnatch=None, pushbullet_notify_ondownload=None,
@@ -5088,13 +5078,6 @@ class ConfigNotifications(Config):
         sickbeard.PYTIVO_HOST = config.clean_host(pytivo_host)
         sickbeard.PYTIVO_SHARE_NAME = pytivo_share_name
         sickbeard.PYTIVO_TIVO_NAME = pytivo_tivo_name
-
-        sickbeard.USE_NMA = config.checkbox_to_value(use_nma)
-        sickbeard.NMA_NOTIFY_ONSNATCH = config.checkbox_to_value(nma_notify_onsnatch)
-        sickbeard.NMA_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(nma_notify_ondownload)
-        sickbeard.NMA_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(nma_notify_onsubtitledownload)
-        sickbeard.NMA_API = nma_api
-        sickbeard.NMA_PRIORITY = nma_priority
 
         sickbeard.USE_PUSHALOT = config.checkbox_to_value(use_pushalot)
         sickbeard.PUSHALOT_NOTIFY_ONSNATCH = config.checkbox_to_value(pushalot_notify_onsnatch)

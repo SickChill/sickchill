@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2018-11-30 21:01+0000\n"
+"POT-Creation-Date: 2019-01-06 23:53+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: en_GB\n"
@@ -87,7 +87,7 @@ msgid "Biography"
 msgstr "Biography"
 
 #: gui/slick/views/config_general.mako:77 gui/slick/views/layouts/main.mako:167
-#: sickbeard/__init__.py:71 sickbeard/webserve.py:3823
+#: sickbeard/__init__.py:71 sickbeard/webserve.py:3814
 msgid "History"
 msgstr "History"
 
@@ -100,7 +100,7 @@ msgid "Western"
 msgstr "Western"
 
 #: gui/slick/views/config_general.mako:78 gui/slick/views/layouts/main.mako:235
-#: sickbeard/__init__.py:72 sickbeard/webserve.py:2446
+#: sickbeard/__init__.py:72 sickbeard/webserve.py:2437
 msgid "News"
 msgstr "News"
 
@@ -295,283 +295,283 @@ msgstr ""
 msgid "Patching socket to IPv4 only"
 msgstr ""
 
-#: sickbeard/helpers.py:240
+#: sickbeard/helpers.py:241
 msgid "Invalid filename. Filename must be a string. {0}"
 msgstr ""
 
-#: sickbeard/helpers.py:316
+#: sickbeard/helpers.py:317
 msgid "Trying to find {} on {}"
 msgstr ""
 
-#: sickbeard/helpers.py:451
+#: sickbeard/helpers.py:452
 msgid "Failed to create hardlink of {0} at {1}. Error: {2}. Copying instead"
 msgstr ""
 
-#: sickbeard/helpers.py:488
+#: sickbeard/helpers.py:489
 msgid "Failed to create symlink of {0} at {1}. Error: {2}. Copying instead"
 msgstr ""
 
-#: sickbeard/helpers.py:499
+#: sickbeard/helpers.py:500
 msgid "Checking if the path {0} already exists"
 msgstr ""
 
-#: sickbeard/helpers.py:505 sickbeard/helpers.py:525
+#: sickbeard/helpers.py:506 sickbeard/helpers.py:526
 msgid "Folder {0} didn't exist, creating it"
 msgstr ""
 
-#: sickbeard/helpers.py:508 sickbeard/helpers.py:532
+#: sickbeard/helpers.py:509 sickbeard/helpers.py:533
 msgid "Failed creating {0} : {1}"
 msgstr ""
 
-#: sickbeard/helpers.py:573
+#: sickbeard/helpers.py:574
 msgid "Renaming file from {0} to {1}"
 msgstr ""
 
-#: sickbeard/helpers.py:576
+#: sickbeard/helpers.py:577
 msgid "Failed renaming {0} to {1} : {2}"
 msgstr ""
 
-#: sickbeard/helpers.py:596
+#: sickbeard/helpers.py:597
 msgid "Trying to clean any empty folders under "
 msgstr ""
 
-#: sickbeard/helpers.py:606
+#: sickbeard/helpers.py:607
 #, fuzzy
 msgid "Deleting empty folder: "
 msgstr "Don't delete empty folders"
 
-#: sickbeard/helpers.py:612
+#: sickbeard/helpers.py:613
 #, fuzzy
 msgid "Unable to delete {0}. Error: {1}"
 msgstr "Unable to update show: {error}"
 
-#: sickbeard/helpers.py:648
+#: sickbeard/helpers.py:649
 msgid "No parent path provided in {location} unable to get permissions from it"
 msgstr ""
 
-#: sickbeard/helpers.py:671
+#: sickbeard/helpers.py:672
 msgid "Not running as root or owner of {location}, not trying to set permissions"
 msgstr ""
 
-#: sickbeard/helpers.py:677
+#: sickbeard/helpers.py:678
 msgid "Failed to set permission for {0} to {1:o}, parent directory has {2:o}"
 msgstr ""
 
-#: sickbeard/helpers.py:709
+#: sickbeard/helpers.py:710
 msgid "Not running as root or owner of {}, not trying to set the set-group-ID"
 msgstr ""
 
-#: sickbeard/helpers.py:714
+#: sickbeard/helpers.py:715
 msgid "Respecting the set-group-ID bit on the parent directory for {0}"
 msgstr ""
 
-#: sickbeard/helpers.py:759
+#: sickbeard/helpers.py:760
 msgid "Found absolute number {absolute} for show {show} {ep}"
 msgstr ""
 
-#: sickbeard/helpers.py:763
+#: sickbeard/helpers.py:764
 msgid "No entries for absolute number for show {show} {ep}"
 msgstr ""
 
-#: sickbeard/helpers.py:845
+#: sickbeard/helpers.py:846
 msgid "pyopenssl module missing, please install for https access"
 msgstr ""
 
-#: sickbeard/helpers.py:869
+#: sickbeard/helpers.py:870
 msgid "Error creating SSL key and certificate"
 msgstr ""
 
-#: sickbeard/helpers.py:890
+#: sickbeard/helpers.py:891
 msgid "Not creating backup, {0} doesn't exist"
 msgstr ""
 
-#: sickbeard/helpers.py:894
+#: sickbeard/helpers.py:895
 msgid "Trying to back up {0} to {1}"
 msgstr ""
 
-#: sickbeard/helpers.py:896
+#: sickbeard/helpers.py:897
 msgid "Backup done"
 msgstr ""
 
-#: sickbeard/helpers.py:899
+#: sickbeard/helpers.py:900
 msgid "Error while trying to back up {0} to {1} : {2}"
 msgstr ""
 
-#: sickbeard/helpers.py:902
+#: sickbeard/helpers.py:903
 msgid "Trying again."
 msgstr ""
 
-#: sickbeard/helpers.py:905
+#: sickbeard/helpers.py:906
 msgid "Unable to back up {0} to {1} please do it manually."
 msgstr ""
 
-#: sickbeard/helpers.py:926 sickbeard/helpers.py:941
+#: sickbeard/helpers.py:927 sickbeard/helpers.py:942
 msgid "Not restoring, {0} doesn't exist"
 msgstr ""
 
-#: sickbeard/helpers.py:930
+#: sickbeard/helpers.py:931
 msgid "Trying to backup {0} to {1}.r{2} before restoring backup"
 msgstr ""
 
-#: sickbeard/helpers.py:935
+#: sickbeard/helpers.py:936
 msgid ""
 "Error while trying to backup DB file {0} before proceeding with restore: "
 "{1}"
 msgstr ""
 
-#: sickbeard/helpers.py:945
+#: sickbeard/helpers.py:946
 msgid "Trying to restore file {0} to {1}"
 msgstr ""
 
-#: sickbeard/helpers.py:947
+#: sickbeard/helpers.py:948
 #, fuzzy
 msgid "Restore done"
 msgstr "Restore"
 
-#: sickbeard/helpers.py:950
+#: sickbeard/helpers.py:951
 msgid "Error while trying to restore file {0}. Error: {1}"
 msgstr ""
 
-#: sickbeard/helpers.py:953
+#: sickbeard/helpers.py:954
 msgid "Trying again. Attempt #: {0}"
 msgstr ""
 
-#: sickbeard/helpers.py:956
+#: sickbeard/helpers.py:957
 msgid "Unable to restore file {0} to {1}"
 msgstr ""
 
-#: sickbeard/helpers.py:1090
+#: sickbeard/helpers.py:1091
 msgid "Error when attempting to find show: {0} in SickChill. Error: {1} "
 msgstr ""
 
-#: sickbeard/helpers.py:1167
+#: sickbeard/helpers.py:1168
 msgid "Usage of anidb disabled. Skiping"
 msgstr ""
 
-#: sickbeard/helpers.py:1171
+#: sickbeard/helpers.py:1172
 msgid "anidb username and/or password are not set. Aborting anidb lookup."
 msgstr ""
 
-#: sickbeard/helpers.py:1176
+#: sickbeard/helpers.py:1177
 msgid "anidb: {0} "
 msgstr ""
 
-#: sickbeard/helpers.py:1181 sickbeard/helpers.py:1190
+#: sickbeard/helpers.py:1182 sickbeard/helpers.py:1191
 msgid "anidb exception msg: {0} "
 msgstr ""
 
-#: sickbeard/helpers.py:1211 sickbeard/helpers.py:1264
+#: sickbeard/helpers.py:1212 sickbeard/helpers.py:1265
 msgid "Zip creation error: {0} "
 msgstr ""
 
-#: sickbeard/helpers.py:1243
+#: sickbeard/helpers.py:1244
 msgid "Zip extraction error: {0} "
 msgstr ""
 
-#: sickbeard/helpers.py:1293
+#: sickbeard/helpers.py:1294
 msgid "Zip extraction error: {0}"
 msgstr ""
 
-#: sickbeard/helpers.py:1315
+#: sickbeard/helpers.py:1316
 msgid "Found indexer mapping in cache for show: "
 msgstr ""
 
-#: sickbeard/helpers.py:1333
+#: sickbeard/helpers.py:1334
 msgid "Unable to map {} -> {} for show: {}, skipping it"
 msgstr ""
 
-#: sickbeard/helpers.py:1338
+#: sickbeard/helpers.py:1339
 msgid "Mapping {} -> {} for show: {}"
 msgstr ""
 
-#: sickbeard/helpers.py:1343
+#: sickbeard/helpers.py:1344
 msgid "Adding indexer mapping to DB for show: {}"
 msgstr ""
 
-#: sickbeard/helpers.py:1390
+#: sickbeard/helpers.py:1391
 msgid "Using global proxy: {}"
 msgstr ""
 
-#: sickbeard/helpers.py:1470
+#: sickbeard/helpers.py:1471
 msgid "Requested a json response but response was not json, check the url: {0}"
 msgstr ""
 
-#: sickbeard/helpers.py:1509
+#: sickbeard/helpers.py:1510
 msgid ""
 "Problem downloading file, setting permissions or writing file to {0} - "
 "ERROR: {1}"
 msgstr ""
 
-#: sickbeard/helpers.py:1523
+#: sickbeard/helpers.py:1524
 msgid "Request failed: {0} ({1})"
 msgstr ""
 
-#: sickbeard/helpers.py:1528
+#: sickbeard/helpers.py:1529
 msgid ""
 "SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to "
 "1.0.1e+"
 msgstr ""
 
-#: sickbeard/helpers.py:1530
+#: sickbeard/helpers.py:1531
 msgid ""
 "SSL Error requesting url: '{0}' Try disabling Cert Verification on the "
 "advanced tab of /config/general"
 msgstr ""
 
-#: sickbeard/helpers.py:1570
+#: sickbeard/helpers.py:1571
 msgid "url is {0}"
 msgstr ""
 
-#: sickbeard/helpers.py:1597
+#: sickbeard/helpers.py:1598
 msgid "Unable to get size for file {0} because the link to the file is not valid"
 msgstr ""
 
-#: sickbeard/helpers.py:1603
+#: sickbeard/helpers.py:1604
 msgid "Unable to get size for file {0} Error: {1}"
 msgstr ""
 
-#: sickbeard/helpers.py:1610
+#: sickbeard/helpers.py:1611
 msgid "Generating New API key"
 msgstr ""
 
-#: sickbeard/helpers.py:1667
+#: sickbeard/helpers.py:1668
 msgid "Trying to determine free space on the destination drive"
 msgstr ""
 
-#: sickbeard/helpers.py:1670
+#: sickbeard/helpers.py:1671
 msgid "A path to a file is required for the source. {0} is not a file."
 msgstr ""
 
-#: sickbeard/helpers.py:1674
+#: sickbeard/helpers.py:1675
 msgid ""
 "A path is required for the destination. Check that the root dir and show "
 "locations are correct for {0} (I got '{1}')"
 msgstr ""
 
-#: sickbeard/helpers.py:1684
+#: sickbeard/helpers.py:1685
 msgid ""
 "Process method is 'move' and src and destination are on the same device, "
 "skipping free space check"
 msgstr ""
 
-#: sickbeard/helpers.py:1690
+#: sickbeard/helpers.py:1691
 msgid "Unable to determine free space, so I will assume there is enough."
 msgstr ""
 
-#: sickbeard/helpers.py:1691 sickbeard/helpers.py:1724
+#: sickbeard/helpers.py:1692 sickbeard/helpers.py:1725
 msgid "Error: {error}"
 msgstr ""
 
-#: sickbeard/helpers.py:1709
+#: sickbeard/helpers.py:1710
 msgid "Not enough free space: Needed: {0} bytes ( {1} ), found: {2} bytes ( {3} )"
 msgstr ""
 
-#: sickbeard/helpers.py:1723
+#: sickbeard/helpers.py:1724
 #, fuzzy
 msgid "Unable to determine free space"
 msgstr "Unable to verify key"
 
-#: sickbeard/helpers.py:1846
+#: sickbeard/helpers.py:1847
 msgid "Show id {} not found on {}, not adding the show: {}"
 msgstr ""
 
@@ -645,19 +645,19 @@ msgstr "Trakt Checker"
 msgid "Event"
 msgstr "Event"
 
-#: sickbeard/logger.py:490 sickbeard/webserve.py:1367
-#: sickbeard/webserve.py:1370 sickbeard/webserve.py:1555
-#: sickbeard/webserve.py:1562 sickbeard/webserve.py:1769
-#: sickbeard/webserve.py:1782 sickbeard/webserve.py:1805
-#: sickbeard/webserve.py:1818 sickbeard/webserve.py:1823
-#: sickbeard/webserve.py:1839 sickbeard/webserve.py:1844
+#: sickbeard/logger.py:490 sickbeard/webserve.py:1358
+#: sickbeard/webserve.py:1361 sickbeard/webserve.py:1546
+#: sickbeard/webserve.py:1553 sickbeard/webserve.py:1760
+#: sickbeard/webserve.py:1773 sickbeard/webserve.py:1796
+#: sickbeard/webserve.py:1809 sickbeard/webserve.py:1814
+#: sickbeard/webserve.py:1830 sickbeard/webserve.py:1835
+#: sickbeard/webserve.py:1899 sickbeard/webserve.py:1902
 #: sickbeard/webserve.py:1908 sickbeard/webserve.py:1911
-#: sickbeard/webserve.py:1917 sickbeard/webserve.py:1920
-#: sickbeard/webserve.py:1927 sickbeard/webserve.py:1930
-#: sickbeard/webserve.py:1952 sickbeard/webserve.py:2057
-#: sickbeard/webserve.py:2062 sickbeard/webserve.py:2067
-#: sickbeard/webserve.py:2094 sickbeard/webserve.py:2098
-#: sickbeard/webserve.py:2103
+#: sickbeard/webserve.py:1918 sickbeard/webserve.py:1921
+#: sickbeard/webserve.py:1943 sickbeard/webserve.py:2048
+#: sickbeard/webserve.py:2053 sickbeard/webserve.py:2058
+#: sickbeard/webserve.py:2085 sickbeard/webserve.py:2089
+#: sickbeard/webserve.py:2094
 msgid "Error"
 msgstr "Error"
 
@@ -801,12 +801,12 @@ msgstr "Invalid show parameters"
 msgid "Invalid parameters"
 msgstr "Invalid parameters"
 
-#: sickbeard/webserve.py:712 sickbeard/webserve.py:1952
+#: sickbeard/webserve.py:712 sickbeard/webserve.py:1943
 msgid "Episode couldn't be retrieved"
 msgstr "Episode couldn't be retrieved"
 
-#: sickbeard/webserve.py:760 sickbeard/webserve.py:1274
-#: sickbeard/webserve.py:1304
+#: sickbeard/webserve.py:760 sickbeard/webserve.py:1265
+#: sickbeard/webserve.py:1295
 msgid "Home"
 msgstr "Home"
 
@@ -1051,14 +1051,6 @@ msgid "ERROR: {last_error}"
 msgstr "ERROR: {last_error}"
 
 #: sickbeard/webserve.py:1199
-msgid "Test NMA notice sent successfully"
-msgstr "Test NMA notice sent successfully"
-
-#: sickbeard/webserve.py:1201
-msgid "Test NMA notice failed"
-msgstr "Test NMA notice failed"
-
-#: sickbeard/webserve.py:1208
 msgid ""
 "Pushalot notification succeeded. Check your Pushalot clients to make sure"
 " it worked"
@@ -1066,11 +1058,11 @@ msgstr ""
 "Pushalot notification succeeded. Check your Pushalot clients to make sure"
 " it worked"
 
-#: sickbeard/webserve.py:1210
+#: sickbeard/webserve.py:1201
 msgid "Error sending Pushalot notification"
 msgstr "Error sending Pushalot notification"
 
-#: sickbeard/webserve.py:1217
+#: sickbeard/webserve.py:1208
 msgid ""
 "Pushbullet notification succeeded. Check your device to make sure it "
 "worked"
@@ -1078,26 +1070,26 @@ msgstr ""
 "Pushbullet notification succeeded. Check your device to make sure it "
 "worked"
 
-#: sickbeard/webserve.py:1219 sickbeard/webserve.py:1229
-#: sickbeard/webserve.py:1238
+#: sickbeard/webserve.py:1210 sickbeard/webserve.py:1220
+#: sickbeard/webserve.py:1229
 msgid "Error sending Pushbullet notification"
 msgstr "Error sending Pushbullet notification"
 
 #: gui/slick/views/displayShow.mako:435
 #: gui/slick/views/inc_home_showList.mako:178 gui/slick/views/manage.mako:49
-#: sickbeard/webserve.py:1255
+#: sickbeard/webserve.py:1246
 msgid "Status"
 msgstr "Status"
 
-#: sickbeard/webserve.py:1274 sickbeard/webserve.py:1304
+#: sickbeard/webserve.py:1265 sickbeard/webserve.py:1295
 msgid "Restarting SickChill"
 msgstr "Restarting SickChill"
 
-#: sickbeard/webserve.py:1307
+#: sickbeard/webserve.py:1298
 msgid "Update Failed"
 msgstr "Update Failed"
 
-#: sickbeard/webserve.py:1308
+#: sickbeard/webserve.py:1299
 msgid ""
 "Update wasn't successful, not restarting. Check your log for more "
 "information."
@@ -1105,30 +1097,30 @@ msgstr ""
 "Update wasn't successful, not restarting. Check your log for more "
 "information."
 
-#: sickbeard/webserve.py:1336
+#: sickbeard/webserve.py:1327
 msgid "Checking out branch"
 msgstr "Checking out branch"
 
-#: sickbeard/webserve.py:1339
+#: sickbeard/webserve.py:1330
 msgid "Already on branch"
 msgstr "Already on branch"
 
-#: sickbeard/webserve.py:1367
+#: sickbeard/webserve.py:1358
 msgid "Invalid show ID: {show}"
 msgstr "Invalid show ID: {show}"
 
-#: sickbeard/webserve.py:1370 sickbeard/webserve.py:1925
-#: sickbeard/webserve.py:2062 sickbeard/webserve.py:2098
+#: sickbeard/webserve.py:1361 sickbeard/webserve.py:1916
+#: sickbeard/webserve.py:2053 sickbeard/webserve.py:2089
 msgid "Show not in show list"
 msgstr "Show not in show list"
 
 #: gui/slick/views/inc_rootDirs.mako:31 gui/slick/views/manage.mako:38
-#: gui/slick/views/manage_massEdit.mako:74 sickbeard/webserve.py:1386
-#: sickbeard/webserve.py:2085
+#: gui/slick/views/manage_massEdit.mako:74 sickbeard/webserve.py:1377
+#: sickbeard/webserve.py:2076
 msgid "Edit"
 msgstr "Edit"
 
-#: sickbeard/webserve.py:1397
+#: sickbeard/webserve.py:1388
 msgid ""
 "This show is in the process of being downloaded - the info below is "
 "incomplete."
@@ -1136,197 +1128,197 @@ msgstr ""
 "This show is in the process of being downloaded - the info below is "
 "incomplete."
 
-#: sickbeard/webserve.py:1400
+#: sickbeard/webserve.py:1391
 msgid "The information on this page is in the process of being updated."
 msgstr "The information on this page is in the process of being updated."
 
-#: sickbeard/webserve.py:1403
+#: sickbeard/webserve.py:1394
 msgid "The episodes below are currently being refreshed from disk"
 msgstr "The episodes below are currently being refreshed from disk"
 
-#: sickbeard/webserve.py:1406
+#: sickbeard/webserve.py:1397
 msgid "Currently downloading subtitles for this show"
 msgstr "Currently downloading subtitles for this show"
 
-#: sickbeard/webserve.py:1409
+#: sickbeard/webserve.py:1400
 msgid "This show is queued to be refreshed."
 msgstr "This show is queued to be refreshed."
 
-#: sickbeard/webserve.py:1412
+#: sickbeard/webserve.py:1403
 msgid "This show is queued and awaiting an update."
 msgstr "This show is queued and awaiting an update."
 
-#: sickbeard/webserve.py:1415
+#: sickbeard/webserve.py:1406
 msgid "This show is queued and awaiting subtitles download."
 msgstr "This show is queued and awaiting subtitles download."
 
-#: gui/slick/js/core.js:3623 sickbeard/webserve.py:1420
+#: gui/slick/js/core.js:3602 sickbeard/webserve.py:1411
 msgid "Resume"
 msgstr "Resume"
 
-#: gui/slick/js/core.js:3623 gui/slick/views/viewlogs.mako:12
-#: sickbeard/webserve.py:1422
+#: gui/slick/js/core.js:3602 gui/slick/views/viewlogs.mako:12
+#: sickbeard/webserve.py:1413
 msgid "Pause"
 msgstr "Pause"
 
 #: gui/slick/views/editShow.mako:368 gui/slick/views/inc_blackwhitelist.mako:40
 #: gui/slick/views/inc_blackwhitelist.mako:85 gui/slick/views/manage.mako:58
-#: gui/slick/views/manage_failedDownloads.mako:43 sickbeard/webserve.py:1425
+#: gui/slick/views/manage_failedDownloads.mako:43 sickbeard/webserve.py:1416
 msgid "Remove"
 msgstr "Remove"
 
-#: sickbeard/webserve.py:1426
+#: sickbeard/webserve.py:1417
 msgid "Re-scan files"
 msgstr "Re-scan files"
 
-#: sickbeard/webserve.py:1428
+#: sickbeard/webserve.py:1419
 msgid "Force Full Update"
 msgstr "Force Full Update"
 
-#: sickbeard/webserve.py:1430
+#: sickbeard/webserve.py:1421
 msgid "Update show in KODI"
 msgstr "Update show in KODI"
 
-#: sickbeard/webserve.py:1432
+#: sickbeard/webserve.py:1423
 msgid "Update show in Emby"
 msgstr "Update show in Emby"
 
-#: sickbeard/webserve.py:1436
+#: sickbeard/webserve.py:1427
 msgid "Hide specials"
 msgstr "Hide specials"
 
-#: sickbeard/webserve.py:1439
+#: sickbeard/webserve.py:1430
 msgid "Show specials"
 msgstr "Show specials"
 
-#: sickbeard/webserve.py:1441 sickbeard/webserve.py:2088
-#: sickbeard/webserve.py:2089
+#: sickbeard/webserve.py:1432 sickbeard/webserve.py:2079
+#: sickbeard/webserve.py:2080
 msgid "Preview Rename"
 msgstr "Preview Rename"
 
-#: sickbeard/webserve.py:1445
+#: sickbeard/webserve.py:1436
 msgid "Download Subtitles"
 msgstr "Download Subtitles"
 
-#: sickbeard/webserve.py:1530
+#: sickbeard/webserve.py:1521
 msgid "No scene exceptions"
 msgstr "No scene exceptions"
 
-#: sickbeard/webserve.py:1551 sickbeard/webserve.py:1818
-#: sickbeard/webserve.py:1839
+#: sickbeard/webserve.py:1542 sickbeard/webserve.py:1809
+#: sickbeard/webserve.py:1830
 msgid "Invalid show ID"
 msgstr "Invalid show ID"
 
-#: sickbeard/webserve.py:1558 sickbeard/webserve.py:1823
-#: sickbeard/webserve.py:1844
+#: sickbeard/webserve.py:1549 sickbeard/webserve.py:1814
+#: sickbeard/webserve.py:1835
 msgid "Unable to find the specified show"
 msgstr "Unable to find the specified show"
 
-#: sickbeard/webserve.py:1588
+#: sickbeard/webserve.py:1579
 msgid "Unable to retreive Fansub Groups from AniDB."
 msgstr "Unable to retrieve Fansub Groups from AniDB."
 
-#: sickbeard/webserve.py:1597 sickbeard/webserve.py:1600
+#: sickbeard/webserve.py:1588 sickbeard/webserve.py:1591
 msgid "Edit Show"
 msgstr "Edit Show"
 
-#: sickbeard/webserve.py:1686 sickbeard/webserve.py:1721
+#: sickbeard/webserve.py:1677 sickbeard/webserve.py:1712
 msgid "Unable to refresh this show: {error}"
 msgstr "Unable to refresh this show: {error}"
 
-#: sickbeard/webserve.py:1713
+#: sickbeard/webserve.py:1704
 msgid "New location <tt>{location}</tt> does not exist"
 msgstr "New location <tt>{location}</tt> does not exist"
 
-#: sickbeard/webserve.py:1739
+#: sickbeard/webserve.py:1730
 msgid "Unable to update show: {error}"
 msgstr "Unable to update show: {error}"
 
-#: sickbeard/webserve.py:1745
+#: sickbeard/webserve.py:1736
 msgid "Unable to force an update on scene exceptions of the show."
 msgstr "Unable to force an update on scene exceptions of the show."
 
-#: sickbeard/webserve.py:1752
+#: sickbeard/webserve.py:1743
 msgid "Unable to force an update on scene numbering of the show."
 msgstr "Unable to force an update on scene numbering of the show."
 
-#: sickbeard/webserve.py:1759 sickbeard/webserve.py:3580
+#: sickbeard/webserve.py:1750 sickbeard/webserve.py:3571
 msgid "{num_errors:d} error{plural} while saving changes:"
 msgstr "{num_errors:d} error{plural} while saving changes:"
 
-#: sickbeard/webserve.py:1772
+#: sickbeard/webserve.py:1763
 msgid "{show_name} has been {paused_resumed}"
 msgstr "{show_name} has been {paused_resumed}"
 
-#: sickbeard/webserve.py:1772
+#: sickbeard/webserve.py:1763
 msgid "resumed"
 msgstr "resumed"
 
-#: sickbeard/webserve.py:1772
+#: sickbeard/webserve.py:1763
 msgid "paused"
 msgstr "paused"
 
-#: sickbeard/webserve.py:1785
+#: sickbeard/webserve.py:1776
 msgid "{show_name} has been {deleted_trashed} {was_deleted}"
 msgstr "{show_name} has been {deleted_trashed} {was_deleted}"
 
-#: sickbeard/webserve.py:1787
+#: sickbeard/webserve.py:1778
 msgid "deleted"
 msgstr "deleted"
 
-#: sickbeard/webserve.py:1787
+#: sickbeard/webserve.py:1778
 msgid "trashed"
 msgstr "trashed"
 
-#: sickbeard/webserve.py:1788
+#: sickbeard/webserve.py:1779
 msgid "(media untouched)"
 msgstr "(media untouched)"
 
-#: sickbeard/webserve.py:1788
+#: sickbeard/webserve.py:1779
 msgid "(with all related media)"
 msgstr "(with all related media)"
 
-#: sickbeard/webserve.py:1809
+#: sickbeard/webserve.py:1800
 msgid "Unable to refresh this show."
 msgstr "Unable to refresh this show."
 
-#: sickbeard/webserve.py:1829
+#: sickbeard/webserve.py:1820
 msgid "Unable to update this show."
 msgstr "Unable to update this show."
 
-#: sickbeard/webserve.py:1868
+#: sickbeard/webserve.py:1859
 msgid "Library update command sent to KODI host(s)): {kodi_hosts}"
 msgstr "Library update command sent to KODI host(s)): {kodi_hosts}"
 
-#: sickbeard/webserve.py:1870
+#: sickbeard/webserve.py:1861
 msgid "Unable to contact one or more KODI host(s)): {kodi_hosts}"
 msgstr "Unable to contact one or more KODI host(s)): {kodi_hosts}"
 
-#: sickbeard/webserve.py:1879
+#: sickbeard/webserve.py:1870
 msgid "Library update command sent to Plex Media Server host: {plex_server}"
 msgstr "Library update command sent to Plex Media Server host: {plex_server}"
 
-#: sickbeard/webserve.py:1882
+#: sickbeard/webserve.py:1873
 msgid "Unable to contact Plex Media Server host: {plex_server}"
 msgstr "Unable to contact Plex Media Server host: {plex_server}"
 
-#: sickbeard/webserve.py:1894
+#: sickbeard/webserve.py:1885
 msgid "Library update command sent to Emby host: {emby_host}"
 msgstr "Library update command sent to Emby host: {emby_host}"
 
-#: sickbeard/webserve.py:1896
+#: sickbeard/webserve.py:1887
 msgid "Unable to contact Emby host: {emby_host}"
 msgstr "Unable to contact Emby host: {emby_host}"
 
-#: sickbeard/webserve.py:1906 sickbeard/webserve.py:2094
+#: sickbeard/webserve.py:1897 sickbeard/webserve.py:2085
 msgid "You must specify a show and at least one episode"
 msgstr "You must specify a show and at least one episode"
 
-#: sickbeard/webserve.py:1915
+#: sickbeard/webserve.py:1906
 msgid "Invalid status"
 msgstr "Invalid status"
 
-#: sickbeard/webserve.py:2014
+#: sickbeard/webserve.py:2005
 msgid ""
 "Backlog was automatically started for the following seasons of "
 "<b>{show_name}</b>"
@@ -1335,16 +1327,16 @@ msgstr ""
 "<b>{show_name}</b>"
 
 #: gui/slick/views/displayShow.mako:73 gui/slick/views/displayShow.mako:78
-#: gui/slick/views/displayShow.mako:403 sickbeard/webserve.py:2021
-#: sickbeard/webserve.py:2040
+#: gui/slick/views/displayShow.mako:403 sickbeard/webserve.py:2012
+#: sickbeard/webserve.py:2031
 msgid "Season"
 msgstr "Series"
 
-#: sickbeard/webserve.py:2028
+#: sickbeard/webserve.py:2019
 msgid "Backlog started"
 msgstr "Backlog started"
 
-#: sickbeard/webserve.py:2033
+#: sickbeard/webserve.py:2024
 msgid ""
 "Retrying Search was automatically started for the following season of "
 "<b>{show_name}</b>"
@@ -1352,40 +1344,40 @@ msgstr ""
 "Retrying Search was automatically started for the following series of "
 "<b>{show_name}</b>"
 
-#: sickbeard/webserve.py:2047
+#: sickbeard/webserve.py:2038
 msgid "Retry Search started"
 msgstr "Retry Search started"
 
-#: sickbeard/webserve.py:2057
+#: sickbeard/webserve.py:2048
 msgid "You must specify a show"
 msgstr "You must specify a show"
 
-#: sickbeard/webserve.py:2067 sickbeard/webserve.py:2103
+#: sickbeard/webserve.py:2058 sickbeard/webserve.py:2094
 msgid "Can't rename episodes when the show dir is missing."
 msgstr "Can't rename episodes when the show dir is missing."
 
-#: sickbeard/webserve.py:2273 sickbeard/webserve.py:2294
+#: sickbeard/webserve.py:2264 sickbeard/webserve.py:2285
 msgid "New subtitles downloaded: {new_subtitle_languages}"
 msgstr "New subtitles downloaded: {new_subtitle_languages}"
 
-#: sickbeard/webserve.py:2276 sickbeard/webserve.py:2297
+#: sickbeard/webserve.py:2267 sickbeard/webserve.py:2288
 msgid "No subtitles downloaded"
 msgstr "No subtitles downloaded"
 
 #: gui/slick/views/config_general.mako:79 gui/slick/views/layouts/main.mako:236
-#: sickbeard/webserve.py:2423
+#: sickbeard/webserve.py:2414
 msgid "IRC"
 msgstr "IRC"
 
-#: sickbeard/webserve.py:2437
+#: sickbeard/webserve.py:2428
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
 msgstr "Could not load news from the repo. [Click here for news.md]) ({news_url})"
 
-#: sickbeard/webserve.py:2444 sickbeard/webserve.py:2465
+#: sickbeard/webserve.py:2435 sickbeard/webserve.py:2456
 msgid "The was a problem connecting to github, please refresh and try again"
 msgstr "The was a problem connecting to github, please refresh and try again"
 
-#: sickbeard/webserve.py:2460
+#: sickbeard/webserve.py:2451
 msgid ""
 "Could not load changes from the repo. [Click here for "
 "CHANGES.md]({changes_url})"
@@ -1393,85 +1385,85 @@ msgstr ""
 "Could not load changes from the repo. [Click here for CHANGES.md] "
 "({changes_url})"
 
-#: gui/slick/views/layouts/main.mako:237 sickbeard/webserve.py:2467
+#: gui/slick/views/layouts/main.mako:237 sickbeard/webserve.py:2458
 msgid "Changelog"
 msgstr "Changelog"
 
-#: gui/slick/views/layouts/main.mako:212 sickbeard/webserve.py:2478
-#: sickbeard/webserve.py:3871 sickbeard/webserve.py:4369
+#: gui/slick/views/layouts/main.mako:212 sickbeard/webserve.py:2469
+#: sickbeard/webserve.py:3862 sickbeard/webserve.py:4360
 msgid "Post Processing"
 msgstr "Post Processing"
 
-#: gui/slick/views/layouts/main.mako:150 sickbeard/webserve.py:2510
+#: gui/slick/views/layouts/main.mako:150 sickbeard/webserve.py:2501
 msgid "Add Shows"
 msgstr "Add Shows"
 
-#: sickbeard/webserve.py:2577
+#: sickbeard/webserve.py:2568
 msgid "No folders selected."
 msgstr "No folders selected."
 
-#: sickbeard/webserve.py:2701
+#: sickbeard/webserve.py:2692
 msgid "New Show"
 msgstr "New Show"
 
-#: sickbeard/webserve.py:2716
+#: sickbeard/webserve.py:2707
 msgid "Trending Shows"
 msgstr "Trending Shows"
 
-#: sickbeard/webserve.py:2718 sickbeard/webserve.py:2801
+#: sickbeard/webserve.py:2709 sickbeard/webserve.py:2792
 msgid "Popular Shows"
 msgstr "Popular Shows"
 
-#: sickbeard/webserve.py:2720 sickbeard/webserve.py:2734
+#: sickbeard/webserve.py:2711 sickbeard/webserve.py:2725
 msgid "Most Anticipated Shows"
 msgstr "Most Anticipated Shows"
 
-#: sickbeard/webserve.py:2722
+#: sickbeard/webserve.py:2713
 msgid "Most Collected Shows"
 msgstr "Most Collected Shows"
 
-#: sickbeard/webserve.py:2724
+#: sickbeard/webserve.py:2715
 msgid "Most Watched Shows"
 msgstr "Most Watched Shows"
 
-#: sickbeard/webserve.py:2726
+#: sickbeard/webserve.py:2717
 msgid "Most Played Shows"
 msgstr "Most Played Shows"
 
-#: sickbeard/webserve.py:2728
+#: sickbeard/webserve.py:2719
 msgid "Recommended Shows"
 msgstr "Recommended Shows"
 
-#: gui/slick/views/addShows_trendingShows.mako:60 sickbeard/webserve.py:2730
+#: gui/slick/views/addShows_trendingShows.mako:60 sickbeard/webserve.py:2721
 msgid "New Shows"
 msgstr "New Shows"
 
-#: gui/slick/views/addShows_trendingShows.mako:61 sickbeard/webserve.py:2732
+#: gui/slick/views/addShows_trendingShows.mako:61 sickbeard/webserve.py:2723
 msgid "Season Premieres"
 msgstr "Series Premieres"
 
-#: sickbeard/webserve.py:2821 sickbeard/webserve.py:2822
+#: sickbeard/webserve.py:2812 sickbeard/webserve.py:2813
 msgid "Existing Show"
 msgstr "Existing Show"
 
-#: sickbeard/webserve.py:2901
+#: sickbeard/webserve.py:2892
 msgid "No root directories setup, please go back and add one."
 msgstr "No root directories setup, please go back and add one."
 
-#: sickbeard/webserve.py:2907 sickbeard/webserve.py:2991
-#: sickbeard/webserve.py:3001
+#: sickbeard/webserve.py:2898 sickbeard/webserve.py:2982
+#: sickbeard/webserve.py:2992
 msgid "Unable to add show"
 msgstr "Unable to add show"
 
-#: sickbeard/webserve.py:2917 sickbeard/webserve.py:3036
+#: sickbeard/webserve.py:2908 sickbeard/webserve.py:3027
 msgid "Show added"
 msgstr "Show added"
 
-#: sickbeard/webserve.py:2917
+#: sickbeard/webserve.py:2908
 msgid "Adding the specified show {show_name}"
 msgstr "Adding the specified show {show_name}"
 
-#: sickbeard/webserve.py:2958
+#: sickbeard/webserve.py:2949
 msgid ""
 "Missing params, no Indexer ID or folder: {show_to_add} and "
 "{root_dir}/{show_path}"
@@ -1479,159 +1471,159 @@ msgstr ""
 "Missing params, no Indexer ID or folder: {show_to_add} and "
 "{root_dir}/{show_path}"
 
-#: sickbeard/webserve.py:2967
+#: sickbeard/webserve.py:2958
 msgid "Unknown error. Unable to add show due to problem with show selection."
 msgstr "Unknown error. Unable to add show due to problem with show selection."
 
-#: sickbeard/webserve.py:2991
+#: sickbeard/webserve.py:2982
 msgid "Folder {show_dir} exists already"
 msgstr "Folder {show_dir} exists already"
 
-#: sickbeard/webserve.py:3002
+#: sickbeard/webserve.py:2993
 msgid "Unable to create the folder {show_dir}, can't add the show"
 msgstr "Unable to create the folder {show_dir}, can't add the show"
 
-#: sickbeard/webserve.py:3036
+#: sickbeard/webserve.py:3027
 msgid "Adding the specified show into {show_dir}"
 msgstr "Adding the specified show into {show_dir}"
 
-#: sickbeard/webserve.py:3112
+#: sickbeard/webserve.py:3103
 msgid "Shows Added"
 msgstr "Shows Added"
 
-#: sickbeard/webserve.py:3113
+#: sickbeard/webserve.py:3104
 msgid "Automatically added {num_shows} from their existing metadata files"
 msgstr "Automatically added {num_shows} from their existing metadata files"
 
-#: gui/slick/views/layouts/main.mako:175 sickbeard/webserve.py:3130
+#: gui/slick/views/layouts/main.mako:175 sickbeard/webserve.py:3121
 msgid "Mass Update"
 msgstr "Mass Update"
 
-#: sickbeard/webserve.py:3168 sickbeard/webserve.py:3195
-#: sickbeard/webserve.py:3271 sickbeard/webserve.py:3272
+#: sickbeard/webserve.py:3159 sickbeard/webserve.py:3186
+#: sickbeard/webserve.py:3262 sickbeard/webserve.py:3263
 msgid "Episode Overview"
 msgstr "Episode Overview"
 
-#: sickbeard/webserve.py:3304
+#: sickbeard/webserve.py:3295
 msgid "Missing Subtitles"
 msgstr "Missing Subtitles"
 
-#: gui/slick/views/layouts/main.mako:176 sickbeard/webserve.py:3390
-#: sickbeard/webserve.py:3391
+#: gui/slick/views/layouts/main.mako:176 sickbeard/webserve.py:3381
+#: sickbeard/webserve.py:3382
 msgid "Backlog Overview"
 msgstr "Backlog Overview"
 
-#: sickbeard/webserve.py:3516
+#: sickbeard/webserve.py:3507
 msgid "Mass Edit"
 msgstr "Mass Edit"
 
-#: sickbeard/webserve.py:3627
+#: sickbeard/webserve.py:3618
 msgid "Unable to update show: {excption_format}"
 msgstr "Unable to update show: {excption_format}"
 
-#: sickbeard/webserve.py:3635
+#: sickbeard/webserve.py:3626
 msgid "Unable to refresh show {show_name}: {excption_format}"
 msgstr "Unable to refresh show {show_name}: {excption_format}"
 
-#: sickbeard/webserve.py:3646
+#: sickbeard/webserve.py:3637
 msgid "Errors encountered"
 msgstr "Errors encountered"
 
-#: gui/slick/views/config_general.mako:260 sickbeard/webserve.py:3652
+#: gui/slick/views/config_general.mako:260 sickbeard/webserve.py:3643
 msgid "Updates"
 msgstr "Updates"
 
-#: sickbeard/webserve.py:3657
+#: sickbeard/webserve.py:3648
 msgid "Refreshes"
 msgstr "Refreshes"
 
-#: sickbeard/webserve.py:3662
+#: sickbeard/webserve.py:3653
 msgid "Renames"
 msgstr "Renames"
 
 #: gui/slick/views/displayShow.mako:259 gui/slick/views/displayShow.mako:434
 #: gui/slick/views/editShow.mako:119 gui/slick/views/inc_addShowOptions.mako:20
-#: gui/slick/views/manage_massEdit.mako:262 sickbeard/webserve.py:3667
-#: sickbeard/webserve.py:5136
+#: gui/slick/views/manage_massEdit.mako:262 sickbeard/webserve.py:3658
+#: sickbeard/webserve.py:5118
 msgid "Subtitles"
 msgstr "Subtitles"
 
-#: sickbeard/webserve.py:3672
+#: sickbeard/webserve.py:3663
 msgid "The following actions were queued"
 msgstr "The following actions were queued"
 
-#: gui/slick/views/layouts/main.mako:192 sickbeard/webserve.py:3696
+#: gui/slick/views/layouts/main.mako:192 sickbeard/webserve.py:3687
 msgid "Failed Downloads"
 msgstr "Failed Downloads"
 
-#: gui/slick/views/layouts/main.mako:177 sickbeard/webserve.py:3716
+#: gui/slick/views/layouts/main.mako:177 sickbeard/webserve.py:3707
 msgid "Manage Searches"
 msgstr "Manage Searches"
 
-#: sickbeard/webserve.py:3724
+#: sickbeard/webserve.py:3715
 msgid "Backlog search started"
 msgstr "Backlog search started"
 
-#: sickbeard/webserve.py:3734
+#: sickbeard/webserve.py:3725
 msgid "Daily search started"
 msgstr "Daily search started"
 
-#: sickbeard/webserve.py:3743
+#: sickbeard/webserve.py:3734
 msgid "Find propers search started"
 msgstr "Find propers search started"
 
-#: sickbeard/webserve.py:3752
+#: sickbeard/webserve.py:3743
 msgid "Subtitle search started"
 msgstr "Subtitle search started"
 
-#: sickbeard/webserve.py:3817
+#: sickbeard/webserve.py:3808
 msgid "Remove Selected"
 msgstr "Remove Selected"
 
-#: sickbeard/webserve.py:3818
+#: sickbeard/webserve.py:3809
 msgid "Clear History"
 msgstr "Clear History"
 
-#: sickbeard/webserve.py:3819
+#: sickbeard/webserve.py:3810
 msgid "Trim History"
 msgstr "Trim History"
 
-#: sickbeard/webserve.py:3839
+#: sickbeard/webserve.py:3830
 msgid "Selected history entries removed"
 msgstr "Selected history entries removed"
 
-#: sickbeard/webserve.py:3846
+#: sickbeard/webserve.py:3837
 msgid "History cleared"
 msgstr "History cleared"
 
-#: sickbeard/webserve.py:3853
+#: sickbeard/webserve.py:3844
 msgid "Removed history entries older than 30 days"
 msgstr "Removed history entries older than 30 days"
 
-#: gui/slick/views/layouts/main.mako:207 sickbeard/webserve.py:3866
+#: gui/slick/views/layouts/main.mako:207 sickbeard/webserve.py:3857
 msgid "General"
 msgstr "General"
 
-#: sickbeard/webserve.py:3867 sickbeard/webserve.py:4167
+#: sickbeard/webserve.py:3858 sickbeard/webserve.py:4158
 msgid "Backup/Restore"
 msgstr "Backup/Restore"
 
-#: gui/slick/views/layouts/main.mako:209 sickbeard/webserve.py:3868
-#: sickbeard/webserve.py:4231
+#: gui/slick/views/layouts/main.mako:209 sickbeard/webserve.py:3859
+#: sickbeard/webserve.py:4222
 msgid "Search Settings"
 msgstr "Search Settings"
 
-#: gui/slick/views/layouts/main.mako:210 sickbeard/webserve.py:3869
-#: sickbeard/webserve.py:4547
+#: gui/slick/views/layouts/main.mako:210 sickbeard/webserve.py:3860
+#: sickbeard/webserve.py:4538
 msgid "Search Providers"
 msgstr "Search Providers"
 
-#: gui/slick/views/layouts/main.mako:211 sickbeard/webserve.py:3870
+#: gui/slick/views/layouts/main.mako:211 sickbeard/webserve.py:3861
 msgid "Subtitles Settings"
 msgstr "Subtitles Settings"
 
-#: gui/slick/views/layouts/main.mako:213 sickbeard/webserve.py:3872
-#: sickbeard/webserve.py:4855
+#: gui/slick/views/layouts/main.mako:213 sickbeard/webserve.py:3863
+#: sickbeard/webserve.py:4846
 msgid "Notifications"
 msgstr "Notifications"
 
@@ -1639,88 +1631,88 @@ msgstr "Notifications"
 #: gui/slick/views/home.mako:35 gui/slick/views/inc_addShowOptions.mako:79
 #: gui/slick/views/inc_home_showList.mako:183
 #: gui/slick/views/layouts/main.mako:214 gui/slick/views/manage.mako:44
-#: gui/slick/views/manage_massEdit.mako:202 sickbeard/webserve.py:3873
-#: sickbeard/webserve.py:5207
+#: gui/slick/views/manage_massEdit.mako:202 sickbeard/webserve.py:3864
+#: sickbeard/webserve.py:5189
 msgid "Anime"
 msgstr "Anime"
 
-#: sickbeard/webserve.py:3913 sickbeard/webserve.py:3914
+#: sickbeard/webserve.py:3904 sickbeard/webserve.py:3905
 msgid "SickChill Configuration"
 msgstr "SickChill Configuration"
 
-#: sickbeard/webserve.py:3929
+#: sickbeard/webserve.py:3920
 msgid "Config - Shares"
 msgstr "Config - Shares"
 
-#: sickbeard/webserve.py:3929
+#: sickbeard/webserve.py:3920
 msgid "Windows Shares Configuration"
 msgstr "Windows Shares Configuration"
 
-#: sickbeard/webserve.py:3957
+#: sickbeard/webserve.py:3948
 msgid "Saved Shares"
 msgstr "Saved Shares"
 
-#: sickbeard/webserve.py:3957
+#: sickbeard/webserve.py:3948
 msgid "Your Windows share settings have been saved"
 msgstr "Your Windows share settings have been saved"
 
-#: sickbeard/webserve.py:3969
+#: sickbeard/webserve.py:3960
 msgid "Config - General"
 msgstr "Config - General"
 
-#: sickbeard/webserve.py:3969
+#: sickbeard/webserve.py:3960
 msgid "General Configuration"
 msgstr "General Configuration"
 
-#: sickbeard/webserve.py:4009
+#: sickbeard/webserve.py:4000
 msgid "Saved Defaults"
 msgstr "Saved Defaults"
 
-#: sickbeard/webserve.py:4009
+#: sickbeard/webserve.py:4000
 msgid "Your \"add show\" defaults have been set to your current selections."
 msgstr "Your \"add show\" defaults have been set to your current selections."
 
-#: sickbeard/webserve.py:4118
+#: sickbeard/webserve.py:4109
 msgid "Unable to create directory {directory}, log directory not changed."
 msgstr "Unable to create directory {directory}, log directory not changed."
 
-#: sickbeard/webserve.py:4126
+#: sickbeard/webserve.py:4117
 msgid "Unable to create directory {directory}, https cert directory not changed."
 msgstr "Unable to create directory {directory}, https cert directory not changed."
 
-#: sickbeard/webserve.py:4130
+#: sickbeard/webserve.py:4121
 msgid "Unable to create directory {directory}, https key directory not changed."
 msgstr "Unable to create directory {directory}, https key directory not changed."
 
-#: sickbeard/webserve.py:4149 sickbeard/webserve.py:4351
-#: sickbeard/webserve.py:4484 sickbeard/webserve.py:5118
+#: sickbeard/webserve.py:4140 sickbeard/webserve.py:4342
+#: sickbeard/webserve.py:4475 sickbeard/webserve.py:5100
 msgid "Error(s) Saving Configuration"
 msgstr "Error(s) Saving Configuration"
 
-#: sickbeard/webserve.py:4152 sickbeard/webserve.py:4354
-#: sickbeard/webserve.py:4486 sickbeard/webserve.py:4840
-#: sickbeard/webserve.py:5121 sickbeard/webserve.py:5191
-#: sickbeard/webserve.py:5221
+#: sickbeard/webserve.py:4143 sickbeard/webserve.py:4345
+#: sickbeard/webserve.py:4477 sickbeard/webserve.py:4831
+#: sickbeard/webserve.py:5103 sickbeard/webserve.py:5173
+#: sickbeard/webserve.py:5203
 msgid "Configuration Saved"
 msgstr "Configuration Saved"
 
-#: sickbeard/webserve.py:4166
+#: sickbeard/webserve.py:4157
 msgid "Config - Backup/Restore"
 msgstr "Config - Backup/Restore"
 
-#: sickbeard/webserve.py:4230
+#: sickbeard/webserve.py:4221
 msgid "Config - Episode Search"
 msgstr "Config - Episode Search"
 
-#: sickbeard/webserve.py:4368
+#: sickbeard/webserve.py:4359
 msgid "Config - Post Processing"
 msgstr "Config - Post Processing"
 
-#: sickbeard/webserve.py:4408
+#: sickbeard/webserve.py:4399
 msgid "Unpacking Not Supported, disabling unpack setting"
 msgstr "Unpacking Not Supported, disabling unpack setting"
 
-#: sickbeard/webserve.py:4459
+#: sickbeard/webserve.py:4450
 msgid ""
 "You tried saving an invalid normal naming config, not saving your naming "
 "settings"
@@ -1728,7 +1720,7 @@ msgstr ""
 "You tried saving an invalid normal naming config, not saving your naming "
 "settings"
 
-#: sickbeard/webserve.py:4467
+#: sickbeard/webserve.py:4458
 msgid ""
 "You tried saving an invalid anime naming config, not saving your naming "
 "settings"
@@ -1736,55 +1728,55 @@ msgstr ""
 "You tried saving an invalid anime naming config, not saving your naming "
 "settings"
 
-#: sickbeard/webserve.py:4546
+#: sickbeard/webserve.py:4537
 msgid "Config - Providers"
 msgstr "Config - Providers"
 
-#: sickbeard/webserve.py:4576
+#: sickbeard/webserve.py:4567
 msgid "No Provider Name specified"
 msgstr "No Provider Name specified"
 
-#: sickbeard/webserve.py:4578
+#: sickbeard/webserve.py:4569
 msgid "No Provider Url specified"
 msgstr "No Provider URL specified"
 
-#: sickbeard/webserve.py:4580
+#: sickbeard/webserve.py:4571
 msgid "No Provider Api key specified"
 msgstr "No Provider API key specified"
 
-#: sickbeard/webserve.py:4854
+#: sickbeard/webserve.py:4845
 msgid "Config - Notifications"
 msgstr "Config - Notifications"
 
-#: sickbeard/webserve.py:5135
+#: sickbeard/webserve.py:5117
 msgid "Config - Subtitles"
 msgstr "Config - Subtitles"
 
-#: sickbeard/webserve.py:5206
+#: sickbeard/webserve.py:5188
 msgid "Config - Anime"
 msgstr "Config - Anime"
 
-#: sickbeard/webserve.py:5234
+#: sickbeard/webserve.py:5216
 msgid "Clear Errors"
 msgstr "Clear Errors"
 
-#: sickbeard/webserve.py:5240
+#: sickbeard/webserve.py:5222
 msgid "Clear Warnings"
 msgstr "Clear Warnings"
 
-#: sickbeard/webserve.py:5246
+#: sickbeard/webserve.py:5228
 msgid "Submit Errors"
 msgstr "Submit Errors"
 
-#: sickbeard/webserve.py:5262
+#: sickbeard/webserve.py:5244
 msgid "Logs &amp; Errors"
 msgstr "Logs &amp; Errors"
 
-#: sickbeard/webserve.py:5287
+#: sickbeard/webserve.py:5269
 msgid "Log File"
 msgstr "Log File"
 
-#: sickbeard/webserve.py:5287
+#: sickbeard/webserve.py:5269
 msgid "Logs"
 msgstr "Logs"
 
@@ -1847,8 +1839,7 @@ msgstr "Select backup files to restore"
 #: gui/slick/js/core.js:630 gui/slick/js/core.js:650 gui/slick/js/core.js:695
 #: gui/slick/js/core.js:774 gui/slick/js/core.js:834 gui/slick/js/core.js:854
 #: gui/slick/js/core.js:884 gui/slick/js/core.js:914 gui/slick/js/core.js:974
-#: gui/slick/js/core.js:1048 gui/slick/js/core.js:1068
-#: gui/slick/js/core.js:1087
+#: gui/slick/js/core.js:1047 gui/slick/js/core.js:1066
 msgid "Please fill out the necessary fields above."
 msgstr "Please fill out the necessary fields above."
 
@@ -1864,29 +1855,29 @@ msgstr "Check blacklist name; the value needs to be a trakt slug"
 msgid "You must provide a recipient email address!"
 msgstr "You must provide a recipient email address!"
 
-#: gui/slick/js/core.js:1111
+#: gui/slick/js/core.js:1090
 msgid "You didn't supply a Pushbullet api key"
 msgstr "You didn't supply a Pushbullet api key"
 
-#: gui/slick/js/core.js:1139 gui/slick/js/core.js:1168
+#: gui/slick/js/core.js:1118 gui/slick/js/core.js:1147
 msgid "Don't forget to save your new pushbullet settings."
 msgstr "Don't forget to save your new Pushbullet settings."
 
-#: gui/slick/js/core.js:1277
+#: gui/slick/js/core.js:1256
 msgid "Select TV Download Directory"
 msgstr "Select TV Download Directory"
 
-#: gui/slick/js/core.js:1278
+#: gui/slick/js/core.js:1257
 msgid "Select Unpack Directory"
 msgstr "Select Unpack Directory"
 
-#: gui/slick/js/core.js:1341 gui/slick/js/core.js:1390
-#: gui/slick/js/core.js:1439 gui/slick/js/core.js:1505
+#: gui/slick/js/core.js:1320 gui/slick/js/core.js:1369
+#: gui/slick/js/core.js:1418 gui/slick/js/core.js:1484
 msgid "This pattern is invalid."
 msgstr "This pattern is invalid."
 
-#: gui/slick/js/core.js:1349 gui/slick/js/core.js:1398
-#: gui/slick/js/core.js:1447 gui/slick/js/core.js:1513
+#: gui/slick/js/core.js:1328 gui/slick/js/core.js:1377
+#: gui/slick/js/core.js:1426 gui/slick/js/core.js:1492
 msgid ""
 "This pattern would be invalid without the folders, using it will force "
 "\"Season Folders\" on for all shows."
@@ -1894,52 +1885,52 @@ msgstr ""
 "This pattern would be invalid without the folders, using it will force "
 "\"Season Folders\" on for all shows."
 
-#: gui/slick/js/core.js:1357 gui/slick/js/core.js:1406
-#: gui/slick/js/core.js:1455 gui/slick/js/core.js:1521
+#: gui/slick/js/core.js:1336 gui/slick/js/core.js:1385
+#: gui/slick/js/core.js:1434 gui/slick/js/core.js:1500
 msgid "This pattern is valid."
 msgstr "This pattern is valid."
 
-#: gui/slick/js/core.js:1799
+#: gui/slick/js/core.js:1778
 msgid "Select .nzb black hole/watch location"
 msgstr "Select .nzb black hole/watch location"
 
-#: gui/slick/js/core.js:1800
+#: gui/slick/js/core.js:1779
 msgid "Select .torrent black hole/watch location"
 msgstr "Select .torrent black hole/watch location"
 
-#: gui/slick/js/core.js:1801
+#: gui/slick/js/core.js:1780
 msgid "Select .torrent download location"
 msgstr "Select .torrent download location"
 
-#: gui/slick/js/core.js:1882
+#: gui/slick/js/core.js:1861
 msgid "Minimum seeding time is"
 msgstr "Minimum seeding time is"
 
-#: gui/slick/js/core.js:1884
+#: gui/slick/js/core.js:1863
 msgid "URL to your uTorrent client (e.g. http://localhost:8000)"
 msgstr "URL to your uTorrent client (e.g. http://localhost:8000)"
 
-#: gui/slick/js/core.js:1887
+#: gui/slick/js/core.js:1866
 msgid "Stop seeding when inactive for"
 msgstr "Stop seeding when inactive for"
 
-#: gui/slick/js/core.js:1893
+#: gui/slick/js/core.js:1872
 msgid "URL to your Transmission client (e.g. http://localhost:9091)"
 msgstr "URL to your Transmission client (e.g. http://localhost:9091)"
 
-#: gui/slick/js/core.js:1903
+#: gui/slick/js/core.js:1882
 msgid "URL to your Deluge client (e.g. http://localhost:8112)"
 msgstr "URL to your Deluge client (e.g. http://localhost:8112)"
 
-#: gui/slick/js/core.js:1912
+#: gui/slick/js/core.js:1891
 msgid "IP or Hostname of your Deluge Daemon (e.g. scgi://localhost:58846)"
 msgstr "IP or Hostname of your Deluge Daemon (e.g. scgi://localhost:58846)"
 
-#: gui/slick/js/core.js:1919
+#: gui/slick/js/core.js:1898
 msgid "URL to your Synology DS client (e.g. http://localhost:5000)"
 msgstr "URL to your Synology DS client (e.g. http://localhost:5000)"
 
-#: gui/slick/js/core.js:1923
+#: gui/slick/js/core.js:1902
 msgid ""
 "URL to your rTorrent client (e.g. scgi://localhost:5000 <br> or "
 "https://localhost/rutorrent/plugins/httprpc/action.php)"
@@ -1947,75 +1938,75 @@ msgstr ""
 "URL to your rTorrent client (e.g. scgi://localhost:5000 <br> or "
 "https://localhost/rutorrent/plugins/httprpc/action.php)"
 
-#: gui/slick/js/core.js:1934
+#: gui/slick/js/core.js:1913
 msgid "URL to your qBittorrent client (e.g. http://localhost:8080)"
 msgstr "URL to your qBittorrent client (e.g. http://localhost:8080)"
 
-#: gui/slick/js/core.js:1944
+#: gui/slick/js/core.js:1923
 msgid "URL to your MLDonkey (e.g. http://localhost:4080)"
 msgstr "URL to your MLDonkey (e.g. http://localhost:4080)"
 
-#: gui/slick/js/core.js:1955
+#: gui/slick/js/core.js:1934
 msgid "URL to your putio client (e.g. http://localhost:8080)"
 msgstr "URL to your putio client (e.g. http://localhost:8080)"
 
-#: gui/slick/js/core.js:1958
+#: gui/slick/js/core.js:1937
 msgid "Create a new OAuth app for put.io"
 msgstr ""
 
-#: gui/slick/js/core.js:1959
+#: gui/slick/js/core.js:1938
 msgid "Put.io Parent Folder"
 msgstr "Put.io Parent Folder"
 
-#: gui/slick/js/core.js:1960
+#: gui/slick/js/core.js:1939
 msgid "Put.io OAuth Token"
 msgstr "Put.io OAuth Token"
 
-#: gui/slick/js/core.js:2854 gui/slick/views/displayShow.mako:409
+#: gui/slick/js/core.js:2833 gui/slick/views/displayShow.mako:409
 msgid "Show Episodes"
 msgstr "Show Episodes"
 
-#: gui/slick/js/core.js:2859 gui/slick/views/displayShow.mako:407
+#: gui/slick/js/core.js:2838 gui/slick/views/displayShow.mako:407
 msgid "Hide Episodes"
 msgstr "Hide Episodes"
 
-#: gui/slick/js/core.js:2864
+#: gui/slick/js/core.js:2843
 msgid "Select Show Location"
 msgstr "Select Show Location"
 
-#: gui/slick/js/core.js:2929 gui/slick/views/editShow.mako:362
+#: gui/slick/js/core.js:2908 gui/slick/views/editShow.mako:362
 msgid "None"
 msgstr ""
 
-#: gui/slick/js/core.js:2939
+#: gui/slick/js/core.js:2918
 msgid "Select Unprocessed Episode Folder"
 msgstr "Select Unprocessed Episode Folder"
 
-#: gui/slick/js/core.js:3327
+#: gui/slick/js/core.js:3306
 msgid "DELETED"
 msgstr "DELETED"
 
-#: gui/slick/js/core.js:3624
+#: gui/slick/js/core.js:3603
 msgid "Resume updating the log on this page."
 msgstr "Resume updating the log on this page."
 
-#: gui/slick/js/core.js:3624 gui/slick/views/viewlogs.mako:10
+#: gui/slick/js/core.js:3603 gui/slick/views/viewlogs.mako:10
 msgid "Pause updating the log on this page."
 msgstr "Pause updating the log on this page."
 
-#: gui/slick/js/core.js:3955
+#: gui/slick/js/core.js:3934
 msgid " on  in "
 msgstr ""
 
-#: gui/slick/js/core.js:3958
+#: gui/slick/js/core.js:3937
 msgid "searching {searchingFor}..."
 msgstr "searching {searchingFor}..."
 
-#: gui/slick/js/core.js:3971
+#: gui/slick/js/core.js:3950
 msgid "search timed out, try again or try another indexer"
 msgstr "search timed out, try again or try another indexer"
 
-#: gui/slick/js/core.js:4101
+#: gui/slick/js/core.js:4080
 msgid "loading folders..."
 msgstr "loading folders..."
 
@@ -2498,17 +2489,16 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:1389
 #: gui/slick/views/config_notifications.mako:1584
 #: gui/slick/views/config_notifications.mako:1677
-#: gui/slick/views/config_notifications.mako:1793
-#: gui/slick/views/config_notifications.mako:1886
-#: gui/slick/views/config_notifications.mako:2020
+#: gui/slick/views/config_notifications.mako:1770
+#: gui/slick/views/config_notifications.mako:1904
+#: gui/slick/views/config_notifications.mako:2015
 #: gui/slick/views/config_notifications.mako:2131
-#: gui/slick/views/config_notifications.mako:2247
-#: gui/slick/views/config_notifications.mako:2358
-#: gui/slick/views/config_notifications.mako:2510
-#: gui/slick/views/config_notifications.mako:2650
-#: gui/slick/views/config_notifications.mako:2898
-#: gui/slick/views/config_notifications.mako:3148
-#: gui/slick/views/config_notifications.mako:3235
+#: gui/slick/views/config_notifications.mako:2242
+#: gui/slick/views/config_notifications.mako:2394
+#: gui/slick/views/config_notifications.mako:2534
+#: gui/slick/views/config_notifications.mako:2782
+#: gui/slick/views/config_notifications.mako:3032
+#: gui/slick/views/config_notifications.mako:3119
 #: gui/slick/views/config_postProcessing.mako:36 gui/slick/views/status.mako:44
 msgid "Enable"
 msgstr "Enable"
@@ -2659,7 +2649,7 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:836
 #: gui/slick/views/config_notifications.mako:881
 #: gui/slick/views/config_notifications.mako:956
-#: gui/slick/views/config_notifications.mako:2521
+#: gui/slick/views/config_notifications.mako:2405
 #: gui/slick/views/config_postProcessing.mako:47
 #: gui/slick/views/config_postProcessing.mako:70
 #: gui/slick/views/config_postProcessing.mako:98
@@ -2774,18 +2764,17 @@ msgstr "where the files of shows are located"
 #: gui/slick/views/config_notifications.mako:1362
 #: gui/slick/views/config_notifications.mako:1557
 #: gui/slick/views/config_notifications.mako:1650
-#: gui/slick/views/config_notifications.mako:1766
-#: gui/slick/views/config_notifications.mako:1859
-#: gui/slick/views/config_notifications.mako:1993
+#: gui/slick/views/config_notifications.mako:1743
+#: gui/slick/views/config_notifications.mako:1877
+#: gui/slick/views/config_notifications.mako:1988
 #: gui/slick/views/config_notifications.mako:2104
-#: gui/slick/views/config_notifications.mako:2220
-#: gui/slick/views/config_notifications.mako:2332
-#: gui/slick/views/config_notifications.mako:2483
-#: gui/slick/views/config_notifications.mako:2625
-#: gui/slick/views/config_notifications.mako:2875
-#: gui/slick/views/config_notifications.mako:3123
-#: gui/slick/views/config_notifications.mako:3210
-#: gui/slick/views/config_notifications.mako:3336
+#: gui/slick/views/config_notifications.mako:2216
+#: gui/slick/views/config_notifications.mako:2367
+#: gui/slick/views/config_notifications.mako:2509
+#: gui/slick/views/config_notifications.mako:2759
+#: gui/slick/views/config_notifications.mako:3007
+#: gui/slick/views/config_notifications.mako:3094
+#: gui/slick/views/config_notifications.mako:3220
 #: gui/slick/views/config_search.mako:825
 #: gui/slick/views/config_search.mako:902
 #: gui/slick/views/config_search.mako:1161 gui/slick/views/editShow.mako:398
@@ -3031,7 +3020,7 @@ msgid "these options require a manual restart to take effect."
 msgstr "these options require a manual restart to take effect."
 
 #: gui/slick/views/config_general.mako:649
-#: gui/slick/views/config_notifications.mako:2307
+#: gui/slick/views/config_notifications.mako:2191
 #: gui/slick/views/config_providers.mako:164
 #: gui/slick/views/config_providers.mako:278
 #: gui/slick/views/config_providers.mako:815
@@ -3411,16 +3400,15 @@ msgstr "log errors when unreachable?"
 #: gui/slick/views/config_notifications.mako:1401
 #: gui/slick/views/config_notifications.mako:1596
 #: gui/slick/views/config_notifications.mako:1689
-#: gui/slick/views/config_notifications.mako:1805
-#: gui/slick/views/config_notifications.mako:1898
-#: gui/slick/views/config_notifications.mako:2032
+#: gui/slick/views/config_notifications.mako:1782
+#: gui/slick/views/config_notifications.mako:1916
+#: gui/slick/views/config_notifications.mako:2027
 #: gui/slick/views/config_notifications.mako:2143
-#: gui/slick/views/config_notifications.mako:2259
-#: gui/slick/views/config_notifications.mako:2374
-#: gui/slick/views/config_notifications.mako:2531
-#: gui/slick/views/config_notifications.mako:2910
-#: gui/slick/views/config_notifications.mako:3164
-#: gui/slick/views/config_notifications.mako:3251
+#: gui/slick/views/config_notifications.mako:2258
+#: gui/slick/views/config_notifications.mako:2415
+#: gui/slick/views/config_notifications.mako:2794
+#: gui/slick/views/config_notifications.mako:3048
+#: gui/slick/views/config_notifications.mako:3135
 msgid "Notify on snatch"
 msgstr "Notify on snatch"
 
@@ -3433,13 +3421,12 @@ msgstr "Notify on snatch"
 #: gui/slick/views/config_notifications.mako:1405
 #: gui/slick/views/config_notifications.mako:1600
 #: gui/slick/views/config_notifications.mako:1693
-#: gui/slick/views/config_notifications.mako:1809
-#: gui/slick/views/config_notifications.mako:1902
-#: gui/slick/views/config_notifications.mako:2378
-#: gui/slick/views/config_notifications.mako:2535
-#: gui/slick/views/config_notifications.mako:2914
-#: gui/slick/views/config_notifications.mako:3168
-#: gui/slick/views/config_notifications.mako:3255
+#: gui/slick/views/config_notifications.mako:1786
+#: gui/slick/views/config_notifications.mako:2262
+#: gui/slick/views/config_notifications.mako:2419
+#: gui/slick/views/config_notifications.mako:2798
+#: gui/slick/views/config_notifications.mako:3052
+#: gui/slick/views/config_notifications.mako:3139
 msgid "send a notification when a download starts?"
 msgstr "send a notification when a download starts?"
 
@@ -3452,16 +3439,15 @@ msgstr "send a notification when a download starts?"
 #: gui/slick/views/config_notifications.mako:1411
 #: gui/slick/views/config_notifications.mako:1606
 #: gui/slick/views/config_notifications.mako:1699
-#: gui/slick/views/config_notifications.mako:1815
-#: gui/slick/views/config_notifications.mako:1908
-#: gui/slick/views/config_notifications.mako:2042
+#: gui/slick/views/config_notifications.mako:1792
+#: gui/slick/views/config_notifications.mako:1926
+#: gui/slick/views/config_notifications.mako:2037
 #: gui/slick/views/config_notifications.mako:2153
-#: gui/slick/views/config_notifications.mako:2269
-#: gui/slick/views/config_notifications.mako:2384
-#: gui/slick/views/config_notifications.mako:2541
-#: gui/slick/views/config_notifications.mako:2920
-#: gui/slick/views/config_notifications.mako:3174
-#: gui/slick/views/config_notifications.mako:3261
+#: gui/slick/views/config_notifications.mako:2268
+#: gui/slick/views/config_notifications.mako:2425
+#: gui/slick/views/config_notifications.mako:2804
+#: gui/slick/views/config_notifications.mako:3058
+#: gui/slick/views/config_notifications.mako:3145
 msgid "Notify on download"
 msgstr "Notify on download"
 
@@ -3474,13 +3460,12 @@ msgstr "Notify on download"
 #: gui/slick/views/config_notifications.mako:1415
 #: gui/slick/views/config_notifications.mako:1610
 #: gui/slick/views/config_notifications.mako:1703
-#: gui/slick/views/config_notifications.mako:1819
-#: gui/slick/views/config_notifications.mako:1912
-#: gui/slick/views/config_notifications.mako:2388
-#: gui/slick/views/config_notifications.mako:2545
-#: gui/slick/views/config_notifications.mako:2924
-#: gui/slick/views/config_notifications.mako:3178
-#: gui/slick/views/config_notifications.mako:3265
+#: gui/slick/views/config_notifications.mako:1796
+#: gui/slick/views/config_notifications.mako:2272
+#: gui/slick/views/config_notifications.mako:2429
+#: gui/slick/views/config_notifications.mako:2808
+#: gui/slick/views/config_notifications.mako:3062
+#: gui/slick/views/config_notifications.mako:3149
 msgid "send a notification when a download finishes?"
 msgstr "send a notification when a download finishes?"
 
@@ -3493,15 +3478,14 @@ msgstr "send a notification when a download finishes?"
 #: gui/slick/views/config_notifications.mako:1421
 #: gui/slick/views/config_notifications.mako:1616
 #: gui/slick/views/config_notifications.mako:1709
-#: gui/slick/views/config_notifications.mako:1825
-#: gui/slick/views/config_notifications.mako:1918
-#: gui/slick/views/config_notifications.mako:2052
+#: gui/slick/views/config_notifications.mako:1802
+#: gui/slick/views/config_notifications.mako:1936
+#: gui/slick/views/config_notifications.mako:2047
 #: gui/slick/views/config_notifications.mako:2163
-#: gui/slick/views/config_notifications.mako:2279
-#: gui/slick/views/config_notifications.mako:2394
-#: gui/slick/views/config_notifications.mako:2551
-#: gui/slick/views/config_notifications.mako:2930
-#: gui/slick/views/config_notifications.mako:3184
+#: gui/slick/views/config_notifications.mako:2278
+#: gui/slick/views/config_notifications.mako:2435
+#: gui/slick/views/config_notifications.mako:2814
+#: gui/slick/views/config_notifications.mako:3068
 msgid "Notify on subtitle download"
 msgstr "Notify on subtitle download"
 
@@ -3514,12 +3498,11 @@ msgstr "Notify on subtitle download"
 #: gui/slick/views/config_notifications.mako:1425
 #: gui/slick/views/config_notifications.mako:1620
 #: gui/slick/views/config_notifications.mako:1713
-#: gui/slick/views/config_notifications.mako:1829
-#: gui/slick/views/config_notifications.mako:1922
-#: gui/slick/views/config_notifications.mako:2398
-#: gui/slick/views/config_notifications.mako:2555
-#: gui/slick/views/config_notifications.mako:2934
-#: gui/slick/views/config_notifications.mako:3188
+#: gui/slick/views/config_notifications.mako:1806
+#: gui/slick/views/config_notifications.mako:2282
+#: gui/slick/views/config_notifications.mako:2439
+#: gui/slick/views/config_notifications.mako:2818
+#: gui/slick/views/config_notifications.mako:3072
 msgid "send a notification when subtitles are downloaded?"
 msgstr "send a notification when subtitles are downloaded?"
 
@@ -3562,7 +3545,7 @@ msgstr "(multiple host strings must be separated by commas)"
 #: gui/slick/views/config_notifications.mako:140
 #: gui/slick/views/config_notifications.mako:248
 #: gui/slick/views/config_notifications.mako:419
-#: gui/slick/views/config_notifications.mako:2662
+#: gui/slick/views/config_notifications.mako:2546
 #: gui/slick/views/config_providers.mako:265
 #: gui/slick/views/config_providers.mako:435 gui/slick/views/login.mako:15
 #: gui/slick/views/login.mako:16 gui/slick/views/login.mako:17
@@ -3594,15 +3577,14 @@ msgstr "password for your KODI server (blank for none)"
 #: gui/slick/views/config_notifications.mako:1356
 #: gui/slick/views/config_notifications.mako:1551
 #: gui/slick/views/config_notifications.mako:1644
-#: gui/slick/views/config_notifications.mako:1760
-#: gui/slick/views/config_notifications.mako:1853
-#: gui/slick/views/config_notifications.mako:1987
-#: gui/slick/views/config_notifications.mako:2476
-#: gui/slick/views/config_notifications.mako:2618
-#: gui/slick/views/config_notifications.mako:2868
-#: gui/slick/views/config_notifications.mako:3116
-#: gui/slick/views/config_notifications.mako:3203
-#: gui/slick/views/config_notifications.mako:3329
+#: gui/slick/views/config_notifications.mako:1737
+#: gui/slick/views/config_notifications.mako:1871
+#: gui/slick/views/config_notifications.mako:2360
+#: gui/slick/views/config_notifications.mako:2502
+#: gui/slick/views/config_notifications.mako:2752
+#: gui/slick/views/config_notifications.mako:3000
+#: gui/slick/views/config_notifications.mako:3087
+#: gui/slick/views/config_notifications.mako:3213
 msgid "Click below to test."
 msgstr "Click below to test."
 
@@ -3994,12 +3976,12 @@ msgid "(this field may be blank except when testing.)"
 msgstr "(this field may be blank except when testing.)"
 
 #: gui/slick/views/config_notifications.mako:1234
-#: gui/slick/views/config_notifications.mako:3082
+#: gui/slick/views/config_notifications.mako:2966
 msgid "Show notification list"
 msgstr "Show notification list"
 
 #: gui/slick/views/config_notifications.mako:1240
-#: gui/slick/views/config_notifications.mako:3088
+#: gui/slick/views/config_notifications.mako:2972
 msgid "-- Select a Show --"
 msgstr "-- Select a Show --"
 
@@ -4020,7 +4002,7 @@ msgstr ""
 "entry."
 
 #: gui/slick/views/config_notifications.mako:1260
-#: gui/slick/views/config_notifications.mako:3108
+#: gui/slick/views/config_notifications.mako:2992
 msgid "Save for this show"
 msgstr "Save for this show"
 
@@ -4030,33 +4012,28 @@ msgstr "Prowl priority"
 
 #: gui/slick/views/config_notifications.mako:1273
 #: gui/slick/views/config_notifications.mako:1533
-#: gui/slick/views/config_notifications.mako:1742
 msgid "Very Low"
 msgstr "Very Low"
 
 #: gui/slick/views/config_notifications.mako:1274
 #: gui/slick/views/config_notifications.mako:1534
-#: gui/slick/views/config_notifications.mako:1743
 msgid "Moderate"
 msgstr "Moderate"
 
 #: gui/slick/views/config_notifications.mako:1275
 #: gui/slick/views/config_notifications.mako:1535
-#: gui/slick/views/config_notifications.mako:1744
 #: gui/slick/views/config_search.mako:709
 msgid "Normal"
 msgstr "Normal"
 
 #: gui/slick/views/config_notifications.mako:1276
 #: gui/slick/views/config_notifications.mako:1536
-#: gui/slick/views/config_notifications.mako:1745
 #: gui/slick/views/config_search.mako:710
 msgid "High"
 msgstr "High"
 
 #: gui/slick/views/config_notifications.mako:1277
 #: gui/slick/views/config_notifications.mako:1537
-#: gui/slick/views/config_notifications.mako:1746
 msgid "Emergency"
 msgstr "Emergency"
 
@@ -4112,7 +4089,7 @@ msgid "Pushover API key"
 msgstr "Pushover API key"
 
 #: gui/slick/views/config_notifications.mako:1459
-#: gui/slick/views/config_notifications.mako:2317
+#: gui/slick/views/config_notifications.mako:2201
 msgid "click here"
 msgstr "click here"
 
@@ -4253,48 +4230,10 @@ msgid "access token for your Boxcar account."
 msgstr "access token for your Boxcar account."
 
 #: gui/slick/views/config_notifications.mako:1666
-msgid "NMA"
-msgstr "NMA"
-
-#: gui/slick/views/config_notifications.mako:1667
-msgid "Notify My Android"
-msgstr "Notify My Android"
-
-#: gui/slick/views/config_notifications.mako:1668
-msgid ""
-"Notify My Android is a Prowl-like Android App and API that offers an easy"
-" way to send notifications from your application directly to your Android"
-" device."
-msgstr ""
-"Notify My Android is a Prowl-like Android App and API that offers an easy"
-" way to send notifications from your application directly to your Android"
-" device."
-
-#: gui/slick/views/config_notifications.mako:1681
-msgid "send NMA notifications?"
-msgstr "send NMA notifications?"
-
-#: gui/slick/views/config_notifications.mako:1719
-msgid "NMA API key"
-msgstr "NMA API key"
-
-#: gui/slick/views/config_notifications.mako:1729
-msgid "(multiple keys must be separated by commas, up to a maximum of 5)"
-msgstr "(multiple keys must be separated by commas, up to a maximum of 5)"
-
-#: gui/slick/views/config_notifications.mako:1736
-msgid "NMA priority"
-msgstr "NMA priority"
-
-#: gui/slick/views/config_notifications.mako:1752
-msgid "priority of NMA messages from SickChill."
-msgstr "priority of NMA messages from SickChill."
-
-#: gui/slick/views/config_notifications.mako:1782
 msgid "Pushalot"
 msgstr "Pushalot"
 
-#: gui/slick/views/config_notifications.mako:1784
+#: gui/slick/views/config_notifications.mako:1668
 msgid ""
 "Pushalot is a platform for receiving custom push notifications to "
 "connected devices running Windows Phone or Windows 8."
@@ -4302,23 +4241,23 @@ msgstr ""
 "Pushalot is a platform for receiving custom push notifications to "
 "connected devices running Windows Phone or Windows 8."
 
-#: gui/slick/views/config_notifications.mako:1797
+#: gui/slick/views/config_notifications.mako:1681
 msgid "send Pushalot notifications ?"
 msgstr "send Pushalot notifications ?"
 
-#: gui/slick/views/config_notifications.mako:1835
+#: gui/slick/views/config_notifications.mako:1719
 msgid "Pushalot authorization token"
 msgstr "Pushalot authorisation token"
 
-#: gui/slick/views/config_notifications.mako:1845
+#: gui/slick/views/config_notifications.mako:1729
 msgid "authorization token of your Pushalot account."
 msgstr "authorisation token of your Pushalot account."
 
-#: gui/slick/views/config_notifications.mako:1875
+#: gui/slick/views/config_notifications.mako:1759
 msgid "Pushbullet"
 msgstr "Pushbullet"
 
-#: gui/slick/views/config_notifications.mako:1877
+#: gui/slick/views/config_notifications.mako:1761
 msgid ""
 "Pushbullet is a platform for receiving custom push notifications to "
 "connected devices running Android/iOS and desktop browsers such as "
@@ -4328,35 +4267,35 @@ msgstr ""
 "connected devices running Android/iOS and desktop browsers such as "
 "Chrome, Firefox or Opera."
 
-#: gui/slick/views/config_notifications.mako:1890
+#: gui/slick/views/config_notifications.mako:1774
 msgid "send Pushbullet notifications?"
 msgstr "send Pushbullet notifications?"
 
-#: gui/slick/views/config_notifications.mako:1928
+#: gui/slick/views/config_notifications.mako:1812
 msgid "Pushbullet API key"
 msgstr "Pushbullet API key"
 
-#: gui/slick/views/config_notifications.mako:1938
+#: gui/slick/views/config_notifications.mako:1822
 msgid "API key of your Pushbullet account"
 msgstr "API key of your Pushbullet account"
 
-#: gui/slick/views/config_notifications.mako:1946
+#: gui/slick/views/config_notifications.mako:1830
 msgid "Pushbullet devices"
 msgstr "Pushbullet devices"
 
-#: gui/slick/views/config_notifications.mako:1961
+#: gui/slick/views/config_notifications.mako:1845
 msgid "Update device list"
 msgstr "Update device list"
 
-#: gui/slick/views/config_notifications.mako:1969
+#: gui/slick/views/config_notifications.mako:1853
 msgid "Pushbullet channels"
 msgstr "Pushbullet channels"
 
-#: gui/slick/views/config_notifications.mako:2009
+#: gui/slick/views/config_notifications.mako:1893
 msgid "Free Mobile"
 msgstr "Free Mobile"
 
-#: gui/slick/views/config_notifications.mako:2011
+#: gui/slick/views/config_notifications.mako:1895
 msgid ""
 "Free Mobile is a famous French cellular network provider.<br> It provides"
 " to their customer a free SMS API."
@@ -4364,124 +4303,124 @@ msgstr ""
 "Free Mobile is a famous French cellular network provider. <br> It "
 "provides their customers with a free SMS API."
 
-#: gui/slick/views/config_notifications.mako:2024
+#: gui/slick/views/config_notifications.mako:1908
 msgid "send SMS notifications?"
 msgstr "send SMS notifications?"
 
-#: gui/slick/views/config_notifications.mako:2036
+#: gui/slick/views/config_notifications.mako:1920
 msgid "send a SMS when a download starts?"
 msgstr "send a SMS when a download starts?"
 
-#: gui/slick/views/config_notifications.mako:2046
+#: gui/slick/views/config_notifications.mako:1930
 msgid "send a SMS when a download finishes?"
 msgstr "send a SMS when a download finishes?"
 
-#: gui/slick/views/config_notifications.mako:2056
+#: gui/slick/views/config_notifications.mako:1940
 msgid "send a SMS when subtitles are downloaded?"
 msgstr "send a SMS when subtitles are downloaded?"
 
-#: gui/slick/views/config_notifications.mako:2062
+#: gui/slick/views/config_notifications.mako:1946
 msgid "Free Mobile customer ID"
 msgstr "Free Mobile customer ID"
 
-#: gui/slick/views/config_notifications.mako:2072
+#: gui/slick/views/config_notifications.mako:1956
 msgid "it's your Free Mobile customer ID (8 digits)"
 msgstr "it's your Free Mobile customer ID (8 digits)"
 
-#: gui/slick/views/config_notifications.mako:2080
+#: gui/slick/views/config_notifications.mako:1964
 msgid "Free Mobile API key"
 msgstr "Free Mobile API key"
 
-#: gui/slick/views/config_notifications.mako:2090
+#: gui/slick/views/config_notifications.mako:1974
 msgid "find your API key in your customer portal."
 msgstr "find your API key in your customer portal."
 
+#: gui/slick/views/config_notifications.mako:1982
 #: gui/slick/views/config_notifications.mako:2098
-#: gui/slick/views/config_notifications.mako:2214
-#: gui/slick/views/config_notifications.mako:2326
+#: gui/slick/views/config_notifications.mako:2210
 msgid "Click below to test your settings."
 msgstr "Click below to test your settings."
 
-#: gui/slick/views/config_notifications.mako:2120
-#: gui/slick/views/config_notifications.mako:2121
+#: gui/slick/views/config_notifications.mako:2004
+#: gui/slick/views/config_notifications.mako:2005
 msgid "Telegram"
 msgstr "Telegram"
 
-#: gui/slick/views/config_notifications.mako:2122
+#: gui/slick/views/config_notifications.mako:2006
 msgid "Telegram is a cloud-based instant messaging service."
 msgstr "Telegram is a cloud-based instant messaging service."
 
-#: gui/slick/views/config_notifications.mako:2135
+#: gui/slick/views/config_notifications.mako:2019
 msgid "send Telegram notifications?"
 msgstr "send Telegram notifications?"
 
+#: gui/slick/views/config_notifications.mako:2031
 #: gui/slick/views/config_notifications.mako:2147
-#: gui/slick/views/config_notifications.mako:2263
 msgid "send a message when a download starts?"
 msgstr "send a message when a download starts?"
 
+#: gui/slick/views/config_notifications.mako:2041
 #: gui/slick/views/config_notifications.mako:2157
-#: gui/slick/views/config_notifications.mako:2273
 msgid "send a message when a download finishes?"
 msgstr "send a message when a download finishes?"
 
+#: gui/slick/views/config_notifications.mako:2051
 #: gui/slick/views/config_notifications.mako:2167
-#: gui/slick/views/config_notifications.mako:2283
 msgid "send a message when subtitles are downloaded?"
 msgstr "send a message when subtitles are downloaded?"
 
-#: gui/slick/views/config_notifications.mako:2173
+#: gui/slick/views/config_notifications.mako:2057
 msgid "User/group ID"
 msgstr "User/group ID"
 
-#: gui/slick/views/config_notifications.mako:2183
+#: gui/slick/views/config_notifications.mako:2067
 msgid "contact @myidbot on Telegram to get an ID"
 msgstr "contact @myidbot on Telegram to get an ID"
 
-#: gui/slick/views/config_notifications.mako:2188
+#: gui/slick/views/config_notifications.mako:2072
 msgid ""
 "Note: Don't forget to talk with your bot at least one time if you get a "
 "403 error."
 msgstr ""
 
-#: gui/slick/views/config_notifications.mako:2196
+#: gui/slick/views/config_notifications.mako:2080
 msgid "Bot API token"
 msgstr "Bot API token"
 
-#: gui/slick/views/config_notifications.mako:2206
+#: gui/slick/views/config_notifications.mako:2090
 msgid "contact @BotFather on Telegram to set up one"
 msgstr "contact @BotFather on Telegram to set up one"
 
-#: gui/slick/views/config_notifications.mako:2236
-#: gui/slick/views/config_notifications.mako:2237
+#: gui/slick/views/config_notifications.mako:2120
+#: gui/slick/views/config_notifications.mako:2121
 msgid "Join"
 msgstr "Join"
 
-#: gui/slick/views/config_notifications.mako:2238
+#: gui/slick/views/config_notifications.mako:2122
 msgid "Join all of your devices together!"
 msgstr "Join all of your devices together!"
 
-#: gui/slick/views/config_notifications.mako:2251
+#: gui/slick/views/config_notifications.mako:2135
 msgid "send Join notifications?"
 msgstr "send Join notifications?"
 
-#: gui/slick/views/config_notifications.mako:2289
+#: gui/slick/views/config_notifications.mako:2173
 msgid "Device ID"
 msgstr "Device ID"
 
-#: gui/slick/views/config_notifications.mako:2299
+#: gui/slick/views/config_notifications.mako:2183
 msgid "per device specific id"
 msgstr "per device specific id"
 
-#: gui/slick/views/config_notifications.mako:2317
+#: gui/slick/views/config_notifications.mako:2201
 msgid " to create a Join API key"
 msgstr " to create a Join API key"
 
-#: gui/slick/views/config_notifications.mako:2348
+#: gui/slick/views/config_notifications.mako:2232
 msgid "Twilio"
 msgstr "Twilio"
 
-#: gui/slick/views/config_notifications.mako:2350
+#: gui/slick/views/config_notifications.mako:2234
 msgid ""
 "Twilio is a webservice API that allows you to communicate directly with a"
 " mobile number. This notifier will send a text directly to your mobile "
@@ -4491,36 +4430,36 @@ msgstr ""
 " mobile number. This notifier will send a text directly to your mobile "
 "device."
 
-#: gui/slick/views/config_notifications.mako:2364
+#: gui/slick/views/config_notifications.mako:2248
 msgid "should SickChill text your mobile device?"
 msgstr "should SickChill text your mobile device?"
 
-#: gui/slick/views/config_notifications.mako:2404
+#: gui/slick/views/config_notifications.mako:2288
 msgid "Twilio Account SID"
 msgstr "Twilio Account SID"
 
-#: gui/slick/views/config_notifications.mako:2414
-#: gui/slick/views/config_notifications.mako:2432
+#: gui/slick/views/config_notifications.mako:2298
+#: gui/slick/views/config_notifications.mako:2316
 msgid "account SID of your Twilio account."
 msgstr "account SID of your Twilio account."
 
-#: gui/slick/views/config_notifications.mako:2422
+#: gui/slick/views/config_notifications.mako:2306
 msgid "Twilio Auth Token"
 msgstr "Twilio Auth Token"
 
-#: gui/slick/views/config_notifications.mako:2440
+#: gui/slick/views/config_notifications.mako:2324
 msgid "Twilio Phone SID"
 msgstr "Twilio Phone SID"
 
-#: gui/slick/views/config_notifications.mako:2450
+#: gui/slick/views/config_notifications.mako:2334
 msgid "phone SID that you would like to send the sms from"
 msgstr "phone SID that you would like to send the sms from"
 
-#: gui/slick/views/config_notifications.mako:2458
+#: gui/slick/views/config_notifications.mako:2342
 msgid "Your phone number"
 msgstr "Your phone number"
 
-#: gui/slick/views/config_notifications.mako:2468
+#: gui/slick/views/config_notifications.mako:2352
 msgid ""
 "phone number that will receive the sms. Please use the format "
 "+1-###-###-####"
@@ -4528,11 +4467,11 @@ msgstr ""
 "phone number that will receive the sms. Please use the format "
 "+1-###-###-####"
 
-#: gui/slick/views/config_notifications.mako:2500
+#: gui/slick/views/config_notifications.mako:2384
 msgid "Twitter"
 msgstr "Twitter"
 
-#: gui/slick/views/config_notifications.mako:2502
+#: gui/slick/views/config_notifications.mako:2386
 msgid ""
 "A social networking and microblogging service, enabling its users to send"
 " and read other users' messages called tweets."
@@ -4540,39 +4479,39 @@ msgstr ""
 "A social networking and microblogging service, enabling its users to send"
 " and read other users' messages called tweets."
 
-#: gui/slick/views/config_notifications.mako:2516
+#: gui/slick/views/config_notifications.mako:2400
 msgid "should SickChill post tweets on Twitter?"
 msgstr "should SickChill post tweets on Twitter?"
 
-#: gui/slick/views/config_notifications.mako:2521
+#: gui/slick/views/config_notifications.mako:2405
 msgid "you may want to use a secondary account."
 msgstr "you may want to use a secondary account."
 
-#: gui/slick/views/config_notifications.mako:2561
+#: gui/slick/views/config_notifications.mako:2445
 msgid "send direct message"
 msgstr "send direct message"
 
-#: gui/slick/views/config_notifications.mako:2565
+#: gui/slick/views/config_notifications.mako:2449
 msgid "send a notification via Direct Message, not via status update"
 msgstr "send a notification via Direct Message, not via status update"
 
-#: gui/slick/views/config_notifications.mako:2571
+#: gui/slick/views/config_notifications.mako:2455
 msgid "send DM to"
 msgstr "send DM to"
 
-#: gui/slick/views/config_notifications.mako:2581
+#: gui/slick/views/config_notifications.mako:2465
 msgid "Twitter account to send Direct Messages to (must follow you)"
 msgstr "Twitter account to send Direct Messages to (must follow you)"
 
-#: gui/slick/views/config_notifications.mako:2589
+#: gui/slick/views/config_notifications.mako:2473
 msgid "Step One"
 msgstr "Step One"
 
-#: gui/slick/views/config_notifications.mako:2592
+#: gui/slick/views/config_notifications.mako:2476
 msgid "Request Authorization"
 msgstr "Request Authorisation"
 
-#: gui/slick/views/config_notifications.mako:2593
+#: gui/slick/views/config_notifications.mako:2477
 msgid ""
 "Click the \"Request Authorization\" button.<br> This will open a new page"
 " containing an auth key.<br> <b>note:</b> if nothing happens check your "
@@ -4582,19 +4521,19 @@ msgstr ""
 "page containing an auth key. <br> <b>note:</b> if nothing happens check "
 "your popup blocker."
 
-#: gui/slick/views/config_notifications.mako:2599
+#: gui/slick/views/config_notifications.mako:2483
 msgid "Step Two"
 msgstr "Step Two"
 
-#: gui/slick/views/config_notifications.mako:2604
+#: gui/slick/views/config_notifications.mako:2488
 msgid "Enter the key Twitter gave you below, and click \"Verify Key\"."
 msgstr "Enter the key Twitter gave you below, and click \"Verify Key\"."
 
-#: gui/slick/views/config_notifications.mako:2640
+#: gui/slick/views/config_notifications.mako:2524
 msgid "Trakt"
 msgstr "Trakt"
 
-#: gui/slick/views/config_notifications.mako:2642
+#: gui/slick/views/config_notifications.mako:2526
 msgid ""
 "Trakt helps keep a record of what TV shows and movies you are watching. "
 "Based on your favorites, Trakt recommends additional shows and movies "
@@ -4604,51 +4543,51 @@ msgstr ""
 "Based on your favorites, Trakt recommends additional shows and movies "
 "you'll enjoy!"
 
-#: gui/slick/views/config_notifications.mako:2654
+#: gui/slick/views/config_notifications.mako:2538
 msgid "send Trakt.tv notifications?"
 msgstr "send Trakt.tv notifications?"
 
-#: gui/slick/views/config_notifications.mako:2672
+#: gui/slick/views/config_notifications.mako:2556
 msgid "username of your Trakt account."
 msgstr "username of your Trakt account."
 
-#: gui/slick/views/config_notifications.mako:2680
+#: gui/slick/views/config_notifications.mako:2564
 msgid "Trakt PIN"
 msgstr "Trakt PIN"
 
-#: gui/slick/views/config_notifications.mako:2686
+#: gui/slick/views/config_notifications.mako:2570
 msgid "Get Trakt PIN"
 msgstr "Get Trakt PIN"
 
-#: gui/slick/views/config_notifications.mako:2696
+#: gui/slick/views/config_notifications.mako:2580
 msgid "PIN code to authorize SickChill to access Trakt on your behalf."
 msgstr "PIN code to authorise SickChill to access Trakt on your behalf."
 
-#: gui/slick/views/config_notifications.mako:2710
+#: gui/slick/views/config_notifications.mako:2594
 msgid "API Timeout"
 msgstr "API Timeout"
 
-#: gui/slick/views/config_notifications.mako:2720
+#: gui/slick/views/config_notifications.mako:2604
 msgid "seconds to wait for Trakt API to respond. (Use 0 to wait forever)"
 msgstr "seconds to wait for Trakt API to respond. (Use 0 to wait forever)"
 
-#: gui/slick/views/config_notifications.mako:2728
+#: gui/slick/views/config_notifications.mako:2612
 msgid "Default indexer"
 msgstr "Default indexer"
 
-#: gui/slick/views/config_notifications.mako:2741
+#: gui/slick/views/config_notifications.mako:2625
 msgid "Sync libraries"
 msgstr "Sync libraries"
 
-#: gui/slick/views/config_notifications.mako:2745
+#: gui/slick/views/config_notifications.mako:2629
 msgid "sync your SickChill show library with your trakt show library."
 msgstr "sync your SickChill show library with your trakt show library."
 
-#: gui/slick/views/config_notifications.mako:2753
+#: gui/slick/views/config_notifications.mako:2637
 msgid "Remove Episodes From Collection"
 msgstr "Remove Episodes From Collection"
 
-#: gui/slick/views/config_notifications.mako:2757
+#: gui/slick/views/config_notifications.mako:2641
 msgid ""
 "remove an episode from your Trakt Collection if it is not in your "
 "SickChill Library."
@@ -4656,11 +4595,11 @@ msgstr ""
 "remove an episode from your Trakt Collection if it is not in your "
 "SickChill Library."
 
-#: gui/slick/views/config_notifications.mako:2765
+#: gui/slick/views/config_notifications.mako:2649
 msgid "Sync watchlist"
 msgstr "Sync watchlist"
 
-#: gui/slick/views/config_notifications.mako:2771
+#: gui/slick/views/config_notifications.mako:2655
 msgid ""
 "sync your SickChill show watchlist with your trakt show watchlist (either"
 " Show and Episode)."
@@ -4668,7 +4607,7 @@ msgstr ""
 "sync your SickChill show watchlist with your trakt show watchlist (either"
 " Show and Episode)."
 
-#: gui/slick/views/config_notifications.mako:2776
+#: gui/slick/views/config_notifications.mako:2660
 msgid ""
 "episode will be added on watch list when wanted or snatched and will be "
 "removed when downloaded "
@@ -4676,63 +4615,63 @@ msgstr ""
 "episode will be added on watch list when wanted or snatched and will be "
 "removed when downloaded "
 
-#: gui/slick/views/config_notifications.mako:2786
+#: gui/slick/views/config_notifications.mako:2670
 msgid "Watchlist add method"
 msgstr "Watchlist add method"
 
-#: gui/slick/views/config_notifications.mako:2792
+#: gui/slick/views/config_notifications.mako:2676
 msgid "Skip All"
 msgstr "Skip All"
 
-#: gui/slick/views/config_notifications.mako:2793
+#: gui/slick/views/config_notifications.mako:2677
 msgid "Download Pilot Only"
 msgstr "Download Pilot Only"
 
-#: gui/slick/views/config_notifications.mako:2794
+#: gui/slick/views/config_notifications.mako:2678
 msgid "Get whole show"
 msgstr "Get whole show"
 
-#: gui/slick/views/config_notifications.mako:2800
+#: gui/slick/views/config_notifications.mako:2684
 msgid "method in which to download episodes for new shows."
 msgstr "method in which to download episodes for new shows."
 
-#: gui/slick/views/config_notifications.mako:2808
+#: gui/slick/views/config_notifications.mako:2692
 msgid "Remove episode"
 msgstr "Remove episode"
 
-#: gui/slick/views/config_notifications.mako:2812
+#: gui/slick/views/config_notifications.mako:2696
 msgid "remove an episode from your watchlist after it is downloaded."
 msgstr "remove an episode from your watchlist after it is downloaded."
 
-#: gui/slick/views/config_notifications.mako:2818
+#: gui/slick/views/config_notifications.mako:2702
 msgid "Remove series"
 msgstr "Remove series"
 
-#: gui/slick/views/config_notifications.mako:2822
+#: gui/slick/views/config_notifications.mako:2706
 msgid "remove the whole series from your watchlist after any download."
 msgstr "remove the whole series from your watchlist after any download."
 
-#: gui/slick/views/config_notifications.mako:2828
+#: gui/slick/views/config_notifications.mako:2712
 msgid "Remove watched show"
 msgstr "Remove watched show"
 
-#: gui/slick/views/config_notifications.mako:2832
+#: gui/slick/views/config_notifications.mako:2716
 msgid "remove the show from sickchill if it's ended and completely watched"
 msgstr "remove the show from sickchill if it's ended and completely watched"
 
-#: gui/slick/views/config_notifications.mako:2838
+#: gui/slick/views/config_notifications.mako:2722
 msgid "Start paused"
 msgstr "Start paused"
 
-#: gui/slick/views/config_notifications.mako:2842
+#: gui/slick/views/config_notifications.mako:2726
 msgid "shows grabbed from your trakt watchlist start paused."
 msgstr "shows grabbed from your trakt watchlist start paused."
 
-#: gui/slick/views/config_notifications.mako:2850
+#: gui/slick/views/config_notifications.mako:2734
 msgid "Trakt blackList name"
 msgstr "Trakt BlackList name"
 
-#: gui/slick/views/config_notifications.mako:2860
+#: gui/slick/views/config_notifications.mako:2744
 msgid ""
 "name (slug) of list on Trakt for blacklisting show on 'Add Trending Show'"
 " & 'Add Recommended Shows' pages"
@@ -4740,71 +4679,71 @@ msgstr ""
 "name (slug) of list on Trakt for blacklisting show on 'Add Trending Show'"
 " & 'Add Recommended Shows' pages"
 
-#: gui/slick/views/config_notifications.mako:2889
+#: gui/slick/views/config_notifications.mako:2773
 msgid "Email"
 msgstr "Email"
 
-#: gui/slick/views/config_notifications.mako:2891
+#: gui/slick/views/config_notifications.mako:2775
 msgid "Allows configuration of email notifications on a per show basis."
 msgstr "Allows configuration of email notifications on a per show basis."
 
-#: gui/slick/views/config_notifications.mako:2902
+#: gui/slick/views/config_notifications.mako:2786
 msgid "send email notifications?"
 msgstr "send email notifications?"
 
-#: gui/slick/views/config_notifications.mako:2940
+#: gui/slick/views/config_notifications.mako:2824
 msgid "SMTP host"
 msgstr "SMTP host"
 
-#: gui/slick/views/config_notifications.mako:2950
+#: gui/slick/views/config_notifications.mako:2834
 msgid "hostname of your SMTP email server."
 msgstr "hostname of your SMTP email server."
 
-#: gui/slick/views/config_notifications.mako:2958
+#: gui/slick/views/config_notifications.mako:2842
 msgid "SMTP port"
 msgstr "SMTP port"
 
-#: gui/slick/views/config_notifications.mako:2968
+#: gui/slick/views/config_notifications.mako:2852
 msgid "port number used to connect to your SMTP host."
 msgstr "port number used to connect to your SMTP host."
 
-#: gui/slick/views/config_notifications.mako:2976
+#: gui/slick/views/config_notifications.mako:2860
 msgid "SMTP from"
 msgstr "SMTP from"
 
-#: gui/slick/views/config_notifications.mako:2986
+#: gui/slick/views/config_notifications.mako:2870
 msgid "sender email address, some hosts require a real address."
 msgstr "sender email address, some hosts require a real address."
 
-#: gui/slick/views/config_notifications.mako:2994
+#: gui/slick/views/config_notifications.mako:2878
 msgid "Use TLS"
 msgstr "Use TLS"
 
-#: gui/slick/views/config_notifications.mako:2998
+#: gui/slick/views/config_notifications.mako:2882
 msgid "check to use TLS encryption."
 msgstr "check to use TLS encryption."
 
-#: gui/slick/views/config_notifications.mako:3004
+#: gui/slick/views/config_notifications.mako:2888
 msgid "SMTP user"
 msgstr "SMTP user"
 
-#: gui/slick/views/config_notifications.mako:3014
+#: gui/slick/views/config_notifications.mako:2898
 msgid "(optional) your SMTP server username."
 msgstr "(optional) your SMTP server username."
 
-#: gui/slick/views/config_notifications.mako:3022
+#: gui/slick/views/config_notifications.mako:2906
 msgid "SMTP password"
 msgstr "SMTP password"
 
-#: gui/slick/views/config_notifications.mako:3035
+#: gui/slick/views/config_notifications.mako:2919
 msgid "(optional) your SMTP server password."
 msgstr "(optional) your SMTP server password."
 
-#: gui/slick/views/config_notifications.mako:3043
+#: gui/slick/views/config_notifications.mako:2927
 msgid "Global email list"
 msgstr "Global email list"
 
-#: gui/slick/views/config_notifications.mako:3053
+#: gui/slick/views/config_notifications.mako:2937
 msgid ""
 "email addresses listed here, separated by commas if applicable, will<br> "
 "receive notifications for <b>all</b> shows."
@@ -4812,23 +4751,23 @@ msgstr ""
 "email addresses listed here, separated by commas if applicable, will<br> "
 "receive notifications for <b>all</b> shows."
 
-#: gui/slick/views/config_notifications.mako:3053
+#: gui/slick/views/config_notifications.mako:2937
 msgid "(This field may be blank except when testing.)"
 msgstr "(This field may be blank except when testing.)"
 
-#: gui/slick/views/config_notifications.mako:3061
+#: gui/slick/views/config_notifications.mako:2945
 msgid "Email Subject"
 msgstr "Email Subject"
 
-#: gui/slick/views/config_notifications.mako:3072
+#: gui/slick/views/config_notifications.mako:2956
 msgid "use a custom subject for some privacy protection?"
 msgstr "use a custom subject for some privacy protection?"
 
-#: gui/slick/views/config_notifications.mako:3073
+#: gui/slick/views/config_notifications.mako:2957
 msgid "(leave blank for the default SickChill subject)"
 msgstr "(leave blank for the default SickChill subject)"
 
-#: gui/slick/views/config_notifications.mako:3100
+#: gui/slick/views/config_notifications.mako:2984
 msgid ""
 "configure per-show notifications here by entering email address(es), "
 "separated by commas,"
@@ -4836,7 +4775,7 @@ msgstr ""
 "configure per-show notifications here by entering email address(es), "
 "separated by commas,"
 
-#: gui/slick/views/config_notifications.mako:3101
+#: gui/slick/views/config_notifications.mako:2985
 msgid ""
 "after selecting a show in the drop-down box.  Be sure to activate the "
 "'Save for this show'"
@@ -4844,15 +4783,15 @@ msgstr ""
 "after selecting a show in the drop-down box.  Be sure to activate the "
 "'Save for this show'"
 
-#: gui/slick/views/config_notifications.mako:3102
+#: gui/slick/views/config_notifications.mako:2986
 msgid "button below after each entry."
 msgstr "button below after each entry."
 
-#: gui/slick/views/config_notifications.mako:3138
+#: gui/slick/views/config_notifications.mako:3022
 msgid "Slack"
 msgstr "Slack"
 
-#: gui/slick/views/config_notifications.mako:3140
+#: gui/slick/views/config_notifications.mako:3024
 msgid ""
 "Slack brings all your communication together in one place. It's real-time"
 " messaging, archiving and search for modern teams."
@@ -4860,19 +4799,19 @@ msgstr ""
 "Slack brings all your communication together in one place. It's real-time"
 " messaging, archiving and search for modern teams."
 
-#: gui/slick/views/config_notifications.mako:3154
+#: gui/slick/views/config_notifications.mako:3038
 msgid "should SickChill post messages on Slack?"
 msgstr "should SickChill post messages on Slack?"
 
-#: gui/slick/views/config_notifications.mako:3194
+#: gui/slick/views/config_notifications.mako:3078
 msgid "Slack Incoming Webhook"
 msgstr "Slack Incoming Webhook"
 
-#: gui/slick/views/config_notifications.mako:3225
+#: gui/slick/views/config_notifications.mako:3109
 msgid "Discord"
 msgstr "Discord"
 
-#: gui/slick/views/config_notifications.mako:3227
+#: gui/slick/views/config_notifications.mako:3111
 msgid ""
 "All-in-one voice and text chat for gamers that's free, secure, and works "
 "on both your desktop and phone."
@@ -4880,39 +4819,39 @@ msgstr ""
 "All-in-one voice and text chat for gamers that's free, secure, and works "
 "on both your desktop and phone."
 
-#: gui/slick/views/config_notifications.mako:3241
+#: gui/slick/views/config_notifications.mako:3125
 msgid "Should SickChill post messages on Discord?"
 msgstr "Should SickChill post messages on Discord?"
 
-#: gui/slick/views/config_notifications.mako:3271
+#: gui/slick/views/config_notifications.mako:3155
 msgid "Discord Incoming Webhook"
 msgstr "Discord Incoming Webhook"
 
-#: gui/slick/views/config_notifications.mako:3279
+#: gui/slick/views/config_notifications.mako:3163
 msgid "Create webhook under channel settings."
 msgstr "Create webhook under channel settings."
 
-#: gui/slick/views/config_notifications.mako:3287
+#: gui/slick/views/config_notifications.mako:3171
 msgid "Discord Bot Name"
 msgstr "Discord Bot Name"
 
-#: gui/slick/views/config_notifications.mako:3295
+#: gui/slick/views/config_notifications.mako:3179
 msgid "Blank will use webhook default Name."
 msgstr "Blank will use webhook default Name."
 
-#: gui/slick/views/config_notifications.mako:3303
+#: gui/slick/views/config_notifications.mako:3187
 msgid "Discord Avatar URL"
 msgstr "Discord Avatar URL"
 
-#: gui/slick/views/config_notifications.mako:3311
+#: gui/slick/views/config_notifications.mako:3195
 msgid "Blank will use webhook default Avatar."
 msgstr "Blank will use webhook default Avatar."
 
-#: gui/slick/views/config_notifications.mako:3319
+#: gui/slick/views/config_notifications.mako:3203
 msgid "Discord TTS"
 msgstr "Discord TTS"
 
-#: gui/slick/views/config_notifications.mako:3323
+#: gui/slick/views/config_notifications.mako:3207
 msgid "Send notifications using text-to-speech"
 msgstr "Send notifications using text-to-speech"
 
