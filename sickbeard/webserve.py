@@ -993,6 +993,14 @@ class Home(WebRoot):
             return _("Slack message failed")
 
     @staticmethod
+    def testMatrix():
+        result = notifiers.matrix_notifier.test_notify()
+        if result:
+            return _("Matrix message successful")
+        else:
+            return _("Matrix message failed")
+
+    @staticmethod
     def testDiscord():
         result = notifiers.discord_notifier.test_notify()
         if result:
@@ -3513,8 +3521,7 @@ class Manage(Home, WebRoot):
                        **kwargs):
         dir_map = {}
         for cur_arg in filter(lambda x: x.startswith('orig_root_dir_'), kwargs):
-            orig_root_dir_uni = ek(six.text_type, kwargs[cur_arg], 'utf-8')
-            dir_map[orig_root_dir_uni] = ek(six.text_type, kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')], 'utf-8')
+            dir_map[kwargs[cur_arg]] = ek(six.text_type, kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')], 'utf-8')
 
         showIDs = toEdit.split("|")
         errors = []
@@ -4899,7 +4906,9 @@ class ConfigNotifications(Config):
             use_email=None, email_notify_onsnatch=None, email_notify_ondownload=None,
             email_notify_onsubtitledownload=None, email_host=None, email_port=25, email_from=None,
             email_tls=None, email_user=None, email_password=None, email_list=None, email_subject=None, email_show_list=None,
-            email_show=None, use_slack=False, slack_notify_snatch=None, slack_notify_download=None, slack_notify_subtitledownload=None, slack_webhook=None,
+            email_show=None, use_slack=False, slack_notify_snatch=None, slack_notify_download=None, slack_notify_subtitledownload=None, slack_webhook=None, 
+            use_matrix=False, matrix_notify_snatch=None, matrix_notify_download=None, matrix_notify_subtitledownload=None, matrix_username=None,
+            matrix_api_token=None, matrix_server=None, matrix_room=None,
             use_discord=False, discord_notify_snatch=None, discord_notify_download=None, discord_webhook=None, discord_name=None,
             discord_avatar_url=None, discord_tts=False):
 
@@ -4994,6 +5003,15 @@ class ConfigNotifications(Config):
         sickbeard.SLACK_NOTIFY_DOWNLOAD = config.checkbox_to_value(slack_notify_download)
         sickbeard.SLACK_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(slack_notify_subtitledownload)
         sickbeard.SLACK_WEBHOOK = slack_webhook
+
+        sickbeard.USE_MATRIX = config.checkbox_to_value(use_matrix)
+        sickbeard.MATRIX_NOTIFY_SNATCH = config.checkbox_to_value(matrix_notify_snatch)
+        sickbeard.MATRIX_NOTIFY_DOWNLOAD = config.checkbox_to_value(matrix_notify_download)
+        sickbeard.MATRIX_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(matrix_notify_subtitledownload)
+        sickbeard.MATRIX_USERNAME = matrix_username
+        sickbeard.MATRIX_API_TOKEN = matrix_api_token
+        sickbeard.MATRIX_SERVER = matrix_server
+        sickbeard.MATRIX_ROOM = matrix_room
 
         sickbeard.USE_DISCORD = config.checkbox_to_value(use_discord)
         sickbeard.DISCORD_NOTIFY_SNATCH = config.checkbox_to_value(discord_notify_snatch)
