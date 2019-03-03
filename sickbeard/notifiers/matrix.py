@@ -32,6 +32,7 @@ from sickchill.helper.exceptions import ex
 class Notifier(object):
 
     def notify_snatch(self, ep_name):
+        logger.log("Sending matrix snatch notification    : " + message, logger.INFO)
         if sickbeard.MATRIX_NOTIFY_SNATCH:
             logger.log("Sending matrix snatch notification: " + message, logger.INFO)
             show = self._parseEp(ep_name)
@@ -45,8 +46,10 @@ class Notifier(object):
             self._notify_matrix(message)
 
     def notify_download(self, ep_name):
+
+
         if sickbeard.MATRIX_NOTIFY_DOWNLOAD:
-            logger.log("Sending matrix download notification: " + message, logger.INFO)
+            logger.log("Sending matrix download notification    : " + message, logger.INFO)
             show = self._parseEp(ep_name)
             message = '''<body style="font-family:Helvetica, Arial, sans-serif;">
                         <h3>SickChill Notification - Downloaded</h3>
