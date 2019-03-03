@@ -4907,7 +4907,7 @@ class ConfigNotifications(Config):
             email_notify_onsubtitledownload=None, email_host=None, email_port=25, email_from=None,
             email_tls=None, email_user=None, email_password=None, email_list=None, email_subject=None, email_show_list=None,
             email_show=None, use_slack=False, slack_notify_snatch=None, slack_notify_download=None, slack_notify_subtitledownload=None, slack_webhook=None, 
-            use_matrix=False, matrix_notify_snatch=None, matrix_notify_download=None, matrix_notify_subtitledownload=None, matrix_username=None,
+            use_matrix=False, matrix_notify_snatch=None, matrix_notify_download=None, matrix_notify_subtitledownload=None,
             matrix_api_token=None, matrix_server=None, matrix_room=None,
             use_discord=False, discord_notify_snatch=None, discord_notify_download=None, discord_webhook=None, discord_name=None,
             discord_avatar_url=None, discord_tts=False):
@@ -5008,7 +5008,6 @@ class ConfigNotifications(Config):
         sickbeard.MATRIX_NOTIFY_SNATCH = config.checkbox_to_value(matrix_notify_snatch)
         sickbeard.MATRIX_NOTIFY_DOWNLOAD = config.checkbox_to_value(matrix_notify_download)
         sickbeard.MATRIX_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(matrix_notify_subtitledownload)
-        sickbeard.MATRIX_USERNAME = matrix_username
         sickbeard.MATRIX_API_TOKEN = matrix_api_token
         sickbeard.MATRIX_SERVER = matrix_server
         sickbeard.MATRIX_ROOM = matrix_room

@@ -33,6 +33,7 @@ class Notifier(object):
 
     def notify_snatch(self, ep_name):
         if sickbeard.MATRIX_NOTIFY_SNATCH:
+            logger.log("Sending matrix snatch notification: " + message, logger.INFO)
             show = self._parseEp(ep_name)
             message = '''<body style="font-family:Helvetica, Arial, sans-serif;">
                         <h3>SickChill Notification - Snatched</h3>
@@ -45,6 +46,7 @@ class Notifier(object):
 
     def notify_download(self, ep_name):
         if sickbeard.MATRIX_NOTIFY_DOWNLOAD:
+            logger.log("Sending matrix download notification: " + message, logger.INFO)
             show = self._parseEp(ep_name)
             message = '''<body style="font-family:Helvetica, Arial, sans-serif;">
                         <h3>SickChill Notification - Downloaded</h3>

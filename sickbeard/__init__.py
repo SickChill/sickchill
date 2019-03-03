@@ -502,10 +502,9 @@ USE_MATRIX = False
 MATRIX_NOTIFY_SNATCH = None
 MATRIX_NOTIFY_DOWNLOAD = None
 MATRIX_NOTIFY_SUBTITLEDOWNLOAD = None
-MATRIX_USERNAME = 'usernam'
-MATRIX_API_TOKEN = 'token'
-MATRIX_SERVER = 'matrix.org'
-MATRIX_ROOM = 'dasroom'
+MATRIX_API_TOKEN = None
+MATRIX_SERVER = None
+MATRIX_ROOM = None
 
 USE_DISCORD = False
 DISCORD_NOTIFY_SNATCH = None
@@ -729,7 +728,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             NEWS_LATEST, SOCKET_TIMEOUT, SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKCHILL_BACKGROUND, \
             SICKCHILL_BACKGROUND_PATH, FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, \
             SLACK_NOTIFY_DOWNLOAD, SLACK_NOTIFY_SUBTITLEDOWNLOAD, SLACK_WEBHOOK, USE_MATRIX, MATRIX_NOTIFY_SNATCH, MATRIX_NOTIFY_DOWNLOAD, \
-            MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_USERNAME, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM, USE_DISCORD, DISCORD_NOTIFY_SNATCH, \
+            MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM, USE_DISCORD, DISCORD_NOTIFY_SNATCH, \
             DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK
 
         if __INITIALIZED__:
@@ -1252,7 +1251,6 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         MATRIX_NOTIFY_SNATCH = check_setting_bool(CFG, 'Matrix', 'matrix_notify_snatch')
         MATRIX_NOTIFY_DOWNLOAD = check_setting_bool(CFG, 'Matrix', 'matrix_notify_download')
         MATRIX_NOTIFY_SUBTITLEDOWNLOAD = check_setting_bool(CFG, 'Matrix', 'matrix_notify_subtitledownload')
-        MATRIX_USERNAME = check_setting_str(CFG, 'Matrix', 'matrix_username')
         MATRIX_API_TOKEN = check_setting_str(CFG, 'Matrix', 'matrix_api_token')
         MATRIX_SERVER = check_setting_str(CFG, 'Matrix', 'matrix_server')
         MATRIX_ROOM = check_setting_str(CFG, 'Matrix', 'matrix_room')
@@ -2174,7 +2172,6 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'matrix_notify_snatch': int(MATRIX_NOTIFY_SNATCH),
             'matrix_notify_download': int(MATRIX_NOTIFY_DOWNLOAD),
             'matrix_notify_subtitledownload': int(MATRIX_NOTIFY_SUBTITLEDOWNLOAD),
-            'matrix_username': MATRIX_USERNAME,
             'matrix_api_token': MATRIX_API_TOKEN,
             'matrix_server': MATRIX_SERVER,
             'matrix_room': MATRIX_ROOM
