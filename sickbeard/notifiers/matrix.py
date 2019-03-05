@@ -34,18 +34,16 @@ class Notifier(object):
     def notify_snatch(self, ep_name):
         if sickbeard.MATRIX_NOTIFY_SNATCH:
             show = self._parseEp(ep_name)
-            message = '''<body style="font-family:Helvetica, Arial, sans-serif;">
+            message = '''<body>
                         <h3>SickChill Notification - Snatched</h3>
                         <p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p><p>Quality: <b>{3}</b></p>
-                        <h5 style="margin-top: 2.5em; padding: .7em 0;
-                        color: #777; border-top: #BBB solid 1px;">
-                        Powered by SickChill.</h5></body>'''.format(show[0], show[1], show[2], show[3])
+                        <h5>Powered by SickChill.</h5></body>'''.format(show[0], show[1], show[2], show[3])
             self._notify_matrix(message)
 
     def notify_download(self, ep_name):
         if sickbeard.MATRIX_NOTIFY_DOWNLOAD:
             show = self._parseEp(ep_name)
-            message = '''<body style="font-family:Helvetica, Arial, sans-serif;">
+            message = '''<body>
                         <h3>SickChill Notification - Downloaded</h3>
                         <p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p><p>Quality: <b>{3}</b></p>
                         <h5 style="margin-top: 2.5em; padding: .7em 0;
@@ -56,13 +54,11 @@ class Notifier(object):
     def notify_subtitle_download(self, ep_name, lang):
         if sickbeard.MATRIX_NOTIFY_SUBTITLEDOWNLOAD:
             show = self._parseEp(ep_name)
-            message = '''<body style="font-family:Helvetica, Arial, sans-serif;">
+            message = '''<body>
                         <h3>SickChill Notification - Subtitle Downloaded</h3>
                         <p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p></p>
                         <p>Language: <b>{3}</b></p>
-                        <h5 style="margin-top: 2.5em; padding: .7em 0;
-                        color: #777; border-top: #BBB solid 1px;">
-                        Powered by SickChill.</h5></body>'''.format(show[0], show[1], show[2], lang)
+                        <h5>Powered by SickChill.</h5></body>'''.format(show[0], show[1], show[2], lang)
             self._notify_matrix(message)
 
     def notify_git_update(self, new_version="??"):
