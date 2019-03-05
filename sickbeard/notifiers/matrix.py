@@ -27,14 +27,12 @@ import time
 import sickbeard
 from sickbeard import common, logger
 from sickchill.helper.exceptions import ex
-
+from sickchill.helper.encoding import ss
 
 class Notifier(object):
 
     def notify_snatch(self, ep_name):
-        logger.log("Sending matrix snatch notification    : " + message, logger.INFO)
         if sickbeard.MATRIX_NOTIFY_SNATCH:
-            logger.log("Sending matrix snatch notification: " + message, logger.INFO)
             show = self._parseEp(ep_name)
             message = '''<body style="font-family:Helvetica, Arial, sans-serif;">
                         <h3>SickChill Notification - Snatched</h3>
@@ -42,14 +40,10 @@ class Notifier(object):
                         <h5 style="margin-top: 2.5em; padding: .7em 0;
                         color: #777; border-top: #BBB solid 1px;">
                         Powered by SickChill.</h5></body>'''.format(show[0], show[1], show[2], show[3])
-
             self._notify_matrix(message)
 
     def notify_download(self, ep_name):
-
-
         if sickbeard.MATRIX_NOTIFY_DOWNLOAD:
-            logger.log("Sending matrix download notification    : " + message, logger.INFO)
             show = self._parseEp(ep_name)
             message = '''<body style="font-family:Helvetica, Arial, sans-serif;">
                         <h3>SickChill Notification - Downloaded</h3>
@@ -90,7 +84,7 @@ class Notifier(object):
         url = 'https://{0}/_matrix/client/r0/rooms/{1}/send/m.room.message/{2}?access_token={3}'.format(sickbeard.MATRIX_SERVER, sickbeard.MATRIX_ROOM, time.time(), sickbeard.MATRIX_API_TOKEN)
 
         logger.log("Sending matrix message: " + message, logger.INFO)
-        logger.log("Sending matrix message  to url: " + url, logger.INFO)
+        logger.log("Sending matrix message to url: " + url, logger.INFO)
 
         if isinstance(message, six.text_type):
             message = message.encode('utf-8')
@@ -118,3 +112,12 @@ class Notifier(object):
             return False
 
         return self._send_matrix(message)
+
+    @staticmethod
+    def _parseEp(ep_name):
+        ep_name = ss(ep_name)
+
+        sep = ' - '
+        titles = ep_name.split(sep)
+        logger.log('TITLES: {0}'.format(titles), logger.DEBUG)
+        return titles
