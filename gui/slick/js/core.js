@@ -732,7 +732,6 @@ var SICKCHILL = {
                 });
             });
 
-
             $('#testDiscord').on('click', function() {
                 $.get(srRoot + '/home/testDiscord', function(data) {
                     $('#testDiscord-result').html(data);
