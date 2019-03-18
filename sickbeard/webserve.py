@@ -3513,7 +3513,8 @@ class Manage(Home, WebRoot):
                        **kwargs):
         dir_map = {}
         for cur_arg in filter(lambda x: x.startswith('orig_root_dir_'), kwargs):
-            dir_map[kwargs[cur_arg]] = ek(six.text_type, kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')], 'utf-8')
+            orig_root_dir_uni = ek(six.text_type, kwargs[cur_arg], 'utf-8')
+            dir_map[orig_root_dir_uni] = ek(six.text_type, kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')], 'utf-8')
 
         showIDs = toEdit.split("|")
         errors = []
