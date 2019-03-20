@@ -40,7 +40,8 @@ class Torrent9Provider(TorrentProvider):
         self.minseed = None
         self.minleech = None
         # self._original_url = "https://www.torrent9.uno"
-        self._original_url = "https://www.torrents9.pw"
+        # Change Original Url for Torrent9 Clone, Maybe works too with OxTorrent.com
+        self._original_url = "https://www.torrent9.vg"
         self._custom_url = None
         self._used_url = None
         self._recheck_url = True
@@ -106,7 +107,7 @@ class Torrent9Provider(TorrentProvider):
                     search_url = self.url
                     post_data = {'torrentSearch': search_string}
                 else:
-                    search_url = self.url + '/torrents_series.html'
+                    search_url = self.url + '/torrents/series'
                     post_data = None
 
                 data = self.get_url(search_url, post_data, returns='text')
