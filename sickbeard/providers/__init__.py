@@ -28,7 +28,7 @@ from sickbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, 
                                  gftracker, gimmepeers, hd4free, hdbits, hdspace, hdtorrents, hdtorrents_it, horriblesubs, hounddawgs, ilcorsaronero,
                                  immortalseed, iptorrents, limetorrents, magnetdl, morethantv, ncore, nebulance, newpct, norbits, nyaa, omgwtfnzbs, pretome,
                                  rarbg, scc, scenetime, shazbat, skytorrents, speedcd, thepiratebay, tntvillage, tokyotoshokan, torrent9, torrentbytes,
-                                 torrentday, torrentleech, torrentproject, torrentz, tvchaosuk, xthor, yggtorrent)
+                                 torrentday, torrentleech, torrentproject, torrentz, tvchaosuk, xthor, yggtorrent, torrent9clone)
 
 __all__ = [
     'abnormal', 'alpharatio', 'archetorrent', 'binsearch', 'bitcannon', 'bjshare', 'btn', 'cpasbien', 'danishbits',
@@ -36,7 +36,7 @@ __all__ = [
     'horriblesubs', 'hounddawgs', 'ilcorsaronero', 'immortalseed', 'iptorrents', 'limetorrents', 'magnetdl', 'morethantv',
     'ncore', 'nebulance', 'newpct', 'norbits', 'nyaa', 'omgwtfnzbs', 'pretome', 'rarbg', 'scc', 'scenetime',
     'shazbat', 'skytorrents', 'speedcd', 'thepiratebay', 'tntvillage', 'tokyotoshokan', 'torrent9',
-    'torrentbytes', 'torrentday', 'torrentleech', 'torrentproject', 'torrentz', 'tvchaosuk', 'xthor', 'yggtorrent'
+    'torrentbytes', 'torrentday', 'torrentleech', 'torrentproject', 'torrentz', 'tvchaosuk', 'xthor', 'yggtorrent', 'torrent9clone'
 ]
 
 
