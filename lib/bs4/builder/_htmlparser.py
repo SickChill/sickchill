@@ -52,7 +52,31 @@ from bs4.builder import (
 HTMLPARSER = 'html.parser'
 
 class BeautifulSoupHTMLParser(HTMLParser):
-    def handle_starttag(self, name, attrs):
+
+    def __init__(self, *args, **kwargs):
+        HTMLParser.__init__(self, *args, **kwargs)
+
+        # Keep a list of empty-element tags that were encountered
+        # without an explicit closing tag. If we encounter a closing tag
+        # of this type, we'll associate it with one of those entries.
+        #
+        # This isn't a stack because we don't care about the
+        # order. It's a list of closing tags we've already handled and
+        # will ignore, assuming they ever show up.
+        self.already_closed_empty_element = []
+    
+    def handle_startendtag(self, name, attrs):
+        # This is only called when the markup looks like
+        # <tag/>.
+
+        # is_startend() tells handle_starttag not to close the tag
+        # just because its name matches a known empty-element tag. We
+        # know that this is an empty-element tag and we want to call
+        # handle_endtag ourselves.
+        tag = self.handle_starttag(name, attrs, handle_empty_element=False)
+        self.handle_endtag(name)
+        
+    def handle_starttag(self, name, attrs, handle_empty_element=True):
         # XXX namespace
         attr_dict = {}
         for key, value in attrs:
@@ -62,10 +86,34 @@ class BeautifulSoupHTMLParser(HTMLParser):
                 value = ''
             attr_dict[key] = value
             attrvalue = '""'
-        self.soup.handle_starttag(name, None, None, attr_dict)
+        #print "START", name
+        tag = self.soup.handle_starttag(name, None, None, attr_dict)
+        if tag and tag.is_empty_element and handle_empty_element:
+            # Unlike other parsers, html.parser doesn't send separate end tag
+            # events for empty-element tags. (It's handled in
+            # handle_startendtag, but only if the original markup looked like
+            # <tag/>.)
+            #
+            # So we need to call handle_endtag() ourselves. Since we
+            # know the start event is identical to the end event, we
+            # don't want handle_endtag() to cross off any previous end
+            # events for tags of this name.
+            self.handle_endtag(name, check_already_closed=False)
 
-    def handle_endtag(self, name):
-        self.soup.handle_endtag(name)
+            # But we might encounter an explicit closing tag for this tag
+            # later on. If so, we want to ignore it.
+            self.already_closed_empty_element.append(name)
+            
+    def handle_endtag(self, name, check_already_closed=True):
+        #print "END", name
+        if check_already_closed and name in self.already_closed_empty_element:
+            # This is a redundant end tag for an empty-element tag.
+            # We've already called handle_endtag() for it, so just
+            # check it off the list.
+            # print "ALREADY CLOSED", name
+            self.already_closed_empty_element.remove(name)
+        else:
+            self.soup.handle_endtag(name)
 
     def handle_data(self, data):
         self.soup.handle_data(data)
@@ -169,6 +217,7 @@ class HTMLParserTreeBuilder(HTMLTreeBuilder):
             warnings.warn(RuntimeWarning(
                 "Python's built-in HTMLParser cannot parse the given document. This is not a bug in Beautiful Soup. The best solution is to install an external parser (lxml or html5lib), and use Beautiful Soup with that parser. See http://www.crummy.com/software/BeautifulSoup/bs4/doc/#installing-a-parser for help."))
             raise e
+        parser.already_closed_empty_element = []
 
 # Patch 3.2 versions of HTMLParser earlier than 3.2.3 to use some
 # 3.2.3 code. This ensures they don't treat markup like <p></p> as a

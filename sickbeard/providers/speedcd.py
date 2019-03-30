@@ -1,34 +1,35 @@
 # coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
 #
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
 import re
+import string
 
 from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.helper.common import convert_size, try_int
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from sickchill.helper.common import convert_size, try_int
+from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
@@ -129,7 +130,7 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                     logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
-                search_params['search'] = search_string
+                search_params['search'] = search_string.translate(None, string.punctuation)
 
                 data = self.get_url(self.urls['search'], params=search_params, returns='text')
                 if not data:
@@ -152,7 +153,7 @@ class SpeedCDProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
                         try:
                             cells = result('td')
 
-                            title = cells[labels.index('Title')].find('a', class_='torrent').get_text()
+                            title = cells[labels.index('Title')].find('a').get_text()
                             download_url = urljoin(self.url, cells[labels.index('Download') - 1].a['href'])
                             if not all([title, download_url]):
                                 continue

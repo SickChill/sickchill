@@ -1,35 +1,35 @@
 # coding=utf-8
 # Author: adaur <adaur.underground@gmail.com>
-# Contributor: PHD <phd59fr@gmail.com>
+# Contributor: PHD <phd59fr@gmail.com>, pluzun <pluzun59@gmail.com>
 #
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
 
 import re
 
+import validators
 from requests.compat import urljoin
-from requests.utils import dict_from_cookiejar
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.helper.common import convert_size, try_int
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from sickchill.helper.common import convert_size, try_int
+from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
@@ -48,7 +48,8 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.minleech = None
 
         # URLs
-        self.url = 'https://yggtorrent.com/'
+        self.custom_url = None
+        self.url = 'https://www6.yggtorrent.to/'
         self.urls = {
             'login': urljoin(self.url, 'user/login'),
             'search': urljoin(self.url, 'engine/search')
@@ -60,32 +61,61 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         # Cache
         self.cache = tvcache.TVCache(self, min_time=30)
 
-    def login(self):
-        if any(dict_from_cookiejar(self.session.cookies).values()):
+    def update_urls(self, new_url, custom=False):
+        if custom and not new_url:
             return True
 
+        if not validators.url(new_url):
+            if custom:
+                logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+            else:
+                logger.log('Url changing has failed!', logger.DEBUG)
+
+            return False
+
+        self.url = new_url
+        self.urls = {
+            'login': urljoin(self.url, 'user/login'),
+            'search': urljoin(self.url, 'engine/search')
+        }
+        return True
+
+    def login(self):
         login_params = {
             'id': self.username,
             'pass': self.password,
         }
 
-        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
-        if not response: # When you call /login if it's OK, it's return 200 with no body, i retry in main if it's logged !
-            response = self.get_url(self.url, returns='text')
-            if not response: # The provider is dead !!!
-                logger.log('Unable to connect to provider', logger.WARNING)
+        self.update_urls(self.custom_url, True)
+
+        response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
+        if self.url not in response.url:
+            new_url = response.url.split('user/login')[0]
+            logger.log('Changing base url from {} to {}'.format(self.url, new_url), logger.DEBUG)
+            if not self.update_urls(new_url):
                 return False
 
-        if 'logout' not in response:
-            logger.log('Invalid username or password. Check your settings', logger.WARNING)
+            response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
+
+        # The login is now an AJAX call (401 : Bad credentials, 200 : Logged in, other : server failure)
+        if not response or response.status_code != 200:
+            logger.log('Unable to connect to provider', logger.WARNING)
             return False
+        else:
+            # It seems we are logged, let's verify that !
+            response = self.get_url(self.url, returns='response')
+
+            if response.status_code != 200:
+                logger.log('Unable to connect to provider', logger.WARNING)
+                return False
+            if 'logout' not in response.text:
+                logger.log('Invalid username or password. Check your settings', logger.WARNING)
+                return False
 
         return True
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
         results = []
-        if not self.login():
-            return results
 
         for mode in search_strings:
             items = []
@@ -111,16 +141,22 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                 try:
                     search_params = {
-                        'category': "2145",
-                        'subcategory' : "2184",
-                        'q': re.sub(r'[()]', '', search_string)
+                        'category': '2145',
+                        'sub_category' : 'all',
+                        'name': re.sub(r'[()]', '', search_string),
+                        'do': 'search'
                     }
+
                     data = self.get_url(self.urls['search'], params=search_params, returns='text')
                     if not data:
                         continue
 
+                    if 'logout' not in data:
+                        logger.log('Refreshing cookies', logger.DEBUG)
+                        self.login()
+
                     with BS4Parser(data, 'html5lib') as html:
-                        torrent_table = html.find(class_='table table-striped')
+                        torrent_table = html.find(class_='table')
                         torrent_rows = torrent_table('tr') if torrent_table else []
 
                         # Continue only if at least one Release is found
@@ -131,23 +167,20 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         # Skip column headers
                         for result in torrent_rows[1:]:
                             cells = result('td')
-                            if len(cells) < 5:
+                            if len(cells) < 9:
                                 continue
 
-                            download_url = ""
-                            title = cells[0].find('a', class_='torrent-name').get_text(strip=True)
-                            for download_img in cells[0].select('a[href] img'):
-                                if download_img['src'] == urljoin(self.url,"static/icons/icon_download.gif"):
-                                    download_url = urljoin(self.url, download_img.parent['href'])
-                                    break
+                            title = cells[1].find('a').get_text(strip=True)
+                            id = cells[2].find('a')['target']
+                            download_url = urljoin(self.url, 'engine/download_torrent?id=' + id)
 
                             if not (title and download_url):
                                 continue
 
-                            seeders = try_int(cells[4].get_text(strip=True))
-                            leechers = try_int(cells[5].get_text(strip=True))
+                            seeders = try_int(cells[7].get_text(strip=True))
+                            leechers = try_int(cells[8].get_text(strip=True))
 
-                            torrent_size = cells[2].get_text()
+                            torrent_size = cells[5].get_text()
                             size = convert_size(torrent_size) or -1
 
                             # Filter unseeded torrent

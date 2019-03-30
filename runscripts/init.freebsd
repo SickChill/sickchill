@@ -1,55 +1,55 @@
 #!/bin/sh
 #
-# PROVIDE: sickrage
+# PROVIDE: sickchill
 # REQUIRE: LOGIN
 # KEYWORD: shutdown
 #
 # Add the following lines to /etc/rc.conf.local or /etc/rc.conf
 # to enable this service:
 #
-# sickrage_enable (bool):	Set to NO by default.
+# sickchill_enable (bool):	Set to NO by default.
 #			Set it to YES to enable it.
-# sickrage_user:	The user account SickRage daemon runs as what
-#			you want it to be. It uses 'sickrage' user by
+# sickchill_user:	The user account SickChill daemon runs as what
+#			you want it to be. It uses 'sickchill' user by
 #			default. Do not sets it as empty or it will run
 #			as root.
-# sickrage_group:	The group account SickRage daemon runs as what
-#			you want it to be. It uses 'sickrage' group by
+# sickchill_group:	The group account SickChill daemon runs as what
+#			you want it to be. It uses 'sickchill' group by
 #			default. Do not sets it as empty or it will run
 #			as wheel.
-# sickrage_dir:	Directory where SickRage lives.
-#			Default: /usr/local/sickrage
-# sickrage_datadir:	Data directory for SickRage (DB, Logs, config)
-#			Default is same as sickrage_dir
+# sickchill_dir:	Directory where SickChill lives.
+#			Default: /usr/local/sickchill
+# sickchill_datadir:	Data directory for SickChill (DB, Logs, config)
+#			Default is same as sickchill_dir
 
 . /etc/rc.subr
 
-name="sickrage"
+name="sickchill"
 rcvar=${name}_enable
 
 load_rc_config ${name}
 
-: ${sickrage_enable:="NO"}
-: ${sickrage_user:="sickrage"}
-: ${sickrage_group:="sickrage"}
-: ${sickrage_dir:="/usr/local/sickrage"}
-: ${sickrage_datadir:="${sickrage_dir}"}
+: ${sickchill_enable:="NO"}
+: ${sickchill_user:="sickchill"}
+: ${sickchill_group:="sickchill"}
+: ${sickchill_dir:="/usr/local/sickchill"}
+: ${sickchill_datadir:="${sickchill_dir}"}
 
-pidfile="/var/run/sickrage/sickrage.pid"
+pidfile="/var/run/sickchill/sickchill.pid"
 command="/usr/local/bin/python2.7"
-command_args="${sickrage_dir}/SickBeard.py --datadir ${sickrage_datadir} -d --pidfile ${pidfile} --quiet --nolaunch"
+command_args="${sickchill_dir}/SickBeard.py --datadir ${sickchill_datadir} -d --pidfile ${pidfile} --quiet --nolaunch"
 
-start_precmd="sickrage_prestart"
-sickrage_prestart() {
+start_precmd="sickchill_prestart"
+sickchill_prestart() {
 	if [ -f ${pidfile} ]; then
 		rm -f ${pidfile}
 		echo "Removing stale pidfile."
 	elif [ ! -d ${pidfile%/*} ]; then
-		install -d -o ${sickrage_user} -g ${sickrage_group} ${pidfile%/*}
+		install -d -o ${sickchill_user} -g ${sickchill_group} ${pidfile%/*}
 	fi
 
-	if [ ! -d ${sickrage_datadir} ]; then
-		install -d -o ${sickrage_user} -g ${sickrage_group} ${sickrage_datadir}
+	if [ ! -d ${sickchill_datadir} ]; then
+		install -d -o ${sickchill_user} -g ${sickchill_group} ${sickchill_datadir}
 	fi
 }
 

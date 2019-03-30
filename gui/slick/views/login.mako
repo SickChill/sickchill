@@ -6,7 +6,7 @@
                 <form action="" method="post">
                     <div class="row">
                         <div class="col-md-12">
-                            <h1>SickRage</h1>
+                            <h1>SickChill</h1>
                         </div>
                     </div>
                     <div class="row">

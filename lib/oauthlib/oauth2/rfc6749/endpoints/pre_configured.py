@@ -8,20 +8,16 @@ for consuming and providing OAuth 2.0 RFC6749.
 """
 from __future__ import absolute_import, unicode_literals
 
-from ..grant_types import OpenIDConnectAuthCode
+from ..grant_types import (AuthCodeGrantDispatcher, AuthorizationCodeGrant,
+                           ClientCredentialsGrant, ImplicitGrant,
+                           OpenIDConnectAuthCode, OpenIDConnectImplicit,
+                           RefreshTokenGrant,
+                           ResourceOwnerPasswordCredentialsGrant)
 from ..tokens import BearerToken
-from ..grant_types import AuthorizationCodeGrant
-from ..grant_types import ImplicitGrant
-from ..grant_types import ResourceOwnerPasswordCredentialsGrant
-from ..grant_types import ClientCredentialsGrant
-from ..grant_types import RefreshTokenGrant
-from ..grant_types import OpenIDConnectImplicit
-from ..grant_types import AuthCodeGrantDispatcher
-
 from .authorization import AuthorizationEndpoint
-from .token import TokenEndpoint
 from .resource import ResourceEndpoint
 from .revocation import RevocationEndpoint
+from .token import TokenEndpoint
 
 
 class Server(AuthorizationEndpoint, TokenEndpoint, ResourceEndpoint,
@@ -79,7 +75,7 @@ class Server(AuthorizationEndpoint, TokenEndpoint, ResourceEndpoint,
                                    'password': password_grant,
                                    'client_credentials': credentials_grant,
                                    'refresh_token': refresh_grant,
-                                   'openid' : openid_connect_auth
+                                   'openid': openid_connect_auth
                                },
                                default_token_type=bearer)
         ResourceEndpoint.__init__(self, default_token='Bearer',

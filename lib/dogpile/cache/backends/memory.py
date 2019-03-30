@@ -10,8 +10,8 @@ places the value as given into the dictionary.
 
 """
 
-from dogpile.cache.api import CacheBackend, NO_VALUE
-from dogpile.cache.compat import pickle
+from ..api import CacheBackend, NO_VALUE
+from ...util.compat import pickle
 
 
 class MemoryBackend(CacheBackend):

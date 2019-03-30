@@ -1,22 +1,22 @@
 #!/usr/bin/env python2.7
 # coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: http://github.com/SickRage/SickRage
+# URL: http://github.com/SickChill/SickChill
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 """
 Test sickbeard.helpers
@@ -47,7 +47,6 @@ Public Methods:
     get_absolute_number_from_season_and_episode
     get_all_episodes_from_absolute_number
     sanitizeSceneName
-    arithmeticEval
     create_https_certificates
     backupVersionedFile
     restoreVersionedFile
@@ -101,7 +100,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import sickbeard
 from bencode.BTL import BTFailure
 from sickbeard import helpers
-from sickrage.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
+from sickchill.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
 
 import six
 
@@ -301,15 +300,15 @@ class HelpersDirectoryTests(unittest.TestCase):
         """
         Test real_path
         """
-        self.assertEqual(helpers.real_path('/usr/SickRage/../root/real/path/'), helpers.real_path('/usr/root/real/path/'))
+        self.assertEqual(helpers.real_path('/usr/SickChill/../root/real/path/'), helpers.real_path('/usr/root/real/path/'))
 
     def test_is_subdirectory(self):
         """
         Test is_subdirectory
         """
-        self.assertTrue(helpers.is_subdirectory(subdir_path='/usr/SickRage/Downloads/Unpack', topdir_path='/usr/SickRage/Downloads'))
-        self.assertTrue(helpers.is_subdirectory(subdir_path='/usr/SickRage/Downloads/testfile.tst', topdir_path='/usr/SickRage/Downloads/'))
-        self.assertFalse(helpers.is_subdirectory(subdir_path='/usr/SickRage/Unpack', topdir_path='/usr/SickRage/Downloads'))
+        self.assertTrue(helpers.is_subdirectory(subdir_path='/usr/SickChill/Downloads/Unpack', topdir_path='/usr/SickChill/Downloads'))
+        self.assertTrue(helpers.is_subdirectory(subdir_path='/usr/SickChill/Downloads/testfile.tst', topdir_path='/usr/SickChill/Downloads/'))
+        self.assertFalse(helpers.is_subdirectory(subdir_path='/usr/SickChill/Unpack', topdir_path='/usr/SickChill/Downloads'))
 
 class HelpersFileTests(unittest.TestCase):
     """
@@ -736,13 +735,6 @@ class HelpersMiscTests(unittest.TestCase):
     def test_sanitize_scene_name(self):
         """
         Test sanitizeSceneName
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
-    def test_arithmetic_eval(self):
-        """
-        Test arithmeticEval
         """
         pass
 

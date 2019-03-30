@@ -1,3 +1,15 @@
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may
+#  not use this file except in compliance with the License. You may obtain
+#  a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+
 from .exception import NoMatches, MultipleMatches
 from .named import NamedExtensionManager
 
@@ -28,12 +40,14 @@ class DriverManager(NamedExtensionManager):
     :param verify_requirements: Use setuptools to enforce the
         dependencies of the plugin(s) being loaded. Defaults to False.
     :type verify_requirements: bool
+    :type warn_on_missing_entrypoint: bool
     """
 
     def __init__(self, namespace, name,
                  invoke_on_load=False, invoke_args=(), invoke_kwds={},
                  on_load_failure_callback=None,
-                 verify_requirements=False):
+                 verify_requirements=False,
+                 warn_on_missing_entrypoint=True):
         on_load_failure_callback = on_load_failure_callback \
             or self._default_on_load_failure
         super(DriverManager, self).__init__(
@@ -44,6 +58,7 @@ class DriverManager(NamedExtensionManager):
             invoke_kwds=invoke_kwds,
             on_load_failure_callback=on_load_failure_callback,
             verify_requirements=verify_requirements,
+            warn_on_missing_entrypoint=warn_on_missing_entrypoint
         )
 
     @staticmethod

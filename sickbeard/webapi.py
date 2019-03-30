@@ -1,22 +1,22 @@
 # coding=utf-8
 # Author: Dennis Lutter <lad1337@gmail.com>
 # Author: Jonathon Saine <thezoggy@gmail.com>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 # TODO: break this up into separate files
 # pylint: disable=line-too-long,too-many-lines,abstract-method
@@ -43,19 +43,19 @@ from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Q
                               WANTED)
 from sickbeard.postProcessor import PROCESS_METHODS
 from sickbeard.versionChecker import CheckVersion
-from sickrage.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import CantUpdateShowException, ex, ShowDirectoryNotFoundException
-from sickrage.helper.quality import get_quality_string
-from sickrage.media.ShowBanner import ShowBanner
-from sickrage.media.ShowFanArt import ShowFanArt
-from sickrage.media.ShowNetworkLogo import ShowNetworkLogo
-from sickrage.media.ShowPoster import ShowPoster
-from sickrage.show.ComingEpisodes import ComingEpisodes
-from sickrage.show.History import History
-from sickrage.show.Show import Show
-from sickrage.system.Restart import Restart
-from sickrage.system.Shutdown import Shutdown
+from sickchill.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
+from sickchill.helper.encoding import ek
+from sickchill.helper.exceptions import CantUpdateShowException, ex, ShowDirectoryNotFoundException
+from sickchill.helper.quality import get_quality_string
+from sickchill.media.ShowBanner import ShowBanner
+from sickchill.media.ShowFanArt import ShowFanArt
+from sickchill.media.ShowNetworkLogo import ShowNetworkLogo
+from sickchill.media.ShowPoster import ShowPoster
+from sickchill.show.ComingEpisodes import ComingEpisodes
+from sickchill.show.History import History
+from sickchill.show.Show import Show
+from sickchill.system.Restart import Restart
+from sickchill.system.Shutdown import Shutdown
 
 try:
     import json
@@ -136,7 +136,7 @@ class ApiHandler(RequestHandler):
                 "kwargs": kwargs
             }
             out_dict = _responds(RESULT_FATAL, error_data,
-                                 "SickRage encountered an internal error! Please report to the Devs")
+                                 "SickChill encountered an internal error! Please report to the Devs")
 
         if 'outputType' in out_dict:
             output_callback = output_callback_dict[out_dict['outputType']]
@@ -688,7 +688,7 @@ class CMDComingEpisodes(ApiCall):
             "sort": {"desc": "Change the sort order"},
             "type": {"desc": "One or more categories of coming episodes, separated by |"},
             "paused": {
-                "desc": "0 to exclude paused shows, 1 to include them, or omitted to use SickRage default value"
+                "desc": "0 to exclude paused shows, 1 to include them, or omitted to use SickChill default value"
             },
         }
     }
@@ -1420,13 +1420,13 @@ class CMDPostProcess(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickBeard(ApiCall):
-    _help = {"desc": "Get miscellaneous information about SickRage"}
+    _help = {"desc": "Get miscellaneous information about SickChill"}
 
     def __init__(self, args, kwargs):
         super(CMDSickBeard, self).__init__(args, kwargs)
 
     def run(self):
-        """ dGet miscellaneous information about SickRage """
+        """ dGet miscellaneous information about SickChill """
         data = {"sr_version": sickbeard.BRANCH, "api_version": self.version,
                 "api_commands": sorted(function_mapper.keys())}
         return _responds(RESULT_SUCCESS, data)
@@ -1435,7 +1435,7 @@ class CMDSickBeard(ApiCall):
 # noinspection PyAbstractClass
 class CMDSickBeardAddRootDir(ApiCall):
     _help = {
-        "desc": "Add a new root (parent) directory to SickRage",
+        "desc": "Add a new root (parent) directory to SickChill",
         "requiredParameters": {
             "location": {"desc": "The full path to the new root (parent) directory"},
         },
@@ -1450,7 +1450,7 @@ class CMDSickBeardAddRootDir(ApiCall):
         self.default, args = self.check_params(args, kwargs, "default", False, False, "bool", [])
 
     def run(self):
-        """ Add a new root (parent) directory to SickRage """
+        """ Add a new root (parent) directory to SickChill """
 
         self.location = urllib.parse.unquote_plus(self.location)
         location_matched = 0
@@ -1494,7 +1494,7 @@ class CMDSickBeardAddRootDir(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickBeardCheckVersion(ApiCall):
-    _help = {"desc": "Check if a new version of SickRage is available"}
+    _help = {"desc": "Check if a new version of SickChill is available"}
 
     def __init__(self, args, kwargs):
         super(CMDSickBeardCheckVersion, self).__init__(args, kwargs)
@@ -1546,7 +1546,7 @@ class CMDSickBeardCheckScheduler(ApiCall):
 # noinspection PyAbstractClass
 class CMDSickBeardDeleteRootDir(ApiCall):
     _help = {
-        "desc": "Delete a root (parent) directory from SickRage",
+        "desc": "Delete a root (parent) directory from SickChill",
         "requiredParameters": {
             "location": {"desc": "The full path to the root (parent) directory to remove"},
         }
@@ -1557,7 +1557,7 @@ class CMDSickBeardDeleteRootDir(ApiCall):
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
 
     def run(self):
-        """ Delete a root (parent) directory from SickRage """
+        """ Delete a root (parent) directory from SickChill """
         if sickbeard.ROOT_DIRS == "":
             return _responds(RESULT_FAILURE, _get_root_dirs(), msg="No root directories detected")
 
@@ -1593,13 +1593,13 @@ class CMDSickBeardDeleteRootDir(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickBeardGetDefaults(ApiCall):
-    _help = {"desc": "Get SickRage's user default configuration value"}
+    _help = {"desc": "Get SickChill's user default configuration value"}
 
     def __init__(self, args, kwargs):
         super(CMDSickBeardGetDefaults, self).__init__(args, kwargs)
 
     def run(self):
-        """ Get SickRage's user default configuration value """
+        """ Get SickChill's user default configuration value """
 
         any_qualities, best_qualities = _map_quality(sickbeard.QUALITY_DEFAULT)
 
@@ -1665,13 +1665,13 @@ class CMDSickBeardPauseBacklog(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickBeardPing(ApiCall):
-    _help = {"desc": "Ping SickRage to check if it is running"}
+    _help = {"desc": "Ping SickChill to check if it is running"}
 
     def __init__(self, args, kwargs):
         super(CMDSickBeardPing, self).__init__(args, kwargs)
 
     def run(self):
-        """ Ping SickRage to check if it is running """
+        """ Ping SickChill to check if it is running """
         if sickbeard.started:
             return _responds(RESULT_SUCCESS, {"pid": sickbeard.PID}, "Pong")
         else:
@@ -1680,17 +1680,17 @@ class CMDSickBeardPing(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickBeardRestart(ApiCall):
-    _help = {"desc": "Restart SickRage"}
+    _help = {"desc": "Restart SickChill"}
 
     def __init__(self, args, kwargs):
         super(CMDSickBeardRestart, self).__init__(args, kwargs)
 
     def run(self):
-        """ Restart SickRage """
+        """ Restart SickChill """
         if not Restart.restart(sickbeard.PID):
-            return _responds(RESULT_FAILURE, msg='SickRage can not be restarted')
+            return _responds(RESULT_FAILURE, msg='SickChill can not be restarted')
 
-        return _responds(RESULT_SUCCESS, msg="SickRage is restarting...")
+        return _responds(RESULT_SUCCESS, msg="SickChill is restarting...")
 
 
 # noinspection PyAbstractClass
@@ -1826,7 +1826,7 @@ class CMDSickBeardSearchTVRAGE(CMDSickBeardSearchIndexers):
 # noinspection PyAbstractClass
 class CMDSickBeardSetDefaults(ApiCall):
     _help = {
-        "desc": "Set SickRage's user default configuration value",
+        "desc": "Set SickChill's user default configuration value",
         "optionalParameters": {
             "initial": {"desc": "The initial quality of a show"},
             "archive": {"desc": "The archive quality of a show"},
@@ -1848,7 +1848,7 @@ class CMDSickBeardSetDefaults(ApiCall):
                                               ["wanted", "skipped", "ignored"])
 
     def run(self):
-        """ Set SickRage's user default configuration value """
+        """ Set SickChill's user default configuration value """
 
         i_quality_id = []
         a_quality_id = []
@@ -1890,22 +1890,22 @@ class CMDSickBeardSetDefaults(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickBeardShutdown(ApiCall):
-    _help = {"desc": "Shutdown SickRage"}
+    _help = {"desc": "Shutdown SickChill"}
 
     def __init__(self, args, kwargs):
         super(CMDSickBeardShutdown, self).__init__(args, kwargs)
 
     def run(self):
-        """ Shutdown SickRage """
+        """ Shutdown SickChill """
         if not Shutdown.stop(sickbeard.PID):
-            return _responds(RESULT_FAILURE, msg='SickRage can not be shut down')
+            return _responds(RESULT_FAILURE, msg='SickChill can not be shut down')
 
-        return _responds(RESULT_SUCCESS, msg="SickRage is shutting down...")
+        return _responds(RESULT_SUCCESS, msg="SickChill is shutting down...")
 
 
 # noinspection PyAbstractClass
 class CMDSickBeardUpdate(ApiCall):
-    _help = {"desc": "Update SickRage to the latest version available"}
+    _help = {"desc": "Update SickChill to the latest version available"}
 
     def __init__(self, args, kwargs):
         super(CMDSickBeardUpdate, self).__init__(args, kwargs)
@@ -1916,9 +1916,9 @@ class CMDSickBeardUpdate(ApiCall):
         if check_version.check_for_new_version():
             if check_version.run_backup_if_safe():
                 check_version.update()
-                return _responds(RESULT_SUCCESS, msg="SickRage is updating ...")
-            return _responds(RESULT_FAILURE, msg="SickRage could not backup config ...")
-        return _responds(RESULT_FAILURE, msg="SickRage is already up to date")
+                return _responds(RESULT_SUCCESS, msg="SickChill is updating ...")
+            return _responds(RESULT_FAILURE, msg="SickChill could not backup config ...")
+        return _responds(RESULT_FAILURE, msg="SickChill is already up to date")
 
 
 # noinspection PyAbstractClass
@@ -2016,7 +2016,7 @@ class CMDShow(ApiCall):
 # noinspection PyAbstractClass
 class CMDShowAddExisting(ApiCall):
     _help = {
-        "desc": "Add an existing show in SickRage",
+        "desc": "Add an existing show in SickChill",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
             "location": {"desc": "Full path to the existing shows's folder"},
@@ -2045,7 +2045,7 @@ class CMDShowAddExisting(ApiCall):
                                                  False, "int", [])
 
     def run(self):
-        """ Add an existing show in SickRage """
+        """ Add an existing show in SickChill """
         show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if show_obj:
             return _responds(RESULT_FAILURE, msg="An existing indexerid already exists in the database")
@@ -2098,7 +2098,7 @@ class CMDShowAddExisting(ApiCall):
 # noinspection PyAbstractClass
 class CMDShowAddNew(ApiCall):
     _help = {
-        "desc": "Add a new show to SickRage",
+        "desc": "Add a new show to SickChill",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
         },
@@ -2144,7 +2144,7 @@ class CMDShowAddNew(ApiCall):
                                                      ["wanted", "skipped", "ignored"])
 
     def run(self):
-        """ Add a new show to SickRage """
+        """ Add a new show to SickChill """
         show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if show_obj:
             return _responds(RESULT_FAILURE, msg="An existing indexerid already exists in database")
@@ -2255,7 +2255,7 @@ class CMDShowAddNew(ApiCall):
 # noinspection PyAbstractClass
 class CMDShowCache(ApiCall):
     _help = {
-        "desc": "Check SickRage's cache to see if the images (poster, banner, fanart) for a show are valid",
+        "desc": "Check SickChill's cache to see if the images (poster, banner, fanart) for a show are valid",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
         },
@@ -2269,7 +2269,7 @@ class CMDShowCache(ApiCall):
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
 
     def run(self):
-        """ Check SickRage's cache to see if the images (poster, banner, fanart) for a show are valid """
+        """ Check SickChill's cache to see if the images (poster, banner, fanart) for a show are valid """
         show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
@@ -2293,7 +2293,7 @@ class CMDShowCache(ApiCall):
 # noinspection PyAbstractClass
 class CMDShowDelete(ApiCall):
     _help = {
-        "desc": "Delete a show in SickRage",
+        "desc": "Delete a show in SickChill",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
         },
@@ -2311,7 +2311,7 @@ class CMDShowDelete(ApiCall):
         self.removefiles, args = self.check_params(args, kwargs, "removefiles", False, False, "bool", [])
 
     def run(self):
-        """ Delete a show in SickRage """
+        """ Delete a show in SickChill """
         error, show = Show.delete(self.indexerid, self.removefiles)
 
         if error:
@@ -2480,7 +2480,7 @@ class CMDShowPause(ApiCall):
 # noinspection PyAbstractClass
 class CMDShowRefresh(ApiCall):
     _help = {
-        "desc": "Refresh a show in SickRage",
+        "desc": "Refresh a show in SickChill",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
         },
@@ -2494,7 +2494,7 @@ class CMDShowRefresh(ApiCall):
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
 
     def run(self):
-        """ Refresh a show in SickRage """
+        """ Refresh a show in SickChill """
         error, show = Show.refresh(self.indexerid)
 
         if error:
@@ -2769,7 +2769,7 @@ class CMDShowStats(ApiCall):
 # noinspection PyAbstractClass
 class CMDShowUpdate(ApiCall):
     _help = {
-        "desc": "Update a show in SickRage",
+        "desc": "Update a show in SickChill",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
         },
@@ -2783,7 +2783,7 @@ class CMDShowUpdate(ApiCall):
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
 
     def run(self):
-        """ Update a show in SickRage """
+        """ Update a show in SickChill """
         show_obj = Show.find(sickbeard.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
@@ -2799,7 +2799,7 @@ class CMDShowUpdate(ApiCall):
 # noinspection PyAbstractClass
 class CMDShows(ApiCall):
     _help = {
-        "desc": "Get all shows in SickRage",
+        "desc": "Get all shows in SickChill",
         "optionalParameters": {
             "sort": {"desc": "The sorting strategy to apply to the list of shows"},
             "paused": {"desc": "True: show paused, False: show un-paused, otherwise show all"},
@@ -2812,7 +2812,7 @@ class CMDShows(ApiCall):
         self.paused, args = self.check_params(args, kwargs, "paused", None, False, "bool", [])
 
     def run(self):
-        """ Get all shows in SickRage """
+        """ Get all shows in SickChill """
         shows = {}
         for curShow in sickbeard.showList:
             # If self.paused is None: show all, 0: show un-paused, 1: show paused

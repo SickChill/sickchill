@@ -1777,7 +1777,7 @@ select .selected {
     vertical-align: text-top;
 }
 
-.icon16-config-sickrage {
+.icon16-config-sickchill {
     background-position: 0 0;
 }
 
@@ -2087,10 +2087,6 @@ div.metadataDiv .disabled {
 
 .icon-notifiers-boxcar2 {
     background-position: -414px 0;
-}
-
-.icon-notifiers-nma {
-    background-position: -450px 0;
 }
 
 .icon-notifiers-pushalot {

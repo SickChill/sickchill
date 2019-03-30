@@ -17,7 +17,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 import sickbeard
 from sickbeard import ek, ex
-from sickrage.helper.common import sanitize_filename
+from sickchill.helper.common import sanitize_filename
 
 
 import six

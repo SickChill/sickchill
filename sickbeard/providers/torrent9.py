@@ -1,31 +1,33 @@
 # coding=utf-8
 # Author: Ludovic Reenaers <ludovic.reenaers@gmail.com>
 #
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
 import re
 
+import validators
+
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.helper.common import convert_size, try_int
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from sickchill.helper.common import convert_size, try_int
+from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class Torrent9Provider(TorrentProvider):
@@ -37,10 +39,56 @@ class Torrent9Provider(TorrentProvider):
         self.public = True
         self.minseed = None
         self.minleech = None
-        self.url = "http://www.torrent9.bz"
+        # self._original_url = "https://www.torrent9.uno"
+        self._original_url = "https://www.torrents9.pw"
+        self._custom_url = None
+        self._used_url = None
+        self._recheck_url = True
 
         self.proper_strings = ['PROPER', 'REPACK']
         self.cache = tvcache.TVCache(self)
+
+    def _retrieve_dllink_from_url(self, inner_url, _type="torrent"):
+        data = self.get_url(inner_url, returns='text')
+        res = {
+            "torrent": "",
+            "magnet": "",
+        }
+        with BS4Parser(data, 'html5lib') as html:
+            download_btns = html.findAll("div", {"class": "download-btn"})
+            for btn in download_btns:
+                link = btn.find('a')["href"]
+                if link.startswith("magnet"):
+                    res["magnet"] = link
+                else:
+                    res["torrent"] = link
+        return res[_type]
+
+    def _get_custom_url(self):
+        return self._custom_url
+
+    def _set_custom_url(self, url):
+        if self._custom_url != url:
+            self._custom_url = url
+            self._recheck_url = True
+
+    def _get_provider_url(self):
+        if self._recheck_url:
+            if self.custom_url:
+                if validators.url(self.custom_url):
+                    self._used_url = self.custom_url
+                else:
+                    logger.log("Invalid custom url set, please check your settings", logger.WARNING)
+
+            self._used_url = self._original_url
+
+        return self._used_url
+
+    def _set_provider_url(self, url):
+        self._used_url = url
+
+    url = property(_get_provider_url, _set_provider_url)
+    custom_url = property(_get_custom_url, _set_custom_url)
 
     def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
         results = []
@@ -55,22 +103,31 @@ class Torrent9Provider(TorrentProvider):
                     logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
-                    search_url = self.url + '/search_torrent/' + search_string.replace('.', '-').replace(' ', '-') + '.html'
+                    search_url = self.url
+                    post_data = {'torrentSearch': search_string}
                 else:
                     search_url = self.url + '/torrents_series.html'
+                    post_data = None
 
-                data = self.get_url(search_url, returns='text')
+                data = self.get_url(search_url, post_data, returns='text')
                 if not data:
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
-                    torrent_rows = html.findAll('tr')
+                    torrent_table = html.find('div', {'class': 'table-responsive'})
+                    if torrent_table:
+                        torrent_rows = torrent_table.findAll('tr')
+                    else:
+                        torrent_rows = None
+
+                    if not torrent_rows:
+                        continue
                     for result in torrent_rows:
                         try:
                             title = result.find('a').get_text(strip=False).replace("HDTV", "HDTV x264-Torrent9")
                             title = re.sub(r' Saison', ' Season', title, flags=re.I)
-                            tmp = result.find("a")['href'].split('/')[-1].replace('.html', '.torrent').strip()
-                            download_url = (self.url + '/get_torrent/{0}'.format(tmp) + ".torrent")
+                            tmp = result.find("a")['href']
+                            download_url = self._retrieve_dllink_from_url(self.url + tmp)
                             if not all([title, download_url]):
                                 continue
 
