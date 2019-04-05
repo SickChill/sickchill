@@ -12,7 +12,7 @@ try:
 except ImportError:
     from urllib.parse import urlparse
 
-__version__ = "1.9.6"
+__version__ = "1.9.7"
 
 DEFAULT_USER_AGENTS = [
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36",
@@ -85,6 +85,7 @@ class CloudflareScraper(Session):
         try:
             params["jschl_vc"] = re.search(r'name="jschl_vc" value="(\w+)"', body).group(1)
             params["pass"] = re.search(r'name="pass" value="(.+?)"', body).group(1)
+            params["s"] = re.search(r'name="s"\svalue="(?P<s_value>[^"]+)', body).group('s_value')
         except Exception as e:
             # Something is wrong with the page.
             # This may indicate Cloudflare has changed their anti-bot
