@@ -49,7 +49,7 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         # URLs
         self.custom_url = None
-        self.url = 'https://www.torrentday.com'
+        self.url = 'https://tday.love'
         self.urls = {
             'login': urljoin(self.url, '/t'),
             'search': urljoin(self.url, '/t.json'),
