@@ -23,7 +23,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-kodi" title="KODI"></span>
-                        <h3><a href="${anon_url('http://kodi.tv/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">KODI</a></h3>
+                        <h3><a href="${anon_url('https://kodi.tv/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">KODI</a></h3>
                         <p>${_('A free and open source cross-platform media center and home entertainment system software with a 10-foot user interface designed for the living-room TV.')}</p>
                     </div>
                 </div>
@@ -198,7 +198,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-plex" title="Plex Media Server"></span>
-                        <h3><a href="${anon_url('http://www.plexapp.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Plex Media Server</a></h3>
+                        <h3><a href="${anon_url('https://www.plex.tv/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Plex Media Server</a></h3>
                         <p>${_('Experience your media on a visually stunning, easy to use interface on your Mac connected to your TV. Your media library has never looked this good!')}</p>
                         <p class="plexinfo hide">${_('For sending notifications to Plex Home Theater (PHT) clients, use the KODI notifier with port <b>3005</b>.')}</p>
                     </div>
@@ -348,7 +348,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-plexth" title="${_('Plex Home Theater')}"></span>
-                        <h3><a href="${anon_url('http://www.plexapp.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Plex Home Theater</a></h3>
+                        <h3><a href="${anon_url('https://www.plex.tv/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Plex Home Theater</a></h3>
                     </div>
                 </div>
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
@@ -484,7 +484,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-emby" title="${_('Emby')}"></span>
-                        <h3><a href="${anon_url('http://emby.media/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Emby</a></h3>
+                        <h3><a href="${anon_url('https://emby.media/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Emby</a></h3>
                         <p>${_('A home media server built using other popular open source technologies.')}</p>
                     </div>
                 </div>
@@ -812,7 +812,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-syno1" title="${_('Synology')}"></span>
-                        <h3><a href="${anon_url('http://synology.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Synology</a></h3>
+                        <h3><a href="${anon_url('https://synology.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Synology</a></h3>
                         <p>${_('The Synology DiskStation NAS.')}</p>
                         <p>${_('Synology Indexer is the daemon running on the Synology NAS to build its media database.')}</p>
                     </div>
@@ -858,7 +858,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-syno2" title="${_('Synology Indexer')}"></span>
-                        <h3><a href="${anon_url('http://synology.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Synology Notifier</a></h3>
+                        <h3><a href="${anon_url('https://synology.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Synology Notifier</a></h3>
                         <p>${_('Synology Notifier is the notification system of Synology DSM')}</p>
                     </div>
                 </div>
@@ -933,7 +933,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-pytivo" title="${_('pyTivo')}"></span>
-                        <h3><a href="${anon_url('http://pytivo.sourceforge.net/wiki/index.php/PyTivo')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">pyTivo</a></h3>
+                        <h3><a href="${anon_url('https://pytivo.sourceforge.io/wiki/index.php/PyTivo')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">pyTivo</a></h3>
                         <p>${_('pyTivo is both an HMO and GoBack server. This notifier will load the completed downloads to your Tivo.')}</p>
                     </div>
                 </div>
@@ -1148,7 +1148,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-prowl" title="${_('Prowl')}"></span>
-                        <h3><a href="${anon_url('http://www.prowlapp.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Prowl</a></h3>
+                        <h3><a href="${anon_url('https://www.prowlapp.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Prowl</a></h3>
                         <p>${_('A Growl client for iOS.')}</p>
                     </div>
                 </div>
@@ -1301,7 +1301,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-libnotify" title="${_('Libnotify')}"></span>
-                        <h3><a href="${anon_url('http://library.gnome.org/devel/libnotify/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Libnotify</a></h3>
+                        <h3><a href="${anon_url('https://library.gnome.org/devel/libnotify/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Libnotify</a></h3>
                         <p>${_('The standard desktop notification API for Linux/*nix systems.  This notifier will only function if the pynotify module is installed (Ubuntu/Debian package <a href="apt:python-notify">python-notify</a>).')}</p>
                     </div>
                 </div>
@@ -2118,7 +2118,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-join" title="${_('Join')}"></span>
-                        <h3><a href="${anon_url('http://joaoapps.com/join/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">${_('Join')}</a></h3>
+                        <h3><a href="${anon_url('https://joaoapps.com/join/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">${_('Join')}</a></h3>
                         <p>${_('Join all of your devices together!')}</p>
                     </div>
                 </div>
@@ -2230,7 +2230,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-twilio" title="${_('Twilio')}"></span>
-                        <h3><a href="${anon_url('http://www.twilio.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Twilio</a></h3>
+                        <h3><a href="${anon_url('https://www.twilio.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Twilio</a></h3>
                         <p>${_('Twilio is a webservice API that allows you to communicate directly with a mobile number. This notifier will send a text directly to your mobile device.')}</p>
                     </div>
                 </div>
@@ -2382,7 +2382,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-twitter" title="${_('Twitter')}"></span>
-                        <h3><a href="${anon_url('http://www.twitter.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Twitter</a></h3>
+                        <h3><a href="${anon_url('https://www.twitter.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Twitter</a></h3>
                         <p>${_('A social networking and microblogging service, enabling its users to send and read other users\' messages called tweets.')}</p>
                     </div>
                 </div>
@@ -2522,7 +2522,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-trakt" title="${_('Trakt')}"></span>
-                        <h3><a href="${anon_url('http://trakt.tv/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Trakt</a></h3>
+                        <h3><a href="${anon_url('https://trakt.tv/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Trakt</a></h3>
                         <p>${_('Trakt helps keep a record of what TV shows and movies you are watching. Based on your favorites, Trakt recommends additional shows and movies you\'ll enjoy!')}</p>
                     </div>
                 </div>
@@ -2771,7 +2771,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-email" title="${_('Email')}"></span>
-                        <h3><a href="${anon_url('http://en.wikipedia.org/wiki/Comparison_of_webmail_providers')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Email</a></h3>
+                        <h3><a href="${anon_url('https://en.wikipedia.org/wiki/Comparison_of_webmail_providers')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Email</a></h3>
                         <p>${_('Allows configuration of email notifications on a per show basis.')}</p>
                     </div>
                 </div>
@@ -3020,7 +3020,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-slack" title="${_('Slack')}"></span>
-                        <h3><a href="${anon_url('http://www.slack.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Slack</a></h3>
+                        <h3><a href="${anon_url('https://slack.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Slack</a></h3>
                         <p>${_('Slack brings all your communication together in one place. It\'s real-time messaging, archiving and search for modern teams.')}</p>
                     </div>
                 </div>

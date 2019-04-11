@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 #
-# Uses the Synology Download Station API: http://download.synology.com/download/Document/DeveloperGuide/Synology_Download_Station_Web_API.pdf
+# Uses the Synology Download Station API: https://download.synology.com/download/Document/DeveloperGuide/Synology_Download_Station_Web_API.pdf
 
 from __future__ import unicode_literals
 

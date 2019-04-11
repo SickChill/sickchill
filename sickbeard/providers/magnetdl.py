@@ -1,6 +1,6 @@
 # coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: http://sickchill.github.io
+# URL: https://sickchill.github.io
 #
 # This file is part of SickChill.
 #
@@ -38,7 +38,7 @@ class MagnetDLProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         self.minseed = None
         self.minleech = None
 
-        self.url = "http://www.magnetdl.com"
+        self.url = "https://www.magnetdl.com"
         self.urls = {
             "rss": urljoin(self.url, "download/tv/age/desc/")
         }

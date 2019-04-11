@@ -36,9 +36,9 @@ indexerConfig = {
         'trakt_id': 'tvdb_id',
         'xem_origin': 'tvdb',
         'icon': 'thetvdb16.png',
-        'scene_loc': 'http://sickchill.github.io/scene_exceptions/scene_exceptions.json',
-        'show_url': 'http://thetvdb.com/?tab=series&id=',
-        'base_url': 'http://thetvdb.com/api/%(apikey)s/series/'
+        'scene_loc': 'https://sickchill.github.io/scene_exceptions/scene_exceptions.json',
+        'show_url': 'https://thetvdb.com/?tab=series&id=',
+        'base_url': 'https://thetvdb.com/api/%(apikey)s/series/'
     }
 }
 

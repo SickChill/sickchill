@@ -17,7 +17,7 @@
             </div>
         % else:
             % for cur_show in trending_shows:
-                <% show_url = 'http://www.trakt.tv/shows/%s' % cur_show['show']['ids']['slug'] %>
+                <% show_url = 'https://www.trakt.tv/shows/%s' % cur_show['show']['ids']['slug'] %>
 
                 <div class="trakt_show" data-name="${cur_show['show']['title']}"
                      data-rating="${cur_show['show']['rating']}" data-votes="${cur_show['show']['votes']}">

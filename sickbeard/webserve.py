@@ -507,7 +507,7 @@ class CalendarHandler(BaseHandler):
 
     # Raw iCalendar implementation by Pedro Jose Pereira Vieito (@pvieito).
     #
-    # iCalendar (iCal) - Standard RFC 5545 <http://tools.ietf.org/html/rfc5546>
+    # iCalendar (iCal) - Standard RFC 5545 <https://tools.ietf.org/html/rfc5546>
     # Works with iCloud, Google Calendar and Outlook.
     def calendar(self):
         """ Provides a subscribeable URL for iCal subscriptions
@@ -2445,11 +2445,11 @@ class HomeChangeLog(Home):
     def index(self, *args_, **kwargs_):
         # noinspection PyBroadException
         try:
-            changes = helpers.getURL('http://sickchill.github.io/sickchill-news/CHANGES.md', session=helpers.make_session(), returns='text')
+            changes = helpers.getURL('https://sickchill.github.io/sickchill-news/CHANGES.md', session=helpers.make_session(), returns='text')
         except Exception:
             logger.log('Could not load changes from repo, giving a link!', logger.DEBUG)
             changes = _('Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})').format(
-                changes_url='http://sickchill.github.io/sickchill-news/CHANGES.md'
+                changes_url='https://sickchill.github.io/sickchill-news/CHANGES.md'
             )
 
         t = PageTemplate(rh=self, filename="markdown.mako")

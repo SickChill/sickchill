@@ -31,7 +31,7 @@ class Notifier(object):
     """
     Use Join to send notifications
 
-    http://joaoapps.com/join/
+    https://joaoapps.com/join/
     """
     def test_notify(self, id=None, apikey=None):
         """

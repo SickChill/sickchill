@@ -19,7 +19,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-anime" title="AniDB"></span>
-                        <h3><a href="${anon_url('http://anidb.info')}"
+                        <h3><a href="${anon_url('https://anidb.info')}"
                                onclick="window.open(this.href, '_blank'); return false;">AniDB</a></h3>
                         <p>${_('AniDB is non-profit database of anime information that is freely open to the public')}</p>
                     </div>

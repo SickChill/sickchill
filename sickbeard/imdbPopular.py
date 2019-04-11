@@ -59,7 +59,7 @@ class imdbPopular(object):
                     a_tag = header.find("a")
                     if a_tag:
                         show['name'] = a_tag.get_text(strip=True)
-                        show['imdb_url'] = "http://www.imdb.com" + a_tag["href"]
+                        show['imdb_url'] = "https://www.imdb.com" + a_tag["href"]
                         show['year'] = header.find("span", {"class": "lister-item-year"}).contents[0].split(" ")[0][1:].strip("-")
 
                 imdb_rating = row.find("div", {"class": "ratings-imdb-rating"})

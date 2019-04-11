@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*
-# Author: Pedro Correia (http://github.com/pedrocorreia/)
+# Author: Pedro Correia (https://github.com/pedrocorreia/)
 # Based on pushalot.py by Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickchill.github.io
 #

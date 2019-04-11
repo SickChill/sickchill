@@ -235,7 +235,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             r'error \[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE\] sslv3 alert handshake failure \(_ssl\.c:\d+\)',
         ]
         for ssl_error in ssl_errors:
-            check = re.sub(ssl_error, 'See: http://git.io/vuU5V', message)
+            check = re.sub(ssl_error, 'See: https://git.io/vuU5V', message)
             if check != message:
                 message = check
                 level = WARNING

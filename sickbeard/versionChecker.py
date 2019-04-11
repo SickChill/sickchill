@@ -211,7 +211,7 @@ class CheckVersion(object):
             cur_hash = str(self.updater.get_newest_commit_hash())
             assert len(cur_hash) == 40, "Commit hash wrong length: {0} hash: {1}".format(len(cur_hash), cur_hash)
 
-            check_url = "http://raw.githubusercontent.com/{0}/{1}/{2}/sickbeard/databases/mainDB.py".format(sickbeard.GIT_ORG, sickbeard.GIT_REPO, cur_hash)
+            check_url = "https://raw.githubusercontent.com/{0}/{1}/{2}/sickbeard/databases/mainDB.py".format(sickbeard.GIT_ORG, sickbeard.GIT_REPO, cur_hash)
             response = helpers.getURL(check_url, session=self.session, returns='text')
             assert response, "Empty response from {0}".format(check_url)
 
@@ -559,7 +559,7 @@ class GitUpdateManager(UpdateManager):
 
         elif self._num_commits_behind > 0:
 
-            base_url = 'http://github.com/' + sickbeard.GIT_ORG + '/' + sickbeard.GIT_REPO
+            base_url = 'https://github.com/' + sickbeard.GIT_ORG + '/' + sickbeard.GIT_REPO
             if self._newest_commit_hash:
                 url = base_url + '/compare/' + self._cur_commit_hash + '...' + self._newest_commit_hash
             else:
@@ -762,7 +762,7 @@ class SourceUpdateManager(UpdateManager):
                             '&mdash; <a href="{update_url}">Update Now</a>').format(update_url=self.get_update_url())
 
         elif self._num_commits_behind > 0:
-            base_url = 'http://github.com/' + sickbeard.GIT_ORG + '/' + sickbeard.GIT_REPO
+            base_url = 'https://github.com/' + sickbeard.GIT_ORG + '/' + sickbeard.GIT_REPO
             if self._newest_commit_hash:
                 url = base_url + '/compare/' + self._cur_commit_hash + '...' + self._newest_commit_hash
             else:
@@ -784,7 +784,7 @@ class SourceUpdateManager(UpdateManager):
         Downloads the latest source tarball from github and installs it over the existing version.
         """
 
-        tar_download_url = 'http://github.com/' + sickbeard.GIT_ORG + '/' + sickbeard.GIT_REPO + '/tarball/' + self.branch
+        tar_download_url = 'https://github.com/' + sickbeard.GIT_ORG + '/' + sickbeard.GIT_REPO + '/tarball/' + self.branch
 
         try:
             # prepare the update dir

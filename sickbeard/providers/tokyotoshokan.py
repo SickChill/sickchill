@@ -41,7 +41,7 @@ class TokyoToshokanProvider(TorrentProvider):  # pylint: disable=too-many-instan
         self.minseed = None
         self.minleech = None
 
-        self.url = 'http://tokyotosho.info/'
+        self.url = 'https://www.tokyotosho.info/'
         self.urls = {
             'search': self.url + 'search.php',
             'rss': self.url + 'rss.php'

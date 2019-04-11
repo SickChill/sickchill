@@ -151,8 +151,8 @@ GIT_TOKEN = None
 GIT_PATH = None
 DEVELOPER = False
 
-NEWS_URL = 'http://sickchill.github.io/sickchill-news/news.md'
-LOGO_URL = 'http://sickchill.github.io/images/ico/favicon-64.png'
+NEWS_URL = 'https://sickchill.github.io/sickchill-news/news.md'
+LOGO_URL = 'https://sickchill.github.io/images/ico/favicon-64.png'
 
 NEWS_LAST_READ = None
 NEWS_LATEST = None

@@ -40,7 +40,7 @@ class ShazbatProvider(TorrentProvider):
 
         self.cache = ShazbatCache(self, min_time=20)
 
-        self.url = 'http://www.shazbat.tv'
+        self.url = 'https://www.shazbat.tv'
         self.urls = {
             'login': urljoin(self.url, 'login'),
             'rss_recent': urljoin(self.url, 'rss/recent'),

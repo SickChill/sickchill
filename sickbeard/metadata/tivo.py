@@ -162,7 +162,7 @@ class TIVOMetadata(generic.GenericMetadata):
 
         The key values for the tivo metadata file are from:
 
-        http://pytivo.sourceforge.net/wiki/index.php/Metadata
+        https://pytivo.sourceforge.io/wiki/index.php/Metadata
         """
 
         data = ""
