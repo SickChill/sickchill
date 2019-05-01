@@ -35,16 +35,8 @@ import requests
 from configobj import ConfigObj
 from tornado.locale import load_gettext_translations
 
-try:
-    import pytz  # pylint: disable=unused-import
-except ImportError:
-    pytz = None
-    from pkg_resources import require
-    require('pytz')
-
-
-from sickbeard import (auto_postprocessor, dailysearcher, db, helpers, logger, metadata, naming, post_processing_queue, properFinder, providers, scheduler,
-                       search_queue, searchBacklog, show_queue, showUpdater, subtitles, traktChecker, versionChecker)
+from sickbeard import (auto_postprocessor, dailysearcher, db, helpers, logger, metadata, naming, post_processing_queue, properFinder, providers,
+                       scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, showUpdater, subtitles, traktChecker, versionChecker)
 from sickbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
 from sickbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
 from sickbeard.databases import cache_db, failed_db, mainDB
@@ -58,7 +50,15 @@ from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
 from sickchill.system.Shutdown import Shutdown
 
-from sickbeard import scene_exceptions
+try:
+    import pytz  # pylint: disable=unused-import
+except ImportError:
+    pytz = None
+    from pkg_resources import require
+    require('pytz')
+
+
+
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 
