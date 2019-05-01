@@ -239,8 +239,22 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
         # Delete rar file only if the extracted dir was successfully processed
         if mode == 'auto' and method_fallback == 'move' or mode == 'manual' and delete_on:
-            this_rar = [rar_file for rar_file in rar_files if os.path.basename(directory_from_rar) == rar_file.rpartition('.')[0]]
-            delete_files(current_directory, this_rar, result) # Deletes only if result.result == True
+            try:
+                #The directory_from_rar includes the subfolder that is extracted. We want to cut this from the path string since we want to
+                #delete the rar files in the parent folder.
+                rar_path = str(directory_from_rar).split(os.path.basename(directory_from_rar))[0]
+                result.output += log_helper('Deleting rar files in path: ' + str(rar_path), logger.DEBUG)
+                #Iterate through parent folder and if_rar_file is true add it to the list
+                rar_files = [x for x in os.listdir(rar_path) if helpers.is_rar_file(ek(os.path.join, rar_path, x))]
+                this_rar = [rar_file for rar_file in rar_files if os.path.basename(directory_from_rar) == rar_file.rpartition('.')[0]]
+                result.output += log_helper('Deleting the files: ' + str(this_rar), logger.DEBUG)
+                if any('.rar' in x for x in rar_files):
+                    result.result = True
+                else:
+                    result.result = False
+                delete_files(rar_path, this_rar, result) # Deletes only if result.result == True
+            except:
+                result.output += log_helper("Could not delete rar files.", logger.DEBUG)
 
     result.output += log_helper(("Processing Failed", "Successfully processed")[result.aggresult], (logger.WARNING, logger.INFO)[result.aggresult])
     if result.missed_files:
