@@ -1243,4 +1243,11 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         self._run_extra_scripts(ep_obj)
 
+        # If any notification fails, don't stop postProcessor
+        try:
+            # send notifications
+            notifiers.email_notifier.notify_postprocess(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))  # pylint: disable=protected-access
+        except Exception:
+            logger.log("Some notifications could not be sent. Finishing postProcessing...")
+
         return True

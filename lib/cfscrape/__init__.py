@@ -2,8 +2,8 @@ import logging
 import random
 import re
 import subprocess
-from copy import deepcopy
-from time import sleep
+import copy
+import time
 
 from requests.sessions import Session
 
@@ -12,7 +12,7 @@ try:
 except ImportError:
     from urllib.parse import urlparse
 
-__version__ = "1.9.5"
+__version__ = "1.9.7"
 
 DEFAULT_USER_AGENTS = [
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36",
@@ -70,14 +70,14 @@ class CloudflareScraper(Session):
         return resp
 
     def solve_cf_challenge(self, resp, **original_kwargs):
-        sleep(self.delay)  # Cloudflare requires a delay before solving the challenge
+        start_time = time.time()
 
         body = resp.text
         parsed_url = urlparse(resp.url)
         domain = parsed_url.netloc
         submit_url = "%s://%s/cdn-cgi/l/chk_jschl" % (parsed_url.scheme, domain)
 
-        cloudflare_kwargs = deepcopy(original_kwargs)
+        cloudflare_kwargs = copy.deepcopy(original_kwargs)
         params = cloudflare_kwargs.setdefault("params", {})
         headers = cloudflare_kwargs.setdefault("headers", {})
         headers["Referer"] = resp.url
@@ -85,7 +85,7 @@ class CloudflareScraper(Session):
         try:
             params["jschl_vc"] = re.search(r'name="jschl_vc" value="(\w+)"', body).group(1)
             params["pass"] = re.search(r'name="pass" value="(.+?)"', body).group(1)
-
+            params["s"] = re.search(r'name="s"\svalue="(?P<s_value>[^"]+)', body).group('s_value')
         except Exception as e:
             # Something is wrong with the page.
             # This may indicate Cloudflare has changed their anti-bot
@@ -101,6 +101,10 @@ class CloudflareScraper(Session):
         # performing other types of requests even as the first request.
         method = resp.request.method
         cloudflare_kwargs["allow_redirects"] = False
+
+        end_time = time.time()
+        time.sleep(self.delay - (end_time - start_time)) # Cloudflare requires a delay before solving the challenge
+
         redirect = self.request(method, submit_url, **cloudflare_kwargs)
 
         redirect_location = urlparse(redirect.headers["Location"])
@@ -116,7 +120,7 @@ class CloudflareScraper(Session):
         except Exception:
             raise ValueError("Unable to identify Cloudflare IUAM Javascript on website. %s" % BUG_REPORT)
 
-        js = re.sub(r"a\.value = (.+ \+ t\.length).+", r"\1", js)
+        js = re.sub(r"a\.value = (.+ \+ t\.length(\).toFixed\(10\))?).+", r"\1", js)
         js = re.sub(r"\s{3,}[a-z](?: = |\.).+", "", js).replace("t.length", str(len(domain)))
 
         # Strip characters that could be used to exit the string context
