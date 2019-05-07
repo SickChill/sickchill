@@ -498,7 +498,6 @@ SLACK_NOTIFY_DOWNLOAD = None
 SLACK_NOTIFY_SUBTITLEDOWNLOAD = None
 SLACK_WEBHOOK = None
 SLACK_ICON_EMOJI = None
-SLACK_ICON_URL = None
 
 USE_DISCORD = False
 DISCORD_NOTIFY_SNATCH = None
@@ -721,7 +720,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             DOWNLOAD_URL, BACKLOG_DAYS, GIT_AUTH_TYPE, GIT_USERNAME, GIT_PASSWORD, GIT_TOKEN, DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, \
             NEWS_LATEST, SOCKET_TIMEOUT, SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKCHILL_BACKGROUND, \
             SICKCHILL_BACKGROUND_PATH, FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, \
-            SLACK_NOTIFY_DOWNLOAD, SLACK_NOTIFY_SUBTITLEDOWNLOAD, SLACK_WEBHOOK, SLACK_ICON_EMOJI, SLACK_ICON_URL, USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK
+            SLACK_NOTIFY_DOWNLOAD, SLACK_NOTIFY_SUBTITLEDOWNLOAD, SLACK_WEBHOOK, SLACK_ICON_EMOJI, USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK
 
         if __INITIALIZED__:
             return False
@@ -1239,7 +1238,6 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         SLACK_NOTIFY_SUBTITLEDOWNLOAD = check_setting_bool(CFG, 'Slack', 'slack_notify_subtitledownload')
         SLACK_WEBHOOK = check_setting_str(CFG, 'Slack', 'slack_webhook')
         SLACK_ICON_EMOJI = check_setting_str(CFG, 'Slack', 'slack_icon_emoji')
-        SLACK_ICON_URL = check_setting_str(CFG, 'Slack', 'slack_icon_url')
 
         USE_DISCORD = check_setting_bool(CFG, 'Discord', 'use_discord')
         DISCORD_NOTIFY_SNATCH = check_setting_bool(CFG, 'Discord', 'discord_notify_snatch')
@@ -2151,8 +2149,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'slack_notify_download': int(SLACK_NOTIFY_DOWNLOAD),
             'slack_notify_subtitledownload': int(SLACK_NOTIFY_SUBTITLEDOWNLOAD),
             'slack_webhook': SLACK_WEBHOOK,
-            'slack_icon_emoji': SLACK_ICON_EMOJI,
-            'slack_icon_url': SLACK_ICON_URL
+            'slack_icon_emoji': SLACK_ICON_EMOJI
         },
 
         'Discord': {
