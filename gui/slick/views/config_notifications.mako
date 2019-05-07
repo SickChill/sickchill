@@ -3092,6 +3092,15 @@
                                 </div>
                             </div>
 
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="slack_icon_emoji" class="component-title">${_('Slack Icon Emoji')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="slack_icon_emoji" id="slack_icon_emoji" value="${sickbeard.SLACK_ICON_EMOJI}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="testNotification" id="testSlack-result">${_('Click below to test.')}</div>
