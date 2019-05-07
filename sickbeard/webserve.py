@@ -4896,7 +4896,7 @@ class ConfigNotifications(Config):
             use_pushbullet=None, pushbullet_notify_onsnatch=None, pushbullet_notify_ondownload=None,
             pushbullet_notify_onsubtitledownload=None, pushbullet_api=None, pushbullet_device=None,
             pushbullet_device_list=None, pushbullet_channel_list=None, pushbullet_channel=None,
-            use_email=None, email_notify_onsnatch=None, email_notify_ondownload=None,
+            use_email=None, email_notify_onsnatch=None, email_notify_ondownload=None, email_notify_onpostprocess=None,
             email_notify_onsubtitledownload=None, email_host=None, email_port=25, email_from=None,
             email_tls=None, email_user=None, email_password=None, email_list=None, email_subject=None, email_show_list=None,
             email_show=None, use_slack=False, slack_notify_snatch=None, slack_notify_download=None, slack_notify_subtitledownload=None, slack_webhook=None,
@@ -5060,6 +5060,7 @@ class ConfigNotifications(Config):
         sickbeard.USE_EMAIL = config.checkbox_to_value(use_email)
         sickbeard.EMAIL_NOTIFY_ONSNATCH = config.checkbox_to_value(email_notify_onsnatch)
         sickbeard.EMAIL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(email_notify_ondownload)
+        sickbeard.EMAIL_NOTIFY_ONPOSTPROCESS = config.checkbox_to_value(email_notify_onpostprocess)
         sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(email_notify_onsubtitledownload)
         sickbeard.EMAIL_HOST = config.clean_host(email_host)
         sickbeard.EMAIL_PORT = try_int(email_port, 25)

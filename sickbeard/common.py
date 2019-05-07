@@ -73,6 +73,7 @@ NOTIFY_GIT_UPDATE = 4
 NOTIFY_GIT_UPDATE_TEXT = 5
 NOTIFY_LOGIN = 6
 NOTIFY_LOGIN_TEXT = 7
+NOTIFY_POSTPROCESS = 8
 
 notifyStrings = NumDict({
     # pylint: disable=undefined-variable
@@ -82,7 +83,8 @@ notifyStrings = NumDict({
     NOTIFY_GIT_UPDATE: _("SickChill Updated"),
     NOTIFY_GIT_UPDATE_TEXT: _("SickChill Updated To Commit#: "),
     NOTIFY_LOGIN: _("SickChill new login"),
-    NOTIFY_LOGIN_TEXT: _("New login from IP: {0}. http://geomaplookup.net/?ip={0}")
+    NOTIFY_LOGIN_TEXT: _("New login from IP: {0}. http://geomaplookup.net/?ip={0}"),
+    NOTIFY_POSTPROCESS: _("Finished Post Processing")
 })
 
 # Episode statuses
