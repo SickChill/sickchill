@@ -144,6 +144,51 @@ class Notifier(object):
                 else:
                     logger.log('Download notification error: {0}'.format(self.last_err), logger.WARNING)
 
+    def notify_postprocess(self, ep_name, title='Postprocessed:'):  # pylint: disable=unused-argument
+        '''
+        Send a notification that an episode was postprocessed
+
+        ep_name: The name of the episode that was postprocessed
+        title: The title of the notification (optional)
+        '''
+        ep_name = ss(ep_name)
+
+        if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONPOSTPROCESS:
+            show = self._parseEp(ep_name)
+            to = self._generate_recipients(show)
+            if not to:
+                logger.log('Skipping email notify because there are no configured recipients', logger.DEBUG)
+            else:
+                try:
+                    msg = MIMEMultipart('alternative')
+                    msg.attach(MIMEText(
+                        '<body style="font-family:Helvetica, Arial, sans-serif;">'
+                        '<h3>SickChill Notification - Postprocessed</h3>'
+                        '<p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p><p>Quality: <b>{3}</b></p>'
+                        '<h5 style="margin-top: 2.5em; padding: .7em 0; '
+                        'color: #777; border-top: #BBB solid 1px;">'
+                        'Powered by SickChill.</h5></body>'.format(show[0], show[1], show[2], show[3]),
+                        'html'))
+
+                except Exception:
+                    try:
+                        msg = MIMEText(ep_name)
+                    except Exception:
+                        msg = MIMEText('Episode Postprocessed')
+
+                if sickbeard.EMAIL_SUBJECT:
+                    msg[b'Subject'] = '[PP] ' + sickbeard.EMAIL_SUBJECT
+                else:
+                    msg[b'Subject'] = 'Postprocessed: ' + ep_name
+                msg[b'From'] = sickbeard.EMAIL_FROM
+                msg[b'To'] = ','.join(to)
+                msg[b'Date'] = formatdate(localtime=True)
+                if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS,
+                                  sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
+                    logger.log('Postprocess notification sent to [{0}] for "{1}"'.format(to, ep_name), logger.DEBUG)
+                else:
+                    logger.log('Postprocess notification error: {0}'.format(self.last_err), logger.WARNING)
+
     def notify_subtitle_download(self, ep_name, lang, title='Downloaded subtitle:'):  # pylint: disable=unused-argument
         '''
         Send a notification that an subtitle was downloaded
