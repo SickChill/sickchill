@@ -21,7 +21,7 @@
 from __future__ import print_function, unicode_literals
 
 import re
-
+from requests.compat import urljoin
 import validators
 
 from sickbeard import logger, tvcache
@@ -127,7 +127,7 @@ class Torrent9Provider(TorrentProvider):
                             title = result.find('a').get_text(strip=False).replace("HDTV", "HDTV x264-Torrent9")
                             title = re.sub(r' Saison', ' Season', title, flags=re.I)
                             tmp = result.find("a")['href']
-                            download_url = self._retrieve_dllink_from_url(self.url + tmp)
+                            download_url = urljoin(self.url, self._retrieve_dllink_from_url(urljoin(self.url, tmp)))
                             if not all([title, download_url]):
                                 continue
 
