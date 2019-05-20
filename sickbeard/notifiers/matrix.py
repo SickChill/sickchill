@@ -19,15 +19,16 @@
 from __future__ import unicode_literals
 
 import json
+import time
 
 import requests
 import six
-import time
 
 import sickbeard
 from sickbeard import common, logger
-from sickchill.helper.exceptions import ex
 from sickchill.helper.encoding import ss
+from sickchill.helper.exceptions import ex
+
 
 class Notifier(object):
 
