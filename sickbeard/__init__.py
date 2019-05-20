@@ -464,6 +464,7 @@ PUSHOVER_PRIORITY = 0
 USE_LIBNOTIFY = False
 LIBNOTIFY_NOTIFY_ONSNATCH = False
 LIBNOTIFY_NOTIFY_ONDOWNLOAD = False
+LIBNOTIFY_NOTIFY_ONPOSTPROCESS = False
 LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD = False
 
 USE_NMJ = False
@@ -497,6 +498,7 @@ SLACK_NOTIFY_SNATCH = None
 SLACK_NOTIFY_DOWNLOAD = None
 SLACK_NOTIFY_SUBTITLEDOWNLOAD = None
 SLACK_WEBHOOK = None
+SLACK_ICON_EMOJI = None
 
 USE_MATRIX = False
 MATRIX_NOTIFY_SNATCH = None
@@ -565,6 +567,7 @@ PUSHBULLET_CHANNEL = None
 USE_EMAIL = False
 EMAIL_NOTIFY_ONSNATCH = False
 EMAIL_NOTIFY_ONDOWNLOAD = False
+EMAIL_NOTIFY_ONPOSTPROCESS = False
 EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD = False
 EMAIL_HOST = None
 EMAIL_PORT = 25
@@ -711,7 +714,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_LIBNOTIFY, LIBNOTIFY_NOTIFY_ONSNATCH, LIBNOTIFY_NOTIFY_ONDOWNLOAD, LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD, USE_NMJ, NMJ_HOST, NMJ_DATABASE, \
             NMJ_MOUNT, USE_NMJv2, NMJv2_HOST, NMJv2_DATABASE, NMJv2_DBLOC, USE_SYNOINDEX, USE_SYNOLOGYNOTIFIER, SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH, \
             SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD, SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD, USE_EMAIL, EMAIL_HOST, EMAIL_PORT, EMAIL_TLS, EMAIL_USER, \
-            EMAIL_PASSWORD, EMAIL_FROM, EMAIL_NOTIFY_ONSNATCH, EMAIL_NOTIFY_ONDOWNLOAD, EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD, EMAIL_LIST, EMAIL_SUBJECT, \
+            EMAIL_PASSWORD, EMAIL_FROM, EMAIL_NOTIFY_ONSNATCH, EMAIL_NOTIFY_ONDOWNLOAD, EMAIL_NOTIFY_ONPOSTPROCESS, EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD, EMAIL_LIST, EMAIL_SUBJECT, \
             USE_LISTVIEW, METADATA_KODI, METADATA_KODI_12PLUS, METADATA_MEDIABROWSER, METADATA_PS3, metadata_provider_dict, NEWZBIN, NEWZBIN_USERNAME, \
             NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, DELETE_NON_ASSOCIATED_FILES, SYNC_FILES, POSTPONE_IF_SYNC_FILES, dailySearchScheduler, \
             NFO_RENAME, GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, \
@@ -727,9 +730,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             DOWNLOAD_URL, BACKLOG_DAYS, GIT_AUTH_TYPE, GIT_USERNAME, GIT_PASSWORD, GIT_TOKEN, DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, \
             NEWS_LATEST, SOCKET_TIMEOUT, SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKCHILL_BACKGROUND, \
             SICKCHILL_BACKGROUND_PATH, FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, \
-            SLACK_NOTIFY_DOWNLOAD, SLACK_NOTIFY_SUBTITLEDOWNLOAD, SLACK_WEBHOOK, USE_MATRIX, MATRIX_NOTIFY_SNATCH, MATRIX_NOTIFY_DOWNLOAD, \
-            MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM, USE_DISCORD, DISCORD_NOTIFY_SNATCH, \
-            DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK
+            SLACK_NOTIFY_DOWNLOAD, SLACK_NOTIFY_SUBTITLEDOWNLOAD, SLACK_WEBHOOK, SLACK_ICON_EMOJI, USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK,\
+            USE_MATRIX, MATRIX_NOTIFY_SNATCH, MATRIX_NOTIFY_DOWNLOAD, MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM
 
         if __INITIALIZED__:
             return False
@@ -1246,6 +1248,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         SLACK_NOTIFY_DOWNLOAD = check_setting_bool(CFG, 'Slack', 'slack_notify_download')
         SLACK_NOTIFY_SUBTITLEDOWNLOAD = check_setting_bool(CFG, 'Slack', 'slack_notify_subtitledownload')
         SLACK_WEBHOOK = check_setting_str(CFG, 'Slack', 'slack_webhook')
+        SLACK_ICON_EMOJI = check_setting_str(CFG, 'Slack', 'slack_icon_emoji')
 
         USE_MATRIX = check_setting_bool(CFG, 'Matrix', 'use_matrix')
         MATRIX_NOTIFY_SNATCH = check_setting_bool(CFG, 'Matrix', 'matrix_notify_snatch')
@@ -1312,6 +1315,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         USE_EMAIL = check_setting_bool(CFG, 'Email', 'use_email')
         EMAIL_NOTIFY_ONSNATCH = check_setting_bool(CFG, 'Email', 'email_notify_onsnatch')
         EMAIL_NOTIFY_ONDOWNLOAD = check_setting_bool(CFG, 'Email', 'email_notify_ondownload')
+        EMAIL_NOTIFY_ONPOSTPROCESS = check_setting_bool(CFG, 'Email', 'email_notify_onpostprocess')
         EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(CFG, 'Email', 'email_notify_onsubtitledownload')
         EMAIL_HOST = check_setting_str(CFG, 'Email', 'email_host')
         EMAIL_PORT = check_setting_int(CFG, 'Email', 'email_port', 25, min_val=21, max_val=65535)
@@ -2164,7 +2168,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'slack_notify_snatch': int(SLACK_NOTIFY_SNATCH),
             'slack_notify_download': int(SLACK_NOTIFY_DOWNLOAD),
             'slack_notify_subtitledownload': int(SLACK_NOTIFY_SUBTITLEDOWNLOAD),
-            'slack_webhook': SLACK_WEBHOOK
+            'slack_webhook': SLACK_WEBHOOK,
+            'slack_icon_emoji': SLACK_ICON_EMOJI
         },
 
         'Matrix': {
@@ -2245,6 +2250,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'use_email': int(USE_EMAIL),
             'email_notify_onsnatch': int(EMAIL_NOTIFY_ONSNATCH),
             'email_notify_ondownload': int(EMAIL_NOTIFY_ONDOWNLOAD),
+            'email_notify_onpostprocess': int(EMAIL_NOTIFY_ONPOSTPROCESS),
             'email_notify_onsubtitledownload': int(EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD),
             'email_host': EMAIL_HOST,
             'email_port': int(EMAIL_PORT),
