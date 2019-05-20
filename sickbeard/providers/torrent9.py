@@ -23,6 +23,7 @@ from __future__ import print_function, unicode_literals
 import re
 
 import validators
+from requests.compat import urljoin
 
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -39,7 +40,7 @@ class Torrent9Provider(TorrentProvider):
         self.public = True
         self.minseed = None
         self.minleech = None
-        self._original_url = "https://www.torrent9.uno"
+        self._original_url = "https://ww1.torrent9.nz/"
         # self._original_url = "https://www.torrents9.pw"
         self._custom_url = None
         self._used_url = None
@@ -127,7 +128,7 @@ class Torrent9Provider(TorrentProvider):
                             title = result.find('a').get_text(strip=False).replace("HDTV", "HDTV x264-Torrent9")
                             title = re.sub(r' Saison', ' Season', title, flags=re.I)
                             tmp = result.find("a")['href']
-                            download_url = self._retrieve_dllink_from_url(self.url + tmp)
+                            download_url = urljoin(self.url, self._retrieve_dllink_from_url(urljoin(self.url, tmp)))
                             if not all([title, download_url]):
                                 continue
 
