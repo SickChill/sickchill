@@ -726,6 +726,12 @@ var SICKCHILL = {
                 });
             });
 
+            $('#testMatrix').on('click', function() {
+                $.post(srRoot + '/home/testMatrix', function(data) {
+                    $('#testMatrix-result').html(data);
+                });
+            });
+
             $('#testDiscord').on('click', function() {
                 $.get(srRoot + '/home/testDiscord', function(data) {
                     $('#testDiscord-result').html(data);

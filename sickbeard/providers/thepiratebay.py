@@ -75,13 +75,13 @@ class ThePirateBayProvider(TorrentProvider):  # pylint: disable=too-many-instanc
         205 = SD, 208 = HD, 200 = All Videos
         https://pirateproxy.pl/s/?q=Game of Thrones&type=search&orderby=7&page=0&category=200
         """
-        # oder_by is 7 in browse for seeders, but 8 in search!
+
         search_params = {
             "q": "",
             "type": "search",
-            "orderby": 8,
-            "page": 0,
-            "category": 200
+            "orderby": 7,       # order by seeders: most first
+            "page": 0,          # first page of results
+            "category": 200     # All videos
         }
 
         # Units

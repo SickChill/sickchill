@@ -192,7 +192,8 @@ def remove_non_release_groups(name):
         r'^\[ www\.TorrentDay\.com \] - ': 'searchre',
         r'\[NO-RAR\] - \[ www\.torrentday\.com \]$': 'searchre',
         r'^www\.Torrenting\.com\.-\.': 'searchre',
-        r'-Scrambled$': 'searchre'
+        r'-Scrambled$': 'searchre',
+        r'^Torrent9\.PH ---> ': 'searchre'
     }
 
     _name = name
@@ -1370,11 +1371,8 @@ def touchFile(fname, atime=None):
 
 
 def make_session():
-    session = requests.Session()
-
+    session = cfscrape.create_scraper()
     session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
-
-    session = cfscrape.create_scraper(sess=session)
 
     return CacheControl(sess=session, cache_etags=True)
 

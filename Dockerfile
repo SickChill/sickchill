@@ -10,7 +10,12 @@ RUN apk add --update \
     nodejs \
     unrar \
     tzdata \
-&&  mkdir /app /var/run/sickchill
+    gcc \
+    libffi-dev \
+    openssl-dev \
+    musl-dev \
+    && pip install pyopenssl \
+    &&  mkdir /app /var/run/sickchill
 COPY . /app/sickchill
 
 WORKDIR /app/sickchill

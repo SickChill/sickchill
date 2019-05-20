@@ -7,7 +7,7 @@ bencode == 1.0  # Made vanilla with https://github.com/SickChill/SickChill/commi
 cachecontrol == 0.11.5
 # certgen.py == d52975cef3a36e18552aeb23de7c06aa73d76454  # Source: https://github.com/pyca/pyopenssl/blob/master/examples/certgen.py
 certifi == 2017.4.17
-cfscrape >= 1.8.0
+cfscrape >= 1.9.5
 chardet == 3.0.4
 configobj == 4.6.0
 decorator == 4.0.10
@@ -74,7 +74,7 @@ tus.py == 1.2.0
 twilio == 5.7.0
 tzlocal == 1.4
 Unidecode == 0.04.21
-urllib3 == 1.21.1
+urllib3>=1.23
 validators == 0.10
 webencodings == 0.5.1
 win-inet-pton == 1.0.1 ; os.name == 'nt' and python_version < '3.0'
