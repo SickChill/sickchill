@@ -182,7 +182,7 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
     sickbeard.ALT_UNRAR_TOOL = rarfile.ALT_TOOL = alt_unrar_tool
 
     try:
-        rarfile.custom_check([rarfile.UNRAR_TOOL])
+        rarfile.custom_check([rarfile.UNRAR_TOOL], True)
         return True
     except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
         if sickbeard.UNPACK == 1:

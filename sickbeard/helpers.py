@@ -1371,11 +1371,8 @@ def touchFile(fname, atime=None):
 
 
 def make_session():
-    session = requests.Session()
-
+    session = cfscrape.create_scraper()
     session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
-
-    session = cfscrape.create_scraper(sess=session)
 
     return CacheControl(sess=session, cache_etags=True)
 
