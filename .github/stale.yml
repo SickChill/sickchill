@@ -9,6 +9,8 @@ daysUntilClose: 7
 
 # Issues or Pull Requests with these labels will never be considered stale. Set to `[]` to disable
 exemptLabels:
+  - Confirmed
+  - "Bug / Issue"
   - Pinned
   - Security
   - "[Status] Maybe Later"
@@ -51,8 +53,3 @@ limitPerRun: 30
 #     This pull request has been automatically marked as stale because it has not had
 #     recent activity. It will be closed if no further activity occurs. Thank you
 #     for your contributions.
-
-issues:
-  exemptLabels:
-    - Confirmed
-    - "Bug / Issue"
