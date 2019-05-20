@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import json
 import logging
 import random
@@ -11,11 +13,13 @@ from base64 import b64encode
 from collections import OrderedDict
 
 from requests.sessions import Session
+from requests.adapters import HTTPAdapter
 from requests.compat import urlparse, urlunparse
 from requests.exceptions import RequestException
 
+from urllib3.util.ssl_ import create_urllib3_context, DEFAULT_CIPHERS
 
-__version__ = "2.0.3"
+__version__ = "2.0.5"
 
 USER_AGENTS_PATH = os.path.join(os.path.dirname(__file__), "user_agents.json")
 
@@ -56,6 +60,24 @@ If increasing the delay does not help, please open a GitHub issue at \
 https://github.com/Anorov/cloudflare-scrape/issues\
 """
 
+# Remove a few problematic TLSv1.0 ciphers from the defaults
+DEFAULT_CIPHERS += ":!ECDHE+SHA:!AES128-SHA"
+
+
+class CloudflareAdapter(HTTPAdapter):
+    """ HTTPS adapter that creates a SSL context with custom ciphers """
+
+    def get_connection(self, *args, **kwargs):
+        conn = super(CloudflareAdapter, self).get_connection(*args, **kwargs)
+
+        if conn.conn_kw.get("ssl_context"):
+            conn.conn_kw["ssl_context"].set_ciphers(DEFAULT_CIPHERS)
+        else:
+            context = create_urllib3_context(ciphers=DEFAULT_CIPHERS)
+            conn.conn_kw["ssl_context"] = context
+
+        return conn
+
 
 class CloudflareError(RequestException):
     pass
@@ -78,6 +100,8 @@ class CloudflareScraper(Session):
 
         # Define headers to force using an OrderedDict and preserve header order
         self.headers = headers
+
+        self.mount("https://", CloudflareAdapter())
 
     @staticmethod
     def is_cloudflare_iuam_challenge(resp):
@@ -108,6 +132,13 @@ class CloudflareScraper(Session):
             resp = self.solve_cf_challenge(resp, **kwargs)
 
         return resp
+
+    def cloudflare_is_bypassed(self, url, resp=None):
+        cookie_domain = ".{}".format(urlparse(url).netloc)
+        return (
+            self.cookies.get("cf_clearance", None, domain=cookie_domain) or
+            (resp and resp.cookies.get("cf_clearance", None, domain=cookie_domain))
+        )
 
     def handle_captcha_challenge(self, resp, url):
         error = (
@@ -297,7 +328,7 @@ class CloudflareScraper(Session):
 
         return scraper
 
-    ## Functions for integrating cloudflare-scrape with other applications and scripts
+    # Functions for integrating cloudflare-scrape with other applications and scripts
 
     @classmethod
     def get_tokens(cls, url, user_agent=None, **kwargs):
