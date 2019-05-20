@@ -2032,6 +2032,12 @@ div.metadataDiv .disabled {
     background-size: 32px;
 }
 
+.icon-notifiers-matrix {
+    background: url("../images/Matrix_Web.png");
+    background-size: 32px;
+    background-color: white;
+}
+
 .icon-notifiers-discord {
     background: url("../images/32px_discord_notifier.png");
     background-size: 32px;
