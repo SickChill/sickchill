@@ -1784,6 +1784,8 @@ var SICKCHILL = {
             $('#nzb_dir').fileBrowser({title: _('Select .nzb black hole/watch location')});
             $('#torrent_dir').fileBrowser({title: _('Select .torrent black hole/watch location')});
             $('#torrent_path').fileBrowser({title: _('Select .torrent download location')});
+            $('#torrent_deluge_download_dir').fileBrowser({title: _('Select .torrent download location')});
+            $('#torrent_deluge_complete_dir').fileBrowser({title: _('Select .torrent completed location')});
 
             $.fn.nzbMethodHandler = function() {
                 const selectedProvider = $('#nzb_method :selected').val();
@@ -1861,12 +1863,16 @@ var SICKCHILL = {
                     $('#torrent_paused_option').show();
                     $('#torrent_rpcurl_option').hide();
                     $('#torrent_host_option').show();
+                    $('#torrent_deluge_download_dir_option').hide();
+                    $('#torrent_deluge_complete_dir_option').hide();
                     if (selectedProvider.toLowerCase() === 'utorrent') {
                         client = 'uTorrent';
                         $('#torrent_path_option').hide();
                         $('#torrent_seed_time_label').text(_('Minimum seeding time is'));
                         $('#torrent_seed_time_option').show();
                         $('#host_desc_torrent').text(_('URL to your uTorrent client (e.g. http://localhost:8000)'));
+                        $('#torrent_deluge_download_dir_option').hide();
+                        $('#torrent_deluge_complete_dir_option').hide();
                     } else if (selectedProvider.toLowerCase() === 'transmission') {
                         client = 'Transmission';
                         $('#torrent_seed_time_label').text(_('Stop seeding when inactive for'));
@@ -1876,6 +1882,8 @@ var SICKCHILL = {
                         $('#torrent_label_anime_option').hide();
                         $('#torrent_rpcurl_option').show();
                         $('#host_desc_torrent').text(_('URL to your Transmission client (e.g. http://localhost:9091)'));
+                        $('#torrent_deluge_download_dir_option').hide();
+                        $('#torrent_deluge_complete_dir_option').hide();
                     } else if (selectedProvider.toLowerCase() === 'deluge') {
                         client = 'Deluge';
                         $('#torrent_verify_cert_option').show();
@@ -1886,8 +1894,13 @@ var SICKCHILL = {
                         $('#torrent_username_option').hide();
                         $('#torrent_username').prop('value', '');
                         $('#host_desc_torrent').text(_('URL to your Deluge client (e.g. http://localhost:8112)'));
+                        $('#torrent_deluge_download_dir_option').hide();
+                        $('#torrent_deluge_complete_dir_option').hide();
                     } else if (selectedProvider.toLowerCase() === 'deluged') {
                         client = 'Deluge';
+                        $('#torrent_path_option').hide();
+                        $('#torrent_deluge_download_dir_option').show();
+                        $('#torrent_deluge_complete_dir_option').show();
                         $('#torrent_verify_cert_option').hide();
                         $('#torrent_verify_deluge').hide();
                         $('#torrent_verify_rtorrent').hide();
