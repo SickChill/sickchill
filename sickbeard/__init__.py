@@ -344,6 +344,8 @@ TORRENT_USERNAME = None
 TORRENT_PASSWORD = None
 TORRENT_HOST = ''
 TORRENT_PATH = ''
+TORRENT_DELUGE_DOWNLOAD_DIR = ''
+TORRENT_DELUGE_COMPLETE_DIR = ''
 TORRENT_SEED_TIME = None
 TORRENT_PAUSED = False
 TORRENT_HIGH_BANDWIDTH = False
@@ -679,7 +681,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             CHECK_PROPERS_INTERVAL, ALLOW_HIGH_PRIORITY, SAB_FORCED, TORRENT_METHOD, NOTIFY_ON_LOGIN, SAB_USERNAME, SAB_PASSWORD, SAB_APIKEY, SAB_CATEGORY, \
             SAB_CATEGORY_BACKLOG, SAB_CATEGORY_ANIME, SAB_CATEGORY_ANIME_BACKLOG, SAB_HOST,  NZBGET_USERNAME, NZBGET_PASSWORD, NZBGET_CATEGORY, \
             NZBGET_CATEGORY_BACKLOG, NZBGET_CATEGORY_ANIME, NZBGET_CATEGORY_ANIME_BACKLOG, NZBGET_PRIORITY, NZBGET_HOST, NZBGET_USE_HTTPS,\
-            backlogSearchScheduler, TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH,\
+            backlogSearchScheduler, TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_DELUGE_DOWNLOAD_DIR, TORRENT_DELUGE_COMPLETE_DIR, TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH,\
             TORRENT_LABEL, TORRENT_LABEL_ANIME, TORRENT_VERIFY_CERT, TORRENT_RPCURL, TORRENT_AUTH_TYPE, USE_KODI, KODI_ALWAYS_ON, KODI_NOTIFY_ONSNATCH, \
             KODI_NOTIFY_ONDOWNLOAD, KODI_NOTIFY_ONSUBTITLEDOWNLOAD, KODI_UPDATE_FULL, KODI_UPDATE_ONLYFIRST, KODI_UPDATE_LIBRARY, KODI_HOST, KODI_USERNAME, \
             KODI_PASSWORD, BACKLOG_FREQUENCY,  USE_TRAKT, TRAKT_USERNAME, TRAKT_ACCESS_TOKEN, TRAKT_REFRESH_TOKEN, TRAKT_REMOVE_WATCHLIST, \
@@ -1103,6 +1105,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TORRENT_PASSWORD = check_setting_str(CFG, 'TORRENT', 'torrent_password', censor_log=True)
         TORRENT_HOST = check_setting_str(CFG, 'TORRENT', 'torrent_host')
         TORRENT_PATH = check_setting_str(CFG, 'TORRENT', 'torrent_path')
+        TORRENT_DELUGE_DOWNLOAD_DIR = check_setting_str(CFG, 'TORRENT', 'torrent_deluge_download_dir')
+        TORRENT_DELUGE_COMPLETE_DIR = check_setting_str(CFG, 'TORRENT', 'torrent_deluge_complete_dir')
         TORRENT_SEED_TIME = check_setting_int(CFG, 'TORRENT', 'torrent_seed_time', min_val=-1)
         TORRENT_PAUSED = check_setting_bool(CFG, 'TORRENT', 'torrent_paused')
         TORRENT_HIGH_BANDWIDTH = check_setting_bool(CFG, 'TORRENT', 'torrent_high_bandwidth')
@@ -1990,6 +1994,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'torrent_password': helpers.encrypt(TORRENT_PASSWORD, ENCRYPTION_VERSION),
             'torrent_host': TORRENT_HOST,
             'torrent_path': TORRENT_PATH,
+            'torrent_deluge_download_dir': TORRENT_DELUGE_DOWNLOAD_DIR,
+            'torrent_deluge_complete_dir': TORRENT_DELUGE_COMPLETE_DIR,
             'torrent_seed_time': int(TORRENT_SEED_TIME),
             'torrent_paused': int(TORRENT_PAUSED),
             'torrent_high_bandwidth': int(TORRENT_HIGH_BANDWIDTH),

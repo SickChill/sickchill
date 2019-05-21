@@ -1070,6 +1070,56 @@
                                         </div>
                                     </div>
 
+                                    <div class="field-pair row" id="torrent_deluge_download_dir_option">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title" id="directory_title">${_('Download directory')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input type="text" name="torrent_deluge_download_dir" id="torrent_deluge_download_dir"
+                                                           value="${sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR}"
+                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label for="torrent_download_dir_deluge">${_('where Deluge will save downloaded files (blank for client default)')}</label>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label id="path_synology"><b>${_('note')}:</b> ${_('the destination has to be a shared folder for Synology DS</span>')}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="field-pair row" id="torrent_deluge_complete_dir_option">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title" id="directory_title">${_('Completed Directory')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input type="text" name="torrent_deluge_complete_dir" id="torrent_deluge_complete_dir"
+                                                           value="${sickbeard.TORRENT_DELUGE_COMPLETE_DIR}"
+                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label for="torrent_deluge_complete_dir_deluge">${_('where Deluge will move files after downloading is complete (blank for client default)')}</label>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label id="path_synology"><b>${_('note')}:</b> ${_('the destination has to be a shared folder for Synology DS</span>')}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
                                     <div class="field-pair row" id="torrent_path_option">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title" id="directory_title">${_('Downloaded files location')}</label>
