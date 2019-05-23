@@ -46,6 +46,8 @@
 
 [Unit]
 Description=SickChill Daemon
+Wants=network-online.target
+After=network-online.target
 
 [Service]
 User=sickchill
