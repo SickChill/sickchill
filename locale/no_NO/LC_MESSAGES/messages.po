@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2019-05-20 13:21+0000\n"
+"POT-Creation-Date: 2019-05-24 12:13+0000\n"
 "PO-Revision-Date: 2018-10-10 07:47+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: no_NO\n"
@@ -158,7 +158,6 @@ msgstr "Ny innlogging fra IP: {0}. http://geomaplookup.net/?ip={0}"
 
 #: sickbeard/common.py:87
 #, fuzzy
-#| msgid "Postpone post processing"
 msgid "Finished Post Processing"
 msgstr "Utsett Etterbehandling"
 
@@ -962,13 +961,11 @@ msgstr "Slack-melding mislyktes"
 
 #: sickbeard/webserve.py:999
 #, fuzzy
-#| msgid "Slack message successful"
 msgid "Matrix message successful"
 msgstr "Slack-melding sendt"
 
 #: sickbeard/webserve.py:1001
 #, fuzzy
-#| msgid "Slack message failed"
 msgid "Matrix message failed"
 msgstr "Slack-melding mislyktes"
 
@@ -1158,11 +1155,11 @@ msgstr "Denne serien er satt i kø og venter på en oppdatering."
 msgid "This show is queued and awaiting subtitles download."
 msgstr "Denne serien er satt i kø og venter på nedlasting av undertekster."
 
-#: gui/slick/js/core.js:3608 sickbeard/webserve.py:1419
+#: gui/slick/js/core.js:3616 sickbeard/webserve.py:1419
 msgid "Resume"
 msgstr "Gjenoppta"
 
-#: gui/slick/js/core.js:3608 gui/slick/views/viewlogs.mako:12
+#: gui/slick/js/core.js:3616 gui/slick/views/viewlogs.mako:12
 #: sickbeard/webserve.py:1421
 msgid "Pause"
 msgstr "Pause"
@@ -1398,7 +1395,7 @@ msgid "Changelog"
 msgstr "Endringslogg"
 
 #: gui/slick/views/layouts/main.mako:212 sickbeard/webserve.py:2477
-#: sickbeard/webserve.py:3870 sickbeard/webserve.py:4368
+#: sickbeard/webserve.py:3870 sickbeard/webserve.py:4371
 msgid "Post Processing"
 msgstr "Etterbehandling"
 
@@ -1552,7 +1549,7 @@ msgstr "Navneendringer"
 #: gui/slick/views/displayShow.mako:259 gui/slick/views/displayShow.mako:434
 #: gui/slick/views/editShow.mako:119 gui/slick/views/inc_addShowOptions.mako:20
 #: gui/slick/views/manage_massEdit.mako:262 sickbeard/webserve.py:3666
-#: sickbeard/webserve.py:5138
+#: sickbeard/webserve.py:5141
 msgid "Subtitles"
 msgstr "Undertekster"
 
@@ -1622,7 +1619,7 @@ msgid "Search Settings"
 msgstr "Søke instillinger"
 
 #: gui/slick/views/layouts/main.mako:210 sickbeard/webserve.py:3868
-#: sickbeard/webserve.py:4546
+#: sickbeard/webserve.py:4549
 msgid "Search Providers"
 msgstr "Søkeleverandører"
 
@@ -1631,7 +1628,7 @@ msgid "Subtitles Settings"
 msgstr "Undertekst innstillinger"
 
 #: gui/slick/views/layouts/main.mako:213 sickbeard/webserve.py:3871
-#: sickbeard/webserve.py:4854
+#: sickbeard/webserve.py:4857
 msgid "Notifications"
 msgstr "Varsler"
 
@@ -1640,7 +1637,7 @@ msgstr "Varsler"
 #: gui/slick/views/inc_home_showList.mako:183
 #: gui/slick/views/layouts/main.mako:214 gui/slick/views/manage.mako:44
 #: gui/slick/views/manage_massEdit.mako:202 sickbeard/webserve.py:3872
-#: sickbeard/webserve.py:5209
+#: sickbeard/webserve.py:5212
 msgid "Anime"
 msgstr "Anime"
 
@@ -1694,15 +1691,15 @@ msgstr "Kan ikke opprette mappen {directory}, https sertifikat-mappe ikke endret
 msgid "Unable to create directory {directory}, https key directory not changed."
 msgstr "Kan ikke opprette mappen {directory}, https nøkkel-mappe ikke endret."
 
-#: sickbeard/webserve.py:4148 sickbeard/webserve.py:4350
-#: sickbeard/webserve.py:4483 sickbeard/webserve.py:5120
+#: sickbeard/webserve.py:4148 sickbeard/webserve.py:4353
+#: sickbeard/webserve.py:4486 sickbeard/webserve.py:5123
 msgid "Error(s) Saving Configuration"
 msgstr "Feil ved lagring av konfigurasjon"
 
-#: sickbeard/webserve.py:4151 sickbeard/webserve.py:4353
-#: sickbeard/webserve.py:4485 sickbeard/webserve.py:4839
-#: sickbeard/webserve.py:5123 sickbeard/webserve.py:5193
-#: sickbeard/webserve.py:5223
+#: sickbeard/webserve.py:4151 sickbeard/webserve.py:4356
+#: sickbeard/webserve.py:4488 sickbeard/webserve.py:4842
+#: sickbeard/webserve.py:5126 sickbeard/webserve.py:5196
+#: sickbeard/webserve.py:5226
 msgid "Configuration Saved"
 msgstr "Konfigurasjon lagret"
 
@@ -1714,15 +1711,15 @@ msgstr "Konfigurasjon - sikkerhetskopiering/gjenoppretting"
 msgid "Config - Episode Search"
 msgstr "Konfigurasjon - Episodesøk"
 
-#: sickbeard/webserve.py:4367
+#: sickbeard/webserve.py:4370
 msgid "Config - Post Processing"
 msgstr "Konfigurasjon - etterbehandling"
 
-#: sickbeard/webserve.py:4407
+#: sickbeard/webserve.py:4410
 msgid "Unpacking Not Supported, disabling unpack setting"
 msgstr "Utpakking støttes ikke, deaktiverer innstilling for utpakking"
 
-#: sickbeard/webserve.py:4458
+#: sickbeard/webserve.py:4461
 msgid ""
 "You tried saving an invalid normal naming config, not saving your naming "
 "settings"
@@ -1730,7 +1727,7 @@ msgstr ""
 "Du prøvde å lagre en ugyldig navngivingskonfigurasjon, lagrer ikke "
 "innstillingene for navngiving"
 
-#: sickbeard/webserve.py:4466
+#: sickbeard/webserve.py:4469
 msgid ""
 "You tried saving an invalid anime naming config, not saving your naming "
 "settings"
@@ -1738,55 +1735,55 @@ msgstr ""
 "Du prøvde å lagre en ugyldig anime navngivingskonfigurasjon, lagrer ikke "
 "innstillingene for navngiving"
 
-#: sickbeard/webserve.py:4545
+#: sickbeard/webserve.py:4548
 msgid "Config - Providers"
 msgstr "Konfigurasjon - søkeleverandører"
 
-#: sickbeard/webserve.py:4575
+#: sickbeard/webserve.py:4578
 msgid "No Provider Name specified"
 msgstr "Ingen søkeleverandør spesifisert"
 
-#: sickbeard/webserve.py:4577
+#: sickbeard/webserve.py:4580
 msgid "No Provider Url specified"
 msgstr "Ingen søkeleverandør url spesifisert"
 
-#: sickbeard/webserve.py:4579
+#: sickbeard/webserve.py:4582
 msgid "No Provider Api key specified"
 msgstr "Ingen søkeleverandør API-nøkkel spesifisert"
 
-#: sickbeard/webserve.py:4853
+#: sickbeard/webserve.py:4856
 msgid "Config - Notifications"
 msgstr "Konfiguration - meldinger"
 
-#: sickbeard/webserve.py:5137
+#: sickbeard/webserve.py:5140
 msgid "Config - Subtitles"
 msgstr "Konfigurasjon - Undertekster"
 
-#: sickbeard/webserve.py:5208
+#: sickbeard/webserve.py:5211
 msgid "Config - Anime"
 msgstr "Konfigurasjon - Anime"
 
-#: sickbeard/webserve.py:5236
+#: sickbeard/webserve.py:5239
 msgid "Clear Errors"
 msgstr "Fjern feilmeldinger"
 
-#: sickbeard/webserve.py:5242
+#: sickbeard/webserve.py:5245
 msgid "Clear Warnings"
 msgstr "Fjern advarsler"
 
-#: sickbeard/webserve.py:5248
+#: sickbeard/webserve.py:5251
 msgid "Submit Errors"
 msgstr "Send inn feil"
 
-#: sickbeard/webserve.py:5264
+#: sickbeard/webserve.py:5267
 msgid "Logs &amp; Errors"
 msgstr "Logger &amp; feil"
 
-#: sickbeard/webserve.py:5289
+#: sickbeard/webserve.py:5292
 msgid "Log File"
 msgstr "Loggfil"
 
-#: sickbeard/webserve.py:5289
+#: sickbeard/webserve.py:5292
 msgid "Logs"
 msgstr "Logg"
 
@@ -1908,39 +1905,45 @@ msgstr "Velg overvåkingsmappe for .nzb-filer"
 msgid "Select .torrent black hole/watch location"
 msgstr "Velg overvåkingsmappe for .torrent-filer"
 
-#: gui/slick/js/core.js:1786
+#: gui/slick/js/core.js:1786 gui/slick/js/core.js:1787
 msgid "Select .torrent download location"
 msgstr "Velg nedlastingssted for .torrent-innhold"
 
-#: gui/slick/js/core.js:1867
+#: gui/slick/js/core.js:1788
+#, fuzzy
+#| msgid "Select .torrent download location"
+msgid "Select .torrent completed location"
+msgstr "Velg nedlastingssted for .torrent-innhold"
+
+#: gui/slick/js/core.js:1870
 msgid "Minimum seeding time is"
 msgstr "Minimumstid for seeding er"
 
-#: gui/slick/js/core.js:1869
+#: gui/slick/js/core.js:1872
 msgid "URL to your uTorrent client (e.g. http://localhost:8000)"
 msgstr "URL til uTorrent-klienten (f.eks. http://localhost:8000)"
 
-#: gui/slick/js/core.js:1872
+#: gui/slick/js/core.js:1876
 msgid "Stop seeding when inactive for"
 msgstr "Stopp seeding når inaktiv i"
 
-#: gui/slick/js/core.js:1878
+#: gui/slick/js/core.js:1882
 msgid "URL to your Transmission client (e.g. http://localhost:9091)"
 msgstr "URL til Transmission-klienten (f.eks. http://localhost:9091)"
 
-#: gui/slick/js/core.js:1888
+#: gui/slick/js/core.js:1893
 msgid "URL to your Deluge client (e.g. http://localhost:8112)"
 msgstr "URL til Deluge-klienten (f.eks. http://localhost:8112)"
 
-#: gui/slick/js/core.js:1897
+#: gui/slick/js/core.js:1905
 msgid "IP or Hostname of your Deluge Daemon (e.g. scgi://localhost:58846)"
 msgstr "IP eller tjenernavn til Deluge daemon (f.eks. scgi://localhost:58846)"
 
-#: gui/slick/js/core.js:1904
+#: gui/slick/js/core.js:1912
 msgid "URL to your Synology DS client (e.g. http://localhost:5000)"
 msgstr "URL til Synology DS-klienten (f.eks. http://localhost:5000)"
 
-#: gui/slick/js/core.js:1908
+#: gui/slick/js/core.js:1916
 msgid ""
 "URL to your rTorrent client (e.g. scgi://localhost:5000 <br> or "
 "https://localhost/rutorrent/plugins/httprpc/action.php)"
@@ -1948,75 +1951,75 @@ msgstr ""
 "URL til rTorrent-klienten (f.eks. scgi://localhost:5000 <br/> eller "
 "https://localhost/rutorrent/plugins/httprpc/action.php)"
 
-#: gui/slick/js/core.js:1919
+#: gui/slick/js/core.js:1927
 msgid "URL to your qBittorrent client (e.g. http://localhost:8080)"
 msgstr "URL til qBittorrent-klienten (f.eks. http://localhost:8080)"
 
-#: gui/slick/js/core.js:1929
+#: gui/slick/js/core.js:1937
 msgid "URL to your MLDonkey (e.g. http://localhost:4080)"
 msgstr "URL til MLDonkey (f.eks. http://localhost:4080)"
 
-#: gui/slick/js/core.js:1940
+#: gui/slick/js/core.js:1948
 msgid "URL to your putio client (e.g. http://localhost:8080)"
 msgstr "URL til Putio-klienten (f.eks. http://localhost:8080)"
 
-#: gui/slick/js/core.js:1943
+#: gui/slick/js/core.js:1951
 msgid "Create a new OAuth app for put.io"
 msgstr ""
 
-#: gui/slick/js/core.js:1944
+#: gui/slick/js/core.js:1952
 msgid "Put.io Parent Folder"
 msgstr "Overordnet mappe for put.io"
 
-#: gui/slick/js/core.js:1945
+#: gui/slick/js/core.js:1953
 msgid "Put.io OAuth Token"
 msgstr "OAuth Token for put.io"
 
-#: gui/slick/js/core.js:2839 gui/slick/views/displayShow.mako:409
+#: gui/slick/js/core.js:2847 gui/slick/views/displayShow.mako:409
 msgid "Show Episodes"
 msgstr "Episoder"
 
-#: gui/slick/js/core.js:2844 gui/slick/views/displayShow.mako:407
+#: gui/slick/js/core.js:2852 gui/slick/views/displayShow.mako:407
 msgid "Hide Episodes"
 msgstr "Skjul episoder"
 
-#: gui/slick/js/core.js:2849
+#: gui/slick/js/core.js:2857
 msgid "Select Show Location"
 msgstr "Velg lagringssted"
 
-#: gui/slick/js/core.js:2914 gui/slick/views/editShow.mako:362
+#: gui/slick/js/core.js:2922 gui/slick/views/editShow.mako:362
 msgid "None"
 msgstr ""
 
-#: gui/slick/js/core.js:2924
+#: gui/slick/js/core.js:2932
 msgid "Select Unprocessed Episode Folder"
 msgstr "Velg mappen med ubehandlede episoder"
 
-#: gui/slick/js/core.js:3312
+#: gui/slick/js/core.js:3320
 msgid "DELETED"
 msgstr "SLETTET"
 
-#: gui/slick/js/core.js:3609
+#: gui/slick/js/core.js:3617
 msgid "Resume updating the log on this page."
 msgstr "Gjenoppta loggoppdatering på denne siden."
 
-#: gui/slick/js/core.js:3609 gui/slick/views/viewlogs.mako:10
+#: gui/slick/js/core.js:3617 gui/slick/views/viewlogs.mako:10
 msgid "Pause updating the log on this page."
 msgstr "Sett loggoppdatering på denne siden på pause."
 
-#: gui/slick/js/core.js:3940
+#: gui/slick/js/core.js:3948
 msgid " on  in "
 msgstr ""
 
-#: gui/slick/js/core.js:3943
+#: gui/slick/js/core.js:3951
 msgid "searching {searchingFor}..."
 msgstr "søker {searchingFor}..."
 
-#: gui/slick/js/core.js:3956
+#: gui/slick/js/core.js:3964
 msgid "search timed out, try again or try another indexer"
 msgstr "søket fikk et tidsavbrudd, prøv igjen eller prøv en annen søkemotor"
 
-#: gui/slick/js/core.js:4086
+#: gui/slick/js/core.js:4094
 msgid "loading folders..."
 msgstr "laster mapper..."
 
@@ -2676,7 +2679,7 @@ msgstr ""
 #: gui/slick/views/config_search.mako:1039
 #: gui/slick/views/config_search.mako:1062
 #: gui/slick/views/config_search.mako:1066
-#: gui/slick/views/config_search.mako:1092
+#: gui/slick/views/config_search.mako:1129
 #: gui/slick/views/config_subtitles.mako:92
 #: gui/slick/views/config_subtitles.mako:180 gui/slick/views/editShow.mako:293
 #: gui/slick/views/editShow.mako:320
@@ -2789,7 +2792,7 @@ msgstr "hvor filene til seriene ligger"
 #: gui/slick/views/config_notifications.mako:3360
 #: gui/slick/views/config_search.mako:825
 #: gui/slick/views/config_search.mako:902
-#: gui/slick/views/config_search.mako:1161 gui/slick/views/editShow.mako:398
+#: gui/slick/views/config_search.mako:1198 gui/slick/views/editShow.mako:398
 #: gui/slick/views/layouts/config.mako:41
 msgid "Save Changes"
 msgstr "Lagre endringer"
@@ -4715,13 +4718,11 @@ msgstr "sende e-postmeldinger?"
 
 #: gui/slick/views/config_notifications.mako:2814
 #, fuzzy
-#| msgid "Postpone post processing"
 msgid "Notify on postprocess"
 msgstr "Utsett Etterbehandling"
 
 #: gui/slick/views/config_notifications.mako:2818
 #, fuzzy
-#| msgid "send a notification when a download finishes?"
 msgid "send a notification when a postprocessing finishes?"
 msgstr "send en melding når en nedlasting er ferdig?"
 
@@ -4855,7 +4856,6 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3144
 #, fuzzy
-#| msgid "should SickChill post messages on Slack?"
 msgid "should SickChill post messages on Matrix?"
 msgstr "skal SickChill poste meldinger på Slack?"
 
@@ -6310,7 +6310,7 @@ msgid "Client password"
 msgstr "Klientpassord"
 
 #: gui/slick/views/config_search.mako:791
-#: gui/slick/views/config_search.mako:1075
+#: gui/slick/views/config_search.mako:1112
 msgid "Downloaded files location"
 msgstr "Plassering av nedlastede filer"
 
@@ -6328,7 +6328,7 @@ msgstr "målet må være en delt mappe for Synology DS"
 
 #: gui/slick/views/config_search.mako:817
 #: gui/slick/views/config_search.mako:818
-#: gui/slick/views/config_search.mako:1154
+#: gui/slick/views/config_search.mako:1191
 msgid "Click below to test"
 msgstr "Klikk nedenfor for å teste"
 
@@ -6412,7 +6412,39 @@ msgstr "Legg en etikett til torrent for anime"
 msgid "for QBitTorrent 3.3.1 and up "
 msgstr "for QBitTorrent 3.3.1 og nyere "
 
+#: gui/slick/views/config_search.mako:1075
+#, fuzzy
+#| msgid "TV Download Directory"
+msgid "Download directory"
+msgstr "TV-nedlastingsmappen"
+
 #: gui/slick/views/config_search.mako:1087
+#, fuzzy
+#| msgid "" "where Synology Download Station will save downloaded files (blank
+#| for " "client default)"
+msgid "where Deluge will save downloaded files (blank for client default)"
+msgstr ""
+"hvor Synology Download Station vil lagre nedlastede filer (tom for klient"
+" standard)"
+
+#: gui/slick/views/config_search.mako:1092
+#, fuzzy
+#| msgid "Choose Directory"
+msgid "Completed Directory"
+msgstr "Velg mappe"
+
+#: gui/slick/views/config_search.mako:1104
+#, fuzzy
+#| msgid "" "where Synology Download Station will save downloaded files (blank
+#| for " "client default)"
+msgid ""
+"where Deluge will move files after downloading is complete (blank for "
+"client default)"
+msgstr ""
+"hvor Synology Download Station vil lagre nedlastede filer (tom for klient"
+" standard)"
+
+#: gui/slick/views/config_search.mako:1124
 msgid ""
 "where <span id=\"torrent_client\">the torrent client</span> will save "
 "downloaded files (blank for client default)"
@@ -6420,27 +6452,27 @@ msgstr ""
 "hvor <span id=\"torrent_client\"> torrent-klienten</span> skal lagre "
 "nedlastede filer (tom for klientens standard)"
 
-#: gui/slick/views/config_search.mako:1092
+#: gui/slick/views/config_search.mako:1129
 msgid "the destination has to be a shared folder for Synology DS</span>"
 msgstr "målet må være en delt mappe for Synology DS</span>"
 
-#: gui/slick/views/config_search.mako:1100
+#: gui/slick/views/config_search.mako:1137
 msgid "Minimum seeding time"
 msgstr "Minimum tid for seeding"
 
-#: gui/slick/views/config_search.mako:1111
+#: gui/slick/views/config_search.mako:1148
 msgid "time in hours"
 msgstr "antall timer"
 
-#: gui/slick/views/config_search.mako:1116
+#: gui/slick/views/config_search.mako:1153
 msgid "(default:'0' passes blank to client and '-1' passes nothing)"
 msgstr "(standard: '0' sender tom verdi til klienten, '-1' sender ingenting)"
 
-#: gui/slick/views/config_search.mako:1124
+#: gui/slick/views/config_search.mako:1161
 msgid "Start torrent paused"
 msgstr "Start torrent pauset"
 
-#: gui/slick/views/config_search.mako:1131
+#: gui/slick/views/config_search.mako:1168
 msgid ""
 "add .torrent to client but do <b style=\"font-weight:900\">not</b> start "
 "downloading"
@@ -6448,15 +6480,15 @@ msgstr ""
 "legg .torrent til klienten, men <b style=\"font-weight:900\">ikke</b> "
 "start nedlasting"
 
-#: gui/slick/views/config_search.mako:1139
+#: gui/slick/views/config_search.mako:1176
 msgid "Allow high bandwidth"
 msgstr "Tillat høy båndbredde"
 
-#: gui/slick/views/config_search.mako:1146
+#: gui/slick/views/config_search.mako:1183
 msgid "use high bandwidth allocation if priority is high"
 msgstr "bruk høy båndbredde-tildeling hvis prioritet er høy"
 
-#: gui/slick/views/config_search.mako:1160
+#: gui/slick/views/config_search.mako:1197
 msgid "Test Connection"
 msgstr "Test tilkoblingen"
 

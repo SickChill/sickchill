@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2019-05-20 13:21+0000\n"
+"POT-Creation-Date: 2019-05-24 12:13+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: ar_SA\n"
@@ -159,7 +159,6 @@ msgstr "تسجيل دخول جديد من IP: {0}. http://geomaplookup.net/?ip={
 
 #: sickbeard/common.py:87
 #, fuzzy
-#| msgid "Postpone post processing"
 msgid "Finished Post Processing"
 msgstr "تأجيل المعالجة"
 
@@ -969,13 +968,11 @@ msgstr ""
 
 #: sickbeard/webserve.py:999
 #, fuzzy
-#| msgid "Update was successful"
 msgid "Matrix message successful"
 msgstr "تم التحديث بنجاح"
 
 #: sickbeard/webserve.py:1001
 #, fuzzy
-#| msgid "Prowl Message Title"
 msgid "Matrix message failed"
 msgstr "عنوان رسالة Prowl"
 
@@ -1167,11 +1164,11 @@ msgstr "هذا المسلسل على قائمة الانتظار حتى يتم �
 msgid "This show is queued and awaiting subtitles download."
 msgstr "هذا المسلسل على قائمة الانتظار حتى يتم تحميل الترجمات."
 
-#: gui/slick/js/core.js:3608 sickbeard/webserve.py:1419
+#: gui/slick/js/core.js:3616 sickbeard/webserve.py:1419
 msgid "Resume"
 msgstr "استئناف"
 
-#: gui/slick/js/core.js:3608 gui/slick/views/viewlogs.mako:12
+#: gui/slick/js/core.js:3616 gui/slick/views/viewlogs.mako:12
 #: sickbeard/webserve.py:1421
 msgid "Pause"
 msgstr "إيقاف مؤقت"
@@ -1401,7 +1398,7 @@ msgid "Changelog"
 msgstr "سجل التغييرات"
 
 #: gui/slick/views/layouts/main.mako:212 sickbeard/webserve.py:2477
-#: sickbeard/webserve.py:3870 sickbeard/webserve.py:4368
+#: sickbeard/webserve.py:3870 sickbeard/webserve.py:4371
 msgid "Post Processing"
 msgstr "المعالجة"
 
@@ -1555,7 +1552,7 @@ msgstr "إعادة تسمية"
 #: gui/slick/views/displayShow.mako:259 gui/slick/views/displayShow.mako:434
 #: gui/slick/views/editShow.mako:119 gui/slick/views/inc_addShowOptions.mako:20
 #: gui/slick/views/manage_massEdit.mako:262 sickbeard/webserve.py:3666
-#: sickbeard/webserve.py:5138
+#: sickbeard/webserve.py:5141
 msgid "Subtitles"
 msgstr "ترجمة"
 
@@ -1625,7 +1622,7 @@ msgid "Search Settings"
 msgstr "إعدادات البحث"
 
 #: gui/slick/views/layouts/main.mako:210 sickbeard/webserve.py:3868
-#: sickbeard/webserve.py:4546
+#: sickbeard/webserve.py:4549
 msgid "Search Providers"
 msgstr "مقدمي خدمة البحث"
 
@@ -1634,7 +1631,7 @@ msgid "Subtitles Settings"
 msgstr "إعدادات الترجمة"
 
 #: gui/slick/views/layouts/main.mako:213 sickbeard/webserve.py:3871
-#: sickbeard/webserve.py:4854
+#: sickbeard/webserve.py:4857
 msgid "Notifications"
 msgstr "الإشعارات"
 
@@ -1643,7 +1640,7 @@ msgstr "الإشعارات"
 #: gui/slick/views/inc_home_showList.mako:183
 #: gui/slick/views/layouts/main.mako:214 gui/slick/views/manage.mako:44
 #: gui/slick/views/manage_massEdit.mako:202 sickbeard/webserve.py:3872
-#: sickbeard/webserve.py:5209
+#: sickbeard/webserve.py:5212
 msgid "Anime"
 msgstr "أنمي"
 
@@ -1695,15 +1692,15 @@ msgstr "غير قادر على إنشاء الدليل {directory}، دليل ش
 msgid "Unable to create directory {directory}, https key directory not changed."
 msgstr "غير قادر على إنشاء الدليل {directory}، دليل مفتاح https لم يتغير."
 
-#: sickbeard/webserve.py:4148 sickbeard/webserve.py:4350
-#: sickbeard/webserve.py:4483 sickbeard/webserve.py:5120
+#: sickbeard/webserve.py:4148 sickbeard/webserve.py:4353
+#: sickbeard/webserve.py:4486 sickbeard/webserve.py:5123
 msgid "Error(s) Saving Configuration"
 msgstr "خطأ (أخطاء) حفظ الضبط"
 
-#: sickbeard/webserve.py:4151 sickbeard/webserve.py:4353
-#: sickbeard/webserve.py:4485 sickbeard/webserve.py:4839
-#: sickbeard/webserve.py:5123 sickbeard/webserve.py:5193
-#: sickbeard/webserve.py:5223
+#: sickbeard/webserve.py:4151 sickbeard/webserve.py:4356
+#: sickbeard/webserve.py:4488 sickbeard/webserve.py:4842
+#: sickbeard/webserve.py:5126 sickbeard/webserve.py:5196
+#: sickbeard/webserve.py:5226
 msgid "Configuration Saved"
 msgstr "تم حفظ الضبط"
 
@@ -1715,75 +1712,75 @@ msgstr "ضبط - نسخ الاحتياط/الاستعادة"
 msgid "Config - Episode Search"
 msgstr "الضبط - البحث عن الحلقة"
 
-#: sickbeard/webserve.py:4367
+#: sickbeard/webserve.py:4370
 msgid "Config - Post Processing"
 msgstr "الضبط - المعالجة"
 
-#: sickbeard/webserve.py:4407
+#: sickbeard/webserve.py:4410
 msgid "Unpacking Not Supported, disabling unpack setting"
 msgstr "فك الضغط غير مدعوم، يتم تعطيل اعداد فك الضغط"
 
-#: sickbeard/webserve.py:4458
+#: sickbeard/webserve.py:4461
 msgid ""
 "You tried saving an invalid normal naming config, not saving your naming "
 "settings"
 msgstr ""
 
-#: sickbeard/webserve.py:4466
+#: sickbeard/webserve.py:4469
 msgid ""
 "You tried saving an invalid anime naming config, not saving your naming "
 "settings"
 msgstr "لقد حاولت حفظ إعدادات تسمية أنمي غير صالحة، لم يتم حفظ إعدادات التسمية"
 
-#: sickbeard/webserve.py:4545
+#: sickbeard/webserve.py:4548
 msgid "Config - Providers"
 msgstr "التكوين - مقدمي الخدمات"
 
-#: sickbeard/webserve.py:4575
+#: sickbeard/webserve.py:4578
 msgid "No Provider Name specified"
 msgstr "لم يتم تحديد اسم مقدم الخدمة"
 
-#: sickbeard/webserve.py:4577
+#: sickbeard/webserve.py:4580
 msgid "No Provider Url specified"
 msgstr "لم يتم تحديدعنوان مقدم الخدمة"
 
-#: sickbeard/webserve.py:4579
+#: sickbeard/webserve.py:4582
 msgid "No Provider Api key specified"
 msgstr "لم يتم تحديد مفاح Api لمقدم الخدمة"
 
-#: sickbeard/webserve.py:4853
+#: sickbeard/webserve.py:4856
 msgid "Config - Notifications"
 msgstr "الضبط - الإشعارات"
 
-#: sickbeard/webserve.py:5137
+#: sickbeard/webserve.py:5140
 msgid "Config - Subtitles"
 msgstr "الضبط - الترجمة"
 
-#: sickbeard/webserve.py:5208
+#: sickbeard/webserve.py:5211
 msgid "Config - Anime"
 msgstr "الضبط - أنيمي"
 
-#: sickbeard/webserve.py:5236
+#: sickbeard/webserve.py:5239
 msgid "Clear Errors"
 msgstr "مسح الأخطاء"
 
-#: sickbeard/webserve.py:5242
+#: sickbeard/webserve.py:5245
 msgid "Clear Warnings"
 msgstr "مسح التحذيرات"
 
-#: sickbeard/webserve.py:5248
+#: sickbeard/webserve.py:5251
 msgid "Submit Errors"
 msgstr "إرسال الأخطاء"
 
-#: sickbeard/webserve.py:5264
+#: sickbeard/webserve.py:5267
 msgid "Logs &amp; Errors"
 msgstr "السجلات &amp; الأخطاء"
 
-#: sickbeard/webserve.py:5289
+#: sickbeard/webserve.py:5292
 msgid "Log File"
 msgstr "ملف السجل"
 
-#: sickbeard/webserve.py:5289
+#: sickbeard/webserve.py:5292
 msgid "Logs"
 msgstr "سجلات"
 
@@ -1903,113 +1900,117 @@ msgstr ""
 msgid "Select .torrent black hole/watch location"
 msgstr ""
 
-#: gui/slick/js/core.js:1786
+#: gui/slick/js/core.js:1786 gui/slick/js/core.js:1787
 msgid "Select .torrent download location"
 msgstr ""
 
-#: gui/slick/js/core.js:1867
+#: gui/slick/js/core.js:1788
+msgid "Select .torrent completed location"
+msgstr ""
+
+#: gui/slick/js/core.js:1870
 msgid "Minimum seeding time is"
 msgstr "الحد الأدنى لمدة الرفع"
 
-#: gui/slick/js/core.js:1869
+#: gui/slick/js/core.js:1872
 msgid "URL to your uTorrent client (e.g. http://localhost:8000)"
 msgstr "عنوان URL الخاص ببرنامج uTorrent (مثلاً من http://localhost:8000)"
 
-#: gui/slick/js/core.js:1872
+#: gui/slick/js/core.js:1876
 msgid "Stop seeding when inactive for"
 msgstr ""
 
-#: gui/slick/js/core.js:1878
+#: gui/slick/js/core.js:1882
 msgid "URL to your Transmission client (e.g. http://localhost:9091)"
 msgstr "عنوان URL الخاص ببرنامج Transmission (مثلاً من http://localhost:9091)"
 
-#: gui/slick/js/core.js:1888
+#: gui/slick/js/core.js:1893
 msgid "URL to your Deluge client (e.g. http://localhost:8112)"
 msgstr "عنوان URL الخاص ببرنامج Deluge (مثلاً من http://localhost:8112)"
 
-#: gui/slick/js/core.js:1897
+#: gui/slick/js/core.js:1905
 msgid "IP or Hostname of your Deluge Daemon (e.g. scgi://localhost:58846)"
 msgstr ""
 
-#: gui/slick/js/core.js:1904
+#: gui/slick/js/core.js:1912
 msgid "URL to your Synology DS client (e.g. http://localhost:5000)"
 msgstr "عنوان URL الخاص بـ Synology (مثلاً من http://localhost:5000)"
 
-#: gui/slick/js/core.js:1908
+#: gui/slick/js/core.js:1916
 msgid ""
 "URL to your rTorrent client (e.g. scgi://localhost:5000 <br> or "
 "https://localhost/rutorrent/plugins/httprpc/action.php)"
 msgstr ""
 
-#: gui/slick/js/core.js:1919
+#: gui/slick/js/core.js:1927
 msgid "URL to your qBittorrent client (e.g. http://localhost:8080)"
 msgstr "عنوان URL الخاص ببرنامج qBittorrent (مثلاً من http://localhost:8080)"
 
-#: gui/slick/js/core.js:1929
+#: gui/slick/js/core.js:1937
 msgid "URL to your MLDonkey (e.g. http://localhost:4080)"
 msgstr "عنوان URL الخاص ببرنامج MLDonkey (مثلاً من http://localhost:4080)"
 
-#: gui/slick/js/core.js:1940
+#: gui/slick/js/core.js:1948
 msgid "URL to your putio client (e.g. http://localhost:8080)"
 msgstr "عنوان URL الخاص ببرنامج putio (مثلاً من http://localhost:8080)"
 
-#: gui/slick/js/core.js:1943
+#: gui/slick/js/core.js:1951
 msgid "Create a new OAuth app for put.io"
 msgstr ""
 
-#: gui/slick/js/core.js:1944
+#: gui/slick/js/core.js:1952
 msgid "Put.io Parent Folder"
 msgstr ""
 
-#: gui/slick/js/core.js:1945
+#: gui/slick/js/core.js:1953
 msgid "Put.io OAuth Token"
 msgstr ""
 
-#: gui/slick/js/core.js:2839 gui/slick/views/displayShow.mako:409
+#: gui/slick/js/core.js:2847 gui/slick/views/displayShow.mako:409
 msgid "Show Episodes"
 msgstr "حلقات المسلسل"
 
-#: gui/slick/js/core.js:2844 gui/slick/views/displayShow.mako:407
+#: gui/slick/js/core.js:2852 gui/slick/views/displayShow.mako:407
 msgid "Hide Episodes"
 msgstr "إخفاء الحلقات"
 
-#: gui/slick/js/core.js:2849
+#: gui/slick/js/core.js:2857
 msgid "Select Show Location"
 msgstr ""
 
-#: gui/slick/js/core.js:2914 gui/slick/views/editShow.mako:362
+#: gui/slick/js/core.js:2922 gui/slick/views/editShow.mako:362
 msgid "None"
 msgstr ""
 
-#: gui/slick/js/core.js:2924
+#: gui/slick/js/core.js:2932
 msgid "Select Unprocessed Episode Folder"
 msgstr ""
 
-#: gui/slick/js/core.js:3312
+#: gui/slick/js/core.js:3320
 msgid "DELETED"
 msgstr ""
 
-#: gui/slick/js/core.js:3609
+#: gui/slick/js/core.js:3617
 msgid "Resume updating the log on this page."
 msgstr ""
 
-#: gui/slick/js/core.js:3609 gui/slick/views/viewlogs.mako:10
+#: gui/slick/js/core.js:3617 gui/slick/views/viewlogs.mako:10
 msgid "Pause updating the log on this page."
 msgstr ""
 
-#: gui/slick/js/core.js:3940
+#: gui/slick/js/core.js:3948
 msgid " on  in "
 msgstr ""
 
-#: gui/slick/js/core.js:3943
+#: gui/slick/js/core.js:3951
 msgid "searching {searchingFor}..."
 msgstr ""
 
-#: gui/slick/js/core.js:3956
+#: gui/slick/js/core.js:3964
 msgid "search timed out, try again or try another indexer"
 msgstr ""
 
-#: gui/slick/js/core.js:4086
+#: gui/slick/js/core.js:4094
 msgid "loading folders..."
 msgstr ""
 
@@ -2663,7 +2664,7 @@ msgstr ""
 #: gui/slick/views/config_search.mako:1039
 #: gui/slick/views/config_search.mako:1062
 #: gui/slick/views/config_search.mako:1066
-#: gui/slick/views/config_search.mako:1092
+#: gui/slick/views/config_search.mako:1129
 #: gui/slick/views/config_subtitles.mako:92
 #: gui/slick/views/config_subtitles.mako:180 gui/slick/views/editShow.mako:293
 #: gui/slick/views/editShow.mako:320
@@ -2778,7 +2779,7 @@ msgstr "حيث توجد ملفات المسلسلات"
 #: gui/slick/views/config_notifications.mako:3360
 #: gui/slick/views/config_search.mako:825
 #: gui/slick/views/config_search.mako:902
-#: gui/slick/views/config_search.mako:1161 gui/slick/views/editShow.mako:398
+#: gui/slick/views/config_search.mako:1198 gui/slick/views/editShow.mako:398
 #: gui/slick/views/layouts/config.mako:41
 msgid "Save Changes"
 msgstr "حفظ التغييرات"
@@ -4687,13 +4688,11 @@ msgstr "إرسال إشعارات البريد الإلكتروني؟"
 
 #: gui/slick/views/config_notifications.mako:2814
 #, fuzzy
-#| msgid "Postpone post processing"
 msgid "Notify on postprocess"
 msgstr "تأجيل المعالجة"
 
 #: gui/slick/views/config_notifications.mako:2818
 #, fuzzy
-#| msgid "send a notification when a download finishes?"
 msgid "send a notification when a postprocessing finishes?"
 msgstr "إرسال إشعار عند انتهاء التحميل؟"
 
@@ -4825,7 +4824,6 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3144
 #, fuzzy
-#| msgid "should SickChill post tweets on Twitter?"
 msgid "should SickChill post messages on Matrix?"
 msgstr "هل ينشر SickChill تغريدات على حسابك في تويتر؟"
 
@@ -6250,7 +6248,7 @@ msgid "Client password"
 msgstr "كلمة مرور العميل"
 
 #: gui/slick/views/config_search.mako:791
-#: gui/slick/views/config_search.mako:1075
+#: gui/slick/views/config_search.mako:1112
 msgid "Downloaded files location"
 msgstr "موقع الملفات التي تم تحميلها"
 
@@ -6266,7 +6264,7 @@ msgstr "الوجهة يجب أن يكون مجلد مشاركة لـ Synology DS
 
 #: gui/slick/views/config_search.mako:817
 #: gui/slick/views/config_search.mako:818
-#: gui/slick/views/config_search.mako:1154
+#: gui/slick/views/config_search.mako:1191
 msgid "Click below to test"
 msgstr "انقر أدناه للتحقق"
 
@@ -6350,7 +6348,35 @@ msgstr "إضافة تسمية \"label \" إلى تورينت لأنمي"
 msgid "for QBitTorrent 3.3.1 and up "
 msgstr "لـ QBitTorrent 3.3.1 وما فوق "
 
+#: gui/slick/views/config_search.mako:1075
+#, fuzzy
+#| msgid "TV Download Directory"
+msgid "Download directory"
+msgstr "مجلد تحميل المسلسلات"
+
 #: gui/slick/views/config_search.mako:1087
+#, fuzzy
+#| msgid "" "where Synology Download Station will save downloaded files (blank
+#| for " "client default)"
+msgid "where Deluge will save downloaded files (blank for client default)"
+msgstr "حيث سيتم حفظ ملفات Synology Download Station (فارغة للعميل الافتراضي)"
+
+#: gui/slick/views/config_search.mako:1092
+#, fuzzy
+#| msgid "TV Download Directory"
+msgid "Completed Directory"
+msgstr "مجلد تحميل المسلسلات"
+
+#: gui/slick/views/config_search.mako:1104
+#, fuzzy
+#| msgid "" "where Synology Download Station will save downloaded files (blank
+#| for " "client default)"
+msgid ""
+"where Deluge will move files after downloading is complete (blank for "
+"client default)"
+msgstr "حيث سيتم حفظ ملفات Synology Download Station (فارغة للعميل الافتراضي)"
+
+#: gui/slick/views/config_search.mako:1124
 msgid ""
 "where <span id=\"torrent_client\">the torrent client</span> will save "
 "downloaded files (blank for client default)"
@@ -6358,27 +6384,27 @@ msgstr ""
 "حيث سيحفظ <span id=\"torrent_client\">برنامج التورينت</span> المفات (فارغ"
 " للإفتراضي من البرنامج)"
 
-#: gui/slick/views/config_search.mako:1092
+#: gui/slick/views/config_search.mako:1129
 msgid "the destination has to be a shared folder for Synology DS</span>"
 msgstr "الوجهة يجب أن يكون مجلد مشاركة لـ Synology DS"
 
-#: gui/slick/views/config_search.mako:1100
+#: gui/slick/views/config_search.mako:1137
 msgid "Minimum seeding time"
 msgstr "الحد الأدنى لمدة الرفع"
 
-#: gui/slick/views/config_search.mako:1111
+#: gui/slick/views/config_search.mako:1148
 msgid "time in hours"
 msgstr "الوقت بالساعات"
 
-#: gui/slick/views/config_search.mako:1116
+#: gui/slick/views/config_search.mako:1153
 msgid "(default:'0' passes blank to client and '-1' passes nothing)"
 msgstr "(الافتراضي: '0' يمرر فارغ إلى البرنامج و'-1' يمرر لا شيء)"
 
-#: gui/slick/views/config_search.mako:1124
+#: gui/slick/views/config_search.mako:1161
 msgid "Start torrent paused"
 msgstr "بدء التورنت في وضع التوقف المؤقت"
 
-#: gui/slick/views/config_search.mako:1131
+#: gui/slick/views/config_search.mako:1168
 msgid ""
 "add .torrent to client but do <b style=\"font-weight:900\">not</b> start "
 "downloading"
@@ -6386,15 +6412,15 @@ msgstr ""
 "إضافة تورنت إلى برنامج التورينت ولكن <b style=\"font-weight:900\">لا</b> "
 "تبدأ تحميله"
 
-#: gui/slick/views/config_search.mako:1139
+#: gui/slick/views/config_search.mako:1176
 msgid "Allow high bandwidth"
 msgstr "السماح بنطاق عالي"
 
-#: gui/slick/views/config_search.mako:1146
+#: gui/slick/views/config_search.mako:1183
 msgid "use high bandwidth allocation if priority is high"
 msgstr "استخدام النطاق العالي إذا كانت الأولوية عالية"
 
-#: gui/slick/views/config_search.mako:1160
+#: gui/slick/views/config_search.mako:1197
 msgid "Test Connection"
 msgstr "تجربة الإتصال"
 
