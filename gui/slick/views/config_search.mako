@@ -1087,11 +1087,6 @@
                                                     <label for="torrent_download_dir_deluge">${_('where Deluge will save downloaded files (blank for client default)')}</label>
                                                 </div>
                                             </div>
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <label id="path_synology"><b>${_('note')}:</b> ${_('the destination has to be a shared folder for Synology DS</span>')}</label>
-                                                </div>
-                                            </div>
                                         </div>
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title" id="directory_title">${_('Completed Directory')}</label>
@@ -1107,11 +1102,6 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <label for="torrent_complete_dir_deluge">${_('where Deluge will move files after downloading is complete (blank for client default)')}</label>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <label id="path_synology"><b>${_('note')}:</b> ${_('the destination has to be a shared folder for Synology DS</span>')}</label>
                                                 </div>
                                             </div>
                                         </div>
