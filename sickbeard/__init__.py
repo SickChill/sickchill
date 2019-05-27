@@ -1105,8 +1105,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TORRENT_PASSWORD = check_setting_str(CFG, 'TORRENT', 'torrent_password', censor_log=True)
         TORRENT_HOST = check_setting_str(CFG, 'TORRENT', 'torrent_host')
         TORRENT_PATH = check_setting_str(CFG, 'TORRENT', 'torrent_path')
-        TORRENT_DELUGE_DOWNLOAD_DIR = check_setting_str(CFG, 'TORRENT', 'torrent_deluge_download_dir')
-        TORRENT_DELUGE_COMPLETE_DIR = check_setting_str(CFG, 'TORRENT', 'torrent_deluge_complete_dir')
+        TORRENT_DELUGE_DOWNLOAD_DIR = check_setting_str(CFG, 'TORRENT', 'torrent_download_dir_deluge')
+        TORRENT_DELUGE_COMPLETE_DIR = check_setting_str(CFG, 'TORRENT', 'torrent_complete_dir_deluge')
         TORRENT_SEED_TIME = check_setting_int(CFG, 'TORRENT', 'torrent_seed_time', min_val=-1)
         TORRENT_PAUSED = check_setting_bool(CFG, 'TORRENT', 'torrent_paused')
         TORRENT_HIGH_BANDWIDTH = check_setting_bool(CFG, 'TORRENT', 'torrent_high_bandwidth')
@@ -1994,8 +1994,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'torrent_password': helpers.encrypt(TORRENT_PASSWORD, ENCRYPTION_VERSION),
             'torrent_host': TORRENT_HOST,
             'torrent_path': TORRENT_PATH,
-            'torrent_deluge_download_dir': TORRENT_DELUGE_DOWNLOAD_DIR,
-            'torrent_deluge_complete_dir': TORRENT_DELUGE_COMPLETE_DIR,
+            'torrent_download_dir_deluge': TORRENT_DELUGE_DOWNLOAD_DIR,
+            'torrent_complete_dir_deluge': TORRENT_DELUGE_COMPLETE_DIR,
             'torrent_seed_time': int(TORRENT_SEED_TIME),
             'torrent_paused': int(TORRENT_PAUSED),
             'torrent_high_bandwidth': int(TORRENT_HIGH_BANDWIDTH),
