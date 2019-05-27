@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2019-05-24 12:13+0000\n"
+"POT-Creation-Date: 2019-05-27 05:44+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: fi_FI\n"
@@ -6194,7 +6194,6 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:1075
 #, fuzzy
-#| msgid "Download propers"
 msgid "Download directory"
 msgstr "Lataa Proper-versioita"
 

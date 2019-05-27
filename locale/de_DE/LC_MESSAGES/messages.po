@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2019-05-24 12:13+0000\n"
+"POT-Creation-Date: 2019-05-27 05:44+0000\n"
 "PO-Revision-Date: 2018-10-10 07:47+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: de_DE\n"
@@ -1961,7 +1961,6 @@ msgstr ".torrent Download-Verzeichnis auswählen"
 
 #: gui/slick/js/core.js:1788
 #, fuzzy
-#| msgid "Select .torrent download location"
 msgid "Select .torrent completed location"
 msgstr ".torrent Download-Verzeichnis auswählen"
 
@@ -6541,27 +6540,21 @@ msgstr "für QBitTorrent 3.3.1 und höher"
 
 #: gui/slick/views/config_search.mako:1075
 #, fuzzy
-#| msgid "TV Download Directory"
 msgid "Download directory"
 msgstr "TV Download-Verzeichnis"
 
 #: gui/slick/views/config_search.mako:1087
 #, fuzzy
-#| msgid "" "where Synology Download Station will save downloaded files (blank
-#| for " "client default)"
 msgid "where Deluge will save downloaded files (blank for client default)"
 msgstr "Speicherort für Synology Download Station (Freilassen für Standard)"
 
 #: gui/slick/views/config_search.mako:1092
 #, fuzzy
-#| msgid "Choose Directory"
 msgid "Completed Directory"
 msgstr "Verzeichnis wählen"
 
 #: gui/slick/views/config_search.mako:1104
 #, fuzzy
-#| msgid "" "where Synology Download Station will save downloaded files (blank
-#| for " "client default)"
 msgid ""
 "where Deluge will move files after downloading is complete (blank for "
 "client default)"

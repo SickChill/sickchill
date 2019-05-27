@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2019-05-24 12:13+0000\n"
+"POT-Creation-Date: 2019-05-27 05:44+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: bg_BG\n"
@@ -1937,7 +1937,6 @@ msgstr "Изберете местоположение за сваляне на .
 
 #: gui/slick/js/core.js:1788
 #, fuzzy
-#| msgid "Select .torrent download location"
 msgid "Select .torrent completed location"
 msgstr "Изберете местоположение за сваляне на .torrent"
 
@@ -6396,14 +6395,11 @@ msgstr "за QBitTorrent 3.3.1 и нагоре "
 
 #: gui/slick/views/config_search.mako:1075
 #, fuzzy
-#| msgid "TV Download Directory"
 msgid "Download directory"
 msgstr "Директория за изтегляне на предаването"
 
 #: gui/slick/views/config_search.mako:1087
 #, fuzzy
-#| msgid "" "where <span id=\"torrent_client\">the torrent client</span> will
-#| save " "downloaded files (blank for client default)"
 msgid "where Deluge will save downloaded files (blank for client default)"
 msgstr ""
 "където <span id=\"torrent_client\">торент клиент</span> ще запазва "
@@ -6411,7 +6407,6 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:1092
 #, fuzzy
-#| msgid "Choose Directory"
 msgid "Completed Directory"
 msgstr "Изберете директория"
 

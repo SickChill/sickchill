@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2019-05-24 12:13+0000\n"
+"POT-Creation-Date: 2019-05-27 05:44+0000\n"
 "PO-Revision-Date: 2018-10-10 07:48+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: sk_SK\n"
@@ -6225,7 +6225,6 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:1075
 #, fuzzy
-#| msgid "TV Download Directory"
 msgid "Download directory"
 msgstr "TV priečinok pre sťahovanie"
 
@@ -6235,7 +6234,6 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:1092
 #, fuzzy
-#| msgid "TV Download Directory"
 msgid "Completed Directory"
 msgstr "TV priečinok pre sťahovanie"
 

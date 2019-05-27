@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2019-05-24 12:13+0000\n"
+"POT-Creation-Date: 2019-05-27 05:44+0000\n"
 "PO-Revision-Date: 2018-10-10 07:47+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: he_IL\n"
@@ -1895,7 +1895,6 @@ msgstr ""
 
 #: gui/slick/js/core.js:1788
 #, fuzzy
-#| msgid "Select log file folder location"
 msgid "Select .torrent completed location"
 msgstr "בחר את מיקום התיקיה של קובץ יומן הרישום"
 
@@ -6214,7 +6213,6 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:1075
 #, fuzzy
-#| msgid "Add shows without directory"
 msgid "Download directory"
 msgstr "הוסף סדרות ללא ספרייה"
 
