@@ -181,7 +181,7 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        return '' if not (self.avc[:-1] == '5') else self.avc
+        return '' if not (self.avc[-1] == '5') else self.avc
 
     @property
     def avc(self):
@@ -288,3 +288,10 @@ class EpisodeTags(object):
         attr = 'amazon'
         match = self._get_match_obj(attr)
         return '' if not match else match.group()
+
+    def __str__(self):
+        # TODO: Add other class properties into this output
+        out = list()
+        out.append(self.name)
+        out.extend('{}: {}'.format(attr, getattr(self, attr)) for attr in self.rex if getattr(self, attr))
+        return '\n'.join(out)

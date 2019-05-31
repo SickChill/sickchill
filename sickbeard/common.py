@@ -357,12 +357,12 @@ class Quality(object):
                 elif (ep.avc and (ep.itunes or ep.amazon or ep.netflix)) or ep.web:
                     result = (Quality.HDWEBDL, Quality.FULLHDWEBDL)[full_res]
                 # HDTV
-                elif ep.avc and ep.tv == 'hd':
+                elif ep.avc and (ep.tv == 'hd' or ep.hevc):
                     result = (Quality.HDTV, Quality.FULLHDTV)[full_res]  # 1080 HDTV h264
                 # MPEG2 encoded
-                elif all([ep.vres == 1080, ep.tv == 'hd', ep.mpeg]):
+                elif all([full_res, ep.tv == 'hd', ep.mpeg]):
                     result = Quality.RAWHDTV
-                elif all([ep.vres == 720, ep.tv == 'hd', ep.mpeg]):
+                elif all([not full_res, ep.tv == 'hd', ep.mpeg]):
                     result = Quality.RAWHDTV
             elif (ep.res == '1080i') and ep.tv == 'hd' and (ep.mpeg or (ep.raw and ep.avc_non_free)):
                 result = Quality.RAWHDTV
