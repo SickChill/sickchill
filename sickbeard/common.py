@@ -36,6 +36,7 @@ from fake_useragent import settings as UA_SETTINGS, UserAgent
 # noinspection PyUnresolvedReferences
 from six.moves import reduce
 
+import sickbeard
 from sickbeard.numdict import NumDict
 from sickchill.helper import video_screen_size
 from sickchill.helper.encoding import ek
@@ -330,23 +331,20 @@ class Quality(object):
             # SD TV
             elif sd_options:
                 result = Quality.SDTV
-
-            return Quality.UNKNOWN if result is None else result
-
         # Is it UHD?
-        if ep.vres in {2160, 4320} and ep.scan == 'p':
+        elif ep.vres in {2160, 4320} and ep.scan == 'p':
             # BluRay
             full_res = (ep.vres == 4320)
             if ep.avc and ep.bluray:
                 result = (Quality.UHD_4K_BLURAY, Quality.UHD_8K_BLURAY)[full_res]
             # WEB-DL
-            elif (ep.avc and (ep.itunes or ep.amazon or ep.netflix)) or ep.web:
+            elif (ep.avc and (ep.itunes or ep.amazon or ep.netflix)) or ep.web:  # I think this ep.web should be in the `or` chain to also require ep.avc
                 result = (Quality.UHD_4K_WEBDL, Quality.UHD_8K_WEBDL)[full_res]
             # HDTV
             elif ep.avc and ep.tv == 'hd':
                 result = (Quality.UHD_4K_TV, Quality.UHD_8K_TV)[full_res]
-
-        # Is it HD?
+        elif ep.hevc and not sickbeard.QUALITY_ALLOW_HEVC:
+            result = Quality.NONE
         elif ep.vres in {1080, 720}:
             if ep.scan == 'p':
                 # BluRay
@@ -354,7 +352,7 @@ class Quality(object):
                 if ep.avc and (ep.bluray or ep.hddvd):
                     result = (Quality.HDBLURAY, Quality.FULLHDBLURAY)[full_res]
                 # WEB-DL
-                elif (ep.avc and (ep.itunes or ep.amazon or ep.netflix)) or ep.web:
+                elif (ep.avc and (ep.itunes or ep.amazon or ep.netflix)) or ep.web:  # I think this ep.web should be in the `or` chain to also require ep.avc
                     result = (Quality.HDWEBDL, Quality.FULLHDWEBDL)[full_res]
                 # HDTV
                 elif ep.avc and (ep.tv == 'hd' or ep.hevc):
