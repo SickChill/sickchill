@@ -181,6 +181,8 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
+        if not self.avc:
+            return ''
         return '' if not (self.avc[-1] == '5') else self.avc
 
     @property
