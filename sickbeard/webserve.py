@@ -4242,7 +4242,7 @@ class ConfigSearch(Config):
                    torrent_complete_dir_deluge=None, torrent_verify_cert=None,
                    torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None,
                    torrent_rpcurl=None, torrent_auth_type=None, ignore_words=None, trackers_list=None, require_words=None, ignored_subs_list=None,
-                   syno_dsm_host=None, syno_dsm_user=None, syno_dsm_pass=None, syno_dsm_path=None):
+                   syno_dsm_host=None, syno_dsm_user=None, syno_dsm_pass=None, syno_dsm_path=None, quality_allow_hevc=False):
 
         results = []
 
@@ -4276,6 +4276,7 @@ class ConfigSearch(Config):
         sickbeard.CHECK_PROPERS_INTERVAL = check_propers_interval
 
         sickbeard.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(allow_high_priority)
+        sickbeard.QUALITY_ALLOW_HEVC = config.checkbox_to_value(quality_allow_hevc)
 
         sickbeard.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
         sickbeard.DELETE_FAILED = config.checkbox_to_value(delete_failed)

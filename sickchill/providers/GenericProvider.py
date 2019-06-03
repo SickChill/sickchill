@@ -181,6 +181,8 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
                 if quality == Quality.UNKNOWN:
                     unknown_items.append(item)
+                elif quality == Quality.NONE:
+                    pass  # Skipping an HEVC when HEVC is not allowed by settings
                 else:
                     if quality not in items:
                         items[quality] = []
