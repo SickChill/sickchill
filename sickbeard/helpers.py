@@ -1295,7 +1295,7 @@ def restore_config_zip(archive, targetDir):
         zip_file.close()
         return True
     except Exception as error:
-        logger.log(_("Zip extraction error: {0}").format(error), logger.ERROR)
+        logger.log(_("Zip extraction error: {0} ").format(error), logger.ERROR)
         shutil.rmtree(targetDir)
         return False
 
