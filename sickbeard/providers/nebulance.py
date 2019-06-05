@@ -161,8 +161,8 @@ class NebulanceProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                                 continue
 
                             cells = torrent_row('td')
-                            seeders = try_int(cells[labels.index('Seeders')].text.strip())
-                            leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
+                            seeders = try_int(cells[labels.index('∧')].text.strip())
+                            leechers = try_int(cells[labels.index('∨')].get_text(strip=True))
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:

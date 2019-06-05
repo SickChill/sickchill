@@ -227,6 +227,7 @@ METADATA_TIVO = None
 METADATA_MEDE8ER = None
 
 QUALITY_DEFAULT = None
+QUALITY_ALLOW_HEVC = None
 STATUS_DEFAULT = None
 STATUS_DEFAULT_AFTER = None
 SEASON_FOLDERS_DEFAULT = False
@@ -344,6 +345,8 @@ TORRENT_USERNAME = None
 TORRENT_PASSWORD = None
 TORRENT_HOST = ''
 TORRENT_PATH = ''
+TORRENT_DELUGE_DOWNLOAD_DIR = ''
+TORRENT_DELUGE_COMPLETE_DIR = ''
 TORRENT_SEED_TIME = None
 TORRENT_PAUSED = False
 TORRENT_HIGH_BANDWIDTH = False
@@ -679,7 +682,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             CHECK_PROPERS_INTERVAL, ALLOW_HIGH_PRIORITY, SAB_FORCED, TORRENT_METHOD, NOTIFY_ON_LOGIN, SAB_USERNAME, SAB_PASSWORD, SAB_APIKEY, SAB_CATEGORY, \
             SAB_CATEGORY_BACKLOG, SAB_CATEGORY_ANIME, SAB_CATEGORY_ANIME_BACKLOG, SAB_HOST,  NZBGET_USERNAME, NZBGET_PASSWORD, NZBGET_CATEGORY, \
             NZBGET_CATEGORY_BACKLOG, NZBGET_CATEGORY_ANIME, NZBGET_CATEGORY_ANIME_BACKLOG, NZBGET_PRIORITY, NZBGET_HOST, NZBGET_USE_HTTPS,\
-            backlogSearchScheduler, TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH,\
+            backlogSearchScheduler, TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_DELUGE_DOWNLOAD_DIR, TORRENT_DELUGE_COMPLETE_DIR,\
+            TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH,\
             TORRENT_LABEL, TORRENT_LABEL_ANIME, TORRENT_VERIFY_CERT, TORRENT_RPCURL, TORRENT_AUTH_TYPE, USE_KODI, KODI_ALWAYS_ON, KODI_NOTIFY_ONSNATCH, \
             KODI_NOTIFY_ONDOWNLOAD, KODI_NOTIFY_ONSUBTITLEDOWNLOAD, KODI_UPDATE_FULL, KODI_UPDATE_ONLYFIRST, KODI_UPDATE_LIBRARY, KODI_HOST, KODI_USERNAME, \
             KODI_PASSWORD, BACKLOG_FREQUENCY,  USE_TRAKT, TRAKT_USERNAME, TRAKT_ACCESS_TOKEN, TRAKT_REFRESH_TOKEN, TRAKT_REMOVE_WATCHLIST, \
@@ -689,7 +693,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             PLEX_CLIENT_PASSWORD, PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_CLIENT_HOST, PLEX_SERVER_USERNAME, PLEX_SERVER_PASSWORD, PLEX_SERVER_HTTPS, \
             MIN_BACKLOG_FREQUENCY, SKIP_REMOVED_FILES, ALLOWED_EXTENSIONS, USE_EMBY, EMBY_HOST, EMBY_APIKEY, SITE_MESSAGES, showUpdateScheduler, \
             INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, IGNORE_BROKEN_SYMLINKS, SORT_ARTICLE, \
-            NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, QUALITY_DEFAULT, SEASON_FOLDERS_DEFAULT, \
+            NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, QUALITY_DEFAULT, QUALITY_ALLOW_HEVC, \
+            SEASON_FOLDERS_DEFAULT, \
             SUBTITLES_DEFAULT, STATUS_DEFAULT, STATUS_DEFAULT_AFTER, GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, GROWL_NOTIFY_ONSUBTITLEDOWNLOAD, \
             TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD, USE_FREEMOBILE, FREEMOBILE_ID, FREEMOBILE_APIKEY, \
             FREEMOBILE_NOTIFY_ONSNATCH, FREEMOBILE_NOTIFY_ONDOWNLOAD, FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD, USE_TELEGRAM, TELEGRAM_ID, TELEGRAM_APIKEY, \
@@ -956,6 +961,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             ROOT_DIRS = ''
 
         QUALITY_DEFAULT = check_setting_int(CFG, 'General', 'quality_default', SD)
+        QUALITY_ALLOW_HEVC = check_setting_bool(CFG, 'General', 'quality_allow_hevc', False)
         STATUS_DEFAULT = check_setting_int(CFG, 'General', 'status_default', SKIPPED)
         if STATUS_DEFAULT not in (SKIPPED, WANTED, IGNORED):
             STATUS_DEFAULT = SKIPPED
@@ -1103,6 +1109,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TORRENT_PASSWORD = check_setting_str(CFG, 'TORRENT', 'torrent_password', censor_log=True)
         TORRENT_HOST = check_setting_str(CFG, 'TORRENT', 'torrent_host')
         TORRENT_PATH = check_setting_str(CFG, 'TORRENT', 'torrent_path')
+        TORRENT_DELUGE_DOWNLOAD_DIR = check_setting_str(CFG, 'TORRENT', 'torrent_download_dir_deluge')
+        TORRENT_DELUGE_COMPLETE_DIR = check_setting_str(CFG, 'TORRENT', 'torrent_complete_dir_deluge')
         TORRENT_SEED_TIME = check_setting_int(CFG, 'TORRENT', 'torrent_seed_time', min_val=-1)
         TORRENT_PAUSED = check_setting_bool(CFG, 'TORRENT', 'torrent_paused')
         TORRENT_HIGH_BANDWIDTH = check_setting_bool(CFG, 'TORRENT', 'torrent_high_bandwidth')
@@ -1858,6 +1866,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'skip_removed_files': int(SKIP_REMOVED_FILES),
             'allowed_extensions': ALLOWED_EXTENSIONS,
             'quality_default': int(QUALITY_DEFAULT),
+            'quality_allow_hevc': int(QUALITY_ALLOW_HEVC),
             'status_default': int(STATUS_DEFAULT),
             'status_default_after': int(STATUS_DEFAULT_AFTER),
             'season_folders_default': int(SEASON_FOLDERS_DEFAULT),
@@ -1990,6 +1999,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'torrent_password': helpers.encrypt(TORRENT_PASSWORD, ENCRYPTION_VERSION),
             'torrent_host': TORRENT_HOST,
             'torrent_path': TORRENT_PATH,
+            'torrent_download_dir_deluge': TORRENT_DELUGE_DOWNLOAD_DIR,
+            'torrent_complete_dir_deluge': TORRENT_DELUGE_COMPLETE_DIR,
             'torrent_seed_time': int(TORRENT_SEED_TIME),
             'torrent_paused': int(TORRENT_PAUSED),
             'torrent_high_bandwidth': int(TORRENT_HIGH_BANDWIDTH),
