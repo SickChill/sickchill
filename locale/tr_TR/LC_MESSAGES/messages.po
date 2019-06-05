@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2019-05-31 08:45+0000\n"
+"POT-Creation-Date: 2019-06-05 09:34+0000\n"
 "PO-Revision-Date: 2018-10-10 07:48+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: tr_TR\n"
@@ -2095,11 +2095,11 @@ msgstr "Göster/Gizle hatası"
 msgid "Add New Show"
 msgstr "Yeni TV programı ekle"
 
+# | msgid "" "For shows that you haven't downloaded yet, this option finds a
+# | show on " "theTVDB.com, creates a directory for it's episodes, and adds it
+# | to " "SickChill."
 #: gui/slick/views/addShows.mako:19
 #, fuzzy
-#| msgid "" "For shows that you haven't downloaded yet, this option finds a
-#| show on " "theTVDB.com, creates a directory for it's episodes, and adds it
-#| to " "SickChill."
 msgid ""
 "For shows that you haven't downloaded yet, this option finds a show on "
 "theTVDB.com, creates a directory for its episodes, and adds it to "
