@@ -9,7 +9,3 @@ certifi-2019.3.9.dist-info/RECORD,,
 certifi-2019.3.9.dist-info/WHEEL,sha256=5wvfB7GvgZAbKBSE9uX9Zbi6LCL-_KgezgHblXhCRnM,113
 certifi-2019.3.9.dist-info/metadata.json,sha256=18_iszglhf39DqJF6n2lEvZN_ZKWnQeGbxvv3xPXM34,1047
 certifi-2019.3.9.dist-info/top_level.txt,sha256=KMu4vUCfsjLrkPbSNdgdekS-pVJzBAJFO__nI8NF6-U,8
-certifi-2019.3.9.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
-certifi/core.pyc,,
-certifi/__main__.pyc,,
-certifi/__init__.pyc,,
