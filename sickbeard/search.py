@@ -29,7 +29,9 @@ import traceback
 import sickbeard
 from sickbeard import clients, common, db, failed_history, helpers, history, logger, notifiers, nzbget, nzbSplitter, sab, show_name_helpers, ui
 from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER
+from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper.encoding import ek
+from sickchill.helper.common import try_int
 from sickchill.helper.exceptions import AuthException, ex
 from sickchill.providers.GenericProvider import GenericProvider
 
@@ -465,10 +467,8 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
         while True:
             searchCount += 1
 
-            if search_mode == 'eponly':
-                logger.log("Performing episode search for " + show.name)
-            else:
-                logger.log("Performing season pack search for " + show.name)
+            logger.log(_("Performing {episode_or_season} search for {show}").format(
+                episode_or_season=(_('season pack'), _('episode'))[search_mode == 'eponly'], show=show.name))
 
             try:
                 searchResults = curProvider.find_search_results(show, episodes, search_mode, manualSearch, downCurQuality)
@@ -703,3 +703,98 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
     # Remove provider from thread name before return results
     threading.currentThread().name = origThreadName
     return finalResults
+
+
+def searchProvidersList(show, episodes, search_mode='eponly'):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    """
+    Walk providers for information on shows
+
+    :param show: Show we are looking for
+    :param episodes: Episodes we hope to find
+    :param manualSearch: Boolean, is this a manual search?
+    :param downCurQuality: Boolean, should we re-download currently available quality file
+    :return: results for search
+    """
+    foundResults = {"results": []}
+
+    didSearch = False
+
+    origThreadName = threading.currentThread().name
+
+    # build name cache for show
+    sickbeard.name_cache.buildNameCache(show)
+
+    providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog]
+    if not providers:
+        logger.log("No NZB/Torrent providers found or enabled in the sickchill config for backlog searches. Please check your settings.",
+                   logger.INFO)
+        return foundResults
+
+    episodes = [episodes]
+    search_episodes = {}
+    for ep in episodes:
+        if ep.season not in search_episodes:
+            search_episodes[ep.season] = [ep]
+        elif search_mode != 'sponly':
+            search_episodes[ep.season] += [ep]
+
+    for curProvider in providers:
+        threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
+
+        if curProvider.anime_only and not show.is_anime:
+            logger.log("" + str(show.name) + " is not an anime, skipping", logger.DEBUG)
+            continue
+
+        if curProvider.search_mode != search_mode and not curProvider.search_fallback:
+            logger.log('Skipping provider because search type does not match and fallback is disabled', logger.DEBUG)
+            continue
+
+        logger.log(_("Performing {episode_or_season} search for {show}").format(
+            episode_or_season=(_('season pack'), _('episode'))[search_mode == 'eponly'], show=show.name))
+
+        curProvider.cache.update_cache()
+        for ep_list in search_episodes.values():
+            for episode in ep_list:
+                try:
+                    curProvider.show = episode.show
+                    if search_mode == 'sponly':
+                        search_params = curProvider.get_season_search_strings(episode)
+                    else:
+                        search_params = curProvider.get_episode_search_strings(episode)
+
+                    searchResults = curProvider.search(search_params[0], ep_obj=episode)
+                except AuthException as error:
+                    logger.log("Authentication error: {0!r}".format(error), logger.WARNING)
+                    continue
+                except Exception as error:
+                    logger.log("Exception while searching {0}. Error: {1!r}".format(curProvider.name, error), logger.ERROR)
+                    logger.log(traceback.format_exc(), logger.DEBUG)
+                    continue
+
+                didSearch = True
+
+                # make a list of all the results for this provider
+                for curResult in searchResults:
+                    curResult["show"] = episode.show.indexerid
+                    curResult["season"] = episode.season
+                    curResult["episode"] = episode.episode
+                    curResult["provider"] = curProvider.name
+                    try:
+                        parse_result = NameParser(parse_method=('normal', 'anime')[show.is_anime]).parse(curResult["title"])
+                        curResult["quality"] = parse_result.quality
+                        curResult["release_group"] = parse_result.release_group
+                        curResult["version"] = parse_result.version
+                    except (InvalidNameException, InvalidShowException) as error:
+                        logger.log("{0}".format(error), logger.DEBUG)
+                        continue
+
+                foundResults["results"] += searchResults
+
+    if not didSearch:
+        logger.log("Unable to find any results. Please check the log", logger.INFO)
+
+    # Remove provider from thread name before return results
+    threading.currentThread().name = origThreadName
+
+    foundResults["results"].sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+    return foundResults

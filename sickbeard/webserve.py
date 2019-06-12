@@ -58,12 +58,13 @@ from sickbeard import (classes, clients, config, db, filters, helpers, logger, n
                        subtitles as subtitle_module, ui)
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.browser import foldersAtPath
-from sickbeard.common import (cpu_presets, FAILED, IGNORED, NAMING_LIMITED_EXTEND_E_PREFIXED, Overview, Quality, SKIPPED, SNATCHED, statusStrings, UNAIRED,
-                              WANTED)
+from sickbeard.common import (cpu_presets, FAILED, IGNORED, NAMING_LIMITED_EXTEND_E_PREFIXED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_BEST,
+                              statusStrings, UNAIRED, WANTED)
 from sickbeard.helpers import get_showname_from_indexer
 from sickbeard.imdbPopular import imdb_popular
 from sickbeard.providers import newznab, rsstorrent
 from sickbeard.routes import route
+from sickbeard import search
 from sickbeard.scene_numbering import (get_scene_absolute_numbering, get_scene_absolute_numbering_for_show, get_scene_numbering, get_scene_numbering_for_show,
                                        get_xem_absolute_numbering_for_show, get_xem_numbering_for_show, set_scene_numbering)
 from sickbeard.traktTrending import trakt_trending
@@ -2132,6 +2133,26 @@ class Home(WebRoot):
             root_ep_obj.rename()
 
         return self.redirect("/home/displayShow?show=" + show)
+
+    # def searchEpisodeListManual(self, show=None, season=None, episode=None, search_mode='eponly'):
+    #     # retrieve the episode object and fail if we can't get one
+    #     self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+    #     self.set_header(b'Content-Type', 'application/json')
+    #     ep_obj, error_msg = self._getEpisode(show, season, episode)
+    #     if error_msg or not ep_obj:
+    #         return json.dumps({'result': 'failure', 'errorMessage': error_msg})
+    #
+    #     return search.searchProvidersList(ep_obj.show, ep_obj, search_mode)
+    #
+    # def snatchEpisodeManual(self, result_dict):
+    #     self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+    #     self.set_header(b'Content-Type', 'application/json')
+    #     result = sickbeard.classes.TorrentSearchResult.make_result(result_dict)
+    #     return search.snatchEpisode(result, SNATCHED_BEST)
+    #
+    # def testSearchEpisodeListManual(self, show=None, season=None, episode=None, search_mode='eponly'):
+    #     r = self.searchEpisodeListManual(show, season, episode, search_mode)
+    #     self.snatchEpisodeManual(r.get('results')[0])
 
     def searchEpisode(self, show=None, season=None, episode=None, downCurQuality=0):
 

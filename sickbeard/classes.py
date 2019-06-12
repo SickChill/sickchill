@@ -77,6 +77,24 @@ class SearchResult(object):  # pylint: disable=too-few-public-methods, too-many-
 
         self.resultType = ''
 
+    def from_json(self, result_dict):
+        self.name = result_dict.get('title')
+        self.hash = result_dict.get('hash')
+        self.url = result_dict.get('link')
+        self.size = result_dict.get('size')
+        self.version = result_dict.get('version')
+        self.release_group = result_dict.get('release_group')
+        self.quality = result_dict.get('quality')
+        self.provider = sickbeard.providers.getProviderModule(result_dict.get('provider')).provider
+
+    @classmethod
+    def make_result(cls, result_dict):
+        show = sickbeard.tv.Show.find(sickbeard.showList, int(result_dict.get('show')))
+        episode = show.getEpisode(result_dict.get('season'), result_dict.get('episode'))
+        result = cls([episode])
+        result.from_json(result_dict)
+        return result
+
     def __str__(self):
 
         if self.provider is None:
