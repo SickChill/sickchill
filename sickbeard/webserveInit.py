@@ -4,17 +4,17 @@ from __future__ import print_function, unicode_literals
 
 import os
 import threading
-from socket import errno, error as SocketError
+from socket import errno, error as socket_error
 
 from tornado.ioloop import IOLoop
-from tornado.web import Application, RedirectHandler, RequestHandler, StaticFileHandler, url
+from tornado.web import Application, RedirectHandler, StaticFileHandler, url
 
 import sickbeard
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates, generateApiKey
 from sickbeard.routes import route
 from sickbeard.webapi import ApiHandler
-from sickbeard.webserve import CalendarHandler, KeyHandler, LoginHandler, LogoutHandler, PageTemplate
+from sickbeard.webserve import CalendarHandler, KeyHandler, LoginHandler, LogoutHandler
 from sickchill.helper.encoding import ek
 
 
@@ -117,11 +117,11 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
                 {"path": ek(os.path.join, self.options['data_root'], 'js')}, name='js'),
 
             url(r'{0}/fonts/(.*)'.format(self.options['web_root']), StaticFileHandler,
-                {"path": ek(os.path.join, self.options['data_root'], 'fonts')}, name='fonts'),
+                {"path": ek(os.path.join, self.options['data_root'], 'fonts')}, name='fonts')
 
             # TODO: WTF is this?
-            url(r'{0}/videos/(.*)'.format(self.options['web_root']), StaticFileHandler,
-                {"path": self.video_root}, name='videos')
+            # url(r'{0}/videos/(.*)'.format(self.options['web_root']), StaticFileHandler,
+            #     {"path": self.video_root}, name='videos')
         ])
 
         # Main Handlers
@@ -135,7 +135,6 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
 
             url(r'{0}/calendar/?'.format(self.options['web_root']), CalendarHandler, name='calendar'),
 
-            # url('(.*)(/?)', )
             # routes added by @route decorator
             # Plus naked index with missing web_root prefix
         ] + route.get_routes(self.options['web_root']) + [r for r in route.get_routes() if r.name == 'index'])
@@ -154,7 +153,7 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
         try:
             self.server = self.app.listen(self.options['port'], self.options['host'], ssl_options=ssl_options,
                                           xheaders=sickbeard.HANDLE_REVERSE_PROXY, protocol=protocol)
-        except SocketError as ex:
+        except socket_error as ex:
             err_msg = ""
             if ex.errno == errno.EADDRINUSE:  # Address/port combination already in use
                 if sickbeard.LAUNCH_BROWSER and not self.daemon:
