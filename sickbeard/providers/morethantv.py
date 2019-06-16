@@ -216,7 +216,7 @@ class MoreThanTVProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         return results
 
-    def _get_season_search_strings(self, episode):
+    def get_season_search_strings(self, episode):
         search_string = {
             'Season': []
         }

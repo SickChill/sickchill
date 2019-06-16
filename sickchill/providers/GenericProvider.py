@@ -162,9 +162,9 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
             searched_scene_season = episode.scene_season
 
             if len(episodes) > 1 and search_mode == 'sponly':
-                search_strings = self._get_season_search_strings(episode)
+                search_strings = self.get_season_search_strings(episode)
             elif search_mode == 'eponly':
-                search_strings = self._get_episode_search_strings(episode)
+                search_strings = self.get_episode_search_strings(episode)
 
             for search_string in search_strings:
                 items_list += self.search(search_string, ep_obj=episode)
@@ -432,7 +432,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
     def _get_result(self, episodes):  # pylint: disable=no-self-use
         return SearchResult(episodes)
 
-    def _get_episode_search_strings(self, episode, add_string=''):
+    def get_episode_search_strings(self, episode, add_string=''):
         if not episode:
             return []
 
@@ -470,7 +470,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
         return [search_string]
 
-    def _get_season_search_strings(self, episode):
+    def get_season_search_strings(self, episode):
         search_string = {
             'Season': []
         }
