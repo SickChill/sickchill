@@ -47,7 +47,7 @@ from requests.compat import unquote_plus, urljoin
 # noinspection PyUnresolvedReferences
 from six.moves import urllib
 from tornado.concurrent import run_on_executor
-from tornado.escape import utf8, xhtml_escape, xhtml_unescape
+from tornado.escape import linkify, utf8, xhtml_escape, xhtml_unescape
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
 from tornado.process import cpu_count
@@ -59,7 +59,7 @@ from sickbeard import (classes, clients, config, db, filters, helpers, logger, n
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.browser import foldersAtPath
 from sickbeard.common import (cpu_presets, FAILED, IGNORED, NAMING_LIMITED_EXTEND_E_PREFIXED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_BEST,
-                              statusStrings, UNAIRED, WANTED)
+                              statusStrings, UNAIRED, unpackStrings, UNPACK_PROCESS_CONTENTS, WANTED)
 from sickbeard.helpers import get_showname_from_indexer
 from sickbeard.imdbPopular import imdb_popular
 from sickbeard.providers import newznab, rsstorrent
@@ -122,6 +122,8 @@ class PageTemplate(MakoTemplate):
         self.arguments['srLogin'] = rh.get_current_user()
         self.arguments['sbStartTime'] = rh.startTime
         self.arguments['static_url'] = rh.static_url
+        self.arguments['reverse_url'] = rh.reverse_url
+        self.arguments['linkify'] = linkify
 
         if rh.request.headers['Host'][0] == '[':
             self.arguments['sbHost'] = re.match(r"^\[.*\]", rh.request.headers['Host'], re.X | re.M | re.S).group(0)
@@ -189,7 +191,7 @@ class BaseHandler(RequestHandler):
 
             if url[:3] != 'api':
                 t = PageTemplate(rh=self, filename="404.mako")
-                return self.finish(t.render(title='404', header=_('Oops')))
+                return self.finish(t.render(title='404', header=_('Oops: 404 Not Found')))
             else:
                 self.finish(_('Wrong API key used'))
 
@@ -332,23 +334,24 @@ class KeyHandler(RequestHandler):
         super(KeyHandler, self).__init__(*args, **kwargs)
 
     def get(self, *args, **kwargs):
-        # noinspection PyBroadException
-        try:
-            if self.get_argument('u', '') != sickbeard.WEB_USERNAME or self.get_argument('p', '') != sickbeard.WEB_PASSWORD:
-                raise Exception
-            self.finish({'success': bool(sickbeard.API_KEY), 'api_key': sickbeard.API_KEY})
-        except Exception:
-            logger.log('Failed doing key request: {0}'.format((traceback.format_exc())), logger.ERROR)
-            self.finish({'success': False, 'error': 'Failed returning results'})
+        if self.get_argument('u', '') == sickbeard.WEB_USERNAME and self.get_argument('p', '') == sickbeard.WEB_PASSWORD:
+            if not len(sickbeard.API_KEY or ''):
+                sickbeard.API_KEY = helpers.generateApiKey()
+            result = {'success': True, 'api_key': sickbeard.API_KEY}
+        else:
+            result = {'success': False, 'error': _('Failed authentication while getting api key')}
+            logger.log(_('Authentication failed during api key request: {0}').format((traceback.format_exc())), logger.WARNING)
+
+        return self.finish(result)
 
 
-@route('(.*)(/?)')
+@route('(.*)(/?)', name='index')
 class WebRoot(WebHandler):
     def __init__(self, *args, **kwargs):
         super(WebRoot, self).__init__(*args, **kwargs)
 
     def index(self):
-        return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
+        return self.redirect(self.reverse_url('home', ''))
 
     def robots_txt(self):
         """ Keep web crawlers out """
@@ -583,7 +586,7 @@ class CalendarHandler(BaseHandler):
         return ical
 
 
-@route('/ui(/?.*)')
+@route('/ui(/?.*)', name='ui')
 class UI(WebRoot):
     def __init__(self, *args, **kwargs):
         super(UI, self).__init__(*args, **kwargs)
@@ -659,7 +662,7 @@ class UI(WebRoot):
         return None
 
 
-@route('/browser(/?.*)')
+@route('/browser(/?.*)', name='filebrowser')
 class WebFileBrowser(WebRoot):
     def __init__(self, *args, **kwargs):
         super(WebFileBrowser, self).__init__(*args, **kwargs)
@@ -682,7 +685,7 @@ class WebFileBrowser(WebRoot):
         return json.dumps(paths)
 
 
-@route('/home(/?.*)')
+@route('/home(/?.*)', name='home')
 class Home(WebRoot):
     def __init__(self, *args, **kwargs):
         super(Home, self).__init__(*args, **kwargs)
@@ -2431,7 +2434,7 @@ class Home(WebRoot):
         return json.dumps({'result': 'failure'})
 
 
-@route('/IRC(/?.*)')
+@route('/IRC(/?.*)', name='irc')
 class HomeIRC(Home):
     def __init__(self, *args, **kwargs):
         super(HomeIRC, self).__init__(*args, **kwargs)
@@ -2442,7 +2445,7 @@ class HomeIRC(Home):
         return t.render(topmenu="system", header=_("IRC"), title=_("IRC"), controller="IRC", action="index")
 
 
-@route('/news(/?.*)')
+@route('/news(/?.*)', name='news')
 class HomeNews(Home):
     def __init__(self, *args, **kwargs):
         super(HomeNews, self).__init__(*args, **kwargs)
@@ -2465,7 +2468,7 @@ class HomeNews(Home):
         return t.render(title=_("News"), header=_("News"), topmenu="system", data=data, controller="news", action="index")
 
 
-@route('/changes(/?.*)')
+@route('/changes(/?.*)', name='changelog')
 class HomeChangeLog(Home):
     def __init__(self, *args, **kwargs):
         super(HomeChangeLog, self).__init__(*args, **kwargs)
@@ -2486,7 +2489,7 @@ class HomeChangeLog(Home):
         return t.render(title=_("Changelog"), header=_("Changelog"), topmenu="system", data=data, controller="changes", action="index")
 
 
-@route('/home/postprocess(/?.*)')
+@route('/home/postprocess(/?.*)', name='home:postprocess')
 class HomePostProcess(Home):
     def __init__(self, *args, **kwargs):
         super(HomePostProcess, self).__init__(*args, **kwargs)
@@ -2519,7 +2522,7 @@ class HomePostProcess(Home):
         return self._genericMessage("Postprocessing results", result)
 
 
-@route('/addShows(/?.*)')
+@route('/addShows(/?.*)', name='addShows')
 class HomeAddShows(Home):
     def __init__(self, *args, **kwargs):
         super(HomeAddShows, self).__init__(*args, **kwargs)
@@ -3139,7 +3142,7 @@ class HomeAddShows(Home):
         return self.newShow(dirs_only[0], dirs_only[1:])
 
 
-@route('/manage(/?.*)')
+@route('/manage(/?.*)', name='manage:main')
 class Manage(Home, WebRoot):
     def __init__(self, *args, **kwargs):
         super(Manage, self).__init__(*args, **kwargs)
@@ -3717,7 +3720,7 @@ class Manage(Home, WebRoot):
                         action="failedDownloads")
 
 
-@route('/manage/manageSearches(/?.*)')
+@route('/manage/manageSearches(/?.*)', name='manage:searches')
 class ManageSearches(Manage):
     def __init__(self, *args, **kwargs):
         super(ManageSearches, self).__init__(*args, **kwargs)
@@ -3781,7 +3784,7 @@ class ManageSearches(Manage):
         return self.redirect("/manage/manageSearches/")
 
 
-@route('/history(/?.*)')
+@route('/history(/?.*)', name='history')
 class History(WebRoot):
     def __init__(self, *args, **kwargs):
         super(History, self).__init__(*args, **kwargs)
@@ -3874,7 +3877,7 @@ class History(WebRoot):
         return self.redirect("/history/")
 
 
-@route('/config(/?.*)')
+@route('/config(/?.*)', name='config:main')
 class Config(WebRoot):
     def __init__(self, *args, **kwargs):
         super(Config, self).__init__(*args, **kwargs)
@@ -3936,7 +3939,7 @@ class Config(WebRoot):
         )
 
 
-@route('/config/shares(/?.*)')
+@route('/config/shares(/?.*)', name='config:shares')
 class ConfigShares(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigShares, self).__init__(*args, **kwargs)
@@ -3976,7 +3979,7 @@ class ConfigShares(Config):
         ui.notifications.message(_('Saved Shares'), _('Your Windows share settings have been saved'))
 
 
-@route('/config/general(/?.*)')
+@route('/config/general(/?.*)', name='config:general')
 class ConfigGeneral(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigGeneral, self).__init__(*args, **kwargs)
@@ -4173,7 +4176,7 @@ class ConfigGeneral(Config):
         return self.redirect("/config/general/")
 
 
-@route('/config/backuprestore(/?.*)')
+@route('/config/backuprestore(/?.*)', name='config:backup')
 class ConfigBackupRestore(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigBackupRestore, self).__init__(*args, **kwargs)
@@ -4237,7 +4240,7 @@ class ConfigBackupRestore(Config):
         return finalResult
 
 
-@route('/config/search(/?.*)')
+@route('/config/search(/?.*)', name='config:search')
 class ConfigSearch(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigSearch, self).__init__(*args, **kwargs)
@@ -4379,7 +4382,7 @@ class ConfigSearch(Config):
         return self.redirect("/config/search/")
 
 
-@route('/config/postProcessing(/?.*)')
+@route('/config/postProcessing(/?.*)', name='config:postprocessing')
 class ConfigPostProcessing(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigPostProcessing, self).__init__(*args, **kwargs)
@@ -4425,11 +4428,11 @@ class ConfigPostProcessing(Config):
         config.change_unrar_tool(unrar_tool, alt_unrar_tool)
 
         unpack = try_int(unpack)
-        if unpack == 1:
+        if unpack == UNPACK_PROCESS_CONTENTS:
             sickbeard.UNPACK = int(self.isRarSupported() != 'not supported')
-            if sickbeard.UNPACK != 1:
+            if sickbeard.UNPACK != UNPACK_PROCESS_CONTENTS:
                 results.append(_("Unpacking Not Supported, disabling unpack setting"))
-        else:
+        elif unpack in unpackStrings:
             sickbeard.UNPACK = unpack
 
         if not config.change_unpack_dir(unpack_dir):
@@ -4557,7 +4560,7 @@ class ConfigPostProcessing(Config):
         return ('not supported', 'supported')[check]
 
 
-@route('/config/providers(/?.*)')
+@route('/config/providers(/?.*)', name='config:providers')
 class ConfigProviders(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigProviders, self).__init__(*args, **kwargs)
@@ -4865,7 +4868,7 @@ class ConfigProviders(Config):
         return self.redirect("/config/providers/")
 
 
-@route('/config/notifications(/?.*)')
+@route('/config/notifications(/?.*)', name='config:notifications')
 class ConfigNotifications(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigNotifications, self).__init__(*args, **kwargs)
@@ -5149,7 +5152,7 @@ class ConfigNotifications(Config):
         return self.redirect("/config/notifications/")
 
 
-@route('/config/subtitles(/?.*)')
+@route('/config/subtitles(/?.*)', name='config:subtitles')
 class ConfigSubtitles(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigSubtitles, self).__init__(*args, **kwargs)
@@ -5219,7 +5222,7 @@ class ConfigSubtitles(Config):
         return self.redirect("/config/subtitles/")
 
 
-@route('/config/anime(/?.*)')
+@route('/config/anime(/?.*)', name='config:anime')
 class ConfigAnime(Config):
     def __init__(self, *args, **kwargs):
         super(ConfigAnime, self).__init__(*args, **kwargs)
@@ -5249,7 +5252,7 @@ class ConfigAnime(Config):
         return self.redirect("/config/anime/")
 
 
-@route('/errorlogs(/?.*)')
+@route('/errorlogs(/?.*)', name='logs:error')
 class ErrorLogs(WebRoot):
     def __init__(self, *args, **kwargs):
         super(ErrorLogs, self).__init__(*args, **kwargs)

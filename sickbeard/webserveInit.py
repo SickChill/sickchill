@@ -7,7 +7,7 @@ import threading
 from socket import errno, error as SocketError
 
 from tornado.ioloop import IOLoop
-from tornado.web import Application, RedirectHandler, RequestHandler, StaticFileHandler
+from tornado.web import Application, RedirectHandler, RequestHandler, StaticFileHandler, url
 
 import sickbeard
 from sickbeard import logger
@@ -18,13 +18,15 @@ from sickbeard.webserve import CalendarHandler, KeyHandler, LoginHandler, Logout
 from sickchill.helper.encoding import ek
 
 
-class Custom404Handler(RequestHandler):
-    startTime = 0.
-
-    def prepare(self):
-        self.set_status(404)
-        t = PageTemplate(rh=self, filename="404.mako")
-        return self.finish(t.render(title='404', header=_('Oops')))
+# class Custom404Handler(RequestHandler):
+#     startTime = 0.
+#
+#     def prepare(self):
+#         return self.redirect(self.reverse_url('home', ''))
+#
+#         self.set_status(404)
+#         t = PageTemplate(rh=self, filename="404.mako")
+#         return self.finish(t.render(title='404', header=_('Oops')))
 
 
 class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attributes
@@ -93,61 +95,50 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
             cookie_secret=sickbeard.WEB_COOKIE_SECRET,
             login_url='{0}/login/'.format(self.options['web_root']),
             static_path=self.options['data_root'],
-            static_url_prefix='{0}/'.format(self.options['web_root']),
-            default_handler_class=Custom404Handler
+            static_url_prefix='{0}/'.format(self.options['web_root'])
+            # default_handler_class=Custom404Handler
         )
 
         # Static File Handlers
         self.app.add_handlers(".*$", [
-            # favicon
-            (r'{0}/(favicon\.ico)'.format(self.options['web_root']), StaticFileHandler,
-             {"path": ek(os.path.join, self.options['data_root'], 'images/ico/favicon.ico')}),
+            url(r'{0}/favicon.ico'.format(self.options['web_root']), StaticFileHandler,
+                {"path": ek(os.path.join, self.options['data_root'], 'images/ico/favicon.ico')}, name='favicon'),
 
-            # images
-            (r'{0}/images/(.*)'.format(self.options['web_root']), StaticFileHandler,
-             {"path": ek(os.path.join, self.options['data_root'], 'images')}),
+            url(r'{0}/images/(.*)'.format(self.options['web_root']), StaticFileHandler,
+                {"path": ek(os.path.join, self.options['data_root'], 'images')}, name='images'),
 
-            # cached images
-            (r'{0}/cache/images/(.*)'.format(self.options['web_root']), StaticFileHandler,
-             {"path": ek(os.path.join, sickbeard.CACHE_DIR, 'images')}),
+            url(r'{0}/cache/images/(.*)'.format(self.options['web_root']), StaticFileHandler,
+                {"path": ek(os.path.join, sickbeard.CACHE_DIR, 'images')}, name='image_cache'),
 
-            # css
-            (r'{0}/css/(.*)'.format(self.options['web_root']), StaticFileHandler,
-             {"path": ek(os.path.join, self.options['data_root'], 'css')}),
+            url(r'{0}/css/(.*)'.format(self.options['web_root']), StaticFileHandler,
+                {"path": ek(os.path.join, self.options['data_root'], 'css')}, name='css'),
 
-            # javascript
-            (r'{0}/js/(.*)'.format(self.options['web_root']), StaticFileHandler,
-             {"path": ek(os.path.join, self.options['data_root'], 'js')}),
+            url(r'{0}/js/(.*)'.format(self.options['web_root']), StaticFileHandler,
+                {"path": ek(os.path.join, self.options['data_root'], 'js')}, name='js'),
 
-            # fonts
-            (r'{0}/fonts/(.*)'.format(self.options['web_root']), StaticFileHandler,
-             {"path": ek(os.path.join, self.options['data_root'], 'fonts')}),
+            url(r'{0}/fonts/(.*)'.format(self.options['web_root']), StaticFileHandler,
+                {"path": ek(os.path.join, self.options['data_root'], 'fonts')}, name='fonts'),
 
-            # videos
-            (r'{0}/videos/(.*)'.format(self.options['web_root']), StaticFileHandler,
-             {"path": self.video_root})
+            # TODO: WTF is this?
+            url(r'{0}/videos/(.*)'.format(self.options['web_root']), StaticFileHandler,
+                {"path": self.video_root}, name='videos')
         ])
 
         # Main Handlers
         self.app.add_handlers('.*$', [
-            # webapi handler
-            (r'{0}(/?.*)'.format(self.options['api_root']), ApiHandler),
+            url(r'{0}(/?.*)'.format(self.options['api_root']), ApiHandler, name='api'),
+            url(r'{0}/getkey(/?.*)'.format(self.options['web_root']), KeyHandler, name='get_api_key'),
 
-            # webapi key retrieval
-            (r'{0}/getkey(/?.*)'.format(self.options['web_root']), KeyHandler),
+            url(r'{0}/api/builder'.format(self.options['web_root']), RedirectHandler, {"url": self.options['web_root'] + '/apibuilder/'}, name='apibuilder'),
+            url(r'{0}/login(/?)'.format(self.options['web_root']), LoginHandler, name='login'),
+            url(r'{0}/logout(/?)'.format(self.options['web_root']), LogoutHandler, name='logout'),
 
-            # webapi builder redirect
-            (r'{0}/api/builder'.format(self.options['web_root']), RedirectHandler, {"url": self.options['web_root'] + '/apibuilder/'}),
+            url(r'{0}/calendar/?'.format(self.options['web_root']), CalendarHandler, name='calendar'),
 
-            # webui login/logout handlers
-            (r'{0}/login(/?)'.format(self.options['web_root']), LoginHandler),
-            (r'{0}/logout(/?)'.format(self.options['web_root']), LogoutHandler),
-
-            # Web calendar handler (Needed for the "Unprotected Calendar" option)
-            (r'{0}/calendar/?'.format(self.options['web_root']), CalendarHandler),
-
-            # webui handlers
-        ] + route.get_routes(self.options['web_root']))
+            # url('(.*)(/?)', )
+            # routes added by @route decorator
+            # Plus naked index with missing web_root prefix
+        ] + route.get_routes(self.options['web_root']) + [r for r in route.get_routes() if r.name == 'index'])
 
     def run(self):
         if self.enable_https:
