@@ -6,17 +6,16 @@ import os
 import threading
 from socket import errno, error as socket_error
 
+from routes import Route
 from tornado.ioloop import IOLoop
 from tornado.web import Application, RedirectHandler, StaticFileHandler, url
 
 import sickbeard
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates, generateApiKey
-from sickbeard.routes import route
-from sickbeard.webapi import ApiHandler
-from sickbeard.webserve import CalendarHandler, KeyHandler, LoginHandler, LogoutHandler
 from sickchill.helper.encoding import ek
-
+from sickchill.views import CalendarHandler, KeyHandler, LoginHandler, LogoutHandler
+from sickchill.views.api.webapi import ApiHandler
 
 # class Custom404Handler(RequestHandler):
 #     startTime = 0.
@@ -88,7 +87,7 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
         # Load the app
         self.app = Application(
             [],
-            debug=False, # enables autoreload, compiled_template_cache, static_hash_cache, serve_traceback - This fixes the 404 page and fixes autoreload for
+            debug=False,  # enables autoreload, compiled_template_cache, static_hash_cache, serve_traceback - This fixes the 404 page and fixes autoreload for
             #  devs. We could now update without restart possibly if we check DB version hasnt changed!
             autoreload=True,
             gzip=sickbeard.WEB_USE_GZIP,
@@ -137,7 +136,7 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
 
             # routes added by @route decorator
             # Plus naked index with missing web_root prefix
-        ] + route.get_routes(self.options['web_root']) + [r for r in route.get_routes() if r.name == 'index'])
+        ] + Route.get_routes(self.options['web_root']))
 
     def run(self):
         if self.enable_https:
@@ -162,10 +161,13 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
                 err_msg = "already in use!"
 
             logger.log("Could not start webserver on port {0}: {1}".format(self.options['port'], err_msg or ex))
-            os._exit(1)  # pylint: disable=protected-access
+            # noinspection PyProtectedMember
+            os._exit(1)
         except Exception as ex:
             logger.log("Could not start webserver on port {0}: {1}".format(self.options['port'], ex))
-            os._exit(1)  # pylint: disable=protected-access
+
+            # noinspection PyProtectedMember
+            os._exit(1)
 
         try:
             self.io_loop.start()

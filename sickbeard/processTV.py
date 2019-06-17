@@ -24,7 +24,7 @@ import os
 import shutil
 import stat
 
-from rarfile import (BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRCError, RarExecError, RarFile, RarOpenError, RarWrongPassword)
+from rarfile import BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRCError, RarExecError, RarFile, RarOpenError, RarWrongPassword
 
 import sickbeard
 from sickbeard import common, db, failedProcessor, helpers, logger, postProcessor

@@ -62,7 +62,7 @@ from tornado._locale_data import LOCALE_NAMES
 
 import sickbeard
 from sickbeard import classes, db, logger
-from sickbeard.common import USER_AGENT, UNPACK_PROCESS_INTACT
+from sickbeard.common import UNPACK_PROCESS_INTACT, USER_AGENT
 from sickchill.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS
 from sickchill.helper.common import replace_extension
 from sickchill.helper.encoding import ek

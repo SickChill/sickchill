@@ -18,10 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-# TODO: break this up into separate files
-# pylint: disable=line-too-long,too-many-lines,abstract-method
-# pylint: disable=no-member,method-hidden,missing-docstring,invalid-name
-
 from __future__ import print_function, unicode_literals
 
 import datetime
@@ -33,7 +29,6 @@ import traceback
 from abc import abstractmethod
 
 import six
-# noinspection PyUnresolvedReferences
 from six.moves import urllib
 from tornado.web import RequestHandler
 
@@ -60,12 +55,8 @@ from sickchill.system.Shutdown import Shutdown
 try:
     import json
 except ImportError:
-    # pylint: disable=import-error
+    # noinspection PyPackageRequirements,PyUnresolvedReferences
     import simplejson as json
-
-
-
-
 
 indexer_ids = ["indexerid", "tvdbid"]
 
@@ -193,7 +184,7 @@ class ApiHandler(RequestHandler):
 
                 logger.log("API :: " + cmd + ": cur_kwargs " + str(cur_kwargs), logger.DEBUG)
                 if not (cmd in ('show.getbanner', 'show.getfanart', 'show.getnetworklogo', 'show.getposter') and
-                        multi_commands):  # skip these cmd while chaining
+                            multi_commands):  # skip these cmd while chaining
                     try:
                         if cmd in function_mapper:
                             func = function_mapper.get(cmd)  # map function
@@ -268,7 +259,6 @@ class ApiHandler(RequestHandler):
 
 # noinspection PyAbstractClass
 class ApiCall(ApiHandler):
-
     _help = {"desc": "This command is not documented. Please report this to the developers."}
 
     # noinspection PyMissingConstructor
@@ -497,9 +487,11 @@ def _responds(result_type, data=None, msg=""):
     message is a human readable string, can be empty
     data is either a dict or a array, can be a empty dict or empty array
     """
-    return {"result": result_type_map[result_type],
-            "message": msg,
-            "data": {} if not data else data}
+    return {
+        "result": result_type_map[result_type],
+        "message": msg,
+        "data": {} if not data else data
+        }
 
 
 def _get_status_strings(s):
@@ -526,6 +518,7 @@ def _ordinal_to_date_form(ordinal):
 def _history_date_to_datetime_form(time_string):
     date = datetime.datetime.strptime(time_string, History.date_format)
     return date.strftime(dateTimeFormat)
+
 
 QUALITY_MAP = {
     Quality.SDTV: 'sdtv',
@@ -589,7 +582,6 @@ PREFERRED_QUALITY_LIST = [
 
 
 def _map_quality(show_quality):
-
     any_qualities = []
     best_qualities = []
 
@@ -847,7 +839,6 @@ class CMDEpisodeSearch(ApiCall):
 
 
 class AbstractStartScheduler(ApiCall):
-
     @property
     @abstractmethod
     def scheduler(self):
@@ -888,6 +879,9 @@ class AbstractStartScheduler(ApiCall):
 
 
 class CMDFullSubtitleSearch(AbstractStartScheduler):
+    def data_received(self, chunk):
+        pass
+
     _help = {"desc": "Force a subtitle search for all shows."}
 
     @property
@@ -900,6 +894,9 @@ class CMDFullSubtitleSearch(AbstractStartScheduler):
 
 
 class CMDProperSearch(AbstractStartScheduler):
+    def data_received(self, chunk):
+        pass
+
     _help = {"desc": "Force a proper search for all shows."}
 
     @property
@@ -912,6 +909,9 @@ class CMDProperSearch(AbstractStartScheduler):
 
 
 class CMDDailySearch(AbstractStartScheduler):
+    def data_received(self, chunk):
+        pass
+
     _help = {"desc": "Force a daily search for all shows."}
 
     @property
@@ -973,8 +973,10 @@ class CMDEpisodeSetStatus(ApiCall):
             ep_list = show_obj.getAllEpisodes(season=self.s)
 
         def _ep_result(result_code, ep, msg=""):
-            return {'season': ep.season, 'episode': ep.episode, 'status': _get_status_strings(ep.status),
-                    'result': result_type_map[result_code], 'message': msg}
+            return {
+                'season': ep.season, 'episode': ep.episode, 'status': _get_status_strings(ep.status),
+                'result': result_type_map[result_code], 'message': msg
+                }
 
         ep_results = []
         failure = False
@@ -1252,7 +1254,7 @@ class CMDBacklog(ApiCall):
 
             # noinspection PyPep8
             sql_results = main_db_con.select(
-                "SELECT tv_episodes.*, tv_shows.paused FROM tv_episodes INNER JOIN tv_shows ON tv_episodes.showid = tv_shows.indexer_id WHERE showid = ? and paused = 0 ORDER BY season DESC, episode DESC",
+                "SELECT tv_episodes.*, tv_shows.paused FROM tv_episodes INNER JOIN tv_shows ON tv_episodes.showid = tv_shows.indexer_id WHERE showid = ? AND paused = 0 ORDER BY season DESC, episode DESC",
                 [curShow.indexerid])
 
             for curResult in sql_results:
@@ -1427,8 +1429,10 @@ class CMDSickBeard(ApiCall):
 
     def run(self):
         """ dGet miscellaneous information about SickChill """
-        data = {"sr_version": sickbeard.BRANCH, "api_version": self.version,
-                "api_commands": sorted(function_mapper.keys())}
+        data = {
+            "sr_version": sickbeard.BRANCH, "api_version": self.version,
+            "api_commands": sorted(function_mapper.keys())
+            }
         return _responds(RESULT_SUCCESS, data)
 
 
@@ -1537,9 +1541,11 @@ class CMDSickBeardCheckScheduler(ApiCall):
         backlog_running = sickbeard.searchQueueScheduler.action.is_backlog_in_progress()  # @UndefinedVariable
         next_backlog = sickbeard.backlogSearchScheduler.nextRun().strftime(dateFormat).decode(sickbeard.SYS_ENCODING)
 
-        data = {"backlog_is_paused": int(backlog_paused), "backlog_is_running": int(backlog_running),
-                "last_backlog": _ordinal_to_date_form(sql_results[0][b"last_backlog"]),
-                "next_backlog": next_backlog}
+        data = {
+            "backlog_is_paused": int(backlog_paused), "backlog_is_running": int(backlog_running),
+            "last_backlog": _ordinal_to_date_form(sql_results[0][b"last_backlog"]),
+            "next_backlog": next_backlog
+            }
         return _responds(RESULT_SUCCESS, data)
 
 
@@ -1603,11 +1609,13 @@ class CMDSickBeardGetDefaults(ApiCall):
 
         any_qualities, best_qualities = _map_quality(sickbeard.QUALITY_DEFAULT)
 
-        data = {"status": statusStrings[sickbeard.STATUS_DEFAULT].lower(),
-                "flatten_folders": int(not sickbeard.SEASON_FOLDERS_DEFAULT),
-                "season_folders": int(sickbeard.SEASON_FOLDERS_DEFAULT),
-                "initial": any_qualities, "archive": best_qualities,
-                "future_show_paused": int(sickbeard.COMING_EPS_DISPLAY_PAUSED)}
+        data = {
+            "status": statusStrings[sickbeard.STATUS_DEFAULT].lower(),
+            "flatten_folders": int(not sickbeard.SEASON_FOLDERS_DEFAULT),
+            "season_folders": int(sickbeard.SEASON_FOLDERS_DEFAULT),
+            "initial": any_qualities, "archive": best_qualities,
+            "future_show_paused": int(sickbeard.COMING_EPS_DISPLAY_PAUSED)
+            }
         return _responds(RESULT_SUCCESS, data)
 
 
@@ -1621,9 +1629,11 @@ class CMDSickBeardGetMessages(ApiCall):
     def run(self):
         messages = []
         for cur_notification in ui.notifications.get_notifications(self.rh.request.remote_ip):
-            messages.append({"title": cur_notification.title,
-                             "message": cur_notification.message,
-                             "type": cur_notification.type})
+            messages.append({
+                                "title": cur_notification.title,
+                                "message": cur_notification.message,
+                                "type": cur_notification.type
+                                })
         return _responds(RESULT_SUCCESS, messages)
 
 
@@ -1741,11 +1751,13 @@ class CMDSickBeardSearchIndexers(ApiCall):
                     # Skip it if it's in our show list already, and we only want new shows
                     if curSeries['in_show_list'] and self.only_new:
                         continue
-                    results.append({indexer_ids[_indexer]: int(curSeries['id']),
-                                    "name": curSeries['seriesname'],
-                                    "first_aired": curSeries['firstaired'],
-                                    "indexer": int(_indexer),
-                                    "in_show_list": curSeries['in_show_list']})
+                    results.append({
+                                       indexer_ids[_indexer]: int(curSeries['id']),
+                                       "name": curSeries['seriesname'],
+                                       "first_aired": curSeries['firstaired'],
+                                       "indexer": int(_indexer),
+                                       "in_show_list": curSeries['in_show_list']
+                                       })
 
             return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
 
@@ -1773,10 +1785,12 @@ class CMDSickBeardSearchIndexers(ApiCall):
 
                 # found show
                 # noinspection PyCompatibility
-                results = [{indexer_ids[_indexer]: int(my_show.data['id']),
-                            "name": six.text_type(my_show.data['seriesname']),
-                            "first_aired": my_show.data['firstaired'],
-                            "indexer": int(_indexer)}]
+                results = [{
+                               indexer_ids[_indexer]: int(my_show.data['id']),
+                               "name": six.text_type(my_show.data['seriesname']),
+                               "first_aired": my_show.data['firstaired'],
+                               "indexer": int(_indexer)
+                               }]
                 break
 
             return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
