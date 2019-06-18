@@ -6,6 +6,7 @@
     import platform
     import sickbeard
     from sickbeard.common import MULTI_EP_STRINGS
+    from sickbeard import unpackStrings
     from sickbeard import naming
     from sickchill.helper.encoding import ek
 %>
@@ -281,15 +282,11 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <select name="unpack" id="unpack" class="form-control input-sm input350" title="unpack">
-                                                <option value="0" ${('', 'selected="selected"')[int(sickbeard.UNPACK) == 0]}>
-                                                    ${_('Ignore (do not process contents)')}
+                                              % for value, description in unpackStrings.iteritems():
+                                                <option value="${value}" ${('', 'selected="selected"')[int(sickbeard.UNPACK) == value]}>
+                                                    ${description}
                                                 </option>
-                                                <option value="1" ${('', 'selected="selected"')[int(sickbeard.UNPACK) == 1]}>
-                                                    ${_('Unpack (process contents)')}
-                                                </option>
-                                                <option value="2" ${('', 'selected="selected"')[int(sickbeard.UNPACK) == 2]}>
-                                                    ${_('Treat as video (process archive as-is)')}
-                                                </option>
+                                              % endfor
                                             </select>
                                         </div>
                                     </div>

@@ -43,22 +43,13 @@ from sickbeard.databases import cache_db, failed_db, mainDB
 from sickbeard.indexers import indexer_api
 from sickbeard.indexers.indexer_exceptions import (indexer_attributenotfound, indexer_episodenotfound, indexer_error, indexer_exception, indexer_seasonnotfound,
                                                    indexer_showincomplete, indexer_shownotfound, indexer_userabort)
+from sickbeard.numdict import NumDict
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.providers.rsstorrent import TorrentRssProvider
 from sickchill.helper import setup_github
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
 from sickchill.system.Shutdown import Shutdown
-
-try:
-    import pytz  # pylint: disable=unused-import
-except ImportError:
-    pytz = None
-    from pkg_resources import require
-    require('pytz')
-
-
-
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 
@@ -301,10 +292,6 @@ DELETE_NON_ASSOCIATED_FILES = False
 POSTPONE_IF_SYNC_FILES = True
 NFO_RENAME = True
 TV_DOWNLOAD_DIR = None
-UNPACK = 0
-UNPACK_DIR = ''
-UNRAR_TOOL = rarfile.UNRAR_TOOL
-ALT_UNRAR_TOOL = rarfile.ALT_TOOL
 
 SKIP_REMOVED_FILES = False
 ALLOWED_EXTENSIONS = "srt,nfo,srr,sfv"
@@ -666,6 +653,21 @@ SHOWS_RECENT = []
 __INITIALIZED__ = {}
 
 NEWZNAB_DATA = None
+
+UNPACK_DISABLED = 0
+UNPACK_PROCESS_CONTENTS = 1
+UNPACK_PROCESS_INTACT = 2
+
+unpackStrings = NumDict({
+    UNPACK_DISABLED: _('Ignore (do not process contents)'),
+    UNPACK_PROCESS_CONTENTS: _('Unpack (process contents)'),
+    UNPACK_PROCESS_INTACT: _('Treat as video (process archive as-is)')
+})
+
+UNPACK = UNPACK_DISABLED
+UNPACK_DIR = ''
+UNRAR_TOOL = rarfile.UNRAR_TOOL
+ALT_UNRAR_TOOL = rarfile.ALT_TOOL
 
 
 def get_backlog_cycle_time():

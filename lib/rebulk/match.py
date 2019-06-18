@@ -5,7 +5,11 @@ Classes and functions related to matches
 """
 import copy
 import itertools
-from collections import defaultdict, MutableSequence
+from collections import defaultdict
+try:
+    from collections.abc import MutableSequence
+except ImportError:
+    from collections import MutableSequence
 
 try:
     from collections import OrderedDict  # pylint:disable=ungrouped-imports
@@ -778,9 +782,9 @@ class Match(object):
                     right.start = end
                     if right:
                         ret.append(right)
-                elif end <= current.end and end > current.start:
+                elif current.end >= end > current.start:
                     current.start = end
-                elif start >= current.start and start < current.end:
+                elif current.start <= start < current.end:
                     current.end = start
         return filter_index(ret, predicate, index)
 

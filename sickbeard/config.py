@@ -185,9 +185,9 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
         rarfile.custom_check([rarfile.UNRAR_TOOL], True)
         return True
     except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-        if sickbeard.UNPACK == 1:
-            logger.log('Disabling UNPACK setting because no unrar is installed.')
-            sickbeard.UNPACK = 0
+        if sickbeard.UNPACK == sickbeard.UNPACK_PROCESS_CONTENTS:
+            logger.log(_('Disabling UNPACK setting because no unrar is found and accessible.'))
+            sickbeard.UNPACK = sickbeard.UNPACK_DISABLED
         return False
 
 

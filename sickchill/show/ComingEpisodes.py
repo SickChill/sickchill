@@ -32,6 +32,7 @@ from sickchill.helper.quality import get_quality_string
 
 SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list
 
+
 class ComingEpisodes(object):
     """
     Snatched: snatched but not yet processed (no re-downloads)
