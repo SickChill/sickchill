@@ -26,7 +26,7 @@ from tornado.web import addslash
 
 import sickbeard
 from sickbeard import config, logger, naming, ui
-from sickbeard.common import NAMING_LIMITED_EXTEND_E_PREFIXED, UNPACK_PROCESS_CONTENTS, unpackStrings
+from sickbeard.common import NAMING_LIMITED_EXTEND_E_PREFIXED
 from sickchill.helper import try_int
 from sickchill.helper.encoding import ek
 from sickchill.views.common import PageTemplate
@@ -87,11 +87,11 @@ class ConfigPostProcessing(Config):
         config.change_unrar_tool(unrar_tool, alt_unrar_tool)
 
         unpack = try_int(unpack)
-        if unpack == UNPACK_PROCESS_CONTENTS:
+        if unpack == sickbeard.UNPACK_PROCESS_CONTENTS:
             sickbeard.UNPACK = int(self.isRarSupported() != 'not supported')
-            if sickbeard.UNPACK != UNPACK_PROCESS_CONTENTS:
+            if sickbeard.UNPACK != sickbeard.common.NPACK_PROCESS_CONTENTS:
                 results.append(_("Unpacking Not Supported, disabling unpack setting"))
-        elif unpack in unpackStrings:
+        elif unpack in sickbeard.unpackStrings:
             sickbeard.UNPACK = unpack
 
         if not config.change_unpack_dir(unpack_dir):

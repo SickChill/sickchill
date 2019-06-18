@@ -76,16 +76,6 @@ NOTIFY_LOGIN = 6
 NOTIFY_LOGIN_TEXT = 7
 NOTIFY_POSTPROCESS = 8
 
-UNPACK_DISABLED = 0
-UNPACK_PROCESS_CONTENTS = 1
-UNPACK_PROCESS_INTACT = 2
-
-unpackStrings = NumDict({
-    UNPACK_DISABLED: _('Ignore (do not process contents)'),
-    UNPACK_PROCESS_CONTENTS: _('Unpack (process contents)'),
-    UNPACK_PROCESS_INTACT: _('Treat as video (process archive as-is)')
-})
-
 notifyStrings = NumDict({
     # pylint: disable=undefined-variable
     NOTIFY_SNATCH: _("Started Download"),

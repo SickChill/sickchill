@@ -33,7 +33,6 @@ from tornado.escape import xhtml_unescape
 
 import sickbeard
 from sickbeard import db, helpers, logger, naming
-from sickbeard.common import UNPACK_DISABLED, UNPACK_PROCESS_CONTENTS
 from sickchill.helper.common import try_int
 from sickchill.helper.encoding import ek
 
@@ -186,9 +185,9 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
         rarfile.custom_check([rarfile.UNRAR_TOOL], True)
         return True
     except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-        if sickbeard.UNPACK == UNPACK_PROCESS_CONTENTS:
+        if sickbeard.UNPACK == sickbeard.UNPACK_PROCESS_CONTENTS:
             logger.log(_('Disabling UNPACK setting because no unrar is found and accessible.'))
-            sickbeard.UNPACK = UNPACK_DISABLED
+            sickbeard.UNPACK = sickbeard.UNPACK_DISABLED
         return False
 
 
