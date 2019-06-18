@@ -16,7 +16,7 @@
                 <div class="button"><div class="add-list-icon-addnewshow"></div></div>
                 <div class="buttontext">
                     <h3>${_('Add New Show')}</h3>
-                    <p>${_('For shows that you haven\'t downloaded yet, this option finds a show on theTVDB.com, creates a directory for it\'s episodes, and adds it to SickChill.')}</p>
+                    <p>${_('For shows that you haven\'t downloaded yet, this option finds a show on theTVDB.com, creates a directory for its episodes, and adds it to SickChill.')}</p>
                 </div>
             </a>
         </div>

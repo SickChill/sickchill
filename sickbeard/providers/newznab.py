@@ -203,8 +203,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
         return 'NZB.Cat|https://nzb.cat/||5030,5040,5010|0|eponly|1|1|1!!!' + \
             'NZBFinder.ws|https://nzbfinder.ws/||5030,5040,5010,5045|0|eponly|1|1|1!!!' + \
             'NZBGeek|https://api.nzbgeek.info/||5030,5040|0|eponly|0|0|0!!!' + \
-            'NZBs.org|https://nzbs.org/||5030,5040|0|eponly|0|0|0!!!' + \
-            'Usenet-Crawler|https://api.usenet-crawler.com/||5030,5040|0|eponly|0|0|0!!!' + \
+            'Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040|0|eponly|0|0|0!!!' + \
             'DOGnzb|https://api.dognzb.cr/||5030,5040,5060,5070|0|eponly|0|1|1'
 
     def _check_auth(self):

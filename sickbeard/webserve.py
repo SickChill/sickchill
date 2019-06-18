@@ -54,12 +54,12 @@ from tornado.process import cpu_count
 from tornado.web import addslash, authenticated, HTTPError, RequestHandler
 
 import sickbeard
-from sickbeard import (classes, clients, config, db, filters, helpers, logger, naming, network_timezones, notifiers, sab, search_queue,
+from sickbeard import (classes, clients, config, db, filters, helpers, logger, naming, network_timezones, notifiers, sab, search, search_queue,
                        subtitles as subtitle_module, ui)
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.browser import foldersAtPath
-from sickbeard.common import (cpu_presets, FAILED, IGNORED, NAMING_LIMITED_EXTEND_E_PREFIXED, Overview, Quality, SKIPPED, SNATCHED, statusStrings, UNAIRED,
-                              WANTED)
+from sickbeard.common import (cpu_presets, FAILED, IGNORED, NAMING_LIMITED_EXTEND_E_PREFIXED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_BEST,
+                              statusStrings, UNAIRED, WANTED)
 from sickbeard.helpers import get_showname_from_indexer
 from sickbeard.imdbPopular import imdb_popular
 from sickbeard.providers import newznab, rsstorrent
@@ -991,6 +991,14 @@ class Home(WebRoot):
             return _("Slack message successful")
         else:
             return _("Slack message failed")
+
+    @staticmethod
+    def testMatrix():
+        result = notifiers.matrix_notifier.test_notify()
+        if result:
+            return _("Matrix message successful")
+        else:
+            return _("Matrix message failed")
 
     @staticmethod
     def testDiscord():
@@ -2124,6 +2132,26 @@ class Home(WebRoot):
             root_ep_obj.rename()
 
         return self.redirect("/home/displayShow?show=" + show)
+
+    # def searchEpisodeListManual(self, show=None, season=None, episode=None, search_mode='eponly'):
+    #     # retrieve the episode object and fail if we can't get one
+    #     self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+    #     self.set_header(b'Content-Type', 'application/json')
+    #     ep_obj, error_msg = self._getEpisode(show, season, episode)
+    #     if error_msg or not ep_obj:
+    #         return json.dumps({'result': 'failure', 'errorMessage': error_msg})
+    #
+    #     return search.searchProvidersList(ep_obj.show, ep_obj, search_mode)
+    #
+    # def snatchEpisodeManual(self, result_dict):
+    #     self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+    #     self.set_header(b'Content-Type', 'application/json')
+    #     result = sickbeard.classes.TorrentSearchResult.make_result(result_dict)
+    #     return search.snatchEpisode(result, SNATCHED_BEST)
+    #
+    # def testSearchEpisodeListManual(self, show=None, season=None, episode=None, search_mode='eponly'):
+    #     r = self.searchEpisodeListManual(show, season, episode, search_mode)
+    #     self.snatchEpisodeManual(r.get('results')[0])
 
     def searchEpisode(self, show=None, season=None, episode=None, downCurQuality=0):
 
@@ -3513,8 +3541,7 @@ class Manage(Home, WebRoot):
                        **kwargs):
         dir_map = {}
         for cur_arg in filter(lambda x: x.startswith('orig_root_dir_'), kwargs):
-            orig_root_dir_uni = ek(six.text_type, kwargs[cur_arg], 'utf-8')
-            dir_map[orig_root_dir_uni] = ek(six.text_type, kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')], 'utf-8')
+            dir_map[kwargs[cur_arg]] = ek(six.text_type, kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')], 'utf-8')
 
         showIDs = toEdit.split("|")
         errors = []
@@ -4231,10 +4258,11 @@ class ConfigSearch(Config):
                    download_propers=None, check_propers_interval=None, allow_high_priority=None, sab_forced=None,
                    randomize_providers=None, use_failed_downloads=None, delete_failed=None,
                    torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
-                   torrent_label=None, torrent_label_anime=None, torrent_path=None, torrent_verify_cert=None,
+                   torrent_label=None, torrent_label_anime=None, torrent_path=None, torrent_download_dir_deluge=None,
+                   torrent_complete_dir_deluge=None, torrent_verify_cert=None,
                    torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None,
                    torrent_rpcurl=None, torrent_auth_type=None, ignore_words=None, trackers_list=None, require_words=None, ignored_subs_list=None,
-                   syno_dsm_host=None, syno_dsm_user=None, syno_dsm_pass=None, syno_dsm_path=None):
+                   syno_dsm_host=None, syno_dsm_user=None, syno_dsm_pass=None, syno_dsm_path=None, quality_allow_hevc=False):
 
         results = []
 
@@ -4268,6 +4296,7 @@ class ConfigSearch(Config):
         sickbeard.CHECK_PROPERS_INTERVAL = check_propers_interval
 
         sickbeard.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(allow_high_priority)
+        sickbeard.QUALITY_ALLOW_HEVC = config.checkbox_to_value(quality_allow_hevc)
 
         sickbeard.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
         sickbeard.DELETE_FAILED = config.checkbox_to_value(delete_failed)
@@ -4299,6 +4328,8 @@ class ConfigSearch(Config):
         sickbeard.TORRENT_VERIFY_CERT = config.checkbox_to_value(torrent_verify_cert)
 
         sickbeard.TORRENT_PATH = torrent_path.rstrip('/\\')
+        sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR = torrent_download_dir_deluge.rstrip('/\\')
+        sickbeard.TORRENT_DELUGE_COMPLETE_DIR = torrent_complete_dir_deluge.rstrip('/\\')
 
         sickbeard.TORRENT_SEED_TIME = torrent_seed_time
         sickbeard.TORRENT_PAUSED = config.checkbox_to_value(torrent_paused)
@@ -4896,10 +4927,12 @@ class ConfigNotifications(Config):
             use_pushbullet=None, pushbullet_notify_onsnatch=None, pushbullet_notify_ondownload=None,
             pushbullet_notify_onsubtitledownload=None, pushbullet_api=None, pushbullet_device=None,
             pushbullet_device_list=None, pushbullet_channel_list=None, pushbullet_channel=None,
-            use_email=None, email_notify_onsnatch=None, email_notify_ondownload=None,
+            use_email=None, email_notify_onsnatch=None, email_notify_ondownload=None, email_notify_onpostprocess=None,
             email_notify_onsubtitledownload=None, email_host=None, email_port=25, email_from=None,
             email_tls=None, email_user=None, email_password=None, email_list=None, email_subject=None, email_show_list=None,
-            email_show=None, use_slack=False, slack_notify_snatch=None, slack_notify_download=None, slack_notify_subtitledownload=None, slack_webhook=None,
+            email_show=None, use_slack=False, slack_notify_snatch=None, slack_notify_download=None, slack_notify_subtitledownload=None, slack_webhook=None, slack_icon_emoji=None,
+            use_matrix=False, matrix_notify_snatch=None, matrix_notify_download=None, matrix_notify_subtitledownload=None,
+            matrix_api_token=None, matrix_server=None, matrix_room=None,
             use_discord=False, discord_notify_snatch=None, discord_notify_download=None, discord_webhook=None, discord_name=None,
             discord_avatar_url=None, discord_tts=False):
 
@@ -4994,6 +5027,15 @@ class ConfigNotifications(Config):
         sickbeard.SLACK_NOTIFY_DOWNLOAD = config.checkbox_to_value(slack_notify_download)
         sickbeard.SLACK_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(slack_notify_subtitledownload)
         sickbeard.SLACK_WEBHOOK = slack_webhook
+        sickbeard.SLACK_ICON_EMOJI = slack_icon_emoji
+
+        sickbeard.USE_MATRIX = config.checkbox_to_value(use_matrix)
+        sickbeard.MATRIX_NOTIFY_SNATCH = config.checkbox_to_value(matrix_notify_snatch)
+        sickbeard.MATRIX_NOTIFY_DOWNLOAD = config.checkbox_to_value(matrix_notify_download)
+        sickbeard.MATRIX_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(matrix_notify_subtitledownload)
+        sickbeard.MATRIX_API_TOKEN = matrix_api_token
+        sickbeard.MATRIX_SERVER = matrix_server
+        sickbeard.MATRIX_ROOM = matrix_room
 
         sickbeard.USE_DISCORD = config.checkbox_to_value(use_discord)
         sickbeard.DISCORD_NOTIFY_SNATCH = config.checkbox_to_value(discord_notify_snatch)
@@ -5060,6 +5102,7 @@ class ConfigNotifications(Config):
         sickbeard.USE_EMAIL = config.checkbox_to_value(use_email)
         sickbeard.EMAIL_NOTIFY_ONSNATCH = config.checkbox_to_value(email_notify_onsnatch)
         sickbeard.EMAIL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(email_notify_ondownload)
+        sickbeard.EMAIL_NOTIFY_ONPOSTPROCESS = config.checkbox_to_value(email_notify_onpostprocess)
         sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(email_notify_onsubtitledownload)
         sickbeard.EMAIL_HOST = config.clean_host(email_host)
         sickbeard.EMAIL_PORT = try_int(email_port, 25)

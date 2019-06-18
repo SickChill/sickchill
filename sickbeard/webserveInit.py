@@ -7,15 +7,24 @@ import threading
 from socket import errno, error as SocketError
 
 from tornado.ioloop import IOLoop
-from tornado.web import Application, RedirectHandler, StaticFileHandler
+from tornado.web import Application, RedirectHandler, RequestHandler, StaticFileHandler
 
 import sickbeard
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates, generateApiKey
 from sickbeard.routes import route
 from sickbeard.webapi import ApiHandler
-from sickbeard.webserve import CalendarHandler, KeyHandler, LoginHandler, LogoutHandler
+from sickbeard.webserve import CalendarHandler, KeyHandler, LoginHandler, LogoutHandler, PageTemplate
 from sickchill.helper.encoding import ek
+
+
+class Custom404Handler(RequestHandler):
+    startTime = 0.
+
+    def prepare(self):
+        self.set_status(404)
+        t = PageTemplate(rh=self, filename="404.mako")
+        return self.finish(t.render(title='404', header=_('Oops')))
 
 
 class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attributes
@@ -77,13 +86,15 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
         # Load the app
         self.app = Application(
             [],
-            debug=True,
-            autoreload=False,
+            debug=False, # enables autoreload, compiled_template_cache, static_hash_cache, serve_traceback - This fixes the 404 page and fixes autoreload for
+            #  devs. We could now update without restart possibly if we check DB version hasnt changed!
+            autoreload=True,
             gzip=sickbeard.WEB_USE_GZIP,
             cookie_secret=sickbeard.WEB_COOKIE_SECRET,
             login_url='{0}/login/'.format(self.options['web_root']),
             static_path=self.options['data_root'],
             static_url_prefix='{0}/'.format(self.options['web_root']),
+            default_handler_class=Custom404Handler
         )
 
         # Static File Handlers

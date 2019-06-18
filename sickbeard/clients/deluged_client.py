@@ -41,10 +41,16 @@ class DelugeDAPI(GenericClient):
         # label = sickbeard.TORRENT_LABEL
         # if result.show.is_anime:
         #     label = sickbeard.TORRENT_LABEL_ANIME
-
-        options = {
-            'add_paused': sickbeard.TORRENT_PAUSED
-        }
+        
+        if sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR:
+            options = {
+                'add_paused': sickbeard.TORRENT_PAUSED,
+                'download_location': sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR
+            }
+        else:
+            options = {
+                'add_paused': sickbeard.TORRENT_PAUSED
+            }
 
         remote_torrent = self.drpc.add_torrent_magnet(result.url, options, result.hash)
 
@@ -64,9 +70,15 @@ class DelugeDAPI(GenericClient):
             result.content = {}
             return None
 
-        options = {
-            'add_paused': sickbeard.TORRENT_PAUSED
-        }
+        if sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR:
+            options = {
+                'add_paused': sickbeard.TORRENT_PAUSED,
+                'download_location': sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR
+            }
+        else:
+            options = {
+                'add_paused': sickbeard.TORRENT_PAUSED
+            }
 
         remote_torrent = self.drpc.add_torrent_file(result.name + '.torrent', result.content, options, result.hash)
 
@@ -102,8 +114,8 @@ class DelugeDAPI(GenericClient):
         return True
 
     def _set_torrent_path(self, result):
-        if sickbeard.TORRENT_PATH:
-            return self.drpc.set_torrent_path(result.hash, sickbeard.TORRENT_PATH)
+        if sickbeard.TORRENT_DELUGE_COMPLETE_DIR:
+            return self.drpc.set_torrent_path(result.hash, sickbeard.TORRENT_DELUGE_COMPLETE_DIR)
         return True
 
     def _set_torrent_pause(self, result):
