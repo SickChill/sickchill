@@ -50,15 +50,6 @@ from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
 from sickchill.system.Shutdown import Shutdown
 
-try:
-    import pytz  # pylint: disable=unused-import
-except ImportError:
-    pytz = None
-    from pkg_resources import require
-    require('pytz')
-
-
-
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 
