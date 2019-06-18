@@ -5,7 +5,8 @@
     import datetime
     import platform
     import sickbeard
-    from sickbeard.common import MULTI_EP_STRINGS, unpackStrings
+    from sickbeard.common import MULTI_EP_STRINGS
+    from sickbeard import unpackStrings
     from sickbeard import naming
     from sickchill.helper.encoding import ek
 %>

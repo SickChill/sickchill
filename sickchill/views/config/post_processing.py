@@ -89,7 +89,7 @@ class ConfigPostProcessing(Config):
         unpack = try_int(unpack)
         if unpack == sickbeard.UNPACK_PROCESS_CONTENTS:
             sickbeard.UNPACK = int(self.isRarSupported() != 'not supported')
-            if sickbeard.UNPACK != sickbeard.common.NPACK_PROCESS_CONTENTS:
+            if sickbeard.UNPACK != sickbeard.UNPACK_PROCESS_CONTENTS:
                 results.append(_("Unpacking Not Supported, disabling unpack setting"))
         elif unpack in sickbeard.unpackStrings:
             sickbeard.UNPACK = unpack
