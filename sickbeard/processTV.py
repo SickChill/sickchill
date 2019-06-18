@@ -30,7 +30,7 @@ import sickbeard
 from sickbeard import common, db, failedProcessor, helpers, logger, postProcessor
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper.common import is_sync_file, is_torrent_or_nzb_file
-from sickchill.helper.encoding import ek, ss
+from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
 
 
@@ -164,8 +164,6 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
     process_method = process_method or sickbeard.PROCESS_METHOD
 
-    directories_from_rars = set()
-
     # If we have a release name (probably from nzbToMedia), and it is a rar/video, only process that file
     if release_name and (helpers.is_media_file(release_name) or helpers.is_rar_file(release_name)):
         result.output += log_helper("Processing {}".format(release_name), logger.INFO)
@@ -176,6 +174,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
     for current_directory, directory_names, file_names in generator_to_use:
         result.result = True
+        directories_from_rars = set()
 
         file_names = [f for f in file_names if not is_torrent_or_nzb_file(f)]
         rar_files = [x for x in file_names if helpers.is_rar_file(ek(os.path.join, current_directory, x))]
@@ -203,7 +202,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             continue
 
         # noinspection PyTypeChecker
-        unwanted_files = filter(lambda x: x in video_files + rar_files, file_names)
+        unwanted_files = filter(lambda w: w in video_files + rar_files, file_names)
         if unwanted_files:
             result.output += log_helper("Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
 
@@ -212,33 +211,33 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         if delete_folder(current_directory, check_empty=not delete_on):
             result.output += log_helper("Deleted folder: {0}".format(current_directory), logger.DEBUG)
 
-    # For processing extracted rars, only allow methods 'move' and 'copy'.
-    # On different methods fall back to 'move'.
-    method_fallback = ('move', process_method)[process_method in ('move', 'copy')]
+        # For processing extracted rars, only allow methods 'move' and 'copy'.
+        # On different methods fall back to 'move'.
+        method_fallback = ('move', process_method)[process_method in ('move', 'copy')]
 
-    # auto post-processing deletes rar content by default if method is 'move',
-    # sickbeard.DELRARCONTENTS allows to override even if method is NOT 'move'
-    # manual post-processing will only delete when prompted by delete_on
-    delete_rar_contents = any([sickbeard.DELRARCONTENTS and mode != 'manual',
-                               not sickbeard.DELRARCONTENTS and mode == 'auto' and method_fallback == 'move',
-                               mode == 'manual' and delete_on])
+        # auto post-processing deletes rar content by default if method is 'move',
+        # sickbeard.DELRARCONTENTS allows to override even if method is NOT 'move'
+        # manual post-processing will only delete when prompted by delete_on
+        delete_rar_contents = any([sickbeard.DELRARCONTENTS and mode != 'manual',
+                                   not sickbeard.DELRARCONTENTS and mode == 'auto' and method_fallback == 'move',
+                                   mode == 'manual' and delete_on])
 
-    for directory_from_rar in directories_from_rars:
-        process_dir(
-            process_path=directory_from_rar,
-            release_name=ek(os.path.basename, directory_from_rar),
-            process_method=method_fallback,
-            force=force,
-            is_priority=is_priority,
-            delete_on=delete_rar_contents,
-            failed=failed,
-            mode=mode
-        )
+        for directory_from_rar in directories_from_rars:
+            process_dir(
+                process_path=directory_from_rar,
+                release_name=ek(os.path.basename, directory_from_rar),
+                process_method=method_fallback,
+                force=force,
+                is_priority=is_priority,
+                delete_on=delete_rar_contents,
+                failed=failed,
+                mode=mode
+            )
 
-        # Delete rar file only if the extracted dir was successfully processed
-        if mode == 'auto' and method_fallback == 'move' or mode == 'manual' and delete_on:
-            this_rar = [rar_file for rar_file in rar_files if os.path.basename(directory_from_rar) == rar_file.rpartition('.')[0]]
-            delete_files(current_directory, this_rar, result) # Deletes only if result.result == True
+            # Delete rar file only if the extracted dir was successfully processed
+            if mode == 'auto' and method_fallback == 'move' or mode == 'manual' and delete_on:
+                this_rar = [rar_file for rar_file in rar_files if os.path.basename(directory_from_rar) == rar_file.rpartition('.')[0]]
+                delete_files(current_directory, this_rar, result)  # Deletes only if result.result == True
 
     result.output += log_helper(("Processing Failed", "Successfully processed")[result.aggresult], (logger.WARNING, logger.INFO)[result.aggresult])
     if result.missed_files:
@@ -315,7 +314,7 @@ def validate_dir(process_path, release_name, failed, result):  # pylint: disable
         for found_file in found_files:
             try:
                 NameParser().parse(found_file, cache_result=False)
-            except (InvalidNameException, InvalidShowException) as e:
+            except (InvalidNameException, InvalidShowException):
                 pass
             else:
                 return True
@@ -370,11 +369,11 @@ def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,
                 rar_release_name = archive.rpartition('.')[0]
 
                 # Choose the directory we'll unpack to:
-                if sickbeard.UNPACK_DIR and os.path.isdir(sickbeard.UNPACK_DIR): # verify the unpack dir exists
+                if sickbeard.UNPACK_DIR and os.path.isdir(sickbeard.UNPACK_DIR):  # verify the unpack dir exists
                     unpack_base_dir = sickbeard.UNPACK_DIR
                 else:
                     unpack_base_dir = path
-                    if sickbeard.UNPACK_DIR: # Let user know if we can't unpack there
+                    if sickbeard.UNPACK_DIR:  # Let user know if we can't unpack there
                         result.output += log_helper('Unpack directory cannot be verified. Using {0}'.format(path), logger.DEBUG)
 
                 # Fix up the list for checking if already processed
@@ -455,7 +454,8 @@ def already_processed(process_path, video_file, force, result):  # pylint: disab
     except (InvalidNameException, InvalidShowException):  # ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
         parse_result = False  # pylint: disable=redefined-variable-type
 
-    search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid" # This part is always the same
+    search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid"  # This part is
+    # always the same
     search_sql += " WHERE history.season=tv_episodes.season AND history.episode=tv_episodes.episode"
 
     # If we find a showid, a season number, and one or more episode numbers then we need to use those in the query

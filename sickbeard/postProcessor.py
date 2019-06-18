@@ -155,6 +155,9 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         """
         For a given file path searches for files with the same name but different extension and returns their absolute paths
 
+        :param rename:
+        :param subfolders:
+        :param subtitles_only:
         :param file_path: The file to check for associated files
         :return: A list containing all files which are associated to the given file
         """
@@ -163,9 +166,9 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             for base, dirnames_, files in ek(os.walk, treeroot.encode(sickbeard.SYS_ENCODING), followlinks=sickbeard.PROCESSOR_FOLLOW_SYMLINKS):
                 goodfiles = fnmatch.filter(files, pattern)
                 for f in goodfiles:
-                    found_file = ek(os.path.join, base, f)
-                    if found_file != file_path:
-                        results.append(found_file)
+                    _found_file = ek(os.path.join, base, f)
+                    if _found_file != file_path:
+                        results.append(_found_file)
             return results
 
         if not file_path:
@@ -188,12 +191,14 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         # subfolders are only checked in show folder, so names will always be exactly alike
         if subfolders:
             # just create the list of all files starting with the basename
+            # noinspection PyUnresolvedReferences
             filelist = recursive_glob(dirname, glob.escape(base_name) + '*')
         # this is called when PP, so we need to do the filename check case-insensitive
         else:
             filelist = []
 
             # loop through all the files in the folder, and check if they are the same name even when the cases don't match
+            # noinspection PyUnresolvedReferences
             for found_file in glob.glob(ek(os.path.join, glob.escape(dirname), '*')):
                 file_name, separator, file_extension = found_file.rpartition('.')
 
@@ -470,7 +475,6 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files,
                                       action=_int_sym_link, subtitles=subtitles)
-
 
     def _history_lookup(self):
         """
@@ -809,8 +813,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
             # if we find a good one then use it
             if ep_quality != common.Quality.UNKNOWN:
-                logger.log(cur_name + " looks like it has quality " + common.Quality.qualityStrings[
-                    ep_quality] + ", using that", logger.DEBUG)
+                logger.log("{0} looks like it has quality {1}, using that".format(cur_name, common.Quality.qualityStrings[ep_quality]), logger.DEBUG)
                 return ep_quality
 
         # Try getting quality from the episode (snatched) status
@@ -1008,7 +1011,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 self._log("File exists and new file is same size, pretending we did something")
                 return True
 
-            if new_ep_quality <= old_ep_quality and old_ep_quality != common.Quality.UNKNOWN and existing_file_status != PostProcessor.DOESNT_EXIST:
+            if new_ep_quality <= old_ep_quality != common.Quality.UNKNOWN and existing_file_status != PostProcessor.DOESNT_EXIST:
                 if self.is_proper and new_ep_quality == old_ep_quality:
                     self._log("New file is a proper/repack, marking it safe to replace")
                 else:
@@ -1047,6 +1050,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         # try to find out if we have enough space to perform the copy or move action.
         if sickbeard.USE_FREE_SPACE_CHECK:
             if not helpers.is_file_locked(self.file_path):
+                # noinspection PyProtectedMember
                 if not verify_freespace(self.file_path, ep_obj.show._location, [ep_obj] + ep_obj.relatedEps, method=self.process_method):  # pylint: disable=protected-access
                     self._log("Not enough space to continue PP, exiting", logger.WARNING)
                     return False
@@ -1060,6 +1064,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
                 # clean up any left over folders
                 if cur_ep.location:
+                    # noinspection PyProtectedMember
                     helpers.delete_empty_folders(ek(os.path.dirname, cur_ep.location), keep_dir=ep_obj.show._location)  # pylint: disable=protected-access
             except (OSError, IOError):
                 raise EpisodePostProcessingFailedException("Unable to delete the existing files")
@@ -1069,15 +1074,20 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             #    curEp.status = common.Quality.compositeStatus(common.SNATCHED, new_ep_quality)
 
         # if the show directory doesn't exist then make it if allowed
+        # noinspection PyProtectedMember
         if not ek(os.path.isdir, ep_obj.show._location) and sickbeard.CREATE_MISSING_SHOW_DIRS:  # pylint: disable=protected-access
             self._log("Show directory doesn't exist, creating it", logger.DEBUG)
             try:
+                # noinspection PyProtectedMember
                 ek(os.mkdir, ep_obj.show._location)  # pylint: disable=protected-access
+                # noinspection PyProtectedMember
                 helpers.chmodAsParent(ep_obj.show._location)  # pylint: disable=protected-access
 
                 # do the library update for synoindex
+                # noinspection PyProtectedMember
                 notifiers.synoindex_notifier.addFolder(ep_obj.show._location)  # pylint: disable=protected-access
             except (OSError, IOError):
+                # noinspection PyProtectedMember
                 raise EpisodePostProcessingFailedException("Unable to create the show directory: " + ep_obj.show._location)  # pylint: disable=protected-access
 
             # get metadata for the show (but not episode because it hasn't been fully processed)
@@ -1177,7 +1187,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                                      sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             elif self.process_method == METHOD_SYMLINK_REVERSED:
                 self._symlink(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
-                                     sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
+                              sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             else:
                 logger.log("Unknown process method: " + str(self.process_method), logger.ERROR)
                 raise EpisodePostProcessingFailedException("Unable to move the files to their new home")
@@ -1188,8 +1198,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             with cur_ep.lock:
                 cur_ep.location = ek(os.path.join, dest_path, new_file_name)
                 # download subtitles
-                if sickbeard.USE_SUBTITLES and ep_obj.show.subtitles \
-                    and (cur_ep.season != 0 or sickbeard.SUBTITLES_INCLUDE_SPECIALS):
+                if sickbeard.USE_SUBTITLES and ep_obj.show.subtitles and (cur_ep.season != 0 or sickbeard.SUBTITLES_INCLUDE_SPECIALS):
                     cur_ep.refreshSubtitles()
                     cur_ep.download_subtitles(force=True)
                 sql_l.append(cur_ep.get_sql())
@@ -1202,6 +1211,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         ep_obj.airdateModifyStamp()
 
         if sickbeard.USE_ICACLS and os.name == 'nt':
+            # noinspection PyProtectedMember
             os.popen('icacls "' + ep_obj._location + '"* /reset /T')
 
         # generate nfo/tbn
@@ -1216,6 +1226,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         # If any notification fails, don't stop postProcessor
         try:
             # send notifications
+            # noinspection PyProtectedMember
             notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))  # pylint: disable=protected-access
 
             # do the library update for KODI
@@ -1246,6 +1257,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         # If any notification fails, don't stop postProcessor
         try:
             # send notifications
+            # noinspection PyProtectedMember
             notifiers.email_notifier.notify_postprocess(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))  # pylint: disable=protected-access
         except Exception:
             logger.log("Some notifications could not be sent. Finishing postProcessing...")

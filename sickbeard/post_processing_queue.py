@@ -24,7 +24,7 @@ import time
 import traceback
 
 import sickbeard
-from sickbeard import common, config, generic_queue, logger, processTV
+from sickbeard import common, config, generic_queue, logger
 from sickbeard.processTV import log_helper, process_dir
 from sickchill.helper.encoding import ek
 
@@ -81,6 +81,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
         Unpause the processing queue
         """
         self.min_priority = 0
+        return True
 
     def queue_length(self):
         """
