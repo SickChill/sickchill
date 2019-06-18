@@ -18,7 +18,7 @@ enzyme == 0.4.1
 fake-useragent == 0.1.2  # [NOTE] there's a `ua.json` file that's used by sickbeard.common, should be moved to a better location.
 git+https://github.com/kurtmckee/feedparser.git@f1dd1bb923ebfe6482fc2521c1f150b4032289ec#egg=feedparser
 futures == 3.1.1
-git+https://github.com/guessit-io/guessit.git@a4fb2865d4b697397aa976388bbd0edf558a24fb#egg=guessit
+guessit == 3.0.4
 # hg+https://bitbucket.org/haypo/hachoir@708fdf64a982ba2e638aa59d94f143112066b8ce#egg=hachoir-core&subdirectory=hachoir-core
 # hg+hg+https://bitbucket.org/haypo/hachoir@708fdf64a982ba2e638aa59d94f143112066b8ce#egg=hachoir-core&subdirectory=hhttps://bitbucket.org/haypo/hachoir@708fdf64a982ba2e638aa59d94f143112066b8ce#egg=hachoir-metadata&subdirectory=hachoir-metadata  # Unable to install
 # hg+https://bitbucket.org/haypo/hachoir@708fdf64a982ba2e638aa59d94f143112066b8ce#egg=hachoir-parser&subdirectory=hachoir-parser  # Unable to install
@@ -50,19 +50,18 @@ pymediainfo == 2.0  # as an .egg file, loaded by pkg_resources
 pynma == 1.0
 PySocks == 1.6.7
 pysrt == 1.1.1
-python-dateutil == 2.6.0
+python-dateutil == 2.8.0
 #! python-fanart == 1.4.0  # <Modified: API url was updated. No newer version>
 python-twitter == 3.3
 pytz == 2016.4  # as an .egg file, loaded by pkg_resources
 git+https://github.com/markokr/rarfile.git@3e54b222c8703eea64cd07102df7bb9408b582b3#egg=rarfile  # v3.0 Github release <Modified: See https://github.com/SickChill/SickChill/commit/059dd933b9da3a0f83c6cbb4f47c198e5a957fc6#diff-c1f4e968aa545d42d2e462672169da4a>
-
-git+https://github.com/Toilal/rebulk.git@42d0a58af9d793334616a6582f2a83b0fae0dd5f#egg=rebulk
+rebulk == 1.0.0
 requests >= 2.20.0
 requests-oauthlib == 0.8.0
 #! rtorrent-python == 0.2.9  # <Modified: See https://github.com/SickChill/SickChill/commits/master/lib/rtorrent>
 #! send2trash == 1.3.0  # <Modified: See https://github.com/SickChill/SickChill/commit/9ad811432ab0ca3292410d29464ce2532361eb55>
 singledispatch == 3.4.0.3
-six == 1.10.0
+six == 1.12.0
 git+https://github.com/zzzeek/sqlalchemy.git@ccc0c44c3a60fc4906e5e3b26cc6d2b7a69d33bf#egg=sqlalchemy
 stevedore == 1.10.0
 #! git+https://github.com/Diaoul/subliminal.git@7eb7a53fe6bcaf3e01a6b44c8366faf7c96f7f1b#egg=subliminal  # <Modified: Subscenter provider disabled until fixed upstream, https://github.com/SickChill/SickChill/pull/3825/files#diff-ab7eb9ba0a2d4c74c16795ff40f2bd62>

@@ -3,8 +3,18 @@
 """
 Various utilities functions
 """
-import inspect
+
+
 import sys
+import inspect
+
+try:
+    from inspect import getfullargspec as getargspec
+    _fullargspec_supported = True
+except ImportError:
+    _fullargspec_supported = False
+    from inspect import getargspec
+
 from .utils import is_iterable
 
 if sys.version_info < (3, 4, 0):  # pragma: no cover
@@ -63,7 +73,7 @@ def function_args(callable_, *args, **kwargs):
     :return: (args, kwargs) matching the function signature
     :rtype: tuple
     """
-    argspec = inspect.getargspec(callable_)  # pylint:disable=deprecated-method
+    argspec = getargspec(callable_)  # pylint:disable=deprecated-method
     return argspec_args(argspec, False, *args, **kwargs)
 
 
@@ -80,7 +90,7 @@ def constructor_args(class_, *args, **kwargs):
     :return: (args, kwargs) matching the function signature
     :rtype: tuple
     """
-    argspec = inspect.getargspec(_constructor(class_))  # pylint:disable=deprecated-method
+    argspec = getargspec(_constructor(class_))  # pylint:disable=deprecated-method
     return argspec_args(argspec, True, *args, **kwargs)
 
 
@@ -99,7 +109,7 @@ def argspec_args(argspec, constructor, *args, **kwargs):
     :return: (args, kwargs) matching the function signature
     :rtype: tuple
     """
-    if argspec.keywords:
+    if argspec.varkw:
         call_kwarg = kwargs
     else:
         call_kwarg = dict((k, kwargs[k]) for k in kwargs if k in argspec.args)  # Python 2.6 dict comprehension
@@ -108,6 +118,34 @@ def argspec_args(argspec, constructor, *args, **kwargs):
     else:
         call_args = args[:len(argspec.args) - (1 if constructor else 0)]
     return call_args, call_kwarg
+
+
+if not _fullargspec_supported:
+    def argspec_args_legacy(argspec, constructor, *args, **kwargs):
+        """
+        Return (args, kwargs) matching the argspec object
+
+        :param argspec: argspec to use
+        :type argspec: argspec
+        :param constructor: is it a constructor ?
+        :type constructor: bool
+        :param args:
+        :type args:
+        :param kwargs:
+        :type kwargs:
+        :return: (args, kwargs) matching the function signature
+        :rtype: tuple
+        """
+        if argspec.keywords:
+            call_kwarg = kwargs
+        else:
+            call_kwarg = dict((k, kwargs[k]) for k in kwargs if k in argspec.args)  # Python 2.6 dict comprehension
+        if argspec.varargs:
+            call_args = args
+        else:
+            call_args = args[:len(argspec.args) - (1 if constructor else 0)]
+        return call_args, call_kwarg
+    argspec_args = argspec_args_legacy
 
 
 def ensure_list(param):
