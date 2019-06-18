@@ -189,7 +189,7 @@ class WebHandler(BaseHandler):
     post = get
 
 
-@Route('(.*)', name='index')
+@Route('(.*)(/?)', name='index')
 class WebRoot(WebHandler):
     def __init__(self, *args, **kwargs):
         super(WebRoot, self).__init__(*args, **kwargs)
