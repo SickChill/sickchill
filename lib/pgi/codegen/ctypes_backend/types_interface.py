@@ -139,6 +139,9 @@ class Interface(Object):
 
 class Union(BaseInterface):
 
+    def pack_in(self, value):
+        raise NotImplementedError
+
     def unpack_return(self, name):
         return self.parse("""
             # unpack union

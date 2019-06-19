@@ -220,7 +220,7 @@ def encode(string):
     return string
 
 
-KWD_RE = re.compile("^(%s)$" % "|".join(keyword.kwlist))
+KWD_RE = re.compile("^(%s)$" % "|".join(keyword.kwlist + ["print", "exec"]))
 
 
 def escape_identifier(text, reg=KWD_RE):

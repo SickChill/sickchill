@@ -18,8 +18,16 @@ from ._compat import integer_types
 
 
 class EnumBase(int):
+    """Base type for all enum types
+
+    :param value:
+    :type value: :obj:`int`
+    """
 
     _allowed = {}
+
+    def __init__(self, value):
+        super(EnumBase, self).__init__()
 
     def __new__(cls, value):
         if not isinstance(value, integer_types):
@@ -43,6 +51,11 @@ EnumBase.__module__ = "GLib"
 
 
 class GEnumBase(EnumBase):
+    """Base type for all enum types with a GType
+
+    :param value:
+    :type value: :obj:`int`
+    """
 
     __gtype__ = PGType.from_name("GEnum")
 
@@ -69,8 +82,16 @@ GEnumBase.__module__ = "GObject"
 
 
 class FlagsBase(int):
+    """Base type for all flags types
+
+    :param value:
+    :type value: :obj:`int`
+    """
 
     _flags = []
+
+    def __init__(self, value):
+        super(FlagsBase, self).__init__()
 
     def __new__(cls, value):
         if not isinstance(value, integer_types):
@@ -105,6 +126,12 @@ FlagsBase.__module__ = "GLib"
 
 
 class GFlagsBase(FlagsBase):
+    """Base type for all flags types with a GType
+
+    :param value:
+    :type value: :obj:`int`
+    """
+
     __gtype__ = PGType.from_name("GFlags")
 
     def __get_flags_value(self, value):

@@ -1,4 +1,5 @@
 #! adba == ???  # <Modified + not on PYPI - https://github.com/lad1337/adba>
+git+https://github.com/SickChill/adba.git#egg=adba
 babelfish == 0.5.5
 backports_abc == 0.5
 backports.ssl-match-hostname == 3.5.0.1
@@ -38,7 +39,8 @@ markdown2 == 2.3.4
 MarkupSafe == 1.1.1
 ndg-httpsclient == 0.3.3
 oauthlib == 2.0.2
-git+https://github.com/pygobject/pgi.git@38f834902247a5851cb4c72ba018f160ae26d612#egg=pgi ; os.name != 'nt'
+# git+https://github.com/pygobject/pgi.git@38f834902247a5851cb4c72ba018f160ae26d612#egg=pgi ; os.name != 'nt'
+pgi >= 0.0.11.2
 #! pkg_resources.py  # Copied from setuptools and looks to be modified. See readme for more info.
 pbr >= 1.6
 profilehooks == 1.5

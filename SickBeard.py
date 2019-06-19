@@ -473,7 +473,7 @@ class SickChill(object):
                 self.remove_pid_file(self.pid_file)
 
             if event == sickbeard.event_queue.Events.SystemEvent.RESTART:
-                install_type = sickbeard.versionCheckScheduler.action.install_type
+                install_type = sickbeard.version_check_scheduler.action.install_type
 
                 popen_list = []
 

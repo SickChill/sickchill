@@ -278,7 +278,9 @@ class MethodAttribute(object):
             func = generate_function(info, method=False)
             func = staticmethod(func)
             setattr(real_owner, name, func)
-            return getattr(owner, name)
+            result_func = getattr(instance or owner, name)
+            result_func._is_static = True
+            return result_func
         else:
             raise NotImplementedError("%r not supported" % flags)
 
