@@ -18,7 +18,7 @@
         _('Proper Finder'): 'proper_search_scheduler',
         _('Post Process'): 'auto_post_processor_scheduler',
         _('Subtitles Finder'): 'subtitles_search_scheduler',
-        _('Trakt Checker'): 'traktCheckerScheduler',
+        _('Trakt Checker'): 'trakt_checker_scheduler',
     }
     %>
     <div class="row">

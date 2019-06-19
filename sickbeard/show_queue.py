@@ -515,10 +515,10 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
 
         if sickbeard.USE_TRAKT:
             # if there are specific episodes that need to be added by trakt
-            sickbeard.traktCheckerScheduler.action.manageNewShow(self.show)
+            sickbeard.trakt_checker_scheduler.action.manageNewShow(self.show)
             # add show to trakt.tv library
             if sickbeard.TRAKT_SYNC:
-                sickbeard.traktCheckerScheduler.action.addShowToTraktLibrary(self.show)
+                sickbeard.trakt_checker_scheduler.action.addShowToTraktLibrary(self.show)
 
             if sickbeard.TRAKT_SYNC_WATCHLIST:
                 logger.log('update watchlist')
@@ -744,7 +744,7 @@ class QueueItemRemove(ShowQueueItem):
 
         if sickbeard.USE_TRAKT:
             try:
-                sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(self.show)
+                sickbeard.trakt_checker_scheduler.action.removeShowFromTraktLibrary(self.show)
             except Exception as error:
                 logger.log('Unable to delete show from Trakt: {0}. Error: {1}'.format(self.show.name, error), logger.WARNING)
 

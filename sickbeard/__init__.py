@@ -114,7 +114,7 @@ proper_search_scheduler = None
 auto_post_processor_scheduler = None
 post_processor_task_scheduler = None
 subtitles_search_scheduler = None
-traktCheckerScheduler = None
+trakt_checker_scheduler = None
 
 showList = []
 
@@ -689,7 +689,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             TORRENT_LABEL, TORRENT_LABEL_ANIME, TORRENT_VERIFY_CERT, TORRENT_RPCURL, TORRENT_AUTH_TYPE, USE_KODI, KODI_ALWAYS_ON, KODI_NOTIFY_ONSNATCH, \
             KODI_NOTIFY_ONDOWNLOAD, KODI_NOTIFY_ONSUBTITLEDOWNLOAD, KODI_UPDATE_FULL, KODI_UPDATE_ONLYFIRST, KODI_UPDATE_LIBRARY, KODI_HOST, KODI_USERNAME, \
             KODI_PASSWORD, BACKLOG_FREQUENCY,  USE_TRAKT, TRAKT_USERNAME, TRAKT_ACCESS_TOKEN, TRAKT_REFRESH_TOKEN, TRAKT_REMOVE_WATCHLIST, \
-            TRAKT_SYNC_WATCHLIST, TRAKT_REMOVE_SHOW_FROM_SICKCHILL, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, traktCheckerScheduler, TRAKT_USE_RECOMMENDED,\
+            TRAKT_SYNC_WATCHLIST, TRAKT_REMOVE_SHOW_FROM_SICKCHILL, TRAKT_METHOD_ADD, TRAKT_START_PAUSED, trakt_checker_scheduler, TRAKT_USE_RECOMMENDED,\
             TRAKT_SYNC, TRAKT_SYNC_REMOVE, TRAKT_DEFAULT_INDEXER, TRAKT_REMOVE_SERIESLIST, TRAKT_TIMEOUT, TRAKT_BLACKLIST_NAME, USE_PLEX_SERVER, \
             PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, USE_PLEX_CLIENT, PLEX_CLIENT_USERNAME,\
             PLEX_CLIENT_PASSWORD, PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_CLIENT_HOST, PLEX_SERVER_USERNAME, PLEX_SERVER_PASSWORD, PLEX_SERVER_HTTPS, \
@@ -1616,7 +1616,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             silent=not PROCESS_AUTOMATICALLY,
         )
 
-        traktCheckerScheduler = scheduler.Scheduler(
+        trakt_checker_scheduler = scheduler.Scheduler(
             traktChecker.TraktChecker(),
             run_delay=datetime.timedelta(minutes=5),
             cycleTime=datetime.timedelta(hours=1),
@@ -1682,8 +1682,8 @@ def start():
             subtitles_search_scheduler.start()
 
             # start the trakt checker
-            traktCheckerScheduler.enable = USE_TRAKT
-            traktCheckerScheduler.start()
+            trakt_checker_scheduler.enable = USE_TRAKT
+            trakt_checker_scheduler.start()
 
             started['0'] = True
 
@@ -1702,7 +1702,7 @@ def halt():
                 search_queue_scheduler,
                 auto_post_processor_scheduler,
                 post_processor_task_scheduler,
-                traktCheckerScheduler,
+                trakt_checker_scheduler,
                 proper_search_scheduler,
                 subtitles_search_scheduler,
                 events

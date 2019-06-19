@@ -504,13 +504,13 @@ def change_use_trakt(use_trakt):
 
     sickbeard.USE_TRAKT = use_trakt
     if sickbeard.USE_TRAKT:
-        if not sickbeard.traktCheckerScheduler.enable:
+        if not sickbeard.trakt_checker_scheduler.enable:
             logger.log("Starting TRAKTCHECKER thread", logger.INFO)
-            sickbeard.traktCheckerScheduler.silent = False
-            sickbeard.traktCheckerScheduler.enable = True
+            sickbeard.trakt_checker_scheduler.silent = False
+            sickbeard.trakt_checker_scheduler.enable = True
     else:
-        sickbeard.traktCheckerScheduler.enable = False
-        sickbeard.traktCheckerScheduler.silent = True
+        sickbeard.trakt_checker_scheduler.enable = False
+        sickbeard.trakt_checker_scheduler.silent = True
         logger.log("Stopping TRAKTCHECKER thread", logger.INFO)
 
     return True

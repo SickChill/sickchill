@@ -521,15 +521,15 @@ class ConfigTestChanges(unittest.TestCase):
         """
         Test change_use_trakt
         """
-        sickbeard.traktCheckerScheduler = scheduler.Scheduler(lambda: None) # dummy
+        sickbeard.trakt_checker_scheduler = scheduler.Scheduler(lambda: None) # dummy
         sickbeard.USE_TRAKT = True
 
         config.change_use_trakt(True) # no change
         self.assertTrue(sickbeard.USE_TRAKT)
         config.change_use_trakt('stop') # = defaults to False
-        self.assertFalse(sickbeard.USE_TRAKT and sickbeard.traktCheckerScheduler.enable)
+        self.assertFalse(sickbeard.USE_TRAKT and sickbeard.trakt_checker_scheduler.enable)
         config.change_use_trakt('on')
-        self.assertTrue(sickbeard.USE_TRAKT and sickbeard.traktCheckerScheduler.enable)
+        self.assertTrue(sickbeard.USE_TRAKT and sickbeard.trakt_checker_scheduler.enable)
 
     def test_change_use_subtitles(self):
         """
