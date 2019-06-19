@@ -35,8 +35,8 @@ import requests
 from configobj import ConfigObj
 from tornado.locale import load_gettext_translations
 
-from sickbeard import (auto_postprocessor, dailysearcher, db, helpers, logger, metadata, naming, post_processing_queue, properFinder, providers,
-                       scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, showUpdater, subtitles, traktChecker, versionChecker)
+from sickbeard import (db, helpers, logger, metadata, naming, post_processing_queue, post_processor_auto, providers, scene_exceptions, scheduler,
+                       search_backlog, search_daily, search_propers, search_queue, show_queue, show_updater, subtitles, traktChecker, versionChecker)
 from sickbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
 from sickbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
 from sickbeard.databases import cache_db, failed_db, mainDB
@@ -1553,7 +1553,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         )
 
         show_update_scheduler = scheduler.Scheduler(
-            showUpdater.ShowUpdater(),
+            show_updater.ShowUpdater(),
             run_delay=datetime.timedelta(seconds=20),
             cycleTime=datetime.timedelta(hours=1),
             start_time=datetime.time(hour=SHOWUPDATE_HOUR),
@@ -1569,15 +1569,15 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         )
 
         daily_search_scheduler = scheduler.Scheduler(
-            dailysearcher.DailySearcher(),
+            search_daily.DailySearcher(),
             run_delay=datetime.timedelta(minutes=10),
             cycleTime=datetime.timedelta(minutes=DAILYSEARCH_FREQUENCY),
             threadName="DAILYSEARCHER"
         )
 
         update_interval = datetime.timedelta(minutes=BACKLOG_FREQUENCY)
-        backlog_search_scheduler = searchBacklog.BacklogSearchScheduler(
-            searchBacklog.BacklogSearcher(),
+        backlog_search_scheduler = search_backlog.BacklogSearchScheduler(
+            search_backlog.BacklogSearcher(),
             cycleTime=update_interval,
             threadName="BACKLOG",
             run_delay=update_interval
@@ -1592,7 +1592,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             run_at = datetime.time(hour=1)  # 1 AM
 
         proper_search_scheduler = scheduler.Scheduler(
-            properFinder.ProperFinder(),
+            search_propers.ProperFinder(),
             cycleTime=update_interval,
             threadName="FINDPROPERS",
             start_time=run_at,
@@ -1609,7 +1609,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         )
 
         auto_post_processor_scheduler = scheduler.Scheduler(
-            auto_postprocessor.PostProcessor(),
+            post_processor_auto.PostProcessor(),
             run_delay=datetime.timedelta(minutes=5),
             cycleTime=datetime.timedelta(minutes=AUTOPOSTPROCESSOR_FREQUENCY),
             threadName="POSTPROCESSOR",

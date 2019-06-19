@@ -25,7 +25,7 @@ import traceback
 
 import sickbeard
 from sickbeard import common, config, generic_queue, logger
-from sickbeard.processTV import log_helper, process_dir
+from sickbeard.post_process_tv import log_helper, process_dir
 from sickchill.helper.encoding import ek
 
 MANUAL_POST_PROCESS = 120
