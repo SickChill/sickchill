@@ -103,7 +103,7 @@ class Notifier(object):
         return False
         # Not implemented, no reason to start scanner.
 
-    def notify_login(self, ipaddress=""):
+    def notify_login(self, ip_address=""):
         return False
 
     def test_notify(self, host, database, mount):

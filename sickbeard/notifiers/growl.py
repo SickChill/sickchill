@@ -53,10 +53,10 @@ class Notifier(object):
         title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
         self._sendGrowl(title, update_text + new_version)
 
-    def notify_login(self, ipaddress=""):
+    def notify_login(self, ip_address=""):
         update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
         title = common.notifyStrings[common.NOTIFY_LOGIN]
-        self._sendGrowl(title, update_text.format(ipaddress))
+        self._sendGrowl(title, update_text.format(ip_address))
 
     def _send_growl(self, options, message=None):
 

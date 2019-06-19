@@ -98,12 +98,12 @@ class Notifier(object):
             if update_text and title and new_version:
                 self._notify_pht(update_text + new_version, title)
 
-    def notify_login(self, ipaddress=""):
+    def notify_login(self, ip_address=""):
         if sickbeard.NOTIFY_ON_LOGIN:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
-            if update_text and title and ipaddress:
-                self._notify_pht(update_text.format(ipaddress), title)
+            if update_text and title and ip_address:
+                self._notify_pht(update_text.format(ip_address), title)
 
     def test_notify_pht(self, host, username, password):
         return self._notify_pht('This is a test notification from SickChill',

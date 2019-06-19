@@ -42,7 +42,7 @@ class Notifier(object):
     def notify_git_update(self, new_version):
         pass
 
-    def notify_login(self, ipaddress=""):
+    def notify_login(self, ip_address=""):
         pass
 
     def moveFolder(self, old_path, new_path):

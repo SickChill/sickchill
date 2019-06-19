@@ -22,6 +22,7 @@ from __future__ import print_function, unicode_literals
 
 import cgi
 import os
+import platform
 
 import sickbeard
 from sickbeard import common
@@ -33,9 +34,10 @@ try:
     from pgi.repository import Notify
 except (ImportError, Exception):
     try:
-        # noinspection PyPackageRequirements
+        # noinspection PyPackageRequirements,PyUnresolvedReferences
         import gi
         gi.require_version('Notify', '0.7')
+        # noinspection PyPackageRequirements,PyUnresolvedReferences
         from gi.repository import Notify
     except (ImportError, Exception):
         Notify = None
@@ -44,45 +46,12 @@ except (ImportError, Exception):
 class Notifier(object):
 
     def __init__(self):
-        self.notify_initialized = None
         if Notify:
-            self.notify_initialized = Notify.init('SickChill')
+            Notify.init('SickChill')
 
-    @staticmethod
-    def diagnose():
-        """
-        Check the environment for reasons libnotify isn't working.  Return a
-        user-readable message indicating possible issues.
-        """
-        if not Notify:
-            return ("<p>Error: gir-notify isn't installed. On Ubuntu/Debian, install the "
-                    "<a href=\"apt:gir1.2-notify-0.7\">gir1.2-notify-0.7</a> or "
-                    "<a href=\"apt:gir1.0-notify-0.4\">gir1.0-notify-0.4</a> package.")
-
-        if 'DISPLAY' not in os.environ and 'DBUS_SESSION_BUS_ADDRESS' not in os.environ:
-            return ("<p>Error: Environment variables DISPLAY and DBUS_SESSION_BUS_ADDRESS "
-                    "aren't set.  libnotify will only work when you run SickChill "
-                    "from a desktop login.")
-
-        try:
-            import dbus
-        except (ImportError, Exception):
-            dbus = None
-
-        if dbus:
-            try:
-                bus = dbus.SessionBus()
-            except dbus.DBusException as e:
-                return ("<p>Error: unable to connect to D-Bus session bus: <code>{}</code>."
-                        "<p>Are you running SickChill in a desktop session?").format(cgi.escape(e))
-            try:
-                bus.get_object('org.freedesktop.Notifications',
-                               '/org/freedesktop/Notifications')
-            except dbus.DBusException as e:
-                return ("<p>Error: there doesn't seem to be a notification daemon available: <code>{}</code> "
-                        "<p>Try installing notification-daemon or notify-osd.").format(cgi.escape(e))
-
-        return "<p>Error: Unable to send notification."
+    def __del__(self):
+        if Notify:
+            Notify.uninit()
 
     def notify_snatch(self, ep_name):
         if sickbeard.LIBNOTIFY_NOTIFY_ONSNATCH:
@@ -102,17 +71,18 @@ class Notifier(object):
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notify(title, update_text + new_version)
 
-    def notify_login(self, ipaddress=""):
+    def notify_login(self, ip_address=""):
         if sickbeard.USE_LIBNOTIFY:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
-            self._notify(title, update_text.format(ipaddress))
+            self._notify(title, update_text.format(ip_address))
 
     def test_notify(self):
         return self._notify('Test notification', "This is a test notification from SickChill", force=True)
 
-    def _notify(self, title, message, force=False):
-        if self.notify_initialized and sickbeard.USE_LIBNOTIFY | force:
+    @classmethod
+    def _notify(cls, title, message, force=False):
+        if Notify.is_initted() and sickbeard.USE_LIBNOTIFY | force:
             icon = ek(os.path.join, sickbeard.PROG_DIR, 'gui', 'slick', 'images', 'ico', 'favicon-120.png')
             # noinspection PyBroadException
             try:
@@ -120,3 +90,40 @@ class Notifier(object):
                 return n.show()
             except Exception:
                 return False
+
+    @staticmethod
+    def diagnose():
+        """
+        Check the environment for reasons that desktop notifications aren't working.  Return a
+        user-readable message indicating possible issues.
+        """
+        if platform.system() != 'Linux':
+            return _("<p>Error: This notifier only works on linux hosts")
+
+        if not Notify:
+            return _("<p>Error: gir-notify isn't installed. On Ubuntu/Debian, install the "
+                     "<a href=\"apt:gir1.2-notify-0.7\">gir1.2-notify-0.7</a> or "
+                     "<a href=\"apt:gir1.0-notify-0.4\">gir1.0-notify-0.4</a> package.")
+
+        if 'DISPLAY' not in os.environ or 'DBUS_SESSION_BUS_ADDRESS' not in os.environ:
+            return _("<p>Error: Environment variables DISPLAY and DBUS_SESSION_BUS_ADDRESS "
+                     "aren't set.  Desktop notifications will only work when you run SickChill from a desktop login.")
+
+        try:
+            import dbus
+        except (ImportError, Exception):
+            dbus = None
+
+        if dbus:
+            try:
+                bus = dbus.SessionBus()
+            except dbus.DBusException as e:
+                return _("<p>Error: unable to connect to D-Bus session bus: <code>{}</code>."
+                         "<p>Are you running SickChill in a desktop session?").format(cgi.escape(e))
+            try:
+                bus.get_object('org.freedesktop.Notifications', '/org/freedesktop/Notifications')
+            except dbus.DBusException as e:
+                return _("<p>Error: there doesn't seem to be a notification daemon available: <code>{}</code> "
+                         "<p>Try installing notification-daemon or notify-osd.").format(cgi.escape(e))
+
+        return "<p>Error: Unable to send notification."

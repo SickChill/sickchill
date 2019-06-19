@@ -80,10 +80,10 @@ class Notifier(object):
         title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
         self._notifyBoxcar2(title, update_text + new_version)
 
-    def notify_login(self, ipaddress=''):
+    def notify_login(self, ip_address=''):
         update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
         title = common.notifyStrings[common.NOTIFY_LOGIN]
-        self._notifyBoxcar2(title, update_text.format(ipaddress))
+        self._notifyBoxcar2(title, update_text.format(ip_address))
 
     def _notifyBoxcar2(self, title, message, accesstoken=None):
         '''

@@ -53,11 +53,11 @@ class Notifier(object):
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             self._notifyTwilio(update_text + new_version)
 
-    def notify_login(self, ipaddress=""):
+    def notify_login(self, ip_address=""):
         if sickbeard.USE_TWILIO:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
-            self._notifyTwilio(title + " - " + update_text.format(ipaddress))
+            self._notifyTwilio(title + " - " + update_text.format(ip_address))
 
     def test_notify(self):
         try:

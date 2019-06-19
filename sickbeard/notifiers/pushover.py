@@ -160,11 +160,11 @@ class Notifier(object):
             title = notifyStrings[NOTIFY_GIT_UPDATE]
             self._notifyPushover(title, update_text + new_version)
 
-    def notify_login(self, ipaddress=""):
+    def notify_login(self, ip_address=""):
         if sickbeard.USE_PUSHOVER:
             update_text = notifyStrings[NOTIFY_LOGIN_TEXT]
             title = notifyStrings[NOTIFY_LOGIN]
-            self._notifyPushover(title, update_text.format(ipaddress))
+            self._notifyPushover(title, update_text.format(ip_address))
 
     def _notifyPushover(self, title, message, sound=None, userKey=None, apiKey=None, force=False):
         """

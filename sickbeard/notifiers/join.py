@@ -123,16 +123,16 @@ class Notifier(object):
             title = notifyStrings[NOTIFY_GIT_UPDATE]
             self._notify_join(title, update_text + new_version)
 
-    def notify_login(self, ipaddress=''):
+    def notify_login(self, ip_address=''):
         """
         Sends a Join notification on login
 
-        :param ipaddress: The IP address the login is originating from
+        :param ip_address: The IP address the login is originating from
         """
         if sickbeard.USE_JOIN:
             update_text = notifyStrings[NOTIFY_LOGIN_TEXT]
             title = notifyStrings[NOTIFY_LOGIN]
-            self._notify_join(title, update_text.format(ipaddress))
+            self._notify_join(title, update_text.format(ip_address))
 
     def _notify_join(self, title, message, id=None, apikey=None, force=False):
         """

@@ -51,11 +51,11 @@ class Notifier(object):
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notify_slack(title + " - " + update_text + new_version)
 
-    def notify_login(self, ipaddress=""):
+    def notify_login(self, ip_address=""):
         if sickbeard.USE_SLACK:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
-            self._notify_slack(title + " - " + update_text.format(ipaddress))
+            self._notify_slack(title + " - " + update_text.format(ip_address))
 
     def test_notify(self):
         return self._notify_slack("This is a test notification from SickChill", force=True)

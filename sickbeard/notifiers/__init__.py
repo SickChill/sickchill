@@ -21,7 +21,7 @@
 from __future__ import print_function, unicode_literals
 
 import sickbeard
-from sickbeard.notifiers import (boxcar2, discord, emailnotify, emby, freemobile, growl, join, kodi, libnotify, matrix, nmj, nmjv2, plex, prowl, pushalot,
+from sickbeard.notifiers import (boxcar2, discord, emailnotify, emby, freemobile, growl, join, kodi, desktop_notifications, matrix, nmj, nmjv2, plex, prowl, pushalot,
                                  pushbullet, pushover, pytivo, slack, synoindex, synologynotifier, telegram, trakt, tweet, twilio_notify)
 
 # home theater / nas
@@ -37,7 +37,7 @@ pytivo_notifier = pytivo.Notifier()
 # devices
 growl_notifier = growl.Notifier()
 prowl_notifier = prowl.Notifier()
-libnotify_notifier = libnotify.Notifier()
+libnotify_notifier = desktop_notifications.Notifier()
 pushover_notifier = pushover.Notifier()
 boxcar2_notifier = boxcar2.Notifier()
 pushalot_notifier = pushalot.Notifier()
@@ -111,10 +111,10 @@ def notify_git_update(new_version=""):
                 print(n.__module__)
 
 
-def notify_login(ipaddress):
-    if sickbeard.NOTIFY_ON_LOGIN and not sickbeard.helpers.is_ip_private(ipaddress):
+def notify_login(ip_address):
+    if sickbeard.NOTIFY_ON_LOGIN and not sickbeard.helpers.is_ip_private(ip_address):
         for n in notifiers:
             if hasattr(n, 'notify_login'):
-                n.notify_login(ipaddress)
+                n.notify_login(ip_address)
             else:
                 print(n.__module__)

@@ -133,16 +133,16 @@ class Notifier(object):
             title = notifyStrings[NOTIFY_GIT_UPDATE]
             self._notify_telegram(title, update_text + new_version)
 
-    def notify_login(self, ipaddress=''):
+    def notify_login(self, ip_address=''):
         """
         Sends a Telegram notification on login
 
-        :param ipaddress: The ip address the login is originating from
+        :param ip_address: The ip address the login is originating from
         """
         if sickbeard.USE_TELEGRAM:
             update_text = notifyStrings[NOTIFY_LOGIN_TEXT]
             title = notifyStrings[NOTIFY_LOGIN]
-            self._notify_telegram(title, update_text.format(ipaddress))
+            self._notify_telegram(title, update_text.format(ip_address))
 
     def _notify_telegram(self, title, message, id=None, api_key=None, force=False):
         """

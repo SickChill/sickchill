@@ -70,13 +70,13 @@ class Notifier(object):
             message=update_text + new_version
         )
 
-    def notify_login(self, ipaddress=''):
+    def notify_login(self, ip_address=''):
         update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
         title = common.notifyStrings[common.NOTIFY_LOGIN]
         self._sendPushalot(
             pushalot_authorizationtoken=None,
             event=title,
-            message=update_text.format(ipaddress)
+            message=update_text.format(ip_address)
         )
 
     def _sendPushalot(self, pushalot_authorizationtoken=None, event=None, message=None, force=False):

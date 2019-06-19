@@ -270,10 +270,10 @@ class Notifier(object):
                 else:
                     logger.log('Update notification error: {0}'.format(self.last_err), logger.WARNING)
 
-    def notify_login(self, ipaddress=''):
+    def notify_login(self, ip_address=''):
         '''
         Send a notification that SickChill was logged into remotely
-        ipaddress: The ip SickChill was logged into from
+        ip_address: The ip SickChill was logged into from
         '''
         if sickbeard.USE_EMAIL:
             to = self._generate_recipients(None)
@@ -289,15 +289,15 @@ class Notifier(object):
                         '<footer style="margin-top: 2.5em; padding: .7em 0; '
                         'color: #777; border-top: #BBB solid 1px;">'
                         'Powered by SickChill.</footer></body>'.format
-                        (ipaddress), 'html'))
+                        (ip_address), 'html'))
 
                 except Exception:
                     try:
-                        msg = MIMEText(ipaddress)
+                        msg = MIMEText(ip_address)
                     except Exception:
                         msg = MIMEText('SickChill Remote Login')
 
-                msg[b'Subject'] = 'New Login from IP: {0}'.format(ipaddress)
+                msg[b'Subject'] = 'New Login from IP: {0}'.format(ip_address)
                 msg[b'From'] = sickbeard.EMAIL_FROM
                 msg[b'To'] = ','.join(to)
                 msg[b'Date'] = formatdate(localtime=True)

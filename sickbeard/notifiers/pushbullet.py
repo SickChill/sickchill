@@ -86,11 +86,11 @@ class Notifier(object):
             # link=link
         )
 
-    def notify_login(self, ipaddress=''):
+    def notify_login(self, ip_address=''):
         self._sendPushbullet(
             pushbullet_api=None,
             event=common.notifyStrings[common.NOTIFY_LOGIN],
-            message=common.notifyStrings[common.NOTIFY_LOGIN_TEXT].format(ipaddress)
+            message=common.notifyStrings[common.NOTIFY_LOGIN_TEXT].format(ip_address)
         )
 
     def _sendPushbullet(  # pylint: disable=too-many-arguments

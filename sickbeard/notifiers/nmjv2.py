@@ -50,7 +50,7 @@ class Notifier(object):
         return False
         # Not implemented, no reason to start scanner.
 
-    def notify_login(self, ipaddress=""):  # pylint: disable=unused-argument
+    def notify_login(self, ip_address=""):  # pylint: disable=unused-argument
         return False
 
     def test_notify(self, host):

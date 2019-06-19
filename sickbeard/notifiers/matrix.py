@@ -68,11 +68,11 @@ class Notifier(object):
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notify_matrix(title + " - " + update_text + new_version)
 
-    def notify_login(self, ipaddress=""):
+    def notify_login(self, ip_address=""):
         if sickbeard.USE_MATRIX:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
-            self._notify_matrix(title + " - " + update_text.format(ipaddress))
+            self._notify_matrix(title + " - " + update_text.format(ip_address))
 
     def test_notify(self):
         return self._notify_matrix("This is a test notification from SickChill", force=True)
