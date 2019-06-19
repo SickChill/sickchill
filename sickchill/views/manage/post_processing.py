@@ -57,7 +57,7 @@ class PostProcess(Home):
 
         release_name = ss(xhtml_unescape(nzbName)) if nzbName else nzbName
 
-        result = sickbeard.postProcessorTaskScheduler.action.add_item(
+        result = sickbeard.post_processor_task_scheduler.action.add_item(
             process_path, release_name, method=process_method, force=force,
             is_priority=is_priority, delete=delete_on, failed=failed, mode=mode,
             force_next=force_next

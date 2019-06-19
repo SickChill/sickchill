@@ -345,8 +345,8 @@
                                 % endif
                                 /&nbsp;<span class="footerhighlight">${ep_total}</span>&nbsp;${_('Episodes Downloaded')}&nbsp;${ep_percentage}
                             </span>&nbsp;|
-                             <span class="footer-item">${_('Daily Search')}: <span class="footerhighlight">${str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]}</span></span>&nbsp;|
-                             <span class="footer-item">${_('Backlog Search')}: <span class="footerhighlight">${str(sickbeard.backlogSearchScheduler.timeLeft()).split('.')[0]}</span></span>
+                             <span class="footer-item">${_('Daily Search')}: <span class="footerhighlight">${str(sickbeard.daily_search_scheduler.timeLeft()).split('.')[0]}</span></span>&nbsp;|
+                             <span class="footer-item">${_('Backlog Search')}: <span class="footerhighlight">${str(sickbeard.backlog_search_scheduler.timeLeft()).split('.')[0]}</span></span>
                         </div>
 
                         <div>

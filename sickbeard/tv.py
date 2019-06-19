@@ -33,7 +33,7 @@ from imdb import imdb
 from unidecode import unidecode
 
 import sickbeard
-from sickbeard import db, helpers, image_cache, logger, network_timezones, notifiers, postProcessor, subtitles
+from sickbeard import db, helpers, image_cache, logger, network_timezones, notifiers, post_processor, subtitles
 from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
                               NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN, WANTED)
@@ -2467,15 +2467,16 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                        logger.DEBUG)
             return
 
+        # TODO: Clean up from here to the lock.
         # get related files
-        related_files = postProcessor.PostProcessor(self.location).list_associated_files(
+        related_files = post_processor.PostProcessor(self.location).list_associated_files(
             self.location, subfolders=True, rename=True)
 
         # get related subs
         if self.show.subtitles and sickbeard.SUBTITLES_DIR:
             # assume that the video file is in the subtitles dir to find associated subs
             subs_path = os.path.join(sickbeard.SUBTITLES_DIR, ek(os.path.basename, self.location))
-            related_subs = postProcessor.PostProcessor(self.location).list_associated_files(
+            related_subs = post_processor.PostProcessor(self.location).list_associated_files(
                 subs_path, subtitles_only=True, subfolders=True, rename=True)
 
         logger.log("Files associated to " + self.location + ": " + str(related_files), logger.DEBUG)
@@ -2500,6 +2501,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                     logger.log(str(self.indexerid) + ": Unable to rename file " + cur_related_file, logger.ERROR)
 
             for cur_related_sub in related_subs:
+                # TODO: This was to keep subtitles in a separate folder away from the episodes. Needs a better solution
                 absolute_proper_subs_path = ek(os.path.join, sickbeard.SUBTITLES_DIR, self.formatted_filename())
                 cur_result = helpers.rename_ep_file(cur_related_sub, absolute_proper_subs_path,
                                                     absolute_current_path_no_ext_length)

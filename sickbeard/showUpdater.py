@@ -86,9 +86,9 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
                 cur_show.nextEpisode()
                 if sickbeard.indexerApi(cur_show.indexer).name == 'theTVDB':
                     if cur_show.indexerid in updated_shows:
-                        pi_list.append(sickbeard.showQueueScheduler.action.update_show(cur_show, True))
+                        pi_list.append(sickbeard.show_queue_scheduler.action.update_show(cur_show, True))
                     else:
-                        pi_list.append(sickbeard.showQueueScheduler.action.refresh_show(cur_show, False))
+                        pi_list.append(sickbeard.show_queue_scheduler.action.refresh_show(cur_show, False))
             except (CantUpdateShowException, CantRefreshShowException) as error:
                 logger.log('Automatic update failed: {0}'.format(ex(error)), logger.DEBUG)
 

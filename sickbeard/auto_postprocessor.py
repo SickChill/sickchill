@@ -37,7 +37,7 @@ class PostProcessor(object):
         :return: Returns when done without a return state/code
         """
         self.amActive = True
-        sickbeard.postProcessorTaskScheduler.action.add_item(sickbeard.TV_DOWNLOAD_DIR, force=force)
+        sickbeard.post_processor_task_scheduler.action.add_item(sickbeard.TV_DOWNLOAD_DIR, force=force)
         self.amActive = False
 
     def __del__(self):

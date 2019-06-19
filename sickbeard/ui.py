@@ -163,7 +163,7 @@ class QueueProgressIndicator(object):
         return len([x for x in self.queueItemList if x.is_in_queue()])
 
     def nextName(self):
-        for curItem in [sickbeard.showQueueScheduler.action.currentItem] + sickbeard.showQueueScheduler.action.queue:  # @UndefinedVariable
+        for curItem in [sickbeard.show_queue_scheduler.action.currentItem] + sickbeard.show_queue_scheduler.action.queue:  # @UndefinedVariable
             if curItem in self.queueItemList:
                 return curItem.name
 

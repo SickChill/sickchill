@@ -104,16 +104,16 @@ events = None
 gh = None
 
 # schedulers
-dailySearchScheduler = None
-backlogSearchScheduler = None
-showUpdateScheduler = None
-versionCheckScheduler = None
-showQueueScheduler = None
-searchQueueScheduler = None
-properFinderScheduler = None
-autoPostProcessorScheduler = None
-postProcessorTaskScheduler = None
-subtitlesFinderScheduler = None
+daily_search_scheduler = None
+backlog_search_scheduler = None
+show_update_scheduler = None
+version_check_scheduler = None
+show_queue_scheduler = None
+search_queue_scheduler = None
+proper_search_scheduler = None
+auto_post_processor_scheduler = None
+post_processor_task_scheduler = None
+subtitles_search_scheduler = None
 traktCheckerScheduler = None
 
 showList = []
@@ -684,7 +684,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             CHECK_PROPERS_INTERVAL, ALLOW_HIGH_PRIORITY, SAB_FORCED, TORRENT_METHOD, NOTIFY_ON_LOGIN, SAB_USERNAME, SAB_PASSWORD, SAB_APIKEY, SAB_CATEGORY, \
             SAB_CATEGORY_BACKLOG, SAB_CATEGORY_ANIME, SAB_CATEGORY_ANIME_BACKLOG, SAB_HOST,  NZBGET_USERNAME, NZBGET_PASSWORD, NZBGET_CATEGORY, \
             NZBGET_CATEGORY_BACKLOG, NZBGET_CATEGORY_ANIME, NZBGET_CATEGORY_ANIME_BACKLOG, NZBGET_PRIORITY, NZBGET_HOST, NZBGET_USE_HTTPS,\
-            backlogSearchScheduler, TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_DELUGE_DOWNLOAD_DIR, TORRENT_DELUGE_COMPLETE_DIR,\
+            backlog_search_scheduler, TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_DELUGE_DOWNLOAD_DIR, TORRENT_DELUGE_COMPLETE_DIR,\
             TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH,\
             TORRENT_LABEL, TORRENT_LABEL_ANIME, TORRENT_VERIFY_CERT, TORRENT_RPCURL, TORRENT_AUTH_TYPE, USE_KODI, KODI_ALWAYS_ON, KODI_NOTIFY_ONSNATCH, \
             KODI_NOTIFY_ONDOWNLOAD, KODI_NOTIFY_ONSUBTITLEDOWNLOAD, KODI_UPDATE_FULL, KODI_UPDATE_ONLYFIRST, KODI_UPDATE_LIBRARY, KODI_HOST, KODI_USERNAME, \
@@ -693,7 +693,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             TRAKT_SYNC, TRAKT_SYNC_REMOVE, TRAKT_DEFAULT_INDEXER, TRAKT_REMOVE_SERIESLIST, TRAKT_TIMEOUT, TRAKT_BLACKLIST_NAME, USE_PLEX_SERVER, \
             PLEX_NOTIFY_ONSNATCH, PLEX_NOTIFY_ONDOWNLOAD, PLEX_NOTIFY_ONSUBTITLEDOWNLOAD, PLEX_UPDATE_LIBRARY, USE_PLEX_CLIENT, PLEX_CLIENT_USERNAME,\
             PLEX_CLIENT_PASSWORD, PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_CLIENT_HOST, PLEX_SERVER_USERNAME, PLEX_SERVER_PASSWORD, PLEX_SERVER_HTTPS, \
-            MIN_BACKLOG_FREQUENCY, SKIP_REMOVED_FILES, ALLOWED_EXTENSIONS, USE_EMBY, EMBY_HOST, EMBY_APIKEY, SITE_MESSAGES, showUpdateScheduler, \
+            MIN_BACKLOG_FREQUENCY, SKIP_REMOVED_FILES, ALLOWED_EXTENSIONS, USE_EMBY, EMBY_HOST, EMBY_APIKEY, SITE_MESSAGES, show_update_scheduler, \
             INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, IGNORE_BROKEN_SYMLINKS, SORT_ARTICLE, \
             NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, QUALITY_DEFAULT, QUALITY_ALLOW_HEVC, \
             SEASON_FOLDERS_DEFAULT, \
@@ -707,12 +707,12 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_NMA, NMA_NOTIFY_ONSNATCH, NMA_NOTIFY_ONDOWNLOAD, NMA_NOTIFY_ONSUBTITLEDOWNLOAD, NMA_API, NMA_PRIORITY, USE_PUSHALOT, \
             PUSHALOT_NOTIFY_ONSNATCH, PUSHALOT_NOTIFY_ONDOWNLOAD, PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHALOT_AUTHORIZATIONTOKEN, USE_PUSHBULLET, \
             PUSHBULLET_NOTIFY_ONSNATCH, PUSHBULLET_NOTIFY_ONDOWNLOAD, PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHBULLET_API, PUSHBULLET_DEVICE,\
-            PUSHBULLET_CHANNEL, versionCheckScheduler, VERSION_NOTIFY, AUTO_UPDATE, NOTIFY_ON_UPDATE, PROCESS_AUTOMATICALLY, NO_DELETE, USE_ICACLS, UNPACK, \
+            PUSHBULLET_CHANNEL, version_check_scheduler, VERSION_NOTIFY, AUTO_UPDATE, NOTIFY_ON_UPDATE, PROCESS_AUTOMATICALLY, NO_DELETE, USE_ICACLS, UNPACK, \
             CPU_PRESET, UNPACK_DIR, UNRAR_TOOL, ALT_UNRAR_TOOL, KEEP_PROCESSED_DIR, PROCESS_METHOD, PROCESSOR_FOLLOW_SYMLINKS, DELRARCONTENTS, \
-            TV_DOWNLOAD_DIR, UPDATE_FREQUENCY, showQueueScheduler, searchQueueScheduler, postProcessorTaskScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, \
+            TV_DOWNLOAD_DIR, UPDATE_FREQUENCY, show_queue_scheduler, search_queue_scheduler, post_processor_task_scheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, \
             TIMEZONE_DISPLAY, NAMING_PATTERN, NAMING_MULTI_EP, NAMING_ANIME_MULTI_EP, NAMING_FORCE_FOLDERS, NAMING_ABD_PATTERN, NAMING_CUSTOM_ABD, \
             NAMING_SPORTS_PATTERN, NAMING_CUSTOM_SPORTS, NAMING_ANIME_PATTERN, NAMING_CUSTOM_ANIME, NAMING_STRIP_YEAR, RENAME_EPISODES, AIRDATE_EPISODES, \
-            FILE_TIMESTAMP_TIMEZONE, properFinderScheduler, PROVIDER_ORDER, autoPostProcessorScheduler, providerList, newznabProviderList, \
+            FILE_TIMESTAMP_TIMEZONE, proper_search_scheduler, PROVIDER_ORDER, auto_post_processor_scheduler, providerList, newznabProviderList, \
             torrentRssProviderList, EXTRA_SCRIPTS, USE_TWITTER, TWITTER_USERNAME, TWITTER_PASSWORD, TWITTER_PREFIX, DAILYSEARCH_FREQUENCY, TWITTER_DMTO, \
             TWITTER_USEDM, USE_TWILIO, TWILIO_NOTIFY_ONSNATCH, TWILIO_NOTIFY_ONDOWNLOAD, TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD, TWILIO_PHONE_SID, \
             TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_TO_NUMBER, USE_BOXCAR2, BOXCAR2_ACCESSTOKEN, BOXCAR2_NOTIFY_ONDOWNLOAD,\
@@ -723,14 +723,14 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD, SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD, USE_EMAIL, EMAIL_HOST, EMAIL_PORT, EMAIL_TLS, EMAIL_USER, \
             EMAIL_PASSWORD, EMAIL_FROM, EMAIL_NOTIFY_ONSNATCH, EMAIL_NOTIFY_ONDOWNLOAD, EMAIL_NOTIFY_ONPOSTPROCESS, EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD, EMAIL_LIST, EMAIL_SUBJECT, \
             USE_LISTVIEW, METADATA_KODI, METADATA_KODI_12PLUS, METADATA_MEDIABROWSER, METADATA_PS3, metadata_provider_dict, NEWZBIN, NEWZBIN_USERNAME, \
-            NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, DELETE_NON_ASSOCIATED_FILES, SYNC_FILES, POSTPONE_IF_SYNC_FILES, dailySearchScheduler, \
+            NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, DELETE_NON_ASSOCIATED_FILES, SYNC_FILES, POSTPONE_IF_SYNC_FILES, daily_search_scheduler, \
             NFO_RENAME, GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, \
             COMING_EPS_DISPLAY_SNATCHED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, \
             POSTER_SORTBY, POSTER_SORTDIR, HISTORY_LIMIT, CREATE_MISSING_SHOW_DIRS, ADD_SHOWS_WO_DIR, USE_FREE_SPACE_CHECK, METADATA_WDTV, METADATA_TIVO, \
             METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, USE_SUBTITLES,\
             SUBTITLES_INCLUDE_SPECIALS, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, \
             SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, SUBTITLES_KEEP_ONLY_WANTED, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, SUBTITLES_PERFECT_MATCH,\
-            subtitlesFinderScheduler, SUBTITLES_HEARING_IMPAIRED, ADDIC7ED_USER, ADDIC7ED_PASS, ITASA_USER, ITASA_PASS, LEGENDASTV_USER, LEGENDASTV_PASS, \
+            subtitles_search_scheduler, SUBTITLES_HEARING_IMPAIRED, ADDIC7ED_USER, ADDIC7ED_PASS, ITASA_USER, ITASA_PASS, LEGENDASTV_USER, LEGENDASTV_PASS, \
             OPENSUBTITLES_USER, OPENSUBTITLES_PASS, SUBSCENTER_USER, SUBSCENTER_PASS, USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, \
             DEBUG, DBDEBUG, DEFAULT_PAGE, PROXY_SETTING, PROXY_INDEXERS, AUTOPOSTPROCESSOR_FREQUENCY, SHOWUPDATE_HOUR, ANIME_DEFAULT, NAMING_ANIME, \
             ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, ANIME_SPLIT_HOME, ANIME_SPLIT_HOME_IN_TABS, SCENE_DEFAULT, \
@@ -1539,20 +1539,20 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
 
         # initialize schedulers
         # updaters
-        versionCheckScheduler = scheduler.Scheduler(
+        version_check_scheduler = scheduler.Scheduler(
             versionChecker.CheckVersion(),
             cycleTime=datetime.timedelta(hours=UPDATE_FREQUENCY),
             threadName="CHECKVERSION",
             silent=False
         )
 
-        showQueueScheduler = scheduler.Scheduler(
+        show_queue_scheduler = scheduler.Scheduler(
             show_queue.ShowQueue(),
             cycleTime=datetime.timedelta(seconds=5),
             threadName="SHOWQUEUE"
         )
 
-        showUpdateScheduler = scheduler.Scheduler(
+        show_update_scheduler = scheduler.Scheduler(
             showUpdater.ShowUpdater(),
             run_delay=datetime.timedelta(seconds=20),
             cycleTime=datetime.timedelta(hours=1),
@@ -1561,14 +1561,14 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         )
 
         # searchers
-        searchQueueScheduler = scheduler.Scheduler(
+        search_queue_scheduler = scheduler.Scheduler(
             search_queue.SearchQueue(),
             run_delay=datetime.timedelta(seconds=10),
             cycleTime=datetime.timedelta(seconds=5),
             threadName="SEARCHQUEUE"
         )
 
-        dailySearchScheduler = scheduler.Scheduler(
+        daily_search_scheduler = scheduler.Scheduler(
             dailysearcher.DailySearcher(),
             run_delay=datetime.timedelta(minutes=10),
             cycleTime=datetime.timedelta(minutes=DAILYSEARCH_FREQUENCY),
@@ -1576,7 +1576,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         )
 
         update_interval = datetime.timedelta(minutes=BACKLOG_FREQUENCY)
-        backlogSearchScheduler = searchBacklog.BacklogSearchScheduler(
+        backlog_search_scheduler = searchBacklog.BacklogSearchScheduler(
             searchBacklog.BacklogSearcher(),
             cycleTime=update_interval,
             threadName="BACKLOG",
@@ -1591,7 +1591,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             update_interval = datetime.timedelta(hours=1)
             run_at = datetime.time(hour=1)  # 1 AM
 
-        properFinderScheduler = scheduler.Scheduler(
+        proper_search_scheduler = scheduler.Scheduler(
             properFinder.ProperFinder(),
             cycleTime=update_interval,
             threadName="FINDPROPERS",
@@ -1601,14 +1601,14 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         )
 
         # processors
-        postProcessorTaskScheduler = scheduler.Scheduler(
+        post_processor_task_scheduler = scheduler.Scheduler(
             post_processing_queue.ProcessingQueue(),
             run_delay=datetime.timedelta(seconds=5),
             cycleTime=datetime.timedelta(seconds=5),
             threadName="POSTPROCESSOR",
         )
 
-        autoPostProcessorScheduler = scheduler.Scheduler(
+        auto_post_processor_scheduler = scheduler.Scheduler(
             auto_postprocessor.PostProcessor(),
             run_delay=datetime.timedelta(minutes=5),
             cycleTime=datetime.timedelta(minutes=AUTOPOSTPROCESSOR_FREQUENCY),
@@ -1624,7 +1624,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             silent=not USE_TRAKT
         )
 
-        subtitlesFinderScheduler = scheduler.Scheduler(
+        subtitles_search_scheduler = scheduler.Scheduler(
             subtitles.SubtitlesFinder(),
             run_delay=datetime.timedelta(minutes=10),
             cycleTime=datetime.timedelta(hours=SUBTITLES_FINDER_FREQUENCY),
@@ -1643,43 +1643,43 @@ def start():
             events.start()
 
             # start the daily search scheduler
-            dailySearchScheduler.enable = True
-            dailySearchScheduler.start()
+            daily_search_scheduler.enable = True
+            daily_search_scheduler.start()
 
             # start the backlog scheduler
-            backlogSearchScheduler.enable = True
-            backlogSearchScheduler.start()
+            backlog_search_scheduler.enable = True
+            backlog_search_scheduler.start()
 
             # start the show updater
-            showUpdateScheduler.enable = True
-            showUpdateScheduler.start()
+            show_update_scheduler.enable = True
+            show_update_scheduler.start()
 
             # start the version checker
-            versionCheckScheduler.enable = True
-            versionCheckScheduler.start()
+            version_check_scheduler.enable = True
+            version_check_scheduler.start()
 
             # start the queue checker
-            showQueueScheduler.enable = True
-            showQueueScheduler.start()
+            show_queue_scheduler.enable = True
+            show_queue_scheduler.start()
 
             # start the search queue checker
-            searchQueueScheduler.enable = True
-            searchQueueScheduler.start()
+            search_queue_scheduler.enable = True
+            search_queue_scheduler.start()
 
             # start the proper finder
-            properFinderScheduler.enable = DOWNLOAD_PROPERS
-            properFinderScheduler.start()
+            proper_search_scheduler.enable = DOWNLOAD_PROPERS
+            proper_search_scheduler.start()
 
-            postProcessorTaskScheduler.enable = True
-            postProcessorTaskScheduler.start()
+            post_processor_task_scheduler.enable = True
+            post_processor_task_scheduler.start()
 
             # start the post processor
-            autoPostProcessorScheduler.enable = PROCESS_AUTOMATICALLY
-            autoPostProcessorScheduler.start()
+            auto_post_processor_scheduler.enable = PROCESS_AUTOMATICALLY
+            auto_post_processor_scheduler.start()
 
             # start the subtitles finder
-            subtitlesFinderScheduler.enable = USE_SUBTITLES
-            subtitlesFinderScheduler.start()
+            subtitles_search_scheduler.enable = USE_SUBTITLES
+            subtitles_search_scheduler.start()
 
             # start the trakt checker
             traktCheckerScheduler.enable = USE_TRAKT
@@ -1694,17 +1694,17 @@ def halt():
             logger.log("Aborting all threads")
 
             threads = [
-                dailySearchScheduler,
-                backlogSearchScheduler,
-                showUpdateScheduler,
-                versionCheckScheduler,
-                showQueueScheduler,
-                searchQueueScheduler,
-                autoPostProcessorScheduler,
-                postProcessorTaskScheduler,
+                daily_search_scheduler,
+                backlog_search_scheduler,
+                show_update_scheduler,
+                version_check_scheduler,
+                show_queue_scheduler,
+                search_queue_scheduler,
+                auto_post_processor_scheduler,
+                post_processor_task_scheduler,
                 traktCheckerScheduler,
-                properFinderScheduler,
-                subtitlesFinderScheduler,
+                proper_search_scheduler,
+                subtitles_search_scheduler,
                 events
             ]
 

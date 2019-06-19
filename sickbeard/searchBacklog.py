@@ -102,7 +102,7 @@ class BacklogSearcher(object):
                 self.currentSearchInfo = {'title': curShow.name + " Season " + str(season)}
 
                 backlog_queue_item = search_queue.BacklogQueueItem(curShow, segment)
-                sickbeard.searchQueueScheduler.action.add_item(backlog_queue_item)  # @UndefinedVariable
+                sickbeard.search_queue_scheduler.action.add_item(backlog_queue_item)  # @UndefinedVariable
 
             if not segments:
                 logger.log("Nothing needs to be downloaded for {0}, skipping".format(curShow.name), logger.DEBUG)

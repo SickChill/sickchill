@@ -49,7 +49,7 @@ class Show(object):
 
         if show:
             try:
-                sickbeard.showQueueScheduler.action.remove_show(show, bool(remove_files))
+                sickbeard.show_queue_scheduler.action.remove_show(show, bool(remove_files))
             except CantRemoveShowException as exception:
                 return ex(exception), show
 
@@ -162,7 +162,7 @@ class Show(object):
             return error, show
 
         try:
-            sickbeard.showQueueScheduler.action.refresh_show(show)
+            sickbeard.show_queue_scheduler.action.refresh_show(show)
         except CantRefreshShowException as exception:
             return ex(exception), show
 

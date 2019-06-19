@@ -34,7 +34,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import sickbeard
 from sickbeard.helpers import make_dirs
 from sickbeard.name_cache import addNameToCache
-from sickbeard.postProcessor import PostProcessor
+from sickbeard.post_processor import PostProcessor
 from sickbeard.tv import TVEpisode, TVShow
 
 import tests.test_lib as test

@@ -260,7 +260,7 @@ class Manage(Home, WebRoot):
         show_obj = Show.find(sickbeard.showList, int(indexer_id))
 
         if show_obj:
-            sickbeard.backlogSearchScheduler.action.searchBacklog([show_obj])
+            sickbeard.backlog_search_scheduler.action.searchBacklog([show_obj])
 
         return self.redirect("/manage/backlogOverview/")
 
@@ -529,18 +529,18 @@ class Manage(Home, WebRoot):
                 continue
 
             if curShowID in toDelete:
-                sickbeard.showQueueScheduler.action.remove_show(show_obj, True)
+                sickbeard.show_queue_scheduler.action.remove_show(show_obj, True)
                 # don't do anything else if it's being deleted
                 continue
 
             if curShowID in toRemove:
-                sickbeard.showQueueScheduler.action.remove_show(show_obj)
+                sickbeard.show_queue_scheduler.action.remove_show(show_obj)
                 # don't do anything else if it's being remove
                 continue
 
             if curShowID in toUpdate:
                 try:
-                    sickbeard.showQueueScheduler.action.update_show(show_obj, True)
+                    sickbeard.show_queue_scheduler.action.update_show(show_obj, True)
                     updates.append(show_obj.name)
                 except CantUpdateShowException as e:
                     errors.append(_("Unable to update show: {exception_format}").format(exception_format=e))
@@ -548,17 +548,17 @@ class Manage(Home, WebRoot):
             # don't bother refreshing shows that were updated anyway
             if curShowID in toRefresh and curShowID not in toUpdate:
                 try:
-                    sickbeard.showQueueScheduler.action.refresh_show(show_obj)
+                    sickbeard.show_queue_scheduler.action.refresh_show(show_obj)
                     refreshes.append(show_obj.name)
                 except CantRefreshShowException as e:
                     errors.append(_("Unable to refresh show {show_name}: {exception_format}").format(show_name=show_obj.name, exception_format=e))
 
             if curShowID in toRename:
-                sickbeard.showQueueScheduler.action.rename_show_episodes(show_obj)
+                sickbeard.show_queue_scheduler.action.rename_show_episodes(show_obj)
                 renames.append(show_obj.name)
 
             if curShowID in toSubtitle:
-                sickbeard.showQueueScheduler.action.download_subtitles(show_obj)
+                sickbeard.show_queue_scheduler.action.download_subtitles(show_obj)
                 subtitles.append(show_obj.name)
 
         if errors:

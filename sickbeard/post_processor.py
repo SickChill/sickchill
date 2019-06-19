@@ -17,7 +17,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=too-many-lines
 
 from __future__ import print_function, unicode_literals
 
@@ -49,7 +48,7 @@ METHOD_SYMLINK_REVERSED = "symlink_reversed"
 PROCESS_METHODS = [METHOD_COPY, METHOD_MOVE, METHOD_HARDLINK, METHOD_SYMLINK, METHOD_SYMLINK_REVERSED]
 
 
-class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
+class PostProcessor(object):
     """
     A class which will process a media file according to the post processing settings in the config.
     """
@@ -150,7 +149,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                       logger.DEBUG)
             return PostProcessor.DOESNT_EXIST
 
-    def list_associated_files(  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def list_associated_files(
             self, file_path, subtitles_only=False, subfolders=False, rename=False):
         """
         For a given file path searches for files with the same name but different extension and returns their absolute paths
@@ -282,6 +281,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 if not file_attribute & stat.S_IWRITE:
                     # File is read-only, so make it writeable
                     self._log('Read only mode on file ' + cur_file + ' Will try to make it writeable', logger.DEBUG)
+                    # noinspection PyBroadException
                     try:
                         ek(os.chmod, cur_file, stat.S_IWRITE)
                     except Exception:
@@ -292,9 +292,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 # do the library update for synoindex
                 notifiers.synoindex_notifier.deleteFile(cur_file)
 
-    def _combined_file_operation(self, file_path, new_path,  # pylint: disable=too-many-arguments, too-many-locals, too-many-branches
-                                 new_base_name, associated_files=False,
-                                 action=None, subtitles=False):
+    def _combined_file_operation(self, file_path, new_path, new_base_name, associated_files=False, action=None, subtitles=False):
         """
         Performs a generic operation (move or copy) on a file. Can rename the file as well as change its location,
         and optionally move associated files too.
@@ -362,7 +360,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
             action(cur_file_path, new_file_path)
 
-    def _move(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):  # pylint: disable=too-many-arguments
+    def _move(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):
         """
         Move file and set proper permissions
 
@@ -385,7 +383,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_move,
                                       subtitles=subtitles)
 
-    def _copy(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):  # pylint: disable=too-many-arguments
+    def _copy(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):
         """
         Copy file and set proper permissions
 
@@ -408,7 +406,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_copy,
                                       subtitles=subtitles)
 
-    def _hardlink(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):  # pylint: disable=too-many-arguments
+    def _hardlink(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):
         """
         Hardlink file and set proper permissions
 
@@ -430,7 +428,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_hard_link, subtitles=subtitles)
 
-    def _moveAndSymlink(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):  # pylint: disable=too-many-arguments
+    def _move_and_symlink(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):
         """
         Move file, symlink source location back to destination, and set proper permissions
 
@@ -440,7 +438,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         :param associated_files: Boolean, whether we should move similarly-named files too
         """
 
-        def _int_move_and_sym_link(cur_file_path, new_file_path):
+        def _int_move_and_symlink(cur_file_path, new_file_path):
 
             self._log("Moving then symbolic linking file from " + cur_file_path + " to " + new_file_path, logger.DEBUG)
             try:
@@ -451,9 +449,9 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files,
-                                      action=_int_move_and_sym_link, subtitles=subtitles)
+                                      action=_int_move_and_symlink, subtitles=subtitles)
 
-    def _symlink(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):  # pylint: disable=too-many-arguments
+    def _symlink(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):
         """
         symlink destination to source location, and set proper permissions
 
@@ -463,7 +461,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         :param associated_files: Boolean, whether we should move similarly-named files too
         """
 
-        def _int_sym_link(cur_file_path, new_file_path):
+        def _int_symlink(cur_file_path, new_file_path):
 
             self._log("Creating then symbolic linking file from " + new_file_path + " to " + cur_file_path, logger.DEBUG)
             try:
@@ -474,7 +472,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files,
-                                      action=_int_sym_link, subtitles=subtitles)
+                                      action=_int_symlink, subtitles=subtitles)
 
     def _history_lookup(self):
         """
@@ -633,7 +631,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             except Exception as e:
                 self._log("exception msg: " + str(e))
 
-    def _find_info(self):  # pylint: disable=too-many-locals, too-many-branches
+    def _find_info(self):
         """
         For a given file try to find the showid, season, and episode.
 
@@ -895,7 +893,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             except Exception as e:
                 self._log("Unable to run extra_script: {0}".format(ex(e)))
 
-    def _is_priority(self, ep_obj, new_ep_quality):  # pylint: disable=too-many-return-statements
+    def _is_priority(self, ep_obj, new_ep_quality):
         """
         Determines if the episode is a priority download or not (if it is expected). Episodes which are expected
         (snatched) or larger than the existing episode are priority, others are not.
@@ -940,7 +938,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         return False
 
-    def process(self):  # pylint: disable=too-many-return-statements, too-many-locals, too-many-branches, too-many-statements
+    def process(self):
         """
         Post-process a given file
 
@@ -1051,7 +1049,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         if sickbeard.USE_FREE_SPACE_CHECK:
             if not helpers.is_file_locked(self.file_path):
                 # noinspection PyProtectedMember
-                if not verify_freespace(self.file_path, ep_obj.show._location, [ep_obj] + ep_obj.relatedEps, method=self.process_method):  # pylint: disable=protected-access
+                if not verify_freespace(self.file_path, ep_obj.show._location, [ep_obj] + ep_obj.relatedEps, method=self.process_method):
                     self._log("Not enough space to continue PP, exiting", logger.WARNING)
                     return False
             else:
@@ -1065,7 +1063,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 # clean up any left over folders
                 if cur_ep.location:
                     # noinspection PyProtectedMember
-                    helpers.delete_empty_folders(ek(os.path.dirname, cur_ep.location), keep_dir=ep_obj.show._location)  # pylint: disable=protected-access
+                    helpers.delete_empty_folders(ek(os.path.dirname, cur_ep.location), keep_dir=ep_obj.show._location)
             except (OSError, IOError):
                 raise EpisodePostProcessingFailedException("Unable to delete the existing files")
 
@@ -1075,20 +1073,20 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
 
         # if the show directory doesn't exist then make it if allowed
         # noinspection PyProtectedMember
-        if not ek(os.path.isdir, ep_obj.show._location) and sickbeard.CREATE_MISSING_SHOW_DIRS:  # pylint: disable=protected-access
+        if not ek(os.path.isdir, ep_obj.show._location) and sickbeard.CREATE_MISSING_SHOW_DIRS:
             self._log("Show directory doesn't exist, creating it", logger.DEBUG)
             try:
                 # noinspection PyProtectedMember
-                ek(os.mkdir, ep_obj.show._location)  # pylint: disable=protected-access
+                ek(os.mkdir, ep_obj.show._location)
                 # noinspection PyProtectedMember
-                helpers.chmodAsParent(ep_obj.show._location)  # pylint: disable=protected-access
+                helpers.chmodAsParent(ep_obj.show._location)
 
                 # do the library update for synoindex
                 # noinspection PyProtectedMember
-                notifiers.synoindex_notifier.addFolder(ep_obj.show._location)  # pylint: disable=protected-access
+                notifiers.synoindex_notifier.addFolder(ep_obj.show._location)
             except (OSError, IOError):
                 # noinspection PyProtectedMember
-                raise EpisodePostProcessingFailedException("Unable to create the show directory: " + ep_obj.show._location)  # pylint: disable=protected-access
+                raise EpisodePostProcessingFailedException("Unable to create the show directory: " + ep_obj.show._location)
 
             # get metadata for the show (but not episode because it hasn't been fully processed)
             ep_obj.show.writeMetadata(True)
@@ -1183,8 +1181,8 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             elif self.process_method == METHOD_SYMLINK:
                 if helpers.is_file_locked(self.file_path, True):
                     raise EpisodePostProcessingFailedException("File is locked for reading/writing")
-                self._moveAndSymlink(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
-                                     sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
+                self._move_and_symlink(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
+                                       sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             elif self.process_method == METHOD_SYMLINK_REVERSED:
                 self._symlink(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
                               sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
@@ -1215,6 +1213,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
             os.popen('icacls "' + ep_obj._location + '"* /reset /T')
 
         # generate nfo/tbn
+        # noinspection PyBroadException
         try:
             ep_obj.createMetaFiles()
         except Exception:
@@ -1224,10 +1223,11 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         history.logDownload(ep_obj, self.file_path, new_ep_quality, self.release_group, new_ep_version)
 
         # If any notification fails, don't stop postProcessor
+        # noinspection PyBroadException
         try:
             # send notifications
             # noinspection PyProtectedMember
-            notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))  # pylint: disable=protected-access
+            notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
 
             # do the library update for KODI
             notifiers.kodi_notifier.update_library(ep_obj.show.name)
@@ -1255,10 +1255,11 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
         self._run_extra_scripts(ep_obj)
 
         # If any notification fails, don't stop postProcessor
+        # noinspection PyBroadException
         try:
             # send notifications
             # noinspection PyProtectedMember
-            notifiers.email_notifier.notify_postprocess(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))  # pylint: disable=protected-access
+            notifiers.email_notifier.notify_postprocess(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
         except Exception:
             logger.log("Some notifications could not be sent. Finishing postProcessing...")
 

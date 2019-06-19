@@ -22,21 +22,23 @@ from __future__ import print_function, unicode_literals
 
 import cgi
 import os
-import warnings
 
 import sickbeard
 from sickbeard import common
 from sickchill.helper.encoding import ek
 
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
+try:
+    import pgi
+    pgi.require_version('Notify', '0.7')
+    from pgi.repository import Notify
+except (ImportError, Exception):
     try:
-        from pgi.repository import Notify
+        # noinspection PyPackageRequirements
+        import gi
+        gi.require_version('Notify', '0.7')
+        from gi.repository import Notify
     except (ImportError, Exception):
-        try:
-            from gi.repository import Notify
-        except (ImportError, Exception):
-            Notify = None
+        Notify = None
 
 
 class Notifier(object):

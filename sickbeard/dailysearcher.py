@@ -106,6 +106,6 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
 
         # queue episode for daily search
         dailysearch_queue_item = sickbeard.search_queue.DailySearchQueueItem()
-        sickbeard.searchQueueScheduler.action.add_item(dailysearch_queue_item)
+        sickbeard.search_queue_scheduler.action.add_item(dailysearch_queue_item)
 
         self.amActive = False

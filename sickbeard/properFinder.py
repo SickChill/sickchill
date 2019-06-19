@@ -58,8 +58,8 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
         self._set_lastProperSearch(datetime.datetime.today().toordinal())
 
         run_at = ""
-        if None is sickbeard.properFinderScheduler.start_time:
-            run_in = sickbeard.properFinderScheduler.lastRun + sickbeard.properFinderScheduler.cycleTime - datetime.datetime.now()
+        if None is sickbeard.proper_search_scheduler.start_time:
+            run_in = sickbeard.proper_search_scheduler.lastRun + sickbeard.proper_search_scheduler.cycleTime - datetime.datetime.now()
             hours, remainder = divmod(run_in.seconds, 3600)
             minutes, seconds = divmod(remainder, 60)
             run_at = ", next check in approx. " + (

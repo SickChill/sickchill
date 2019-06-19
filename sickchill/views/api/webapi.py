@@ -36,7 +36,7 @@ import sickbeard
 from sickbeard import classes, db, helpers, image_cache, logger, network_timezones, sbdatetime, search_queue, ui
 from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN,
                               WANTED)
-from sickbeard.postProcessor import PROCESS_METHODS
+from sickbeard.post_processor import PROCESS_METHODS
 from sickbeard.versionChecker import CheckVersion
 from sickchill.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
 from sickchill.helper.encoding import ek
@@ -822,7 +822,7 @@ class CMDEpisodeSearch(ApiCall):
 
         # make a queue item for it and put it on the queue
         ep_queue_item = search_queue.ManualSearchQueueItem(show_obj, ep_obj)
-        sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
+        sickbeard.search_queue_scheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
 
         # wait until the queue item tells us whether it worked or not
         while ep_queue_item.success is None:  # @UndefinedVariable
@@ -886,11 +886,11 @@ class CMDFullSubtitleSearch(AbstractStartScheduler):
 
     @property
     def scheduler(self):
-        return sickbeard.subtitlesFinderScheduler
+        return sickbeard.subtitles_search_scheduler
 
     @property
     def scheduler_class_str(self):
-        return 'sickbeard.subtitlesFinderScheduler'
+        return 'sickbeard.subtitles_search_scheduler'
 
 
 class CMDProperSearch(AbstractStartScheduler):
@@ -901,11 +901,11 @@ class CMDProperSearch(AbstractStartScheduler):
 
     @property
     def scheduler(self):
-        return sickbeard.properFinderScheduler
+        return sickbeard.proper_search_scheduler
 
     @property
     def scheduler_class_str(self):
-        return 'sickbeard.properFinderScheduler'
+        return 'sickbeard.proper_search_scheduler'
 
 
 class CMDDailySearch(AbstractStartScheduler):
@@ -916,11 +916,11 @@ class CMDDailySearch(AbstractStartScheduler):
 
     @property
     def scheduler(self):
-        return sickbeard.dailySearchScheduler
+        return sickbeard.daily_search_scheduler
 
     @property
     def scheduler_class_str(self):
-        return 'sickbeard.dailySearchScheduler'
+        return 'sickbeard.daily_search_scheduler'
 
 
 # noinspection PyAbstractClass
@@ -1029,7 +1029,7 @@ class CMDEpisodeSetStatus(ApiCall):
             # noinspection PyCompatibility
             for season, segment in six.iteritems(segments):
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(show_obj, segment)
-                sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)  # @UndefinedVariable
+                sickbeard.search_queue_scheduler.action.add_item(cur_backlog_queue_item)  # @UndefinedVariable
 
                 logger.log("API :: Starting backlog for " + show_obj.name + " season " + str(
                     season) + " because some episodes were set to WANTED")
@@ -1408,7 +1408,7 @@ class CMDPostProcess(ApiCall):
         if not self.type:
             self.type = 'manual'
 
-        data = sickbeard.postProcessorTaskScheduler.action.add_item(
+        data = sickbeard.post_processor_task_scheduler.action.add_item(
             self.path, method=self.process_method, force=self.force_replace,
             is_priority=self.is_priority, failed=self.failed, delete=self.delete,
             mode=self.type, force_next=self.force_next
@@ -1537,9 +1537,9 @@ class CMDSickBeardCheckScheduler(ApiCall):
         main_db_con = db.DBConnection(row_type="dict")
         sql_results = main_db_con.select("SELECT last_backlog FROM info")
 
-        backlog_paused = sickbeard.searchQueueScheduler.action.is_backlog_paused()  # @UndefinedVariable
-        backlog_running = sickbeard.searchQueueScheduler.action.is_backlog_in_progress()  # @UndefinedVariable
-        next_backlog = sickbeard.backlogSearchScheduler.nextRun().strftime(dateFormat).decode(sickbeard.SYS_ENCODING)
+        backlog_paused = sickbeard.search_queue_scheduler.action.is_backlog_paused()  # @UndefinedVariable
+        backlog_running = sickbeard.search_queue_scheduler.action.is_backlog_in_progress()  # @UndefinedVariable
+        next_backlog = sickbeard.backlog_search_scheduler.nextRun().strftime(dateFormat).decode(sickbeard.SYS_ENCODING)
 
         data = {
             "backlog_is_paused": int(backlog_paused), "backlog_is_running": int(backlog_running),
@@ -1666,10 +1666,10 @@ class CMDSickBeardPauseBacklog(ApiCall):
     def run(self):
         """ Pause or un-pause the backlog search """
         if self.pause:
-            sickbeard.searchQueueScheduler.action.pause_backlog()  # @UndefinedVariable
+            sickbeard.search_queue_scheduler.action.pause_backlog()  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg="Backlog paused")
         else:
-            sickbeard.searchQueueScheduler.action.unpause_backlog()  # @UndefinedVariable
+            sickbeard.search_queue_scheduler.action.unpause_backlog()  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg="Backlog un-paused")
 
 
@@ -2099,7 +2099,7 @@ class CMDShowAddExisting(ApiCall):
         if i_quality_id or a_quality_id:
             new_quality = Quality.combineQualities(i_quality_id, a_quality_id)
 
-        sickbeard.showQueueScheduler.action.add_show(
+        sickbeard.show_queue_scheduler.action.add_show(
             int(indexer), int(self.indexerid), self.location,
             default_status=sickbeard.STATUS_DEFAULT, quality=new_quality,
             season_folders=int(self.season_folders), subtitles=self.subtitles,
@@ -2256,7 +2256,7 @@ class CMDShowAddNew(ApiCall):
             else:
                 helpers.chmodAsParent(show_path)
 
-        sickbeard.showQueueScheduler.action.add_show(
+        sickbeard.show_queue_scheduler.action.add_show(
             int(indexer), int(self.indexerid), show_path, default_status=new_status,
             quality=new_quality, season_folders=int(self.season_folders),
             lang=self.lang, subtitles=self.subtitles, anime=self.anime,
@@ -2803,7 +2803,7 @@ class CMDShowUpdate(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         try:
-            sickbeard.showQueueScheduler.action.update_show(show_obj, True)  # @UndefinedVariable
+            sickbeard.show_queue_scheduler.action.update_show(show_obj, True)  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg=str(show_obj.name) + " has queued to be updated")
         except CantUpdateShowException as e:
             logger.log("API::Unable to update show: {0}".format(e), logger.DEBUG)

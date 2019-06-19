@@ -459,7 +459,7 @@ class AddShows(Home):
             return self.redirect('/home/')
 
         # add the show
-        sickbeard.showQueueScheduler.action.add_show(
+        sickbeard.show_queue_scheduler.action.add_show(
             indexer=1, indexer_id=indexer_id, showDir=show_dir, default_status=default_status, quality=quality,
             season_folders=season_folders, lang=indexer_lang, subtitles=subtitles, subtitles_sr_metadata=None,
             anime=anime, scene=scene, paused=None, blacklist=blacklist, whitelist=whitelist,
@@ -579,7 +579,7 @@ class AddShows(Home):
         newQuality = Quality.combineQualities([int(q) for q in anyQualities], [int(q) for q in bestQualities])
 
         # add the show
-        sickbeard.showQueueScheduler.action.add_show(
+        sickbeard.show_queue_scheduler.action.add_show(
             indexer, indexer_id, showDir=show_dir, default_status=int(defaultStatus), quality=newQuality,
             season_folders=season_folders, lang=indexerLang, subtitles=subtitles, subtitles_sr_metadata=subtitles_sr_metadata,
             anime=anime, scene=scene, paused=None, blacklist=blacklist, whitelist=whitelist,
@@ -647,7 +647,7 @@ class AddShows(Home):
 
             if indexer is not None and indexer_id is not None:
                 # add the show
-                sickbeard.showQueueScheduler.action.add_show(
+                sickbeard.show_queue_scheduler.action.add_show(
                     indexer, indexer_id, show_dir,
                     default_status=sickbeard.STATUS_DEFAULT,
                     quality=sickbeard.QUALITY_DEFAULT,

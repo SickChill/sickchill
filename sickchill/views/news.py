@@ -43,7 +43,7 @@ class HomeNews(Home):
     def index(self, *args_, **kwargs_):
         # noinspection PyBroadException
         try:
-            news = sickbeard.versionCheckScheduler.action.check_for_new_news()
+            news = sickbeard.version_check_scheduler.action.check_for_new_news()
         except Exception:
             logger.log('Could not load news from repo, giving a link!', logger.DEBUG)
             news = _('Could not load news from the repo. [Click here for news.md])({news_url})').format(news_url=sickbeard.NEWS_URL)

@@ -54,7 +54,7 @@ def setEpisodeToWanted(show, s, e):
             epObj.saveToDB()
 
         cur_backlog_queue_item = search_queue.BacklogQueueItem(show, [epObj])
-        sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
+        sickbeard.search_queue_scheduler.action.add_item(cur_backlog_queue_item)
 
         logger.log("Starting backlog search for {show} {ep} because some episodes were set to wanted".format
                    (show=show.name, ep=episode_num(s, e)))
@@ -372,7 +372,7 @@ class TraktChecker(object):
                             continue
 
                         if progress.get('aired', True) == progress.get('completed', False):
-                            sickbeard.showQueueScheduler.action.remove_show(show, full=True)
+                            sickbeard.show_queue_scheduler.action.remove_show(show, full=True)
                             logger.log("Show: {0} has been removed from SickChill".format(show.name), logger.DEBUG)
 
             logger.log("SHOW_SICKCHILL::REMOVE::FINISH - Trakt Show Watchlist", logger.DEBUG)
@@ -475,12 +475,12 @@ class TraktChecker(object):
                 else:
                     helpers.chmodAsParent(showPath)
 
-                sickbeard.showQueueScheduler.action.add_show(int(indexer), int(indexer_id), showPath,
-                                                             default_status=status,
-                                                             quality=int(sickbeard.QUALITY_DEFAULT),
-                                                             season_folders=int(sickbeard.SEASON_FOLDERS_DEFAULT),
-                                                             paused=sickbeard.TRAKT_START_PAUSED,
-                                                             default_status_after=status)
+                sickbeard.show_queue_scheduler.action.add_show(int(indexer), int(indexer_id), showPath,
+                                                               default_status=status,
+                                                               quality=int(sickbeard.QUALITY_DEFAULT),
+                                                               season_folders=int(sickbeard.SEASON_FOLDERS_DEFAULT),
+                                                               paused=sickbeard.TRAKT_START_PAUSED,
+                                                               default_status_after=status)
             else:
                 logger.log("There was an error creating the show, no root directory setting found", logger.WARNING)
                 return

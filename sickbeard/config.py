@@ -361,7 +361,7 @@ def change_postprocessor_frequency(freq):
     if sickbeard.AUTOPOSTPROCESSOR_FREQUENCY < sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY:
         sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY
 
-    sickbeard.autoPostProcessorScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.AUTOPOSTPROCESSOR_FREQUENCY)
+    sickbeard.auto_post_processor_scheduler.cycleTime = datetime.timedelta(minutes=sickbeard.AUTOPOSTPROCESSOR_FREQUENCY)
     return True
 
 
@@ -376,7 +376,7 @@ def change_daily_search_frequency(freq):
     if sickbeard.DAILYSEARCH_FREQUENCY < sickbeard.MIN_DAILYSEARCH_FREQUENCY:
         sickbeard.DAILYSEARCH_FREQUENCY = sickbeard.MIN_DAILYSEARCH_FREQUENCY
 
-    sickbeard.dailySearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.DAILYSEARCH_FREQUENCY)
+    sickbeard.daily_search_scheduler.cycleTime = datetime.timedelta(minutes=sickbeard.DAILYSEARCH_FREQUENCY)
     return True
 
 
@@ -392,7 +392,7 @@ def change_backlog_frequency(freq):
     if sickbeard.BACKLOG_FREQUENCY < sickbeard.MIN_BACKLOG_FREQUENCY:
         sickbeard.BACKLOG_FREQUENCY = sickbeard.MIN_BACKLOG_FREQUENCY
 
-    sickbeard.backlogSearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.BACKLOG_FREQUENCY)
+    sickbeard.backlog_search_scheduler.cycleTime = datetime.timedelta(minutes=sickbeard.BACKLOG_FREQUENCY)
     return True
 
 
@@ -407,7 +407,7 @@ def change_update_frequency(freq):
     if sickbeard.UPDATE_FREQUENCY < sickbeard.MIN_UPDATE_FREQUENCY:
         sickbeard.UPDATE_FREQUENCY = sickbeard.MIN_UPDATE_FREQUENCY
 
-    sickbeard.versionCheckScheduler.cycleTime = datetime.timedelta(hours=sickbeard.UPDATE_FREQUENCY)
+    sickbeard.version_check_scheduler.cycleTime = datetime.timedelta(hours=sickbeard.UPDATE_FREQUENCY)
     return True
 
 
@@ -424,7 +424,7 @@ def change_showupdate_hour(freq):
     elif sickbeard.SHOWUPDATE_HOUR < 0:
         sickbeard.SHOWUPDATE_HOUR = 0
 
-    sickbeard.showUpdateScheduler.start_time = datetime.time(hour=sickbeard.SHOWUPDATE_HOUR)
+    sickbeard.show_update_scheduler.start_time = datetime.time(hour=sickbeard.SHOWUPDATE_HOUR)
     return True
 
 def change_subtitle_finder_frequency(subtitles_finder_frequency):
@@ -453,14 +453,14 @@ def change_version_notify(version_notify):
 
     sickbeard.VERSION_NOTIFY = version_notify
     if sickbeard.VERSION_NOTIFY:
-        if not sickbeard.versionCheckScheduler.enable:
+        if not sickbeard.version_check_scheduler.enable:
             logger.log("Starting VERSIONCHECK thread", logger.INFO)
-            sickbeard.versionCheckScheduler.silent = False
-            sickbeard.versionCheckScheduler.enable = True
-            sickbeard.versionCheckScheduler.forceRun()
+            sickbeard.version_check_scheduler.silent = False
+            sickbeard.version_check_scheduler.enable = True
+            sickbeard.version_check_scheduler.forceRun()
     else:
-        sickbeard.versionCheckScheduler.enable = False
-        sickbeard.versionCheckScheduler.silent = True
+        sickbeard.version_check_scheduler.enable = False
+        sickbeard.version_check_scheduler.silent = True
         logger.log("Stopping VERSIONCHECK thread", logger.INFO)
 
     return True
@@ -479,13 +479,13 @@ def change_download_propers(download_propers):
 
     sickbeard.DOWNLOAD_PROPERS = download_propers
     if sickbeard.DOWNLOAD_PROPERS:
-        if not sickbeard.properFinderScheduler.enable:
+        if not sickbeard.proper_search_scheduler.enable:
             logger.log("Starting PROPERFINDER thread", logger.INFO)
-            sickbeard.properFinderScheduler.silent = False
-            sickbeard.properFinderScheduler.enable = True
+            sickbeard.proper_search_scheduler.silent = False
+            sickbeard.proper_search_scheduler.enable = True
     else:
-        sickbeard.properFinderScheduler.enable = False
-        sickbeard.properFinderScheduler.silent = True
+        sickbeard.proper_search_scheduler.enable = False
+        sickbeard.proper_search_scheduler.silent = True
         logger.log("Stopping PROPERFINDER thread", logger.INFO)
 
     return True
@@ -529,13 +529,13 @@ def change_use_subtitles(use_subtitles):
 
     sickbeard.USE_SUBTITLES = use_subtitles
     if sickbeard.USE_SUBTITLES:
-        if not sickbeard.subtitlesFinderScheduler.enable:
+        if not sickbeard.subtitles_search_scheduler.enable:
             logger.log("Starting SUBTITLESFINDER thread", logger.INFO)
-            sickbeard.subtitlesFinderScheduler.silent = False
-            sickbeard.subtitlesFinderScheduler.enable = True
+            sickbeard.subtitles_search_scheduler.silent = False
+            sickbeard.subtitles_search_scheduler.enable = True
     else:
-        sickbeard.subtitlesFinderScheduler.enable = False
-        sickbeard.subtitlesFinderScheduler.silent = True
+        sickbeard.subtitles_search_scheduler.enable = False
+        sickbeard.subtitles_search_scheduler.silent = True
         logger.log("Stopping SUBTITLESFINDER thread", logger.DEBUG)
 
     return True
@@ -554,14 +554,14 @@ def change_process_automatically(process_automatically):
 
     sickbeard.PROCESS_AUTOMATICALLY = process_automatically
     if sickbeard.PROCESS_AUTOMATICALLY:
-        if not sickbeard.autoPostProcessorScheduler.enable:
+        if not sickbeard.auto_post_processor_scheduler.enable:
             logger.log("Starting POSTPROCESSOR thread", logger.INFO)
-            sickbeard.autoPostProcessorScheduler.silent = False
-            sickbeard.autoPostProcessorScheduler.enable = True
+            sickbeard.auto_post_processor_scheduler.silent = False
+            sickbeard.auto_post_processor_scheduler.enable = True
     else:
         logger.log("Stopping POSTPROCESSOR thread", logger.INFO)
-        sickbeard.autoPostProcessorScheduler.enable = False
-        sickbeard.autoPostProcessorScheduler.silent = True
+        sickbeard.auto_post_processor_scheduler.enable = False
+        sickbeard.auto_post_processor_scheduler.silent = True
 
     return True
 

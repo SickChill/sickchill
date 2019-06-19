@@ -657,8 +657,8 @@ class Home(WebRoot):
         if str(pid) != str(sickbeard.PID):
             return self.redirect('/home/')
 
-        sickbeard.versionCheckScheduler.action.check_for_new_version(force=True)
-        sickbeard.versionCheckScheduler.action.check_for_new_news()
+        sickbeard.version_check_scheduler.action.check_for_new_version(force=True)
+        sickbeard.version_check_scheduler.action.check_for_new_news()
 
         return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
@@ -692,7 +692,7 @@ class Home(WebRoot):
     def fetchRemoteBranches():
         response = []
         try:
-            gh_branches = sickbeard.versionCheckScheduler.action.list_remote_branches()
+            gh_branches = sickbeard.version_check_scheduler.action.list_remote_branches()
         except GithubException:
             gh_branches = None
 
@@ -772,29 +772,29 @@ class Home(WebRoot):
 
         show_message = ''
 
-        if sickbeard.showQueueScheduler.action.is_being_added(show_obj):
+        if sickbeard.show_queue_scheduler.action.is_being_added(show_obj):
             show_message = _('This show is in the process of being downloaded - the info below is incomplete.')
 
-        elif sickbeard.showQueueScheduler.action.is_being_updated(show_obj):
+        elif sickbeard.show_queue_scheduler.action.is_being_updated(show_obj):
             show_message = _('The information on this page is in the process of being updated.')
 
-        elif sickbeard.showQueueScheduler.action.is_being_refreshed(show_obj):
+        elif sickbeard.show_queue_scheduler.action.is_being_refreshed(show_obj):
             show_message = _('The episodes below are currently being refreshed from disk')
 
-        elif sickbeard.showQueueScheduler.action.is_being_subtitled(show_obj):
+        elif sickbeard.show_queue_scheduler.action.is_being_subtitled(show_obj):
             show_message = _('Currently downloading subtitles for this show')
 
-        elif sickbeard.showQueueScheduler.action.is_in_refresh_queue(show_obj):
+        elif sickbeard.show_queue_scheduler.action.is_in_refresh_queue(show_obj):
             show_message = _('This show is queued to be refreshed.')
 
-        elif sickbeard.showQueueScheduler.action.is_in_update_queue(show_obj):
+        elif sickbeard.show_queue_scheduler.action.is_in_update_queue(show_obj):
             show_message = _('This show is queued and awaiting an update.')
 
-        elif sickbeard.showQueueScheduler.action.is_in_subtitle_queue(show_obj):
+        elif sickbeard.show_queue_scheduler.action.is_in_subtitle_queue(show_obj):
             show_message = _('This show is queued and awaiting subtitles download.')
 
-        if not sickbeard.showQueueScheduler.action.is_being_added(show_obj):
-            if not sickbeard.showQueueScheduler.action.is_being_updated(show_obj):
+        if not sickbeard.show_queue_scheduler.action.is_being_added(show_obj):
+            if not sickbeard.show_queue_scheduler.action.is_being_updated(show_obj):
                 if show_obj.paused:
                     submenu.append({'title': _('Resume'), 'path': 'home/togglePause?show={0:d}'.format(show_obj.indexerid), 'icon': 'fa fa-play'})
                 else:
@@ -846,7 +846,7 @@ class Home(WebRoot):
 
                 submenu.append({'title': _('Preview Rename'), 'path': 'home/testRename?show={0:d}'.format(show_obj.indexerid), 'icon': 'fa fa-tag'})
 
-                if sickbeard.USE_SUBTITLES and show_obj.subtitles and not sickbeard.showQueueScheduler.action.is_being_subtitled(show_obj):
+                if sickbeard.USE_SUBTITLES and show_obj.subtitles and not sickbeard.show_queue_scheduler.action.is_being_subtitled(show_obj):
                     # noinspection PyPep8
                     submenu.append(
                         {'title': _('Download Subtitles'), 'path': 'home/subtitleShow?show={0:d}'.format(show_obj.indexerid), 'icon': 'fa fa-language'})
@@ -1088,7 +1088,7 @@ class Home(WebRoot):
             if bool(show_obj.season_folders) != season_folders:
                 show_obj.season_folders = season_folders
                 try:
-                    sickbeard.showQueueScheduler.action.refresh_show(show_obj)
+                    sickbeard.show_queue_scheduler.action.refresh_show(show_obj)
                 except CantRefreshShowException as e:
                     errors.append(_("Unable to refresh this show: {error}").format(error=e))
 
@@ -1123,7 +1123,7 @@ class Home(WebRoot):
                     try:
                         show_obj.location = location
                         try:
-                            sickbeard.showQueueScheduler.action.refresh_show(show_obj)
+                            sickbeard.show_queue_scheduler.action.refresh_show(show_obj)
                         except CantRefreshShowException as e:
                             errors.append(_("Unable to refresh this show: {error}").format(error=e))
                             # grab updated info from TVDB
@@ -1141,7 +1141,7 @@ class Home(WebRoot):
         # force the update
         if do_update:
             try:
-                sickbeard.showQueueScheduler.action.update_show(show_obj, True)
+                sickbeard.show_queue_scheduler.action.update_show(show_obj, True)
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
             except CantUpdateShowException as e:
                 errors.append(_("Unable to update show: {error}").format(error=e))
@@ -1232,7 +1232,7 @@ class Home(WebRoot):
 
         # force the update
         try:
-            sickbeard.showQueueScheduler.action.update_show(show_obj, bool(force))
+            sickbeard.show_queue_scheduler.action.update_show(show_obj, bool(force))
         except CantUpdateShowException as e:
             ui.notifications.error(_("Unable to update this show."), ex(e))
 
@@ -1252,7 +1252,7 @@ class Home(WebRoot):
             return self._genericMessage(_("Error"), _("Unable to find the specified show"))
 
         # search and download subtitles
-        sickbeard.showQueueScheduler.action.download_subtitles(show_obj, bool(force))
+        sickbeard.show_queue_scheduler.action.download_subtitles(show_obj, bool(force))
 
         time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
@@ -1424,7 +1424,7 @@ class Home(WebRoot):
 
             for season, segment in six.iteritems(segments):
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(show_obj, segment)
-                sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
+                sickbeard.search_queue_scheduler.action.add_item(cur_backlog_queue_item)
 
                 msg += "<li>" + _("Season") + " " + str(season) + "</li>"
                 logger.log("Sending backlog for " + show_obj.name + " season " + str(
@@ -1443,7 +1443,7 @@ class Home(WebRoot):
 
             for season, segment in six.iteritems(segments):
                 cur_failed_queue_item = search_queue.FailedQueueItem(show_obj, segment)
-                sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)
+                sickbeard.search_queue_scheduler.action.add_item(cur_failed_queue_item)
 
                 msg += "<li>" + _("Season") + " " + str(season) + "</li>"
                 logger.log("Retrying Search for " + show_obj.name + " season " + str(
@@ -1572,7 +1572,7 @@ class Home(WebRoot):
         # make a queue item for it and put it on the queue
         ep_queue_item = search_queue.ManualSearchQueueItem(ep_obj.show, ep_obj, bool(int(downCurQuality)))
 
-        sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)
+        sickbeard.search_queue_scheduler.action.add_item(ep_queue_item)
 
         if not ep_queue_item.started and ep_queue_item.success is None:
             return json.dumps(
@@ -1638,13 +1638,13 @@ class Home(WebRoot):
 
         # Queued Searches
         searchstatus = 'Queued'
-        for searchThread in sickbeard.searchQueueScheduler.action.get_all_ep_from_queue(show):
+        for searchThread in sickbeard.search_queue_scheduler.action.get_all_ep_from_queue(show):
             episodes += getEpisodes(searchThread, searchstatus)
 
         # Running Searches
         searchstatus = 'Searching'
-        if sickbeard.searchQueueScheduler.action.is_manualsearch_in_progress():
-            searchThread = sickbeard.searchQueueScheduler.action.currentItem
+        if sickbeard.search_queue_scheduler.action.is_manualsearch_in_progress():
+            searchThread = sickbeard.search_queue_scheduler.action.currentItem
 
             if searchThread.success:
                 searchstatus = 'Finished'
@@ -1815,7 +1815,7 @@ class Home(WebRoot):
 
         # make a queue item for it and put it on the queue
         ep_queue_item = search_queue.FailedQueueItem(ep_obj.show, [ep_obj], bool(int(downCurQuality)))
-        sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)
+        sickbeard.search_queue_scheduler.action.add_item(ep_queue_item)
 
         if not ep_queue_item.started and ep_queue_item.success is None:
             return json.dumps(

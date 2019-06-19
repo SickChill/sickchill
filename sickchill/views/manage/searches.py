@@ -41,20 +41,20 @@ class ManageSearches(Manage):
 
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="manage_manageSearches.mako")
-        # t.backlogPI = sickbeard.backlogSearchScheduler.action.getProgressIndicator()
+        # t.backlogPI = sickbeard.backlog_search_scheduler.action.getProgressIndicator()
 
-        return t.render(backlogPaused=sickbeard.searchQueueScheduler.action.is_backlog_paused(),
-                        backlogRunning=sickbeard.searchQueueScheduler.action.is_backlog_in_progress(),
-                        dailySearchStatus=sickbeard.dailySearchScheduler.action.amActive,
-                        findPropersStatus=sickbeard.properFinderScheduler.action.amActive,
-                        queueLength=sickbeard.searchQueueScheduler.action.queue_length(),
-                        subtitlesFinderStatus=sickbeard.subtitlesFinderScheduler.action.amActive,
+        return t.render(backlogPaused=sickbeard.search_queue_scheduler.action.is_backlog_paused(),
+                        backlogRunning=sickbeard.search_queue_scheduler.action.is_backlog_in_progress(),
+                        dailySearchStatus=sickbeard.daily_search_scheduler.action.amActive,
+                        findPropersStatus=sickbeard.proper_search_scheduler.action.amActive,
+                        queueLength=sickbeard.search_queue_scheduler.action.queue_length(),
+                        subtitlesFinderStatus=sickbeard.subtitles_search_scheduler.action.amActive,
                         title=_('Manage Searches'), header=_('Manage Searches'), topmenu='manage',
                         controller="manage", action="manageSearches")
 
     def forceBacklog(self):
         # force it to run the next time it looks
-        result = sickbeard.backlogSearchScheduler.forceRun()
+        result = sickbeard.backlog_search_scheduler.forceRun()
         if result:
             logger.log("Backlog search forced")
             ui.notifications.message(_('Backlog search started'))
@@ -64,7 +64,7 @@ class ManageSearches(Manage):
     def forceSearch(self):
 
         # force it to run the next time it looks
-        result = sickbeard.dailySearchScheduler.forceRun()
+        result = sickbeard.daily_search_scheduler.forceRun()
         if result:
             logger.log("Daily search forced")
             ui.notifications.message(_('Daily search started'))
@@ -73,7 +73,7 @@ class ManageSearches(Manage):
 
     def forceFindPropers(self):
         # force it to run the next time it looks
-        result = sickbeard.properFinderScheduler.forceRun()
+        result = sickbeard.proper_search_scheduler.forceRun()
         if result:
             logger.log("Find propers search forced")
             ui.notifications.message(_('Find propers search started'))
@@ -82,7 +82,7 @@ class ManageSearches(Manage):
 
     def forceSubtitlesFinder(self):
         # force it to run the next time it looks
-        result = sickbeard.subtitlesFinderScheduler.forceRun()
+        result = sickbeard.subtitles_search_scheduler.forceRun()
         if result:
             logger.log("Subtitle search forced")
             ui.notifications.message(_('Subtitle search started'))
@@ -91,8 +91,8 @@ class ManageSearches(Manage):
 
     def pauseBacklog(self, paused=None):
         if paused == "1":
-            sickbeard.searchQueueScheduler.action.pause_backlog()
+            sickbeard.search_queue_scheduler.action.pause_backlog()
         else:
-            sickbeard.searchQueueScheduler.action.unpause_backlog()
+            sickbeard.search_queue_scheduler.action.unpause_backlog()
 
         return self.redirect("/manage/manageSearches/")

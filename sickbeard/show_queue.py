@@ -228,8 +228,8 @@ class ShowQueueItem(generic_queue.QueueItem):
         self.show = show
 
     def is_in_queue(self):
-        return self in sickbeard.showQueueScheduler.action.queue + [
-            sickbeard.showQueueScheduler.action.currentItem]
+        return self in sickbeard.show_queue_scheduler.action.queue + [
+            sickbeard.show_queue_scheduler.action.currentItem]
 
     @property
     def show_name(self):
@@ -505,7 +505,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
         # FIXME: This needs to be a backlog queue item!!!
         if self.show.default_ep_status == WANTED:
             logger.log('Launching backlog for this show since its episodes are WANTED')
-            sickbeard.backlogSearchScheduler.action.searchBacklog([self.show])
+            sickbeard.backlog_search_scheduler.action.searchBacklog([self.show])
 
         self.show.writeMetadata()
         self.show.updateMetadata()
@@ -539,7 +539,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
 
     def _finish_early(self):
         if self.show is not None:
-            sickbeard.showQueueScheduler.action.remove_show(self.show)
+            sickbeard.show_queue_scheduler.action.remove_show(self.show)
 
         super(QueueItemAdd, self).finish()
         self.finish()
@@ -724,7 +724,7 @@ class QueueItemUpdate(ShowQueueItem):
 
         logger.log('Finished update of {0}'.format(self.show.name), logger.DEBUG)
 
-        sickbeard.showQueueScheduler.action.refresh_show(self.show, self.force)
+        sickbeard.show_queue_scheduler.action.refresh_show(self.show, self.force)
         super(QueueItemUpdate, self).finish()
         self.finish()
 

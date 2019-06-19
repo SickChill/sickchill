@@ -61,25 +61,25 @@
                         <tbody>
                             % for curShow in sorted(sickbeard.showList, key=lambda mbr: attrgetter('sort_name')(mbr)):
                             <%
-                                if sickbeard.showQueueScheduler.action.is_in_remove_queue(curShow) or sickbeard.showQueueScheduler.action.is_being_removed(curShow):
+                                if sickbeard.show_queue_scheduler.action.is_in_remove_queue(curShow) or sickbeard.show_queue_scheduler.action.is_being_removed(curShow):
                                     continue
 
-                                disabled = sickbeard.showQueueScheduler.action.is_being_updated(curShow) or sickbeard.showQueueScheduler.action.is_in_update_queue(curShow)
+                                disabled = sickbeard.show_queue_scheduler.action.is_being_updated(curShow) or sickbeard.show_queue_scheduler.action.is_in_update_queue(curShow)
                                 curUpdate = "<input type=\"checkbox\" class=\"updateCheck\" id=\"update-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 
-                                disabled = sickbeard.showQueueScheduler.action.is_being_refreshed(curShow) or sickbeard.showQueueScheduler.action.is_in_refresh_queue(curShow)
+                                disabled = sickbeard.show_queue_scheduler.action.is_being_refreshed(curShow) or sickbeard.show_queue_scheduler.action.is_in_refresh_queue(curShow)
                                 curRefresh = "<input type=\"checkbox\" class=\"refreshCheck\" id=\"refresh-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 
-                                disabled = sickbeard.showQueueScheduler.action.is_being_renamed(curShow) or sickbeard.showQueueScheduler.action.is_in_rename_queue(curShow)
+                                disabled = sickbeard.show_queue_scheduler.action.is_being_renamed(curShow) or sickbeard.show_queue_scheduler.action.is_in_rename_queue(curShow)
                                 curRename = "<input type=\"checkbox\" class=\"renameCheck\" id=\"rename-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 
-                                disabled = not curShow.subtitles or sickbeard.showQueueScheduler.action.is_being_subtitled(curShow) or sickbeard.showQueueScheduler.action.is_in_subtitle_queue(curShow)
+                                disabled = not curShow.subtitles or sickbeard.show_queue_scheduler.action.is_being_subtitled(curShow) or sickbeard.show_queue_scheduler.action.is_in_subtitle_queue(curShow)
                                 curSubtitle = "<input type=\"checkbox\" class=\"subtitleCheck\" id=\"subtitle-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 
-                                disabled = sickbeard.showQueueScheduler.action.is_being_renamed(curShow) or sickbeard.showQueueScheduler.action.is_in_rename_queue(curShow) or sickbeard.showQueueScheduler.action.is_in_refresh_queue(curShow)
+                                disabled = sickbeard.show_queue_scheduler.action.is_being_renamed(curShow) or sickbeard.show_queue_scheduler.action.is_in_rename_queue(curShow) or sickbeard.show_queue_scheduler.action.is_in_refresh_queue(curShow)
                                 curDelete = "<input type=\"checkbox\" class=\"confirm deleteCheck\" id=\"delete-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 
-                                disabled = sickbeard.showQueueScheduler.action.is_being_renamed(curShow) or sickbeard.showQueueScheduler.action.is_in_rename_queue(curShow) or sickbeard.showQueueScheduler.action.is_in_refresh_queue(curShow)
+                                disabled = sickbeard.show_queue_scheduler.action.is_being_renamed(curShow) or sickbeard.show_queue_scheduler.action.is_in_rename_queue(curShow) or sickbeard.show_queue_scheduler.action.is_in_refresh_queue(curShow)
                                 curRemove = "<input type=\"checkbox\" class=\"removeCheck\" id=\"remove-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
                             %>
                                 <tr>

@@ -69,7 +69,7 @@ class CheckVersion(object):
                     logger.log("New update found for SickChill, starting auto-updater ...")
                     ui.notifications.message(_('New update found for SickChill, starting auto-updater'))
                     if self.run_backup_if_safe():
-                        if sickbeard.versionCheckScheduler.action.update():
+                        if sickbeard.version_check_scheduler.action.update():
                             logger.log("Update was successful!")
                             ui.notifications.message(_('Update was successful'))
                             sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
@@ -179,7 +179,7 @@ class CheckVersion(object):
                 return False
 
         def postprocessor_safe():
-            if not sickbeard.autoPostProcessorScheduler.action.amActive:
+            if not sickbeard.auto_post_processor_scheduler.action.amActive:
                 logger.log("We can proceed with the update. Post-Processor is not running", logger.DEBUG)
                 return True
             else:
@@ -187,7 +187,7 @@ class CheckVersion(object):
                 return False
 
         def showupdate_safe():
-            if not sickbeard.showUpdateScheduler.action.amActive:
+            if not sickbeard.show_update_scheduler.action.amActive:
                 logger.log("We can proceed with the update. Shows are not being updated", logger.DEBUG)
                 return True
             else:

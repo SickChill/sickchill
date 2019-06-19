@@ -410,7 +410,7 @@ class ConfigTestChanges(unittest.TestCase):
         """
         Test change_postprocessor_frequency
         """
-        sickbeard.autoPostProcessorScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickbeard.auto_post_processor_scheduler = scheduler.Scheduler(lambda: None) # dummy
 
         config.change_postprocessor_frequency(0)
         self.assertEqual(sickbeard.AUTOPOSTPROCESSOR_FREQUENCY, sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY)
@@ -423,7 +423,7 @@ class ConfigTestChanges(unittest.TestCase):
         """
         Test change_daily_search_frequency
         """
-        sickbeard.dailySearchScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickbeard.daily_search_scheduler = scheduler.Scheduler(lambda: None) # dummy
 
         config.change_daily_search_frequency(0)
         self.assertEqual(sickbeard.DAILYSEARCH_FREQUENCY, sickbeard.MIN_DAILYSEARCH_FREQUENCY)
@@ -436,7 +436,7 @@ class ConfigTestChanges(unittest.TestCase):
         """
         Test change_backlog_frequency
         """
-        sickbeard.backlogSearchScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickbeard.backlog_search_scheduler = scheduler.Scheduler(lambda: None) # dummy
         sickbeard.DAILYSEARCH_FREQUENCY = sickbeard.DEFAULT_DAILYSEARCH_FREQUENCY # needed
 
         config.change_backlog_frequency(0)
@@ -450,7 +450,7 @@ class ConfigTestChanges(unittest.TestCase):
         """
         Test change_update_frequency
         """
-        sickbeard.versionCheckScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickbeard.version_check_scheduler = scheduler.Scheduler(lambda: None) # dummy
 
         config.change_update_frequency(0)
         self.assertEqual(sickbeard.UPDATE_FREQUENCY, sickbeard.MIN_UPDATE_FREQUENCY)
@@ -463,7 +463,7 @@ class ConfigTestChanges(unittest.TestCase):
         """
         Test change_showupdate_hour
         """
-        sickbeard.showUpdateScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickbeard.show_update_scheduler = scheduler.Scheduler(lambda: None) # dummy
 
         config.change_showupdate_hour(-2)
         self.assertEqual(sickbeard.SHOWUPDATE_HOUR, 0)
@@ -493,35 +493,35 @@ class ConfigTestChanges(unittest.TestCase):
             def __init__(self):
                 self.amActive = False
 
-        sickbeard.versionCheckScheduler = scheduler.Scheduler(dummy_action()) # dummy
+        sickbeard.version_check_scheduler = scheduler.Scheduler(dummy_action()) # dummy
         sickbeard.VERSION_NOTIFY = True
 
         config.change_version_notify(True) # no change
         self.assertTrue(sickbeard.VERSION_NOTIFY)
         config.change_version_notify('stop') # = defaults to False
-        self.assertFalse(sickbeard.VERSION_NOTIFY and sickbeard.versionCheckScheduler.enable)
+        self.assertFalse(sickbeard.VERSION_NOTIFY and sickbeard.version_check_scheduler.enable)
         config.change_version_notify('on')
-        self.assertTrue(sickbeard.VERSION_NOTIFY and sickbeard.versionCheckScheduler.enable)
+        self.assertTrue(sickbeard.VERSION_NOTIFY and sickbeard.version_check_scheduler.enable)
 
     def test_change_download_propers(self):
         """
         Test change_download_propers
         """
-        sickbeard.properFinderScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickbeard.proper_search_scheduler = scheduler.Scheduler(lambda: None) # dummy
         sickbeard.DOWNLOAD_PROPERS = True
 
         config.change_download_propers(True) # no change
         self.assertTrue(sickbeard.DOWNLOAD_PROPERS)
         config.change_download_propers('stop') # = defaults to False
-        self.assertFalse(sickbeard.DOWNLOAD_PROPERS and sickbeard.properFinderScheduler.enable)
+        self.assertFalse(sickbeard.DOWNLOAD_PROPERS and sickbeard.proper_search_scheduler.enable)
         config.change_download_propers('on')
-        self.assertTrue(sickbeard.DOWNLOAD_PROPERS and sickbeard.properFinderScheduler.enable)
+        self.assertTrue(sickbeard.DOWNLOAD_PROPERS and sickbeard.proper_search_scheduler.enable)
 
     def test_change_use_trakt(self):
         """
         Test change_use_trakt
         """
-        sickbeard.traktCheckerScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickbeard.traktCheckerScheduler = scheduler.Scheduler(lambda: None) # dummy
         sickbeard.USE_TRAKT = True
 
         config.change_use_trakt(True) # no change
@@ -535,29 +535,29 @@ class ConfigTestChanges(unittest.TestCase):
         """
         Test change_use_subtitles
         """
-        sickbeard.subtitlesFinderScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickbeard.subtitles_search_scheduler = scheduler.Scheduler(lambda: None) # dummy
         sickbeard.USE_SUBTITLES = True
 
         config.change_use_subtitles(True) # no change
         self.assertTrue(sickbeard.USE_SUBTITLES)
         config.change_use_subtitles('stop') # = defaults to False
-        self.assertFalse(sickbeard.USE_SUBTITLES and sickbeard.subtitlesFinderScheduler.enable)
+        self.assertFalse(sickbeard.USE_SUBTITLES and sickbeard.subtitles_search_scheduler.enable)
         config.change_use_subtitles('on')
-        self.assertTrue(sickbeard.USE_SUBTITLES and sickbeard.subtitlesFinderScheduler.enable)
+        self.assertTrue(sickbeard.USE_SUBTITLES and sickbeard.subtitles_search_scheduler.enable)
 
     def test_change_process_auto(self):
         """
         Test change_process_automatically
         """
-        sickbeard.autoPostProcessorScheduler = scheduler.Scheduler(lambda:None) # dummy
+        sickbeard.auto_post_processor_scheduler = scheduler.Scheduler(lambda: None) # dummy
         sickbeard.PROCESS_AUTOMATICALLY = True
 
         config.change_process_automatically(True) # no change
         self.assertTrue(sickbeard.PROCESS_AUTOMATICALLY)
         config.change_process_automatically('stop') # = defaults to False
-        self.assertFalse(sickbeard.PROCESS_AUTOMATICALLY and sickbeard.autoPostProcessorScheduler.enable)
+        self.assertFalse(sickbeard.PROCESS_AUTOMATICALLY and sickbeard.auto_post_processor_scheduler.enable)
         config.change_process_automatically('on')
-        self.assertTrue(sickbeard.PROCESS_AUTOMATICALLY and sickbeard.autoPostProcessorScheduler.enable)
+        self.assertTrue(sickbeard.PROCESS_AUTOMATICALLY and sickbeard.auto_post_processor_scheduler.enable)
 
 
 class ConfigTestMigrator(unittest.TestCase):

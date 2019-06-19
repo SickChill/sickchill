@@ -27,7 +27,7 @@ import stat
 from rarfile import BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRCError, RarExecError, RarFile, RarOpenError, RarWrongPassword
 
 import sickbeard
-from sickbeard import common, db, failedProcessor, helpers, logger, postProcessor
+from sickbeard import common, db, failedProcessor, helpers, logger, post_processor
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper.common import is_sync_file, is_torrent_or_nzb_file
 from sickchill.helper.encoding import ek
@@ -192,13 +192,10 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             continue
 
         video_files = filter(helpers.is_media_file, file_names)
-        if video_files:
-            process_media(current_directory, video_files, release_name, process_method, force, is_priority, result)
-        else:
-            result.result = False
+        result = process_media(current_directory, video_files, release_name, process_method, force, is_priority, result)
 
         # Delete all file not needed and avoid deleting files if Manual PostProcessing
-        if not(process_method == "move" and result.result) or (mode == "manual" and not delete_on):
+        if process_method != "move" or (mode == "manual" and not delete_on) or not result.result:
             continue
 
         # noinspection PyTypeChecker
@@ -219,7 +216,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         # sickbeard.DELRARCONTENTS allows to override even if method is NOT 'move'
         # manual post-processing will only delete when prompted by delete_on
         delete_rar_contents = any([sickbeard.DELRARCONTENTS and mode != 'manual',
-                                   not sickbeard.DELRARCONTENTS and mode == 'auto' and method_fallback == 'move',
+                                   not sickbeard.DELRARCONTENTS and mode == 'auto' and method_fallback == 'move' or process_method == 'move',
                                    mode == 'manual' and delete_on])
 
         for directory_from_rar in directories_from_rars:
@@ -296,7 +293,7 @@ def validate_dir(process_path, release_name, failed, result):  # pylint: disable
                 logger.WARNING)
             return False
 
-    for current_directory, directory_names, file_names in ek(os.walk, process_path, topdown=False, followlinks=sickbeard.PROCESSOR_FOLLOW_SYMLINKS):
+    for current_directory, directory_names, file_names in ek(os.walk, process_path, followlinks=sickbeard.PROCESSOR_FOLLOW_SYMLINKS):
         sync_files = filter(is_sync_file, file_names)
         if sync_files and sickbeard.POSTPONE_IF_SYNC_FILES:
             result.output += log_helper("Found temporary sync files: {0} in path: {1}".format(sync_files, ek(os.path.join, process_path, sync_files[0])))
@@ -486,6 +483,9 @@ def process_media(process_path, video_files, release_name, process_method, force
     :param result: Previous results
     """
 
+    if not video_files:
+        return result
+
     processor = None
     for cur_video_file in video_files:
         cur_video_file_path = ek(os.path.join, process_path, cur_video_file)
@@ -495,7 +495,7 @@ def process_media(process_path, video_files, release_name, process_method, force
             continue
 
         try:
-            processor = postProcessor.PostProcessor(cur_video_file_path, release_name, process_method, is_priority)
+            processor = post_processor.PostProcessor(cur_video_file_path, release_name, process_method, is_priority)
             result.result = processor.process()
             process_fail_message = ""
         except EpisodePostProcessingFailedException as e:
@@ -511,6 +511,8 @@ def process_media(process_path, video_files, release_name, process_method, force
             result.output += log_helper("Processing failed for {0}: {1}".format(cur_video_file_path, process_fail_message), logger.WARNING)
             result.missed_files.append("{0} : Processing failed: {1}".format(cur_video_file_path, process_fail_message))
             result.aggresult = False
+
+    return result
 
 
 def process_failed(process_path, release_name, result):
