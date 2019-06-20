@@ -22,18 +22,75 @@
 
 from __future__ import print_function, unicode_literals
 
-import six
 from six.moves import urllib
 
 import sickbeard
 from sickbeard import logger
-from sickbeard.common import (NOTIFY_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, NOTIFY_SNATCH,
+from sickbeard.common import (NOTIFY_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, NOTIFY_POSTPROCESS, NOTIFY_SNATCH,
                               NOTIFY_SUBTITLE_DOWNLOAD, notifyStrings)
+# noinspection PyProtectedMember
+from sickchill.notifiers._base import NotifierBase
 
 
-class Notifier(object):
+class Notifier(NotifierBase):
+    def notify_download(self, ep_name, title=notifyStrings[NOTIFY_DOWNLOAD]):
+        if sickbeard.FREEMOBILE_NOTIFY_ONDOWNLOAD:
+            self._notifyFreeMobile(title, ep_name)
+
+    def notify_git_update(self, new_version="??"):
+        if sickbeard.USE_FREEMOBILE:
+            update_text = notifyStrings[NOTIFY_GIT_UPDATE_TEXT]
+            title = notifyStrings[NOTIFY_GIT_UPDATE]
+            self._notifyFreeMobile(title, update_text + new_version)
+
+    def notify_login(self, ip_address=""):
+        if sickbeard.USE_FREEMOBILE:
+            update_text = notifyStrings[NOTIFY_LOGIN_TEXT]
+            title = notifyStrings[NOTIFY_LOGIN]
+            self._notifyFreeMobile(title, update_text.format(ip_address))
+
+    def notify_postprocess(self, ep_name):
+        if sickbeard.USE_FREEMOBILE:
+            title = notifyStrings[NOTIFY_POSTPROCESS]
+            self._notifyFreeMobile(title, ep_name)
+
+    def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
+        if sickbeard.FREEMOBILE_NOTIFY_ONSNATCH:
+            self._notifyFreeMobile(title, ep_name)
+
+    def notify_subtitle_download(self, ep_name, lang, title=notifyStrings[NOTIFY_SUBTITLE_DOWNLOAD]):
+        if sickbeard.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD:
+            self._notifyFreeMobile(title, ep_name + ": " + lang)
+
+    def notify_update(self, new_version="??"):
+        if sickbeard.NOTIFY_ON_UPDATE:
+            update_text = notifyStrings[NOTIFY_GIT_UPDATE_TEXT]
+            title = notifyStrings[NOTIFY_GIT_UPDATE]
+            if update_text and title and new_version:
+                self._notifyFreeMobile(title, update_text + new_version)
+
     def test_notify(self, cust_id=None, apiKey=None):
         return self._notifyFreeMobile('Test', "This is a test notification from SickChill", cust_id, apiKey, force=True)
+
+    def _notifyFreeMobile(self, title, message, cust_id=None, apiKey=None, force=False):  # pylint: disable=too-many-arguments
+        """
+        Sends a SMS notification
+
+        title: The title of the notification to send
+        message: The message string to send
+        cust_id: Your Free Mobile customer ID
+        apikey: Your Free Mobile API key
+        force: Enforce sending, for instance for testing
+        """
+
+        if not sickbeard.USE_FREEMOBILE and not force:
+            logger.log("Notification for Free Mobile not enabled, skipping this notification", logger.DEBUG)
+            return False, "Disabled"
+
+        logger.log("Sending a SMS for " + message, logger.DEBUG)
+
+        return self._sendFreeMobileSMS(title, message, cust_id, apiKey)
+
 
     def _sendFreeMobileSMS(self, title, msg, cust_id=None, apiKey=None):
         """
@@ -88,46 +145,3 @@ class Notifier(object):
         message = "Free Mobile SMS successful."
         logger.log(message, logger.INFO)
         return True, message
-
-    def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
-        if sickbeard.FREEMOBILE_NOTIFY_ONSNATCH:
-            self._notifyFreeMobile(title, ep_name)
-
-    def notify_download(self, ep_name, title=notifyStrings[NOTIFY_DOWNLOAD]):
-        if sickbeard.FREEMOBILE_NOTIFY_ONDOWNLOAD:
-            self._notifyFreeMobile(title, ep_name)
-
-    def notify_subtitle_download(self, ep_name, lang, title=notifyStrings[NOTIFY_SUBTITLE_DOWNLOAD]):
-        if sickbeard.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._notifyFreeMobile(title, ep_name + ": " + lang)
-
-    def notify_git_update(self, new_version="??"):
-        if sickbeard.USE_FREEMOBILE:
-            update_text = notifyStrings[NOTIFY_GIT_UPDATE_TEXT]
-            title = notifyStrings[NOTIFY_GIT_UPDATE]
-            self._notifyFreeMobile(title, update_text + new_version)
-
-    def notify_login(self, ip_address=""):
-        if sickbeard.USE_FREEMOBILE:
-            update_text = notifyStrings[NOTIFY_LOGIN_TEXT]
-            title = notifyStrings[NOTIFY_LOGIN]
-            self._notifyFreeMobile(title, update_text.format(ip_address))
-
-    def _notifyFreeMobile(self, title, message, cust_id=None, apiKey=None, force=False):  # pylint: disable=too-many-arguments
-        """
-        Sends a SMS notification
-
-        title: The title of the notification to send
-        message: The message string to send
-        cust_id: Your Free Mobile customer ID
-        apikey: Your Free Mobile API key
-        force: Enforce sending, for instance for testing
-        """
-
-        if not sickbeard.USE_FREEMOBILE and not force:
-            logger.log("Notification for Free Mobile not enabled, skipping this notification", logger.DEBUG)
-            return False, "Disabled"
-
-        logger.log("Sending a SMS for " + message, logger.DEBUG)
-
-        return self._sendFreeMobileSMS(title, message, cust_id, apiKey)

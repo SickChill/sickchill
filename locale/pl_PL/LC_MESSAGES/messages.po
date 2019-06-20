@@ -4135,7 +4135,7 @@ msgstr ""
 "dla Ubuntu/Debiana <a href=\"apt:python-notify\">python-notify</a>)."
 
 #: gui/slick/views/config_notifications.mako:1318
-msgid "send Libnotify notifications?"
+msgid "send linux desktop notifications?"
 msgstr "wyślij notyfikacje Libnotify?"
 
 #: gui/slick/views/config_notifications.mako:1378

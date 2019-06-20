@@ -21,8 +21,13 @@
 from __future__ import print_function, unicode_literals
 
 import sickbeard
-from sickbeard.notifiers import (boxcar2, discord, emailnotify, emby, freemobile, growl, join, kodi, desktop_notifications, matrix, nmj, nmjv2, plex, prowl, pushalot,
-                                 pushbullet, pushover, pytivo, slack, synoindex, synologynotifier, telegram, trakt, tweet, twilio_notify)
+from sickbeard.notifiers import (boxcar2, desktop_notifications, discord, emailnotify, emby, freemobile, growl, join, kodi, matrix, nmj, nmjv2, plex, prowl,
+                                 pushalot, pushbullet, pushover, pytivo, slack, synoindex, synologynotifier, telegram, trakt, tweet, twilio_notify)
+
+__all__ = [
+"boxcar2", "discord", "emailnotify", "emby", "freemobile", "growl", "join", "kodi", "desktop_notifications", "matrix", "nmj", "nmjv2", "plex", "prowl", "pushalot",
+                                 "pushbullet", "pushover", "pytivo", "slack", "synoindex", "synologynotifier", "telegram", "trakt", "tweet", "twilio_notify"
+]
 
 # home theater / nas
 kodi_notifier = kodi.Notifier()

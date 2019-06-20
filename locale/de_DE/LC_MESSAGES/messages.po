@@ -4173,7 +4173,7 @@ msgstr ""
 "notify\">python-notify</a>)."
 
 #: gui/slick/views/config_notifications.mako:1318
-msgid "send Libnotify notifications?"
+msgid "send linux desktop notifications?"
 msgstr "Libnotify Benachrichtigungen senden?"
 
 #: gui/slick/views/config_notifications.mako:1378

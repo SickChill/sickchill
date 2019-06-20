@@ -443,7 +443,7 @@ class Home(WebRoot):
     def testLibnotify():
 
         if notifiers.libnotify_notifier.test_notify():
-            return _("Tried sending desktop notification via libnotify")
+            return _("Tried sending desktop notification")
         return notifiers.libnotify_notifier.diagnose()
 
     @staticmethod

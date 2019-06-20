@@ -1315,7 +1315,7 @@
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" class="enabler" name="use_libnotify" id="use_libnotify" ${('', 'checked="checked"')[bool(sickbeard.USE_LIBNOTIFY)]}/>
-                                <label for="use_libnotify">${_('send Libnotify notifications?')}</label>
+                                <label for="use_libnotify">${_('send linux desktop notifications?')}</label>
                             </div>
                         </div>
 
