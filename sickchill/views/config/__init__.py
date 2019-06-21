@@ -22,6 +22,7 @@ from __future__ import print_function, unicode_literals
 
 from anime import ConfigAnime
 from backup import ConfigBackupRestore
+from general import ConfigGeneral
 from index import Config
 from notifications import ConfigNotifications
 from post_processing import ConfigPostProcessing

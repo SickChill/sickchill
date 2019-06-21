@@ -24,10 +24,11 @@ from calendar import CalendarHandler
 
 from api import ApiCall, ApiHandler, function_mapper, KeyHandler
 from authentication import LoginHandler, LogoutHandler
+from browser import WebFileBrowser
 from changelog import HomeChangeLog
 from common import PageTemplate
-from config import (Config, ConfigAnime, ConfigBackupRestore, ConfigNotifications, ConfigPostProcessing, ConfigProviders, ConfigSearch, ConfigShares,
-                    ConfigSubtitles)
+from config import (Config, ConfigAnime, ConfigBackupRestore, ConfigGeneral, ConfigNotifications, ConfigPostProcessing, ConfigProviders, ConfigSearch,
+                    ConfigShares, ConfigSubtitles)
 from history import History
 from home import Home
 from index import BaseHandler, WebHandler, WebRoot

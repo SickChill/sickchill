@@ -36,7 +36,7 @@ except ImportError:
     import simplejson as json
 
 
-@Route('/errorlogs(/?.*)', name='logs:error')
+@Route('/errorlogs(/?.*)', name='errorlogs')
 class ErrorLogs(WebRoot):
     def __init__(self, *args, **kwargs):
         super(ErrorLogs, self).__init__(*args, **kwargs)

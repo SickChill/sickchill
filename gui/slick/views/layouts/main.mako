@@ -247,18 +247,21 @@
                                           </a>
                                         </li>
                                     %endif
-                                    <li><a href="${static_url("errorlogs/viewlog/", include_version=False)}"><i class="fa fa-fw fa-file-text-o"></i>&nbsp;${_('View Log')}</a></li>
+                                    <li><a href="${reverse_url("errorlogs", "/viewlog/")}">
+                                        <i class="fa fa-fw fa-file-text-o"></i>&nbsp;${_('View Log')}</a></li>
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="${static_url("home/updateCheck?pid={}".format(sbPID), include_version=False)}"><i class="fa fa-fw fa-wrench"></i>&nbsp;${_('Check For Updates')}</a></li>
+                                    <li><a href="${static_url("home/updateCheck?pid={}".format(sbPID), include_version=False)}">
+                                        <i class="fa fa-fw fa-wrench"></i>&nbsp;${_('Check For Updates')}</a></li>
                                     <li><a href="${static_url("home/restart/?pid={}".format(sbPID), include_version=False)}" class="confirm restart"><i
                                         class="fa fa-fw fa-repeat"></i>&nbsp;${_('Restart')}</a></li>
-                                    <li><a href="${static_url("home/shutdown/?pid={}".format(sbPID), include_version=False)}" class="confirm shutdown"><i
-                                        class="fa fa-fw fa-power-off"></i>&nbsp;${_('Shutdown')}</a></li>
+                                    <li><a href="${static_url("home/shutdown/?pid={}".format(sbPID), include_version=False)}" class="confirm shutdown">
+                                        <i class="fa fa-fw fa-power-off"></i>&nbsp;${_('Shutdown')}</a></li>
                                     % if srLogin:
-                                        <li><a href="${static_url("logout", include_version=False)}" class="confirm logout"><i class="fa fa-fw fa-sign-out"></i>&nbsp;${_('Logout')}</a></li>
+                                        <li><a href="${reverse_url("logout")}" class="confirm logout">
+                                            <i class="fa fa-fw fa-sign-out"></i>&nbsp;${_('Logout')}</a></li>
                                     % endif
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="${static_url("home/status/", include_version=False)}"><i class="fa fa-fw fa-info-circle"></i>&nbsp;${_('Server Status')}</a></li>
+                                    <li><a href="${reverse_url("home", "/status/")}"><i class="fa fa-fw fa-info-circle"></i>&nbsp;${_('Server Status')}</a></li>
                                 </ul>
                                 <div style="clear:both;"></div>
                             </li>

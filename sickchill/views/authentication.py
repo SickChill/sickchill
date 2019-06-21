@@ -63,22 +63,3 @@ class LogoutHandler(BaseHandler):
     def get(self, *args, **kwargs):
         self.clear_cookie("sickchill_user")
         self.redirect('/login/')
-
-
-class KeyHandler(RequestHandler):
-    def data_received(self, chunk):
-        pass
-
-    def __init__(self, *args, **kwargs):
-        super(KeyHandler, self).__init__(*args, **kwargs)
-
-    def get(self, *args, **kwargs):
-        if self.get_argument('u', '') == sickbeard.WEB_USERNAME and self.get_argument('p', '') == sickbeard.WEB_PASSWORD:
-            if not len(sickbeard.API_KEY or ''):
-                sickbeard.API_KEY = helpers.generateApiKey()
-            result = {'success': True, 'api_key': sickbeard.API_KEY}
-        else:
-            result = {'success': False, 'error': _('Failed authentication while getting api key')}
-            logger.log(_('Authentication failed during api key request: {0}').format((traceback.format_exc())), logger.WARNING)
-
-        return self.finish(result)

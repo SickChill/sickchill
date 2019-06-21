@@ -36,24 +36,19 @@ except ImportError:
     import simplejson as json
 
 
-@Route('/browser(/?.*)', name='filebrowser')
 class WebFileBrowser(WebRoot):
     def __init__(self, *args, **kwargs):
         super(WebFileBrowser, self).__init__(*args, **kwargs)
 
-    def index(self, path='', includeFiles=False, fileTypes=''):  # pylint: disable=arguments-differ
-
+    def set_default_headers(self):
         self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header(b'Content-Type', 'application/json')
 
+    def index(self, path='', includeFiles=False, fileTypes=''):  # pylint: disable=arguments-differ
         return json.dumps(foldersAtPath(xhtml_unescape(path), True, bool(int(includeFiles)), fileTypes.split(',')))
 
     def complete(self, term, includeFiles=False, fileTypes=''):
-
-        self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
-        self.set_header(b'Content-Type', 'application/json')
         paths = [entry['path'] for entry in foldersAtPath(ek(os.path.dirname, xhtml_unescape(term)), includeFiles=bool(int(includeFiles)),
-                                                          fileTypes=fileTypes.split(','))
-                 if 'path' in entry]
+                                                     fileTypes=fileTypes.split(',')) if 'path' in entry]
 
         return json.dumps(paths)

@@ -47,6 +47,8 @@ class ManageSearches(Manage):
                         backlogRunning=sickbeard.search_queue_scheduler.action.is_backlog_in_progress(),
                         dailySearchStatus=sickbeard.daily_search_scheduler.action.amActive,
                         findPropersStatus=sickbeard.proper_search_scheduler.action.amActive,
+                        postProcessorStatus=sickbeard.post_processor_task_scheduler.action.amActive,
+                        autoPostProcessorStatus=sickbeard.auto_post_processor_scheduler.action.amActive,
                         queueLength=sickbeard.search_queue_scheduler.action.queue_length(),
                         subtitlesFinderStatus=sickbeard.subtitles_search_scheduler.action.amActive,
                         title=_('Manage Searches'), header=_('Manage Searches'), topmenu='manage',
@@ -56,7 +58,7 @@ class ManageSearches(Manage):
         # force it to run the next time it looks
         result = sickbeard.backlog_search_scheduler.forceRun()
         if result:
-            logger.log("Backlog search forced")
+            logger.log(_("Backlog search forced"))
             ui.notifications.message(_('Backlog search started'))
 
         return self.redirect("/manage/manageSearches/")
@@ -66,7 +68,7 @@ class ManageSearches(Manage):
         # force it to run the next time it looks
         result = sickbeard.daily_search_scheduler.forceRun()
         if result:
-            logger.log("Daily search forced")
+            logger.log(_("Daily search forced"))
             ui.notifications.message(_('Daily search started'))
 
         return self.redirect("/manage/manageSearches/")
@@ -84,7 +86,7 @@ class ManageSearches(Manage):
         # force it to run the next time it looks
         result = sickbeard.subtitles_search_scheduler.forceRun()
         if result:
-            logger.log("Subtitle search forced")
+            logger.log(_("Subtitle search forced"))
             ui.notifications.message(_('Subtitle search started'))
 
         return self.redirect("/manage/manageSearches/")
@@ -92,7 +94,22 @@ class ManageSearches(Manage):
     def pauseBacklog(self, paused=None):
         if paused == "1":
             sickbeard.search_queue_scheduler.action.pause_backlog()
+            logger.log(_("Backlog paused"))
+            ui.notifications.message(_('Backlog paused'))
         else:
             sickbeard.search_queue_scheduler.action.unpause_backlog()
+            logger.log(_("Backlog unpaused"))
+            ui.notifications.message(_('Backlog unpaused'))
+
+        return self.redirect("/manage/manageSearches/")
+
+    def forceAutoPostProcessor(self):
+        # force it to run the next time it looks
+
+        # sickbeard.post_processor_task_scheduler.action.add_item(sickbeard.TV_DOWNLOAD_DIR, force=force)
+        result = sickbeard.auto_post_processor_scheduler.forceRun()
+        if result:
+            logger.log(_("Auto Post Processor run forced"))
+            ui.notifications.message(_('Auto Post Processor started'))
 
         return self.redirect("/manage/manageSearches/")
