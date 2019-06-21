@@ -44,27 +44,11 @@ if (2, 7, 99) < sys.version_info < (2, 7):
     print('Sorry, requires Python 2.7')
     sys.exit(1)
 
-# https://mail.python.org/pipermail/python-dev/2014-September/136300.html
-if sys.version_info >= (2, 7, 9):
-    import ssl
-    ssl._create_default_https_context = ssl._create_unverified_context  # pylint: disable=protected-access
-
-
-# Fix mimetypes on misconfigured systems
-import mimetypes
-mimetypes.add_type("text/css", ".css")
-mimetypes.add_type("application/sfont", ".otf")
-mimetypes.add_type("application/sfont", ".ttf")
-mimetypes.add_type("application/javascript", ".js")
-mimetypes.add_type("application/font-woff", ".woff")
-# Not sure about this one, but we also have halflings in .woff so I think it wont matter
-# mimetypes.add_type("application/font-woff2", ".woff2")
-
-# Do this before importing sickbeard, to prevent locked files and incorrect import
-OLD_TORNADO = os.path.abspath(os.path.join(os.path.dirname(__file__), 'tornado'))
-if os.path.isdir(OLD_TORNADO):
-    shutil.move(OLD_TORNADO, OLD_TORNADO + '_kill')
-    shutil.rmtree(OLD_TORNADO + '_kill')
+# TODO: Monitor issues for ssl errors
+# # https://mail.python.org/pipermail/python-dev/2014-September/136300.html
+# if sys.version_info >= (2, 7, 9):
+#     import ssl
+#     ssl._create_default_https_context = ssl._create_unverified_context  # pylint: disable=protected-access
 
 import sickbeard
 from sickbeard import db, logger, network_timezones, failed_history, name_cache

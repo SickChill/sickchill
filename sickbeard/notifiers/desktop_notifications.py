@@ -50,7 +50,7 @@ class Notifier(object):
             Notify.init('SickChill')
 
     def __del__(self):
-        if Notify:
+        if Notify and Notify.is_initted:
             Notify.uninit()
 
     def notify_snatch(self, ep_name):

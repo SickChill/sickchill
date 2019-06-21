@@ -21,14 +21,14 @@
 from __future__ import print_function, unicode_literals
 
 from calendar import CalendarHandler
+from config import (Config, ConfigAnime, ConfigBackupRestore, ConfigGeneral, ConfigNotifications, ConfigPostProcessing, ConfigProviders, ConfigSearch,
+                    ConfigShares, ConfigSubtitles)
 
 from api import ApiCall, ApiHandler, function_mapper, KeyHandler
 from authentication import LoginHandler, LogoutHandler
 from browser import WebFileBrowser
 from changelog import HomeChangeLog
 from common import PageTemplate
-from config import (Config, ConfigAnime, ConfigBackupRestore, ConfigGeneral, ConfigNotifications, ConfigPostProcessing, ConfigProviders, ConfigSearch,
-                    ConfigShares, ConfigSubtitles)
 from history import History
 from home import Home
 from index import BaseHandler, WebHandler, WebRoot
@@ -37,3 +37,4 @@ from logs import ErrorLogs
 from manage import AddShows, Manage, ManageSearches, PostProcess
 from news import HomeNews
 from routes import Route
+from ui import CustomStaticFileHandler

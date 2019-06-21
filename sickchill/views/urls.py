@@ -28,29 +28,29 @@ from tornado.web import RedirectHandler, StaticFileHandler, url
 import sickbeard
 from sickbeard.common import ek
 
-from . import ApiHandler, CalendarHandler, KeyHandler, LoginHandler, LogoutHandler, WebFileBrowser
+from . import ApiHandler, CalendarHandler, CustomStaticFileHandler, KeyHandler, LoginHandler, LogoutHandler, WebFileBrowser
 
 
 # TODO: Move all @Route calls into here so we can manage url paths easier.
 class Urls(object):
     def __init__(self, options):
         self.urls = [
-                        url(r'{0}/favicon.ico'.format(options['web_root']), StaticFileHandler,
+                        url(r'{0}/favicon.ico'.format(options['web_root']), CustomStaticFileHandler,
                             {"path": ek(os.path.join, options['data_root'], 'images/ico/favicon.ico')}, name='favicon'),
 
-                        url(r'{0}/images/(.*)'.format(options['web_root']), StaticFileHandler,
+                        url(r'{0}/images/(.*)'.format(options['web_root']), CustomStaticFileHandler,
                             {"path": ek(os.path.join, options['data_root'], 'images')}, name='images'),
 
-                        url(r'{0}/cache/images/(.*)'.format(options['web_root']), StaticFileHandler,
+                        url(r'{0}/cache/images/(.*)'.format(options['web_root']), CustomStaticFileHandler,
                             {"path": ek(os.path.join, sickbeard.CACHE_DIR, 'images')}, name='image_cache'),
 
-                        url(r'{0}/css/(.*)'.format(options['web_root']), StaticFileHandler,
+                        url(r'{0}/css/(.*)'.format(options['web_root']), CustomStaticFileHandler,
                             {"path": ek(os.path.join, options['data_root'], 'css')}, name='css'),
 
-                        url(r'{0}/js/(.*)'.format(options['web_root']), StaticFileHandler,
+                        url(r'{0}/js/(.*)'.format(options['web_root']), CustomStaticFileHandler,
                             {"path": ek(os.path.join, options['data_root'], 'js')}, name='js'),
 
-                        url(r'{0}/fonts/(.*)'.format(options['web_root']), StaticFileHandler,
+                        url(r'{0}/fonts/(.*)'.format(options['web_root']), CustomStaticFileHandler,
                             {"path": ek(os.path.join, options['data_root'], 'fonts')}, name='fonts'),
 
                         # TODO: WTF is this?
