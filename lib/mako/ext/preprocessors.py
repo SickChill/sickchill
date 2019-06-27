@@ -1,5 +1,5 @@
 # ext/preprocessors.py
-# Copyright (C) 2006-2016 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2019 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -17,4 +17,4 @@ def convert_comments(text):
 
     from mako.ext.preprocessors import convert_comments
     t = Template(..., preprocessor=convert_comments)"""
-    return re.sub(r'(?<=\n)\s*#[^#]', "##", text)
+    return re.sub(r"(?<=\n)\s*#[^#]", "##", text)

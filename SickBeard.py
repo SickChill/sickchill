@@ -27,8 +27,8 @@ import codecs
 import datetime
 import io
 import locale
-import platform
 import os
+import platform
 import shutil
 import signal
 import subprocess
@@ -69,7 +69,7 @@ if os.path.isdir(OLD_TORNADO):
 import sickbeard
 from sickbeard import db, logger, network_timezones, failed_history, name_cache
 from sickbeard.tv import TVShow
-from sickbeard.webserveInit import SRWebServer
+from sickchill.views.server_settings import SRWebServer
 from sickbeard.event_queue import Events
 from sickbeard.versionChecker import SourceUpdateManager, GitUpdateManager
 from configobj import ConfigObj  # pylint: disable=import-error

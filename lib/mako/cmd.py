@@ -1,14 +1,16 @@
 # mako/cmd.py
-# Copyright (C) 2006-2016 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2019 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 from argparse import ArgumentParser
-from os.path import isfile, dirname
+from os.path import dirname
+from os.path import isfile
 import sys
-from mako.template import Template
-from mako.lookup import TemplateLookup
+
 from mako import exceptions
+from mako.lookup import TemplateLookup
+from mako.template import Template
 
 
 def varsplit(var):
@@ -24,25 +26,41 @@ def _exit():
 
 def cmdline(argv=None):
 
-    parser = ArgumentParser("usage: %prog [FILENAME]")
+    parser = ArgumentParser()
     parser.add_argument(
-        "--var", default=[], action="append",
-        help="variable (can be used multiple times, use name=value)")
+        "--var",
+        default=[],
+        action="append",
+        help="variable (can be used multiple times, use name=value)",
+    )
     parser.add_argument(
-        "--template-dir", default=[], action="append",
+        "--template-dir",
+        default=[],
+        action="append",
         help="Directory to use for template lookup (multiple "
         "directories may be provided). If not given then if the "
         "template is read from stdin, the value defaults to be "
         "the current directory, otherwise it defaults to be the "
-        "parent directory of the file provided.")
-    parser.add_argument('input', nargs='?', default='-')
+        "parent directory of the file provided.",
+    )
+    parser.add_argument(
+        "--output-encoding", default=None, help="force output encoding"
+    )
+    parser.add_argument("input", nargs="?", default="-")
 
     options = parser.parse_args(argv)
-    if options.input == '-':
+
+    output_encoding = options.output_encoding
+
+    if options.input == "-":
         lookup_dirs = options.template_dir or ["."]
         lookup = TemplateLookup(lookup_dirs)
         try:
-            template = Template(sys.stdin.read(), lookup=lookup)
+            template = Template(
+                sys.stdin.read(),
+                lookup=lookup,
+                output_encoding=output_encoding,
+            )
         except:
             _exit()
     else:
@@ -52,7 +70,11 @@ def cmdline(argv=None):
         lookup_dirs = options.template_dir or [dirname(filename)]
         lookup = TemplateLookup(lookup_dirs)
         try:
-            template = Template(filename=filename, lookup=lookup)
+            template = Template(
+                filename=filename,
+                lookup=lookup,
+                output_encoding=output_encoding,
+            )
         except:
             _exit()
 

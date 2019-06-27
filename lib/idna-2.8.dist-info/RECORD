@@ -11,12 +11,3 @@ idna-2.8.dist-info/METADATA,sha256=X4QsM_BLMPhl4gC8SEnXjvl5-gj7hvwAl7UCyR418so,8
 idna-2.8.dist-info/WHEEL,sha256=CihQvCnsGZQBGAHLEUMf0IdA4fRduS_NBUTMgCTtvPM,110
 idna-2.8.dist-info/top_level.txt,sha256=jSag9sEDqvSPftxOQy-ABfGV_RSy7oFh4zZJpODV8k0,5
 idna-2.8.dist-info/RECORD,,
-idna-2.8.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
-idna/uts46data.pyc,,
-idna/codec.pyc,,
-idna/intranges.pyc,,
-idna/package_data.pyc,,
-idna/idnadata.pyc,,
-idna/compat.pyc,,
-idna/__init__.pyc,,
-idna/core.pyc,,

@@ -209,7 +209,7 @@ class BTNProvider(TorrentProvider):
 
         return title, url
 
-    def _get_season_search_strings(self, ep_obj):
+    def get_season_search_strings(self, ep_obj):
         search_params = []
         current_params = {'category': 'Season'}
 
@@ -235,7 +235,7 @@ class BTNProvider(TorrentProvider):
 
         return search_params
 
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
+    def get_episode_search_strings(self, ep_obj, add_string=''):
 
         if not ep_obj:
             return [{}]

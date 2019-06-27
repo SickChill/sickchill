@@ -89,8 +89,8 @@ def generator(cur_data, cur_name, cur_provider):
             episode.saveToDB()
 
             cur_provider.show = show
-            season_strings = cur_provider._get_season_search_strings(episode)  # pylint: disable=protected-access
-            episode_strings = cur_provider._get_episode_search_strings(episode)  # pylint: disable=protected-access
+            season_strings = cur_provider.get_season_search_strings(episode)  # pylint: disable=protected-access
+            episode_strings = cur_provider.get_episode_search_strings(episode)  # pylint: disable=protected-access
 
             fail = False
             cur_string = ''

@@ -240,7 +240,7 @@ def is_media_file(filename):
         if re.search('extras?$', filname_parts[0], re.I):
             return False
 
-        return filname_parts[-1].lower() in MEDIA_EXTENSIONS or (sickbeard.UNPACK == 2 and is_rar)
+        return filname_parts[-1].lower() in MEDIA_EXTENSIONS or (sickbeard.UNPACK == sickbeard.UNPACK_PROCESS_INTACT and is_rar)
     except (TypeError, AssertionError) as error:  # Not a string
         logger.log(_('Invalid filename. Filename must be a string. {0}').format(error), logger.DEBUG)  # pylint: disable=no-member
         return False
