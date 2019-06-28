@@ -23,6 +23,7 @@ from __future__ import print_function, unicode_literals
 import gettext
 import os
 
+from index import Config
 from tornado.web import addslash
 
 import sickbeard
@@ -32,8 +33,6 @@ from sickchill.helper import setup_github, try_int
 from sickchill.helper.encoding import ek
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
-
-from . import Config
 
 try:
     import json
