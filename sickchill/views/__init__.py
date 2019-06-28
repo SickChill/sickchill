@@ -36,3 +36,4 @@ from logs import ErrorLogs
 from manage import AddShows, Manage, ManageSearches, PostProcess
 from news import HomeNews
 from routes import Route
+from browser import WebFileBrowser
