@@ -72,6 +72,10 @@ class Notifier(object):
                 try:
                     msg = MIMEMultipart('alternative')
                     msg.attach(MIMEText(
+                        'SickChill Notification - Snatched\n'
+                        'Show: {0}\nEpisode Number: {1}\nEpisode: {2}\nQuality: {3}\n\n'
+                        'Powered by SickChill.'.format(show[0], show[1], show[2], show[3])))
+                    msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
                         '<h3>SickChill Notification - Snatched</h3>'
                         '<p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p><p>Quality: <b>{3}</b></p>'
@@ -116,6 +120,10 @@ class Notifier(object):
             else:
                 try:
                     msg = MIMEMultipart('alternative')
+                    msg.attach(MIMEText(
+                        'SickChill Notification - Downloaded\n'
+                        'Show: {0}\nEpisode Number: {1}\nEpisode: {2}\nQuality: {3}\n\n'
+                        'Powered by SickChill.'.format(show[0], show[1], show[2], show[3])))
                     msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
                         '<h3>SickChill Notification - Downloaded</h3>'
@@ -162,6 +170,10 @@ class Notifier(object):
                 try:
                     msg = MIMEMultipart('alternative')
                     msg.attach(MIMEText(
+                        'SickChill Notification - Postprocessed\n'
+                        'Show: {0}\nEpisode Number: {1}\nEpisode: {2}\nQuality: {3}\n\n'
+                        'Powered by SickChill.'.format(show[0], show[1], show[2], show[3])))
+                    msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
                         '<h3>SickChill Notification - Postprocessed</h3>'
                         '<p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p><p>Quality: <b>{3}</b></p>'
@@ -207,6 +219,11 @@ class Notifier(object):
                 try:
                     msg = MIMEMultipart('alternative')
                     msg.attach(MIMEText(
+                        'SickChill Notification - Subtitle Downloaded\n'
+                        'Show: {0}\nEpisode Number: {1}\nEpisode: {2}\n'
+                        'Language: {3}\n\n'
+                        'Powered by SickChill.'.format(show[0], show[1], show[2], lang)))
+                    msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
                         '<h3>SickChill Notification - Subtitle Downloaded</h3>'
                         '<p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p></p>'
@@ -246,6 +263,10 @@ class Notifier(object):
                 try:
                     msg = MIMEMultipart('alternative')
                     msg.attach(MIMEText(
+                        'SickChill Notification - Updated\n'
+                        'Commit: {}\n\n'
+                        'Powered by SickChill.'.format(new_version)))
+                    msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
                         '<h3>SickChill Notification - Updated</h3><br>'
                         '<p>Commit: <b>{}</b></p><br><br>'
@@ -282,6 +303,10 @@ class Notifier(object):
             else:
                 try:
                     msg = MIMEMultipart('alternative')
+                    msg.attach(MIMEText(
+                        'SickChill Notification - Remote Login\n'
+                        'New login from IP: {0}\n\n'
+                        'Powered by SickChill.'.format(ipaddress)))
                     msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
                         '<h3>SickChill Notification - Remote Login</h3><br>'
