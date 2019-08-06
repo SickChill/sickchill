@@ -64,3 +64,5 @@ A full list can be found here: [Link](https://github.com/SickChill/SickChill/wik
 
 #### News and Changelog
 [news.md and CHANGES.md have moved to a separate repo, click here](https://github.com/SickChill/SickChill.github.io)
+
+
