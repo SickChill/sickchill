@@ -26,6 +26,7 @@ from config import (Config, ConfigAnime, ConfigBackupRestore, ConfigNotification
 
 from api import ApiCall, ApiHandler, function_mapper, KeyHandler
 from authentication import LoginHandler, LogoutHandler
+from browser import WebFileBrowser
 from changelog import HomeChangeLog
 from common import PageTemplate
 from history import History
@@ -36,4 +37,3 @@ from logs import ErrorLogs
 from manage import AddShows, Manage, ManageSearches, PostProcess
 from news import HomeNews
 from routes import Route
-from browser import WebFileBrowser
