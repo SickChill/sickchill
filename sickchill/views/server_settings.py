@@ -89,7 +89,7 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
             [],
             debug=False,  # enables autoreload, compiled_template_cache, static_hash_cache, serve_traceback - This fixes the 404 page and fixes autoreload for
             #  devs. We could now update without restart possibly if we check DB version hasnt changed!
-            autoreload=True,
+            autoreload=False,
             gzip=sickbeard.WEB_USE_GZIP,
             cookie_secret=sickbeard.WEB_COOKIE_SECRET,
             login_url='{0}/login/'.format(self.options['web_root']),
