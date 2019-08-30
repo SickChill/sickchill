@@ -104,7 +104,7 @@ class TorrentLeechProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                     if self.show and self.show.is_anime:
                         categories += ["34"]
                 else:
-                    categories = ["2", "26", "27", "32", "7", "34", "35"]
+                    categories = ["2", "26", "27", "32", "7", "34", "35", "44"]
 
                 # Craft the query URL
                 categories_url = 'categories/{categories}/'.format(categories=",".join(categories))
