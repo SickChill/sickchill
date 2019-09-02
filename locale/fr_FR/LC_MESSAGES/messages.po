@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2019-06-27 07:39+0000\n"
+"POT-Creation-Date: 2019-09-02 11:23+0000\n"
 "PO-Revision-Date: 2018-10-10 07:47+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: fr_FR\n"
@@ -707,9 +707,9 @@ msgstr "Général"
 msgid "Performing {episode_or_season} search for {show}"
 msgstr ""
 
+# | msgid "season packs only."
 #: sickbeard/search.py:471 sickbeard/search.py:753
 #, fuzzy
-#| msgid "season packs only."
 msgid "season pack"
 msgstr "saison complète uniquement."
 
@@ -5486,11 +5486,11 @@ msgstr "Activer les fournisseurs de recherche de torrent"
 msgid "Trackers list"
 msgstr "Liste de trackers"
 
+# | msgid "" "trackers that will be added to magnets without
+# | trackers<br>separate " "trackers with a comma, e.g.
+# | \"tracker1,tracker2,tracker3\""
 #: gui/slick/views/config_search.mako:861
 #, fuzzy
-#| msgid "" "trackers that will be added to magnets without
-#| trackers<br>separate " "trackers with a comma, e.g.
-#| \"tracker1,tracker2,tracker3\""
 msgid ""
 "trackers that will be added to magnets without trackers<br>separate "
 "trackers '\n"
@@ -8084,7 +8084,7 @@ msgstr ""
 msgid "Config - Anime"
 msgstr "Config - Anime"
 
-#: sickchill/views/config/anime.py:66 sickchill/views/config/general.py:237
+#: sickchill/views/config/anime.py:66 sickchill/views/config/general.py:236
 #: sickchill/views/config/notifications.py:322
 #: sickchill/views/config/post_processing.py:171
 #: sickchill/views/config/providers.py:348 sickchill/views/config/search.py:180
@@ -8100,41 +8100,41 @@ msgstr "Config - Sauvegarde/Restauration"
 msgid "Backup/Restore"
 msgstr "Sauvegarde / Restauration"
 
-#: sickchill/views/config/general.py:54
+#: sickchill/views/config/general.py:53
 msgid "Config - General"
 msgstr "Config - Général"
 
-#: sickchill/views/config/general.py:54
+#: sickchill/views/config/general.py:53
 msgid "General Configuration"
 msgstr "Configuration générale"
 
-#: sickchill/views/config/general.py:94
+#: sickchill/views/config/general.py:93
 msgid "Saved Defaults"
 msgstr "Enregistrer par défaut"
 
-#: sickchill/views/config/general.py:94
+#: sickchill/views/config/general.py:93
 msgid "Your \"add show\" defaults have been set to your current selections."
 msgstr "Les options actuelles ont été sauvegardées comme options par défaut."
 
-#: sickchill/views/config/general.py:203
+#: sickchill/views/config/general.py:202
 msgid "Unable to create directory {directory}, log directory not changed."
 msgstr ""
 "Impossible de créer le répertoire {directory}, le répertoire du journal "
 "d'événement n'a pas changé."
 
-#: sickchill/views/config/general.py:211
+#: sickchill/views/config/general.py:210
 msgid "Unable to create directory {directory}, https cert directory not changed."
 msgstr ""
 "Impossible de créer le répertoire {directory}, le répertoire du "
 "certificat HTTPS n'a pas changé."
 
-#: sickchill/views/config/general.py:215
+#: sickchill/views/config/general.py:214
 msgid "Unable to create directory {directory}, https key directory not changed."
 msgstr ""
 "Impossible de créer le répertoire {directory}, le répertoire clé HTTPS "
 "n'a pas changé."
 
-#: sickchill/views/config/general.py:234
+#: sickchill/views/config/general.py:233
 #: sickchill/views/config/notifications.py:319
 #: sickchill/views/config/post_processing.py:169
 #: sickchill/views/config/search.py:177
@@ -8324,15 +8324,15 @@ msgstr "Sous-titres manquants"
 msgid "Mass Edit"
 msgstr "Édition par lots"
 
+# | msgid "Unable to update show: {excption_format}"
 #: sickchill/views/manage/index.py:546
 #, fuzzy
-#| msgid "Unable to update show: {excption_format}"
 msgid "Unable to update show: {exception_format}"
 msgstr "Impossible de mettre à jour la série : {excption_format}"
 
+# | msgid "Unable to refresh show {show_name}: {excption_format}"
 #: sickchill/views/manage/index.py:554
 #, fuzzy
-#| msgid "Unable to refresh show {show_name}: {excption_format}"
 msgid "Unable to refresh show {show_name}: {exception_format}"
 msgstr "Impossible d'actualiser la série {show_name} : {excption_format}"
 

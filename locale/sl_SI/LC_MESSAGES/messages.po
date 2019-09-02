@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2019-06-27 07:39+0000\n"
+"POT-Creation-Date: 2019-09-02 11:23+0000\n"
 "PO-Revision-Date: 2018-10-10 07:48+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: sl_SI\n"
@@ -697,9 +697,9 @@ msgstr "Glavni"
 msgid "Performing {episode_or_season} search for {show}"
 msgstr ""
 
+# | msgid "season packs only."
 #: sickbeard/search.py:471 sickbeard/search.py:753
 #, fuzzy
-#| msgid "season packs only."
 msgid "season pack"
 msgstr "samo sezonske pakete."
 
@@ -5178,11 +5178,11 @@ msgstr "omogoči iskanje ponudnikov terrent-u"
 msgid "Trackers list"
 msgstr "Seznam sledilcev"
 
+# | msgid "" "trackers that will be added to magnets without
+# | trackers<br>separate " "trackers with a comma, e.g.
+# | \"tracker1,tracker2,tracker3\""
 #: gui/slick/views/config_search.mako:861
 #, fuzzy
-#| msgid "" "trackers that will be added to magnets without
-#| trackers<br>separate " "trackers with a comma, e.g.
-#| \"tracker1,tracker2,tracker3\""
 msgid ""
 "trackers that will be added to magnets without trackers<br>separate "
 "trackers '\n"
@@ -7717,7 +7717,7 @@ msgstr ""
 msgid "Config - Anime"
 msgstr ""
 
-#: sickchill/views/config/anime.py:66 sickchill/views/config/general.py:237
+#: sickchill/views/config/anime.py:66 sickchill/views/config/general.py:236
 #: sickchill/views/config/notifications.py:322
 #: sickchill/views/config/post_processing.py:171
 #: sickchill/views/config/providers.py:348 sickchill/views/config/search.py:180
@@ -7733,35 +7733,35 @@ msgstr ""
 msgid "Backup/Restore"
 msgstr ""
 
-#: sickchill/views/config/general.py:54
+#: sickchill/views/config/general.py:53
 msgid "Config - General"
 msgstr ""
 
-#: sickchill/views/config/general.py:54
+#: sickchill/views/config/general.py:53
 msgid "General Configuration"
 msgstr ""
 
-#: sickchill/views/config/general.py:94
+#: sickchill/views/config/general.py:93
 msgid "Saved Defaults"
 msgstr ""
 
-#: sickchill/views/config/general.py:94
+#: sickchill/views/config/general.py:93
 msgid "Your \"add show\" defaults have been set to your current selections."
 msgstr ""
 
-#: sickchill/views/config/general.py:203
+#: sickchill/views/config/general.py:202
 msgid "Unable to create directory {directory}, log directory not changed."
 msgstr ""
 
-#: sickchill/views/config/general.py:211
+#: sickchill/views/config/general.py:210
 msgid "Unable to create directory {directory}, https cert directory not changed."
 msgstr ""
 
-#: sickchill/views/config/general.py:215
+#: sickchill/views/config/general.py:214
 msgid "Unable to create directory {directory}, https key directory not changed."
 msgstr ""
 
-#: sickchill/views/config/general.py:234
+#: sickchill/views/config/general.py:233
 #: sickchill/views/config/notifications.py:319
 #: sickchill/views/config/post_processing.py:169
 #: sickchill/views/config/search.py:177

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickchill 0.0.1\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2019-06-27 07:39+0000\n"
+"POT-Creation-Date: 2019-09-02 11:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -7491,7 +7491,7 @@ msgstr ""
 msgid "Config - Anime"
 msgstr ""
 
-#: sickchill/views/config/anime.py:66 sickchill/views/config/general.py:237
+#: sickchill/views/config/anime.py:66 sickchill/views/config/general.py:236
 #: sickchill/views/config/notifications.py:322
 #: sickchill/views/config/post_processing.py:171
 #: sickchill/views/config/providers.py:348 sickchill/views/config/search.py:180
@@ -7507,35 +7507,35 @@ msgstr ""
 msgid "Backup/Restore"
 msgstr ""
 
-#: sickchill/views/config/general.py:54
+#: sickchill/views/config/general.py:53
 msgid "Config - General"
 msgstr ""
 
-#: sickchill/views/config/general.py:54
+#: sickchill/views/config/general.py:53
 msgid "General Configuration"
 msgstr ""
 
-#: sickchill/views/config/general.py:94
+#: sickchill/views/config/general.py:93
 msgid "Saved Defaults"
 msgstr ""
 
-#: sickchill/views/config/general.py:94
+#: sickchill/views/config/general.py:93
 msgid "Your \"add show\" defaults have been set to your current selections."
 msgstr ""
 
-#: sickchill/views/config/general.py:203
+#: sickchill/views/config/general.py:202
 msgid "Unable to create directory {directory}, log directory not changed."
 msgstr ""
 
-#: sickchill/views/config/general.py:211
+#: sickchill/views/config/general.py:210
 msgid "Unable to create directory {directory}, https cert directory not changed."
 msgstr ""
 
-#: sickchill/views/config/general.py:215
+#: sickchill/views/config/general.py:214
 msgid "Unable to create directory {directory}, https key directory not changed."
 msgstr ""
 
-#: sickchill/views/config/general.py:234
+#: sickchill/views/config/general.py:233
 #: sickchill/views/config/notifications.py:319
 #: sickchill/views/config/post_processing.py:169
 #: sickchill/views/config/search.py:177

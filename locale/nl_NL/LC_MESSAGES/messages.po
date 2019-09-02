@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2019-06-27 07:39+0000\n"
+"POT-Creation-Date: 2019-09-02 11:23+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: nl_NL\n"
@@ -703,9 +703,9 @@ msgstr "Algemeen"
 msgid "Performing {episode_or_season} search for {show}"
 msgstr ""
 
+# | msgid "season packs only."
 #: sickbeard/search.py:471 sickbeard/search.py:753
 #, fuzzy
-#| msgid "season packs only."
 msgid "season pack"
 msgstr "alleen complete seizoenen."
 
@@ -5410,11 +5410,11 @@ msgstr "schakel torrent Zoekmachines in"
 msgid "Trackers list"
 msgstr "Trackerlijst"
 
+# | msgid "" "trackers that will be added to magnets without
+# | trackers<br>separate " "trackers with a comma, e.g.
+# | \"tracker1,tracker2,tracker3\""
 #: gui/slick/views/config_search.mako:861
 #, fuzzy
-#| msgid "" "trackers that will be added to magnets without
-#| trackers<br>separate " "trackers with a comma, e.g.
-#| \"tracker1,tracker2,tracker3\""
 msgid ""
 "trackers that will be added to magnets without trackers<br>separate "
 "trackers '\n"
@@ -7978,7 +7978,7 @@ msgstr ""
 msgid "Config - Anime"
 msgstr "Configuratie - Anime"
 
-#: sickchill/views/config/anime.py:66 sickchill/views/config/general.py:237
+#: sickchill/views/config/anime.py:66 sickchill/views/config/general.py:236
 #: sickchill/views/config/notifications.py:322
 #: sickchill/views/config/post_processing.py:171
 #: sickchill/views/config/providers.py:348 sickchill/views/config/search.py:180
@@ -7994,41 +7994,41 @@ msgstr "Configuratie - Back-up/Herstel"
 msgid "Backup/Restore"
 msgstr "Back-up/Herstel"
 
-#: sickchill/views/config/general.py:54
+#: sickchill/views/config/general.py:53
 msgid "Config - General"
 msgstr "Configuratie - Algemeen"
 
-#: sickchill/views/config/general.py:54
+#: sickchill/views/config/general.py:53
 msgid "General Configuration"
 msgstr "Algemene Configuratie"
 
-#: sickchill/views/config/general.py:94
+#: sickchill/views/config/general.py:93
 msgid "Saved Defaults"
 msgstr "Opgeslagen Standaardwaarden"
 
-#: sickchill/views/config/general.py:94
+#: sickchill/views/config/general.py:93
 msgid "Your \"add show\" defaults have been set to your current selections."
 msgstr ""
 "De standaard waardes voor \"Show toevoegen\" zijn ingesteld op uw huidige"
 " selectie."
 
-#: sickchill/views/config/general.py:203
+#: sickchill/views/config/general.py:202
 msgid "Unable to create directory {directory}, log directory not changed."
 msgstr "Aanmaken van de map {directory} is mislukt, logboekmap is ongewijzigd."
 
-#: sickchill/views/config/general.py:211
+#: sickchill/views/config/general.py:210
 msgid "Unable to create directory {directory}, https cert directory not changed."
 msgstr ""
 "Map {directory) kan niet worden aangemaakt, SSL certificaat map is "
 "ongewijzigd."
 
-#: sickchill/views/config/general.py:215
+#: sickchill/views/config/general.py:214
 msgid "Unable to create directory {directory}, https key directory not changed."
 msgstr ""
 "Niet in staat hier een map {directory} te maken, de https key map is niet"
 " gewijzigd."
 
-#: sickchill/views/config/general.py:234
+#: sickchill/views/config/general.py:233
 #: sickchill/views/config/notifications.py:319
 #: sickchill/views/config/post_processing.py:169
 #: sickchill/views/config/search.py:177
@@ -8220,15 +8220,15 @@ msgstr "Ontbrekende Ondertiteling"
 msgid "Mass Edit"
 msgstr "Groepsgewijs Bewerken"
 
+# | msgid "Unable to update show: {excption_format}"
 #: sickchill/views/manage/index.py:546
 #, fuzzy
-#| msgid "Unable to update show: {excption_format}"
 msgid "Unable to update show: {exception_format}"
 msgstr "Kan serie niet updaten: {excption_format}"
 
+# | msgid "Unable to refresh show {show_name}: {excption_format}"
 #: sickchill/views/manage/index.py:554
 #, fuzzy
-#| msgid "Unable to refresh show {show_name}: {excption_format}"
 msgid "Unable to refresh show {show_name}: {exception_format}"
 msgstr "Kan serie {show_name} niet updaten: {excption_format}"
 
