@@ -20,7 +20,7 @@ from urllib3.util.ssl_ import create_urllib3_context, DEFAULT_CIPHERS
 
 from .user_agents import USER_AGENTS
 
-__version__ = "2.0.7"
+__version__ = "2.0.8"
 
 DEFAULT_USER_AGENT = random.choice(USER_AGENTS)
 
@@ -57,7 +57,7 @@ https://github.com/Anorov/cloudflare-scrape/issues\
 """
 
 # Remove a few problematic TLSv1.0 ciphers from the defaults
-DEFAULT_CIPHERS += ":!ECDHE+SHA:!AES128-SHA"
+DEFAULT_CIPHERS += ":!ECDHE+SHA:!AES128-SHA:!AESCCM:!DHE:!ARIA"
 
 
 class CloudflareAdapter(HTTPAdapter):

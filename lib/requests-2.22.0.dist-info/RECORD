@@ -1,3 +1,9 @@
+requests-2.22.0.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+requests-2.22.0.dist-info/LICENSE,sha256=vkGrrCxA-FMDB-jRcsWQtHb0pIi8amj43le3z2R4Zoc,582
+requests-2.22.0.dist-info/METADATA,sha256=sJ1ZdIgF0uoV9U58VVoEZv1QTyMCpmc2MQnbkob3nsE,5523
+requests-2.22.0.dist-info/RECORD,,
+requests-2.22.0.dist-info/WHEEL,sha256=h_aVn5OB2IERUjMbi2pucmR_zzWJtk303YXvhh60NJ8,110
+requests-2.22.0.dist-info/top_level.txt,sha256=fMSVmHfb5rbGOo6xv-O_tUX6j-WyixssE-SnwcDRxNQ,9
 requests/__init__.py,sha256=PnKCgjcTq44LaAMzB-7--B2FdewRrE8F_vjZeaG9NhA,3921
 requests/__version__.py,sha256=Bm-GFstQaFezsFlnmEMrJDe8JNROz9n2XXYtODdvjjc,436
 requests/_internal_utils.py,sha256=Zx3PnEUccyfsB-ie11nZVAW8qClJy0gx1qNME7rgT18,1096
@@ -16,8 +22,3 @@ requests/sessions.py,sha256=DjbCotDW6xSAaBsjbW-L8l4N0UcwmrxVNgSrZgIjGWM,29332
 requests/status_codes.py,sha256=XWlcpBjbCtq9sSqpH9_KKxgnLTf9Z__wCWolq21ySlg,4129
 requests/structures.py,sha256=zoP8qly2Jak5e89HwpqjN1z2diztI-_gaqts1raJJBc,2981
 requests/utils.py,sha256=LtPJ1db6mJff2TJSJWKi7rBpzjPS3mSOrjC9zRhoD3A,30049
-requests-2.22.0.dist-info/LICENSE,sha256=vkGrrCxA-FMDB-jRcsWQtHb0pIi8amj43le3z2R4Zoc,582
-requests-2.22.0.dist-info/METADATA,sha256=sJ1ZdIgF0uoV9U58VVoEZv1QTyMCpmc2MQnbkob3nsE,5523
-requests-2.22.0.dist-info/WHEEL,sha256=h_aVn5OB2IERUjMbi2pucmR_zzWJtk303YXvhh60NJ8,110
-requests-2.22.0.dist-info/top_level.txt,sha256=fMSVmHfb5rbGOo6xv-O_tUX6j-WyixssE-SnwcDRxNQ,9
-requests-2.22.0.dist-info/RECORD,,
