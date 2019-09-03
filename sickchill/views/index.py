@@ -247,6 +247,7 @@ class WebRoot(WebHandler):
             media = None
 
         if media:
+            self.set_header(b'Cache-Control', 'public, max-age=86400')
             self.set_header(b'Content-Type', media.get_media_type())
 
             return media.get_media()
