@@ -247,7 +247,14 @@ class WebRoot(WebHandler):
             media = None
 
         if media:
+            abspath = media.get_static_media_path()
+            stat_result = os.stat(abspath)
+            modified = datetime.datetime.fromtimestamp(int(stat_result.st_mtime))
+
+            self.set_header(b'Last-Modified', modified)
             self.set_header(b'Content-Type', media.get_media_type())
+            self.set_header(b'Accept-Ranges', 'bytes')
+            self.set_header(b'Cache-Control', 'public, max-age=86400')
 
             return media.get_media()
 
