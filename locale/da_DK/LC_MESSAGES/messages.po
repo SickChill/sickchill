@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2019-06-27 07:39+0000\n"
+"POT-Creation-Date: 2019-09-02 11:23+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: da_DK\n"
@@ -699,9 +699,9 @@ msgstr "Hoved"
 msgid "Performing {episode_or_season} search for {show}"
 msgstr ""
 
+# | msgid "season packs only."
 #: sickbeard/search.py:471 sickbeard/search.py:753
 #, fuzzy
-#| msgid "season packs only."
 msgid "season pack"
 msgstr "kun sæson pakker."
 
@@ -7795,7 +7795,7 @@ msgstr "Kunne ikke indlæse nyheder fra repo. [Klik her for news.md])({news_url}
 msgid "Config - Anime"
 msgstr "Konfigurer - Anime"
 
-#: sickchill/views/config/anime.py:66 sickchill/views/config/general.py:237
+#: sickchill/views/config/anime.py:66 sickchill/views/config/general.py:236
 #: sickchill/views/config/notifications.py:322
 #: sickchill/views/config/post_processing.py:171
 #: sickchill/views/config/providers.py:348 sickchill/views/config/search.py:180
@@ -7811,39 +7811,39 @@ msgstr "Konfigurer - Backup/gendannelse"
 msgid "Backup/Restore"
 msgstr "Backup/gendannelse"
 
-#: sickchill/views/config/general.py:54
+#: sickchill/views/config/general.py:53
 msgid "Config - General"
 msgstr "Konfigurer - General"
 
-#: sickchill/views/config/general.py:54
+#: sickchill/views/config/general.py:53
 msgid "General Configuration"
 msgstr "General Konfiguration"
 
-#: sickchill/views/config/general.py:94
+#: sickchill/views/config/general.py:93
 msgid "Saved Defaults"
 msgstr "Gemte standardindstillinger"
 
-#: sickchill/views/config/general.py:94
+#: sickchill/views/config/general.py:93
 msgid "Your \"add show\" defaults have been set to your current selections."
 msgstr ""
 "Din \"Tilføj show\" standardindstillinger er indstillet til dit aktuelle "
 "valg."
 
-#: sickchill/views/config/general.py:203
+#: sickchill/views/config/general.py:202
 msgid "Unable to create directory {directory}, log directory not changed."
 msgstr ""
 "Ikke i stand til at oprette kataloget {directory}, log katalog ikke "
 "ændret."
 
-#: sickchill/views/config/general.py:211
+#: sickchill/views/config/general.py:210
 msgid "Unable to create directory {directory}, https cert directory not changed."
 msgstr "Kan ikke oprette mappe {directory}, https cert mappe ikke ændret."
 
-#: sickchill/views/config/general.py:215
+#: sickchill/views/config/general.py:214
 msgid "Unable to create directory {directory}, https key directory not changed."
 msgstr "Kan ikke oprette mappe {directory}, https cert mappe ikke ændret."
 
-#: sickchill/views/config/general.py:234
+#: sickchill/views/config/general.py:233
 #: sickchill/views/config/notifications.py:319
 #: sickchill/views/config/post_processing.py:169
 #: sickchill/views/config/search.py:177
@@ -8029,15 +8029,15 @@ msgstr "Mangler undertekster"
 msgid "Mass Edit"
 msgstr "Masse Rediger"
 
+# | msgid "Unable to update show: {excption_format}"
 #: sickchill/views/manage/index.py:546
 #, fuzzy
-#| msgid "Unable to update show: {excption_format}"
 msgid "Unable to update show: {exception_format}"
 msgstr "Kunne ikke opdatere serie: {excption_format}"
 
+# | msgid "Unable to refresh show {show_name}: {excption_format}"
 #: sickchill/views/manage/index.py:554
 #, fuzzy
-#| msgid "Unable to refresh show {show_name}: {excption_format}"
 msgid "Unable to refresh show {show_name}: {exception_format}"
 msgstr "Kunne ikke genopfriske serie{show_name}: {excption_format}"
 
