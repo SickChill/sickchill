@@ -106,6 +106,7 @@
                                 <th>${_('Airdate')} (${('local', 'network')[sickbeard.TIMEZONE_DISPLAY == 'network']})</th>
                                 <th>${_('Ends')}</th>
                                 <th>${_('Show')}</th>
+			        <th>${_('Banner')}</th>
                                 <th>${_('Next Ep')}</th>
                                 <th>${_('Next Ep Name')}</th>
                                 <th>${_('Network')}</th>
@@ -166,6 +167,11 @@
                                             <span class="pause">[paused]</span>
                                         % endif
                                     </td>
+			            <td class="banner">
+					<a href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">
+						<img alt="" class="bannerThumb" src="${srRoot}/showPoster/?show=${cur_result[b'showid']}&amp;which=banner" />
+					</a>
+				    </td>
                                     <td nowrap="nowrap" align="center">
                                         ${'S%02iE%02i' % (int(cur_result[b'season']), int(cur_result[b'episode']))}
                                     </td>
