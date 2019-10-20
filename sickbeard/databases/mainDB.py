@@ -1156,9 +1156,17 @@ class UseSickChillMetadataForSubtitle(AlterTVShowsFieldTypes):
         self.add_column('tv_shows', 'sub_use_sr_metadata', "NUMERIC", "0")
 
 
-class ResetDBVersion(UseSickChillMetadataForSubtitle):
+class AddPreferWords(UseSickChillMetadataForSubtitle):
+    """ Adding column rls_prefer_words to tv_shows """
+
     def test(self):
-        return False
+        return self.has_column("tv_shows", "rls_prefer_words")
 
     def execute(self):
-        self.connection.action("UPDATE db_version SET db_version = ?, db_minor_version = ?", [MAX_DB_VERSION, 0])
+        backupDatabase(self.get_db_version())
+
+        logger.log("Adding column rls_prefer_words to tvshows")
+        if not self.has_column("tv_shows", "rls_prefer_words"):
+            self.add_column("tv_shows", "rls_prefer_words", "TEXT", "")
+
+        self.inc_minor_version()

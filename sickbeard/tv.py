@@ -95,6 +95,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         self._scene = 0
         self._rls_ignore_words = ""
         self._rls_require_words = ""
+        self._rls_prefer_words = ""
         self._default_ep_status = SKIPPED
         self.dirty = True
 
@@ -136,6 +137,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
     scene = property(lambda self: self._scene, dirty_setter("_scene"))
     rls_ignore_words = property(lambda self: self._rls_ignore_words, dirty_setter("_rls_ignore_words"))
     rls_require_words = property(lambda self: self._rls_require_words, dirty_setter("_rls_require_words"))
+    rls_prefer_words = property(lambda self: self._rls_prefer_words, dirty_setter("_rls_prefer_words"))
     default_ep_status = property(lambda self: self._default_ep_status, dirty_setter("_default_ep_status"))
     subtitles_sr_metadata = property(lambda self: self._subtitles_sr_metadata, dirty_setter("_subtitles_sr_metadata"))
 
@@ -794,6 +796,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
             self.rls_ignore_words = sql_results[0][b"rls_ignore_words"]
             self.rls_require_words = sql_results[0][b"rls_require_words"]
+            self.rls_prefer_words = sql_results[0][b"rls_prefer_words"]
 
             self.default_ep_status = int(sql_results[0][b"default_ep_status"] or SKIPPED)
 
@@ -1184,6 +1187,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                         "last_update_indexer": self.last_update_indexer,
                         "rls_ignore_words": self.rls_ignore_words,
                         "rls_require_words": self.rls_require_words,
+                        "rls_prefer_words": self.rls_prefer_words,
                         "default_ep_status": self.default_ep_status,
                         "sub_use_sr_metadata": self.subtitles_sr_metadata}
 
