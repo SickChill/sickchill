@@ -32,7 +32,7 @@ class XThorProvider(TorrentProvider):
         TorrentProvider.__init__(self, 'XThor')
 
         self.url = 'https://xthor.to'
-        self.urls = {'search': 'https://api.xthor.to'}
+        self.urls = {'search': 'https://api.xthor.tk'}
 
         self.freeleech = None
         self.api_key = None
