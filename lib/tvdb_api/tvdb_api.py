@@ -22,6 +22,7 @@ import logging
 import zipfile
 import datetime as dt
 import requests
+from base64 import standard_b64decode
 
 import xmltodict
 
@@ -609,9 +610,9 @@ class Tvdb:
             try:
                 log().debug("We recived a zip file unpacking now ...")
                 zipdata = StringIO.StringIO()
-                zipdata.write(resp.content)
+                zipdata.write(standard_b64decode(resp.content))
                 myzipfile = zipfile.ZipFile(zipdata)
-                return xmltodict.parse(myzipfile.read('%s.xml' % language), postprocessor=process)
+                return xmltodict.parse(myzipfile.read('series.xml'), postprocessor=process)
             except zipfile.BadZipfile:
                 raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
         else:
