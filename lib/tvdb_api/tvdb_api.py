@@ -611,7 +611,7 @@ class Tvdb:
                 zipdata = StringIO.StringIO()
                 zipdata.write(resp.content)
                 myzipfile = zipfile.ZipFile(zipdata)
-                return xmltodict.parse(myzipfile.read('%s.zip.xml' % language), postprocessor=process)
+                return xmltodict.parse(myzipfile.read('%s.xml' % language), postprocessor=process)
             except zipfile.BadZipfile:
                 raise tvdb_error("Bad zip file received from thetvdb.com, could not read it")
         else:
