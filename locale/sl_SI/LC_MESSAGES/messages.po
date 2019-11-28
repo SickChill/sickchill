@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2019-09-02 11:23+0000\n"
+"POT-Creation-Date: 2019-11-28 19:23+0000\n"
 "PO-Revision-Date: 2018-10-10 07:48+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: sl_SI\n"
@@ -204,7 +204,7 @@ msgstr "Prejeto"
 #: gui/slick/views/inc_home_showList.mako:78
 #: gui/slick/views/inc_home_showList.mako:283
 #: gui/slick/views/layouts/main.mako:344 gui/slick/views/schedule.mako:28
-#: gui/slick/views/schedule.mako:304 sickbeard/common.py:223
+#: gui/slick/views/schedule.mako:310 sickbeard/common.py:223
 #: sickbeard/common.py:605
 msgid "Snatched"
 msgstr "Izginil"
@@ -1163,7 +1163,7 @@ msgid "All Indexers"
 msgstr ""
 
 #: gui/slick/views/addShows_newShow.mako:91
-#: gui/slick/views/displayShow.mako:436 gui/slick/views/schedule.mako:115
+#: gui/slick/views/displayShow.mako:436 gui/slick/views/schedule.mako:116
 #: gui/slick/views/viewlogs.mako:41
 msgid "Search"
 msgstr "Iskanje"
@@ -1196,8 +1196,8 @@ msgstr "Mapa"
 #: gui/slick/views/config_postProcessing.mako:1248
 #: gui/slick/views/displayShow.mako:169 gui/slick/views/history.mako:64
 #: gui/slick/views/history.mako:132 gui/slick/views/inc_home_showList.mako:174
-#: gui/slick/views/manage.mako:41 gui/slick/views/schedule.mako:113
-#: gui/slick/views/schedule.mako:467
+#: gui/slick/views/manage.mako:41 gui/slick/views/schedule.mako:114
+#: gui/slick/views/schedule.mako:473
 msgid "Quality"
 msgstr ""
 
@@ -1617,7 +1617,7 @@ msgid "Shows"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:76 gui/slick/views/layouts/main.mako:163
-#: sickchill/views/index.py:340
+#: sickchill/views/index.py:347
 msgid "Schedule"
 msgstr "Urnik"
 
@@ -1970,7 +1970,7 @@ msgstr ""
 #: gui/slick/views/config_general.mako:588
 #: gui/slick/views/inc_home_menu.mako:48
 #: gui/slick/views/inc_home_showList.mako:173 gui/slick/views/manage.mako:40
-#: gui/slick/views/schedule.mako:57 gui/slick/views/schedule.mako:111
+#: gui/slick/views/schedule.mako:57 gui/slick/views/schedule.mako:112
 msgid "Network"
 msgstr "Omrežje"
 
@@ -6250,6 +6250,7 @@ msgid "Small Poster"
 msgstr "Mali plakat"
 
 #: gui/slick/views/inc_home_menu.mako:38 gui/slick/views/schedule.mako:86
+#: gui/slick/views/schedule.mako:109
 msgid "Banner"
 msgstr "Pasica"
 
@@ -6257,7 +6258,7 @@ msgstr "Pasica"
 msgid "Simple"
 msgstr "Enostavno"
 
-#: gui/slick/views/inc_home_menu.mako:47 gui/slick/views/schedule.mako:453
+#: gui/slick/views/inc_home_menu.mako:47 gui/slick/views/schedule.mako:459
 msgid "Next Episode"
 msgstr "Naslednja epizoda"
 
@@ -6303,7 +6304,7 @@ msgstr "Neveljaven datum"
 msgid "No Network"
 msgstr "Ni omrežja"
 
-#: gui/slick/views/inc_home_showList.mako:170 gui/slick/views/schedule.mako:109
+#: gui/slick/views/inc_home_showList.mako:170 gui/slick/views/schedule.mako:110
 msgid "Next Ep"
 msgstr "Naslednji ep"
 
@@ -6662,11 +6663,11 @@ msgstr ""
 msgid "Key"
 msgstr "Ključ"
 
-#: gui/slick/views/schedule.mako:26 gui/slick/views/schedule.mako:305
+#: gui/slick/views/schedule.mako:26 gui/slick/views/schedule.mako:311
 msgid "Missed"
 msgstr "Zgrešeni"
 
-#: gui/slick/views/schedule.mako:30 gui/slick/views/schedule.mako:373
+#: gui/slick/views/schedule.mako:30 gui/slick/views/schedule.mako:379
 msgid "Today"
 msgstr "Danes"
 
@@ -6674,7 +6675,7 @@ msgstr "Danes"
 msgid "Soon"
 msgstr "Kmalu"
 
-#: gui/slick/views/schedule.mako:32 gui/slick/views/schedule.mako:306
+#: gui/slick/views/schedule.mako:32 gui/slick/views/schedule.mako:312
 msgid "Later"
 msgstr "Pozneje"
 
@@ -6714,27 +6715,27 @@ msgstr "Seznam"
 msgid "Ends"
 msgstr "Konec"
 
-#: gui/slick/views/schedule.mako:110
+#: gui/slick/views/schedule.mako:111
 msgid "Next Ep Name"
 msgstr "Naslednja Ep ime"
 
-#: gui/slick/views/schedule.mako:112
+#: gui/slick/views/schedule.mako:113
 msgid "Run time"
 msgstr "Zaženite čas"
 
-#: gui/slick/views/schedule.mako:114
+#: gui/slick/views/schedule.mako:115
 msgid "Indexers"
 msgstr "Indeksi"
 
-#: gui/slick/views/schedule.mako:288
+#: gui/slick/views/schedule.mako:294
 msgid "No shows for this day"
 msgstr "Ni shows za ta dan"
 
-#: gui/slick/views/schedule.mako:459
+#: gui/slick/views/schedule.mako:465
 msgid "Airs"
 msgstr "Načini"
 
-#: gui/slick/views/schedule.mako:476 gui/slick/views/schedule.mako:481
+#: gui/slick/views/schedule.mako:482 gui/slick/views/schedule.mako:487
 msgid "Plot"
 msgstr "Zgodba/scenarij"
 
@@ -7661,23 +7662,23 @@ msgstr "Ključ API ni bil ustvarjen"
 msgid "API Builder"
 msgstr "API graditelj"
 
-#: sickchill/views/index.py:364
+#: sickchill/views/index.py:371
 msgid "Test 1"
 msgstr "Preizkus 1"
 
-#: sickchill/views/index.py:364
+#: sickchill/views/index.py:371
 msgid "This is test number 1"
 msgstr "To je test številka 1"
 
-#: sickchill/views/index.py:365
+#: sickchill/views/index.py:372
 msgid "Test 2"
 msgstr "Preizkus 2"
 
-#: sickchill/views/index.py:365
+#: sickchill/views/index.py:372
 msgid "This is test number 2"
 msgstr "To je test številka 2"
 
-#: sickchill/views/index.py:390
+#: sickchill/views/index.py:397
 msgid ""
 "You're using the {branch} branch. Please use 'master' unless specifically"
 " asked"

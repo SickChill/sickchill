@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2019-09-02 11:23+0000\n"
+"POT-Creation-Date: 2019-11-28 19:23+0000\n"
 "PO-Revision-Date: 2018-10-10 07:47+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: pt_PT\n"
@@ -203,7 +203,7 @@ msgstr "Transferido"
 #: gui/slick/views/inc_home_showList.mako:78
 #: gui/slick/views/inc_home_showList.mako:283
 #: gui/slick/views/layouts/main.mako:344 gui/slick/views/schedule.mako:28
-#: gui/slick/views/schedule.mako:304 sickbeard/common.py:223
+#: gui/slick/views/schedule.mako:310 sickbeard/common.py:223
 #: sickbeard/common.py:605
 msgid "Snatched"
 msgstr "Encontrado"
@@ -1195,7 +1195,7 @@ msgid "All Indexers"
 msgstr "Todos os indexadores"
 
 #: gui/slick/views/addShows_newShow.mako:91
-#: gui/slick/views/displayShow.mako:436 gui/slick/views/schedule.mako:115
+#: gui/slick/views/displayShow.mako:436 gui/slick/views/schedule.mako:116
 #: gui/slick/views/viewlogs.mako:41
 msgid "Search"
 msgstr "Procurar"
@@ -1228,8 +1228,8 @@ msgstr "Diretório"
 #: gui/slick/views/config_postProcessing.mako:1248
 #: gui/slick/views/displayShow.mako:169 gui/slick/views/history.mako:64
 #: gui/slick/views/history.mako:132 gui/slick/views/inc_home_showList.mako:174
-#: gui/slick/views/manage.mako:41 gui/slick/views/schedule.mako:113
-#: gui/slick/views/schedule.mako:467
+#: gui/slick/views/manage.mako:41 gui/slick/views/schedule.mako:114
+#: gui/slick/views/schedule.mako:473
 msgid "Quality"
 msgstr "Qualidade"
 
@@ -1655,7 +1655,7 @@ msgid "Shows"
 msgstr "Programas"
 
 #: gui/slick/views/config_general.mako:76 gui/slick/views/layouts/main.mako:163
-#: sickchill/views/index.py:340
+#: sickchill/views/index.py:347
 msgid "Schedule"
 msgstr "Calendário"
 
@@ -2020,7 +2020,7 @@ msgstr "Local"
 #: gui/slick/views/config_general.mako:588
 #: gui/slick/views/inc_home_menu.mako:48
 #: gui/slick/views/inc_home_showList.mako:173 gui/slick/views/manage.mako:40
-#: gui/slick/views/schedule.mako:57 gui/slick/views/schedule.mako:111
+#: gui/slick/views/schedule.mako:57 gui/slick/views/schedule.mako:112
 msgid "Network"
 msgstr "Canal"
 
@@ -6242,6 +6242,7 @@ msgid "Small Poster"
 msgstr ""
 
 #: gui/slick/views/inc_home_menu.mako:38 gui/slick/views/schedule.mako:86
+#: gui/slick/views/schedule.mako:109
 msgid "Banner"
 msgstr "Faixa"
 
@@ -6249,7 +6250,7 @@ msgstr "Faixa"
 msgid "Simple"
 msgstr "Simples"
 
-#: gui/slick/views/inc_home_menu.mako:47 gui/slick/views/schedule.mako:453
+#: gui/slick/views/inc_home_menu.mako:47 gui/slick/views/schedule.mako:459
 msgid "Next Episode"
 msgstr "Próximo Episódio"
 
@@ -6295,7 +6296,7 @@ msgstr ""
 msgid "No Network"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:170 gui/slick/views/schedule.mako:109
+#: gui/slick/views/inc_home_showList.mako:170 gui/slick/views/schedule.mako:110
 msgid "Next Ep"
 msgstr ""
 
@@ -6650,11 +6651,11 @@ msgstr ""
 msgid "Key"
 msgstr "Etiqueta"
 
-#: gui/slick/views/schedule.mako:26 gui/slick/views/schedule.mako:305
+#: gui/slick/views/schedule.mako:26 gui/slick/views/schedule.mako:311
 msgid "Missed"
 msgstr "Perdido"
 
-#: gui/slick/views/schedule.mako:30 gui/slick/views/schedule.mako:373
+#: gui/slick/views/schedule.mako:30 gui/slick/views/schedule.mako:379
 msgid "Today"
 msgstr "Hoje"
 
@@ -6662,7 +6663,7 @@ msgstr "Hoje"
 msgid "Soon"
 msgstr "Brevemente"
 
-#: gui/slick/views/schedule.mako:32 gui/slick/views/schedule.mako:306
+#: gui/slick/views/schedule.mako:32 gui/slick/views/schedule.mako:312
 msgid "Later"
 msgstr "Mais tarde"
 
@@ -6702,27 +6703,27 @@ msgstr "Lista"
 msgid "Ends"
 msgstr "Termina"
 
-#: gui/slick/views/schedule.mako:110
+#: gui/slick/views/schedule.mako:111
 msgid "Next Ep Name"
 msgstr "Nome do Próximo Ep"
 
-#: gui/slick/views/schedule.mako:112
+#: gui/slick/views/schedule.mako:113
 msgid "Run time"
 msgstr "Duração"
 
-#: gui/slick/views/schedule.mako:114
+#: gui/slick/views/schedule.mako:115
 msgid "Indexers"
 msgstr "Indexadores"
 
-#: gui/slick/views/schedule.mako:288
+#: gui/slick/views/schedule.mako:294
 msgid "No shows for this day"
 msgstr "Sem programas para este dia"
 
-#: gui/slick/views/schedule.mako:459
+#: gui/slick/views/schedule.mako:465
 msgid "Airs"
 msgstr "Estreia"
 
-#: gui/slick/views/schedule.mako:476 gui/slick/views/schedule.mako:481
+#: gui/slick/views/schedule.mako:482 gui/slick/views/schedule.mako:487
 msgid "Plot"
 msgstr "Sinopse"
 
@@ -7671,23 +7672,23 @@ msgstr "Chave da API não gerada"
 msgid "API Builder"
 msgstr "Construtor de API"
 
-#: sickchill/views/index.py:364
+#: sickchill/views/index.py:371
 msgid "Test 1"
 msgstr "Teste 1"
 
-#: sickchill/views/index.py:364
+#: sickchill/views/index.py:371
 msgid "This is test number 1"
 msgstr "Este é o teste número 1"
 
-#: sickchill/views/index.py:365
+#: sickchill/views/index.py:372
 msgid "Test 2"
 msgstr "Teste 2"
 
-#: sickchill/views/index.py:365
+#: sickchill/views/index.py:372
 msgid "This is test number 2"
 msgstr "Este é o teste número 2"
 
-#: sickchill/views/index.py:390
+#: sickchill/views/index.py:397
 msgid ""
 "You're using the {branch} branch. Please use 'master' unless specifically"
 " asked"
