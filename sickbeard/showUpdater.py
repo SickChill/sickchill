@@ -1,6 +1,9 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # 2019-11-29 : Updated by Benj to comply with Tvdb API V3
+# 2019-12-01 : Made sure update will be done when the cache is empty
+#              or the last update is more then a week old.
+#              Also remove the hardcoded api key and use the one from indexer_config
 # URL: https://sickchill.github.io
 #
 # This file is part of SickChill.
@@ -35,82 +38,63 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
     def __init__(self):
         self.lock = threading.Lock()
         self.amActive = False
+
+        self.apikey = json.dumps({'apikey':sickbeard.indexerApi(INDEXER_TVDB).api_params['apikey']})
         self.base = 'https://api.thetvdb.com'
-        self.apikey = json.dumps({'apikey':"F9C450E78D99172E"})
         self.login = self.base + '/login'
-        self.refresh = self.base + '/refresh'
         self.update = self.base + '/updated/query?fromTime='
         self.session = helpers.make_session()
             # set the correct headers for the requests calls to tvdb
-        self.session.headers.update({'Accept': 'application/json','Content-Type': 'application/json','Authorization': ''})
-        self.timeout = 12.1 #General timeout for the requests calls to prevent a hang if tvdb does not fespond
+        self.session.headers.update({'Accept': 'application/json','Content-Type': 'application/json'})
+        self.timeout = 12.1 #General timeout for the requests calls to prevent a hang if tvdb does not respond
 
     def _gettoken(self):
+        logger.log('Login to tvdb to get a token')
+        Token = None
         try:
-            if self.session.headers.get('Authorization'):
-                    # There is a token in the header so we try to refresh it
-                resp = self.session.get(self.refresh, timeout=self.timeout)
-                logger.log('Try to refresh a tvdb token')
-                if resp.ok:
-                    Token = json.loads(resp.text).get('token','')
-                    self.session.headers.update({"Authorization": "Bearer " + Token})
-                    logger.log('Tvdb token refreshed')
-                    return True
-                # there was no token in the header or the token was expired so we login to tvdb with the apikey to get a new token
-            logger.log('Try to login to tvdb to get a token')
             resp = self.session.post(self.login, self.apikey, timeout=self.timeout)
             if resp.ok:
+                    # Put the token in the request header
                 Token = json.loads(resp.text).get('token','')
                 self.session.headers.update({"Authorization": "Bearer " + Token})
-                logger.log('Logged in on tvdb and got a token.')
                 return True
             else:
-                logger.log('Failed to get a token from tvdb')
-                return False
+                raise Exception('Failed to login on tvdb. reason: %s' % resp.reason)
         except Exception as error:
-            logger.log('Could not get a token from Tvdb. Reason: %s' %resp.reason)
-        return False
+            logger.log(str(error))
+            return False
 
     def run(self, force=False):  # pylint: disable=unused-argument, too-many-locals, too-many-branches, too-many-statements
         logger.log('ShowUpdater for tvdb Api V3 starting')
         if self.amActive:
             return
-            # get a tvdb api token and put it in the requests session header
-        if not self._gettoken():
-            return
         self.amActive = True
+        if not self._gettoken():
+            self.amActive = False
+            logger.log('No token from tvdb so update not possible')
+            return 
 
-        update_timestamp = time.mktime(datetime.datetime.now().timetuple())
         cache_db_con = db.DBConnection('cache.db')
         result = cache_db_con.select('SELECT `time` FROM lastUpdate WHERE provider = ?', ['theTVDB'])
-        if result:
-            last_update = int(result[0][0])
-        else:
-            last_update = int(time.mktime(datetime.datetime.min.timetuple()))
-            cache_db_con.action('INSERT INTO lastUpdate (provider, `time`) VALUES (?, ?)', ['theTVDB', last_update])
-
+        last_update = int(result[0][0]) if result else 0
         network_timezones.update_network_dict()
-        try:
-            logger.log('Tvdb Cmd:' + self.update + str(last_update))
-            resp = self.session.get(self.update + str(last_update), timeout=self.timeout)
-        except Exception as error:
-            self.amActive = False
-            logger.log('Could not get show updates from tvdb. Reason: %s' %resp.reason)
-            return
-        TvdbData = json.loads(resp.text)
-        if TvdbData.get('Error'):
-            logger.log(TvdbData['Error'])
-            self.amActive = False
-            return
+        update_timestamp = int(time.time())
+        updated_shows = []
+        if last_update:
+            logger.log( 'Last update: %s' %time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_update)))
+                # We query tvdb for updates starting from the last update time from the cache until now with increments of 7 days
+            for fromTime in range(last_update, update_timestamp, 604800): # increments of 604800 sec = 7*24*60*60
+                try:                    
+                    resp = self.session.get(self.update + str(fromTime), timeout=self.timeout)
+                    if resp.ok:
+                        TvdbData = json.loads(resp.text)
+                        updated_shows.extend([d['id'] for d in TvdbData.get('data',[])])
+                    else:
+                        raise Exception('Failed to get update from tvdb. reason: %s' % resp.reason)
+                except Exception as error:
+                    logger.log(str(error))
         else:
-                # Use a list comprehension to put all the updated serie id's from the dict into a single list
-            updated_shows = [i['id'] for i in TvdbData.get('data',[])]
-            logger.log('Updates for: %s' % updated_shows )
-        if not updated_shows:
-            logger.log('No updated shows found on tvdb')
-            self.amActive = False
-            return
-
+            logger.log('No last update time from the cache, so we do a full update for all shows')
         pi_list = []
         for cur_show in sickbeard.showList:
             if int(cur_show.indexer) in [INDEXER_TVRAGE]:
@@ -119,16 +103,17 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
             try:
                 cur_show.nextEpisode()
                 if sickbeard.indexerApi(cur_show.indexer).name == 'theTVDB':
-                    if cur_show.indexerid in updated_shows:
+                        # When last_update is not set from the cache or the show was in the tvdb updated list we update the show
+                    if not last_update or cur_show.indexerid in updated_shows:
                         pi_list.append(sickbeard.showQueueScheduler.action.update_show(cur_show, True))
                     else:
                         pi_list.append(sickbeard.showQueueScheduler.action.refresh_show(cur_show, False))
             except (CantUpdateShowException, CantRefreshShowException) as error:
-                logger.log('Automatic update failed: {0}'.format(ex(error)), logger.DEBUG)
+                logger.log('Automatic update failed: {0}'.format(ex(error)))
 
         ui.ProgressIndicators.setIndicator('dailyUpdate', ui.QueueProgressIndicator('Daily Update', pi_list))
 
-        cache_db_con.action('UPDATE lastUpdate SET `time` = ? WHERE provider=?', [update_timestamp, 'theTVDB'])
+        cache_db_con.action('UPDATE lastUpdate SET `time` = ? WHERE provider=?', [str(update_timestamp), 'theTVDB'])
 
         self.amActive = False
 
@@ -136,7 +121,7 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
     def request_hook(response, **kwargs):
         _ = kwargs
         logger.log('{0} URL: {1} [Status: {2}]'.format
-                   (response.request.method, response.request.url, response.status_code), logger.DEBUG)
+                   (response.request.method, response.request.url, response.status_code))
 
     def __del__(self):
         pass
