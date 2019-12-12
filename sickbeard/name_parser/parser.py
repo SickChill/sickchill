@@ -167,7 +167,10 @@ class NameParser(object):
             if 'air_date' in named_groups:
                 air_date = match.group('air_date')
                 try:
-                    assert re.sub(r'[^\d]*', '', air_date) != '112263'
+                    # Workaround for shows that get interpreted as 'air_date' incorrectly.
+                    # Shows so far are 11.22.63 and 9-1-1
+                    excluded_shows = ['112263', '911']
+                    assert re.sub(r'[^\d]*', '', air_date) not in excluded_shows
                     result.air_date = dateutil.parser.parse(air_date, fuzzy_with_tokens=True)[0].date()
                     result.score += 1
                 except Exception:
