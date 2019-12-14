@@ -96,7 +96,7 @@ class MagnetDLProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
                             magnet = result.find("td", class_="m").find("a")['href']
                             seeders = try_int(result.find("td", class_="s").get_text(strip=True))
                             leechers = try_int(result.find("td", class_="l").get_text(strip=True))
-                            size = convert_size(result("td")[labels.index('Size')] or '') or -1
+                            size = convert_size(result("td")[labels.index('Size')].get_text(strip=True) or '') or -1
 
                             if not all([title, magnet]):
                                 continue
