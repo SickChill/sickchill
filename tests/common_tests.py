@@ -34,7 +34,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../l
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from sickbeard import common
-
+import sickbeard
 
 import six
 
@@ -43,6 +43,7 @@ class QualityStringTests(unittest.TestCase):
     """
     Test Case for strings in common.Quality
     """
+    sickbeard.QUALITY_ALLOW_HEVC = True
     test_cases = {
         'sd_tv': [
             "Test.Show.S01E02.PDTV.XViD-GROUP",

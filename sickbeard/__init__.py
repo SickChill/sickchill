@@ -35,30 +35,21 @@ import requests
 from configobj import ConfigObj
 from tornado.locale import load_gettext_translations
 
-try:
-    import pytz  # pylint: disable=unused-import
-except ImportError:
-    pytz = None
-    from pkg_resources import require
-    require('pytz')
-
-
-from sickbeard import (auto_postprocessor, dailysearcher, db, helpers, logger, metadata, naming, post_processing_queue, properFinder, providers, scheduler,
-                       search_queue, searchBacklog, show_queue, showUpdater, subtitles, traktChecker, versionChecker)
+from sickbeard import (auto_postprocessor, dailysearcher, db, helpers, logger, metadata, naming, post_processing_queue, properFinder, providers,
+                       scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, showUpdater, subtitles, traktChecker, versionChecker)
 from sickbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
 from sickbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
 from sickbeard.databases import cache_db, failed_db, mainDB
 from sickbeard.indexers import indexer_api
 from sickbeard.indexers.indexer_exceptions import (indexer_attributenotfound, indexer_episodenotfound, indexer_error, indexer_exception, indexer_seasonnotfound,
                                                    indexer_showincomplete, indexer_shownotfound, indexer_userabort)
+from sickbeard.numdict import NumDict
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.providers.rsstorrent import TorrentRssProvider
 from sickchill.helper import setup_github
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
 from sickchill.system.Shutdown import Shutdown
-
-from sickbeard import scene_exceptions
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 
@@ -227,6 +218,7 @@ METADATA_TIVO = None
 METADATA_MEDE8ER = None
 
 QUALITY_DEFAULT = None
+QUALITY_ALLOW_HEVC = None
 STATUS_DEFAULT = None
 STATUS_DEFAULT_AFTER = None
 SEASON_FOLDERS_DEFAULT = False
@@ -300,10 +292,6 @@ DELETE_NON_ASSOCIATED_FILES = False
 POSTPONE_IF_SYNC_FILES = True
 NFO_RENAME = True
 TV_DOWNLOAD_DIR = None
-UNPACK = 0
-UNPACK_DIR = ''
-UNRAR_TOOL = rarfile.UNRAR_TOOL
-ALT_UNRAR_TOOL = rarfile.ALT_TOOL
 
 SKIP_REMOVED_FILES = False
 ALLOWED_EXTENSIONS = "srt,nfo,srr,sfv"
@@ -344,6 +332,8 @@ TORRENT_USERNAME = None
 TORRENT_PASSWORD = None
 TORRENT_HOST = ''
 TORRENT_PATH = ''
+TORRENT_DELUGE_DOWNLOAD_DIR = ''
+TORRENT_DELUGE_COMPLETE_DIR = ''
 TORRENT_SEED_TIME = None
 TORRENT_PAUSED = False
 TORRENT_HIGH_BANDWIDTH = False
@@ -464,6 +454,7 @@ PUSHOVER_PRIORITY = 0
 USE_LIBNOTIFY = False
 LIBNOTIFY_NOTIFY_ONSNATCH = False
 LIBNOTIFY_NOTIFY_ONDOWNLOAD = False
+LIBNOTIFY_NOTIFY_ONPOSTPROCESS = False
 LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD = False
 
 USE_NMJ = False
@@ -497,6 +488,15 @@ SLACK_NOTIFY_SNATCH = None
 SLACK_NOTIFY_DOWNLOAD = None
 SLACK_NOTIFY_SUBTITLEDOWNLOAD = None
 SLACK_WEBHOOK = None
+SLACK_ICON_EMOJI = None
+
+USE_MATRIX = False
+MATRIX_NOTIFY_SNATCH = None
+MATRIX_NOTIFY_DOWNLOAD = None
+MATRIX_NOTIFY_SUBTITLEDOWNLOAD = None
+MATRIX_API_TOKEN = None
+MATRIX_SERVER = None
+MATRIX_ROOM = None
 
 USE_DISCORD = False
 DISCORD_NOTIFY_SNATCH = None
@@ -557,6 +557,7 @@ PUSHBULLET_CHANNEL = None
 USE_EMAIL = False
 EMAIL_NOTIFY_ONSNATCH = False
 EMAIL_NOTIFY_ONDOWNLOAD = False
+EMAIL_NOTIFY_ONPOSTPROCESS = False
 EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD = False
 EMAIL_HOST = None
 EMAIL_PORT = 25
@@ -629,6 +630,7 @@ TRACKERS_LIST += "udp://glotorrents.pw:6969/announce,udp://tracker.openbittorren
 TRACKERS_LIST += "udp://9.rarbg.to:2710/announce"
 
 REQUIRE_WORDS = ""
+PREFER_WORDS = ""
 IGNORED_SUBS_LIST = "dk,fin,heb,kor,nor,nordic,pl,swe"
 SYNC_FILES = "!sync,lftp-pget-status,bts,!qb,!qB"
 
@@ -653,6 +655,21 @@ __INITIALIZED__ = {}
 
 NEWZNAB_DATA = None
 
+UNPACK_DISABLED = 0
+UNPACK_PROCESS_CONTENTS = 1
+UNPACK_PROCESS_INTACT = 2
+
+unpackStrings = NumDict({
+    UNPACK_DISABLED: _('Ignore (do not process contents)'),
+    UNPACK_PROCESS_CONTENTS: _('Unpack (process contents)'),
+    UNPACK_PROCESS_INTACT: _('Treat as video (process archive as-is)')
+})
+
+UNPACK = UNPACK_DISABLED
+UNPACK_DIR = ''
+UNRAR_TOOL = rarfile.UNRAR_TOOL
+ALT_UNRAR_TOOL = rarfile.ALT_TOOL
+
 
 def get_backlog_cycle_time():
     cycletime = DAILYSEARCH_FREQUENCY * 2 + 7
@@ -668,7 +685,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             CHECK_PROPERS_INTERVAL, ALLOW_HIGH_PRIORITY, SAB_FORCED, TORRENT_METHOD, NOTIFY_ON_LOGIN, SAB_USERNAME, SAB_PASSWORD, SAB_APIKEY, SAB_CATEGORY, \
             SAB_CATEGORY_BACKLOG, SAB_CATEGORY_ANIME, SAB_CATEGORY_ANIME_BACKLOG, SAB_HOST,  NZBGET_USERNAME, NZBGET_PASSWORD, NZBGET_CATEGORY, \
             NZBGET_CATEGORY_BACKLOG, NZBGET_CATEGORY_ANIME, NZBGET_CATEGORY_ANIME_BACKLOG, NZBGET_PRIORITY, NZBGET_HOST, NZBGET_USE_HTTPS,\
-            backlogSearchScheduler, TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH,\
+            backlogSearchScheduler, TORRENT_USERNAME, TORRENT_PASSWORD, TORRENT_HOST, TORRENT_PATH, TORRENT_DELUGE_DOWNLOAD_DIR, TORRENT_DELUGE_COMPLETE_DIR,\
+            TORRENT_SEED_TIME, TORRENT_PAUSED, TORRENT_HIGH_BANDWIDTH,\
             TORRENT_LABEL, TORRENT_LABEL_ANIME, TORRENT_VERIFY_CERT, TORRENT_RPCURL, TORRENT_AUTH_TYPE, USE_KODI, KODI_ALWAYS_ON, KODI_NOTIFY_ONSNATCH, \
             KODI_NOTIFY_ONDOWNLOAD, KODI_NOTIFY_ONSUBTITLEDOWNLOAD, KODI_UPDATE_FULL, KODI_UPDATE_ONLYFIRST, KODI_UPDATE_LIBRARY, KODI_HOST, KODI_USERNAME, \
             KODI_PASSWORD, BACKLOG_FREQUENCY,  USE_TRAKT, TRAKT_USERNAME, TRAKT_ACCESS_TOKEN, TRAKT_REFRESH_TOKEN, TRAKT_REMOVE_WATCHLIST, \
@@ -678,7 +696,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             PLEX_CLIENT_PASSWORD, PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_CLIENT_HOST, PLEX_SERVER_USERNAME, PLEX_SERVER_PASSWORD, PLEX_SERVER_HTTPS, \
             MIN_BACKLOG_FREQUENCY, SKIP_REMOVED_FILES, ALLOWED_EXTENSIONS, USE_EMBY, EMBY_HOST, EMBY_APIKEY, SITE_MESSAGES, showUpdateScheduler, \
             INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, IGNORE_BROKEN_SYMLINKS, SORT_ARTICLE, \
-            NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, QUALITY_DEFAULT, SEASON_FOLDERS_DEFAULT, \
+            NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, QUALITY_DEFAULT, QUALITY_ALLOW_HEVC, \
+            SEASON_FOLDERS_DEFAULT, \
             SUBTITLES_DEFAULT, STATUS_DEFAULT, STATUS_DEFAULT_AFTER, GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, GROWL_NOTIFY_ONSUBTITLEDOWNLOAD, \
             TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD, USE_FREEMOBILE, FREEMOBILE_ID, FREEMOBILE_APIKEY, \
             FREEMOBILE_NOTIFY_ONSNATCH, FREEMOBILE_NOTIFY_ONDOWNLOAD, FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD, USE_TELEGRAM, TELEGRAM_ID, TELEGRAM_APIKEY, \
@@ -703,13 +722,13 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             USE_LIBNOTIFY, LIBNOTIFY_NOTIFY_ONSNATCH, LIBNOTIFY_NOTIFY_ONDOWNLOAD, LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD, USE_NMJ, NMJ_HOST, NMJ_DATABASE, \
             NMJ_MOUNT, USE_NMJv2, NMJv2_HOST, NMJv2_DATABASE, NMJv2_DBLOC, USE_SYNOINDEX, USE_SYNOLOGYNOTIFIER, SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH, \
             SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD, SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD, USE_EMAIL, EMAIL_HOST, EMAIL_PORT, EMAIL_TLS, EMAIL_USER, \
-            EMAIL_PASSWORD, EMAIL_FROM, EMAIL_NOTIFY_ONSNATCH, EMAIL_NOTIFY_ONDOWNLOAD, EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD, EMAIL_LIST, EMAIL_SUBJECT, \
+            EMAIL_PASSWORD, EMAIL_FROM, EMAIL_NOTIFY_ONSNATCH, EMAIL_NOTIFY_ONDOWNLOAD, EMAIL_NOTIFY_ONPOSTPROCESS, EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD, EMAIL_LIST, EMAIL_SUBJECT, \
             USE_LISTVIEW, METADATA_KODI, METADATA_KODI_12PLUS, METADATA_MEDIABROWSER, METADATA_PS3, metadata_provider_dict, NEWZBIN, NEWZBIN_USERNAME, \
             NEWZBIN_PASSWORD, GIT_PATH, MOVE_ASSOCIATED_FILES, DELETE_NON_ASSOCIATED_FILES, SYNC_FILES, POSTPONE_IF_SYNC_FILES, dailySearchScheduler, \
             NFO_RENAME, GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, \
             COMING_EPS_DISPLAY_SNATCHED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, \
             POSTER_SORTBY, POSTER_SORTDIR, HISTORY_LIMIT, CREATE_MISSING_SHOW_DIRS, ADD_SHOWS_WO_DIR, USE_FREE_SPACE_CHECK, METADATA_WDTV, METADATA_TIVO, \
-            METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, USE_SUBTITLES,\
+            METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, PREFER_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, USE_SUBTITLES,\
             SUBTITLES_INCLUDE_SPECIALS, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, \
             SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, SUBTITLES_KEEP_ONLY_WANTED, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, SUBTITLES_PERFECT_MATCH,\
             subtitlesFinderScheduler, SUBTITLES_HEARING_IMPAIRED, ADDIC7ED_USER, ADDIC7ED_PASS, ITASA_USER, ITASA_PASS, LEGENDASTV_USER, LEGENDASTV_PASS, \
@@ -719,7 +738,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             DOWNLOAD_URL, BACKLOG_DAYS, GIT_AUTH_TYPE, GIT_USERNAME, GIT_PASSWORD, GIT_TOKEN, DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, \
             NEWS_LATEST, SOCKET_TIMEOUT, SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKCHILL_BACKGROUND, \
             SICKCHILL_BACKGROUND_PATH, FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, \
-            SLACK_NOTIFY_DOWNLOAD, SLACK_NOTIFY_SUBTITLEDOWNLOAD, SLACK_WEBHOOK, USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK
+            SLACK_NOTIFY_DOWNLOAD, SLACK_NOTIFY_SUBTITLEDOWNLOAD, SLACK_WEBHOOK, SLACK_ICON_EMOJI, USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK,\
+            USE_MATRIX, MATRIX_NOTIFY_SNATCH, MATRIX_NOTIFY_DOWNLOAD, MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM
 
         if __INITIALIZED__:
             return False
@@ -944,6 +964,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             ROOT_DIRS = ''
 
         QUALITY_DEFAULT = check_setting_int(CFG, 'General', 'quality_default', SD)
+        QUALITY_ALLOW_HEVC = check_setting_bool(CFG, 'General', 'quality_allow_hevc', False)
         STATUS_DEFAULT = check_setting_int(CFG, 'General', 'status_default', SKIPPED)
         if STATUS_DEFAULT not in (SKIPPED, WANTED, IGNORED):
             STATUS_DEFAULT = SKIPPED
@@ -1091,6 +1112,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TORRENT_PASSWORD = check_setting_str(CFG, 'TORRENT', 'torrent_password', censor_log=True)
         TORRENT_HOST = check_setting_str(CFG, 'TORRENT', 'torrent_host')
         TORRENT_PATH = check_setting_str(CFG, 'TORRENT', 'torrent_path')
+        TORRENT_DELUGE_DOWNLOAD_DIR = check_setting_str(CFG, 'TORRENT', 'torrent_download_dir_deluge')
+        TORRENT_DELUGE_COMPLETE_DIR = check_setting_str(CFG, 'TORRENT', 'torrent_complete_dir_deluge')
         TORRENT_SEED_TIME = check_setting_int(CFG, 'TORRENT', 'torrent_seed_time', min_val=-1)
         TORRENT_PAUSED = check_setting_bool(CFG, 'TORRENT', 'torrent_paused')
         TORRENT_HIGH_BANDWIDTH = check_setting_bool(CFG, 'TORRENT', 'torrent_high_bandwidth')
@@ -1236,6 +1259,15 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         SLACK_NOTIFY_DOWNLOAD = check_setting_bool(CFG, 'Slack', 'slack_notify_download')
         SLACK_NOTIFY_SUBTITLEDOWNLOAD = check_setting_bool(CFG, 'Slack', 'slack_notify_subtitledownload')
         SLACK_WEBHOOK = check_setting_str(CFG, 'Slack', 'slack_webhook')
+        SLACK_ICON_EMOJI = check_setting_str(CFG, 'Slack', 'slack_icon_emoji')
+
+        USE_MATRIX = check_setting_bool(CFG, 'Matrix', 'use_matrix')
+        MATRIX_NOTIFY_SNATCH = check_setting_bool(CFG, 'Matrix', 'matrix_notify_snatch')
+        MATRIX_NOTIFY_DOWNLOAD = check_setting_bool(CFG, 'Matrix', 'matrix_notify_download')
+        MATRIX_NOTIFY_SUBTITLEDOWNLOAD = check_setting_bool(CFG, 'Matrix', 'matrix_notify_subtitledownload')
+        MATRIX_API_TOKEN = check_setting_str(CFG, 'Matrix', 'matrix_api_token')
+        MATRIX_SERVER = check_setting_str(CFG, 'Matrix', 'matrix_server')
+        MATRIX_ROOM = check_setting_str(CFG, 'Matrix', 'matrix_room')
 
         USE_DISCORD = check_setting_bool(CFG, 'Discord', 'use_discord')
         DISCORD_NOTIFY_SNATCH = check_setting_bool(CFG, 'Discord', 'discord_notify_snatch')
@@ -1294,6 +1326,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         USE_EMAIL = check_setting_bool(CFG, 'Email', 'use_email')
         EMAIL_NOTIFY_ONSNATCH = check_setting_bool(CFG, 'Email', 'email_notify_onsnatch')
         EMAIL_NOTIFY_ONDOWNLOAD = check_setting_bool(CFG, 'Email', 'email_notify_ondownload')
+        EMAIL_NOTIFY_ONPOSTPROCESS = check_setting_bool(CFG, 'Email', 'email_notify_onpostprocess')
         EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(CFG, 'Email', 'email_notify_onsubtitledownload')
         EMAIL_HOST = check_setting_str(CFG, 'Email', 'email_host')
         EMAIL_PORT = check_setting_int(CFG, 'Email', 'email_port', 25, min_val=21, max_val=65535)
@@ -1347,6 +1380,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         IGNORE_WORDS = check_setting_str(CFG, 'General', 'ignore_words', IGNORE_WORDS)
         TRACKERS_LIST = check_setting_str(CFG, 'General', 'trackers_list', TRACKERS_LIST)
         REQUIRE_WORDS = check_setting_str(CFG, 'General', 'require_words', REQUIRE_WORDS)
+        PREFER_WORDS = check_setting_str(CFG, 'General', 'prefer_words', PREFER_WORDS)
         IGNORED_SUBS_LIST = check_setting_str(CFG, 'General', 'ignored_subs_list', IGNORED_SUBS_LIST)
 
         CALENDAR_UNPROTECTED = check_setting_bool(CFG, 'General', 'calendar_unprotected')
@@ -1836,6 +1870,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'skip_removed_files': int(SKIP_REMOVED_FILES),
             'allowed_extensions': ALLOWED_EXTENSIONS,
             'quality_default': int(QUALITY_DEFAULT),
+            'quality_allow_hevc': int(QUALITY_ALLOW_HEVC),
             'status_default': int(STATUS_DEFAULT),
             'status_default_after': int(STATUS_DEFAULT_AFTER),
             'season_folders_default': int(SEASON_FOLDERS_DEFAULT),
@@ -1910,6 +1945,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'ignore_words': IGNORE_WORDS,
             'trackers_list': TRACKERS_LIST,
             'require_words': REQUIRE_WORDS,
+            'prefer_words': PREFER_WORDS,
             'ignored_subs_list': IGNORED_SUBS_LIST,
             'calendar_unprotected': int(CALENDAR_UNPROTECTED),
             'calendar_icons': int(CALENDAR_ICONS),
@@ -1968,6 +2004,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'torrent_password': helpers.encrypt(TORRENT_PASSWORD, ENCRYPTION_VERSION),
             'torrent_host': TORRENT_HOST,
             'torrent_path': TORRENT_PATH,
+            'torrent_download_dir_deluge': TORRENT_DELUGE_DOWNLOAD_DIR,
+            'torrent_complete_dir_deluge': TORRENT_DELUGE_COMPLETE_DIR,
             'torrent_seed_time': int(TORRENT_SEED_TIME),
             'torrent_paused': int(TORRENT_PAUSED),
             'torrent_high_bandwidth': int(TORRENT_HIGH_BANDWIDTH),
@@ -2146,7 +2184,18 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'slack_notify_snatch': int(SLACK_NOTIFY_SNATCH),
             'slack_notify_download': int(SLACK_NOTIFY_DOWNLOAD),
             'slack_notify_subtitledownload': int(SLACK_NOTIFY_SUBTITLEDOWNLOAD),
-            'slack_webhook': SLACK_WEBHOOK
+            'slack_webhook': SLACK_WEBHOOK,
+            'slack_icon_emoji': SLACK_ICON_EMOJI
+        },
+
+        'Matrix': {
+            'use_matrix': int(USE_MATRIX),
+            'matrix_notify_snatch': int(MATRIX_NOTIFY_SNATCH),
+            'matrix_notify_download': int(MATRIX_NOTIFY_DOWNLOAD),
+            'matrix_notify_subtitledownload': int(MATRIX_NOTIFY_SUBTITLEDOWNLOAD),
+            'matrix_api_token': MATRIX_API_TOKEN,
+            'matrix_server': MATRIX_SERVER,
+            'matrix_room': MATRIX_ROOM
         },
 
         'Discord': {
@@ -2217,6 +2266,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'use_email': int(USE_EMAIL),
             'email_notify_onsnatch': int(EMAIL_NOTIFY_ONSNATCH),
             'email_notify_ondownload': int(EMAIL_NOTIFY_ONDOWNLOAD),
+            'email_notify_onpostprocess': int(EMAIL_NOTIFY_ONPOSTPROCESS),
             'email_notify_onsubtitledownload': int(EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD),
             'email_host': EMAIL_HOST,
             'email_port': int(EMAIL_PORT),

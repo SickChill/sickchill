@@ -1,5 +1,5 @@
 # mako/pygen.py
-# Copyright (C) 2006-2016 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2019 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -7,11 +7,11 @@
 """utilities for generating and formatting literal Python code."""
 
 import re
+
 from mako import exceptions
 
 
 class PythonPrinter(object):
-
     def __init__(self, stream):
         # indentation counter
         self.indent = 0
@@ -60,7 +60,7 @@ class PythonPrinter(object):
         The indentation of the total block of lines will be adjusted to that of
         the current indent level."""
         self.in_indent_lines = False
-        for l in re.split(r'\r?\n', block):
+        for l in re.split(r"\r?\n", block):
             self.line_buffer.append(l)
             self._update_lineno(1)
 
@@ -83,21 +83,18 @@ class PythonPrinter(object):
             self.in_indent_lines = True
 
         if (
-            line is None or
-            re.match(r"^\s*#", line) or
-            re.match(r"^\s*$", line)
+            line is None
+            or re.match(r"^\s*#", line)
+            or re.match(r"^\s*$", line)
         ):
             hastext = False
         else:
             hastext = True
 
-        is_comment = line and len(line) and line[0] == '#'
+        is_comment = line and len(line) and line[0] == "#"
 
         # see if this line should decrease the indentation level
-        if (
-            not is_comment and
-            (not hastext or self._is_unindentor(line))
-        ):
+        if not is_comment and (not hastext or self._is_unindentor(line)):
 
             if self.indent > 0:
                 self.indent -= 1
@@ -106,7 +103,8 @@ class PythonPrinter(object):
                 # module wont compile.
                 if len(self.indent_detail) == 0:
                     raise exceptions.SyntaxException(
-                        "Too many whitespace closures")
+                        "Too many whitespace closures"
+                    )
                 self.indent_detail.pop()
 
         if line is None:
@@ -136,8 +134,9 @@ class PythonPrinter(object):
                 # its not a "compound" keyword.  but lets also
                 # test for valid Python keywords that might be indenting us,
                 # else assume its a non-indenting line
-                m2 = re.match(r"^\s*(def|class|else|elif|except|finally)",
-                              line)
+                m2 = re.match(
+                    r"^\s*(def|class|else|elif|except|finally)", line
+                )
                 if m2:
                     self.indent += 1
                     self.indent_detail.append(indentor)
@@ -189,14 +188,15 @@ class PythonPrinter(object):
 
         # return False
 
-    def _indent_line(self, line, stripspace=''):
+    def _indent_line(self, line, stripspace=""):
         """indent the given line according to the current indent level.
 
         stripspace is a string of space that will be truncated from the
         start of the line before indenting."""
 
-        return re.sub(r"^%s" % stripspace, self.indentstring
-                      * self.indent, line)
+        return re.sub(
+            r"^%s" % stripspace, self.indentstring * self.indent, line
+        )
 
     def _reset_multi_line_flags(self):
         """reset the flags which would indicate we are in a backslashed
@@ -214,7 +214,7 @@ class PythonPrinter(object):
         # a literal multiline string with unfortunately placed
         # whitespace
 
-        current_state = (self.backslashed or self.triplequoted)
+        current_state = self.backslashed or self.triplequoted
 
         if re.search(r"\\$", line):
             self.backslashed = True
@@ -251,7 +251,7 @@ def adjust_whitespace(text):
     (backslashed, triplequoted) = (0, 1)
 
     def in_multi_line(line):
-        start_state = (state[backslashed] or state[triplequoted])
+        start_state = state[backslashed] or state[triplequoted]
 
         if re.search(r"\\$", line):
             state[backslashed] = True
@@ -261,7 +261,7 @@ def adjust_whitespace(text):
         def match(reg, t):
             m = re.match(reg, t)
             if m:
-                return m, t[len(m.group(0)):]
+                return m, t[len(m.group(0)) :]
             else:
                 return None, t
 
@@ -273,7 +273,7 @@ def adjust_whitespace(text):
                 else:
                     m, line = match(r".*?(?=%s|$)" % state[triplequoted], line)
             else:
-                m, line = match(r'#', line)
+                m, line = match(r"#", line)
                 if m:
                     return start_state
 
@@ -286,13 +286,13 @@ def adjust_whitespace(text):
 
         return start_state
 
-    def _indent_line(line, stripspace=''):
-        return re.sub(r"^%s" % stripspace, '', line)
+    def _indent_line(line, stripspace=""):
+        return re.sub(r"^%s" % stripspace, "", line)
 
     lines = []
     stripspace = None
 
-    for line in re.split(r'\r?\n', text):
+    for line in re.split(r"\r?\n", text):
         if in_multi_line(line):
             lines.append(line)
         else:

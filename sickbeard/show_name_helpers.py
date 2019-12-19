@@ -201,3 +201,40 @@ def determineReleaseName(dir_name=None, nzb_name=None):
         return folder
 
     return None
+
+
+def hasPreferedWords(name, show=None):
+    """Determine based on the full episode (file)name combined with the prefered words what the weight its preference should be"""
+
+    name = name.lower()
+
+    def clean_set(words):
+        weighted_words = []
+
+        words = words.lower().strip().split(',')
+        val = len(words)
+
+        for word in words:
+            weighted_words.append({"word": word, "weight": val})
+            val = val - 1
+
+        return weighted_words
+
+    prefer_words = []
+
+    ## Because we weigh values, we can not union global and show based values, so we don't do that
+    if sickbeard.PREFER_WORDS:
+        prefer_words = clean_set(sickbeard.PREFER_WORDS)
+    if show and show.rls_prefer_words:
+        prefer_words = clean_set(show.rls_prefer_words or '')
+
+    ## if nothing set, return position 0
+    if len(prefer_words) <= 0:
+        return 0
+
+    value = 0
+    for word_pair in prefer_words:
+        if word_pair['weight'] > value and word_pair['word'] in name:
+            value = word_pair['weight']
+
+    return value

@@ -39,7 +39,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from sickbeard import db
 from sickbeard.tv import TVEpisode, TVShow
-from sickbeard.webserve import Home
+from sickchill.views.home import Home
 from sickbeard.notifiers.emailnotify import Notifier as EmailNotifier
 from sickbeard.notifiers.prowl import Notifier as ProwlNotifier
 from sickchill.helper.encoding import ss

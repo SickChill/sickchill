@@ -128,27 +128,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="field-pair row">
-                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Usenet retention')}</label>
-                                </div>
-                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <input type="number" min="1" step="1" name="usenet_retention"
-                                                   value="${sickbeard.USENET_RETENTION}" class="form-control input-sm input75"
-                                                   id="usenet_retention" autocapitalize="off"/>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label for="usenet_retention">${_('age limit in days for usenet articles to be used (e.g. 500)')}</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Ignore words')}</label>
@@ -163,6 +142,25 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <label for="ignore_words">${_('''results with one or more word from this list will be ignored<br>separate words with a comma, e.g. "word1,word2,word3"''')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Prefer words')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="prefer_words" value="${sickbeard.PREFER_WORDS}"
+                                                   id="prefer_words" class="form-control input-sm input350" autocapitalize="off"/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="prefer_words">${_('''search results with these words will be preferred in this order<br>separate words with a comma, e.g. "word1,word2,word3"''')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -189,25 +187,6 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Trackers list')}</label>
-                                </div>
-                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <input type="text" name="trackers_list" value="${sickbeard.TRACKERS_LIST}"
-                                                   class="form-control input-sm input350" autocapitalize="off"/>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label for="usenet_retention">${_('''trackers that will be added to magnets without trackers<br>separate trackers with a comma, e.g. "tracker1,tracker2,tracker3"''')}</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="field-pair row">
-                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Ignore language names in subbed results')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
@@ -219,7 +198,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="usenet_retention">${_('''ignore subbed releases based on language names <br>
+                                            <label for="ignored_subs_list">${_('''ignore subbed releases based on language names <br>
                             Example: "dk" will ignore words: dksub, dksubs, dksubbed, dksubed <br>
                             separate languages with a comma, e.g. "lang1,lang2,lang3''')}</label>
                                         </div>
@@ -237,7 +216,16 @@
                                     <label for="allow_high_priority">${_('set downloads of recently aired episodes to high priority')}</label>
                                 </div>
                             </div>
-
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Allow downloading HEVC x265 releases')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="quality_allow_hevc"
+                                           id="quality_allow_hevc" ${('', 'checked="checked"')[bool(sickbeard.QUALITY_ALLOW_HEVC)]}/>
+                                    <label for="quality_allow_hevc">${_('whether we should download HEVC x265 releases')}</label>
+                                </div>
+                            </div>
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Use Failed Downloads')}</label>
@@ -313,7 +301,25 @@
                             </div>
 
                             <div id="content_use_nzbs">
-
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <label class="component-title">${_('Usenet retention')}</label>
+                                    </div>
+                                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <input type="number" min="1" step="1" name="usenet_retention"
+                                                       value="${sickbeard.USENET_RETENTION}" class="form-control input-sm input75"
+                                                       id="usenet_retention" autocapitalize="off"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label for="usenet_retention">${_('age limit in days for usenet articles to be used (e.g. 500)')}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                         <label class="component-title">${_('Send .nzb files to')}</label>
@@ -327,7 +333,6 @@
                                         </select>
                                     </div>
                                 </div>
-
                                 <div id="sabnzbd_settings">
 
                                     <div class="field-pair row">
@@ -860,7 +865,25 @@
                             </div>
 
                             <div id="content_use_torrents">
-
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <label class="component-title">${_('Trackers list')}</label>
+                                    </div>
+                                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <input type="text" name="trackers_list" value="${sickbeard.TRACKERS_LIST}"
+                                                       class="form-control input-sm input350" autocapitalize="off"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label for="trackers_list">${_('''trackers that will be added to magnets without trackers<br>separate trackers '
+                                                'with a comma, e.g. "tracker1,tracker2,tracker3"''')}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                         <label class="component-title">${_('Send .torrent files to')}</label>
@@ -874,7 +897,6 @@
                                         </select>
                                     </div>
                                 </div>
-
                                 <div id="options_torrent_blackhole">
 
                                     <div class="field-pair row">
@@ -1065,6 +1087,43 @@
                                                         <label for="torrent_label_anime">${_('(blank spaces are not allowed)')}</label>
                                                         <label><b>${_('note')}:</b> ${_('for QBitTorrent 3.3.1 and up ')}</label>
                                                     </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="field-pair row" id="torrent_deluge_dirs_option">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title" id="directory_title">${_('Download directory')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input type="text" name="torrent_download_dir_deluge" id="torrent_download_dir_deluge"
+                                                           value="${sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR}"
+                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label for="torrent_download_dir_deluge">${_('where Deluge will save downloaded files (blank for client default)')}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title" id="directory_title">${_('Completed Directory')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input type="text" name="torrent_complete_dir_deluge" id="torrent_complete_dir_deluge"
+                                                           value="${sickbeard.TORRENT_DELUGE_COMPLETE_DIR}"
+                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label for="torrent_complete_dir_deluge">${_('where Deluge will move files after downloading is complete (blank for client default)')}</label>
                                                 </div>
                                             </div>
                                         </div>

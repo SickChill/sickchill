@@ -1,30 +1,39 @@
+# ext/extract.py
+# Copyright 2006-2019 the Mako authors and contributors <see AUTHORS file>
+#
+# This module is part of Mako and is released under
+# the MIT License: http://www.opensource.org/licenses/mit-license.php
+
 import re
+
 from mako import compat
 from mako import lexer
 from mako import parsetree
 
 
 class MessageExtractor(object):
-
     def process_file(self, fileobj):
         template_node = lexer.Lexer(
-            fileobj.read(),
-            input_encoding=self.config['encoding']).parse()
+            fileobj.read(), input_encoding=self.config["encoding"]
+        ).parse()
         for extracted in self.extract_nodes(template_node.get_children()):
             yield extracted
 
     def extract_nodes(self, nodes):
         translator_comments = []
         in_translator_comments = False
-        input_encoding = self.config['encoding'] or 'ascii'
+        input_encoding = self.config["encoding"] or "ascii"
         comment_tags = list(
-            filter(None, re.split(r'\s+', self.config['comment-tags'])))
+            filter(None, re.split(r"\s+", self.config["comment-tags"]))
+        )
 
         for node in nodes:
             child_nodes = None
-            if in_translator_comments and \
-                    isinstance(node, parsetree.Text) and \
-                    not node.content.strip():
+            if (
+                in_translator_comments
+                and isinstance(node, parsetree.Text)
+                and not node.content.strip()
+            ):
                 # Ignore whitespace within translator comments
                 continue
 
@@ -32,13 +41,15 @@ class MessageExtractor(object):
                 value = node.text.strip()
                 if in_translator_comments:
                     translator_comments.extend(
-                        self._split_comment(node.lineno, value))
+                        self._split_comment(node.lineno, value)
+                    )
                     continue
                 for comment_tag in comment_tags:
                     if value.startswith(comment_tag):
                         in_translator_comments = True
                         translator_comments.extend(
-                            self._split_comment(node.lineno, value))
+                            self._split_comment(node.lineno, value)
+                        )
                 continue
 
             if isinstance(node, parsetree.DefTag):
@@ -69,15 +80,18 @@ class MessageExtractor(object):
                 continue
 
             # Comments don't apply unless they immediately precede the message
-            if translator_comments and \
-                    translator_comments[-1][0] < node.lineno - 1:
+            if (
+                translator_comments
+                and translator_comments[-1][0] < node.lineno - 1
+            ):
                 translator_comments = []
 
             translator_strings = [
-                comment[1] for comment in translator_comments]
+                comment[1] for comment in translator_comments
+            ]
 
             if isinstance(code, compat.text_type):
-                code = code.encode(input_encoding, 'backslashreplace')
+                code = code.encode(input_encoding, "backslashreplace")
 
             used_translator_comments = False
             # We add extra newline to work around a pybabel bug
@@ -85,10 +99,11 @@ class MessageExtractor(object):
             # input string of the input is non-ascii)
             # Also, because we added it, we have to subtract one from
             # node.lineno
-            code = compat.byte_buffer(compat.b('\n') + code)
+            code = compat.byte_buffer(compat.b("\n") + code)
 
             for message in self.process_python(
-                    code, node.lineno - 1, translator_strings):
+                code, node.lineno - 1, translator_strings
+            ):
                 yield message
                 used_translator_comments = True
 
@@ -104,5 +119,7 @@ class MessageExtractor(object):
     def _split_comment(lineno, comment):
         """Return the multiline comment at lineno split into a list of
         comment line numbers and the accompanying comment line"""
-        return [(lineno + index, line) for index, line in
-                enumerate(comment.splitlines())]
+        return [
+            (lineno + index, line)
+            for index, line in enumerate(comment.splitlines())
+        ]

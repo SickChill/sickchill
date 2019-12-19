@@ -51,6 +51,7 @@ import cfscrape
 import rarfile
 import requests
 import six
+import urllib3
 from cachecontrol import CacheControl
 from requests.compat import urljoin
 from requests.utils import urlparse
@@ -89,6 +90,9 @@ def getaddrinfo_wrapper(host, port, family=socket.AF_INET, socktype=0, proto=0, 
 if socket.getaddrinfo.__module__ in ('socket', '_socket'):
     logger.log(_("Patching socket to IPv4 only"), logger.DEBUG)
     socket.getaddrinfo = getaddrinfo_wrapper
+
+# Patches urllib3 default ciphers to match those of cfscrape
+urllib3.util.ssl_.DEFAULT_CIPHERS = cfscrape.DEFAULT_CIPHERS
 
 # Override original shutil function to increase its speed by increasing its buffer to 10MB (optimal)
 copyfileobj_orig = shutil.copyfileobj
@@ -236,7 +240,7 @@ def is_media_file(filename):
         if re.search('extras?$', filname_parts[0], re.I):
             return False
 
-        return filname_parts[-1].lower() in MEDIA_EXTENSIONS or (sickbeard.UNPACK == 2 and is_rar)
+        return filname_parts[-1].lower() in MEDIA_EXTENSIONS or (sickbeard.UNPACK == sickbeard.UNPACK_PROCESS_INTACT and is_rar)
     except (TypeError, AssertionError) as error:  # Not a string
         logger.log(_('Invalid filename. Filename must be a string. {0}').format(error), logger.DEBUG)  # pylint: disable=no-member
         return False
@@ -1371,11 +1375,8 @@ def touchFile(fname, atime=None):
 
 
 def make_session():
-    session = requests.Session()
-
+    session = cfscrape.create_scraper()
     session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
-
-    session = cfscrape.create_scraper(sess=session)
 
     return CacheControl(sess=session, cache_etags=True)
 
