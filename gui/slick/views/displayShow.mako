@@ -223,6 +223,14 @@
                                                     <td>${show.rls_require_words}</td>
                                                 </tr>
                                             % endif
+
+                                            % if show.rls_prefer_words:
+                                                <tr>
+                                                    <td class="showLegend">${_('Prefered Words')}: </td>
+                                                    <td>${show.rls_prefer_words}</td>
+                                                </tr>
+                                            % endif
+
                                             % if show.rls_ignore_words:
                                                 <tr>
                                                     <td class="showLegend">${_('Ignored Words')}: </td>

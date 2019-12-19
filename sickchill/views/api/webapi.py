@@ -1996,6 +1996,11 @@ class CMDShow(ApiCall):
         else:
             show_dict["rls_require_words"] = []
 
+        if show_obj.rls_prefer_words:
+            show_dict["rls_prefer_words"] = show_obj.rls_prefer_words.split(", ")
+        else:
+            show_dict["rls_prefer_words"] = []
+
         if show_obj.rls_ignore_words:
             show_dict["rls_ignore_words"] = show_obj.rls_ignore_words.split(", ")
         else:

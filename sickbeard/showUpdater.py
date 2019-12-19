@@ -24,9 +24,9 @@
 from __future__ import unicode_literals
 
 import datetime
+import json
 import threading
 import time
-import json
 
 import sickbeard
 from sickbeard import db, helpers, logger, network_timezones, ui

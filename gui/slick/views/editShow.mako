@@ -298,6 +298,34 @@
 
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <span class="component-title">${_('Prefered Words')}</span>
+                                    </div>
+                                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <input type="text" id="rls_prefer_words" name="rls_prefer_words"
+                                                       value="${show.rls_prefer_words}" autocapitalize="off"
+                                                       class="form-control input-sm input350"/>
+                                                <br/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label for="rls_prefer_words">${_('comma-separated <i>e.g. "word1,word2,word3</i>"')}</label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>${_('search results with these words will be prefered in this order.')}</label>
+                                                <label><b>${_('note')}:</b> ${_('this option overrides the globally prefered words!')}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                         <span class="component-title">${_('Required Words')}</span>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
