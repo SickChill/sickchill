@@ -72,7 +72,7 @@ setup(
         'flake8-coding',
         'isort'
     ],
-
+    python_requires='>=2.7, <3',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: System Administrators',

@@ -55,10 +55,8 @@ install:
   - "python --version"
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
 
-  # Upgrade to the latest version of pip to avoid it displaying warnings
-  # about it being out of date.
-  - "python -m pip install --disable-pip-version-check --user --upgrade pip"
-  - "python -m easy_install -U tox"
+  - pip install --disable-pip-version-check -U pip
+  - pip install --disable-pip-version-check "zipp<0.6.0" "tox"
 
   # Install node/npm
   - ps: Install-Product node $env:8
