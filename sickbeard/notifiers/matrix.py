@@ -18,12 +18,12 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+import html
 import json
 import time
 
 import requests
 import six
-import html
 
 import sickbeard
 from sickbeard import common, logger
