@@ -1,0 +1,13 @@
+name: Greetings
+
+on: [pull_request, issues]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/first-interaction@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        issue-message: 'Hi, thanks for the report. Please use search to make sure your issue has not been reported yet, and someone will try to help you as soon as possible.'
+        pr-message: 'Thanks for your PR, it is most appreciated. Please make sure your PR is targetting the develop branch. We will get it reviewed as soon as possible.'
