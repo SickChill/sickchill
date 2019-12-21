@@ -18,6 +18,7 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+import html
 import json
 import time
 
@@ -80,7 +81,7 @@ class Notifier(object):
     def _send_matrix(self, message=None):
         url = 'https://{0}/_matrix/client/r0/rooms/{1}/send/m.room.message/{2}?access_token={3}'.format(sickbeard.MATRIX_SERVER, sickbeard.MATRIX_ROOM, time.time(), sickbeard.MATRIX_API_TOKEN)
 
-        logger.log("Sending matrix message: " + message, logger.INFO)
+        logger.log("Sending matrix message: " + html.escape(message), logger.INFO)
         logger.log("Sending matrix message to url: " + url, logger.INFO)
 
         if isinstance(message, six.text_type):

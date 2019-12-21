@@ -149,6 +149,25 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Prefer words')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="prefer_words" value="${sickbeard.PREFER_WORDS}"
+                                                   id="prefer_words" class="form-control input-sm input350" autocapitalize="off"/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="prefer_words">${_('''search results with these words will be preferred in this order<br>separate words with a comma, e.g. "word1,word2,word3"''')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Require words')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
@@ -165,6 +184,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Ignore language names in subbed results')}</label>

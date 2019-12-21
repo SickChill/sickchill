@@ -630,6 +630,7 @@ TRACKERS_LIST += "udp://glotorrents.pw:6969/announce,udp://tracker.openbittorren
 TRACKERS_LIST += "udp://9.rarbg.to:2710/announce"
 
 REQUIRE_WORDS = ""
+PREFER_WORDS = ""
 IGNORED_SUBS_LIST = "dk,fin,heb,kor,nor,nordic,pl,swe"
 SYNC_FILES = "!sync,lftp-pget-status,bts,!qb,!qB"
 
@@ -727,7 +728,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             NFO_RENAME, GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, \
             COMING_EPS_DISPLAY_SNATCHED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, \
             POSTER_SORTBY, POSTER_SORTDIR, HISTORY_LIMIT, CREATE_MISSING_SHOW_DIRS, ADD_SHOWS_WO_DIR, USE_FREE_SPACE_CHECK, METADATA_WDTV, METADATA_TIVO, \
-            METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, USE_SUBTITLES,\
+            METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, PREFER_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, USE_SUBTITLES,\
             SUBTITLES_INCLUDE_SPECIALS, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, \
             SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, SUBTITLES_KEEP_ONLY_WANTED, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, SUBTITLES_PERFECT_MATCH,\
             subtitlesFinderScheduler, SUBTITLES_HEARING_IMPAIRED, ADDIC7ED_USER, ADDIC7ED_PASS, ITASA_USER, ITASA_PASS, LEGENDASTV_USER, LEGENDASTV_PASS, \
@@ -1379,6 +1380,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         IGNORE_WORDS = check_setting_str(CFG, 'General', 'ignore_words', IGNORE_WORDS)
         TRACKERS_LIST = check_setting_str(CFG, 'General', 'trackers_list', TRACKERS_LIST)
         REQUIRE_WORDS = check_setting_str(CFG, 'General', 'require_words', REQUIRE_WORDS)
+        PREFER_WORDS = check_setting_str(CFG, 'General', 'prefer_words', PREFER_WORDS)
         IGNORED_SUBS_LIST = check_setting_str(CFG, 'General', 'ignored_subs_list', IGNORED_SUBS_LIST)
 
         CALENDAR_UNPROTECTED = check_setting_bool(CFG, 'General', 'calendar_unprotected')
@@ -1943,6 +1945,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'ignore_words': IGNORE_WORDS,
             'trackers_list': TRACKERS_LIST,
             'require_words': REQUIRE_WORDS,
+            'prefer_words': PREFER_WORDS,
             'ignored_subs_list': IGNORED_SUBS_LIST,
             'calendar_unprotected': int(CALENDAR_UNPROTECTED),
             'calendar_icons': int(CALENDAR_ICONS),

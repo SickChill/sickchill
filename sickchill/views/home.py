@@ -946,7 +946,7 @@ class Home(WebRoot):
     def editShow(self, show=None, location=None, anyQualities=None, bestQualities=None,
                  exceptions_list=None, season_folders=None, paused=None, directCall=False,
                  air_by_date=None, sports=None, dvdorder=None, indexerLang=None,
-                 subtitles=None, subtitles_sr_metadata=None, rls_ignore_words=None, rls_require_words=None,
+                 subtitles=None, subtitles_sr_metadata=None, rls_ignore_words=None, rls_require_words=None, rls_prefer_words=None,
                  anime=None, blacklist=None, whitelist=None, scene=None,
                  defaultEpStatus=None, quality_preset=None):
 
@@ -1106,6 +1106,7 @@ class Home(WebRoot):
                 show_obj.dvdorder = dvdorder
                 show_obj.rls_ignore_words = rls_ignore_words.strip()
                 show_obj.rls_require_words = rls_require_words.strip()
+                show_obj.rls_prefer_words = rls_prefer_words.strip()
 
             if not isinstance(location, six.text_type):
                 location = ek(six.text_type, location, 'utf-8')
