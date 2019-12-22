@@ -19,6 +19,8 @@
 
 from __future__ import unicode_literals
 
+from collections import OrderedDict
+
 _clients = [
     'utorrent',
     'transmission',
@@ -26,12 +28,14 @@ _clients = [
     'deluged',
     'download_station',
     'rtorrent',
-    # 'new_rtorrent',
+    'rtorrent9',
     'qbittorrent',
     'new_qbittorrent',
     'mlnet',
     'putio'
 ]
+
+_clients.sort()
 
 default_host = {
     'utorrent': 'http://localhost:8000',
@@ -56,6 +60,8 @@ def getClientListDict(keys_only=False):
     if keys_only:
         return _clients + ['blackhole']
 
-    client_dict = {name: getClientInstance(name)().name for name in _clients}
-    client_dict.update({'blackhole': 'Black Hole'})
-    return client_dict
+    result = OrderedDict()
+    result['blackhole'] = 'Black Hole'
+    for client in _clients:
+        result[client] = getClientInstance(client)().name
+    return result
