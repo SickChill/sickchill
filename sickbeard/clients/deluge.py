@@ -27,10 +27,10 @@ from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
 
 
-class DelugeAPI(GenericClient):
+class Client(GenericClient):
     def __init__(self, host=None, username=None, password=None):
 
-        super(DelugeAPI, self).__init__('Deluge', host, username, password)
+        super(Client, self).__init__('Deluge', host, username, password)
 
         self.url = self.host + 'json'
         self.session.headers.update({'Content-Type': 'application/json'})
@@ -218,6 +218,3 @@ class DelugeAPI(GenericClient):
             return not self.response.json()['error']
 
         return True
-
-
-api = DelugeAPI()

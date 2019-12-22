@@ -1832,10 +1832,6 @@ var SICKCHILL = {
                 $('#options_torrent_blackhole').hide();
 
                 const selectedProvider = $('#torrent_method :selected').val();
-                const host = ' host:port';
-                const username = ' username';
-                const password = ' password';
-                const rpcurl = ' RPC URL';
 
                 let optionPanel = '#options_torrent_blackhole';
                 let client = '';
@@ -1911,7 +1907,7 @@ var SICKCHILL = {
                         $('#torrent_path_option').find('.fileBrowser').hide();
                         $('#host_desc_torrent').text(_('URL to your Synology DS client (e.g. http://localhost:5000)'));
                         $('#path_synology').show();
-                    } else if (selectedProvider.toLowerCase() === 'rtorrent') {
+                    } else if (selectedProvider.toLowerCase() === 'rtorrent' || selectedProvider.toLowerCase() === 'new_rtorrent') {
                         client = 'rTorrent';
                         $('#host_desc_torrent').html(_('URL to your rTorrent client (e.g. scgi://localhost:5000 <br> ' +
                                                         'or https://localhost/rutorrent/plugins/httprpc/action.php)'));
@@ -1919,8 +1915,8 @@ var SICKCHILL = {
                         $('#torrent_verify_deluge').hide();
                         $('#torrent_verify_rtorrent').show();
                         $('#torrent_auth_type_option').show();
-                    } else if (selectedProvider.toLowerCase() === 'qbittorrent') {
-                        client = 'qbittorrent';
+                    } else if (selectedProvider.toLowerCase() === 'qbittorrent' || selectedProvider.toLowerCase() === 'new_qbittorrent') {
+                        client = 'qBittorrent';
                         $('#torrent_path_option').hide();
                         $('#label_warning_qbittorrent').show();
                         $('#label_anime_warning_qbittorrent').show();
@@ -1952,18 +1948,18 @@ var SICKCHILL = {
                         $('#username_title.component-title').text(_('Put.io Parent Folder'));
                         $('#password_title.component-title').text(_('Put.io OAuth Token'));
                     }
-                    $('#host_title').text(client + host);
-                    $('#username_title').text(client + username);
-                    $('#password_title').text(client + password);
+                    $('#host_title').text(client + ' host:port');
+                    $('#username_title').text(client + ' Username');
+                    $('#password_title').text(client + ' Password');
                     $('#torrent_client').text(client);
-                    $('#rpcurl_title').text(client + rpcurl);
+                    $('#rpcurl_title').text(client + ' RPC URL');
                     optionPanel = '#options_torrent_clients';
                 }
                 $(optionPanel).show();
             };
 
             $('#torrent_host').on('input', function() {
-                if ($('#torrent_method :selected').val().toLowerCase() === 'rtorrent') {
+                if ($('#torrent_method :selected').val().toLowerCase() === 'rtorrent' || $('#torrent_method :selected').val().toLowerCase() === 'new_rtorrent') {
                     const hostname = $('#torrent_host').val();
                     const isMatch = hostname.substr(0, 7) === 'scgi://';
 

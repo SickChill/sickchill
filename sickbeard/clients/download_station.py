@@ -31,7 +31,7 @@ from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
 
 
-class DownloadStationAPI(GenericClient):
+class Client(GenericClient):
     """
     Class to send torrents/NZBs or links to them to DownloadStation
     """
@@ -42,7 +42,7 @@ class DownloadStationAPI(GenericClient):
                 :username: Username to use for authentication
                 :password: Password to use for authentication
         """
-        super(DownloadStationAPI, self).__init__('DownloadStation', host, username, password)
+        super(Client, self).__init__('DownloadStation', host, username, password)
 
         self.urls = {
             'login': urljoin(self.host, 'webapi/auth.cgi'),
@@ -203,5 +203,3 @@ class DownloadStationAPI(GenericClient):
             return self._add_torrent_uri(result)
         elif result.resultType == 'nzbdata':
             return self._add_torrent_file(result)
-
-api = DownloadStationAPI()

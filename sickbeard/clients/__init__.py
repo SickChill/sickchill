@@ -26,8 +26,10 @@ _clients = [
     'deluged',
     'download_station',
     'rtorrent',
+    # 'new_rtorrent',
     'qbittorrent',
-    'mlnet'
+    'new_qbittorrent',
+    'mlnet',
     'putio'
 ]
 
@@ -38,22 +40,22 @@ default_host = {
     'deluged': 'scgi://localhost:58846',
     'download_station': 'http://localhost:5000',
     'rtorrent': 'scgi://localhost:5000',
+    'new_rtorrent': 'scgi://localhost:5000',
     'qbittorrent': 'http://localhost:8080',
+    'new_qbittorrent': 'http://localhost:8080',
     'mlnet': 'http://localhost:4080',
     'putio': 'https://api.put.io/login'
 }
 
 
-def getClientModule(name):
-    name = name.lower()
-    prefix = "sickbeard.clients."
-
-    return __import__('{prefix}{name}_client'.format
-                      (prefix=prefix, name=name), fromlist=_clients)
-
-
 def getClientInstance(name):
-    module = getClientModule(name)
-    class_name = module.api.__class__.__name__
+    return __import__('sickbeard.clients.' + name.lower(), fromlist=_clients).Client
 
-    return getattr(module, class_name)
+
+def getClientListDict(keys_only=False):
+    if keys_only:
+        return _clients + ['blackhole']
+
+    client_dict = {name: getClientInstance(name)().name for name in _clients}
+    client_dict.update({'blackhole': 'Black Hole'})
+    return client_dict

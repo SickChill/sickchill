@@ -27,10 +27,10 @@ import sickbeard
 from sickbeard.clients.generic import GenericClient
 
 
-class TransmissionAPI(GenericClient):
+class Client(GenericClient):
     def __init__(self, host=None, username=None, password=None):
 
-        super(TransmissionAPI, self).__init__('Transmission', host, username, password)
+        super(Client, self).__init__('Transmission', host, username, password)
         self.url = '/'.join((self.host.rstrip('/'), sickbeard.TORRENT_RPCURL.strip('/'), 'rpc'))
 
     def _get_auth(self):
@@ -153,6 +153,3 @@ class TransmissionAPI(GenericClient):
         self._request(method='post', data=post_data)
 
         return self.response.json()['result'] == "success"
-
-
-api = TransmissionAPI()

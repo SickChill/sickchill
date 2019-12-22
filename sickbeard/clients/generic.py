@@ -44,9 +44,9 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
         """
 
         self.name = name
-        self.username = sickbeard.TORRENT_USERNAME if not username else username
-        self.password = sickbeard.TORRENT_PASSWORD if not password else password
-        self.host = sickbeard.TORRENT_HOST if not host else host
+        self.username = username or sickbeard.TORRENT_USERNAME
+        self.password = password or sickbeard.TORRENT_PASSWORD
+        self.host = host or sickbeard.TORRENT_HOST
 
         self.url = None
         self.response = None

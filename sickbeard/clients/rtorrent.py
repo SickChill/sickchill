@@ -26,16 +26,16 @@
 
 from __future__ import print_function, unicode_literals
 
-from rtorrent import RTorrent  # pylint: disable=import-error
+from lib.rtorrent import RTorrent  # pylint: disable=import-error
 
 import sickbeard
 from sickbeard import ex, logger
 from sickbeard.clients.generic import GenericClient
 
 
-class rTorrentAPI(GenericClient):  # pylint: disable=invalid-name
+class Client(GenericClient):  # pylint: disable=invalid-name
     def __init__(self, host=None, username=None, password=None):
-        super(rTorrentAPI, self).__init__('rTorrent', host, username, password)
+        super(Client, self).__init__('rTorrent', host, username, password)
 
     def _get_auth(self):
         self.auth = None
@@ -188,6 +188,3 @@ class rTorrentAPI(GenericClient):  # pylint: disable=invalid-name
                 return False, 'Error: Unable to get {name} Authentication, check your config!'.format(name=self.name)
         except Exception:  # pylint: disable=broad-except
             return False, 'Error: Unable to connect to {name}'.format(name=self.name)
-
-
-api = rTorrentAPI()  # pylint: disable=invalid-name
