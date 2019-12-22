@@ -481,7 +481,7 @@ def xem_refresh(indexer_id, indexer, force=False):
 
     if refresh or force:
         logger.log(
-            'Looking up XEM scene mapping for show {0} on {1}'.format(indexer_id, sickbeard.indexerApi(indexer).name),
+            'Looking up XEM scene mapping for show {0} on {1}'.format(indexer_id, 'theTVDB'),
             logger.DEBUG)
 
         # mark refreshed
@@ -494,17 +494,17 @@ def xem_refresh(indexer_id, indexer, force=False):
 
         try:
             # XEM MAP URL
-            url = "http://thexem.de/map/havemap?origin={0}".format(sickbeard.indexerApi(indexer).config['xem_origin'])
+            url = "http://thexem.de/map/havemap?origin={0}".format('tvdb')
             parsed_json = sickbeard.helpers.getURL(url, session=xem_session, returns='json')
             if not parsed_json or 'result' not in parsed_json or 'success' not in parsed_json['result'] or 'data' not in parsed_json or str(indexer_id) not in parsed_json['data']:
                 return
 
             # XEM API URL
-            url = "http://thexem.de/map/all?id={0}&origin={1}&destination=scene".format(indexer_id, sickbeard.indexerApi(indexer).config['xem_origin'])
+            url = "http://thexem.de/map/all?id={0}&origin={1}&destination=scene".format(indexer_id, 'tvdb')
 
             parsed_json = sickbeard.helpers.getURL(url, session=xem_session, returns='json')
             if not parsed_json or 'result' not in parsed_json or 'success' not in parsed_json['result']:
-                logger.log('No XEM data for show "{0} on {1}"'.format(indexer_id, sickbeard.indexerApi(indexer).name), logger.INFO)
+                logger.log('No XEM data for show "{0} on {1}"'.format(indexer_id, 'theTVDB'), logger.INFO)
                 return
 
             cl = []
@@ -514,22 +514,22 @@ def xem_refresh(indexer_id, indexer, force=False):
                         "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
                         [entry['scene']['season'], entry['scene']['episode'],
                          entry['scene']['absolute'], indexer_id,
-                         entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
-                         entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']]
+                         entry['tvdb']['season'],
+                         entry['tvdb']['episode']]
                     ])
                     cl.append([
                         "UPDATE tv_episodes SET absolute_number = ? WHERE showid = ? AND season = ? AND episode = ? AND absolute_number = 0",
-                        [entry[sickbeard.indexerApi(indexer).config['xem_origin']]['absolute'], indexer_id,
-                         entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
-                         entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']]
+                        [entry['tvdb']['absolute'], indexer_id,
+                         entry['tvdb']['season'],
+                         entry['tvdb']['episode']]
                     ])
                 if 'scene_2' in entry:  # for doubles
                     cl.append([
                         "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
                         [entry['scene_2']['season'], entry['scene_2']['episode'],
                          entry['scene_2']['absolute'], indexer_id,
-                         entry[sickbeard.indexerApi(indexer).config['xem_origin']]['season'],
-                         entry[sickbeard.indexerApi(indexer).config['xem_origin']]['episode']]
+                         entry['tvdb']['season'],
+                         entry['tvdb']['episode']]
                     ])
 
             if cl:
@@ -571,7 +571,7 @@ def fix_xem_numbering(indexer_id, indexer):  # pylint:disable=too-many-locals, t
     update_scene_absolute_number = False
 
     logger.log(
-        'Fixing any XEM scene mapping issues for show {0} on {1}'.format(indexer_id, sickbeard.indexerApi(indexer).name),
+        'Fixing any XEM scene mapping issues for show {0} on {1}'.format(indexer_id, 'theTVDB'),
         logger.DEBUG)
 
     cl = []

@@ -2012,7 +2012,7 @@ class CMDShow(ApiCall):
         show_dict["archive_firstmatch"] = 1
 
         show_dict["indexerid"] = show_obj.indexerid
-        show_dict["tvdbid"] = helpers.mapIndexersToShow(show_obj)[1]
+        show_dict["tvdbid"] = show_obj.indexerid
         show_dict["imdbid"] = show_obj.imdbid
 
         show_dict["network"] = show_obj.network
@@ -2838,8 +2838,6 @@ class CMDShows(ApiCall):
             if self.paused is not None and self.paused != curShow.paused:
                 continue
 
-            indexer_show = helpers.mapIndexersToShow(curShow)
-
             show_dict = {
                 "paused": (0, 1)[curShow.paused],
                 "quality": get_quality_string(curShow.quality),
@@ -2848,7 +2846,7 @@ class CMDShows(ApiCall):
                 "sports": (0, 1)[curShow.sports],
                 "anime": (0, 1)[curShow.anime],
                 "indexerid": curShow.indexerid,
-                "tvdbid": indexer_show[1],
+                "tvdbid": curShow.indexerid,
                 "network": curShow.network,
                 "show_name": curShow.name,
                 "status": curShow.status,

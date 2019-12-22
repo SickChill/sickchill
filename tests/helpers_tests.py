@@ -66,7 +66,6 @@ Public Methods:
     extractZip
     backup_config_zip
     restore_config_zip
-    mapIndexersToShow
     touchFile
     getURL
     download_file
@@ -623,12 +622,6 @@ class HelpersShowTests(unittest.TestCase):
         """
         pass
 
-    @unittest.skip('Not yet implemented')
-    def test_map_indexers_to_show(self):
-        """
-        Test mapIndexersToShow
-        """
-        pass
 
     @unittest.skip('Not yet implemented')
     def test_get_abs_no_from_s_and_e(self):

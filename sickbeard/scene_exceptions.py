@@ -196,11 +196,11 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
 
     do_refresh = False
     for indexer in sickbeard.indexerApi().indexers:
-        if shouldRefresh(sickbeard.indexerApi(indexer).name):
+        if shouldRefresh('theTVDB'):
             do_refresh = True
 
     if do_refresh:
-        loc = sickbeard.indexerApi(INDEXER_TVDB).config['scene_loc']
+        loc = 'http://sickchill.github.io/scene_exceptions/scene_exceptions.json'
         logger.log("Checking for scene exception updates from {0}".format(loc))
 
         session = sickbeard.indexerApi(INDEXER_TVDB).session
@@ -222,12 +222,12 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
         else:
             for indexer in sickbeard.indexerApi().indexers:
                 try:
-                    setLastRefresh(sickbeard.indexerApi(indexer).name)
-                    for indexer_id in jdata[sickbeard.indexerApi(indexer).config['xem_origin']]:
+                    setLastRefresh('theTVDB')
+                    for indexer_id in jdata['tvdb']:
                         alias_list = [
                             {scene_exception: int(scene_season)}
-                            for scene_season in jdata[sickbeard.indexerApi(indexer).config['xem_origin']][indexer_id]
-                            for scene_exception in jdata[sickbeard.indexerApi(indexer).config['xem_origin']][indexer_id][scene_season]
+                            for scene_season in jdata['tvdb'][indexer_id]
+                            for scene_exception in jdata['tvdb'][indexer_id][scene_season]
                         ]
                         exception_dict[indexer_id] = alias_list
                 except Exception:
@@ -313,14 +313,14 @@ def _xem_exceptions_fetcher():
     if shouldRefresh('xem'):
         for indexer in sickbeard.indexerApi().indexers:
             logger.log("Checking for XEM scene exception updates for {0}".format
-                       (sickbeard.indexerApi(indexer).name))
+                       ('theTVDB'))
 
-            url = "http://thexem.de/map/allNames?origin={0}&seasonNumbers=1".format(sickbeard.indexerApi(indexer).config['xem_origin'])
+            url = "http://thexem.de/map/allNames?origin={0}&seasonNumbers=1".format('tvdb')
 
             parsed_json = helpers.getURL(url, session=xem_session, timeout=90, returns='json')
             if not parsed_json:
                 logger.log("Check scene exceptions update failed for {0}, Unable to get URL: {1}".format
-                           (sickbeard.indexerApi(indexer).name, url), logger.DEBUG)
+                           ('theTVDB', url), logger.DEBUG)
                 continue
 
             if parsed_json['result'] == 'failure':

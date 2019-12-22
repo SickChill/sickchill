@@ -102,7 +102,7 @@ class AddShows(Home):
             t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
 
             logger.log("Searching for Show with searchterm(s): {0} on Indexer: {1}".format(
-                searchTerms, sickbeard.indexerApi(indexer).name), logger.DEBUG)
+                searchTerms, 'theTVDB'), logger.DEBUG)
             for searchTerm in searchTerms:
                 # noinspection PyBroadException
                 try:
