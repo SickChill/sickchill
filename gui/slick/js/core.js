@@ -1907,7 +1907,7 @@ var SICKCHILL = {
                         $('#torrent_path_option').find('.fileBrowser').hide();
                         $('#host_desc_torrent').text(_('URL to your Synology DS client (e.g. http://localhost:5000)'));
                         $('#path_synology').show();
-                    } else if (selectedProvider.toLowerCase() === 'rtorrent' || selectedProvider.toLowerCase() === 'new_rtorrent') {
+                    } else if (selectedProvider.toLowerCase() === 'rtorrent' || selectedProvider.toLowerCase() === 'rtorrent9') {
                         client = 'rTorrent';
                         $('#host_desc_torrent').html(_('URL to your rTorrent client (e.g. scgi://localhost:5000 <br> ' +
                                                         'or https://localhost/rutorrent/plugins/httprpc/action.php)'));
@@ -1959,7 +1959,7 @@ var SICKCHILL = {
             };
 
             $('#torrent_host').on('input', function() {
-                if ($('#torrent_method :selected').val().toLowerCase() === 'rtorrent' || $('#torrent_method :selected').val().toLowerCase() === 'new_rtorrent') {
+                if ($('#torrent_method :selected').val().toLowerCase() === 'rtorrent' || $('#torrent_method :selected').val().toLowerCase() === 'rtorrent9') {
                     const hostname = $('#torrent_host').val();
                     const isMatch = hostname.substr(0, 7) === 'scgi://';
 

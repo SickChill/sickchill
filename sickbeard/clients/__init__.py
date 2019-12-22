@@ -44,7 +44,7 @@ default_host = {
     'deluged': 'scgi://localhost:58846',
     'download_station': 'http://localhost:5000',
     'rtorrent': 'scgi://localhost:5000',
-    'new_rtorrent': 'scgi://localhost:5000',
+    'rtorrent9': 'scgi://localhost:5000',
     'qbittorrent': 'http://localhost:8080',
     'new_qbittorrent': 'http://localhost:8080',
     'mlnet': 'http://localhost:4080',
