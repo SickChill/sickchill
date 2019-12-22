@@ -46,6 +46,7 @@ from sickchill.helper.encoding import ss
 import tests.test_lib as test
 
 
+# noinspection PyProtectedMember
 class NotifierTests(test.SickbeardTestDBCase):  # pylint: disable=too-many-public-methods
     """
     Test notifiers

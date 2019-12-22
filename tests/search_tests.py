@@ -68,6 +68,7 @@ def generator(cur_data, cur_name, cur_provider):
     :return:
     """
 
+    # noinspection PyProtectedMember
     def do_test(self):
         """
         Test to perform
