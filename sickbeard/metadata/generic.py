@@ -991,22 +991,20 @@ class GenericMetadata(object):
         }
 
         try:
-            indexerid = helpers.mapIndexersToShow(show)[1]
-            if indexerid:
-                request = fanartRequest(
-                    apikey=sickbeard.FANART_API_KEY,
-                    id=indexerid,
-                    ws=fanart_module.WS.TV,
-                    type=types[img_type],
-                    sort=fanart_module.SORT.POPULAR,
-                    limit=fanart_module.LIMIT.ONE,
-                )
+            request = fanartRequest(
+                apikey=sickbeard.FANART_API_KEY,
+                id=show.indexerid,
+                ws=fanart_module.WS.TV,
+                type=types[img_type],
+                sort=fanart_module.SORT.POPULAR,
+                limit=fanart_module.LIMIT.ONE,
+            )
 
-                resp = request.response()
-                url = resp[types[img_type]][0]['url']
-                if thumb:
-                    url = re.sub('/fanart/', '/preview/', url)
-                return url
+            resp = request.response()
+            url = resp[types[img_type]][0]['url']
+            if thumb:
+                url = re.sub('/fanart/', '/preview/', url)
+            return url
         except Exception:
             pass
 

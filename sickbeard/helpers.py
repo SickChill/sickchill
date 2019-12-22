@@ -1300,64 +1300,6 @@ def restore_config_zip(archive, targetDir):
         return False
 
 
-def mapIndexersToShow(showObj):
-    mapped = {}
-
-    # init mapped indexers object
-    for indexer in sickbeard.indexerApi().indexers:
-        mapped[indexer] = showObj.indexerid if int(indexer) == int(showObj.indexer) else 0
-
-    main_db_con = db.DBConnection()
-    sql_results = main_db_con.select(
-        "SELECT * FROM indexer_mapping WHERE indexer_id = ? AND indexer = ?",
-        [showObj.indexerid, showObj.indexer])
-
-    # for each mapped entry
-    for curResult in sql_results:
-        nlist = [i for i in curResult if i is not None]
-        # Check if its mapped with both tvdb and tvrage.
-        if len(nlist) >= 4:
-            logger.log(_("Found indexer mapping in cache for show: ") + showObj.name, logger.DEBUG)
-            mapped[int(curResult[b'mindexer'])] = int(curResult[b'mindexer_id'])
-            break
-    else:
-        sql_l = []
-        for indexer in sickbeard.indexerApi().indexers:
-            if indexer == showObj.indexer:
-                mapped[indexer] = showObj.indexerid
-                continue
-
-            lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
-            lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
-            t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
-
-            # noinspection PyBroadException
-            try:
-                mapped_show = t[showObj.name]
-            except Exception:
-                logger.log(_("Unable to map {} -> {} for show: {}, skipping it").format(
-                    sickbeard.indexerApi(showObj.indexer).name, sickbeard.indexerApi(indexer).name, showObj.name), logger.DEBUG)
-                continue
-
-            if mapped_show and len(mapped_show) == 1:
-                logger.log(_("Mapping {} -> {} for show: {}").format(
-                    sickbeard.indexerApi(showObj.indexer).name, sickbeard.indexerApi(indexer).name, showObj.name), logger.DEBUG)
-
-                mapped[indexer] = int(mapped_show[0][b'id'])
-
-                logger.log(_("Adding indexer mapping to DB for show: {}").format(showObj.name), logger.DEBUG)
-
-                sql_l.append([
-                    "INSERT OR IGNORE INTO indexer_mapping (indexer_id, indexer, mindexer_id, mindexer) VALUES (?,?,?,?)",
-                    [showObj.indexerid, showObj.indexer, int(mapped_show[0][b'id']), indexer]])
-
-        if sql_l:
-            main_db_con = db.DBConnection()
-            main_db_con.mass_action(sql_l)
-
-    return mapped
-
-
 def touchFile(fname, atime=None):
     """
     Touch a file (change modification date)
@@ -1837,7 +1779,7 @@ def get_showname_from_indexer(indexer, indexer_id, lang='en'):
         lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
         lINDEXER_API_PARMS['language'] = lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
 
-        logger.log('{0}: {1!r}'.format(sickbeard.indexerApi(indexer).name, lINDEXER_API_PARMS))
+        logger.log('{0}: {1!r}'.format('theTVDB', lINDEXER_API_PARMS))
 
         t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
         s = t[int(indexer_id)]
@@ -1846,7 +1788,7 @@ def get_showname_from_indexer(indexer, indexer_id, lang='en'):
             return s.data.get('seriesname')
     except (sickbeard.indexer_error, IOError) as e:
         logger.log(_("Show id {} not found on {}, not adding the show: {}").format(
-            indexer_id, sickbeard.indexerApi(indexer).name, ex(e)), logger.WARNING)
+            indexer_id, 'theTVDB', ex(e)), logger.WARNING)
         return None
 
     return None
