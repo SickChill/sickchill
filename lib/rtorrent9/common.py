@@ -19,7 +19,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-from rtorrent.compat import is_py3
+from rtorrent9.compat import is_py3
 
 
 def bool_to_int(value):

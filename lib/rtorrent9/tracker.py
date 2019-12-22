@@ -18,12 +18,12 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# from rtorrent.rpc import Method
-import rtorrent.rpc
+# from rtorrent9.rpc import Method
+import rtorrent9.rpc
 
-from rtorrent.common import safe_repr
+from rtorrent9.common import safe_repr
 
-Method = rtorrent.rpc.Method
+Method = rtorrent9.rpc.Method
 
 
 class Tracker:
@@ -59,7 +59,7 @@ class Tracker:
 
         @return: None
         """
-        multicall = rtorrent.rpc.Multicall(self)
+        multicall = rtorrent9.rpc.Multicall(self)
         retriever_methods = [m for m in methods
                              if m.is_retriever() and m.is_available(self._rt_obj)]
         for method in retriever_methods:

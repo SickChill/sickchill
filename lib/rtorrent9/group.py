@@ -18,9 +18,9 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import rtorrent.rpc
+import rtorrent9.rpc
 
-Method = rtorrent.rpc.Method
+Method = rtorrent9.rpc.Method
 
 
 class Group:
@@ -42,7 +42,7 @@ class Group:
             Method(Group, 'set_upload', 'group.' + self.name + '.ratio.upload.set', varname='upload')
         ]
 
-        rtorrent.rpc._build_rpc_methods(self, self.methods)
+        rtorrent9.rpc._build_rpc_methods(self, self.methods)
 
         # Setup multicall_add method
         caller = lambda multicall, method, *args: \
@@ -53,7 +53,7 @@ class Group:
         return 'group.' + self.name + '.ratio.'
 
     def update(self):
-        multicall = rtorrent.rpc.Multicall(self)
+        multicall = rtorrent9.rpc.Multicall(self)
 
         retriever_methods = [m for m in self.methods
                              if m.is_retriever() and m.is_available(self._rt_obj)]
@@ -74,7 +74,7 @@ class Group:
     def set_command(self, *methods):
         methods = [m + '=' for m in methods]
 
-        m = rtorrent.rpc.Multicall(self)
+        m = rtorrent9.rpc.Multicall(self)
         self.multicall_add(
             m, 'system.method.set',
             self._get_prefix() + 'command',
