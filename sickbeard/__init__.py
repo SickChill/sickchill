@@ -35,7 +35,7 @@ import requests
 from configobj import ConfigObj
 from tornado.locale import load_gettext_translations
 
-from sickbeard import (auto_postprocessor, dailysearcher, db, helpers, logger, metadata, naming, post_processing_queue, properFinder, providers,
+from sickbeard import (auto_postprocessor, clients, dailysearcher, db, helpers, logger, metadata, naming, post_processing_queue, properFinder, providers,
                        scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, showUpdater, subtitles, traktChecker, versionChecker)
 from sickbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
 from sickbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
@@ -1004,9 +1004,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             NZB_METHOD = 'blackhole'
 
         TORRENT_METHOD = check_setting_str(CFG, 'General', 'torrent_method', 'blackhole')
-        if TORRENT_METHOD not in (
-            'blackhole', 'utorrent', 'transmission', 'deluge', 'deluged', 'download_station', 'rtorrent', 'qbittorrent', 'mlnet', 'putio'
-        ):
+        if TORRENT_METHOD not in clients.getClientListDict(True):
             TORRENT_METHOD = 'blackhole'
 
         DOWNLOAD_PROPERS = check_setting_bool(CFG, 'General', 'download_propers', True)

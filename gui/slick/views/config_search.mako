@@ -3,6 +3,7 @@
     import six
     import sickbeard
     from sickbeard.filters import hide
+    from sickbeard.clients import getClientListDict
 %>
 
 <%block name="tabs">
@@ -890,9 +891,9 @@
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <select name="torrent_method" id="torrent_method" class="form-control input-sm input200" title="torrent_method">
-                                            <% torrent_method_text = {'blackhole': "Black hole", 'utorrent': "uTorrent", 'transmission': "Transmission/Biglybt/Vuze", 'deluge': "Deluge (via WebUI)", 'deluged': "Deluge (via Daemon)", 'download_station': "Synology DS", 'rtorrent': "rTorrent", 'qbittorrent': "qbittorrent", 'mlnet': "MLDonkey", 'putio' : "Putio"} %>
-                                            % for curAction in ('blackhole', 'utorrent', 'transmission', 'deluge', 'deluged', 'download_station', 'rtorrent', 'qbittorrent', 'mlnet', 'putio'):
-                                                <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${torrent_method_text[curAction]}</option>
+                                            <% client_list = getClientListDict() %>
+                                            % for curAction in client_list.keys():
+                                                <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${client_list[curAction]}</option>
                                             % endfor
                                         </select>
                                     </div>

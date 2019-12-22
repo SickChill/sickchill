@@ -23,10 +23,10 @@ from __future__ import unicode_literals
 from sickbeard.clients.generic import GenericClient
 
 
-class mlnetAPI(GenericClient):
+class Client(GenericClient):
     def __init__(self, host=None, username=None, password=None):
 
-        super(mlnetAPI, self).__init__('mlnet', host, username, password)
+        super(Client, self).__init__('mlnet', host, username, password)
 
         self.url = self.host
         # self.session.auth = HTTPDigestAuth(self.username, self.password);
@@ -52,5 +52,3 @@ class mlnetAPI(GenericClient):
         self.url = self.host + 'submit'
         params = {'q': 'dllink ' + result.url}
         return self._request(method='get', params=params)
-
-api = mlnetAPI()

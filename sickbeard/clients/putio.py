@@ -25,10 +25,10 @@ from sickbeard import helpers
 from sickbeard.clients.generic import GenericClient
 
 
-class PutioAPI(GenericClient):
+class Client(GenericClient):
     def __init__(self, host=None, username=None, password=None):
 
-        super(PutioAPI, self).__init__('put_io', host, username, password)
+        super(Client, self).__init__('put.io', host, username, password)
         self.url = 'https://api.put.io/login'
 
     def _get_auth(self):
@@ -64,6 +64,3 @@ class PutioAPI(GenericClient):
         transfer = self.auth.Transfer.add_torrent(filename, self._parent_id)
 
         return transfer.id is not None
-
-
-api = PutioAPI()

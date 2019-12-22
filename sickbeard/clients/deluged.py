@@ -16,12 +16,12 @@ from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
 
 
-class DelugeDAPI(GenericClient):
+class Client(GenericClient):
 
     drpc = None
 
     def __init__(self, host=None, username=None, password=None):
-        super(DelugeDAPI, self).__init__('DelugeD', host, username, password)
+        super(Client, self).__init__('DelugeD', host, username, password)
 
     def _get_auth(self):
         if not self.connect():
@@ -41,7 +41,7 @@ class DelugeDAPI(GenericClient):
         # label = sickbeard.TORRENT_LABEL
         # if result.show.is_anime:
         #     label = sickbeard.TORRENT_LABEL_ANIME
-        
+
         if sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR:
             options = {
                 'add_paused': sickbeard.TORRENT_PAUSED,
@@ -258,5 +258,3 @@ class DelugeRPC(object):
             logger.log('DelugeD: Torrent already exists in Deluge', logger.DEBUG)
             return torrent_hash
         return False
-
-api = DelugeDAPI()

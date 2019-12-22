@@ -29,10 +29,10 @@ import sickbeard
 from sickbeard.clients.generic import GenericClient
 
 
-class qbittorrentAPI(GenericClient):
+class Client(GenericClient):
 
     def __init__(self, host=None, username=None, password=None):
-        super(qbittorrentAPI, self).__init__('qbittorrent', host, username, password)
+        super(Client, self).__init__('qBittorrent APIv2', host, username, password)
         self.url = self.host
         self.api_prefix = 'api/v2/'
         self.session.auth = HTTPDigestAuth(self.username, self.password)
@@ -105,6 +105,3 @@ class qbittorrentAPI(GenericClient):
                     return True
             sleep(2)
         return False
-
-
-api = qbittorrentAPI()
