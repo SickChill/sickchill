@@ -31,16 +31,13 @@ def get_varname(rpc_call):
     """Transform rpc method into variable name.
 
     @newfield example: Example
-    @example: if the name of the rpc method is 'p.get_down_rate', the variable
+    @example: if the name of the rpc method is 'p.down_rate', the variable
     name will be 'down_rate'
     """
     # extract variable name from xmlrpc func name
-    r = re.search(
-        "([ptdf]\.|system\.|get\_|is\_|set\_)+([^=]*)", rpc_call, re.I)
+    r = re.match(r'(?:[ptdf]\.)?(.+?)(?:\.set)?$', rpc_call)
     if r:
-        return(r.groups()[-1])
-    else:
-        return(None)
+        return r.group(1)
 
 
 def _handle_unavailable_rpc_method(method, rt_obj):
