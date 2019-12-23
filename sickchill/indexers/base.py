@@ -36,7 +36,7 @@ class Indexer(object):
         self.timeout = sickbeard.INDEXER_TIMEOUT
 
     @abc.abstractmethod
-    def search(self, text, language=None):
+    def search(self, name, language=None):
         pass
 
     @abc.abstractmethod

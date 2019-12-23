@@ -18,14 +18,28 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
+import gettext
+# import re
+
 import sickbeard
+from sickbeard import logger
+from sickbeard.tv import Show
+
+from .tvdb import TVDB
+
+gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
+
+
+INDEXER_TVDB = 1
+INDEXER_TVRAGE = 2  # Must keep
 
 
 class ShowIndexer(object):
+
     def __init__(self):
-        self.indexers = {}
+        self.indexers = {INDEXER_TVDB: TVDB()}
         if sickbeard.INDEXER_DEFAULT is None:
-            sickbeard.INDEXER_DEFAULT = 1
+            sickbeard.INDEXER_DEFAULT = INDEXER_TVDB
 
     def name(self, indexer=None):
         if indexer is None:
@@ -41,6 +55,49 @@ class ShowIndexer(object):
         if indexer is None:
             indexer = sickbeard.INDEXER_DEFAULT
         return self.indexers[indexer].search(*args, **kwargs)
+
+    def search_indexers_for_show_name(self, name, indexerid=None, language=None):
+        results = {}
+        for i, indexer in self.indexers.iteritems():
+            results[i] = indexer.search(name, language)
+
+        return results
+
+    def search_indexers_for_show_id(self, name=None, indexer=None, indexerid=None):
+        if not indexer:
+            indexer = self.indexers.values()
+
+        if isinstance(indexer, basestring):
+            indexer = [indexer]
+
+        if isinstance(name, basestring):
+            name = [name]
+
+        if indexerid:
+            indexerid = int(indexerid)
+
+        for n in name:
+            # n = [re.sub('[. -]', ' ', n)]
+            for i in indexer:
+                print(_)
+                logger.log(_("Trying to find {} on {}").format(name, i.name), logger.DEBUG)
+                if indexerid:
+                    result = i.get_show_by_id(indexerid)
+                else:
+                    result = i.get_show_by_name(n)
+
+                try:
+                    garbage = result.seriesName, result.id
+                except AttributeError:
+                    continue
+
+                ShowObj = Show.find(sickbeard.showList, int(result.id))
+                if indexerid and ShowObj and ShowObj.indexerid == result.id:
+                    return i, result
+                elif indexerid and indexerid == result.id:
+                    return i, result
+
+        return None, None
 
     @property
     def languages(self, indexer=None):

@@ -296,63 +296,6 @@ def makeDir(path):
     return True
 
 
-def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
-    """
-    Contacts indexer to check for information on shows by showid
-
-    :param regShowName: Name of show
-    :param indexer: Which indexer to use
-    :param indexer_id: Which indexer ID to look for
-    :param ui: Custom UI for indexer use
-    :return:
-    """
-
-    showNames = [re.sub('[. -]', ' ', regShowName)]
-
-    # Query Indexers for each search term and build the list of results
-    for i in sickbeard.indexerApi().indexers if not indexer else int(indexer or []):
-        # Query Indexers for each search term and build the list of results
-        lINDEXER_API_PARMS = sickbeard.indexerApi(i).api_params.copy()
-        if ui is not None:
-            lINDEXER_API_PARMS['custom_ui'] = ui
-        t = sickbeard.indexerApi(i).indexer(**lINDEXER_API_PARMS)
-
-        for name in showNames:
-            logger.log(_("Trying to find {} on {}").format(name, sickbeard.indexerApi(i).name), logger.DEBUG)
-
-            # noinspection PyBroadException
-            try:
-                search = t[indexer_id] if indexer_id else t[name]
-            except Exception:
-                continue
-
-            # noinspection PyBroadException
-            try:
-                seriesname = search[0][b'seriesname']
-            except Exception:
-                seriesname = None
-
-            # noinspection PyBroadException
-            try:
-                series_id = search[0][b'id']
-            except Exception:
-                series_id = None
-
-            if not (seriesname and series_id):
-                continue
-            ShowObj = Show.find(sickbeard.showList, int(series_id))
-            # Check if we can find the show in our list (if not, it's not the right show)
-            if (indexer_id is None) and (ShowObj is not None) and (ShowObj.indexerid == int(series_id)):
-                return seriesname, i, int(series_id)
-            elif (indexer_id is not None) and (int(indexer_id) == int(series_id)):
-                return seriesname, i, int(indexer_id)
-
-        if indexer:
-            break
-
-    return None, None, None
-
-
 def list_media_files(path):
     """
     Get a list of files possibly containing media in a path
@@ -1080,7 +1023,7 @@ def get_show(name, tryIndexers=False):
         # try indexers
         if not showObj and tryIndexers:
             showObj = Show.find(
-                sickbeard.showList, searchIndexerForShowID(full_sanitizeSceneName(name), ui=classes.ShowListUI)[2])
+                sickbeard.showList, sickbeard.show_indexer.search_indexers_for_show_id(full_sanitizeSceneName(name))[1].id)
 
         # try scene exceptions
         if not showObj:
