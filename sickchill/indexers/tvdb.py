@@ -35,7 +35,9 @@ class TVDB(Indexer):
         self.series = tvdbsimple.series.Series
 
     def get_show_by_id(self, indexerid, language=None):
-        return self.series(indexerid, language)
+        result = self.series(indexerid, language)
+        result.info()
+        return result
 
     def get_show_by_name(self, name, indexerid=None, language=None):
         if indexerid:

@@ -27,7 +27,6 @@ from sickbeard.tv import Show
 
 from .tvdb import TVDB
 
-gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 
 
 INDEXER_TVDB = 1
@@ -65,9 +64,9 @@ class ShowIndexer(object):
 
     def search_indexers_for_show_id(self, name=None, indexer=None, indexerid=None):
         if not indexer:
-            indexer = self.indexers.values()
+            indexer = self.indexers.keys()
 
-        if isinstance(indexer, basestring):
+        if isinstance(indexer, (int, basestring)):
             indexer = [indexer]
 
         if isinstance(name, basestring):
@@ -79,19 +78,20 @@ class ShowIndexer(object):
         for n in name:
             # n = [re.sub('[. -]', ' ', n)]
             for i in indexer:
-                print(_)
-                logger.log(_("Trying to find {} on {}").format(name, i.name), logger.DEBUG)
+
+                logger.log("Trying to find {} on {}".format(name, self.indexers[i].name), logger.DEBUG)
                 if indexerid:
-                    result = i.get_show_by_id(indexerid)
+                    result = self.indexers[i].get_show_by_id(indexerid)
                 else:
-                    result = i.get_show_by_name(n)
+                    result = self.indexers[i].get_show_by_name(n)
 
                 try:
                     garbage = result.seriesName, result.id
                 except AttributeError:
+                    logger.log("Failed to find {} on {}".format(name, self.indexers[i].name), logger.DEBUG)
                     continue
 
-                ShowObj = Show.find(sickbeard.showList, int(result.id))
+                ShowObj = Show.find(sickbeard.showList, result.id)
                 if indexerid and ShowObj and ShowObj.indexerid == result.id:
                     return i, result
                 elif indexerid and indexerid == result.id:
