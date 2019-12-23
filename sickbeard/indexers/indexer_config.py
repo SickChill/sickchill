@@ -2,8 +2,6 @@
 
 from __future__ import unicode_literals
 
-from tvdb_api.tvdb_api import Tvdb
-
 from sickbeard import helpers
 
 initConfig = {
@@ -26,7 +24,7 @@ indexerConfig = {
     INDEXER_TVDB: {
         'id': INDEXER_TVDB,
         'name': 'theTVDB',
-        'module': Tvdb,
+        'module': None,
         'api_params': {
             'apikey': 'F9C450E78D99172E',
             'language': 'en',

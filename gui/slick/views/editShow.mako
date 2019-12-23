@@ -102,7 +102,7 @@
                                                 <select name="indexerLang" id="indexerLangSelect"
                                                         class="form-control input-sm input150 bfh-languages"
                                                         data-language="${show.lang}"
-                                                        data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}" title="indexerLang">
+                                                        data-available="${','.join(sickbeard.show_indexer.languages)}" title="indexerLang">
                                                 </select>
                                             </div>
                                         </div>
