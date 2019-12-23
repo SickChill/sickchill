@@ -1731,67 +1731,41 @@ class CMDSickBeardSearchIndexers(ApiCall):
         lang_id = self.valid_languages[self.lang]
 
         if self.name and not self.indexerid:  # only name was given
-            for _indexer in sickbeard.indexerApi().indexers if self.indexer == 0 else [int(self.indexer)]:
-                indexer_api_params = sickbeard.indexerApi(_indexer).api_params.copy()
-
-                indexer_api_params['language'] = self.lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-                indexer_api_params['actors'] = False
-                indexer_api_params['custom_ui'] = classes.AllShowsListUI
-
-                t = sickbeard.indexerApi(_indexer).indexer(**indexer_api_params)
-
-                try:
-                    api_data = t[str(self.name).encode()]
-                except (sickbeard.indexer_shownotfound, sickbeard.indexer_showincomplete, sickbeard.indexer_error):
-                    logger.log("API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
-                    continue
-
-                for curSeries in api_data:
+            search_results = sickbeard.show_indexer.search_indexers_for_show_name(str(self.name).encode(), self.lang)
+            for indexer, indexer_results in search_results.iteritems():
+                for result in indexer_results:
                     # Skip it if it's in our show list already, and we only want new shows
-                    if curSeries['in_show_list'] and self.only_new:
+                    in_show_list = sickbeard.tv.Show.find(sickbeard.showList, int(result.id))
+                    if in_show_list and self.only_new:
                         continue
-                    results.append({
-                                       indexer_ids[_indexer]: int(curSeries['id']),
-                                       "name": curSeries['seriesname'],
-                                       "first_aired": curSeries['firstaired'],
-                                       "indexer": int(_indexer),
-                                       "in_show_list": curSeries['in_show_list']
-                                       })
 
-            return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
+                    results.append({
+                        indexer_ids[indexer]: result['id'],
+                         "name": result['seriesName'],
+                         "first_aired": result['firstAired'],
+                         "indexer": indexer,
+                         "in_show_list": in_show_list
+                    })
+
+                return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
 
         elif self.indexerid:
-            for _indexer in sickbeard.indexerApi().indexers if self.indexer == 0 else [int(self.indexer)]:
-                indexer_api_params = sickbeard.indexerApi(_indexer).api_params.copy()
+            indexer, result = sickbeard.show_indexer.search_indexers_for_show_id(self.indexerid, self.lang)
+            if not indexer:
+                logger.log("API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
+                return _responds(RESULT_SUCCESS, {"results": [], "langid": lang_id})
 
-                indexer_api_params['language'] = self.lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
+            if not result.seriesName:
+                logger.log(
+                    "API :: Found show with indexerid: " + str(self.indexerid) + ", however it contained no show name", logger.DEBUG)
+                return _responds(RESULT_FAILURE, msg="Show contains no name, invalid result")
 
-                indexer_api_params['actors'] = False
-
-                t = sickbeard.indexerApi(_indexer).indexer(**indexer_api_params)
-
-                try:
-                    my_show = t[int(self.indexerid)]
-                except (sickbeard.indexer_shownotfound, sickbeard.indexer_showincomplete, sickbeard.indexer_error):
-                    logger.log("API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
-                    return _responds(RESULT_SUCCESS, {"results": [], "langid": lang_id})
-
-                if not my_show.data['seriesname']:
-                    logger.log(
-                        "API :: Found show with indexerid: " + str(
-                            self.indexerid) + ", however it contained no show name", logger.DEBUG)
-                    return _responds(RESULT_FAILURE, msg="Show contains no name, invalid result")
-
-                # found show
-                # noinspection PyCompatibility
-                results = [{
-                               indexer_ids[_indexer]: int(my_show.data['id']),
-                               "name": six.text_type(my_show.data['seriesname']),
-                               "first_aired": my_show.data['firstaired'],
-                               "indexer": int(_indexer)
-                               }]
-                break
+            results = [{
+                indexer_ids[indexer]: result.id,
+                "name": six.text_type(result.seriesName),
+                "first_aired": result.firstAired,
+                "indexer": indexer
+            }]
 
             return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
         else:

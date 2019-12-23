@@ -19,6 +19,8 @@
 
 from __future__ import print_function, unicode_literals
 
+import tvdbsimple
+
 from .base import Indexer
 
 
@@ -27,12 +29,19 @@ class TVDB(Indexer):
         super(TVDB, self).__init__()
         self.name = 'theTVDB'
         self.trakt_id = 'tvdb'
+        self.api_key = 'F9C450E78D99172E'
+        tvdbsimple.KEYS.API_KEY = self.api_key
+        self.search = tvdbsimple.search.Search().series
+        self.series = tvdbsimple.series.Series
 
-    def get_show_by_id(self, id, language=None, indexer=None):
-        pass
+    def get_show_by_id(self, indexerid, language=None):
+        return self.series(indexerid, language)
 
-    def get_show_by_name(self, indexerid, language=None, indexer=None):
-        pass
+    def get_show_by_name(self, name, indexerid=None, language=None):
+        if indexerid:
+            return self.get_show_by_id(indexerid, language)
+        # Just return the first result for now
+        return self.series(self.search(name, language)[0]['id'])
 
     def seasons(self, show):
         pass
@@ -40,8 +49,8 @@ class TVDB(Indexer):
     def episodes(self, show, season):
         pass
 
-    def search(self, text, language=None):
-        pass
+    def search(self, name, language=None):
+        return self.search(name, language)
 
     def series_title(self, show):
         pass
