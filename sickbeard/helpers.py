@@ -1774,26 +1774,6 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
         return tvdb_id
 
 
-def get_showname_from_indexer(indexer, indexer_id, lang='en'):
-    try:
-        lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
-        lINDEXER_API_PARMS['language'] = lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-        logger.log('{0}: {1!r}'.format('theTVDB', lINDEXER_API_PARMS))
-
-        t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
-        s = t[int(indexer_id)]
-
-        if hasattr(s, 'data'):
-            return s.data.get('seriesname')
-    except (sickbeard.indexer_error, IOError) as e:
-        logger.log(_("Show id {} not found on {}, not adding the show: {}").format(
-            indexer_id, 'theTVDB', ex(e)), logger.WARNING)
-        return None
-
-    return None
-
-
 def is_ip_private(ip):
     priv_lo = re.compile(r"^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
     priv_24 = re.compile(r"^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$")

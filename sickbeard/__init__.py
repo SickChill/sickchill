@@ -46,6 +46,7 @@ from sickbeard.indexers.indexer_exceptions import (indexer_attributenotfound, in
 from sickbeard.numdict import NumDict
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.providers.rsstorrent import TorrentRssProvider
+from sickchill.indexers import ShowIndexer
 from sickchill.helper import setup_github
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
@@ -66,7 +67,6 @@ dynamic_strings = (
 
 
 requests.packages.urllib3.disable_warnings()
-indexerApi = indexer_api.indexerApi
 
 PID = None
 
@@ -117,6 +117,7 @@ subtitlesFinderScheduler = None
 traktCheckerScheduler = None
 
 showList = []
+show_indexer = None
 
 providerList = []
 newznabProviderList = []
@@ -739,7 +740,8 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             NEWS_LATEST, SOCKET_TIMEOUT, SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKCHILL_BACKGROUND, \
             SICKCHILL_BACKGROUND_PATH, FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, \
             SLACK_NOTIFY_DOWNLOAD, SLACK_NOTIFY_SUBTITLEDOWNLOAD, SLACK_WEBHOOK, SLACK_ICON_EMOJI, USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK,\
-            USE_MATRIX, MATRIX_NOTIFY_SNATCH, MATRIX_NOTIFY_DOWNLOAD, MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM
+            USE_MATRIX, MATRIX_NOTIFY_SNATCH, MATRIX_NOTIFY_DOWNLOAD, MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM, \
+            show_indexer
 
         if __INITIALIZED__:
             return False
@@ -920,7 +922,6 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
 
         SSL_VERIFY = check_setting_bool(CFG, 'General', 'ssl_verify', True)
 
-        INDEXER_DEFAULT_LANGUAGE = check_setting_str(CFG, 'General', 'indexerDefaultLang', 'en')
         EP_DEFAULT_DELETED_STATUS = check_setting_int(CFG, 'General', 'ep_default_deleted_status', ARCHIVED)
         if EP_DEFAULT_DELETED_STATUS not in (SKIPPED, ARCHIVED, IGNORED):
             EP_DEFAULT_DELETED_STATUS = ARCHIVED
@@ -934,12 +935,18 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         CPU_PRESET = check_setting_str(CFG, 'General', 'cpu_preset', 'NORMAL')
 
         ANON_REDIRECT = check_setting_str(CFG, 'General', 'anon_redirect', 'http://dereferer.org/?')
-        PROXY_SETTING = check_setting_str(CFG, 'General', 'proxy_setting')
-        PROXY_INDEXERS = check_setting_bool(CFG, 'General', 'proxy_indexers', True)
-
         # attempt to help prevent users from breaking links by using a bad url
         if not ANON_REDIRECT.endswith('?'):
             ANON_REDIRECT = ''
+
+        PROXY_SETTING = check_setting_str(CFG, 'General', 'proxy_setting')
+        PROXY_INDEXERS = check_setting_bool(CFG, 'General', 'proxy_indexers', True)
+
+        INDEXER_DEFAULT_LANGUAGE = check_setting_str(CFG, 'General', 'indexerDefaultLang', 'en')
+        INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', min_val=1, max_val=2)
+        INDEXER_TIMEOUT = check_setting_int(CFG, 'General', 'indexer_timeout', 20, min_val=0)
+
+        show_indexer = ShowIndexer()
 
         TRASH_REMOVE_SHOW = check_setting_bool(CFG, 'General', 'trash_remove_show')
         TRASH_ROTATE_LOGS = check_setting_bool(CFG, 'General', 'trash_rotate_logs')
@@ -975,8 +982,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         AUTO_UPDATE = check_setting_bool(CFG, 'General', 'auto_update')
         NOTIFY_ON_UPDATE = check_setting_bool(CFG, 'General', 'notify_on_update', True)
         SEASON_FOLDERS_DEFAULT = check_setting_bool(CFG, 'General', 'season_folders_default', True)
-        INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', min_val=min(indexerApi().indexers), max_val=max(indexerApi().indexers))
-        INDEXER_TIMEOUT = check_setting_int(CFG, 'General', 'indexer_timeout', 20, min_val=0)
+
         ANIME_DEFAULT = check_setting_bool(CFG, 'General', 'anime_default')
         SCENE_DEFAULT = check_setting_bool(CFG, 'General', 'scene_default')
 
@@ -1285,9 +1291,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TRAKT_USE_RECOMMENDED = check_setting_bool(CFG, 'Trakt', 'trakt_use_recommended')
         TRAKT_SYNC = check_setting_bool(CFG, 'Trakt', 'trakt_sync')
         TRAKT_SYNC_REMOVE = check_setting_bool(CFG, 'Trakt', 'trakt_sync_remove')
-        TRAKT_DEFAULT_INDEXER = check_setting_int(
-            CFG, 'Trakt', 'trakt_default_indexer', 1, min_val=min(indexerApi().indexers), max_val=max(indexerApi().indexers)
-        )
+        TRAKT_DEFAULT_INDEXER = check_setting_int(CFG, 'Trakt', 'trakt_default_indexer', 1, min_val=1, max_val=2)
         TRAKT_TIMEOUT = check_setting_int(CFG, 'Trakt', 'trakt_timeout', 30, min_val=0)
         TRAKT_BLACKLIST_NAME = check_setting_str(CFG, 'Trakt', 'trakt_blacklist_name')
 
