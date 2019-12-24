@@ -60,7 +60,6 @@ Public Methods:
     is_hidden_folder
     real_path
     is_subdirectory
-    validateShow
     set_up_anidb_connection
     makeZip
     extractZip
@@ -614,14 +613,6 @@ class HelpersShowTests(unittest.TestCase):
         Test get_show
         """
         pass
-
-    @unittest.skip('Not yet implemented')
-    def test_validate_show(self):
-        """
-        Test validateShow
-        """
-        pass
-
 
     @unittest.skip('Not yet implemented')
     def test_get_abs_no_from_s_and_e(self):

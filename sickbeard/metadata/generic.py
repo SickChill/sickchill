@@ -365,16 +365,17 @@ class GenericMetadata(object):
         all_eps = [ep_obj] + ep_obj.relatedEps
 
         # validate show
-        if not helpers.validateShow(ep_obj.show):
+        if not sickbeard.show_indexer.episode(ep_obj.show, ep_obj.season, ep_obj.episode):
             return None
 
         # try all included episodes in case some have thumbs and others don't
         for cur_ep in all_eps:
-            myEp = helpers.validateShow(cur_ep.show, cur_ep.season, cur_ep.episode)
-            if not myEp:
+
+            episode = sickbeard.show_indexer.episode(cur_ep.show, cur_ep.season, cur_ep.episode)
+            if not episode:
                 continue
 
-            thumb_url = getattr(myEp, 'filename', None)
+            thumb_url = sickbeard.show_indexer.episode_image_url(episode)
             if thumb_url:
                 return thumb_url
 

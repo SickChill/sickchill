@@ -37,28 +37,28 @@ class Indexer(object):
 
     @abc.abstractmethod
     def search(self, name, language=None):
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
-    def get_show_by_id(self, indexerid, language=None, indexer=None):
-        pass
+    def get_show_by_id(self, indexerid, language=None):
+        raise NotImplementedError
 
     @abc.abstractmethod
-    def get_show_by_name(self, indexerid, language=None, indexer=None):
-        pass
+    def get_show_by_name(self, indexerid, language=None):
+        raise NotImplementedError
 
     @abc.abstractmethod
     def series_title(self, show):
-        pass
-
-    @abc.abstractmethod
-    def seasons(self, show):
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def episodes(self, show, season):
-        pass
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def episode(self, show, season, episode):
+        raise NotImplementedError
 
     @abc.abstractproperty
     def languages(self):
-        pass
+        raise NotImplementedError

@@ -18,7 +18,7 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
-import gettext
+
 # import re
 
 import sickbeard
@@ -26,8 +26,6 @@ from sickbeard import logger
 from sickbeard.tv import Show
 
 from .tvdb import TVDB
-
-
 
 INDEXER_TVDB = 1
 INDEXER_TVRAGE = 2  # Must keep
@@ -104,3 +102,21 @@ class ShowIndexer(object):
         if indexer is None:
             indexer = sickbeard.INDEXER_DEFAULT
         return self.indexers[indexer].languages
+
+    def episodes(self, show, season):
+        return self.indexers[show.indexer].episodes(show, season)
+
+    def episode(self, item, season=None, episode=None):
+        if isinstance(item, sickbeard.tv.TVEpisode):
+            show = item.show
+            season = item.season
+            episode = item.episode
+        else:
+            show = item
+
+        return self.indexers[show.indexer].episode(show, season, episode)
+
+    def episode_image_url(self, episode):
+        return self.indexers[episode.show.indexer].episode_image_url(episode)
+
+

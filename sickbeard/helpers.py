@@ -1088,26 +1088,6 @@ def is_subdirectory(subdir_path, topdir_path):
     return os.path.commonprefix([subdir_path, topdir_path]) == topdir_path
 
 
-def validateShow(show, season=None, episode=None):
-    indexer_lang = show.lang
-
-    try:
-        lINDEXER_API_PARMS = sickbeard.indexerApi(show.indexer).api_params.copy()
-
-        lINDEXER_API_PARMS['language'] = indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-        if show.dvdorder:
-            lINDEXER_API_PARMS['dvdorder'] = True
-
-        t = sickbeard.indexerApi(show.indexer).indexer(**lINDEXER_API_PARMS)
-        if season is None and episode is None:
-            return t
-
-        return t[show.indexerid][season][episode]
-    except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-        pass
-
-
 def set_up_anidb_connection():
     """Connect to anidb"""
 
