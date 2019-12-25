@@ -105,8 +105,31 @@ class TVDB(Indexer):
         }
 
     @staticmethod
-    def _complete_image_url(location):
+    def complete_image_url(location):
         return 'https://artworks.thetvdb.com/banners/{path}'.format(path=location)
 
-    def episode_image_url(self, episode):
-        return self._complete_image_url(self.episode(episode)['filename'])
+    def series_poster_url(self, show, thumb=False):
+        images = self.series_images(show.indexerid, show.lang, keyType='poster')
+        return self.complete_image_url(images.all()[0][('fileName', 'thumbnail')[thumb]])
+
+    def series_banner_url(self, show, thumb=False):
+        images = self.series_images(show.indexerid, show.lang, keyType='series')
+        return self.complete_image_url(images.all()[0][('fileName', 'thumbnail')[thumb]])
+
+    def series_fanart_url(self, show, thumb=False):
+        images = self.series_images(show.indexerid, show.lang, keyType='fanart')
+        return self.complete_image_url(images.all()[0][('fileName', 'thumbnail')[thumb]])
+
+    def season_poster_url(self, show, season, thumb=False):
+        images = self.series_images(show.indexerid, show.lang, keyType='season', subKey=season)
+        return self.complete_image_url(images.all()[0][('fileName', 'thumbnail')[thumb]])
+
+    def season_banner_url(self, show, season, thumb=False):
+        images = self.series_images(show.indexerid, show.lang, keyType='seasonwide', subKey=season)
+        return self.complete_image_url(images.all()[0][('fileName', 'thumbnail')[thumb]])
+
+    def episode_image_url(self, episode, thumb=False):
+        return self._complete_image_url(self.episode(episode)[('fileName', 'thumbnail')[thumb]])
+
+
+

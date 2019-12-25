@@ -141,10 +141,8 @@
                             </span>
                                     <a href="${anon_url('http://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><span class="displayshow-icon-imdb" /></a>
                                 % endif
-                                <a href="${anon_url(_show.idxr.show_url, _show.indexerid)}" onclick="window.open(this.href,
-                                '_blank'); return false;" title="${show_obj.idxr.show_url + str(show.indexerid)}"><img
-                                    alt="${show.idxr.name}" src="${static_url(show.idxr.icon)}"
-                                    style="margin-top: -1px; vertical-align:middle;"/></a>
+                                <a href="${anon_url(_show.idxr.show_url, _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;"
+                                   title="${_show.idxr.show_url + str(show.indexerid)}"><img alt="${show.idxr.name}" src="${static_url(show.idxr.icon)}" style="margin-top: -1px; vertical-align:middle;"/></a>
                                 % if xem_numbering or xem_absolute_numbering:
                                     <a href="${anon_url('http://thexem.de/search?q=', _show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><span alt="" class="displayshow-icon-xem" /></a>
                                 % endif
@@ -153,7 +151,7 @@
                             <div class="pull-left col-lg-8 col-md-8 col-sm-12 col-xs-12">
                                 <ul class="tags">
                                     % if show.genre and not show.imdb_info.get('genres'):
-                                        % for genre in show.genre[1:-1].split('|'):
+                                        % for genre in show.genre:
                                             <a href="${anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower())}" target="_blank" title="${_('View other popular {genre} shows on trakt.tv.').format(genre=_(genre))}"><li>${_(genre)}</li></a>
                                         % endfor
                                     % elif show.imdb_info.get('genres'):

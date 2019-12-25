@@ -150,5 +150,21 @@ class ShowIndexer(object):
 
         return self.indexers[show.indexer].episode(show, season, episode)
 
-    def episode_image_url(self, episode):
-        return self.indexers[episode.show.indexer].episode_image_url(episode)
+    def series_poster_url(self, show, thumb=False):
+        return self.indexers[show.indexer].series_poster_url(show, thumb)
+
+    def series_banner_url(self, show, thumb=False):
+        return self.indexers[show.indexer].series_banner_url(show, thumb)
+
+    def series_fanart_url(self, show, thumb=False):
+        return self.indexers[show.indexer].series_fanart_url(show, thumb)
+
+    def season_poster_url(self, show, season, thumb=False):
+        return self.indexers[show.indexer].season_poster_url(show, season, thumb)
+
+    def season_banner_url(self, show, season, thumb=False):
+        return self.indexers[show.indexer].season_banner_url(show, season, thumb)
+
+    def episode_image_url(self, episode, thumb=False):
+        return self.indexers[episode.show.indexer].episode_image_url(episode, thumb)
+

@@ -536,6 +536,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         sql_l = []
         for season in showObj:
             scannedEps[season] = {}
+            # TODO: Fix season and episode adding
             for episode in showObj[season]:
                 # need some examples of wtf episode 0 means to decide if we want it or not
                 if episode == 0:

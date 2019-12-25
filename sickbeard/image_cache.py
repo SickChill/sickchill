@@ -29,6 +29,7 @@ from hachoir_parser import createParser
 import sickbeard
 from sickbeard import helpers, logger
 from sickbeard.metadata.generic import GenericMetadata
+from sickbeard.metadata.helpers import getShowImage
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ShowDirectoryNotFoundException
 
@@ -236,19 +237,19 @@ class ImageCache(object):
 
         # generate the path based on the type & indexer_id
         if img_type == self.POSTER:
-            img_type_name = 'poster'
+            img_url = sickbeard.show_indexer.series_poster_url(show_obj)
             dest_path = self.poster_path(show_obj.indexerid)
         elif img_type == self.BANNER:
-            img_type_name = 'banner'
+            img_url = sickbeard.show_indexer.series_banner_url(show_obj)
             dest_path = self.banner_path(show_obj.indexerid)
         elif img_type == self.POSTER_THUMB:
-            img_type_name = 'poster_thumb'
+            img_url = sickbeard.show_indexer.series_poster_url(show_obj, thumb=True)
             dest_path = self.poster_thumb_path(show_obj.indexerid)
         elif img_type == self.BANNER_THUMB:
-            img_type_name = 'banner_thumb'
+            img_url = sickbeard.show_indexer.series_banner_url(show_obj, thumb=True)
             dest_path = self.banner_thumb_path(show_obj.indexerid)
         elif img_type == self.FANART:
-            img_type_name = 'fanart'
+            img_url = sickbeard.show_indexer.series_fanart_url(show_obj)
             dest_path = self.fanart_path(show_obj.indexerid)
         else:
             logger.log("Invalid cache image type: " + str(img_type), logger.ERROR)
@@ -257,7 +258,7 @@ class ImageCache(object):
         # retrieve the image from indexer using the generic metadata class
         # TODO: refactor
         metadata_generator = GenericMetadata()
-        img_data = metadata_generator._retrieve_show_image(img_type_name, show_obj)
+        img_data = getShowImage(img_url)
         result = metadata_generator._write_image(img_data, dest_path)
 
         return result
