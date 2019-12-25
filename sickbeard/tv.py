@@ -521,47 +521,43 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         return scannedEps
 
     def loadEpisodesFromIndexer(self):
-        try:
-            showObj = self.idxr.series(self.indexerid)
-        except Exception:
-            logger.log("{} timed out, unable to update episodes from {}".format(
-                self.indexer_name, self.indexer_name), logger.WARNING)
-            return None
+        showObj = self.idxr.series(self.indexerid, self.lang)
+        if not showObj:
+            logger.log(_('{show_id}: Could not get the show from {indexer_name}, try again later.').format(
+                show_id=self.indexerid, indexer_name=self.indexer_name), logger.DEBUG)
+            return
 
-        logger.log(
-            str(self.indexerid) + ": Loading all episodes from " + self.indexer_name + "..", logger.DEBUG)
+        logger.log(_("{show_id}: Loading all episodes from {indexer_name}...").format(
+            show_id=self.indexerid, indexer_name=self.indexer_name), logger.DEBUG)
 
         scannedEps = {}
 
         sql_l = []
-        for season in showObj:
+        for episode in showObj.Episodes.all():
+            season = episode['airedSeason']
+            episode = episode['airedEpisodeNumber']
             scannedEps[season] = {}
-            # TODO: Fix season and episode adding
-            for episode in showObj[season]:
-                # need some examples of wtf episode 0 means to decide if we want it or not
-                if episode == 0:
-                    continue
+            try:
+                ep = self.getEpisode(season, episode)
+                if not ep:
+                    raise EpisodeNotFoundException
+            except EpisodeNotFoundException:
+                logger.log("{id}: {indexer} object for {ep} is incomplete, skipping this episode".format
+                           (id=self.indexerid, indexer=self.indexer_name, ep=episode_num(season, episode)))
+                continue
+            else:
                 try:
-                    ep = self.getEpisode(season, episode)
-                    if not ep:
-                        raise EpisodeNotFoundException
-                except EpisodeNotFoundException:
-                    logger.log("{id}: {indexer} object for {ep} is incomplete, skipping this episode".format
-                               (id=self.indexerid, indexer=self.indexer_name, ep=episode_num(season, episode)))
+                    ep.loadFromIndexer()
+                except EpisodeDeletedException:
+                    logger.log("The episode was deleted, skipping the rest of the load")
                     continue
-                else:
-                    try:
-                        ep.loadFromIndexer()
-                    except EpisodeDeletedException:
-                        logger.log("The episode was deleted, skipping the rest of the load")
-                        continue
 
-                with ep.lock:
-                    ep.loadFromIndexer(season, episode)
+            with ep.lock:
+                ep.loadFromIndexer(season, episode)
 
-                    sql_l.append(ep.get_sql())
+                sql_l.append(ep.get_sql())
 
-                scannedEps[season][episode] = True
+            scannedEps[season][episode] = True
 
         if sql_l:
             main_db_con = db.DBConnection()
@@ -719,7 +715,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         return rootEp
 
-    def loadFromDB(self):  # pylint: disable=too-many-branches, too-many-statements
+    def loadFromDB(self):
 
         # logger.log(str(self.indexerid) + ": Loading show info from database", logger.DEBUG)
 
@@ -811,6 +807,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         logger.log(str(self.indexerid) + ": Loading show info from " + self.indexer_name, logger.DEBUG)
 
         myShow = sickbeard.show_indexer.series(self)
+        myShow.info()
         if not myShow or not getattr(myShow, 'seriesName'):
             raise AttributeError("Found {0}, but attribute 'seriesName' was empty.".format(self.indexerid))
 
@@ -822,13 +819,14 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         self.imdbid = getattr(myShow, 'imdb_id', '')
 
-        if getattr(myShow, 'airs_dayofweek', None) is not None and getattr(myShow, 'airs_time', None) is not None:
-            self.airs = myShow[b"airs_dayofweek"] + " " + myShow[b"airs_time"]
+        if hasattr(myShow, 'airsDayOfWeek') and hasattr(myShow, 'airsTime'):
+            self.airs = myShow.airsDayOfWeek + " " + myShow.airsTime
+            self.airs = self.airs.strip()
 
         if self.airs is None:
             self.airs = ''
 
-        if getattr(myShow, 'firstAired', None) is not None:
+        if hasattr(myShow, 'firstAired'):
             self.startyear = int(myShow.firstAired.split('-')[0])
 
         self.status = getattr(myShow, 'status', 'Unknown')
@@ -1127,7 +1125,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                         "show_name": self.name,
                         "location": self._location,
                         "network": self.network,
-                        "genre": '|'.join(self.genre),
+                        "genre": '|'.join(self.genre) if isinstance(self.genre, list) else self.genre,
                         "classification": self.classification,
                         "runtime": self.runtime,
                         "quality": self.quality,
@@ -1151,7 +1149,6 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                         "default_ep_status": self.default_ep_status,
                         "sub_use_sr_metadata": self.subtitles_sr_metadata}
 
-        logger.log(newValueDict)
         main_db_con = db.DBConnection()
         main_db_con.upsert("tv_shows", newValueDict, controlValueDict)
 
@@ -1593,21 +1590,20 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                 self.deleteEpisode()
             return
 
-        if getattr(myEp, 'episodeName', None) is None:
+        if 'episodeName' not in myEp:
             logger.log("This episode {show} - {ep} has no name on {indexer}. Setting to an empty string".format
                        (show=self.show.name, ep=episode_num(season, episode), indexer=self.indexer_name))
-            setattr(myEp, 'episodeName', '')
 
-        if getattr(myEp, 'absolute_number', None) is None:
+        if 'absoluteNumber' not in myEp:
             logger.log("{id}: This episode {show} - {ep} has no absolute number on {indexer}".format
                        (id=self.show.indexerid, show=self.show.name, ep=episode_num(season, episode),
                         indexer=self.indexer_name), logger.DEBUG)
         else:
             logger.log("{id}: The absolute number for {ep} is: {absolute} ".format
-                       (id=self.show.indexerid, ep=episode_num(season, episode), absolute=myEp[b"absolute_number"]), logger.DEBUG)
-            self.absolute_number = int(myEp[b"absolute_number"])
+                       (id=self.show.indexerid, ep=episode_num(season, episode), absolute=myEp["absoluteNumber"]), logger.DEBUG)
+            self.absolute_number = myEp["absoluteNumber"]
 
-        self.name = getattr(myEp, 'episodeName', "")
+        self.name = myEp['episodeName']
         self.season = season
         self.episode = episode
 
@@ -1625,9 +1621,9 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             self.season, self.episode
         )
 
-        self.description = getattr(myEp, 'overview', "")
+        self.description = myEp['overview']
 
-        firstaired = getattr(myEp, 'firstAired', None)
+        firstaired = myEp['firstAired']
         if not firstaired or firstaired == "0000-00-00":
             firstaired = str(datetime.date.fromordinal(1))
         rawAirdate = [int(x) for x in firstaired.split("-")]
@@ -1643,8 +1639,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                 self.deleteEpisode()
             return False
 
-        # early conversion to int so that episode doesn't get marked dirty
-        self.indexerid = getattr(myEp, 'id', None)
+        self.indexerid = myEp['id']
         if self.indexerid is None:
             logger.log("Failed to retrieve ID from {indexer}".format
                        (indexer=self.indexer_name), logger.ERROR)
