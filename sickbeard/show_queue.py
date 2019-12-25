@@ -336,7 +336,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                 chmodAsParent(self.showDir)
 
             # this usually only happens if they have an NFO in their show dir which gave us a Indexer ID that has no proper english version of the show
-            if getattr(s, 'seriesname', None) is None:
+            if getattr(s, 'seriesName', None) is None:
                 # noinspection PyPep8
                 error_string = 'Show in {0} has no name on {1}, probably searched with the wrong language. Delete .nfo and add manually in the correct language.'.format(
                     self.showDir, sickbeard.show_indexer.name(self.indexer))
@@ -350,7 +350,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
             # if the show has no episodes/seasons
             if not s:
                 error_string = 'Show {0} is on {1} but contains no season/episode data.'.format(
-                    s[b'seriesname'], sickbeard.show_indexer.name(self.indexer))
+                    s[b'seriesName'], sickbeard.show_indexer.name(self.indexer))
 
                 logger.log(error_string)
                 ui.notifications.error('Unable to add show', error_string)

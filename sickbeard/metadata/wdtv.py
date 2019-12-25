@@ -196,10 +196,10 @@ class WDTVMetadata(generic.GenericMetadata):
                     curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.show.idxr.name))
                 return None
 
-            if ep_obj.season == 0 and not getattr(myEp, 'firstaired', None):
-                myEp["firstaired"] = str(datetime.date.fromordinal(1))
+            if ep_obj.season == 0 and not getattr(myEp, 'firstAired', None):
+                myEp["firstAired"] = str(datetime.date.fromordinal(1))
 
-            if not (getattr(myEp, 'episodename', None) and getattr(myEp, 'firstaired', None)):
+            if not (getattr(myEp, 'episodeName', None) and getattr(myEp, 'firstAired', None)):
                 return None
 
             if len(eps_to_write) > 1:
@@ -214,9 +214,9 @@ class WDTVMetadata(generic.GenericMetadata):
             title = etree.SubElement(episode, "title")
             title.text = ep_obj.pretty_name()
 
-            if getattr(myShow, 'seriesname', None):
+            if getattr(myShow, 'seriesName', None):
                 seriesName = etree.SubElement(episode, "series_name")
-                seriesName.text = myShow["seriesname"]
+                seriesName.text = myShow["seriesName"]
 
             if curEpToWrite.name:
                 episodeName = etree.SubElement(episode, "episode_name")
@@ -228,14 +228,14 @@ class WDTVMetadata(generic.GenericMetadata):
             episodeNum = etree.SubElement(episode, "episode_number")
             episodeNum.text = str(curEpToWrite.episode)
 
-            firstAired = etree.SubElement(episode, "firstaired")
+            firstAired = etree.SubElement(episode, "firstAired")
 
             if curEpToWrite.airdate != datetime.date.fromordinal(1):
                 firstAired.text = str(curEpToWrite.airdate)
 
-            if getattr(myShow, 'firstaired', None):
+            if getattr(myShow, 'firstAired', None):
                 try:
-                    year_text = str(datetime.datetime.strptime(myShow["firstaired"], dateFormat).year)
+                    year_text = str(datetime.datetime.strptime(myShow["firstAired"], dateFormat).year)
                     if year_text:
                         year = etree.SubElement(episode, "year")
                         year.text = year_text

@@ -812,10 +812,10 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         myShow = self.idxr.series(self.indexerid)
 
         try:
-            self.name = myEp[b'seriesName'].strip()
+            self.name = myShow.seriesName.strip()
         except AttributeError:
             raise AttributeError(
-                "Found {0}, but attribute 'seriesname' was empty.".format(self.indexerid))
+                "Found {0}, but attribute 'seriesName' was empty.".format(self.indexerid))
 
         self.classification = getattr(myShow, 'classification', 'Scripted')
         self.genre = getattr(myShow, 'genre', '')
@@ -1594,10 +1594,10 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                 self.deleteEpisode()
             return
 
-        if getattr(myEp, 'episodename', None) is None:
+        if getattr(myEp, 'episodeName', None) is None:
             logger.log("This episode {show} - {ep} has no name on {indexer}. Setting to an empty string".format
                        (show=self.show.name, ep=episode_num(season, episode), indexer=self.indexer_name))
-            setattr(myEp, 'episodename', '')
+            setattr(myEp, 'episodeName', '')
 
         if getattr(myEp, 'absolute_number', None) is None:
             logger.log("{id}: This episode {show} - {ep} has no absolute number on {indexer}".format
@@ -1608,7 +1608,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                        (id=self.show.indexerid, ep=episode_num(season, episode), absolute=myEp[b"absolute_number"]), logger.DEBUG)
             self.absolute_number = int(myEp[b"absolute_number"])
 
-        self.name = getattr(myEp, 'episodename', "")
+        self.name = getattr(myEp, 'episodeName', "")
         self.season = season
         self.episode = episode
 
