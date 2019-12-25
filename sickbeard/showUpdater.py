@@ -103,7 +103,7 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
                 continue
             try:
                 cur_show.nextEpisode()
-                if sickbeard.show_indexer.name(cur_show.indexer) == 'theTVDB':
+                if cur_show.idxr.name == 'theTVDB':
                     # When last_update is not set from the cache or the show was in the tvdb updated list we update the show
                     if not last_update or cur_show.indexerid in updated_shows:
                         pi_list.append(sickbeard.showQueueScheduler.action.update_show(cur_show, True))

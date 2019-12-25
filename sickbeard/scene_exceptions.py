@@ -29,7 +29,6 @@ import six
 
 import sickbeard
 from sickbeard import db, helpers, logger
-from sickchill.indexers.handler import INDEXER_TVDB
 
 exception_dict = {}
 anidb_exception_dict = {}

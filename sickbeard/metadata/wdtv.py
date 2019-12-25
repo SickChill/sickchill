@@ -29,7 +29,6 @@ from sickbeard import helpers, logger
 from sickbeard.metadata import generic
 from sickchill.helper.common import dateFormat, replace_extension
 from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex, ShowNotFoundException
 
 try:
     import xml.etree.cElementTree as etree
@@ -190,14 +189,11 @@ class WDTVMetadata(generic.GenericMetadata):
 
         # write an WDTV XML containing info for all matching episodes
         for curEpToWrite in eps_to_write:
-
-            try:
-                myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
-            except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
+            myEp = curEpToWrite.idxr.episode(curEpToWrite)
+            if not myEp:
                 logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
                            "has it been removed? Should I delete from db?".format(
-                    curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name,
-                    sickbeard.show_indexer.name(ep_obj.show.indexer)))
+                    curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.show.idxr.name))
                 return None
 
             if ep_obj.season == 0 and not getattr(myEp, 'firstaired', None):

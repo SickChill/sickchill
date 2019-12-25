@@ -29,7 +29,6 @@ import sickbeard
 from sickbeard import helpers, logger
 from sickbeard.metadata import generic
 from sickchill.helper.common import dateFormat
-from sickchill.helper.exceptions import ex, ShowNotFoundException
 
 try:
     import xml.etree.cElementTree as etree
@@ -113,13 +112,13 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         myShow = sickbeard.show_indexer.series(show_obj)
         if not myShow:
             logger.log("Unable to find show with id {} on {}, skipping it".format(
-                show_obj.indexerid, sickbeard.show_indexer.name(show_obj.indexer).name))
+                show_obj.indexerid, show_obj.idxr.name.name))
             return False
 
         # check for title and id
         if not (getattr(myShow, 'seriesName', None) and getattr(myShow, 'id', None)):
             logger.log("Incomplete info for show with id {} on {}, skipping it".format(
-                show_obj.indexerid, sickbeard.show_indexer.name(show_obj.indexer).name))
+                show_obj.indexerid, show_obj.idxr.name.name))
             return False
 
         title = etree.SubElement(tv_node, "title")
@@ -145,7 +144,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         if getattr(myShow, 'id', None):
             episodeguide = etree.SubElement(tv_node, "episodeguide")
             episodeguideurl = etree.SubElement(episodeguide, "url")
-            episodeguideurl.text = sickbeard.show_indexer[show_obj.indexer].base_url + str(myShow["id"]) + '/all/en.zip'
+            episodeguideurl.text = show_obj.idxr.base_url + str(myShow["id"]) + '/all/en.zip'
 
         if getattr(myShow, 'contentrating', None):
             mpaa = etree.SubElement(tv_node, "mpaa")
@@ -225,7 +224,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         myShow = sickbeard.show_indexer.series(ep_obj.show)
         if not myShow:
             logger.log("Unable to find {} on {} while creating meta files, skipping".format(
-                ep_obj.show.indexerid, sickbeard.show_indexer.name(ep_obj.show.indexer)), logger.ERROR)
+                ep_obj.show.indexerid, ep_obj.show.idxr.name), logger.ERROR)
             return
 
         if len(eps_to_write) > 1:
@@ -240,8 +239,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
             if not myEp:
                 logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
                            "has it been removed? Should I delete from db?".format(
-                    curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name,
-                    sickbeard.show_indexer.name(ep_obj.show.indexer)))
+                    curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.show.idxr.name))
 
                 return None
 

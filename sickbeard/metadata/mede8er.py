@@ -31,7 +31,7 @@ from sickbeard import helpers, logger
 from sickbeard.metadata import mediabrowser
 from sickchill.helper.common import dateFormat, replace_extension
 from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex, ShowNotFoundException
+from sickchill.helper.exceptions import ex
 
 try:
     import xml.etree.cElementTree as etree
@@ -110,12 +110,12 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         myShow = sickbeard.show_indexer.series(show_obj)
         if not myShow:
-            logger.log("Unable to find show with id {} on {}, skipping it".format(show_obj.indexerid, sickbeard.show_indexer.name(show_obj.indexer)))
+            logger.log("Unable to find show with id {} on {}, skipping it".format(show_obj.indexerid, show_obj.idxr.name))
             return False
 
         # check for title and id
         if not (getattr(myShow, 'seriesName', None) and getattr(myShow, 'id', None)):
-            logger.log("Incomplete info for show with id {} on {}, skipping it".format(show_obj.indexerid, sickbeard.show_indexer.name(show_obj.indexer)))
+            logger.log("Incomplete info for show with id {} on {}, skipping it".format(show_obj.indexerid, show_obj.idxr.name))
             return False
 
         SeriesName = etree.SubElement(tv_node, "title")
@@ -201,7 +201,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         myShow = sickbeard.show_indexer.series(ep_obj.show)
         if not myShow:
-            logger.log("Unable to connect to {} while creating meta files - skipping".format(sickbeard.show_indexer.name(ep_obj.indexer)))
+            logger.log("Unable to connect to {} while creating meta files - skipping".format(ep_obj.show.idxr.name))
             return False
 
         rootNode = etree.Element("details")
@@ -218,8 +218,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             if not myEp:
                 logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
                            "has it been removed? Should I delete from db?".format(
-                    curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name,
-                    sickbeard.show_indexer.name(ep_obj.indexer)))
+                    curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.show.idxr.name))
                 return None
 
             if curEpToWrite == ep_obj:

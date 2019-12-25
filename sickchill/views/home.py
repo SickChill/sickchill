@@ -1016,7 +1016,7 @@ class Home(WebRoot):
         subtitles = config.checkbox_to_value(subtitles)
         subtitles_sr_metadata = config.checkbox_to_value(subtitles_sr_metadata)
 
-        if indexerLang and indexerLang in sickbeard.show_indexer[show_obj.indexer].languages:
+        if indexerLang and indexerLang in show_obj.idxr.languages:
             indexer_lang = indexerLang
         else:
             indexer_lang = show_obj.lang

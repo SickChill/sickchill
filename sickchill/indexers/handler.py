@@ -28,9 +28,6 @@ from sickbeard.tv import Show
 
 from .tvdb import TVDB
 
-INDEXER_TVDB = 1
-INDEXER_TVRAGE = 2  # Must keep
-
 
 class ShowIndexer(object):
 
@@ -66,9 +63,9 @@ class ShowIndexer(object):
             indexer = sickbeard.INDEXER_DEFAULT
         return self.indexers[indexer].search(*args, **kwargs)
 
-    def search_indexers_for_show_name(self, name, indexerid=None, language=None):
+    def search_indexers_for_show_name(self, name, language=None):
         results = {}
-        for i, indexer in self.indexers.iteritems():
+        for i, indexer in self:
             results[i] = indexer.search(name, language)
 
         return results
@@ -97,6 +94,7 @@ class ShowIndexer(object):
                     result = self.indexers[i].get_show_by_name(n)
 
                 try:
+                    # noinspection PyUnusedLocal
                     garbage = result.seriesName, result.id
                 except AttributeError:
                     logger.log("Failed to find {} on {}".format(name, self.indexers[i].name), logger.DEBUG)

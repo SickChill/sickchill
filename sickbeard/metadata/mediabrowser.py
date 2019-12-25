@@ -31,7 +31,7 @@ from sickbeard import helpers, logger
 from sickbeard.metadata import generic
 from sickchill.helper.common import dateFormat, replace_extension
 from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex, ShowNotFoundException
+from sickchill.helper.exceptions import ex
 
 try:
     import xml.etree.cElementTree as etree
@@ -237,15 +237,10 @@ class MediaBrowserMetadata(generic.GenericMetadata):
 
         tv_node = etree.Element("Series")
 
-        try:
-            myShow = sickbeard.show_indexer[show_obj.indexer].series(show_obj.indexerid, language=show_obj.lang)
-        except sickbeard.indexer_shownotfound:
+        myShow = show_obj.idxr.series(show_obj)
+        if not myShow:
             logger.log("Unable to find show with id {} on {}, skipping it".format(show_obj.indexerid, show_obj.indexer_name), logger.ERROR)
-            raise
-
-        except sickbeard.indexer_error:
-            logger.log("{} is down, can't use its data to make the NFO".format(show_obj.indexer_name), logger.ERROR)
-            raise
+            return False
 
         # check for title and id
         if not (getattr(myShow, 'seriesName', None) and getattr(myShow, 'id', None)):
@@ -409,7 +404,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
 
         myShow = sickbeard.show_indexer.series(ep_obj.show)
         if not myShow:
-            logger.log("Unable to connect to {} while creating meta files - skipping - {}".format(sickbeard.show_indexer.name(ep_obj.show.indexer)))
+            logger.log("Unable to connect to {} while creating meta files - skipping".format(ep_obj.show.idxr.name))
             return False
 
         rootNode = etree.Element("Item")

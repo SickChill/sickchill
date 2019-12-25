@@ -66,7 +66,6 @@ from sickbeard.common import USER_AGENT
 from sickchill.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS
 from sickchill.helper.common import replace_extension
 from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex
 from sickchill.show.Show import Show
 
 # Add some missing languages

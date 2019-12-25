@@ -56,7 +56,7 @@ class Notifier(object):
         ep_obj: The TVEpisode object to add to trakt
         """
 
-        trakt_id = sickbeard.show_indexer[ep_obj.show.indexer].trakt_id
+        trakt_id = ep_obj.show.idxr.trakt_id
         trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
         if sickbeard.USE_TRAKT:
@@ -112,7 +112,7 @@ class Notifier(object):
             try:
                 # URL parameters
                 if show_obj is not None:
-                    trakt_id = sickbeard.show_indexer[show_obj.indexer].trakt_id
+                    trakt_id = show_obj.idxr.trakt_id
                     data = {
                         'shows': [
                             {

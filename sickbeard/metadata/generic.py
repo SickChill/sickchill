@@ -731,12 +731,12 @@ class GenericMetadata(object):
         image_url = None
         indexer_show_obj = sickbeard.show_indexer.series(show_obj)
         if not indexer_show_obj:
-            logger.log("Unable to look up show on {}, not downloading images".format(sickbeard.show_indexer.name(show_obj.indexer)))
-            logger.log("{0} may be experiencing some problems. Try again later.".format(sickbeard.show_indexer.name(show_obj.indexer)))
+            logger.log("Unable to look up show on {}, not downloading images".format(show_obj.idxr.name))
+            logger.log("{0} may be experiencing some problems. Try again later.".format(show_obj.idxr.name))
             return None
 
         if image_type not in ('fanart', 'poster', 'banner', 'poster_thumb', 'banner_thumb'):
-            logger.log("Invalid image type {}, couldn't find it in the {} object".format(image_type, sickbeard.show_indexer.name(show_obj.indexer)))
+            logger.log("Invalid image type {}, couldn't find it in the {} object".format(image_type, show_obj.idxr.name))
             return None
 
         if image_type == 'poster_thumb':
@@ -785,8 +785,8 @@ class GenericMetadata(object):
 
         indexer_show_obj = sickbeard.show_indexer.series(show_obj)
         if not indexer_show_obj:
-            logger.log("Unable to look up show on {}, not downloading images".format(sickbeard.show_indexer.name(show_obj.indexer)))
-            logger.log("{0} may be experiencing some problems. Try again later.".format(sickbeard.show_indexer.name(show_obj.indexer)))
+            logger.log("Unable to look up show on {}, not downloading images".format(show_obj.idxr.name))
+            logger.log("{0} may be experiencing some problems. Try again later.".format(show_obj.idxr.name))
             return result
 
         # if we have no season banners then just finish
@@ -826,8 +826,8 @@ class GenericMetadata(object):
 
         indexer_show_obj = sickbeard.show_indexer.series(show_obj)
         if not indexer_show_obj:
-            logger.log("Unable to look up show on {}, not downloading images".format(sickbeard.show_indexer.name(indexer_show_obj.indexer)))
-            logger.log("{0} may be experiencing some problems. Try again later.".format(sickbeard.show_indexer.name(show_obj.indexer)))
+            logger.log("Unable to look up show on {}, not downloading images".format(indexer_show_obj.idxr.name))
+            logger.log("{0} may be experiencing some problems. Try again later.".format(show_obj.idxr.name))
             return result
 
         # if we have no season banners then just finish
@@ -849,7 +849,7 @@ class GenericMetadata(object):
 
         # find the correct season in the TVDB object and just copy the dict into our result dict
         for seasonArtID in seasonsArtObj.keys():
-            if int(seasonsArtObj[seasonArtID]['season']) == season and seasonsArtObj[seasonArtID]['language'] == (indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE):
+            if int(seasonsArtObj[seasonArtID]['season']) == season and seasonsArtObj[seasonArtID]['language'] == (show_obj.lang or sickbeard.INDEXER_DEFAULT_LANGUAGE):
                 result[season][seasonArtID] = seasonsArtObj[seasonArtID]['_bannerpath']
 
         return result

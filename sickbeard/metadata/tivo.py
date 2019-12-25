@@ -163,27 +163,22 @@ class TIVOMetadata(generic.GenericMetadata):
 
         eps_to_write = [ep_obj] + ep_obj.relatedEps
 
-        try:
-            myShow = ep_obj.idxr.series(ep_obj.show.indexerid, ep_obj.show.lang)
-        except sickbeard.indexer_shownotfound as e:
-            raise ShowNotFoundException(str(e))
-        except sickbeard.indexer_error as e:
+        myShow = ep_obj.idxr.series(ep_obj.show)
+        if not myShow:
             logger.log("Unable to connect to {} while creating meta files - skipping - {}".format(ep_obj.indexer_name, str(e)), logger.ERROR)
             return False
 
         for curEpToWrite in eps_to_write:
-
-            try:
-                myEp = ep_obj.idxr.episode(ep_obj.show, curEpToWrite.season, curEpToWrite.episode)
-            except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
+            myEp = ep_obj.idxr.episode(ep_obj.show, curEpToWrite.season, curEpToWrite.episode)
+            if not myEp:
                 logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}...has it been removed? Should I delete from db?".format(
                     curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.indexer_name))
-                return None
+                return False
 
-            if ep_obj.season == 0 and not getattr(myEp, 'firstaired', None):
-                myEp["firstaired"] = str(datetime.date.fromordinal(1))
+            if ep_obj.season == 0 and not getattr(myEp, 'firstAired', None):
+                myEp["firstAired"] = str(datetime.date.fromordinal(1))
 
-            if not (getattr(myEp, 'episodename', None) and getattr(myEp, 'firstaired', None)):
+            if not (getattr(myEp, 'episodeName', None) and getattr(myEp, 'firstAired', None)):
                 return None
 
             if myShow.seriesName:

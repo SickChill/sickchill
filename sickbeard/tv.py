@@ -484,7 +484,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             if curSeason not in cachedSeasons:
                 try:
                     cachedSeasons[curSeason] = cachedShow[curSeason]
-                except sickbeard.indexer_seasonnotfound as error:
+                except Exception as error:
                     logger.log("{0}: {1} (unaired/deleted) in the indexer {2} for {3}. Removing existing records from database".format
                                (curShowid, error.message, self.indexer_name, curShowName), logger.DEBUG)
                     deleteEp = True
@@ -524,7 +524,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
     def loadEpisodesFromIndexer(self):
         try:
             showObj = self.idxr.series(self.indexerid)
-        except sickbeard.indexer_error:
+        except Exception:
             logger.log("{} timed out, unable to update episodes from {}".format(
                 self.indexer_name, self.indexer_name), logger.WARNING)
             return None
@@ -815,7 +815,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         try:
             self.name = myEp[b'seriesname'].strip()
         except AttributeError:
-            raise sickbeard.indexer_attributenotfound(
+            raise AttributeError(
                 "Found {0}, but attribute 'seriesname' was empty.".format(self.indexerid))
 
         self.classification = getattr(myEp, 'classification', 'Scripted')
@@ -1579,7 +1579,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                 myEp = cachedSeason[episode]
             else:
                 myEp = self.idxr.episode(self.show, season or self.season, episode or self.episode)
-        except (sickbeard.indexer_error, IOError) as error:
+        except IOError as error:
             logger.log("{} threw up an error: {}".format(self.indexer_name, ex(error)), logger.DEBUG)
             # if the episode is already valid just log it, if not throw it up
             if self.name:
@@ -1588,7 +1588,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             else:
                 logger.log("{} timed out, unable to create the episode".format(self.indexer_name), logger.ERROR)
                 return False
-        except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
+        except Exception:
             logger.log("Unable to find the episode on {}... has it been removed? Should I delete from db?".format(self.indexer_name), logger.DEBUG)
             # if I'm no longer on the Indexers but I once was then delete myself from the DB
             if self.indexerid != -1:

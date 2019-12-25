@@ -433,7 +433,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
             # if self.show.classification and 'sports' in self.show.classification.lower():
             #     self.show.sports = 1
 
-        except sickbeard.indexer_exception as error:
+        except Exception as error:
             error_string = 'Unable to add {0} due to an error with {1}'.format(
                 self.show.name if self.show else 'show', sickbeard.show_indexer.name(self.indexer))
 
@@ -480,8 +480,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
         try:
             self.show.loadEpisodesFromIndexer()
         except Exception as error:
-            logger.log('Error with {0}, not creating episode list: {1}'.format(
-                sickbeard.show_indexer.name(self.show.indexer), error), logger.ERROR)
+            logger.log('Error with {0}, not creating episode list: {1}'.format(self.show.idxr.name, error), logger.ERROR)
             logger.log(traceback.format_exc(), logger.DEBUG)
 
         # update internal name cache
@@ -638,18 +637,11 @@ class QueueItemUpdate(ShowQueueItem):
 
         logger.log('Beginning update of {0}'.format(self.show.name), logger.DEBUG)
 
-        logger.log('Retrieving show info from {0}'.format(sickbeard.show_indexer.name(self.show.indexer)), logger.DEBUG)
+        logger.log('Retrieving show info from {0}'.format(self.show.idxr.name), logger.DEBUG)
         try:
             self.show.loadFromIndexer(cache=not self.force)
-        except sickbeard.indexer_error as error:
-            logger.log('Unable to contact {0}, aborting: {1}'.format
-                       (sickbeard.show_indexer.name(self.show.indexer), error), logger.WARNING)
-            super(QueueItemUpdate, self).finish()
-            self.finish()
-            return
-        except sickbeard.indexer_attributenotfound as error:
-            logger.log('Data retrieved from {0} was incomplete, aborting: {1}'.format
-                       (sickbeard.show_indexer.name(self.show.indexer), error), logger.ERROR)
+        except Exception as error:
+            logger.log('Unable to contact {0}, aborting: {1}'.format(self.show.idxr.name, error), logger.WARNING)
             super(QueueItemUpdate, self).finish()
             self.finish()
             return
@@ -675,17 +667,17 @@ class QueueItemUpdate(ShowQueueItem):
         DBEpList = self.show.loadEpisodesFromDB()
 
         # get episode list from TVDB
-        logger.log('Loading all episodes from {0}'.format(sickbeard.show_indexer.name(self.show.indexer)), logger.DEBUG)
+        logger.log('Loading all episodes from {0}'.format(self.show.idxr.name), logger.DEBUG)
         try:
             IndexerEpList = self.show.loadEpisodesFromIndexer()
-        except sickbeard.indexer_exception as error:
+        except Exception as error:
             logger.log('Unable to get info from {0}, the show info will not be refreshed: {1}'.format
-                       (sickbeard.show_indexer.name(self.show.indexer), error), logger.ERROR)
+                       (self.show.idxr.name, error), logger.ERROR)
             IndexerEpList = None
 
         if not IndexerEpList:
             logger.log('No data returned from {0}, unable to update this show.'.format
-                       (sickbeard.show_indexer.name(self.show.indexer)), logger.ERROR)
+                       (self.show.idxr.name), logger.ERROR)
         else:
             # for each ep we found on the Indexer delete it from the DB list
             for curSeason in IndexerEpList:

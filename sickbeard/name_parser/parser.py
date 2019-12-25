@@ -247,17 +247,15 @@ class NameParser(object):
 
                 if season_number is None or not episode_numbers:
                     try:
-                        series = sickbeard.show_indexer.series(bestResult.show)
+                        series = bestResult.show.idxr.series(bestResult.show)
                         series.Episodes.update_filters(firstAired=bestResult.air_date)
                         epObj = series.Episodes.all()[0]
 
                         season_number = int(epObj["airedSeason"])
                         episode_numbers = [int(epObj["airedEpisode"])]
-                    except sickbeard.indexer_episodenotfound:
-                        logger.log("Unable to find episode with date " + six.text_type(bestResult.air_date) + " for show " + bestResult.show.name + ", skipping", logger.WARNING)
-                        episode_numbers = []
-                    except sickbeard.indexer_error as e:
-                        logger.log("Unable to contact {}: {}".format(sickbeard.show_indexer.name(bestResult.show.indexer), ex(e)), logger.WARNING)
+                    except Exception:
+                        logger.log("Unable to find episode with date {} for show {}, skipping".format(
+                            bestResult.air_date. bestResult.show.name), logger.WARNING)
                         episode_numbers = []
 
                 for epNo in episode_numbers:
