@@ -154,12 +154,6 @@ class TIVOMetadata(generic.GenericMetadata):
 
         ep_obj: a TVEpisode instance to create the metadata file for.
 
-        Lookup the show in http://thetvdb.com/ using the python library:
-
-        https://github.com/dbr/indexer_api/
-
-        The results are saved in the object myShow.
-
         The key values for the tivo metadata file are from:
 
         http://pytivo.sourceforge.net/wiki/index.php/Metadata

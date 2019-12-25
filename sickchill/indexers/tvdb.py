@@ -85,17 +85,21 @@ class TVDB(Indexer):
     def search(self, name, language=None):
         return self.search(name, language)
 
-    def series_title(self, show):
-        series = self.get_show_by_id(show.indexerid, language=show.lang)
-        series.info(language=show.lang)
-        return series.seriesName
-
     @property
     def languages(self):
         return [
             "da", "fi", "nl", "de", "it", "es", "fr", "pl", "hu", "el", "tr",
             "ru", "he", "ja", "pt", "zh", "cs", "sl", "hr", "ko", "en", "sv", "no"
         ]
+
+    @property
+    def lang_dict(self):
+        return {
+            'el': 20, 'en': 7, 'zh': 27,
+            'it': 15, 'cs': 28, 'es': 16, 'ru': 22, 'nl': 13, 'pt': 26, 'no': 9,
+            'tr': 21, 'pl': 18, 'fr': 17, 'hr': 31, 'de': 14, 'da': 10, 'fi': 11,
+            'hu': 19, 'ja': 25, 'he': 24, 'ko': 32, 'sv': 8, 'sl': 30
+        }
 
     @staticmethod
     def _complete_image_url(location):

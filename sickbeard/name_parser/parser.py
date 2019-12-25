@@ -247,21 +247,17 @@ class NameParser(object):
 
                 if season_number is None or not episode_numbers:
                     try:
-                        lINDEXER_API_PARMS = sickbeard.indexerApi(bestResult.show.indexer).api_params.copy()
+                        series = sickbeard.show_indexer.series(bestResult.show)
+                        series.Episodes.update_filters(firstAired=bestResult.air_date)
+                        epObj = series.Episodes.all()[0]
 
-                        lINDEXER_API_PARMS['language'] = bestResult.show.lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-                        t = sickbeard.indexerApi(bestResult.show.indexer).indexer(**lINDEXER_API_PARMS)
-
-                        epObj = t[bestResult.show.indexerid].airedOn(bestResult.air_date)[0]
-
-                        season_number = int(epObj["seasonnumber"])
-                        episode_numbers = [int(epObj["episodenumber"])]
+                        season_number = int(epObj["airedSeason"])
+                        episode_numbers = [int(epObj["airedEpisode"])]
                     except sickbeard.indexer_episodenotfound:
                         logger.log("Unable to find episode with date " + six.text_type(bestResult.air_date) + " for show " + bestResult.show.name + ", skipping", logger.WARNING)
                         episode_numbers = []
                     except sickbeard.indexer_error as e:
-                        logger.log("Unable to contact " + sickbeard.indexerApi(bestResult.show.indexer).name + ": " + ex(e), logger.WARNING)
+                        logger.log("Unable to contact {}: {}".format(sickbeard.show_indexer.name(bestResult.show.indexer), ex(e)), logger.WARNING)
                         episode_numbers = []
 
                 for epNo in episode_numbers:

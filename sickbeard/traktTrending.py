@@ -10,7 +10,7 @@ from libtrakt.trakt import TraktAPI
 
 import sickbeard
 from sickbeard import helpers, logger
-from sickbeard.indexers.indexer_config import INDEXER_TVDB
+from sickchill.indexers.handler import INDEXER_TVDB
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex, MultipleShowObjectsException
 
@@ -97,17 +97,7 @@ class traktTrending(object):
         """ Get poster image url from TVDB """
         image_url = None
 
-        try:
-            lINDEXER_API_PARMS = sickbeard.indexerApi(INDEXER_TVDB).api_params.copy()
-
-            lINDEXER_API_PARMS['banners'] = True
-
-            t = sickbeard.indexerApi(INDEXER_TVDB).indexer(**lINDEXER_API_PARMS)
-            indexer_show_obj = t[int(indexer_id)]
-        except (sickbeard.indexer_error, IOError) as e:
-            logger.log("Show id " + indexer_id + " not found on " + sickbeard.indexerApi(INDEXER_TVDB).name +
-                       ", not downloading poster: " + ex(e), logger.DEBUG)
-            return None
+        indexer_show_obj = sickbeard.show_indexer['tvdb'].series(indexer_id)
 
         if getattr(indexer_show_obj, 'poster', None):
             image_url = indexer_show_obj['poster'].replace('posters', '_cache/posters')

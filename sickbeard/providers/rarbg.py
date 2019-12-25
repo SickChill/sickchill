@@ -26,7 +26,7 @@ import time
 import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.common import cpu_presets
-from sickbeard.indexers.indexer_config import INDEXER_TVDB
+from sickchill.indexers.handler import INDEXER_TVDB
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 

@@ -48,10 +48,6 @@ class Indexer(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def series_title(self, show):
-        raise NotImplementedError
-
-    @abc.abstractmethod
     def episodes(self, show, season):
         raise NotImplementedError
 
@@ -61,4 +57,8 @@ class Indexer(object):
 
     @abc.abstractproperty
     def languages(self):
+        raise NotImplementedError
+
+    @abc.abstractproperty
+    def lang_dict(self):
         raise NotImplementedError

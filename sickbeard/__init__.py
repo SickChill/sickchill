@@ -40,9 +40,7 @@ from sickbeard import (auto_postprocessor, clients, dailysearcher, db, helpers, 
 from sickbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
 from sickbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
 from sickbeard.databases import cache_db, failed_db, mainDB
-from sickbeard.indexers import indexer_api
-from sickbeard.indexers.indexer_exceptions import (indexer_attributenotfound, indexer_episodenotfound, indexer_error, indexer_exception, indexer_seasonnotfound,
-                                                   indexer_showincomplete, indexer_shownotfound, indexer_userabort)
+
 from sickbeard.numdict import NumDict
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.providers.rsstorrent import TorrentRssProvider
@@ -224,7 +222,7 @@ STATUS_DEFAULT = None
 STATUS_DEFAULT_AFTER = None
 SEASON_FOLDERS_DEFAULT = False
 SUBTITLES_DEFAULT = False
-INDEXER_DEFAULT = None
+INDEXER_DEFAULT = 1
 INDEXER_TIMEOUT = None
 SCENE_DEFAULT = False
 ANIME_DEFAULT = False
@@ -943,7 +941,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         PROXY_INDEXERS = check_setting_bool(CFG, 'General', 'proxy_indexers', True)
 
         INDEXER_DEFAULT_LANGUAGE = check_setting_str(CFG, 'General', 'indexerDefaultLang', 'en')
-        INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', min_val=1, max_val=2)
+        INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', min_val=1, max_val=2, def_val=1)
         INDEXER_TIMEOUT = check_setting_int(CFG, 'General', 'indexer_timeout', 20, min_val=0)
 
         show_indexer = ShowIndexer()

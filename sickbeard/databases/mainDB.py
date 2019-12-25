@@ -79,8 +79,8 @@ class MainSanityCheck(db.DBSanityCheck):
 
     def convert_tvrage_to_tvdb(self):
         logger.log("Checking for shows with tvrage id's, since tvrage is gone", logger.DEBUG)
-        from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
-        from sickbeard.indexers.indexer_config import INDEXER_TVDB
+        from sickchill.indexers.handler import INDEXER_TVRAGE
+        from sickchill.indexers.handler import INDEXER_TVDB
 
         sql_results = self.connection.select("SELECT indexer_id, show_name, location FROM tv_shows WHERE indexer = {0:d}".format(INDEXER_TVRAGE))
 

@@ -30,7 +30,7 @@ import time
 
 import sickbeard
 from sickbeard import db, helpers, logger, network_timezones, ui
-from sickbeard.indexers.indexer_config import INDEXER_TVDB, INDEXER_TVRAGE
+from sickchill.indexers.handler import INDEXER_TVDB, INDEXER_TVRAGE
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
 
 

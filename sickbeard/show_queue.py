@@ -350,7 +350,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
             # if the show has no episodes/seasons
             if not s:
                 error_string = 'Show {0} is on {1} but contains no season/episode data.'.format(
-                    s[b'seriesname'], sickbeard.show_indexer(self.indexer).name)
+                    s[b'seriesname'], sickbeard.show_indexer.name(self.indexer))
 
                 logger.log(error_string)
                 ui.notifications.error('Unable to add show', error_string)

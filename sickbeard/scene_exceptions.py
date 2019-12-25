@@ -29,7 +29,7 @@ import six
 
 import sickbeard
 from sickbeard import db, helpers, logger
-from sickbeard.indexers.indexer_config import INDEXER_TVDB
+from sickchill.indexers.handler import INDEXER_TVDB
 
 exception_dict = {}
 anidb_exception_dict = {}
@@ -195,15 +195,15 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
     """
 
     do_refresh = False
-    for indexer in sickbeard.show_indexer.indexers:
-        if shouldRefresh('theTVDB'):
+    for indexer, instance in sickbeard.show_indexer:
+        if shouldRefresh(instance.name):
             do_refresh = True
 
     if do_refresh:
         loc = 'http://sickchill.github.io/scene_exceptions/scene_exceptions.json'
         logger.log("Checking for scene exception updates from {0}".format(loc))
 
-        session = sickbeard.indexerApi(INDEXER_TVDB).session
+        session = helpers.make_session()
         proxy = sickbeard.PROXY_SETTING
         if proxy and sickbeard.PROXY_INDEXERS:
             session.proxies = {
@@ -220,14 +220,17 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
             # When jdata is None, trouble connecting to github, or reading file failed
             logger.log("Check scene exceptions update failed. Unable to update from {0}".format(loc), logger.DEBUG)
         else:
-            for indexer in sickbeard.show_indexer.indexers:
+            for indexer, instance in sickbeard.show_indexer:
                 try:
-                    setLastRefresh('theTVDB')
-                    for indexer_id in jdata['tvdb']:
+                    setLastRefresh(instance.name)
+                    if instance.name not in jdata:
+                        continue
+
+                    for indexer_id in jdata[instance.trakt_id]:
                         alias_list = [
                             {scene_exception: int(scene_season)}
-                            for scene_season in jdata['tvdb'][indexer_id]
-                            for scene_exception in jdata['tvdb'][indexer_id][scene_season]
+                            for scene_season in jdata[instance.trakt_id][indexer_id]
+                            for scene_exception in jdata[instance.trakt_id][indexer_id][scene_season]
                         ]
                         exception_dict[indexer_id] = alias_list
                 except Exception:
@@ -309,13 +312,13 @@ def _anidb_exceptions_fetcher():
 
 xem_session = helpers.make_session()
 
+
 def _xem_exceptions_fetcher():
     if shouldRefresh('xem'):
-        for indexer in sickbeard.show_indexer.indexers:
-            logger.log("Checking for XEM scene exception updates for {0}".format
-                       ('theTVDB'))
+        for indexer, instance in sickbeard.show_indexer:
+            logger.log("Checking for XEM scene exception updates for {0}".format(instance.name))
 
-            url = "http://thexem.de/map/allNames?origin={0}&seasonNumbers=1".format('tvdb')
+            url = "http://thexem.de/map/allNames?origin={0}&seasonNumbers=1".format(instance.trakt_id)
 
             parsed_json = helpers.getURL(url, session=xem_session, timeout=90, returns='json')
             if not parsed_json:

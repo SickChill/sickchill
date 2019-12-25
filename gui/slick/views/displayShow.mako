@@ -141,7 +141,10 @@
                             </span>
                                     <a href="${anon_url('http://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><span class="displayshow-icon-imdb" /></a>
                                 % endif
-                                <a href="${anon_url(sickbeard.show_indexer[_show.indexer].show_url, _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;" title="${sickbeard.indexerApi(show.indexer).config["show_url"] + str(show.indexerid)}"><img alt="${sickbeard.indexerApi(show.indexer).name}" src="${static_url('images/indexers/' + sickbeard.indexerApi(show.indexer).config["icon"])}" style="margin-top: -1px; vertical-align:middle;"/></a>
+                                <a href="${anon_url(sickbeard.show_indexer[_show.indexer].show_url, _show.indexerid)}" onclick="window.open(this.href,
+                                '_blank'); return false;" title="${sickbeard.show_indexer[show_obj.indexer].show_url + str(show.indexerid)}"><img
+                                    alt="${sickbeard.show_indexer.name(show.indexer)}" src="${static_url(sickbeard.show_indexer[show.indexer].icon)}"
+                                    style="margin-top: -1px; vertical-align:middle;"/></a>
                                 % if xem_numbering or xem_absolute_numbering:
                                     <a href="${anon_url('http://thexem.de/search?q=', _show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><span alt="" class="displayshow-icon-xem" /></a>
                                 % endif

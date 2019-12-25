@@ -248,7 +248,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             raise
 
         # check for title and id
-        if not (getattr(myShow, 'seriesname', None) and getattr(myShow, 'id', None)):
+        if not (getattr(myShow, 'seriesName', None) and getattr(myShow, 'id', None)):
             logger.log("Incomplete info for show with id {} on {}, skipping it".format(show_obj.indexerid, show_obj.indexer_name))
             return False
 
@@ -257,7 +257,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             indexerid = etree.SubElement(tv_node, "id")
             indexerid.text = data
 
-        data = getattr(myShow, 'seriesname', None)
+        data = getattr(myShow, 'seriesName', None)
         if data:
             SeriesName = etree.SubElement(tv_node, "SeriesName")
             SeriesName.text = data
@@ -306,7 +306,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             Overview = etree.SubElement(tv_node, "Overview")
             Overview.text = data
 
-        data = getattr(myShow, 'firstaired', None)
+        data = getattr(myShow, 'firstAired', None)
         if data:
             PremiereDate = etree.SubElement(tv_node, "PremiereDate")
             PremiereDate.text = data
@@ -316,10 +316,10 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             Rating = etree.SubElement(tv_node, "Rating")
             Rating.text = data
 
-        data = getattr(myShow, 'firstaired', None)
+        data = getattr(myShow, 'firstAired', None)
         if data:
             try:
-                year_text = str(datetime.datetime.strptime(myShow['firstaired'], dateFormat).year)
+                year_text = str(datetime.datetime.strptime(myShow['firstAired'], dateFormat).year)
                 if year_text:
                     ProductionYear = etree.SubElement(tv_node, "ProductionYear")
                     ProductionYear.text = year_text
@@ -407,26 +407,9 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             'Writer': []
         }
 
-        indexer_lang = ep_obj.show.lang
-
-        try:
-            lINDEXER_API_PARMS = sickbeard.indexerApi(ep_obj.show.indexer).api_params.copy()
-
-            lINDEXER_API_PARMS['actors'] = True
-
-            lINDEXER_API_PARMS['language'] = indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-            if ep_obj.show.dvdorder:
-                lINDEXER_API_PARMS['dvdorder'] = True
-
-            t = sickbeard.indexerApi(ep_obj.show.indexer).indexer(**lINDEXER_API_PARMS)
-
-            myShow = t[ep_obj.show.indexerid]
-        except sickbeard.indexer_shownotfound as e:
-            raise ShowNotFoundException(e.message)
-        except sickbeard.indexer_error as e:
-            logger.log("Unable to connect to " + sickbeard.indexerApi(
-                ep_obj.show.indexer).name + " while creating meta files - skipping - " + ex(e), logger.ERROR)
+        myShow = sickbeard.show_indexer.series(ep_obj.show)
+        if not myShow:
+            logger.log("Unable to connect to {} while creating meta files - skipping - {}".format(sickbeard.show_indexer.name(ep_obj.show.indexer)))
             return False
 
         rootNode = etree.Element("Item")
@@ -434,23 +417,18 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         # write an MediaBrowser XML containing info for all matching episodes
         for curEpToWrite in eps_to_write:
 
-            try:
-                myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
-            except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-                logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
-                           "has it been removed? Should I delete from db?".format(
-                    curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name,
-                    sickbeard.indexerApi(ep_obj.show.indexer).name))
-                return None
+            myEp = sickbeard.show_indexer.episode(ep_obj.show, curEpToWrite.season, curEpToWrite.episode)
+            if not myEp:
+                continue
 
             if curEpToWrite == ep_obj:
                 # root (or single) episode
 
-                # default to today's date for specials if firstaired is not set
-                if ep_obj.season == 0 and not getattr(myEp, 'firstaired', None):
-                    myEp['firstaired'] = str(datetime.date.fromordinal(1))
+                # default to today's date for specials if firstAired is not set
+                if ep_obj.season == 0 and not getattr(myEp, 'firstAired', None):
+                    myEp['firstAired'] = str(datetime.date.fromordinal(1))
 
-                if not (getattr(myEp, 'episodename', None) and getattr(myEp, 'firstaired', None)):
+                if not (getattr(myEp, 'episodeName', None) and getattr(myEp, 'firstAired', None)):
                     return None
 
                 episode = rootNode

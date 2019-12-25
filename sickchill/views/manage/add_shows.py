@@ -61,10 +61,6 @@ class AddShows(Home):
         return t.render(title=_('Add Shows'), header=_('Add Shows'), topmenu='home', controller="addShows", action="index")
 
     @staticmethod
-    def getIndexerLanguages():
-        return json.dumps({'results': sickbeard.show_indexer[1].languages})
-
-    @staticmethod
     def sanitizeFileName(name):
         return sanitize_filename(name)
 
@@ -93,25 +89,25 @@ class AddShows(Home):
         final_results = []
 
         # Query Indexers for each search term and build the list of results
-        for indexer in sickbeard.show_indexer.indexers if not int(indexer) else [int(indexer)]:
+        for i, instance in sickbeard.show_indexer if not int(indexer) else [int(indexer)]:
             logger.log("Searching for Show with searchterm(s): {0} on Indexer: {1}".format(
                 searchTerms, 'theTVDB'), logger.DEBUG)
             for searchTerm in searchTerms:
                 # noinspection PyBroadException
                 try:
-                    indexerResults = sickbeard.show_indexer[indexer].search(searchTerm, language=lang)
+                    indexerResults = sickbeard.show_indexer[i].search(searchTerm, language=lang)
                 except Exception:
                     # logger.log(traceback.format_exc(), logger.ERROR)
                     continue
 
                 # add search results
-                results.setdefault(indexer, []).extend(indexerResults)
+                results.setdefault(i, []).extend(indexerResults)
 
         for i, shows in six.iteritems(results):
             final_results.extend({(sickbeard.show_indexer.name(i), i, sickbeard.show_indexer[i].show_url, int(show['id']),
                                    show.seriesName, show.firstAired, sickbeard.tv.Show.find(sickbeard.showList, show.id)) for show in shows})
 
-        lang_id = sickbeard.indexerApi().config['langabbv_to_id'][lang]
+        lang_id = sickbeard.show_indexer.lang_dict[lang]
         return json.dumps({'results': final_results, 'langid': lang_id, 'success': len(final_results) > 0})
 
     def massAddTable(self, rootDir=None):
@@ -241,7 +237,7 @@ class AddShows(Home):
             default_show_name=default_show_name, other_shows=other_shows,
             provided_show_dir=show_dir, provided_indexer_id=provided_indexer_id,
             provided_indexer_name=provided_indexer_name, provided_indexer=provided_indexer,
-            indexers=sickbeard.show_indexer.indexers, whitelist=[], blacklist=[], groups=[],
+            indexers=sickbeard.show_indexer, whitelist=[], blacklist=[], groups=[],
             title=_('New Show'), header=_('New Show'), topmenu='home',
             controller="addShows", action="newShow"
         )

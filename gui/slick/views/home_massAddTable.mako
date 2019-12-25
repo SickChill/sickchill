@@ -35,15 +35,15 @@
                 <td><label for="${show_id}">${curDir['display_dir']}</label></td>
                 % if curDir['existing_info'][1] and indexer > 0:
                     <td>
-                        <a href="${anon_url(sickbeard.indexerApi(indexer).config['show_url'], curDir['existing_info'][0])}">${curDir['existing_info'][1]}</a>
+                        <a href="${anon_url(sickbeard.show_indexer[show_obj.indexer].show_url, curDir['existing_info'][0])}">${curDir['existing_info'][1]}</a>
                     </td>
                 % else:
                     <td>?</td>
                 % endif
                 <td align="center">
                     <select name="indexer">
-                        % for curIndexer in six.iteritems(sickbeard.show_indexer.indexers):
-                            <option value="${curIndexer[0]}" ${('', 'selected="selected"')[curIndexer[0] == indexer]}>${curIndexer[1]}</option>
+                        % for index, curIndexer in sickbeard.show_indexer:
+                            <option value="${index}" ${('', 'selected="selected"')[index == indexer]}>${curIndexer.name}</option>
                         % endfor
                     </select>
                 </td>

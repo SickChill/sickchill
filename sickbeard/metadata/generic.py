@@ -729,31 +729,14 @@ class GenericMetadata(object):
         Returns: the binary image data if available, or else None
         """
         image_url = None
-        indexer_lang = show_obj.lang
-
-        try:
-            # There's gotta be a better way of doing this but we don't wanna
-            # change the language value elsewhere
-            lINDEXER_API_PARMS = sickbeard.indexerApi(show_obj.indexer).api_params.copy()
-
-            lINDEXER_API_PARMS['banners'] = True
-
-            lINDEXER_API_PARMS['language'] = indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-            if show_obj.dvdorder:
-                lINDEXER_API_PARMS['dvdorder'] = True
-
-            t = sickbeard.indexerApi(show_obj.indexer).indexer(**lINDEXER_API_PARMS)
-            indexer_show_obj = t[show_obj.indexerid]
-        except (sickbeard.indexer_error, IOError) as e:
-            logger.log("Unable to look up show on " + sickbeard.indexerApi(
-                show_obj.indexer).name + ", not downloading images: " + ex(e), logger.WARNING)
-            logger.log("{0} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(show_obj.indexer).name), logger.DEBUG)
+        indexer_show_obj = sickbeard.show_indexer.series(show_obj)
+        if not indexer_show_obj:
+            logger.log("Unable to look up show on {}, not downloading images".format(sickbeard.show_indexer.name(show_obj.indexer)))
+            logger.log("{0} may be experiencing some problems. Try again later.".format(sickbeard.show_indexer.name(show_obj.indexer)))
             return None
 
         if image_type not in ('fanart', 'poster', 'banner', 'poster_thumb', 'banner_thumb'):
-            logger.log("Invalid image type " + str(image_type) + ", couldn't find it in the " + sickbeard.indexerApi(
-                show_obj.indexer).name + " object", logger.ERROR)
+            logger.log("Invalid image type {}, couldn't find it in the {} object".format(image_type, sickbeard.show_indexer.name(show_obj.indexer)))
             return None
 
         if image_type == 'poster_thumb':
@@ -800,24 +783,10 @@ class GenericMetadata(object):
 
         indexer_lang = show_obj.lang
 
-        try:
-            # There's gotta be a better way of doing this but we don't wanna
-            # change the language value elsewhere
-            lINDEXER_API_PARMS = sickbeard.indexerApi(show_obj.indexer).api_params.copy()
-
-            lINDEXER_API_PARMS['banners'] = True
-
-            lINDEXER_API_PARMS['language'] = indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-            if show_obj.dvdorder:
-                lINDEXER_API_PARMS['dvdorder'] = True
-
-            t = sickbeard.indexerApi(show_obj.indexer).indexer(**lINDEXER_API_PARMS)
-            indexer_show_obj = t[show_obj.indexerid]
-        except (sickbeard.indexer_error, IOError) as e:
-            logger.log("Unable to look up show on " + sickbeard.indexerApi(
-                show_obj.indexer).name + ", not downloading images: " + ex(e), logger.WARNING)
-            logger.log("{0} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(show_obj.indexer).name), logger.DEBUG)
+        indexer_show_obj = sickbeard.show_indexer.series(show_obj)
+        if not indexer_show_obj:
+            logger.log("Unable to look up show on {}, not downloading images".format(sickbeard.show_indexer.name(show_obj.indexer)))
+            logger.log("{0} may be experiencing some problems. Try again later.".format(sickbeard.show_indexer.name(show_obj.indexer)))
             return result
 
         # if we have no season banners then just finish
@@ -855,23 +824,10 @@ class GenericMetadata(object):
         # This holds our resulting dictionary of season art
         result = {}
 
-        indexer_lang = show_obj.lang
-
-        try:
-            # There's gotta be a better way of doing this but we don't wanna
-            # change the language value elsewhere
-            lINDEXER_API_PARMS = sickbeard.indexerApi(show_obj.indexer).api_params.copy()
-
-            lINDEXER_API_PARMS['banners'] = True
-
-            lINDEXER_API_PARMS['language'] = indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-            t = sickbeard.indexerApi(show_obj.indexer).indexer(**lINDEXER_API_PARMS)
-            indexer_show_obj = t[show_obj.indexerid]
-        except (sickbeard.indexer_error, IOError) as e:
-            logger.log("Unable to look up show on " + sickbeard.indexerApi(
-                show_obj.indexer).name + ", not downloading images: " + ex(e), logger.WARNING)
-            logger.log("{0} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(show_obj.indexer).name), logger.DEBUG)
+        indexer_show_obj = sickbeard.show_indexer.series(show_obj)
+        if not indexer_show_obj:
+            logger.log("Unable to look up show on {}, not downloading images".format(sickbeard.show_indexer.name(indexer_show_obj.indexer)))
+            logger.log("{0} may be experiencing some problems. Try again later.".format(sickbeard.show_indexer.name(show_obj.indexer)))
             return result
 
         # if we have no season banners then just finish

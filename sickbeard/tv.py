@@ -37,7 +37,7 @@ from sickbeard import db, helpers, image_cache, logger, network_timezones, notif
 from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
                               NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN, WANTED)
-from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
+from sickchill.indexers.handler import INDEXER_TVRAGE
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper import glob
 from sickchill.helper.common import dateTimeFormat, episode_num, remove_extension, replace_extension, sanitize_filename, try_int

@@ -102,43 +102,24 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         show_obj: a TVShow instance to create the NFO for
         """
-
-        indexer_lang = show_obj.lang
-        lINDEXER_API_PARMS = sickbeard.indexerApi(show_obj.indexer).api_params.copy()
-
-        lINDEXER_API_PARMS['actors'] = True
-
-        lINDEXER_API_PARMS['language'] = indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-        if show_obj.dvdorder:
-            lINDEXER_API_PARMS['dvdorder'] = True
-
-        t = sickbeard.indexerApi(show_obj.indexer).indexer(**lINDEXER_API_PARMS)
-
         rootNode = etree.Element("details")
         tv_node = etree.SubElement(rootNode, "movie")
         tv_node.attrib["isExtra"] = "false"
         tv_node.attrib["isSet"] = "false"
         tv_node.attrib["isTV"] = "true"
 
-        try:
-            myShow = t[int(show_obj.indexerid)]
-        except sickbeard.indexer_shownotfound:
-            logger.log("Unable to find show with id " + str(show_obj.indexerid) + " on tvdb, skipping it", logger.ERROR)
-            raise
-
-        except sickbeard.indexer_error:
-            logger.log("TVDB is down, can't use its data to make the NFO", logger.ERROR)
-            raise
+        myShow = sickbeard.show_indexer.series(show_obj)
+        if not myShow:
+            logger.log("Unable to find show with id {} on {}, skipping it".format(show_obj.indexerid, sickbeard.show_indexer.name(show_obj.indexer)))
+            return False
 
         # check for title and id
-        if not (getattr(myShow, 'seriesname', None) and getattr(myShow, 'id', None)):
-            logger.log("Incomplete info for show with id " + str(show_obj.indexerid) + " on " + sickbeard.indexerApi(
-                show_obj.indexer).name + ", skipping it")
+        if not (getattr(myShow, 'seriesName', None) and getattr(myShow, 'id', None)):
+            logger.log("Incomplete info for show with id {} on {}, skipping it".format(show_obj.indexerid, sickbeard.show_indexer.name(show_obj.indexer)))
             return False
 
         SeriesName = etree.SubElement(tv_node, "title")
-        SeriesName.text = myShow['seriesname']
+        SeriesName.text = myShow['seriesName']
 
         if getattr(myShow, "genre", None):
             Genres = etree.SubElement(tv_node, "genres")
@@ -147,13 +128,13 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                     cur_genre = etree.SubElement(Genres, "Genre")
                     cur_genre.text = genre.strip()
 
-        if getattr(myShow, 'firstaired', None):
+        if getattr(myShow, 'firstAired', None):
             FirstAired = etree.SubElement(tv_node, "premiered")
-            FirstAired.text = myShow['firstaired']
+            FirstAired.text = myShow['firstAired']
 
-        if getattr(myShow, "firstaired", None):
+        if getattr(myShow, "firstAired", None):
             try:
-                year_text = str(datetime.datetime.strptime(myShow["firstaired"], dateFormat).year)
+                year_text = str(datetime.datetime.strptime(myShow["firstAired"], dateFormat).year)
                 if year_text:
                     year = etree.SubElement(tv_node, "year")
                     year.text = year_text
@@ -218,24 +199,9 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         eps_to_write = [ep_obj] + ep_obj.relatedEps
 
-        indexer_lang = ep_obj.show.lang
-
-        try:
-            # There's gotta be a better way of doing this but we don't wanna
-            # change the language value elsewhere
-            lINDEXER_API_PARMS = sickbeard.indexerApi(ep_obj.show.indexer).api_params.copy()
-
-            lINDEXER_API_PARMS['language'] = indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-            if ep_obj.show.dvdorder:
-                lINDEXER_API_PARMS['dvdorder'] = True
-
-            t = sickbeard.indexerApi(ep_obj.show.indexer).indexer(**lINDEXER_API_PARMS)
-            myShow = t[ep_obj.show.indexerid]
-        except sickbeard.indexer_shownotfound as e:
-            raise ShowNotFoundException(e.message)
-        except sickbeard.indexer_error as e:
-            logger.log("Unable to connect to TVDB while creating meta files - skipping - " + ex(e), logger.ERROR)
+        myShow = sickbeard.show_indexer.series(ep_obj.show)
+        if not myShow:
+            logger.log("Unable to connect to {} while creating meta files - skipping".format(sickbeard.show_indexer.name(ep_obj.indexer)))
             return False
 
         rootNode = etree.Element("details")
@@ -248,23 +214,22 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
         # write an MediaBrowser XML containing info for all matching episodes
         for curEpToWrite in eps_to_write:
 
-            try:
-                myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
-            except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
+            myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
+            if not myEp:
                 logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
                            "has it been removed? Should I delete from db?".format(
                     curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name,
-                    sickbeard.indexerApi(ep_obj.show.indexer).name))
+                    sickbeard.show_indexer.name(ep_obj.indexer)))
                 return None
 
             if curEpToWrite == ep_obj:
                 # root (or single) episode
 
-                # default to today's date for specials if firstaired is not set
-                if curEpToWrite.season == 0 and not getattr(myEp, 'firstaired', None):
-                    myEp['firstaired'] = str(datetime.date.fromordinal(1))
+                # default to today's date for specials if firstAired is not set
+                if curEpToWrite.season == 0 and not getattr(myEp, 'firstAired', None):
+                    myEp['firstAired'] = str(datetime.date.fromordinal(1))
 
-                if not (getattr(myEp, 'episodename', None) and getattr(myEp, 'firstaired', None)):
+                if not (getattr(myEp, 'episodeName', None) and getattr(myEp, 'firstAired', None)):
                     return None
 
                 episode = movie
@@ -279,9 +244,9 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                 EpisodeNumber = etree.SubElement(episode, "episode")
                 EpisodeNumber.text = str(curEpToWrite.episode)
 
-                if getattr(myShow, "firstaired", None):
+                if getattr(myShow, "firstAired", None):
                     try:
-                        year_text = str(datetime.datetime.strptime(myShow["firstaired"], dateFormat).year)
+                        year_text = str(datetime.datetime.strptime(myShow["firstAired"], dateFormat).year)
                         if year_text:
                             year = etree.SubElement(episode, "year")
                             year.text = year_text

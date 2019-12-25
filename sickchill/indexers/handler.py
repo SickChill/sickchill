@@ -20,6 +20,7 @@
 from __future__ import print_function, unicode_literals
 
 # import re
+from requests.exceptions import HTTPError
 
 import sickbeard
 from sickbeard import logger
@@ -39,7 +40,16 @@ class ShowIndexer(object):
             sickbeard.INDEXER_DEFAULT = INDEXER_TVDB
 
     def __getitem__(self, item):
+        if isinstance(item, basestring):
+            for indexer in self.indexers.values():
+                if item == indexer.trakt_id:
+                    return indexer
+
         return self.indexers[item]
+
+    def __iter__(self):
+        for i in self.indexers.iteritems():
+            yield i
 
     def name(self, indexer=None):
         if indexer is None:
@@ -100,11 +110,27 @@ class ShowIndexer(object):
 
         return None, None
 
+    def series(self, show):
+        series = self.indexers[show.indexer].series(show.indexerid, language=show.lang)
+        try:
+            series.info(show.lang)
+        except HTTPError:
+            series = None
+
+        return series
+
     @property
     def languages(self, indexer=None):
         if indexer is None:
             indexer = sickbeard.INDEXER_DEFAULT
         return self.indexers[indexer].languages
+
+    @property
+    def lang_dict(self, indexer=None):
+        if indexer is None:
+            indexer = sickbeard.INDEXER_DEFAULT
+
+        return self[indexer].lang_dict
 
     def episodes(self, show, season):
         return self.indexers[show.indexer].episodes(show, season)
