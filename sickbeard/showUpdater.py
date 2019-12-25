@@ -37,68 +37,43 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
         self.lock = threading.Lock()
         self.amActive = False
 
-        self.apikey = json.dumps({'apikey': sickbeard.show_indexer[1].api_key})
-        self.base = 'https://api.thetvdb.com'
-        self.login = self.base + '/login'
-        self.update = self.base + '/updated/query?fromTime='
-        self.session = helpers.make_session()
-        # set the correct headers for the requests calls to tvdb
-        self.session.headers.update({'Accept': 'application/json','Content-Type': 'application/json'})
-        self.timeout = 12.1  # General timeout for the requests calls to prevent a hang if tvdb does not respond
-
-    def _gettoken(self):
-        logger.log('Login to tvdb to get a token')
-        Token = None
-        try:
-            resp = self.session.post(self.login, self.apikey, timeout=self.timeout)
-            if resp.ok:
-                # Put the token in the request header
-                Token = json.loads(resp.text).get('token','')
-                self.session.headers.update({"Authorization": "Bearer " + Token})
-                return True
-            else:
-                raise Exception('Failed to login on tvdb. reason: %s' % resp.reason)
-        except Exception as error:
-            logger.log(str(error))
-            return False
+        self.seven_days = 7*24*60*60
+        self.six_months = self.seven_days * 26
 
     def run(self, force=False):  # pylint: disable=unused-argument, too-many-locals, too-many-branches, too-many-statements
         logger.log('ShowUpdater for tvdb Api V3 starting')
         if self.amActive:
             return
+
         self.amActive = True
-        if not self._gettoken():
-            self.amActive = False
-            logger.log('No token from tvdb so update not possible')
-            return
 
         cache_db_con = db.DBConnection('cache.db')
         result = cache_db_con.select('SELECT `time` FROM lastUpdate WHERE provider = ?', ['theTVDB'])
-        last_update = int(result[0][0]) if result else 0
+        last_update = int(result[0][0]) if result else int(time.time() - self.six_months)  # Go back 6 months rather than beginning of time.
         network_timezones.update_network_dict()
         update_timestamp = int(time.time())
         updated_shows = []
-        # TODO: Make this use tvdbsimple.updates.Updates
+
         if last_update:
-            logger.log( 'Last update: %s' %time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_update)))
+            logger.log('Last update: {}'.format(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_update))))
             # We query tvdb for updates starting from the last update time from the cache until now with increments of 7 days
-            for fromTime in range(last_update, update_timestamp, 604800): # increments of 604800 sec = 7*24*60*60
+            for fromTime in range(last_update, update_timestamp - self.seven_days, self.seven_days):  # increments of 604800 sec = 7*24*60*60
                 try:
-                    resp = self.session.get(self.update + str(fromTime), timeout=self.timeout)
-                    if resp.ok:
-                        TvdbData = json.loads(resp.text)
-                        updated_shows.extend([d['id'] for d in TvdbData.get('data',[])])
-                    else:
-                        raise Exception('Failed to get update from tvdb. reason: %s' % resp.reason)
+                    TvdbData = sickbeard.show_indexer[1].updates(fromTime=fromTime, toTime=fromTime + self.seven_days)
+                    TvdbData.series()
+                    updated_shows.extend([d['id'] for d in TvdbData.series])
+
                 except Exception as error:
                     logger.log(str(error))
         else:
             logger.log('No last update time from the cache, so we do a full update for all shows')
+
         pi_list = []
         for cur_show in sickbeard.showList:
-            if cur_show.idxr.name == 'theTVDB':
+            if cur_show.idxr.name != 'theTVDB':
                 logger.log('Indexer is no longer available for show [{0}] '.format(cur_show.name), logger.WARNING)
                 continue
+
             try:
                 cur_show.nextEpisode()
                 if cur_show.idxr.name == 'theTVDB':

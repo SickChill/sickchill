@@ -38,9 +38,10 @@ class TVDB(Indexer):
         self.icon = 'images/indexers/thetvdb16.png'
         tvdbsimple.KEYS.API_KEY = self.api_key
         self.search = tvdbsimple.search.Search().series
-        self.series = tvdbsimple.series.Series
-        self.series_episodes = tvdbsimple.series.Series_Episodes
-        self.series_images = tvdbsimple.series.Series_Images
+        self.series = tvdbsimple.Series
+        self.series_episodes = tvdbsimple.Series_Episodes
+        self.series_images = tvdbsimple.Series_Images
+        self.updates = tvdbsimple.Updates
 
     def get_show_by_id(self, indexerid, language=None):
         result = self.series(indexerid, language)
