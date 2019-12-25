@@ -222,7 +222,7 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
             for indexer, instance in sickbeard.show_indexer:
                 try:
                     setLastRefresh(instance.name)
-                    if instance.name not in jdata:
+                    if instance.trakt_id not in jdata:
                         continue
 
                     for indexer_id in jdata[instance.trakt_id]:
