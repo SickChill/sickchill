@@ -42,6 +42,9 @@ class ShowIndexer(object):
                 if item == indexer.trakt_id:
                     return indexer
 
+        if isinstance(item, tuple):
+            item = item[0]
+
         return self.indexers[item]
 
     def __iter__(self):
@@ -108,14 +111,18 @@ class ShowIndexer(object):
 
         return None, None
 
-    def series(self, show):
-        series = self.indexers[show.indexer].series(show.indexerid, language=show.lang)
+    def series_by_id(self, id, indexer, language):
+        series = self.indexers[indexer].series(id=id, language=language)
         try:
-            series.info(show.lang)
+            series.info(language)
         except HTTPError:
             series = None
 
         return series
+
+    def series(self, show):
+        return self.series_by_id(id=show.indexerid, indexer=show.indexer, language=show.lang)
+
 
     @property
     def languages(self, indexer=None):

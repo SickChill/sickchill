@@ -730,6 +730,7 @@ class GenericMetadata(object):
         """
         image_url = None
         indexer_show_obj = sickbeard.show_indexer.series(show_obj)
+        # TODO: Fix images
         if not indexer_show_obj:
             logger.log("Unable to look up show on {}, not downloading images".format(show_obj.idxr.name))
             logger.log("{0} may be experiencing some problems. Try again later.".format(show_obj.idxr.name))
@@ -741,7 +742,7 @@ class GenericMetadata(object):
 
         if image_type == 'poster_thumb':
             if getattr(indexer_show_obj, 'poster', None):
-                image_url = re.sub('posters', '_cache/posters', indexer_show_obj['poster'])
+                image_url = re.sub('posters', '_cache/posters', indexer_show_obj.poster)
             if not image_url:
                 # Try and get images from Fanart.TV
                 image_url = self._retrieve_show_images_from_fanart(show_obj, image_type)
@@ -756,7 +757,7 @@ class GenericMetadata(object):
                 image_url = self._retrieve_show_images_from_fanart(show_obj, image_type)
         else:
             if getattr(indexer_show_obj, image_type, None):
-                image_url = indexer_show_obj[image_type]
+                image_url = getattr(indexer_show_obj, image_type)
             if not image_url:
                 # Try and get images from Fanart.TV
                 image_url = self._retrieve_show_images_from_fanart(show_obj, image_type)

@@ -103,8 +103,9 @@ class AddShows(Home):
                 results.setdefault(i, []).extend(indexerResults)
 
         for i, shows in six.iteritems(results):
-            final_results.extend({(sickbeard.show_indexer.name(i), i, sickbeard.show_indexer[i].show_url, int(show['id']),
-                                   show.seriesName, show.firstAired, sickbeard.tv.Show.find(sickbeard.showList, show.id)) for show in shows})
+            final_results.extend({(sickbeard.show_indexer.name(i), i, sickbeard.show_indexer[i].show_url, show['id'],
+                                   show['seriesName'], show['firstAired'], sickbeard.tv.Show.find(sickbeard.showList, show['id']) is not None
+                                   ) for show in shows})
 
         lang_id = sickbeard.show_indexer.lang_dict[lang]
         return json.dumps({'results': final_results, 'langid': lang_id, 'success': len(final_results) > 0})
@@ -178,7 +179,7 @@ class AddShows(Home):
 
                         # default to TVDB if indexer was not detected
                         if show_name and not (indexer or indexer_id):
-                            (show_name_, idxr, i) = helpers.searchIndexerForShowID(show_name, indexer, indexer_id)
+                            (show_name_, idxr, i) = sickbeard.show_indexer.search_indexers_for_show_name(show_name)
 
                             # set indexer and indexer_id from found info
                             if not indexer and idxr:

@@ -809,14 +809,11 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         logger.log(str(self.indexerid) + ": Loading show info from " + self.indexer_name, logger.DEBUG)
 
-        myShow = self.idxr.series(self.indexerid)
+        myShow = sickbeard.show_indexer.series(self)
+        if not myShow or not getattr(myShow, 'seriesName'):
+            raise AttributeError("Found {0}, but attribute 'seriesName' was empty.".format(self.indexerid))
 
-        try:
-            self.name = myShow.seriesName.strip()
-        except AttributeError:
-            raise AttributeError(
-                "Found {0}, but attribute 'seriesName' was empty.".format(self.indexerid))
-
+        self.name = myShow.seriesName.strip()
         self.classification = getattr(myShow, 'classification', 'Scripted')
         self.genre = getattr(myShow, 'genre', '')
         self.network = getattr(myShow, 'network', '')
@@ -831,7 +828,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             self.airs = ''
 
         if getattr(myShow, 'firstAired', None) is not None:
-            self.startyear = int(str(myShow[b"firstAired"]).split('-')[0])
+            self.startyear = int(myShow.firstAired.split('-')[0])
 
         self.status = getattr(myShow, 'status', 'Unknown')
 
@@ -1129,7 +1126,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                         "show_name": self.name,
                         "location": self._location,
                         "network": self.network,
-                        "genre": self.genre,
+                        "genre": '|'.join(self.genre),
                         "classification": self.classification,
                         "runtime": self.runtime,
                         "quality": self.quality,
@@ -1153,6 +1150,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                         "default_ep_status": self.default_ep_status,
                         "sub_use_sr_metadata": self.subtitles_sr_metadata}
 
+        logger.log(newValueDict)
         main_db_con = db.DBConnection()
         main_db_con.upsert("tv_shows", newValueDict, controlValueDict)
 

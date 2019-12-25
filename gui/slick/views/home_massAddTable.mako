@@ -35,7 +35,7 @@
                 <td><label for="${show_id}">${curDir['display_dir']}</label></td>
                 % if curDir['existing_info'][1] and indexer > 0:
                     <td>
-                        <a href="${anon_url(show_obj.idxr.show_url, curDir['existing_info'][0])}">${curDir['existing_info'][1]}</a>
+                        <a href="${anon_url(sickbeard.show_indexer[indexer].show_url, curDir['existing_info'][0])}">${curDir['existing_info'][1]}</a>
                     </td>
                 % else:
                     <td>?</td>
