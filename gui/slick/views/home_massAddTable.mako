@@ -42,7 +42,7 @@
                 % endif
                 <td align="center">
                     <select name="indexer">
-                        % for curIndexer in six.iteritems(sickbeard.indexerApi().indexers):
+                        % for curIndexer in six.iteritems(sickbeard.show_indexer.indexers):
                             <option value="${curIndexer[0]}" ${('', 'selected="selected"')[curIndexer[0] == indexer]}>${curIndexer[1]}</option>
                         % endfor
                     </select>

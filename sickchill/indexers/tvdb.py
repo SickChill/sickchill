@@ -33,6 +33,9 @@ class TVDB(Indexer):
         self.name = 'theTVDB'
         self.trakt_id = 'tvdb'
         self.api_key = 'F9C450E78D99172E'
+        self.show_url = 'http://thetvdb.com/?tab=series&id='
+        self.base_url = 'http://thetvdb.com/api/%(apikey)s/series/'
+        self.icon = 'images/indexers/thetvdb16.png'
         tvdbsimple.KEYS.API_KEY = self.api_key
         self.search = tvdbsimple.search.Search().series
         self.series = tvdbsimple.series.Series

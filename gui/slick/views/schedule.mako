@@ -201,11 +201,11 @@
                                                 <span class="displayshow-icon-imdb"></span>
                                             </a>
                                         % endif
-                                        <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result[b'showid'])}"
+                                        <a href="${anon_url(sickbeard.show_indexer[cur_indexer].show_url, cur_result[b'showid'])}"
                                            rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
-                                           title="${sickbeard.indexerApi(cur_indexer).config['show_url']}${cur_result[b'showid']}">
-                                            <img alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16"
-                                                 src="${static_url('images/indexers/' + sickbeard.indexerApi(cur_indexer).config['icon'])}"/>
+                                           title="${sickbeard.show_indexer[cur_indexer].show_url}${cur_result[b'showid']}">
+                                            <img alt="${sickbeard.show_indexer.name(cur_indexer)}" height="16" width="16"
+                                                 src="${static_url(sickbeard.show_indexer[cur_indexer].icon)}"/>
                                         </a>
                                     </td>
                                     <td align="center">
@@ -439,11 +439,11 @@
                                                     <span class="displayshow-icon-imdb"></span>
                                                 </a>
                                             % endif
-                                            <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result[b'showid'])}"
+                                            <a href="${anon_url(sickbeard.show_indexer[cur_indexer].show_url, cur_result[b'showid'])}"
                                                rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
-                                               title="${sickbeard.indexerApi(cur_indexer).config['show_url']}"><img
-                                                    alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16"
-                                                    src="${static_url('images/indexers/' + sickbeard.indexerApi(cur_indexer).config['icon'])}"/>
+                                               title="${sickbeard.show_indexer[cur_indexer].show_url}"><img
+                                                    alt="${sickbeard.show_indexer.name(cur_indexer)}" height="16" width="16"
+                                                    src="${static_url(sickbeard.show_indexer[cur_indexer].icon)}"/>
                                             </a>
                                             <span>
                                                 <a href="${srRoot}/home/searchEpisode?show=${cur_result[b'showid']}&amp;season=${cur_result[b'season']}&amp;episode=${cur_result[b'episode']}"

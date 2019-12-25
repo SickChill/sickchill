@@ -48,14 +48,15 @@ class Notifier(object):
     def notify_login(self, ipaddress=""):
         pass
 
-    def update_library(self, ep_obj):
+    @staticmethod
+    def update_library(ep_obj):
         """
         Sends a request to trakt indicating that the given episode is part of our library.
 
         ep_obj: The TVEpisode object to add to trakt
         """
 
-        trakt_id = sickbeard.indexerApi(ep_obj.show.indexer).config['trakt_id']
+        trakt_id = sickbeard.show_indexer[ep_obj.show.indexer].trakt_id
         trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
         if sickbeard.USE_TRAKT:
@@ -66,15 +67,10 @@ class Notifier(object):
                         {
                             'title': ep_obj.show.name,
                             'year': ep_obj.show.startyear,
-                            'ids': {},
+                            'ids': {trakt_id: ep_obj.show.indexerid},
                         }
                     ]
                 }
-
-                if trakt_id == 'tvdb_id':
-                    data['shows'][0]['ids']['tvdb'] = ep_obj.show.indexerid
-                else:
-                    data['shows'][0]['ids']['tvrage'] = ep_obj.show.indexerid
 
                 if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.TRAKT_REMOVE_SERIESLIST:
                         trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
@@ -94,6 +90,7 @@ class Notifier(object):
             except (traktException, traktAuthException, traktServerBusy) as e:
                 logger.log("Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
 
+    @staticmethod
     def update_watchlist(self, show_obj=None, s=None, e=None, data_show=None, data_episode=None, update="add"):
 
         """
@@ -115,21 +112,16 @@ class Notifier(object):
             try:
                 # URL parameters
                 if show_obj is not None:
-                    trakt_id = sickbeard.indexerApi(show_obj.indexer).config['trakt_id']
+                    trakt_id = sickbeard.show_indexer[show_obj.indexer].trakt_id
                     data = {
                         'shows': [
                             {
                                 'title': show_obj.name,
                                 'year': show_obj.startyear,
-                                'ids': {},
+                                'ids': {trakt_id: show_obj.indexerid},
                             }
                         ]
                     }
-
-                    if trakt_id == 'tvdb_id':
-                        data['shows'][0]['ids']['tvdb'] = show_obj.indexerid
-                    else:
-                        data['shows'][0]['ids']['tvrage'] = show_obj.indexerid
                 elif data_show is not None:
                     data.update(data_show)
                 else:
@@ -175,23 +167,21 @@ class Notifier(object):
 
         return True
 
-    def trakt_show_data_generate(self, data):
+    @staticmethod
+    def trakt_show_data_generate(data):
 
         showList = []
         for indexer, indexerid, title, year in data:
-            trakt_id = sickbeard.indexerApi(indexer).config['trakt_id']
-            show = {'title': title, 'year': year, 'ids': {}}
-            if trakt_id == 'tvdb_id':
-                show['ids']['tvdb'] = indexerid
-            else:
-                show['ids']['tvrage'] = indexerid
+            trakt_id = sickbeard.show_indexer[indexer].trakt_id
+            show = {'title': title, 'year': year, 'ids': {trakt_id: indexerid}}
             showList.append(show)
 
         post_data = {'shows': showList}
 
         return post_data
 
-    def trakt_episode_data_generate(self, data):
+    @staticmethod
+    def trakt_episode_data_generate(data):
 
         # Find how many unique season we have
         uniqueSeasons = []
@@ -212,7 +202,8 @@ class Notifier(object):
 
         return post_data
 
-    def test_notify(self, username, blacklist_name=None):
+    @staticmethod
+    def test_notify(username, blacklist_name=None):
         """
         Sends a test notification to trakt with the given authentication info and returns a boolean
         representing success.

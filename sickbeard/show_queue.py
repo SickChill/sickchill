@@ -677,7 +677,7 @@ class QueueItemUpdate(ShowQueueItem):
         # get episode list from TVDB
         logger.log('Loading all episodes from {0}'.format(sickbeard.show_indexer.name(self.show.indexer)), logger.DEBUG)
         try:
-            IndexerEpList = self.show.loadEpisodesFromIndexer(cache=not self.force)
+            IndexerEpList = self.show.loadEpisodesFromIndexer()
         except sickbeard.indexer_exception as error:
             logger.log('Unable to get info from {0}, the show info will not be refreshed: {1}'.format
                        (sickbeard.show_indexer.name(self.show.indexer), error), logger.ERROR)

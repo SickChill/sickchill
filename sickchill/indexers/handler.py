@@ -38,6 +38,9 @@ class ShowIndexer(object):
         if sickbeard.INDEXER_DEFAULT is None:
             sickbeard.INDEXER_DEFAULT = INDEXER_TVDB
 
+    def __getitem__(self, item):
+        return self.indexers[item]
+
     def name(self, indexer=None):
         if indexer is None:
             indexer = sickbeard.INDEXER_DEFAULT

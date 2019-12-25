@@ -39,14 +39,14 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
         self.lock = threading.Lock()
         self.amActive = False
 
-        self.apikey = json.dumps({'apikey':sickbeard.indexerApi(INDEXER_TVDB).api_params['apikey']})
+        self.apikey = json.dumps({'apikey': sickbeard.show_indexer[INDEXER_TVDB].apikey})
         self.base = 'https://api.thetvdb.com'
         self.login = self.base + '/login'
         self.update = self.base + '/updated/query?fromTime='
         self.session = helpers.make_session()
-            # set the correct headers for the requests calls to tvdb
+        # set the correct headers for the requests calls to tvdb
         self.session.headers.update({'Accept': 'application/json','Content-Type': 'application/json'})
-        self.timeout = 12.1 #General timeout for the requests calls to prevent a hang if tvdb does not respond
+        self.timeout = 12.1  # General timeout for the requests calls to prevent a hang if tvdb does not respond
 
     def _gettoken(self):
         logger.log('Login to tvdb to get a token')
@@ -54,7 +54,7 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
         try:
             resp = self.session.post(self.login, self.apikey, timeout=self.timeout)
             if resp.ok:
-                    # Put the token in the request header
+                # Put the token in the request header
                 Token = json.loads(resp.text).get('token','')
                 self.session.headers.update({"Authorization": "Bearer " + Token})
                 return True
@@ -72,7 +72,7 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
         if not self._gettoken():
             self.amActive = False
             logger.log('No token from tvdb so update not possible')
-            return 
+            return
 
         cache_db_con = db.DBConnection('cache.db')
         result = cache_db_con.select('SELECT `time` FROM lastUpdate WHERE provider = ?', ['theTVDB'])
@@ -80,11 +80,12 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
         network_timezones.update_network_dict()
         update_timestamp = int(time.time())
         updated_shows = []
+        # TODO: Make this use tvdbsimple.updates.Updates
         if last_update:
             logger.log( 'Last update: %s' %time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_update)))
-                # We query tvdb for updates starting from the last update time from the cache until now with increments of 7 days
+            # We query tvdb for updates starting from the last update time from the cache until now with increments of 7 days
             for fromTime in range(last_update, update_timestamp, 604800): # increments of 604800 sec = 7*24*60*60
-                try:                    
+                try:
                     resp = self.session.get(self.update + str(fromTime), timeout=self.timeout)
                     if resp.ok:
                         TvdbData = json.loads(resp.text)
@@ -102,8 +103,8 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
                 continue
             try:
                 cur_show.nextEpisode()
-                if sickbeard.indexerApi(cur_show.indexer).name == 'theTVDB':
-                        # When last_update is not set from the cache or the show was in the tvdb updated list we update the show
+                if sickbeard.show_indexer.name(cur_show.indexer) == 'theTVDB':
+                    # When last_update is not set from the cache or the show was in the tvdb updated list we update the show
                     if not last_update or cur_show.indexerid in updated_shows:
                         pi_list.append(sickbeard.showQueueScheduler.action.update_show(cur_show, True))
                     else:

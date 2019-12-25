@@ -191,8 +191,8 @@
                                     <div class="col-md-12">
                                         <select id="indexer_default" name="indexer_default" class="form-control input-sm input150">
                                             <option value="0" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == 0]}>${_('All Indexers')}</option>
-                                            % for indexer in sickbeard.indexerApi().indexers:
-                                                <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
+                                            % for indexer in sickbeard.show_indexer.indexers:
+                                                <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${sickbeard.show_indexer[indexer].name}</option>
                                             % endfor
                                         </select>
                                     </div>

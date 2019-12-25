@@ -62,9 +62,7 @@ class AddShows(Home):
 
     @staticmethod
     def getIndexerLanguages():
-        result = sickbeard.indexerApi().config['valid_languages']
-
-        return json.dumps({'results': result})
+        return json.dumps({'results': sickbeard.show_indexer[1].languages})
 
     @staticmethod
     def sanitizeFileName(name):
@@ -95,18 +93,13 @@ class AddShows(Home):
         final_results = []
 
         # Query Indexers for each search term and build the list of results
-        for indexer in sickbeard.indexerApi().indexers if not int(indexer) else [int(indexer)]:
-            lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
-            lINDEXER_API_PARMS['language'] = lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-            lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
-            t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
-
+        for indexer in sickbeard.show_indexer.indexers if not int(indexer) else [int(indexer)]:
             logger.log("Searching for Show with searchterm(s): {0} on Indexer: {1}".format(
                 searchTerms, 'theTVDB'), logger.DEBUG)
             for searchTerm in searchTerms:
                 # noinspection PyBroadException
                 try:
-                    indexerResults = t[searchTerm]
+                    indexerResults = sickbeard.show_indexer[indexer].search(searchTerm, language=lang)
                 except Exception:
                     # logger.log(traceback.format_exc(), logger.ERROR)
                     continue
@@ -115,8 +108,8 @@ class AddShows(Home):
                 results.setdefault(indexer, []).extend(indexerResults)
 
         for i, shows in six.iteritems(results):
-            final_results.extend({(sickbeard.indexerApi(i).name, i, sickbeard.indexerApi(i).config["show_url"], int(show['id']),
-                                   show['seriesname'], show['firstaired'], show['in_show_list']) for show in shows})
+            final_results.extend({(sickbeard.show_indexer.name(i), i, sickbeard.show_indexer[i].show_url, int(show['id']),
+                                   show.seriesName, show.firstAired, sickbeard.tv.Show.find(sickbeard.showList, show.id)) for show in shows})
 
         lang_id = sickbeard.indexerApi().config['langabbv_to_id'][lang]
         return json.dumps({'results': final_results, 'langid': lang_id, 'success': len(final_results) > 0})
@@ -248,7 +241,7 @@ class AddShows(Home):
             default_show_name=default_show_name, other_shows=other_shows,
             provided_show_dir=show_dir, provided_indexer_id=provided_indexer_id,
             provided_indexer_name=provided_indexer_name, provided_indexer=provided_indexer,
-            indexers=sickbeard.indexerApi().indexers, whitelist=[], blacklist=[], groups=[],
+            indexers=sickbeard.show_indexer.indexers, whitelist=[], blacklist=[], groups=[],
             title=_('New Show'), header=_('New Show'), topmenu='home',
             controller="addShows", action="newShow"
         )

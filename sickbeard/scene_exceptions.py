@@ -195,7 +195,7 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
     """
 
     do_refresh = False
-    for indexer in sickbeard.indexerApi().indexers:
+    for indexer in sickbeard.show_indexer.indexers:
         if shouldRefresh('theTVDB'):
             do_refresh = True
 
@@ -220,7 +220,7 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
             # When jdata is None, trouble connecting to github, or reading file failed
             logger.log("Check scene exceptions update failed. Unable to update from {0}".format(loc), logger.DEBUG)
         else:
-            for indexer in sickbeard.indexerApi().indexers:
+            for indexer in sickbeard.show_indexer.indexers:
                 try:
                     setLastRefresh('theTVDB')
                     for indexer_id in jdata['tvdb']:
@@ -311,7 +311,7 @@ xem_session = helpers.make_session()
 
 def _xem_exceptions_fetcher():
     if shouldRefresh('xem'):
-        for indexer in sickbeard.indexerApi().indexers:
+        for indexer in sickbeard.show_indexer.indexers:
             logger.log("Checking for XEM scene exception updates for {0}".format
                        ('theTVDB'))
 
