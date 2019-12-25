@@ -145,5 +145,3 @@ class ShowIndexer(object):
 
     def episode_image_url(self, episode):
         return self.indexers[episode.show.indexer].episode_image_url(episode)
-
-

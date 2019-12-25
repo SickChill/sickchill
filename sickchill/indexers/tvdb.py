@@ -19,12 +19,12 @@
 
 from __future__ import print_function, unicode_literals
 
+import tvdbsimple
 from requests.exceptions import HTTPError
 
-import tvdbsimple
+from sickbeard.tv import TVEpisode
 
 from .base import Indexer
-from sickbeard.tv import TVEpisode
 
 
 class TVDB(Indexer):

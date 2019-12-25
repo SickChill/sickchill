@@ -34,7 +34,6 @@ from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard.common import WANTED
 from sickbeard.helpers import chmodAsParent, makeDir, sortable_name
 from sickbeard.tv import TVShow
-
 from sickchill.helper.common import sanitize_filename
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import (CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, EpisodeDeletedException,

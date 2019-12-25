@@ -40,14 +40,13 @@ from sickbeard import (auto_postprocessor, clients, dailysearcher, db, helpers, 
 from sickbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
 from sickbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
 from sickbeard.databases import cache_db, failed_db, mainDB
-
 from sickbeard.numdict import NumDict
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.providers.rsstorrent import TorrentRssProvider
-from sickchill.indexers import ShowIndexer
 from sickchill.helper import setup_github
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
+from sickchill.indexers import ShowIndexer
 from sickchill.system.Shutdown import Shutdown
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
