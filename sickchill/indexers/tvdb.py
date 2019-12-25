@@ -44,14 +44,16 @@ class TVDB(Indexer):
 
     def get_show_by_id(self, indexerid, language=None):
         result = self.series(indexerid, language)
-        result.info()
+        result.info(language=language)
         return result
 
     def get_show_by_name(self, name, indexerid=None, language=None):
         if indexerid:
             return self.get_show_by_id(indexerid, language)
         # Just return the first result for now
-        return self.series(self.search(name, language)[0]['id'])
+        result = self.series(self.search(name, language)[0]['id'])
+        result.info(language=language)
+        return result
 
     def episodes(self, show, season=None):
         try:

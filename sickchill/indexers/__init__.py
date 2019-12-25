@@ -20,6 +20,3 @@
 from __future__ import print_function, unicode_literals
 
 from .handler import ShowIndexer
-
-INDEXER_TVDB = 1
-INDEXER_TVRAGE = 2  # Must keep

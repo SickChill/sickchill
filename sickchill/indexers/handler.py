@@ -32,9 +32,9 @@ from .tvdb import TVDB
 class ShowIndexer(object):
 
     def __init__(self):
-        self.indexers = {INDEXER_TVDB: TVDB()}
+        self.indexers = {1: TVDB()}
         if sickbeard.INDEXER_DEFAULT is None:
-            sickbeard.INDEXER_DEFAULT = INDEXER_TVDB
+            sickbeard.INDEXER_DEFAULT = 1
 
     def __getitem__(self, item):
         if isinstance(item, basestring):

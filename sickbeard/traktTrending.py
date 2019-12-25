@@ -10,7 +10,6 @@ from libtrakt.trakt import TraktAPI
 
 import sickbeard
 from sickbeard import helpers, logger
-from sickchill.indexers.handler import INDEXER_TVDB
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex, MultipleShowObjectsException
 

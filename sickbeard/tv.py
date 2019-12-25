@@ -37,7 +37,6 @@ from sickbeard import db, helpers, image_cache, logger, network_timezones, notif
 from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
                               NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN, WANTED)
-from sickchill.indexers.handler import INDEXER_TVRAGE
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper import glob
 from sickchill.helper.common import dateTimeFormat, episode_num, remove_extension, replace_extension, sanitize_filename, try_int
@@ -803,38 +802,38 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         self.dirty = False
         return True
 
-    def loadFromIndexer(self, cache=True, tvapi=None):
+    def loadFromIndexer(self):
 
-        if self.indexer == INDEXER_TVRAGE:
+        if self.idxr.name != 'theTVDB':
             return
 
         logger.log(str(self.indexerid) + ": Loading show info from " + self.indexer_name, logger.DEBUG)
 
-        myEp = self.idxr.series(self.indexerid)
+        myShow = self.idxr.series(self.indexerid)
 
         try:
-            self.name = myEp[b'seriesname'].strip()
+            self.name = myEp[b'seriesName'].strip()
         except AttributeError:
             raise AttributeError(
                 "Found {0}, but attribute 'seriesname' was empty.".format(self.indexerid))
 
-        self.classification = getattr(myEp, 'classification', 'Scripted')
-        self.genre = getattr(myEp, 'genre', '')
-        self.network = getattr(myEp, 'network', '')
-        self.runtime = getattr(myEp, 'runtime', '')
+        self.classification = getattr(myShow, 'classification', 'Scripted')
+        self.genre = getattr(myShow, 'genre', '')
+        self.network = getattr(myShow, 'network', '')
+        self.runtime = getattr(myShow, 'runtime', '')
 
-        self.imdbid = getattr(myEp, 'imdb_id', '')
+        self.imdbid = getattr(myShow, 'imdb_id', '')
 
-        if getattr(myEp, 'airs_dayofweek', None) is not None and getattr(myEp, 'airs_time', None) is not None:
-            self.airs = myEp[b"airs_dayofweek"] + " " + myEp[b"airs_time"]
+        if getattr(myShow, 'airs_dayofweek', None) is not None and getattr(myShow, 'airs_time', None) is not None:
+            self.airs = myShow[b"airs_dayofweek"] + " " + myShow[b"airs_time"]
 
         if self.airs is None:
             self.airs = ''
 
-        if getattr(myEp, 'firstaired', None) is not None:
-            self.startyear = int(str(myEp[b"firstaired"]).split('-')[0])
+        if getattr(myShow, 'firstAired', None) is not None:
+            self.startyear = int(str(myShow[b"firstAired"]).split('-')[0])
 
-        self.status = getattr(myEp, 'status', 'Unknown')
+        self.status = getattr(myShow, 'status', 'Unknown')
 
     def check_imdbid(self):
         try:
@@ -1629,7 +1628,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         self.description = getattr(myEp, 'overview', "")
 
-        firstaired = getattr(myEp, 'firstaired', None)
+        firstaired = getattr(myEp, 'firstAired', None)
         if not firstaired or firstaired == "0000-00-00":
             firstaired = str(datetime.date.fromordinal(1))
         rawAirdate = [int(x) for x in firstaired.split("-")]

@@ -26,7 +26,6 @@ import time
 import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.common import cpu_presets
-from sickchill.indexers.handler import INDEXER_TVDB
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -90,7 +89,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
         if ep_obj is not None:
             ep_indexerid = ep_obj.show.indexerid
-            ep_indexer = ep_obj.show.indexer
+            ep_indexer = ep_obj.show.idxr.trakt_id
         else:
             ep_indexerid = None
             ep_indexer = None
@@ -107,7 +106,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                 search_params["sort"] = self.sorting if self.sorting else "seeders"
                 search_params["mode"] = "search"
 
-                if ep_indexer == INDEXER_TVDB and ep_indexerid:
+                if ep_indexer == 'tvdb' and ep_indexerid:
                     search_params["search_tvdb"] = ep_indexerid
                 else:
                     search_params.pop("search_tvdb", None)

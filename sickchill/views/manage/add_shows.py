@@ -33,7 +33,6 @@ import sickbeard
 from sickbeard import classes, config, db, helpers, logger, ui
 from sickbeard.blackandwhitelist import short_group_names
 from sickbeard.common import Quality
-from sickbeard.helpers import get_showname_from_indexer
 from sickbeard.imdbPopular import imdb_popular
 from sickbeard.traktTrending import trakt_trending
 from sickchill.helper import sanitize_filename, try_int
@@ -440,7 +439,7 @@ class AddShows(Home):
             logger.log("There was an error creating the show, no root directory setting found")
             return _("No root directories setup, please go back and add one.")
 
-        show_name = get_showname_from_indexer(1, indexer_id)
+        show_name = sickbeard.show_indexer[1].get_show_by_id(indexer_id, indexer_lang).seriesName
         show_dir = None
 
         if not show_name:

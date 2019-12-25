@@ -23,14 +23,12 @@
 
 from __future__ import unicode_literals
 
-import datetime
 import json
 import threading
 import time
 
 import sickbeard
 from sickbeard import db, helpers, logger, network_timezones, ui
-from sickchill.indexers.handler import INDEXER_TVDB, INDEXER_TVRAGE
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
 
 
@@ -39,7 +37,7 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
         self.lock = threading.Lock()
         self.amActive = False
 
-        self.apikey = json.dumps({'apikey': sickbeard.show_indexer[INDEXER_TVDB].apikey})
+        self.apikey = json.dumps({'apikey': sickbeard.show_indexer[1].api_key})
         self.base = 'https://api.thetvdb.com'
         self.login = self.base + '/login'
         self.update = self.base + '/updated/query?fromTime='
@@ -98,7 +96,7 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
             logger.log('No last update time from the cache, so we do a full update for all shows')
         pi_list = []
         for cur_show in sickbeard.showList:
-            if int(cur_show.indexer) in [INDEXER_TVRAGE]:
+            if cur_show.idxr.name == 'theTVDB':
                 logger.log('Indexer is no longer available for show [{0}] '.format(cur_show.name), logger.WARNING)
                 continue
             try:
