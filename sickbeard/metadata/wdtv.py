@@ -25,6 +25,7 @@ import os
 import re
 
 import sickbeard
+import sickchill
 from sickbeard import helpers, logger
 from sickbeard.metadata import generic
 from sickchill.helper.common import dateFormat, replace_extension
@@ -183,7 +184,7 @@ class WDTVMetadata(generic.GenericMetadata):
 
         eps_to_write = [ep_obj] + ep_obj.relatedEps
 
-        myShow = sickbeard.show_indexer.series(ep_obj.show)
+        myShow = sickchill.indexer.series(ep_obj.show)
 
         rootNode = etree.Element("details")
 

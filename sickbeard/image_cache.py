@@ -27,6 +27,7 @@ from hachoir_metadata import extractMetadata
 from hachoir_parser import createParser
 
 import sickbeard
+import sickchill
 from sickbeard import helpers, logger
 from sickbeard.metadata.generic import GenericMetadata
 from sickbeard.metadata.helpers import getShowImage
@@ -237,19 +238,19 @@ class ImageCache(object):
 
         # generate the path based on the type & indexer_id
         if img_type == self.POSTER:
-            img_url = sickbeard.show_indexer.series_poster_url(show_obj)
+            img_url = sickchill.indexer.series_poster_url(show_obj)
             dest_path = self.poster_path(show_obj.indexerid)
         elif img_type == self.BANNER:
-            img_url = sickbeard.show_indexer.series_banner_url(show_obj)
+            img_url = sickchill.indexer.series_banner_url(show_obj)
             dest_path = self.banner_path(show_obj.indexerid)
         elif img_type == self.POSTER_THUMB:
-            img_url = sickbeard.show_indexer.series_poster_url(show_obj, thumb=True)
+            img_url = sickchill.indexer.series_poster_url(show_obj, thumb=True)
             dest_path = self.poster_thumb_path(show_obj.indexerid)
         elif img_type == self.BANNER_THUMB:
-            img_url = sickbeard.show_indexer.series_banner_url(show_obj, thumb=True)
+            img_url = sickchill.indexer.series_banner_url(show_obj, thumb=True)
             dest_path = self.banner_thumb_path(show_obj.indexerid)
         elif img_type == self.FANART:
-            img_url = sickbeard.show_indexer.series_fanart_url(show_obj)
+            img_url = sickchill.indexer.series_fanart_url(show_obj)
             dest_path = self.fanart_path(show_obj.indexerid)
         else:
             logger.log("Invalid cache image type: " + str(img_type), logger.ERROR)

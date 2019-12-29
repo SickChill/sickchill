@@ -30,6 +30,7 @@ from fanart.core import Request as fanartRequest
 from tmdb_api.tmdb_api import TMDB
 
 import sickbeard
+import sickchill
 from sickbeard import helpers, logger
 from sickbeard.metadata import helpers as metadata_helpers
 from sickbeard.show_name_helpers import allPossibleShowNames
@@ -452,7 +453,7 @@ class GenericMetadata(object):
         ep_obj: a TVEpisode object for which to generate a thumbnail
         """
 
-        thumb_url = sickbeard.show_indexer.episode_image_url(ep_obj)
+        thumb_url = sickchill.indexer.episode_image_url(ep_obj)
         if not thumb_url:
             logger.log("No thumb is available for this episode, not creating a thumb", logger.DEBUG)
             return False
@@ -491,7 +492,7 @@ class GenericMetadata(object):
             logger.log("Fanart path for show {} came back blank, skipping this image".format(show_obj.title), logger.DEBUG)
             return False
 
-        fanart_url = sickbeard.show_indexer.series_fanart_url(show_obj)
+        fanart_url = sickchill.indexer.series_fanart_url(show_obj)
         if not fanart_url:
             logger.log("Fanart url not found for show {}, skipping this image".format(show_obj.title), logger.DEBUG)
             return False
@@ -517,7 +518,7 @@ class GenericMetadata(object):
             logger.log("Banner path for show {} came back blank, skipping this image".format(show_obj.title), logger.DEBUG)
             return False
 
-        poster_url = sickbeard.show_indexer.series_poster_url(show_obj)
+        poster_url = sickchill.indexer.series_poster_url(show_obj)
         if not poster_url:
             logger.log("Poster url not found for show {}, skipping this image".format(show_obj.title), logger.DEBUG)
             return False
@@ -542,7 +543,7 @@ class GenericMetadata(object):
             logger.log("Banner path for show {} came back blank, skipping this image".format(show_obj.title), logger.DEBUG)
             return False
 
-        banner_url = sickbeard.show_indexer.series_banner_url(show_obj)
+        banner_url = sickchill.indexer.series_banner_url(show_obj)
         if not banner_url:
             logger.log("Banner url not found for show {}, skipping this image".format(show_obj.title), logger.DEBUG)
             return False
@@ -561,7 +562,7 @@ class GenericMetadata(object):
         show_obj: a TVShow object for which to save the season thumbs
         """
 
-        season_poster_url = sickbeard.show_indexer.season_poster_url(show_obj, season)
+        season_poster_url = sickchill.indexer.season_poster_url(show_obj, season)
         if not season_poster_url:
             logger.log("Season poster url not found for season {}, skipping this season".format(season), logger.DEBUG)
             return False
@@ -585,7 +586,7 @@ class GenericMetadata(object):
 
         show_obj: a TVShow object for which to save the season thumbs
         """
-        season_banner_url = sickbeard.show_indexer.season_banner_url(show_obj, season)
+        season_banner_url = sickchill.indexer.season_banner_url(show_obj, season)
         if not season_banner_url:
             logger.log("Url for season banner {} came back blank, skipping this season".format(season), logger.DEBUG)
             return False
@@ -603,7 +604,7 @@ class GenericMetadata(object):
         return self._write_image(image_data, season_banner_file_path)
 
     def save_season_all_poster(self, show_obj):
-        poster_url = sickbeard.show_indexer.series_poster_url(show_obj)
+        poster_url = sickchill.indexer.series_poster_url(show_obj)
         if not poster_url:
             logger.log("Url for season all poster came back blank, skipping this season", logger.DEBUG)
             return False
@@ -621,7 +622,7 @@ class GenericMetadata(object):
         return self._write_image(image_data, season_poster_file_path)
 
     def save_season_all_banner(self, show_obj):
-        banner_url = sickbeard.show_indexer.series_banner_url(show_obj)
+        banner_url = sickchill.indexer.series_banner_url(show_obj)
         if not banner_url:
             logger.log("Url for season all banner came back blank, skipping this season", logger.DEBUG)
             return False

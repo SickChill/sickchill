@@ -30,6 +30,7 @@ from requests.compat import unquote_plus
 from tornado.escape import xhtml_unescape
 
 import sickbeard
+import sickchill
 from sickbeard import classes, config, db, helpers, logger, ui
 from sickbeard.blackandwhitelist import short_group_names
 from sickbeard.common import Quality
@@ -88,13 +89,13 @@ class AddShows(Home):
         final_results = []
 
         # Query Indexers for each search term and build the list of results
-        for i, instance in sickbeard.show_indexer if not int(indexer) else [int(indexer)]:
+        for i, instance in sickchill.indexer if not int(indexer) else [int(indexer)]:
             logger.log("Searching for Show with searchterm(s): {0} on Indexer: {1}".format(
                 searchTerms, 'theTVDB'), logger.DEBUG)
             for searchTerm in searchTerms:
                 # noinspection PyBroadException
                 try:
-                    indexerResults = sickbeard.show_indexer[i].search(searchTerm, language=lang)
+                    indexerResults = sickchill.indexer[i].search(searchTerm, language=lang)
                 except Exception:
                     # logger.log(traceback.format_exc(), logger.ERROR)
                     continue
@@ -103,11 +104,11 @@ class AddShows(Home):
                 results.setdefault(i, []).extend(indexerResults)
 
         for i, shows in six.iteritems(results):
-            final_results.extend({(sickbeard.show_indexer.name(i), i, sickbeard.show_indexer[i].show_url, show['id'],
+            final_results.extend({(sickchill.indexer.name(i), i, sickchill.indexer[i].show_url, show['id'],
                                    show['seriesName'], show['firstAired'], sickbeard.tv.Show.find(sickbeard.showList, show['id']) is not None
                                    ) for show in shows})
 
-        lang_id = sickbeard.show_indexer.lang_dict[lang]
+        lang_id = sickchill.indexer.lang_dict[lang]
         return json.dumps({'results': final_results, 'langid': lang_id, 'success': len(final_results) > 0})
 
     def massAddTable(self, rootDir=None):
@@ -179,7 +180,7 @@ class AddShows(Home):
 
                         # default to TVDB if indexer was not detected
                         if show_name and not (indexer or indexer_id):
-                            (show_name_, idxr, i) = sickbeard.show_indexer.search_indexers_for_show_name(show_name)
+                            (show_name_, idxr, i) = sickchill.indexer.search_indexers_for_show_name(show_name)
 
                             # set indexer and indexer_id from found info
                             if not indexer and idxr:
@@ -237,7 +238,7 @@ class AddShows(Home):
             default_show_name=default_show_name, other_shows=other_shows,
             provided_show_dir=show_dir, provided_indexer_id=provided_indexer_id,
             provided_indexer_name=provided_indexer_name, provided_indexer=provided_indexer,
-            indexers=sickbeard.show_indexer, whitelist=[], blacklist=[], groups=[],
+            indexers=sickchill.indexer, whitelist=[], blacklist=[], groups=[],
             title=_('New Show'), header=_('New Show'), topmenu='home',
             controller="addShows", action="newShow"
         )
@@ -440,7 +441,7 @@ class AddShows(Home):
             logger.log("There was an error creating the show, no root directory setting found")
             return _("No root directories setup, please go back and add one.")
 
-        show_name = sickbeard.show_indexer[1].get_show_by_id(indexer_id, indexer_lang).seriesName
+        show_name = sickchill.indexer[1].get_show_by_id(indexer_id, indexer_lang).seriesName
         show_dir = None
 
         if not show_name:

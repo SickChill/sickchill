@@ -30,6 +30,7 @@ import time
 import traceback
 
 import sickbeard
+import sickchill
 from sickbeard import db, logger
 from sickbeard.scene_exceptions import xem_session
 from sickchill.helper.exceptions import ex
@@ -538,7 +539,7 @@ def xem_refresh(indexer_id, indexer, force=False):
 
         except Exception as e:
             logger.log("Exception while refreshing XEM data for show {} on {}: {}".format(
-                indexer_id, sickbeard.show_indexer.name(indexer), ex(e)), logger.WARNING)
+                indexer_id, sickchill.indexer.name(indexer), ex(e)), logger.WARNING)
             logger.log(traceback.format_exc(), logger.DEBUG)
 
 

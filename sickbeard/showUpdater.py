@@ -28,6 +28,7 @@ import threading
 import time
 
 import sickbeard
+import sickchill
 from sickbeard import db, helpers, logger, network_timezones, ui
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
 
@@ -59,7 +60,7 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
             # We query tvdb for updates starting from the last update time from the cache until now with increments of 7 days
             for fromTime in range(last_update, update_timestamp - self.seven_days, self.seven_days):  # increments of 604800 sec = 7*24*60*60
                 try:
-                    TvdbData = sickbeard.show_indexer[1].updates(fromTime=fromTime, toTime=fromTime + self.seven_days)
+                    TvdbData = sickchill.indexer[1].updates(fromTime=fromTime, toTime=fromTime + self.seven_days)
                     TvdbData.series()
                     updated_shows.extend([d['id'] for d in TvdbData.series])
 

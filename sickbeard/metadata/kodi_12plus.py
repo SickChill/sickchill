@@ -26,6 +26,7 @@ import six
 from babelfish import Country
 
 import sickbeard
+import sickchill
 from sickbeard import helpers, logger
 from sickbeard.metadata import generic
 from sickchill.helper.common import dateFormat
@@ -109,7 +110,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         """
         tv_node = etree.Element("tvshow")
 
-        myShow = sickbeard.show_indexer.series(show_obj)
+        myShow = sickchill.indexer.series(show_obj)
         if not myShow:
             logger.log("Unable to find show with id {} on {}, skipping it".format(
                 show_obj.indexerid, show_obj.idxr.name.name))
@@ -221,7 +222,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
 
         eps_to_write = [ep_obj] + ep_obj.relatedEps
 
-        myShow = sickbeard.show_indexer.series(ep_obj.show)
+        myShow = sickchill.indexer.series(ep_obj.show)
         if not myShow:
             logger.log("Unable to find {} on {} while creating meta files, skipping".format(
                 ep_obj.show.indexerid, ep_obj.show.idxr.name), logger.ERROR)
@@ -235,7 +236,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         # write an NFO containing info for all matching episodes
         for curEpToWrite in eps_to_write:
 
-            myEp = sickbeard.show_indexer.episode(curEpToWrite.show, curEpToWrite.season, curEpToWrite.episode)
+            myEp = sickchill.indexer.episode(curEpToWrite.show, curEpToWrite.season, curEpToWrite.episode)
             if not myEp:
                 logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
                            "has it been removed? Should I delete from db?".format(

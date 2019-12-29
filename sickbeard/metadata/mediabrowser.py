@@ -27,6 +27,7 @@ import re
 import six
 
 import sickbeard
+import sickchill
 from sickbeard import helpers, logger
 from sickbeard.metadata import generic
 from sickchill.helper.common import dateFormat, replace_extension
@@ -394,7 +395,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             'Writer': []
         }
 
-        myShow = sickbeard.show_indexer.series(ep_obj.show)
+        myShow = sickchill.indexer.series(ep_obj.show)
         if not myShow:
             logger.log("Unable to connect to {} while creating meta files - skipping".format(ep_obj.show.idxr.name))
             return False
@@ -404,7 +405,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         # write an MediaBrowser XML containing info for all matching episodes
         for curEpToWrite in eps_to_write:
 
-            myEp = sickbeard.show_indexer.episode(ep_obj.show, curEpToWrite.season, curEpToWrite.episode)
+            myEp = sickchill.indexer.episode(ep_obj.show, curEpToWrite.season, curEpToWrite.episode)
             if not myEp:
                 continue
 

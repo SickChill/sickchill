@@ -35,6 +35,7 @@ import requests
 from configobj import ConfigObj
 from tornado.locale import load_gettext_translations
 
+import sickchill
 from sickbeard import (auto_postprocessor, clients, dailysearcher, db, helpers, logger, metadata, naming, post_processing_queue, properFinder, providers,
                        scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, showUpdater, subtitles, traktChecker, versionChecker)
 from sickbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
@@ -46,7 +47,6 @@ from sickbeard.providers.rsstorrent import TorrentRssProvider
 from sickchill.helper import setup_github
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
-from sickchill.indexers import ShowIndexer
 from sickchill.system.Shutdown import Shutdown
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
@@ -114,7 +114,6 @@ subtitlesFinderScheduler = None
 traktCheckerScheduler = None
 
 showList = []
-show_indexer = None
 
 providerList = []
 newznabProviderList = []
@@ -737,8 +736,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             NEWS_LATEST, SOCKET_TIMEOUT, SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKCHILL_BACKGROUND, \
             SICKCHILL_BACKGROUND_PATH, FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, \
             SLACK_NOTIFY_DOWNLOAD, SLACK_NOTIFY_SUBTITLEDOWNLOAD, SLACK_WEBHOOK, SLACK_ICON_EMOJI, USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK,\
-            USE_MATRIX, MATRIX_NOTIFY_SNATCH, MATRIX_NOTIFY_DOWNLOAD, MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM, \
-            show_indexer
+            USE_MATRIX, MATRIX_NOTIFY_SNATCH, MATRIX_NOTIFY_DOWNLOAD, MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM
 
         if __INITIALIZED__:
             return False
@@ -943,7 +941,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', min_val=1, max_val=2, def_val=1)
         INDEXER_TIMEOUT = check_setting_int(CFG, 'General', 'indexer_timeout', 20, min_val=0)
 
-        show_indexer = ShowIndexer()
+        sickchill.indexer = sickchill.ShowIndexer()
 
         TRASH_REMOVE_SHOW = check_setting_bool(CFG, 'General', 'trash_remove_show')
         TRASH_ROTATE_LOGS = check_setting_bool(CFG, 'General', 'trash_rotate_logs')

@@ -26,6 +26,7 @@ import sys
 from six.moves import urllib
 
 import sickbeard
+import sickchill
 from sickbeard.common import Quality, USER_AGENT
 from sickchill.helper.common import dateTimeFormat
 
@@ -165,7 +166,7 @@ class Proper(object):  # pylint: disable=too-few-public-methods, too-many-instan
     def __str__(self):
         return '{date} {name} {season}x{episode} of {series_id} from {indexer}'.format(
             date=self.date, name=self.name, season=self.season, episode=self.episode,
-            series_id=self.indexerid, indexer=sickbeard.show_indexer.name(self.indexer))
+            series_id=self.indexerid, indexer=sickchill.indexer.name(self.indexer))
 
 
 class ErrorViewer(object):

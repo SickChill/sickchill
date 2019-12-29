@@ -8,6 +8,7 @@
     from sickbeard.filters import hide
     from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
     from sickbeard.helpers import anon_url, LOCALE_NAMES
+    import sickchill
 
     def lang_name(code):
         return LOCALE_NAMES.get(code, {}).get("name", u"Unknown")
@@ -44,7 +45,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm input350
-                                        bfh-languages" data-language=${sickbeard.INDEXER_DEFAULT_LANGUAGE} data-available="${','.join(sickbeard.show_indexer.languages}"></select>
+                                        bfh-languages" data-language=${sickbeard.INDEXER_DEFAULT_LANGUAGE} data-available="${','.join(sickchill.indexer.languages}"></select>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -192,7 +193,7 @@
                                     <div class="col-md-12">
                                         <select id="indexer_default" name="indexer_default" class="form-control input-sm input150">
                                             <option value="0" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == 0]}>${_('All Indexers')}</option>
-                                            % for indexer, instance in sickbeard.show_indexer:
+                                            % for indexer, instance in sickchill.indexer:
                                                 <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${instance.name}</option>
                                             % endfor
                                         </select>

@@ -24,6 +24,7 @@ from libtrakt import TraktAPI
 from libtrakt.exceptions import traktAuthException, traktException, traktServerBusy
 
 import sickbeard
+import sickchill
 from sickbeard import logger
 from sickchill.helper.exceptions import ex
 
@@ -56,7 +57,6 @@ class Notifier(object):
         ep_obj: The TVEpisode object to add to trakt
         """
 
-        trakt_id = ep_obj.show.idxr.trakt_id
         trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
         if sickbeard.USE_TRAKT:
@@ -67,7 +67,7 @@ class Notifier(object):
                         {
                             'title': ep_obj.show.name,
                             'year': ep_obj.show.startyear,
-                            'ids': {trakt_id: ep_obj.show.indexerid},
+                            'ids': {ep_obj.show.idxr.slug: ep_obj.show.indexerid},
                         }
                     ]
                 }
@@ -112,13 +112,12 @@ class Notifier(object):
             try:
                 # URL parameters
                 if show_obj is not None:
-                    trakt_id = show_obj.idxr.trakt_id
                     data = {
                         'shows': [
                             {
                                 'title': show_obj.name,
                                 'year': show_obj.startyear,
-                                'ids': {trakt_id: show_obj.indexerid},
+                                'ids': {show_obj.idxr.slug: show_obj.indexerid},
                             }
                         ]
                     }
@@ -171,9 +170,9 @@ class Notifier(object):
     def trakt_show_data_generate(data):
 
         showList = []
+        # TODO: is indexer and indexerid swapped here or in traktChecker:591? !Important
         for indexer, indexerid, title, year in data:
-            trakt_id = sickbeard.show_indexer[indexer].trakt_id
-            show = {'title': title, 'year': year, 'ids': {trakt_id: indexerid}}
+            show = {'title': title, 'year': year, 'ids': {sickchill.indexer.slug(indexer): indexerid}}
             showList.append(show)
 
         post_data = {'shows': showList}

@@ -33,6 +33,7 @@ from imdb import imdb
 from unidecode import unidecode
 
 import sickbeard
+import sickchill
 from sickbeard import db, helpers, image_cache, logger, network_timezones, notifiers, postProcessor, subtitles
 from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
@@ -162,7 +163,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
     @property
     def idxr(self):
-        return sickbeard.show_indexer[self.indexer]
+        return sickchill.indexer[self.indexer]
 
     @property
     def indexer_name(self):
@@ -806,7 +807,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         logger.log(str(self.indexerid) + ": Loading show info from " + self.indexer_name, logger.DEBUG)
 
-        myShow = sickbeard.show_indexer.series(self)
+        myShow = sickchill.indexer.series(self)
         myShow.info()
         if not myShow or not getattr(myShow, 'seriesName'):
             raise AttributeError("Found {0}, but attribute 'seriesName' was empty.".format(self.indexerid))

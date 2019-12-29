@@ -29,6 +29,7 @@ from imdb import _exceptions as imdb_exceptions
 from libtrakt import TraktAPI
 
 import sickbeard
+import sickchill
 from sickbeard import generic_queue, logger, name_cache, notifiers, scene_numbering, ui
 from sickbeard.blackandwhitelist import BlackAndWhiteList
 from sickbeard.common import WANTED
@@ -314,7 +315,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
         logger.log('Starting to add show {0}'.format('by ShowDir: {0}'.format(self.showDir) if self.showDir else 'by Indexer Id: {0}'.format(self.indexer_id)))
         # make sure the Indexer IDs are valid
         try:
-            s = sickbeard.show_indexer.series_by_id(id=self.indexer_id, indexer=self.indexer, language=self.lang)
+            s = sickchill.indexer.series_by_id(id=self.indexer_id, indexer=self.indexer, language=self.lang)
 
             # Let's try to create the show Dir if it's not provided. This way we force the show dir to build build using the
             # Indexers provided series name
@@ -338,7 +339,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
             if getattr(s, 'seriesName', None) is None:
                 # noinspection PyPep8
                 error_string = 'Show in {0} has no name on {1}, probably searched with the wrong language. Delete .nfo and add manually in the correct language.'.format(
-                    self.showDir, sickbeard.show_indexer.name(self.indexer))
+                    self.showDir, sickchill.indexer.name(self.indexer))
 
                 logger.log(error_string, logger.WARNING)
                 ui.notifications.error('Unable to add show', error_string)
@@ -349,7 +350,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
             # if the show has no episodes/seasons
             if not s:
                 error_string = 'Show {0} is on {1} but contains no season/episode data.'.format(
-                    s[b'seriesName'], sickbeard.show_indexer.name(self.indexer))
+                    s[b'seriesName'], sickchill.indexer.name(self.indexer))
 
                 logger.log(error_string)
                 ui.notifications.error('Unable to add show', error_string)
@@ -358,14 +359,13 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                 return
         except Exception as error:
             error_string = 'Unable to look up the show in {0} on {1} using ID {2}, not using the NFO. Delete .nfo and try adding manually again.'.format(
-                self.showDir, sickbeard.show_indexer.name(self.indexer), self.indexer_id)
+                self.showDir, sickchill.indexer.name(self.indexer), self.indexer_id)
 
             logger.log('{0}: {1}'.format(error_string, error), logger.ERROR)
             ui.notifications.error(
                 'Unable to add show', error_string)
 
             if sickbeard.USE_TRAKT:
-                trakt_id = sickbeard.show_indexer.trakt_id(self.indexer)
                 trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
                 title = self.showDir.split('/')[-1]
@@ -373,15 +373,10 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                     'shows': [
                         {
                             'title': title,
-                            'ids': {}
+                            'ids': {sickchill.indexer.slug(self.indexer): self.indexer_id}
                         }
                     ]
                 }
-                if trakt_id == 'tvdb_id':
-                    data['shows'][0]['ids']['tvdb'] = self.indexer_id
-                else:
-                    data['shows'][0]['ids']['tvrage'] = self.indexer_id
-
                 trakt_api.traktRequest('sync/watchlist/remove', data, method='POST')
 
             self._finish_early()
@@ -434,7 +429,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
 
         except Exception as error:
             error_string = 'Unable to add {0} due to an error with {1}'.format(
-                self.show.name if self.show else 'show', sickbeard.show_indexer.name(self.indexer))
+                self.show.name if self.show else 'show', sickchill.indexer.name(self.indexer))
 
             logger.log('{0}: {1}'.format(error_string, error), logger.ERROR)
             ui.notifications.error('Unable to add show', error_string)
@@ -733,6 +728,7 @@ class QueueItemRemove(ShowQueueItem):
 
         # If any notification fails, don't stop postProcessor
         try:
+            # TODO: ep_obj is undefined here, so all of these will fail.
             # send notifications
             notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))  # pylint: disable=protected-access
 

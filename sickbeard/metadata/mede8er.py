@@ -27,6 +27,7 @@ import os
 import six
 
 import sickbeard
+import sickchill
 from sickbeard import helpers, logger
 from sickbeard.metadata import mediabrowser
 from sickchill.helper.common import dateFormat, replace_extension
@@ -108,7 +109,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
         tv_node.attrib["isSet"] = "false"
         tv_node.attrib["isTV"] = "true"
 
-        myShow = sickbeard.show_indexer.series(show_obj)
+        myShow = sickchill.indexer.series(show_obj)
         if not myShow:
             logger.log("Unable to find show with id {} on {}, skipping it".format(show_obj.indexerid, show_obj.idxr.name))
             return False
@@ -199,7 +200,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         eps_to_write = [ep_obj] + ep_obj.relatedEps
 
-        myShow = sickbeard.show_indexer.series(ep_obj.show)
+        myShow = sickchill.indexer.series(ep_obj.show)
         if not myShow:
             logger.log("Unable to connect to {} while creating meta files - skipping".format(ep_obj.show.idxr.name))
             return False

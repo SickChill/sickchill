@@ -33,6 +33,7 @@ from six.moves import urllib
 from tornado.web import RequestHandler
 
 import sickbeard
+import sickchill
 from sickbeard import classes, db, helpers, image_cache, logger, network_timezones, sbdatetime, search_queue, ui
 from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN,
                               WANTED)
@@ -1717,7 +1718,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDSickBeardSearchIndexers, self).__init__(args, kwargs)
-        self.valid_languages = sickbeard.show_indexer.lang_dict
+        self.valid_languages = sickchill.indexer.lang_dict
         self.name, args = self.check_params(args, kwargs, "name", None, False, "string", [])
         self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string",
                                             self.valid_languages.keys())
@@ -1731,7 +1732,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
         lang_id = self.valid_languages[self.lang]
 
         if self.name and not self.indexerid:  # only name was given
-            search_results = sickbeard.show_indexer.search_indexers_for_show_name(str(self.name).encode(), self.lang)
+            search_results = sickchill.indexer.search_indexers_for_show_name(str(self.name).encode(), self.lang)
             for indexer, indexer_results in search_results.iteritems():
                 for result in indexer_results:
                     # Skip it if it's in our show list already, and we only want new shows
@@ -1750,7 +1751,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
                 return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
 
         elif self.indexerid:
-            indexer, result = sickbeard.show_indexer.search_indexers_for_show_id(self.indexerid, self.lang)
+            indexer, result = sickchill.indexer.search_indexers_for_series_id(indexerid=self.indexerid, language=self.lang)
             if not indexer:
                 logger.log("API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
                 return _responds(RESULT_SUCCESS, {"results": [], "langid": lang_id})
@@ -2112,7 +2113,7 @@ class CMDShowAddNew(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDShowAddNew, self).__init__(args, kwargs)
-        self.valid_languages = sickbeard.show_indexer.lang_dict
+        self.valid_languages = sickchill.indexer.lang_dict
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.location, args = self.check_params(args, kwargs, "location", None, False, "string", [])
         self.initial, args = self.check_params(

@@ -9,6 +9,7 @@ from libtrakt.exceptions import traktException
 from libtrakt.trakt import TraktAPI
 
 import sickbeard
+import sickchill
 from sickbeard import helpers, logger
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex, MultipleShowObjectsException
@@ -96,7 +97,7 @@ class traktTrending(object):
         """ Get poster image url from TVDB """
         image_url = None
 
-        indexer_show_obj = sickbeard.show_indexer['tvdb'].series(indexer_id)
+        indexer_show_obj = sickchill.indexer['tvdb'].series(indexer_id)
 
         if getattr(indexer_show_obj, 'poster', None):
             image_url = indexer_show_obj['poster'].replace('posters', '_cache/posters')

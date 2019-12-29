@@ -61,6 +61,7 @@ from six.moves import urllib
 from tornado._locale_data import LOCALE_NAMES
 
 import sickbeard
+import sickchill
 from sickbeard import classes, db, logger
 from sickbeard.common import USER_AGENT
 from sickchill.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS
@@ -1022,13 +1023,16 @@ def get_show(name, tryIndexers=False):
         # try indexers
         if not showObj and tryIndexers:
             showObj = Show.find(
-                sickbeard.showList, sickbeard.show_indexer.search_indexers_for_show_id(full_sanitizeSceneName(name))[1].id)
+                sickbeard.showList, sickchill.indexer.search_indexers_for_series_id(name=full_sanitizeSceneName(name))[1].id)
 
         # try scene exceptions
         if not showObj:
-            ShowID = sickbeard.scene_exceptions.get_scene_exception_by_name(name)[0]
-            if ShowID:
-                showObj = Show.find(sickbeard.showList, int(ShowID))
+            scene_exceptions = sickbeard.scene_exceptions.get_scene_exception_by_name_multiple(name)
+            for scene_exception in scene_exceptions:
+                if scene_exception[1]:
+                    showObj = Show.find(sickbeard.showList, scene_exception[1])
+                    if showObj:
+                        break
 
         # add show to cache
         if showObj and not fromCache:

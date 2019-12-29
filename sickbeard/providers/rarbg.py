@@ -89,7 +89,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
         if ep_obj is not None:
             ep_indexerid = ep_obj.show.indexerid
-            ep_indexer = ep_obj.show.idxr.trakt_id
+            ep_indexer = ep_obj.show.idxr.slug
         else:
             ep_indexerid = None
             ep_indexer = None

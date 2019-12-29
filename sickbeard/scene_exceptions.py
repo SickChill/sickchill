@@ -28,6 +28,7 @@ import adba
 import six
 
 import sickbeard
+import sickchill
 from sickbeard import db, helpers, logger
 
 exception_dict = {}
@@ -194,7 +195,7 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
     """
 
     do_refresh = False
-    for indexer, instance in sickbeard.show_indexer:
+    for indexer, instance in sickchill.indexer:
         if shouldRefresh(instance.name):
             do_refresh = True
 
@@ -219,17 +220,17 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
             # When jdata is None, trouble connecting to github, or reading file failed
             logger.log("Check scene exceptions update failed. Unable to update from {0}".format(loc), logger.DEBUG)
         else:
-            for indexer, instance in sickbeard.show_indexer:
+            for indexer, instance in sickchill.indexer:
                 try:
                     setLastRefresh(instance.name)
-                    if instance.trakt_id not in jdata:
+                    if instance.slug not in jdata:
                         continue
 
-                    for indexer_id in jdata[instance.trakt_id]:
+                    for indexer_id in jdata[instance.slug]:
                         alias_list = [
                             {scene_exception: int(scene_season)}
-                            for scene_season in jdata[instance.trakt_id][indexer_id]
-                            for scene_exception in jdata[instance.trakt_id][indexer_id][scene_season]
+                            for scene_season in jdata[instance.slug][indexer_id]
+                            for scene_exception in jdata[instance.slug][indexer_id][scene_season]
                         ]
                         exception_dict[indexer_id] = alias_list
                 except Exception:
@@ -314,10 +315,10 @@ xem_session = helpers.make_session()
 
 def _xem_exceptions_fetcher():
     if shouldRefresh('xem'):
-        for indexer, instance in sickbeard.show_indexer:
+        for indexer, instance in sickchill.indexer:
             logger.log("Checking for XEM scene exception updates for {0}".format(instance.name))
 
-            url = "http://thexem.de/map/allNames?origin={0}&seasonNumbers=1".format(instance.trakt_id)
+            url = "http://thexem.de/map/allNames?origin={0}&seasonNumbers=1".format(instance.slug)
 
             parsed_json = helpers.getURL(url, session=xem_session, timeout=90, returns='json')
             if not parsed_json:

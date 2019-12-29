@@ -46,6 +46,8 @@ import shutil
 import sys
 import unittest
 
+import sickchill
+
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -55,7 +57,7 @@ from sickbeard.databases import cache_db, failed_db, mainDB
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.tv import TVEpisode, TVShow
 import sickbeard
-from sickchill.indexers import ShowIndexer
+from sickchill.show.indexers import ShowIndexer
 
 # pylint: disable=import-error
 
@@ -140,7 +142,7 @@ create_test_cache_folder()
 # pylint: disable=no-member
 sickbeard.logger.init_logging(False, True)
 
-sickbeard.show_indexer = ShowIndexer()
+sickchill.indexer = ShowIndexer()
 
 
 # =================
