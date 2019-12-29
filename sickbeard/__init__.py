@@ -32,12 +32,14 @@ from threading import Lock
 
 import rarfile
 import requests
-import sickchill
 from configobj import ConfigObj
-from sickbeard import auto_postprocessor, clients, dailysearcher, db, helpers, logger, metadata, naming, post_processing_queue, properFinder, providers, \
-    scene_exceptions, scheduler, searchBacklog, search_queue, show_queue, subtitles, traktChecker, versionChecker
+from tornado.locale import load_gettext_translations
+
+import sickchill
+from sickbeard import (auto_postprocessor, clients, dailysearcher, db, helpers, logger, metadata, naming, post_processing_queue, properFinder, providers,
+                       scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker, versionChecker)
 from sickbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
-from sickbeard.config import ConfigMigrator, check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str
+from sickbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
 from sickbeard.databases import cache_db, failed_db, mainDB
 from sickbeard.numdict import NumDict
 from sickbeard.providers.newznab import NewznabProvider
@@ -47,7 +49,6 @@ from sickchill.helper import setup_github
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
 from sickchill.system.Shutdown import Shutdown
-from tornado.locale import load_gettext_translations
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 
