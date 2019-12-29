@@ -1,0 +1,11 @@
+extraction:
+  python:
+    python_setup:
+      version: 2
+      requirements_files:
+        # - requirements/requirements.txt
+        - false
+      setup_py: false
+    extraction:
+      exclude:
+        - lib
