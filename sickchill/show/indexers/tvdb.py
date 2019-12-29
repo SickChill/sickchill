@@ -31,7 +31,7 @@ class TVDB(Indexer):
     def __init__(self):
         super(TVDB, self).__init__()
         self.name = 'theTVDB'
-        self.slug = 'slug'
+        self.slug = 'tvdb'
         self.api_key = 'F9C450E78D99172E'
         self.show_url = 'http://thetvdb.com/?tab=series&id='
         self.base_url = 'http://thetvdb.com/api/%(apikey)s/series/'

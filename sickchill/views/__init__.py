@@ -29,7 +29,6 @@ from authentication import LoginHandler, LogoutHandler
 from browser import WebFileBrowser
 from changelog import HomeChangeLog
 from common import PageTemplate
-
 from history import History
 from home import Home
 from index import BaseHandler, WebHandler, WebRoot
