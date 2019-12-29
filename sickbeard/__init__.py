@@ -32,22 +32,22 @@ from threading import Lock
 
 import rarfile
 import requests
-from configobj import ConfigObj
-from tornado.locale import load_gettext_translations
-
 import sickchill
-from sickbeard import (auto_postprocessor, clients, dailysearcher, db, helpers, logger, metadata, naming, post_processing_queue, properFinder, providers,
-                       scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, showUpdater, subtitles, traktChecker, versionChecker)
+from configobj import ConfigObj
+from sickbeard import auto_postprocessor, clients, dailysearcher, db, helpers, logger, metadata, naming, post_processing_queue, properFinder, providers, \
+    scene_exceptions, scheduler, searchBacklog, search_queue, show_queue, subtitles, traktChecker, versionChecker
 from sickbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
-from sickbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
+from sickbeard.config import ConfigMigrator, check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str
 from sickbeard.databases import cache_db, failed_db, mainDB
 from sickbeard.numdict import NumDict
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.providers.rsstorrent import TorrentRssProvider
+from sickchill import show_updater
 from sickchill.helper import setup_github
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
 from sickchill.system.Shutdown import Shutdown
+from tornado.locale import load_gettext_translations
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 
@@ -1552,7 +1552,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         )
 
         showUpdateScheduler = scheduler.Scheduler(
-            showUpdater.ShowUpdater(),
+            show_updater.ShowUpdater(),
             run_delay=datetime.timedelta(seconds=20),
             cycleTime=datetime.timedelta(hours=1),
             start_time=datetime.time(hour=SHOWUPDATE_HOUR),

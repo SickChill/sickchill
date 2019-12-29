@@ -24,7 +24,6 @@ import datetime
 import os
 import re
 
-import sickbeard
 import sickchill
 from sickbeard import helpers, logger
 from sickbeard.metadata import generic

@@ -25,11 +25,10 @@ import datetime
 import io
 import os
 
-import sickbeard
 from sickbeard import helpers, logger
 from sickbeard.metadata import generic
 from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex, ShowNotFoundException
+from sickchill.helper.exceptions import ex
 
 
 class TIVOMetadata(generic.GenericMetadata):
@@ -165,7 +164,7 @@ class TIVOMetadata(generic.GenericMetadata):
 
         myShow = ep_obj.idxr.series(ep_obj.show)
         if not myShow:
-            logger.log("Unable to connect to {} while creating meta files - skipping - {}".format(ep_obj.indexer_name, str(e)), logger.ERROR)
+            logger.log("Unable to connect to {} while creating meta files for {}, skipping".format(ep_obj.indexer_name, ep_obj.name), logger.DEBUG)
             return False
 
         for curEpToWrite in eps_to_write:

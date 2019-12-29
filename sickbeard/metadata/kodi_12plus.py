@@ -25,7 +25,6 @@ import re
 import six
 from babelfish import Country
 
-import sickbeard
 import sickchill
 from sickbeard import helpers, logger
 from sickbeard.metadata import generic

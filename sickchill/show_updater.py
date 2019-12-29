@@ -23,13 +23,12 @@
 
 from __future__ import unicode_literals
 
-import json
 import threading
 import time
 
 import sickbeard
 import sickchill
-from sickbeard import db, helpers, logger, network_timezones, ui
+from sickbeard import db, logger, network_timezones, ui
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
 
 

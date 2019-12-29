@@ -32,7 +32,6 @@ from sickbeard import helpers, logger
 from sickbeard.metadata import generic
 from sickchill.helper.common import dateFormat, replace_extension
 from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex
 
 try:
     import xml.etree.cElementTree as etree

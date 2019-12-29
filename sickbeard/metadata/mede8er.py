@@ -26,7 +26,6 @@ import os
 
 import six
 
-import sickbeard
 import sickchill
 from sickbeard import helpers, logger
 from sickbeard.metadata import mediabrowser
