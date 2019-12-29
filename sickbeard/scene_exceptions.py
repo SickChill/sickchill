@@ -329,12 +329,13 @@ def _xem_exceptions_fetcher():
             if parsed_json['result'] == 'failure':
                 continue
 
-            for indexerid, names in six.iteritems(parsed_json['data']):
-                try:
-                    xem_exception_dict[int(indexerid)] = names
-                except Exception as error:
-                    logger.log("XEM: Rejected entry: indexerid:{0}; names:{1}".format(indexerid, names), logger.WARNING)
-                    logger.log("XEM: Rejected entry error message:{0}".format(error), logger.DEBUG)
+            if parsed_json['data']:
+                for indexerid, names in six.iteritems(parsed_json['data']):
+                    try:
+                        xem_exception_dict[int(indexerid)] = names
+                    except Exception as error:
+                        logger.log("XEM: Rejected entry: indexerid:{0}; names:{1}".format(indexerid, names), logger.WARNING)
+                        logger.log("XEM: Rejected entry error message:{0}".format(error), logger.DEBUG)
 
         setLastRefresh('xem')
 
