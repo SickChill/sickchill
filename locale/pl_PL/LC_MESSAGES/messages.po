@@ -245,7 +245,7 @@ msgstr "Pominięto"
 #: gui/slick/views/manage_backlogOverview.mako:26
 #: gui/slick/views/manage_backlogOverview.mako:66 sickbeard/common.py:609
 msgid "Wanted"
-msgstr "Porządany"
+msgstr "Pożądany"
 
 #: sickbeard/common.py:611
 msgid "Ignored"
