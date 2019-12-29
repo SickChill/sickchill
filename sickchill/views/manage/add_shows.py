@@ -31,7 +31,7 @@ from tornado.escape import xhtml_unescape
 
 import sickbeard
 import sickchill
-from sickbeard import classes, config, db, helpers, logger, ui
+from sickbeard import config, db, helpers, logger, ui
 from sickbeard.blackandwhitelist import short_group_names
 from sickbeard.common import Quality
 from sickbeard.imdbPopular import imdb_popular

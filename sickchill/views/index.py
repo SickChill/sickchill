@@ -24,7 +24,6 @@ import datetime
 import os
 import time
 import traceback
-# noinspection PyCompatibility
 from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
 from operator import attrgetter
