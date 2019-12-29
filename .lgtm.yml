@@ -6,6 +6,6 @@ extraction:
         # - requirements/requirements.txt
         - false
       setup_py: false
-    extraction:
+    index:
       exclude:
         - lib
