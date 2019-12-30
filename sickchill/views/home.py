@@ -18,7 +18,7 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
 import ast
 import datetime
@@ -28,12 +28,9 @@ from operator import attrgetter
 
 import adba
 import six
-from common import PageTemplate
 from github.GithubException import GithubException
-from index import WebRoot
 from libtrakt import TraktAPI
 from requests.compat import unquote_plus
-from routes import Route
 from six.moves import urllib
 from tornado.escape import xhtml_unescape
 
@@ -51,6 +48,10 @@ from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShow
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
+
+from .common import PageTemplate
+from .index import WebRoot
+from .routes import Route
 
 try:
     import json

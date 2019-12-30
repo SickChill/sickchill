@@ -18,7 +18,7 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
 import datetime
 import os
@@ -29,8 +29,6 @@ from mimetypes import guess_type
 from operator import attrgetter
 
 import six
-from api.webapi import function_mapper
-from common import PageTemplate
 from mako.lookup import Template
 from requests.compat import urljoin
 from tornado.concurrent import run_on_executor
@@ -49,6 +47,9 @@ from sickchill.media.ShowNetworkLogo import ShowNetworkLogo
 from sickchill.media.ShowPoster import ShowPoster
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.views.routes import Route
+
+from .api.webapi import function_mapper
+from .common import PageTemplate
 
 try:
     import json

@@ -21,7 +21,7 @@
 
 # pylint: disable=line-too-long
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
 from lib.rtorrent9 import RTorrent  # pylint: disable=import-error
 

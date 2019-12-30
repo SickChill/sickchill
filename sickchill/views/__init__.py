@@ -18,22 +18,21 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
-from calendar import CalendarHandler
-from config import (Config, ConfigAnime, ConfigBackupRestore, ConfigNotifications, ConfigPostProcessing, ConfigProviders, ConfigSearch, ConfigShares,
-                    ConfigSubtitles)
-
-from api import ApiCall, ApiHandler, function_mapper, KeyHandler
-from authentication import LoginHandler, LogoutHandler
-from browser import WebFileBrowser
-from changelog import HomeChangeLog
-from common import PageTemplate
-from history import History
-from home import Home
-from index import BaseHandler, WebHandler, WebRoot
-from irc import HomeIRC
-from logs import ErrorLogs
-from manage import AddShows, Manage, ManageSearches, PostProcess
-from news import HomeNews
-from routes import Route
+from .api import ApiCall, ApiHandler, function_mapper, KeyHandler
+from .authentication import LoginHandler, LogoutHandler
+from .browser import WebFileBrowser
+from .calendar import CalendarHandler
+from .changelog import HomeChangeLog
+from .common import PageTemplate
+from .config import (Config, ConfigAnime, ConfigBackupRestore, ConfigNotifications, ConfigPostProcessing, ConfigProviders, ConfigSearch, ConfigShares,
+                     ConfigSubtitles)
+from .history import History
+from .home import Home
+from .index import BaseHandler, WebHandler, WebRoot
+from .irc import HomeIRC
+from .logs import ErrorLogs
+from .manage import AddShows, Manage, ManageSearches, PostProcess
+from .news import HomeNews
+from .routes import Route
