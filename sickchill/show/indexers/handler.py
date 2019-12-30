@@ -139,8 +139,8 @@ class ShowIndexer(object):
 
         return None, None
 
-    def series_by_id(self, id, indexer, language):
-        series = self.indexers[indexer].series(id=id, language=language)
+    def series_by_id(self, indexerid, indexer, language):
+        series = self.indexers[indexer].series(id=indexerid, language=language)
         try:
             series.info(language)
         except HTTPError:

@@ -129,4 +129,4 @@ class TVDB(Indexer):
         return self.complete_image_url(images.all()[0][('fileName', 'thumbnail')[thumb]])
 
     def episode_image_url(self, episode, thumb=False):
-        return self._complete_image_url(self.episode(episode)[('fileName', 'thumbnail')[thumb]])
+        return self.complete_image_url(self.episode(episode)[('fileName', 'thumbnail')[thumb]])
