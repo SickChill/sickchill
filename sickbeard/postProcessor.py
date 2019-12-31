@@ -19,17 +19,21 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=too-many-lines
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import fnmatch
 import os
 import re
 import stat
 import subprocess
 
+# Third Party Imports
 import adba
 import six
 
+# First Party Imports
 import sickbeard
 from sickbeard import common, db, failed_history, helpers, history, logger, notifiers, show_name_helpers
 from sickbeard.helpers import verify_freespace
@@ -1008,7 +1012,7 @@ class PostProcessor(object):  # pylint: disable=too-many-instance-attributes
                 self._log("File exists and new file is same size, pretending we did something")
                 return True
 
-            if new_ep_quality <= old_ep_quality and old_ep_quality != common.Quality.UNKNOWN and existing_file_status != PostProcessor.DOESNT_EXIST:
+            if new_ep_quality <= old_ep_quality != common.Quality.UNKNOWN and existing_file_status != PostProcessor.DOESNT_EXIST:
                 if self.is_proper and new_ep_quality == old_ep_quality:
                     self._log("New file is a proper/repack, marking it safe to replace")
                 else:

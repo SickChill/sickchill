@@ -24,10 +24,13 @@
 # based on fuzemans work
 # https://github.com/RuudBurger/CouchPotatoServer/blob/develop/couchpotato/core/downloaders/rtorrent/main.py
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Third Party Imports
 from lib.rtorrent import RTorrent  # pylint: disable=import-error
 
+# First Party Imports
 import sickbeard
 from sickbeard import ex, logger
 from sickbeard.clients.generic import GenericClient

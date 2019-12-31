@@ -18,13 +18,17 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Third Party Imports
 import markdown2
 
+# First Party Imports
 import sickbeard
 from sickbeard import logger
 
+# Local Folder Imports
 from .common import PageTemplate
 from .home import Home
 from .routes import Route

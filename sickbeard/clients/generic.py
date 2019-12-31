@@ -17,18 +17,22 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import re
 import time
 from base64 import b16encode, b32decode
 from hashlib import sha1
 
+# Third Party Imports
 import bencode
 import six
 from requests.compat import urlencode
 from requests.models import HTTPError
 
+# First Party Imports
 import sickbeard
 from sickbeard import helpers, logger
 

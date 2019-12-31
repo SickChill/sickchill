@@ -19,8 +19,10 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint:disable=too-many-lines
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import ast
 import base64
 import ctypes
@@ -44,6 +46,7 @@ import zipfile
 from contextlib import closing
 from itertools import cycle, izip
 
+# Third Party Imports
 import adba
 import bencode
 import certifi
@@ -60,6 +63,7 @@ from six.moves import urllib
 # noinspection PyProtectedMember
 from tornado._locale_data import LOCALE_NAMES
 
+# First Party Imports
 import sickbeard
 import sickchill
 from sickbeard import classes, db, logger

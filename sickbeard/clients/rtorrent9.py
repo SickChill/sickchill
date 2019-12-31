@@ -21,10 +21,13 @@
 
 # pylint: disable=line-too-long
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Third Party Imports
 from lib.rtorrent9 import RTorrent  # pylint: disable=import-error
 
+# First Party Imports
 import sickbeard
 from sickbeard import ex, logger
 from sickbeard.clients.generic import GenericClient

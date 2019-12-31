@@ -17,13 +17,17 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import threading
 
+# Third Party Imports
 import six
 
+# First Party Imports
 import sickbeard
 from sickbeard import common, db, logger, scheduler, search_queue, ui
 

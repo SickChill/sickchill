@@ -20,15 +20,19 @@
 #
 ##############################################################################
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import ast
 import socket
 import time
 
+# Third Party Imports
 from requests.compat import urlencode
 from six.moves.http_client import HTTPException, HTTPSConnection
 
+# First Party Imports
 import sickbeard
 from sickbeard import common, db, logger
 from sickchill.helper.encoding import ss

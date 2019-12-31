@@ -1,8 +1,11 @@
 # coding=utf-8
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Third Party Imports
 from feedparser.api import parse
 
+# First Party Imports
 from sickbeard import logger
 from sickchill.helper.exceptions import ex
 

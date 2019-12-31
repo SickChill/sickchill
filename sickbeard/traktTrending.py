@@ -1,13 +1,17 @@
 # coding=utf-8
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 import posixpath
 
+# Third Party Imports
 from libtrakt.exceptions import traktException
 from libtrakt.trakt import TraktAPI
 
+# First Party Imports
 import sickbeard
 import sickchill
 from sickbeard import helpers, logger

@@ -18,12 +18,16 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 
+# Third Party Imports
 import six
 
+# First Party Imports
 import sickbeard
 from sickbeard import db, logger, subtitles as subtitle_module, ui
 from sickbeard.common import Overview, Quality, SNATCHED

@@ -18,11 +18,14 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Third Party Imports
 from tornado.escape import xhtml_unescape
 from tornado.web import addslash
 
+# First Party Imports
 import sickbeard
 from sickbeard import config
 from sickchill.helper.encoding import ss

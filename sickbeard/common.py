@@ -22,9 +22,11 @@
 Common interface for Quality and Status
 """
 
+# Future Imports
 # pylint: disable=line-too-long
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import gettext
 import operator
 import platform
@@ -32,10 +34,12 @@ import re
 import uuid
 from os import path
 
+# Third Party Imports
 from fake_useragent import settings as UA_SETTINGS, UserAgent
 # noinspection PyUnresolvedReferences
 from six.moves import reduce
 
+# First Party Imports
 import sickbeard
 from sickbeard.numdict import NumDict
 from sickchill.helper import video_screen_size

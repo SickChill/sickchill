@@ -18,12 +18,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import functools
 import locale
 
+# First Party Imports
 import sickbeard
 from sickbeard.network_timezones import sb_timezone
 

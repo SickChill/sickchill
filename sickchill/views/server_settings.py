@@ -1,14 +1,18 @@
 # coding=utf-8
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 import threading
 from socket import errno, error as socket_error
 
+# Third Party Imports
 from tornado.ioloop import IOLoop
 from tornado.web import Application, RedirectHandler, StaticFileHandler, url
 
+# First Party Imports
 import sickbeard
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates, generateApiKey
@@ -16,6 +20,7 @@ from sickchill.helper.encoding import ek
 from sickchill.views import CalendarHandler, KeyHandler, LoginHandler, LogoutHandler
 from sickchill.views.api.webapi import ApiHandler
 
+# Local Folder Imports
 from .routes import Route
 
 # class Custom404Handler(RequestHandler):

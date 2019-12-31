@@ -17,13 +17,17 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Third Party Imports
 import tvdbsimple
 from requests.exceptions import HTTPError
 
+# First Party Imports
 from sickbeard.tv import TVEpisode
 
+# Local Folder Imports
 from .base import Indexer
 
 

@@ -17,12 +17,16 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 
+# Third Party Imports
 from requests.compat import urlencode, urljoin
 
+# First Party Imports
 from sickbeard import classes, logger, tvcache
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider

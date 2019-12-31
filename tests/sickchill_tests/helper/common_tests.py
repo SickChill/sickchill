@@ -316,6 +316,7 @@ class CommonTests(unittest.TestCase):
         """
         Test sanitize filename
         """
+        # noinspection PyByteLiteral
         test_cases = {
             None: '',
             42: '',

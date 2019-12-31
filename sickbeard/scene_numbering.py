@@ -23,12 +23,15 @@
 # @copyright: Dermot Buckley
 #
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import time
 import traceback
 
+# First Party Imports
 import sickbeard
 import sickchill
 from sickbeard import db, logger

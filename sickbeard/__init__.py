@@ -18,8 +18,10 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=too-many-lines
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import gettext
 import os
@@ -30,11 +32,13 @@ import socket
 import sys
 from threading import Lock
 
+# Third Party Imports
 import rarfile
 import requests
 from configobj import ConfigObj
 from tornado.locale import load_gettext_translations
 
+# First Party Imports
 import sickchill
 from sickbeard import (auto_postprocessor, clients, dailysearcher, db, helpers, logger, metadata, naming, post_processing_queue, properFinder, providers,
                        scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker, versionChecker)

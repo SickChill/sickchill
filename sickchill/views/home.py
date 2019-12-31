@@ -18,14 +18,17 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import ast
 import datetime
 import os
 import time
 from operator import attrgetter
 
+# Third Party Imports
 import adba
 import six
 from github.GithubException import GithubException
@@ -34,6 +37,7 @@ from requests.compat import unquote_plus
 from six.moves import urllib
 from tornado.escape import xhtml_unescape
 
+# First Party Imports
 import sickbeard
 from sickbeard import clients, config, db, filters, helpers, logger, notifiers, sab, search_queue, subtitles as subtitle_module, ui
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
@@ -49,6 +53,7 @@ from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
 
+# Local Folder Imports
 from .common import PageTemplate
 from .index import WebRoot
 from .routes import Route

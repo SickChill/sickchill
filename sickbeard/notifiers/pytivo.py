@@ -18,14 +18,18 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 
+# Third Party Imports
 from requests.compat import urlencode
 from six.moves.urllib.error import HTTPError
 from six.moves.urllib.request import Request, urlopen
 
+# First Party Imports
 import sickbeard
 from sickbeard import logger
 from sickchill.helper.encoding import ek

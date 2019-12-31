@@ -17,12 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 import time
 import traceback
 
+# First Party Imports
 import sickbeard
 from sickbeard import common, config, generic_queue, logger, processTV
 from sickbeard.processTV import log_helper, process_dir

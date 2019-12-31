@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import bisect
 import io
 import json
@@ -8,6 +10,7 @@ import logging
 import zipfile
 from collections import defaultdict
 
+# Third Party Imports
 from babelfish import Language
 from guessit import guessit
 from requests import Session

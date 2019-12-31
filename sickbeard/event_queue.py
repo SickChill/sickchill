@@ -1,12 +1,16 @@
 # coding=utf-8
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import threading
 import traceback
 
+# Third Party Imports
 from six.moves.queue import Empty, Queue
 
+# First Party Imports
 from sickbeard import logger
 from sickchill.helper.exceptions import ex
 

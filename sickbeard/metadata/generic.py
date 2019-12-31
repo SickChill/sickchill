@@ -18,17 +18,21 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import io
 import os
 import re
 
+# Third Party Imports
 import fanart as fanart_module
 import six
 from fanart.core import Request as fanartRequest
 from tmdb_api.tmdb_api import TMDB
 
+# First Party Imports
 import sickbeard
 import sickchill
 from sickbeard import helpers, logger

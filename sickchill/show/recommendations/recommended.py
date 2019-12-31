@@ -21,11 +21,14 @@
 Recommend shows based on lists from indexers
 """
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 import posixpath
 
+# First Party Imports
 import sickbeard
 from sickbeard import helpers
 from sickchill.helper.encoding import ek

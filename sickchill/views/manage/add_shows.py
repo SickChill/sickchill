@@ -18,17 +18,21 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import os
 import re
 
+# Third Party Imports
 import six
 from libtrakt import TraktAPI
 from requests.compat import unquote_plus
 from tornado.escape import xhtml_unescape
 
+# First Party Imports
 import sickbeard
 import sickchill
 from sickbeard import config, db, helpers, logger, ui

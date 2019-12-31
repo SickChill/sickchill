@@ -18,8 +18,10 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=too-many-lines
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import os.path
 import re
@@ -28,10 +30,12 @@ import stat
 import threading
 import traceback
 
+# Third Party Imports
 import six
 from imdb import imdb
 from unidecode import unidecode
 
+# First Party Imports
 import sickbeard
 import sickchill
 from sickbeard import db, helpers, image_cache, logger, network_timezones, notifiers, postProcessor, subtitles

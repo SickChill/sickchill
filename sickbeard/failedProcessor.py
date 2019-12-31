@@ -17,8 +17,10 @@
 #
 # You should have received a copy of the GNU General Public License
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# First Party Imports
 import sickbeard
 from sickbeard import logger, search_queue, show_name_helpers
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser

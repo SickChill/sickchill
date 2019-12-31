@@ -18,14 +18,18 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 import shutil
 import stat
 
+# Third Party Imports
 from rarfile import BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRCError, RarExecError, RarFile, RarOpenError, RarWrongPassword
 
+# First Party Imports
 import sickbeard
 from sickbeard import common, db, failedProcessor, helpers, logger, postProcessor
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser

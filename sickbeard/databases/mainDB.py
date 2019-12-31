@@ -19,14 +19,18 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=line-too-long
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import os.path
 import warnings
 
+# Third Party Imports
 import six
 
+# First Party Imports
 import sickbeard
 from sickbeard import common, db, helpers, logger, subtitles
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser

@@ -18,8 +18,10 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Local Folder Imports
 from .api import ApiCall, ApiHandler, function_mapper, KeyHandler
 from .authentication import LoginHandler, LogoutHandler
 from .browser import WebFileBrowser

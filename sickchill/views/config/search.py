@@ -18,12 +18,16 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 
+# Third Party Imports
 from tornado.web import addslash
 
+# First Party Imports
 import sickbeard
 from sickbeard import config, filters, helpers, logger, ui
 from sickchill.helper import try_int
@@ -31,6 +35,7 @@ from sickchill.helper.encoding import ek
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
+# Local Folder Imports
 from . import Config
 
 try:

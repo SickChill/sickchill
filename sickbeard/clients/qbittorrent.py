@@ -18,13 +18,17 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 from time import sleep
 
+# Third Party Imports
 from requests.auth import HTTPDigestAuth
 from requests.compat import urljoin
 
+# First Party Imports
 import sickbeard
 from sickbeard.clients.generic import GenericClient
 

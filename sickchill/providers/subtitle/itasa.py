@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import copy
 import io
 import logging
 import re
 from zipfile import is_zipfile, ZipFile
 
+# Third Party Imports
 from babelfish import Language
 from guessit import guessit
 from requests import Session

@@ -21,17 +21,21 @@
 Common helper functions
 """
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import glob
 import os
 import re
 from fnmatch import fnmatch
 
+# Third Party Imports
 import six
 from github import Github
 from github.GithubException import BadCredentialsException, TwoFactorException
 
+# First Party Imports
 import sickbeard
 
 dateFormat = '%Y-%m-%d'

@@ -18,15 +18,20 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 
+# Third Party Imports
 from tornado.escape import xhtml_unescape
 
+# First Party Imports
 from sickbeard.browser import foldersAtPath
 from sickchill.helper.encoding import ek
 
+# Local Folder Imports
 from .index import WebRoot
 from .routes import Route
 

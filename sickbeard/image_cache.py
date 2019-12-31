@@ -18,14 +18,18 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os.path
 
+# Third Party Imports
 from hachoir_core.log import log
 from hachoir_metadata import extractMetadata
 from hachoir_parser import createParser
 
+# First Party Imports
 import sickbeard
 import sickchill
 from sickbeard import helpers, logger

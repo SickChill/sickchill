@@ -18,14 +18,18 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import binascii
 import io
 
+# Third Party Imports
 from enzyme import MKV
 from pkg_resources import DistributionNotFound, get_distribution
 
+# First Party Imports
 import sickbeard
 
 try:

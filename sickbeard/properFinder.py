@@ -18,8 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import operator
 import re
@@ -27,6 +29,7 @@ import threading
 import time
 import traceback
 
+# First Party Imports
 import sickbeard
 from sickbeard import db, helpers, logger
 from sickbeard.common import cpu_presets, DOWNLOADED, Quality, SNATCHED, SNATCHED_PROPER

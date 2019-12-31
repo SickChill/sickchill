@@ -70,8 +70,11 @@
                             <% curStatus, curQuality = Quality.splitCompositeStatus(int(hItem[b"action"])) %>
                                 <tr>
                                     <td align="center">
-                                        <% airDate = sbdatetime.sbdatetime.sbfdatetime(datetime.datetime.strptime(str(hItem[b"date"]), History.date_format), show_seconds=True) %>
-                                        <% isoDate = datetime.datetime.strptime(str(hItem[b"date"]), History.date_format).isoformat('T') %>
+                                        <%
+                                            # noinspection PyCallByClass
+                                            airDate = sbdatetime.sbdatetime.sbfdatetime(datetime.datetime.strptime(str(hItem[b"date"]), History.date_format), show_seconds=True)
+                                            isoDate = datetime.datetime.strptime(str(hItem[b"date"]), History.date_format).isoformat('T')
+                                        %>
                                         <time datetime="${isoDate}" class="date">${airDate}</time>
                                     </td>
                                     <td class="tvShow" width="35%"><a href="${srRoot}/home/displayShow?show=${hItem[b"show_id"]}#S${hItem[b"season"]}E${hItem[b"episode"]}">${hItem[b"show_name"]} - ${"S%02i" % int(hItem[b"season"])}${"E%02i" % int(hItem[b"episode"])} ${('', '<span class="quality Proper">Proper</span>')[b"proper" in hItem[b"resource"].lower() or "repack" in hItem[b"resource"].lower()]}</a></td>
@@ -137,8 +140,11 @@
                             % for hItem in compactResults:
                                 <tr>
                                     <td align="center">
-                                        <% airDate = sbdatetime.sbdatetime.sbfdatetime(datetime.datetime.strptime(str(hItem[b"actions"][0][b"time"]), History.date_format), show_seconds=True) %>
-                                        <% isoDate = datetime.datetime.strptime(str(hItem[b"actions"][0][b"time"]), History.date_format).isoformat('T') %>
+                                        <%
+                                            # noinspection PyCallByClass
+                                            airDate = sbdatetime.sbdatetime.sbfdatetime(datetime.datetime.strptime(str(hItem[b"actions"][0][b"time"]), History.date_format), show_seconds=True)
+                                            isoDate = datetime.datetime.strptime(str(hItem[b"actions"][0][b"time"]), History.date_format).isoformat('T')
+                                        %>
                                         <time datetime="${isoDate}" class="date">${airDate}</time>
                                     </td>
                                     <td class="tvShow" width="25%">

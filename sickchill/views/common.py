@@ -18,18 +18,22 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 import re
 import time
 
+# Third Party Imports
 from mako.exceptions import RichTraceback
 from mako.lookup import TemplateLookup
 from mako.runtime import UNDEFINED
 from mako.template import Template
 from tornado.escape import linkify
 
+# First Party Imports
 import sickbeard
 from sickbeard import classes, helpers
 from sickchill.helper.encoding import ek

@@ -18,8 +18,10 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import os
 import time
@@ -28,6 +30,7 @@ from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
 from operator import attrgetter
 
+# Third Party Imports
 import six
 from mako.lookup import Template
 from requests.compat import urljoin
@@ -38,6 +41,7 @@ from tornado.ioloop import IOLoop
 from tornado.process import cpu_count
 from tornado.web import authenticated, HTTPError, RequestHandler
 
+# First Party Imports
 import sickbeard
 from sickbeard import db, helpers, logger, network_timezones, ui
 from sickbeard.common import ek
@@ -48,6 +52,7 @@ from sickchill.media.ShowPoster import ShowPoster
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.views.routes import Route
 
+# Local Folder Imports
 from .api.webapi import function_mapper
 from .common import PageTemplate
 

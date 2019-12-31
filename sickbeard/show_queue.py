@@ -17,17 +17,21 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 import traceback
 from collections import namedtuple
 
+# Third Party Imports
 import six
 # noinspection PyProtectedMember
 from imdb import _exceptions as imdb_exceptions
 from libtrakt import TraktAPI
 
+# First Party Imports
 import sickbeard
 import sickchill
 from sickbeard import generic_queue, logger, name_cache, notifiers, scene_numbering, ui
@@ -432,6 +436,10 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                 self.show.name if self.show else 'show', sickchill.indexer.name(self.indexer))
 
             logger.log('{0}: {1}'.format(error_string, error), logger.ERROR)
+
+            logger.log('Error trying to add show: {0}'.format(error), logger.ERROR)
+            logger.log(traceback.format_exc(), logger.DEBUG)
+
             ui.notifications.error('Unable to add show', error_string)
 
             self._finish_early()
@@ -444,12 +452,6 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
 
             self._finish_early()
             return
-
-        except Exception as error:
-            logger.log('Error trying to add show: {0}'.format(error), logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
-            self._finish_early()
-            raise
 
         logger.log('Retrieving show info from IMDb', logger.DEBUG)
         try:

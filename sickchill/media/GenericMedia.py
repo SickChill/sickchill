@@ -17,12 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 from abc import abstractmethod
 from mimetypes import guess_type
 from os.path import isfile, join, normpath
 
+# First Party Imports
 import sickbeard
 from sickchill.helper.common import try_int
 from sickchill.helper.encoding import ek

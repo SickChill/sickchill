@@ -18,14 +18,18 @@
 #
 # Uses the Synology Download Station API: http://download.synology.com/download/Document/DeveloperGuide/Synology_Download_Station_Web_API.pdf
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 import re
 
+# Third Party Imports
 import six
 from requests.compat import urljoin
 
+# First Party Imports
 import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient

@@ -19,8 +19,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import os
 import re
@@ -28,12 +30,14 @@ import subprocess
 import threading
 import traceback
 
+# Third Party Imports
 import six
 import subliminal
 from babelfish import Language, language_converters
 from guessit import guessit
 from subliminal import Episode, provider_manager, ProviderPool
 
+# First Party Imports
 import sickbeard
 from sickbeard import db, history, logger
 from sickbeard.common import Quality

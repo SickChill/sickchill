@@ -22,8 +22,10 @@
 Custom Logger for SickChill
 """
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import io
 import locale
 import logging
@@ -36,12 +38,14 @@ import threading
 import traceback
 from logging import NullHandler
 
+# Third Party Imports
 import six
 from github import InputFileContent
 from github.GithubException import RateLimitExceededException, TwoFactorException
 # noinspection PyUnresolvedReferences
 from requests.compat import quote
 
+# First Party Imports
 import sickbeard
 from sickbeard import classes
 from sickchill.helper.common import dateTimeFormat

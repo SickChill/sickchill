@@ -17,8 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import re
 from base64 import b16encode, b32decode
 from datetime import datetime
@@ -26,9 +28,11 @@ from itertools import chain
 from os.path import join
 from random import shuffle
 
+# Third Party Imports
 import six
 from requests.utils import add_dict_to_cookiejar
 
+# First Party Imports
 import sickbeard
 from sickbeard import logger
 from sickbeard.classes import Proper, SearchResult

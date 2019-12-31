@@ -18,16 +18,21 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
+# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import traceback
 
+# Third Party Imports
 from tornado.web import RequestHandler
 
+# First Party Imports
 import sickbeard
 from sickbeard import helpers, logger, notifiers
 from sickchill.helper import try_int
 
+# Local Folder Imports
 from .common import PageTemplate
 from .index import BaseHandler
 

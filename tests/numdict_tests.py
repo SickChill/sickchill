@@ -484,6 +484,7 @@ class NumDictTest(unittest.TestCase):
             """
             subclass calls super classes __missing__ and modifies the value before returning it
             """
+
             def __missing__(self, key):  # pylint: disable=arguments-differ
                 return super(NumDictH, self).__missing__(key) + 1
 
