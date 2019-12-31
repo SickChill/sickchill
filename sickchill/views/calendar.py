@@ -36,12 +36,6 @@ from sickchill.helper import try_int
 # Local Folder Imports
 from .index import BaseHandler
 
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
-
 
 class CalendarHandler(BaseHandler):
     def get(self, *args, **kwargs):

@@ -40,12 +40,6 @@ from sickchill.views.routes import Route
 # Local Folder Imports
 from .index import Config
 
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
-
 
 @Route('/config/general(/?.*)', name='config:general')
 class ConfigGeneral(Config):

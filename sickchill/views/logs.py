@@ -16,9 +16,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
-
-# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Third Party Imports
@@ -33,12 +30,6 @@ from sickchill.helper import try_int
 from .common import PageTemplate
 from .index import WebRoot
 from .routes import Route
-
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
 
 
 @Route('/errorlogs(/?.*)', name='logs:error')

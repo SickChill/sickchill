@@ -31,12 +31,6 @@ from tornado.web import RequestHandler
 import sickbeard
 from sickbeard import helpers, logger
 
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
-
 
 class KeyHandler(RequestHandler):
     def data_received(self, chunk):

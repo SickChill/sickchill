@@ -18,7 +18,6 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
 
-# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
@@ -35,12 +34,6 @@ from sickchill.helper import try_int
 # Local Folder Imports
 from .common import PageTemplate
 from .index import BaseHandler
-
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
 
 
 class LoginHandler(BaseHandler):

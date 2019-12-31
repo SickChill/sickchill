@@ -17,20 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=abstract-method,too-many-lines, R
-
-# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Local Folder Imports
 from .common import PageTemplate
 from .home import Home
 from .routes import Route
-
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
 
 
 @Route('/IRC(/?.*)', name='irc')

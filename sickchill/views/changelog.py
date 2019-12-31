@@ -32,12 +32,6 @@ from .common import PageTemplate
 from .home import Home
 from .routes import Route
 
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
-
 
 @Route('/changes(/?.*)', name='changelog')
 class HomeChangeLog(Home):

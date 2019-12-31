@@ -39,12 +39,6 @@ from sickchill.views.routes import Route
 # Local Folder Imports
 from . import Config
 
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
-
 
 @Route('/config/postProcessing(/?.*)', name='config:postprocessing')
 class ConfigPostProcessing(Config):

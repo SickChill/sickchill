@@ -33,12 +33,6 @@ from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home
 from sickchill.views.routes import Route
 
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
-
 
 @Route('/home/postprocess(/?.*)', name='home:postprocess')
 class PostProcess(Home):

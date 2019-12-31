@@ -34,12 +34,6 @@ from sickchill.views.common import PageTemplate
 from sickchill.views.index import WebRoot
 from sickchill.views.routes import Route
 
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
-
 
 @Route('/config(/?.*)', name='config:main')
 class Config(WebRoot):
