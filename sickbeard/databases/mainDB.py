@@ -19,7 +19,6 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=line-too-long
 
-# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports

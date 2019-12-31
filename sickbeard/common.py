@@ -22,7 +22,6 @@
 Common interface for Quality and Status
 """
 
-# Future Imports
 # pylint: disable=line-too-long
 from __future__ import absolute_import, print_function, unicode_literals
 

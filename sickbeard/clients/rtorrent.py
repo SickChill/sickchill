@@ -24,7 +24,6 @@
 # based on fuzemans work
 # https://github.com/RuudBurger/CouchPotatoServer/blob/develop/couchpotato/core/downloaders/rtorrent/main.py
 
-# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Third Party Imports

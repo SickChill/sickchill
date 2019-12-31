@@ -5,7 +5,6 @@
 # This client script allows connection to Deluge Daemon directly, completely
 # circumventing the requirement to use the WebUI.
 
-# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports

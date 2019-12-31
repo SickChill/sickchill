@@ -4,7 +4,6 @@
 class NumDict - A dict with numeric keys
 """
 
-# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
