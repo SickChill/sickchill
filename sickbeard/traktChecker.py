@@ -25,8 +25,8 @@ import os
 import traceback
 
 # Third Party Imports
-from libtrakt import TraktAPI
-from libtrakt.exceptions import traktException
+from trakt import TraktAPI
+from trakt.exceptions import traktException
 
 # First Party Imports
 import sickbeard

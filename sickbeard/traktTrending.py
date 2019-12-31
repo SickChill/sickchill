@@ -7,8 +7,8 @@ import os
 import posixpath
 
 # Third Party Imports
-from libtrakt.exceptions import traktException
-from libtrakt.trakt import TraktAPI
+from trakt.exceptions import traktException
+from trakt.trakt import TraktAPI
 
 # First Party Imports
 import sickbeard

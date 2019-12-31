@@ -32,7 +32,7 @@ from operator import attrgetter
 import adba
 import six
 from github.GithubException import GithubException
-from libtrakt import TraktAPI
+from trakt import TraktAPI
 from requests.compat import unquote_plus
 from six.moves import urllib
 from tornado.escape import xhtml_unescape

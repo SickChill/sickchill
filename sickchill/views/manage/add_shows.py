@@ -28,7 +28,7 @@ import re
 
 # Third Party Imports
 import six
-from libtrakt import TraktAPI
+from trakt import TraktAPI
 from requests.compat import unquote_plus
 from tornado.escape import xhtml_unescape
 
