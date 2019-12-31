@@ -32,6 +32,7 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 try:
     import json
 except ImportError:
+    # noinspection PyUnresolvedReferences
     import simplejson as json
 
 

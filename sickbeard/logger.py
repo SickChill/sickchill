@@ -50,8 +50,6 @@ from sickchill.helper.common import dateTimeFormat
 from sickchill.helper.encoding import ek, ss
 from sickchill.helper.exceptions import ex
 
-# pylint: disable=line-too-long
-
 # log levels
 ERROR = logging.ERROR
 WARNING = logging.WARNING
@@ -429,7 +427,6 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         return submitter_result, issue_id
 
 
-# pylint: disable=too-few-public-methods
 class Wrapper(object):
     instance = Logger()
 

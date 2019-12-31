@@ -16,7 +16,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=too-many-lines
 
 from __future__ import absolute_import, print_function, unicode_literals
 
@@ -66,7 +65,7 @@ dynamic_strings = (
     _('Talk-Show'), _('Science-Fiction')
 )
 
-
+# noinspection PyUnresolvedReferences
 requests.packages.urllib3.disable_warnings()
 
 PID = None

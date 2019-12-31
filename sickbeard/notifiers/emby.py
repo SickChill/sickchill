@@ -21,6 +21,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Third Party Imports
+# noinspection PyUnresolvedReferences
 from six.moves import urllib
 
 # First Party Imports
@@ -31,6 +32,7 @@ from sickchill.helper.exceptions import ex
 try:
     import json
 except ImportError:
+    # noinspection PyUnresolvedReferences
     import simplejson as json
 
 

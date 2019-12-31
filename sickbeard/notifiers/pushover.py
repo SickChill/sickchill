@@ -25,6 +25,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import time
 
 # Third Party Imports
+# noinspection PyUnresolvedReferences
 from six.moves import http_client, urllib
 
 # First Party Imports

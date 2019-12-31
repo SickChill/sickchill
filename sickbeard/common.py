@@ -22,7 +22,6 @@
 Common interface for Quality and Status
 """
 
-# pylint: disable=line-too-long
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
@@ -35,6 +34,7 @@ from os import path
 
 # Third Party Imports
 from fake_useragent import settings as UA_SETTINGS, UserAgent
+# noinspection PyUnresolvedReferences
 from six.moves import reduce
 
 # First Party Imports

@@ -17,21 +17,20 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
-# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
+import abc
 import datetime
 import io
 import os
 import re
 import time
 import traceback
-from abc import abstractmethod
 
 # Third Party Imports
 import six
+# noinspection PyUnresolvedReferences
 from six.moves import urllib
 from tornado.web import RequestHandler
 
@@ -56,6 +55,12 @@ from sickchill.show.History import History
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
+
+try:
+    import json
+except ImportError:
+    # noinspection PyPackageRequirements,PyUnresolvedReferences
+    import simplejson as json
 
 
 indexer_ids = ["indexerid", "tvdbid"]
@@ -840,14 +845,14 @@ class CMDEpisodeSearch(ApiCall):
 
 class AbstractStartScheduler(ApiCall):
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def scheduler(self):
-        return AbstractStartScheduler
+        raise NotImplementedError
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def scheduler_class_str(self):
-        return 'sickbeard.scheduler.Scheduler'
+        raise NotImplementedError
 
     def run(self):
         error_str = 'Start scheduler failed'
@@ -1735,6 +1740,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
             for indexer, indexer_results in six.iteritems(search_results):
                 for result in indexer_results:
                     # Skip it if it's in our show list already, and we only want new shows
+                    # noinspection PyUnresolvedReferences
                     in_show_list = sickbeard.tv.Show.find(sickbeard.showList, int(result.id))
                     if in_show_list and self.only_new:
                         continue

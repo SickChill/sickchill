@@ -16,8 +16,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
-# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Third Party Imports
@@ -76,6 +74,7 @@ class ShowIndexer(object):
                     # Loop and find the right index
                     if indexer not in self.indexers:
                         for i in self.indexers:
+                            # noinspection PyUnresolvedReferences
                             if indexer in (self.name(i), self.slug(i)):
                                 indexer = i
 
@@ -123,6 +122,7 @@ class ShowIndexer(object):
             # n = [re.sub('[. -]', ' ', n)]
             for i in indexer:
                 search = (name, indexerid)[bool(indexerid)]
+                # noinspection PyUnresolvedReferences
                 logger.log("Trying to find {} on {}".format(search, self.name(i)), logger.DEBUG)
                 if indexerid:
                     result = self.indexers[i].get_series_by_id(indexerid, language)
@@ -133,6 +133,7 @@ class ShowIndexer(object):
                     # noinspection PyUnusedLocal
                     garbage = result.seriesName, result.id
                 except AttributeError:
+                    # noinspection PyUnresolvedReferences
                     logger.log("Failed to find {} on {}".format(search, self.name(i)), logger.DEBUG)
                     continue
 

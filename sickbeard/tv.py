@@ -16,7 +16,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=too-many-lines
 
 from __future__ import absolute_import, print_function, unicode_literals
 
@@ -58,7 +57,11 @@ except ImportError:
 try:
     from send2trash import send2trash
 except ImportError:
-    pass
+    def send2trash(path):
+        if ek(os.path.isfile, path):
+            ek(os.remove, path)
+        elif ek(os.path.isdir, path):
+            ek(shutil.rmtree, path)
 
 
 def dirty_setter(attr_name):

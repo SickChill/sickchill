@@ -716,8 +716,7 @@ def searchProvidersList(show, episodes, search_mode='eponly'):  # pylint: disabl
 
     :param show: Show we are looking for
     :param episodes: Episodes we hope to find
-    :param manualSearch: Boolean, is this a manual search?
-    :param downCurQuality: Boolean, should we re-download currently available quality file
+    :param search_mode: String, eponly|sponly: Episode search or Season Pack Search?
     :return: results for search
     """
     foundResults = {"results": []}

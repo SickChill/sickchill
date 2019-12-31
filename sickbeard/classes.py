@@ -25,6 +25,7 @@ import datetime
 import sys
 
 # Third Party Imports
+# noinspection PyUnresolvedReferences
 from six.moves import urllib
 
 # First Party Imports
@@ -93,6 +94,7 @@ class SearchResult(object):  # pylint: disable=too-few-public-methods, too-many-
 
     @classmethod
     def make_result(cls, result_dict):
+        # noinspection PyUnresolvedReferences
         show = sickbeard.tv.Show.find(sickbeard.showList, int(result_dict.get('show')))
         episode = show.getEpisode(result_dict.get('season'), result_dict.get('episode'))
         result = cls([episode])

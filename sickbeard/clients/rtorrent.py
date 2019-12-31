@@ -19,7 +19,6 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 
-# pylint: disable=line-too-long
 
 # based on fuzemans work
 # https://github.com/RuudBurger/CouchPotatoServer/blob/develop/couchpotato/core/downloaders/rtorrent/main.py

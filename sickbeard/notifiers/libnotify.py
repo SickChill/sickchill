@@ -36,6 +36,7 @@ with warnings.catch_warnings():
         from pgi.repository import Notify
     except (ImportError, Exception):
         try:
+            # noinspection PyUnresolvedReferences
             from gi.repository import Notify
         except (ImportError, Exception):
             Notify = None

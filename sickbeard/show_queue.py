@@ -724,33 +724,33 @@ class QueueItemRemove(ShowQueueItem):
             try:
                 sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(self.show)
             except Exception as error:
-                logger.log('Unable to delete show from Trakt: {0}. Error: {1}'.format(self.show.name, error), logger.WARNING)
+                logger.log(_('Unable to delete show from Trakt: {0}. Error: {1}').format(self.show.name, error), logger.WARNING)
 
-        # If any notification fails, don't stop postProcessor
+        # If any notification fails, don't stop removal
         try:
             # TODO: ep_obj is undefined here, so all of these will fail.
             # send notifications
-            notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))  # pylint: disable=protected-access
+            # notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))  # pylint: disable=protected-access
 
             # do the library update for KODI
-            notifiers.kodi_notifier.update_library(ep_obj.show.name)
+            notifiers.kodi_notifier.update_library(self.show.name)
 
             # do the library update for Plex
-            notifiers.plex_notifier.update_library(ep_obj)
+            notifiers.plex_notifier.update_library(self.show)
 
             # do the library update for EMBY
-            notifiers.emby_notifier.update_library(ep_obj.show)
+            notifiers.emby_notifier.update_library(self.show)
 
             # do the library update for NMJ
             # nmj_notifier kicks off its library update when the notify_download is issued (inside notifiers)
 
             # do the library update for Synology Indexer
-            notifiers.synoindex_notifier.addFile(ep_obj.location)
+            notifiers.synoindex_notifier.addFolder(self.show.location)
 
             # do the library update for pyTivo
-            notifiers.pytivo_notifier.update_library(ep_obj)
+            notifiers.pytivo_notifier.update_library(self.show)
         except Exception:
-            logger.log("Some notifications could not be sent. Continuing with postProcessing...")
+            logger.log(_("Some notifications could not be sent. Continuing removal of {}...").format(self.show.name))
 
         super(QueueItemRemove, self).finish()
         self.finish()

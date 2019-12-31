@@ -25,7 +25,8 @@ import os
 
 # Third Party Imports
 from requests.compat import urlencode
-from six.moves.urllib.error import HTTPError
+from requests.exceptions import HTTPError
+# noinspection PyUnresolvedReferences
 from six.moves.urllib.request import Request, urlopen
 
 # First Party Imports
@@ -75,10 +76,18 @@ class Notifier(object):
         #
 
         # Calculated values
-        showPath = ep_obj.show.location
-        showName = ep_obj.show.name
-        rootShowAndSeason = ek(os.path.dirname, ep_obj.location)
-        absPath = ep_obj.location
+        # noinspection PyUnresolvedReferences
+        if isinstance(ep_obj, sickbeard.tv.TVEpisode):
+            showPath = ep_obj.show.location
+            showName = ep_obj.show.name
+            rootShowAndSeason = ek(os.path.dirname, ep_obj.location)
+            absPath = ep_obj.location
+        else:
+            # This is a TVShow
+            showPath = ep_obj.location
+            showName = ep_obj.name
+            rootShowAndSeason = ek(os.path.dirname, ep_obj.location)
+            absPath = ep_obj.location
 
         # Some show names have colons in them which are illegal in a path location, so strip them out.
         # (Are there other characters?)

@@ -66,13 +66,7 @@ class NameParser(object):
         characters, along with any trailing hyphens.
 
         Is basically equivalent to replacing all _ and . with a
-        space, but handles decimal numbers in string, for example:
-
-        >>> cleanRegexedSeriesName("an.example.1.0.test")
-        'an example 1.0 test'
-        >>> cleanRegexedSeriesName("an_example_1.0_test")
-        'an example 1.0 test'
-
+        space, but handles decimal numbers in string.
         Stolen from dbr's tvnamer
         """
 
@@ -257,7 +251,7 @@ class NameParser(object):
                         episode_numbers = [int(epObj["airedEpisode"])]
                     except Exception:
                         logger.log("Unable to find episode with date {} for show {}, skipping".format(
-                            bestResult.air_date. bestResult.show.name), logger.WARNING)
+                            bestResult.air_date, bestResult.show.name), logger.WARNING)
                         episode_numbers = []
 
                 for epNo in episode_numbers:

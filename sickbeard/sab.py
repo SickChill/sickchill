@@ -105,9 +105,6 @@ def getSabAccesMethod(host=None):
     Find out how we should connect to SAB
 
     :param host: hostname where SAB lives
-    :param username: username to use
-    :param password: password to use
-    :param apikey: apikey to use
     :return: (boolean, string) with True if method was successful
     '''
     params = {'mode': 'auth', 'output': 'json'}

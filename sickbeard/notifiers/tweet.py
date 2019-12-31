@@ -75,7 +75,6 @@ class Notifier(object):
         """
         Step 1 of authorization - get app authorization url.
 
-        :param key: Authorization key received from twitter
         :return: True if succeeded, False otherwise
         """
         logger.log('Requesting temp token from Twitter', logger.DEBUG)

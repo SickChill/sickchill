@@ -25,6 +25,7 @@ import re
 import telnetlib
 
 # Third Party Imports
+# noinspection PyUnresolvedReferences
 from six.moves import urllib
 
 # First Party Imports

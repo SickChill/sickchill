@@ -18,7 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-# pylint: disable=line-too-long
 
 """
 Create a test database for testing.
@@ -59,7 +58,6 @@ from sickbeard.tv import TVEpisode, TVShow
 import sickbeard
 from sickchill.show.indexers import ShowIndexer
 
-# pylint: disable=import-error
 
 
 # =================
@@ -139,7 +137,6 @@ create_test_log_folder()
 sickbeard.CACHE_DIR = os.path.join(TEST_DIR, 'cache')
 create_test_cache_folder()
 
-# pylint: disable=no-member
 sickbeard.logger.init_logging(False, True)
 
 sickchill.indexer = ShowIndexer()

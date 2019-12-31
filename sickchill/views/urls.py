@@ -16,14 +16,12 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import os
 
 # Third Party Imports
-from .api import ApiHandler, KeyHandler
 from tornado.web import RedirectHandler, StaticFileHandler, url
 
 # First Party Imports
@@ -32,6 +30,7 @@ from sickbeard.common import ek
 
 # Local Folder Imports
 from . import CalendarHandler, LoginHandler, LogoutHandler
+from .api import ApiHandler, KeyHandler
 from .routes import Route
 
 

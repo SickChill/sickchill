@@ -21,7 +21,6 @@
 Test torrents
 """
 
-# pylint: disable=line-too-long
 
 import os.path
 import sys

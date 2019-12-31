@@ -57,6 +57,7 @@ import urllib3
 from cachecontrol import CacheControl
 from requests.compat import urljoin
 from requests.utils import urlparse
+# noinspection PyUnresolvedReferences
 from six.moves import urllib
 from tornado._locale_data import LOCALE_NAMES
 
@@ -76,7 +77,6 @@ LOCALE_NAMES.update({
     "no_NO": {"name_en": "Norwegian", "name": "Norsk"},
 })
 
-# pylint: disable=protected-access
 # Access to a protected member of a client class
 urllib._urlopener = classes.SickBeardURLopener()
 orig_getaddrinfo = socket.getaddrinfo
@@ -93,6 +93,7 @@ if socket.getaddrinfo.__module__ in ('socket', '_socket'):
     socket.getaddrinfo = getaddrinfo_wrapper
 
 # Patches urllib3 default ciphers to match those of cfscrape
+# noinspection PyUnresolvedReferences
 urllib3.util.ssl_.DEFAULT_CIPHERS = cfscrape.DEFAULT_CIPHERS
 
 # Override original shutil function to increase its speed by increasing its buffer to 10MB (optimal)

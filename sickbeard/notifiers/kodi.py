@@ -27,6 +27,7 @@ import time
 
 # Third Party Imports
 import six
+# noinspection PyUnresolvedReferences
 from six.moves import http_client, urllib
 
 # First Party Imports
@@ -43,6 +44,7 @@ except ImportError:
 try:
     import json
 except ImportError:
+    # noinspection PyUnresolvedReferences
     import simplejson as json
 
 
@@ -372,7 +374,7 @@ class Notifier(object):
 
         if not host:
             logger.log('No {0} host passed, aborting update'.format(dest_app), logger.WARNING)
-            return False
+            return dict()
 
         command = command.encode('utf-8')
         logger.log("{0} JSON command: {1}".format(dest_app, command), logger.DEBUG)
@@ -395,7 +397,7 @@ class Notifier(object):
             except (http_client.BadStatusLine, urllib.error.URLError) as e:
                 if sickbeard.KODI_ALWAYS_ON:
                     logger.log("Error while trying to retrieve {0} API version for {1}: {2!r}".format(dest_app, host, ex(e)), logger.WARNING)
-                return False
+                return dict()
 
             # parse the json result
             try:
@@ -405,12 +407,12 @@ class Notifier(object):
                 return result  # need to return response for parsing
             except ValueError as e:
                 logger.log("Unable to decode JSON: " + str(response.read()), logger.WARNING)
-                return False
+                return dict()
 
         except IOError as e:
             if sickbeard.KODI_ALWAYS_ON:
                 logger.log("Warning: Couldn't contact {0} JSON API at {1}: {2!r}".format(dest_app, ss(url), ex(e)), logger.WARNING)
-            return False
+            return dict()
 
     def _update_library_json(self, host=None, showName=None):  # pylint: disable=too-many-return-statements, too-many-branches
         """Handles updating KODI host via HTTP JSON-RPC

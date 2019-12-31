@@ -29,6 +29,7 @@ import time
 
 # Third Party Imports
 from requests.compat import urlencode
+# noinspection PyUnresolvedReferences
 from six.moves.http_client import HTTPException, HTTPSConnection
 
 # First Party Imports

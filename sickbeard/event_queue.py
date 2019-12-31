@@ -7,6 +7,7 @@ import threading
 import traceback
 
 # Third Party Imports
+# noinspection PyUnresolvedReferences
 from six.moves.queue import Empty, Queue
 
 # First Party Imports

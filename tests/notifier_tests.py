@@ -23,7 +23,6 @@
 # classes in order to test those classes.  Therefore we will be pylint disable protected-access
 ###
 
-# pylint: disable=line-too-long
 
 """
 Test notifiers

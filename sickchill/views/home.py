@@ -16,9 +16,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
-
-# Future Imports
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
@@ -33,6 +30,7 @@ import adba
 import six
 from github.GithubException import GithubException
 from requests.compat import unquote_plus
+# noinspection PyUnresolvedReferences
 from six.moves import urllib
 from tornado.escape import xhtml_unescape
 from trakt import TraktAPI

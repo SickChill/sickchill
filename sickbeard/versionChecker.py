@@ -111,6 +111,7 @@ class CheckVersion(object):
             return False
 
         from sickchill.helper import glob
+        # noinspection PyUnresolvedReferences
         files = glob.glob(ek(os.path.join, glob.escape(backupDir), '*.zip'))
         if not files:
             return True
