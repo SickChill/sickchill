@@ -38,8 +38,8 @@
         <title>SickChill - ${title}</title>
 
         <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-            <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+            <script src="${static_url('js/html5shiv.min.js')}"></script>
+            <script src="${static_url('js/respond.min.js')}"></script>
         <![endif]-->
 
         <meta name="msapplication-TileColor" content="#2b5797">
@@ -91,7 +91,7 @@
         <link rel="manifest" href="${static_url('images/ico/site.webmanifest')}">
 
 
-        <link rel="stylesheet" type="text/css" href="${static_url('css/vender.min.css')}"/>
+        <link rel="stylesheet" type="text/css" href="${static_url('css/vendor.min.css')}"/>
         <link rel="stylesheet" type="text/css" href="${static_url('css/browser.css')}" />
         <link rel="stylesheet" type="text/css" href="${static_url('css/font-awesome.min.css')}" />
         <link rel="stylesheet" type="text/css" href="${static_url('css/lib/jquery-ui-1.10.4.custom.min.css')}" />
@@ -360,7 +360,7 @@
                         </div>
                     </div>
                 </div>
-                <script type="text/javascript" src="${static_url('js/vender.min.js')}"></script>
+                <script type="text/javascript" src="${static_url('js/vendor.min.js')}"></script>
                 <script type="text/javascript" src="${static_url('js/lib/jquery.form.min.js')}"></script>
                 <script type="text/javascript" src="${static_url('js/lib/jquery.selectboxes.min.js')}"></script>
                 <script type="text/javascript" src="${static_url('js/lib/formwizard.js')}"></script><!-- Can't be added to bower -->

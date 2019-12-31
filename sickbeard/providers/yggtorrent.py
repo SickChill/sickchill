@@ -28,6 +28,7 @@ import re
 # Third Party Imports
 import validators
 from requests.compat import urljoin
+import six
 
 # First Party Imports
 from sickbeard import logger, tvcache
@@ -137,7 +138,7 @@ class YggTorrentProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                                 "ç": 'c'
                 }
 
-                for k, v in replace_chars.iteritems():
+                for k, v in six.iteritems(replace_chars):
                     search_string = search_string.replace(k, v)
 
                 logger.log('Sanitized string: {0}'.format

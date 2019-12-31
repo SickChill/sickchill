@@ -1737,7 +1737,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
 
         if self.name and not self.indexerid:  # only name was given
             search_results = sickchill.indexer.search_indexers_for_show_name(str(self.name).encode(), self.lang)
-            for indexer, indexer_results in search_results.iteritems():
+            for indexer, indexer_results in six.iteritems(search_results):
                 for result in indexer_results:
                     # Skip it if it's in our show list already, and we only want new shows
                     in_show_list = sickbeard.tv.Show.find(sickbeard.showList, int(result.id))

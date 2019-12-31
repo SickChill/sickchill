@@ -268,7 +268,7 @@ class TVCache(object):
         episodes = parse_result.episode_numbers
 
         if season and episodes:
-            # store episodes as a seperated string
+            # store episodes as a separated string
             episode_text = "|" + "|".join({str(episode) for episode in episodes if episode}) + "|"
 
             # get the current timestamp

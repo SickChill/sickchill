@@ -207,8 +207,8 @@ def determineReleaseName(dir_name=None, nzb_name=None):
     return None
 
 
-def hasPreferedWords(name, show=None):
-    """Determine based on the full episode (file)name combined with the prefered words what the weight its preference should be"""
+def hasPreferredWords(name, show=None):
+    """Determine based on the full episode (file)name combined with the preferred words what the weight its preference should be"""
 
     name = name.lower()
 

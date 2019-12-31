@@ -201,8 +201,8 @@ def pickBestResult(results, show):  # pylint: disable=too-many-branches
 
     bestResult = None
 
-    # order the list so that prefered releases are at the top
-    results.sort(key=lambda ep: show_name_helpers.hasPreferedWords(ep.name, ep.show), reverse=True)
+    # order the list so that preferred releases are at the top
+    results.sort(key=lambda ep: show_name_helpers.hasPreferredWords(ep.name, ep.show), reverse=True)
 
     # find the best result for the current episode
     for cur_result in results:

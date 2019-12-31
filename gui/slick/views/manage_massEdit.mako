@@ -4,17 +4,6 @@
     from sickbeard import common
 %>
 
-<%block name="scripts">
-    <%
-        if quality_value is not None:
-            initial_quality = int(quality_value)
-        else:
-            initial_quality = common.SD
-
-        anyQualities, bestQualities = common.Quality.splitQuality(initial_quality)
-    %>
-</%block>
-
 <%block name="tabs">
     <li><a href="#main">${_('Main')}</a></li>
 </%block>

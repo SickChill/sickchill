@@ -68,7 +68,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <span><b>${_('note')}:</b>&nbsp;${_('please use seperate downloading and completed folders in your download client if possible.')}</span>
+                                        <span><b>${_('note')}:</b>&nbsp;${_('please use separate downloading and completed folders in your download client if possible.')}</span>
                                     </div>
                                 </div>
                             </div>
@@ -142,7 +142,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <span class="component-desc">${_('comma seperated list of extensions or filename globs SickChill ignores when Post Processing')}</span>
+                                        <span class="component-desc">${_('comma separated list of extensions or filename globs SickChill ignores when Post Processing')}</span>
                                     </div>
                                 </div>
                             </div>
@@ -235,7 +235,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" name="airdate_episodes" id="airdate_episodes" ${('', 'checked="checked"')[bool(sickbeard.AIRDATE_EPISODES)]}/>
-                                        <label for="airdate_episodes">${_('set last modified filedate to the date that the episode aired?')}</label>
+                                        <label for="airdate_episodes">${_('set last modified file date to the date that the episode aired?')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -282,7 +282,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <select name="unpack" id="unpack" class="form-control input-sm input350" title="unpack">
-                                              % for value, description in unpackStrings.iteritems():
+                                              % for value, description in six.iteritems(unpackStrings):
                                                 <option value="${value}" ${('', 'selected="selected"')[int(sickbeard.UNPACK) == value]}>
                                                     ${description}
                                                 </option>

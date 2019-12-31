@@ -22,6 +22,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Third Party Imports
 from requests.exceptions import HTTPError
+import six
 
 # First Party Imports
 import sickbeard
@@ -54,7 +55,7 @@ class ShowIndexer(object):
         return self.indexers[item]
 
     def __iter__(self):
-        for i in self.indexers.iteritems():
+        for i in six.iteritems(self.indexers):
             yield i
 
     def __build_indexer_attribute_getters(self):
