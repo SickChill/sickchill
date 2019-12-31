@@ -25,7 +25,6 @@ import re
 import traceback
 
 # Third Party Imports
-# noinspection PyUnresolvedReferences
 from requests.compat import quote
 from requests.utils import dict_from_cookiejar
 

@@ -25,14 +25,10 @@ import os
 import platform
 import re
 import shutil
-import stat
 import subprocess
 import tarfile
 import time
 import traceback
-
-# Third Party Imports
-import six
 
 # First Party Imports
 import sickbeard

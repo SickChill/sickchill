@@ -29,7 +29,6 @@ import re
 # Third Party Imports
 import rarfile
 import six
-# noinspection PyUnresolvedReferences
 from six.moves.urllib import parse
 from tornado.escape import xhtml_unescape
 

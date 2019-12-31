@@ -35,7 +35,6 @@ from os import path
 
 # Third Party Imports
 from fake_useragent import settings as UA_SETTINGS, UserAgent
-# noinspection PyUnresolvedReferences
 from six.moves import reduce
 
 # First Party Imports

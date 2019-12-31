@@ -20,9 +20,6 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
-# Stdlib Imports
-import re
-
 # Third Party Imports
 from requests.compat import urljoin
 

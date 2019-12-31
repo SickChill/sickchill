@@ -20,9 +20,6 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
-# Stdlib Imports
-import re
-
 # First Party Imports
 from sickbeard import logger, tvcache
 from sickchill.helper.common import convert_size, try_int

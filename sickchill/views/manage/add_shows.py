@@ -28,9 +28,9 @@ import re
 
 # Third Party Imports
 import six
-from trakt import TraktAPI
 from requests.compat import unquote_plus
 from tornado.escape import xhtml_unescape
+from trakt import TraktAPI
 
 # First Party Imports
 import sickbeard

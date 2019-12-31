@@ -25,9 +25,6 @@ import re
 import time
 import traceback
 
-# Third Party Imports
-import six
-
 # First Party Imports
 import sickbeard
 from sickbeard import logger, tvcache

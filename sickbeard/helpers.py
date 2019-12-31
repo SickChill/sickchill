@@ -57,9 +57,7 @@ import urllib3
 from cachecontrol import CacheControl
 from requests.compat import urljoin
 from requests.utils import urlparse
-# noinspection PyUnresolvedReferences
 from six.moves import urllib
-# noinspection PyProtectedMember
 from tornado._locale_data import LOCALE_NAMES
 
 # First Party Imports

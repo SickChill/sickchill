@@ -23,7 +23,6 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Third Party Imports
-import six
 from six.moves import urllib
 
 # First Party Imports

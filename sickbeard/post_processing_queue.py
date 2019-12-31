@@ -26,7 +26,7 @@ import traceback
 
 # First Party Imports
 import sickbeard
-from sickbeard import common, config, generic_queue, logger, processTV
+from sickbeard import common, config, generic_queue, logger
 from sickbeard.processTV import log_helper, process_dir
 from sickchill.helper.encoding import ek
 

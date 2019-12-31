@@ -26,7 +26,6 @@ from collections import namedtuple
 
 # Third Party Imports
 import six
-# noinspection PyProtectedMember
 from imdb import _exceptions as imdb_exceptions
 from trakt import TraktAPI
 

@@ -27,9 +27,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import ast
-import re
 import smtplib
-# import traceback
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formatdate

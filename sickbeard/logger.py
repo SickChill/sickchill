@@ -41,7 +41,6 @@ from logging import NullHandler
 import six
 from github import InputFileContent
 from github.GithubException import RateLimitExceededException, TwoFactorException
-# noinspection PyUnresolvedReferences
 from requests.compat import quote
 
 # First Party Imports
