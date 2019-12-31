@@ -21,8 +21,8 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Third Party Imports
-from requests.exceptions import HTTPError
 import six
+from requests.exceptions import HTTPError
 
 # First Party Imports
 import sickbeard
@@ -44,7 +44,7 @@ class ShowIndexer(object):
         self.__build_indexer_attribute_getters()
 
     def __getitem__(self, item):
-        if isinstance(item, basestring):
+        if isinstance(item, six.string_types):
             for indexer in self.indexers.values():
                 if item in (indexer.name, indexer.slug):
                     return indexer
@@ -94,7 +94,7 @@ class ShowIndexer(object):
             indexer = sickbeard.INDEXER_DEFAULT
         return self.indexers[indexer].search(*args, **kwargs)
 
-    def search_indexers_for_show_name(self, name, language=None):
+    def search_indexers_for_series_name(self, name, language=None):
         results = {}
         for i, indexer in self:
             results[i] = indexer.search(name, language)
@@ -105,10 +105,10 @@ class ShowIndexer(object):
         if not indexer:
             indexer = self.indexers.keys()
 
-        if isinstance(indexer, (int, basestring)):
+        if isinstance(indexer, (int, six.string_types)):
             indexer = [indexer]
 
-        if isinstance(name, basestring):
+        if isinstance(name, six.string_types):
             name = [name]
 
         if indexerid:
@@ -125,9 +125,9 @@ class ShowIndexer(object):
                 search = (name, indexerid)[bool(indexerid)]
                 logger.log("Trying to find {} on {}".format(search, self.name(i)), logger.DEBUG)
                 if indexerid:
-                    result = self.indexers[i].get_show_by_id(indexerid, language)
+                    result = self.indexers[i].get_series_by_id(indexerid, language)
                 else:
-                    result = self.indexers[i].get_show_by_name(n, indexerid, language)
+                    result = self.indexers[i].get_series_by_name(n, indexerid, language)
 
                 try:
                     # noinspection PyUnusedLocal
@@ -154,7 +154,7 @@ class ShowIndexer(object):
         return series
 
     def series(self, show):
-        return self.series_by_id(id=show.indexerid, indexer=show.indexer, language=show.lang)
+        return self.series_by_id(indexerid=show.indexerid, indexer=show.indexer, language=show.lang)
 
     def episodes(self, show, season):
         return self.indexers[show.indexer].episodes(show, season)

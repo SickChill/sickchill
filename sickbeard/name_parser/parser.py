@@ -33,12 +33,11 @@ import dateutil
 import six
 
 # First Party Imports
-import sickbeard
+import sickchill
 from sickbeard import common, db, helpers, logger, scene_exceptions, scene_numbering
 from sickbeard.name_parser import regexes
 from sickchill.helper.common import remove_extension
 from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex
 
 
 class NameParser(object):
@@ -251,7 +250,7 @@ class NameParser(object):
 
                 if season_number is None or not episode_numbers:
                     try:
-                        series = bestResult.show.idxr.series(bestResult.show)
+                        series = sickchill.indexer.series(bestResult.show)
                         series.Episodes.update_filters(firstAired=bestResult.air_date)
                         epObj = series.Episodes.all()[0]
 

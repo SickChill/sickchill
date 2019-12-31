@@ -131,7 +131,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
         item = self.find_in_queue(directory, mode)
 
         if not delete:
-            delete = (False, (not sickbeard.NO_DELETE, True)[method == u"move"])[mode == u"auto"]
+            delete = (False, (not sickbeard.NO_DELETE, True)[method == "move"])[mode == "auto"]
 
         if item:
             if self.currentItem == item:

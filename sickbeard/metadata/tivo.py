@@ -28,6 +28,7 @@ import io
 import os
 
 # First Party Imports
+import sickchill
 from sickbeard import helpers, logger
 from sickbeard.metadata import generic
 from sickchill.helper.encoding import ek
@@ -165,13 +166,13 @@ class TIVOMetadata(generic.GenericMetadata):
 
         eps_to_write = [ep_obj] + ep_obj.relatedEps
 
-        myShow = ep_obj.idxr.series(ep_obj.show)
+        myShow = sickchill.indexer.series(ep_obj.show)
         if not myShow:
             logger.log("Unable to connect to {} while creating meta files for {}, skipping".format(ep_obj.indexer_name, ep_obj.name), logger.DEBUG)
             return False
 
         for curEpToWrite in eps_to_write:
-            myEp = ep_obj.idxr.episode(ep_obj.show, curEpToWrite.season, curEpToWrite.episode)
+            myEp = ep_obj.idxr.episode(curEpToWrite)
             if not myEp:
                 logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}...has it been removed? Should I delete from db?".format(
                     curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.indexer_name))

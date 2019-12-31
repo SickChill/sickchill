@@ -55,7 +55,7 @@
                                                 <select name="indexerLang" id="indexerLangSelect"
                                                         class="form-control form-control-inline input-sm bfh-languages"
                                                         data-language="${sickbeard.INDEXER_DEFAULT_LANGUAGE}"
-                                                        data-available="${','.join(sickbeard.show_indexer.languages)}"></select>
+                                                        data-available="${','.join(sickbeard.show_indexer.languages())}"></select>
                                             </div>
                                         </div>
                                         <div class="row">

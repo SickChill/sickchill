@@ -141,12 +141,10 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 try:
                     torrents = self.get_url(search_url, params=get_params, returns='json')
                     # Handle empty string response or None #4304
-                    if not torrents:
-                        raise
-
+                    assert torrents
                     # Make sure it is iterable #4304
                     iter(torrents)
-                except Exception:
+                except (TypeError, AssertionError):
                     logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
                     continue
 

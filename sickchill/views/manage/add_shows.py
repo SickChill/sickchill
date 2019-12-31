@@ -184,7 +184,7 @@ class AddShows(Home):
 
                         # default to TVDB if indexer was not detected
                         if show_name and not (indexer or indexer_id):
-                            (show_name_, idxr, i) = sickchill.indexer.search_indexers_for_show_name(show_name)
+                            (show_name_, idxr, i) = sickchill.indexer.search_indexers_for_series_name(show_name)
 
                             # set indexer and indexer_id from found info
                             if not indexer and idxr:
@@ -445,7 +445,7 @@ class AddShows(Home):
             logger.log("There was an error creating the show, no root directory setting found")
             return _("No root directories setup, please go back and add one.")
 
-        show_name = sickchill.indexer[1].get_show_by_id(indexer_id, indexer_lang).seriesName
+        show_name = sickchill.indexer[1].get_series_by_id(indexer_id, indexer_lang).seriesName
         show_dir = None
 
         if not show_name:

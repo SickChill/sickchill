@@ -41,20 +41,20 @@ class TVDB(Indexer):
         self.base_url = 'http://thetvdb.com/api/%(apikey)s/series/'
         self.icon = 'images/indexers/thetvdb16.png'
         tvdbsimple.KEYS.API_KEY = self.api_key
-        self.search = tvdbsimple.search.Search().series
+        self._search = tvdbsimple.search.Search().series
         self.series = tvdbsimple.Series
         self.series_episodes = tvdbsimple.Series_Episodes
         self.series_images = tvdbsimple.Series_Images
         self.updates = tvdbsimple.Updates
 
-    def get_show_by_id(self, indexerid, language=None):
+    def get_series_by_id(self, indexerid, language=None):
         result = self.series(indexerid, language)
         result.info(language=language)
         return result
 
-    def get_show_by_name(self, name, indexerid=None, language=None):
+    def get_series_by_name(self, name, indexerid=None, language=None):
         if indexerid:
-            return self.get_show_by_id(indexerid, language)
+            return self.get_series_by_id(indexerid, language)
         # Just return the first result for now
         result = self.series(self.search(name, language)[0]['id'])
         result.info(language=language)
@@ -84,13 +84,13 @@ class TVDB(Indexer):
                 result = self.series_episodes(show.indexerid, dvdSeason=season, dvdEpisode=episode, language=show.lang).all()[0]
             else:
                 result = self.series_episodes(show.indexerid, airedSeason=season, airedEpisode=episode, language=show.lang).all()[0]
-        except HTTPError:
+        except (HTTPError, IndexError):
             result = None
 
         return result
 
     def search(self, name, language=None):
-        return self.search(name, language)
+        return self._search(name, language=language)
 
     @property
     def languages(self):

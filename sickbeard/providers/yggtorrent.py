@@ -26,9 +26,9 @@ from __future__ import absolute_import, print_function, unicode_literals
 import re
 
 # Third Party Imports
+import six
 import validators
 from requests.compat import urljoin
-import six
 
 # First Party Imports
 from sickbeard import logger, tvcache

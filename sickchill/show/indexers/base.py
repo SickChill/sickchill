@@ -44,11 +44,11 @@ class Indexer(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_show_by_id(self, indexerid, language=None):
+    def get_series_by_id(self, indexerid, language=None):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_show_by_name(self, indexerid, language=None):
+    def get_series_by_name(self, indexerid, language=None):
         raise NotImplementedError
 
     @abc.abstractmethod

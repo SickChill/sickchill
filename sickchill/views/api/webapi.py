@@ -1736,7 +1736,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
         lang_id = self.valid_languages[self.lang]
 
         if self.name and not self.indexerid:  # only name was given
-            search_results = sickchill.indexer.search_indexers_for_show_name(str(self.name).encode(), self.lang)
+            search_results = sickchill.indexer.search_indexers_for_series_name(str(self.name).encode(), self.lang)
             for indexer, indexer_results in six.iteritems(search_results):
                 for result in indexer_results:
                     # Skip it if it's in our show list already, and we only want new shows

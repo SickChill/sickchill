@@ -11,7 +11,7 @@
     import sickchill
 
     def lang_name(code):
-        return LOCALE_NAMES.get(code, {}).get("name", u"Unknown")
+        return LOCALE_NAMES.get(code, {}).get("name", "Unknown")
 %>
 
 <%block name="tabs">
@@ -45,7 +45,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm input350
-                                        bfh-languages" data-language=${sickbeard.INDEXER_DEFAULT_LANGUAGE} data-available="${','.join(sickchill.indexer.languages}"></select>
+                                        bfh-languages" data-language="${sickbeard.INDEXER_DEFAULT_LANGUAGE}" data-available="${','.join(sickchill.indexer.languages())}"></select>
                                     </div>
                                 </div>
                                 <div class="row">

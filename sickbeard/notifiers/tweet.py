@@ -92,6 +92,7 @@ class Notifier(object):
             return oauth_session.authorization_url(self.AUTHORIZATION_URL)
 
     def _get_credentials(self, key):
+        logger.log('Type of key is {}'.format(type(key)))
         """
         Step 2 of authorization - poll server for access token.
 

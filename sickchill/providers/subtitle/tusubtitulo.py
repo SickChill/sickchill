@@ -25,12 +25,13 @@ logger = logging.getLogger(__name__)
 class TuSubtituloConverter(LanguageReverseConverter):
     def __init__(self):
         self.name_converter = language_converters['name']
-        self.from_tusubtitulo = {u'Español': ('spa',), u'Español (España)': ('spa',),
-                                 u'Español (Latinoamérica)': ('spa', 'MX'), u'Català': ('cat',), 'English': ('eng',),
+        self.from_tusubtitulo = {
+            'Español': ('spa',), 'Español (España)': ('spa',),
+                                 'Español (Latinoamérica)': ('spa', 'MX'), 'Català': ('cat',), 'English': ('eng',),
                                  'Galego': ('glg',), 'Portuguese': ('por',), 'English (US)': ('eng', 'US'),
                                  'English (UK)': ('eng', 'GB'), 'Brazilian': ('por', 'BR')}
 
-        self.to_tusubtitulo = {('cat',): u'Català', ('glg',): 'Galego', ('por', 'BR'): 'Brazilian'}
+        self.to_tusubtitulo = {('cat',): 'Català', ('glg',): 'Galego', ('por', 'BR'): 'Brazilian'}
 
         self.codes = set(self.from_tusubtitulo.keys())
 
