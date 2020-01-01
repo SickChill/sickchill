@@ -80,7 +80,6 @@ class ConfigProviders(Config):
         http://yournewznaburl.com/api?t=caps&apikey=yourapikey
         """
         error = ""
-        success = False
 
         if not name:
             error += "\n" + _("No Provider Name specified")
