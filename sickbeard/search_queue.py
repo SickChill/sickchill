@@ -25,7 +25,9 @@ import traceback
 
 # First Party Imports
 import sickbeard
-from sickbeard import common, failed_history, generic_queue, history, logger, search, ui
+
+# Local Folder Imports
+from . import common, failed_history, generic_queue, history, logger, search, ui
 
 BACKLOG_SEARCH = 10
 DAILY_SEARCH = 20

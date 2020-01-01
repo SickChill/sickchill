@@ -38,12 +38,14 @@ from subliminal import Episode, provider_manager, ProviderPool
 
 # First Party Imports
 import sickbeard
-from sickbeard import db, history, logger
-from sickbeard.common import Quality
-from sickbeard.helpers import is_media_file
 from sickchill.helper.common import dateTimeFormat, episode_num
 from sickchill.helper.exceptions import ex
 from sickchill.show.Show import Show
+
+# Local Folder Imports
+from . import db, history, logger
+from .common import Quality
+from .helpers import is_media_file
 
 # https://github.com/Diaoul/subliminal/issues/536
 # provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')

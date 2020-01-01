@@ -27,9 +27,11 @@ import six
 
 # First Party Imports
 import sickbeard
-from sickbeard import db
 
-# from sickbeard import logger
+# Local Folder Imports
+from . import db
+
+# from . import logger
 
 nameCache = {}
 nameCacheLock = threading.Lock()

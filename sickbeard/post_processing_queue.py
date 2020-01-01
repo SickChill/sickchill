@@ -26,9 +26,11 @@ import traceback
 
 # First Party Imports
 import sickbeard
-from sickbeard import common, config, generic_queue, logger
-from sickbeard.processTV import log_helper, process_dir
 from sickchill.helper.encoding import ek
+
+# Local Folder Imports
+from . import common, config, generic_queue, logger
+from .processTV import log_helper, process_dir
 
 MANUAL_POST_PROCESS = 120
 AUTO_POST_PROCESS = 100

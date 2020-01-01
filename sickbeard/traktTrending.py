@@ -13,9 +13,11 @@ from trakt.trakt import TraktAPI
 # First Party Imports
 import sickbeard
 import sickchill
-from sickbeard import helpers, logger
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex, MultipleShowObjectsException
+
+# Local Folder Imports
+from . import helpers, logger
 
 
 class traktTrending(object):

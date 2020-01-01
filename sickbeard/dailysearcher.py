@@ -26,9 +26,11 @@ import threading
 
 # First Party Imports
 import sickbeard
-from sickbeard import common, db, logger, network_timezones
 from sickchill.helper.exceptions import MultipleShowObjectsException
 from sickchill.show.Show import Show
+
+# Local Folder Imports
+from . import common, db, logger, network_timezones
 
 
 class DailySearcher(object):  # pylint:disable=too-few-public-methods

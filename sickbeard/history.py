@@ -24,12 +24,12 @@ from __future__ import absolute_import, print_function, unicode_literals
 import datetime
 
 # First Party Imports
-from sickbeard.common import FAILED, Quality, SNATCHED, SUBTITLED
 from sickchill.helper.encoding import ss
 from sickchill.show.History import History
 
 # Local Folder Imports
 from . import db
+from .common import FAILED, Quality, SNATCHED, SUBTITLED
 
 
 def _logHistoryItem(action, showid, season, episode, quality, resource, provider, version=-1):

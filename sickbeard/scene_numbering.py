@@ -33,10 +33,12 @@ import traceback
 # First Party Imports
 import sickbeard
 import sickchill
-from sickbeard import db, logger
-from sickbeard.scene_exceptions import xem_session
 from sickchill.helper.exceptions import ex
 from sickchill.show.Show import Show
+
+# Local Folder Imports
+from . import db, logger
+from .scene_exceptions import xem_session
 
 
 def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=True):

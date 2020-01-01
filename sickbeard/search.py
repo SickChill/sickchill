@@ -29,13 +29,15 @@ import traceback
 
 # First Party Imports
 import sickbeard
-from sickbeard import clients, common, db, failed_history, helpers, history, logger, notifiers, nzbget, nzbSplitter, sab, show_name_helpers, ui
-from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper.common import try_int
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import AuthException, ex
 from sickchill.providers.GenericProvider import GenericProvider
+
+# Local Folder Imports
+from . import clients, common, db, failed_history, helpers, history, logger, notifiers, nzbget, nzbSplitter, sab, show_name_helpers, ui
+from .common import MULTI_EP_RESULT, Quality, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 
 def _downloadResult(result):

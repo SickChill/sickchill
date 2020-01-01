@@ -31,12 +31,14 @@ from trakt.exceptions import traktException
 # First Party Imports
 import sickbeard
 import sickchill
-from sickbeard import db, helpers, logger, search_queue
-from sickbeard.common import Quality, SKIPPED, UNKNOWN, WANTED
 from sickchill.helper.common import episode_num, sanitize_filename
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
 from sickchill.show.Show import Show
+
+# Local Folder Imports
+from . import db, helpers, logger, search_queue
+from .common import Quality, SKIPPED, UNKNOWN, WANTED
 
 
 def setEpisodeToWanted(show, s, e):

@@ -26,10 +26,12 @@ import os
 
 # First Party Imports
 import sickbeard
-from sickbeard import common, logger, tv
-from sickbeard.common import DOWNLOADED, Quality
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper.encoding import ek
+
+# Local Folder Imports
+from . import common, logger, tv
+from .common import DOWNLOADED, Quality
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 name_presets = (
     '%SN - %Sx%0E',

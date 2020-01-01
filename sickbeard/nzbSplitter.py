@@ -25,10 +25,12 @@ from __future__ import absolute_import, print_function, unicode_literals
 import re
 
 # First Party Imports
-from sickbeard import classes, helpers, logger
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper.encoding import ek, ss
 from sickchill.helper.exceptions import ex
+
+# Local Folder Imports
+from . import classes, helpers, logger
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 try:
     import xml.etree.cElementTree as ETree

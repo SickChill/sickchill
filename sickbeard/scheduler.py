@@ -27,8 +27,10 @@ import time
 import traceback
 
 # First Party Imports
-from sickbeard import logger
 from sickchill.helper.exceptions import ex
+
+# Local Folder Imports
+from . import logger
 
 
 class Scheduler(threading.Thread):

@@ -32,9 +32,11 @@ import traceback
 
 # First Party Imports
 import sickbeard
-from sickbeard import db, helpers, logger, notifiers, ui
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
+
+# Local Folder Imports
+from . import db, helpers, logger, notifiers, ui
 
 
 class CheckVersion(object):

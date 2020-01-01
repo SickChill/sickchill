@@ -29,11 +29,13 @@ import re
 from six.moves import urllib
 
 # First Party Imports
-from sickbeard import db, logger
-from sickbeard.common import FAILED, Quality, WANTED
 from sickchill.helper.encoding import ss
 from sickchill.helper.exceptions import EpisodeNotFoundException, ex
 from sickchill.show.History import History
+
+# Local Folder Imports
+from . import db, logger
+from .common import FAILED, Quality, WANTED
 
 
 def prepareFailedName(release):

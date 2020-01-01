@@ -36,11 +36,6 @@ from unidecode import unidecode
 # First Party Imports
 import sickbeard
 import sickchill
-from sickbeard import db, helpers, image_cache, logger, network_timezones, notifiers, postProcessor, subtitles
-from sickbeard.blackandwhitelist import BlackAndWhiteList
-from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
-                              NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN, WANTED)
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper import glob
 from sickchill.helper.common import dateTimeFormat, episode_num, remove_extension, replace_extension, sanitize_filename, try_int
 from sickchill.helper.encoding import ek
@@ -48,6 +43,13 @@ from sickchill.helper.exceptions import (EpisodeDeletedException, EpisodeNotFoun
                                          MultipleShowObjectsException, MultipleShowsInDatabaseException, NoNFOException, ShowDirectoryNotFoundException,
                                          ShowNotFoundException)
 from sickchill.show.Show import Show
+
+# Local Folder Imports
+from . import db, helpers, image_cache, logger, network_timezones, notifiers, postProcessor, subtitles
+from .blackandwhitelist import BlackAndWhiteList
+from .common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
+                     NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN, WANTED)
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 try:
     import xml.etree.cElementTree as etree

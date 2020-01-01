@@ -11,8 +11,10 @@ import traceback
 from six.moves.queue import Empty, Queue
 
 # First Party Imports
-from sickbeard import logger
 from sickchill.helper.exceptions import ex
+
+# Local Folder Imports
+from . import logger
 
 
 class Event(object):

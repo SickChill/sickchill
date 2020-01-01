@@ -31,8 +31,10 @@ from six.moves import urllib
 # First Party Imports
 import sickbeard
 import sickchill
-from sickbeard.common import Quality, USER_AGENT
 from sickchill.helper.common import dateTimeFormat
+
+# Local Folder Imports
+from .common import Quality, USER_AGENT
 
 
 class SickBeardURLopener(urllib.request.FancyURLopener, object):

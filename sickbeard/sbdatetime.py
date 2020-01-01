@@ -27,7 +27,9 @@ import locale
 
 # First Party Imports
 import sickbeard
-from sickbeard.network_timezones import sb_timezone
+
+# Local Folder Imports
+from .network_timezones import sb_timezone
 
 date_presets = (
     '%Y-%m-%d',

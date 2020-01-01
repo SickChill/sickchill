@@ -35,9 +35,11 @@ from tornado.escape import xhtml_unescape
 
 # First Party Imports
 import sickbeard
-from sickbeard import db, helpers, logger, naming
 from sickchill.helper.common import try_int
 from sickchill.helper.encoding import ek
+
+# Local Folder Imports
+from . import db, helpers, logger, naming
 
 # Address poor support for scgi over unix domain sockets
 # this is not nicely handled by python currently

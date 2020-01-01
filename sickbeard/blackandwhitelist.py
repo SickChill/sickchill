@@ -25,7 +25,9 @@ from adba.aniDBerrors import AniDBCommandTimeoutError
 
 # First Party Imports
 import sickbeard
-from sickbeard import db, helpers, logger
+
+# Local Folder Imports
+from . import db, helpers, logger
 
 
 class BlackAndWhiteList(object):

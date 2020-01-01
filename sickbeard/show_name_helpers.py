@@ -29,10 +29,12 @@ import six
 
 # First Party Imports
 import sickbeard
-from sickbeard import common, logger
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickbeard.scene_exceptions import get_scene_exceptions
 from sickchill.helper.encoding import ek
+
+# Local Folder Imports
+from . import common, logger
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from .scene_exceptions import get_scene_exceptions
 
 resultFilters = {
     "sub(bed|ed|pack|s)",

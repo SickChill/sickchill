@@ -5,8 +5,10 @@ from __future__ import absolute_import, print_function, unicode_literals
 from feedparser.api import parse
 
 # First Party Imports
-from sickbeard import logger
 from sickchill.helper.exceptions import ex
+
+# Local Folder Imports
+from . import logger
 
 
 def getFeed(url, params=None, request_hook=None):

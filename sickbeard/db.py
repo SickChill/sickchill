@@ -34,9 +34,11 @@ import six
 
 # First Party Imports
 import sickbeard
-from sickbeard import logger
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
+
+# Local Folder Imports
+from . import logger
 
 db_cons = {}
 db_locks = {}

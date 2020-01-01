@@ -32,16 +32,18 @@ from trakt import TraktAPI
 # First Party Imports
 import sickbeard
 import sickchill
-from sickbeard import generic_queue, logger, name_cache, notifiers, scene_numbering, ui
-from sickbeard.blackandwhitelist import BlackAndWhiteList
-from sickbeard.common import WANTED
-from sickbeard.helpers import chmodAsParent, makeDir, sortable_name
-from sickbeard.tv import TVShow
 from sickchill.helper.common import sanitize_filename
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import (CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, EpisodeDeletedException,
                                          MultipleShowObjectsException, ShowDirectoryNotFoundException)
 from sickchill.show.Show import Show
+
+# Local Folder Imports
+from . import generic_queue, logger, name_cache, notifiers, scene_numbering, ui
+from .blackandwhitelist import BlackAndWhiteList
+from .common import WANTED
+from .helpers import chmodAsParent, makeDir, sortable_name
+from .tv import TVShow
 
 
 class ShowQueue(generic_queue.GenericQueue):

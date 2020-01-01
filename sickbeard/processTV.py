@@ -30,11 +30,13 @@ from rarfile import BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRC
 
 # First Party Imports
 import sickbeard
-from sickbeard import common, db, failedProcessor, helpers, logger, postProcessor
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper.common import is_sync_file, is_torrent_or_nzb_file
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
+
+# Local Folder Imports
+from . import common, db, failedProcessor, helpers, logger, postProcessor
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 
 class ProcessResult(object):  # pylint: disable=too-few-public-methods

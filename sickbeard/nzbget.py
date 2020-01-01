@@ -30,9 +30,11 @@ from six.moves import http_client, xmlrpc_client
 
 # First Party Imports
 import sickbeard
-from sickbeard import logger
-from sickbeard.common import Quality
 from sickchill.helper.common import try_int
+
+# Local Folder Imports
+from . import logger
+from .common import Quality
 
 
 def sendNZB(nzb, proper=False):  # pylint: disable=too-many-locals, too-many-statements, too-many-branches, too-many-return-statements

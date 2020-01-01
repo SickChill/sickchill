@@ -38,19 +38,21 @@ from tornado.locale import load_gettext_translations
 
 # First Party Imports
 import sickchill
-from sickbeard import (auto_postprocessor, clients, dailysearcher, db, helpers, logger, metadata, naming, post_processing_queue, properFinder, providers,
-                       scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker, versionChecker)
-from sickbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
-from sickbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
-from sickbeard.databases import cache_db, failed_db, mainDB
-from sickbeard.numdict import NumDict
-from sickbeard.providers.newznab import NewznabProvider
-from sickbeard.providers.rsstorrent import TorrentRssProvider
 from sickchill import show_updater
 from sickchill.helper import setup_github
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
 from sickchill.system.Shutdown import Shutdown
+
+# Local Folder Imports
+from . import (auto_postprocessor, clients, dailysearcher, db, helpers, logger, metadata, naming, post_processing_queue, properFinder, providers,
+               scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker, versionChecker)
+from .common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
+from .config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
+from .databases import cache_db, failed_db, mainDB
+from .numdict import NumDict
+from .providers.newznab import NewznabProvider
+from .providers.rsstorrent import TorrentRssProvider
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 

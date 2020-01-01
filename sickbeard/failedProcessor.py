@@ -21,9 +21,11 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # First Party Imports
 import sickbeard
-from sickbeard import logger, search_queue, show_name_helpers
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper.exceptions import FailedPostProcessingFailedException
+
+# Local Folder Imports
+from . import logger, search_queue, show_name_helpers
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 
 class FailedProcessor(object):

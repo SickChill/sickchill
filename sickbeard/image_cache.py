@@ -31,11 +31,13 @@ from hachoir_parser import createParser
 # First Party Imports
 import sickbeard
 import sickchill
-from sickbeard import helpers, logger
-from sickbeard.metadata.generic import GenericMetadata
-from sickbeard.metadata.helpers import getShowImage
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ShowDirectoryNotFoundException
+
+# Local Folder Imports
+from . import helpers, logger
+from .metadata.generic import GenericMetadata
+from .metadata.helpers import getShowImage
 
 log.use_print = False
 

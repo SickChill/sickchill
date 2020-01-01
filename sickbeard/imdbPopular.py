@@ -13,8 +13,10 @@ from bs4 import BeautifulSoup
 
 # First Party Imports
 import sickbeard
-from sickbeard import helpers
 from sickchill.helper.encoding import ek
+
+# Local Folder Imports
+from . import helpers
 
 
 class imdbPopular(object):

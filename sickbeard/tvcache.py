@@ -29,11 +29,13 @@ import six
 
 # First Party Imports
 import sickbeard
-from sickbeard import db, logger, show_name_helpers
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickbeard.rssfeeds import getFeed
 from sickchill.helper.exceptions import AuthException, ex
 from sickchill.show.Show import Show
+
+# Local Folder Imports
+from . import db, logger, show_name_helpers
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from .rssfeeds import getFeed
 
 
 class CacheDBConnection(db.DBConnection):

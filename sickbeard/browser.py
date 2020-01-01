@@ -30,8 +30,10 @@ import six
 
 # First Party Imports
 import sickbeard
-from sickbeard import logger
 from sickchill.helper.encoding import ek
+
+# Local Folder Imports
+from . import logger
 
 
 # adapted from http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490

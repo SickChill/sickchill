@@ -30,12 +30,14 @@ import traceback
 
 # First Party Imports
 import sickbeard
-from sickbeard import db, helpers, logger
-from sickbeard.common import cpu_presets, DOWNLOADED, Quality, SNATCHED, SNATCHED_PROPER
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickbeard.search import pickBestResult, snatchEpisode
 from sickchill.helper.exceptions import AuthException, ex
 from sickchill.show.History import History
+
+# Local Folder Imports
+from . import db, helpers, logger
+from .common import cpu_presets, DOWNLOADED, Quality, SNATCHED, SNATCHED_PROPER
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from .search import pickBestResult, snatchEpisode
 
 
 class ProperFinder(object):  # pylint: disable=too-few-public-methods

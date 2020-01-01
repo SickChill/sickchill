@@ -45,10 +45,12 @@ from requests.compat import quote
 
 # First Party Imports
 import sickbeard
-from sickbeard import classes
 from sickchill.helper.common import dateTimeFormat
 from sickchill.helper.encoding import ek, ss
 from sickchill.helper.exceptions import ex
+
+# Local Folder Imports
+from . import classes
 
 # log levels
 ERROR = logging.ERROR
@@ -275,7 +277,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             return submitter_result, issue_id
 
         try:
-            from sickbeard.versionChecker import CheckVersion
+            from .versionChecker import CheckVersion
             checkversion = CheckVersion()
             checkversion.check_for_new_version()
             commits_behind = checkversion.updater.get_num_commits_behind()

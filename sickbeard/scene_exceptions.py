@@ -32,7 +32,9 @@ import six
 # First Party Imports
 import sickbeard
 import sickchill
-from sickbeard import db, helpers, logger
+
+# Local Folder Imports
+from . import db, helpers, logger
 
 exception_dict = {}
 anidb_exception_dict = {}

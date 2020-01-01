@@ -39,11 +39,13 @@ from six.moves import reduce
 
 # First Party Imports
 import sickbeard
-from sickbeard.numdict import NumDict
 from sickchill.helper import video_screen_size
 from sickchill.helper.encoding import ek
 from sickchill.recompiled import tags
 from sickchill.tagger.episode import EpisodeTags
+
+# Local Folder Imports
+from .numdict import NumDict
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 

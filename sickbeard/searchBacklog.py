@@ -28,7 +28,9 @@ import six
 
 # First Party Imports
 import sickbeard
-from sickbeard import common, db, logger, scheduler, search_queue, ui
+
+# Local Folder Imports
+from . import common, db, logger, scheduler, search_queue, ui
 
 
 class BacklogSearchScheduler(scheduler.Scheduler):

@@ -24,8 +24,8 @@ from __future__ import absolute_import, print_function, unicode_literals
 import datetime
 import threading
 
-# First Party Imports
-from sickbeard import logger
+# Local Folder Imports
+from . import logger
 
 
 class QueuePriorities(object):

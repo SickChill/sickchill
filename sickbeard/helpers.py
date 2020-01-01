@@ -64,12 +64,14 @@ from tornado._locale_data import LOCALE_NAMES
 # First Party Imports
 import sickbeard
 import sickchill
-from sickbeard import classes, db, logger
-from sickbeard.common import USER_AGENT
 from sickchill.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS
 from sickchill.helper.common import replace_extension
 from sickchill.helper.encoding import ek
 from sickchill.show.Show import Show
+
+# Local Folder Imports
+from . import classes, db, logger
+from .common import USER_AGENT
 
 # Add some missing languages
 LOCALE_NAMES.update({

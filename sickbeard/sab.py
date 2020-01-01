@@ -28,7 +28,9 @@ from requests.compat import urljoin
 
 # First Party Imports
 import sickbeard
-from sickbeard import helpers, logger
+
+# Local Folder Imports
+from . import helpers, logger
 
 session = helpers.make_session()
 
