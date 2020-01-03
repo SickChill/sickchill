@@ -253,7 +253,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         data = getattr(myShow, 'id', None)
         if data:
             indexerid = etree.SubElement(tv_node, "id")
-            indexerid.text = data
+            indexerid.text = str(data)
 
         data = getattr(myShow, 'seriesName', None)
         if data:
@@ -340,15 +340,15 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             Zap2ItId = etree.SubElement(tv_node, "Zap2ItId")
             Zap2ItId.text = data
 
-        if getattr(myShow, 'genre', None) and isinstance(myShow["genre"], six.string_types):
+        if getattr(myShow, 'genre', None) and isinstance(myShow.genre, six.string_types):
             Genres = etree.SubElement(tv_node, "Genres")
-            for genre in myShow['genre']:
+            for genre in myShow.genre:
                 if genre.strip():
                     cur_genre = etree.SubElement(Genres, "Genre")
                     cur_genre.text = genre.strip()
 
             Genre = etree.SubElement(tv_node, "Genre")
-            Genre.text = "|".join([x.strip() for x in myShow["genre"] if x.strip()])
+            Genre.text = "|".join([x.strip() for x in myShow.genre if x.strip()])
 
         data = getattr(myShow, 'network', None)
         if data:
@@ -359,7 +359,8 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         data = getattr(myShow, 'actors', None)
         if data:
             Persons = etree.SubElement(tv_node, "Persons")
-            for actor in myShow['_actors']:
+            myShow.actors()
+            for actor in myShow.actors:
                 if not ('name' in actor and actor['name'].strip()):
                     continue
 

@@ -319,7 +319,7 @@ class QueueItemAdd(ShowQueueItem):
         logger.log('Starting to add show {0}'.format('by ShowDir: {0}'.format(self.showDir) if self.showDir else 'by Indexer Id: {0}'.format(self.indexer_id)))
         # make sure the Indexer IDs are valid
         try:
-            s = sickchill.indexer.series_by_id(id=self.indexer_id, indexer=self.indexer, language=self.lang)
+            s = sickchill.indexer.series_by_id(indexerid=self.indexer_id, indexer=self.indexer, language=self.lang)
 
             # Let's try to create the show Dir if it's not provided. This way we force the show dir to build build using the
             # Indexers provided series name

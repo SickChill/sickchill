@@ -26,6 +26,7 @@ import tvdbsimple
 from requests.exceptions import HTTPError
 
 # First Party Imports
+# from sickbeard import logger
 from sickbeard.tv import TVEpisode
 
 # Local Folder Imports
@@ -124,8 +125,9 @@ class TVDB(Indexer):
     def __call_images_api(self, show, thumb, keyType, subKey=None):
         try:
             images = self.series_images(show.indexerid, show.lang, keyType=keyType, subKey=subKey)
-            result =  self.complete_image_url(images.all()[0][('fileName', 'thumbnail')[thumb]])
+            result = self.complete_image_url(images.all()[0][('fileName', 'thumbnail')[thumb]])
         except HTTPError:
+            # logger.log('Unable to find image for {show}, {thumb}, {keyType}, {subKey}'.format(show=show, thumb=thumb, keyType=keyType, subKey=subKey))
             result = ''
 
         return result

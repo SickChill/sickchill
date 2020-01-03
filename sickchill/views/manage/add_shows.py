@@ -240,7 +240,7 @@ class AddShows(Home):
             default_show_name=default_show_name, other_shows=other_shows,
             provided_show_dir=show_dir, provided_indexer_id=provided_indexer_id,
             provided_indexer_name=provided_indexer_name, provided_indexer=provided_indexer,
-            indexers=sickchill.indexer, whitelist=[], blacklist=[], groups=[],
+            whitelist=[], blacklist=[], groups=[],
             title=_('New Show'), header=_('New Show'), topmenu='home',
             controller="addShows", action="newShow"
         )

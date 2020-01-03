@@ -31,7 +31,7 @@ meta_session = helpers.make_session()
 
 
 def getShowImage(url, imgNum=None):
-    if url is None:
+    if not url:
         return None
 
     # if they provided a fanart number try to use it instead

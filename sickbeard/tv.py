@@ -1593,7 +1593,8 @@ class TVEpisode(object):
                         indexer=self.indexer_name), logger.DEBUG)
         else:
             logger.log("{id}: The absolute number for {ep} is: {absolute} ".format
-                       (id=self.show.indexerid, ep=episode_num(season, episode), absolute=myEp["absoluteNumber"]), logger.DEBUG)
+                       (id=self.show.indexerid, ep=episode_num(season or self.season, episode or self.episode),
+                        absolute=myEp["absoluteNumber"]), logger.DEBUG)
             self.absolute_number = myEp["absoluteNumber"]
 
         self.name = myEp['episodeName']

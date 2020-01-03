@@ -118,6 +118,8 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                 show_obj.indexerid, show_obj.idxr.name.name))
             return False
 
+        myShow.info()
+
         # check for title and id
         if not (getattr(myShow, 'seriesName', None) and getattr(myShow, 'id', None)):
             logger.log("Incomplete info for show with id {} on {}, skipping it".format(
@@ -125,15 +127,15 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
             return False
 
         title = etree.SubElement(tv_node, "title")
-        title.text = myShow["seriesName"]
+        title.text = myShow.seriesName
 
         if getattr(myShow, 'rating', None):
             rating = etree.SubElement(tv_node, "rating")
-            rating.text = myShow["rating"]
+            rating.text = myShow.rating
 
         if getattr(myShow, 'firstAired', None):
             try:
-                year_text = str(datetime.datetime.strptime(myShow["firstAired"], dateFormat).year)
+                year_text = str(datetime.datetime.strptime(myShow.firstAired, dateFormat).year)
                 if year_text:
                     year = etree.SubElement(tv_node, "year")
                     year.text = year_text
@@ -142,23 +144,23 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
 
         if getattr(myShow, 'overview', None):
             plot = etree.SubElement(tv_node, "plot")
-            plot.text = myShow["overview"]
+            plot.text = myShow.overview
 
         if getattr(myShow, 'id', None):
             episodeguide = etree.SubElement(tv_node, "episodeguide")
             episodeguideurl = etree.SubElement(episodeguide, "url")
-            episodeguideurl.text = show_obj.idxr.base_url + str(myShow["id"]) + '/all/en.zip'
+            episodeguideurl.text = show_obj.idxr.base_url + str(myShow.id) + '/all/en.zip'
 
         if getattr(myShow, 'contentrating', None):
             mpaa = etree.SubElement(tv_node, "mpaa")
-            mpaa.text = myShow["contentrating"]
+            mpaa.text = myShow.contentrating
 
         if getattr(myShow, 'id', None):
             indexerid = etree.SubElement(tv_node, "id")
-            indexerid.text = str(myShow["id"])
+            indexerid.text = str(myShow.id)
 
-        if getattr(myShow, 'genre', None) and isinstance(myShow["genre"], six.string_types):
-            for genre in self._split_info(myShow["genre"]):
+        if getattr(myShow, 'genre', None) and isinstance(myShow.genre, six.string_types):
+            for genre in self._split_info(myShow.genre):
                 cur_genre = etree.SubElement(tv_node, "genre")
                 cur_genre.text = genre
 
@@ -174,24 +176,24 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
 
         if getattr(myShow, 'firstAired', None):
             premiered = etree.SubElement(tv_node, "premiered")
-            premiered.text = myShow["firstAired"]
+            premiered.text = myShow.firstAired
 
         if getattr(myShow, 'network', None):
             studio = etree.SubElement(tv_node, "studio")
-            studio.text = myShow["network"].strip()
+            studio.text = myShow.network.strip()
 
-        if getattr(myShow, 'writer', None) and isinstance(myShow['writer'], six.string_types):
-            for writer in self._split_info(myShow['writer']):
+        if getattr(myShow, 'writer', None) and isinstance(myShow.writer, six.string_types):
+            for writer in self._split_info(myShow.writer):
                 cur_writer = etree.SubElement(tv_node, "credits")
                 cur_writer.text = writer
 
-        if getattr(myShow, 'director', None) and isinstance(myShow['director'], six.string_types):
-            for director in self._split_info(myShow['director']):
+        if getattr(myShow, 'director', None) and isinstance(myShow.director, six.string_types):
+            for director in self._split_info(myShow.director):
                 cur_director = etree.SubElement(tv_node, "director")
                 cur_director.text = director
 
         if getattr(myShow, '_actors', None):
-            for actor in myShow['_actors']:
+            for actor in myShow.actors:
                 cur_actor = etree.SubElement(tv_node, "actor")
 
                 if 'name' in actor and actor['name'].strip():
@@ -266,7 +268,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
 
             if getattr(myShow, 'seriesName', None):
                 showtitle = etree.SubElement(episode, "showtitle")
-                showtitle.text = myShow['seriesName']
+                showtitle.text = myShow.seriesName
 
             season = etree.SubElement(episode, "season")
             season.text = str(curEpToWrite.season)
@@ -287,7 +289,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
 
             if curEpToWrite.season and getattr(myShow, 'runtime', None):
                 runtime = etree.SubElement(episode, "runtime")
-                runtime.text = myShow["runtime"]
+                runtime.text = myShow.runtime
 
             if getattr(myEp, 'airsbefore_season', None):
                 displayseason = etree.SubElement(episode, "displayseason")
@@ -325,7 +327,8 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                     cur_actor_name.text = actor
 
             if getattr(myShow, '_actors', None):
-                for actor in myShow['_actors']:
+                myShow.actors()
+                for actor in myShow.actors:
                     cur_actor = etree.SubElement(episode, "actor")
 
                     if 'name' in actor and actor['name'].strip():

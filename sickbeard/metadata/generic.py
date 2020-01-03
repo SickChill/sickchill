@@ -492,12 +492,12 @@ class GenericMetadata(object):
         # use the default fanart name
         fanart_path = self.get_fanart_path(show_obj)
         if not fanart_path:
-            logger.log("Fanart path for show {} came back blank, skipping this image".format(show_obj.title), logger.DEBUG)
+            logger.log("Fanart path for show {} came back blank, skipping this image".format(show_obj.name), logger.DEBUG)
             return False
 
         fanart_url = sickchill.indexer.series_fanart_url(show_obj)
         if not fanart_url:
-            logger.log("Fanart url not found for show {}, skipping this image".format(show_obj.title), logger.DEBUG)
+            logger.log("Fanart url not found for show {}, skipping this image".format(show_obj.name), logger.DEBUG)
             return False
 
         fanart_data = metadata_helpers.getShowImage(fanart_url)
@@ -518,12 +518,12 @@ class GenericMetadata(object):
         # use the default poster name
         poster_path = self.get_poster_path(show_obj)
         if not poster_path:
-            logger.log("Banner path for show {} came back blank, skipping this image".format(show_obj.title), logger.DEBUG)
+            logger.log("Banner path for show {} came back blank, skipping this image".format(show_obj.name), logger.DEBUG)
             return False
 
         poster_url = sickchill.indexer.series_poster_url(show_obj)
         if not poster_url:
-            logger.log("Poster url not found for show {}, skipping this image".format(show_obj.title), logger.DEBUG)
+            logger.log("Poster url not found for show {}, skipping this image".format(show_obj.name), logger.DEBUG)
             return False
 
         poster_data = metadata_helpers.getShowImage(poster_url)
@@ -543,12 +543,12 @@ class GenericMetadata(object):
 
         banner_path = self.get_banner_path(show_obj)
         if not banner_path:
-            logger.log("Banner path for show {} came back blank, skipping this image".format(show_obj.title), logger.DEBUG)
+            logger.log("Banner path for show {} came back blank, skipping this image".format(show_obj.name), logger.DEBUG)
             return False
 
         banner_url = sickchill.indexer.series_banner_url(show_obj)
         if not banner_url:
-            logger.log("Banner url not found for show {}, skipping this image".format(show_obj.title), logger.DEBUG)
+            logger.log("Banner url not found for show {}, skipping this image".format(show_obj.name), logger.DEBUG)
             return False
 
         banner_data = metadata_helpers.getShowImage(banner_url)
