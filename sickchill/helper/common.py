@@ -262,7 +262,7 @@ def remove_extension(filename):
     """
 
     if isinstance(filename, six.string_types) and '.' in filename:
-        basename, _, extension = filename.rpartition('.')
+        basename, dot, extension = filename.rpartition('.')
 
         if basename and extension.lower() in ['nzb', 'torrent'] + MEDIA_EXTENSIONS:
             return basename

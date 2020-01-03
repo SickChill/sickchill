@@ -174,9 +174,6 @@ class Client(GenericClient):
         #
         # except:
         # return False
-
-        _ = name
-
         return True
 
     def testAuthentication(self):

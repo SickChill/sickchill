@@ -32,6 +32,5 @@ class BS4Parser(object):
         return self.soup
 
     def __exit__(self, exc_ty, exc_val, tb):
-        _ = exc_ty, exc_val, tb  # Throw away unused values
         self.soup.clear(True)
         self.soup = None

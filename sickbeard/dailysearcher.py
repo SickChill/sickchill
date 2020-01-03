@@ -48,8 +48,7 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
             return
 
         self.amActive = True
-        _ = force
-        logger.log("Searching for new released episodes ...")
+        logger.log(_("Searching for new released episodes ..."))
 
         if not network_timezones.network_dict:
             network_timezones.update_network_dict()

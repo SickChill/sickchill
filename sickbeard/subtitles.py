@@ -599,7 +599,7 @@ def refine_video(video, episode):
             setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
 
     # Set quality from metadata
-    _, quality = Quality.splitCompositeStatus(episode.status)
+    status, quality = Quality.splitCompositeStatus(episode.status)
     if not video.format or episode.show.subtitles_sr_metadata:
         if quality & Quality.ANYHDTV:
             video.format = Quality.combinedQualityStrings.get(Quality.ANYHDTV)

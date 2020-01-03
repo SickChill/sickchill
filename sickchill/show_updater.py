@@ -94,7 +94,6 @@ class ShowUpdater(object):
 
     @staticmethod
     def request_hook(response, **kwargs):
-        _ = kwargs
         logger.log('{0} URL: {1} [Status: {2}]'.format
                    (response.request.method, response.request.url, response.status_code))
 
