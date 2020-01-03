@@ -45,7 +45,7 @@ def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=Tr
     """
     Returns a tuple, (season, episode), with the scene numbering (if there is one),
     otherwise returns the xem numbering (if fallback_to_xem is set), otherwise
-    returns the TVDB numbering.
+    returns the indexer numbering.
     (so the return values will always be set)
 
     :param indexer_id: int
@@ -95,11 +95,12 @@ def get_scene_absolute_numbering(indexer_id, indexer, absolute_number, fallback_
     """
     Returns a tuple, (season, episode), with the scene numbering (if there is one),
     otherwise returns the xem numbering (if fallback_to_xem is set), otherwise
-    returns the TVDB numbering.
+    returns the indexer numbering.
     (so the return values will always be set)
 
     :param indexer_id: int
-    ;param absolute_number: int
+    :param indexer: int
+    :param absolute_number: int
     :param fallback_to_xem: bool If set (the default), check xem for matches if there is no local scene numbering
     :return: (int, int) a tuple with (season, episode)
     """
@@ -145,7 +146,7 @@ def find_scene_absolute_numbering(indexer_id, indexer, absolute_number):
 
 def get_indexer_numbering(indexer_id, indexer, sceneSeason, sceneEpisode, fallback_to_xem=True):
     """
-    Returns a tuple, (season, episode) with the TVDB numbering for (sceneSeason, sceneEpisode)
+    Returns a tuple, (season, episode) with the indexer numbering for (sceneSeason, sceneEpisode)
     (this works like the reverse of get_scene_numbering)
     """
     if indexer_id is None or sceneSeason is None or sceneEpisode is None:
@@ -169,7 +170,7 @@ def get_indexer_numbering(indexer_id, indexer, sceneSeason, sceneEpisode, fallba
 
 def get_indexer_absolute_numbering(indexer_id, indexer, sceneAbsoluteNumber, fallback_to_xem=True, scene_season=None):
     """
-    Returns a tuple, (season, episode, absolute_number) with the TVDB absolute numbering for (sceneAbsoluteNumber)
+    Returns a tuple, (season, episode, absolute_number) with the show absolute numbering for (sceneAbsoluteNumber)
     (this works like the reverse of get_absolute_numbering)
     """
     if indexer_id is None or sceneAbsoluteNumber is None:
@@ -196,7 +197,7 @@ def get_indexer_absolute_numbering(indexer_id, indexer, sceneAbsoluteNumber, fal
         return sceneAbsoluteNumber
 
 
-def set_scene_numbering(indexer_id, indexer, season=None, episode=None,  # pylint:disable=too-many-arguments
+def set_scene_numbering(indexer_id, indexer, season=None, episode=None,
                         absolute_number=None, sceneSeason=None,
                         sceneEpisode=None, sceneAbsolute=None):
     """
@@ -238,6 +239,7 @@ def find_xem_numbering(indexer_id, indexer, season, episode):
     Refreshes/Loads as needed.
 
     :param indexer_id: int
+    :param indexer: int
     :param season: int
     :param episode: int
     :return: (int, int) a tuple of scene_season, scene_episode, or None if there is no special mapping.
@@ -287,9 +289,10 @@ def find_xem_absolute_numbering(indexer_id, indexer, absolute_number):
 
 def get_indexer_numbering_for_xem(indexer_id, indexer, sceneSeason, sceneEpisode):
     """
-    Reverse of find_xem_numbering: lookup a tvdb season and episode using scene numbering
+    Reverse of find_xem_numbering: lookup a show season and episode using scene numbering
 
     :param indexer_id: int
+    :param indexer: int
     :param sceneSeason: int
     :param sceneEpisode: int
     :return: (int, int) a tuple of (season, episode)
@@ -315,9 +318,10 @@ def get_indexer_numbering_for_xem(indexer_id, indexer, sceneSeason, sceneEpisode
 
 def get_indexer_absolute_numbering_for_xem(indexer_id, indexer, sceneAbsoluteNumber, scene_season=None):
     """
-    Reverse of find_xem_numbering: lookup a tvdb season and episode using scene numbering
+    Reverse of find_xem_numbering: lookup a show season and episode using scene numbering
 
     :param indexer_id: int
+    :param indexer: int
     :param sceneAbsoluteNumber: int
     :return: int
     """
@@ -453,10 +457,12 @@ def get_xem_absolute_numbering_for_show(indexer_id, indexer):
         [indexer, indexer_id])
 
     for row in rows:
-        absolute_number = int(row[b'absolute_number'])
-        scene_absolute_number = int(row[b'scene_absolute_number'])
+        __absolute_number = row[b'absolute_number']
+        __scene_absolute_number = row[b'scene_absolute_number']
+        if not (__absolute_number and __scene_absolute_number):
+            continue
 
-        result[absolute_number] = scene_absolute_number
+        result[int(__absolute_number)] = int(__scene_absolute_number)
 
     return result
 
@@ -486,7 +492,7 @@ def xem_refresh(indexer_id, indexer, force=False):
 
     if refresh or force:
         logger.log(
-            'Looking up XEM scene mapping for show {0} on {1}'.format(indexer_id, 'theTVDB'),
+            'Looking up XEM scene mapping for show {0} on {1}'.format(indexer_id, sickchill.indexer.name(indexer)),
             logger.DEBUG)
 
         # mark refreshed
@@ -499,17 +505,17 @@ def xem_refresh(indexer_id, indexer, force=False):
 
         try:
             # XEM MAP URL
-            url = "http://thexem.de/map/havemap?origin={0}".format('tvdb')
+            url = "http://thexem.de/map/havemap?origin={0}".format(sickchill.indexer.slug(indexer))
             parsed_json = sickbeard.helpers.getURL(url, session=xem_session, returns='json')
             if not parsed_json or 'result' not in parsed_json or 'success' not in parsed_json['result'] or 'data' not in parsed_json or str(indexer_id) not in parsed_json['data']:
                 return
 
             # XEM API URL
-            url = "http://thexem.de/map/all?id={0}&origin={1}&destination=scene".format(indexer_id, 'tvdb')
+            url = "http://thexem.de/map/all?id={0}&origin={1}&destination=scene".format(indexer_id, sickchill.indexer.slug(indexer))
 
             parsed_json = sickbeard.helpers.getURL(url, session=xem_session, returns='json')
             if not parsed_json or 'result' not in parsed_json or 'success' not in parsed_json['result']:
-                logger.log('No XEM data for show "{0} on {1}"'.format(indexer_id, 'theTVDB'), logger.INFO)
+                logger.log('No XEM data for show "{0} on {1}"'.format(indexer_id, sickchill.indexer.name(indexer)), logger.INFO)
                 return
 
             cl = []
@@ -519,22 +525,22 @@ def xem_refresh(indexer_id, indexer, force=False):
                         "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
                         [entry['scene']['season'], entry['scene']['episode'],
                          entry['scene']['absolute'], indexer_id,
-                         entry['tvdb']['season'],
-                         entry['tvdb']['episode']]
+                         entry[sickchill.indexer.slug(indexer)]['season'],
+                         entry[sickchill.indexer.slug(indexer)]['episode']]
                     ])
                     cl.append([
                         "UPDATE tv_episodes SET absolute_number = ? WHERE showid = ? AND season = ? AND episode = ? AND absolute_number = 0",
-                        [entry['tvdb']['absolute'], indexer_id,
-                         entry['tvdb']['season'],
-                         entry['tvdb']['episode']]
+                        [entry[sickchill.indexer.slug(indexer)]['absolute'], indexer_id,
+                         entry[sickchill.indexer.slug(indexer)]['season'],
+                         entry[sickchill.indexer.slug(indexer)]['episode']]
                     ])
                 if 'scene_2' in entry:  # for doubles
                     cl.append([
                         "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
                         [entry['scene_2']['season'], entry['scene_2']['episode'],
                          entry['scene_2']['absolute'], indexer_id,
-                         entry['tvdb']['season'],
-                         entry['tvdb']['episode']]
+                         entry[sickchill.indexer.slug(indexer)]['season'],
+                         entry[sickchill.indexer.slug(indexer)]['episode']]
                     ])
 
             if cl:
@@ -547,7 +553,7 @@ def xem_refresh(indexer_id, indexer, force=False):
             logger.log(traceback.format_exc(), logger.DEBUG)
 
 
-def fix_xem_numbering(indexer_id, indexer):  # pylint:disable=too-many-locals, too-many-branches, too-many-statements
+def fix_xem_numbering(indexer_id, indexer):
     """
     Returns a dict of (season, episode) : (sceneSeason, sceneEpisode) mappings
     for an entire show.  Both the keys and values of the dict are tuples.
@@ -575,7 +581,7 @@ def fix_xem_numbering(indexer_id, indexer):  # pylint:disable=too-many-locals, t
     update_scene_absolute_number = False
 
     logger.log(
-        'Fixing any XEM scene mapping issues for show {0} on {1}'.format(indexer_id, 'theTVDB'),
+        'Fixing any XEM scene mapping issues for show {0} on {1}'.format(indexer_id, sickchill.indexer.name(indexer)),
         logger.DEBUG)
 
     cl = []

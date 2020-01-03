@@ -462,7 +462,7 @@ class TVShow(object):
 
     def loadEpisodesFromDB(self):
 
-        logger.log("Loading all episodes from the DB", logger.DEBUG)
+        logger.log("Loading all episodes from the database", logger.DEBUG)
         scannedEps = {}
 
         try:
@@ -482,8 +482,6 @@ class TVShow(object):
             curEpisode = int(curResult[b"episode"])
             curShowid = int(curResult[b'showid'])
             curShowName = str(curResult[b'show_name'])
-
-            logger.log("{0}: Loading {1} episodes from DB".format(curShowid, curShowName), logger.DEBUG)
 
             if curSeason not in scannedEps:
                 logger.log("{id}: Not curSeason in scannedEps".format(id=curShowid), logger.DEBUG)

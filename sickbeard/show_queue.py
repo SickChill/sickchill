@@ -659,7 +659,6 @@ class QueueItemUpdate(ShowQueueItem):
             logger.log(traceback.format_exc(), logger.DEBUG)
 
         # get episode list from DB
-        logger.log('Loading all episodes from the database', logger.DEBUG)
         DBEpList = self.show.loadEpisodesFromDB()
 
         # get episode list from TVDB

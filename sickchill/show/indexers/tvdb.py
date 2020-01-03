@@ -19,6 +19,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Third Party Imports
+import re
 import tvdbsimple
 from requests.exceptions import HTTPError
 
@@ -53,6 +54,7 @@ class TVDB(Indexer):
     def get_series_by_name(self, name, indexerid=None, language=None):
         if indexerid:
             return self.get_series_by_id(indexerid, language)
+
         # Just return the first result for now
         result = self.series(self.search(name, language)[0]['id'])
         result.info(language=language)
@@ -88,7 +90,14 @@ class TVDB(Indexer):
         return result
 
     def search(self, name, language=None):
-        return self._search(name, language=language)
+        if re.match(r'^t?t?\d{7,8}$', name):
+            result = self._search(imdbId='tt{}'.format(name.strip('t')))
+        elif re.match(r'^\d{6}$', name):
+            result = [self.series(name)]
+        else:
+            result = self._search(name, language=language)
+
+        return result
 
     @property
     def languages(self):
@@ -110,25 +119,34 @@ class TVDB(Indexer):
     def complete_image_url(location):
         return 'https://artworks.thetvdb.com/banners/{path}'.format(path=location)
 
+    def __call_images_api(self, show, thumb, keyType, subKey=None):
+        try:
+            images = self.series_images(show.indexerid, show.lang, keyType=keyType, subKey=subKey)
+            result =  self.complete_image_url(images.all()[0][('fileName', 'thumbnail')[thumb]])
+        except HTTPError:
+            result = ''
+
+        return result
+
     def series_poster_url(self, show, thumb=False):
-        images = self.series_images(show.indexerid, show.lang, keyType='poster')
-        return self.complete_image_url(images.all()[0][('fileName', 'thumbnail')[thumb]])
+        return self.__call_images_api(show, thumb, 'poster')
 
     def series_banner_url(self, show, thumb=False):
-        images = self.series_images(show.indexerid, show.lang, keyType='series')
-        return self.complete_image_url(images.all()[0][('fileName', 'thumbnail')[thumb]])
+        return self.__call_images_api(show, thumb, 'series')
 
     def series_fanart_url(self, show, thumb=False):
-        images = self.series_images(show.indexerid, show.lang, keyType='fanart')
-        return self.complete_image_url(images.all()[0][('fileName', 'thumbnail')[thumb]])
+        return self.__call_images_api(show, thumb, 'fanart')
 
     def season_poster_url(self, show, season, thumb=False):
-        images = self.series_images(show.indexerid, show.lang, keyType='season', subKey=season)
-        return self.complete_image_url(images.all()[0][('fileName', 'thumbnail')[thumb]])
+        return self.__call_images_api(show, thumb, 'season', season)
 
     def season_banner_url(self, show, season, thumb=False):
-        images = self.series_images(show.indexerid, show.lang, keyType='seasonwide', subKey=season)
-        return self.complete_image_url(images.all()[0][('fileName', 'thumbnail')[thumb]])
+        return self.__call_images_api(show, thumb, 'seasonwide', season)
 
     def episode_image_url(self, episode, thumb=False):
-        return self.complete_image_url(self.episode(episode)[('fileName', 'thumbnail')[thumb]])
+        try:
+            result =  self.complete_image_url(self.episode(episode)[('fileName', 'thumbnail')[thumb]])
+        except HTTPError:
+            result = ''
+
+        return result
