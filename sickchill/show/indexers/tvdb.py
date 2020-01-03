@@ -18,8 +18,10 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 from __future__ import absolute_import, print_function, unicode_literals
 
-# Third Party Imports
+# Stdlib Imports
 import re
+
+# Third Party Imports
 import tvdbsimple
 from requests.exceptions import HTTPError
 

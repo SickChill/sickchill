@@ -20,6 +20,7 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Third Party Imports
 from requests.exceptions import HTTPError
 
 # First Party Imports
