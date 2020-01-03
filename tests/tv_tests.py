@@ -58,7 +58,7 @@ class TVShowTests(test.SickbeardTestDBCase):
         show = TVShow(1, 1, "en")
         show.name = "show name"
         show.network = "cbs"
-        show.genre = "crime"
+        show.genre = ["crime"]
         show.runtime = 40
         show.status = "Ended"
         show.default_ep_status = "5"
@@ -127,7 +127,7 @@ class TVTests(test.SickbeardTestDBCase):
         show = TVShow(1, 1, "en")
         show.name = "show name"
         show.network = "cbs"
-        show.genre = "crime"
+        show.genre = ["crime"]
         show.runtime = 40
         show.status = "Ended"
         show.default_ep_status = "5"

@@ -82,7 +82,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         self._name = ""
         self._imdbid = ""
         self._network = ""
-        self._genre = ""
+        self._genre = []
         self._classification = ""
         self._runtime = 0
         self._imdb_info = {}
@@ -473,9 +473,6 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             logger.log("Could not load episodes from the DB. Error: {0}".format(error), logger.ERROR)
             return scannedEps
 
-        cachedShow = self.idxr.series(self.indexerid, self.lang)
-        cachedSeasons = {}
-
         curShowid = None
         curShowName = None
 
@@ -487,15 +484,6 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             curShowName = str(curResult[b'show_name'])
 
             logger.log("{0}: Loading {1} episodes from DB".format(curShowid, curShowName), logger.DEBUG)
-            deleteEp = False
-
-            if curSeason not in cachedSeasons:
-                try:
-                    cachedSeasons[curSeason] = cachedShow[curSeason]
-                except Exception as error:
-                    logger.log("{0}: {1} (unaired/deleted) in the indexer {2} for {3}. Removing existing records from database".format
-                               (curShowid, error.message, self.indexer_name, curShowName), logger.DEBUG)
-                    deleteEp = True
 
             if curSeason not in scannedEps:
                 logger.log("{id}: Not curSeason in scannedEps".format(id=curShowid), logger.DEBUG)
@@ -510,12 +498,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                 if not curEp:
                     raise EpisodeNotFoundException
 
-                # if we found out that the ep is no longer on TVDB then delete it from our database too
-                if deleteEp:
-                    curEp.deleteEpisode()
-
                 curEp.loadFromDB(curSeason, curEpisode)
-                curEp.loadFromIndexer(cachedSeason=cachedSeasons[curSeason])
+                curEp.loadFromIndexer()
                 scannedEps[curSeason][curEpisode] = True
             except EpisodeDeletedException:
                 logger.log("{id}: Tried loading {show} {ep} from the DB that should have been deleted, skipping it".format
@@ -745,6 +729,11 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                 self.network = sql_results[0][b"network"]
             if not self.genre:
                 self.genre = sql_results[0][b"genre"]
+
+            if not isinstance(self.genre, list):
+                if self.genre:
+                    self.genre = [x.strip() for x in self.genre.split('|') if x.strip()]
+
             if not self.classification:
                 self.classification = sql_results[0][b"classification"]
 
@@ -809,10 +798,6 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         return True
 
     def loadFromIndexer(self):
-
-        if self.idxr.name != 'theTVDB':
-            return
-
         logger.log(str(self.indexerid) + ": Loading show info from " + self.indexer_name, logger.DEBUG)
 
         myShow = sickchill.indexer.series(self)
@@ -822,11 +807,11 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         self.name = myShow.seriesName.strip()
         self.classification = getattr(myShow, 'classification', 'Scripted')
-        self.genre = getattr(myShow, 'genre', '')
+        self.genre = getattr(myShow, 'genre', [])
         self.network = getattr(myShow, 'network', '')
         self.runtime = getattr(myShow, 'runtime', '')
 
-        self.imdbid = getattr(myShow, 'imdb_id', '')
+        self.imdbid = getattr(myShow, 'imdbId', '')
 
         if hasattr(myShow, 'airsDayOfWeek') and hasattr(myShow, 'airsTime'):
             self.airs = myShow.airsDayOfWeek + " " + myShow.airsTime
@@ -873,6 +858,10 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         if self.name and not self.imdbid:
             self.imdbid = i.title2imdbID(self.name, kind='tv series')
+            if not self.imdbid:
+                self.imdbid = i.title2imdbID('{} ({})'.format(self.name, self.startyear), kind='tv series')
+            if not self.imdbid:
+                self.imdbid = i.title2imdbID('"{}" ({})'.format(self.name, self.startyear), kind='tv series')
 
         # Make sure the lib didn't give us back something bogus
         self.check_imdbid()
@@ -887,7 +876,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         imdbTv = i.get_movie(str(re.sub(r"[^0-9]", "", self.imdbid)))
 
-        imdb_info[b'imdb_id'] = self.imdbid
+        imdb_info['imdb_id'] = self.imdbid
 
         for key in [x for x in imdb_info.keys() if x.replace('_', ' ') in imdbTv.keys()]:
             # Store only the first value for string type
@@ -897,42 +886,42 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                 imdb_info[key] = imdbTv.get(key.replace('_', ' '))
 
         # Filter only the value
-        if imdb_info[b'runtimes']:
-            imdb_info[b'runtimes'] = re.search(r'\d+', imdb_info[b'runtimes']).group(0)
+        if imdb_info['runtimes']:
+            imdb_info['runtimes'] = re.search(r'\d+', imdb_info['runtimes']).group(0)
         else:
-            imdb_info[b'runtimes'] = self.runtime
+            imdb_info['runtimes'] = self.runtime
 
-        if imdb_info[b'akas']:
-            imdb_info[b'akas'] = '|'.join(imdb_info[b'akas'])
+        if imdb_info['akas']:
+            imdb_info['akas'] = '|'.join(imdb_info['akas'])
         else:
-            imdb_info[b'akas'] = ''
+            imdb_info['akas'] = ''
 
         # Join all genres in a string
-        if imdb_info[b'genres']:
-            imdb_info[b'genres'] = '|'.join(imdb_info[b'genres'])
+        if imdb_info['genres']:
+            imdb_info['genres'] = '|'.join(imdb_info['genres'])
         else:
-            imdb_info[b'genres'] = ''
+            imdb_info['genres'] = ''
 
         # Get only the production country certificate if any
-        if imdb_info[b'certificates'] and imdb_info[b'countries']:
+        if imdb_info['certificates'] and imdb_info['countries']:
             dct = {}
             try:
-                for item in imdb_info[b'certificates']:
+                for item in imdb_info['certificates']:
                     dct[item.split(':')[0]] = item.split(':')[1]
 
-                imdb_info[b'certificates'] = dct[imdb_info[b'countries']]
+                imdb_info['certificates'] = dct[imdb_info['countries']]
             except Exception:
-                imdb_info[b'certificates'] = ''
+                imdb_info['certificates'] = ''
 
         else:
-            imdb_info[b'certificates'] = ''
+            imdb_info['certificates'] = ''
 
-        if imdb_info[b'country_codes']:
-            imdb_info[b'country_codes'] = '|'.join(imdb_info[b'country_codes'])
+        if imdb_info['country_codes']:
+            imdb_info['country_codes'] = '|'.join(imdb_info['country_codes'])
         else:
-            imdb_info[b'country_codes'] = ''
+            imdb_info['country_codes'] = ''
 
-        imdb_info[b'last_update'] = datetime.date.today().toordinal()
+        imdb_info['last_update'] = datetime.date.today().toordinal()
 
         # Rename dict keys without spaces for DB upsert
         self.imdb_info = dict(
@@ -1180,7 +1169,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         toReturn += "status: " + self.status + "\n"
         toReturn += "startyear: " + str(self.startyear) + "\n"
         if self.genre:
-            toReturn += "genre: " + self.genre + "\n"
+            toReturn += "genre: " + '|'.join(self.genre) + "\n"
         toReturn += "classification: " + self.classification + "\n"
         toReturn += "runtime: " + str(self.runtime) + "\n"
         toReturn += "quality: " + str(self.quality) + "\n"
@@ -1576,18 +1565,15 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             self.dirty = False
             return True
 
-    def loadFromIndexer(self, season=None, episode=None, cachedSeason=None):  # pylint: disable=too-many-arguments, too-many-branches, too-many-statements
+    def loadFromIndexer(self, season=None, episode=None):  # pylint: disable=too-many-arguments, too-many-branches, too-many-statements
 
         try:
-            if cachedSeason:
-                myEp = cachedSeason[episode]
-            else:
-                myEp = self.idxr.episode(self.show, season or self.season, episode or self.episode)
+            myEp = self.idxr.episode(self.show, season or self.season, episode or self.episode)
         except IOError as error:
             logger.log("{} threw up an error: {}".format(self.indexer_name, ex(error)), logger.DEBUG)
             # if the episode is already valid just log it, if not throw it up
             if self.name:
-                logger.log(" timed out but we have enough info from other sources, allowing the error".format(self.indexer_name), logger.DEBUG)
+                logger.log("{} timed out but we have enough info from other sources, allowing the error".format(self.indexer_name), logger.DEBUG)
                 return
             else:
                 logger.log("{} timed out, unable to create the episode".format(self.indexer_name), logger.ERROR)
