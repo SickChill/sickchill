@@ -1722,7 +1722,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDSickBeardSearchIndexers, self).__init__(args, kwargs)
-        self.valid_languages = sickchill.indexer.lang_dict
+        self.valid_languages = sickchill.indexer.lang_dict()
         self.name, args = self.check_params(args, kwargs, "name", None, False, "string", [])
         self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string",
                                             self.valid_languages.keys())
@@ -2118,7 +2118,7 @@ class CMDShowAddNew(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDShowAddNew, self).__init__(args, kwargs)
-        self.valid_languages = sickchill.indexer.lang_dict
+        self.valid_languages = sickchill.indexer.lang_dict()
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.location, args = self.check_params(args, kwargs, "location", None, False, "string", [])
         self.initial, args = self.check_params(

@@ -2,6 +2,7 @@
 <%!
     import sickbeard
     from sickbeard.helpers import anon_url
+    from sickchill import indexer as show_indexer
 %>
 <%block name="scripts">
     <script type="text/javascript" src="${static_url('js/plotTooltip.js')}"></script>
@@ -27,7 +28,7 @@
 
                             % if use_provided_info:
                                 <label>${_('Show retrieved from existing metadata')}:
-                                    <a href="${anon_url(sickbeard.show_indexer[provided_indexer].show_url, provided_indexer_id)}">${provided_indexer_name}</a>
+                                    <a href="${anon_url(show_indexer.show_url(provided_indexer), provided_indexer_id)}">${provided_indexer_name}</a>
                                 </label>
                                 <input type="hidden" id="indexerLang" name="indexerLang" value="en"/>
                                 <input type="hidden" id="whichSeries" name="whichSeries" value="${provided_indexer_id}"/>
@@ -55,7 +56,7 @@
                                                 <select name="indexerLang" id="indexerLangSelect"
                                                         class="form-control form-control-inline input-sm bfh-languages"
                                                         data-language="${sickbeard.INDEXER_DEFAULT_LANGUAGE}"
-                                                        data-available="${','.join(sickbeard.show_indexer.languages())}"></select>
+                                                        data-available="${','.join(show_indexer.languages())}"></select>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -77,7 +78,7 @@
                                             <option value="0" ${('', 'selected="selected"')[provided_indexer == 0]}>${_('All Indexers')}</option>
                                             % for indexer in indexers:
                                                 <option value="${indexer}" ${('', 'selected="selected"')[provided_indexer == indexer]}>
-                                                    ${indexers[indexer]}
+                                                    ${indexers[indexer].name}
                                                 </option>
                                             % endfor
                                         </select>

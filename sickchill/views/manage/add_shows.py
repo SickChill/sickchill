@@ -90,7 +90,7 @@ class AddShows(Home):
         final_results = []
 
         # Query Indexers for each search term and build the list of results
-        for i, instance in sickchill.indexer if not int(indexer) else [int(indexer)]:
+        for i in sickchill.indexer.indexers.keys() if not int(indexer) else [int(indexer)]:
             logger.log("Searching for Show with searchterm(s): {0} on Indexer: {1}".format(
                 searchTerms, 'theTVDB'), logger.DEBUG)
             for searchTerm in searchTerms:
@@ -110,7 +110,7 @@ class AddShows(Home):
                                    show['seriesName'], show['firstAired'], sickbeard.tv.Show.find(sickbeard.showList, show['id']) is not None
                                    ) for show in shows})
 
-        lang_id = sickchill.indexer.lang_dict[lang]
+        lang_id = sickchill.indexer.lang_dict()[lang]
         return json.dumps({'results': final_results, 'langid': lang_id, 'success': len(final_results) > 0})
 
     def massAddTable(self, rootDir=None):

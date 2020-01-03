@@ -4,6 +4,7 @@
     from sickbeard import common
     from sickbeard.common import SKIPPED, WANTED, IGNORED
     from sickbeard.common import statusStrings
+    from sickchill import indexer as show_indexer
 %>
 
 <%block name="metas">
@@ -102,7 +103,7 @@
                                                 <select name="indexerLang" id="indexerLangSelect"
                                                         class="form-control input-sm input150 bfh-languages"
                                                         data-language="${show.lang}"
-                                                        data-available="${','.join(sickbeard.show_indexer.languages())}" title="indexerLang">
+                                                        data-available="${','.join(show_indexer.languages())}" title="indexerLang">
                                                 </select>
                                             </div>
                                         </div>
