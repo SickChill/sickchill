@@ -176,8 +176,7 @@ class RTorrent:
                              if m.is_retriever() and m.is_available(self)]
 
         m = rtorrent9.rpc.Multicall(self)
-        # TODO: Verify multicall2
-        m.add("d.multicall2", view, "d.hash=",
+        m.add("d.multicall2", '', view, "d.hash=",
               *[method.rpc_call + "=" for method in retriever_methods])
 
         results = m.call()[0]  # only sent one call, only need first result

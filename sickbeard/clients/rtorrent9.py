@@ -52,7 +52,7 @@ class Client(GenericClient):  # pylint: disable=invalid-name
         if self.username and self.password:
             self.auth = RTorrent(self.host, self.username, self.password, True, tp_kwargs=tp_kwargs)
         else:
-            self.auth = RTorrent(self.host, None, None, True)
+            self.auth = RTorrent(self.host, None, None, True, tp_kwargs=tp_kwargs)
 
         return self.auth
 
