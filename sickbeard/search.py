@@ -83,7 +83,7 @@ def _downloadResult(result):
     return newResult
 
 
-def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branches, too-many-statements
+def snatchEpisode(result, endStatus=SNATCHED):
     """
     Contains the internal logic necessary to actually "snatch" a result that
     has been found.
@@ -166,7 +166,7 @@ def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branc
 
         if curEpObj.status not in Quality.DOWNLOADED:
             try:
-                notifiers.notify_snatch("{0} from {1}".format(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN'), result.provider.name))  # pylint: disable=protected-access
+                notifiers.notify_snatch("{0} from {1}".format(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN'), result.provider.name))
             except Exception:
                 # Without this, when notification fail, it crashes the snatch thread and SR will
                 # keep snatching until notification is sent
@@ -188,7 +188,7 @@ def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branc
     return True
 
 
-def pickBestResult(results, show):  # pylint: disable=too-many-branches
+def pickBestResult(results, show):
     """
     Find the best result out of a list of search results for a show
 
@@ -428,7 +428,7 @@ def searchForNeededEpisodes():
     return foundResults.values()
 
 
-def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
     """
     Walk providers for information on shows
 
@@ -712,7 +712,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
     return finalResults
 
 
-def searchProvidersList(show, episodes, search_mode='eponly'):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+def searchProvidersList(show, episodes, search_mode='eponly'):
     """
     Walk providers for information on shows
 

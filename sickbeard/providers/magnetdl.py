@@ -31,7 +31,7 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class MagnetDLProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class MagnetDLProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -50,7 +50,7 @@ class MagnetDLProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
 
         self.cache = tvcache.TVCache(self)
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals, too-many-statements
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
 
         for mode in search_strings:

@@ -52,7 +52,7 @@ class EliteTorrentProvider(TorrentProvider):
 
         self.url = self.urls['base_url']
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         lang_info = '' if not ep_obj or not ep_obj.show else ep_obj.show.lang
 

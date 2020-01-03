@@ -67,7 +67,7 @@ LOGGING_LEVELS = {
     'DB': DB,
 }
 
-censored_items = {}  # pylint: disable=invalid-name
+censored_items = {}
 
 
 class CensoredFormatter(logging.Formatter, object):
@@ -111,7 +111,7 @@ class CensoredFormatter(logging.Formatter, object):
         return msg
 
 
-class Logger(object):  # pylint: disable=too-many-instance-attributes
+class Logger(object):
     """
     Logger to create log entries
     """
@@ -264,7 +264,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         else:
             sys.exit(1)
 
-    def submit_errors(self):  # pylint: disable=too-many-branches,too-many-locals
+    def submit_errors(self):
 
         submitter_result = ''
         issue_id = None
@@ -281,7 +281,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             checkversion = CheckVersion()
             checkversion.check_for_new_version()
             commits_behind = checkversion.updater.get_num_commits_behind()
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             submitter_result = 'Could not check if your SickChill is updated, unable to submit issue ticket to GitHub!'
             return submitter_result, issue_id
 
@@ -321,7 +321,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                     if len(title_error) > 1000:
                         title_error = title_error[0:1000]
 
-                except Exception as err_msg:  # pylint: disable=broad-except
+                except Exception as err_msg:
                     self.log('Unable to get error title : {0}'.format(ex(err_msg)), ERROR)
                     title_error = 'UNKNOWN'
 
@@ -341,7 +341,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
 
                 try:
                     locale_name = locale.getdefaultlocale()[1]
-                except Exception:  # pylint: disable=broad-except
+                except Exception:
                     locale_name = 'unknown'
 
                 if gist and gist != 'No ERROR found':
@@ -419,7 +419,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             submitter_result = ('Your Github account requires Two-Factor Authentication, '
                                 'please change your auth method in the config')
             issue_id = None
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             self.log(traceback.format_exc(), ERROR)
             submitter_result = 'Exception generated in issue submitter, please check the log'
             issue_id = None
@@ -442,7 +442,7 @@ class Wrapper(object):
             return getattr(self.instance, name)
 
 
-_globals = sys.modules[__name__] = Wrapper(sys.modules[__name__])  # pylint: disable=invalid-name
+_globals = sys.modules[__name__] = Wrapper(sys.modules[__name__])
 
 
 def init_logging(*args, **kwargs):

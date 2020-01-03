@@ -126,7 +126,7 @@ class ShowTests(unittest.TestCase):
         )
 
         for (index, indexer_id) in enumerate(indexer_id_list):
-            self.assertEqual(Show._validate_indexer_id(indexer_id), results_list[index])  # pylint: disable=protected-access
+            self.assertEqual(Show._validate_indexer_id(indexer_id), results_list[index])
 
 
 class TestTVShow(TVShow):

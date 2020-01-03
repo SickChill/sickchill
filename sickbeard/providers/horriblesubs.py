@@ -33,7 +33,7 @@ from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class HorribleSubsProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -54,7 +54,7 @@ class HorribleSubsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         self.cache = tvcache.TVCache(self, min_time=15)  # only poll HorribleSubs every 15 minutes max
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         # TODO Removed to allow Tests to pass... Not sure about removing it
         # if not self.show or not self.show.is_anime:

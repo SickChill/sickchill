@@ -338,7 +338,7 @@ class CheckVersion(object):
             return self.updater.branch
 
 
-class UpdateManager(object):  # pylint: disable=too-few-public-methods
+class UpdateManager(object):
     @staticmethod
     def get_update_url():
         return sickbeard.WEB_ROOT + "/home/update/?pid=" + str(sickbeard.PID)
@@ -781,7 +781,7 @@ class SourceUpdateManager(UpdateManager):
 
         helpers.add_site_message(newest_text, tag=newest_tag, level='success')
 
-    def update(self):  # pylint: disable=too-many-statements
+    def update(self):
         """
         Downloads the latest source tarball from github and installs it over the existing version.
         """

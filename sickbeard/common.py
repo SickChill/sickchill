@@ -81,7 +81,7 @@ NOTIFY_LOGIN_TEXT = 7
 NOTIFY_POSTPROCESS = 8
 
 notifyStrings = NumDict({
-    # pylint: disable=undefined-variable
+
     NOTIFY_SNATCH: _("Started Download"),
     NOTIFY_DOWNLOAD: _("Finished Download"),
     NOTIFY_SUBTITLE_DOWNLOAD: _("Subtitle Download Finished"),
@@ -300,7 +300,7 @@ class Quality(object):
             return Quality.UNKNOWN
 
     @staticmethod
-    def scene_quality(name, anime=False):  # pylint: disable=too-many-branches, too-many-statements
+    def scene_quality(name, anime=False):
         """
         Return The quality from the scene episode File
 
@@ -391,7 +391,7 @@ class Quality(object):
         return Quality.UNKNOWN if result is None else result
 
     @staticmethod
-    def qualityFromFileMeta(filename):  # pylint: disable=too-many-branches
+    def qualityFromFileMeta(filename):
         """
         Get quality file file metadata
 
@@ -450,7 +450,7 @@ class Quality(object):
         return status, Quality.NONE
 
     @staticmethod
-    def sceneQualityFromName(name, quality):  # pylint: disable=too-many-branches
+    def sceneQualityFromName(name, quality):
         """
         Get scene naming parameters from filename and quality
 
@@ -603,7 +603,7 @@ class StatusStrings(NumDict):
 
 # Assign strings to statuses
 statusStrings = StatusStrings({
-    # pylint: disable=undefined-variable
+
     UNKNOWN: _("Unknown"),
     UNAIRED: _("Unaired"),
     SNATCHED: _("Snatched"),
@@ -619,7 +619,7 @@ statusStrings = StatusStrings({
 })
 
 
-class Overview(object):  # pylint: disable=too-few-public-methods
+class Overview(object):
     UNAIRED = UNAIRED  # 1
     SNATCHED = SNATCHED  # 2
     WANTED = WANTED  # 3

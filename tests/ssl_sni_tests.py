@@ -32,8 +32,8 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../l
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from sickbeard import ex
-import certifi  # pylint: disable=import-error
-import requests  # pylint: disable=import-error
+import certifi
+import requests
 import sickbeard.providers as providers
 
 

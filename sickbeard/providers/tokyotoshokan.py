@@ -30,7 +30,7 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TokyoToshokanProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class TokyoToshokanProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -50,7 +50,7 @@ class TokyoToshokanProvider(TorrentProvider):  # pylint: disable=too-many-instan
         }
         self.cache = tvcache.TVCache(self, min_time=15)  # only poll TokyoToshokan every 15 minutes max
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         if not self.show or not self.show.is_anime:
             return results

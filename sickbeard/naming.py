@@ -92,8 +92,8 @@ class TVShow(object):
         return self.scene > 0
 
 
-class TVEpisode(tv.TVEpisode):  # pylint: disable=too-many-instance-attributes
-    def __init__(self, season, episode, absolute_number, name):  # pylint: disable=super-init-not-called
+class TVEpisode(tv.TVEpisode):
+    def __init__(self, season, episode, absolute_number, name):
         self.relatedEps = []
         self._name = name
         self._season = season
@@ -182,7 +182,7 @@ def check_valid_sports_naming(pattern=None):
     return valid
 
 
-def validate_name(pattern, multi=None, anime_type=None,  # pylint: disable=too-many-arguments, too-many-return-statements
+def validate_name(pattern, multi=None, anime_type=None,
                   file_only=False, abd=False, sports=False):
     """
     See if we understand a name
@@ -239,7 +239,7 @@ def generate_sample_ep(multi=None, abd=False, sports=False, anime_type=None):
     # make a fake episode object
     ep = TVEpisode(2, 3, 3, "Ep Name")
 
-    # pylint: disable=protected-access
+
     ep._status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)
     ep._airdate = datetime.date(2011, 3, 9)
 

@@ -1697,7 +1697,7 @@ class Home(WebRoot):
 
         # noinspection PyBroadException
         try:
-            new_subtitles = ep_obj.download_subtitles()  # pylint: disable=no-member
+            new_subtitles = ep_obj.download_subtitles()
         except Exception:
             return json.dumps({'result': 'failure'})
 
@@ -1708,8 +1708,8 @@ class Home(WebRoot):
         else:
             status = _('No subtitles downloaded')
 
-        ui.notifications.message(ep_obj.show.name, status)  # pylint: disable=no-member
-        return json.dumps({'result': status, 'subtitles': ','.join(ep_obj.subtitles)})  # pylint: disable=no-member
+        ui.notifications.message(ep_obj.show.name, status)
+        return json.dumps({'result': status, 'subtitles': ','.join(ep_obj.subtitles)})
 
     def retrySearchSubtitles(self, show, season, episode, lang):
         # retrieve the episode object and fail if we can't get one

@@ -34,7 +34,7 @@ from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class GFTrackerProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -91,7 +91,7 @@ class GFTrackerProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         if not self.login():
             return results

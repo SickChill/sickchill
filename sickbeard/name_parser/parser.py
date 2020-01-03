@@ -44,7 +44,7 @@ class NameParser(object):
     NORMAL_REGEX = 1
     ANIME_REGEX = 2
 
-    def __init__(self, file_name=True, showObj=None, tryIndexers=False,  # pylint: disable=too-many-arguments
+    def __init__(self, file_name=True, showObj=None, tryIndexers=False,
                  naming_pattern=False, parse_method=None):
 
         self.file_name = file_name
@@ -100,7 +100,7 @@ class NameParser(object):
                 else:
                     self.compiled_regexes.append((cur_pattern_num, cur_pattern_name, cur_regex))
 
-    def _parse_string(self, name, skip_scene_detection=False):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def _parse_string(self, name, skip_scene_detection=False):
         if not name:
             return
 
@@ -476,8 +476,8 @@ class NameParser(object):
         return final_result
 
 
-class ParseResult(object):  # pylint: disable=too-many-instance-attributes
-    def __init__(self, original_name, series_name=None, season_number=None,  # pylint: disable=too-many-arguments
+class ParseResult(object):
+    def __init__(self, original_name, series_name=None, season_number=None,
                  episode_numbers=None, extra_info=None, release_group=None,
                  air_date=None, ab_episode_numbers=None, show=None,
                  score=None, quality=None, version=None):

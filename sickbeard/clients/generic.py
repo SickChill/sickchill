@@ -36,7 +36,7 @@ import sickbeard
 from sickbeard import helpers, logger
 
 
-class GenericClient(object):  # pylint: disable=too-many-instance-attributes
+class GenericClient(object):
     def __init__(self, name, host=None, username=None, password=None):
         """
         Initializes the client
@@ -58,7 +58,7 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
         self.session = helpers.make_session()
         self.session.auth = (self.username, self.password)
 
-    def _request(self, method='get', params=None, data=None, files=None, cookies=None):  # pylint: disable=too-many-arguments, too-many-return-statements
+    def _request(self, method='get', params=None, data=None, files=None, cookies=None):
         """
         Makes the actual request for the client, for everything except auth
         """

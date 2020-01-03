@@ -45,7 +45,7 @@ class CpasbienProvider(TorrentProvider):
         self.cache = tvcache.TVCache(self)
         self.ability_status = self.PROVIDER_BACKLOG
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         for mode in search_strings:
             items = []

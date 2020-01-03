@@ -85,7 +85,7 @@ class BJShareProvider(TorrentProvider):
             'One Piece', 'Boruto: Naruto Next Generations'
         ]
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
+    def search(self, search_strings, age=0, ep_obj=None):
         """
         Search a provider and parse the results.
 

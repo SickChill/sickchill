@@ -246,7 +246,7 @@ def is_media_file(filename):
 
         return filname_parts[-1].lower() in MEDIA_EXTENSIONS or (sickbeard.UNPACK == sickbeard.UNPACK_PROCESS_INTACT and is_rar)
     except (TypeError, AssertionError) as error:  # Not a string
-        logger.log(_('Invalid filename. Filename must be a string. {0}').format(error), logger.DEBUG)  # pylint: disable=no-member
+        logger.log(_('Invalid filename. Filename must be a string. {0}').format(error), logger.DEBUG)
         return False
 
 
@@ -616,7 +616,7 @@ def chmodAsParent(childPath):
     if childPath_mode == childMode:
         return
 
-    childPath_owner = childPathStat.st_uid  # pylint: disable=no-member
+    childPath_owner = childPathStat.st_uid
     user_id = os.geteuid()  # @UndefinedVariable - only available on UNIX
 
     if user_id not in (childPath_owner, 0):
@@ -654,7 +654,7 @@ def fixSetGroupID(childPath):
         if childGID == parentGID:
             return
 
-        childPath_owner = childStat.st_uid  # pylint: disable=no-member
+        childPath_owner = childStat.st_uid
         user_id = os.geteuid()  # @UndefinedVariable - only available on UNIX
 
         if user_id not in (childPath_owner, 0):
@@ -813,7 +813,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     # Save the key and certificate to disk
     # noinspection PyBroadException
     try:
-        # pylint: disable=no-member
+
         # Module has no member
         io.open(ssl_key, 'wb').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
         io.open(ssl_cert, 'wb').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
@@ -1390,7 +1390,7 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
     return True if not return_filename else filename
 
 
-def handle_requests_exception(requests_exception):  # pylint: disable=too-many-branches, too-many-statements
+def handle_requests_exception(requests_exception):
     def get_level(exception):
         return (logger.ERROR, logger.WARNING)[exception.message and 's,t,o,p,b,r,e,a,k,i,n,g,f' in exception.message]
 
@@ -1518,7 +1518,7 @@ def disk_usage(path):
                 pass
 
         st = ek(os.statvfs, path)
-        return st.f_bavail * st.f_frsize  # pylint: disable=no-member
+        return st.f_bavail * st.f_frsize
 
     else:
         raise Exception("Unable to determine free space on your OS")
@@ -1643,7 +1643,7 @@ def is_file_locked(checkfile, write_check=False):
         return True
     try:
         f = ek(io.open, checkfile, 'rb')
-        f.close()  # pylint: disable=no-member
+        f.close()
     except IOError:
         return True
 

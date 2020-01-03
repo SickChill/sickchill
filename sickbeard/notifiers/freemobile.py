@@ -115,7 +115,7 @@ class Notifier(object):
             title = notifyStrings[NOTIFY_LOGIN]
             self._notifyFreeMobile(title, update_text.format(ipaddress))
 
-    def _notifyFreeMobile(self, title, message, cust_id=None, apiKey=None, force=False):  # pylint: disable=too-many-arguments
+    def _notifyFreeMobile(self, title, message, cust_id=None, apiKey=None, force=False):
         """
         Sends a SMS notification
 

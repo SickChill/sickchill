@@ -49,7 +49,7 @@ class ConfigNotifications(Config):
                         header=_('Notifications'), topmenu='config',
                         controller="config", action="notifications")
 
-    def saveNotifications(  # pylint: disable=unused-argument
+    def saveNotifications(
             self, use_kodi=None, kodi_always_on=None, kodi_notify_onsnatch=None,
             kodi_notify_ondownload=None,
             kodi_notify_onsubtitledownload=None, kodi_update_onlyfirst=None,

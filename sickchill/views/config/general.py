@@ -89,7 +89,7 @@ class ConfigGeneral(Config):
 
         ui.notifications.message(_('Saved Defaults'), _('Your "add show" defaults have been set to your current selections.'))
 
-    def saveGeneral(  # pylint: disable=unused-argument
+    def saveGeneral(
             self, log_dir=None, log_nr=5, log_size=1, web_port=None, notify_on_login=None, web_log=None, encryption_version=None, web_ipv6=None,
             trash_remove_show=None, trash_rotate_logs=None, update_frequency=None, skip_removed_files=None,
             indexerDefaultLang='en', ep_default_deleted_status=None, launch_browser=None, showupdate_hour=3, web_username=None,

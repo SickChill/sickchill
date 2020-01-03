@@ -3,7 +3,7 @@
 """
 Abstract pattern class definition along with various implementations (regexp, string, functional)
 """
-# pylint: disable=super-init-not-called,wrong-import-position
+
 
 from abc import ABCMeta, abstractmethod, abstractproperty
 
@@ -196,7 +196,7 @@ class Pattern(object):
         :return: matches based on input_string for this pattern
         :rtype: iterator[Match]
         """
-        # pylint: disable=too-many-branches
+
 
         matches = []
         raw_matches = []

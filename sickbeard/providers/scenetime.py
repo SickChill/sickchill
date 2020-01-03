@@ -30,7 +30,7 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class SceneTimeProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -79,7 +79,7 @@ class SceneTimeProvider(TorrentProvider):  # pylint: disable=too-many-instance-a
                 logger.log('Failed to login, check your cookies', logger.WARNING)
                 return False
 
-    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals
+    def search(self, search_params, age=0, ep_obj=None):
         results = []
         if not self.login():
             return results

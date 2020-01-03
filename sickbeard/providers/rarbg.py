@@ -32,7 +32,7 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class RarbgProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -73,7 +73,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
         self.token_expires = datetime.datetime.now() + datetime.timedelta(minutes=14) if self.token else None
         return self.token is not None
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals, too-many-statements
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         if not self.login():
             return results

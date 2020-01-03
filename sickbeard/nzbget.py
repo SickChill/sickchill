@@ -37,7 +37,7 @@ from . import logger
 from .common import Quality
 
 
-def sendNZB(nzb, proper=False):  # pylint: disable=too-many-locals, too-many-statements, too-many-branches, too-many-return-statements
+def sendNZB(nzb, proper=False):
     '''
     Sends NZB to NZBGet client
 

@@ -41,7 +41,7 @@ class SickBeardURLopener(urllib.request.FancyURLopener, object):
     version = USER_AGENT
 
 
-class SearchResult(object):  # pylint: disable=too-few-public-methods, too-many-instance-attributes
+class SearchResult(object):
     """
     Represents a search result from an indexer.
     """
@@ -125,7 +125,7 @@ class SearchResult(object):  # pylint: disable=too-few-public-methods, too-many-
         return my_string
 
 
-class NZBSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
+class NZBSearchResult(SearchResult):
     """
     Regular NZB result with an URL to the NZB
     """
@@ -134,7 +134,7 @@ class NZBSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
         self.resultType = 'nzb'
 
 
-class NZBDataSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
+class NZBDataSearchResult(SearchResult):
     """
     NZB result where the actual NZB XML data is stored in the extraInfo
     """
@@ -143,7 +143,7 @@ class NZBDataSearchResult(SearchResult):  # pylint: disable=too-few-public-metho
         self.resultType = 'nzbdata'
 
 
-class TorrentSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
+class TorrentSearchResult(SearchResult):
     """
     Torrent result with an URL to the torrent
     """
@@ -152,7 +152,7 @@ class TorrentSearchResult(SearchResult):  # pylint: disable=too-few-public-metho
         self.resultType = 'torrent'
 
 
-class Proper(object):  # pylint: disable=too-few-public-methods, too-many-instance-attributes
+class Proper(object):
     def __init__(self, name, url, date, show):
         self.name = name
         self.url = url
@@ -226,7 +226,7 @@ class WarningViewer(object):
         return WarningViewer.errors
 
 
-class UIError(object):  # pylint: disable=too-few-public-methods
+class UIError(object):
     """
     Represents an error to be displayed in the web UI.
     """

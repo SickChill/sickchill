@@ -64,7 +64,7 @@ class ErrorLogs(WebRoot):
         return menu
 
     @addslash
-    def index(self, level=logger.ERROR):  # pylint: disable=arguments-differ
+    def index(self, level=logger.ERROR):
         level = try_int(level, logger.ERROR)
 
         t = PageTemplate(rh=self, filename="errorlogs.mako")

@@ -115,7 +115,7 @@ def generator(tvdb_id, show_name, cur_data, force_search):
         """
         Test to perform
         """
-        global search_items  # pylint: disable=global-statement
+        global search_items
         search_items = cur_data["i"]
         show = TVShow(1, tvdb_id)
         show.name = show_name
@@ -132,7 +132,7 @@ def generator(tvdb_id, show_name, cur_data, force_search):
         best_result = search.searchProviders(show, episode.episode, force_search)
         if not best_result:
             assert cur_data["b"] == best_result
-        # pylint: disable=no-member
+
         assert cur_data["b"] == best_result.name  # first is expected, second is chosen one
     return do_test
 

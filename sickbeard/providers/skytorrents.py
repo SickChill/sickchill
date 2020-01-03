@@ -30,7 +30,7 @@ from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class SkyTorrents(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class SkyTorrents(TorrentProvider):
 
     def __init__(self):
 
@@ -49,7 +49,7 @@ class SkyTorrents(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
         self.cache = tvcache.TVCache(self, search_params={"RSS": [""]})
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals, too-many-statements
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         for mode in search_strings:
             items = []

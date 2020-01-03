@@ -94,7 +94,7 @@ class Torrent9Provider(TorrentProvider):
     url = property(_get_provider_url, _set_provider_url)
     custom_url = property(_get_custom_url, _set_custom_url)
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         for mode in search_strings:
             items = []

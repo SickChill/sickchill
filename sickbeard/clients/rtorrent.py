@@ -26,7 +26,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Third Party Imports
-from lib.rtorrent import RTorrent  # pylint: disable=import-error
+from lib.rtorrent import RTorrent
 
 # First Party Imports
 import sickbeard
@@ -34,7 +34,7 @@ from sickbeard import ex, logger
 from sickbeard.clients.generic import GenericClient
 
 
-class Client(GenericClient):  # pylint: disable=invalid-name
+class Client(GenericClient):
     def __init__(self, host=None, username=None, password=None):
         super(Client, self).__init__('rTorrent', host, username, password)
 
@@ -92,8 +92,8 @@ class Client(GenericClient):  # pylint: disable=invalid-name
 
             return True
 
-        except Exception as error:  # pylint: disable=broad-except
-            logger.log('Error while sending torrent: {error}'.format  # pylint: disable=no-member
+        except Exception as error:
+            logger.log('Error while sending torrent: {error}'.format
                        (error=ex(error)), logger.WARNING)
             return False
 
@@ -136,8 +136,8 @@ class Client(GenericClient):  # pylint: disable=invalid-name
 
             return True
 
-        except Exception as error:  # pylint: disable=broad-except
-            logger.log('Error while sending torrent: {error}'.format  # pylint: disable=no-member
+        except Exception as error:
+            logger.log('Error while sending torrent: {error}'.format
                        (error=ex(error)), logger.WARNING)
             return False
 
@@ -187,5 +187,5 @@ class Client(GenericClient):  # pylint: disable=invalid-name
                 return True, 'Success: Connected and Authenticated'
             else:
                 return False, 'Error: Unable to get {name} Authentication, check your config!'.format(name=self.name)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             return False, 'Error: Unable to connect to {name}'.format(name=self.name)

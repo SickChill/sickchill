@@ -99,7 +99,7 @@ class Notifier(object):
             else:
                 return False
 
-    def _notify_kodi(self, message, title="SickChill", host=None, username=None, password=None, force=False, dest_app="KODI"):  # pylint: disable=too-many-arguments
+    def _notify_kodi(self, message, title="SickChill", host=None, username=None, password=None, force=False, dest_app="KODI"):
         """Internal wrapper for the notify_snatch and notify_download functions
 
         Detects JSON-RPC version then branches the logic for either the JSON-RPC or legacy HTTP API methods.
@@ -150,7 +150,7 @@ class Notifier(object):
                     command = '{{"jsonrpc":"2.0","method":"GUI.ShowNotification","params":{{"title":"{0}","message":"{1}", "image": "{2}"}},"id":1}}'.format(
                         title.encode("utf-8"), message.encode("utf-8"), sickbeard.LOGO_URL)
                     notifyResult = self._send_to_kodi_json(command, curHost, username, password, dest_app)
-                    if notifyResult and notifyResult.get('result'):  # pylint: disable=no-member
+                    if notifyResult and notifyResult.get('result'):
                         result += curHost + ':' + notifyResult["result"].decode(sickbeard.SYS_ENCODING)
             else:
                 if sickbeard.KODI_ALWAYS_ON or force:
@@ -201,7 +201,7 @@ class Notifier(object):
     ##############################################################################
 
     @staticmethod
-    def _send_to_kodi(command, host=None, username=None, password=None, dest_app="KODI"):  # pylint: disable=too-many-arguments
+    def _send_to_kodi(command, host=None, username=None, password=None, dest_app="KODI"):
         """Handles communication to KODI servers via HTTP API
 
         Args:
@@ -261,7 +261,7 @@ class Notifier(object):
             logger.log("Couldn't contact {0} HTTP at {1!r} : {2!r}".format(dest_app, url, ex(e)), logger.DEBUG)
             return False
 
-    def _update_library(self, host=None, showName=None):  # pylint: disable=too-many-locals, too-many-return-statements
+    def _update_library(self, host=None, showName=None):
         """Handles updating KODI host via HTTP API
 
         Attempts to update the KODI video library for a specific tv show if passed,
@@ -414,7 +414,7 @@ class Notifier(object):
                 logger.log("Warning: Couldn't contact {0} JSON API at {1}: {2!r}".format(dest_app, ss(url), ex(e)), logger.WARNING)
             return dict()
 
-    def _update_library_json(self, host=None, showName=None):  # pylint: disable=too-many-return-statements, too-many-branches
+    def _update_library_json(self, host=None, showName=None):
         """Handles updating KODI host via HTTP JSON-RPC
 
         Attempts to update the KODI video library for a specific tv show if passed,

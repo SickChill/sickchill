@@ -192,7 +192,7 @@ class ShowQueue(generic_queue.GenericQueue):
         return queue_item_obj
 
 
-class ShowQueueActions(object):  # pylint: disable=too-few-public-methods
+class ShowQueueActions(object):
 
     def __init__(self):
         pass
@@ -241,13 +241,13 @@ class ShowQueueItem(generic_queue.QueueItem):
         return self.show.name if self.show else 'UNSET'
 
     @property
-    def is_loading(self):  # pylint: disable=no-self-use
+    def is_loading(self):
         return False
 
 
-class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attributes
+class QueueItemAdd(ShowQueueItem):
     # noinspection PyPep8Naming
-    def __init__(self,  # pylint: disable=too-many-arguments, too-many-locals
+    def __init__(self,
                  indexer, indexer_id, showDir, default_status, quality, season_folders,
                  lang, subtitles, subtitles_sr_metadata, anime, scene, paused, blacklist, whitelist,
                  default_status_after, root_dir):
@@ -304,7 +304,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
         # noinspection PyUnresolvedReferences
         return info(id=self.show_name, name=self.show_name, sort_name=sortable_name(self.show_name), network=_('Loading'), quality=0)
 
-    def run(self):  # pylint: disable=too-many-branches, too-many-statements, too-many-return-statements
+    def run(self):
 
         super(QueueItemAdd, self).run()
 
@@ -393,7 +393,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                 # If we have the show in our list, but the location is wrong, lets fix it and refresh!
                 existing_show = Show.find(sickbeard.showList, self.indexer_id)
                 # noinspection PyProtectedMember
-                if existing_show and not ek(os.path.isdir, existing_show._location):  # pylint: disable=protected-access
+                if existing_show and not ek(os.path.isdir, existing_show._location):
                     newShow = existing_show
                 else:
                     raise error
@@ -627,7 +627,7 @@ class QueueItemUpdate(ShowQueueItem):
         self.force = force
         self.priority = generic_queue.QueuePriorities.HIGH
 
-    def run(self):  # pylint: disable=too-many-branches, too-many-statements
+    def run(self):
 
         super(QueueItemUpdate, self).run()
 
@@ -732,7 +732,7 @@ class QueueItemRemove(ShowQueueItem):
         try:
             # TODO: ep_obj is undefined here, so all of these will fail.
             # send notifications
-            # notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))  # pylint: disable=protected-access
+            # notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
 
             # do the library update for KODI
             notifiers.kodi_notifier.update_library(self.show.name)

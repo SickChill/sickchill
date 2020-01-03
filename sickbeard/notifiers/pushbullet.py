@@ -93,7 +93,7 @@ class Notifier(object):
             message=common.notifyStrings[common.NOTIFY_LOGIN_TEXT].format(ipaddress)
         )
 
-    def _sendPushbullet(  # pylint: disable=too-many-arguments
+    def _sendPushbullet(
             self, pushbullet_api=None, pushbullet_device=None, pushbullet_channel=None, event=None, message=None, link=None, force=False):
 
         if not (sickbeard.USE_PUSHBULLET or force):

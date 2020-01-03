@@ -65,16 +65,16 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         bitcannon.api_key = ""
 
         if bitcannon.custom_url:
-            # pylint: disable=protected-access
+
             search_strings_list = bitcannon.get_episode_search_strings(self.shows[0].episodes[0])  # [{'Episode': ['Italian Works S05E10']}]
             for search_strings in search_strings_list:
-                bitcannon.search(search_strings)   # {'Episode': ['Italian Works S05E10']} # pylint: disable=protected-access
+                bitcannon.search(search_strings)   # {'Episode': ['Italian Works S05E10']}
 
         return True
 
     @staticmethod
     @unittest.skip('KickAssTorrents is down, needs a replacement')  # TODO
-    def test_search():  # pylint: disable=too-many-locals
+    def test_search():
         """
         Test searching
         """

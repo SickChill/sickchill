@@ -34,7 +34,7 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class TorrentDayProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -108,7 +108,7 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             logger.log('You need to set your cookies to use torrentday')
             return False
 
-    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals
+    def search(self, search_params, age=0, ep_obj=None):
         results = []
 
         search_url = self.urls['search']

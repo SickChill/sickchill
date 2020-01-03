@@ -26,7 +26,7 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class NyaaProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -44,7 +44,7 @@ class NyaaProvider(TorrentProvider):  # pylint: disable=too-many-instance-attrib
 
         self.cache = tvcache.TVCache(self, min_time=20)  # only poll Nyaa every 20 minutes max
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         if self.show and not self.show.is_anime:
             return results

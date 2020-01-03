@@ -40,7 +40,7 @@ class Client(GenericClient):
         super(Client, self).__init__('uTorrent', host, username, password)
         self.url = urljoin(self.host, 'gui/')
 
-    def _request(self, method='get', params=None, data=None, files=None, cookies=None):  # pylint: disable=too-many-arguments
+    def _request(self, method='get', params=None, data=None, files=None, cookies=None):
         """
         Overrides the parent _request method to add the auth token
         """

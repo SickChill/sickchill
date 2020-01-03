@@ -32,7 +32,7 @@ from .routes import Route
 #         return self.finish(t.render(title='404', header=_('Oops')))
 
 
-class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attributes
+class SRWebServer(threading.Thread):
     def __init__(self, options=None):
         threading.Thread.__init__(self)
         self.daemon = True

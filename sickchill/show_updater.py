@@ -33,7 +33,7 @@ from sickbeard import db, logger, network_timezones, ui
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
 
 
-class ShowUpdater(object):  # pylint: disable=too-few-public-methods
+class ShowUpdater(object):
     def __init__(self):
         self.lock = threading.Lock()
         self.amActive = False
@@ -41,7 +41,7 @@ class ShowUpdater(object):  # pylint: disable=too-few-public-methods
         self.seven_days = 7*24*60*60
         self.six_months = self.seven_days * 26
 
-    def run(self, force=False):  # pylint: disable=unused-argument, too-many-locals, too-many-branches, too-many-statements
+    def run(self, force=False):
         logger.log('ShowUpdater for tvdb Api V3 starting')
         if self.amActive:
             return

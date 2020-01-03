@@ -442,7 +442,7 @@ def sanity_check_database(connection, sanity_check):
     sanity_check(connection).check()
 
 
-class DBSanityCheck(object):  # pylint: disable=too-few-public-methods
+class DBSanityCheck(object):
     def __init__(self, connection):
         self.connection = connection
 

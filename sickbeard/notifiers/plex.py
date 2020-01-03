@@ -51,7 +51,7 @@ class Notifier(object):
         self.session = make_session()
 
     @staticmethod
-    def _notify_pht(message, title='SickChill', host=None, username=None, password=None, force=False):  # pylint: disable=too-many-arguments
+    def _notify_pht(message, title='SickChill', host=None, username=None, password=None, force=False):
         """Internal wrapper for the notify_snatch and notify_download functions
 
         Args:
@@ -76,7 +76,7 @@ class Notifier(object):
         username = username or sickbeard.PLEX_CLIENT_USERNAME
         password = password or sickbeard.PLEX_CLIENT_PASSWORD
 
-        return sickbeard.notifiers.kodi_notifier._notify_kodi(message, title=title, host=host, username=username, password=password, force=force, dest_app="PLEX")  # pylint: disable=protected-access
+        return sickbeard.notifiers.kodi_notifier._notify_kodi(message, title=title, host=host, username=username, password=password, force=force, dest_app="PLEX")
 
 ##############################################################################
 # Public functions
@@ -116,7 +116,7 @@ class Notifier(object):
         return self.update_library(host=host, username=username, password=password,
                                    plex_server_token=plex_server_token, force=True)
 
-    def update_library(self, ep_obj=None, host=None,  # pylint: disable=too-many-arguments, too-many-locals, too-many-statements, too-many-branches
+    def update_library(self, ep_obj=None, host=None,
                        username=None, password=None,
                        plex_server_token=None, force=False):
 

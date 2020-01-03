@@ -35,7 +35,7 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class PretomeProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -87,7 +87,7 @@ class PretomeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-statements, too-many-locals
+    def search(self, search_params, age=0, ep_obj=None):
         results = []
         if not self.login():
             return results

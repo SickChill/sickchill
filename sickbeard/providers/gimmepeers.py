@@ -34,7 +34,7 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class GimmePeersProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class GimmePeersProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -89,7 +89,7 @@ class GimmePeersProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         if not self.login():
             return results

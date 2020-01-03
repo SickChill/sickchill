@@ -67,7 +67,7 @@ class Notifier(object):
             if not self.number.capabilities['sms']:
                 return False
 
-            # pylint: disable=undefined-variable
+
             return self._notifyTwilio(_('This is a test notification from SickChill'), force=True, allow_raise=True)
         except twilio.TwilioRestException:
             return False

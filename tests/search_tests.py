@@ -89,8 +89,8 @@ def generator(cur_data, cur_name, cur_provider):
             episode.saveToDB()
 
             cur_provider.show = show
-            season_strings = cur_provider.get_season_search_strings(episode)  # pylint: disable=protected-access
-            episode_strings = cur_provider.get_episode_search_strings(episode)  # pylint: disable=protected-access
+            season_strings = cur_provider.get_season_search_strings(episode)
+            episode_strings = cur_provider.get_episode_search_strings(episode)
 
             fail = False
             cur_string = ''
@@ -121,12 +121,12 @@ def generator(cur_data, cur_name, cur_provider):
             if not cur_provider.public:
                 continue
 
-            items = cur_provider.search(search_strings)  # pylint: disable=protected-access
+            items = cur_provider.search(search_strings)
             if not items:
                 print("No results from cur_provider?")
                 continue
 
-            title, url = cur_provider._get_title_and_url(items[0])  # pylint: disable=protected-access
+            title, url = cur_provider._get_title_and_url(items[0])
             for word in show.name.split(" "):
                 if not word.lower() in title.lower():
                     print("Show cur_name not in title: {0}. URL: {1}".format(title, url))
@@ -137,7 +137,7 @@ def generator(cur_data, cur_name, cur_provider):
                 continue
 
             quality = cur_provider.get_quality(items[0])
-            size = cur_provider._get_size(items[0])  # pylint: disable=protected-access
+            size = cur_provider._get_size(items[0])
 
             if not show.quality & quality:
                 print("Quality not in common.ANY, {0!r} {1}".format(quality, size))

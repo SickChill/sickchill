@@ -254,7 +254,7 @@ class TestCacheDBConnection(TestDBConnection, object):
     Test connecting to the cache database.
     """
     def __init__(self, provider_name):
-        # pylint: disable=non-parent-init-called
+
         db.DBConnection.__init__(self, os.path.join(TEST_DIR, TEST_CACHE_DB_NAME), row_type='dict')
 
         # Create the table if it's not already there
@@ -263,7 +263,7 @@ class TestCacheDBConnection(TestDBConnection, object):
                 sql = "CREATE TABLE [" + provider_name + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT, release_group TEXT)"
                 self.connection.execute(sql)
                 self.connection.commit()
-        # pylint: disable=broad-except
+
         # Catching too general exception
         except Exception as error:
             if str(error) != "table [" + provider_name + "] already exists":
@@ -278,7 +278,7 @@ class TestCacheDBConnection(TestDBConnection, object):
             sql = "CREATE TABLE lastUpdate (provider TEXT, time NUMERIC);"
             self.connection.execute(sql)
             self.connection.commit()
-        # pylint: disable=broad-except
+
         # Catching too general exception
         except Exception as error:
             if str(error) != "table lastUpdate already exists":
@@ -340,7 +340,7 @@ def setup_test_episode_file():
         with open(FILE_PATH, 'wb') as ep_file:
             ep_file.write("foo bar")
             ep_file.flush()
-    # pylint: disable=broad-except
+
     # Catching too general exception
     except Exception:
         print("Unable to set up test episode")

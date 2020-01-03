@@ -366,7 +366,7 @@ class AddShows(Home):
                         controller="addShows", action="addExistingShow")
 
     # noinspection PyUnusedLocal
-    def addShowByID(  # pylint: disable=unused-argument
+    def addShowByID(
             self, indexer_id, show_name, indexer="TVDB", which_series=None,
             indexer_lang=None, root_dir=None, default_status=None,
             quality_preset=None, any_qualities=None, best_qualities=None,

@@ -86,7 +86,7 @@ def is_iterable(obj):
     We don't need to check for the Python 2 `unicode` type, because it doesn't
     have an `__iter__` attribute anyway.
     """
-    # pylint: disable=consider-using-ternary
+
     return hasattr(obj, '__iter__') and not isinstance(obj, str) or isinstance(obj, GeneratorType)
 
 
@@ -121,7 +121,7 @@ class IdentitySet(MutableSet):  # pragma: no cover
     """
     Set based on identity
     """
-    def __init__(self, items=None):  # pylint: disable=super-init-not-called
+    def __init__(self, items=None):
         if items is None:
             items = []
         self.refs = set(map(_Ref, items))

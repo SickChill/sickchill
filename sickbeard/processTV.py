@@ -39,7 +39,7 @@ from . import common, db, failedProcessor, helpers, logger, postProcessor
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 
-class ProcessResult(object):  # pylint: disable=too-few-public-methods
+class ProcessResult(object):
     def __init__(self):
         self.result = True
         self.output = ''
@@ -253,7 +253,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
     return result.output
 
 
-def validate_dir(process_path, release_name, failed, result):  # pylint: disable=too-many-locals,too-many-branches,too-many-return-statements
+def validate_dir(process_path, release_name, failed, result):
     """
     Check if directory is valid for processing
 
@@ -328,7 +328,7 @@ def validate_dir(process_path, release_name, failed, result):  # pylint: disable
     return False
 
 
-def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,too-many-statements
+def unrar(path, rar_files, force, result):
     """
     Extracts RAR files
 
@@ -432,7 +432,7 @@ def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,
     return unpacked_dirs
 
 
-def already_processed(process_path, video_file, force, result):  # pylint: disable=unused-argument
+def already_processed(process_path, video_file, force, result):
     """
     Check if we already post processed a file
 
@@ -457,7 +457,7 @@ def already_processed(process_path, video_file, force, result):  # pylint: disab
     try:  # if it fails to find any info (because we're doing an unparsable folder (like the TV root dir) it will throw an exception, which we want to ignore
         parse_result = NameParser(process_path, tryIndexers=True).parse(process_path)
     except (InvalidNameException, InvalidShowException):  # ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
-        parse_result = False  # pylint: disable=redefined-variable-type
+        parse_result = False
 
     search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid" # This part is always the same
     search_sql += " WHERE history.season=tv_episodes.season AND history.episode=tv_episodes.episode"
@@ -477,7 +477,7 @@ def already_processed(process_path, video_file, force, result):  # pylint: disab
     return False
 
 
-def process_media(process_path, video_files, release_name, process_method, force, is_priority, result):  # pylint: disable=too-many-arguments
+def process_media(process_path, video_files, release_name, process_method, force, is_priority, result):
     """
     Postprocess mediafiles
 

@@ -37,7 +37,7 @@ class History(WebRoot):
 
         self.history = HistoryTool()
 
-    def index(self, limit=None):  # pylint: disable=arguments-differ
+    def index(self, limit=None):
         sickbeard.HISTORY_LIMIT = limit = try_int(limit or sickbeard.HISTORY_LIMIT or 100, 100)
         sickbeard.save_config()
 

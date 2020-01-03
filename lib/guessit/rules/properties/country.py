@@ -3,7 +3,7 @@
 """
 country property
 """
-# pylint: disable=no-member
+
 import babelfish
 
 from rebulk import Rebulk
@@ -46,7 +46,7 @@ def country(config, common_words):
     return rebulk
 
 
-class GuessitCountryConverter(babelfish.CountryReverseConverter):  # pylint: disable=missing-docstring
+class GuessitCountryConverter(babelfish.CountryReverseConverter):
     def __init__(self, synonyms):
         self.guessit_exceptions = {}
 
@@ -55,7 +55,7 @@ class GuessitCountryConverter(babelfish.CountryReverseConverter):  # pylint: dis
                 self.guessit_exceptions[syn.lower()] = alpha2
 
     @property
-    def codes(self):  # pylint: disable=missing-docstring
+    def codes(self):
         return (babelfish.country_converters['name'].codes |
                 frozenset(babelfish.COUNTRIES.values()) |
                 frozenset(self.guessit_exceptions.keys()))

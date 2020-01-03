@@ -44,7 +44,7 @@ from sickchill.helper.common import sanitize_filename
 from sickchill.helper.encoding import ek
 
 
-class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
+class GenericProvider(object):
     NZB = 'nzb'
     NZBDATA = 'nzbdata'
     TORRENT = 'torrent'
@@ -137,7 +137,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
         return [Proper(x[b'name'], x[b'url'], datetime.fromtimestamp(x[b'time']), self.show) for x in results]
 
-    def find_search_results(self, show, episodes, search_mode,  # pylint: disable=too-many-branches,too-many-arguments,too-many-locals,too-many-statements
+    def find_search_results(self, show, episodes, search_mode,
                             manual_search=False, download_current_quality=False):
         self._check_auth()
         self.show = show
@@ -227,7 +227,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
                 else:
                     if not all([
-                        # pylint: disable=bad-continuation
+
                         parse_result.season_number is not None,
                         parse_result.episode_numbers,
                         [ep for ep in episodes if (ep.season, ep.scene_season)[ep.show.is_scene] ==
@@ -286,7 +286,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
             if add_cache_entry:
                 logger.log('Adding item from search to cache: {0}'.format(title), logger.DEBUG)
-                # pylint: disable=protected-access
+
                 # Access to a protected member of a client class
                 ci = self.cache._add_cache_entry(title, url, parse_result=parse_result)
 
@@ -340,7 +340,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
                 results[episode_number].append(result)
 
         if cl:
-            # pylint: disable=protected-access
+
             # Access to a protected member of a client class
             cache_db = self.cache._get_db()
             cache_db.mass_action(cl)
@@ -371,7 +371,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
             if response.request.method == 'POST':
                 logger.log('With post data: {0}'.format(response.request.body), logger.DEBUG)
 
-    def get_url(self, url, post_data=None, params=None, timeout=30, **kwargs):  # pylint: disable=too-many-arguments,
+    def get_url(self, url, post_data=None, params=None, timeout=30, **kwargs):
         kwargs['hooks'] = {'response': self.get_url_hook}
         return getURL(url, post_data, params, self.headers, timeout, self.session, **kwargs)
 
@@ -379,7 +379,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
         return self.get_id() + '.png'
 
     @property
-    def is_active(self):  # pylint: disable=no-self-use
+    def is_active(self):
         return False
 
     @property
@@ -419,19 +419,19 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
     def search_rss(self, episodes):
         return self.cache.find_needed_episodes(episodes)
 
-    def seed_ratio(self):  # pylint: disable=no-self-use
+    def seed_ratio(self):
         return ''
 
-    def _check_auth(self):  # pylint: disable=no-self-use
+    def _check_auth(self):
         return True
 
-    def login(self):  # pylint: disable=no-self-use
+    def login(self):
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=unused-argument,no-self-use
+    def search(self, search_params, age=0, ep_obj=None):
         return []
 
-    def _get_result(self, episodes):  # pylint: disable=no-self-use
+    def _get_result(self, episodes):
         return SearchResult(episodes)
 
     def get_episode_search_strings(self, episode, add_string=''):
@@ -493,16 +493,16 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
         return [search_string]
 
-    def _get_size(self, item):  # pylint: disable=unused-argument,no-self-use
+    def _get_size(self, item):
         try:
             return item.get('size', -1)
         except AttributeError:
             return -1
 
-    def _get_storage_dir(self):  # pylint: disable=no-self-use
+    def _get_storage_dir(self):
         return ''
 
-    def _get_title_and_url(self, item):  # pylint: disable=no-self-use
+    def _get_title_and_url(self, item):
         if not item:
             return '', ''
 
@@ -554,7 +554,7 @@ class GenericProvider(object):  # pylint: disable=too-many-instance-attributes
 
         return urls, filename
 
-    def _verify_download(self, file_name=None):  # pylint: disable=unused-argument,no-self-use
+    def _verify_download(self, file_name=None):
         return True
 
     def add_cookies_from_ui(self):

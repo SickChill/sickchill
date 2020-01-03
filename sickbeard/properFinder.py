@@ -40,11 +40,11 @@ from .name_parser.parser import InvalidNameException, InvalidShowException, Name
 from .search import pickBestResult, snatchEpisode
 
 
-class ProperFinder(object):  # pylint: disable=too-few-public-methods
+class ProperFinder(object):
     def __init__(self):
         self.amActive = False
 
-    def run(self, force=False):  # pylint: disable=unused-argument
+    def run(self, force=False):
         """
         Start looking for new propers
 
@@ -73,7 +73,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
 
         self.amActive = False
 
-    def _getProperList(self):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def _getProperList(self):
         """
         Walk providers for propers
         """

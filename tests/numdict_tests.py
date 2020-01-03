@@ -24,7 +24,7 @@ class NumDictTest(unittest.TestCase):
     """
     Test the NumDict class
     """
-    def test_constructors(self):  # pylint: disable=too-many-locals, too-many-statements
+    def test_constructors(self):
         """
         Test NumDict constructors
         """
@@ -139,7 +139,7 @@ class NumDictTest(unittest.TestCase):
         self.assertIsInstance(num_dict_3.fromkeys('1 2'.split()), NumDict)
         self.assertIsInstance(num_dict_4.fromkeys('1 2'.split()), NumDict)
 
-    def test_repr(self):  # pylint: disable=too-many-locals
+    def test_repr(self):
         """
         Test representation of NumDicts
         """
@@ -241,7 +241,7 @@ class NumDictTest(unittest.TestCase):
             for val_b in all_dicts:
                 self.assertEqual(val_a == val_b, len(val_a) == len(val_b))
 
-    def test_dict_access_and_mod(self):  # pylint: disable=too-many-locals, too-many-statements
+    def test_dict_access_and_mod(self):
         """
         Test num dict access and modification
         """
@@ -423,7 +423,7 @@ class NumDictTest(unittest.TestCase):
             """
             subclass defines __missing__ method returning a value
             """
-            def __missing__(self, key):  # pylint: disable=no-self-use
+            def __missing__(self, key):
                 key = 42
                 return key
 
@@ -438,7 +438,7 @@ class NumDictTest(unittest.TestCase):
             """
             subclass defines __missing__ method raising RuntimeError
             """
-            def __missing__(self, key):  # pylint: disable=no-self-use
+            def __missing__(self, key):
                 raise RuntimeError(key)
 
         num_dict_e = NumDictE()
@@ -484,7 +484,7 @@ class NumDictTest(unittest.TestCase):
             subclass calls super classes __missing__ and modifies the value before returning it
             """
 
-            def __missing__(self, key):  # pylint: disable=arguments-differ
+            def __missing__(self, key):
                 return super(NumDictH, self).__missing__(key) + 1
 
         num_dict_h = NumDictH()

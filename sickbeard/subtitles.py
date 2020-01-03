@@ -79,7 +79,7 @@ PROVIDER_URLS = {
 }
 
 
-class SubtitleProviderPool(object):  # pylint: disable=too-few-public-methods
+class SubtitleProviderPool(object):
     _lock = threading.Lock()
     _creation = None
     _instance = None
@@ -193,7 +193,7 @@ def needs_subtitles(subtitles, force_lang=None):
 def from_code(language):
     language = language.strip()
     if language and language in language_converters['opensubtitles'].codes:
-        return Language.fromopensubtitles(language)  # pylint: disable=no-member
+        return Language.fromopensubtitles(language)
 
     return Language('und')
 
@@ -206,7 +206,7 @@ def code_from_code(code):
     return from_code(code).opensubtitles
 
 
-def download_subtitles(episode, force_lang=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+def download_subtitles(episode, force_lang=None):
     existing_subtitles = episode.subtitles
 
     if not needs_subtitles(existing_subtitles, force_lang):
@@ -403,7 +403,7 @@ def get_subtitles(video):
     return sorted(result_list)
 
 
-class SubtitlesFinder(object):  # pylint: disable=too-few-public-methods
+class SubtitlesFinder(object):
     """The SubtitlesFinder will be executed every hour but will not necessarly search and download subtitles.
 
     Only if the defined rule is true.
@@ -412,7 +412,7 @@ class SubtitlesFinder(object):  # pylint: disable=too-few-public-methods
     def __init__(self):
         self.amActive = False
 
-    def run(self, force=False):  # pylint: disable=too-many-branches, too-many-statements, too-many-locals
+    def run(self, force=False):
         if not sickbeard.USE_SUBTITLES:
             return
 

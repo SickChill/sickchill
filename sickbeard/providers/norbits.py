@@ -36,7 +36,7 @@ except ImportError:
     import simplejson as json
 
 
-class NorbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class NorbitsProvider(TorrentProvider):
     """Main provider object"""
 
     def __init__(self):
@@ -71,7 +71,7 @@ class NorbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals
+    def search(self, search_params, age=0, ep_obj=None):
         """ Do the actual searching and JSON parsing"""
 
         results = []
@@ -141,4 +141,4 @@ class NorbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         return results
 
 
-provider = NorbitsProvider()  # pylint: disable=invalid-name
+provider = NorbitsProvider()

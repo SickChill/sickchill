@@ -36,7 +36,7 @@ from sickchill.helper.exceptions import ex
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class IPTorrentsProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -106,7 +106,7 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def search(self, search_params, age=0, ep_obj=None):
         results = []
         if not self.login():
             return results

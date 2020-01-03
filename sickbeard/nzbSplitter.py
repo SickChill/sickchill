@@ -55,14 +55,14 @@ def get_season_nzbs(name, url_data, season):
         # Example:  nzbElement.getchildren()[1].tag == '{http://www.newzbin.com/DTD/2003/nzb}file'
         #           regex match returns  'http://www.newzbin.com/DTD/2003/nzb'
         'nzb_xmlns': r"{(http://[\w_\./]+nzb)}file",
-        'scene_name': '([\w\._\ ]+)[\. ]S%02d[\. ]([\w\._\-\ ]+)[\- ]([\w_\-\ ]+?)',  # pylint: disable=anomalous-backslash-in-string
-        'episode': '\.S%02d(?:[E0-9]+)\.[\w\._]+\-\w+',  # pylint: disable=anomalous-backslash-in-string
+        'scene_name': '([\w\._\ ]+)[\. ]S%02d[\. ]([\w\._\-\ ]+)[\- ]([\w_\-\ ]+?)',
+        'episode': '\.S%02d(?:[E0-9]+)\.[\w\._]+\-\w+',
     }
 
     try:
         show_xml = ETree.ElementTree(ETree.XML(url_data))
     except SyntaxError:
-        logger.log("Unable to parse the XML of " + name + ", not splitting it", logger.ERROR)  # pylint: disable=no-member
+        logger.log("Unable to parse the XML of " + name + ", not splitting it", logger.ERROR)
         return {}, ''
 
     nzb_element = show_xml.getroot()
@@ -72,7 +72,7 @@ def get_season_nzbs(name, url_data, season):
         show_name = scene_name_match.groups()[0]
     else:  # Make sure we aren't missing valid results after changing name_parser and the quality detection
         # Most of these will likely be invalid shows
-        logger.log("Unable to parse " + name + " into a scene name.", logger.DEBUG)   # pylint: disable=no-member
+        logger.log("Unable to parse " + name + " into a scene name.", logger.DEBUG)
         return {}, ''
 
     regex = '(' + re.escape(show_name) + regex_string['episode'] % season + ')'
@@ -130,7 +130,7 @@ def save_nzb(nzb_name, nzb_string):
             nzb_fh.write(nzb_string)
 
     except EnvironmentError as error:
-        logger.log("Unable to save NZB: " + ex(error), logger.ERROR)  # pylint: disable=no-member
+        logger.log("Unable to save NZB: " + ex(error), logger.ERROR)
 
 
 def strip_xmlns(element, xmlns):
@@ -179,7 +179,7 @@ def split_result(obj):
     #   Maybe we should return the results found or possibly continue with the next iteration of the loop
     #   Also maybe turn this into a function and generate the results_list with a list comprehension instead
     for new_nzb in separate_nzbs:
-        logger.log("Split out " + new_nzb + " from " + obj.name, logger.DEBUG)  # pylint: disable=no-member
+        logger.log("Split out " + new_nzb + " from " + obj.name, logger.DEBUG)
 
         # parse the name
         try:
@@ -190,12 +190,12 @@ def split_result(obj):
 
         # make sure the result is sane
         if (parsed_obj.season_number != season) or (parsed_obj.season_number is None and season != 1):
-            # pylint: disable=no-member
+
             logger.log("Found " + new_nzb + " inside " + obj.name + " but it doesn't seem to belong to the same season, ignoring it",
                        logger.WARNING)
             continue
         elif not parsed_obj.episode_numbers:
-            # pylint: disable=no-member
+
             logger.log("Found " + new_nzb + " inside " + obj.name + " but it doesn't seem to be a valid episode NZB, ignoring it",
                        logger.WARNING)
             continue

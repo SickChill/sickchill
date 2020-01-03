@@ -35,7 +35,7 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class ilCorsaroNeroProvider(TorrentProvider):
 
     def __init__(self):
         TorrentProvider.__init__(self, 'ilCorsaroNero')
@@ -109,7 +109,7 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
         return quality_string
 
     @staticmethod
-    def _episodeQuality(torrent_rows):  # pylint: disable=too-many-return-statements, too-many-branches
+    def _episodeQuality(torrent_rows):
         """
             Return The quality from the scene episode HTML row.
         """
@@ -204,7 +204,7 @@ class ilCorsaroNeroProvider(TorrentProvider):  # pylint: disable=too-many-instan
             title=quote_plus(title),
             trackers='http://tracker.tntvillage.scambioetico.org:2710/announce')
 
-    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def search(self, search_params, age=0, ep_obj=None):
         results = []
 
         for mode in search_params:

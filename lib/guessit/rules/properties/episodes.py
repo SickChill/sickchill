@@ -29,7 +29,7 @@ def episodes(config):
     :return: Created Rebulk object
     :rtype: Rebulk
     """
-    # pylint: disable=too-many-branches,too-many-statements,too-many-locals
+
     def is_season_episode_disabled(context):
         """Whether season and episode rules should be enabled."""
         return is_disabled(context, 'episode') or is_disabled(context, 'season')
