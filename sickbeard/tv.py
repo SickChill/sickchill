@@ -799,7 +799,6 @@ class TVShow(object):
         logger.log(str(self.indexerid) + ": Loading show info from " + self.indexer_name, logger.DEBUG)
 
         myShow = sickchill.indexer.series(self)
-        myShow.info()
         if not myShow or not getattr(myShow, 'seriesName'):
             raise AttributeError("Found {0}, but attribute 'seriesName' was empty.".format(self.indexerid))
 
@@ -1504,7 +1503,7 @@ class TVEpisode(object):
 
             self.season = season
             self.episode = episode
-            self.absolute_number = sql_results[0][b"absolute_number"]
+            self.absolute_number = try_int(sql_results[0][b"absolute_number"], 0)
             self.description = sql_results[0][b"description"]
             if not self.description:
                 self.description = ""
@@ -1595,7 +1594,7 @@ class TVEpisode(object):
             logger.log("{id}: The absolute number for {ep} is: {absolute} ".format
                        (id=self.show.indexerid, ep=episode_num(season or self.season, episode or self.episode),
                         absolute=myEp["absoluteNumber"]), logger.DEBUG)
-            self.absolute_number = myEp["absoluteNumber"]
+            self.absolute_number = try_int(myEp["absoluteNumber"], 0)
 
         self.name = myEp['episodeName']
         self.season = season

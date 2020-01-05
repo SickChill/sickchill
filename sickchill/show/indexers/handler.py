@@ -158,7 +158,10 @@ class ShowIndexer(object):
         return series
 
     def series(self, show):
-        return self.series_by_id(indexerid=show.indexerid, indexer=show.indexer, language=show.lang)
+        result = self.series_by_id(indexerid=show.indexerid, indexer=show.indexer, language=show.lang)
+        if result:
+            result.info()
+        return result
 
     def episodes(self, show, season):
         return self.indexers[show.indexer].episodes(show, season)
@@ -188,5 +191,5 @@ class ShowIndexer(object):
     def season_banner_url(self, show, season, thumb=False):
         return self.indexers[show.indexer].season_banner_url(show, season, thumb)
 
-    def episode_image_url(self, episode, thumb=False):
-        return self.indexers[episode.show.indexer].episode_image_url(episode, thumb)
+    def episode_image_url(self, episode):
+        return self.indexers[episode.show.indexer].episode_image_url(episode)

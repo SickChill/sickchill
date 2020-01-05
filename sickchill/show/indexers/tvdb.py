@@ -120,7 +120,7 @@ class TVDB(Indexer):
 
     @staticmethod
     def complete_image_url(location):
-        return 'https://artworks.thetvdb.com/banners/{path}'.format(path=location)
+        return 'https://artworks.thetvdb.com/banners/{path}'.format(path=location.strip())
 
     def __call_images_api(self, show, thumb, keyType, subKey=None):
         try:
@@ -131,6 +131,12 @@ class TVDB(Indexer):
             result = ''
 
         return result
+
+    @staticmethod
+    def actors(series):
+        if hasattr(series, 'actors') and callable(series.actors):
+            series.actors()
+        return series.actors
 
     def series_poster_url(self, show, thumb=False):
         return self.__call_images_api(show, thumb, 'poster')
@@ -147,9 +153,9 @@ class TVDB(Indexer):
     def season_banner_url(self, show, season, thumb=False):
         return self.__call_images_api(show, thumb, 'seasonwide', season)
 
-    def episode_image_url(self, episode, thumb=False):
+    def episode_image_url(self, episode):
         try:
-            result =  self.complete_image_url(self.episode(episode)[('fileName', 'thumbnail')[thumb]])
+            result = self.complete_image_url(self.episode(episode)['filename'])
         except HTTPError:
             result = ''
 

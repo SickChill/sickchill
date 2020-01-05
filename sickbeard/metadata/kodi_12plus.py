@@ -118,8 +118,6 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                 show_obj.indexerid, show_obj.idxr.name.name))
             return False
 
-        myShow.info()
-
         # check for title and id
         if not (getattr(myShow, 'seriesName', None) and getattr(myShow, 'id', None)):
             logger.log("Incomplete info for show with id {} on {}, skipping it".format(
@@ -132,6 +130,8 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         if getattr(myShow, 'rating', None):
             rating = etree.SubElement(tv_node, "rating")
             rating.text = myShow.rating
+            mpaa = etree.SubElement(tv_node, "mpaa")
+            mpaa.text = myShow.rating
 
         if getattr(myShow, 'firstAired', None):
             try:
@@ -151,16 +151,12 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
             episodeguideurl = etree.SubElement(episodeguide, "url")
             episodeguideurl.text = show_obj.idxr.base_url + str(myShow.id) + '/all/en.zip'
 
-        if getattr(myShow, 'contentrating', None):
-            mpaa = etree.SubElement(tv_node, "mpaa")
-            mpaa.text = myShow.contentrating
-
         if getattr(myShow, 'id', None):
             indexerid = etree.SubElement(tv_node, "id")
             indexerid.text = str(myShow.id)
 
-        if getattr(myShow, 'genre', None) and isinstance(myShow.genre, six.string_types):
-            for genre in self._split_info(myShow.genre):
+        if getattr(myShow, 'genre', None) and isinstance(myShow.genre, list):
+            for genre in myShow.genre:
                 cur_genre = etree.SubElement(tv_node, "genre")
                 cur_genre.text = genre
 
@@ -192,8 +188,9 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                 cur_director = etree.SubElement(tv_node, "director")
                 cur_director.text = director
 
-        if getattr(myShow, '_actors', None):
-            for actor in myShow.actors:
+        data = show_obj.idxr.actors(myShow)
+        if data:
+            for actor in data:
                 cur_actor = etree.SubElement(tv_node, "actor")
 
                 if 'name' in actor and actor['name'].strip():
@@ -208,7 +205,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
 
                 if 'image' in actor and actor['image'].strip():
                     cur_actor_thumb = etree.SubElement(cur_actor, "thumb")
-                    cur_actor_thumb.text = actor['image'].strip()
+                    cur_actor_thumb.text = show_obj.idxr.complete_image_url(actor['image'])
 
         # Make it purdy
         helpers.indentXML(tv_node)
@@ -291,20 +288,17 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                 runtime = etree.SubElement(episode, "runtime")
                 runtime.text = myShow.runtime
 
-            if getattr(myEp, 'airsbefore_season', None):
+            if getattr(myEp, 'airedSeason', None):
                 displayseason = etree.SubElement(episode, "displayseason")
-                displayseason.text = myEp['airsbefore_season']
+                displayseason.text = myEp['airedSeason']
 
-            if getattr(myEp, 'airsbefore_episode', None):
+            if getattr(myEp, 'airedEpisodeNumber', None):
                 displayepisode = etree.SubElement(episode, "displayepisode")
-                displayepisode.text = myEp['airsbefore_episode']
+                displayepisode.text = myEp['airedEpisodeNumber']
 
             if getattr(myEp, 'filename', None):
                 thumb = etree.SubElement(episode, "thumb")
-                thumb.text = myEp['filename'].strip()
-
-            # watched = etree.SubElement(episode, "watched")
-            # watched.text = 'false'
+                thumb.text = ep_obj.idxr.complete_image_url(myEp['filename'])
 
             if getattr(myEp, 'rating', None):
                 rating = etree.SubElement(episode, "rating")
@@ -315,20 +309,20 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                     cur_writer = etree.SubElement(episode, "credits")
                     cur_writer.text = writer
 
-            if getattr(myEp, 'director', None) and isinstance(myEp['director'], six.string_types):
+            if getattr(myEp, 'directors', None) and isinstance(myEp['directors'], list):
                 for director in self._split_info(myEp['director']):
                     cur_director = etree.SubElement(episode, "director")
                     cur_director.text = director
 
-            if getattr(myEp, 'gueststars', None) and isinstance(myEp['gueststars'], six.string_types):
-                for actor in self._split_info(myEp['gueststars']):
+            if getattr(myEp, 'guestStars', None) and isinstance(myEp['guestStars'], list):
+                for actor in myEp['guestStars']:
                     cur_actor = etree.SubElement(episode, "actor")
                     cur_actor_name = etree.SubElement(cur_actor, "name")
                     cur_actor_name.text = actor
 
-            if getattr(myShow, '_actors', None):
-                myShow.actors()
-                for actor in myShow.actors:
+            data = ep_obj.show.idxr.actors(myShow)
+            if data:
+                for actor in data:
                     cur_actor = etree.SubElement(episode, "actor")
 
                     if 'name' in actor and actor['name'].strip():
@@ -343,7 +337,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
 
                     if 'image' in actor and actor['image'].strip():
                         cur_actor_thumb = etree.SubElement(cur_actor, "thumb")
-                        cur_actor_thumb.text = actor['image'].strip()
+                        cur_actor_thumb.text = ep_obj.idxr.complete_image_url(actor['image'])
 
         # Make it purdy
         helpers.indentXML(rootNode)
