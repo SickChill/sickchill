@@ -386,7 +386,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         # write an MediaBrowser XML containing info for all matching episodes
         for curEpToWrite in eps_to_write:
 
-            myEp = sickchill.indexer.episode(ep_obj.show, curEpToWrite.season, curEpToWrite.episode)
+            myEp = curEpToWrite.idxr.episode(curEpToWrite)
             if not myEp:
                 continue
 

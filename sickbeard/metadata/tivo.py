@@ -171,7 +171,7 @@ class TIVOMetadata(generic.GenericMetadata):
             return False
 
         for curEpToWrite in eps_to_write:
-            myEp = ep_obj.idxr.episode(curEpToWrite)
+            myEp = curEpToWrite.idxr.episode(curEpToWrite)
             if not myEp:
                 logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}...has it been removed? Should I delete from db?".format(
                     curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.indexer_name))

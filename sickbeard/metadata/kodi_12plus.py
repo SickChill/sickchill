@@ -237,7 +237,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         # write an NFO containing info for all matching episodes
         for curEpToWrite in eps_to_write:
 
-            myEp = sickchill.indexer.episode(curEpToWrite.show, curEpToWrite.season, curEpToWrite.episode)
+            myEp = curEpToWrite.idxr.episode(curEpToWrite)
             if not myEp:
                 logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
                            "has it been removed? Should I delete from db?".format(

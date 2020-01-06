@@ -46,7 +46,7 @@ class ShowIndexer(object):
 
     def __getitem__(self, item):
         if isinstance(item, six.string_types):
-            for indexer in self.indexers.values():
+            for index, indexer in self.indexers:
                 if item in (indexer.name, indexer.slug):
                     return indexer
 
@@ -99,7 +99,9 @@ class ShowIndexer(object):
     def search_indexers_for_series_name(self, name, language=None):
         results = {}
         for i, indexer in self:
-            results[i] = indexer.search(name, language)
+            search = indexer.search(name, language)
+            if search:
+                results[i] = search
 
         return results
 

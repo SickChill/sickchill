@@ -367,7 +367,7 @@ class TraktChecker(object):
             logger.log("No shows found in your watchlist, aborting watchlist update", logger.DEBUG)
             return
 
-        for indexer in sickchill.indexer.indexers.values():
+        for index, indexer in sickchill.indexer:
             if indexer.slug in self.ShowWatchlist:
                 for show_el in self.ShowWatchlist[indexer.slug]:
                     indexer_id = int(str(show_el))
@@ -401,7 +401,7 @@ class TraktChecker(object):
 
         managed_show = []
 
-        for indexer in sickchill.indexer.indexers.values():
+        for index, indexer in sickchill.indexer:
             if indexer.slug in self.EpisodeWatchlist:
                 for show_el in self.EpisodeWatchlist[indexer.slug]:
                     indexer_id = int(show_el)
@@ -504,7 +504,7 @@ class TraktChecker(object):
         Get Watchlist and parse once into addressable structure
         """
         try:
-            self.ShowWatchlist = {indexer.slug: {} for indexer in sickchill.indexer.indexers.values()}
+            self.ShowWatchlist = {indexer.slug: {} for index, indexer in sickchill.indexer}
             TraktShowWatchlist = self.trakt_api.traktRequest("sync/watchlist/shows")
             for slug in self.ShowWatchlist:
                 for watchlist_el in TraktShowWatchlist:
@@ -525,7 +525,7 @@ class TraktChecker(object):
          Get Watchlist and parse once into addressable structure
         """
         try:
-            self.EpisodeWatchlist = {indexer.slug: {} for indexer in sickchill.indexer.indexers.values()}
+            self.EpisodeWatchlist = {indexer.slug: {} for index, indexer in sickchill.indexer}
             TraktEpisodeWatchlist = self.trakt_api.traktRequest("sync/watchlist/episodes")
             for slug in self.EpisodeWatchlist:
                 for watchlist_el in TraktEpisodeWatchlist:
@@ -557,7 +557,7 @@ class TraktChecker(object):
         Get Collection and parse once into addressable structure
         """
         try:
-            self.Collectionlist = {indexer.slug: {} for indexer in sickchill.indexer.indexers.values()}
+            self.Collectionlist = {indexer.slug: {} for index, indexer in sickchill.indexer}
             logger.log("Getting Show Collection", logger.DEBUG)
             TraktCollectionList = self.trakt_api.traktRequest("sync/collection/shows")
             for slug in self.Collectionlist:

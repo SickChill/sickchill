@@ -76,7 +76,7 @@
                                         <select name="providedIndexer" id="providedIndexer"
                                                 class="form-control form-control-inline input-sm">
                                             <option value="0" ${('', 'selected="selected"')[provided_indexer == 0]}>${_('All Indexers')}</option>
-                                            % for index, indexer in show_indexer.indexers.items():
+                                            % for index, indexer in show_indexer:
                                                 <option value="${index}" ${('', 'selected="selected"')[provided_indexer == index]}>
                                                     ${indexer.name}
                                                 </option>

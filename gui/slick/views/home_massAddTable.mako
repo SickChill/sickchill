@@ -43,7 +43,7 @@
                 % endif
                 <td align="center">
                     <select name="indexer">
-                        % for index, curIndexer in sickchill.indexer.indexers.items():
+                        % for index, curIndexer in sickchill.indexer:
                             <option value="${index}" ${('', 'selected="selected"')[index == indexer]}>${curIndexer.name}</option>
                         % endfor
                     </select>

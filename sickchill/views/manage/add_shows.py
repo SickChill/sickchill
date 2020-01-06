@@ -90,7 +90,7 @@ class AddShows(Home):
         final_results = []
 
         # Query Indexers for each search term and build the list of results
-        for i in sickchill.indexer.indexers.keys() if not int(indexer) else [int(indexer)]:
+        for i, j in sickchill.indexer if not int(indexer) else [(int(indexer), None)]:
             logger.log("Searching for Show with searchterm(s): {0} on Indexer: {1}".format(
                 searchTerms, 'theTVDB'), logger.DEBUG)
             for searchTerm in searchTerms:
@@ -175,24 +175,33 @@ class AddShows(Home):
 
                 dir_list.append(cur_dir)
 
+                def find_on_indexers(i, n, idxr):
+                    if not n:
+                        n = ek(os.path.basename, cur_path)
+
+                    if n and not (idxr and i):
+                        search_results = sickchill.indexer.search_indexers_for_series_name(n)
+                        for idxr in (search_results, [idxr])[idxr in search_results]:
+                            for r in search_results[idxr]:
+                                item = r.get('id'), r.get('seriesName'), idxr
+                                if all(item):
+                                    return item
+
+                    return None, None, None
+
                 indexer_id = show_name = indexer = None
                 for cur_provider in sickbeard.metadata_provider_dict.values():
                     if not (indexer_id and show_name):
                         (indexer_id, show_name, indexer) = cur_provider.retrieveShowMetadata(cur_path)
+                        if all((indexer_id, show_name, indexer)):
+                            break
 
-                        # default to TVDB if indexer was not detected
-                        if show_name and not (indexer or indexer_id):
-                            (show_name_, idxr, i) = sickchill.indexer.search_indexers_for_series_name(show_name)
-
-                            # set indexer and indexer_id from found info
-                            if not indexer and idxr:
-                                indexer = idxr
-
-                            if not indexer_id and i:
-                                indexer_id = i
+                if not (indexer_id and show_name and indexer):
+                    result = find_on_indexers(indexer_id, show_name, indexer)
+                    if all(result):
+                        indexer_id, show_name, indexer = result
 
                 cur_dir['existing_info'] = (indexer_id, show_name, indexer)
-
                 if indexer_id and Show.find(sickbeard.showList, indexer_id):
                     cur_dir['added_already'] = True
         return t.render(dirList=dir_list)

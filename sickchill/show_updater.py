@@ -49,7 +49,7 @@ class ShowUpdater(object):
         self.amActive = True
 
         cache_db_con = db.DBConnection('cache.db')
-        for provider in sickchill.indexer.indexers.values():
+        for index, provider in sickchill.indexer:
             database_result = cache_db_con.select('SELECT `time` FROM lastUpdate WHERE provider = ?', [provider.name])
             last_update = int(database_result[0][0]) if database_result else int(time.time() - self.six_months)  # Go back 6 months rather than beginning of time.
             network_timezones.update_network_dict()
