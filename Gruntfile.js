@@ -170,7 +170,7 @@ module.exports = function(grunt) {
         uglify: {
             bower: {
                 files: {
-                    './gui/slick/js/vender.min.js': ['./dist/bower.js']
+                    './gui/slick/js/vendor.min.js': ['./dist/bower.js']
                 }
             },
             core: {
@@ -186,7 +186,7 @@ module.exports = function(grunt) {
             },
             bower: {
                 files: {
-                    './gui/slick/css/vender.min.css': ['./dist/bower.css']
+                    './gui/slick/css/vendor.min.css': ['./dist/bower.css']
                 }
             },
             core: {
@@ -241,9 +241,9 @@ module.exports = function(grunt) {
 
                     var commitMsg = [];
                     var commitPaths = [];
-                    if (stdout.match(/gui\/.*(vender|core)\.min\.(js|css)$/gm)) {
+                    if (stdout.match(/gui\/.*(vendor|core)\.min\.(js|css)$/gm)) {
                         commitMsg.push('Grunt');
-                        commitPaths.push('gui/**/vender.min.*');
+                        commitPaths.push('gui/**/vendor.min.*');
                         commitPaths.push('gui/**/core.min.*');
                     }
                     if (stdout.match(/locale\/.*(pot|po|mo|json)$/gm)) {

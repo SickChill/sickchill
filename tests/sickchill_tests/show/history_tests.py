@@ -66,7 +66,7 @@ class HistoryTests(unittest.TestCase):
 
         for tests in test_cases, unicode_test_cases:
             for (action, result) in six.iteritems(tests):
-                self.assertEqual(History._get_actions(action), result)  # pylint: disable=protected-access
+                self.assertEqual(History._get_actions(action), result)
 
     def test_get_limit(self):
         """
@@ -97,7 +97,7 @@ class HistoryTests(unittest.TestCase):
 
         for tests in test_cases, unicode_test_cases:
             for (action, result) in six.iteritems(tests):
-                self.assertEqual(History._get_limit(action), result)  # pylint: disable=protected-access
+                self.assertEqual(History._get_limit(action), result)
 
 
 if __name__ == '__main__':

@@ -17,14 +17,17 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import re
 from collections import OrderedDict
 
+# Third Party Imports
 import six
 from requests.compat import urljoin
 
+# First Party Imports
 import sickbeard
 from sickbeard.clients.generic import GenericClient
 
@@ -37,7 +40,7 @@ class Client(GenericClient):
         super(Client, self).__init__('uTorrent', host, username, password)
         self.url = urljoin(self.host, 'gui/')
 
-    def _request(self, method='get', params=None, data=None, files=None, cookies=None):  # pylint: disable=too-many-arguments
+    def _request(self, method='get', params=None, data=None, files=None, cookies=None):
         """
         Overrides the parent _request method to add the auth token
         """

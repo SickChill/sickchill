@@ -16,24 +16,20 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
-from common import PageTemplate
-from index import WebRoot
-from routes import Route
+# Third Party Imports
 from tornado.web import addslash
 
+# First Party Imports
 import sickbeard
 from sickbeard import classes, logger, ui
 from sickchill.helper import try_int
 
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
+# Local Folder Imports
+from .common import PageTemplate
+from .index import WebRoot
+from .routes import Route
 
 
 @Route('/errorlogs(/?.*)', name='logs:error')
@@ -68,7 +64,7 @@ class ErrorLogs(WebRoot):
         return menu
 
     @addslash
-    def index(self, level=logger.ERROR):  # pylint: disable=arguments-differ
+    def index(self, level=logger.ERROR):
         level = try_int(level, logger.ERROR)
 
         t = PageTemplate(rh=self, filename="errorlogs.mako")

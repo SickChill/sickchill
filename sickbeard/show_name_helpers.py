@@ -17,19 +17,24 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import fnmatch
 import os
 import re
 
+# Third Party Imports
 import six
 
+# First Party Imports
 import sickbeard
-from sickbeard import common, logger
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickbeard.scene_exceptions import get_scene_exceptions
 from sickchill.helper.encoding import ek
+
+# Local Folder Imports
+from . import common, logger
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from .scene_exceptions import get_scene_exceptions
 
 resultFilters = {
     "sub(bed|ed|pack|s)",
@@ -203,8 +208,8 @@ def determineReleaseName(dir_name=None, nzb_name=None):
     return None
 
 
-def hasPreferedWords(name, show=None):
-    """Determine based on the full episode (file)name combined with the prefered words what the weight its preference should be"""
+def hasPreferredWords(name, show=None):
+    """Determine based on the full episode (file)name combined with the preferred words what the weight its preference should be"""
 
     name = name.lower()
 

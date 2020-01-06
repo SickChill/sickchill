@@ -18,10 +18,12 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Third Party Imports
 from requests.compat import urlencode
 
+# First Party Imports
 from sickbeard import logger, tvcache
 from sickchill.helper.common import convert_size, try_int
 from sickchill.helper.exceptions import AuthException
@@ -30,10 +32,11 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 try:
     import json
 except ImportError:
+    # noinspection PyUnresolvedReferences
     import simplejson as json
 
 
-class NorbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class NorbitsProvider(TorrentProvider):
     """Main provider object"""
 
     def __init__(self):
@@ -68,7 +71,7 @@ class NorbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals
+    def search(self, search_params, age=0, ep_obj=None):
         """ Do the actual searching and JSON parsing"""
 
         results = []
@@ -138,4 +141,4 @@ class NorbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         return results
 
 
-provider = NorbitsProvider()  # pylint: disable=invalid-name
+provider = NorbitsProvider()

@@ -39,8 +39,8 @@ def exception_generator():
     try:
         raise Exception('FAKE EXCEPTION')
     except Exception as error:
-        logger.log("FAKE ERROR: " + ex(error), logger.ERROR)  # pylint: disable=no-member
-        logger.submit_errors()  # pylint: disable=no-member
+        logger.log("FAKE ERROR: " + ex(error), logger.ERROR)
+        logger.submit_errors()
         raise
 
 

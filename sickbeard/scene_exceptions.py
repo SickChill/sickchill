@@ -18,18 +18,23 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import threading
 import time
 
+# Third Party Imports
 import adba
 import six
 
+# First Party Imports
 import sickbeard
-from sickbeard import db, helpers, logger
-from sickbeard.indexers.indexer_config import INDEXER_TVDB
+import sickchill
+
+# Local Folder Imports
+from . import db, helpers, logger
 
 exception_dict = {}
 anidb_exception_dict = {}
@@ -195,15 +200,15 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
     """
 
     do_refresh = False
-    for indexer in sickbeard.indexerApi().indexers:
-        if shouldRefresh(sickbeard.indexerApi(indexer).name):
+    for indexer, instance in sickchill.indexer:
+        if shouldRefresh(instance.name):
             do_refresh = True
 
     if do_refresh:
-        loc = sickbeard.indexerApi(INDEXER_TVDB).config['scene_loc']
+        loc = 'http://sickchill.github.io/scene_exceptions/scene_exceptions.json'
         logger.log("Checking for scene exception updates from {0}".format(loc))
 
-        session = sickbeard.indexerApi(INDEXER_TVDB).session
+        session = helpers.make_session()
         proxy = sickbeard.PROXY_SETTING
         if proxy and sickbeard.PROXY_INDEXERS:
             session.proxies = {
@@ -220,14 +225,17 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
             # When jdata is None, trouble connecting to github, or reading file failed
             logger.log("Check scene exceptions update failed. Unable to update from {0}".format(loc), logger.DEBUG)
         else:
-            for indexer in sickbeard.indexerApi().indexers:
+            for indexer, instance in sickchill.indexer:
                 try:
-                    setLastRefresh(sickbeard.indexerApi(indexer).name)
-                    for indexer_id in jdata[sickbeard.indexerApi(indexer).config['xem_origin']]:
+                    setLastRefresh(instance.name)
+                    if instance.slug not in jdata:
+                        continue
+
+                    for indexer_id in jdata[instance.slug]:
                         alias_list = [
                             {scene_exception: int(scene_season)}
-                            for scene_season in jdata[sickbeard.indexerApi(indexer).config['xem_origin']][indexer_id]
-                            for scene_exception in jdata[sickbeard.indexerApi(indexer).config['xem_origin']][indexer_id][scene_season]
+                            for scene_season in jdata[instance.slug][indexer_id]
+                            for scene_exception in jdata[instance.slug][indexer_id][scene_season]
                         ]
                         exception_dict[indexer_id] = alias_list
                 except Exception:
@@ -309,29 +317,30 @@ def _anidb_exceptions_fetcher():
 
 xem_session = helpers.make_session()
 
+
 def _xem_exceptions_fetcher():
     if shouldRefresh('xem'):
-        for indexer in sickbeard.indexerApi().indexers:
-            logger.log("Checking for XEM scene exception updates for {0}".format
-                       (sickbeard.indexerApi(indexer).name))
+        for indexer, instance in sickchill.indexer:
+            logger.log("Checking for XEM scene exception updates for {0}".format(instance.name))
 
-            url = "http://thexem.de/map/allNames?origin={0}&seasonNumbers=1".format(sickbeard.indexerApi(indexer).config['xem_origin'])
+            url = "http://thexem.de/map/allNames?origin={0}&seasonNumbers=1".format(instance.slug)
 
             parsed_json = helpers.getURL(url, session=xem_session, timeout=90, returns='json')
             if not parsed_json:
                 logger.log("Check scene exceptions update failed for {0}, Unable to get URL: {1}".format
-                           (sickbeard.indexerApi(indexer).name, url), logger.DEBUG)
+                           ('theTVDB', url), logger.DEBUG)
                 continue
 
             if parsed_json['result'] == 'failure':
                 continue
 
-            for indexerid, names in six.iteritems(parsed_json['data']):
-                try:
-                    xem_exception_dict[int(indexerid)] = names
-                except Exception as error:
-                    logger.log("XEM: Rejected entry: indexerid:{0}; names:{1}".format(indexerid, names), logger.WARNING)
-                    logger.log("XEM: Rejected entry error message:{0}".format(error), logger.DEBUG)
+            if parsed_json['data']:
+                for indexerid, names in six.iteritems(parsed_json['data']):
+                    try:
+                        xem_exception_dict[int(indexerid)] = names
+                    except Exception as error:
+                        logger.log("XEM: Rejected entry: indexerid:{0}; names:{1}".format(indexerid, names), logger.WARNING)
+                        logger.log("XEM: Rejected entry error message:{0}".format(error), logger.DEBUG)
 
         setLastRefresh('xem')
 

@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# pylint: disable=no-self-use, pointless-statement, missing-docstring, invalid-name
+
 import logging
 import os
 # io.open supports encoding= in python 2.7
-from io import open  # pylint: disable=redefined-builtin
+from io import open
 
 import babelfish
 import pytest  # pylint:disable=wrong-import-order
@@ -183,7 +183,7 @@ class TestYml(object):
                 expected[k] = v
         if not isinstance(string, str):
             string = str(string)
-        if not string_predicate or string_predicate(string):  # pylint: disable=not-callable
+        if not string_predicate or string_predicate(string):
             entry = self.check(string, expected)
             if entry.ok:
                 logger.debug('[%s] %s', filename, entry)
@@ -251,10 +251,10 @@ class TestYml(object):
         if len(values) != len(expecteds):
             return False
         if isinstance(next(iter(values)), babelfish.Language):
-            # pylint: disable=no-member
+
             expecteds = {babelfish.Language.fromguessit(expected) for expected in expecteds}
         elif isinstance(next(iter(values)), babelfish.Country):
-            # pylint: disable=no-member
+
             expecteds = {babelfish.Country.fromguessit(expected) for expected in expecteds}
         return values == expecteds
 

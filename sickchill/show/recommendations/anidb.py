@@ -1,12 +1,16 @@
 # coding=utf-8
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Third Party Imports
 from anidbhttp import anidbquery
 from anidbhttp.query import QUERY_HOT
-from recommended import RecommendedShow
 
+# First Party Imports
 from sickbeard import helpers
 from sickchill.helper.common import try_int
+
+# Local Folder Imports
+from .recommended import RecommendedShow
 
 
 class AnidbPopular(object):

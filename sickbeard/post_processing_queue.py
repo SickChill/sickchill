@@ -17,16 +17,20 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 import time
 import traceback
 
+# First Party Imports
 import sickbeard
-from sickbeard import common, config, generic_queue, logger, processTV
-from sickbeard.processTV import log_helper, process_dir
 from sickchill.helper.encoding import ek
+
+# Local Folder Imports
+from . import common, config, generic_queue, logger
+from .processTV import log_helper, process_dir
 
 MANUAL_POST_PROCESS = 120
 AUTO_POST_PROCESS = 100
@@ -128,7 +132,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
         item = self.find_in_queue(directory, mode)
 
         if not delete:
-            delete = (False, (not sickbeard.NO_DELETE, True)[method == u"move"])[mode == u"auto"]
+            delete = (False, (not sickbeard.NO_DELETE, True)[method == "move"])[mode == "auto"]
 
         if item:
             if self.currentItem == item:

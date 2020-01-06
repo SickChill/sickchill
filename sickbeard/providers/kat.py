@@ -17,11 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Third Party Imports
 import validators
 from requests.compat import urljoin
 
+# First Party Imports
 import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -29,7 +31,7 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class KatProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -48,7 +50,7 @@ class KatProvider(TorrentProvider):  # pylint: disable=too-many-instance-attribu
 
         self.cache = tvcache.TVCache(self, search_params={"RSS": ["tv", "anime"]})
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals, too-many-statements
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
 
         anime = (self.show and self.show.anime) or (ep_obj and ep_obj.show and ep_obj.show.anime) or False

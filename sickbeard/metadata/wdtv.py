@@ -18,18 +18,19 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import os
 import re
 
-import sickbeard
+# First Party Imports
+import sickchill
 from sickbeard import helpers, logger
 from sickbeard.metadata import generic
 from sickchill.helper.common import dateFormat, replace_extension
 from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex, ShowNotFoundException
 
 try:
     import xml.etree.cElementTree as etree
@@ -184,45 +185,23 @@ class WDTVMetadata(generic.GenericMetadata):
 
         eps_to_write = [ep_obj] + ep_obj.relatedEps
 
-        indexer_lang = ep_obj.show.lang
-
-        try:
-            lINDEXER_API_PARMS = sickbeard.indexerApi(ep_obj.show.indexer).api_params.copy()
-
-            lINDEXER_API_PARMS['actors'] = True
-
-            lINDEXER_API_PARMS['language'] = indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-            if ep_obj.show.dvdorder:
-                lINDEXER_API_PARMS['dvdorder'] = True
-
-            t = sickbeard.indexerApi(ep_obj.show.indexer).indexer(**lINDEXER_API_PARMS)
-            myShow = t[ep_obj.show.indexerid]
-        except sickbeard.indexer_shownotfound as e:
-            raise ShowNotFoundException(e.message)
-        except sickbeard.indexer_error as e:
-            logger.log("Unable to connect to " + sickbeard.indexerApi(
-                ep_obj.show.indexer).name + " while creating meta files - skipping - " + ex(e), logger.ERROR)
-            return False
+        myShow = sickchill.indexer.series(ep_obj.show)
 
         rootNode = etree.Element("details")
 
         # write an WDTV XML containing info for all matching episodes
         for curEpToWrite in eps_to_write:
-
-            try:
-                myEp = myShow[curEpToWrite.season][curEpToWrite.episode]
-            except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
+            myEp = curEpToWrite.idxr.episode(curEpToWrite)
+            if not myEp:
                 logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
                            "has it been removed? Should I delete from db?".format(
-                    curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name,
-                    sickbeard.indexerApi(ep_obj.show.indexer).name))
+                    curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.show.idxr.name))
                 return None
 
-            if ep_obj.season == 0 and not getattr(myEp, 'firstaired', None):
-                myEp["firstaired"] = str(datetime.date.fromordinal(1))
+            if ep_obj.season == 0 and not getattr(myEp, 'firstAired', None):
+                myEp["firstAired"] = str(datetime.date.fromordinal(1))
 
-            if not (getattr(myEp, 'episodename', None) and getattr(myEp, 'firstaired', None)):
+            if not (getattr(myEp, 'episodeName', None) and getattr(myEp, 'firstAired', None)):
                 return None
 
             if len(eps_to_write) > 1:
@@ -237,9 +216,9 @@ class WDTVMetadata(generic.GenericMetadata):
             title = etree.SubElement(episode, "title")
             title.text = ep_obj.pretty_name()
 
-            if getattr(myShow, 'seriesname', None):
+            if getattr(myShow, 'seriesName', None):
                 seriesName = etree.SubElement(episode, "series_name")
-                seriesName.text = myShow["seriesname"]
+                seriesName.text = myShow["seriesName"]
 
             if curEpToWrite.name:
                 episodeName = etree.SubElement(episode, "episode_name")
@@ -251,14 +230,14 @@ class WDTVMetadata(generic.GenericMetadata):
             episodeNum = etree.SubElement(episode, "episode_number")
             episodeNum.text = str(curEpToWrite.episode)
 
-            firstAired = etree.SubElement(episode, "firstaired")
+            firstAired = etree.SubElement(episode, "firstAired")
 
             if curEpToWrite.airdate != datetime.date.fromordinal(1):
                 firstAired.text = str(curEpToWrite.airdate)
 
-            if getattr(myShow, 'firstaired', None):
+            if getattr(myShow, 'firstAired', None):
                 try:
-                    year_text = str(datetime.datetime.strptime(myShow["firstaired"], dateFormat).year)
+                    year_text = str(datetime.datetime.strptime(myShow["firstAired"], dateFormat).year)
                     if year_text:
                         year = etree.SubElement(episode, "year")
                         year.text = year_text

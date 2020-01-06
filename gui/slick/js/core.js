@@ -3364,7 +3364,7 @@ var SICKCHILL = {
             });
 
             // Clears all visible episode checkboxes and the season selectors
-            $('.unselectAllShows').on('click', function() {
+            $('.deselectAllShows').on('click', function() {
                 $('.allCheck').each(function() {
                     this.checked = false;
                 });
@@ -3421,7 +3421,7 @@ var SICKCHILL = {
             });
 
             // Clears all visible episode checkboxes and the season selectors
-            $('.unselectAllShows').on('click', function() {
+            $('.deselectAllShows').on('click', function() {
                 $('.allCheck').each(function() {
                     this.checked = false;
                 });

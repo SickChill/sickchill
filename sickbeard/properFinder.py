@@ -18,8 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import operator
 import re
@@ -27,20 +28,23 @@ import threading
 import time
 import traceback
 
+# First Party Imports
 import sickbeard
-from sickbeard import db, helpers, logger
-from sickbeard.common import cpu_presets, DOWNLOADED, Quality, SNATCHED, SNATCHED_PROPER
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickbeard.search import pickBestResult, snatchEpisode
 from sickchill.helper.exceptions import AuthException, ex
 from sickchill.show.History import History
 
+# Local Folder Imports
+from . import db, helpers, logger
+from .common import cpu_presets, DOWNLOADED, Quality, SNATCHED, SNATCHED_PROPER
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from .search import pickBestResult, snatchEpisode
 
-class ProperFinder(object):  # pylint: disable=too-few-public-methods
+
+class ProperFinder(object):
     def __init__(self):
         self.amActive = False
 
-    def run(self, force=False):  # pylint: disable=unused-argument
+    def run(self, force=False):
         """
         Start looking for new propers
 
@@ -69,7 +73,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
 
         self.amActive = False
 
-    def _getProperList(self):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def _getProperList(self):
         """
         Walk providers for propers
         """

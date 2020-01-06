@@ -52,7 +52,7 @@
                         <br>
                         <div class="row">
                             <div class="col-md-12">
-                                <h5>${_('Displaying folders within these directories which aren\'t already added to SickChill')}</h5>
+                                <h5>${_("Displaying folders within these directories which aren't already added to SickChill")}</h5>
                             </div>
                         </div>
                         <div class="row">

@@ -18,19 +18,26 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os.path
 
+# Third Party Imports
 from hachoir_core.log import log
 from hachoir_metadata import extractMetadata
 from hachoir_parser import createParser
 
+# First Party Imports
 import sickbeard
-from sickbeard import helpers, logger
-from sickbeard.metadata.generic import GenericMetadata
+import sickchill
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ShowDirectoryNotFoundException
+
+# Local Folder Imports
+from . import helpers, logger
+from .metadata.generic import GenericMetadata
+from .metadata.helpers import getShowImage
 
 log.use_print = False
 
@@ -236,19 +243,19 @@ class ImageCache(object):
 
         # generate the path based on the type & indexer_id
         if img_type == self.POSTER:
-            img_type_name = 'poster'
+            img_url = sickchill.indexer.series_poster_url(show_obj)
             dest_path = self.poster_path(show_obj.indexerid)
         elif img_type == self.BANNER:
-            img_type_name = 'banner'
+            img_url = sickchill.indexer.series_banner_url(show_obj)
             dest_path = self.banner_path(show_obj.indexerid)
         elif img_type == self.POSTER_THUMB:
-            img_type_name = 'poster_thumb'
+            img_url = sickchill.indexer.series_poster_url(show_obj, thumb=True)
             dest_path = self.poster_thumb_path(show_obj.indexerid)
         elif img_type == self.BANNER_THUMB:
-            img_type_name = 'banner_thumb'
+            img_url = sickchill.indexer.series_banner_url(show_obj, thumb=True)
             dest_path = self.banner_thumb_path(show_obj.indexerid)
         elif img_type == self.FANART:
-            img_type_name = 'fanart'
+            img_url = sickchill.indexer.series_fanart_url(show_obj)
             dest_path = self.fanart_path(show_obj.indexerid)
         else:
             logger.log("Invalid cache image type: " + str(img_type), logger.ERROR)
@@ -257,7 +264,7 @@ class ImageCache(object):
         # retrieve the image from indexer using the generic metadata class
         # TODO: refactor
         metadata_generator = GenericMetadata()
-        img_data = metadata_generator._retrieve_show_image(img_type_name, show_obj)
+        img_data = getShowImage(img_url)
         result = metadata_generator._write_image(img_data, dest_path)
 
         return result

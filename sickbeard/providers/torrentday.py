@@ -18,20 +18,23 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import re
 
+# Third Party Imports
 import validators
 from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
+# First Party Imports
 from sickbeard import logger, tvcache
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class TorrentDayProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -105,7 +108,7 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             logger.log('You need to set your cookies to use torrentday')
             return False
 
-    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals
+    def search(self, search_params, age=0, ep_obj=None):
         results = []
 
         search_url = self.urls['search']
@@ -137,12 +140,10 @@ class TorrentDayProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                 try:
                     torrents = self.get_url(search_url, params=get_params, returns='json')
                     # Handle empty string response or None #4304
-                    if not torrents:
-                        raise
-
+                    assert torrents
                     # Make sure it is iterable #4304
                     iter(torrents)
-                except Exception:
+                except (TypeError, AssertionError):
                     logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
                     continue
 

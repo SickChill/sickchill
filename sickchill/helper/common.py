@@ -20,18 +20,20 @@
 """
 Common helper functions
 """
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import glob
 import os
 import re
 from fnmatch import fnmatch
 
+# Third Party Imports
 import six
 from github import Github
 from github.GithubException import BadCredentialsException, TwoFactorException
 
+# First Party Imports
 import sickbeard
 
 dateFormat = '%Y-%m-%d'
@@ -260,7 +262,7 @@ def remove_extension(filename):
     """
 
     if isinstance(filename, six.string_types) and '.' in filename:
-        basename, _, extension = filename.rpartition('.')
+        basename, dot, extension = filename.rpartition('.')
 
         if basename and extension.lower() in ['nzb', 'torrent'] + MEDIA_EXTENSIONS:
             return basename

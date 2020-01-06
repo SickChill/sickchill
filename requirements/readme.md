@@ -33,8 +33,8 @@ List of dependencies [![Requirements Status](https://requires.io/github/SickChil
 :warning: | IMDbPY | 5.1.1 | Resolved by [#3877](https://github.com/SickChill/SickChill/pull/3877)<br>**Still can't install this from requirements.txt**,<br>because we need to be able to use `--no-deps`, but it's unsupported in the context of requirement files.<br>A workaround seems to be to use `pip install --no-deps -r requirements.txt`, which is fine as long as we list ALL dependencies (which is planned).<br>Also, I don't think `install_requires` in `setup.py` supports anything more than simple package version constraints, maybe VCS sources (git/mercurial/etc..) - untested.
 :warning: | js2py | [05e77f0](https://github.com/PiotrDabkowski/Js2Py/tree/05e77f0d4ffe91ef418a93860e666962cfd193b8)
 :warning: | jsonrpclib | [e3a3cde](https://github.com/joshmarshall/jsonrpclib/tree/e3a3cdedc9577b25b91274815b38ba7f3bc43c68)
-:warning: | libgrowl | - | **Custom by Sick-Beard's midgetspy**<br>Some of the code is from [GH:kfdm/gntp](https://github.com/kfdm/gntp)
-:warning: | libtrakt | - | **Custom**<br>Just a small note -<br>if needed, [GH:fuzeman/trakt.py](https://github.com/fuzeman/trakt.py) is a great implementation of Trakt.tv's API.
+:warning: | growl | - | **Custom by Sick-Beard's midgetspy**<br>Some of the code is from [GH:kfdm/gntp](https://github.com/kfdm/gntp)
+:warning: | trakt | - | **Custom**<br>Just a small note -<br>if needed, [GH:fuzeman/trakt.py](https://github.com/fuzeman/trakt.py) is a great implementation of Trakt.tv's API.
 :ok: | lockfile | 0.11.0
 :ok: | Mako | 1.0.6
 :ok: | markdown2 | 2.3.4 | Resolved by [#3877](https://github.com/SickChill/SickChill/pull/3877)

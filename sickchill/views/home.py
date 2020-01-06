@@ -16,27 +16,26 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import ast
 import datetime
 import os
 import time
 from operator import attrgetter
 
+# Third Party Imports
 import adba
 import six
-from common import PageTemplate
 from github.GithubException import GithubException
-from index import WebRoot
-from libtrakt import TraktAPI
 from requests.compat import unquote_plus
-from routes import Route
+# noinspection PyUnresolvedReferences
 from six.moves import urllib
 from tornado.escape import xhtml_unescape
+from trakt import TraktAPI
 
+# First Party Imports
 import sickbeard
 from sickbeard import clients, config, db, filters, helpers, logger, notifiers, sab, search_queue, subtitles as subtitle_module, ui
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
@@ -51,6 +50,11 @@ from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShow
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
+
+# Local Folder Imports
+from .common import PageTemplate
+from .index import WebRoot
+from .routes import Route
 
 try:
     import json
@@ -1016,7 +1020,7 @@ class Home(WebRoot):
         subtitles = config.checkbox_to_value(subtitles)
         subtitles_sr_metadata = config.checkbox_to_value(subtitles_sr_metadata)
 
-        if indexerLang and indexerLang in sickbeard.indexerApi(show_obj.indexer).indexer().config['valid_languages']:
+        if indexerLang and indexerLang in show_obj.idxr.languages:
             indexer_lang = indexerLang
         else:
             indexer_lang = show_obj.lang
@@ -1693,7 +1697,7 @@ class Home(WebRoot):
 
         # noinspection PyBroadException
         try:
-            new_subtitles = ep_obj.download_subtitles()  # pylint: disable=no-member
+            new_subtitles = ep_obj.download_subtitles()
         except Exception:
             return json.dumps({'result': 'failure'})
 
@@ -1704,8 +1708,8 @@ class Home(WebRoot):
         else:
             status = _('No subtitles downloaded')
 
-        ui.notifications.message(ep_obj.show.name, status)  # pylint: disable=no-member
-        return json.dumps({'result': status, 'subtitles': ','.join(ep_obj.subtitles)})  # pylint: disable=no-member
+        ui.notifications.message(ep_obj.show.name, status)
+        return json.dumps({'result': status, 'subtitles': ','.join(ep_obj.subtitles)})
 
     def retrySearchSubtitles(self, show, season, episode, lang):
         # retrieve the episode object and fail if we can't get one

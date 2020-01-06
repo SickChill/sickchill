@@ -3,7 +3,7 @@
 <%block name="content">
     <h1 class="header">${header}</h1>
     <p>
-        ${_("""A mako error has occured.<br>
+        ${_("""A mako error has occurred.<br>
             If this happened during an update a simple page refresh may be the solution.<br>
             Mako errors that happen during updates may be a one time error if there were significant ui changes.""")}
         <br>
@@ -13,9 +13,9 @@
     <div id="mako-error" class="collapse">
         <br>
         <div class="align-center">
-            <% filename, lineno, function, line = backtrace.traceback[-1] %>
+            <% filename, line_number, function, line = backtrace.traceback[-1] %>
             <pre>
-                File ${filename}:${lineno}, in ${function}:
+                File ${filename}:${line_number}, in ${function}:
                 % if line:
                     ${line}
                 % endif

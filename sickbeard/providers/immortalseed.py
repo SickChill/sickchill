@@ -18,13 +18,16 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import re
 
+# Third Party Imports
 from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
+# First Party Imports
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickchill.helper.common import convert_size, try_int
@@ -32,7 +35,7 @@ from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class ImmortalseedProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class ImmortalseedProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -96,7 +99,7 @@ class ImmortalseedProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         if not self.login():
             return results
@@ -204,7 +207,7 @@ class ImmortalseedCache(tvcache.TVCache):
         return self.get_rss_feed(self.provider.urls['rss'], params=params)
 
     def _check_auth(self, data):
-        return self.provider._check_auth_from_data(data) # pylint: disable=protected-access
+        return self.provider._check_auth_from_data(data)
 
 
 provider = ImmortalseedProvider()

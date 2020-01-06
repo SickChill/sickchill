@@ -18,20 +18,21 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import time
 
+# First Party Imports
 import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.common import cpu_presets
-from sickbeard.indexers.indexer_config import INDEXER_TVDB
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class RarbgProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -72,7 +73,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
         self.token_expires = datetime.datetime.now() + datetime.timedelta(minutes=14) if self.token else None
         return self.token is not None
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals, too-many-statements
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         if not self.login():
             return results
@@ -90,7 +91,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
 
         if ep_obj is not None:
             ep_indexerid = ep_obj.show.indexerid
-            ep_indexer = ep_obj.show.indexer
+            ep_indexer = ep_obj.show.idxr.slug
         else:
             ep_indexerid = None
             ep_indexer = None
@@ -107,7 +108,7 @@ class RarbgProvider(TorrentProvider):  # pylint: disable=too-many-instance-attri
                 search_params["sort"] = self.sorting if self.sorting else "seeders"
                 search_params["mode"] = "search"
 
-                if ep_indexer == INDEXER_TVDB and ep_indexerid:
+                if ep_indexer == 'tvdb' and ep_indexerid:
                     search_params["search_tvdb"] = ep_indexerid
                 else:
                     search_params.pop("search_tvdb", None)

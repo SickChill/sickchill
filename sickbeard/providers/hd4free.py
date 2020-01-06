@@ -18,16 +18,18 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Third Party Imports
 from requests.compat import urljoin
 
+# First Party Imports
 from sickbeard import logger, tvcache
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class HD4FreeProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -51,7 +53,7 @@ class HD4FreeProvider(TorrentProvider):  # pylint: disable=too-many-instance-att
         logger.log('Your authentication credentials for {0} are missing, check your config.'.format(self.name), logger.WARNING)
         return False
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         if not self._check_auth:
             return results

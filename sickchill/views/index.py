@@ -16,22 +16,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import datetime
 import os
 import time
 import traceback
-# noinspection PyCompatibility
 from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
 from operator import attrgetter
 
+# Third Party Imports
 import six
-from api.webapi import function_mapper
-from common import PageTemplate
 from mako.lookup import Template
 from requests.compat import urljoin
 from tornado.concurrent import run_on_executor
@@ -41,6 +38,7 @@ from tornado.ioloop import IOLoop
 from tornado.process import cpu_count
 from tornado.web import authenticated, HTTPError, RequestHandler
 
+# First Party Imports
 import sickbeard
 from sickbeard import db, helpers, logger, network_timezones, ui
 from sickbeard.common import ek
@@ -50,6 +48,10 @@ from sickchill.media.ShowNetworkLogo import ShowNetworkLogo
 from sickchill.media.ShowPoster import ShowPoster
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.views.routes import Route
+
+# Local Folder Imports
+from .api.webapi import function_mapper
+from .common import PageTemplate
 
 try:
     import json

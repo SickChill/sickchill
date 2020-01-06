@@ -18,15 +18,19 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import threading
 
+# First Party Imports
 import sickbeard
-from sickbeard import common, db, logger, network_timezones
 from sickchill.helper.exceptions import MultipleShowObjectsException
 from sickchill.show.Show import Show
+
+# Local Folder Imports
+from . import common, db, logger, network_timezones
 
 
 class DailySearcher(object):  # pylint:disable=too-few-public-methods
@@ -44,8 +48,7 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
             return
 
         self.amActive = True
-        _ = force
-        logger.log("Searching for new released episodes ...")
+        logger.log(_("Searching for new released episodes ..."))
 
         if not network_timezones.network_dict:
             network_timezones.update_network_dict()
