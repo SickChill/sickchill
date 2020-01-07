@@ -16,22 +16,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import traceback
 
+# Third Party Imports
 from tornado.web import RequestHandler
 
+# First Party Imports
 import sickbeard
 from sickbeard import helpers, logger
-
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
 
 
 class KeyHandler(RequestHandler):

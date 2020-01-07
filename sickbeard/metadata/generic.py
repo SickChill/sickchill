@@ -18,18 +18,22 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import io
 import os
 import re
 
+# Third Party Imports
 import fanart as fanart_module
 import six
 from fanart.core import Request as fanartRequest
 from tmdb_api.tmdb_api import TMDB
 
+# First Party Imports
 import sickbeard
+import sickchill
 from sickbeard import helpers, logger
 from sickbeard.metadata import helpers as metadata_helpers
 from sickbeard.show_name_helpers import allPossibleShowNames
@@ -231,7 +235,7 @@ class GenericMetadata(object):
     def get_season_all_banner_path(self, show_obj):
         return ek(os.path.join, show_obj.location, self.season_all_banner_name)
 
-    # pylint: disable=unused-argument,no-self-use
+
     def _show_data(self, show_obj):
         """
         This should be overridden by the implementing class. It should
@@ -239,7 +243,7 @@ class GenericMetadata(object):
         """
         return None
 
-    # pylint: disable=unused-argument,no-self-use
+
     def _ep_data(self, ep_obj):
         """
         This should be overridden by the implementing class. It should
@@ -327,7 +331,7 @@ class GenericMetadata(object):
                 if not self._has_season_poster(show_obj, season):
                     logger.log("Metadata provider " + self.name + " creating season posters for " + show_obj.name,
                                logger.DEBUG)
-                    result.extend([self.save_season_posters(show_obj, season)])
+                    result.extend([self.save_season_poster(show_obj, season)])
             return all(result)
         return False
 
@@ -337,7 +341,7 @@ class GenericMetadata(object):
             logger.log("Metadata provider " + self.name + " creating season banners for " + show_obj.name, logger.DEBUG)
             for season in show_obj.episodes:
                 if not self._has_season_banner(show_obj, season):
-                    result.extend([self.save_season_banners(show_obj, season)])
+                    result.extend([self.save_season_banner(show_obj, season)])
             return all(result)
         return False
 
@@ -354,31 +358,6 @@ class GenericMetadata(object):
                        logger.DEBUG)
             return self.save_season_all_banner(show_obj)
         return False
-
-    def _get_episode_thumb_url(self, ep_obj):
-        """
-        Returns the URL to use for downloading an episode's thumbnail. Uses
-        theTVDB.com data.
-
-        ep_obj: a TVEpisode object for which to grab the thumb URL
-        """
-        all_eps = [ep_obj] + ep_obj.relatedEps
-
-        # validate show
-        if not helpers.validateShow(ep_obj.show):
-            return None
-
-        # try all included episodes in case some have thumbs and others don't
-        for cur_ep in all_eps:
-            myEp = helpers.validateShow(cur_ep.show, cur_ep.season, cur_ep.episode)
-            if not myEp:
-                continue
-
-            thumb_url = getattr(myEp, 'filename', None)
-            if thumb_url:
-                return thumb_url
-
-        return None
 
     def write_show_file(self, show_obj):
         """
@@ -442,9 +421,14 @@ class GenericMetadata(object):
         """
 
         data = self._ep_data(ep_obj)
-
         if not data:
             return False
+
+        def print_data(d):
+            for child in d.getroot():
+                print(str(child.tag), str(child.text))
+
+        # print_data(data)
 
         nfo_file_path = self.get_episode_file_path(ep_obj)
         assert isinstance(nfo_file_path, six.text_type)
@@ -477,20 +461,20 @@ class GenericMetadata(object):
         ep_obj: a TVEpisode object for which to generate a thumbnail
         """
 
-        file_path = self.get_episode_thumb_path(ep_obj)
-
-        if not file_path:
-            logger.log("Unable to find a file path to use for this thumbnail, not generating it", logger.DEBUG)
-            return False
-
-        thumb_url = self._get_episode_thumb_url(ep_obj)
-
-        # if we can't find one then give up
+        thumb_url = sickchill.indexer.episode_image_url(ep_obj)
         if not thumb_url:
             logger.log("No thumb is available for this episode, not creating a thumb", logger.DEBUG)
             return False
 
+        file_path = self.get_episode_thumb_path(ep_obj)
+        if not file_path:
+            logger.log("Unable to find a file path to use for this thumbnail, not generating it", logger.DEBUG)
+            return False
+
         thumb_data = metadata_helpers.getShowImage(thumb_url)
+        if not thumb_data:
+            logger.log("No thumb is available for this episode, not creating a thumb", logger.DEBUG)
+            return False
 
         result = self._write_image(thumb_data, file_path)
 
@@ -502,7 +486,7 @@ class GenericMetadata(object):
 
         return True
 
-    def save_fanart(self, show_obj, which=None):
+    def save_fanart(self, show_obj):
         """
         Downloads a fanart image and saves it to the filename specified by fanart_name
         inside the show's root folder.
@@ -512,16 +496,23 @@ class GenericMetadata(object):
 
         # use the default fanart name
         fanart_path = self.get_fanart_path(show_obj)
+        if not fanart_path:
+            logger.log("Fanart path for show {} came back blank, skipping this image".format(show_obj.name), logger.DEBUG)
+            return False
 
-        fanart_data = self._retrieve_show_image('fanart', show_obj, which)
+        fanart_url = sickchill.indexer.series_fanart_url(show_obj)
+        if not fanart_url:
+            logger.log("Fanart url not found for show {}, skipping this image".format(show_obj.name), logger.DEBUG)
+            return False
 
+        fanart_data = metadata_helpers.getShowImage(fanart_url)
         if not fanart_data:
             logger.log("No fanart image was retrieved, unable to write fanart", logger.DEBUG)
             return False
 
         return self._write_image(fanart_data, fanart_path)
 
-    def save_poster(self, show_obj, which=None):
+    def save_poster(self, show_obj):
         """
         Downloads a poster image and saves it to the filename specified by poster_name
         inside the show's root folder.
@@ -531,16 +522,23 @@ class GenericMetadata(object):
 
         # use the default poster name
         poster_path = self.get_poster_path(show_obj)
+        if not poster_path:
+            logger.log("Banner path for show {} came back blank, skipping this image".format(show_obj.name), logger.DEBUG)
+            return False
 
-        poster_data = self._retrieve_show_image('poster', show_obj, which)
+        poster_url = sickchill.indexer.series_poster_url(show_obj)
+        if not poster_url:
+            logger.log("Poster url not found for show {}, skipping this image".format(show_obj.name), logger.DEBUG)
+            return False
 
+        poster_data = metadata_helpers.getShowImage(poster_url)
         if not poster_data:
             logger.log("No show poster image was retrieved, unable to write poster", logger.DEBUG)
             return False
 
         return self._write_image(poster_data, poster_path)
 
-    def save_banner(self, show_obj, which=None):
+    def save_banner(self, show_obj):
         """
         Downloads a banner image and saves it to the filename specified by banner_name
         inside the show's root folder.
@@ -548,136 +546,109 @@ class GenericMetadata(object):
         show_obj: a TVShow object for which to download a banner
         """
 
-        # use the default banner name
         banner_path = self.get_banner_path(show_obj)
+        if not banner_path:
+            logger.log("Banner path for show {} came back blank, skipping this image".format(show_obj.name), logger.DEBUG)
+            return False
 
-        banner_data = self._retrieve_show_image('banner', show_obj, which)
+        banner_url = sickchill.indexer.series_banner_url(show_obj)
+        if not banner_url:
+            logger.log("Banner url not found for show {}, skipping this image".format(show_obj.name), logger.DEBUG)
+            return False
 
+        banner_data = metadata_helpers.getShowImage(banner_url)
         if not banner_data:
             logger.log("No show banner image was retrieved, unable to write banner", logger.DEBUG)
             return False
 
         return self._write_image(banner_data, banner_path)
 
-    def save_season_posters(self, show_obj, season):
+    def save_season_poster(self, show_obj, season):
         """
-        Saves all season posters to disk for the given show.
+        Saves a specific season poster to disk for the given show.
 
         show_obj: a TVShow object for which to save the season thumbs
-
-        Cycles through all seasons and saves the season posters if possible. This
-        method should not need to be overridden by implementing classes, changing
-        _season_posters_dict and get_season_poster_path should be good enough.
         """
 
-        season_dict = self._season_posters_dict(show_obj, season)
-        result = []
-
-        # Returns a nested dictionary of season art with the season
-        # number as primary key. It's really overkill but gives the option
-        # to present to user via ui to pick down the road.
-        for cur_season in season_dict:
-
-            cur_season_art = season_dict[cur_season]
-
-            if not cur_season_art:
-                continue
-
-            # Just grab whatever's there for now
-            _, season_url = cur_season_art.popitem()  # @UnusedVariable
-
-            season_poster_file_path = self.get_season_poster_path(show_obj, cur_season)
-
-            if not season_poster_file_path:
-                logger.log("Path for season " + str(cur_season) + " came back blank, skipping this season",
-                           logger.DEBUG)
-                continue
-
-            seasonData = metadata_helpers.getShowImage(season_url)
-
-            if not seasonData:
-                logger.log("No season poster data available, skipping this season", logger.DEBUG)
-                continue
-
-            result.extend([self._write_image(seasonData, season_poster_file_path)])
-
-        if result:
-            return all(result)
-        else:
+        season_poster_url = sickchill.indexer.season_poster_url(show_obj, season)
+        if not season_poster_url:
+            logger.log("Season poster url not found for season {}, skipping this season".format(season), logger.DEBUG)
             return False
 
-    def save_season_banners(self, show_obj, season):
+        season_poster_file_path = self.get_season_poster_path(show_obj, season)
+        if not season_poster_file_path:
+            logger.log("Path for season {} came back blank, skipping this season".format(season),
+                       logger.DEBUG)
+            return False
+
+        image_data = metadata_helpers.getShowImage(season_poster_url)
+        if not image_data:
+            logger.log("No season poster data available, skipping this season", logger.DEBUG)
+            return False
+
+        return self._write_image(image_data, season_poster_file_path)
+
+    def save_season_banner(self, show_obj, season):
         """
-        Saves all season banners to disk for the given show.
+        Saves the first season banner for a season to disk for the given show.
 
         show_obj: a TVShow object for which to save the season thumbs
-
-        Cycles through all seasons and saves the season banners if possible. This
-        method should not need to be overridden by implementing classes, changing
-        _season_banners_dict and get_season_banner_path should be good enough.
         """
-
-        season_dict = self._season_banners_dict(show_obj, season)
-        result = []
-
-        # Returns a nested dictionary of season art with the season
-        # number as primary key. It's really overkill but gives the option
-        # to present to user via ui to pick down the road.
-        for cur_season in season_dict:
-
-            cur_season_art = season_dict[cur_season]
-
-            if not cur_season_art:
-                continue
-
-            # Just grab whatever's there for now
-            _, season_url = cur_season_art.popitem()  # @UnusedVariable
-
-            season_banner_file_path = self.get_season_banner_path(show_obj, cur_season)
-
-            if not season_banner_file_path:
-                logger.log("Path for season " + str(cur_season) + " came back blank, skipping this season",
-                           logger.DEBUG)
-                continue
-
-            seasonData = metadata_helpers.getShowImage(season_url)
-
-            if not seasonData:
-                logger.log("No season banner data available, skipping this season", logger.DEBUG)
-                continue
-
-            result.extend([self._write_image(seasonData, season_banner_file_path)])
-
-        if result:
-            return all(result)
-        else:
+        season_banner_url = sickchill.indexer.season_banner_url(show_obj, season)
+        if not season_banner_url:
+            logger.log("Url for season banner {} came back blank, skipping this season".format(season), logger.DEBUG)
             return False
 
-    def save_season_all_poster(self, show_obj, which=None):
-        # use the default season all poster name
-        poster_path = self.get_season_all_poster_path(show_obj)
-
-        poster_data = self._retrieve_show_image('poster', show_obj, which)
-
-        if not poster_data:
-            logger.log("No show poster image was retrieved, unable to write season all poster", logger.DEBUG)
+        season_banner_file_path = self.get_season_banner_path(show_obj, season)
+        if not season_banner_file_path:
+            logger.log("Path for season {} came back blank, skipping this season".format(season), logger.DEBUG)
             return False
 
-        return self._write_image(poster_data, poster_path)
-
-    def save_season_all_banner(self, show_obj, which=None):
-        # use the default season all banner name
-        banner_path = self.get_season_all_banner_path(show_obj)
-
-        banner_data = self._retrieve_show_image('banner', show_obj, which)
-
-        if not banner_data:
-            logger.log("No show banner image was retrieved, unable to write season all banner", logger.DEBUG)
+        image_data = metadata_helpers.getShowImage(season_banner_url)
+        if not image_data:
+            logger.log("No season banner data available, skipping this season", logger.DEBUG)
             return False
 
-        return self._write_image(banner_data, banner_path)
+        return self._write_image(image_data, season_banner_file_path)
 
-    def _write_image(self, image_data, image_path, obj=None):
+    def save_season_all_poster(self, show_obj):
+        poster_url = sickchill.indexer.series_poster_url(show_obj)
+        if not poster_url:
+            logger.log("Url for season all poster came back blank, skipping this season", logger.DEBUG)
+            return False
+
+        season_poster_file_path = self.get_season_all_poster_path(show_obj)
+        if not season_poster_file_path:
+            logger.log("Path for season all poster came back blank, skipping this season", logger.DEBUG)
+            return False
+
+        image_data = metadata_helpers.getShowImage(poster_url)
+        if not image_data:
+            logger.log("No season all poster data available, skipping this season", logger.DEBUG)
+            return False
+
+        return self._write_image(image_data, season_poster_file_path)
+
+    def save_season_all_banner(self, show_obj):
+        banner_url = sickchill.indexer.series_banner_url(show_obj)
+        if not banner_url:
+            logger.log("Url for season all banner came back blank, skipping this season", logger.DEBUG)
+            return False
+
+        season_banner_file_path = self.get_season_all_banner_path(show_obj)
+        if not season_banner_file_path:
+            logger.log("Path for season all banner came back blank, skipping this season", logger.DEBUG)
+            return False
+
+        image_data = metadata_helpers.getShowImage(banner_url)
+        if not image_data:
+            logger.log("No season all banner data available, skipping this season", logger.DEBUG)
+            return False
+
+        return self._write_image(image_data, season_banner_file_path)
+
+    @staticmethod
+    def _write_image(image_data, image_path):
         """
         Saves the data in image_data to the location image_path. Returns True/False
         to represent success or failure.
@@ -716,186 +687,6 @@ class GenericMetadata(object):
             return False
 
         return True
-
-    def _retrieve_show_image(self, image_type, show_obj, which=None):
-        """
-        Gets an image URL from theTVDB.com and TMDB.com, downloads it and returns the data.
-
-        image_type: type of image to retrieve (currently supported: fanart, poster, banner)
-        show_obj: a TVShow object to use when searching for the image
-        which: optional, a specific numbered poster to look for
-
-        Returns: the binary image data if available, or else None
-        """
-        image_url = None
-        indexer_lang = show_obj.lang
-
-        try:
-            # There's gotta be a better way of doing this but we don't wanna
-            # change the language value elsewhere
-            lINDEXER_API_PARMS = sickbeard.indexerApi(show_obj.indexer).api_params.copy()
-
-            lINDEXER_API_PARMS['banners'] = True
-
-            lINDEXER_API_PARMS['language'] = indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-            if show_obj.dvdorder:
-                lINDEXER_API_PARMS['dvdorder'] = True
-
-            t = sickbeard.indexerApi(show_obj.indexer).indexer(**lINDEXER_API_PARMS)
-            indexer_show_obj = t[show_obj.indexerid]
-        except (sickbeard.indexer_error, IOError) as e:
-            logger.log("Unable to look up show on " + sickbeard.indexerApi(
-                show_obj.indexer).name + ", not downloading images: " + ex(e), logger.WARNING)
-            logger.log("{0} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(show_obj.indexer).name), logger.DEBUG)
-            return None
-
-        if image_type not in ('fanart', 'poster', 'banner', 'poster_thumb', 'banner_thumb'):
-            logger.log("Invalid image type " + str(image_type) + ", couldn't find it in the " + sickbeard.indexerApi(
-                show_obj.indexer).name + " object", logger.ERROR)
-            return None
-
-        if image_type == 'poster_thumb':
-            if getattr(indexer_show_obj, 'poster', None):
-                image_url = re.sub('posters', '_cache/posters', indexer_show_obj['poster'])
-            if not image_url:
-                # Try and get images from Fanart.TV
-                image_url = self._retrieve_show_images_from_fanart(show_obj, image_type)
-            if not image_url:
-                # Try and get images from TMDB
-                image_url = self._retrieve_show_images_from_tmdb(show_obj, image_type)
-        elif image_type == 'banner_thumb':
-            if getattr(indexer_show_obj, 'banner', None):
-                image_url = re.sub('graphical', '_cache/graphical', indexer_show_obj['banner'])
-            if not image_url:
-                # Try and get images from Fanart.TV
-                image_url = self._retrieve_show_images_from_fanart(show_obj, image_type)
-        else:
-            if getattr(indexer_show_obj, image_type, None):
-                image_url = indexer_show_obj[image_type]
-            if not image_url:
-                # Try and get images from Fanart.TV
-                image_url = self._retrieve_show_images_from_fanart(show_obj, image_type)
-            if not image_url:
-                # Try and get images from TMDB
-                image_url = self._retrieve_show_images_from_tmdb(show_obj, image_type)
-
-        if image_url:
-            image_data = metadata_helpers.getShowImage(image_url, which)
-            return image_data
-
-        return None
-
-    def _season_posters_dict(self, show_obj, season):
-        """
-        Should return a dict like:
-
-        result = {<season number>:
-                    {1: '<url 1>', 2: <url 2>, ...},}
-        """
-
-        # This holds our resulting dictionary of season art
-        result = {}
-
-        indexer_lang = show_obj.lang
-
-        try:
-            # There's gotta be a better way of doing this but we don't wanna
-            # change the language value elsewhere
-            lINDEXER_API_PARMS = sickbeard.indexerApi(show_obj.indexer).api_params.copy()
-
-            lINDEXER_API_PARMS['banners'] = True
-
-            lINDEXER_API_PARMS['language'] = indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-            if show_obj.dvdorder:
-                lINDEXER_API_PARMS['dvdorder'] = True
-
-            t = sickbeard.indexerApi(show_obj.indexer).indexer(**lINDEXER_API_PARMS)
-            indexer_show_obj = t[show_obj.indexerid]
-        except (sickbeard.indexer_error, IOError) as e:
-            logger.log("Unable to look up show on " + sickbeard.indexerApi(
-                show_obj.indexer).name + ", not downloading images: " + ex(e), logger.WARNING)
-            logger.log("{0} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(show_obj.indexer).name), logger.DEBUG)
-            return result
-
-        # if we have no season banners then just finish
-        if not getattr(indexer_show_obj, '_banners', None):
-            return result
-
-        if 'season' not in indexer_show_obj['_banners'] or 'season' not in indexer_show_obj['_banners']['season']:
-            return result
-
-        # Give us just the normal poster-style season graphics
-        seasonsArtObj = indexer_show_obj['_banners']['season']['season']
-
-        # Returns a nested dictionary of season art with the season
-        # number as primary key. It's really overkill but gives the option
-        # to present to user via ui to pick down the road.
-
-        result[season] = {}
-
-        # find the correct season in the TVDB object and just copy the dict into our result dict
-        for seasonArtID in seasonsArtObj.keys():
-            if int(seasonsArtObj[seasonArtID]['season']) == season and seasonsArtObj[seasonArtID]['language'] == (
-                    indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE):
-                result[season][seasonArtID] = seasonsArtObj[seasonArtID]['_bannerpath']
-
-        return result
-
-    def _season_banners_dict(self, show_obj, season):
-        """
-        Should return a dict like:
-
-        result = {<season number>:
-                    {1: '<url 1>', 2: <url 2>, ...},}
-        """
-
-        # This holds our resulting dictionary of season art
-        result = {}
-
-        indexer_lang = show_obj.lang
-
-        try:
-            # There's gotta be a better way of doing this but we don't wanna
-            # change the language value elsewhere
-            lINDEXER_API_PARMS = sickbeard.indexerApi(show_obj.indexer).api_params.copy()
-
-            lINDEXER_API_PARMS['banners'] = True
-
-            lINDEXER_API_PARMS['language'] = indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-            t = sickbeard.indexerApi(show_obj.indexer).indexer(**lINDEXER_API_PARMS)
-            indexer_show_obj = t[show_obj.indexerid]
-        except (sickbeard.indexer_error, IOError) as e:
-            logger.log("Unable to look up show on " + sickbeard.indexerApi(
-                show_obj.indexer).name + ", not downloading images: " + ex(e), logger.WARNING)
-            logger.log("{0} may be experiencing some problems. Try again later.".format(sickbeard.indexerApi(show_obj.indexer).name), logger.DEBUG)
-            return result
-
-        # if we have no season banners then just finish
-        if not getattr(indexer_show_obj, '_banners', None):
-            return result
-
-        # if we have no season banners then just finish
-        if 'season' not in indexer_show_obj['_banners'] or 'seasonwide' not in indexer_show_obj['_banners']['season']:
-            return result
-
-        # Give us just the normal season graphics
-        seasonsArtObj = indexer_show_obj['_banners']['season']['seasonwide']
-
-        # Returns a nested dictionary of season art with the season
-        # number as primary key. It's really overkill but gives the option
-        # to present to user via ui to pick down the road.
-
-        result[season] = {}
-
-        # find the correct season in the TVDB object and just copy the dict into our result dict
-        for seasonArtID in seasonsArtObj.keys():
-            if int(seasonsArtObj[seasonArtID]['season']) == season and seasonsArtObj[seasonArtID]['language'] == (indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE):
-                result[season][seasonArtID] = seasonsArtObj[seasonArtID]['_bannerpath']
-
-        return result
 
     def retrieveShowMetadata(self, folder):
         """
@@ -991,22 +782,20 @@ class GenericMetadata(object):
         }
 
         try:
-            indexerid = helpers.mapIndexersToShow(show)[1]
-            if indexerid:
-                request = fanartRequest(
-                    apikey=sickbeard.FANART_API_KEY,
-                    id=indexerid,
-                    ws=fanart_module.WS.TV,
-                    type=types[img_type],
-                    sort=fanart_module.SORT.POPULAR,
-                    limit=fanart_module.LIMIT.ONE,
-                )
+            request = fanartRequest(
+                apikey=sickbeard.FANART_API_KEY,
+                id=show.indexerid,
+                ws=fanart_module.WS.TV,
+                type=types[img_type],
+                sort=fanart_module.SORT.POPULAR,
+                limit=fanart_module.LIMIT.ONE,
+            )
 
-                resp = request.response()
-                url = resp[types[img_type]][0]['url']
-                if thumb:
-                    url = re.sub('/fanart/', '/preview/', url)
-                return url
+            resp = request.response()
+            url = resp[types[img_type]][0]['url']
+            if thumb:
+                url = re.sub('/fanart/', '/preview/', url)
+            return url
         except Exception:
             pass
 

@@ -18,8 +18,12 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Third Party Imports
+from requests.exceptions import HTTPError
+
+# First Party Imports
 import sickbeard
 from sickbeard import helpers, logger
 
@@ -27,7 +31,7 @@ meta_session = helpers.make_session()
 
 
 def getShowImage(url, imgNum=None):
-    if url is None:
+    if not url:
         return None
 
     # if they provided a fanart number try to use it instead
@@ -38,7 +42,11 @@ def getShowImage(url, imgNum=None):
 
     logger.log("Fetching image from " + tempURL, logger.DEBUG)
 
-    image_data = helpers.getURL(tempURL, session=meta_session, returns='content', allow_proxy=sickbeard.PROXY_INDEXERS)
+    try:
+        image_data = helpers.getURL(tempURL, session=meta_session, returns='content', allow_proxy=sickbeard.PROXY_INDEXERS)
+    except HTTPError:
+        image_data = None
+
     if image_data is None:
         logger.log("There was an error trying to retrieve the image, aborting", logger.WARNING)
         return

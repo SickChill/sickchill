@@ -18,16 +18,19 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import math
 import socket
 import time
 from datetime import datetime
 
+# Third Party Imports
 import jsonrpclib
 import six
 
+# First Party Imports
 import sickbeard
 from sickbeard import classes, logger, scene_exceptions, tvcache
 from sickbeard.common import cpu_presets

@@ -18,11 +18,13 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 from os import sys
 from random import shuffle
 
+# First Party Imports
 import sickbeard
 from sickbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, bitcannon, bjshare, btn, cpasbien, danishbits, elitetorrent, filelist,
                                  gftracker, gimmepeers, hd4free, hdbits, hdspace, hdtorrents, hdtorrents_it, horriblesubs, hounddawgs, ilcorsaronero,

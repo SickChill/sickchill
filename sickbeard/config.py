@@ -18,23 +18,28 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import os.path
 import platform
 import re
 
+# Third Party Imports
 import rarfile
 import six
 # noinspection PyUnresolvedReferences
 from six.moves.urllib import parse
 from tornado.escape import xhtml_unescape
 
+# First Party Imports
 import sickbeard
-from sickbeard import db, helpers, logger, naming
 from sickchill.helper.common import try_int
 from sickchill.helper.encoding import ek
+
+# Local Folder Imports
+from . import db, helpers, logger, naming
 
 # Address poor support for scgi over unix domain sockets
 # this is not nicely handled by python currently

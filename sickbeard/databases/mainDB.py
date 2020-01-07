@@ -17,16 +17,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=line-too-long
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import os.path
 import warnings
 
+# Third Party Imports
 import six
 
+# First Party Imports
 import sickbeard
 from sickbeard import common, db, helpers, logger, subtitles
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
@@ -79,8 +81,8 @@ class MainSanityCheck(db.DBSanityCheck):
 
     def convert_tvrage_to_tvdb(self):
         logger.log("Checking for shows with tvrage id's, since tvrage is gone", logger.DEBUG)
-        from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
-        from sickbeard.indexers.indexer_config import INDEXER_TVDB
+        INDEXER_TVRAGE = 2
+        INDEXER_TVDB = 1
 
         sql_results = self.connection.select("SELECT indexer_id, show_name, location FROM tv_shows WHERE indexer = {0:d}".format(INDEXER_TVRAGE))
 

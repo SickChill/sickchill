@@ -18,7 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-# pylint: disable=line-too-long
 
 """
 Create a test database for testing.
@@ -46,6 +45,8 @@ import shutil
 import sys
 import unittest
 
+import sickchill
+
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -55,8 +56,8 @@ from sickbeard.databases import cache_db, failed_db, mainDB
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.tv import TVEpisode, TVShow
 import sickbeard
+from sickchill.show.indexers import ShowIndexer
 
-# pylint: disable=import-error
 
 
 # =================
@@ -136,8 +137,9 @@ create_test_log_folder()
 sickbeard.CACHE_DIR = os.path.join(TEST_DIR, 'cache')
 create_test_cache_folder()
 
-# pylint: disable=no-member
 sickbeard.logger.init_logging(False, True)
+
+sickchill.indexer = ShowIndexer()
 
 
 # =================
@@ -252,7 +254,7 @@ class TestCacheDBConnection(TestDBConnection, object):
     Test connecting to the cache database.
     """
     def __init__(self, provider_name):
-        # pylint: disable=non-parent-init-called
+
         db.DBConnection.__init__(self, os.path.join(TEST_DIR, TEST_CACHE_DB_NAME), row_type='dict')
 
         # Create the table if it's not already there
@@ -261,7 +263,7 @@ class TestCacheDBConnection(TestDBConnection, object):
                 sql = "CREATE TABLE [" + provider_name + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT, release_group TEXT)"
                 self.connection.execute(sql)
                 self.connection.commit()
-        # pylint: disable=broad-except
+
         # Catching too general exception
         except Exception as error:
             if str(error) != "table [" + provider_name + "] already exists":
@@ -276,7 +278,7 @@ class TestCacheDBConnection(TestDBConnection, object):
             sql = "CREATE TABLE lastUpdate (provider TEXT, time NUMERIC);"
             self.connection.execute(sql)
             self.connection.commit()
-        # pylint: disable=broad-except
+
         # Catching too general exception
         except Exception as error:
             if str(error) != "table lastUpdate already exists":
@@ -338,7 +340,7 @@ def setup_test_episode_file():
         with open(FILE_PATH, 'wb') as ep_file:
             ep_file.write("foo bar")
             ep_file.flush()
-    # pylint: disable=broad-except
+
     # Catching too general exception
     except Exception:
         print("Unable to set up test episode")

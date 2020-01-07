@@ -16,14 +16,15 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import os
 
+# Third Party Imports
 from tornado.web import addslash
 
+# First Party Imports
 import sickbeard
 from sickbeard import config, logger, naming, ui
 from sickbeard.common import NAMING_LIMITED_EXTEND_E_PREFIXED
@@ -32,13 +33,8 @@ from sickchill.helper.encoding import ek
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
+# Local Folder Imports
 from . import Config
-
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
 
 
 @Route('/config/postProcessing(/?.*)', name='config:postprocessing')

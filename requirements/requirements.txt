@@ -29,8 +29,8 @@ idna == 2.5
 # IMDbPY == 5.1.1 --no-deps --global-option="--without-sqlobject" --global-option="--without-sqlalchemy"  # doesn't work because --no-deps isn't supported in reqs file context
 git+https://github.com/PiotrDabkowski/Js2Py.git@05e77f0d4ffe91ef418a93860e666962cfd193b8#egg=js2py
 git+https://github.com/joshmarshall/jsonrpclib.git@e3a3cdedc9577b25b91274815b38ba7f3bc43c68#egg=jsonrpclib
-# libgrowl  # <Custom: by Sick-Beard's midgetspy. Some of the code is from https://github.com/kfdm/gntp>
-# libtrakt  # <Custom> Just a small note - https://github.com/fuzeman/trakt.py is a great implementation of Trakt.tv's API, if needed
+# growl  # <Custom: by Sick-Beard's midgetspy. Some of the code is from https://github.com/kfdm/gntp>
+# trakt  # <Custom> Just a small note - https://github.com/fuzeman/trakt.py is a great implementation of Trakt.tv's API, if needed
 lockfile
 mock
 mako == 1.0.12

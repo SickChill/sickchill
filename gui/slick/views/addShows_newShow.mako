@@ -2,6 +2,7 @@
 <%!
     import sickbeard
     from sickbeard.helpers import anon_url
+    from sickchill import indexer as show_indexer
 %>
 <%block name="scripts">
     <script type="text/javascript" src="${static_url('js/plotTooltip.js')}"></script>
@@ -27,13 +28,11 @@
 
                             % if use_provided_info:
                                 <label>${_('Show retrieved from existing metadata')}:
-                                    <a href="${anon_url(sickbeard.indexerApi(provided_indexer).config['show_url'], provided_indexer_id)}">${provided_indexer_name}</a>
+                                    <a href="${anon_url(show_indexer.show_url(provided_indexer), provided_indexer_id)}">${provided_indexer_name}</a>
                                 </label>
                                 <input type="hidden" id="indexerLang" name="indexerLang" value="en"/>
-                                <input type="hidden" id="whichSeries" name="whichSeries"
-                                       value="${provided_indexer_id}"/>
-                                <input type="hidden" id="providedIndexer" name="providedIndexer"
-                                       value="${provided_indexer}"/>
+                                <input type="hidden" id="whichSeries" name="whichSeries" value="${provided_indexer_id}"/>
+                                <input type="hidden" id="providedIndexer" name="providedIndexer" value="${provided_indexer}"/>
                                 <input type="hidden" id="providedName" value="${provided_indexer_name}"/>
                             % else:
                                 <div class="field-pair row">
@@ -57,12 +56,12 @@
                                                 <select name="indexerLang" id="indexerLangSelect"
                                                         class="form-control form-control-inline input-sm bfh-languages"
                                                         data-language="${sickbeard.INDEXER_DEFAULT_LANGUAGE}"
-                                                        data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}"></select>
+                                                        data-available="${','.join(show_indexer.languages())}"></select>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <span>${_('This will only affect the language of the retrieved metadata file contents and episode filenames.')}</span>
+                                                <span>${_('This will only affect the language of the retrieved metadata file contents and episode file names.')}</span>
                                                 <br/>
                                                 <span>${_('This <b>DOES NOT</b> allow SickChill to download non-english TV episodes!')}</span>
                                             </div>
@@ -77,9 +76,9 @@
                                         <select name="providedIndexer" id="providedIndexer"
                                                 class="form-control form-control-inline input-sm">
                                             <option value="0" ${('', 'selected="selected"')[provided_indexer == 0]}>${_('All Indexers')}</option>
-                                            % for indexer in indexers:
-                                                <option value="${indexer}" ${('', 'selected="selected"')[provided_indexer == indexer]}>
-                                                    ${indexers[indexer]}
+                                            % for index, indexer in show_indexer:
+                                                <option value="${index}" ${('', 'selected="selected"')[provided_indexer == index]}>
+                                                    ${indexer.name}
                                                 </option>
                                             % endfor
                                         </select>

@@ -18,11 +18,13 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import re
 import traceback
 
+# First Party Imports
 from sickbeard import db, logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import Quality
@@ -58,7 +60,7 @@ category_excluded = {'Sport': 22,
                      'Mobile': 37}
 
 
-class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class TNTVillageProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -167,7 +169,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         return quality_string
 
     @staticmethod
-    def _episodeQuality(torrent_rows):  # pylint: disable=too-many-return-statements, too-many-branches
+    def _episodeQuality(torrent_rows):
         """
             Return The quality from the scene episode HTML row.
         """
@@ -272,7 +274,7 @@ class TNTVillageProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         if int(episodes[0][b'count']) == len(parse_result.episode_numbers):
             return True
 
-    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def search(self, search_params, age=0, ep_obj=None):
         results = []
         if not self.login():
             return results

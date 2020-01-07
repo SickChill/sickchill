@@ -16,9 +16,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import unicode_literals
-
+# First Party Imports
 from sickbeard.common import Quality, qualityPresetStrings
 
 

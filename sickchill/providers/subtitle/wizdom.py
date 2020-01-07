@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import bisect
 import io
 import logging
 import os
 import zipfile
 
+# Third Party Imports
 from babelfish import Language
 from guessit import guessit
 from requests import Session
@@ -17,6 +19,7 @@ from subliminal.subtitle import fix_line_ending, guess_matches, Subtitle
 from subliminal.utils import sanitize
 from subliminal.video import Episode, Movie
 
+# First Party Imports
 import sickbeard
 
 logger = logging.getLogger(__name__)

@@ -29,7 +29,7 @@
 #         self.assertTrue('entries' in result)
 #         self.assertTrue('feed' in result)
 #         for item in result[b'entries'] or []:
-#             title, url = binsearch._get_title_and_url(item)     # pylint: disable=protected-access
+#             title, url = binsearch._get_title_and_url(item)
 #             self.assertTrue(title and url)
 #
 # if __name__ == "__main__":

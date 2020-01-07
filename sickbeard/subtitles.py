@@ -19,8 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import os
 import re
@@ -28,19 +29,23 @@ import subprocess
 import threading
 import traceback
 
+# Third Party Imports
 import six
 import subliminal
 from babelfish import Language, language_converters
 from guessit import guessit
 from subliminal import Episode, provider_manager, ProviderPool
 
+# First Party Imports
 import sickbeard
-from sickbeard import db, history, logger
-from sickbeard.common import Quality
-from sickbeard.helpers import is_media_file
 from sickchill.helper.common import dateTimeFormat, episode_num
 from sickchill.helper.exceptions import ex
 from sickchill.show.Show import Show
+
+# Local Folder Imports
+from . import db, history, logger
+from .common import Quality
+from .helpers import is_media_file
 
 # https://github.com/Diaoul/subliminal/issues/536
 # provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')
@@ -74,7 +79,7 @@ PROVIDER_URLS = {
 }
 
 
-class SubtitleProviderPool(object):  # pylint: disable=too-few-public-methods
+class SubtitleProviderPool(object):
     _lock = threading.Lock()
     _creation = None
     _instance = None
@@ -188,7 +193,7 @@ def needs_subtitles(subtitles, force_lang=None):
 def from_code(language):
     language = language.strip()
     if language and language in language_converters['opensubtitles'].codes:
-        return Language.fromopensubtitles(language)  # pylint: disable=no-member
+        return Language.fromopensubtitles(language)
 
     return Language('und')
 
@@ -201,7 +206,7 @@ def code_from_code(code):
     return from_code(code).opensubtitles
 
 
-def download_subtitles(episode, force_lang=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+def download_subtitles(episode, force_lang=None):
     existing_subtitles = episode.subtitles
 
     if not needs_subtitles(existing_subtitles, force_lang):
@@ -398,7 +403,7 @@ def get_subtitles(video):
     return sorted(result_list)
 
 
-class SubtitlesFinder(object):  # pylint: disable=too-few-public-methods
+class SubtitlesFinder(object):
     """The SubtitlesFinder will be executed every hour but will not necessarly search and download subtitles.
 
     Only if the defined rule is true.
@@ -407,7 +412,7 @@ class SubtitlesFinder(object):  # pylint: disable=too-few-public-methods
     def __init__(self):
         self.amActive = False
 
-    def run(self, force=False):  # pylint: disable=too-many-branches, too-many-statements, too-many-locals
+    def run(self, force=False):
         if not sickbeard.USE_SUBTITLES:
             return
 
@@ -594,7 +599,7 @@ def refine_video(video, episode):
             setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
 
     # Set quality from metadata
-    _, quality = Quality.splitCompositeStatus(episode.status)
+    status, quality = Quality.splitCompositeStatus(episode.status)
     if not video.format or episode.show.subtitles_sr_metadata:
         if quality & Quality.ANYHDTV:
             video.format = Quality.combinedQualityStrings.get(Quality.ANYHDTV)

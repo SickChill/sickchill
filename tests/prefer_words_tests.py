@@ -6,7 +6,7 @@ from __future__ import print_function, unicode_literals
 import unittest
 
 import sickbeard
-from sickbeard.show_name_helpers import hasPreferedWords
+from sickbeard.show_name_helpers import hasPreferredWords
 
 
 class PreferWordFilterTest(unittest.TestCase):
@@ -25,13 +25,13 @@ class PreferWordFilterTest(unittest.TestCase):
         ]
 
     def test_prefer_words_determine_weight(self):
-        self.assertTrue(hasPreferedWords(self.results_names_only_source[0]) == 0)
-        self.assertTrue(hasPreferedWords(self.results_names_only_source[1]) == 1)
-        self.assertTrue(hasPreferedWords(self.results_names_only_source[2]) == 3)
-        self.assertTrue(hasPreferedWords(self.results_names_only_source[3]) == 5)
-        self.assertTrue(hasPreferedWords(self.results_names_only_source[4]) == 5)
-        self.assertTrue(hasPreferedWords(self.results_names_only_source[5]) == 4)
-        self.assertTrue(hasPreferedWords(self.results_names_only_source[6]) == 2)
+        self.assertTrue(hasPreferredWords(self.results_names_only_source[0]) == 0)
+        self.assertTrue(hasPreferredWords(self.results_names_only_source[1]) == 1)
+        self.assertTrue(hasPreferredWords(self.results_names_only_source[2]) == 3)
+        self.assertTrue(hasPreferredWords(self.results_names_only_source[3]) == 5)
+        self.assertTrue(hasPreferredWords(self.results_names_only_source[4]) == 5)
+        self.assertTrue(hasPreferredWords(self.results_names_only_source[5]) == 4)
+        self.assertTrue(hasPreferredWords(self.results_names_only_source[6]) == 2)
 
 if __name__ == '__main__':
     SUITE = unittest.TestLoader().loadTestsFromTestCase(PreferWordFilterTest)

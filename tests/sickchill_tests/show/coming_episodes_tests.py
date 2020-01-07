@@ -21,7 +21,6 @@
 Test coming episodes
 """
 
-# pylint: disable=line-too-long
 
 from __future__ import print_function, unicode_literals
 
@@ -59,7 +58,7 @@ class ComingEpisodesTests(unittest.TestCase):
         )
 
         for (index, categories) in enumerate(categories_list):
-            self.assertEqual(ComingEpisodes._get_categories(categories), results_list[index])  # pylint: disable=protected-access
+            self.assertEqual(ComingEpisodes._get_categories(categories), results_list[index])
 
     def test_get_categories_map(self):
         """
@@ -78,7 +77,7 @@ class ComingEpisodesTests(unittest.TestCase):
         )
 
         for (index, categories) in enumerate(categories_list):
-            self.assertEqual(ComingEpisodes._get_categories_map(categories), results_list[index])  # pylint: disable=protected-access
+            self.assertEqual(ComingEpisodes._get_categories_map(categories), results_list[index])
 
     def test_get_sort(self):
         """
@@ -109,7 +108,7 @@ class ComingEpisodesTests(unittest.TestCase):
 
         for tests in test_cases, unicode_test_cases:
             for (sort, result) in six.iteritems(tests):
-                self.assertEqual(ComingEpisodes._get_sort(sort), result)  # pylint: disable=protected-access
+                self.assertEqual(ComingEpisodes._get_sort(sort), result)
 
 
 if __name__ == '__main__':

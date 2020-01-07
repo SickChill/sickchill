@@ -18,17 +18,22 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 import string
 from operator import itemgetter
 
+# Third Party Imports
 import six
 
+# First Party Imports
 import sickbeard
-from sickbeard import logger
 from sickchill.helper.encoding import ek
+
+# Local Folder Imports
+from . import logger
 
 
 # adapted from http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490

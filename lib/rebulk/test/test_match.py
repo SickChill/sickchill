@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# pylint: disable=no-self-use, pointless-statement, missing-docstring, unneeded-not, len-as-condition
+
 
 import pytest
 import six

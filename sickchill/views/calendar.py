@@ -16,25 +16,22 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import datetime
 
+# Third Party Imports
 from dateutil import tz
-from index import BaseHandler
 from tornado.web import authenticated
 
+# First Party Imports
 import sickbeard
 from sickbeard import db, logger, network_timezones
 from sickchill.helper import try_int
 
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
+# Local Folder Imports
+from .index import BaseHandler
 
 
 class CalendarHandler(BaseHandler):
