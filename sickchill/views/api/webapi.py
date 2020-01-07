@@ -1939,18 +1939,9 @@ class CMDShow(ApiCall):
 
         show_dict = {
             "season_list": CMDShowSeasonList((), {"indexerid": self.indexerid}).run()["data"],
-            "cache": CMDShowCache((), {"indexerid": self.indexerid}).run()["data"]
+            "cache": CMDShowCache((), {"indexerid": self.indexerid}).run()["data"],
+            "genre": show_obj.genre, "quality": get_quality_string(show_obj.quality)
         }
-
-        genre_list = []
-        if show_obj.genre:
-            genre_list_tmp = show_obj.genre.split("|")
-            for genre in genre_list_tmp:
-                if genre:
-                    genre_list.append(genre)
-
-        show_dict["genre"] = genre_list
-        show_dict["quality"] = get_quality_string(show_obj.quality)
 
         any_qualities, best_qualities = _map_quality(show_obj.quality)
         show_dict["quality_details"] = {"initial": any_qualities, "archive": best_qualities}
