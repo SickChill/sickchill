@@ -111,7 +111,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
         tv_node.attrib["isSet"] = "false"
         tv_node.attrib["isTV"] = "true"
 
-        myShow = show_obj.idxr.series(show_obj)
+        myShow = sickchill.indexer.series(show_obj)
         if not myShow:
             logger.log("Unable to find show with id {} on {}, skipping it".format(show_obj.indexerid, show_obj.idxr.name))
             return False
@@ -122,7 +122,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             return False
 
         SeriesName = etree.SubElement(tv_node, "title")
-        SeriesName.text = myShow['seriesName']
+        SeriesName.text = myShow.seriesName
 
         if getattr(myShow, "genre", None):
             Genres = etree.SubElement(tv_node, "genres")

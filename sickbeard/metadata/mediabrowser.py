@@ -240,7 +240,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
 
         tv_node = etree.Element("Series")
 
-        myShow = show_obj.idxr.series(show_obj)
+        myShow = sickchill.indexer.series(show_obj)
         if not myShow:
             logger.log("Unable to find show with id {} on {}, skipping it".format(show_obj.indexerid, show_obj.indexer_name), logger.ERROR)
             return False
@@ -352,13 +352,11 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                     cur_genre.text = genre.strip()
 
             Genre = etree.SubElement(tv_node, "Genre")
-            Genre.text = "|".join([x.strip() for x in myShow.genre if x.strip()])
+            Genre.text = "|".join(myShow.genre)
 
         helpers.indentXML(tv_node)
 
-        data = etree.ElementTree(tv_node)
-
-        return data
+        return etree.ElementTree(tv_node)
 
     def _ep_data(self, ep_obj):
         """
@@ -394,15 +392,16 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 # root (or single) episode
 
                 # default to today's date for specials if firstAired is not set
-                if ep_obj.season == 0 and 'firstAired' not in myEp:
-                    if str(ep_obj.airdate) != str(datetime.date.fromordinal(1)):
-                        myEp['firstAired'] = str(ep_obj.airdate)
-                    elif ep_obj.show and ep_obj.show.startyear:
+                if str(ep_obj.airdate) != str(datetime.date.fromordinal(1)) and myEp.get('firstAired'):
+                    myEp['firstAired'] = str(ep_obj.airdate)
+
+                if ep_obj.season == 0 and not myEp.get('firstAired'):
+                    if ep_obj.show and ep_obj.show.startyear:
                         myEp['firstAired'] = str(datetime.date.fromordinal(1).replace(year=ep_obj.show.startyear))
                     else:
                         myEp['firstAired'] = str(datetime.date.today())
 
-                if 'episodeName' not in myEp or 'firstAired' not in myEp:
+                if not (myEp.get('episodeName') and myEp.get('firstAired')):
                     return None
 
                 episode = rootNode
@@ -426,7 +425,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 SeasonNumber = etree.SubElement(episode, "SeasonNumber")
                 SeasonNumber.text = str(curEpToWrite.season)
 
-                if not ep_obj.relatedEps and myEp.get('absoluteNumber'):
+                if myEp.get('absoluteNumber') and not ep_obj.relatedEps:
                     absolute_number = etree.SubElement(episode, "absolute_number")
                     absolute_number.text = str(myEp['absoluteNumber'])
 
@@ -440,26 +439,24 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 if curEpToWrite.description:
                     Overview = etree.SubElement(episode, "Overview")
                     Overview.text = curEpToWrite.description
-                elif 'overview' in myEp and myEp["overview"]:
+                elif myEp.get("overview"):
                     Overview = etree.SubElement(episode, "Overview")
                     Overview.text = myEp["overview"]
 
                 if not ep_obj.relatedEps:
-                    if 'rating' in myEp:
+                    if myEp.get('rating'):
                         Rating = etree.SubElement(episode, "Rating")
                         Rating.text = myEp['siteRating']
 
-                    if 'imdbId' in myEp:
-                        data = myEp['imdbId']
-                        if data:
-                            IMDB_ID = etree.SubElement(episode, "IMDB_ID")
-                            IMDB_ID.text = data
+                    if myEp.get('imdbId'):
+                        IMDB_ID = etree.SubElement(episode, "IMDB_ID")
+                        IMDB_ID.text = myEp['imdbId']
 
-                            IMDB = etree.SubElement(episode, "IMDB")
-                            IMDB.text = data
+                        IMDB = etree.SubElement(episode, "IMDB")
+                        IMDB.text = myEp['imdbId']
 
-                            IMDbId = etree.SubElement(episode, "IMDbId")
-                            IMDbId.text = data
+                        IMDbId = etree.SubElement(episode, "IMDbId")
+                        IMDbId.text = myEp['imdbId']
 
                 if myEp.get('id'):
                     indexerid = etree.SubElement(episode, "id")
@@ -467,8 +464,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
 
                 Persons = etree.SubElement(episode, "Persons")
 
-                data = ep_obj.idxr.actors(myShow)
-                for actor in data:
+                for actor in ep_obj.idxr.actors(myShow):
                     if not ('name' in actor and actor['name'].strip()):
                         continue
 
@@ -484,10 +480,15 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                         cur_actor_role = etree.SubElement(cur_actor, "Role")
                         cur_actor_role.text = actor['role'].strip()
 
-                Language = etree.SubElement(episode, "Language")
-                Language.text = myEp.get('language', sickbeard.INDEXER_DEFAULT_LANGUAGE)
+                if myEp.get('language'):
+                    language = myEp.get('language')['overview']
+                else:
+                    language = sickbeard.INDEXER_DEFAULT_LANGUAGE
 
-                if 'filename' in myEp and myEp['filename']:
+                Language = etree.SubElement(episode, "Language")
+                Language.text = language
+
+                if myEp.get('filename'):
                     thumb = etree.SubElement(episode, "filename")
                     thumb.text = curEpToWrite.idxr.complete_image_url(myEp['filename'])
 
@@ -506,11 +507,11 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                         Overview.text = Overview.text + "\r" + curEpToWrite.description
 
             # collect all directors, guest stars and writers
-            if 'directors' in myEp:
+            if myEp.get('directors'):
                 persons_dict['Director'] += myEp['directors']
-            if 'guestStars' in myEp:
+            if myEp.get('guestStars'):
                 persons_dict['GuestStar'] += myEp['guestStars']
-            if 'writers' in myEp:
+            if myEp.get('writers'):
                 persons_dict['Writer'] += myEp['writers']
 
         # fill in Persons section with collected directors, guest starts and writers
@@ -525,9 +526,8 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 cur_person_type.text = person_type
 
         helpers.indentXML(rootNode)
-        data = etree.ElementTree(rootNode)
 
-        return data
+        return etree.ElementTree(rootNode)
 
 
 # present a standard "interface" from the module

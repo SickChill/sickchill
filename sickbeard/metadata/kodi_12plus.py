@@ -112,7 +112,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         """
         tv_node = etree.Element("tvshow")
 
-        myShow = show_obj.idxr.series(show_obj)
+        myShow = sickchill.indexer.series(show_obj)
         if not myShow:
             logger.log("Unable to find show with id {} on {}, skipping it".format(
                 show_obj.indexerid, show_obj.idxr.name.name))

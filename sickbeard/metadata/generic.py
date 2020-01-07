@@ -424,6 +424,12 @@ class GenericMetadata(object):
         if not data:
             return False
 
+        def print_data(d):
+            for child in d.getroot():
+                print(str(child.tag), str(child.text))
+
+        # print_data(data)
+
         nfo_file_path = self.get_episode_file_path(ep_obj)
         assert isinstance(nfo_file_path, six.text_type)
         nfo_file_dir = ek(os.path.dirname, nfo_file_path)
