@@ -93,7 +93,7 @@ class Notifier(object):
                 logger.log("Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
 
     @staticmethod
-    def update_watchlist(self, show_obj=None, s=None, e=None, data_show=None, data_episode=None, update="add"):
+    def update_watchlist(show_obj=None, s=None, e=None, data_show=None, data_episode=None, update="add"):
 
         """
         Sends a request to trakt indicating that the given episode is part of our library.
