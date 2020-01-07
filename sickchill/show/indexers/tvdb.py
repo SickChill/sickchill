@@ -128,6 +128,9 @@ class TVDB(Indexer):
 
     @staticmethod
     def complete_image_url(location):
+        location = location.strip()
+        if not location:
+            return location
         return 'https://artworks.thetvdb.com/banners/{path}'.format(path=location.strip())
 
     def __call_images_api(self, show, thumb, keyType, subKey=None):

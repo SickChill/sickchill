@@ -277,7 +277,7 @@ class TVShow(object):
         if season not in self.episodes:
             self.episodes[season] = {}
 
-        if episode not in self.episodes[season] or self.episodes[season][episode] is None:
+        if not self.episodes[season].get(episode):
             if noCreate:
                 return None
 
@@ -289,7 +289,7 @@ class TVShow(object):
             else:
                 ep = TVEpisode(self, season, episode)
 
-            if ep is not None:
+            if ep:
                 self.episodes[season][episode] = ep
 
         return self.episodes[season][episode]
@@ -524,31 +524,31 @@ class TVShow(object):
         scannedEps = {}
 
         sql_l = []
-        for episode in showObj.Episodes.all():
-            season = episode['airedSeason']
-            episode = episode['airedEpisodeNumber']
-            scannedEps[season] = {}
+        for series_episode in showObj.Episodes.all():
+            if series_episode['airedSeason'] not in scannedEps:
+                scannedEps[series_episode['airedSeason']] = {}
+
+            season_episode = series_episode['airedSeason'], series_episode['airedEpisodeNumber']
             try:
-                ep = self.getEpisode(season, episode)
-                if not ep:
+                show_episode = self.getEpisode(*season_episode)
+                if not show_episode:
                     raise EpisodeNotFoundException
             except EpisodeNotFoundException:
                 logger.log("{id}: {indexer} object for {ep} is incomplete, skipping this episode".format
-                           (id=self.indexerid, indexer=self.indexer_name, ep=episode_num(season, episode)))
+                           (id=self.indexerid, indexer=self.indexer_name, ep=episode_num(*season_episode)))
                 continue
             else:
                 try:
-                    ep.loadFromIndexer()
+                    show_episode.loadFromIndexer()
                 except EpisodeDeletedException:
                     logger.log("The episode was deleted, skipping the rest of the load")
                     continue
 
-            with ep.lock:
-                ep.loadFromIndexer(season, episode)
+            with show_episode.lock:
+                show_episode.loadFromIndexer(*season_episode)
+                sql_l.append(show_episode.get_sql())
 
-                sql_l.append(ep.get_sql())
-
-            scannedEps[season][episode] = True
+            scannedEps[series_episode['airedSeason']][series_episode['airedEpisodeNumber']] = True
 
         if sql_l:
             main_db_con = db.DBConnection()
@@ -1582,11 +1582,11 @@ class TVEpisode(object):
                 self.deleteEpisode()
             return
 
-        if 'episodeName' not in myEp:
+        if not myEp.get('episodeName'):
             logger.log("This episode {show} - {ep} has no name on {indexer}. Setting to an empty string".format
                        (show=self.show.name, ep=episode_num(season, episode), indexer=self.indexer_name))
 
-        if 'absoluteNumber' not in myEp:
+        if not myEp.get('absoluteNumber'):
             logger.log("{id}: This episode {show} - {ep} has no absolute number on {indexer}".format
                        (id=self.show.indexerid, show=self.show.name, ep=episode_num(season, episode),
                         indexer=self.indexer_name), logger.DEBUG)
@@ -1597,8 +1597,8 @@ class TVEpisode(object):
             self.absolute_number = try_int(myEp["absoluteNumber"], 0)
 
         self.name = myEp['episodeName']
-        self.season = season
-        self.episode = episode
+        self.season = myEp['airedSeason']
+        self.episode = myEp['airedEpisodeNumber']
 
         sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
