@@ -112,7 +112,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         """
         tv_node = etree.Element("tvshow")
 
-        myShow = sickchill.indexer.series(show_obj)
+        myShow = show_obj.idxr.series(show_obj)
         if not myShow:
             logger.log("Unable to find show with id {} on {}, skipping it".format(
                 show_obj.indexerid, show_obj.idxr.name.name))
@@ -129,9 +129,9 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
 
         if getattr(myShow, 'rating', None):
             rating = etree.SubElement(tv_node, "rating")
-            rating.text = myShow.rating
+            rating.text = str(myShow.rating)
             mpaa = etree.SubElement(tv_node, "mpaa")
-            mpaa.text = myShow.rating
+            mpaa.text = str(myShow.rating)
 
         if getattr(myShow, 'firstAired', None):
             try:
@@ -223,10 +223,10 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
 
         eps_to_write = [ep_obj] + ep_obj.relatedEps
 
-        myShow = sickchill.indexer.series(ep_obj.show)
+        myShow = ep_obj.idxr.series_from_episode(ep_obj)
         if not myShow:
             logger.log("Unable to find {} on {} while creating meta files, skipping".format(
-                ep_obj.show.indexerid, ep_obj.show.idxr.name), logger.ERROR)
+                ep_obj.show.indexerid, ep_obj.idxr.name), logger.ERROR)
             return
 
         if len(eps_to_write) > 1:
@@ -241,15 +241,19 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
             if not myEp:
                 logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
                            "has it been removed? Should I delete from db?".format(
-                    curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.show.idxr.name))
+                    curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.idxr.name))
 
                 return None
 
-            if not getattr(myEp, 'firstAired', None):
-                myEp["firstAired"] = str(datetime.date.fromordinal(1))
+            if str(ep_obj.airdate) != str(datetime.date.fromordinal(1)) and not myEp.get('firstAired'):
+                myEp["firstAired"] = str(ep_obj.airdate)
 
-            if not getattr(myEp, 'episodeName', None):
+            if not myEp.get('episodeName'):
                 logger.log("Not generating nfo because the ep has no title", logger.DEBUG)
+                return None
+
+            if not myEp.get('firstAired'):
+                logger.log("Not generating nfo because the ep has no airdate", logger.DEBUG)
                 return None
 
             logger.log("Creating metadata for episode " + str(ep_obj.season) + "x" + str(ep_obj.episode), logger.DEBUG)
@@ -259,7 +263,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
             else:
                 episode = rootNode
 
-            if getattr(myEp, 'episodeName', None):
+            if myEp.get('episodeName'):
                 title = etree.SubElement(episode, "title")
                 title.text = myEp['episodeName']
 
@@ -273,14 +277,15 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
             episodenum = etree.SubElement(episode, "episode")
             episodenum.text = str(curEpToWrite.episode)
 
-            uniqueid = etree.SubElement(episode, "uniqueid")
-            uniqueid.text = str(curEpToWrite.indexerid)
+            if myEp.get('id'):
+                uniqueid = etree.SubElement(episode, "uniqueid")
+                uniqueid.text = str(myEp['id'])
 
             if curEpToWrite.airdate != datetime.date.fromordinal(1):
                 aired = etree.SubElement(episode, "aired")
                 aired.text = str(curEpToWrite.airdate)
 
-            if getattr(myEp, 'overview', None):
+            if myEp.get('overview'):
                 plot = etree.SubElement(episode, "plot")
                 plot.text = myEp['overview']
 
@@ -288,63 +293,59 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                 runtime = etree.SubElement(episode, "runtime")
                 runtime.text = myShow.runtime
 
-            if getattr(myEp, 'airedSeason', None):
+            if myEp.get('airedSeason'):
                 displayseason = etree.SubElement(episode, "displayseason")
-                displayseason.text = myEp['airedSeason']
+                displayseason.text = str(myEp['airedSeason'])
 
-            if getattr(myEp, 'airedEpisodeNumber', None):
+            if myEp.get('airedEpisodeNumber'):
                 displayepisode = etree.SubElement(episode, "displayepisode")
-                displayepisode.text = myEp['airedEpisodeNumber']
+                displayepisode.text = str(myEp['airedEpisodeNumber'])
 
-            if getattr(myEp, 'filename', None):
+            if myEp.get('filename'):
                 thumb = etree.SubElement(episode, "thumb")
                 thumb.text = ep_obj.idxr.complete_image_url(myEp['filename'])
 
-            if getattr(myEp, 'rating', None):
+            if myEp.get('rating') is not None:
                 rating = etree.SubElement(episode, "rating")
-                rating.text = myEp['rating']
+                rating.text = str(myEp['rating'])
 
-            if getattr(myEp, 'writer', None) and isinstance(myEp['writer'], six.string_types):
-                for writer in self._split_info(myEp['writer']):
+            if myEp.get('writers') and isinstance(myEp['writers'], list):
+                for writer in myEp['writers']:
                     cur_writer = etree.SubElement(episode, "credits")
                     cur_writer.text = writer
 
-            if getattr(myEp, 'directors', None) and isinstance(myEp['directors'], list):
-                for director in self._split_info(myEp['director']):
+            if myEp.get('directors') and isinstance(myEp['directors'], list):
+                for director in myEp['directors']:
                     cur_director = etree.SubElement(episode, "director")
                     cur_director.text = director
 
-            if getattr(myEp, 'guestStars', None) and isinstance(myEp['guestStars'], list):
+            if myEp.get('guestStars') and isinstance(myEp['guestStars'], list):
                 for actor in myEp['guestStars']:
                     cur_actor = etree.SubElement(episode, "actor")
                     cur_actor_name = etree.SubElement(cur_actor, "name")
                     cur_actor_name.text = actor
 
-            data = ep_obj.show.idxr.actors(myShow)
-            if data:
-                for actor in data:
-                    cur_actor = etree.SubElement(episode, "actor")
+            for actor in ep_obj.idxr.actors(myShow):
+                cur_actor = etree.SubElement(episode, "actor")
 
-                    if 'name' in actor and actor['name'].strip():
-                        cur_actor_name = etree.SubElement(cur_actor, "name")
-                        cur_actor_name.text = actor['name'].strip()
-                    else:
-                        continue
+                if 'name' in actor and actor['name'].strip():
+                    cur_actor_name = etree.SubElement(cur_actor, "name")
+                    cur_actor_name.text = actor['name'].strip()
+                else:
+                    continue
 
-                    if 'role' in actor and actor['role'].strip():
-                        cur_actor_role = etree.SubElement(cur_actor, "role")
-                        cur_actor_role.text = actor['role'].strip()
+                if 'role' in actor and actor['role'].strip():
+                    cur_actor_role = etree.SubElement(cur_actor, "role")
+                    cur_actor_role.text = actor['role'].strip()
 
-                    if 'image' in actor and actor['image'].strip():
-                        cur_actor_thumb = etree.SubElement(cur_actor, "thumb")
-                        cur_actor_thumb.text = ep_obj.idxr.complete_image_url(actor['image'])
+                if 'image' in actor and actor['image'].strip():
+                    cur_actor_thumb = etree.SubElement(cur_actor, "thumb")
+                    cur_actor_thumb.text = ep_obj.idxr.complete_image_url(actor['image'])
 
         # Make it purdy
         helpers.indentXML(rootNode)
 
-        data = etree.ElementTree(rootNode)
-
-        return data
+        return etree.ElementTree(rootNode)
 
 
 # present a standard "interface" from the module

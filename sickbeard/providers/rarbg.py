@@ -91,7 +91,7 @@ class RarbgProvider(TorrentProvider):
 
         if ep_obj is not None:
             ep_indexerid = ep_obj.show.indexerid
-            ep_indexer = ep_obj.show.idxr.slug
+            ep_indexer = ep_obj.idxr.slug
         else:
             ep_indexerid = None
             ep_indexer = None

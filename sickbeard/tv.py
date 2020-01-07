@@ -1618,7 +1618,7 @@ class TVEpisode(object):
 
         firstaired = myEp['firstAired']
         if not firstaired or firstaired == "0000-00-00":
-            firstaired = str(datetime.date.fromordinal(1))
+            firstaired = str(self.airdate)
         rawAirdate = [int(x) for x in firstaired.split("-")]
 
         try:
@@ -1633,7 +1633,7 @@ class TVEpisode(object):
             return False
 
         self.indexerid = myEp['id']
-        if self.indexerid is None:
+        if not self.indexerid:
             logger.log("Failed to retrieve ID from {indexer}".format
                        (indexer=self.indexer_name), logger.ERROR)
             if self.indexerid != -1:
@@ -1747,8 +1747,6 @@ class TVEpisode(object):
                     if epDetails.findtext('aired'):
                         rawAirdate = [int(x) for x in epDetails.findtext('aired').split("-")]
                         self.airdate = datetime.date(rawAirdate[0], rawAirdate[1], rawAirdate[2])
-                    else:
-                        self.airdate = datetime.date.fromordinal(1)
 
                     self.hasnfo = True
             else:

@@ -243,12 +243,9 @@ class NameParser(object):
 
                 if season_number is None or not episode_numbers:
                     try:
-                        series = sickchill.indexer.series(bestResult.show)
-                        series.Episodes.update_filters(firstAired=bestResult.air_date)
-                        epObj = series.Episodes.all()[0]
-
-                        season_number = int(epObj["airedSeason"])
-                        episode_numbers = [int(epObj["airedEpisode"])]
+                        epObj = sickchill.indexer.episode(bestResult.show, firstAired=bestResult.air_date)
+                        season_number = epObj["airedSeason"]
+                        episode_numbers = [epObj["airedEpisode"]]
                     except Exception:
                         logger.log("Unable to find episode with date {} for show {}, skipping".format(
                             bestResult.air_date, bestResult.show.name), logger.WARNING)

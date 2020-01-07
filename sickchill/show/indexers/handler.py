@@ -168,7 +168,7 @@ class ShowIndexer(object):
     def episodes(self, show, season):
         return self.indexers[show.indexer].episodes(show, season)
 
-    def episode(self, item, season=None, episode=None):
+    def episode(self, item, season=None, episode=None, **kwargs):
         if isinstance(item, sickbeard.tv.TVEpisode):
             show = item.show
             season = item.season
@@ -176,7 +176,15 @@ class ShowIndexer(object):
         else:
             show = item
 
-        return self.indexers[show.indexer].episode(show, season, episode)
+        return self.indexers[show.indexer].episode(show, season, episode, **kwargs)
+
+    def series_poster_url_by_id(self, indexerid, language=None, indexer=None, thumb=False):
+        class __TVShow(object):
+            def __init__(self, __indexerid, __language, __indexer):
+                self.indexerid = __indexerid
+                self.indexer = __indexer or sickbeard.INDEXER_DEFAULT
+                self.language = __language or sickbeard.INDEXER_DEFAULT_LANGUAGE
+        return self.series_poster_url(__TVShow(indexerid, language, indexer), thumb)
 
     def series_poster_url(self, show, thumb=False):
         return self.indexers[show.indexer].series_poster_url(show, thumb)

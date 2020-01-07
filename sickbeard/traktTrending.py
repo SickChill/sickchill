@@ -98,18 +98,6 @@ class traktTrending(object):
         return trending_shows, black_list
 
     @staticmethod
-    def get_image_url(indexer_id):
-        """ Get poster image url from TVDB """
-        image_url = None
-
-        indexer_show_obj = sickchill.indexer['tvdb'].series(indexer_id)
-
-        if getattr(indexer_show_obj, 'poster', None):
-            image_url = indexer_show_obj['poster'].replace('posters', '_cache/posters')
-
-        return image_url
-
-    @staticmethod
     def get_image_name(indexer_id):
          return str(indexer_id) + ".jpg"
 

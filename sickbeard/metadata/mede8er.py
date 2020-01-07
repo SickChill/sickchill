@@ -111,7 +111,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
         tv_node.attrib["isSet"] = "false"
         tv_node.attrib["isTV"] = "true"
 
-        myShow = sickchill.indexer.series(show_obj)
+        myShow = show_obj.idxr.series(show_obj)
         if not myShow:
             logger.log("Unable to find show with id {} on {}, skipping it".format(show_obj.indexerid, show_obj.idxr.name))
             return False
@@ -202,9 +202,9 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         eps_to_write = [ep_obj] + ep_obj.relatedEps
 
-        myShow = sickchill.indexer.series(ep_obj.show)
+        myShow = ep_obj.idxr.series_from_episode(ep_obj)
         if not myShow:
-            logger.log("Unable to connect to {} while creating meta files - skipping".format(ep_obj.show.idxr.name))
+            logger.log("Unable to connect to {} while creating meta files - skipping".format(ep_obj.idxr.name))
             return False
 
         rootNode = etree.Element("details")
@@ -220,17 +220,16 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             if not myEp:
                 logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
                            "has it been removed? Should I delete from db?".format(
-                    curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.show.idxr.name))
+                    curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.idxr.name))
                 return None
 
             if curEpToWrite == ep_obj:
                 # root (or single) episode
 
-                # default to today's date for specials if firstAired is not set
-                if curEpToWrite.season == 0 and not getattr(myEp, 'firstAired', None):
-                    myEp['firstAired'] = str(datetime.date.fromordinal(1))
+                if str(ep_obj.airdate) != str(datetime.date.fromordinal(1)) and not myEp.get('firstAired'):
+                    myEp['firstAired'] = str(ep_obj.airdate)
 
-                if not (getattr(myEp, 'episodeName', None) and getattr(myEp, 'firstAired', None)):
+                if not (myEp.get('episodeName') and myEp.get('firstAired')):
                     return None
 
                 episode = movie
@@ -266,7 +265,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                     mpaa = etree.SubElement(episode, "mpaa")
                     mpaa.text = myShow["contentRating"]
 
-                if not ep_obj.relatedEps and getattr(myEp, "rating", None):
+                if not ep_obj.relatedEps and myEp.get("rating"):
                     try:
                         rating = int((float(myEp['rating']) * 10))
                     except ValueError:
@@ -276,26 +275,21 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
                         Rating = etree.SubElement(episode, "rating")
                         Rating.text = str(rating)
 
-                if getattr(myEp, 'director', None):
-                    director = etree.SubElement(episode, "director")
-                    director.text = myEp['director']
+                if myEp.get('directors') and isinstance(myEp['directors'], list):
+                    for director in myEp['directors']:
+                        cur_director = etree.SubElement(episode, "director")
+                        cur_director.text = director
 
-                if getattr(myEp, 'writer', None):
-                    writer = etree.SubElement(episode, "credits")
-                    writer.text = myEp['writer']
+                if myEp.get('writers') and isinstance(myEp['writers'], list):
+                    for writer in myEp['writers']:
+                        cur_writer = etree.SubElement(episode, "credits")
+                        cur_writer.text = writer
 
-                if getattr(myShow, '_actors', None) or getattr(myEp, 'guestStars', None):
+                if myEp.get('guestStars') and isinstance(myEp['guestStars'], list):
                     cast = etree.SubElement(episode, "cast")
-                    if getattr(myEp, 'guestStars', None) and isinstance(myEp['guestStars'], six.string_types):
-                        for actor in (x.strip() for x in myEp['guestStars'].split('|') if x.strip()):
-                            cur_actor = etree.SubElement(cast, "actor")
-                            cur_actor.text = actor
-
-                    if getattr(myShow, '_actors', None):
-                        for actor in myShow['_actors']:
-                            if 'name' in actor and actor['name'].strip():
-                                cur_actor = etree.SubElement(cast, "actor")
-                                cur_actor.text = actor['name'].strip()
+                    for actor in myEp['guestStars']:
+                        cur_actor = etree.SubElement(cast, "actor")
+                        cur_actor.text = actor
 
             else:
                 # append data from (if any) related episodes

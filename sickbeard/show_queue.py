@@ -354,7 +354,7 @@ class QueueItemAdd(ShowQueueItem):
             # if the show has no episodes/seasons
             if not s:
                 error_string = 'Show {0} is on {1} but contains no season/episode data.'.format(
-                    s[b'seriesName'], sickchill.indexer.name(self.indexer))
+                    s.seriesName, sickchill.indexer.name(self.indexer))
 
                 logger.log(error_string)
                 ui.notifications.error('Unable to add show', error_string)

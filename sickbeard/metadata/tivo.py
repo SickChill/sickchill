@@ -165,7 +165,7 @@ class TIVOMetadata(generic.GenericMetadata):
 
         eps_to_write = [ep_obj] + ep_obj.relatedEps
 
-        myShow = sickchill.indexer.series(ep_obj.show)
+        myShow = ep_obj.idxr.series_from_episode(ep_obj)
         if not myShow:
             logger.log("Unable to connect to {} while creating meta files for {}, skipping".format(ep_obj.indexer_name, ep_obj.name), logger.DEBUG)
             return False
@@ -177,10 +177,10 @@ class TIVOMetadata(generic.GenericMetadata):
                     curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.indexer_name))
                 return False
 
-            if ep_obj.season == 0 and not getattr(myEp, 'firstAired', None):
-                myEp["firstAired"] = str(datetime.date.fromordinal(1))
+            if str(ep_obj.airdate) != str(datetime.date.fromordinal(1)) and not myEp.get('firstAired'):
+                myEp["firstAired"] = str(ep_obj.airdate)
 
-            if not (getattr(myEp, 'episodeName', None) or not getattr(myEp, 'firstAired', None)):
+            if not (myEp.get('episodeName') and myEp.get('firstAired')):
                 return None
 
             if myShow.seriesName:
@@ -232,14 +232,12 @@ class TIVOMetadata(generic.GenericMetadata):
                 data += ("originalAirDate : " + str(curEpToWrite.airdate) + "T00:00:00Z\n")
 
             # This shows up at the beginning of the description on the Program screen and on the Details screen.
-            data = ep_obj.idxr.actors(myShow)
-            if data:
-                for actor in data:
-                    if 'name' in actor and actor['name'].strip():
-                        data += ("vActor : " + actor['name'].strip() + "\n")
+            for actor in ep_obj.idxr.actors(myShow):
+                if 'name' in actor and actor['name'].strip():
+                    data += ("vActor : " + actor['name'].strip() + "\n")
 
             # This is shown on both the Program screen and the Details screen.
-            if getattr(myEp, 'siteRating', None):
+            if myEp.get('siteRating'):
                 try:
                     rating = float(myEp['siteRating'])
                 except ValueError:
@@ -252,7 +250,7 @@ class TIVOMetadata(generic.GenericMetadata):
             # This is shown on both the Program screen and the Details screen.
             # It uses the standard TV rating system of: TV-Y7, TV-Y, TV-G, TV-PG, TV-14, TV-MA and TV-NR.
             if getattr(myShow, 'rating', None):
-                data += ("tvRating : " + str(myShow.rating) + "\n")
+                data += ("tvRating : " + str(str(myShow.rating)) + "\n")
 
             # This field can be repeated as many times as necessary or omitted completely.
             if ep_obj.show.genre:

@@ -185,7 +185,7 @@ class WDTVMetadata(generic.GenericMetadata):
 
         eps_to_write = [ep_obj] + ep_obj.relatedEps
 
-        myShow = sickchill.indexer.series(ep_obj.show)
+        myShow = ep_obj.idxr.series_from_episode(ep_obj)
 
         rootNode = etree.Element("details")
 
@@ -195,13 +195,13 @@ class WDTVMetadata(generic.GenericMetadata):
             if not myEp:
                 logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
                            "has it been removed? Should I delete from db?".format(
-                    curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.show.idxr.name))
+                    curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.idxr.name))
                 return None
 
-            if ep_obj.season == 0 and not getattr(myEp, 'firstAired', None):
-                myEp["firstAired"] = str(datetime.date.fromordinal(1))
+            if str(ep_obj.airdate) != str(datetime.date.fromordinal(1)) and not myEp.get('firstAired'):
+                myEp["firstAired"] = str(ep_obj.airdate)
 
-            if not (getattr(myEp, 'episodeName', None) and getattr(myEp, 'firstAired', None)):
+            if not (myEp.get('episodeName') and myEp.get('firstAired')):
                 return None
 
             if len(eps_to_write) > 1:
@@ -209,16 +209,16 @@ class WDTVMetadata(generic.GenericMetadata):
             else:
                 episode = rootNode
 
-            # TODO: get right EpisodeID
-            episodeID = etree.SubElement(episode, "id")
-            episodeID.text = str(curEpToWrite.indexerid)
+            if myEp.get('id'):
+                episodeID = etree.SubElement(episode, "id")
+                episodeID.text = str(myEp['id'])
 
             title = etree.SubElement(episode, "title")
             title.text = ep_obj.pretty_name()
 
             if getattr(myShow, 'seriesName', None):
                 seriesName = etree.SubElement(episode, "series_name")
-                seriesName.text = myShow["seriesName"]
+                seriesName.text = myShow.seriesName
 
             if curEpToWrite.name:
                 episodeName = etree.SubElement(episode, "episode_name")
@@ -237,7 +237,7 @@ class WDTVMetadata(generic.GenericMetadata):
 
             if getattr(myShow, 'firstAired', None):
                 try:
-                    year_text = str(datetime.datetime.strptime(myShow["firstAired"], dateFormat).year)
+                    year_text = str(datetime.datetime.strptime(myShow.firstAired, dateFormat).year)
                     if year_text:
                         year = etree.SubElement(episode, "year")
                         year.text = year_text
@@ -246,29 +246,30 @@ class WDTVMetadata(generic.GenericMetadata):
 
             if curEpToWrite.season != 0 and getattr(myShow, 'runtime', None):
                 runtime = etree.SubElement(episode, "runtime")
-                runtime.text = myShow["runtime"]
+                runtime.text = myShow.runtime
 
             if getattr(myShow, 'genre', None):
                 genre = etree.SubElement(episode, "genre")
-                genre.text = " / ".join([x.strip() for x in myShow["genre"].split('|') if x.strip()])
+                genre.text = " / ".join(myShow.genre)
 
-            if getattr(myEp, 'director', None):
-                director = etree.SubElement(episode, "director")
-                director.text = myEp['director']
+            if myEp.get('directors') and isinstance(myEp['directors'], list):
+                for director in myEp['directors']:
+                    director_element = etree.SubElement(episode, "director")
+                    director_element.text = director
 
-            if getattr(myShow, '_actors', None):
-                for actor in myShow['_actors']:
-                    if not ('name' in actor and actor['name'].strip()):
-                        continue
+            data = ep_obj.idxr.actors(myShow)
+            for actor in data:
+                if not ('name' in actor and actor['name'].strip()):
+                    continue
 
-                    cur_actor = etree.SubElement(episode, "actor")
+                cur_actor = etree.SubElement(episode, "actor")
 
-                    cur_actor_name = etree.SubElement(cur_actor, "name")
-                    cur_actor_name.text = actor['name']
+                cur_actor_name = etree.SubElement(cur_actor, "name")
+                cur_actor_name.text = actor['name']
 
-                    if 'role' in actor and actor['role'].strip():
-                        cur_actor_role = etree.SubElement(cur_actor, "role")
-                        cur_actor_role.text = actor['role'].strip()
+                if 'role' in actor and actor['role'].strip():
+                    cur_actor_role = etree.SubElement(cur_actor, "role")
+                    cur_actor_role.text = actor['role'].strip()
 
             if curEpToWrite.description:
                 overview = etree.SubElement(episode, "overview")

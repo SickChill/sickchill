@@ -240,7 +240,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
 
         tv_node = etree.Element("Series")
 
-        myShow = sickchill.indexer.series(show_obj)
+        myShow = show_obj.idxr.series(show_obj)
         if not myShow:
             logger.log("Unable to find show with id {} on {}, skipping it".format(show_obj.indexerid, show_obj.indexer_name), logger.ERROR)
             return False
@@ -376,9 +376,9 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             'Writer': []
         }
 
-        myShow = sickchill.indexer.series(ep_obj.show)
+        myShow = ep_obj.idxr.series_from_episode(ep_obj)
         if not myShow:
-            logger.log("Unable to connect to {} while creating meta files - skipping".format(ep_obj.show.idxr.name))
+            logger.log("Unable to connect to {} while creating meta files - skipping".format(ep_obj.idxr.name))
             return False
 
         rootNode = etree.Element("Item")
@@ -395,10 +395,12 @@ class MediaBrowserMetadata(generic.GenericMetadata):
 
                 # default to today's date for specials if firstAired is not set
                 if ep_obj.season == 0 and 'firstAired' not in myEp:
-                    if ep_obj.show and ep_obj.show.startyear:
+                    if str(ep_obj.airdate) != str(datetime.date.fromordinal(1)):
+                        myEp['firstAired'] = str(ep_obj.airdate)
+                    elif ep_obj.show and ep_obj.show.startyear:
                         myEp['firstAired'] = str(datetime.date.fromordinal(1).replace(year=ep_obj.show.startyear))
                     else:
-                        myEp['firstAired'] = str(datetime.date.fromordinal(1))
+                        myEp['firstAired'] = str(datetime.date.today())
 
                 if 'episodeName' not in myEp or 'firstAired' not in myEp:
                     return None
@@ -424,7 +426,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 SeasonNumber = etree.SubElement(episode, "SeasonNumber")
                 SeasonNumber.text = str(curEpToWrite.season)
 
-                if not ep_obj.relatedEps and getattr(myEp, 'absoluteNumber', None):
+                if not ep_obj.relatedEps and myEp.get('absoluteNumber'):
                     absolute_number = etree.SubElement(episode, "absolute_number")
                     absolute_number.text = str(myEp['absoluteNumber'])
 
@@ -459,12 +461,13 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                             IMDbId = etree.SubElement(episode, "IMDbId")
                             IMDbId.text = data
 
-                indexerid = etree.SubElement(episode, "id")
-                indexerid.text = str(curEpToWrite.indexerid)
+                if myEp.get('id'):
+                    indexerid = etree.SubElement(episode, "id")
+                    indexerid.text = str(myEp['id'])
 
                 Persons = etree.SubElement(episode, "Persons")
 
-                data = ep_obj.show.idxr.actors(myShow)
+                data = ep_obj.idxr.actors(myShow)
                 for actor in data:
                     if not ('name' in actor and actor['name'].strip()):
                         continue
@@ -482,7 +485,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                         cur_actor_role.text = actor['role'].strip()
 
                 Language = etree.SubElement(episode, "Language")
-                Language.text = getattr(myEp, 'language', sickbeard.INDEXER_DEFAULT_LANGUAGE)
+                Language.text = myEp.get('language', sickbeard.INDEXER_DEFAULT_LANGUAGE)
 
                 if 'filename' in myEp and myEp['filename']:
                     thumb = etree.SubElement(episode, "filename")

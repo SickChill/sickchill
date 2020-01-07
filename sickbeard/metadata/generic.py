@@ -421,7 +421,6 @@ class GenericMetadata(object):
         """
 
         data = self._ep_data(ep_obj)
-
         if not data:
             return False
 

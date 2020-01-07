@@ -54,6 +54,14 @@ class TVDB(Indexer):
         result.info(language=language)
         return result
 
+    def series_from_show(self, show):
+        result = self.series(show.indexerid, show.lang)
+        result.info(language=show.lang)
+        return result
+
+    def series_from_episode(self, episode):
+        return self.series_from_show(episode.show)
+
     def get_series_by_name(self, name, indexerid=None, language=None):
         if indexerid:
             return self.get_series_by_id(indexerid, language)
@@ -74,7 +82,7 @@ class TVDB(Indexer):
 
         return result
 
-    def episode(self, item, season=None, episode=None):
+    def episode(self, item, season=None, episode=None, **kwargs):
         if isinstance(item, TVEpisode):
             show = item.show
             season = item.season
@@ -84,9 +92,9 @@ class TVDB(Indexer):
 
         try:
             if show.dvdorder:
-                result = self.series_episodes(show.indexerid, dvdSeason=season, dvdEpisode=episode, language=show.lang).all()[0]
+                result = self.series_episodes(show.indexerid, dvdSeason=season, dvdEpisode=episode, language=show.lang, **kwargs).all()[0]
             else:
-                result = self.series_episodes(show.indexerid, airedSeason=season, airedEpisode=episode, language=show.lang).all()[0]
+                result = self.series_episodes(show.indexerid, airedSeason=season, airedEpisode=episode, language=show.lang, **kwargs).all()[0]
         except (HTTPError, IndexError):
             result = None
 
@@ -135,7 +143,10 @@ class TVDB(Indexer):
     @staticmethod
     def actors(series):
         if hasattr(series, 'actors') and callable(series.actors):
-            series.actors()
+            try:
+                series.actors(series.language)
+            except HTTPError:
+                return []
         return series.actors
 
     def series_poster_url(self, show, thumb=False):

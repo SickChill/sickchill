@@ -69,7 +69,7 @@ class Notifier(object):
                         {
                             'title': ep_obj.show.name,
                             'year': ep_obj.show.startyear,
-                            'ids': {ep_obj.show.idxr.slug: ep_obj.show.indexerid},
+                            'ids': {ep_obj.idxr.slug: ep_obj.show.indexerid},
                         }
                     ]
                 }
