@@ -160,7 +160,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                 cur_genre = etree.SubElement(tv_node, "genre")
                 cur_genre.text = genre
 
-        if 'country_codes' in show_obj.imdb_info:
+        if show_obj.imdb_info.get('country_codes'):
             for country in self._split_info(show_obj.imdb_info['country_codes']):
                 try:
                     cur_country_name = Country(country.upper()).name.title()
@@ -177,16 +177,6 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         if getattr(myShow, 'network', None):
             studio = etree.SubElement(tv_node, "studio")
             studio.text = myShow.network.strip()
-
-        if getattr(myShow, 'writer', None) and isinstance(myShow.writer, six.string_types):
-            for writer in self._split_info(myShow.writer):
-                cur_writer = etree.SubElement(tv_node, "credits")
-                cur_writer.text = writer
-
-        if getattr(myShow, 'director', None) and isinstance(myShow.director, six.string_types):
-            for director in self._split_info(myShow.director):
-                cur_director = etree.SubElement(tv_node, "director")
-                cur_director.text = director
 
         data = show_obj.idxr.actors(myShow)
         if data:
