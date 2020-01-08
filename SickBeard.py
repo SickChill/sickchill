@@ -44,8 +44,9 @@ if (2, 7, 99) < sys.version_info or sys.version_info < (2, 7, 9):
     print('Sorry, requires Python at least 2.7.9 but less than 3')
     sys.exit(1)
 
-import ssl
-ssl._create_default_https_context = ssl._create_unverified_context  # TODO: Not sure we need this anymore
+if sys.version_info > (2, 7, 9):
+    import ssl
+    ssl._create_default_https_context = ssl._create_unverified_context  # TODO: Not sure we need this anymore
 
 # Fix mimetypes on misconfigured systems
 import mimetypes

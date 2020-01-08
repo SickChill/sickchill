@@ -37,6 +37,7 @@ import shutil
 import socket
 import ssl
 import stat
+import sys
 import time
 import traceback
 import uuid
@@ -1248,7 +1249,7 @@ def touchFile(fname, atime=None):
 
 
 def make_session(use_cfscrape=True):
-    if use_cfscrape:
+    if use_cfscrape and sys.version_info < (2, 7, 9):
         session = cloudscraper.create_scraper()
     else:
         session = cfscrape.create_scraper()
