@@ -40,15 +40,12 @@ import traceback
 codecs.register(lambda name: codecs.lookup('utf-8') if name == 'cp65001' else None)
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), 'lib')))
 
-if (2, 7, 99) < sys.version_info < (2, 7):
-    print('Sorry, requires Python 2.7')
+if (2, 7, 99) < sys.version_info or sys.version_info < (2, 7, 9):
+    print('Sorry, requires Python at least 2.7.9 but less than 3')
     sys.exit(1)
 
-# https://mail.python.org/pipermail/python-dev/2014-September/136300.html
-if sys.version_info >= (2, 7, 9):
-    import ssl
-    ssl._create_default_https_context = ssl._create_unverified_context
-
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context  # TODO: Not sure we need this anymore
 
 # Fix mimetypes on misconfigured systems
 import mimetypes
