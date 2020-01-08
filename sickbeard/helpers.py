@@ -50,6 +50,7 @@ import adba
 import bencode
 import certifi
 import cfscrape
+import cloudscraper
 import rarfile
 import requests
 import six
@@ -1246,8 +1247,12 @@ def touchFile(fname, atime=None):
     return False
 
 
-def make_session():
-    session = cfscrape.create_scraper()
+def make_session(use_cfscrape=True):
+    if use_cfscrape:
+        session = cloudscraper.create_scraper()
+    else:
+        session = cfscrape.create_scraper()
+
     session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
 
     return CacheControl(sess=session, cache_etags=True)
