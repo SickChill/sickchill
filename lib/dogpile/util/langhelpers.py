@@ -1,5 +1,6 @@
-import re
 import collections
+import re
+
 from . import compat
 
 
@@ -11,13 +12,13 @@ def coerce_string_conf(d):
             continue
 
         v = v.strip()
-        if re.match(r'^[-+]?\d+$', v):
+        if re.match(r"^[-+]?\d+$", v):
             result[k] = int(v)
-        elif re.match(r'^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?$', v):
+        elif re.match(r"^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?$", v):
             result[k] = float(v)
-        elif v.lower() in ('false', 'true'):
-            result[k] = v.lower() == 'true'
-        elif v == 'None':
+        elif v.lower() in ("false", "true"):
+            result[k] = v.lower() == "true"
+        elif v == "None":
             result[k] = None
         else:
             result[k] = v
@@ -34,8 +35,8 @@ class PluginLoader(object):
             return self.impls[name]()
         else:  # pragma NO COVERAGE
             import pkg_resources
-            for impl in pkg_resources.iter_entry_points(
-                    self.group, name):
+
+            for impl in pkg_resources.iter_entry_points(self.group, name):
                 self.impls[name] = impl.load
                 return impl.load()
             else:
@@ -47,6 +48,7 @@ class PluginLoader(object):
         def load():
             mod = __import__(modulepath, fromlist=[objname])
             return getattr(mod, objname)
+
         self.impls[name] = load
 
     class NotFound(Exception):
@@ -55,6 +57,7 @@ class PluginLoader(object):
 
 class memoized_property(object):
     """A read-only @property that is only evaluated once."""
+
     def __init__(self, fget, doc=None):
         self.fget = fget
         self.__doc__ = doc or fget.__doc__
@@ -78,7 +81,6 @@ def to_list(x, default=None):
 
 
 class KeyReentrantMutex(object):
-
     def __init__(self, key, mutex, keys):
         self.key = key
         self.mutex = mutex
@@ -93,13 +95,13 @@ class KeyReentrantMutex(object):
 
         def fac(key):
             return KeyReentrantMutex(key, mutex, keystore)
+
         return fac
 
     def acquire(self, wait=True):
         current_thread = compat.threading.current_thread().ident
         keys = self.keys.get(current_thread)
-        if keys is not None and \
-                self.key not in keys:
+        if keys is not None and self.key not in keys:
             # current lockholder, new key. add it in
             keys.add(self.key)
             return True

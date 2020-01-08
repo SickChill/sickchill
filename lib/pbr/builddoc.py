@@ -57,6 +57,9 @@ from pbr import options
 from pbr import version
 
 
+_deprecated_options = ['autodoc_tree_index_modules', 'autodoc_index_modules',
+                       'autodoc_tree_excludes', 'autodoc_exclude_modules']
+_deprecated_envs = ['AUTODOC_TREE_INDEX_MODULES', 'AUTODOC_INDEX_MODULES']
 _rst_template = """%(heading)s
 %(underline)s
 
@@ -129,11 +132,11 @@ class LocalBuildDoc(setup_command.BuildDoc):
                 autoindex.write("   %s.rst\n" % module)
 
     def _sphinx_tree(self):
-            source_dir = self._get_source_dir()
-            cmd = ['-H', 'Modules', '-o', source_dir, '.']
-            if apidoc_use_padding:
-                cmd.insert(0, 'apidoc')
-            apidoc.main(cmd + self.autodoc_tree_excludes)
+        source_dir = self._get_source_dir()
+        cmd = ['-H', 'Modules', '-o', source_dir, '.']
+        if apidoc_use_padding:
+            cmd.insert(0, 'apidoc')
+        apidoc.main(cmd + self.autodoc_tree_excludes)
 
     def _sphinx_run(self):
         if not self.verbose:
@@ -181,6 +184,23 @@ class LocalBuildDoc(setup_command.BuildDoc):
 
     def run(self):
         option_dict = self.distribution.get_option_dict('pbr')
+
+        # TODO(stephenfin): Remove this (and the entire file) when 5.0 is
+        # released
+        warn_opts = set(option_dict.keys()).intersection(_deprecated_options)
+        warn_env = list(filter(lambda x: os.getenv(x), _deprecated_envs))
+        if warn_opts or warn_env:
+            msg = ('The autodoc and autodoc_tree features are deprecated in '
+                   '4.2 and will be removed in a future release. You should '
+                   'use the sphinxcontrib-apidoc Sphinx extension instead. '
+                   'Refer to the pbr documentation for more information.')
+            if warn_opts:
+                msg += ' Deprecated options: %s' % list(warn_opts)
+            if warn_env:
+                msg += ' Deprecated environment variables: %s' % warn_env
+
+            log.warn(msg)
+
         if git._git_is_installed():
             git.write_git_changelog(option_dict=option_dict)
             git.generate_authors(option_dict=option_dict)
@@ -228,7 +248,7 @@ class LocalBuildDoc(setup_command.BuildDoc):
             return setup_command.BuildDoc.run(self)
 
         # Sphinx < 1.6
-        for builder in self.builder:
+        for builder in self.builders:
             self.builder = builder
             self.finalize_options()
             self._sphinx_run()

@@ -8,7 +8,7 @@ from rebulk.remodule import re
 from rebulk import Rebulk
 from ..common import dash
 from ..common.pattern import is_disabled
-from ..common.validators import seps_surround, int_coercable, compose
+from ..common.validators import seps_surround, int_coercable, and_
 from ..common.numeral import numeral, parse_numeral
 from ...reutils import build_or_pattern
 
@@ -41,6 +41,6 @@ def part(config):  # pylint:disable=unused-argument
 
     rebulk.regex(build_or_pattern(prefixes) + r'-?(?P<part>' + numeral + r')',
                  prefixes=prefixes, validate_all=True, private_parent=True, children=True, formatter=parse_numeral,
-                 validator={'part': compose(validate_roman, lambda m: 0 < m.value < 100)})
+                 validator={'part': and_(validate_roman, lambda m: 0 < m.value < 100)})
 
     return rebulk

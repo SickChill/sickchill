@@ -1,5 +1,6 @@
-from .compat import threading
 import weakref
+
+from .compat import threading
 
 
 class NameRegistry(object):
@@ -37,6 +38,7 @@ class NameRegistry(object):
      method.
 
     """
+
     _locks = weakref.WeakValueDictionary()
     _mutex = threading.RLock()
 
@@ -50,7 +52,7 @@ class NameRegistry(object):
         self.creator = creator
 
     def get(self, identifier, *args, **kw):
-        """Get and possibly create the value.
+        r"""Get and possibly create the value.
 
         :param identifier: Hash key for the value.
          If the creation function is called, this identifier
@@ -75,10 +77,14 @@ class NameRegistry(object):
                 if identifier in self._values:
                     return self._values[identifier]
                 else:
-                    self._values[identifier] = value = self.creator(identifier, *args, **kw)
+                    self._values[identifier] = value = self.creator(
+                        identifier, *args, **kw
+                    )
                     return value
             except KeyError:
-                self._values[identifier] = value = self.creator(identifier, *args, **kw)
+                self._values[identifier] = value = self.creator(
+                    identifier, *args, **kw
+                )
                 return value
         finally:
             self._mutex.release()

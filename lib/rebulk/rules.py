@@ -65,7 +65,7 @@ class CustomRule(Condition, Consequence):
     """
     Definition of a rule to apply
     """
-
+    # pylint: disable=no-self-use, unused-argument, abstract-method
     priority = 0
     name = None
     dependency = None
@@ -127,7 +127,7 @@ class Rule(CustomRule):
             cons.then(matches, when_response, context)
 
 
-class RemoveMatch(Consequence):
+class RemoveMatch(Consequence):  # pylint: disable=abstract-method
     """
     Remove matches returned by then
     """
@@ -145,7 +145,7 @@ class RemoveMatch(Consequence):
             return when_response
 
 
-class AppendMatch(Consequence):
+class AppendMatch(Consequence):  # pylint: disable=abstract-method
     """
     Append matches returned by then
     """
@@ -170,7 +170,7 @@ class AppendMatch(Consequence):
             return when_response
 
 
-class RenameMatch(Consequence):
+class RenameMatch(Consequence):  # pylint: disable=abstract-method
     """
     Rename matches returned by then
     """
@@ -191,7 +191,7 @@ class RenameMatch(Consequence):
             self.append.then(matches, removed, context)
 
 
-class AppendTags(Consequence):
+class AppendTags(Consequence):  # pylint: disable=abstract-method
     """
     Add tags to returned matches
     """
@@ -207,12 +207,12 @@ class AppendTags(Consequence):
             for match in removed:
                 match.tags.extend(self.tags)
         elif removed:
-            removed.tags.extend(self.tags)
+            removed.tags.extend(self.tags)  # pylint: disable=no-member
         if removed:
             self.append.then(matches, removed, context)
 
 
-class RemoveTags(Consequence):
+class RemoveTags(Consequence):  # pylint: disable=abstract-method
     """
     Remove tags from returned matches
     """
@@ -231,8 +231,8 @@ class RemoveTags(Consequence):
                         match.tags.remove(tag)
         elif removed:
             for tag in self.tags:
-                if tag in removed.tags:
-                    removed.tags.remove(tag)
+                if tag in removed.tags:  # pylint: disable=no-member
+                    removed.tags.remove(tag)  # pylint: disable=no-member
         if removed:
             self.append.then(matches, removed, context)
 
@@ -272,7 +272,7 @@ class Rules(list):
         :return:
         :rtype:
         """
-
+        # pylint: disable=unused-variable
         for name, obj in inspect.getmembers(module,
                                             lambda member: hasattr(member, '__module__')
                                             and member.__module__ == module.__name__

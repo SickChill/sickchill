@@ -42,7 +42,7 @@ class _BaseMatches(MutableSequence):
     _base_remove = _base.remove
     _base_extend = _base.extend
 
-    def __init__(self, matches=None, input_string=None):
+    def __init__(self, matches=None, input_string=None):  # pylint: disable=super-init-not-called
         self.input_string = input_string
         self._max_end = 0
         self._delegate = []
@@ -377,7 +377,7 @@ class _BaseMatches(MutableSequence):
         return self.max_end
 
     def holes(self, start=0, end=None, formatter=None, ignore=None, seps=None, predicate=None,
-              index=None):
+              index=None):  # pylint: disable=too-many-branches,too-many-locals
         """
         Retrieves a set of Match objects that are not defined in given range.
         :param start:
@@ -610,7 +610,7 @@ class Match(object):
 
     def __init__(self, start, end, value=None, name=None, tags=None, marker=None, parent=None, private=None,
                  pattern=None, input_string=None, formatter=None, conflict_solver=None, **kwargs):
-
+        # pylint: disable=unused-argument
         self.start = start
         self.end = end
         self.name = name
@@ -670,7 +670,7 @@ class Match(object):
         :return:
         :rtype:
         """
-        self._value = value
+        self._value = value  # pylint: disable=attribute-defined-outside-init
 
     @property
     def names(self):
@@ -814,6 +814,24 @@ class Match(object):
                     split_match = None
 
         return filter_index(ret, predicate, index)
+
+    def tagged(self, *tags):
+        """
+        Check if this match has at least one of the provided tags
+
+        :param tags:
+        :return: True if at least one tag is defined, False otherwise.
+        """
+        return any(tag in self.tags for tag in tags)
+
+    def named(self, *names):
+        """
+        Check if one of the children match has one of the provided name
+
+        :param names:
+        :return: True if at least one child is named with a given name is defined, False otherwise.
+        """
+        return any(name in self.names for name in names)
 
     def __len__(self):
         return self.end - self.start

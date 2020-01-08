@@ -56,24 +56,23 @@ to be an installation dependency for our packages yet--it is still too unstable
 # irritating Python bug that can crop up when using ./setup.py test.
 # See: http://www.eby-sarna.com/pipermail/peak/2010-May/003355.html
 try:
-    import multiprocessing  # flake8: noqa
+    import multiprocessing  # noqa
 except ImportError:
     pass
-import logging  # flake8: noqa
+import logging  # noqa
 
+from collections import defaultdict
+import io
 import os
 import re
+import shlex
 import sys
 import traceback
 
-from collections import defaultdict
-
 import distutils.ccompiler
-import pkg_resources
-
-from distutils import log
 from distutils import errors
-from setuptools.command.egg_info import manifest_maker
+from distutils import log
+import pkg_resources
 from setuptools import dist as st_dist
 from setuptools import extension
 
@@ -114,7 +113,9 @@ D1_D2_SETUP_ARGS = {
     # broken distutils requires
     "install_requires": ("metadata", "requires_dist"),
     "setup_requires": ("metadata", "setup_requires_dist"),
+    "python_requires": ("metadata",),
     "provides": ("metadata", "provides_dist"),  # **
+    "provides_extras": ("metadata",),
     "obsoletes": ("metadata", "obsoletes_dist"),  # **
     "package_dir": ("files", 'packages_root'),
     "packages": ("files",),
@@ -148,7 +149,9 @@ MULTI_FIELDS = ("classifiers",
                 "dependency_links",
                 "setup_requires",
                 "tests_require",
-                "cmdclass")
+                "keywords",
+                "cmdclass",
+                "provides_extras")
 
 # setup() arguments that can have mapping values in setup.cfg
 MAP_FIELDS = ("project_urls",)
@@ -156,8 +159,17 @@ MAP_FIELDS = ("project_urls",)
 # setup() arguments that contain boolean values
 BOOL_FIELDS = ("use_2to3", "zip_safe", "include_package_data")
 
+CSV_FIELDS = ()
 
-CSV_FIELDS = ("keywords",)
+
+def shlex_split(path):
+    if os.name == 'nt':
+        # shlex cannot handle paths that contain backslashes, treating those
+        # as escape characters.
+        path = path.replace("\\", "/")
+        return [x.replace("/", "\\") for x in shlex.split(path)]
+
+    return shlex.split(path)
 
 
 def resolve_name(name):
@@ -207,10 +219,11 @@ def cfg_to_args(path='setup.cfg', script_args=()):
     """
 
     # The method source code really starts here.
-    if sys.version_info >= (3, 2):
-            parser = configparser.ConfigParser()
+    if sys.version_info >= (3, 0):
+        parser = configparser.ConfigParser()
     else:
-            parser = configparser.SafeConfigParser()
+        parser = configparser.SafeConfigParser()
+
     if not os.path.exists(path):
         raise errors.DistutilsFileError("file '%s' does not exist" %
                                         os.path.abspath(path))
@@ -243,11 +256,11 @@ def cfg_to_args(path='setup.cfg', script_args=()):
                 if hook != 'pbr.hooks.setup_hook']
             for hook in setup_hooks:
                 hook_fn = resolve_name(hook)
-                try :
+                try:
                     hook_fn(config)
                 except SystemExit:
                     log.error('setup hook %s terminated the installation')
-                except:
+                except Exception:
                     e = sys.exc_info()[1]
                     log.error('setup hook %s raised exception: %s\n' %
                               (hook, e))
@@ -287,7 +300,9 @@ def cfg_to_args(path='setup.cfg', script_args=()):
 
 
 def setup_cfg_to_setup_kwargs(config, script_args=()):
-    """Processes the setup.cfg options and converts them to arguments accepted
+    """Convert config options to kwargs.
+
+    Processes the setup.cfg options and converts them to arguments accepted
     by setuptools' setup() function.
     """
 
@@ -317,7 +332,7 @@ def setup_cfg_to_setup_kwargs(config, script_args=()):
                     in_cfg_value = split_multiline(in_cfg_value)
                     value = ''
                     for filename in in_cfg_value:
-                        description_file = open(filename)
+                        description_file = io.open(filename, encoding='utf-8')
                         try:
                             value += description_file.read().strip() + '\n\n'
                         finally:
@@ -333,7 +348,7 @@ def setup_cfg_to_setup_kwargs(config, script_args=()):
         elif arg in MAP_FIELDS:
             in_cfg_map = {}
             for i in split_multiline(in_cfg_value):
-                k, v = i.split('=')
+                k, v = i.split('=', 1)
                 in_cfg_map[k.strip()] = v.strip()
             in_cfg_value = in_cfg_map
         elif arg in BOOL_FIELDS:
@@ -353,12 +368,13 @@ def setup_cfg_to_setup_kwargs(config, script_args=()):
                 # Split install_requires into package,env_marker tuples
                 # These will be re-assembled later
                 install_requires = []
-                requirement_pattern = '(?P<package>[^;]*);?(?P<env_marker>[^#]*?)(?:\s*#.*)?$'
+                requirement_pattern = (
+                    r'(?P<package>[^;]*);?(?P<env_marker>[^#]*?)(?:\s*#.*)?$')
                 for requirement in in_cfg_value:
                     m = re.match(requirement_pattern, requirement)
                     requirement_package = m.group('package').strip()
                     env_marker = m.group('env_marker').strip()
-                    install_requires.append((requirement_package,env_marker))
+                    install_requires.append((requirement_package, env_marker))
                 all_requirements[''] = install_requires
             elif arg == 'package_dir':
                 in_cfg_value = {'': in_cfg_value}
@@ -369,21 +385,22 @@ def setup_cfg_to_setup_kwargs(config, script_args=()):
                 for line in in_cfg_value:
                     if '=' in line:
                         key, value = line.split('=', 1)
-                        key, value = (key.strip(), value.strip())
+                        key_unquoted = shlex_split(key.strip())[0]
+                        key, value = (key_unquoted, value.strip())
                         if key in data_files:
                             # Multiple duplicates of the same package name;
                             # this is for backwards compatibility of the old
                             # format prior to d2to1 0.2.6.
                             prev = data_files[key]
-                            prev.extend(value.split())
+                            prev.extend(shlex_split(value))
                         else:
-                            prev = data_files[key.strip()] = value.split()
+                            prev = data_files[key.strip()] = shlex_split(value)
                     elif firstline:
                         raise errors.DistutilsOptionError(
                             'malformed package_data first line %r (misses '
                             '"=")' % line)
                     else:
-                        prev.extend(line.strip().split())
+                        prev.extend(shlex_split(line.strip()))
                     firstline = False
                 if arg == 'data_files':
                     # the data_files value is a pointlessly different structure
@@ -413,7 +430,8 @@ def setup_cfg_to_setup_kwargs(config, script_args=()):
     # -> {'fred': ['bar'], 'fred:marker':['foo']}
 
     if 'extras' in config:
-        requirement_pattern = '(?P<package>[^:]*):?(?P<env_marker>[^#]*?)(?:\s*#.*)?$'
+        requirement_pattern = (
+            r'(?P<package>[^:]*):?(?P<env_marker>[^#]*?)(?:\s*#.*)?$')
         extras = config['extras']
         # Add contents of test-requirements, if any, into an extra named
         # 'test' if one does not already exist.
@@ -429,7 +447,7 @@ def setup_cfg_to_setup_kwargs(config, script_args=()):
                 m = re.match(requirement_pattern, requirement)
                 extras_value = m.group('package').strip()
                 env_marker = m.group('env_marker')
-                extra_requirements.append((extras_value,env_marker))
+                extra_requirements.append((extras_value, env_marker))
             all_requirements[extra] = extra_requirements
 
     # Transform the full list of requirements into:
@@ -458,7 +476,7 @@ def setup_cfg_to_setup_kwargs(config, script_args=()):
                             "Marker evaluation failed, see the following "
                             "error.  For more information see: "
                             "http://docs.openstack.org/"
-                            "developer/pbr/compatibility.html#evaluate-marker"
+                            "pbr/latest/user/using.html#environment-markers"
                         )
                         raise
             else:
@@ -472,9 +490,10 @@ def setup_cfg_to_setup_kwargs(config, script_args=()):
 
 
 def register_custom_compilers(config):
-    """Handle custom compilers; this has no real equivalent in distutils, where
-    additional compilers could only be added programmatically, so we have to
-    hack it in somehow.
+    """Handle custom compilers.
+
+    This has no real equivalent in distutils, where additional compilers could
+    only be added programmatically, so we have to hack it in somehow.
     """
 
     compilers = has_get_option(config, 'global', 'compilers')
@@ -496,7 +515,7 @@ def register_custom_compilers(config):
 
             module_name = compiler.__module__
             # Note; this *will* override built in compilers with the same name
-            # TODO: Maybe display a warning about this?
+            # TODO(embray): Maybe display a warning about this?
             cc = distutils.ccompiler.compiler_class
             cc[name] = (module_name, compiler.__name__, desc)
 
@@ -559,13 +578,14 @@ def get_extension_modules(config):
 
 
 def get_entry_points(config):
-    """Process the [entry_points] section of setup.cfg to handle setuptools
-    entry points.  This is, of course, not a standard feature of
-    distutils2/packaging, but as there is not currently a standard alternative
-    in packaging, we provide support for them.
+    """Process the [entry_points] section of setup.cfg.
+
+    Processes setup.cfg to handle setuptools entry points. This is, of course,
+    not a standard feature of distutils2/packaging, but as there is not
+    currently a standard alternative in packaging, we provide support for them.
     """
 
-    if not 'entry_points' in config:
+    if 'entry_points' not in config:
         return {}
 
     return dict((option, split_multiline(value))
@@ -599,9 +619,7 @@ def split_csv(value):
 
 # The following classes are used to hack Distribution.command_options a bit
 class DefaultGetDict(defaultdict):
-    """Like defaultdict, but the get() method also sets and returns the default
-    value.
-    """
+    """Like defaultdict, but get() also sets and returns the default value."""
 
     def get(self, key, default=None):
         if default is None:

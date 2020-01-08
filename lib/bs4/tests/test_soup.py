@@ -11,12 +11,20 @@ from bs4 import (
     BeautifulSoup,
     BeautifulStoneSoup,
 )
+from bs4.builder import (
+    TreeBuilder,
+    ParserRejectedMarkup,
+)
 from bs4.element import (
     CharsetMetaAttributeValue,
+    Comment,
     ContentMetaAttributeValue,
     SoupStrainer,
     NamespacedAttribute,
+    Tag,
+    NavigableString,
     )
+
 import bs4.dammit
 from bs4.dammit import (
     EntitySubstitution,
@@ -24,6 +32,7 @@ from bs4.dammit import (
     EncodingDetector,
 )
 from bs4.testing import (
+    default_builder,
     SoupTest,
     skipIf,
 )
@@ -32,7 +41,7 @@ import warnings
 try:
     from bs4.builder import LXMLTreeBuilder, LXMLTreeBuilderForXML
     LXML_PRESENT = True
-except ImportError, e:
+except ImportError as e:
     LXML_PRESENT = False
 
 PYTHON_3_PRE_3_2 = (sys.version_info[0] == 3 and sys.version_info < (3,2))
@@ -54,7 +63,130 @@ class TestConstructor(SoupTest):
         soup = self.soup(utf8_data, exclude_encodings=["utf-8"])
         self.assertEqual("windows-1252", soup.original_encoding)
 
+    def test_custom_builder_class(self):
+        # Verify that you can pass in a custom Builder class and
+        # it'll be instantiated with the appropriate keyword arguments.
+        class Mock(object):
+            def __init__(self, **kwargs):
+                self.called_with = kwargs
+                self.is_xml = True
+                self.store_line_numbers = False
+                self.cdata_list_attributes = []
+                self.preserve_whitespace_tags = []
+            def initialize_soup(self, soup):
+                pass
+            def feed(self, markup):
+                self.fed = markup
+            def reset(self):
+                pass
+            def ignore(self, ignore):
+                pass
+            set_up_substitutions = can_be_empty_element = ignore
+            def prepare_markup(self, *args, **kwargs):
+                yield "prepared markup", "original encoding", "declared encoding", "contains replacement characters"
+                
+        kwargs = dict(
+            var="value",
+            # This is a deprecated BS3-era keyword argument, which
+            # will be stripped out.
+            convertEntities=True,
+        )
+        with warnings.catch_warnings(record=True):
+            soup = BeautifulSoup('', builder=Mock, **kwargs)
+        assert isinstance(soup.builder, Mock)
+        self.assertEqual(dict(var="value"), soup.builder.called_with)
+        self.assertEqual("prepared markup", soup.builder.fed)
+        
+        # You can also instantiate the TreeBuilder yourself. In this
+        # case, that specific object is used and any keyword arguments
+        # to the BeautifulSoup constructor are ignored.
+        builder = Mock(**kwargs)
+        with warnings.catch_warnings(record=True) as w:
+            soup = BeautifulSoup(
+                '', builder=builder, ignored_value=True,
+            )
+        msg = str(w[0].message)
+        assert msg.startswith("Keyword arguments to the BeautifulSoup constructor will be ignored.")
+        self.assertEqual(builder, soup.builder)
+        self.assertEqual(kwargs, builder.called_with)
 
+    def test_parser_markup_rejection(self):
+        # If markup is completely rejected by the parser, an
+        # explanatory ParserRejectedMarkup exception is raised.
+        class Mock(TreeBuilder):
+            def feed(self, *args, **kwargs):
+                raise ParserRejectedMarkup("Nope.")
+
+        def prepare_markup(self, *args, **kwargs):
+            # We're going to try two different ways of preparing this markup,
+            # but feed() will reject both of them.
+            yield markup, None, None, False
+            yield markup, None, None, False
+            
+        import re
+        self.assertRaisesRegexp(
+            ParserRejectedMarkup,
+            "The markup you provided was rejected by the parser. Trying a different parser or a different encoding may help.",
+            BeautifulSoup, '', builder=Mock,
+        )
+        
+    def test_cdata_list_attributes(self):
+        # Most attribute values are represented as scalars, but the
+        # HTML standard says that some attributes, like 'class' have
+        # space-separated lists as values.
+        markup = '<a id=" an id " class=" a class "></a>'
+        soup = self.soup(markup)
+
+        # Note that the spaces are stripped for 'class' but not for 'id'.
+        a = soup.a
+        self.assertEqual(" an id ", a['id'])
+        self.assertEqual(["a", "class"], a['class'])
+
+        # TreeBuilder takes an argument called 'mutli_valued_attributes'  which lets
+        # you customize or disable this. As always, you can customize the TreeBuilder
+        # by passing in a keyword argument to the BeautifulSoup constructor.
+        soup = self.soup(markup, builder=default_builder, multi_valued_attributes=None)
+        self.assertEqual(" a class ", soup.a['class'])
+
+        # Here are two ways of saying that `id` is a multi-valued
+        # attribute in this context, but 'class' is not.
+        for switcheroo in ({'*': 'id'}, {'a': 'id'}):
+            with warnings.catch_warnings(record=True) as w:
+                # This will create a warning about not explicitly
+                # specifying a parser, but we'll ignore it.
+                soup = self.soup(markup, builder=None, multi_valued_attributes=switcheroo)
+            a = soup.a
+            self.assertEqual(["an", "id"], a['id'])
+            self.assertEqual(" a class ", a['class'])
+
+    def test_replacement_classes(self):
+        # Test the ability to pass in replacements for element classes
+        # which will be used when building the tree.
+        class TagPlus(Tag):
+            pass
+
+        class StringPlus(NavigableString):
+            pass
+
+        class CommentPlus(Comment):
+            pass
+        
+        soup = self.soup(
+            "<a><b>foo</b>bar</a><!--whee-->",
+            element_classes = {
+                Tag: TagPlus,
+                NavigableString: StringPlus,
+                Comment: CommentPlus,
+            }
+        )
+
+        # The tree was built with TagPlus, StringPlus, and CommentPlus objects,
+        # rather than Tag, String, and Comment objects.
+        assert all(
+            isinstance(x, (TagPlus, StringPlus, CommentPlus))
+            for x in soup.recursiveChildGenerator()
+        )
+        
 class TestWarnings(SoupTest):
 
     def _no_parser_specified(self, s, is_there=True):
@@ -217,7 +349,7 @@ class TestEntitySubstitution(unittest.TestCase):
         self.assertEqual(
             self.sub.substitute_xml_containing_entities("&Aacute;T&T"),
             "&Aacute;T&amp;T")
-
+       
     def test_quotes_not_html_substituted(self):
         """There's no need to do this except inside attribute values."""
         text = 'Bob\'s "bar"'
@@ -458,12 +590,61 @@ class TestUnicodeDammit(unittest.TestCase):
             output = UnicodeDammit.detwingle(input)
             self.assertEqual(output, input)
 
+    def test_find_declared_encoding(self):
+        # Test our ability to find a declared encoding inside an
+        # XML or HTML document.
+        #
+        # Even if the document comes in as Unicode, it may be
+        # interesting to know what encoding was claimed
+        # originally.
+
+        html_unicode = u'<html><head><meta charset="utf-8"></head></html>'
+        html_bytes = html_unicode.encode("ascii")
+
+        xml_unicode= u'<?xml version="1.0" encoding="ISO-8859-1" ?>'
+        xml_bytes = xml_unicode.encode("ascii")
+
+        m = EncodingDetector.find_declared_encoding
+        self.assertEquals(None, m(html_unicode, is_html=False))
+        self.assertEquals("utf-8", m(html_unicode, is_html=True))
+        self.assertEquals("utf-8", m(html_bytes, is_html=True))
+
+        self.assertEquals("iso-8859-1", m(xml_unicode))
+        self.assertEquals("iso-8859-1", m(xml_bytes))
+
+        # Normally, only the first few kilobytes of a document are checked for
+        # an encoding.
+        spacer = b' ' * 5000
+        self.assertEquals(None, m(spacer + html_bytes))
+        self.assertEquals(None, m(spacer + xml_bytes))
+
+        # But you can tell find_declared_encoding to search an entire
+        # HTML document.
+        self.assertEquals(
+            "utf-8",
+            m(spacer + html_bytes, is_html=True, search_entire_document=True)
+        )
+
+        # The XML encoding declaration has to be the very first thing
+        # in the document. We'll allow whitespace before the document
+        # starts, but nothing else.
+        self.assertEquals(
+            "iso-8859-1",
+            m(xml_bytes, search_entire_document=True)
+        )
+        self.assertEquals(
+            None, m(b'a' + xml_bytes, search_entire_document=True)
+        )
+            
 class TestNamedspacedAttribute(SoupTest):
 
-    def test_name_may_be_none(self):
+    def test_name_may_be_none_or_missing(self):
         a = NamespacedAttribute("xmlns", None)
         self.assertEqual(a, "xmlns")
 
+        a = NamespacedAttribute("xmlns")
+        self.assertEqual(a, "xmlns")
+        
     def test_attribute_is_equivalent_to_colon_separated_string(self):
         a = NamespacedAttribute("a", "b")
         self.assertEqual("a:b", a)

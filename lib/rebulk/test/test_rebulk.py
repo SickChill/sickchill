@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+# pylint: disable=no-self-use, pointless-statement, missing-docstring, no-member, len-as-condition
 
 from ..rebulk import Rebulk
 from ..rules import Rule

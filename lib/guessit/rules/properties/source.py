@@ -12,7 +12,7 @@ from rebulk import AppendMatch, Rebulk, RemoveMatch, Rule
 from .audio_codec import HqConflictRule
 from ..common import dash, seps
 from ..common.pattern import is_disabled
-from ..common.validators import seps_before, seps_after
+from ..common.validators import seps_before, seps_after, or_
 
 
 def source(config):  # pylint:disable=unused-argument
@@ -26,7 +26,10 @@ def source(config):  # pylint:disable=unused-argument
     """
     rebulk = Rebulk(disabled=lambda context: is_disabled(context, 'source'))
     rebulk = rebulk.regex_defaults(flags=re.IGNORECASE, abbreviations=[dash], private_parent=True, children=True)
-    rebulk.defaults(name='source', tags=['video-codec-prefix', 'streaming_service.suffix'])
+    rebulk = rebulk.defaults(name='source',
+                             tags=['video-codec-prefix', 'streaming_service.suffix'],
+                             validate_all=True,
+                             validator={'__parent__': or_(seps_before, seps_after)})
 
     rip_prefix = '(?P<other>Rip)-?'
     rip_suffix = '-?(?P<other>Rip)'
@@ -40,9 +43,9 @@ def source(config):  # pylint:disable=unused-argument
         string_format = prefix_format + '({0})' + suffix_format
         return [string_format.format(pattern) for pattern in patterns]
 
-    def demote_other(match, other):
+    def demote_other(match, other):  # pylint: disable=unused-argument
         """Default conflict solver with 'other' property."""
-        return other if other.name == 'other' else '__default__'
+        return other if other.name == 'other' or other.name == 'release_group' else '__default__'
 
     rebulk.regex(*build_source_pattern('VHS', suffix=rip_optional_suffix),
                  value={'source': 'VHS', 'other': 'Rip'})
@@ -119,7 +122,7 @@ def source(config):  # pylint:disable=unused-argument
     rebulk.regex(*build_source_pattern('DSR?', 'SAT', suffix=rip_suffix),
                  value={'source': 'Satellite', 'other': 'Rip'})
 
-    rebulk.rules(ValidateSource, UltraHdBlurayRule)
+    rebulk.rules(ValidateSourcePrefixSuffix, ValidateWeakSource, UltraHdBlurayRule)
 
     return rebulk
 
@@ -171,10 +174,12 @@ class UltraHdBlurayRule(Rule):
                 to_remove.append(match)
                 to_append.append(new_source)
 
-        return to_remove, to_append
+        if to_remove or to_append:
+            return to_remove, to_append
+        return False
 
 
-class ValidateSource(Rule):
+class ValidateSourcePrefixSuffix(Rule):
     """
     Validate source with source prefix, source suffix.
     """
@@ -201,6 +206,21 @@ class ValidateSource(Rule):
                     ret.append(match)
                     continue
 
+        return ret
+
+
+class ValidateWeakSource(Rule):
+    """
+    Validate weak source
+    """
+    dependency = [ValidateSourcePrefixSuffix]
+    priority = 64
+    consequence = RemoveMatch
+
+    def when(self, matches, context):
+        ret = []
+        for filepart in matches.markers.named('path'):
+            for match in matches.range(filepart.start, filepart.end, predicate=lambda m: m.name == 'source'):
                 # if there are more than 1 source in this filepart, just before the year and with holes for the title
                 # most likely the source is part of the title
                 if 'weak.source' in match.tags \

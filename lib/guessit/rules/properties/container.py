@@ -44,7 +44,8 @@ def container(config):
     rebulk.regex(r'\.'+build_or_pattern(torrent)+'$', exts=torrent, tags=['extension', 'torrent'])
     rebulk.regex(r'\.'+build_or_pattern(nzb)+'$', exts=nzb, tags=['extension', 'nzb'])
 
-    rebulk.defaults(name='container',
+    rebulk.defaults(clear=True,
+                    name='container',
                     validator=seps_surround,
                     formatter=lambda s: s.lower(),
                     conflict_solver=lambda match, other: match

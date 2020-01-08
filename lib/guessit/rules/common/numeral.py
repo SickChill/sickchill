@@ -129,7 +129,7 @@ def parse_numeral(value, int_enabled=True, roman_enabled=True, word_enabled=True
     :return: Numeric value, or None if value can't be parsed
     :rtype: int
     """
-
+    # pylint: disable=too-many-branches
     if int_enabled:
         try:
             if clean:

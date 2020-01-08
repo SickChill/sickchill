@@ -14,6 +14,7 @@
 # under the License.
 
 import os
+import shlex
 import sys
 
 from pbr import find_package
@@ -33,6 +34,21 @@ def get_manpath():
 
 def get_man_section(section):
     return os.path.join(get_manpath(), 'man%s' % section)
+
+
+def unquote_path(path):
+    # unquote the full path, e.g: "'a/full/path'" becomes "a/full/path", also
+    # strip the quotes off individual path components because os.walk cannot
+    # handle paths like: "'i like spaces'/'another dir'", so we will pass it
+    # "i like spaces/another dir" instead.
+
+    if os.name == 'nt':
+        # shlex cannot handle paths that contain backslashes, treating those
+        # as escape characters.
+        path = path.replace("\\", "/")
+        return "".join(shlex.split(path)).replace("/", "\\")
+
+    return "".join(shlex.split(path))
 
 
 class FilesConfig(base.BaseConfig):
@@ -57,21 +73,28 @@ class FilesConfig(base.BaseConfig):
                 target = target.strip()
                 if not target.endswith(os.path.sep):
                     target += os.path.sep
-                for (dirpath, dirnames, fnames) in os.walk(source_prefix):
-                    finished.append(
-                        "%s = " % dirpath.replace(source_prefix, target))
+                unquoted_prefix = unquote_path(source_prefix)
+                unquoted_target = unquote_path(target)
+                for (dirpath, dirnames, fnames) in os.walk(unquoted_prefix):
+                    # As source_prefix is always matched, using replace with a
+                    # a limit of one is always going to replace the path prefix
+                    # and not accidentally replace some text in the middle of
+                    # the path
+                    new_prefix = dirpath.replace(unquoted_prefix,
+                                                 unquoted_target, 1)
+                    finished.append("'%s' = " % new_prefix)
                     finished.extend(
-                        [" %s" % os.path.join(dirpath, f) for f in fnames])
+                        [" '%s'" % os.path.join(dirpath, f) for f in fnames])
             else:
                 finished.append(line)
 
         self.data_files = "\n".join(finished)
 
     def add_man_path(self, man_path):
-        self.data_files = "%s\n%s =" % (self.data_files, man_path)
+        self.data_files = "%s\n'%s' =" % (self.data_files, man_path)
 
     def add_man_page(self, man_page):
-        self.data_files = "%s\n  %s" % (self.data_files, man_page)
+        self.data_files = "%s\n  '%s'" % (self.data_files, man_page)
 
     def get_man_sections(self):
         man_sections = dict()

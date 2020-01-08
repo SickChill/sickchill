@@ -11,7 +11,7 @@ from rebulk.remodule import re
 from ..common import dash
 from ..common import seps
 from ..common.pattern import is_disabled
-from ..common.validators import seps_after, seps_before, seps_surround, compose
+from ..common.validators import seps_after, seps_before, seps_surround, and_
 from ...reutils import build_or_pattern
 from ...rules.common.formatters import raw_cleanup
 
@@ -77,11 +77,12 @@ def other(config):  # pylint:disable=unused-argument,too-many-statements
                  private_names=['completeArticle', 'completeWordsBefore', 'completeWordsAfter'],
                  value={'other': 'Complete'},
                  tags=['release-group-prefix'],
-                 validator={'__parent__': compose(seps_surround, validate_complete)})
+                 validator={'__parent__': and_(seps_surround, validate_complete)})
     rebulk.string('R5', value='Region 5')
     rebulk.string('RC', value='Region C')
     rebulk.regex('Pre-?Air', value='Preair')
-    rebulk.regex('(?:PS-?)?Vita', value='PS Vita')
+    rebulk.regex('(?:PS-?)Vita', value='PS Vita')
+    rebulk.regex('Vita', value='PS Vita', tags='has-neighbor')
     rebulk.regex('(HD)(?P<another>Rip)', value={'other': 'HD', 'another': 'Rip'},
                  private_parent=True, children=True, validator={'__parent__': seps_surround}, validate_all=True)
 
@@ -96,6 +97,7 @@ def other(config):  # pylint:disable=unused-argument,too-many-statements
     rebulk.string('mHD', 'HDLight', value='Micro HD')
     rebulk.string('LDTV', value='Low Definition')
     rebulk.string('HFR', value='High Frame Rate')
+    rebulk.string('VFR', value='Variable Frame Rate')
     rebulk.string('HD', value='HD', validator=None,
                   tags=['streaming_service.prefix', 'streaming_service.suffix'])
     rebulk.regex('Full-?HD', 'FHD', value='Full HD', validator=None,

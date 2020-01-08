@@ -1114,3 +1114,86 @@
   video_codec: H.264
   release_group: W4F
   type: episode
+
+? NOS4A2.S01E01.The.Shorter.Way.REPACK.720p.AMZN.WEB-DL.DDP5.1.H.264-NTG.mkv
+: title: NOS4A2
+  season: 1
+  episode: 1
+  episode_title: The Shorter Way
+  other: Proper
+  proper_count: 1
+  screen_size: 720p
+  streaming_service: Amazon Prime
+  source: Web
+  audio_codec: Dolby Digital Plus
+  audio_channels: '5.1'
+  video_codec: H.264
+  release_group: NTG
+  container: mkv
+  type: episode
+
+? Star Trek DS9 Ep 2x03 The Siege (Part III)
+: title: Star Trek DS9
+  season: 2
+  episode: 3
+  episode_title: The Siege
+  part: 3
+  type: episode
+
+? The.Red.Line.S01E01
+: title: The Red Line
+  season: 1
+  episode: 1
+  type: episode
+
+? Show.S01E01.WEB.x264-METCON.mkv
+: title: Show
+  season: 1
+  episode: 1
+  source: Web
+  video_codec: H.264
+  release_group: METCON
+  container: mkv
+  type: episode
+
+? Show.S01E01.WEB.x264-TCMEON.mkv
+: title: Show
+  season: 1
+  episode: 1
+  source: Web
+  video_codec: H.264
+  release_group: TCMEON
+  container: mkv
+  type: episode
+
+? Show.S01E01.WEB.x264-MEONTC.mkv
+: title: Show
+  season: 1
+  episode: 1
+  source: Web
+  video_codec: H.264
+  release_group: MEONTC
+  container: mkv
+  type: episode
+
+? '[TorrentCouch.com].Westworld.S02.Complete.720p.WEB-DL.x264.[MP4].[5.3GB].[Season.2.Full]/[TorrentCouch.com].Westworld.S02E03.720p.WEB-DL.x264.mp4'
+: website: TorrentCouch.com
+  title: Westworld
+  season: 2
+  other: Complete
+  screen_size: 720p
+  source: Web
+  video_codec: H.264
+  container: mp4
+  size: 5.3GB
+  episode: 3
+  type: episode
+
+? Vita.&.Virginia.2018.720p.H.264.YTS.LT.mp4
+: title: Vita & Virginia
+  year: 2018
+  screen_size: 720p
+  video_codec: H.264
+  release_group: YTS.LT
+  container: mp4
+  type: movie

@@ -1,7 +1,6 @@
 """Diagnostic functions, mainly for use when doing tech support."""
 
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
+# Use of this source code is governed by the MIT license.
 __license__ = "MIT"
 
 import cProfile
@@ -21,7 +20,11 @@ import sys
 import cProfile
 
 def diagnose(data):
-    """Diagnostic suite for isolating common problems."""
+    """Diagnostic suite for isolating common problems.
+
+    :param data: A string containing markup that needs to be explained.
+    :return: None; diagnostics are printed to standard output.
+    """
     print "Diagnostic running on Beautiful Soup %s" % __version__
     print "Python version %s" % sys.version
 
@@ -37,7 +40,7 @@ def diagnose(data):
                 name)
 
     if 'lxml' in basic_parsers:
-        basic_parsers.append(["lxml", "xml"])
+        basic_parsers.append("lxml-xml")
         try:
             from lxml import etree
             print "Found lxml version %s" % ".".join(map(str,etree.LXML_VERSION))
@@ -56,21 +59,27 @@ def diagnose(data):
 
     if hasattr(data, 'read'):
         data = data.read()
-    elif os.path.exists(data):
-        print '"%s" looks like a filename. Reading data from the file.' % data
-        with open(data) as fp:
-            data = fp.read()
     elif data.startswith("http:") or data.startswith("https:"):
         print '"%s" looks like a URL. Beautiful Soup is not an HTTP client.' % data
         print "You need to use some other library to get the document behind the URL, and feed that document to Beautiful Soup."
         return
-    print
+    else:
+        try:
+            if os.path.exists(data):
+                print '"%s" looks like a filename. Reading data from the file.' % data
+                with open(data) as fp:
+                    data = fp.read()
+        except ValueError:
+            # This can happen on some platforms when the 'filename' is
+            # too long. Assume it's data and not a filename.
+            pass
+        print
 
     for parser in basic_parsers:
         print "Trying to parse your markup with %s" % parser
         success = False
         try:
-            soup = BeautifulSoup(data, parser)
+            soup = BeautifulSoup(data, features=parser)
             success = True
         except Exception, e:
             print "%s could not parse the markup." % parser
@@ -85,14 +94,25 @@ def lxml_trace(data, html=True, **kwargs):
     """Print out the lxml events that occur during parsing.
 
     This lets you see how lxml parses a document when no Beautiful
-    Soup code is running.
+    Soup code is running. You can use this to determine whether
+    an lxml-specific problem is in Beautiful Soup's lxml tree builders
+    or in lxml itself.
+
+    :param data: Some markup.
+    :param html: If True, markup will be parsed with lxml's HTML parser.
+       if False, lxml's XML parser will be used.
     """
     from lxml import etree
     for event, element in etree.iterparse(StringIO(data), html=html, **kwargs):
         print("%s, %4s, %s" % (event, element.tag, element.text))
 
 class AnnouncingParser(HTMLParser):
-    """Announces HTMLParser parse events, without doing anything else."""
+    """Subclass of HTMLParser that announces parse events, without doing
+    anything else.
+
+    You can use this to get a picture of how html.parser sees a given
+    document. The easiest way to do this is to call `htmlparser_trace`.
+    """
 
     def _p(self, s):
         print(s)
@@ -129,6 +149,8 @@ def htmlparser_trace(data):
 
     This lets you see how HTMLParser parses a document when no
     Beautiful Soup code is running.
+
+    :param data: Some markup.
     """
     parser = AnnouncingParser()
     parser.feed(data)
@@ -202,7 +224,7 @@ def benchmark_parsers(num_elements=100000):
     print "Raw html5lib parsed the markup in %.2fs." % (b-a)
 
 def profile(num_elements=100000, parser="lxml"):
-
+    """Use Python's profiler on a randomly generated document."""
     filehandle = tempfile.NamedTemporaryFile()
     filename = filehandle.name
 
@@ -215,5 +237,6 @@ def profile(num_elements=100000, parser="lxml"):
     stats.sort_stats("cumulative")
     stats.print_stats('_html5lib|bs4', 50)
 
+# If this file is run as a script, standard input is diagnosed.
 if __name__ == '__main__':
     diagnose(sys.stdin.read())

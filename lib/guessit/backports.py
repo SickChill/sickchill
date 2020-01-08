@@ -10,7 +10,7 @@ def cmp_to_key(mycmp):
     """functools.cmp_to_key backport"""
     class KeyClass(object):
         """Key class"""
-        def __init__(self, obj, *args):
+        def __init__(self, obj, *args):  # pylint: disable=unused-argument
             self.obj = obj
         def __lt__(self, other):
             return mycmp(self.obj, other.obj) < 0

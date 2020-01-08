@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright (c) 2015 Hewlett-Packard Development Company, L.P. (HP)
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -13,6 +14,7 @@
 # under the License.
 
 import io
+import tempfile
 import textwrap
 
 import six
@@ -21,6 +23,19 @@ import sys
 
 from pbr.tests import base
 from pbr import util
+
+
+def config_from_ini(ini):
+    config = {}
+    if sys.version_info >= (3, 2):
+        parser = configparser.ConfigParser()
+    else:
+        parser = configparser.SafeConfigParser()
+    ini = textwrap.dedent(six.u(ini))
+    parser.readfp(io.StringIO(ini))
+    for section in parser.sections():
+        config[section] = dict(parser.items(section))
+    return config
 
 
 class TestExtrasRequireParsingScenarios(base.BaseTestCase):
@@ -64,20 +79,8 @@ class TestExtrasRequireParsingScenarios(base.BaseTestCase):
             {}
         })]
 
-    def config_from_ini(self, ini):
-        config = {}
-        if sys.version_info >= (3, 2):
-            parser = configparser.ConfigParser()
-        else:
-            parser = configparser.SafeConfigParser()
-        ini = textwrap.dedent(six.u(ini))
-        parser.readfp(io.StringIO(ini))
-        for section in parser.sections():
-            config[section] = dict(parser.items(section))
-        return config
-
     def test_extras_parsing(self):
-        config = self.config_from_ini(self.config_text)
+        config = config_from_ini(self.config_text)
         kwargs = util.setup_cfg_to_setup_kwargs(config)
 
         self.assertEqual(self.expected_extra_requires,
@@ -89,3 +92,128 @@ class TestInvalidMarkers(base.BaseTestCase):
     def test_invalid_marker_raises_error(self):
         config = {'extras': {'test': "foo :bad_marker>'1.0'"}}
         self.assertRaises(SyntaxError, util.setup_cfg_to_setup_kwargs, config)
+
+
+class TestMapFieldsParsingScenarios(base.BaseTestCase):
+
+    scenarios = [
+        ('simple_project_urls', {
+            'config_text': """
+                [metadata]
+                project_urls =
+                    Bug Tracker = https://bugs.launchpad.net/pbr/
+                    Documentation = https://docs.openstack.org/pbr/
+                    Source Code = https://git.openstack.org/cgit/openstack-dev/pbr/
+                """,  # noqa: E501
+            'expected_project_urls': {
+                'Bug Tracker': 'https://bugs.launchpad.net/pbr/',
+                'Documentation': 'https://docs.openstack.org/pbr/',
+                'Source Code': 'https://git.openstack.org/cgit/openstack-dev/pbr/',  # noqa: E501
+            },
+        }),
+        ('query_parameters', {
+            'config_text': """
+                [metadata]
+                project_urls =
+                    Bug Tracker = https://bugs.launchpad.net/pbr/?query=true
+                    Documentation = https://docs.openstack.org/pbr/?foo=bar
+                    Source Code = https://git.openstack.org/cgit/openstack-dev/pbr/commit/?id=hash
+                """,  # noqa: E501
+            'expected_project_urls': {
+                'Bug Tracker': 'https://bugs.launchpad.net/pbr/?query=true',
+                'Documentation': 'https://docs.openstack.org/pbr/?foo=bar',
+                'Source Code': 'https://git.openstack.org/cgit/openstack-dev/pbr/commit/?id=hash',  # noqa: E501
+            },
+        }),
+    ]
+
+    def test_project_url_parsing(self):
+        config = config_from_ini(self.config_text)
+        kwargs = util.setup_cfg_to_setup_kwargs(config)
+
+        self.assertEqual(self.expected_project_urls, kwargs['project_urls'])
+
+
+class TestKeywordsParsingScenarios(base.BaseTestCase):
+
+    scenarios = [
+        ('keywords_list', {
+            'config_text': """
+                [metadata]
+                keywords =
+                    one
+                    two
+                    three
+                """,  # noqa: E501
+            'expected_keywords': ['one', 'two', 'three'],
+            },
+        ),
+        ('inline_keywords', {
+            'config_text': """
+                [metadata]
+                keywords = one, two, three
+                """,  # noqa: E501
+            'expected_keywords': ['one, two, three'],
+        }),
+    ]
+
+    def test_keywords_parsing(self):
+        config = config_from_ini(self.config_text)
+        kwargs = util.setup_cfg_to_setup_kwargs(config)
+
+        self.assertEqual(self.expected_keywords, kwargs['keywords'])
+
+
+class TestProvidesExtras(base.BaseTestCase):
+    def test_provides_extras(self):
+        ini = """
+        [metadata]
+        provides_extras = foo
+                          bar
+        """
+        config = config_from_ini(ini)
+        kwargs = util.setup_cfg_to_setup_kwargs(config)
+        self.assertEqual(['foo', 'bar'], kwargs['provides_extras'])
+
+
+class TestDataFilesParsing(base.BaseTestCase):
+
+    scenarios = [
+        ('data_files', {
+            'config_text': """
+            [files]
+            data_files =
+                'i like spaces/' =
+                    'dir with space/file with spc 2'
+                    'dir with space/file with spc 1'
+            """,
+            'data_files': [
+                ('i like spaces/', ['dir with space/file with spc 2',
+                                    'dir with space/file with spc 1'])
+            ]
+        })]
+
+    def test_handling_of_whitespace_in_data_files(self):
+        config = config_from_ini(self.config_text)
+        kwargs = util.setup_cfg_to_setup_kwargs(config)
+
+        self.assertEqual(self.data_files,
+                         list(kwargs['data_files']))
+
+
+class TestUTF8DescriptionFile(base.BaseTestCase):
+    def test_utf8_description_file(self):
+        _, path = tempfile.mkstemp()
+        ini_template = """
+        [metadata]
+        description_file = %s
+        """
+        # Two \n's because pbr strips the file content and adds \n\n
+        # This way we can use it directly as the assert comparison
+        unicode_description = u'UTF8 description: é"…-ʃŋ\'\n\n'
+        ini = ini_template % path
+        with io.open(path, 'w', encoding='utf8') as f:
+            f.write(unicode_description)
+        config = config_from_ini(ini)
+        kwargs = util.setup_cfg_to_setup_kwargs(config)
+        self.assertEqual(unicode_description, kwargs['long_description'])
