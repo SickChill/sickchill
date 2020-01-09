@@ -102,6 +102,7 @@ class TVDB(Indexer):
 
     def search(self, name, language=None):
         # Caution, mistake here will cause infinite recursion
+        result = []
         if re.match(r'^t?t?\d{7,8}$', name):
             result = self._search(imdbId='tt{}'.format(name.strip('t')))
         elif re.match(r'^\d{6}$', name):
@@ -115,9 +116,8 @@ class TVDB(Indexer):
                         result = self._search(name[0:-7], language=language)
                     except HTTPError:
                         if re.match(r'[. -_]', name):
+                            # Recursion starts here conditionally, should be called only once
                             result = self.search(re.sub('[. -]', ' ', name), language)
-                        else:
-                            result = []
 
         return result
 
