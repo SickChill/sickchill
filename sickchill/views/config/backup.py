@@ -16,27 +16,24 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import os
 import time
 
-from index import Config
+# Third Party Imports
 from tornado.web import addslash
 
+# First Party Imports
 import sickbeard
 from sickbeard import helpers
 from sickchill.helper.encoding import ek
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
+# Local Folder Imports
+from .index import Config
 
 
 @Route('/config/backuprestore(/?.*)', name='config:backup')

@@ -3,7 +3,7 @@
 """
 language and subtitle_language properties
 """
-# pylint: disable=no-member
+
 import copy
 from collections import defaultdict, namedtuple
 
@@ -76,7 +76,7 @@ MULTIPLE = babelfish.Language('mul')
 NON_SPECIFIC_LANGUAGES = frozenset([UNDETERMINED, MULTIPLE])
 
 
-class GuessitConverter(babelfish.LanguageReverseConverter):  # pylint: disable=missing-docstring
+class GuessitConverter(babelfish.LanguageReverseConverter):
     _with_country_regexp = re.compile(r'(.*)\((.*)\)')
     _with_country_regexp2 = re.compile(r'(.*)-(.*)')
 
@@ -91,7 +91,7 @@ class GuessitConverter(babelfish.LanguageReverseConverter):  # pylint: disable=m
                 self.guessit_exceptions[syn.lower()] = (alpha3, country, None)
 
     @property
-    def codes(self):  # pylint: disable=missing-docstring
+    def codes(self):
         return (babelfish.language_converters['alpha3b'].codes |
                 babelfish.language_converters['alpha2'].codes |
                 babelfish.language_converters['name'].codes |

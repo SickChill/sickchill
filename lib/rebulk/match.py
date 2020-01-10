@@ -42,7 +42,7 @@ class _BaseMatches(MutableSequence):
     _base_remove = _base.remove
     _base_extend = _base.extend
 
-    def __init__(self, matches=None, input_string=None):  # pylint: disable=super-init-not-called
+    def __init__(self, matches=None, input_string=None):
         self.input_string = input_string
         self._max_end = 0
         self._delegate = []
@@ -377,7 +377,7 @@ class _BaseMatches(MutableSequence):
         return self.max_end
 
     def holes(self, start=0, end=None, formatter=None, ignore=None, seps=None, predicate=None,
-              index=None):  # pylint: disable=too-many-branches,too-many-locals
+              index=None):
         """
         Retrieves a set of Match objects that are not defined in given range.
         :param start:
@@ -610,7 +610,7 @@ class Match(object):
 
     def __init__(self, start, end, value=None, name=None, tags=None, marker=None, parent=None, private=None,
                  pattern=None, input_string=None, formatter=None, conflict_solver=None, **kwargs):
-        # pylint: disable=unused-argument
+
         self.start = start
         self.end = end
         self.name = name
@@ -670,7 +670,7 @@ class Match(object):
         :return:
         :rtype:
         """
-        self._value = value  # pylint: disable=attribute-defined-outside-init
+        self._value = value
 
     @property
     def names(self):

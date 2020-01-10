@@ -3,11 +3,12 @@
 """
 Episode tagger to extract information from episodes
 """
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import re
 
+# First Party Imports
 from sickchill.helper.common import try_int
 from sickchill.recompiled import tags
 

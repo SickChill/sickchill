@@ -60,13 +60,11 @@ Public Methods:
     is_hidden_folder
     real_path
     is_subdirectory
-    validateShow
     set_up_anidb_connection
     makeZip
     extractZip
     backup_config_zip
     restore_config_zip
-    mapIndexersToShow
     touchFile
     getURL
     download_file
@@ -613,20 +611,6 @@ class HelpersShowTests(unittest.TestCase):
     def test_get_show(self):
         """
         Test get_show
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
-    def test_validate_show(self):
-        """
-        Test validateShow
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
-    def test_map_indexers_to_show(self):
-        """
-        Test mapIndexersToShow
         """
         pass
 

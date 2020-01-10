@@ -107,7 +107,7 @@ class ListAssociatedFiles(unittest.TestCase):
         self.post_processor = PostProcessor('Show Name')
         self.maxDiff = None
         sickbeard.MOVE_ASSOCIATED_FILES = True
-        sickbeard.ALLOWED_EXTENSIONS = u''
+        sickbeard.ALLOWED_EXTENSIONS = ''
 
     def setUp(self):
         make_dirs(self.test_tree)

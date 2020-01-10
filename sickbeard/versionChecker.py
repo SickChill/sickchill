@@ -17,25 +17,26 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import os
 import platform
 import re
 import shutil
-import stat
 import subprocess
 import tarfile
 import time
 import traceback
 
-import six
-
+# First Party Imports
 import sickbeard
-from sickbeard import db, helpers, logger, notifiers, ui
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
+
+# Local Folder Imports
+from . import db, helpers, logger, notifiers, ui
 
 
 class CheckVersion(object):
@@ -112,6 +113,7 @@ class CheckVersion(object):
             return False
 
         from sickchill.helper import glob
+        # noinspection PyUnresolvedReferences
         files = glob.glob(ek(os.path.join, glob.escape(backupDir), '*.zip'))
         if not files:
             return True
@@ -336,7 +338,7 @@ class CheckVersion(object):
             return self.updater.branch
 
 
-class UpdateManager(object):  # pylint: disable=too-few-public-methods
+class UpdateManager(object):
     @staticmethod
     def get_update_url():
         return sickbeard.WEB_ROOT + "/home/update/?pid=" + str(sickbeard.PID)
@@ -779,7 +781,7 @@ class SourceUpdateManager(UpdateManager):
 
         helpers.add_site_message(newest_text, tag=newest_tag, level='success')
 
-    def update(self):  # pylint: disable=too-many-statements
+    def update(self):
         """
         Downloads the latest source tarball from github and installs it over the existing version.
         """

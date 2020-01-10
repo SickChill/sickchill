@@ -18,14 +18,19 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 
+# Third Party Imports
 from requests.compat import urljoin
 
+# First Party Imports
 import sickbeard
-from sickbeard import helpers, logger
+
+# Local Folder Imports
+from . import helpers, logger
 
 session = helpers.make_session()
 
@@ -102,9 +107,6 @@ def getSabAccesMethod(host=None):
     Find out how we should connect to SAB
 
     :param host: hostname where SAB lives
-    :param username: username to use
-    :param password: password to use
-    :param apikey: apikey to use
     :return: (boolean, string) with True if method was successful
     '''
     params = {'mode': 'auth', 'output': 'json'}

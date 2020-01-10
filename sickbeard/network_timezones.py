@@ -18,16 +18,21 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import re
 
+# Third Party Imports
 import six
 from dateutil import tz
 
-from sickbeard import db, helpers, logger
+# First Party Imports
 from sickchill.helper.common import try_int
+
+# Local Folder Imports
+from . import db, helpers, logger
 
 # regex to parse time (12/24 hour format)
 time_regex = re.compile(r'(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})?)? ?(?P<meridiem>[PA]\.? ?M?)?\b', re.I)

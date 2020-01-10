@@ -3,7 +3,7 @@
 """
 Chain patterns and handle repetiting capture group
 """
-# pylint: disable=super-init-not-called
+
 import itertools
 
 from .loose import call, set_defaults
@@ -90,7 +90,7 @@ class Chain(Pattern):
         :return:
         :rtype:
         """
-        # pylint: disable=protected-access
+
         chain = self.rebulk.chain(**self._kwargs)
         chain._defaults = dict(self._defaults)
         chain._regex_defaults = dict(self._regex_defaults)
@@ -165,7 +165,7 @@ class Chain(Pattern):
         return self.rebulk
 
     def _match(self, pattern, input_string, context=None):
-        # pylint: disable=too-many-locals,too-many-nested-blocks
+
         chain_matches = []
         chain_input_string = input_string
         offset = 0

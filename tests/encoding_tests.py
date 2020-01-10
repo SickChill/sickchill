@@ -4,7 +4,6 @@
 Test encoding
 """
 
-# pylint: disable=line-too-long
 from __future__ import print_function, unicode_literals
 
 import locale
@@ -50,7 +49,7 @@ class EncodingTests(unittest.TestCase):
             try:
                 show_dir = ek(os.path.join, root_dir, sanitize_filename(test))
                 self.assertTrue(isinstance(show_dir, six.text_type))
-            except Exception as error:  # pylint: disable=broad-except
+            except Exception as error:
                 ex(error)
 
 if __name__ == "__main__":

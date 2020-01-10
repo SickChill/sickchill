@@ -16,14 +16,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import unicode_literals
-
+# Stdlib Imports
 from datetime import datetime
 
+# Third Party Imports
 from feedparser.util import FeedParserDict
 from hachoir_parser import createParser
 
+# First Party Imports
 import sickbeard
 from sickbeard import logger
 from sickbeard.classes import Proper, TorrentSearchResult
@@ -132,7 +134,7 @@ class TorrentProvider(GenericProvider):
             parser = createParser(file_name)
 
             if parser:
-                # pylint: disable=protected-access
+
                 # Access to a protected member of a client class
                 mime_type = parser._getMimeType()
 

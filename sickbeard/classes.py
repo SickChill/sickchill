@@ -18,23 +18,30 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import sys
 
+# Third Party Imports
+# noinspection PyUnresolvedReferences
 from six.moves import urllib
 
+# First Party Imports
 import sickbeard
-from sickbeard.common import Quality, USER_AGENT
+import sickchill
 from sickchill.helper.common import dateTimeFormat
+
+# Local Folder Imports
+from .common import Quality, USER_AGENT
 
 
 class SickBeardURLopener(urllib.request.FancyURLopener, object):
     version = USER_AGENT
 
 
-class SearchResult(object):  # pylint: disable=too-few-public-methods, too-many-instance-attributes
+class SearchResult(object):
     """
     Represents a search result from an indexer.
     """
@@ -89,6 +96,7 @@ class SearchResult(object):  # pylint: disable=too-few-public-methods, too-many-
 
     @classmethod
     def make_result(cls, result_dict):
+        # noinspection PyUnresolvedReferences
         show = sickbeard.tv.Show.find(sickbeard.showList, int(result_dict.get('show')))
         episode = show.getEpisode(result_dict.get('season'), result_dict.get('episode'))
         result = cls([episode])
@@ -117,7 +125,7 @@ class SearchResult(object):  # pylint: disable=too-few-public-methods, too-many-
         return my_string
 
 
-class NZBSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
+class NZBSearchResult(SearchResult):
     """
     Regular NZB result with an URL to the NZB
     """
@@ -126,7 +134,7 @@ class NZBSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
         self.resultType = 'nzb'
 
 
-class NZBDataSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
+class NZBDataSearchResult(SearchResult):
     """
     NZB result where the actual NZB XML data is stored in the extraInfo
     """
@@ -135,7 +143,7 @@ class NZBDataSearchResult(SearchResult):  # pylint: disable=too-few-public-metho
         self.resultType = 'nzbdata'
 
 
-class TorrentSearchResult(SearchResult):  # pylint: disable=too-few-public-methods
+class TorrentSearchResult(SearchResult):
     """
     Torrent result with an URL to the torrent
     """
@@ -144,76 +152,7 @@ class TorrentSearchResult(SearchResult):  # pylint: disable=too-few-public-metho
         self.resultType = 'torrent'
 
 
-class AllShowsListUI(object):  # pylint: disable=too-few-public-methods
-    """
-    This class is for indexer api.
-
-    Instead of prompting with a UI to pick the desired result out of a
-    list of shows it tries to be smart about it based on what shows
-    are in SickChill.
-    """
-
-    def __init__(self, config, log=None):
-        self.config = config
-        self.log = log
-
-    def selectSeries(self, all_results):
-        search_results = []
-
-        # get all available shows
-        if all_results and 'searchterm' in self.config:
-            show_id_list = {int(x.indexerid) for x in sickbeard.showList if x}
-            for curShow in all_results:
-                if curShow in search_results:
-                    continue
-
-                if 'seriesname' not in curShow:
-                    continue
-
-                try:
-                    # We need to know if it's in our show list already
-                    curShow['in_show_list'] = int(curShow.get('id')) in show_id_list
-                except Exception:  # If it doesnt have an id, we cant use it anyways.
-                    continue
-
-                if 'firstaired' not in curShow:
-                    curShow['firstaired'] = 'Unknown'
-
-                if curShow not in search_results:
-                    search_results += [curShow]
-
-        return search_results
-
-
-class ShowListUI(object):  # pylint: disable=too-few-public-methods
-    """
-    This class is for tvdb-api.
-
-    Instead of prompting with a UI to pick the desired result out of a
-    list of shows it tries to be smart about it based on what shows
-    are in SickChill.
-    """
-
-    def __init__(self, config, log=None):
-        self.config = config
-        self.log = log
-
-    @staticmethod
-    def selectSeries(all_results):
-        # try to pick a show that's in my show list
-        show_id_list = {int(x.indexerid) for x in sickbeard.showList if x}
-        for curShow in all_results:
-            try:
-                if int(curShow.get('id')) in show_id_list:
-                    return curShow
-            except Exception:
-                pass
-
-        # if nothing matches then return first result
-        return all_results[0]
-
-
-class Proper(object):  # pylint: disable=too-few-public-methods, too-many-instance-attributes
+class Proper(object):
     def __init__(self, name, url, date, show):
         self.name = name
         self.url = url
@@ -234,7 +173,7 @@ class Proper(object):  # pylint: disable=too-few-public-methods, too-many-instan
     def __str__(self):
         return '{date} {name} {season}x{episode} of {series_id} from {indexer}'.format(
             date=self.date, name=self.name, season=self.season, episode=self.episode,
-            series_id=self.indexerid, indexer=sickbeard.indexerApi(self.indexer).name)
+            series_id=self.indexerid, indexer=sickchill.indexer.name(self.indexer))
 
 
 class ErrorViewer(object):
@@ -287,7 +226,7 @@ class WarningViewer(object):
         return WarningViewer.errors
 
 
-class UIError(object):  # pylint: disable=too-few-public-methods
+class UIError(object):
     """
     Represents an error to be displayed in the web UI.
     """

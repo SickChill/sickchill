@@ -17,20 +17,25 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import itertools
 import time
 
+# Third Party Imports
 import six
 
+# First Party Imports
 import sickbeard
-from sickbeard import db, logger, show_name_helpers
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickbeard.rssfeeds import getFeed
 from sickchill.helper.exceptions import AuthException, ex
 from sickchill.show.Show import Show
+
+# Local Folder Imports
+from . import db, logger, show_name_helpers
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from .rssfeeds import getFeed
 
 
 class CacheDBConnection(db.DBConnection):
@@ -264,7 +269,7 @@ class TVCache(object):
         episodes = parse_result.episode_numbers
 
         if season and episodes:
-            # store episodes as a seperated string
+            # store episodes as a separated string
             episode_text = "|" + "|".join({str(episode) for episode in episodes if episode}) + "|"
 
             # get the current timestamp

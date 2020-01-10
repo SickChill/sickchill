@@ -4,6 +4,7 @@
     import sickbeard
     from sickbeard.filters import hide
     from sickbeard.helpers import anon_url
+    import sickchill
 %>
 
 <%block name="tabs">
@@ -2613,8 +2614,8 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <select id="trakt_default_indexer" name="trakt_default_indexer" class="form-control input-sm input250" title="trakt_default_indexer">
-                                        % for indexer in sickbeard.indexerApi().indexers:
-                                            <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.TRAKT_DEFAULT_INDEXER == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
+                                        % for indexer, instance in sickchill.indexer:
+                                            <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.TRAKT_DEFAULT_INDEXER == indexer]}>${instance.name}</option>
                                         % endfor
                                     </select>
                                 </div>

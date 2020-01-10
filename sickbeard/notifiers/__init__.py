@@ -18,8 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# First Party Imports
 import sickbeard
 from sickbeard.notifiers import (boxcar2, discord, emailnotify, emby, freemobile, growl, join, kodi, libnotify, matrix, nmj, nmjv2, plex, prowl, pushalot,
                                  pushbullet, pushover, pytivo, slack, synoindex, synologynotifier, telegram, trakt, tweet, twilio_notify)

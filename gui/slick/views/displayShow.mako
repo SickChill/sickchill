@@ -141,7 +141,8 @@
                             </span>
                                     <a href="${anon_url('http://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><span class="displayshow-icon-imdb" /></a>
                                 % endif
-                                <a href="${anon_url(sickbeard.indexerApi(_show.indexer).config['show_url'], _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;" title="${sickbeard.indexerApi(show.indexer).config["show_url"] + str(show.indexerid)}"><img alt="${sickbeard.indexerApi(show.indexer).name}" src="${static_url('images/indexers/' + sickbeard.indexerApi(show.indexer).config["icon"])}" style="margin-top: -1px; vertical-align:middle;"/></a>
+                                <a href="${anon_url(_show.idxr.show_url, _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;"
+                                   title="${_show.idxr.show_url + str(show.indexerid)}"><img alt="${show.idxr.name}" src="${static_url(show.idxr.icon)}" style="margin-top: -1px; vertical-align:middle;"/></a>
                                 % if xem_numbering or xem_absolute_numbering:
                                     <a href="${anon_url('http://thexem.de/search?q=', _show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><span alt="" class="displayshow-icon-xem" /></a>
                                 % endif
@@ -150,7 +151,7 @@
                             <div class="pull-left col-lg-8 col-md-8 col-sm-12 col-xs-12">
                                 <ul class="tags">
                                     % if show.genre and not show.imdb_info.get('genres'):
-                                        % for genre in show.genre[1:-1].split('|'):
+                                        % for genre in show.genre:
                                             <a href="${anon_url('http://trakt.tv/shows/popular/?genres=', genre.lower())}" target="_blank" title="${_('View other popular {genre} shows on trakt.tv.').format(genre=_(genre))}"><li>${_(genre)}</li></a>
                                         % endfor
                                     % elif show.imdb_info.get('genres'):
@@ -226,7 +227,7 @@
 
                                             % if show.rls_prefer_words:
                                                 <tr>
-                                                    <td class="showLegend">${_('Prefered Words')}: </td>
+                                                    <td class="showLegend">${_('Preferred Words')}: </td>
                                                     <td>${show.rls_prefer_words}</td>
                                                 </tr>
                                             % endif
@@ -372,30 +373,30 @@
                     elif not show.air_by_date and not show.is_sports and show.is_anime and show.is_scene:
                         scene_anime = True
 
-                    (dfltSeas, dfltEpis, dfltAbsolute) = (0, 0, 0)
+                    (default_season, default_episode, default_absolute_number) = (0, 0, 0)
                     if (epResult[b"season"], epResult[b"episode"]) in xem_numbering:
-                        (dfltSeas, dfltEpis) = xem_numbering[(epResult[b"season"], epResult[b"episode"])]
+                        (default_season, default_episode) = xem_numbering[(epResult[b"season"], epResult[b"episode"])]
 
                     if epResult[b"absolute_number"] in xem_absolute_numbering:
-                        dfltAbsolute = xem_absolute_numbering[epResult[b"absolute_number"]]
+                        default_absolute_number = xem_absolute_numbering[epResult[b"absolute_number"]]
 
                     if epResult[b"absolute_number"] in scene_absolute_numbering:
                         scAbsolute = scene_absolute_numbering[epResult[b"absolute_number"]]
-                        dfltAbsNumbering = False
+                        default_absolute_numbering = False
                     else:
-                        scAbsolute = dfltAbsolute
-                        dfltAbsNumbering = True
+                        scAbsolute = default_absolute_number
+                        default_absolute_numbering = True
 
                     if (epResult[b"season"], epResult[b"episode"]) in scene_numbering:
-                        (scSeas, scEpis) = scene_numbering[(epResult[b"season"], epResult[b"episode"])]
-                        dfltEpNumbering = False
+                        (season_number, episode_number) = scene_numbering[(epResult[b"season"], epResult[b"episode"])]
+                        default_episode_numbering = False
                     else:
-                        (scSeas, scEpis) = (dfltSeas, dfltEpis)
-                        dfltEpNumbering = True
+                        (season_number, episode_number) = (default_season, default_episode)
+                        default_episode_numbering = True
 
                     epLoc = epResult[b"location"]
-                    if epLoc and show._location and epLoc.lower().startswith(show._location.lower()):
-                        epLoc = epLoc[len(show._location)+1:]
+                    if epLoc and show.location and epLoc.lower().startswith(show.location.lower()):
+                        epLoc = epLoc[len(show.location)+1:]
                 %>
                 % if int(epResult[b"season"]) != curSeason:
                     % if epResult[b"season"] != sql_results[0][b"season"]:
@@ -470,23 +471,23 @@
                                         </td>
                                         <td align="center">${epResult[b"absolute_number"]}</td>
                                         <td align="center">
-                                            <input type="text" placeholder="${str(dfltSeas) + 'x' + str(dfltEpis)}" size="6" maxlength="8"
+                                            <input type="text" placeholder="${str(default_season) + 'x' + str(default_episode)}" size="6" maxlength="8"
                                                    class="sceneSeasonXEpisode form-control input-scene" data-for-season="${epResult[b"season"]}" data-for-episode="${epResult[b"episode"]}"
                                                    id="sceneSeasonXEpisode_${show.indexerid}_${str(epResult[b"season"])}_${str(epResult[b"episode"])}"
                                                    title="${_('Change the value here if scene numbering differs from the indexer episode numbering')}"
-                                                % if dfltEpNumbering:
+                                                % if default_episode_numbering:
                                                    value=""
                                                 % else:
-                                                   value="${str(scSeas)}x${str(scEpis)}"
+                                                   value="${str(season_number)}x${str(episode_number)}"
                                                 % endif
                                                    style="padding: 0; text-align: center; max-width: 60px;" autocapitalize="off" />
                                         </td>
                                         <td align="center">
-                                            <input type="text" placeholder="${str(dfltAbsolute)}" size="6" maxlength="8"
+                                            <input type="text" placeholder="${str(default_absolute_number)}" size="6" maxlength="8"
                                                    class="sceneAbsolute form-control input-scene" data-for-absolute="${epResult[b"absolute_number"]}"
                                                    id="sceneAbsolute_${show.indexerid}${"_"+str(epResult[b"absolute_number"])}"
                                                    title="${_('Change the value here if scene absolute numbering differs from the indexer absolute numbering')}"
-                                                % if dfltAbsNumbering:
+                                                % if default_absolute_numbering:
                                                    value=""
                                                 % else:
                                                    value="${str(scAbsolute)}"
@@ -509,12 +510,12 @@
                                         </td>
                                         <td class="col-airdate">
                                             % if int(epResult[b'airdate']) != 1:
-                                            ## Lets do this exactly like ComingEpisodes and History
-                                            ## Avoid issues with dateutil's _isdst on Windows but still provide air dates
-                                        <% airDate = datetime.datetime.fromordinal(epResult[b'airdate']) %>
-                                            % if airDate.year >= 1970 or show.network:
-                                                <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult[b'airdate'], show.airs, show.network)) %>
-                                            % endif
+                                                ## Lets do this exactly like ComingEpisodes and History
+                                                ## Avoid issues with dateutil's _isdst on Windows but still provide air dates
+                                                <% airDate = datetime.datetime.fromordinal(epResult[b'airdate']) %>
+                                                % if airDate.year >= 1970 or show.network:
+                                                    <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult[b'airdate'], show.airs, show.network)) %>
+                                                % endif
                                                 <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
                                             % else:
                                                 Never

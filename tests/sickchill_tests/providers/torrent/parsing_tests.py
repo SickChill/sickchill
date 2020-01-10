@@ -83,12 +83,12 @@ class BaseParser(type):
             self.provider.password = self.password
 
         @property
-        def username(self):  # pylint: disable=no-self-use
+        def username(self):
             # TODO: Make this read usernames from somewhere
             return ''
 
         @property
-        def password(self):  # pylint: disable=no-self-use
+        def password(self):
             # TODO: Make this read passwords from somewhere
             return ''
 
@@ -191,17 +191,17 @@ class BaseParser(type):
                 else:
                     self.assertTrue(validators.url(result[b'link']), result[b'link'])
 
-                self.assertIsInstance(self.provider._get_size(result), six.integer_types)  # pylint: disable=protected-access
-                self.assertTrue(all(self.provider._get_title_and_url(result)))  # pylint: disable=protected-access
-                self.assertTrue(self.provider._get_size(result))  # pylint: disable=protected-access
+                self.assertIsInstance(self.provider._get_size(result), six.integer_types)
+                self.assertTrue(all(self.provider._get_title_and_url(result)))
+                self.assertTrue(self.provider._get_size(result))
 
             @unittest.skip('Not yet implemented')
-            def test_season_search_strings_format(self):  # pylint: disable=no-self-use, unused-argument, unused-variable
+            def test_season_search_strings_format(self):
                 """Check format of the provider's season search strings"""
                 pass
 
             @unittest.skip('Not yet implemented')
-            def test_episode_search_strings_format(self):  # pylint: disable=no-self-use, unused-argument, unused-variable
+            def test_episode_search_strings_format(self):
                 """Check format of the provider's season search strings"""
                 pass
 

@@ -18,8 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Third Party Imports
 from bs4 import BeautifulSoup
 
 
@@ -31,6 +32,5 @@ class BS4Parser(object):
         return self.soup
 
     def __exit__(self, exc_ty, exc_val, tb):
-        _ = exc_ty, exc_val, tb  # Throw away unused values
         self.soup.clear(True)
         self.soup = None

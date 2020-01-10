@@ -17,12 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 
+# Third Party Imports
 from requests.compat import urlencode, urljoin
 
+# First Party Imports
 from sickbeard import classes, logger, tvcache
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
@@ -30,6 +33,7 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 try:
     import json
 except ImportError:
+    # noinspection PyUnresolvedReferences
     import simplejson as json
 
 

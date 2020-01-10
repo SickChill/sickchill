@@ -18,19 +18,18 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import json
 
-from requests.utils import dict_from_cookiejar
-
+# First Party Imports
 from sickbeard import logger, tvcache
-from sickbeard.bs4_parser import BS4Parser
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class DanishbitsProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -58,7 +57,7 @@ class DanishbitsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         # Cache
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll Danishbits every 10 minutes max
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         if not self.login():
             return results

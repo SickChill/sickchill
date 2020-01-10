@@ -23,16 +23,16 @@
 #
 ##############################################################################
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import ast
-import re
 import smtplib
-# import traceback
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formatdate
 
+# First Party Imports
 import sickbeard
 from sickbeard import db, logger
 from sickchill.helper.encoding import ss
@@ -42,7 +42,7 @@ class Notifier(object):
     def __init__(self):
         self.last_err = None
 
-    def test_notify(self, host, port, smtp_from, use_tls, user, pwd, to):  # pylint: disable=too-many-arguments
+    def test_notify(self, host, port, smtp_from, use_tls, user, pwd, to):
         msg = MIMEText('This is a test message from SickChill.  If you\'re reading this, the test succeeded.')
         if sickbeard.EMAIL_SUBJECT:
             msg[b'Subject'] = '[TEST] ' + sickbeard.EMAIL_SUBJECT
@@ -54,7 +54,7 @@ class Notifier(object):
         msg[b'Date'] = formatdate(localtime=True)
         return self._sendmail(host, port, smtp_from, use_tls, user, pwd, [to], msg, True)
 
-    def notify_snatch(self, ep_name, title='Snatched:'):  # pylint: disable=unused-argument
+    def notify_snatch(self, ep_name, title='Snatched:'):
         '''
         Send a notification that an episode was snatched
 
@@ -103,7 +103,7 @@ class Notifier(object):
                 else:
                     logger.log('Snatch notification error: {0}'.format(self.last_err), logger.WARNING)
 
-    def notify_download(self, ep_name, title='Completed:'):  # pylint: disable=unused-argument
+    def notify_download(self, ep_name, title='Completed:'):
         '''
         Send a notification that an episode was downloaded
 
@@ -152,7 +152,7 @@ class Notifier(object):
                 else:
                     logger.log('Download notification error: {0}'.format(self.last_err), logger.WARNING)
 
-    def notify_postprocess(self, ep_name, title='Postprocessed:'):  # pylint: disable=unused-argument
+    def notify_postprocess(self, ep_name, title='Postprocessed:'):
         '''
         Send a notification that an episode was postprocessed
 
@@ -201,7 +201,7 @@ class Notifier(object):
                 else:
                     logger.log('Postprocess notification error: {0}'.format(self.last_err), logger.WARNING)
 
-    def notify_subtitle_download(self, ep_name, lang, title='Downloaded subtitle:'):  # pylint: disable=unused-argument
+    def notify_subtitle_download(self, ep_name, lang, title='Downloaded subtitle:'):
         '''
         Send a notification that an subtitle was downloaded
 
@@ -333,7 +333,7 @@ class Notifier(object):
                     logger.log('Login notification error: {0}'.format(self.last_err), logger.WARNING)
 
     @staticmethod
-    def _generate_recipients(show):  # pylint: disable=too-many-branches
+    def _generate_recipients(show):
         addrs = []
         main_db_con = db.DBConnection()
 
@@ -362,7 +362,7 @@ class Notifier(object):
         logger.log('Notification recipients: {0}'.format(addrs), logger.DEBUG)
         return addrs
 
-    def _sendmail(self, host, port, smtp_from, use_tls, user, pwd, to, msg, smtpDebug=False):  # pylint: disable=too-many-arguments
+    def _sendmail(self, host, port, smtp_from, use_tls, user, pwd, to, msg, smtpDebug=False):
         logger.log('HOST: {0}; PORT: {1}; FROM: {2}, TLS: {3}, USER: {4}, PWD: {5}, TO: {6}'.format(
             host, port, smtp_from, use_tls, user, pwd, to), logger.DEBUG)
         try:

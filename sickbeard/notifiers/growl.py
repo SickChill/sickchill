@@ -18,12 +18,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import socket
 
-from libgrowl import gntp
+# Third Party Imports
+from growl import gntp
 
+# First Party Imports
 import sickbeard
 from sickbeard import common, logger
 from sickchill.helper.exceptions import ex

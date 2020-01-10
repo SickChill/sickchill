@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-# pylint: disable=line-too-long
 
 """
 Test sickchill.common
@@ -316,6 +315,7 @@ class CommonTests(unittest.TestCase):
         """
         Test sanitize filename
         """
+        # noinspection PyByteLiteral
         test_cases = {
             None: '',
             42: '',

@@ -17,16 +17,21 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import threading
 
+# Third Party Imports
 import six
 
+# First Party Imports
 import sickbeard
-from sickbeard import db
 
-# from sickbeard import logger
+# Local Folder Imports
+from . import db
+
+# from . import logger
 
 nameCache = {}
 nameCacheLock = threading.Lock()

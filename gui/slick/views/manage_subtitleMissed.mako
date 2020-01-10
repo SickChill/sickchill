@@ -60,7 +60,7 @@
             ${_('Download missed subtitles for selected episodes')} <input class="btn btn-inline" type="submit" value="Go" />
             <div>
                 <button type="button" class="btn btn-xs selectAllShows">${_('Select all')}</a></button>
-                <button type="button" class="btn btn-xs unselectAllShows">${_('Clear all')}</a></button>
+                <button type="button" class="btn btn-xs deselectAllShows">${_('Clear all')}</a></button>
             </div>
             <br>
             <table class="sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0">

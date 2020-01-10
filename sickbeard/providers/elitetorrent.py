@@ -18,14 +18,14 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import re
 import time
 import traceback
 
-import six
-
+# First Party Imports
 import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -52,7 +52,7 @@ class EliteTorrentProvider(TorrentProvider):
 
         self.url = self.urls['base_url']
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         lang_info = '' if not ep_obj or not ep_obj.show else ep_obj.show.lang
 

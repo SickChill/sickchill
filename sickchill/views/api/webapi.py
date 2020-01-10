@@ -17,22 +17,26 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
+import abc
 import datetime
 import io
 import os
 import re
 import time
 import traceback
-from abc import abstractmethod
 
+# Third Party Imports
 import six
+# noinspection PyUnresolvedReferences
 from six.moves import urllib
 from tornado.web import RequestHandler
 
+# First Party Imports
 import sickbeard
+import sickchill
 from sickbeard import classes, db, helpers, image_cache, logger, network_timezones, sbdatetime, search_queue, ui
 from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN,
                               WANTED)
@@ -57,6 +61,7 @@ try:
 except ImportError:
     # noinspection PyPackageRequirements,PyUnresolvedReferences
     import simplejson as json
+
 
 indexer_ids = ["indexerid", "tvdbid"]
 
@@ -141,11 +146,11 @@ class ApiHandler(RequestHandler):
             pass
 
     def _out_as_image(self, _dict):
-        self.set_header('Content-Type', _dict['image'].get_media_type())
+        self.set_header('Content-Type'.encode('utf-8'), _dict['image'].get_media_type())
         return _dict['image'].get_media()
 
     def _out_as_json(self, _dict):
-        self.set_header("Content-Type", "application/json;charset=UTF-8")
+        self.set_header("Content-Type".encode('utf-8'), "application/json;charset=UTF-8")
         try:
             out = json.dumps(_dict, ensure_ascii=False, sort_keys=True)
             callback = self.get_query_argument('callback', None) or self.get_query_argument('jsonp', None)
@@ -840,14 +845,14 @@ class CMDEpisodeSearch(ApiCall):
 
 class AbstractStartScheduler(ApiCall):
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def scheduler(self):
-        return AbstractStartScheduler
+        raise NotImplementedError
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def scheduler_class_str(self):
-        return 'sickbeard.scheduler.Scheduler'
+        raise NotImplementedError
 
     def run(self):
         error_str = 'Start scheduler failed'
@@ -1717,7 +1722,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDSickBeardSearchIndexers, self).__init__(args, kwargs)
-        self.valid_languages = sickbeard.indexerApi().config['langabbv_to_id']
+        self.valid_languages = sickchill.indexer.lang_dict()
         self.name, args = self.check_params(args, kwargs, "name", None, False, "string", [])
         self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string",
                                             self.valid_languages.keys())
@@ -1731,67 +1736,42 @@ class CMDSickBeardSearchIndexers(ApiCall):
         lang_id = self.valid_languages[self.lang]
 
         if self.name and not self.indexerid:  # only name was given
-            for _indexer in sickbeard.indexerApi().indexers if self.indexer == 0 else [int(self.indexer)]:
-                indexer_api_params = sickbeard.indexerApi(_indexer).api_params.copy()
-
-                indexer_api_params['language'] = self.lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-                indexer_api_params['actors'] = False
-                indexer_api_params['custom_ui'] = classes.AllShowsListUI
-
-                t = sickbeard.indexerApi(_indexer).indexer(**indexer_api_params)
-
-                try:
-                    api_data = t[str(self.name).encode()]
-                except (sickbeard.indexer_shownotfound, sickbeard.indexer_showincomplete, sickbeard.indexer_error):
-                    logger.log("API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
-                    continue
-
-                for curSeries in api_data:
+            search_results = sickchill.indexer.search_indexers_for_series_name(str(self.name).encode(), self.lang)
+            for indexer, indexer_results in six.iteritems(search_results):
+                for result in indexer_results:
                     # Skip it if it's in our show list already, and we only want new shows
-                    if curSeries['in_show_list'] and self.only_new:
+                    # noinspection PyUnresolvedReferences
+                    in_show_list = sickbeard.tv.Show.find(sickbeard.showList, int(result.id))
+                    if in_show_list and self.only_new:
                         continue
-                    results.append({
-                                       indexer_ids[_indexer]: int(curSeries['id']),
-                                       "name": curSeries['seriesname'],
-                                       "first_aired": curSeries['firstaired'],
-                                       "indexer": int(_indexer),
-                                       "in_show_list": curSeries['in_show_list']
-                                       })
 
-            return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
+                    results.append({
+                        indexer_ids[indexer]: result['id'],
+                         "name": result['seriesName'],
+                         "first_aired": result['firstAired'],
+                         "indexer": indexer,
+                         "in_show_list": in_show_list
+                    })
+
+                return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
 
         elif self.indexerid:
-            for _indexer in sickbeard.indexerApi().indexers if self.indexer == 0 else [int(self.indexer)]:
-                indexer_api_params = sickbeard.indexerApi(_indexer).api_params.copy()
+            indexer, result = sickchill.indexer.search_indexers_for_series_id(indexerid=self.indexerid, language=self.lang)
+            if not indexer:
+                logger.log("API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
+                return _responds(RESULT_SUCCESS, {"results": [], "langid": lang_id})
 
-                indexer_api_params['language'] = self.lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
+            if not result.seriesName:
+                logger.log(
+                    "API :: Found show with indexerid: " + str(self.indexerid) + ", however it contained no show name", logger.DEBUG)
+                return _responds(RESULT_FAILURE, msg="Show contains no name, invalid result")
 
-                indexer_api_params['actors'] = False
-
-                t = sickbeard.indexerApi(_indexer).indexer(**indexer_api_params)
-
-                try:
-                    my_show = t[int(self.indexerid)]
-                except (sickbeard.indexer_shownotfound, sickbeard.indexer_showincomplete, sickbeard.indexer_error):
-                    logger.log("API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
-                    return _responds(RESULT_SUCCESS, {"results": [], "langid": lang_id})
-
-                if not my_show.data['seriesname']:
-                    logger.log(
-                        "API :: Found show with indexerid: " + str(
-                            self.indexerid) + ", however it contained no show name", logger.DEBUG)
-                    return _responds(RESULT_FAILURE, msg="Show contains no name, invalid result")
-
-                # found show
-                # noinspection PyCompatibility
-                results = [{
-                               indexer_ids[_indexer]: int(my_show.data['id']),
-                               "name": six.text_type(my_show.data['seriesname']),
-                               "first_aired": my_show.data['firstaired'],
-                               "indexer": int(_indexer)
-                               }]
-                break
+            results = [{
+                indexer_ids[indexer]: result.id,
+                "name": six.text_type(result.seriesName),
+                "first_aired": result.firstAired,
+                "indexer": indexer
+            }]
 
             return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})
         else:
@@ -1959,18 +1939,9 @@ class CMDShow(ApiCall):
 
         show_dict = {
             "season_list": CMDShowSeasonList((), {"indexerid": self.indexerid}).run()["data"],
-            "cache": CMDShowCache((), {"indexerid": self.indexerid}).run()["data"]
+            "cache": CMDShowCache((), {"indexerid": self.indexerid}).run()["data"],
+            "genre": show_obj.genre, "quality": get_quality_string(show_obj.quality)
         }
-
-        genre_list = []
-        if show_obj.genre:
-            genre_list_tmp = show_obj.genre.split("|")
-            for genre in genre_list_tmp:
-                if genre:
-                    genre_list.append(genre)
-
-        show_dict["genre"] = genre_list
-        show_dict["quality"] = get_quality_string(show_obj.quality)
 
         any_qualities, best_qualities = _map_quality(show_obj.quality)
         show_dict["quality_details"] = {"initial": any_qualities, "archive": best_qualities}
@@ -2012,7 +1983,7 @@ class CMDShow(ApiCall):
         show_dict["archive_firstmatch"] = 1
 
         show_dict["indexerid"] = show_obj.indexerid
-        show_dict["tvdbid"] = helpers.mapIndexersToShow(show_obj)[1]
+        show_dict["tvdbid"] = show_obj.indexerid
         show_dict["imdbid"] = show_obj.imdbid
 
         show_dict["network"] = show_obj.network
@@ -2138,7 +2109,7 @@ class CMDShowAddNew(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDShowAddNew, self).__init__(args, kwargs)
-        self.valid_languages = sickbeard.indexerApi().config['langabbv_to_id']
+        self.valid_languages = sickchill.indexer.lang_dict()
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.location, args = self.check_params(args, kwargs, "location", None, False, "string", [])
         self.initial, args = self.check_params(
@@ -2838,8 +2809,6 @@ class CMDShows(ApiCall):
             if self.paused is not None and self.paused != curShow.paused:
                 continue
 
-            indexer_show = helpers.mapIndexersToShow(curShow)
-
             show_dict = {
                 "paused": (0, 1)[curShow.paused],
                 "quality": get_quality_string(curShow.quality),
@@ -2848,7 +2817,7 @@ class CMDShows(ApiCall):
                 "sports": (0, 1)[curShow.sports],
                 "anime": (0, 1)[curShow.anime],
                 "indexerid": curShow.indexerid,
-                "tvdbid": indexer_show[1],
+                "tvdbid": curShow.indexerid,
                 "network": curShow.network,
                 "show_name": curShow.name,
                 "status": curShow.status,

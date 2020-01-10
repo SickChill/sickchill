@@ -16,24 +16,25 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import datetime
 import os
 import re
 
+# Third Party Imports
 import six
-from libtrakt import TraktAPI
 from requests.compat import unquote_plus
 from tornado.escape import xhtml_unescape
+from trakt import TraktAPI
 
+# First Party Imports
 import sickbeard
-from sickbeard import classes, config, db, helpers, logger, ui
+import sickchill
+from sickbeard import config, db, helpers, logger, ui
 from sickbeard.blackandwhitelist import short_group_names
 from sickbeard.common import Quality
-from sickbeard.helpers import get_showname_from_indexer
 from sickbeard.imdbPopular import imdb_popular
 from sickbeard.traktTrending import trakt_trending
 from sickchill.helper import sanitize_filename, try_int
@@ -59,12 +60,6 @@ class AddShows(Home):
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="addShows.mako")
         return t.render(title=_('Add Shows'), header=_('Add Shows'), topmenu='home', controller="addShows", action="index")
-
-    @staticmethod
-    def getIndexerLanguages():
-        result = sickbeard.indexerApi().config['valid_languages']
-
-        return json.dumps({'results': result})
 
     @staticmethod
     def sanitizeFileName(name):
@@ -95,30 +90,27 @@ class AddShows(Home):
         final_results = []
 
         # Query Indexers for each search term and build the list of results
-        for indexer in sickbeard.indexerApi().indexers if not int(indexer) else [int(indexer)]:
-            lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
-            lINDEXER_API_PARMS['language'] = lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-            lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
-            t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
-
+        for i, j in sickchill.indexer if not int(indexer) else [(int(indexer), None)]:
             logger.log("Searching for Show with searchterm(s): {0} on Indexer: {1}".format(
-                searchTerms, sickbeard.indexerApi(indexer).name), logger.DEBUG)
+                searchTerms, 'theTVDB'), logger.DEBUG)
             for searchTerm in searchTerms:
                 # noinspection PyBroadException
                 try:
-                    indexerResults = t[searchTerm]
+                    indexerResults = sickchill.indexer[i].search(searchTerm, language=lang)
                 except Exception:
                     # logger.log(traceback.format_exc(), logger.ERROR)
                     continue
 
                 # add search results
-                results.setdefault(indexer, []).extend(indexerResults)
+                results.setdefault(i, []).extend(indexerResults)
 
         for i, shows in six.iteritems(results):
-            final_results.extend({(sickbeard.indexerApi(i).name, i, sickbeard.indexerApi(i).config["show_url"], int(show['id']),
-                                   show['seriesname'], show['firstaired'], show['in_show_list']) for show in shows})
+            # noinspection PyUnresolvedReferences
+            final_results.extend({(sickchill.indexer.name(i), i, sickchill.indexer[i].show_url, show['id'],
+                                   show['seriesName'], show['firstAired'], sickbeard.tv.Show.find(sickbeard.showList, show['id']) is not None
+                                   ) for show in shows})
 
-        lang_id = sickbeard.indexerApi().config['langabbv_to_id'][lang]
+        lang_id = sickchill.indexer.lang_dict()[lang]
         return json.dumps({'results': final_results, 'langid': lang_id, 'success': len(final_results) > 0})
 
     def massAddTable(self, rootDir=None):
@@ -183,24 +175,33 @@ class AddShows(Home):
 
                 dir_list.append(cur_dir)
 
+                def find_on_indexers(i, n, idxr):
+                    if not n:
+                        n = ek(os.path.basename, cur_path)
+
+                    if n and not (idxr and i):
+                        search_results = sickchill.indexer.search_indexers_for_series_name(n)
+                        for idxr in (search_results, [idxr])[idxr in search_results]:
+                            for r in search_results[idxr]:
+                                item = r.get('id'), r.get('seriesName'), idxr
+                                if all(item):
+                                    return item
+
+                    return None, None, None
+
                 indexer_id = show_name = indexer = None
                 for cur_provider in sickbeard.metadata_provider_dict.values():
                     if not (indexer_id and show_name):
                         (indexer_id, show_name, indexer) = cur_provider.retrieveShowMetadata(cur_path)
+                        if all((indexer_id, show_name, indexer)):
+                            break
 
-                        # default to TVDB if indexer was not detected
-                        if show_name and not (indexer or indexer_id):
-                            (show_name_, idxr, i) = helpers.searchIndexerForShowID(show_name, indexer, indexer_id)
-
-                            # set indexer and indexer_id from found info
-                            if not indexer and idxr:
-                                indexer = idxr
-
-                            if not indexer_id and i:
-                                indexer_id = i
+                if not (indexer_id and show_name and indexer):
+                    result = find_on_indexers(indexer_id, show_name, indexer)
+                    if all(result):
+                        indexer_id, show_name, indexer = result
 
                 cur_dir['existing_info'] = (indexer_id, show_name, indexer)
-
                 if indexer_id and Show.find(sickbeard.showList, indexer_id):
                     cur_dir['added_already'] = True
         return t.render(dirList=dir_list)
@@ -248,7 +249,7 @@ class AddShows(Home):
             default_show_name=default_show_name, other_shows=other_shows,
             provided_show_dir=show_dir, provided_indexer_id=provided_indexer_id,
             provided_indexer_name=provided_indexer_name, provided_indexer=provided_indexer,
-            indexers=sickbeard.indexerApi().indexers, whitelist=[], blacklist=[], groups=[],
+            whitelist=[], blacklist=[], groups=[],
             title=_('New Show'), header=_('New Show'), topmenu='home',
             controller="addShows", action="newShow"
         )
@@ -330,7 +331,7 @@ class AddShows(Home):
 
     @staticmethod
     def getTrendingShowImage(indexerId):
-        image_url = trakt_trending.get_image_url(indexerId)
+        image_url = sickchill.indexer.series_poster_by_id(indexerId)
         if image_url:
             image_path = trakt_trending.get_image_path(trakt_trending.get_image_name(indexerId))
             trakt_trending.cache_image(image_url, image_path)
@@ -374,7 +375,7 @@ class AddShows(Home):
                         controller="addShows", action="addExistingShow")
 
     # noinspection PyUnusedLocal
-    def addShowByID(  # pylint: disable=unused-argument
+    def addShowByID(
             self, indexer_id, show_name, indexer="TVDB", which_series=None,
             indexer_lang=None, root_dir=None, default_status=None,
             quality_preset=None, any_qualities=None, best_qualities=None,
@@ -451,7 +452,7 @@ class AddShows(Home):
             logger.log("There was an error creating the show, no root directory setting found")
             return _("No root directories setup, please go back and add one.")
 
-        show_name = get_showname_from_indexer(1, indexer_id)
+        show_name = sickchill.indexer[1].get_series_by_id(indexer_id, indexer_lang).seriesName
         show_dir = None
 
         if not show_name:

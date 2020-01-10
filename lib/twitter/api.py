@@ -70,7 +70,7 @@ from twitter.error import (
 )
 
 if sys.version_info > (3,):
-    long = int  # pylint: disable=invalid-name,redefined-builtin
+    long = int
 
 CHARACTER_LIMIT = 280
 

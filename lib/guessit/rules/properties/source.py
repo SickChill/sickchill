@@ -40,7 +40,7 @@ def source(config):  # pylint:disable=unused-argument
         string_format = prefix_format + '({0})' + suffix_format
         return [string_format.format(pattern) for pattern in patterns]
 
-    def demote_other(match, other):  # pylint: disable=unused-argument
+    def demote_other(match, other):
         """Default conflict solver with 'other' property."""
         return other if other.name == 'other' else '__default__'
 

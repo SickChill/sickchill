@@ -1,14 +1,16 @@
 # coding=utf-8
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import os
 import posixpath
 import re
 from datetime import date
 
+# Third Party Imports
 from bs4 import BeautifulSoup
 
+# First Party Imports
 import sickbeard
 from sickbeard import helpers
 from sickchill.helper.encoding import ek

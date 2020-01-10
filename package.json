@@ -96,7 +96,7 @@
     ],
     "ignores": [
       "core.min.js",
-      "vender.min.js",
+      "vendor.min.js",
       "lib/**/*",
       "Gruntfile.js"
     ]

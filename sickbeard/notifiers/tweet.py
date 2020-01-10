@@ -18,12 +18,14 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Third Party Imports
 import twitter
 from requests.exceptions import RequestException
 from requests_oauthlib import OAuth1Session
 
+# First Party Imports
 import sickbeard
 from sickbeard import common, logger
 from sickchill.helper.exceptions import ex
@@ -73,7 +75,6 @@ class Notifier(object):
         """
         Step 1 of authorization - get app authorization url.
 
-        :param key: Authorization key received from twitter
         :return: True if succeeded, False otherwise
         """
         logger.log('Requesting temp token from Twitter', logger.DEBUG)
@@ -89,6 +90,7 @@ class Notifier(object):
             return oauth_session.authorization_url(self.AUTHORIZATION_URL)
 
     def _get_credentials(self, key):
+        logger.log('Type of key is {}'.format(type(key)))
         """
         Step 2 of authorization - poll server for access token.
 

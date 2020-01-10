@@ -18,15 +18,18 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 
-import db
-
-from sickbeard.common import FAILED, Quality, SNATCHED, SUBTITLED
+# First Party Imports
 from sickchill.helper.encoding import ss
 from sickchill.show.History import History
+
+# Local Folder Imports
+from . import db
+from .common import FAILED, Quality, SNATCHED, SUBTITLED
 
 
 def _logHistoryItem(action, showid, season, episode, quality, resource, provider, version=-1):
