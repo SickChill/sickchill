@@ -36,6 +36,8 @@ from .tvdb import TVDB
 
 
 class ShowIndexer(object):
+    TVDB = 1
+    TVRAGE = 2
 
     def __init__(self):
         if sickbeard.INDEXER_DEFAULT is None:
@@ -96,10 +98,10 @@ class ShowIndexer(object):
             indexer = sickbeard.INDEXER_DEFAULT
         return self.indexers[indexer].search(*args, **kwargs)
 
-    def search_indexers_for_series_name(self, name, language=None):
+    def search_indexers_for_series_name(self, name, language=None, exact=False):
         results = {}
         for i, indexer in self:
-            search = indexer.search(name, language)
+            search = indexer.search(name, language=language, exact=exact)
             if search:
                 results[i] = search
 

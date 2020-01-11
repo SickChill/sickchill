@@ -61,7 +61,7 @@
         <div class="col-md-12">
             % for cur_ep_obj in ep_obj_list:
                 <%
-                    curLoc = cur_ep_obj.location[len(cur_ep_obj.show.location)+1:]
+                    curLoc = cur_ep_obj.location[len(cur_ep_obj.show._location)+1:]
                     curExt = curLoc.split('.')[-1]
                     newLoc = cur_ep_obj.proper_path() + '.' + curExt
                 %>

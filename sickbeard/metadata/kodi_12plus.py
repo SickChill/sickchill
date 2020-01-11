@@ -151,8 +151,10 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
             episodeguideurl = etree.SubElement(episodeguide, "url")
             episodeguideurl.text = show_obj.idxr.base_url + str(myShow.id) + '/all/en.zip'
 
-        if getattr(myShow, 'id', None):
             indexerid = etree.SubElement(tv_node, "id")
+            indexerid.text = str(myShow.id)
+
+            indexerid = etree.SubElement(tv_node, "tvdbid")
             indexerid.text = str(myShow.id)
 
         if getattr(myShow, 'genre', None) and isinstance(myShow.genre, list):

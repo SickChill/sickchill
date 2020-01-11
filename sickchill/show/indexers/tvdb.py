@@ -31,6 +31,7 @@ from sickbeard.tv import TVEpisode
 
 # Local Folder Imports
 from .base import Indexer
+from .wrappers import ExceptionDecorator
 
 
 class TVDB(Indexer):
@@ -49,11 +50,13 @@ class TVDB(Indexer):
         self.series_images = tvdbsimple.Series_Images
         self.updates = tvdbsimple.Updates
 
+    @ExceptionDecorator(default_return=None)
     def get_series_by_id(self, indexerid, language=None):
         result = self.series(indexerid, language)
         result.info(language=language)
         return result
 
+    @ExceptionDecorator(default_return=None)
     def series_from_show(self, show):
         result = self.series(show.indexerid, show.lang)
         result.info(language=show.lang)
@@ -71,17 +74,16 @@ class TVDB(Indexer):
         result.info(language=language)
         return result
 
+    @ExceptionDecorator()
     def episodes(self, show, season=None):
-        try:
-            if show.dvdorder:
-                result = self.series_episodes(show.indexerid, dvdSeason=season, language=show.lang).all()
-            else:
-                result = self.series_episodes(show.indexerid, airedSeason=season, language=show.lang).all()
-        except HTTPError:
-            result = []
+        if show.dvdorder:
+            result = self.series_episodes(show.indexerid, dvdSeason=season, language=show.lang).all()
+        else:
+            result = self.series_episodes(show.indexerid, airedSeason=season, language=show.lang).all()
 
         return result
 
+    @ExceptionDecorator(default_return=None)
     def episode(self, item, season=None, episode=None, **kwargs):
         if isinstance(item, TVEpisode):
             show = item.show
@@ -90,34 +92,54 @@ class TVDB(Indexer):
         else:
             show = item
 
-        try:
-            if show.dvdorder:
-                result = self.series_episodes(show.indexerid, dvdSeason=season, dvdEpisode=episode, language=show.lang, **kwargs).all()[0]
-            else:
-                result = self.series_episodes(show.indexerid, airedSeason=season, airedEpisode=episode, language=show.lang, **kwargs).all()[0]
-        except (HTTPError, IndexError):
-            result = None
+        if show.dvdorder:
+            result = self.series_episodes(show.indexerid, dvdSeason=season, dvdEpisode=episode, language=show.lang, **kwargs).all()[0]
+        else:
+            result = self.series_episodes(show.indexerid, airedSeason=season, airedEpisode=episode, language=show.lang, **kwargs).all()[0]
 
         return result
 
-    def search(self, name, language=None):
-        # Caution, mistake here will cause infinite recursion
+    @ExceptionDecorator()
+    def search(self, name, language=None, exact=False, indexer_id=False):
+        """
+        :param name: Show name to search for
+        :param language: Language of the show info we want
+        :param exact: Exact when adding existing, processed when adding new shows
+        :param indexer_id: Exact indexer id to get, either imdb or tvdb id.
+        :return: list of series objects
+        """
+        language = language or self.language
         result = []
-        if re.match(r'^t?t?\d{7,8}$', name):
-            result = self._search(imdbId='tt{}'.format(name.strip('t')))
-        elif re.match(r'^\d{6}$', name):
-            result = [self.series(name)]
-        else:
+        if indexer_id:
             try:
-                result = self._search(name, language=language)
+                if re.match(r'^t?t?\d{7,8}$', str(name)):
+                    result = self._search(imdbId='tt{}'.format(name.strip('t')), language=language)
+                elif re.match(r'^\d{6}$', str(name)):
+                    result = [self.series(name, language=language)]
             except HTTPError:
-                if re.match(r'^(.*)[. -_]\(\d{4}\)$', name):
-                    try:
-                        result = self._search(name[0:-7], language=language)
-                    except HTTPError:
-                        if re.match(r'[. -_]', name):
-                            # Recursion starts here conditionally, should be called only once
-                            result = self.search(re.sub('[. -]', ' ', name), language)
+                pass
+        else:
+            # Name as provided (usually from nfo)
+            names = [name]
+            if not exact:
+                # Name without year and separator
+                test = re.match(r'^(.+?)[. -]+\(\d{4}\)?$', name)
+                if test:
+                    names.append(test.group(1).strip())
+                # Name with spaces
+                if re.match(r'[. -_]', name):
+                    names.append(re.sub(r'[. -_]', ' ', name).strip())
+                    if test:
+                        # Name with spaces and without year
+                        names.append(re.sub(r'[. -_]', ' ', test.group(1)).strip())
+
+            for attempt in set(n for n in names if n.strip()):
+                try:
+                    result = self._search(attempt, language=language)
+                    if result:
+                        break
+                except HTTPError:
+                    pass
 
         return result
 
@@ -142,25 +164,18 @@ class TVDB(Indexer):
         location = location.strip()
         if not location:
             return location
-        return 'https://artworks.thetvdb.com/banners/{path}'.format(path=location.strip())
+        return 'https://artworks.thetvdb.com/banners/{path}'.format(path=location)
 
+    @ExceptionDecorator(default_return='', catch=(HTTPError, KeyError))
     def __call_images_api(self, show, thumb, keyType, subKey=None):
-        try:
-            images = self.series_images(show.indexerid, show.lang, keyType=keyType, subKey=subKey)
-            result = self.complete_image_url(images.all()[0][('fileName', 'thumbnail')[thumb]])
-        except HTTPError:
-            # logger.log('Unable to find image for {show}, {thumb}, {keyType}, {subKey}'.format(show=show, thumb=thumb, keyType=keyType, subKey=subKey))
-            result = ''
-
-        return result
+        images = self.series_images(show.indexerid, show.lang, keyType=keyType, subKey=subKey)
+        return self.complete_image_url(images.all()[0][('fileName', 'thumbnail')[thumb]])
 
     @staticmethod
+    @ExceptionDecorator()
     def actors(series):
         if hasattr(series, 'actors') and callable(series.actors):
-            try:
-                series.actors(series.language)
-            except HTTPError:
-                return []
+            series.actors(series.language)
         return series.actors
 
     def series_poster_url(self, show, thumb=False):
@@ -178,10 +193,6 @@ class TVDB(Indexer):
     def season_banner_url(self, show, season, thumb=False):
         return self.__call_images_api(show, thumb, 'seasonwide', season)
 
+    @ExceptionDecorator(default_return='', catch=(HTTPError, KeyError))
     def episode_image_url(self, episode):
-        try:
-            result = self.complete_image_url(self.episode(episode)['filename'])
-        except HTTPError:
-            result = ''
-
-        return result
+        return self.complete_image_url(self.episode(episode)['filename'])

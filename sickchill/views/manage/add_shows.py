@@ -179,13 +179,24 @@ class AddShows(Home):
                     if not n:
                         n = ek(os.path.basename, cur_path)
 
-                    if n and not (idxr and i):
-                        search_results = sickchill.indexer.search_indexers_for_series_name(n)
-                        for idxr in (search_results, [idxr])[idxr in search_results]:
-                            for r in search_results[idxr]:
-                                item = r.get('id'), r.get('seriesName'), idxr
-                                if all(item):
-                                    return item
+                    if idxr and i:
+                        __result = sickchill.indexer[idxr].get_series_by_id(indexerid=i)
+                        if __result:
+                            search_results = {idxr: [__result.info()]}
+                        else:
+                            search_results = []
+                    elif idxr and n:
+                        search_results = {idxr: sickchill.indexer[idxr].search(name=n, exact=True)}
+                    elif n and not (idxr and i):
+                        search_results = sickchill.indexer.search_indexers_for_series_name(n, exact=True)
+                    else:
+                        search_results = []
+
+                    for idxr in (search_results, [idxr])[idxr in search_results]:
+                        for r in search_results[idxr]:
+                            item = r.get('id'), r.get('seriesName'), idxr
+                            if all(item):
+                                return item
 
                     return None, None, None
 
@@ -193,7 +204,7 @@ class AddShows(Home):
                 for cur_provider in sickbeard.metadata_provider_dict.values():
                     if not (indexer_id and show_name):
                         (indexer_id, show_name, indexer) = cur_provider.retrieveShowMetadata(cur_path)
-                        if all((indexer_id, show_name, indexer)):
+                        if show_name or (indexer_id and indexer):
                             break
 
                 if not (indexer_id and show_name and indexer):

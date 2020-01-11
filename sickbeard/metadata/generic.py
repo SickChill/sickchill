@@ -700,43 +700,69 @@ class GenericMetadata(object):
         metadata_path = ek(os.path.join, folder, self._show_metadata_filename)
 
         if not ek(os.path.isdir, folder) or not ek(os.path.isfile, metadata_path):
-            logger.log("Can't load the metadata file from " + metadata_path + ", it doesn't exist", logger.DEBUG)
+            logger.log(_("Can't load the metadata file from {0}, it doesn't exist").format(metadata_path), logger.DEBUG)
             return empty_return
 
-        logger.log("Loading show info from metadata file in " + metadata_path, logger.DEBUG)
+        logger.log(_("Loading show info from metadata file in {0}").format(metadata_path), logger.DEBUG)
+
+        def read_xml():
+            with io.open(metadata_path, 'rb') as __xml_file:
+                try:
+                    __show_xml = etree.ElementTree(file=__xml_file)
+                except (etree.ParseError, IOError):
+                    __show_xml = None
+            return __show_xml
+
+        def fix_xml():
+            logger.log(_("There was an error loading {0}, trying to repair it by fixing & symbols. If it still has problems, please check the file "
+                         "manually").format(metadata_path))
+            with io.open(metadata_path, 'rb') as __xml_file:
+                output = __xml_file.read()
+
+            regex = re.compile(r"&(?!amp;|lt;|gt;)")
+            output = regex.sub("&amp;", output)
+            with io.open(metadata_path, 'wb') as __xml_file:
+                __xml_file.write(output)
+
+            return True
 
         try:
-            with io.open(metadata_path, 'rb') as xmlFileObj:
-                showXML = etree.ElementTree(file=xmlFileObj)
-
-            if showXML.findtext('title') is None or (showXML.findtext('tvdbid') is None and showXML.findtext('id') is None):
-                logger.log("Invalid info in tvshow.nfo (missing name or id): {0} {1} {2}".format(showXML.findtext('title'), showXML.findtext('tvdbid'), showXML.findtext('id')))
+            show_xml = read_xml() or fix_xml() and read_xml()
+            if not show_xml:
+                logger.log(_("Can't load the metadata file from {0}, error reading file").format(metadata_path), logger.DEBUG)
                 return empty_return
 
-            name = showXML.findtext('title')
+            if not (show_xml.findtext('title') or (show_xml.findtext('tvdbid') and show_xml.findtext('id'))):
+                logger.log(_("Invalid info in tvshow.nfo (missing name or id): {0} {1} {2}").format(show_xml.findtext('title'), show_xml.findtext('tvdbid'),
+                                                                                                    show_xml.findtext('id')))
+                return empty_return
 
-            indexer_id_text = showXML.findtext('tvdbid') or showXML.findtext('id')
+            name = show_xml.findtext('title')
+
+            indexer_id_text = show_xml.findtext('tvdbid') or show_xml.findtext('id')
             if indexer_id_text:
                 indexer_id = try_int(indexer_id_text, None)
                 if indexer_id is None or indexer_id < 1:
-                    logger.log("Invalid Indexer ID (" + str(indexer_id) + "), not using metadata file", logger.DEBUG)
+                    logger.log(_("Invalid Indexer ID ({0}), not using metadata file").format(str(indexer_id)), logger.DEBUG)
                     return empty_return
             else:
-                logger.log("Empty <id> or <tvdbid> field in NFO, unable to find a ID, not using metadata file", logger.DEBUG)
+                logger.log(_("Empty <id> or <tvdbid> field in NFO, unable to find a ID, not using metadata file"), logger.DEBUG)
                 return empty_return
 
             indexer = 1
-            epg_url_text = showXML.findtext('episodeguide/url')
+            epg_url_text = show_xml.findtext('episodeguide/url')
             if epg_url_text:
                 epg_url = epg_url_text.lower()
                 if str(indexer_id) in epg_url and 'tvrage' in epg_url:
-                    logger.log("Invalid Indexer ID (" + str(indexer_id) + "), not using metadata file because it has TVRage info", logger.WARNING)
-                    return empty_return
+                    if sickchill.indexer.TVRAGE not in sickchill.indexer:
+                        logger.log(_("Invalid Indexer ID ({0}), not using metadata file because it has TVRage info").format(indexer_id), logger.WARNING)
+                        return empty_return
+                    return indexer_id, show_xml.findtext('title'), sickchill.indexer.TVRAGE
+                if str(indexer_id) in epg_url and 'tvdb' in epg_url:
+                    return indexer_id, show_xml.findtext('title'), sickchill.indexer.TVDB
 
         except Exception as e:
-            logger.log(
-                "There was an error parsing your existing metadata file: '" + metadata_path + "' error: " + ex(e),
-                logger.WARNING)
+            logger.log(_("There was an error parsing your existing metadata file: '{0}' error: {1}").format(metadata_path, ex(e)), logger.WARNING)
             return empty_return
 
         return indexer_id, name, indexer
