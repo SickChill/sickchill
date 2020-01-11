@@ -1875,7 +1875,7 @@ select .selected {
     background-position: -106px 0;
 }
 
-.add-client-icon-qbittorrent {
+.add-client-icon-qbittorrent, .add-client-icon-new-qbittorrent {
     background-position: -138px 0;
 }
 
