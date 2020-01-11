@@ -17,7 +17,9 @@
   "dependencies": {},
   "devDependencies": {
     "ava": "^0.24.0",
+    "bower": "1.8.8",
     "browser-env": "^3.1.0",
+    "eslint": "^6.8.0",
     "grunt": "^1.0.1",
     "grunt-bower-concat": "^1.0.0",
     "grunt-bower-task": "^0.5.0",
