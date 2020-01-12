@@ -324,12 +324,12 @@ class QueueItemAdd(ShowQueueItem):
             # Let's try to create the show Dir if it's not provided. This way we force the show dir to build build using the
             # Indexers provided series name
             if self.root_dir and not self.showDir:
-                if not s.title:
+                if not s.seriesName:
                     logger.log('Unable to get a show {0}, can\'t add the show'.format(self.showDir))
                     self._finish_early()
                     return
 
-                self.showDir = ek(os.path.join, self.root_dir, sanitize_filename(s.title))
+                self.showDir = ek(os.path.join, self.root_dir, sanitize_filename(s.seriesName))
 
                 dir_exists = makeDir(self.showDir)
                 if not dir_exists:

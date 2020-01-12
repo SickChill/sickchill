@@ -47,7 +47,7 @@ class RarbgProvider(TorrentProvider):
         self.token_expires = None
 
         # Spec: https://torrentapi.org/apidocs_v2.txt
-        self.url = "https://rarbg.com"
+        self.url = "https://rarbg.to"
         self.urls = {"api": "http://torrentapi.org/pubapi_v2.php"}
 
         self.proper_strings = ["{{PROPER|REPACK}}"]
