@@ -105,6 +105,12 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
     endStatus = SNATCHED_PROPER if re.search(r'\b(proper|repack|real)\b', result.name, re.I) else endStatus
 
+    # This is breaking if newznab protocol, expecting a torrent from a url and getting a magnet instead.
+    if result.url and 'jackett_apikey' in result.url:
+        response = result.provider.get_url(result.url, allow_redirects=False, returns='response')
+        if response.next and response.next.url and response.next.url.startswith('magnet'):
+            result.url = response.next.url
+
     # NZBs can be sent straight to SAB or saved to disk
     if result.resultType in (GenericProvider.NZB, GenericProvider.NZBDATA):
         if sickbeard.NZB_METHOD == "blackhole":

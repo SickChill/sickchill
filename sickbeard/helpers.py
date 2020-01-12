@@ -1288,6 +1288,7 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
     try:
         response_type = kwargs.pop('returns', 'text')
         stream = kwargs.pop('stream', False)
+        allow_redirects = kwargs.pop('allow_redirects', True)
 
         hooks, cookies, verify, proxies = request_defaults(kwargs)
 
@@ -1335,7 +1336,7 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
 
         resp = session.request(
             'POST' if post_data else 'GET', url, data=post_data or {}, params=params or {},
-            timeout=timeout, allow_redirects=True, hooks=hooks, stream=stream,
+            timeout=timeout, allow_redirects=allow_redirects, hooks=hooks, stream=stream,
             headers=headers, cookies=cookies, proxies=proxies, verify=verify
         )
         resp.raise_for_status()
