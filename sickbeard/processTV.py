@@ -267,13 +267,13 @@ def validate_dir(process_path, release_name, failed, result):
     result.output += log_helper("Processing folder " + process_path, logger.DEBUG)
 
     upper_name = ek(os.path.basename, process_path).upper()
-    if upper_name.startswith('_FAILED_') or upper_name.endswith('_FAILED_'):
+    if upper_name.startswith('_FAILED_') or upper_name.endswith('_FAILED_') or (os.sep + '_FAILED_') in upper_name or ('_FAILED_' + os.sep + ) in upper_name:
         result.output += log_helper("The directory name indicates it failed to extract.", logger.DEBUG)
         failed = True
-    elif upper_name.startswith('_UNDERSIZED_') or upper_name.endswith('_UNDERSIZED_'):
+    elif upper_name.startswith('_UNDERSIZED_') or upper_name.endswith('_UNDERSIZED_') or (os.sep + '_UNDERSIZED_') in upper_name or ('_UNDERSIZED_' + os.sep + ) in upper_name:
         result.output += log_helper("The directory name indicates that it was previously rejected for being undersized.", logger.DEBUG)
         failed = True
-    elif upper_name.startswith('_UNPACK') or upper_name.endswith('_UNPACK'):
+    elif upper_name.startswith('_UNPACK') or upper_name.endswith('_UNPACK') or (os.sep + '_UNPACK') in upper_name or ('_UNPACK' + os.sep + ) in upper_name:
         result.output += log_helper("The directory name indicates that this release is in the process of being unpacked.", logger.DEBUG)
         result.missed_files.append("{0} : Being unpacked".format(process_path))
         return False
