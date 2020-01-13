@@ -185,7 +185,7 @@ class ShowIndexer(object):
             def __init__(self, __indexerid, __language, __indexer):
                 self.indexerid = __indexerid
                 self.indexer = __indexer or sickbeard.INDEXER_DEFAULT
-                self.language = __language or sickbeard.INDEXER_DEFAULT_LANGUAGE
+                self.lang = __language or sickbeard.INDEXER_DEFAULT_LANGUAGE
         return self.series_poster_url(__TVShow(indexerid, language, indexer), thumb)
 
     def series_poster_url(self, show, thumb=False):
