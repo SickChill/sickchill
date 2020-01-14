@@ -104,10 +104,11 @@ class CensoredFormatter(logging.Formatter, object):
         censored.sort(key=len, reverse=True)
 
         for item in censored:
-            msg = msg.replace(item, len(item) * '*')
+            msg = re.sub(r'\b({item})\b'.format(item=item), '*' * 8, msg)
+            # msg = msg.replace(item, len(item) * '*')
 
         # Needed because Newznab apikey isn't stored as key=value in a section.
-        msg = re.sub(r'([&?]r|[&?]apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)', r'\1=**********\2', msg, re.I)
+        msg = re.sub(r'([&?]r|[&?]apikey|[&?]jackett_apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)', r'\1=**********\2', msg, re.I)
         return msg
 
 
