@@ -102,7 +102,7 @@ class ConfigGeneral(Config):
             indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None, fanart_background=None, fanart_background_opacity=None,
             sickchill_background=None, sickchill_background_path=None, custom_css=None, custom_css_path=None,
             git_reset=None, git_auth_type=0, git_username=None, git_password=None, git_token=None,
-            display_all_seasons=None, gui_language=None, ignore_broken_symlinks=None):
+            display_all_seasons=None, gui_language=None, ignore_broken_symlinks=None, ended_shows_update_interval=None):
 
         results = []
 
@@ -219,6 +219,8 @@ class ConfigGeneral(Config):
         sickbeard.FANART_BACKGROUND_OPACITY = fanart_background_opacity
         sickbeard.CUSTOM_CSS = config.checkbox_to_value(custom_css)
         config.change_custom_css(custom_css_path)
+
+        sickbeard.ENDED_SHOWS_UPDATE_INTERVAL = int(ended_shows_update_interval)
 
         sickbeard.DEFAULT_PAGE = default_page
 
