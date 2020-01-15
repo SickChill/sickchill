@@ -672,6 +672,8 @@ UNPACK_DIR = ''
 UNRAR_TOOL = rarfile.UNRAR_TOOL
 ALT_UNRAR_TOOL = rarfile.ALT_TOOL
 
+ENDED_SHOWS_UPDATE_INTERVAL = 7
+
 
 def get_backlog_cycle_time():
     cycletime = DAILYSEARCH_FREQUENCY * 2 + 7
@@ -741,7 +743,7 @@ def initialize(consoleLogging=True):
             NEWS_LATEST, SOCKET_TIMEOUT, SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKCHILL_BACKGROUND, \
             SICKCHILL_BACKGROUND_PATH, FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, \
             SLACK_NOTIFY_DOWNLOAD, SLACK_NOTIFY_SUBTITLEDOWNLOAD, SLACK_WEBHOOK, SLACK_ICON_EMOJI, USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK,\
-            USE_MATRIX, MATRIX_NOTIFY_SNATCH, MATRIX_NOTIFY_DOWNLOAD, MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM
+            USE_MATRIX, MATRIX_NOTIFY_SNATCH, MATRIX_NOTIFY_DOWNLOAD, MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM, ENDED_SHOWS_UPDATE_INTERVAL
 
         if __INITIALIZED__:
             return False
@@ -1429,6 +1431,7 @@ def initialize(consoleLogging=True):
         POSTER_SORTBY = check_setting_str(CFG, 'GUI', 'poster_sortby', 'name')
         POSTER_SORTDIR = check_setting_int(CFG, 'GUI', 'poster_sortdir', 1, min_val=0, max_val=1)
         DISPLAY_ALL_SEASONS = check_setting_bool(CFG, 'General', 'display_all_seasons', True)
+        ENDED_SHOWS_UPDATE_INTERVAL = check_setting_int(CFG, 'General', 'ended_shows_update_interval', 7)
 
         if check_section(CFG, 'Shares'):
             WINDOWS_SHARES.update(CFG['Shares'])
@@ -1954,6 +1957,7 @@ def save_config():
             'no_restart': int(NO_RESTART),
             'developer': int(DEVELOPER),
             'display_all_seasons': int(DISPLAY_ALL_SEASONS),
+            'ended_shows_update_interval': int(ENDED_SHOWS_UPDATE_INTERVAL),
             'news_last_read': NEWS_LAST_READ,
         },
 

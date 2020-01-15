@@ -817,7 +817,7 @@ class TVShow(object):
         if self.airs is None:
             self.airs = ''
 
-        if hasattr(myShow, 'firstAired'):
+        if hasattr(myShow, 'firstAired') and myShow.firstAired:
             self.startyear = int(myShow.firstAired.split('-')[0])
 
         self.status = getattr(myShow, 'status', 'Unknown')

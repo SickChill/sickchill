@@ -23,6 +23,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
+import datetime
 import threading
 import time
 
@@ -74,8 +75,17 @@ class ShowUpdater(object):
             for cur_show in sickbeard.showList:
                 try:
                     cur_show.nextEpisode()
+
+                    # Skip ended shows until interval is met
+                    if cur_show.status == 'Ended' and sickbeard.ENDED_SHOWS_UPDATE_INTERVAL != 0:  # 0 is always
+                        if sickbeard.ENDED_SHOWS_UPDATE_INTERVAL == -1:  # Never
+                            continue
+                        if (datetime.datetime.today() - datetime.datetime.fromordinal(cur_show.last_update_indexer or 1)).days < \
+                            sickbeard.ENDED_SHOWS_UPDATE_INTERVAL:
+                            continue
+
                     # When last_update is not set from the cache or the show was in the tvdb updated list we update the show
-                    if not last_update or cur_show.indexerid in updated_shows:
+                    if cur_show.indexerid in updated_shows or not last_update:
                         pi_list.append(sickbeard.showQueueScheduler.action.update_show(cur_show, True))
                     else:
                         pi_list.append(sickbeard.showQueueScheduler.action.refresh_show(cur_show, False))
