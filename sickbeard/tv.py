@@ -518,13 +518,12 @@ class TVShow(object):
                 show_id=self.indexerid, indexer_name=self.indexer_name), logger.DEBUG)
             return
 
-        logger.log(_("{show_id}: Loading all episodes from {indexer_name}...").format(
-            show_id=self.indexerid, indexer_name=self.indexer_name), logger.DEBUG)
+        logger.log(_("{show_id}: Loading all episodes from {indexer_name}...").format(show_id=self.indexerid, indexer_name=self.indexer_name), logger.DEBUG)
 
         scannedEps = {}
 
         sql_l = []
-        for series_episode in showObj.Episodes.all():
+        for series_episode in self.idxr.episodes(self):
             if series_episode['airedSeason'] not in scannedEps:
                 scannedEps[series_episode['airedSeason']] = {}
 
