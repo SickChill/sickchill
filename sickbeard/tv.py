@@ -512,12 +512,6 @@ class TVShow(object):
         return scannedEps
 
     def loadEpisodesFromIndexer(self):
-        showObj = self.idxr.series(self.indexerid, self.lang)
-        if not showObj:
-            logger.log(_('{show_id}: Could not get the show from {indexer_name}, try again later.').format(
-                show_id=self.indexerid, indexer_name=self.indexer_name), logger.DEBUG)
-            return
-
         logger.log(_("{show_id}: Loading all episodes from {indexer_name}...").format(show_id=self.indexerid, indexer_name=self.indexer_name), logger.DEBUG)
 
         scannedEps = {}
