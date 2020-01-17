@@ -163,7 +163,7 @@ class Client(GenericClient):
         self.url = urljoin(self.host, 'query/propertiesGeneral/{}'.format(torrent_hash.lower()))
         for i in range(attempts):
             if self._request(method='get', cookies=self.session.cookies):
-                if self.response.json()['piece_size'] != -1:
+                if self.response.json()['addition_date'] != -1:
                     return True
             sleep(2)
         return False

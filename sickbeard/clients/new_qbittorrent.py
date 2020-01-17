@@ -99,12 +99,3 @@ class Client(GenericClient):
         if sickbeard.TORRENT_PAUSED:
             self.url = urljoin(self.host, self.api_prefix + 'torrents/pause?hashes={}'.format(result.hash.lower()))
         return self._request(method='get', cookies=self.session.cookies)
-
-    def _verify_added(self, torrent_hash, attempts=10):
-        self.url = urljoin(self.host, self.api_prefix + 'torrents/info?hashes={}'.format(torrent_hash.lower()))
-        for i in range(attempts):
-            if self._request(method='get', cookies=self.session.cookies):
-                if self.response.json()['piece_size'] != -1:
-                    return True
-            sleep(2)
-        return False
