@@ -193,6 +193,6 @@ class TVDB(Indexer):
     def season_banner_url(self, show, season, thumb=False):
         return self.__call_images_api(show, thumb, 'seasonwide', season)
 
-    @ExceptionDecorator(default_return='', catch=(HTTPError, KeyError))
+    @ExceptionDecorator(default_return='', catch=(HTTPError, KeyError, TypeError))
     def episode_image_url(self, episode):
         return self.complete_image_url(self.episode(episode)['filename'])

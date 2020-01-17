@@ -497,7 +497,6 @@ class TVShow(object):
                     raise EpisodeNotFoundException
 
                 curEp.loadFromDB(curSeason, curEpisode)
-                curEp.loadFromIndexer()
                 scannedEps[curSeason][curEpisode] = True
             except EpisodeDeletedException:
                 logger.log("{id}: Tried loading {show} {ep} from the DB that should have been deleted, skipping it".format
@@ -532,14 +531,12 @@ class TVShow(object):
                 continue
             else:
                 try:
-                    show_episode.loadFromIndexer()
+                    with show_episode.lock:
+                        show_episode.loadFromIndexer(*season_episode)
+                        sql_l.append(show_episode.get_sql())
                 except EpisodeDeletedException:
                     logger.log("The episode was deleted, skipping the rest of the load")
                     continue
-
-            with show_episode.lock:
-                show_episode.loadFromIndexer(*season_episode)
-                sql_l.append(show_episode.get_sql())
 
             scannedEps[series_episode['airedSeason']][series_episode['airedEpisodeNumber']] = True
 
