@@ -668,11 +668,7 @@ class QueueItemUpdate(ShowQueueItem):
                        (self.show.idxr.name, error), logger.ERROR)
             IndexerEpList = None
 
-        if not IndexerEpList:
-            logger.log('No data returned from {0}, unable to update this show.'.format
-                       (self.show.idxr.name), logger.ERROR)
-        else:
-            # for each ep we found on the Indexer delete it from the DB list
+        if IndexerEpList is not None:
             for curSeason in IndexerEpList:
                 for curEpisode in IndexerEpList[curSeason]:
                     curEp = self.show.getEpisode(curSeason, curEpisode)
