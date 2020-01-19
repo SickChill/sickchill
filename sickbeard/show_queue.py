@@ -320,6 +320,15 @@ class QueueItemAdd(ShowQueueItem):
         # make sure the Indexer IDs are valid
         try:
             s = sickchill.indexer.series_by_id(indexerid=self.indexer_id, indexer=self.indexer, language=self.lang)
+            if not s:
+                error_string = 'Could not find show with id:{0} on {1}, skipping'.format(
+                    self.indexer_id, sickchill.indexer.name(self.indexer))
+
+                logger.log(error_string)
+                ui.notifications.error('Unable to add show', error_string)
+
+                self._finish_early()
+                return
 
             # Let's try to create the show Dir if it's not provided. This way we force the show dir to build build using the
             # Indexers provided series name
@@ -346,17 +355,6 @@ class QueueItemAdd(ShowQueueItem):
                     self.showDir, sickchill.indexer.name(self.indexer))
 
                 logger.log(error_string, logger.WARNING)
-                ui.notifications.error('Unable to add show', error_string)
-
-                self._finish_early()
-                return
-
-            # if the show has no episodes/seasons
-            if not s:
-                error_string = 'Show {0} is on {1} but contains no season/episode data.'.format(
-                    s.seriesName, sickchill.indexer.name(self.indexer))
-
-                logger.log(error_string)
                 ui.notifications.error('Unable to add show', error_string)
 
                 self._finish_early()
