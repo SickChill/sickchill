@@ -40,8 +40,8 @@ import traceback
 codecs.register(lambda name: codecs.lookup('utf-8') if name == 'cp65001' else None)
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), 'lib')))
 
-if (2, 7, 99) < sys.version_info or sys.version_info < (2, 7, 9):
-    print('Sorry, requires Python at least 2.7.9 but less than 3')
+if (2, 7, 99) < sys.version_info or sys.version_info < (2, 7, 1):
+    print('Sorry, requires Python at least 2.7 but less than 3')
     sys.exit(1)
 
 if sys.version_info > (2, 7, 9):

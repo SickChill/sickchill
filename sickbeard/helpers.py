@@ -98,6 +98,7 @@ if socket.getaddrinfo.__module__ in ('socket', '_socket'):
 
 # Patches urllib3 default ciphers to match those of cfscrape
 # noinspection PyUnresolvedReferences
+# TODO: Not sure if this is needed anymore
 urllib3.util.ssl_.DEFAULT_CIPHERS = cfscrape.DEFAULT_CIPHERS
 
 # Override original shutil function to increase its speed by increasing its buffer to 10MB (optimal)
@@ -1250,9 +1251,9 @@ def touchFile(fname, atime=None):
 
 def make_session(use_cfscrape=True):
     if use_cfscrape and sys.version_info < (2, 7, 9):
-        session = cloudscraper.create_scraper()
-    else:
         session = cfscrape.create_scraper()
+    else:
+        session = cloudscraper.create_scraper()
 
     session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
 

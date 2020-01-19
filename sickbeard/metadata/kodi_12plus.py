@@ -218,7 +218,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         myShow = ep_obj.idxr.series_from_episode(ep_obj)
         if not myShow:
             logger.log("Unable to find {} on {} while creating meta files, skipping".format(
-                ep_obj.show.indexerid, ep_obj.idxr.name), logger.ERROR)
+                ep_obj.show.indexerid, ep_obj.idxr.name), logger.INFO)
             return
 
         if len(eps_to_write) > 1:

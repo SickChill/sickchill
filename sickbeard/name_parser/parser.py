@@ -167,7 +167,14 @@ class NameParser(object):
                     # Shows so far are 11.22.63 and 9-1-1
                     excluded_shows = ['112263', '911']
                     assert re.sub(r'[^\d]*', '', air_date) not in excluded_shows
-                    result.air_date = dateutil.parser.parse(air_date, fuzzy_with_tokens=True)[0].date()
+
+                    check = dateutil.parser.parse(air_date, fuzzy_with_tokens=True)[0].date()
+                    # Make sure a 20th century date isn't returned as a 21st century date
+                    # 1 Year into the future (No releases should be coming out a year ahead of time, that's just insane)
+                    if check > check.today() and (check - check.today()).days // 365 > 1:
+                            check = check.replace(year=check.year-100)
+
+                    result.air_date = check
                     result.score += 1
                 except Exception:
                     continue
