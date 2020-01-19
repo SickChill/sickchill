@@ -184,7 +184,7 @@ class AddShows(Home):
                             break
 
                 if all((indexer_id, show_name, indexer)):
-                    cur_dir['existing_info'] = (indqexer_id, show_name, indexer)
+                    cur_dir['existing_info'] = (indexer_id, show_name, indexer)
 
                 if indexer_id and Show.find(sickbeard.showList, indexer_id):
                     cur_dir['added_already'] = True
