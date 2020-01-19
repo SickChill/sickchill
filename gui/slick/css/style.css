@@ -1395,7 +1395,7 @@ td.col-search {
 }
 
 .displayshow-icon-trakt {
-    background-position: -###px 0;
+    background: url("../images/32px_sprite_colored_add_lists.png") -38px 0;
 }
 
 /* =======================================================================
