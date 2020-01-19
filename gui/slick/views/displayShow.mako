@@ -140,6 +140,7 @@
                                         ${show.imdb_info['runtimes']} ${_('minutes')}
                             </span>
                                     <a href="${anon_url('http://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><span class="displayshow-icon-imdb" /></a>
+                                    <a href="${anon_url('https://trakt.tv/shows/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="https://trakt.tv/shows/${show.imdbid}"><span class="displayshow-icon-trakt" /></a>
                                 % endif
                                 <a href="${anon_url(_show.idxr.show_url, _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;"
                                    title="${_show.idxr.show_url + str(show.indexerid)}"><img alt="${show.idxr.name}" src="${static_url(show.idxr.icon)}" style="margin-top: -1px; vertical-align:middle;"/></a>
