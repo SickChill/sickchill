@@ -361,7 +361,7 @@
                                             <div class="col-md-12">
                                                 <input type="text" id="SceneName" class="form-control input-sm input250" autocapitalize="off"/>
                                                 <select id="SceneSeason" class="form-control input-sm" style="width: 95px">
-                                                    % for season in range(0, len(seasonResults)):
+                                                    % for season in range(0, len(seasonResults) + 1):
                                                         %if season == 0:
                                                             <% season = -1 %>
                                                         %endif
