@@ -24,6 +24,7 @@ import validators
 from requests.compat import urljoin
 
 # First Party Imports
+import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickchill.helper.common import try_int
@@ -78,21 +79,21 @@ class SkyTorrents(TorrentProvider):
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
-                    for item in html('item'):
+                    labels = [label.get_text(strip=True) for label in html('th')]
+                    for item in html('tr', attrs={'data-size': True}):
                         try:
-                            title = item.title.get_text(strip=True)
-                            download_url = item.magneturl.get_text(strip=True)
-                            if not (title and download_url):
-                                continue
+                            size = try_int(item['data-size'])
+                            cells = item.findChildren('td')
 
-                            size = try_int(item.size.get_text(strip=True))
-                            seeders = leechers = 0
-                            info_hash = None
+                            title_block_links = cells[labels.index('Name')].find_all('a')
+                            title = title_block_links[0].get_text(strip=True)
+                            info_hash = title_block_links[0]['href'].split('/')[1]
+                            download_url = title_block_links[2]['href']
 
-                            for attr in item.find_all(['newznab:attr', 'torznab:attr']):
-                                seeders = try_int(attr['value']) if attr['name'] == 'seeders' else seeders
-                                leechers = try_int(attr['value']) if attr['name'] == 'peers' else leechers
-                                info_hash = attr['value'] if attr['name'] == 'infohash' else info_hash
+                            seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
+                            leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
+                            if sickbeard.TORRENT_METHOD == 'blackhole':
+                                download_url = 'https://itorrents.org/torrent/{0}.torrent'.format(info_hash)
 
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
