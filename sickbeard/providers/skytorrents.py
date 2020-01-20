@@ -42,8 +42,9 @@ class SkyTorrents(TorrentProvider):
         self.minleech = None
 
         self.url = "https://www.skytorrents.lol"
-        # https://www.skytorrents.lol/rss?query=game+of+thrones&type=video&sort=seeders
-        self.urls = {"search": urljoin(self.url, "/rss")}
+        # https://www.skytorrents.lol/?query=arrow&category=show&tag=hd&sort=seeders&type=video
+        # https://www.skytorrents.lol/top100?category=show&type=video&sort=created
+        self.urls = {"search": urljoin(self.url, "/"), 'rss': urljoin(self.url, "/top100")}
 
         self.custom_url = None
 
@@ -59,14 +60,18 @@ class SkyTorrents(TorrentProvider):
                     logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
-                search_url = self.urls["search"]
+                search_url = (self.urls["search"], self.urls["rss"])[mode == "RSS"]
                 if self.custom_url:
                     if not validators.url(self.custom_url):
                         logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
-                search_params = {'query': search_string, 'sort': ('seeders', 'created')[mode == 'RSS'], 'type': 'video', 'tag': 'hd'}
+                if mode != "RSS":
+                    search_params = {'query': search_string, 'sort': ('seeders', 'created')[mode == 'RSS'], 'type': 'video', 'tag': 'hd', 'category': 'show'}
+                else:
+                    search_params = {'category': 'show', 'type': 'video', 'sort': 'created'}
+
                 data = self.get_url(search_url, params=search_params, returns='text')
                 if not data:
                     logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
