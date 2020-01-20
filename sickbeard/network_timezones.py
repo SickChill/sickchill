@@ -128,7 +128,7 @@ def get_network_timezone(network):
     network_tz_name = network_dict.get(network)
     if network and not (network_tz_name or network in missing_network_timezones):
         missing_network_timezones.add(network)
-        logger.log('Missing time zone for network: {0}. Check valid network is set in indexer (theTVDB) before filing issue.'.format(orig_network),
+        logger.log(_('Missing time zone for network: {0}. Check valid network is set in indexer (theTVDB) before filing issue.').format(orig_network),
                    logger.ERROR)
 
     try:

@@ -223,6 +223,7 @@ class Logger(object):
         :param kwargs: to pass to logger
         """
         cur_thread = threading.currentThread().getName()
+        cur_thread = cur_thread.rstrip('_1234567890')
 
         cur_hash = ''
         if level == ERROR and sickbeard.CUR_COMMIT_HASH and len(sickbeard.CUR_COMMIT_HASH) > 6:
@@ -230,21 +231,24 @@ class Logger(object):
                 sickbeard.CUR_COMMIT_HASH[:7]
             )
 
-        message = '{thread} :: {hash}{message}'.format(
-            thread=cur_thread, hash=cur_hash, message=msg)
-
         # Change the SSL error to a warning with a link to information about how to fix it.
         # Check for 'error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:590)'
-
         ssl_errors = [
             r'error \[Errno \d+\] _ssl.c:\d+: error:\d+\s*:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert internal error',
             r'error \[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE\] sslv3 alert handshake failure \(_ssl\.c:\d+\)',
         ]
         for ssl_error in ssl_errors:
-            check = re.sub(ssl_error, 'See: http://git.io/vuU5V', message)
-            if check != message:
-                message = check
+            check = re.sub(ssl_error, 'See: http://git.io/vuU5V', msg)
+            if check != msg:
+                msg = check
                 level = WARNING
+
+        if _('Missing time zone for network') in msg:
+            message = '{thread} :: {message}'.format(
+                thread=cur_thread, message=msg)
+        else:
+            message = '{thread} :: {hash}{message}'.format(
+                thread=cur_thread, hash=cur_hash, message=msg)
 
         if level == ERROR:
             classes.ErrorViewer.add(classes.UIError(message))

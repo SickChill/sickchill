@@ -37,7 +37,7 @@ class SRWebServer(threading.Thread):
         threading.Thread.__init__(self)
         self.daemon = True
         self.alive = True
-        self.name = "TORNADO"
+        self.name = "WEBSERVER"
         self.io_loop = IOLoop.current()
 
         self.options = options or {}
