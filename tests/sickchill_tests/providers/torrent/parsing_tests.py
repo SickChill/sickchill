@@ -49,6 +49,7 @@ import six
 disabled_provider_tests = {
     # ???
     'Cpasbien': ['test_rss_search', 'test_episode_search', 'test_season_search'],
+    'SkyTorrents': ['test_rss_search', 'test_episode_search', 'test_season_search'],
     # api_maintenance still
     'TorrentProject': ['test_rss_search', 'test_episode_search', 'test_season_search', 'test_cache_update', 'test_result_values'],
     # Have to trick it into thinking is an anime search, and add string overrides
