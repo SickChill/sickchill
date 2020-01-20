@@ -13,7 +13,6 @@ git+https://github.com/VeNoMouS/cloudscraper.git@dev#egg=cloudscraper
 configobj == 4.6.0
 decorator == 4.0.10
 git+https://bitbucket.org/zzzeek/dogpile.cache.git@229615be466d00c9c135a90d8965679ab3e4edaa#egg=dogpile.cache
-dogpile.core == 0.4.1
 enum34 == 1.0.4
 enzyme == 0.4.1
 fake-useragent == 0.1.2  # [NOTE] there's a `ua.json` file that's used by sickbeard.common, should be moved to a better location.
@@ -44,7 +43,7 @@ git+https://github.com/pygobject/pgi.git@38f834902247a5851cb4c72ba018f160ae26d61
 pbr >= 1.6
 profilehooks == 1.5
 putio.py == 6.1.0
-pyasn1 == 0.1.7  # + LICENSE
+pyasn1 >= 0.1.7  # + LICENSE
 PyGithub == 1.34
 PyJWT == 1.5.0
 pymediainfo == 2.0  # as an .egg file, loaded by pkg_resources
