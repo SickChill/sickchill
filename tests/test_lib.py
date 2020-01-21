@@ -128,7 +128,7 @@ sickbeard.GUI_NAME = 'slick'
 sickbeard.BRANCH = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'branch')
 sickbeard.CUR_COMMIT_HASH = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'cur_commit_hash')
 sickbeard.GIT_USERNAME = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'git_username')
-sickbeard.GIT_PASSWORD = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'git_password', censor_log=True)
+sickbeard.GIT_TOKEN = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'git_token_password', censor_log=True)
 
 sickbeard.LOG_DIR = os.path.join(TEST_DIR, 'Logs')
 sickbeard.logger.log_file = os.path.join(sickbeard.LOG_DIR, 'test_sickbeard.log')

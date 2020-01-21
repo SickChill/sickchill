@@ -137,9 +137,7 @@ GIT_REMOTE_URL = ''
 CUR_COMMIT_BRANCH = ''
 GIT_ORG = 'SickChill'
 GIT_REPO = 'SickChill'
-GIT_AUTH_TYPE = 0
 GIT_USERNAME = None
-GIT_PASSWORD = None
 GIT_TOKEN = None
 GIT_PATH = None
 DEVELOPER = False
@@ -739,7 +737,7 @@ def initialize(consoleLogging=True):
             OPENSUBTITLES_USER, OPENSUBTITLES_PASS, SUBSCENTER_USER, SUBSCENTER_PASS, USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, \
             DEBUG, DBDEBUG, DEFAULT_PAGE, PROXY_SETTING, PROXY_INDEXERS, AUTOPOSTPROCESSOR_FREQUENCY, SHOWUPDATE_HOUR, ANIME_DEFAULT, NAMING_ANIME, \
             ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, ANIME_SPLIT_HOME, ANIME_SPLIT_HOME_IN_TABS, SCENE_DEFAULT, \
-            DOWNLOAD_URL, BACKLOG_DAYS, GIT_AUTH_TYPE, GIT_USERNAME, GIT_PASSWORD, GIT_TOKEN, DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, \
+            DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_TOKEN, DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, \
             NEWS_LATEST, SOCKET_TIMEOUT, SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKCHILL_BACKGROUND, \
             SICKCHILL_BACKGROUND_PATH, FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, \
             SLACK_NOTIFY_DOWNLOAD, SLACK_NOTIFY_SUBTITLEDOWNLOAD, SLACK_WEBHOOK, SLACK_ICON_EMOJI, USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK,\
@@ -778,9 +776,7 @@ def initialize(consoleLogging=True):
         ENCRYPTION_SECRET = check_setting_str(CFG, 'General', 'encryption_secret', helpers.generateCookieSecret(), censor_log=True)
 
         # git login info
-        GIT_AUTH_TYPE = check_setting_int(CFG, 'General', 'git_auth_type', min_val=0, max_val=1)
         GIT_USERNAME = check_setting_str(CFG, 'General', 'git_username')
-        GIT_PASSWORD = check_setting_str(CFG, 'General', 'git_password', censor_log=True)
         GIT_TOKEN = check_setting_str(CFG, 'General', 'git_token_password', censor_log=True)  # encryption needed
         DEVELOPER = check_setting_bool(CFG, 'General', 'developer')
 
@@ -1818,9 +1814,7 @@ def save_config():
 
     new_config.update({
         'General': {
-            'git_auth_type': int(GIT_AUTH_TYPE),
             'git_username': GIT_USERNAME,
-            'git_password': helpers.encrypt(GIT_PASSWORD, ENCRYPTION_VERSION),
             'git_token_password': helpers.encrypt(GIT_TOKEN, ENCRYPTION_VERSION),
             'git_reset': int(GIT_RESET),
             'branch': BRANCH,

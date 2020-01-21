@@ -701,14 +701,12 @@ class Home(WebRoot):
             gh_branches = None
 
         if gh_branches:
-            gh_credentials = (sickbeard.GIT_AUTH_TYPE == 0 and sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD or
-                              sickbeard.GIT_AUTH_TYPE == 1 and sickbeard.GIT_TOKEN)
             for cur_branch in gh_branches:
                 branch_obj = {'name': cur_branch}
                 if cur_branch == sickbeard.BRANCH:
                     branch_obj['current'] = True
 
-                if cur_branch == 'master' or (gh_credentials and (sickbeard.DEVELOPER == 1 or cur_branch == 'develop')):
+                if cur_branch == 'master' or (sickbeard.GIT_TOKEN and (sickbeard.DEVELOPER == 1 or cur_branch == 'develop')):
                     response.append(branch_obj)
 
         return json.dumps(response)
