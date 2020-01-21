@@ -394,28 +394,12 @@ var SICKCHILL = {
                 });
             });
 
-            // GitHub Auth Types
-            function setupGithubAuthTypes() {
-                const selected = parseInt($('input[name="git_auth_type"]').filter(':checked').val(), 10);
-
-                $('div[name="content_github_auth_type"]').each(function(index) {
-                    if (index === selected) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
-                });
-            }
-
-            setupGithubAuthTypes();
-
-            $('input[name="git_auth_type"]').on('click', setupGithubAuthTypes);
-
             $('#git_token').on('click', $('#git_token').select());
 
             $('#create_access_token').on('click', function() {
                 notifyModal(
                     '<p>Copy the generated token and paste it in the token input box.</p>' +
+                    '<p>Provide permissions for repo:status, public_repo, write:discussion, read:discussion, user, gist, and notifications</p>' +
                     '<p><a href="' + anonURL + 'https://github.com/settings/tokens/new?description=SickChill&scopes=user,gist,public_repo" target="_blank">' +
                     '<input class="btn" type="button" value="Continue to Github..."></a></p>');
                 $('#git_token').select();
