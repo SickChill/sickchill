@@ -24,6 +24,7 @@ import os
 import re
 
 # Third Party Imports
+import dateutil
 import six
 from requests.compat import unquote_plus
 from tornado.escape import xhtml_unescape
@@ -498,7 +499,7 @@ class AddShows(Home):
         series_pieces = whichSeries.split('|')
         if (whichSeries and rootDir) or (whichSeries and fullShowPath and len(series_pieces) > 1):
             if len(series_pieces) < 6:
-                logger.log("Unable to add show due to show selection. Not anough arguments: {0}".format((repr(series_pieces))),
+                logger.log("Unable to add show due to show selection. Not enough arguments: {0}".format((repr(series_pieces))),
                            logger.ERROR)
                 ui.notifications.error(_("Unknown error. Unable to add show due to problem with show selection."))
                 return self.redirect('/addShows/existingShows/')
@@ -519,11 +520,23 @@ class AddShows(Home):
         # use the whole path if it's given, or else append the show name to the root dir to get the full show path
         if fullShowPath:
             show_dir = ek(os.path.normpath, xhtml_unescape(fullShowPath))
+            extra_check_dir = show_dir
         else:
-            show_dir = ek(os.path.join, rootDir, sanitize_filename(xhtml_unescape(show_name)))
+            folder_name = show_name
+            s = sickchill.indexer.series_by_id(indexerid=indexer_id, indexer=indexer, language=indexerLang)
+            if sickbeard.ADD_SHOWS_WITH_YEAR and s.firstAired:
+                try:
+                    year = '({0})'.format(dateutil.parser.parse(s.firstAired).year)
+                    if year not in folder_name:
+                        folder_name = '{0} {1}'.format(s.seriesName, year)
+                except (TypeError, ValueError):
+                    logger.log(_('Could not append the show year folder for the show: {0}').format(folder_name))
+
+            show_dir = ek(os.path.join, rootDir, sanitize_filename(xhtml_unescape(folder_name)))
+            extra_check_dir = ek(os.path.join, rootDir, sanitize_filename(xhtml_unescape(show_name)))
 
         # blanket policy - if the dir exists you should have used "add existing show" numbnuts
-        if ek(os.path.isdir, show_dir) and not fullShowPath:
+        if ek(os.path.isdir, show_dir) or ek(os.path.isdir, extra_check_dir) and not fullShowPath:
             ui.notifications.error(_("Unable to add show"), _("Folder {show_dir} exists already").format(show_dir=show_dir))
             return self.redirect('/addShows/existingShows/')
 
@@ -568,7 +581,7 @@ class AddShows(Home):
             indexer, indexer_id, showDir=show_dir, default_status=int(defaultStatus), quality=newQuality,
             season_folders=season_folders, lang=indexerLang, subtitles=subtitles, subtitles_sr_metadata=subtitles_sr_metadata,
             anime=anime, scene=scene, paused=None, blacklist=blacklist, whitelist=whitelist,
-            default_status_after=int(defaultStatusAfter), root_dir=None)
+            default_status_after=int(defaultStatusAfter), root_dir=rootDir)
         ui.notifications.message(_('Show added'), _('Adding the specified show into {show_dir}').format(show_dir=show_dir))
 
         return finishAddShow()
