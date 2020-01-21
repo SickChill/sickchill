@@ -107,9 +107,8 @@ class NewznabProvider(NZBProvider):
                 continue
 
             if default.name not in providers_dict:
-                default.default = True
-                providers_list.append(default)
-            else:
+                providers_dict[default.name] = default
+
                 providers_dict[default.name].default = True
                 providers_dict[default.name].name = default.name
                 providers_dict[default.name].url = default.url
@@ -120,6 +119,9 @@ class NewznabProvider(NZBProvider):
                 providers_dict[default.name].enable_backlog = default.enable_backlog
                 providers_dict[default.name].catIDs = ','.join([x for x in providers_dict[default.name].catIDs.split(',')
                                                                 if 5000 <= try_int(x) <= 5999]) or default.catIDs
+
+                if sickbeard.QUALITY_ALLOW_HEVC and '5090' not in providers_dict[default.name].catIDs:
+                    providers_dict[default.name].catIDs += ',5090'
 
         return [x for x in providers_list if x]
 
