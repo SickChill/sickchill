@@ -315,7 +315,7 @@ class ImageCache(object):
                             self._cache_image_from_file(cur_file_name, cur_file_type, show_obj.indexerid)
                             need_images[cur_file_type] = False
             except ShowDirectoryNotFoundException:
-                logger.log("Unable to search for images in show dir because it doesn't exist", logger.WARNING)
+                logger.log("Unable to search for images in show dir because it doesn't exist", logger.DEBUG)
 
         # download from indexer for missing ones
         for cur_image_type in [self.POSTER, self.BANNER, self.POSTER_THUMB, self.BANNER_THUMB, self.FANART]:
