@@ -124,30 +124,29 @@
                                     <span class="imdbstars" qtip-content="${rating_tip}">${show.imdb_info['rating']}</span>
                                 % endif
 
-                                <% _show = show %>
                                 % if not show.imdbid:
                                     <span>(${show.startyear}) - ${show.runtime} ${_('minutes')} - </span>
                                 % else:
-                                % if 'country_codes' in show.imdb_info:
-                                    % for country in show.imdb_info['country_codes'].split('|'):
-                                        <img src="${static_url('images/blank.png')}" class="country-flag flag-${country}" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
-                                    % endfor
-                                % endif
+                                    % if 'country_codes' in show.imdb_info:
+                                        % for country in show.imdb_info['country_codes'].split('|'):
+                                            <img src="${static_url('images/blank.png')}" class="country-flag flag-${country}" width="16" height="11" style="margin-left: 3px; vertical-align:middle;" />
+                                        % endfor
+                                    % endif
                                     <span>
-                                % if show.imdb_info.get('year'):
-                                    (${show.imdb_info['year']}) -
+                                    % if show.imdb_info.get('year'):
+                                        (${show.imdb_info['year']}) -
+                                    % endif
+                                            ${show.imdb_info['runtimes']} ${_('minutes')}
+                                    </span>
+                                    <a href="${anon_url('http://www.imdb.com/title/', show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><span class="displayshow-icon-imdb" /></a>
+                                    <a href="${anon_url('https://trakt.tv/shows/', show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="https://trakt.tv/shows/${show.imdbid}"><span class="displayshow-icon-trakt" /></a>
                                 % endif
-                                        ${show.imdb_info['runtimes']} ${_('minutes')}
-                            </span>
-                                    <a href="${anon_url('http://www.imdb.com/title/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><span class="displayshow-icon-imdb" /></a>
-                                    <a href="${anon_url('https://trakt.tv/shows/', _show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="https://trakt.tv/shows/${show.imdbid}"><span class="displayshow-icon-trakt" /></a>
-                                % endif
-                                <a href="${anon_url(_show.idxr.show_url, _show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;"
-                                   title="${_show.idxr.show_url + str(show.indexerid)}"><img alt="${show.idxr.name}" src="${static_url(show.idxr.icon)}" style="margin-top: -1px; vertical-align:middle;"/></a>
+                                <a href="${anon_url(show.idxr.show_url, show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;"
+                                   title="${show.idxr.show_url + str(show.indexerid)}"><img alt="${show.idxr.name}" src="${static_url(show.idxr.icon)}" style="margin-top: -1px; vertical-align:middle;"/></a>
                                 % if xem_numbering or xem_absolute_numbering:
-                                    <a href="${anon_url('http://thexem.de/search?q=', _show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><span alt="" class="displayshow-icon-xem" /></a>
+                                    <a href="${anon_url('http://thexem.de/search?q=', show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><span alt="" class="displayshow-icon-xem" /></a>
                                 % endif
-                                <a href="${anon_url('https://fanart.tv/series/', _show.indexerid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="https://fanart.tv/series/${show.name}"><span class="displayshow-icon-fanart" /></a>
+                                <a href="${anon_url('https://fanart.tv/series/', show.indexerid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="https://fanart.tv/series/${show.name}"><span class="displayshow-icon-fanart" /></a>
                             </div>
                             <div class="pull-left col-lg-8 col-md-8 col-sm-12 col-xs-12">
                                 <ul class="tags">

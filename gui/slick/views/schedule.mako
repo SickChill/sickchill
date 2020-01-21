@@ -201,6 +201,11 @@
                                                title="http://www.imdb.com/title/${cur_result[b'imdb_id']}">
                                                 <span class="displayshow-icon-imdb"></span>
                                             </a>
+                                            <a href="${anon_url('https://trakt.tv/shows/', cur_result[b'imdb_id'])}" rel="noreferrer"
+                                               onclick="window.open(this.href, '_blank'); return false;"
+                                               title="https://trakt.tv/shows/${cur_result[b'imdb_id']}">
+                                                <span class="displayshow-icon-trakt" />
+                                            </a>
                                         % endif
                                         <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result[b'showid'])}"
                                            rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
@@ -222,7 +227,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th rowspan="1" colspan="10" align="center">&nbsp</th>
+                                <th rowspan="1" colspan="11" align="center">&nbsp</th>
                             </tr>
                         </tfoot>
                     </table>
@@ -438,6 +443,10 @@
                                                 <a href="${anon_url('http://www.imdb.com/title/', cur_result[b'imdb_id'])}" rel="noreferrer"
                                                    onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result[b'imdb_id']}">
                                                     <span class="displayshow-icon-imdb"></span>
+                                                </a>
+                                                <a href="${anon_url('https://trakt.tv/shows/', cur_result[b'imdb_id'])}" rel="noreferrer"
+                                                   onclick="window.open(this.href, '_blank'); return false;" title="https://trakt.tv/shows/${cur_result[b'imdb_id']}">
+                                                    <span class="displayshow-icon-trakt" />
                                                 </a>
                                             % endif
                                             <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result[b'showid'])}"
