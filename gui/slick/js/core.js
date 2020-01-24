@@ -3869,15 +3869,16 @@ var SICKCHILL = {
                 let table =
                     '<div class="row">' +
                     '<div class="col-lg-6 col-md-12">' +
-                    '<table class="sickbeardTable new-show-table">' +
+                    '<table class="sickbeardTable new-show-table tablesorter">' +
                     '<thead>' +
                     '<tr>' +
-                    '<th style="width:40px;">&nbsp;</th>' +
+                    '<th></th>' +
                     '<th>Show Name</th>' +
                     '<th>Premiere</th>' +
                     '<th>Indexer</th>' +
                     '</tr>' +
-                    '<thead>';
+                    '</thead>' +
+                    '<tbody>';
 
                 const selectedIndex = shows.indexOf(function(show) {
                     return !show.inShowList;
@@ -3909,6 +3910,7 @@ var SICKCHILL = {
                 });
 
                 table +=
+                    '</tbody>' +
                     '</table>' +
                     '</div>' +
                     '</div>';
@@ -3979,6 +3981,17 @@ var SICKCHILL = {
 
                         $('#searchResults').html(resultStr);
                         updateSampleText();
+                        $('.new-show-table').tablesorter(
+                        {
+                            widgets: ['stickyHeaders', 'zebra', 'saveSort'],
+                            headers:
+                            {
+                                0: { sorter: false },
+                            },
+                            sortMultiSortKey: 'ctrlKey',
+                            debug:true,
+
+                        });
                     }
                 });
             };
