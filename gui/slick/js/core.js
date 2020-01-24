@@ -3982,16 +3982,10 @@ var SICKCHILL = {
                         $('#searchResults').html(resultStr);
                         updateSampleText();
                         $('.new-show-table').tablesorter(
-                        {
-                            widgets: ['stickyHeaders', 'zebra', 'saveSort'],
-                            headers:
                             {
-                                0: { sorter: false },
-                            },
-                            sortMultiSortKey: 'ctrlKey',
-                            debug:true,
-
-                        });
+                                widgets: ['stickyHeaders', 'zebra', 'saveSort'],
+                                headers: {0: {sorter: false}}
+                            });
                     }
                 });
             };
