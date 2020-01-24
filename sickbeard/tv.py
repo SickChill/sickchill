@@ -801,8 +801,11 @@ class TVShow(object):
         self.imdbid = getattr(myShow, 'imdbId', '')
 
         if hasattr(myShow, 'airsDayOfWeek') and hasattr(myShow, 'airsTime'):
-            self.airs = myShow.airsDayOfWeek + " " + myShow.airsTime
-            self.airs = self.airs.strip()
+            if myShow.airsTime and myShow.airsDayOfWeek:
+                self.airs = myShow.airsDayOfWeek + " " + myShow.airsTime
+                self.airs = self.airs.strip()
+            else:
+                self.airs = self.airs.strip() or ''
 
         if self.airs is None:
             self.airs = ''
@@ -1554,27 +1557,24 @@ class TVEpisode(object):
 
     def loadFromIndexer(self, season=None, episode=None):
 
-        try:
-            myEp = self.idxr.episode(self.show, season or self.season, episode or self.episode)
-        except IOError as error:
-            logger.log("{} threw up an error: {}".format(self.indexer_name, ex(error)), logger.DEBUG)
-            # if the episode is already valid just log it, if not throw it up
+        myEp = self.idxr.episode(self.show, season or self.season, episode or self.episode)
+        if not myEp:
             if self.name:
                 logger.log("{} timed out but we have enough info from other sources, allowing the error".format(self.indexer_name), logger.DEBUG)
                 return
             else:
                 logger.log("{} timed out, unable to create the episode".format(self.indexer_name), logger.ERROR)
                 return False
-        except Exception:
-            logger.log("Unable to find the episode on {}... has it been removed? Should I delete from db?".format(self.indexer_name), logger.DEBUG)
-            # if I'm no longer on the Indexers but I once was then delete myself from the DB
-            if self.indexerid != -1:
-                self.deleteEpisode()
-            return
 
         if not myEp.get('episodeName'):
-            logger.log("This episode {show} - {ep} has no name on {indexer}. Setting to an empty string".format
-                       (show=self.show.name, ep=episode_num(season, episode), indexer=self.indexer_name))
+            if self.name:
+                logger.log("This episode {show} - {ep} has no name on {indexer}. Keeping the name: {title}".format
+                           (show=self.show.name, ep=episode_num(season, episode), indexer=self.indexer_name, title=self.name))
+            else:
+                logger.log("This episode {show} - {ep} has no name on {indexer}. Setting to an empty string".format
+                           (show=self.show.name, ep=episode_num(season, episode), indexer=self.indexer_name))
+        else:
+            self.name = myEp.get('episodeName')
 
         if not myEp.get('absoluteNumber'):
             logger.log("{id}: This episode {show} - {ep} has no absolute number on {indexer}".format
@@ -1586,9 +1586,8 @@ class TVEpisode(object):
                         absolute=myEp["absoluteNumber"]), logger.DEBUG)
             self.absolute_number = try_int(myEp["absoluteNumber"], 0)
 
-        self.name = myEp['episodeName']
-        self.season = myEp['airedSeason']
-        self.episode = myEp['airedEpisodeNumber']
+        self.season = (season, self.season)[season is None]
+        self.episode = (episode, self.episode)[season is None]
 
         sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
@@ -1604,25 +1603,28 @@ class TVEpisode(object):
             self.season, self.episode
         )
 
-        self.description = myEp['overview']
+        if myEp.get('overview'):
+            self.description = myEp.get('overview')
 
-        firstaired = myEp['firstAired']
-        if not firstaired or firstaired == "0000-00-00":
-            firstaired = str(self.airdate)
-        rawAirdate = [int(x) for x in firstaired.split("-")]
+        first_aired = myEp.get('firstAired')
+        if not first_aired or first_aired == "0000-00-00":
+            first_aired = str(self.airdate)
+        rawAirdate = [int(x) for x in first_aired.split("-")]
 
         try:
             self.airdate = datetime.date(rawAirdate[0], rawAirdate[1], rawAirdate[2])
         except (ValueError, IndexError):
             logger.log("Malformed air date of {aired} retrieved from {indexer} for ({show} - {ep})".format
-                       (aired=firstaired, indexer=self.indexer_name, show=self.show.name,
+                       (aired=first_aired, indexer=self.indexer_name, show=self.show.name,
                         ep=episode_num(season, episode)), logger.WARNING)
             # if I'm incomplete on the indexer but I once was complete then just delete myself from the DB for now
             if self.indexerid != -1:
                 self.deleteEpisode()
             return False
 
-        self.indexerid = myEp['id']
+        if myEp.get('id'):
+            self.indexerid = myEp.get('id')
+
         if not self.indexerid:
             logger.log("Failed to retrieve ID from {indexer}".format
                        (indexer=self.indexer_name), logger.ERROR)
