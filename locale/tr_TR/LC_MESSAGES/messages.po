@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-01-25 04:39+0000\n"
+"POT-Creation-Date: 2020-01-25 09:41+0000\n"
 "PO-Revision-Date: 2018-10-10 07:48+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: tr_TR\n"
@@ -258,9 +258,9 @@ msgstr "Altyazılı"
 msgid "Disabling UNPACK setting because no unrar is found and accessible."
 msgstr ""
 
+# | msgid "Change selected episodes to"
 #: sickbeard/dailysearcher.py:51
 #, fuzzy
-#| msgid "Change selected episodes to"
 msgid "Searching for new released episodes ..."
 msgstr "Seçilen bölümleri değiştir"
 
@@ -707,9 +707,9 @@ msgstr "sadece sezon paketleri."
 msgid "episode"
 msgstr "bölüm"
 
+# | msgid "Refreshes"
 #: sickbeard/show_queue.py:210
 #, fuzzy
-#| msgid "Refreshes"
 msgid "Refresh"
 msgstr "Yenilemeler"
 
@@ -723,9 +723,9 @@ msgstr "Ekle"
 msgid "Update"
 msgstr "Güncelleştir"
 
+# | msgid "Force Full Update"
 #: sickbeard/show_queue.py:213
 #, fuzzy
-#| msgid "Force Full Update"
 msgid "Force Update"
 msgstr "Tam Güncellemeye Zorla"
 
@@ -747,9 +747,9 @@ msgstr "Dizi Kaldır"
 msgid "Loading"
 msgstr "Yükleniyor"
 
+# | msgid "Unable to add show"
 #: sickbeard/show_queue.py:320
 #, fuzzy
-#| msgid "Unable to add show"
 msgid "Starting to add show {0}"
 msgstr "Dizi eklenemedi"
 
@@ -773,9 +773,9 @@ msgstr ""
 msgid "Unable to add show"
 msgstr "Dizi eklenemedi"
 
+# | msgid "Unable to create the folder {show_dir}, can't add the show"
 #: sickbeard/show_queue.py:339
 #, fuzzy
-#| msgid "Unable to create the folder {show_dir}, can't add the show"
 msgid "Unable to get a show {0}, can't add the show"
 msgstr "{show_dir} klasörü oluşturulamadı, dizi eklenemedi"
 
@@ -787,9 +787,9 @@ msgstr ""
 msgid "Skipping initial creation of {0} due to config.ini setting"
 msgstr ""
 
+# | msgid "Unable to create the folder {show_dir}, can't add the show"
 #: sickbeard/show_queue.py:359
 #, fuzzy
-#| msgid "Unable to create the folder {show_dir}, can't add the show"
 msgid "Unable to create the folder {0}, can't add the show"
 msgstr "{show_dir} klasörü oluşturulamadı, dizi eklenemedi"
 
@@ -807,9 +807,9 @@ msgstr ""
 msgid "The show in {0} is already in your show list, skipping"
 msgstr ""
 
+# | msgid "Skipped"
 #: sickbeard/show_queue.py:462
 #, fuzzy
-#| msgid "Skipped"
 msgid "Show skipped"
 msgstr "Atlandı"
 
@@ -821,9 +821,9 @@ msgstr ""
 msgid "Something wrong on IMDb api: {0}"
 msgstr ""
 
+# | msgid "Unable to delete {0}. Error: {1}"
 #: sickbeard/show_queue.py:735
 #, fuzzy
-#| msgid "Unable to delete {0}. Error: {1}"
 msgid "Unable to delete show from Trakt: {0}. Error: {1}"
 msgstr "Dizi güncelleştirilemedi: {error}"
 
@@ -912,9 +912,9 @@ msgstr ""
 msgid "Can't load the metadata file from {0}, it doesn't exist"
 msgstr ""
 
+# | msgid "for adding shows and metadata providers"
 #: sickbeard/metadata/generic.py:706
 #, fuzzy
-#| msgid "for adding shows and metadata providers"
 msgid "Loading show info from metadata file in {0}"
 msgstr "dizi ekleme ve meta veri sağlayıcıları için"
 
@@ -1219,12 +1219,12 @@ msgstr "Bu sayfaya yanlışlıkla ulaştınız, lütfen adresi denetleyin."
 msgid "Home"
 msgstr "Ana Sayfa"
 
+# | msgid "" "A mako error has occured.<br>\n" "            If this happened
+# | during an update a simple page refresh may " "be the solution.<br>\n" "
+# | Mako errors that happen during updates may be a one time " "error if there
+# | were significant ui changes."
 #: gui/slick/views/500.mako:6
 #, fuzzy
-#| msgid "" "A mako error has occured.<br>\n" "            If this happened
-#| during an update a simple page refresh may " "be the solution.<br>\n" "
-#| Mako errors that happen during updates may be a one time " "error if there
-#| were significant ui changes."
 msgid ""
 "A mako error has occurred.<br>\n"
 "            If this happened during an update a simple page refresh may "
@@ -1357,10 +1357,11 @@ msgstr "Dizi ismi"
 msgid "Metadata language"
 msgstr "Meta veri dili"
 
+# | msgid "" "This will only affect the language of the retrieved metadata
+# file
+# | " "contents and episode filenames."
 #: gui/slick/views/addShows_newShow.mako:64
 #, fuzzy
-#| msgid "" "This will only affect the language of the retrieved metadata file
-#| " "contents and episode filenames."
 msgid ""
 "This will only affect the language of the retrieved metadata file "
 "contents and episode file names."
@@ -4196,10 +4197,10 @@ msgstr "Son İşlem Klasörü"
 msgid "the folder where your download client puts the completed TV downloads."
 msgstr "indirme yöneticinizin tamamlanmış TV indirmelerini koyduğu dosya."
 
+# | msgid "" "please use seperate downloading and completed folders in your
+# | download " "client if possible."
 #: gui/slick/views/config_postProcessing.mako:71
 #, fuzzy
-#| msgid "" "please use seperate downloading and completed folders in your
-#| download " "client if possible."
 msgid ""
 "please use separate downloading and completed folders in your download "
 "client if possible."
@@ -4245,10 +4246,10 @@ msgstr "eşitleme dosyaları mevcutsa dosyada işlem yapmak için bekle."
 msgid "Sync File Extensions"
 msgstr "Eşitleme dosya uzantısı"
 
+# | msgid "" "comma seperated list of extensions or filename globs SickChill
+# | ignores " "when Post Processing"
 #: gui/slick/views/config_postProcessing.mako:145
 #, fuzzy
-#| msgid "" "comma seperated list of extensions or filename globs SickChill
-#| ignores " "when Post Processing"
 msgid ""
 "comma separated list of extensions or filename globs SickChill ignores "
 "when Post Processing"
@@ -4326,9 +4327,9 @@ msgstr "son işlem sırasında ilişkisiz dosyalar silinsin mi?"
 msgid "Change File Date"
 msgstr "Dosya Tarihini Değiştir"
 
+# | msgid "set last modified filedate to the date that the episode aired?"
 #: gui/slick/views/config_postProcessing.mako:238
 #, fuzzy
-#| msgid "set last modified filedate to the date that the episode aired?"
 msgid "set last modified file date to the date that the episode aired?"
 msgstr ""
 "dosyanın son düzenleme tarihi bölümün yayınlanan tarihi ile değiştirilsin"
@@ -5857,9 +5858,9 @@ msgstr "Geçmiş sayfasında indirilen Altyazıların günlüğü tutulsun mu?"
 msgid "Subtitles Multi-Language"
 msgstr "Çok Dilli Altyazılar"
 
+# | msgid "append language codes to subtitle filenames?"
 #: gui/slick/views/config_subtitles.mako:175
 #, fuzzy
-#| msgid "append language codes to subtitle filenames?"
 msgid "append language codes to subtitle file names?"
 msgstr "altyazı dosya adlarına dil kodları eklensin mi?"
 
@@ -6050,9 +6051,9 @@ msgid "Required Words"
 msgstr "Gerekli Kelimeler"
 
 # | msgid "Required Words"
+# | msgid "Prefered Words"
 #: gui/slick/views/displayShow.mako:230 gui/slick/views/editShow.mako:302
 #, fuzzy
-#| msgid "Prefered Words"
 msgid "Preferred Words"
 msgstr "Gerekli Kelimeler"
 
@@ -6269,10 +6270,10 @@ msgstr "Varsayılan Bölüm Durumu"
 msgid "this will set the status for future episodes."
 msgstr "bu, gelecek bölümler için durum belirleyecektir."
 
+# | msgid "this only applies to episode filenames and the contents of metadata
+# | files."
 #: gui/slick/views/editShow.mako:112
 #, fuzzy
-#| msgid "this only applies to episode filenames and the contents of metadata
-#| files."
 msgid ""
 "this only applies to episode file names and the contents of metadata "
 "files."
@@ -6284,9 +6285,9 @@ msgstr ""
 msgid "search for subtitles"
 msgstr "alt yazıları ara"
 
+# | msgid "Use SR Metdata"
 #: gui/slick/views/editShow.mako:130 gui/slick/views/inc_addShowOptions.mako:27
 #, fuzzy
-#| msgid "Use SR Metdata"
 msgid "Use SR Metadata"
 msgstr "SR metaveriyi kullan"
 
@@ -6384,16 +6385,16 @@ msgid "this option overrides the globally ignored words!"
 msgstr "bu seçenek evrensel olarak yoksayılan kelimeleri değiştirir!"
 
 # | msgid "search results with no words from this list will be ignored."
+# | msgid "search results with these words will be prefered in this order."
 #: gui/slick/views/editShow.mako:320
 #, fuzzy
-#| msgid "search results with these words will be prefered in this order."
 msgid "search results with these words will be preferred in this order."
 msgstr "bu listeden hiç kelime olmayan arama sonuçları göz ardı edilecektir."
 
 # | msgid "this option overrides the globally required words!"
+# | msgid "this option overrides the globally prefered words!"
 #: gui/slick/views/editShow.mako:321
 #, fuzzy
-#| msgid "this option overrides the globally prefered words!"
 msgid "this option overrides the globally preferred words!"
 msgstr "bu seçenek evrensel olarak gerekli kelimeleri değiştirir!"
 
@@ -7482,9 +7483,9 @@ msgstr "Şimdi"
 msgid "No last update time from the cache, so we do a full update for all shows"
 msgstr ""
 
+# | msgid "Automatically update"
 #: sickchill/show_updater.py:93
 #, fuzzy
-#| msgid "Automatically update"
 msgid "Automatic update failed: {0}"
 msgstr "Otomatik olarak güncelleştir"
 

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-01-25 04:39+0000\n"
+"POT-Creation-Date: 2020-01-25 09:41+0000\n"
 "PO-Revision-Date: 2018-10-10 07:48+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: sl_SI\n"
@@ -259,9 +259,9 @@ msgstr "Podnapisi"
 msgid "Disabling UNPACK setting because no unrar is found and accessible."
 msgstr ""
 
+# | msgid "Change selected episodes to"
 #: sickbeard/dailysearcher.py:51
 #, fuzzy
-#| msgid "Change selected episodes to"
 msgid "Searching for new released episodes ..."
 msgstr "Spremenite izbrane epizode v"
 
@@ -700,9 +700,9 @@ msgstr "samo sezonske pakete."
 msgid "episode"
 msgstr ""
 
+# | msgid "Preferred"
 #: sickbeard/show_queue.py:210
 #, fuzzy
-#| msgid "Preferred"
 msgid "Refresh"
 msgstr "Prednostne/priljubljene"
 
@@ -716,9 +716,9 @@ msgstr ""
 msgid "Update"
 msgstr "Nadgradnja"
 
+# | msgid "Force Full Update"
 #: sickbeard/show_queue.py:213
 #, fuzzy
-#| msgid "Force Full Update"
 msgid "Force Update"
 msgstr "Vsili polno posodobitev"
 
@@ -794,9 +794,9 @@ msgstr ""
 msgid "The show in {0} is already in your show list, skipping"
 msgstr ""
 
+# | msgid "Skipped"
 #: sickbeard/show_queue.py:462
 #, fuzzy
-#| msgid "Skipped"
 msgid "Show skipped"
 msgstr "Preskočeno"
 
@@ -5598,9 +5598,9 @@ msgstr "dnevnik prenesenih podnapisov na strani z zgodovino?"
 msgid "Subtitles Multi-Language"
 msgstr "Podnapisi Multi-Jezik"
 
+# | msgid "append language codes to subtitle filenames?"
 #: gui/slick/views/config_subtitles.mako:175
 #, fuzzy
-#| msgid "append language codes to subtitle filenames?"
 msgid "append language codes to subtitle file names?"
 msgstr "dodati jezikovne kode za podnaslov imena datotek?"
 
@@ -5795,9 +5795,9 @@ msgid "Required Words"
 msgstr "Zahtevane besede"
 
 # | msgid "Required Words"
+# | msgid "Prefered Words"
 #: gui/slick/views/displayShow.mako:230 gui/slick/views/editShow.mako:302
 #, fuzzy
-#| msgid "Prefered Words"
 msgid "Preferred Words"
 msgstr "Zahtevane besede"
 
@@ -6014,10 +6014,10 @@ msgstr "Privzeta epizoda Status"
 msgid "this will set the status for future episodes."
 msgstr "to bo določilo stanje za prihodnje epizode."
 
+# | msgid "this only applies to episode filenames and the contents of metadata
+# | files."
 #: gui/slick/views/editShow.mako:112
 #, fuzzy
-#| msgid "this only applies to episode filenames and the contents of metadata
-#| files."
 msgid ""
 "this only applies to episode file names and the contents of metadata "
 "files."
@@ -6027,9 +6027,9 @@ msgstr "to velja le za epizodne datoteke in vsebino datotek metapodatkov."
 msgid "search for subtitles"
 msgstr "iskanje podnapisov"
 
+# | msgid "Use SR Metdata"
 #: gui/slick/views/editShow.mako:130 gui/slick/views/inc_addShowOptions.mako:27
 #, fuzzy
-#| msgid "Use SR Metdata"
 msgid "Use SR Metadata"
 msgstr "Uporabi SR Metdata"
 
@@ -6123,9 +6123,9 @@ msgid "this option overrides the globally ignored words!"
 msgstr ""
 
 # | msgid "search results with no words from this list will be ignored."
+# | msgid "search results with these words will be prefered in this order."
 #: gui/slick/views/editShow.mako:320
 #, fuzzy
-#| msgid "search results with these words will be prefered in this order."
 msgid "search results with these words will be preferred in this order."
 msgstr "rezultati iskanja brez besed s tega seznama bodo prezrti."
 

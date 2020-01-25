@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-01-25 04:39+0000\n"
+"POT-Creation-Date: 2020-01-25 09:41+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: zh_TW\n"
@@ -710,9 +710,9 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
+# | msgid "Force Full Update"
 #: sickbeard/show_queue.py:213
 #, fuzzy
-#| msgid "Force Full Update"
 msgid "Force Update"
 msgstr "強制完整更新"
 
@@ -788,9 +788,9 @@ msgstr ""
 msgid "The show in {0} is already in your show list, skipping"
 msgstr ""
 
+# | msgid "Skipped"
 #: sickbeard/show_queue.py:462
 #, fuzzy
-#| msgid "Skipped"
 msgid "Show skipped"
 msgstr "跳過此項"
 
@@ -1287,10 +1287,11 @@ msgstr ""
 msgid "Metadata language"
 msgstr ""
 
+# | msgid "" "This will only affect the language of the retrieved metadata
+# file
+# | " "contents and episode filenames."
 #: gui/slick/views/addShows_newShow.mako:64
 #, fuzzy
-#| msgid "" "This will only affect the language of the retrieved metadata file
-#| " "contents and episode filenames."
 msgid ""
 "This will only affect the language of the retrieved metadata file "
 "contents and episode file names."

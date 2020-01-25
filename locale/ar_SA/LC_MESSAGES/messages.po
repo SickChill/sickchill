@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-01-25 04:39+0000\n"
+"POT-Creation-Date: 2020-01-25 09:41+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: ar_SA\n"
@@ -259,9 +259,9 @@ msgstr "مترجم"
 msgid "Disabling UNPACK setting because no unrar is found and accessible."
 msgstr ""
 
+# | msgid "Change selected episodes to"
 #: sickbeard/dailysearcher.py:51
 #, fuzzy
-#| msgid "Change selected episodes to"
 msgid "Searching for new released episodes ..."
 msgstr "تغيير الحلقات المختارة إلى"
 
@@ -703,9 +703,9 @@ msgstr "موسم كامل فقط."
 msgid "episode"
 msgstr "الحلقة"
 
+# | msgid "Refreshes"
 #: sickbeard/show_queue.py:210
 #, fuzzy
-#| msgid "Refreshes"
 msgid "Refresh"
 msgstr "يقوم بتحديث"
 
@@ -719,9 +719,9 @@ msgstr "إضافة"
 msgid "Update"
 msgstr "تحديث"
 
+# | msgid "Force Full Update"
 #: sickbeard/show_queue.py:213
 #, fuzzy
-#| msgid "Force Full Update"
 msgid "Force Update"
 msgstr "إجبار التحديث الكامل"
 
@@ -743,9 +743,9 @@ msgstr "إزالة المسلسل"
 msgid "Loading"
 msgstr "جاري التحميل"
 
+# | msgid "Unable to add show"
 #: sickbeard/show_queue.py:320
 #, fuzzy
-#| msgid "Unable to add show"
 msgid "Starting to add show {0}"
 msgstr "غير قادر على اضافة المسلسل"
 
@@ -769,9 +769,9 @@ msgstr ""
 msgid "Unable to add show"
 msgstr "غير قادر على اضافة المسلسل"
 
+# | msgid "Unable to create the folder {show_dir}, can't add the show"
 #: sickbeard/show_queue.py:339
 #, fuzzy
-#| msgid "Unable to create the folder {show_dir}, can't add the show"
 msgid "Unable to get a show {0}, can't add the show"
 msgstr "غير قادر على إنشاء المجلد {show_dir}، لا يمكن إضافة المسلسل"
 
@@ -783,9 +783,9 @@ msgstr ""
 msgid "Skipping initial creation of {0} due to config.ini setting"
 msgstr ""
 
+# | msgid "Unable to create the folder {show_dir}, can't add the show"
 #: sickbeard/show_queue.py:359
 #, fuzzy
-#| msgid "Unable to create the folder {show_dir}, can't add the show"
 msgid "Unable to create the folder {0}, can't add the show"
 msgstr "غير قادر على إنشاء المجلد {show_dir}، لا يمكن إضافة المسلسل"
 
@@ -803,9 +803,9 @@ msgstr ""
 msgid "The show in {0} is already in your show list, skipping"
 msgstr ""
 
+# | msgid "Skipped"
 #: sickbeard/show_queue.py:462
 #, fuzzy
-#| msgid "Skipped"
 msgid "Show skipped"
 msgstr "متخطى"
 
@@ -817,9 +817,9 @@ msgstr ""
 msgid "Something wrong on IMDb api: {0}"
 msgstr ""
 
+# | msgid "Unable to delete {0}. Error: {1}"
 #: sickbeard/show_queue.py:735
 #, fuzzy
-#| msgid "Unable to delete {0}. Error: {1}"
 msgid "Unable to delete show from Trakt: {0}. Error: {1}"
 msgstr "غير قادر على تحديث المسلسل: {error}"
 
@@ -896,9 +896,9 @@ msgstr ""
 msgid "Can't load the metadata file from {0}, it doesn't exist"
 msgstr ""
 
+# | msgid "for adding shows and metadata providers"
 #: sickbeard/metadata/generic.py:706
 #, fuzzy
-#| msgid "for adding shows and metadata providers"
 msgid "Loading show info from metadata file in {0}"
 msgstr "لإضافة مسلسلات وموفري بيانات التعريف"
 
@@ -1192,12 +1192,12 @@ msgstr "لقد وصلت إلى هذه الصفحة بالخطأ، الرجاء �
 msgid "Home"
 msgstr "الصفحة الرئيسية"
 
+# | msgid "" "A mako error has occured.<br>\n" "            If this happened
+# | during an update a simple page refresh may " "be the solution.<br>\n" "
+# | Mako errors that happen during updates may be a one time " "error if there
+# | were significant ui changes."
 #: gui/slick/views/500.mako:6
 #, fuzzy
-#| msgid "" "A mako error has occured.<br>\n" "            If this happened
-#| during an update a simple page refresh may " "be the solution.<br>\n" "
-#| Mako errors that happen during updates may be a one time " "error if there
-#| were significant ui changes."
 msgid ""
 "A mako error has occurred.<br>\n"
 "            If this happened during an update a simple page refresh may "
@@ -1330,10 +1330,11 @@ msgstr "اسم المسلسل"
 msgid "Metadata language"
 msgstr ""
 
+# | msgid "" "This will only affect the language of the retrieved metadata
+# file
+# | " "contents and episode filenames."
 #: gui/slick/views/addShows_newShow.mako:64
 #, fuzzy
-#| msgid "" "This will only affect the language of the retrieved metadata file
-#| " "contents and episode filenames."
 msgid ""
 "This will only affect the language of the retrieved metadata file "
 "contents and episode file names."
@@ -4115,10 +4116,10 @@ msgstr "مجلد المعالجة"
 msgid "the folder where your download client puts the completed TV downloads."
 msgstr "المجلد الخاص ببرمامج التحميل الخاص بك لوضع الحلقات فيه بعد إكتمال تحميلها."
 
+# | msgid "" "please use seperate downloading and completed folders in your
+# | download " "client if possible."
 #: gui/slick/views/config_postProcessing.mako:71
 #, fuzzy
-#| msgid "" "please use seperate downloading and completed folders in your
-#| download " "client if possible."
 msgid ""
 "please use separate downloading and completed folders in your download "
 "client if possible."
@@ -4164,10 +4165,10 @@ msgstr "الانتظار عن معالجة الملف إذا كانت المزا
 msgid "Sync File Extensions"
 msgstr "مزامنة ملحقات الملفات"
 
+# | msgid "" "comma seperated list of extensions or filename globs SickChill
+# | ignores " "when Post Processing"
 #: gui/slick/views/config_postProcessing.mako:145
 #, fuzzy
-#| msgid "" "comma seperated list of extensions or filename globs SickChill
-#| ignores " "when Post Processing"
 msgid ""
 "comma separated list of extensions or filename globs SickChill ignores "
 "when Post Processing"
@@ -4241,9 +4242,9 @@ msgstr ""
 msgid "Change File Date"
 msgstr "تغيير تاريخ الملف"
 
+# | msgid "set last modified filedate to the date that the episode aired?"
 #: gui/slick/views/config_postProcessing.mako:238
 #, fuzzy
-#| msgid "set last modified filedate to the date that the episode aired?"
 msgid "set last modified file date to the date that the episode aired?"
 msgstr "ضبط آخر تعديل لتاريخ الملف إلى تاريخ بثت الحلقة؟"
 
@@ -5739,9 +5740,9 @@ msgstr "تسجيل الترجمات المحملة في صفحة المحفوظ�
 msgid "Subtitles Multi-Language"
 msgstr "ترجمات متعددة اللغات"
 
+# | msgid "append language codes to subtitle filenames?"
 #: gui/slick/views/config_subtitles.mako:175
 #, fuzzy
-#| msgid "append language codes to subtitle filenames?"
 msgid "append language codes to subtitle file names?"
 msgstr "إلحاق رموز اللغة بأسماء ملفات الترجمة ؟"
 
@@ -5932,9 +5933,9 @@ msgid "Required Words"
 msgstr "الكلمات المطلوبة"
 
 # | msgid "Required Words"
+# | msgid "Prefered Words"
 #: gui/slick/views/displayShow.mako:230 gui/slick/views/editShow.mako:302
 #, fuzzy
-#| msgid "Prefered Words"
 msgid "Preferred Words"
 msgstr "الكلمات المطلوبة"
 
@@ -6151,10 +6152,10 @@ msgstr "الحالة الإفتراضية للحلقة"
 msgid "this will set the status for future episodes."
 msgstr "سيؤدي هذا إلى تعيين الحالة للحلقات المقبلة."
 
+# | msgid "this only applies to episode filenames and the contents of metadata
+# | files."
 #: gui/slick/views/editShow.mako:112
 #, fuzzy
-#| msgid "this only applies to episode filenames and the contents of metadata
-#| files."
 msgid ""
 "this only applies to episode file names and the contents of metadata "
 "files."
@@ -6164,9 +6165,9 @@ msgstr "ينطبق هذا فقط على أسماء الحلقة ومحتويات
 msgid "search for subtitles"
 msgstr "البحث عن الترجمة"
 
+# | msgid "Use SR Metdata"
 #: gui/slick/views/editShow.mako:130 gui/slick/views/inc_addShowOptions.mako:27
 #, fuzzy
-#| msgid "Use SR Metdata"
 msgid "Use SR Metadata"
 msgstr "استخدام بيانات تعريف SickChill"
 
@@ -6258,9 +6259,9 @@ msgid "this option overrides the globally ignored words!"
 msgstr ""
 
 # | msgid "search results with no words from this list will be ignored."
+# | msgid "search results with these words will be prefered in this order."
 #: gui/slick/views/editShow.mako:320
 #, fuzzy
-#| msgid "search results with these words will be prefered in this order."
 msgid "search results with these words will be preferred in this order."
 msgstr "نتائج البحث اللتي لا تحتوي على كلمة من هذه الكلمات سيتم تجاهلها."
 
@@ -7345,9 +7346,9 @@ msgstr "الآن"
 msgid "No last update time from the cache, so we do a full update for all shows"
 msgstr ""
 
+# | msgid "Automatically update"
 #: sickchill/show_updater.py:93
 #, fuzzy
-#| msgid "Automatically update"
 msgid "Automatic update failed: {0}"
 msgstr "تحديث تلقائي"
 

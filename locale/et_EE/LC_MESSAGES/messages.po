@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-01-25 04:39+0000\n"
+"POT-Creation-Date: 2020-01-25 09:41+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: et_EE\n"
@@ -697,9 +697,9 @@ msgstr "hooaeg"
 msgid "episode"
 msgstr "episood"
 
+# | msgid "Refreshes"
 #: sickbeard/show_queue.py:210
 #, fuzzy
-#| msgid "Refreshes"
 msgid "Refresh"
 msgstr "Värskenda"
 
@@ -713,9 +713,9 @@ msgstr "Lisa"
 msgid "Update"
 msgstr "Uuendus"
 
+# | msgid "Force Full Update"
 #: sickbeard/show_queue.py:213
 #, fuzzy
-#| msgid "Force Full Update"
 msgid "Force Update"
 msgstr "Jõuline uuendamine"
 
@@ -791,9 +791,9 @@ msgstr ""
 msgid "The show in {0} is already in your show list, skipping"
 msgstr ""
 
+# | msgid "Skipped"
 #: sickbeard/show_queue.py:462
 #, fuzzy
-#| msgid "Skipped"
 msgid "Show skipped"
 msgstr "Vahele jäetud"
 
@@ -5720,9 +5720,9 @@ msgid "Required Words"
 msgstr ""
 
 # | msgid "Preferred"
+# | msgid "Prefered Words"
 #: gui/slick/views/displayShow.mako:230 gui/slick/views/editShow.mako:302
 #, fuzzy
-#| msgid "Prefered Words"
 msgid "Preferred Words"
 msgstr "Eelistatud"
 
@@ -5941,9 +5941,9 @@ msgstr ""
 msgid "search for subtitles"
 msgstr ""
 
+# | msgid "Metadata"
 #: gui/slick/views/editShow.mako:130 gui/slick/views/inc_addShowOptions.mako:27
 #, fuzzy
-#| msgid "Metadata"
 msgid "Use SR Metadata"
 msgstr "Metaandmed"
 
@@ -7081,9 +7081,9 @@ msgstr "Nüüd"
 msgid "No last update time from the cache, so we do a full update for all shows"
 msgstr ""
 
+# | msgid "Automatically update"
 #: sickchill/show_updater.py:93
 #, fuzzy
-#| msgid "Automatically update"
 msgid "Automatic update failed: {0}"
 msgstr "Värskenda automaatselt"
 

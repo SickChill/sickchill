@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-01-25 04:39+0000\n"
+"POT-Creation-Date: 2020-01-25 09:41+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: fi_FI\n"
@@ -699,9 +699,9 @@ msgstr "kausi"
 msgid "episode"
 msgstr "jakso"
 
+# | msgid "Preferred"
 #: sickbeard/show_queue.py:210
 #, fuzzy
-#| msgid "Preferred"
 msgid "Refresh"
 msgstr "Ensisijainen"
 
@@ -715,9 +715,9 @@ msgstr "Lisää"
 msgid "Update"
 msgstr "Päivitä"
 
+# | msgid "Force Full Update"
 #: sickbeard/show_queue.py:213
 #, fuzzy
-#| msgid "Force Full Update"
 msgid "Force Update"
 msgstr "Pakota täydellinen päivitys"
 
@@ -793,9 +793,9 @@ msgstr ""
 msgid "The show in {0} is already in your show list, skipping"
 msgstr ""
 
+# | msgid "Skipped"
 #: sickbeard/show_queue.py:462
 #, fuzzy
-#| msgid "Skipped"
 msgid "Show skipped"
 msgstr "Ohitettu"
 
@@ -807,9 +807,9 @@ msgstr ""
 msgid "Something wrong on IMDb api: {0}"
 msgstr ""
 
+# | msgid "Unable to delete {0}. Error: {1}"
 #: sickbeard/show_queue.py:735
 #, fuzzy
-#| msgid "Unable to delete {0}. Error: {1}"
 msgid "Unable to delete show from Trakt: {0}. Error: {1}"
 msgstr "Tätä sarjaa ei voitu päivittää: {error}"
 
@@ -4027,10 +4027,10 @@ msgstr ""
 msgid "Sync File Extensions"
 msgstr ""
 
+# | msgid "" "comma seperated list of extensions or filename globs SickChill
+# | ignores " "when Post Processing"
 #: gui/slick/views/config_postProcessing.mako:145
 #, fuzzy
-#| msgid "" "comma seperated list of extensions or filename globs SickChill
-#| ignores " "when Post Processing"
 msgid ""
 "comma separated list of extensions or filename globs SickChill ignores "
 "when Post Processing"
@@ -5732,9 +5732,9 @@ msgid "Required Words"
 msgstr ""
 
 # | msgid "Ignore words"
+# | msgid "Prefered Words"
 #: gui/slick/views/displayShow.mako:230 gui/slick/views/editShow.mako:302
 #, fuzzy
-#| msgid "Prefered Words"
 msgid "Preferred Words"
 msgstr "Jätä huomiotta sanat"
 
@@ -5953,9 +5953,9 @@ msgstr ""
 msgid "search for subtitles"
 msgstr ""
 
+# | msgid "Metadata"
 #: gui/slick/views/editShow.mako:130 gui/slick/views/inc_addShowOptions.mako:27
 #, fuzzy
-#| msgid "Metadata"
 msgid "Use SR Metadata"
 msgstr "Metatiedot"
 
@@ -7097,9 +7097,9 @@ msgstr "Nyt"
 msgid "No last update time from the cache, so we do a full update for all shows"
 msgstr ""
 
+# | msgid "Automatically update"
 #: sickchill/show_updater.py:93
 #, fuzzy
-#| msgid "Automatically update"
 msgid "Automatic update failed: {0}"
 msgstr "Päivitä automaattisesti"
 

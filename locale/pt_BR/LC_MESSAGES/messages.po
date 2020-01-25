@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-01-25 04:39+0000\n"
+"POT-Creation-Date: 2020-01-25 09:41+0000\n"
 "PO-Revision-Date: 2018-10-10 07:47+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: pt_BR\n"
@@ -258,9 +258,9 @@ msgstr "Legendado"
 msgid "Disabling UNPACK setting because no unrar is found and accessible."
 msgstr ""
 
+# | msgid "Change selected episodes to"
 #: sickbeard/dailysearcher.py:51
 #, fuzzy
-#| msgid "Change selected episodes to"
 msgid "Searching for new released episodes ..."
 msgstr "Alterar episódios selecionados para"
 
@@ -702,9 +702,9 @@ msgstr "apenas pacotes de temporada."
 msgid "episode"
 msgstr "episódio"
 
+# | msgid "Refreshes"
 #: sickbeard/show_queue.py:210
 #, fuzzy
-#| msgid "Refreshes"
 msgid "Refresh"
 msgstr "Atualizações"
 
@@ -718,9 +718,9 @@ msgstr "Adicionar"
 msgid "Update"
 msgstr "Atualizar"
 
+# | msgid "Force Full Update"
 #: sickbeard/show_queue.py:213
 #, fuzzy
-#| msgid "Force Full Update"
 msgid "Force Update"
 msgstr "Forçar a atualização completa"
 
@@ -742,9 +742,9 @@ msgstr "Remover Série"
 msgid "Loading"
 msgstr "Carregando"
 
+# | msgid "Unable to add show"
 #: sickbeard/show_queue.py:320
 #, fuzzy
-#| msgid "Unable to add show"
 msgid "Starting to add show {0}"
 msgstr "Não é possível adicionar série"
 
@@ -768,9 +768,9 @@ msgstr ""
 msgid "Unable to add show"
 msgstr "Não é possível adicionar série"
 
+# | msgid "Unable to create the folder {show_dir}, can't add the show"
 #: sickbeard/show_queue.py:339
 #, fuzzy
-#| msgid "Unable to create the folder {show_dir}, can't add the show"
 msgid "Unable to get a show {0}, can't add the show"
 msgstr "Não foi possível criar a pasta {show_dir}, série não adicionada"
 
@@ -782,9 +782,9 @@ msgstr ""
 msgid "Skipping initial creation of {0} due to config.ini setting"
 msgstr ""
 
+# | msgid "Unable to create the folder {show_dir}, can't add the show"
 #: sickbeard/show_queue.py:359
 #, fuzzy
-#| msgid "Unable to create the folder {show_dir}, can't add the show"
 msgid "Unable to create the folder {0}, can't add the show"
 msgstr "Não foi possível criar a pasta {show_dir}, série não adicionada"
 
@@ -802,9 +802,9 @@ msgstr ""
 msgid "The show in {0} is already in your show list, skipping"
 msgstr ""
 
+# | msgid "Skipped"
 #: sickbeard/show_queue.py:462
 #, fuzzy
-#| msgid "Skipped"
 msgid "Show skipped"
 msgstr "Ignorado"
 
@@ -816,9 +816,9 @@ msgstr ""
 msgid "Something wrong on IMDb api: {0}"
 msgstr ""
 
+# | msgid "Unable to delete {0}. Error: {1}"
 #: sickbeard/show_queue.py:735
 #, fuzzy
-#| msgid "Unable to delete {0}. Error: {1}"
 msgid "Unable to delete show from Trakt: {0}. Error: {1}"
 msgstr "Não foi possível atualizar a série: {error}"
 
@@ -895,9 +895,9 @@ msgstr ""
 msgid "Can't load the metadata file from {0}, it doesn't exist"
 msgstr ""
 
+# | msgid "for adding shows and metadata providers"
 #: sickbeard/metadata/generic.py:706
 #, fuzzy
-#| msgid "for adding shows and metadata providers"
 msgid "Loading show info from metadata file in {0}"
 msgstr "para adicionar séries e provedores de metadados"
 
@@ -1196,12 +1196,12 @@ msgstr "Chegou a esta página por acidente, por favor, verifique o url."
 msgid "Home"
 msgstr "Página Inicial"
 
+# | msgid "" "A mako error has occured.<br>\n" "            If this happened
+# | during an update a simple page refresh may " "be the solution.<br>\n" "
+# | Mako errors that happen during updates may be a one time " "error if there
+# | were significant ui changes."
 #: gui/slick/views/500.mako:6
 #, fuzzy
-#| msgid "" "A mako error has occured.<br>\n" "            If this happened
-#| during an update a simple page refresh may " "be the solution.<br>\n" "
-#| Mako errors that happen during updates may be a one time " "error if there
-#| were significant ui changes."
 msgid ""
 "A mako error has occurred.<br>\n"
 "            If this happened during an update a simple page refresh may "
@@ -1336,10 +1336,11 @@ msgstr "Série nome"
 msgid "Metadata language"
 msgstr "Linguagem de metadados"
 
+# | msgid "" "This will only affect the language of the retrieved metadata
+# file
+# | " "contents and episode filenames."
 #: gui/slick/views/addShows_newShow.mako:64
 #, fuzzy
-#| msgid "" "This will only affect the language of the retrieved metadata file
-#| " "contents and episode filenames."
 msgid ""
 "This will only affect the language of the retrieved metadata file "
 "contents and episode file names."
@@ -4202,10 +4203,10 @@ msgstr ""
 msgid "Sync File Extensions"
 msgstr "Extensões de arquivos Sync"
 
+# | msgid "" "comma seperated list of extensions or filename globs SickChill
+# | ignores " "when Post Processing"
 #: gui/slick/views/config_postProcessing.mako:145
 #, fuzzy
-#| msgid "" "comma seperated list of extensions or filename globs SickChill
-#| ignores " "when Post Processing"
 msgid ""
 "comma separated list of extensions or filename globs SickChill ignores "
 "when Post Processing"
@@ -5978,9 +5979,9 @@ msgid "Required Words"
 msgstr "Palavras requeridas"
 
 # | msgid "Required Words"
+# | msgid "Prefered Words"
 #: gui/slick/views/displayShow.mako:230 gui/slick/views/editShow.mako:302
 #, fuzzy
-#| msgid "Prefered Words"
 msgid "Preferred Words"
 msgstr "Palavras requeridas"
 
@@ -6207,9 +6208,9 @@ msgstr ""
 msgid "search for subtitles"
 msgstr "procurar por legendas"
 
+# | msgid "Use SR Metdata"
 #: gui/slick/views/editShow.mako:130 gui/slick/views/inc_addShowOptions.mako:27
 #, fuzzy
-#| msgid "Use SR Metdata"
 msgid "Use SR Metadata"
 msgstr "Usar Metadados SickChill"
 
@@ -6304,10 +6305,10 @@ msgstr ""
 
 # | msgid "" "results with no word from this list will be ignored<br>separate
 # | words " "with a comma, e.g. \"word1,word2,word3\""
+# | msgid "" "search results with these words will be preferred in this "
+# | "order<br>separate words with a comma, e.g. \"word1,word2,word3\""
 #: gui/slick/views/editShow.mako:320
 #, fuzzy
-#| msgid "" "search results with these words will be preferred in this "
-#| "order<br>separate words with a comma, e.g. \"word1,word2,word3\""
 msgid "search results with these words will be preferred in this order."
 msgstr ""
 "resultados sem palavras desta lista serão ignorados<br>separe as palavras"
@@ -7405,9 +7406,9 @@ msgstr "Agora"
 msgid "No last update time from the cache, so we do a full update for all shows"
 msgstr ""
 
+# | msgid "Automatically update"
 #: sickchill/show_updater.py:93
 #, fuzzy
-#| msgid "Automatically update"
 msgid "Automatic update failed: {0}"
 msgstr "Atualizar automaticamente"
 

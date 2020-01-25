@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-01-25 04:39+0000\n"
+"POT-Creation-Date: 2020-01-25 09:41+0000\n"
 "PO-Revision-Date: 2018-10-10 07:48+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: ru_RU\n"
@@ -702,9 +702,9 @@ msgstr "сезон целиком."
 msgid "episode"
 msgstr "Эпизод"
 
+# | msgid "Refreshes"
 #: sickbeard/show_queue.py:210
 #, fuzzy
-#| msgid "Refreshes"
 msgid "Refresh"
 msgstr "Обновления"
 
@@ -718,9 +718,9 @@ msgstr "Добавить"
 msgid "Update"
 msgstr "Обновление"
 
+# | msgid "Force Full Update"
 #: sickbeard/show_queue.py:213
 #, fuzzy
-#| msgid "Force Full Update"
 msgid "Force Update"
 msgstr "Принудительное полное обновление"
 
@@ -742,9 +742,9 @@ msgstr "Удалить шоу"
 msgid "Loading"
 msgstr "Загрузка"
 
+# | msgid "Unable to add show"
 #: sickbeard/show_queue.py:320
 #, fuzzy
-#| msgid "Unable to add show"
 msgid "Starting to add show {0}"
 msgstr "Не удается добавить шоу"
 
@@ -768,9 +768,9 @@ msgstr ""
 msgid "Unable to add show"
 msgstr "Не удается добавить шоу"
 
+# | msgid "Unable to create the folder {show_dir}, can't add the show"
 #: sickbeard/show_queue.py:339
 #, fuzzy
-#| msgid "Unable to create the folder {show_dir}, can't add the show"
 msgid "Unable to get a show {0}, can't add the show"
 msgstr "Не удается создать папку {show_dir}, не удалось добавить шоу"
 
@@ -782,9 +782,9 @@ msgstr ""
 msgid "Skipping initial creation of {0} due to config.ini setting"
 msgstr ""
 
+# | msgid "Unable to create the folder {show_dir}, can't add the show"
 #: sickbeard/show_queue.py:359
 #, fuzzy
-#| msgid "Unable to create the folder {show_dir}, can't add the show"
 msgid "Unable to create the folder {0}, can't add the show"
 msgstr "Не удается создать папку {show_dir}, не удалось добавить шоу"
 
@@ -802,9 +802,9 @@ msgstr ""
 msgid "The show in {0} is already in your show list, skipping"
 msgstr ""
 
+# | msgid "Skipped"
 #: sickbeard/show_queue.py:462
 #, fuzzy
-#| msgid "Skipped"
 msgid "Show skipped"
 msgstr "Пропущен"
 
@@ -816,9 +816,9 @@ msgstr ""
 msgid "Something wrong on IMDb api: {0}"
 msgstr ""
 
+# | msgid "Unable to delete {0}. Error: {1}"
 #: sickbeard/show_queue.py:735
 #, fuzzy
-#| msgid "Unable to delete {0}. Error: {1}"
 msgid "Unable to delete show from Trakt: {0}. Error: {1}"
 msgstr "Не удается обновить шоу: {error}"
 
@@ -897,9 +897,9 @@ msgstr ""
 msgid "Can't load the metadata file from {0}, it doesn't exist"
 msgstr ""
 
+# | msgid "for adding shows and metadata providers"
 #: sickbeard/metadata/generic.py:706
 #, fuzzy
-#| msgid "for adding shows and metadata providers"
 msgid "Loading show info from metadata file in {0}"
 msgstr "для добавления шоу и метаданных провайдеров"
 
@@ -4193,9 +4193,9 @@ msgstr "удаление не связанных файлов во время п
 msgid "Change File Date"
 msgstr "Дата изменения файла"
 
+# | msgid "set last modified filedate to the date that the episode aired?"
 #: gui/slick/views/config_postProcessing.mako:238
 #, fuzzy
-#| msgid "set last modified filedate to the date that the episode aired?"
 msgid "set last modified file date to the date that the episode aired?"
 msgstr "установить дату изменения файла на дату релиза эпизода?"
 
@@ -5666,9 +5666,9 @@ msgstr "вести журнал загрузки субтитров на стр�
 msgid "Subtitles Multi-Language"
 msgstr "мультиязычные субтитры"
 
+# | msgid "append language codes to subtitle filenames?"
 #: gui/slick/views/config_subtitles.mako:175
 #, fuzzy
-#| msgid "append language codes to subtitle filenames?"
 msgid "append language codes to subtitle file names?"
 msgstr "добавить коды языков в названия файлов субтитров?"
 
@@ -5859,9 +5859,9 @@ msgid "Required Words"
 msgstr "Необходимые слова"
 
 # | msgid "Required Words"
+# | msgid "Prefered Words"
 #: gui/slick/views/displayShow.mako:230 gui/slick/views/editShow.mako:302
 #, fuzzy
-#| msgid "Prefered Words"
 msgid "Preferred Words"
 msgstr "Необходимые слова"
 
@@ -6074,10 +6074,10 @@ msgstr "Статус эпизода по умолчанию"
 msgid "this will set the status for future episodes."
 msgstr "Это позволит установить статус для будущих эпизодов."
 
+# | msgid "this only applies to episode filenames and the contents of metadata
+# | files."
 #: gui/slick/views/editShow.mako:112
 #, fuzzy
-#| msgid "this only applies to episode filenames and the contents of metadata
-#| files."
 msgid ""
 "this only applies to episode file names and the contents of metadata "
 "files."
@@ -6089,9 +6089,9 @@ msgstr ""
 msgid "search for subtitles"
 msgstr "поиск для субтитров"
 
+# | msgid "Use SR Metdata"
 #: gui/slick/views/editShow.mako:130 gui/slick/views/inc_addShowOptions.mako:27
 #, fuzzy
-#| msgid "Use SR Metdata"
 msgid "Use SR Metadata"
 msgstr "Использование SR Metdata"
 
@@ -6183,9 +6183,9 @@ msgid "this option overrides the globally ignored words!"
 msgstr ""
 
 # | msgid "search results with no words from this list will be ignored."
+# | msgid "search results with these words will be prefered in this order."
 #: gui/slick/views/editShow.mako:320
 #, fuzzy
-#| msgid "search results with these words will be prefered in this order."
 msgid "search results with these words will be preferred in this order."
 msgstr "результаты поиска без слов из этого списка будут игнорироваться."
 
@@ -7250,9 +7250,9 @@ msgstr "Сейчас"
 msgid "No last update time from the cache, so we do a full update for all shows"
 msgstr ""
 
+# | msgid "Automatically update"
 #: sickchill/show_updater.py:93
 #, fuzzy
-#| msgid "Automatically update"
 msgid "Automatic update failed: {0}"
 msgstr "Автоматическое обновление"
 

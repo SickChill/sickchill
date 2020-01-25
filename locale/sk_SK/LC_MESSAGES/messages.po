@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-01-25 04:39+0000\n"
+"POT-Creation-Date: 2020-01-25 09:41+0000\n"
 "PO-Revision-Date: 2018-10-10 07:48+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: sk_SK\n"
@@ -699,9 +699,9 @@ msgstr "sezóna"
 msgid "episode"
 msgstr "epizóda"
 
+# | msgid "Refreshes"
 #: sickbeard/show_queue.py:210
 #, fuzzy
-#| msgid "Refreshes"
 msgid "Refresh"
 msgstr "Obnoví"
 
@@ -715,9 +715,9 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
+# | msgid "Force Full Update"
 #: sickbeard/show_queue.py:213
 #, fuzzy
-#| msgid "Force Full Update"
 msgid "Force Update"
 msgstr "Vynútiť úplnú aktualizáciu"
 
@@ -739,9 +739,9 @@ msgstr "Odstrániť seriál"
 msgid "Loading"
 msgstr ""
 
+# | msgid "Unable to add show"
 #: sickbeard/show_queue.py:320
 #, fuzzy
-#| msgid "Unable to add show"
 msgid "Starting to add show {0}"
 msgstr "Nepodarilo sa pridať seriál"
 
@@ -765,9 +765,9 @@ msgstr ""
 msgid "Unable to add show"
 msgstr "Nepodarilo sa pridať seriál"
 
+# | msgid "Unable to create the folder {show_dir}, can't add the show"
 #: sickbeard/show_queue.py:339
 #, fuzzy
-#| msgid "Unable to create the folder {show_dir}, can't add the show"
 msgid "Unable to get a show {0}, can't add the show"
 msgstr "Nepodarilo sa vytvoriť priečinok {show_dir}, nie je možné pridať seriál"
 
@@ -779,9 +779,9 @@ msgstr ""
 msgid "Skipping initial creation of {0} due to config.ini setting"
 msgstr ""
 
+# | msgid "Unable to create the folder {show_dir}, can't add the show"
 #: sickbeard/show_queue.py:359
 #, fuzzy
-#| msgid "Unable to create the folder {show_dir}, can't add the show"
 msgid "Unable to create the folder {0}, can't add the show"
 msgstr "Nepodarilo sa vytvoriť priečinok {show_dir}, nie je možné pridať seriál"
 
@@ -799,9 +799,9 @@ msgstr ""
 msgid "The show in {0} is already in your show list, skipping"
 msgstr ""
 
+# | msgid "Skipped"
 #: sickbeard/show_queue.py:462
 #, fuzzy
-#| msgid "Skipped"
 msgid "Show skipped"
 msgstr "Vynechané"
 
@@ -813,9 +813,9 @@ msgstr ""
 msgid "Something wrong on IMDb api: {0}"
 msgstr ""
 
+# | msgid "Unable to delete {0}. Error: {1}"
 #: sickbeard/show_queue.py:735
 #, fuzzy
-#| msgid "Unable to delete {0}. Error: {1}"
 msgid "Unable to delete show from Trakt: {0}. Error: {1}"
 msgstr "Nepodarilo sa aktualizovať seriál: {error}"
 
@@ -1309,10 +1309,11 @@ msgstr "Názov seriálu"
 msgid "Metadata language"
 msgstr ""
 
+# | msgid "" "This will only affect the language of the retrieved metadata
+# file
+# | " "contents and episode filenames."
 #: gui/slick/views/addShows_newShow.mako:64
 #, fuzzy
-#| msgid "" "This will only affect the language of the retrieved metadata file
-#| " "contents and episode filenames."
 msgid ""
 "This will only affect the language of the retrieved metadata file "
 "contents and episode file names."

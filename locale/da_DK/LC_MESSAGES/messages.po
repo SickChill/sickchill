@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-01-25 04:39+0000\n"
+"POT-Creation-Date: 2020-01-25 09:41+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: da_DK\n"
@@ -258,9 +258,9 @@ msgstr "Undertekstet"
 msgid "Disabling UNPACK setting because no unrar is found and accessible."
 msgstr ""
 
+# | msgid "Change selected episodes to"
 #: sickbeard/dailysearcher.py:51
 #, fuzzy
-#| msgid "Change selected episodes to"
 msgid "Searching for new released episodes ..."
 msgstr "Ændre valgte episoder til"
 
@@ -702,9 +702,9 @@ msgstr "kun sæson pakker."
 msgid "episode"
 msgstr "episode"
 
+# | msgid "Refreshes"
 #: sickbeard/show_queue.py:210
 #, fuzzy
-#| msgid "Refreshes"
 msgid "Refresh"
 msgstr "Opdaterer"
 
@@ -718,9 +718,9 @@ msgstr "Tilføj"
 msgid "Update"
 msgstr "Opdater"
 
+# | msgid "Force Full Update"
 #: sickbeard/show_queue.py:213
 #, fuzzy
-#| msgid "Force Full Update"
 msgid "Force Update"
 msgstr "Tving fuld opdatering"
 
@@ -742,9 +742,9 @@ msgstr "Fjern Serie"
 msgid "Loading"
 msgstr "Indlæser"
 
+# | msgid "Unable to add show"
 #: sickbeard/show_queue.py:320
 #, fuzzy
-#| msgid "Unable to add show"
 msgid "Starting to add show {0}"
 msgstr "Ikke i stand til at tilføje serie"
 
@@ -768,9 +768,9 @@ msgstr ""
 msgid "Unable to add show"
 msgstr "Ikke i stand til at tilføje serie"
 
+# | msgid "Unable to create the folder {show_dir}, can't add the show"
 #: sickbeard/show_queue.py:339
 #, fuzzy
-#| msgid "Unable to create the folder {show_dir}, can't add the show"
 msgid "Unable to get a show {0}, can't add the show"
 msgstr "Ikke i stand til at oprette folderen {show_dir}, kan ikke tilføje serien"
 
@@ -782,9 +782,9 @@ msgstr ""
 msgid "Skipping initial creation of {0} due to config.ini setting"
 msgstr ""
 
+# | msgid "Unable to create the folder {show_dir}, can't add the show"
 #: sickbeard/show_queue.py:359
 #, fuzzy
-#| msgid "Unable to create the folder {show_dir}, can't add the show"
 msgid "Unable to create the folder {0}, can't add the show"
 msgstr "Ikke i stand til at oprette folderen {show_dir}, kan ikke tilføje serien"
 
@@ -802,9 +802,9 @@ msgstr ""
 msgid "The show in {0} is already in your show list, skipping"
 msgstr ""
 
+# | msgid "Skipped"
 #: sickbeard/show_queue.py:462
 #, fuzzy
-#| msgid "Skipped"
 msgid "Show skipped"
 msgstr "Sprunget over"
 
@@ -816,9 +816,9 @@ msgstr ""
 msgid "Something wrong on IMDb api: {0}"
 msgstr ""
 
+# | msgid "Unable to delete {0}. Error: {1}"
 #: sickbeard/show_queue.py:735
 #, fuzzy
-#| msgid "Unable to delete {0}. Error: {1}"
 msgid "Unable to delete show from Trakt: {0}. Error: {1}"
 msgstr "Ikke i stand til at opdatere serien: {error}"
 
@@ -895,9 +895,9 @@ msgstr ""
 msgid "Can't load the metadata file from {0}, it doesn't exist"
 msgstr ""
 
+# | msgid "for adding shows and metadata providers"
 #: sickbeard/metadata/generic.py:706
 #, fuzzy
-#| msgid "for adding shows and metadata providers"
 msgid "Loading show info from metadata file in {0}"
 msgstr "for at tilføje serier og metadata udbydere"
 
@@ -1319,10 +1319,11 @@ msgstr "Serie navn"
 msgid "Metadata language"
 msgstr ""
 
+# | msgid "" "This will only affect the language of the retrieved metadata
+# file
+# | " "contents and episode filenames."
 #: gui/slick/views/addShows_newShow.mako:64
 #, fuzzy
-#| msgid "" "This will only affect the language of the retrieved metadata file
-#| " "contents and episode filenames."
 msgid ""
 "This will only affect the language of the retrieved metadata file "
 "contents and episode file names."
@@ -5884,9 +5885,9 @@ msgid "Required Words"
 msgstr "Krævede ord"
 
 # | msgid "Required Words"
+# | msgid "Prefered Words"
 #: gui/slick/views/displayShow.mako:230 gui/slick/views/editShow.mako:302
 #, fuzzy
-#| msgid "Prefered Words"
 msgid "Preferred Words"
 msgstr "Krævede ord"
 
@@ -6113,9 +6114,9 @@ msgstr ""
 msgid "search for subtitles"
 msgstr "søg efter undertekster"
 
+# | msgid "Metadata"
 #: gui/slick/views/editShow.mako:130 gui/slick/views/inc_addShowOptions.mako:27
 #, fuzzy
-#| msgid "Metadata"
 msgid "Use SR Metadata"
 msgstr "Metadata"
 
@@ -6206,10 +6207,10 @@ msgstr ""
 
 # | msgid "" "results with no word from this list will be ignored<br>separate
 # | words " "with a comma, e.g. \"word1,word2,word3\""
+# | msgid "" "search results with these words will be preferred in this "
+# | "order<br>separate words with a comma, e.g. \"word1,word2,word3\""
 #: gui/slick/views/editShow.mako:320
 #, fuzzy
-#| msgid "" "search results with these words will be preferred in this "
-#| "order<br>separate words with a comma, e.g. \"word1,word2,word3\""
 msgid "search results with these words will be preferred in this order."
 msgstr ""
 "resultater uden nogen ord fra denne liste vil blive ignoreret <br>flere "
@@ -7296,9 +7297,9 @@ msgstr "Nu"
 msgid "No last update time from the cache, so we do a full update for all shows"
 msgstr ""
 
+# | msgid "Automatically update"
 #: sickchill/show_updater.py:93
 #, fuzzy
-#| msgid "Automatically update"
 msgid "Automatic update failed: {0}"
 msgstr "Opdater automatisk"
 

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-01-25 04:39+0000\n"
+"POT-Creation-Date: 2020-01-25 09:41+0000\n"
 "PO-Revision-Date: 2018-10-10 07:47+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: he_IL\n"
@@ -711,9 +711,9 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
+# | msgid "Force Full Update"
 #: sickbeard/show_queue.py:213
 #, fuzzy
-#| msgid "Force Full Update"
 msgid "Force Update"
 msgstr "אלץ עדכון מלא"
 
@@ -789,9 +789,9 @@ msgstr ""
 msgid "The show in {0} is already in your show list, skipping"
 msgstr ""
 
+# | msgid "Skipped"
 #: sickbeard/show_queue.py:462
 #, fuzzy
-#| msgid "Skipped"
 msgid "Show skipped"
 msgstr "דולג"
 
@@ -803,9 +803,9 @@ msgstr ""
 msgid "Something wrong on IMDb api: {0}"
 msgstr ""
 
+# | msgid "Unable to delete {0}. Error: {1}"
 #: sickbeard/show_queue.py:735
 #, fuzzy
-#| msgid "Unable to delete {0}. Error: {1}"
 msgid "Unable to delete show from Trakt: {0}. Error: {1}"
 msgstr "אינו מסוגל לעדכן את הסדרה: {error}"
 
@@ -1304,10 +1304,11 @@ msgstr ""
 msgid "Metadata language"
 msgstr ""
 
+# | msgid "" "This will only affect the language of the retrieved metadata
+# file
+# | " "contents and episode filenames."
 #: gui/slick/views/addShows_newShow.mako:64
 #, fuzzy
-#| msgid "" "This will only affect the language of the retrieved metadata file
-#| " "contents and episode filenames."
 msgid ""
 "This will only affect the language of the retrieved metadata file "
 "contents and episode file names."
@@ -4005,10 +4006,10 @@ msgstr "ספריית ההורדות לעיבוד"
 msgid "the folder where your download client puts the completed TV downloads."
 msgstr "התיקייה שבה תוכנת ההורדות שלך שמה את הורדות הטלויזיה שהסתיימו."
 
+# | msgid "" "please use seperate downloading and completed folders in your
+# | download " "client if possible."
 #: gui/slick/views/config_postProcessing.mako:71
 #, fuzzy
-#| msgid "" "please use seperate downloading and completed folders in your
-#| download " "client if possible."
 msgid ""
 "please use separate downloading and completed folders in your download "
 "client if possible."
@@ -4054,10 +4055,10 @@ msgstr "דחה עיבוד תיקייה במידה וקיימים בה קבצי �
 msgid "Sync File Extensions"
 msgstr "סיומות קבצי סנכרון"
 
+# | msgid "" "comma seperated list of extensions or filename globs SickChill
+# | ignores " "when Post Processing"
 #: gui/slick/views/config_postProcessing.mako:145
 #, fuzzy
-#| msgid "" "comma seperated list of extensions or filename globs SickChill
-#| ignores " "when Post Processing"
 msgid ""
 "comma separated list of extensions or filename globs SickChill ignores "
 "when Post Processing"
@@ -5977,9 +5978,9 @@ msgstr ""
 msgid "search for subtitles"
 msgstr ""
 
+# | msgid "Metadata"
 #: gui/slick/views/editShow.mako:130 gui/slick/views/inc_addShowOptions.mako:27
 #, fuzzy
-#| msgid "Metadata"
 msgid "Use SR Metadata"
 msgstr "מטא-נתונים"
 

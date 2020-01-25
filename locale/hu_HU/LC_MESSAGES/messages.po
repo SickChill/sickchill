@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-01-25 04:39+0000\n"
+"POT-Creation-Date: 2020-01-25 09:41+0000\n"
 "PO-Revision-Date: 2018-10-10 07:47+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: hu_HU\n"
@@ -701,9 +701,9 @@ msgstr "Évad"
 msgid "episode"
 msgstr "epizód"
 
+# | msgid "Refreshes"
 #: sickbeard/show_queue.py:210
 #, fuzzy
-#| msgid "Refreshes"
 msgid "Refresh"
 msgstr "Frissít"
 
@@ -717,9 +717,9 @@ msgstr "Hozzáad"
 msgid "Update"
 msgstr "Frissítés"
 
+# | msgid "Force Full Update"
 #: sickbeard/show_queue.py:213
 #, fuzzy
-#| msgid "Force Full Update"
 msgid "Force Update"
 msgstr "Teljes frissítés kényszerítése"
 
@@ -741,9 +741,9 @@ msgstr "Műsor eltávolítása"
 msgid "Loading"
 msgstr ""
 
+# | msgid "Unable to add show"
 #: sickbeard/show_queue.py:320
 #, fuzzy
-#| msgid "Unable to add show"
 msgid "Starting to add show {0}"
 msgstr "Nem sikerült a műsort hozzáadni"
 
@@ -767,9 +767,9 @@ msgstr ""
 msgid "Unable to add show"
 msgstr "Nem sikerült a műsort hozzáadni"
 
+# | msgid "Unable to create the folder {show_dir}, can't add the show"
 #: sickbeard/show_queue.py:339
 #, fuzzy
-#| msgid "Unable to create the folder {show_dir}, can't add the show"
 msgid "Unable to get a show {0}, can't add the show"
 msgstr ""
 "Nem sikerült létrehozni a(z) {show_dir} mappát, ezért a műsor hozzáadása "
@@ -783,9 +783,9 @@ msgstr ""
 msgid "Skipping initial creation of {0} due to config.ini setting"
 msgstr ""
 
+# | msgid "Unable to create the folder {show_dir}, can't add the show"
 #: sickbeard/show_queue.py:359
 #, fuzzy
-#| msgid "Unable to create the folder {show_dir}, can't add the show"
 msgid "Unable to create the folder {0}, can't add the show"
 msgstr ""
 "Nem sikerült létrehozni a(z) {show_dir} mappát, ezért a műsor hozzáadása "
@@ -805,9 +805,9 @@ msgstr ""
 msgid "The show in {0} is already in your show list, skipping"
 msgstr ""
 
+# | msgid "Skipped"
 #: sickbeard/show_queue.py:462
 #, fuzzy
-#| msgid "Skipped"
 msgid "Show skipped"
 msgstr "Kihagyva"
 
@@ -819,9 +819,9 @@ msgstr ""
 msgid "Something wrong on IMDb api: {0}"
 msgstr ""
 
+# | msgid "Unable to delete {0}. Error: {1}"
 #: sickbeard/show_queue.py:735
 #, fuzzy
-#| msgid "Unable to delete {0}. Error: {1}"
 msgid "Unable to delete show from Trakt: {0}. Error: {1}"
 msgstr "Nem lehet frissíteni a sorozatot: {error}"
 
@@ -1192,12 +1192,12 @@ msgstr "Véletlenül juthatott erre az oldalra, kérem ellenőrizze az url-t."
 msgid "Home"
 msgstr "Kezdőnézet"
 
+# | msgid "" "A mako error has occured.<br>\n" "            If this happened
+# | during an update a simple page refresh may " "be the solution.<br>\n" "
+# | Mako errors that happen during updates may be a one time " "error if there
+# | were significant ui changes."
 #: gui/slick/views/500.mako:6
 #, fuzzy
-#| msgid "" "A mako error has occured.<br>\n" "            If this happened
-#| during an update a simple page refresh may " "be the solution.<br>\n" "
-#| Mako errors that happen during updates may be a one time " "error if there
-#| were significant ui changes."
 msgid ""
 "A mako error has occurred.<br>\n"
 "            If this happened during an update a simple page refresh may "
@@ -1312,10 +1312,11 @@ msgstr "Műsor neve"
 msgid "Metadata language"
 msgstr ""
 
+# | msgid "" "This will only affect the language of the retrieved metadata
+# file
+# | " "contents and episode filenames."
 #: gui/slick/views/addShows_newShow.mako:64
 #, fuzzy
-#| msgid "" "This will only affect the language of the retrieved metadata file
-#| " "contents and episode filenames."
 msgid ""
 "This will only affect the language of the retrieved metadata file "
 "contents and episode file names."
@@ -5753,9 +5754,9 @@ msgid "Required Words"
 msgstr ""
 
 # | msgid "Ignore words"
+# | msgid "Prefered Words"
 #: gui/slick/views/displayShow.mako:230 gui/slick/views/editShow.mako:302
 #, fuzzy
-#| msgid "Prefered Words"
 msgid "Preferred Words"
 msgstr "Szavak figyelmen kívül hagyása"
 
@@ -5974,9 +5975,9 @@ msgstr ""
 msgid "search for subtitles"
 msgstr ""
 
+# | msgid "Metadata"
 #: gui/slick/views/editShow.mako:130 gui/slick/views/inc_addShowOptions.mako:27
 #, fuzzy
-#| msgid "Metadata"
 msgid "Use SR Metadata"
 msgstr "Metaadat"
 
@@ -7114,9 +7115,9 @@ msgstr "Most"
 msgid "No last update time from the cache, so we do a full update for all shows"
 msgstr ""
 
+# | msgid "Automatically update"
 #: sickchill/show_updater.py:93
 #, fuzzy
-#| msgid "Automatically update"
 msgid "Automatic update failed: {0}"
 msgstr "Automatikus frissítése"
 
