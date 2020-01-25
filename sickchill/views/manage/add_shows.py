@@ -536,7 +536,7 @@ class AddShows(Home):
             extra_check_dir = ek(os.path.join, rootDir, sanitize_filename(xhtml_unescape(show_name)))
 
         # blanket policy - if the dir exists you should have used "add existing show" numbnuts
-        if ek(os.path.isdir, show_dir) or ek(os.path.isdir, extra_check_dir) and not fullShowPath:
+        if (ek(os.path.isdir, show_dir) or ek(os.path.isdir, extra_check_dir)) and not fullShowPath:
             ui.notifications.error(_("Unable to add show"), _("Folder {show_dir} exists already").format(show_dir=show_dir))
             return self.redirect('/addShows/existingShows/')
 
