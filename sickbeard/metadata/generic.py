@@ -243,7 +243,6 @@ class GenericMetadata(object):
         """
         return None
 
-
     def _ep_data(self, ep_obj):
         """
         This should be overridden by the implementing class. It should

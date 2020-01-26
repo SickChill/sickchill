@@ -441,8 +441,9 @@
                                             <th data-sorter="false" class="col-ep columnSelector-false size">${_('Size')}</th>
                                             <th data-sorter="false" class="col-airdate">${_('Airdate')}</th>
                                             <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(sickbeard.DOWNLOAD_URL)]}>${_('Download')}</th>
+                                            <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(sickbeard.KODI_HOST and sickbeard.USE_KODI)]}>${_('Play')}</th>
                                             <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(sickbeard.USE_SUBTITLES)]}>${_('Subtitles')}</th>
-                                            <th data-sorter="false" class="col-status">${_('Status')}</th>
+                                            <th data-sorter="false" class="col-ep">${_('Status')}</th>
                                             <th data-sorter="false" class="col-search">${_('Search')}</th>
                                         </tr>
                                     </thead>
@@ -522,17 +523,24 @@
                                                 Never
                                             % endif
                                         </td>
-                                        <td>
+                                        <td class="col-download">
                                             % if sickbeard.DOWNLOAD_URL and epResult[b'location']:
-                                            <%
-                                                filename = epResult[b'location']
-                                                for rootDir in sickbeard.ROOT_DIRS.split('|'):
-                                                    if rootDir.startswith('/'):
-                                                        filename = filename.replace(rootDir, "")
-                                                filename = sickbeard.DOWNLOAD_URL + urllib.quote(filename.encode('utf8'))
-                                            %>
-                                                <center><a href="${filename}">${_('Download')}</a></center>
+                                                <%
+                                                    filename = epResult[b'location']
+                                                    for rootDir in sickbeard.ROOT_DIRS.split('|'):
+                                                        if rootDir.startswith('/'):
+                                                            filename = filename.replace(rootDir, "")
+                                                    filename = sickbeard.DOWNLOAD_URL + urllib.quote(filename.encode('utf8'))
+                                                %>
+                                                <a href="${filename}">${_('Download')}</a>
                                             % endif
+                                        </td>
+                                        <td class="col-play">
+                                            <a class="play-on-kodi${(' hidden', '')[bool(epResult[b'location'])]}"
+                                               href="playOnKodi?show=${show.indexerid}&amp;season=${epResult[b"season"]}&amp;episode=${epResult[b"episode"]}"
+                                            >
+                                                <span class="displayshow-play-icon-kodi" title="KODI"></span>
+                                            </a>
                                         </td>
                                         <td class="col-subtitles" align="center">
                                             % for flag in (epResult[b"subtitles"] or '').split(','):
@@ -628,6 +636,33 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info" data-dismiss="modal">${_('No')}</button>
                     <button type="button" class="btn btn-success" data-dismiss="modal">${_('Yes')}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="playOnKodiModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                         <span class="sr-only">${_('Close')}</span>
+                    </button>
+                    <h4 class="modal-title">${_('Select Kodi Player')}</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group col-md-12">
+                        <select id="kodi-play-host" name="kodi-play-host" class="form-control">
+                            % for index, connection in enumerate(sickbeard.notifiers.kodi_notifier.connections):
+                                <option value="${index}">${connection.name} (${connection.host})</option>
+                            % endfor
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal">${_('Play')}</button>
+                    <button type="button" class="btn btn-info" data-dismiss="modal">${_('Cancel')}</button>
                 </div>
             </div>
         </div>

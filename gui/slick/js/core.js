@@ -2457,6 +2457,43 @@ var SICKCHILL = {
                 link.fadeTo('fast', 0.5);
             }
 
+            $('.play-on-kodi').on('click', function() {
+                if ($(this).prop('enableClick') === '0') {
+                    return false;
+                }
+
+                const selectedEpisode = $(this);
+                const playModal = $('#playOnKodiModal');
+
+                $('#playOnKodiModal .btn.btn-success').on('click', function() {
+                    disableLink(selectedEpisode);
+                    playModal.modal('hide');
+
+                    const img = selectedEpisode.children('img');
+                    img.hide();
+
+                    selectedEpisode.append($('<span/>').attr({class: 'loading-spinner16', title: 'Playing'}));
+                    const icon = selectedEpisode.children('span');
+
+                    const host = $('#kodi-play-host').val();
+                    $.getJSON(selectedEpisode.prop('href') + '&host=' + host, function(data) {
+                        if (data.result.toLowerCase() === 'failure') {
+                            icon.prop('class', 'displayshow-icon-disable');
+                            icon.prop('title', 'Failed');
+                        } else {
+                            img.prop('title', 'Success');
+                            img.prop('alt', 'Success');
+                            icon.hide();
+                            img.show();
+                        }
+                    });
+                    enableLink(selectedEpisode);
+                    return false;
+                });
+                playModal.modal('show');
+                return false;
+            });
+
             $('.epSubtitlesSearch').on('click', function() {
                 if ($(this).prop('enableClick') === '0') {
                     return false;

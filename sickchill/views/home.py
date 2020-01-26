@@ -393,17 +393,13 @@ class Home(WebRoot):
     def testKODI(host=None, username=None, password=None):
 
         host = config.clean_hosts(host)
-        finalResult = ''
         password = filters.unhide(sickbeard.KODI_PASSWORD, password)
-        for curHost in [x.strip() for x in host.split(",")]:
-            curResult = notifiers.kodi_notifier.test_notify(unquote_plus(curHost), username, password)
-            if len(curResult.split(":")) > 2 and 'OK' in curResult.split(":")[2]:
-                finalResult += _("Test KODI notice sent successfully to {kodi_host}").format(kodi_host=unquote_plus(curHost))
-            else:
-                finalResult += _("Test KODI notice failed to {kodi_host}").format(kodi_host=unquote_plus(curHost))
-            finalResult += "<br>\n"
 
-        return finalResult
+        results = notifiers.kodi_notifier.test_notify(unquote_plus(host), username, password)
+        final_results = [
+            _("Test KODI notice {result} to {kodi_host}").format(kodi_host=host, result=('failed', 'sent successfully')[result]) for host, result in results.items()]
+
+        return "<br>\n".join(final_results)
 
     def testPHT(self, host=None, username=None, password=None):
         self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
@@ -1275,7 +1271,7 @@ class Home(WebRoot):
         else:
             host = sickbeard.KODI_HOST
 
-        if notifiers.kodi_notifier.update_library(showName=showName):
+        if notifiers.kodi_notifier.update_library(show_name=showName):
             ui.notifications.message(_("Library update command sent to KODI host(s)): {kodi_hosts}").format(kodi_hosts=host))
         else:
             ui.notifications.error(_("Unable to contact one or more KODI host(s)): {kodi_hosts}").format(kodi_hosts=host))
@@ -1708,6 +1704,15 @@ class Home(WebRoot):
 
         ui.notifications.message(ep_obj.show.name, status)
         return json.dumps({'result': status, 'subtitles': ','.join(ep_obj.subtitles)})
+
+    def playOnKodi(self, show, season, episode, host):
+        ep_obj, error_msg = self._getEpisode(show, season, episode)
+        if error_msg or not ep_obj:
+            print('error')
+            return json.dumps({'result': 'failure', 'errorMessage': error_msg})
+
+        sickbeard.notifiers.kodi_notifier.play_episode(ep_obj, host)
+        return json.dumps({'result': 'success'})
 
     def retrySearchSubtitles(self, show, season, episode, lang):
         # retrieve the episode object and fail if we can't get one
