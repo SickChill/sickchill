@@ -375,9 +375,9 @@ class TraktChecker(object):
 
                     # logger.log(u"Checking Show: %s %s %s" % (slug, indexer_id, show['title']),logger.DEBUG)
                     if int(sickbeard.TRAKT_METHOD_ADD) != 2:
-                        self.addDefaultShow(indexer, indexer_id, show['title'], SKIPPED)
+                        self.addDefaultShow(index, indexer_id, show['title'], SKIPPED)
                     else:
-                        self.addDefaultShow(indexer, indexer_id, show['title'], WANTED)
+                        self.addDefaultShow(index, indexer_id, show['title'], WANTED)
 
                     if int(sickbeard.TRAKT_METHOD_ADD) == 1:
                         newShow = Show.find(sickbeard.showList, indexer_id)
@@ -412,7 +412,7 @@ class TraktChecker(object):
                     try:
                         if newShow is None:
                             if indexer_id not in managed_show:
-                                self.addDefaultShow(indexer, indexer_id, show['title'], SKIPPED)
+                                self.addDefaultShow(index, indexer_id, show['title'], SKIPPED)
                                 managed_show.append(indexer_id)
 
                                 for season_el in show['seasons']:
