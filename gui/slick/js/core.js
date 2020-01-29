@@ -2403,7 +2403,7 @@ var SICKCHILL = {
             });
 
             $('#postersort').on('change', function() {
-                $('.show-grid').isotope({sortBy: $(this).val() == 'date' ? ['status', 'date', 'name'] : $(this).val()});
+                $('.show-grid').isotope({sortBy: $(this).val() === 'date' ? ['status', 'date', 'name'] : $(this).val()});
                 $.post($(this).find('option[value=' + $(this).val() + ']').attr('data-sort'));
             });
 
