@@ -115,7 +115,7 @@ class TVDB(Indexer):
                 if re.match(r'^t?t?\d{7,8}$', str(name)):
                     result = self._search(imdbId='tt{}'.format(name.strip('t')), language=language)
                 elif re.match(r'^\d{6}$', str(name)):
-                    result = [self.series(name, language=language)]
+                    result = [self.series(name, language=language).info(language)]
             except HTTPError:
                 pass
         else:
