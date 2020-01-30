@@ -47,6 +47,7 @@
                         <option value="date" data-sort="${srRoot}/setPosterSortBy/?sort=date" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'date']}>${_('Next Episode')}</option>
                         <option value="network" data-sort="${srRoot}/setPosterSortBy/?sort=network" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'network']}>${_('Network')}</option>
                         <option value="progress" data-sort="${srRoot}/setPosterSortBy/?sort=progress" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'progress']}>${_('Progress')}</option>
+                        <option value="status" data-sort="${srRoot}/setPosterSortBy/?sort=status" ${('', 'selected="selected"')[sickbeard.POSTER_SORTBY == 'status']}>${_('Status')}</option>
                     </select>
                 </label>
 

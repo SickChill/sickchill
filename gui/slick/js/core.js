@@ -2308,10 +2308,11 @@ var SICKCHILL = {
             });
 
             $('.show-grid').imagesLoaded(function() {
+                var sort = getMeta('sickbeard.POSTER_SORTBY') === 'date' ? ['status', 'date', 'name'] : getMeta('sickbeard.POSTER_SORTBY');
                 $('.loading-spinner').hide();
                 $('.show-grid').show().isotope({
                     itemSelector: '.show-container',
-                    sortBy: getMeta('sickbeard.POSTER_SORTBY'),
+                    sortBy: sort,
                     sortAscending: getMeta('sickbeard.POSTER_SORTDIR'),
                     layoutMode: 'masonry',
                     masonry: {
@@ -2330,7 +2331,8 @@ var SICKCHILL = {
                         progress: function(itemElem) {
                             const progress = $(itemElem).attr('data-progress');
                             return (progress.length && parseInt(progress, 10)) || Number.NEGATIVE_INFINITY;
-                        }
+                        },
+                        status: '[data-status]'
                     }
                 });
 

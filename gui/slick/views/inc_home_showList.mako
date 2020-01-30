@@ -19,7 +19,7 @@
         <div class="posterview">
             % for curLoadingShow in sickbeard.showQueueScheduler.action.loading_show_list:
                 <% loading_show = curLoadingShow.info %>
-                <div class="show-container" data-name="${loading_show.sort_name}" data-date="1" data-network="0" data-progress="0">
+                <div class="show-container" data-name="${loading_show.sort_name}" data-date="1" data-network="0" data-progress="0" data-status="Loading">
                     <div class="show-image">
                         <img alt="" title="${loading_show.name}" class="show-image" style="border-bottom: 1px solid #111;" src="" data-src="${srRoot}/showPoster/?show=${loading_show.id | u}&amp;which=poster_thumb" />
                     </div>
