@@ -256,7 +256,8 @@ class WebRoot(WebHandler):
             self.set_header(b'Last-Modified', modified)
             self.set_header(b'Content-Type', media.get_media_type())
             self.set_header(b'Accept-Ranges', 'bytes')
-            self.set_header(b'Cache-Control', 'public, max-age=86400')
+            # self.set_header(b'Cache-Control', 'public, max-age=86400')
+            self.set_header(b'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
 
             return media.get_media()
 
