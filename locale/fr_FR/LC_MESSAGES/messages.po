@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-01-29 06:34+0000\n"
+"POT-Creation-Date: 2020-01-30 02:09+0000\n"
 "PO-Revision-Date: 2018-10-10 07:47+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: fr_FR\n"
@@ -1145,60 +1145,60 @@ msgstr "Dossier Parent de put.io"
 msgid "Put.io OAuth Token"
 msgstr "Jeton d'authentification de Put.io"
 
-#: gui/slick/js/core.js:2827 gui/slick/views/displayShow.mako:418
+#: gui/slick/js/core.js:2829 gui/slick/views/displayShow.mako:418
 msgid "Show Episodes"
 msgstr "Afficher les épisodes"
 
-#: gui/slick/js/core.js:2832 gui/slick/views/displayShow.mako:416
+#: gui/slick/js/core.js:2834 gui/slick/views/displayShow.mako:416
 msgid "Hide Episodes"
 msgstr "Cacher les épisodes"
 
-#: gui/slick/js/core.js:2837
+#: gui/slick/js/core.js:2839
 msgid "Select Show Location"
 msgstr "Sélectionner l'emplacement de la série"
 
-#: gui/slick/js/core.js:2902 gui/slick/views/editShow.mako:391
+#: gui/slick/js/core.js:2904 gui/slick/views/editShow.mako:391
 msgid "None"
 msgstr ""
 
-#: gui/slick/js/core.js:2912
+#: gui/slick/js/core.js:2914
 msgid "Select Unprocessed Episode Folder"
 msgstr "Sélectionner le dossier des épisodes non traités"
 
-#: gui/slick/js/core.js:3300
+#: gui/slick/js/core.js:3302
 msgid "DELETED"
 msgstr "SUPPRIMÉ"
 
-#: gui/slick/js/core.js:3596 sickchill/views/home.py:801
+#: gui/slick/js/core.js:3598 sickchill/views/home.py:801
 msgid "Resume"
 msgstr "Reprendre"
 
-#: gui/slick/js/core.js:3596 gui/slick/views/viewlogs.mako:12
+#: gui/slick/js/core.js:3598 gui/slick/views/viewlogs.mako:12
 #: sickchill/views/home.py:803
 msgid "Pause"
 msgstr "Suspendre"
 
-#: gui/slick/js/core.js:3597
+#: gui/slick/js/core.js:3599
 msgid "Resume updating the log on this page."
 msgstr "Reprendre la mise à jour du log sur cette page."
 
-#: gui/slick/js/core.js:3597 gui/slick/views/viewlogs.mako:10
+#: gui/slick/js/core.js:3599 gui/slick/views/viewlogs.mako:10
 msgid "Pause updating the log on this page."
 msgstr "Mettre en pause la mise à jour du log sur cette page."
 
-#: gui/slick/js/core.js:3930
+#: gui/slick/js/core.js:3932
 msgid " on  in "
 msgstr ""
 
-#: gui/slick/js/core.js:3933
+#: gui/slick/js/core.js:3935
 msgid "searching {searchingFor}..."
 msgstr "recherche de {searchingFor}..."
 
-#: gui/slick/js/core.js:3946
+#: gui/slick/js/core.js:3948
 msgid "search timed out, try again or try another indexer"
 msgstr "temps de recherche expiré, veuillez réessayer ou essayer un autre indexeur"
 
-#: gui/slick/js/core.js:4081
+#: gui/slick/js/core.js:4083
 msgid "loading folders..."
 msgstr "chargement de dossiers ..."
 
@@ -1851,7 +1851,7 @@ msgid "Shows"
 msgstr "Séries"
 
 #: gui/slick/views/config_general.mako:78 gui/slick/views/layouts/main.mako:163
-#: sickchill/views/index.py:349
+#: sickchill/views/index.py:350
 msgid "Schedule"
 msgstr "Planning"
 
@@ -6273,7 +6273,7 @@ msgstr "Date de diffusion"
 msgid "Download"
 msgstr " Télécharger"
 
-#: gui/slick/views/displayShow.mako:444
+#: gui/slick/views/displayShow.mako:444 gui/slick/views/inc_home_menu.mako:50
 #: gui/slick/views/inc_home_showList.mako:178 gui/slick/views/manage.mako:49
 #: sickchill/views/home.py:638
 msgid "Status"
@@ -6813,19 +6813,19 @@ msgstr "Prochain épisode"
 msgid "Progress"
 msgstr "En cours"
 
-#: gui/slick/views/inc_home_menu.mako:54
+#: gui/slick/views/inc_home_menu.mako:55
 msgid "Direction"
 msgstr "Sens du tri"
 
-#: gui/slick/views/inc_home_menu.mako:56
+#: gui/slick/views/inc_home_menu.mako:57
 msgid "Ascending"
 msgstr "Croissant"
 
-#: gui/slick/views/inc_home_menu.mako:57
+#: gui/slick/views/inc_home_menu.mako:58
 msgid "Descending"
 msgstr "Décroissant"
 
-#: gui/slick/views/inc_home_menu.mako:61
+#: gui/slick/views/inc_home_menu.mako:62
 msgid "Poster Size"
 msgstr "Taille des vignettes"
 
@@ -8281,23 +8281,23 @@ msgstr "Clé API non générée"
 msgid "API Builder"
 msgstr "Constructeur d'API"
 
-#: sickchill/views/index.py:373
+#: sickchill/views/index.py:374
 msgid "Test 1"
 msgstr "Test 1"
 
-#: sickchill/views/index.py:373
+#: sickchill/views/index.py:374
 msgid "This is test number 1"
 msgstr "Ceci est le test numéro 1"
 
-#: sickchill/views/index.py:374
+#: sickchill/views/index.py:375
 msgid "Test 2"
 msgstr "Test 2"
 
-#: sickchill/views/index.py:374
+#: sickchill/views/index.py:375
 msgid "This is test number 2"
 msgstr "Ceci est le test numéro 2"
 
-#: sickchill/views/index.py:399
+#: sickchill/views/index.py:400
 msgid ""
 "You're using the {branch} branch. Please use 'master' unless specifically"
 " asked"
