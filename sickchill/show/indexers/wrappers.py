@@ -22,12 +22,18 @@ from __future__ import absolute_import, print_function, unicode_literals
 from functools import wraps
 
 # Third Party Imports
-from requests.exceptions import HTTPError
+from requests.exceptions import RequestException, RequestsWarning
+from urllib3.exceptions import HTTPError, HTTPWarning
+from requests.exceptions import HTTPError as RHTTPError
+
+# First Party Imports
+from sickbeard import logger
+from sickchill.helper.exceptions import ex
 
 
 class ExceptionDecorator(object):
 
-    def __init__(self, default_return=list(), catch=HTTPError):
+    def __init__(self, default_return=list(), catch=(HTTPError, HTTPWarning, RequestException, RequestsWarning)):
         self.default_return = default_return
         self.catch = catch
 
@@ -36,7 +42,11 @@ class ExceptionDecorator(object):
         def wrapper(*args, **kwargs):
             try:
                 result = target(*args, **kwargs)
-            except self.catch:
+            except self.catch as e:
+                logger.log('Error accessing indexer: {error}'.format(error=ex(e)))
+                result = self.default_return
+            except RHTTPError as e:
+                logger.log('Error accessing indexer: {error}'.format(error=ex(e)))
                 result = self.default_return
 
             return result

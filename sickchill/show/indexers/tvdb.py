@@ -45,21 +45,30 @@ class TVDB(Indexer):
         self.icon = 'images/indexers/thetvdb16.png'
         tvdbsimple.KEYS.API_KEY = self.api_key
         self._search = tvdbsimple.search.Search().series
-        self.series = tvdbsimple.Series
+        self._series = tvdbsimple.Series
         self.series_episodes = tvdbsimple.Series_Episodes
         self.series_images = tvdbsimple.Series_Images
         self.updates = tvdbsimple.Updates
 
     @ExceptionDecorator(default_return=None)
+    def series(self, *args, **kwargs):
+        result = self._series(*args, **kwargs)
+        if result:
+            result.info(language=kwargs.get('language'))
+        return result
+
+    @ExceptionDecorator(default_return=None)
     def get_series_by_id(self, indexerid, language=None):
-        result = self.series(indexerid, language)
-        result.info(language=language)
+        result = self._series(indexerid, language)
+        if result:
+            result.info(language=language)
         return result
 
     @ExceptionDecorator(default_return=None)
     def series_from_show(self, show):
-        result = self.series(show.indexerid, show.lang)
-        result.info(language=show.lang)
+        result = self._series(show.indexerid, show.lang)
+        if result:
+            result.info(language=show.lang)
         return result
 
     def series_from_episode(self, episode):
@@ -70,8 +79,9 @@ class TVDB(Indexer):
             return self.get_series_by_id(indexerid, language)
 
         # Just return the first result for now
-        result = self.series(self.search(name, language)[0]['id'])
-        result.info(language=language)
+        result = self._series(self.search(name, language)[0]['id'])
+        if result:
+            result.info(language=language)
         return result
 
     @ExceptionDecorator()
@@ -115,7 +125,9 @@ class TVDB(Indexer):
                 if re.match(r'^t?t?\d{7,8}$', str(name)):
                     result = self._search(imdbId='tt{}'.format(name.strip('t')), language=language)
                 elif re.match(r'^\d{6}$', str(name)):
-                    result = [self.series(name, language=language).info(language)]
+                    series = self._series(name, language=language)
+                    if series:
+                        result = [series.info(language)]
             except HTTPError:
                 pass
         else:
