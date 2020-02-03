@@ -22,9 +22,8 @@ from __future__ import absolute_import, print_function, unicode_literals
 from functools import wraps
 
 # Third Party Imports
-from requests.exceptions import RequestException, RequestsWarning
+from requests.exceptions import HTTPError as RHTTPError, RequestException, RequestsWarning
 from urllib3.exceptions import HTTPError, HTTPWarning
-from requests.exceptions import HTTPError as RHTTPError
 
 # First Party Imports
 from sickbeard import logger
