@@ -40,7 +40,6 @@ class ShowUpdater(object):
         self.amActive = False
 
         self.seven_days = 7*24*60*60
-        self.six_months = self.seven_days * 26
 
     def run(self, force=False):
         logger.log('ShowUpdater for tvdb Api V3 starting')
@@ -52,7 +51,7 @@ class ShowUpdater(object):
         cache_db_con = db.DBConnection('cache.db')
         for index, provider in sickchill.indexer:
             database_result = cache_db_con.select('SELECT `time` FROM lastUpdate WHERE provider = ?', [provider.name])
-            last_update = int(database_result[0][0]) if database_result else int(time.time() - self.six_months)  # Go back 6 months rather than beginning of time.
+            last_update = int(database_result[0][0]) if database_result else 0
             network_timezones.update_network_dict()
             update_timestamp = int(time.time())
             updated_shows = []
@@ -85,10 +84,10 @@ class ShowUpdater(object):
                             continue
 
                     # When last_update is not set from the cache or the show was in the tvdb updated list we update the show
-                    if cur_show.indexerid in updated_shows or not last_update:
+                    if not last_update or cur_show.indexerid in updated_shows:
                         pi_list.append(sickbeard.showQueueScheduler.action.update_show(cur_show, True))
                     else:
-                        pi_list.append(sickbeard.showQueueScheduler.action.refresh_show(cur_show, False))
+                        pi_list.append(sickbeard.showQueueScheduler.action.refresh_show(cur_show, force))
                 except (CantUpdateShowException, CantRefreshShowException) as error:
                     logger.log(_('Automatic update failed: {0}').format(ex(error)))
 

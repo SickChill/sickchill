@@ -115,13 +115,13 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         myShow = sickchill.indexer.series(show_obj)
         if not myShow:
             logger.log("Unable to find show with id {} on {}, skipping it".format(
-                show_obj.indexerid, show_obj.idxr.name.name))
+                show_obj.indexerid, show_obj.idxr.name))
             return False
 
         # check for title and id
         if not (getattr(myShow, 'seriesName', None) and getattr(myShow, 'id', None)):
             logger.log("Incomplete info for show with id {} on {}, skipping it".format(
-                show_obj.indexerid, show_obj.idxr.name.name))
+                show_obj.indexerid, show_obj.idxr.name))
             return False
 
         title = etree.SubElement(tv_node, "title")
@@ -149,7 +149,8 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         if getattr(myShow, 'id', None):
             episodeguide = etree.SubElement(tv_node, "episodeguide")
             episodeguideurl = etree.SubElement(episodeguide, "url")
-            episodeguideurl.text = show_obj.idxr.base_url + str(myShow.id) + '/all/en.zip'
+            episodeguideurl.attrib = {'post': 'yes', 'cache': 'auth.json'}
+            episodeguideurl.text = show_obj.idxr.episode_guide_url(show_obj)
 
             indexerid = etree.SubElement(tv_node, "id")
             indexerid.text = str(myShow.id)

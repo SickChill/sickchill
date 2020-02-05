@@ -19,6 +19,8 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
+import html
+import json
 import re
 
 # Third Party Imports
@@ -208,3 +210,8 @@ class TVDB(Indexer):
     @ExceptionDecorator(default_return='', catch=(HTTPError, KeyError, TypeError))
     def episode_image_url(self, episode):
         return self.complete_image_url(self.episode(episode)['filename'])
+
+    def episode_guide_url(self, show):
+        # https://forum.kodi.tv/showthread.php?tid=323588
+        data = html.escape(json.dumps({'apikey': self.api_key, 'id': show.indexerid})).replace(' ', '')
+        return tvdbsimple.base.TVDB(key=self.api_key)._get_complete_url('login') + '?' + data + '|Content-Type=application/json'
