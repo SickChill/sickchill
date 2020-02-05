@@ -19,7 +19,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
-import html
+import cgi
 import json
 import re
 
@@ -213,5 +213,5 @@ class TVDB(Indexer):
 
     def episode_guide_url(self, show):
         # https://forum.kodi.tv/showthread.php?tid=323588
-        data = html.escape(json.dumps({'apikey': self.api_key, 'id': show.indexerid})).replace(' ', '')
+        data = cgi.escape(json.dumps({'apikey': self.api_key, 'id': show.indexerid}), True).replace(' ', '')
         return tvdbsimple.base.TVDB(key=self.api_key)._get_complete_url('login') + '?' + data + '|Content-Type=application/json'
