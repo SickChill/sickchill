@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-02-03 04:03+0000\n"
+"POT-Creation-Date: 2020-02-05 15:34+0000\n"
 "PO-Revision-Date: 2018-10-10 07:47+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: de_DE\n"
@@ -7524,12 +7524,12 @@ msgstr "Versionszweig"
 msgid "Now"
 msgstr "Jetzt"
 
-#: sickchill/show_updater.py:72
+#: sickchill/show_updater.py:71
 msgid "No last update time from the cache, so we do a full update for all shows"
 msgstr ""
 
 # | msgid "Automatically update"
-#: sickchill/show_updater.py:93
+#: sickchill/show_updater.py:92
 #, fuzzy
 msgid "Automatic update failed: {0}"
 msgstr "Automatisch aktualisieren"
