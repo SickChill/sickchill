@@ -831,11 +831,11 @@ def initialize(consoleLogging=True):
         # current commit branch
         CUR_COMMIT_BRANCH = check_setting_str(CFG, 'General', 'cur_commit_branch')
 
-        ACTUAL_CACHE_DIR = check_setting_str(CFG, 'General', 'cache_dir', 'cache')
+        ACTUAL_CACHE_DIR = check_setting_str(CFG, 'General', 'cache_dir', 'gui/slick/cache')
 
         # fix bad configs due to buggy code
         if ACTUAL_CACHE_DIR == 'None':
-            ACTUAL_CACHE_DIR = 'cache'
+            ACTUAL_CACHE_DIR = 'gui/slick/cache'
 
         # unless they specify, put the cache dir inside the data dir
         if not ek(os.path.isabs, ACTUAL_CACHE_DIR):
@@ -845,7 +845,8 @@ def initialize(consoleLogging=True):
 
         if not helpers.makeDir(CACHE_DIR):
             logger.log("!!! Creating local cache dir failed, using system default", logger.ERROR)
-            CACHE_DIR = None
+            CACHE_DIR = ek(os.path.join, DATA_DIR, 'gui/slick/cache')
+            ACTUAL_CACHE_DIR = 'gui/slick/cache'
 
         # Check if we need to perform a restore of the cache folder
         try:
@@ -883,6 +884,12 @@ def initialize(consoleLogging=True):
                     except Exception as e:
                         if cleanupDir not in ['rss', 'sessions', 'indexers']:
                             logger.log("Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
+
+        if CACHE_DIR in ('cache', ek(os.path.join, DATA_DIR, 'cache')):
+            new_cache_dir = ek(os.path.join, DATA_DIR, 'gui/slick/cache')
+            helpers.moveFile(CACHE_DIR, new_cache_dir)
+            CACHE_DIR = new_cache_dir
+            ACTUAL_CACHE_DIR = 'gui/slick/cache'
 
         IMAGE_CACHE = image_cache.ImageCache()
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
@@ -1919,7 +1926,7 @@ def save_config():
 
             'backlog_days': int(BACKLOG_DAYS),
 
-            'cache_dir': ACTUAL_CACHE_DIR if ACTUAL_CACHE_DIR else 'cache',
+            'cache_dir': ACTUAL_CACHE_DIR if ACTUAL_CACHE_DIR else 'gui/slick/cache',
             'root_dirs': ROOT_DIRS if ROOT_DIRS else '',
             'tv_download_dir': TV_DOWNLOAD_DIR,
             'keep_processed_dir': int(KEEP_PROCESSED_DIR),

@@ -22,7 +22,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import os.path
-from requests.compat import urljoin
 
 # Third Party Imports
 from hachoir_core.log import log
