@@ -171,7 +171,7 @@
                                     <td class="banner">
                                         <a href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">
                                             <img alt="" class="bannerThumb"
-                                                 src="${static_url"images/banner.png"}"
+                                                 src="${static_url("images/banner.png")}"
                                                  data-src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result[b'showid'], 'banner_thumb'))}"
                                             />
                                         </a>
