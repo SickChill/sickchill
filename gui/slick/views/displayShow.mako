@@ -109,18 +109,19 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="poster-container">
-                        <img src="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster_thumb"
+                        <img src="${static_url(show.show_image_url('poster_thumb'))}"
                              class="tvshowImg" alt="${_('Poster for')} ${show.name}"
-                             onclick="location.href='${srRoot}/showPoster/?show=${show.indexerid}&amp;which=poster'"/>
+                             onclick="location.href='${static_url(show.show_image_url('poster'))}"/>
                     </div>
                     <div class="info-container">
                         <div class="row">
                             <div class="pull-right col-lg-4 col-md-4 hidden-sm hidden-xs">
-                                <img src="${srRoot}/showPoster/?show=${show.indexerid}&amp;which=banner" style="max-height:50px;border:1px solid black;" class="pull-right">
+                                <img src="${static_url(show.show_image_url('banner'))}"
+                                     style="max-height:50px;border:1px solid black;" class="pull-right">
                             </div>
                             <div class="pull-left col-lg-8 col-md-8 col-sm-12 col-xs-12">
                                 % if 'rating' in show.imdb_info:
-                                <% rating_tip = str(show.imdb_info['rating']) + " / 10" + _('Stars') + "<br>" + str(show.imdb_info['votes']) +  _('Votes') %>
+                                    <% rating_tip = str(show.imdb_info['rating']) + " / 10" + _('Stars') + "<br>" + str(show.imdb_info['votes']) +  _('Votes') %>
                                     <span class="imdbstars" qtip-content="${rating_tip}">${show.imdb_info['rating']}</span>
                                 % endif
 

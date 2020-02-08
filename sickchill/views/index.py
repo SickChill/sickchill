@@ -42,10 +42,6 @@ from tornado.web import authenticated, HTTPError, RequestHandler
 import sickbeard
 from sickbeard import db, helpers, logger, network_timezones, ui
 from sickbeard.common import ek
-from sickchill.media.ShowBanner import ShowBanner
-from sickchill.media.ShowFanArt import ShowFanArt
-from sickchill.media.ShowNetworkLogo import ShowNetworkLogo
-from sickchill.media.ShowPoster import ShowPoster
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.views.routes import Route
 
@@ -232,36 +228,6 @@ class WebRoot(WebHandler):
         t = PageTemplate(rh=self, filename='apiBuilder.mako')
         return t.render(title=_('API Builder'), header=_('API Builder'), shows=shows, episodes=episodes, apikey=apikey,
                         commands=function_mapper)
-
-    def showPoster(self, show=None, which=None):
-
-        media_format = ('normal', 'thumb')[which in ('banner_thumb', 'poster_thumb', 'small')]
-
-        if which[0:6] == 'banner':
-            media = ShowBanner(show, media_format)
-        elif which[0:6] == 'fanart':
-            media = ShowFanArt(show, media_format)
-        elif which[0:6] == 'poster':
-            media = ShowPoster(show, media_format)
-        elif which[0:7] == 'network':
-            media = ShowNetworkLogo(show, media_format)
-        else:
-            media = None
-
-        if media:
-            abspath = media.get_static_media_path()
-            stat_result = os.stat(abspath)
-            modified = datetime.datetime.fromtimestamp(int(stat_result.st_mtime))
-
-            self.set_header(b'Last-Modified', modified)
-            self.set_header(b'Content-Type', media.get_media_type())
-            self.set_header(b'Accept-Ranges', 'bytes')
-            # self.set_header(b'Cache-Control', 'public, max-age=86400')
-            self.set_header(b'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
-
-            return media.get_media()
-
-        return None
 
     def setHomeLayout(self, layout):
 

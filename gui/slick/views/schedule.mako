@@ -170,7 +170,10 @@
                                     </td>
                                     <td class="banner">
                                         <a href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">
-                                            <img alt="" class="bannerThumb" src="${srRoot}/showPoster/?show=${cur_result[b'showid']}&amp;which=banner" />
+                                            <img alt="" class="bannerThumb"
+                                                 src="${static_url"images/banner.png"}"
+                                                 data-src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result[b'showid'], 'banner_thumb'))}"
+                                            />
                                         </a>
                                     </td>
                                     <td nowrap="nowrap" align="center">
@@ -278,7 +281,9 @@
                                                 <td class="calendarShow">
                                                     <div class="poster">
                                                         <a title="${cur_result[b'show_name']}" href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">
-                                                            <img alt="" src="${srRoot}/showPoster/?show=${cur_result[b'showid']}&amp;which=poster_thumb"/>
+                                                            <img alt=""
+                                                                 src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result[b'showid'], 'poster_thumb'))}"
+                                                            />
                                                         </a>
                                                     </div>
                                                     <div class="text">
@@ -425,7 +430,8 @@
                                     <th ${('class="nobg"', 'rowspan="3"')[layout == 'poster']} valign="top">
                                         <a href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">
                                             <img alt="" class="${('posterThumb', 'bannerThumb')[layout == 'banner']}"
-                                                 src="${srRoot}/showPoster/?show=${cur_result[b'showid']}&amp;which=${(layout, 'poster_thumb')[layout == 'poster']}"/>
+                                                 src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result[b'showid'], (layout, 'poster_thumb')[layout == 'poster']))}"
+                                            />
                                         </a>
                                     </th>
                                 </tr>

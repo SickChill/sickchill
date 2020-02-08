@@ -2428,7 +2428,7 @@ var SICKCHILL = {
         },
         displayShow: function() {
             if (metaToBool('sickbeard.FANART_BACKGROUND')) {
-                $.backstretch(srRoot + '/showPoster/?show=' + $('#showID').attr('value') + '&which=fanart');
+                $.backstretch(srRoot + '/cache/images/' + $('#showID').attr('value') + '.fanart.jpg');
                 $('.backstretch').css('opacity', getMeta('sickbeard.FANART_BACKGROUND_OPACITY')).fadeIn('500');
             }
 

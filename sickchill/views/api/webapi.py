@@ -46,10 +46,6 @@ from sickchill.helper.common import dateFormat, dateTimeFormat, pretty_file_size
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import CantUpdateShowException, ex, ShowDirectoryNotFoundException
 from sickchill.helper.quality import get_quality_string
-from sickchill.media.ShowBanner import ShowBanner
-from sickchill.media.ShowFanArt import ShowFanArt
-from sickchill.media.ShowNetworkLogo import ShowNetworkLogo
-from sickchill.media.ShowPoster import ShowPoster
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.show.History import History
 from sickchill.show.Show import Show
@@ -2267,17 +2263,25 @@ class CMDShowCache(ApiCall):
         # TODO: catch if cache dir is missing/invalid.. so it doesn't break show/show.cache
         # return {"poster": 0, "banner": 0}
 
-        cache_obj = image_cache.ImageCache()
+        has_poster = has_banner = has_fanart = has_poster_thumb = has_banner_thumb = 0
 
-        has_poster = 0
-        has_banner = 0
-
-        if ek(os.path.isfile, cache_obj.poster_path(show_obj.indexerid)):
+        if sickbeard.IMAGE_CACHE.has_poster(show_obj.indexerid):
             has_poster = 1
-        if ek(os.path.isfile, cache_obj.banner_path(show_obj.indexerid)):
-            has_banner = 1
+        if sickbeard.IMAGE_CACHE.has_poster_thumb(show_obj.indexerid):
+            has_poster_thumb = 1
 
-        return _responds(RESULT_SUCCESS, {"poster": has_poster, "banner": has_banner})
+        if sickbeard.IMAGE_CACHE.has_banner(show_obj.indexerid):
+            has_banner = 1
+        if sickbeard.IMAGE_CACHE.has_banner_thumb(show_obj.indexerid):
+            has_banner_thumb = 1
+
+        if sickbeard.IMAGE_CACHE.has_fanart(show_obj.indexerid):
+            has_fanart = 1
+
+        return _responds(RESULT_SUCCESS,
+                         {"poster": has_poster, "banner": has_banner, 'fanart': has_fanart,
+                          'poster_thumb': has_poster_thumb, 'banner_thumb': has_banner_thumb}
+                         )
 
 
 # noinspection PyAbstractClass
@@ -2359,7 +2363,7 @@ class CMDShowGetPoster(ApiCall):
         """ Get the poster a show """
         return {
             'outputType': 'image',
-            'image': ShowPoster(self.indexerid, self.media_format),
+            'image': None,
         }
 
 
@@ -2385,7 +2389,7 @@ class CMDShowGetBanner(ApiCall):
         """ Get the banner of a show """
         return {
             'outputType': 'image',
-            'image': ShowBanner(self.indexerid, self.media_format),
+            'image': None,
         }
 
 
@@ -2411,7 +2415,7 @@ class CMDShowGetNetworkLogo(ApiCall):
         """
         return {
             'outputType': 'image',
-            'image': ShowNetworkLogo(self.indexerid),
+            'image': None,
         }
 
 
@@ -2435,7 +2439,7 @@ class CMDShowGetFanArt(ApiCall):
         """ Get the fan art of a show """
         return {
             'outputType': 'image',
-            'image': ShowFanArt(self.indexerid),
+            'image': None,
         }
 
 

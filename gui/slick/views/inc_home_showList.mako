@@ -21,10 +21,11 @@
                 <% loading_show = curLoadingShow.info %>
                 <div class="show-container" data-name="${loading_show.sort_name}" data-date="1" data-network="0" data-progress="0" data-status="Loading">
                     <div class="show-image">
-                        <img alt="" title="${loading_show.name}" class="show-image" style="border-bottom: 1px solid #111;" src="" data-src="${srRoot}/showPoster/?show=${loading_show.id | u}&amp;which=poster_thumb" />
+                        <img alt="" title="${loading_show.name}" class="show-image" style="border-bottom: 1px solid #111;" src="${static_url("images/poster.png")}"
+                             data-src="${static_url(loading_show.show_image_url('poster_thumb'))}" />
                     </div>
                     <div class="show-information">
-                        <div class="progressbar hidden-print" style="position:relative;" data-show-id="${loading_show.id | u}" data-progress-percentage="0"></div>
+                        <div class="progressbar hidden-print" style="position:relative;" data-show-id="${loading_show.id}" data-progress-percentage="0"></div>
                         <div class="show-title">${_('Loading')} (${loading_show.name})</div>
                         <div class="show-date">&nbsp;</div>
                         <div class="show-details">
@@ -34,7 +35,11 @@
                                         <span class="show-dlstats" title="${'Loading'}">${'Loading'}</span>
                                     </td>
                                     <td class="show-table">
-                                        <span title="${loading_show.network}"><img class="show-network-image" src="" data-src="${srRoot}/showPoster/?show=${loading_show.id | u}&amp;which=network" alt="${loading_show.network}" title="${loading_show.network}" /></span>
+                                        <span title="${loading_show.network}">
+                                            <img class="show-network-image" src="${static_url("images/network/nonetwork.png")}"
+                                                 data-src="${static_url(loading_show.network_image_url)}"
+                                                 alt="${loading_show.network}" title="${loading_show.network}" />
+                                        </span>
                                     </td>
                                     <td class="show-table">
                                         ${renderQualityPill(loading_show.quality, showTitle=True, overrideClass="show-quality")}
@@ -102,7 +107,9 @@
                 %>
                 <div class="show-container" id="show${curShow.indexerid}" data-name="${curShow.sort_name}" data-date="${data_date}" data-network="${curShow.network}" data-progress="${progressbar_percent}" data-status="${curShow.status}">
                     <div class="show-image">
-                        <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}"><img alt="" class="show-image" src="" data-src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" /></a>
+                        <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">
+                            <img alt="" class="show-image" src="${static_url("images/poster.png")}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}" />
+                        </a>
                     </div>
 
                     <div class="show-information">
@@ -146,9 +153,12 @@
 
                                     <td class="show-table">
                                         % if curShow.network:
-                                            <span title="${curShow.network}"><img class="show-network-image" src="" data-src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=network" alt="${curShow.network}" title="${curShow.network}" /></span>
+                                            <span title="${curShow.network}">
+                                                <img class="show-network-image" src="${static_url('images/network/nonetwork.png')}"
+                                                     data-src="${static_url(curShow.network_image_url)}" alt="${curShow.network}" title="${curShow.network}" />
+                                            </span>
                                         % else:
-                                            <span title="${_('No Network')}"><img class="show-network-image" src="" data-src="${static_url('images/network/nonetwork.png')}" alt="No Network" title="No Network" /></span>
+                                            <span title="${_('No Network')}"><img class="show-network-image" src="${static_url('images/network/nonetwork.png')}" data-src="${static_url('images/network/nonetwork.png')}" alt="No Network" title="No Network" /></span>
                                         % endif
                                     </td>
                                     <td class="show-table">
@@ -200,14 +210,15 @@
                             <td class="tvShow">
                                 <div class="imgsmallposter ${sickbeard.HOME_LAYOUT}">
                                     % if curLoadingShow.show:
-                                        <a href="${srRoot}/home/displayShow?show=${loading_show.id | u}" title="${loading_show.name}">
+                                        <a href="${srRoot}/home/displayShow?show=${loading_show.id}" title="${loading_show.name}">
                                     % else:
                                         <span title="${loading_show.name}">
                                     % endif
-                                    <img src="" data-src="${srRoot}/showPoster/?show=${loading_show.id | u}&amp;which=poster_thumb" class="${sickbeard.HOME_LAYOUT}" alt="${loading_show.name}"/>
+                                    <img src="${static_url("images/poster.png")}" data-src="${static_url(loading_show.show_image_url('poster_thumb'))}"
+                                         class="${sickbeard.HOME_LAYOUT}" alt="${loading_show.name}"/>
                                     % if curLoadingShow.show:
                                         </a>
-                                        <a href="${srRoot}/home/displayShow?show=${loading_show.id | u}" style="vertical-align: middle;">${loading_show.name}</a>
+                                        <a href="${srRoot}/home/displayShow?show=${loading_show.id}" style="vertical-align: middle;">${loading_show.name}</a>
                                     % else:
                                         </span>
                                         <span style="vertical-align: middle;">${_('Loading...')} (${loading_show.name})</span>
@@ -219,9 +230,10 @@
                                 <span style="display: none;">${_('Loading...')} (${loading_show.name})</span>
                                 <div class="imgbanner ${sickbeard.HOME_LAYOUT}">
                                     % if curLoadingShow.show:
-                                        <a href="${srRoot}/home/displayShow?show=${loading_show.id | u}">
+                                        <a href="${srRoot}/home/displayShow?show=${loading_show.id}">
                                     % endif
-                                    <img src="" data-src="${srRoot}/showPoster/?show=${loading_show.id | u}&amp;which=banner" class="${sickbeard.HOME_LAYOUT}" alt="${loading_show.name}" title="${loading_show.name}"/>
+                                    <img src="${static_url("images/banner.png")}" data-src="${static_url(loading_show.show_image_url('banner'))}"
+                                         class="${sickbeard.HOME_LAYOUT}" alt="${loading_show.name}" title="${loading_show.name}"/>
                                     % if curLoadingShow.show:
                                         </a>
                                     % endif
@@ -230,7 +242,7 @@
                         % elif sickbeard.HOME_LAYOUT == 'simple':
                             <td class="tvShow">
                                 % if curLoadingShow.show:
-                                    <a href="${srRoot}/home/displayShow?show=${loading_show.id | u}">${loading_show.name}</a>
+                                    <a href="${srRoot}/home/displayShow?show=${loading_show.id}">${loading_show.name}</a>
                                 % else:
                                     <span title="">${_('Loading...')} (${loading_show.name})</span>
                                 % endif
@@ -325,7 +337,8 @@
                             <td class="tvShow">
                                 <div class="imgsmallposter ${sickbeard.HOME_LAYOUT}">
                                     <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}" title="${curShow.name}">
-                                        <img src="" data-src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=poster_thumb" class="${sickbeard.HOME_LAYOUT}" alt="${curShow.indexerid}"/>
+                                        <img src="${static_url("images/poster.png")}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}"
+                                             class="${sickbeard.HOME_LAYOUT}" alt="${curShow.indexerid}"/>
                                     </a>
                                     <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}" style="vertical-align: middle;">${curShow.name}</a>
                                 </div>
@@ -335,7 +348,8 @@
                                 <span style="display: none;">${curShow.name}</span>
                                 <div class="imgbanner ${sickbeard.HOME_LAYOUT}">
                                     <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">
-                                        <img src="" data-src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=banner" class="${sickbeard.HOME_LAYOUT}" alt="${curShow.indexerid}" title="${curShow.name}"/>
+                                        <img src="${static_url("images/banner.png")}" data-src="${static_url(curShow.show_image_url('banner'))}"
+                                             class="${sickbeard.HOME_LAYOUT}" alt="${curShow.indexerid}" title="${curShow.name}"/>
                                     </a>
                                 </div>
                             </td>
@@ -346,10 +360,17 @@
                         % if sickbeard.HOME_LAYOUT != 'simple':
                             <td align="center">
                                 % if curShow.network:
-                                    <span title="${curShow.network}" class="hidden-print"><img id="network" width="54" height="27" src="" data-src="${srRoot}/showPoster/?show=${curShow.indexerid}&amp;which=network" alt="${curShow.network}" title="${curShow.network}" /></span>
+                                    <span title="${curShow.network}" class="hidden-print">
+                                        <img id="network" width="54" height="27" src="${static_url('images/network/nonetwork.png')}"
+                                             data-src="${static_url('images/network/{0}.png'.format(curShow.network.lower()))}"
+                                             alt="${curShow.network}" title="${curShow.network}" />
+                                    </span>
                                     <span class="visible-print-inline">${curShow.network}</span>
                                 % else:
-                                    <span title="No Network" class="hidden-print"><img id="network" width="54" height="27" src="" data-src="${static_url('images/network/nonetwork.png')}" alt="No Network" title="No Network" /></span>
+                                    <span title="No Network" class="hidden-print">
+                                        <img id="network" width="54" height="27" src="${static_url('images/network/nonetwork.png')}"
+                                             data-src="${static_url('images/network/nonetwork.png')}" alt="No Network" title="No Network" />
+                                    </span>
                                     <span class="visible-print-inline">${_('No Network')}</span>
                                 % endif
                             </td>

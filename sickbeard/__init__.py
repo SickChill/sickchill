@@ -45,7 +45,7 @@ from sickchill.helper.exceptions import ex
 from sickchill.system.Shutdown import Shutdown
 
 # Local Folder Imports
-from . import (auto_postprocessor, clients, dailysearcher, db, helpers, logger, metadata, naming, post_processing_queue, properFinder, providers,
+from . import (auto_postprocessor, clients, dailysearcher, db, helpers, image_cache, logger, metadata, naming, post_processing_queue, properFinder, providers,
                scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker, versionChecker)
 from .common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
 from .config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
@@ -82,6 +82,8 @@ CONFIG_VERSION = 8
 # Default encryption version (0 for None)
 ENCRYPTION_VERSION = 0
 ENCRYPTION_SECRET = None
+
+IMAGE_CACHE = None
 
 PROG_DIR = '.'
 MY_FULLNAME = None
@@ -742,7 +744,8 @@ def initialize(consoleLogging=True):
             NEWS_LATEST, SOCKET_TIMEOUT, SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKCHILL_BACKGROUND, \
             SICKCHILL_BACKGROUND_PATH, FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, \
             SLACK_NOTIFY_DOWNLOAD, SLACK_NOTIFY_SUBTITLEDOWNLOAD, SLACK_WEBHOOK, SLACK_ICON_EMOJI, USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK,\
-            USE_MATRIX, MATRIX_NOTIFY_SNATCH, MATRIX_NOTIFY_DOWNLOAD, MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM, ENDED_SHOWS_UPDATE_INTERVAL
+            USE_MATRIX, MATRIX_NOTIFY_SNATCH, MATRIX_NOTIFY_DOWNLOAD, MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM, \
+            ENDED_SHOWS_UPDATE_INTERVAL, IMAGE_CACHE
 
         if __INITIALIZED__:
             return False
@@ -881,6 +884,7 @@ def initialize(consoleLogging=True):
                         if cleanupDir not in ['rss', 'sessions', 'indexers']:
                             logger.log("Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
 
+        IMAGE_CACHE = image_cache.ImageCache()
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
         SICKCHILL_BACKGROUND = check_setting_bool(CFG, 'GUI', 'sickchill_background')
         SICKCHILL_BACKGROUND_PATH = check_setting_str(CFG, 'GUI', 'sickchill_background_path')
