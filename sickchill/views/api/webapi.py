@@ -37,7 +37,7 @@ from tornado.web import RequestHandler
 # First Party Imports
 import sickbeard
 import sickchill
-from sickbeard import classes, db, helpers, image_cache, logger, network_timezones, sbdatetime, search_queue, ui
+from sickbeard import classes, db, helpers, logger, network_timezones, sbdatetime, search_queue, ui
 from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN,
                               WANTED)
 from sickbeard.postProcessor import PROCESS_METHODS

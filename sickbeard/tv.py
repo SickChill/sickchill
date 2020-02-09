@@ -45,7 +45,7 @@ from sickchill.helper.exceptions import (EpisodeDeletedException, EpisodeNotFoun
 from sickchill.show.Show import Show
 
 # Local Folder Imports
-from . import db, helpers, image_cache, logger, network_timezones, notifiers, postProcessor, subtitles
+from . import db, helpers, logger, network_timezones, notifiers, postProcessor, subtitles
 from .blackandwhitelist import BlackAndWhiteList
 from .common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
                      NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN, WANTED)
