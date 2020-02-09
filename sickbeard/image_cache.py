@@ -156,7 +156,10 @@ class ImageCache(object):
     def image_url(self, indexer_id, which):
         path = self.__getattribute__(which + "_path")(indexer_id)
         if ek(os.path.isfile, path):
-            return 'cache' + path.split(sickbeard.CACHE_DIR)[1].replace('\\', '/')
+            try:
+                return 'cache' + path.split(sickbeard.CACHE_DIR)[1].replace('\\', '/')
+            except:
+                pass
         return ('images/poster.png', 'images/banner.png')['banner' in which]
 
     BANNER = 1
