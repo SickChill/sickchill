@@ -53,7 +53,7 @@ class YggTorrentProvider(TorrentProvider):
 
         # URLs
         self.custom_url = None
-        self.url = 'https://www2.yggtorrent.ws/'
+        self.url = 'https://www2.yggtorrent.se/'
         self.urls = {
             'login': urljoin(self.url, 'user/login'),
             'search': urljoin(self.url, 'engine/search')
@@ -119,6 +119,8 @@ class YggTorrentProvider(TorrentProvider):
         return True
 
     def search(self, search_strings, age=0, ep_obj=None):
+        self.login()
+
         results = []
 
         for mode in search_strings:
