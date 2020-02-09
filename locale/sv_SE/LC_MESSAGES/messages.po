@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-02-05 15:34+0000\n"
+"POT-Creation-Date: 2020-02-09 19:25+0000\n"
 "PO-Revision-Date: 2018-10-10 07:48+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: sv_SE\n"
@@ -128,15 +128,15 @@ msgstr "Musikal"
 msgid "Talk-Show"
 msgstr "Talkshow"
 
-#: sickbeard/__init__.py:664
+#: sickbeard/__init__.py:666
 msgid "Ignore (do not process contents)"
 msgstr ""
 
-#: sickbeard/__init__.py:665
+#: sickbeard/__init__.py:667
 msgid "Unpack (process contents)"
 msgstr ""
 
-#: sickbeard/__init__.py:666
+#: sickbeard/__init__.py:668
 msgid "Treat as video (process archive as-is)"
 msgstr ""
 
@@ -193,64 +193,64 @@ msgstr "Förläng (Begränsat)"
 msgid "Extend (Limited, E-prefixed)"
 msgstr "Förläng (Begränsat, E-prefix)"
 
-#: gui/slick/views/history.mako:131 gui/slick/views/inc_home_showList.mako:74
-#: gui/slick/views/inc_home_showList.mako:279 sickbeard/common.py:226
-#: sickbeard/common.py:610
+#: gui/slick/views/history.mako:131 gui/slick/views/inc_home_showList.mako:79
+#: gui/slick/views/inc_home_showList.mako:291 sickbeard/common.py:226
+#: sickbeard/common.py:615
 msgid "Downloaded"
 msgstr "Nedladdad"
 
-#: gui/slick/views/displayShow.mako:322 gui/slick/views/history.mako:130
-#: gui/slick/views/inc_home_showList.mako:78
-#: gui/slick/views/inc_home_showList.mako:283
+#: gui/slick/views/displayShow.mako:323 gui/slick/views/history.mako:130
+#: gui/slick/views/inc_home_showList.mako:83
+#: gui/slick/views/inc_home_showList.mako:295
 #: gui/slick/views/layouts/main.mako:344 gui/slick/views/schedule.mako:29
-#: gui/slick/views/schedule.mako:316 sickbeard/common.py:227
-#: sickbeard/common.py:609
+#: gui/slick/views/schedule.mako:321 sickbeard/common.py:227
+#: sickbeard/common.py:614
 msgid "Snatched"
 msgstr "Hämtad"
 
-#: sickbeard/common.py:228 sickbeard/common.py:612
+#: sickbeard/common.py:228 sickbeard/common.py:617
 msgid "Snatched (Proper)"
 msgstr "Hämtad (Proper)"
 
 #: gui/slick/views/manage_manageSearches.mako:64 sickbeard/common.py:229
-#: sickbeard/common.py:617
+#: sickbeard/common.py:622
 msgid "Failed"
 msgstr "Misslyckad"
 
-#: sickbeard/common.py:230 sickbeard/common.py:618
+#: sickbeard/common.py:230 sickbeard/common.py:623
 msgid "Snatched (Best)"
 msgstr "Hämtad (Best)"
 
-#: sickbeard/common.py:231 sickbeard/common.py:614
+#: sickbeard/common.py:231 sickbeard/common.py:619
 msgid "Archived"
 msgstr "Arkiverad"
 
 #: gui/slick/views/history.mako:92 gui/slick/views/history.mako:173
-#: gui/slick/views/manage_failedDownloads.mako:67 sickbeard/common.py:607
+#: gui/slick/views/manage_failedDownloads.mako:67 sickbeard/common.py:612
 msgid "Unknown"
 msgstr "Okänd"
 
-#: gui/slick/views/inc_home_showList.mako:88
-#: gui/slick/views/inc_home_showList.mako:293 sickbeard/common.py:608
+#: gui/slick/views/inc_home_showList.mako:93
+#: gui/slick/views/inc_home_showList.mako:305 sickbeard/common.py:613
 msgid "Unaired"
 msgstr "Kommande"
 
-#: gui/slick/views/displayShow.mako:321 sickbeard/common.py:611
+#: gui/slick/views/displayShow.mako:322 sickbeard/common.py:616
 msgid "Skipped"
 msgstr "Hoppat över"
 
-#: gui/slick/views/displayShow.mako:318
+#: gui/slick/views/displayShow.mako:319
 #: gui/slick/views/manage_backlogOverview.mako:26
-#: gui/slick/views/manage_backlogOverview.mako:66 sickbeard/common.py:613
+#: gui/slick/views/manage_backlogOverview.mako:66 sickbeard/common.py:618
 msgid "Wanted"
 msgstr "Önskad"
 
-#: sickbeard/common.py:615
+#: sickbeard/common.py:620
 msgid "Ignored"
 msgstr "Ignorerad"
 
 #: gui/slick/views/config_providers.mako:749 gui/slick/views/history.mako:133
-#: sickbeard/common.py:616
+#: sickbeard/common.py:621
 msgid "Subtitled"
 msgstr "Undertextad"
 
@@ -652,19 +652,19 @@ msgstr "Trakt kontroll"
 msgid "Event"
 msgstr "Händelse"
 
-#: sickbeard/logger.py:496 sickchill/views/home.py:748
-#: sickchill/views/home.py:751 sickchill/views/home.py:964
-#: sickchill/views/home.py:971 sickchill/views/home.py:1180
-#: sickchill/views/home.py:1193 sickchill/views/home.py:1216
-#: sickchill/views/home.py:1229 sickchill/views/home.py:1234
-#: sickchill/views/home.py:1250 sickchill/views/home.py:1255
-#: sickchill/views/home.py:1319 sickchill/views/home.py:1322
-#: sickchill/views/home.py:1328 sickchill/views/home.py:1331
-#: sickchill/views/home.py:1338 sickchill/views/home.py:1341
-#: sickchill/views/home.py:1363 sickchill/views/home.py:1468
-#: sickchill/views/home.py:1473 sickchill/views/home.py:1478
-#: sickchill/views/home.py:1505 sickchill/views/home.py:1509
-#: sickchill/views/home.py:1514
+#: sickbeard/logger.py:496 sickchill/views/home.py:744
+#: sickchill/views/home.py:747 sickchill/views/home.py:960
+#: sickchill/views/home.py:967 sickchill/views/home.py:1176
+#: sickchill/views/home.py:1189 sickchill/views/home.py:1212
+#: sickchill/views/home.py:1225 sickchill/views/home.py:1230
+#: sickchill/views/home.py:1246 sickchill/views/home.py:1251
+#: sickchill/views/home.py:1315 sickchill/views/home.py:1318
+#: sickchill/views/home.py:1324 sickchill/views/home.py:1327
+#: sickchill/views/home.py:1334 sickchill/views/home.py:1337
+#: sickchill/views/home.py:1359 sickchill/views/home.py:1464
+#: sickchill/views/home.py:1469 sickchill/views/home.py:1474
+#: sickchill/views/home.py:1501 sickchill/views/home.py:1505
+#: sickchill/views/home.py:1510
 msgid "Error"
 msgstr "Fel"
 
@@ -710,7 +710,7 @@ msgstr "Uppdateringar"
 
 #: gui/slick/views/config_providers.mako:860
 #: gui/slick/views/config_providers.mako:957 gui/slick/views/editShow.mako:371
-#: gui/slick/views/inc_home_showList.mako:183 sickbeard/show_queue.py:211
+#: gui/slick/views/inc_home_showList.mako:193 sickbeard/show_queue.py:211
 msgid "Add"
 msgstr "Lägg till"
 
@@ -737,31 +737,31 @@ msgid "Remove Show"
 msgstr "Ta bort TV-serie"
 
 #: gui/slick/js/ajaxEpSearch.js:156 gui/slick/js/ajaxEpSearch.js:157
-#: gui/slick/views/inc_home_showList.mako:28 sickbeard/show_queue.py:290
-#: sickbeard/show_queue.py:306
+#: gui/slick/views/inc_home_showList.mako:29 sickbeard/show_queue.py:290
+#: sickbeard/show_queue.py:307
 msgid "Loading"
 msgstr "Laddar"
 
 # | msgid "Unable to add show"
-#: sickbeard/show_queue.py:320
+#: sickbeard/show_queue.py:323
 #, fuzzy
 msgid "Starting to add show {0}"
 msgstr "Det gick inte att lägga till serien"
 
-#: sickbeard/show_queue.py:320
+#: sickbeard/show_queue.py:323
 msgid "by ShowDir: {0}"
 msgstr ""
 
-#: sickbeard/show_queue.py:320
+#: sickbeard/show_queue.py:323
 msgid "by Indexer Id: {0}"
 msgstr ""
 
-#: sickbeard/show_queue.py:326
+#: sickbeard/show_queue.py:329
 msgid "Could not find show with id:{0} on {1}, skipping"
 msgstr ""
 
-#: sickbeard/show_queue.py:330 sickbeard/show_queue.py:372
-#: sickbeard/show_queue.py:381 sickbeard/show_queue.py:454
+#: sickbeard/show_queue.py:333 sickbeard/show_queue.py:375
+#: sickbeard/show_queue.py:384 sickbeard/show_queue.py:457
 #: sickchill/views/manage/add_shows.py:444
 #: sickchill/views/manage/add_shows.py:540
 #: sickchill/views/manage/add_shows.py:550
@@ -769,64 +769,64 @@ msgid "Unable to add show"
 msgstr "Det gick inte att lägga till serien"
 
 # | msgid "Unable to create the folder {show_dir}, can't add the show"
-#: sickbeard/show_queue.py:339
+#: sickbeard/show_queue.py:342
 #, fuzzy
 msgid "Unable to get a show {0}, can't add the show"
 msgstr "Kan inte skapa mapp {show_dir}, kan inte lägga till serien"
 
-#: sickbeard/show_queue.py:350 sickchill/views/manage/add_shows.py:533
+#: sickbeard/show_queue.py:353 sickchill/views/manage/add_shows.py:533
 msgid "Could not append the show year folder for the show: {0}"
 msgstr ""
 
-#: sickbeard/show_queue.py:355
+#: sickbeard/show_queue.py:358
 msgid "Skipping initial creation of {0} due to config.ini setting"
 msgstr ""
 
 # | msgid "Unable to create the folder {show_dir}, can't add the show"
-#: sickbeard/show_queue.py:359
+#: sickbeard/show_queue.py:362
 #, fuzzy
 msgid "Unable to create the folder {0}, can't add the show"
 msgstr "Kan inte skapa mapp {show_dir}, kan inte lägga till serien"
 
-#: sickbeard/show_queue.py:368
+#: sickbeard/show_queue.py:371
 msgid ""
 "Show in {0} has no name on {1}, probably searched with the wrong "
 "language. Delete .nfo and add manually in the correct language."
 msgstr ""
 
-#: sickbeard/show_queue.py:427
+#: sickbeard/show_queue.py:430
 msgid "Setting all episodes to the specified default status: {0}"
 msgstr ""
 
-#: sickbeard/show_queue.py:460
+#: sickbeard/show_queue.py:463
 msgid "The show in {0} is already in your show list, skipping"
 msgstr ""
 
 # | msgid "Skipped"
-#: sickbeard/show_queue.py:462
+#: sickbeard/show_queue.py:465
 #, fuzzy
 msgid "Show skipped"
 msgstr "Hoppat över"
 
-#: sickbeard/show_queue.py:467
+#: sickbeard/show_queue.py:470
 msgid "Retrieving show info from IMDb"
 msgstr ""
 
-#: sickbeard/show_queue.py:471
+#: sickbeard/show_queue.py:474
 msgid "Something wrong on IMDb api: {0}"
 msgstr ""
 
 # | msgid "Unable to delete {0}. Error: {1}"
-#: sickbeard/show_queue.py:735
+#: sickbeard/show_queue.py:738
 #, fuzzy
 msgid "Unable to delete show from Trakt: {0}. Error: {1}"
 msgstr "Misslyckades att uppdatera serie: {error}"
 
-#: sickbeard/show_queue.py:761
+#: sickbeard/show_queue.py:764
 msgid "Some notifications could not be sent. Continuing removal of {}..."
 msgstr ""
 
-#: sickbeard/tv.py:514
+#: sickbeard/tv.py:521
 msgid "{show_id}: Loading all episodes from {indexer_name}..."
 msgstr ""
 
@@ -891,47 +891,47 @@ msgid ""
 "href=\"{update_url}\">Update Now</a>"
 msgstr ""
 
-#: sickbeard/metadata/generic.py:703
+#: sickbeard/metadata/generic.py:702
 msgid "Can't load the metadata file from {0}, it doesn't exist"
 msgstr ""
 
 # | msgid "for adding shows and metadata providers"
-#: sickbeard/metadata/generic.py:706
+#: sickbeard/metadata/generic.py:705
 #, fuzzy
 msgid "Loading show info from metadata file in {0}"
 msgstr "för att lägga till serier och metadata leverantörer"
 
-#: sickbeard/metadata/generic.py:717
+#: sickbeard/metadata/generic.py:716
 msgid ""
 "There was an error loading {0}, trying to repair it by fixing & symbols. "
 "If it still has problems, please check the file manually"
 msgstr ""
 
-#: sickbeard/metadata/generic.py:732
+#: sickbeard/metadata/generic.py:731
 msgid "Can't load the metadata file from {0}, error reading file"
 msgstr ""
 
-#: sickbeard/metadata/generic.py:736
+#: sickbeard/metadata/generic.py:735
 msgid "Invalid info in tvshow.nfo (missing name or id): {0} {1} {2}"
 msgstr ""
 
-#: sickbeard/metadata/generic.py:746
+#: sickbeard/metadata/generic.py:745
 msgid "Invalid Indexer ID ({0}), not using metadata file"
 msgstr ""
 
-#: sickbeard/metadata/generic.py:749
+#: sickbeard/metadata/generic.py:748
 msgid ""
 "Empty <id> or <tvdbid> field in NFO, unable to find a ID, not using "
 "metadata file"
 msgstr ""
 
-#: sickbeard/metadata/generic.py:758
+#: sickbeard/metadata/generic.py:757
 msgid ""
 "Invalid Indexer ID ({0}), not using metadata file because it has TVRage "
 "info"
 msgstr ""
 
-#: sickbeard/metadata/generic.py:765
+#: sickbeard/metadata/generic.py:764
 msgid "There was an error parsing your existing metadata file: '{0}' error: {1}"
 msgstr ""
 
@@ -1117,68 +1117,68 @@ msgstr ""
 msgid "Put.io OAuth Token"
 msgstr ""
 
-#: gui/slick/js/core.js:2829 gui/slick/views/displayShow.mako:418
+#: gui/slick/js/core.js:2866 gui/slick/views/displayShow.mako:419
 msgid "Show Episodes"
 msgstr "Serieepisoder"
 
-#: gui/slick/js/core.js:2834 gui/slick/views/displayShow.mako:416
+#: gui/slick/js/core.js:2871 gui/slick/views/displayShow.mako:417
 msgid "Hide Episodes"
 msgstr "Dölj avsnitt"
 
-#: gui/slick/js/core.js:2839
+#: gui/slick/js/core.js:2876
 msgid "Select Show Location"
 msgstr ""
 
-#: gui/slick/js/core.js:2904 gui/slick/views/editShow.mako:391
+#: gui/slick/js/core.js:2941 gui/slick/views/editShow.mako:391
 msgid "None"
 msgstr ""
 
-#: gui/slick/js/core.js:2914
+#: gui/slick/js/core.js:2951
 msgid "Select Unprocessed Episode Folder"
 msgstr ""
 
-#: gui/slick/js/core.js:3302
+#: gui/slick/js/core.js:3339
 msgid "DELETED"
 msgstr "RADERAD"
 
-#: gui/slick/js/core.js:3598 sickchill/views/home.py:801
+#: gui/slick/js/core.js:3635 sickchill/views/home.py:797
 msgid "Resume"
 msgstr "Fortsätt"
 
-#: gui/slick/js/core.js:3598 gui/slick/views/viewlogs.mako:12
-#: sickchill/views/home.py:803
+#: gui/slick/js/core.js:3635 gui/slick/views/viewlogs.mako:12
+#: sickchill/views/home.py:799
 msgid "Pause"
 msgstr "Paus"
 
-#: gui/slick/js/core.js:3599
+#: gui/slick/js/core.js:3636
 msgid "Resume updating the log on this page."
 msgstr ""
 
-#: gui/slick/js/core.js:3599 gui/slick/views/viewlogs.mako:10
+#: gui/slick/js/core.js:3636 gui/slick/views/viewlogs.mako:10
 msgid "Pause updating the log on this page."
 msgstr ""
 
-#: gui/slick/js/core.js:3932
+#: gui/slick/js/core.js:3969
 msgid " on  in "
 msgstr ""
 
-#: gui/slick/js/core.js:3935
+#: gui/slick/js/core.js:3972
 msgid "searching {searchingFor}..."
 msgstr ""
 
-#: gui/slick/js/core.js:3948
+#: gui/slick/js/core.js:3985
 msgid "search timed out, try again or try another indexer"
 msgstr ""
 
-#: gui/slick/js/core.js:4083
+#: gui/slick/js/core.js:4120
 msgid "loading folders..."
 msgstr ""
 
 #: gui/slick/js/parsers.js:7 gui/slick/js/parsers.js:8
 #: gui/slick/js/plotTooltip.js:6 gui/slick/js/sceneExceptionsTooltip.js:6
-#: gui/slick/views/inc_home_showList.mako:213
-#: gui/slick/views/inc_home_showList.mako:219
-#: gui/slick/views/inc_home_showList.mako:235
+#: gui/slick/views/inc_home_showList.mako:224
+#: gui/slick/views/inc_home_showList.mako:230
+#: gui/slick/views/inc_home_showList.mako:247
 msgid "Loading..."
 msgstr "Laddar …..."
 
@@ -1187,7 +1187,7 @@ msgid "You have reached this page by accident, please check the url."
 msgstr "Du har nått denna sida av en slump, vänligen kontrollera URL:en."
 
 #: gui/slick/views/404.mako:9 sickchill/views/home.py:141
-#: sickchill/views/home.py:657 sickchill/views/home.py:687
+#: sickchill/views/home.py:653 sickchill/views/home.py:683
 msgid "Home"
 msgstr "Startsida"
 
@@ -1309,7 +1309,7 @@ msgid ""
 msgstr "Visar mappar i katalogerna som inte är tillagda i SickChill"
 
 #: gui/slick/views/addShows_addExistingShow.mako:71
-#: gui/slick/views/manage.mako:16 gui/slick/views/manage.mako:116
+#: gui/slick/views/manage.mako:16 gui/slick/views/manage.mako:119
 #: gui/slick/views/manage_failedDownloads.mako:78
 msgid "Submit"
 msgstr "Spara"
@@ -1358,7 +1358,7 @@ msgid "All Indexers"
 msgstr "Alla register"
 
 #: gui/slick/views/addShows_newShow.mako:90
-#: gui/slick/views/displayShow.mako:445 gui/slick/views/schedule.mako:117
+#: gui/slick/views/displayShow.mako:447 gui/slick/views/schedule.mako:117
 #: gui/slick/views/viewlogs.mako:41
 msgid "Search"
 msgstr "Sök"
@@ -1389,10 +1389,10 @@ msgstr "Katalog"
 #: gui/slick/views/config_postProcessing.mako:857
 #: gui/slick/views/config_postProcessing.mako:1042
 #: gui/slick/views/config_postProcessing.mako:1248
-#: gui/slick/views/displayShow.mako:170 gui/slick/views/history.mako:64
-#: gui/slick/views/history.mako:135 gui/slick/views/inc_home_showList.mako:174
+#: gui/slick/views/displayShow.mako:171 gui/slick/views/history.mako:64
+#: gui/slick/views/history.mako:135 gui/slick/views/inc_home_showList.mako:184
 #: gui/slick/views/manage.mako:41 gui/slick/views/schedule.mako:115
-#: gui/slick/views/schedule.mako:483
+#: gui/slick/views/schedule.mako:489
 msgid "Quality"
 msgstr "Kvalitet"
 
@@ -1413,7 +1413,7 @@ msgstr "Sortera på"
 
 #: gui/slick/views/addShows_popularShows.mako:17
 #: gui/slick/views/addShows_trendingShows.mako:40
-#: gui/slick/views/apiBuilder.mako:154 gui/slick/views/displayShow.mako:438
+#: gui/slick/views/apiBuilder.mako:154 gui/slick/views/displayShow.mako:439
 #: gui/slick/views/inc_home_menu.mako:46
 #: gui/slick/views/manage_backlogOverview.mako:92
 msgid "Name"
@@ -1426,7 +1426,7 @@ msgstr "Original"
 
 #: gui/slick/views/addShows_popularShows.mako:19
 #: gui/slick/views/addShows_trendingShows.mako:42
-#: gui/slick/views/displayShow.mako:123
+#: gui/slick/views/displayShow.mako:124
 msgid "Votes"
 msgstr "Röster"
 
@@ -1554,7 +1554,7 @@ msgid "Clear"
 msgstr "Rensa"
 
 #: gui/slick/views/apiBuilder.mako:256 gui/slick/views/apiBuilder.mako:293
-#: gui/slick/views/displayShow.mako:629
+#: gui/slick/views/displayShow.mako:638
 #: gui/slick/views/manage_massEdit.mako:139
 #: gui/slick/views/manage_massEdit.mako:153
 #: gui/slick/views/manage_massEdit.mako:182
@@ -1566,7 +1566,7 @@ msgid "Yes"
 msgstr "Ja"
 
 #: gui/slick/views/apiBuilder.mako:258 gui/slick/views/apiBuilder.mako:292
-#: gui/slick/views/displayShow.mako:628
+#: gui/slick/views/displayShow.mako:637
 #: gui/slick/views/manage_massEdit.mako:140
 #: gui/slick/views/manage_massEdit.mako:154
 #: gui/slick/views/manage_massEdit.mako:183
@@ -1814,7 +1814,7 @@ msgid "Shows"
 msgstr "Serier"
 
 #: gui/slick/views/config_general.mako:78 gui/slick/views/layouts/main.mako:163
-#: sickchill/views/index.py:350
+#: sickchill/views/index.py:316
 msgid "Schedule"
 msgstr "Schemalägg"
 
@@ -2189,7 +2189,7 @@ msgstr "Lokal"
 
 #: gui/slick/views/config_general.mako:611
 #: gui/slick/views/inc_home_menu.mako:48
-#: gui/slick/views/inc_home_showList.mako:173 gui/slick/views/manage.mako:40
+#: gui/slick/views/inc_home_showList.mako:183 gui/slick/views/manage.mako:40
 #: gui/slick/views/schedule.mako:58 gui/slick/views/schedule.mako:113
 msgid "Network"
 msgstr "Nätverk"
@@ -5844,13 +5844,13 @@ msgid "Jump to Season"
 msgstr "Hoppa till säsong"
 
 #: gui/slick/views/displayShow.mako:73 gui/slick/views/displayShow.mako:81
-#: gui/slick/views/displayShow.mako:412
+#: gui/slick/views/displayShow.mako:413
 msgid "Specials"
 msgstr "Specialer"
 
 #: gui/slick/views/displayShow.mako:73 gui/slick/views/displayShow.mako:78
-#: gui/slick/views/displayShow.mako:412 sickchill/views/home.py:1432
-#: sickchill/views/home.py:1451
+#: gui/slick/views/displayShow.mako:413 sickchill/views/home.py:1428
+#: sickchill/views/home.py:1447
 msgid "Season"
 msgstr "Säsong"
 
@@ -5858,23 +5858,23 @@ msgstr "Säsong"
 msgid "Poster for"
 msgstr "Affisch för"
 
-#: gui/slick/views/displayShow.mako:123
+#: gui/slick/views/displayShow.mako:124
 msgid "Stars"
 msgstr "Stjärnor"
 
-#: gui/slick/views/displayShow.mako:128 gui/slick/views/displayShow.mako:139
+#: gui/slick/views/displayShow.mako:129 gui/slick/views/displayShow.mako:140
 msgid "minutes"
 msgstr "minuter"
 
-#: gui/slick/views/displayShow.mako:155
+#: gui/slick/views/displayShow.mako:156
 msgid "View other popular {genre} shows on trakt.tv."
 msgstr "Kolla andra populära {genre} serier på trakt.tv."
 
-#: gui/slick/views/displayShow.mako:159
+#: gui/slick/views/displayShow.mako:160
 msgid "View other popular {imdbgenre} shows on IMDB."
 msgstr "Visa andra populära {imdbgenre}serier på IMDB."
 
-#: gui/slick/views/displayShow.mako:176 gui/slick/views/displayShow.mako:319
+#: gui/slick/views/displayShow.mako:177 gui/slick/views/displayShow.mako:320
 #: gui/slick/views/inc_qualityChooser.mako:34
 #: gui/slick/views/manage_backlogOverview.mako:34
 #: gui/slick/views/manage_backlogOverview.mako:74
@@ -5882,179 +5882,183 @@ msgstr "Visa andra populära {imdbgenre}serier på IMDB."
 msgid "Allowed"
 msgstr "Tillåten"
 
-#: gui/slick/views/displayShow.mako:179 gui/slick/views/displayShow.mako:320
+#: gui/slick/views/displayShow.mako:180 gui/slick/views/displayShow.mako:321
 #: gui/slick/views/inc_qualityChooser.mako:44
 #: gui/slick/views/manage_massEdit.mako:116
 msgid "Preferred"
 msgstr "Önskad"
 
-#: gui/slick/views/displayShow.mako:185 gui/slick/views/displayShow.mako:189
-#: gui/slick/views/displayShow.mako:193
+#: gui/slick/views/displayShow.mako:186 gui/slick/views/displayShow.mako:190
+#: gui/slick/views/displayShow.mako:194
 msgid "Originally Airs"
 msgstr "Sändes ursprungligen"
 
-#: gui/slick/views/displayShow.mako:198
+#: gui/slick/views/displayShow.mako:199
 msgid "Show Status"
 msgstr "Seriestatus"
 
-#: gui/slick/views/displayShow.mako:202
+#: gui/slick/views/displayShow.mako:203
 msgid "Default EP Status"
 msgstr "Standard episodstatusen"
 
-#: gui/slick/views/displayShow.mako:207 gui/slick/views/displayShow.mako:212
+#: gui/slick/views/displayShow.mako:208 gui/slick/views/displayShow.mako:213
 #: gui/slick/views/status.mako:217
 msgid "Location"
 msgstr "Plats"
 
-#: gui/slick/views/displayShow.mako:213 gui/slick/views/status.mako:229
+#: gui/slick/views/displayShow.mako:214 gui/slick/views/status.mako:229
 #: gui/slick/views/status.mako:240
 msgid "Missing"
 msgstr "Saknas"
 
-#: gui/slick/views/displayShow.mako:217
+#: gui/slick/views/displayShow.mako:218
 msgid "Scene Name"
 msgstr "Scene namn"
 
-#: gui/slick/views/displayShow.mako:223 gui/slick/views/editShow.mako:330
+#: gui/slick/views/displayShow.mako:224 gui/slick/views/editShow.mako:330
 msgid "Required Words"
 msgstr "Krävda ord"
 
 # | msgid "Required Words"
 # | msgid "Prefered Words"
-#: gui/slick/views/displayShow.mako:230 gui/slick/views/editShow.mako:302
+#: gui/slick/views/displayShow.mako:231 gui/slick/views/editShow.mako:302
 #, fuzzy
 msgid "Preferred Words"
 msgstr "Krävda ord"
 
-#: gui/slick/views/displayShow.mako:237 gui/slick/views/editShow.mako:276
+#: gui/slick/views/displayShow.mako:238 gui/slick/views/editShow.mako:276
 msgid "Ignored Words"
 msgstr "Ignorerade ord"
 
-#: gui/slick/views/displayShow.mako:254 gui/slick/views/displayShow.mako:440
-#: gui/slick/views/inc_home_showList.mako:176
+#: gui/slick/views/displayShow.mako:255 gui/slick/views/displayShow.mako:441
+#: gui/slick/views/inc_home_showList.mako:186
 #: gui/slick/views/manage_failedDownloads.mako:40
 msgid "Size"
 msgstr "Storlek"
 
-#: gui/slick/views/displayShow.mako:263 gui/slick/views/editShow.mako:98
+#: gui/slick/views/displayShow.mako:264 gui/slick/views/editShow.mako:98
 msgid "Info Language"
 msgstr "Informationsspråk"
 
-#: gui/slick/views/displayShow.mako:268 gui/slick/views/displayShow.mako:443
+#: gui/slick/views/displayShow.mako:269 gui/slick/views/displayShow.mako:445
 #: gui/slick/views/editShow.mako:120 gui/slick/views/inc_addShowOptions.mako:20
 #: gui/slick/views/manage_massEdit.mako:251
 #: sickchill/views/config/subtitles.py:48 sickchill/views/manage/index.py:587
 msgid "Subtitles"
 msgstr "Undertexter"
 
-#: gui/slick/views/displayShow.mako:273
+#: gui/slick/views/displayShow.mako:274
 msgid "Subtitles SR Metadata"
 msgstr "Undertexter SR Metadata"
 
-#: gui/slick/views/displayShow.mako:277
+#: gui/slick/views/displayShow.mako:278
 #: gui/slick/views/inc_addShowOptions.mako:67
 msgid "Season Folders"
 msgstr "Säsongmappar"
 
-#: gui/slick/views/displayShow.mako:281 gui/slick/views/editShow.mako:141
+#: gui/slick/views/displayShow.mako:282 gui/slick/views/editShow.mako:141
 #: gui/slick/views/manage.mako:46 gui/slick/views/manage_manageSearches.mako:19
 #: gui/slick/views/manage_massEdit.mako:148 gui/slick/views/status.mako:68
 msgid "Paused"
 msgstr "Pausad"
 
-#: gui/slick/views/displayShow.mako:285
+#: gui/slick/views/displayShow.mako:286
 msgid "Air-by-Date"
 msgstr "Sändningsdatum"
 
-#: gui/slick/views/displayShow.mako:289 gui/slick/views/editShow.mako:204
+#: gui/slick/views/displayShow.mako:290 gui/slick/views/editShow.mako:204
 #: gui/slick/views/manage.mako:42 gui/slick/views/manage_massEdit.mako:205
 msgid "Sports"
 msgstr "Sport"
 
-#: gui/slick/views/displayShow.mako:293 gui/slick/views/editShow.mako:182
+#: gui/slick/views/displayShow.mako:294 gui/slick/views/editShow.mako:182
 #: gui/slick/views/home.mako:35 gui/slick/views/inc_addShowOptions.mako:79
-#: gui/slick/views/inc_home_showList.mako:183
+#: gui/slick/views/inc_home_showList.mako:193
 #: gui/slick/views/layouts/main.mako:214 gui/slick/views/manage.mako:44
 #: gui/slick/views/manage_massEdit.mako:191 sickchill/views/config/anime.py:49
 #: sickchill/views/config/index.py:50
 msgid "Anime"
 msgstr "Anime"
 
-#: gui/slick/views/displayShow.mako:297 gui/slick/views/editShow.mako:243
+#: gui/slick/views/displayShow.mako:298 gui/slick/views/editShow.mako:243
 msgid "DVD Order"
 msgstr "DVD-sortering"
 
-#: gui/slick/views/displayShow.mako:301 gui/slick/views/editShow.mako:233
+#: gui/slick/views/displayShow.mako:302 gui/slick/views/editShow.mako:233
 #: gui/slick/views/inc_addShowOptions.mako:91
 #: gui/slick/views/manage_massEdit.mako:177
 msgid "Scene Numbering"
 msgstr "Scene-numrering"
 
-#: gui/slick/views/displayShow.mako:327
+#: gui/slick/views/displayShow.mako:328
 msgid "Select Filtered Episodes"
 msgstr "Markera filtrerade episoder"
 
-#: gui/slick/views/displayShow.mako:328
+#: gui/slick/views/displayShow.mako:329
 msgid "Clear All"
 msgstr "Rensa alla"
 
-#: gui/slick/views/displayShow.mako:336
+#: gui/slick/views/displayShow.mako:337
 msgid "Change selected episodes to"
 msgstr "Ändra valda episoder till"
 
-#: gui/slick/views/displayShow.mako:351 gui/slick/views/inc_home_menu.mako:30
+#: gui/slick/views/displayShow.mako:352 gui/slick/views/inc_home_menu.mako:30
 #: gui/slick/views/manage.mako:18 gui/slick/views/schedule.mako:51
 msgid "Select Columns"
 msgstr "Markera kolumner"
 
-#: gui/slick/views/displayShow.mako:432
+#: gui/slick/views/displayShow.mako:433
 msgid "NFO"
 msgstr "NFO"
 
-#: gui/slick/views/displayShow.mako:433
+#: gui/slick/views/displayShow.mako:434
 msgid "TBN"
 msgstr "TBN"
 
-#: gui/slick/views/displayShow.mako:434 gui/slick/views/history.mako:61
+#: gui/slick/views/displayShow.mako:435 gui/slick/views/history.mako:61
 #: gui/slick/views/history.mako:129
 #: gui/slick/views/manage_backlogOverview.mako:92
 #: gui/slick/views/testRename.mako:88
 msgid "Episode"
 msgstr "Episod"
 
-#: gui/slick/views/displayShow.mako:435
+#: gui/slick/views/displayShow.mako:436
 msgid "Absolute"
 msgstr "Absolut"
 
-#: gui/slick/views/displayShow.mako:436 gui/slick/views/manage.mako:43
+#: gui/slick/views/displayShow.mako:437 gui/slick/views/manage.mako:43
 msgid "Scene"
 msgstr "Scene"
 
-#: gui/slick/views/displayShow.mako:437
+#: gui/slick/views/displayShow.mako:438
 msgid "Scene Absolute"
 msgstr "Scene absolut"
 
-#: gui/slick/views/displayShow.mako:439
+#: gui/slick/views/displayShow.mako:440
 msgid "File Name"
 msgstr "Filnamn"
 
-#: gui/slick/views/displayShow.mako:441
+#: gui/slick/views/displayShow.mako:442
 #: gui/slick/views/manage_backlogOverview.mako:92
 #: gui/slick/views/schedule.mako:107
 msgid "Airdate"
 msgstr "Sändningsdatum"
 
-#: gui/slick/views/displayShow.mako:442 gui/slick/views/displayShow.mako:533
+#: gui/slick/views/displayShow.mako:443 gui/slick/views/displayShow.mako:535
 msgid "Download"
 msgstr "Nerladdad"
 
-#: gui/slick/views/displayShow.mako:444 gui/slick/views/inc_home_menu.mako:50
-#: gui/slick/views/inc_home_showList.mako:178 gui/slick/views/manage.mako:49
-#: sickchill/views/home.py:638
+#: gui/slick/views/displayShow.mako:444 gui/slick/views/displayShow.mako:664
+msgid "Play"
+msgstr ""
+
+#: gui/slick/views/displayShow.mako:446 gui/slick/views/inc_home_menu.mako:50
+#: gui/slick/views/inc_home_showList.mako:188 gui/slick/views/manage.mako:49
+#: sickchill/views/home.py:634
 msgid "Status"
 msgstr "Status"
 
-#: gui/slick/views/displayShow.mako:477
+#: gui/slick/views/displayShow.mako:479
 msgid ""
 "Change the value here if scene numbering differs from the indexer episode"
 " numbering"
@@ -6062,7 +6066,7 @@ msgstr ""
 "Ändra värdet här om scene-numrering skiljer sig från indexerarens "
 "episodnumrering"
 
-#: gui/slick/views/displayShow.mako:489
+#: gui/slick/views/displayShow.mako:491
 msgid ""
 "Change the value here if scene absolute numbering differs from the "
 "indexer absolute numbering"
@@ -6070,15 +6074,15 @@ msgstr ""
 "Ändra värdet här om scene absolutnumrering skiljer sig från indexerarens "
 "absolutnumrering"
 
-#: gui/slick/views/displayShow.mako:583 gui/slick/views/displayShow.mako:602
+#: gui/slick/views/displayShow.mako:592 gui/slick/views/displayShow.mako:611
 msgid "Manual Search"
 msgstr "Manuell sök"
 
-#: gui/slick/views/displayShow.mako:586
+#: gui/slick/views/displayShow.mako:595
 msgid "Do you want to mark this episode as failed?"
 msgstr "Vill du markera denna episod som misslyckad?"
 
-#: gui/slick/views/displayShow.mako:587
+#: gui/slick/views/displayShow.mako:596
 msgid ""
 "The episode release name will be added to the failed history, preventing "
 "it to be downloaded again."
@@ -6086,11 +6090,11 @@ msgstr ""
 "Episodnamnet kommer att läggas till i felhistoriken, för att förhindra "
 "att den laddas ner igen."
 
-#: gui/slick/views/displayShow.mako:605
+#: gui/slick/views/displayShow.mako:614
 msgid "Do you want to include the current episode quality in the search?"
 msgstr "Vill du inkludera den aktuella episodkvaliteten i sökningen?"
 
-#: gui/slick/views/displayShow.mako:606
+#: gui/slick/views/displayShow.mako:615
 msgid ""
 "Choosing No will ignore any releases with the same episode quality as the"
 " one currently downloaded/snatched."
@@ -6098,17 +6102,31 @@ msgstr ""
 "Att välja Nej kommer att ignorera alla utgåvor med samma episodkvalitet "
 "som den nuvarande nerladdade/hämtade."
 
-#: gui/slick/views/displayShow.mako:621
+#: gui/slick/views/displayShow.mako:630
 msgid "Download subtitle"
 msgstr "Ladda ner undertexter"
 
-#: gui/slick/views/displayShow.mako:624
+#: gui/slick/views/displayShow.mako:633
 msgid "Do you want to re-download the subtitle for this language?"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:625
+#: gui/slick/views/displayShow.mako:634
 msgid "It will overwrite your current subtitle"
 msgstr "Det kommer att skriva över din nuvarande undertext"
+
+#: gui/slick/views/displayShow.mako:650
+msgid "Close"
+msgstr ""
+
+#: gui/slick/views/displayShow.mako:652
+msgid "Select Kodi Player"
+msgstr ""
+
+#: gui/slick/views/displayShow.mako:665
+#, fuzzy
+#| msgid "Mechanical"
+msgid "Cancel"
+msgstr "Mechanical"
 
 #: gui/slick/views/editShow.mako:39
 msgid "Format"
@@ -6268,8 +6286,8 @@ msgid "Scene Exception"
 msgstr "Scene-undantag"
 
 #: gui/slick/views/editShow.mako:368 gui/slick/views/editShow.mako:383
-#: gui/slick/views/inc_home_showList.mako:172
-#: gui/slick/views/inc_home_showList.mako:183 gui/slick/views/schedule.mako:59
+#: gui/slick/views/inc_home_showList.mako:182
+#: gui/slick/views/inc_home_showList.mako:193 gui/slick/views/schedule.mako:59
 #: gui/slick/views/schedule.mako:109
 msgid "Show"
 msgstr "Visa"
@@ -6280,7 +6298,7 @@ msgstr ""
 
 #: gui/slick/views/editShow.mako:397 gui/slick/views/inc_blackwhitelist.mako:40
 #: gui/slick/views/inc_blackwhitelist.mako:85 gui/slick/views/manage.mako:58
-#: gui/slick/views/manage_failedDownloads.mako:43 sickchill/views/home.py:807
+#: gui/slick/views/manage_failedDownloads.mako:43 sickchill/views/home.py:803
 msgid "Remove"
 msgstr "Ta bort"
 
@@ -6564,7 +6582,7 @@ msgstr "Banner"
 msgid "Simple"
 msgstr "Enkel"
 
-#: gui/slick/views/inc_home_menu.mako:47 gui/slick/views/schedule.mako:469
+#: gui/slick/views/inc_home_menu.mako:47 gui/slick/views/schedule.mako:475
 msgid "Next Episode"
 msgstr "Nästa episod"
 
@@ -6596,38 +6614,38 @@ msgstr "Fortsätter"
 msgid "Ended"
 msgstr "Avslutad"
 
-#: gui/slick/views/inc_home_showList.mako:81
-#: gui/slick/views/inc_home_showList.mako:286
+#: gui/slick/views/inc_home_showList.mako:86
+#: gui/slick/views/inc_home_showList.mako:298
 msgid "Total"
 msgstr "Totalt"
 
-#: gui/slick/views/inc_home_showList.mako:122
+#: gui/slick/views/inc_home_showList.mako:129
 msgid "Invalid date"
 msgstr "Ogiltigt datum"
 
-#: gui/slick/views/inc_home_showList.mako:151
-#: gui/slick/views/inc_home_showList.mako:353
+#: gui/slick/views/inc_home_showList.mako:161
+#: gui/slick/views/inc_home_showList.mako:374
 msgid "No Network"
 msgstr "Inget nätverk"
 
-#: gui/slick/views/inc_home_showList.mako:170 gui/slick/views/schedule.mako:111
+#: gui/slick/views/inc_home_showList.mako:180 gui/slick/views/schedule.mako:111
 msgid "Next Ep"
 msgstr "Nästa episod"
 
-#: gui/slick/views/inc_home_showList.mako:171
+#: gui/slick/views/inc_home_showList.mako:181
 msgid "Prev Ep"
 msgstr "Föregående episod"
 
-#: gui/slick/views/inc_home_showList.mako:175
+#: gui/slick/views/inc_home_showList.mako:185
 msgid "Downloads"
 msgstr "Nedladdningar"
 
-#: gui/slick/views/inc_home_showList.mako:177
+#: gui/slick/views/inc_home_showList.mako:187
 #: gui/slick/views/layouts/main.mako:335 gui/slick/views/status.mako:45
 msgid "Active"
 msgstr "Aktiv"
 
-#: gui/slick/views/inc_home_showList.mako:198
+#: gui/slick/views/inc_home_showList.mako:208
 msgid "loading"
 msgstr "laddar"
 
@@ -6644,8 +6662,8 @@ msgid "New"
 msgstr "Ny"
 
 #: gui/slick/views/inc_rootDirs.mako:31 gui/slick/views/manage.mako:38
-#: gui/slick/views/manage_massEdit.mako:63 sickchill/views/home.py:767
-#: sickchill/views/home.py:1496
+#: gui/slick/views/manage_massEdit.mako:63 sickchill/views/home.py:763
+#: sickchill/views/home.py:1492
 msgid "Edit"
 msgstr "Redigera"
 
@@ -6665,7 +6683,7 @@ msgstr "Kom ihåg mig"
 msgid "Login"
 msgstr "Användarnamn"
 
-#: gui/slick/views/manage.mako:15 gui/slick/views/manage.mako:115
+#: gui/slick/views/manage.mako:15 gui/slick/views/manage.mako:118
 msgid "Edit Selected"
 msgstr "Redigera markerade"
 
@@ -6958,11 +6976,11 @@ msgstr ""
 msgid "Key"
 msgstr "Nyckel"
 
-#: gui/slick/views/schedule.mako:27 gui/slick/views/schedule.mako:317
+#: gui/slick/views/schedule.mako:27 gui/slick/views/schedule.mako:322
 msgid "Missed"
 msgstr "Missade"
 
-#: gui/slick/views/schedule.mako:31 gui/slick/views/schedule.mako:385
+#: gui/slick/views/schedule.mako:31 gui/slick/views/schedule.mako:390
 msgid "Today"
 msgstr "Idag"
 
@@ -6970,7 +6988,7 @@ msgstr "Idag"
 msgid "Soon"
 msgstr "Snart"
 
-#: gui/slick/views/schedule.mako:33 gui/slick/views/schedule.mako:318
+#: gui/slick/views/schedule.mako:33 gui/slick/views/schedule.mako:323
 msgid "Later"
 msgstr "Senare"
 
@@ -7022,15 +7040,15 @@ msgstr "Körtid"
 msgid "Indexers"
 msgstr "Indexerare"
 
-#: gui/slick/views/schedule.mako:300
+#: gui/slick/views/schedule.mako:305
 msgid "No shows for this day"
 msgstr "Inga TV_serier denna dag"
 
-#: gui/slick/views/schedule.mako:475
+#: gui/slick/views/schedule.mako:481
 msgid "Airs"
 msgstr "Sänds"
 
-#: gui/slick/views/schedule.mako:492 gui/slick/views/schedule.mako:497
+#: gui/slick/views/schedule.mako:498 gui/slick/views/schedule.mako:503
 msgid "Plot"
 msgstr "Sammanfattning"
 
@@ -7475,7 +7493,7 @@ msgstr "Ogiltiga show parametrar"
 msgid "Invalid parameters"
 msgstr "Ogiltiga parametrar"
 
-#: sickchill/views/home.py:93 sickchill/views/home.py:1363
+#: sickchill/views/home.py:93 sickchill/views/home.py:1359
 msgid "Episode couldn't be retrieved"
 msgstr "Avsnittet kunde inte hämtas"
 
@@ -7647,89 +7665,87 @@ msgstr "Discord-meddelande lyckades"
 msgid "Discord message failed"
 msgstr "Discord-meddelande misslyckades"
 
-#: sickchill/views/home.py:401
-msgid "Test KODI notice sent successfully to {kodi_host}"
-msgstr "KODI test-notifiering lyckades till {kodi_host}"
-
-#: sickchill/views/home.py:403
-msgid "Test KODI notice failed to {kodi_host}"
+#: sickchill/views/home.py:400
+#, fuzzy
+#| msgid "Test KODI notice failed to {kodi_host}"
+msgid "Test KODI notice {result} to {kodi_host}"
 msgstr "KODI test-notifiering misslyckades till {kodi_host}"
 
-#: sickchill/views/home.py:417
+#: sickchill/views/home.py:413
 msgid "Successful test notice sent to Plex Home Theater ... {plex_clients}"
 msgstr ""
 "Lyckat test-notifiering blev sänt till Plex Home Theater ... "
 "{plex_clients}"
 
-#: sickchill/views/home.py:419
+#: sickchill/views/home.py:415
 msgid "Test failed for Plex Home Theater ... {plex_clients}"
 msgstr "Test misslyckades för Plex Home Theater ... {plex_clients}"
 
-#: sickchill/views/home.py:422
+#: sickchill/views/home.py:418
 msgid "Tested Plex Home Theater(s)"
 msgstr "Testade Plex Home Theater(s)"
 
-#: sickchill/views/home.py:435
+#: sickchill/views/home.py:431
 msgid "Successful test of Plex Media Server(s) ... {plex_servers}"
 msgstr "Lyckat test för Plex Media Server(s) ... {plex_servers}"
 
-#: sickchill/views/home.py:437
+#: sickchill/views/home.py:433
 msgid "Test failed, No Plex Media Server host specified"
 msgstr "Test misslyckades. Ingen specificerad Plex Media Server värd"
 
-#: sickchill/views/home.py:439
+#: sickchill/views/home.py:435
 msgid "Test failed for Plex Media Server(s) ... {plex_servers}"
 msgstr "Test misslyckades för Plex Media Server(s) ... {plex_servers}"
 
-#: sickchill/views/home.py:442
+#: sickchill/views/home.py:438
 msgid "Tested Plex Media Server host(s)"
 msgstr "Testade Plex Media Server Värd(ar)"
 
-#: sickchill/views/home.py:450
+#: sickchill/views/home.py:446
 msgid "Tried sending desktop notification via libnotify"
 msgstr "Försökte skicka skrivbordsnotifiering via libnotify"
 
-#: sickchill/views/home.py:459
+#: sickchill/views/home.py:455
 msgid "Test notice sent successfully to {emby_host}"
 msgstr "Lyckad testnotis skickades till {emby_host}"
 
-#: sickchill/views/home.py:461
+#: sickchill/views/home.py:457
 msgid "Test notice failed to {emby_host}"
 msgstr "Testnotis misslyckades till {emby_host}"
 
-#: sickchill/views/home.py:469
+#: sickchill/views/home.py:465
 msgid "Successfully started the scan update"
 msgstr "Lyckad start av skanningsuppdateringen"
 
-#: sickchill/views/home.py:471
+#: sickchill/views/home.py:467
 msgid "Test failed to start the scan update"
 msgstr "Testet misslyckades att starta skanningsuppdateringen"
 
-#: sickchill/views/home.py:492
+#: sickchill/views/home.py:488
 msgid "Test notice sent successfully to {nmj2_host}"
 msgstr "Lyckad testnotis skickades till {nmj2_host}"
 
-#: sickchill/views/home.py:494
+#: sickchill/views/home.py:490
 msgid "Test notice failed to {nmj2_host}"
 msgstr "Testnotis misslyckades till {nmj2_host}"
 
-#: sickchill/views/home.py:517
+#: sickchill/views/home.py:513
 msgid "Trakt Authorized"
 msgstr "Trakt auktoriserad"
 
-#: sickchill/views/home.py:518
+#: sickchill/views/home.py:514
 msgid "Trakt Not Authorized!"
 msgstr "Trakt inte auktoriserad!"
 
-#: sickchill/views/home.py:582
+#: sickchill/views/home.py:578
 msgid "Test email sent successfully! Check inbox."
 msgstr "E-posttest lyckades! Kolla inkorgen."
 
-#: sickchill/views/home.py:584
+#: sickchill/views/home.py:580
 msgid "ERROR: {last_error}"
 msgstr "FEL: {last_error}"
 
-#: sickchill/views/home.py:591
+#: sickchill/views/home.py:587
 msgid ""
 "Pushalot notification succeeded. Check your Pushalot clients to make sure"
 " it worked"
@@ -7737,11 +7753,11 @@ msgstr ""
 "Pushalot notifiering lyckades. Kolla din Pushalot klient för att "
 "säkerställa att det funkade"
 
-#: sickchill/views/home.py:593
+#: sickchill/views/home.py:589
 msgid "Error sending Pushalot notification"
 msgstr "Fel vid sändning av Pushalot-notis"
 
-#: sickchill/views/home.py:600
+#: sickchill/views/home.py:596
 msgid ""
 "Pushbullet notification succeeded. Check your device to make sure it "
 "worked"
@@ -7749,236 +7765,236 @@ msgstr ""
 "Pushbullet notifiering lyckades. Kontrollera din enhet för att "
 "säkerställa att det funkade"
 
-#: sickchill/views/home.py:602 sickchill/views/home.py:612
-#: sickchill/views/home.py:621
+#: sickchill/views/home.py:598 sickchill/views/home.py:608
+#: sickchill/views/home.py:617
 msgid "Error sending Pushbullet notification"
 msgstr "Ett fel uppstod vid sändning av Pushbullet notifiering"
 
-#: sickchill/views/home.py:657 sickchill/views/home.py:687
+#: sickchill/views/home.py:653 sickchill/views/home.py:683
 msgid "Restarting SickChill"
 msgstr "Startar om SickChill"
 
-#: sickchill/views/home.py:690
+#: sickchill/views/home.py:686
 msgid "Update Failed"
 msgstr "Uppdateringen misslyckades"
 
-#: sickchill/views/home.py:691
+#: sickchill/views/home.py:687
 msgid ""
 "Update wasn't successful, not restarting. Check your log for more "
 "information."
 msgstr "Uppdateringen lyckades ej, startar inte om. Se logg för mer information."
 
-#: sickchill/views/home.py:717
+#: sickchill/views/home.py:713
 msgid "Checking out branch"
 msgstr "Kontrollera branch"
 
-#: sickchill/views/home.py:720
+#: sickchill/views/home.py:716
 msgid "Already on branch"
 msgstr "Redan på den branchen"
 
-#: sickchill/views/home.py:748
+#: sickchill/views/home.py:744
 msgid "Invalid show ID: {show}"
 msgstr "Ogiltigt serie ID: {show}"
 
-#: sickchill/views/home.py:751 sickchill/views/home.py:1336
-#: sickchill/views/home.py:1473 sickchill/views/home.py:1509
+#: sickchill/views/home.py:747 sickchill/views/home.py:1332
+#: sickchill/views/home.py:1469 sickchill/views/home.py:1505
 msgid "Show not in show list"
 msgstr "Serie finns inte med på serielistan"
 
-#: sickchill/views/home.py:778
+#: sickchill/views/home.py:774
 msgid ""
 "This show is in the process of being downloaded - the info below is "
 "incomplete."
 msgstr "Denna serie håller på att laddas ner. Informationen nedan är ofullständig."
 
-#: sickchill/views/home.py:781
+#: sickchill/views/home.py:777
 msgid "The information on this page is in the process of being updated."
 msgstr "Informationen på denna sida håller på att uppdateras."
 
-#: sickchill/views/home.py:784
+#: sickchill/views/home.py:780
 msgid "The episodes below are currently being refreshed from disk"
 msgstr "Avsnitten nedan uppdateras på disken"
 
-#: sickchill/views/home.py:787
+#: sickchill/views/home.py:783
 msgid "Currently downloading subtitles for this show"
 msgstr "Laddar ner undertexter för denna serie"
 
-#: sickchill/views/home.py:790
+#: sickchill/views/home.py:786
 msgid "This show is queued to be refreshed."
 msgstr "Denna serie står i kö för att bli uppdaterad."
 
-#: sickchill/views/home.py:793
+#: sickchill/views/home.py:789
 msgid "This show is queued and awaiting an update."
 msgstr "Denna serie står i kö för att uppdateras."
 
-#: sickchill/views/home.py:796
+#: sickchill/views/home.py:792
 msgid "This show is queued and awaiting subtitles download."
 msgstr "Denna serie står i kö för att ladda ner undertexter."
 
-#: sickchill/views/home.py:813
+#: sickchill/views/home.py:809
 msgid "Re-scan files"
 msgstr "Skanna om filer"
 
-#: sickchill/views/home.py:816
+#: sickchill/views/home.py:812
 msgid "Force Full Update"
 msgstr "Tvinga full uppdatering"
 
-#: sickchill/views/home.py:819
+#: sickchill/views/home.py:815
 msgid "Update show in KODI"
 msgstr "Uppdatera serie i KODI"
 
-#: sickchill/views/home.py:826
+#: sickchill/views/home.py:822
 msgid "Update show in Emby"
 msgstr "Uppdatera serie i Emby"
 
-#: sickchill/views/home.py:835
+#: sickchill/views/home.py:831
 msgid "Hide specials"
 msgstr "Dölj specialer"
 
-#: sickchill/views/home.py:843
+#: sickchill/views/home.py:839
 msgid "Show specials"
 msgstr "Visa specialer"
 
-#: sickchill/views/home.py:849 sickchill/views/home.py:1499
-#: sickchill/views/home.py:1500
+#: sickchill/views/home.py:845 sickchill/views/home.py:1495
+#: sickchill/views/home.py:1496
 msgid "Preview Rename"
 msgstr "Förhandsgranska namn byte"
 
-#: sickchill/views/home.py:854
+#: sickchill/views/home.py:850
 msgid "Download Subtitles"
 msgstr "Ladda ner undertexter"
 
-#: sickchill/views/home.py:939
+#: sickchill/views/home.py:935
 msgid "No scene exceptions"
 msgstr "Inget scene undantag"
 
-#: sickchill/views/home.py:960 sickchill/views/home.py:1229
-#: sickchill/views/home.py:1250
+#: sickchill/views/home.py:956 sickchill/views/home.py:1225
+#: sickchill/views/home.py:1246
 msgid "Invalid show ID"
 msgstr "Ogiltigt serie ID"
 
-#: sickchill/views/home.py:967 sickchill/views/home.py:1234
-#: sickchill/views/home.py:1255
+#: sickchill/views/home.py:963 sickchill/views/home.py:1230
+#: sickchill/views/home.py:1251
 msgid "Unable to find the specified show"
 msgstr "Det gick inte att hitta den angivna serien"
 
-#: sickchill/views/home.py:997
+#: sickchill/views/home.py:993
 msgid "Unable to retreive Fansub Groups from AniDB."
 msgstr "Gick inte att hämta Fansub Groups från AniDB."
 
-#: sickchill/views/home.py:1006 sickchill/views/home.py:1009
+#: sickchill/views/home.py:1002 sickchill/views/home.py:1005
 msgid "Edit Show"
 msgstr "Redigera program"
 
-#: sickchill/views/home.py:1095 sickchill/views/home.py:1131
+#: sickchill/views/home.py:1091 sickchill/views/home.py:1127
 msgid "Unable to refresh this show: {error}"
 msgstr "Det gick inte att uppdatera denna serien: {error}"
 
-#: sickchill/views/home.py:1123
+#: sickchill/views/home.py:1119
 msgid "New location <tt>{location}</tt> does not exist"
 msgstr "Ny plats <tt>{location}</tt> finns inte"
 
-#: sickchill/views/home.py:1150
+#: sickchill/views/home.py:1146
 msgid "Unable to update show: {error}"
 msgstr "Misslyckades att uppdatera serie: {error}"
 
-#: sickchill/views/home.py:1156
+#: sickchill/views/home.py:1152
 msgid "Unable to force an update on scene exceptions of the show."
 msgstr "Kan inte att tvinga en uppdatering av scene undantag för denna serie."
 
-#: sickchill/views/home.py:1163
+#: sickchill/views/home.py:1159
 msgid "Unable to force an update on scene numbering of the show."
 msgstr "Kan inte att tvinga en uppdatering av scene numrering av denna serie."
 
-#: sickchill/views/home.py:1170 sickchill/views/manage/index.py:500
+#: sickchill/views/home.py:1166 sickchill/views/manage/index.py:500
 msgid "{num_errors:d} error{plural} while saving changes:"
 msgstr "{num_errors:d} fel{plural} vid sparande av ändringar:"
 
-#: sickchill/views/home.py:1183
+#: sickchill/views/home.py:1179
 msgid "{show_name} has been {paused_resumed}"
 msgstr "{show_name} har blivit {paused_resumed}"
 
-#: sickchill/views/home.py:1183
+#: sickchill/views/home.py:1179
 msgid "resumed"
 msgstr "återupptogs"
 
-#: sickchill/views/home.py:1183
+#: sickchill/views/home.py:1179
 msgid "paused"
 msgstr "pausad"
 
-#: sickchill/views/home.py:1196
+#: sickchill/views/home.py:1192
 msgid "{show_name} has been {deleted_trashed} {was_deleted}"
 msgstr "{show_name} har blivit {deleted_trashed} {was_deleted}"
 
-#: sickchill/views/home.py:1198
+#: sickchill/views/home.py:1194
 msgid "deleted"
 msgstr "raderad"
 
-#: sickchill/views/home.py:1198
+#: sickchill/views/home.py:1194
 msgid "trashed"
 msgstr "slängd"
 
-#: sickchill/views/home.py:1199
+#: sickchill/views/home.py:1195
 msgid "(media untouched)"
 msgstr "(media orörd)"
 
-#: sickchill/views/home.py:1199
+#: sickchill/views/home.py:1195
 msgid "(with all related media)"
 msgstr "(med all relaterad media)"
 
-#: sickchill/views/home.py:1220
+#: sickchill/views/home.py:1216
 msgid "Unable to refresh this show."
 msgstr "Kan inte att uppdatera denna serie."
 
-#: sickchill/views/home.py:1240
+#: sickchill/views/home.py:1236
 msgid "Unable to update this show."
 msgstr "Kan inte uppdatera denna serie."
 
-#: sickchill/views/home.py:1279
+#: sickchill/views/home.py:1275
 msgid "Library update command sent to KODI host(s)): {kodi_hosts}"
 msgstr "Biblioteksuppdateringskommando skickat till KODI värd(ar)): {kodi_hosts}"
 
-#: sickchill/views/home.py:1281
+#: sickchill/views/home.py:1277
 msgid "Unable to contact one or more KODI host(s)): {kodi_hosts}"
 msgstr "Misslyckad anslutning till en eller flera KODI servrar: {kodi_hosts}"
 
-#: sickchill/views/home.py:1290
+#: sickchill/views/home.py:1286
 msgid "Library update command sent to Plex Media Server host: {plex_server}"
 msgstr ""
 "Biblioteksuppdateringskommandot skickades till Plex Media Server: "
 "{plex_server}"
 
-#: sickchill/views/home.py:1293
+#: sickchill/views/home.py:1289
 msgid "Unable to contact Plex Media Server host: {plex_server}"
 msgstr "Det går inte att kontakta PMS servern: {plex_server}"
 
-#: sickchill/views/home.py:1305
+#: sickchill/views/home.py:1301
 msgid "Library update command sent to Emby host: {emby_host}"
 msgstr "Biblioteksuppdateringskommandot skickades till Emby Host: {emby_host}"
 
-#: sickchill/views/home.py:1307
+#: sickchill/views/home.py:1303
 msgid "Unable to contact Emby host: {emby_host}"
 msgstr "Det går inte att kontakta Emby servern: {emby_host}"
 
-#: sickchill/views/home.py:1317 sickchill/views/home.py:1505
+#: sickchill/views/home.py:1313 sickchill/views/home.py:1501
 msgid "You must specify a show and at least one episode"
 msgstr "Du måste välja en serie och minst ett avsnitt"
 
-#: sickchill/views/home.py:1326
+#: sickchill/views/home.py:1322
 msgid "Invalid status"
 msgstr "Ogiltig status"
 
-#: sickchill/views/home.py:1425
+#: sickchill/views/home.py:1421
 msgid ""
 "Backlog was automatically started for the following seasons of "
 "<b>{show_name}</b>"
 msgstr "Backlog startades automatiskt för följande säsonger av <b>{show_name}</b>"
 
-#: sickchill/views/home.py:1439
+#: sickchill/views/home.py:1435
 msgid "Backlog started"
 msgstr "Backlog startad"
 
-#: sickchill/views/home.py:1444
+#: sickchill/views/home.py:1440
 msgid ""
 "Retrying Search was automatically started for the following season of "
 "<b>{show_name}</b>"
@@ -7986,59 +8002,59 @@ msgstr ""
 "Försöker söka på nytt blev automatisk startat för följande säsong av "
 "<b>{show_name}</b>"
 
-#: sickchill/views/home.py:1458
+#: sickchill/views/home.py:1454
 msgid "Retry Search started"
 msgstr "Nytt sökförsök påbörjades"
 
-#: sickchill/views/home.py:1468
+#: sickchill/views/home.py:1464
 msgid "You must specify a show"
 msgstr "Du måste välja en serie"
 
-#: sickchill/views/home.py:1478 sickchill/views/home.py:1514
+#: sickchill/views/home.py:1474 sickchill/views/home.py:1510
 msgid "Can't rename episodes when the show dir is missing."
 msgstr "Kan inte byta namn på avsnitt när seriens bibliotek saknas."
 
-#: sickchill/views/home.py:1704 sickchill/views/home.py:1725
+#: sickchill/views/home.py:1700 sickchill/views/home.py:1730
 msgid "New subtitles downloaded: {new_subtitle_languages}"
 msgstr "Nya undertexter hämtade: {new_subtitle_languages}"
 
-#: sickchill/views/home.py:1707 sickchill/views/home.py:1728
+#: sickchill/views/home.py:1703 sickchill/views/home.py:1733
 msgid "No subtitles downloaded"
 msgstr "Inga undertexter nerladdade"
 
-#: sickchill/views/index.py:87
+#: sickchill/views/index.py:83
 msgid "Oops: 404 Not Found"
 msgstr ""
 
-#: sickchill/views/index.py:89
+#: sickchill/views/index.py:85
 msgid "Wrong API key used"
 msgstr "Fel API nyckel användes"
 
-#: sickchill/views/index.py:230
+#: sickchill/views/index.py:226
 msgid "API Key not generated"
 msgstr "API nyckeln är inte genererad"
 
-#: sickchill/views/index.py:233
+#: sickchill/views/index.py:229
 msgid "API Builder"
 msgstr "API Byggare"
 
-#: sickchill/views/index.py:374
+#: sickchill/views/index.py:340
 msgid "Test 1"
 msgstr "Test 1"
 
-#: sickchill/views/index.py:374
+#: sickchill/views/index.py:340
 msgid "This is test number 1"
 msgstr "Detta är test nummer 1"
 
-#: sickchill/views/index.py:375
+#: sickchill/views/index.py:341
 msgid "Test 2"
 msgstr "Test 2"
 
-#: sickchill/views/index.py:375
+#: sickchill/views/index.py:341
 msgid "This is test number 2"
 msgstr "Detta är test nummer 2"
 
-#: sickchill/views/index.py:400
+#: sickchill/views/index.py:366
 msgid ""
 "You're using the {branch} branch. Please use 'master' unless specifically"
 " asked"
