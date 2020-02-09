@@ -45,7 +45,7 @@ from sickchill.helper.exceptions import (EpisodeDeletedException, EpisodeNotFoun
 from sickchill.show.Show import Show
 
 # Local Folder Imports
-from . import db, helpers, image_cache, logger, network_timezones, notifiers, postProcessor, subtitles
+from . import db, helpers, logger, network_timezones, notifiers, postProcessor, subtitles
 from .blackandwhitelist import BlackAndWhiteList
 from .common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
                      NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN, WANTED)
@@ -176,6 +176,13 @@ class TVShow(object):
     @property
     def indexer_name(self):
         return self.idxr.name
+
+    @property
+    def network_image_url(self):
+        return 'images/network/{0}.png'.format(unidecode(self.network or 'nonetwork').lower())
+
+    def show_image_url(self, which):
+        return sickbeard.IMAGE_CACHE.image_url(self.indexerid, which)
 
     def _getLocation(self):
         # no dir check needed if missing show dirs are created during post-processing
@@ -1011,10 +1018,8 @@ class TVShow(object):
             notifiers.trakt_notifier.update_watchlist(self, update="remove")
 
     def populateCache(self):
-        cache_inst = image_cache.ImageCache()
-
         logger.log("Checking & filling cache for show " + self.name, logger.DEBUG)
-        cache_inst.fill_cache(self)
+        sickbeard.IMAGE_CACHE.fill_cache(self)
 
     def refreshDir(self):
 

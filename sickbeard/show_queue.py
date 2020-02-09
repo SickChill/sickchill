@@ -299,11 +299,14 @@ class QueueItemAdd(ShowQueueItem):
 
     @property
     def info(self):
-        info = namedtuple('LoadingShowInfo', 'id name sort_name network quality')
+        info = namedtuple('LoadingShowInfo', 'id name sort_name network network_image_url show_image_url quality')
         if self.show:
-            return info(id=self.show.indexerid, name=self.show.name, sort_name=self.show.sort_name, network=self.show.network, quality=self.show.quality)
+            return info(id=self.show.indexerid, name=self.show.name, sort_name=self.show.sort_name, network=self.show.network,
+                        network_image_url=self.show.network_image_url, show_image_url=self.show.show_image_url, quality=self.show.quality)
         # noinspection PyUnresolvedReferences
-        return info(id=self.show_name, name=self.show_name, sort_name=sortable_name(self.show_name), network=_('Loading'), quality=0)
+        return info(id=0, name=self.show_name, sort_name=sortable_name(self.show_name), network=_('Loading'),
+                    network_image_url='images/network/nonetwork.png', show_image_url=lambda x: 'images/{}.png'.format(('poster', 'banner')['banner' in x]),
+                    quality=0)
 
     def run(self):
 

@@ -22,6 +22,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import os.path
+from mimetypes import guess_type
 
 # Third Party Imports
 from hachoir_core.log import log
@@ -136,7 +137,7 @@ class ImageCache(object):
         logger.log("Checking if file " + str(fanart_path) + " exists", logger.DEBUG)
         return ek(os.path.isfile, fanart_path)
 
-    def has_poster_thumbnail(self, indexer_id):
+    def has_poster_thumb(self, indexer_id):
         """
         Returns true if a cached poster thumbnail exists for the given Indexer ID
         """
@@ -144,13 +145,19 @@ class ImageCache(object):
         logger.log("Checking if file " + str(poster_thumb_path) + " exists", logger.DEBUG)
         return ek(os.path.isfile, poster_thumb_path)
 
-    def has_banner_thumbnail(self, indexer_id):
+    def has_banner_thumb(self, indexer_id):
         """
         Returns true if a cached banner exists for the given Indexer ID
         """
         banner_thumb_path = self.banner_thumb_path(indexer_id)
         logger.log("Checking if file " + str(banner_thumb_path) + " exists", logger.DEBUG)
         return ek(os.path.isfile, banner_thumb_path)
+
+    def image_url(self, indexer_id, which):
+        path = self.__getattribute__(which + "_path")(indexer_id)
+        if ek(os.path.isfile, path):
+            return 'cache' + path.split(sickbeard.CACHE_DIR)[1].replace('\\', '/')
+        return ('images/poster.png', 'images/banner.png')['banner' in which]
 
     BANNER = 1
     POSTER = 2
@@ -196,6 +203,29 @@ class ImageCache(object):
         else:
             logger.log("Image has size ratio of " + str(img_ratio) + ", unknown type", logger.WARNING)
             return None
+
+    @staticmethod
+    def image_data(path):
+        """
+        :return: The content of the desired media file
+        """
+
+        if ek(os.path.isfile, path):
+            with open(path, 'rb') as content:
+                return content.read()
+
+        return None
+
+    @staticmethod
+    def content_type(path):
+        """
+        :return: The mime type of the current media
+        """
+
+        if ek(os.path.isfile, path):
+            return guess_type(path)[0]
+
+        return ''
 
     def _cache_image_from_file(self, image_path, img_type, indexer_id):
         """
@@ -282,8 +312,8 @@ class ImageCache(object):
         # check if the images are already cached or not
         need_images = {self.POSTER: not self.has_poster(show_obj.indexerid),
                        self.BANNER: not self.has_banner(show_obj.indexerid),
-                       self.POSTER_THUMB: not self.has_poster_thumbnail(show_obj.indexerid),
-                       self.BANNER_THUMB: not self.has_banner_thumbnail(show_obj.indexerid),
+                       self.POSTER_THUMB: not self.has_poster_thumb(show_obj.indexerid),
+                       self.BANNER_THUMB: not self.has_banner_thumb(show_obj.indexerid),
                        self.FANART: not self.has_fanart(show_obj.indexerid)}
 
         if not need_images[self.POSTER] and not need_images[self.BANNER] and not need_images[self.POSTER_THUMB] and not need_images[self.BANNER_THUMB] and not need_images[self.FANART]:

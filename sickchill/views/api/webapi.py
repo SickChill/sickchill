@@ -37,7 +37,7 @@ from tornado.web import RequestHandler
 # First Party Imports
 import sickbeard
 import sickchill
-from sickbeard import classes, db, helpers, image_cache, logger, network_timezones, sbdatetime, search_queue, ui
+from sickbeard import classes, db, helpers, logger, network_timezones, sbdatetime, search_queue, ui
 from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN,
                               WANTED)
 from sickbeard.postProcessor import PROCESS_METHODS
@@ -46,10 +46,6 @@ from sickchill.helper.common import dateFormat, dateTimeFormat, pretty_file_size
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import CantUpdateShowException, ex, ShowDirectoryNotFoundException
 from sickchill.helper.quality import get_quality_string
-from sickchill.media.ShowBanner import ShowBanner
-from sickchill.media.ShowFanArt import ShowFanArt
-from sickchill.media.ShowNetworkLogo import ShowNetworkLogo
-from sickchill.media.ShowPoster import ShowPoster
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.show.History import History
 from sickchill.show.Show import Show
@@ -146,8 +142,8 @@ class ApiHandler(RequestHandler):
             pass
 
     def _out_as_image(self, _dict):
-        self.set_header('Content-Type'.encode('utf-8'), _dict['image'].get_media_type())
-        return _dict['image'].get_media()
+        self.set_header('Content-Type'.encode('utf-8'), sickbeard.IMAGE_CACHE.content_type(_dict['image']))
+        return sickbeard.IMAGE_CACHE.image_data(_dict['image'])
 
     def _out_as_json(self, _dict):
         self.set_header("Content-Type".encode('utf-8'), "application/json;charset=UTF-8")
@@ -2267,17 +2263,25 @@ class CMDShowCache(ApiCall):
         # TODO: catch if cache dir is missing/invalid.. so it doesn't break show/show.cache
         # return {"poster": 0, "banner": 0}
 
-        cache_obj = image_cache.ImageCache()
+        has_poster = has_banner = has_fanart = has_poster_thumb = has_banner_thumb = 0
 
-        has_poster = 0
-        has_banner = 0
-
-        if ek(os.path.isfile, cache_obj.poster_path(show_obj.indexerid)):
+        if sickbeard.IMAGE_CACHE.has_poster(show_obj.indexerid):
             has_poster = 1
-        if ek(os.path.isfile, cache_obj.banner_path(show_obj.indexerid)):
-            has_banner = 1
+        if sickbeard.IMAGE_CACHE.has_poster_thumb(show_obj.indexerid):
+            has_poster_thumb = 1
 
-        return _responds(RESULT_SUCCESS, {"poster": has_poster, "banner": has_banner})
+        if sickbeard.IMAGE_CACHE.has_banner(show_obj.indexerid):
+            has_banner = 1
+        if sickbeard.IMAGE_CACHE.has_banner_thumb(show_obj.indexerid):
+            has_banner_thumb = 1
+
+        if sickbeard.IMAGE_CACHE.has_fanart(show_obj.indexerid):
+            has_fanart = 1
+
+        return _responds(RESULT_SUCCESS,
+                         {"poster": has_poster, "banner": has_banner, 'fanart': has_fanart,
+                          'poster_thumb': has_poster_thumb, 'banner_thumb': has_banner_thumb}
+                         )
 
 
 # noinspection PyAbstractClass
@@ -2353,13 +2357,15 @@ class CMDShowGetPoster(ApiCall):
     def __init__(self, args, kwargs):
         super(CMDShowGetPoster, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
+        self.tvdbid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
         self.media_format, args = self.check_params(args, kwargs, "media_format", "normal", False, "string", ["normal", "thumb"])
 
     def run(self):
         """ Get the poster a show """
+        method = (sickbeard.IMAGE_CACHE.poster_path, sickbeard.IMAGE_CACHE.poster_thumb_path)[self.media_format == "thumb"]
         return {
             'outputType': 'image',
-            'image': ShowPoster(self.indexerid, self.media_format),
+            'image': method(self.tvdbid or self.indexerid),
         }
 
 
@@ -2379,13 +2385,15 @@ class CMDShowGetBanner(ApiCall):
     def __init__(self, args, kwargs):
         super(CMDShowGetBanner, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
+        self.tvdbid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
         self.media_format, args = self.check_params(args, kwargs, "media_format", "normal", False, "string", ["normal", "thumb"])
 
     def run(self):
         """ Get the banner of a show """
+        method = (sickbeard.IMAGE_CACHE.banner_path, sickbeard.IMAGE_CACHE.banner_thumb_path)[self.media_format == "thumb"]
         return {
             'outputType': 'image',
-            'image': ShowBanner(self.indexerid, self.media_format),
+            'image': method(self.tvdbid or self.indexerid),
         }
 
 
@@ -2404,14 +2412,16 @@ class CMDShowGetNetworkLogo(ApiCall):
     def __init__(self, args, kwargs):
         super(CMDShowGetNetworkLogo, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
+        self.tvdbid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
 
     def run(self):
         """
         :return: Get the network logo of a show
         """
+        show = Show.find(sickbeard.showList, self.tvdbid or self.indexerid)
         return {
             'outputType': 'image',
-            'image': ShowNetworkLogo(self.indexerid),
+            'image': ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images/network', show.network_logo_name),
         }
 
 
@@ -2430,12 +2440,13 @@ class CMDShowGetFanArt(ApiCall):
     def __init__(self, args, kwargs):
         super(CMDShowGetFanArt, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
+        self.tvdbid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
 
     def run(self):
         """ Get the fan art of a show """
         return {
             'outputType': 'image',
-            'image': ShowFanArt(self.indexerid),
+            'image': sickbeard.IMAGE_CACHE.fanart_path(self.tvdbid or self.indexerid),
         }
 
 
