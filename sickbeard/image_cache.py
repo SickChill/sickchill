@@ -22,6 +22,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import os.path
+from mimetypes import guess_type
 
 # Third Party Imports
 from hachoir_core.log import log
@@ -202,6 +203,29 @@ class ImageCache(object):
         else:
             logger.log("Image has size ratio of " + str(img_ratio) + ", unknown type", logger.WARNING)
             return None
+
+    @staticmethod
+    def image_data(path):
+        """
+        :return: The content of the desired media file
+        """
+
+        if ek(os.path.isfile, path):
+            with open(path, 'rb') as content:
+                return content.read()
+
+        return None
+
+    @staticmethod
+    def content_type(path):
+        """
+        :return: The mime type of the current media
+        """
+
+        if ek(os.path.isfile, path):
+            return guess_type(path)[0]
+
+        return ''
 
     def _cache_image_from_file(self, image_path, img_type, indexer_id):
         """

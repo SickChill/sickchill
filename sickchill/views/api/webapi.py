@@ -142,8 +142,8 @@ class ApiHandler(RequestHandler):
             pass
 
     def _out_as_image(self, _dict):
-        self.set_header('Content-Type'.encode('utf-8'), _dict['image'].get_media_type())
-        return _dict['image'].get_media()
+        self.set_header('Content-Type'.encode('utf-8'), sickbeard.IMAGE_CACHE.content_type(_dict['image']))
+        return sickbeard.IMAGE_CACHE.image_data(_dict['image'])
 
     def _out_as_json(self, _dict):
         self.set_header("Content-Type".encode('utf-8'), "application/json;charset=UTF-8")
@@ -2357,13 +2357,15 @@ class CMDShowGetPoster(ApiCall):
     def __init__(self, args, kwargs):
         super(CMDShowGetPoster, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
+        self.tvdbid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
         self.media_format, args = self.check_params(args, kwargs, "media_format", "normal", False, "string", ["normal", "thumb"])
 
     def run(self):
         """ Get the poster a show """
+        method = (sickbeard.IMAGE_CACHE.poster_path, sickbeard.IMAGE_CACHE.poster_thumb_path)[self.media_format == "thumb"]
         return {
             'outputType': 'image',
-            'image': None,
+            'image': method(self.tvdbid or self.indexerid),
         }
 
 
@@ -2383,13 +2385,15 @@ class CMDShowGetBanner(ApiCall):
     def __init__(self, args, kwargs):
         super(CMDShowGetBanner, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
+        self.tvdbid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
         self.media_format, args = self.check_params(args, kwargs, "media_format", "normal", False, "string", ["normal", "thumb"])
 
     def run(self):
         """ Get the banner of a show """
+        method = (sickbeard.IMAGE_CACHE.banner_path, sickbeard.IMAGE_CACHE.banner_thumb_path)[self.media_format == "thumb"]
         return {
             'outputType': 'image',
-            'image': None,
+            'image': method(self.tvdbid or self.indexerid),
         }
 
 
@@ -2408,14 +2412,16 @@ class CMDShowGetNetworkLogo(ApiCall):
     def __init__(self, args, kwargs):
         super(CMDShowGetNetworkLogo, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
+        self.tvdbid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
 
     def run(self):
         """
         :return: Get the network logo of a show
         """
+        show = Show.find(sickbeard.showList, self.tvdbid or self.indexerid)
         return {
             'outputType': 'image',
-            'image': None,
+            'image': ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images/network', show.network_logo_name),
         }
 
 
@@ -2434,12 +2440,13 @@ class CMDShowGetFanArt(ApiCall):
     def __init__(self, args, kwargs):
         super(CMDShowGetFanArt, self).__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
+        self.tvdbid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
 
     def run(self):
         """ Get the fan art of a show """
         return {
             'outputType': 'image',
-            'image': None,
+            'image': sickbeard.IMAGE_CACHE.fanart_path(self.tvdbid or self.indexerid),
         }
 
 
