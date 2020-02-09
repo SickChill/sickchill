@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-02-09 19:25+0000\n"
+"POT-Creation-Date: 2020-02-09 19:37+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: bg_BG\n"
@@ -6141,9 +6141,9 @@ msgstr ""
 msgid "Select Kodi Player"
 msgstr ""
 
+# | msgid "Mechanical"
 #: gui/slick/views/displayShow.mako:665
 #, fuzzy
-#| msgid "Mechanical"
 msgid "Cancel"
 msgstr "Mechanical"
 
@@ -7646,9 +7646,9 @@ msgstr "Успешно съобщение към Discord"
 msgid "Discord message failed"
 msgstr "Неуспешно съобщение към Discord"
 
+# | msgid "Test KODI notice failed to {kodi_host}"
 #: sickchill/views/home.py:400
 #, fuzzy
-#| msgid "Test KODI notice failed to {kodi_host}"
 msgid "Test KODI notice {result} to {kodi_host}"
 msgstr "Неуспешно тестово уведомление на KODI към {kodi_host}"
 
