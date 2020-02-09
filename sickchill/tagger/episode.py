@@ -270,7 +270,11 @@ class EpisodeTags(object):
         if self.res and self.tv == 'hd':
             regex = re.compile(r'({0}.hdtv)'.format(self.res), re.I)
             match = self._get_match_obj(attr, regex)
+        if not match:
+            regex = re.compile(r'(RawHD)', re.I)
+            match = self._get_match_obj(attr, regex)
         return '' if not match else match.group()
+
 
     @property
     def netflix(self):

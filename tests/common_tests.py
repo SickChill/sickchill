@@ -197,9 +197,9 @@ class QualityStringTests(unittest.TestCase):
         for name, tests in six.iteritems(self.test_cases):
             for test in tests:
                 if name == cur_test:
-                    self.assertEqual(cur_qual, common.Quality.nameQuality(test))
+                    self.assertEqual(cur_qual, common.Quality.nameQuality(test), test)
                 else:
-                    self.assertNotEqual(cur_qual, common.Quality.nameQuality(test))
+                    self.assertNotEqual(cur_qual, common.Quality.nameQuality(test), test)
 
     def test_raw_hd_tv(self):
         """
@@ -211,9 +211,9 @@ class QualityStringTests(unittest.TestCase):
         for name, tests in six.iteritems(self.test_cases):
             for test in tests:
                 if name == cur_test:
-                    self.assertEqual(cur_qual, common.Quality.nameQuality(test))
+                    self.assertEqual(cur_qual, common.Quality.nameQuality(test), test)
                 else:
-                    self.assertNotEqual(cur_qual, common.Quality.nameQuality(test))
+                    self.assertNotEqual(cur_qual, common.Quality.nameQuality(test), test)
 
     def test_full_hd_tv(self):
         """
@@ -340,7 +340,6 @@ class QualityTests(unittest.TestCase):
     """
 
     # TODO: repack / proper ? air-by-date ? season rip? multi-ep?
-    @unittest.expectedFailure
     # reverse parsing does not work
     def test_reverse_parsing(self):
         """

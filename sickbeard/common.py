@@ -335,31 +335,33 @@ class Quality(object):
             # SD TV
             elif sd_options:
                 result = Quality.SDTV
+        elif ep.hevc and not sickbeard.QUALITY_ALLOW_HEVC:
+            result = Quality.NONE
+        elif ep.mpeg:
+            result = Quality.RAWHDTV
         # Is it UHD?
         elif ep.vres in {2160, 4320} and ep.scan == 'p':
             # BluRay
             full_res = (ep.vres == 4320)
-            if ep.avc and ep.bluray:
+            if ep.bluray:
                 result = (Quality.UHD_4K_BLURAY, Quality.UHD_8K_BLURAY)[full_res]
             # WEB-DL
-            elif (ep.avc and (ep.itunes or ep.amazon or ep.netflix)) or ep.web:  # I think this ep.web should be in the `or` chain to also require ep.avc
+            elif ep.itunes or ep.amazon or ep.netflix or ep.web:
                 result = (Quality.UHD_4K_WEBDL, Quality.UHD_8K_WEBDL)[full_res]
             # HDTV
-            elif ep.avc and ep.tv == 'hd':
+            elif ep.tv == 'hd':
                 result = (Quality.UHD_4K_TV, Quality.UHD_8K_TV)[full_res]
-        elif ep.hevc and not sickbeard.QUALITY_ALLOW_HEVC:
-            result = Quality.NONE
         elif ep.vres in {1080, 720}:
             if ep.scan == 'p':
                 # BluRay
                 full_res = (ep.vres == 1080)
-                if ep.avc and (ep.bluray or ep.hddvd):
+                if ep.bluray or ep.hddvd:
                     result = (Quality.HDBLURAY, Quality.FULLHDBLURAY)[full_res]
                 # WEB-DL
-                elif (ep.avc and (ep.itunes or ep.amazon or ep.netflix)) or ep.web:  # I think this ep.web should be in the `or` chain to also require ep.avc
+                elif ep.itunes or ep.amazon or ep.netflix or ep.web:
                     result = (Quality.HDWEBDL, Quality.FULLHDWEBDL)[full_res]
                 # HDTV
-                elif ep.avc and (ep.tv == 'hd' or ep.hevc):
+                elif ep.tv == 'hd' or ep.hevc:
                     result = (Quality.HDTV, Quality.FULLHDTV)[full_res]  # 1080 HDTV h264
                 # MPEG2 encoded
                 elif all([full_res, ep.tv == 'hd', ep.mpeg]):
@@ -386,7 +388,10 @@ class Quality(object):
             result = Quality.SDDVD
         elif ep.tv:
             # SD TV/HD TV
-            result = Quality.SDTV
+            result = (Quality.SDTV, Quality.HDTV)[ep.tv == 'hd']
+        elif ep.raw or ep.mpeg:
+            # RawHD
+            result = Quality.RAWHDTV
 
         return Quality.UNKNOWN if result is None else result
 

@@ -402,6 +402,9 @@ class CommonTests(unittest.TestCase):
                 self.assertEqual(try_int(candidate, default_value), result)
 
     def test_convert_size(self):
+        """
+        Test convert_size
+        """
         # converts pretty file sizes to integers
         self.assertEqual(convert_size('1 B'), 1)
         self.assertEqual(convert_size('1 KB'), 1024)
