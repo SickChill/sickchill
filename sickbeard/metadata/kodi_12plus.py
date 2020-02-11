@@ -128,10 +128,12 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
         title.text = myShow.seriesName
 
         if getattr(myShow, 'rating', None):
-            rating = etree.SubElement(tv_node, "rating")
-            rating.text = str(myShow.rating)
             mpaa = etree.SubElement(tv_node, "mpaa")
             mpaa.text = str(myShow.rating)
+
+        if getattr(myShow, 'siteRating', None):
+            rating = etree.SubElement(tv_node, "rating")
+            rating.text = str(myShow.siteRating)
 
         if getattr(myShow, 'firstAired', None):
             try:

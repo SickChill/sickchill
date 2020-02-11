@@ -25,9 +25,6 @@ import datetime
 import io
 import os
 
-# Third Party Imports
-import six
-
 # First Party Imports
 import sickchill
 from sickbeard import helpers, logger
@@ -126,18 +123,18 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         if getattr(myShow, "genre", None):
             Genres = etree.SubElement(tv_node, "genres")
-            for genre in myShow['genre'].split('|'):
+            for genre in myShow.genre:
                 if genre and genre.strip():
                     cur_genre = etree.SubElement(Genres, "Genre")
                     cur_genre.text = genre.strip()
 
         if getattr(myShow, 'firstAired', None):
             FirstAired = etree.SubElement(tv_node, "premiered")
-            FirstAired.text = myShow['firstAired']
+            FirstAired.text = myShow.firstAired
 
         if getattr(myShow, "firstAired", None):
             try:
-                year_text = str(datetime.datetime.strptime(myShow["firstAired"], dateFormat).year)
+                year_text = str(datetime.datetime.strptime(myShow.firstAired, dateFormat).year)
                 if year_text:
                     year = etree.SubElement(tv_node, "year")
                     year.text = year_text
@@ -146,11 +143,11 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         if getattr(myShow, 'overview', None):
             plot = etree.SubElement(tv_node, "plot")
-            plot.text = myShow["overview"]
+            plot.text = myShow.overview
 
         if getattr(myShow, 'rating', None):
             try:
-                rating = int(float(myShow['rating']) * 10)
+                rating = int(float(myShow.siteRating) * 10)
             except ValueError:
                 rating = 0
 
@@ -160,28 +157,29 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         if getattr(myShow, 'status', None):
             Status = etree.SubElement(tv_node, "status")
-            Status.text = myShow['status']
+            Status.text = myShow.status
 
         if getattr(myShow, "contentRating", None):
             mpaa = etree.SubElement(tv_node, "mpaa")
-            mpaa.text = myShow["contentRating"]
+            mpaa.text = myShow.rating
 
         if getattr(myShow, 'imdb_id', None):
             imdb_id = etree.SubElement(tv_node, "id")
             imdb_id.attrib["moviedb"] = "imdb"
-            imdb_id.text = myShow['imdb_id']
+            imdb_id.text = myShow.imdbId
 
         if getattr(myShow, 'id', None):
             indexerid = etree.SubElement(tv_node, "indexerid")
-            indexerid.text = myShow['id']
+            indexerid.text = str(myShow.id)
 
         if getattr(myShow, 'runtime', None):
             Runtime = etree.SubElement(tv_node, "runtime")
-            Runtime.text = myShow['runtime']
+            Runtime.text = myShow.runtime
 
-        if getattr(myShow, '_actors', None):
+        actors = show_obj.idxr.actors(myShow)
+        if actors:
             cast = etree.SubElement(tv_node, "cast")
-            for actor in myShow['_actors']:
+            for actor in actors:
                 if 'name' in actor and actor['name'].strip():
                     cur_actor = etree.SubElement(cast, "actor")
                     cur_actor.text = actor['name'].strip()
@@ -246,7 +244,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
                 if getattr(myShow, "firstAired", None):
                     try:
-                        year_text = str(datetime.datetime.strptime(myShow["firstAired"], dateFormat).year)
+                        year_text = str(datetime.datetime.strptime(myShow.firstAired, dateFormat).year)
                         if year_text:
                             year = etree.SubElement(episode, "year")
                             year.text = year_text
@@ -255,7 +253,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
                 if getattr(myShow, "overview", None):
                     plot = etree.SubElement(episode, "plot")
-                    plot.text = myShow["overview"]
+                    plot.text = myShow.overview
 
                 if curEpToWrite.description:
                     Overview = etree.SubElement(episode, "episodeplot")
@@ -263,11 +261,11 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
                 if getattr(myShow, 'contentRating', None):
                     mpaa = etree.SubElement(episode, "mpaa")
-                    mpaa.text = myShow["contentRating"]
+                    mpaa.text = myShow.rating
 
                 if not ep_obj.relatedEps and myEp.get("rating"):
                     try:
-                        rating = int((float(myEp['rating']) * 10))
+                        rating = int((float(myEp.siteRating) * 10))
                     except ValueError:
                         rating = 0
 
