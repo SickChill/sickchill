@@ -42,10 +42,10 @@ class ExceptionDecorator(object):
             try:
                 result = target(*args, **kwargs)
             except self.catch as e:
-                logger.log('Error accessing indexer: {error}'.format(error=ex(e)))
+                logger.log("Error accessing indexer: {error} (Indexer probably doesn't have this item)".format(error=ex(e)), logger.DEBUG)
                 result = self.default_return
             except RHTTPError as e:
-                logger.log('Error accessing indexer: {error}'.format(error=ex(e)))
+                logger.log("Error accessing indexer: {error} (Indexer probably doesn't have this item)".format(error=ex(e)), logger.DEBUG)
                 result = self.default_return
 
             return result
