@@ -72,6 +72,7 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
 
         return True
 
+    @unittest.skip('Only run this manually')
     def test_search(self):
         """
         Test searching, using rarbg
