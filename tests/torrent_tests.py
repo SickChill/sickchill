@@ -29,13 +29,13 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from bs4 import BeautifulSoup
-from sickbeard.helpers import getURL, make_session
+
+import sickbeard
 from sickbeard.providers.bitcannon import BitCannonProvider
+from sickbeard.providers.rarbg import provider as rarbg
+
 from sickbeard.tv import TVEpisode, TVShow
 import tests.test_lib as test
-
-from six.moves import urllib
 
 
 class TorrentBasicTests(test.SickbeardTestDBCase):
@@ -72,48 +72,18 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
 
         return True
 
-    @staticmethod
-    @unittest.skip('KickAssTorrents is down, needs a replacement')  # TODO
-    def test_search():
+    def test_search(self):
         """
-        Test searching
+        Test searching, using rarbg
         """
-        url = 'http://kickass.to/'
-        search_url = 'http://kickass.to/usearch/American%20Dad%21%20S08%20-S08E%20category%3Atv/?field=seeders&sorder=desc'
+        sickbeard.CPU_PRESET = 'LOW'
+        results = rarbg.search({'Episode': ['The Mandalorian S01E08']})
+        self.assertTrue(results)
+        self.assertIn('Mandalorian', results[0]['title'])
 
-        html = getURL(search_url, session=make_session(), returns='text')
-        if not html:
-            return
+        results = rarbg.search({'RSS': ['']})
+        self.assertTrue(results)
 
-        soup = BeautifulSoup(html, 'html5lib')
-
-        torrent_table = soup.find('table', attrs={'class': 'data'})
-        torrent_rows = torrent_table('tr') if torrent_table else []
-
-        # cleanup memory
-        soup.clear(True)
-
-        # Continue only if one Release is found
-        if len(torrent_rows) < 2:
-            print("The data returned does not contain any torrents")
-            return
-
-        for row in torrent_rows[1:]:
-            try:
-                link = urllib.parse.urljoin(url, (row.find('div', {'class': 'torrentname'})('a')[1])['href'])
-                _id = row.get('id')[-7:]
-                title = (row.find('div', {'class': 'torrentname'})('a')[1]).text \
-                    or (row.find('div', {'class': 'torrentname'})('a')[2]).text
-                url = row.find('a', 'imagnet')['href']
-                verified = True if row.find('a', 'iverify') else False
-                trusted = True if row.find('img', {'alt': 'verified'}) else False
-                seeders = int(row('td')[-2].text)
-                leechers = int(row('td')[-1].text)
-                _ = link, _id, verified, trusted, seeders, leechers
-            except (AttributeError, TypeError):
-                continue
-
-            print(title)
 
 if __name__ == "__main__":
     print("==================")
