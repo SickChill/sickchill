@@ -1249,7 +1249,7 @@ class TVShow(object):
                        logger.DEBUG)
         return False
 
-    def getOverview(self, epStatus):
+    def getOverview(self, epStatus, backlog=False):
         """
         Get the Overview status from the Episode status
 
@@ -1279,9 +1279,9 @@ class TVShow(object):
             allowed_qualities, preferred_qualities = Quality.splitQuality(self.quality)
             ep_status, cur_quality = Quality.splitCompositeStatus(ep_status)
 
-            if cur_quality not in allowed_qualities + preferred_qualities:
+            if cur_quality not in allowed_qualities + preferred_qualities and not backlog:
                 return Overview.QUAL
-            elif preferred_qualities and cur_quality not in preferred_qualities:
+            elif preferred_qualities and cur_quality not in preferred_qualities and not backlog:
                 return Overview.QUAL
             else:
                 return Overview.GOOD
