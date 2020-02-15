@@ -240,30 +240,6 @@ def change_custom_css(new_css):
     return True
 
 
-def change_log_dir(log_dir, web_log):
-    """
-    Change logging directory for application and webserver
-
-    :param log_dir: Path to new logging directory
-    :param web_log: Enable/disable web logging
-    :return: True on success, False on failure
-    """
-    abs_log_dir = ek(os.path.normpath, ek(os.path.join, sickbeard.DATA_DIR, log_dir))
-    sickbeard.WEB_LOG = checkbox_to_value(web_log)
-
-    if ek(os.path.normpath, sickbeard.LOG_DIR) != abs_log_dir:
-        if not helpers.makeDir(abs_log_dir):
-            return False
-
-        sickbeard.ACTUAL_LOG_DIR = ek(os.path.normpath, log_dir)
-        sickbeard.LOG_DIR = abs_log_dir
-
-        logger.init_logging()
-        logger.log("Initialized new log file in " + sickbeard.LOG_DIR)
-
-    return True
-
-
 def change_nzb_dir(nzb_dir):
     """
     Change NZB Folder
