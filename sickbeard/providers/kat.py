@@ -19,13 +19,15 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
+import re
+import traceback
+from collections import OrderedDict
+
 # Third Party Imports
 import validators
 from requests.compat import urljoin
-from collections import OrderedDict
 from six.moves import urllib
-import traceback
-import re
 
 # First Party Imports
 from sickbeard import logger, tvcache

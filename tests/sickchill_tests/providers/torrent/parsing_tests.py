@@ -57,6 +57,7 @@ disabled_provider_tests = {
     'LimeTorrents': ['test_rss_search', 'test_episode_search', 'test_season_search'],
     'Torrentz': ['test_rss_search', 'test_episode_search', 'test_season_search', 'test_cache_update', 'test_result_values'],
     'ThePirateBay': ['test_rss_search', 'test_episode_search', 'test_season_search', 'test_cache_update', 'test_result_values'],
+    'Demonoid': ['test_rss_search']
 }
 test_string_overrides = {
     'Cpasbien': {'Episode': ['The 100 S02E16'], 'Season': ['The 100 S02']},
@@ -64,6 +65,7 @@ test_string_overrides = {
     'Nyaa': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
     'TokyoToshokan': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
     'HorribleSubs': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
+    'Demonoid': {'Episode': ['Star Trek Picard S01E04'], 'Season': ['Locke and Key 2020 S01']},
 }
 
 magnet_regex = re.compile(r'magnet:\?xt=urn:btih:\w{32,40}(:?&dn=[\w. %+-]+)*(:?&tr=(:?tcp|https?|udp)[\w%. +-]+)*')

@@ -21,9 +21,12 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
-from requests.compat import urljoin
 import time
 import traceback
+
+# Third Party Imports
+from requests.compat import urljoin
+from requests.utils import add_dict_to_cookiejar
 
 # First Party Imports
 import sickbeard
@@ -31,7 +34,6 @@ from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
 from sickchill.helper.common import convert_size, try_int
-from requests.utils import add_dict_to_cookiejar
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -55,6 +57,8 @@ class DemonoidProvider(TorrentProvider):
             "category": 12, "quality": 58, "seeded": 0, "external": 2, "sort": "added", "order": "desc"
         }
 
+        self.cache = DemonoidCache(self)
+
     def search(self, search_strings, age=0, ep_obj=None):
         results = []
         # https://demonoid.is/files/?category=12&quality=58&seeded=0&external=2&sort=seeders&order=desc&query=SEARCH_STRING
@@ -70,7 +74,8 @@ class DemonoidProvider(TorrentProvider):
             items = []
             logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
             if mode == "RSS":
-                raise Exception('This should be calling the cache, not the search method for RSS/Daily searches')
+                logger.log("Demonoid RSS search is not working through this provider yet, only string searches will work. Continuing")
+                continue
 
             for search_string in search_strings[mode]:
                 search_params["query"] = search_string
