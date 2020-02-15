@@ -40,7 +40,11 @@ class Notifier(object):
         self._connections = []
         for host in (x.strip() for x in (hosts or sickbeard.KODI_HOST or '').split(",") if x.strip()):
             try:
-                kodi = Kodi(host, username or sickbeard.KODI_USERNAME, password or sickbeard.KODI_PASSWORD)
+                if ':' in host:
+                    bare_host, port = host.split(':')
+                    kodi = Kodi(bare_host, username or sickbeard.KODI_USERNAME, password or sickbeard.KODI_PASSWORD, port=port)
+                else:
+                    kodi = Kodi(host, username or sickbeard.KODI_USERNAME, password or sickbeard.KODI_PASSWORD)
                 kodi.host = kodi.variables()['hostname']['value']
                 kodi.name = kodi.Settings.GetSettingValue(setting="services.devicename")['result']['value']
                 if kodi not in self._connections:
