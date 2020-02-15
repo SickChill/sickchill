@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-02-15 18:06+0000\n"
+"POT-Creation-Date: 2020-02-15 22:43+0000\n"
 "PO-Revision-Date: 2018-10-10 07:47+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: de_DE\n"
@@ -128,15 +128,15 @@ msgstr "Musical"
 msgid "Talk-Show"
 msgstr "Talkshow"
 
-#: sickbeard/__init__.py:664
+#: sickbeard/__init__.py:666
 msgid "Ignore (do not process contents)"
 msgstr "Ignorieren (Inhalt nicht verarbeiten)"
 
-#: sickbeard/__init__.py:665
+#: sickbeard/__init__.py:667
 msgid "Unpack (process contents)"
 msgstr "Entpacken (verarbeite Inhalte)"
 
-#: sickbeard/__init__.py:666
+#: sickbeard/__init__.py:668
 msgid "Treat as video (process archive as-is)"
 msgstr "Behandele als Video (verarbeite Archive wie bekannt)"
 
@@ -1882,13 +1882,14 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:399
 #: gui/slick/views/config_postProcessing.mako:519
 #: gui/slick/views/config_search.mako:266
-#: gui/slick/views/config_search.mako:552
-#: gui/slick/views/config_search.mako:814
-#: gui/slick/views/config_search.mako:1058
-#: gui/slick/views/config_search.mako:1062
-#: gui/slick/views/config_search.mako:1085
-#: gui/slick/views/config_search.mako:1089
-#: gui/slick/views/config_search.mako:1152
+#: gui/slick/views/config_search.mako:290
+#: gui/slick/views/config_search.mako:576
+#: gui/slick/views/config_search.mako:838
+#: gui/slick/views/config_search.mako:1082
+#: gui/slick/views/config_search.mako:1086
+#: gui/slick/views/config_search.mako:1109
+#: gui/slick/views/config_search.mako:1113
+#: gui/slick/views/config_search.mako:1176
 #: gui/slick/views/config_subtitles.mako:92
 #: gui/slick/views/config_subtitles.mako:180 gui/slick/views/editShow.mako:294
 #: gui/slick/views/editShow.mako:321 gui/slick/views/editShow.mako:349
@@ -1997,14 +1998,14 @@ msgstr "Standort der Seriendateien"
 #: gui/slick/views/config_notifications.mako:3114
 #: gui/slick/views/config_notifications.mako:3234
 #: gui/slick/views/config_notifications.mako:3361
-#: gui/slick/views/config_search.mako:831
-#: gui/slick/views/config_search.mako:925
-#: gui/slick/views/config_search.mako:1221 gui/slick/views/editShow.mako:427
+#: gui/slick/views/config_search.mako:855
+#: gui/slick/views/config_search.mako:949
+#: gui/slick/views/config_search.mako:1245 gui/slick/views/editShow.mako:427
 #: gui/slick/views/layouts/config.mako:41
 msgid "Save Changes"
 msgstr "Änderungen speichern"
 
-#: gui/slick/views/config_general.mako:253 sickchill/views/manage/index.py:572
+#: gui/slick/views/config_general.mako:253 sickchill/views/manage/index.py:573
 msgid "Updates"
 msgstr "Aktualisierungen"
 
@@ -3278,13 +3279,13 @@ msgstr "Moderat"
 
 #: gui/slick/views/config_notifications.mako:1276
 #: gui/slick/views/config_notifications.mako:1536
-#: gui/slick/views/config_search.mako:715
+#: gui/slick/views/config_search.mako:739
 msgid "Normal"
 msgstr "Normal"
 
 #: gui/slick/views/config_notifications.mako:1277
 #: gui/slick/views/config_notifications.mako:1537
-#: gui/slick/views/config_search.mako:716
+#: gui/slick/views/config_search.mako:740
 msgid "High"
 msgstr "Hoch"
 
@@ -5176,11 +5177,11 @@ msgstr "z.B.: Titel"
 msgid "Episode Search"
 msgstr "Episodensuche"
 
-#: gui/slick/views/config_search.mako:11 gui/slick/views/config_search.mako:284
+#: gui/slick/views/config_search.mako:11 gui/slick/views/config_search.mako:308
 msgid "NZB Search"
 msgstr "NZB-Suche"
 
-#: gui/slick/views/config_search.mako:12 gui/slick/views/config_search.mako:848
+#: gui/slick/views/config_search.mako:12 gui/slick/views/config_search.mako:872
 msgid "Torrent Search"
 msgstr "Torrent-Suche"
 
@@ -5359,201 +5360,215 @@ msgstr "Übrige Dateien eines fehlgeschlagenen Downloads löschen?"
 msgid "this only works if Use Failed Downloads is enabled."
 msgstr "Dies funktioniert nur sofern \"Fehlgeschlagene Downloads\" aktiviert ist."
 
+#: gui/slick/views/config_search.mako:278
+#, fuzzy
+#| msgid "Backlog search frequency"
+msgid "Backlog search for missing only"
+msgstr "Takt der Rückstandssuche"
+
 #: gui/slick/views/config_search.mako:285
+msgid "restrict backlog searches to missing episodes only?"
+msgstr ""
+
+#: gui/slick/views/config_search.mako:290
+msgid "if enabled, this ignores episodes that are not preferred qualities"
+msgstr ""
+
+#: gui/slick/views/config_search.mako:309
 msgid "How to handle NZB search results."
 msgstr "Umgang mit NZB-Suchergebnissen."
 
-#: gui/slick/views/config_search.mako:295
+#: gui/slick/views/config_search.mako:319
 msgid "Search NZBs"
 msgstr "Suche NZBs"
 
-#: gui/slick/views/config_search.mako:300
+#: gui/slick/views/config_search.mako:324
 msgid "enable NZB search providers"
 msgstr "NZB-Suchanbieter aktivieren"
 
-#: gui/slick/views/config_search.mako:307
+#: gui/slick/views/config_search.mako:331
 msgid "Usenet retention"
 msgstr "Usenet-Speicherung"
 
-#: gui/slick/views/config_search.mako:319
+#: gui/slick/views/config_search.mako:343
 msgid "age limit in days for usenet articles to be used (e.g. 500)"
 msgstr "Altersgrenze in Tagen für verwendete Usenet-Artikel (z. B. 500)"
 
-#: gui/slick/views/config_search.mako:326
+#: gui/slick/views/config_search.mako:350
 msgid "Send .nzb files to"
 msgstr ".nzb Dateien senden zu"
 
-#: gui/slick/views/config_search.mako:341
+#: gui/slick/views/config_search.mako:365
 msgid "SABnzbd server URL"
 msgstr "SABnzbd Server URL"
 
-#: gui/slick/views/config_search.mako:352
+#: gui/slick/views/config_search.mako:376
 msgid "URL to your SABnzbd server (e.g. http://localhost:8080/)"
 msgstr "URL zu SABnzbd-Server (z.B. localhost8080: /)"
 
-#: gui/slick/views/config_search.mako:360
+#: gui/slick/views/config_search.mako:384
 msgid "SABnzbd username"
 msgstr "SABnzbd-Benutzername"
 
-#: gui/slick/views/config_search.mako:372
-#: gui/slick/views/config_search.mako:393
-#: gui/slick/views/config_search.mako:768
-#: gui/slick/views/config_search.mako:789
-#: gui/slick/views/config_search.mako:1015
-#: gui/slick/views/config_search.mako:1036
+#: gui/slick/views/config_search.mako:396
+#: gui/slick/views/config_search.mako:417
+#: gui/slick/views/config_search.mako:792
+#: gui/slick/views/config_search.mako:813
+#: gui/slick/views/config_search.mako:1039
+#: gui/slick/views/config_search.mako:1060
 msgid "(blank for none)"
 msgstr "(leer lassen für kein)"
 
-#: gui/slick/views/config_search.mako:380
+#: gui/slick/views/config_search.mako:404
 msgid "SABnzbd password"
 msgstr "SABnzbd-Passwort"
 
-#: gui/slick/views/config_search.mako:401
+#: gui/slick/views/config_search.mako:425
 msgid "SABnzbd API key"
 msgstr "SABnzbd API-Key"
 
-#: gui/slick/views/config_search.mako:414
+#: gui/slick/views/config_search.mako:438
 msgid "locate at... SABnzbd Config -> General -> API Key"
 msgstr "suchen unter... SABnzbd Konfiguration-> Allgemein-> API-Key"
 
-#: gui/slick/views/config_search.mako:422
+#: gui/slick/views/config_search.mako:446
 msgid "Use SABnzbd category"
 msgstr "SABnzbd-Kategorie benutzen"
 
-#: gui/slick/views/config_search.mako:434
+#: gui/slick/views/config_search.mako:458
 msgid "add downloads to this category (e.g. TV)"
 msgstr "Downloads zu dieser Kategorie (z.B. TV) hinzufügen"
 
-#: gui/slick/views/config_search.mako:442
+#: gui/slick/views/config_search.mako:466
 msgid "Use SABnzbd category (backlog episodes)"
 msgstr "SABnzbd-Kategorie verwenden (rückständige Folgen)"
 
-#: gui/slick/views/config_search.mako:454
+#: gui/slick/views/config_search.mako:478
 msgid "add downloads of old episodes to this category (e.g. TV)"
 msgstr "Downloads alter Folgen dieser Kategorie (z.B. TV) hinzufügen"
 
-#: gui/slick/views/config_search.mako:462
+#: gui/slick/views/config_search.mako:486
 msgid "Use SABnzbd category for anime"
 msgstr "SABnzbd-Kategorie für Anime verwenden"
 
-#: gui/slick/views/config_search.mako:474
+#: gui/slick/views/config_search.mako:498
 msgid "add anime downloads to this category (e.g. anime)"
 msgstr "Anime-Downlaods dieser Kategorie hinzufügen (z.B. Anime)"
 
-#: gui/slick/views/config_search.mako:483
+#: gui/slick/views/config_search.mako:507
 msgid "Use SABnzbd category for anime (backlog episodes)"
 msgstr "SABnzbd-Kategorie für Anime verwenden (rückständige Folgen)"
 
-#: gui/slick/views/config_search.mako:496
+#: gui/slick/views/config_search.mako:520
 msgid "add anime downloads of old episodes to this category (e.g. anime)"
 msgstr "Anime-Downloads alter Folgen dieser Kategorie hinzufügen (z.B. Anime)"
 
-#: gui/slick/views/config_search.mako:505
+#: gui/slick/views/config_search.mako:529
 msgid "Use forced priority"
 msgstr "Erzwungene Priorität verwenden"
 
-#: gui/slick/views/config_search.mako:510
+#: gui/slick/views/config_search.mako:534
 msgid "enable to change priority from HIGH to FORCED"
 msgstr "Ändern der Priorität von HOCH auf GEZWUNGEN aktivieren"
 
-#: gui/slick/views/config_search.mako:519
-#: gui/slick/views/config_search.mako:905
+#: gui/slick/views/config_search.mako:543
+#: gui/slick/views/config_search.mako:929
 msgid "Black hole folder location"
 msgstr "\"Black Hole\"-Ordnerspeicherort"
 
-#: gui/slick/views/config_search.mako:530
+#: gui/slick/views/config_search.mako:554
 msgid ""
 "<b>.nzb</b> files are stored at this location for external software to "
 "find and use"
 msgstr "<b>.nzb</b>-Dateien werden hier für externe Software bereitgestellt"
 
-#: gui/slick/views/config_search.mako:541
+#: gui/slick/views/config_search.mako:565
 msgid "Connect using HTTPS"
 msgstr "Über HTTPS verbinden"
 
-#: gui/slick/views/config_search.mako:552
+#: gui/slick/views/config_search.mako:576
 msgid "enable Secure control in NZBGet and set the correct Secure Port here"
 msgstr ""
 "Aktivieren des Secure-Steuerelements in NZBGet und legen Sie hier den "
 "richtigen Secure-Port fest"
 
-#: gui/slick/views/config_search.mako:560
+#: gui/slick/views/config_search.mako:584
 msgid "NZBget host:port"
 msgstr "NZBget-Host: Port"
 
-#: gui/slick/views/config_search.mako:572
+#: gui/slick/views/config_search.mako:596
 msgid "(e.g. localhost:6789)"
 msgstr "(z.B. localhost:6789)"
 
-#: gui/slick/views/config_search.mako:577
+#: gui/slick/views/config_search.mako:601
 msgid "NZBget RPC host name and port number (not NZBgetweb!)"
 msgstr "NZBget RPC-host-Namen und die Portnummer (nicht NZBgetweb!)"
 
-#: gui/slick/views/config_search.mako:585
+#: gui/slick/views/config_search.mako:609
 msgid "NZBget username"
 msgstr "NZBget-Benutzername"
 
-#: gui/slick/views/config_search.mako:597
+#: gui/slick/views/config_search.mako:621
 msgid "locate in nzbget.conf (default:nzbget)"
 msgstr "Suche in nzbget.conf (Standard: nzbget)"
 
-#: gui/slick/views/config_search.mako:605
+#: gui/slick/views/config_search.mako:629
 msgid "NZBget password"
 msgstr "NZBget-Passwort"
 
-#: gui/slick/views/config_search.mako:618
+#: gui/slick/views/config_search.mako:642
 msgid "locate in nzbget.conf (default:tegbzn6789)"
 msgstr "Suche in nzbget.conf (Standard: tegbzn6789)"
 
-#: gui/slick/views/config_search.mako:626
+#: gui/slick/views/config_search.mako:650
 msgid "Use NZBget category"
 msgstr "NZBget-Kategorie benutzen"
 
-#: gui/slick/views/config_search.mako:638
+#: gui/slick/views/config_search.mako:662
 msgid "send downloads marked this category (e.g. TV)"
 msgstr "Downloads dieser Kategorie (z.B. TV) anhängen"
 
-#: gui/slick/views/config_search.mako:646
+#: gui/slick/views/config_search.mako:670
 msgid "Use NZBget category (backlog episodes)"
 msgstr "NZBget-Kategorie verwenden (rückständige Folgen)"
 
-#: gui/slick/views/config_search.mako:658
+#: gui/slick/views/config_search.mako:682
 msgid "send downloads of old episodes marked this category (e.g. TV)"
 msgstr "Downloads alter Folgen dieser Kategorie (z.B. TV) anhängen"
 
-#: gui/slick/views/config_search.mako:666
+#: gui/slick/views/config_search.mako:690
 msgid "Use NZBget category for anime"
 msgstr "NZBget-Kategorie für Anime verwenden"
 
-#: gui/slick/views/config_search.mako:678
+#: gui/slick/views/config_search.mako:702
 msgid "send anime downloads marked this category (e.g. anime)"
 msgstr "Anime-Downloads dieser Kategorie (z.B. anime) anhängen"
 
-#: gui/slick/views/config_search.mako:686
+#: gui/slick/views/config_search.mako:710
 msgid "Use NZBget category for anime (backlog episodes)"
 msgstr "NZBget-Kategorie für Anime verwenden (rückständige Folgen)"
 
-#: gui/slick/views/config_search.mako:699
+#: gui/slick/views/config_search.mako:723
 msgid "send anime downloads of old episodes marked this category (e.g. anime)"
 msgstr "Anime-Downloads alter Folgen dieser Kategorie (z.B. anime) anhängen"
 
-#: gui/slick/views/config_search.mako:707
+#: gui/slick/views/config_search.mako:731
 msgid "NZBget priority"
 msgstr "NZBget-Priorität"
 
-#: gui/slick/views/config_search.mako:713
+#: gui/slick/views/config_search.mako:737
 msgid "Very low"
 msgstr "Sehr niedrig"
 
-#: gui/slick/views/config_search.mako:714
+#: gui/slick/views/config_search.mako:738
 msgid "Low"
 msgstr "Niedrig"
 
-#: gui/slick/views/config_search.mako:717
+#: gui/slick/views/config_search.mako:741
 msgid "Very high"
 msgstr "Sehr hoch"
 
-#: gui/slick/views/config_search.mako:718
+#: gui/slick/views/config_search.mako:742
 #: gui/slick/views/manage_manageSearches.mako:17
 #: gui/slick/views/manage_manageSearches.mako:26
 #: gui/slick/views/manage_manageSearches.mako:34
@@ -5561,70 +5576,70 @@ msgstr "Sehr hoch"
 msgid "Force"
 msgstr "Erzwingen"
 
-#: gui/slick/views/config_search.mako:724
+#: gui/slick/views/config_search.mako:748
 msgid "priority for daily snatches (no backlog)"
 msgstr "Priorität für tägliche Ermittlungen (kein Rückstand)"
 
-#: gui/slick/views/config_search.mako:735
-#: gui/slick/views/config_search.mako:935
+#: gui/slick/views/config_search.mako:759
+#: gui/slick/views/config_search.mako:959
 msgid "Torrent host:port"
 msgstr "Torrent-Host:Port"
 
-#: gui/slick/views/config_search.mako:747
+#: gui/slick/views/config_search.mako:771
 msgid "URL to your Synology DSM (e.g. http://localhost:5000/)"
 msgstr "URL zu Ihrer Synology DS (z.B. http://localhost:5000/)"
 
-#: gui/slick/views/config_search.mako:755
-#: gui/slick/views/config_search.mako:1002
+#: gui/slick/views/config_search.mako:779
+#: gui/slick/views/config_search.mako:1026
 msgid "Client username"
 msgstr "Client-Benutzername"
 
-#: gui/slick/views/config_search.mako:776
-#: gui/slick/views/config_search.mako:1023
+#: gui/slick/views/config_search.mako:800
+#: gui/slick/views/config_search.mako:1047
 msgid "Client password"
 msgstr "Client-Passwort"
 
-#: gui/slick/views/config_search.mako:797
-#: gui/slick/views/config_search.mako:1135
+#: gui/slick/views/config_search.mako:821
+#: gui/slick/views/config_search.mako:1159
 msgid "Downloaded files location"
 msgstr "Speicherort heruntergeladener Dateien"
 
-#: gui/slick/views/config_search.mako:809
+#: gui/slick/views/config_search.mako:833
 msgid ""
 "where Synology Download Station will save downloaded files (blank for "
 "client default)"
 msgstr "Speicherort für Synology Download Station (Freilassen für Standard)"
 
-#: gui/slick/views/config_search.mako:814
+#: gui/slick/views/config_search.mako:838
 msgid "the destination has to be a shared folder for Synology DS"
 msgstr "Das Ziel muss ein freigegebener Ordner für Synology DS sein"
 
-#: gui/slick/views/config_search.mako:823
-#: gui/slick/views/config_search.mako:824
-#: gui/slick/views/config_search.mako:1214
+#: gui/slick/views/config_search.mako:847
+#: gui/slick/views/config_search.mako:848
+#: gui/slick/views/config_search.mako:1238
 msgid "Click below to test"
 msgstr "Test: unten klicken"
 
-#: gui/slick/views/config_search.mako:849
+#: gui/slick/views/config_search.mako:873
 msgid "How to handle Torrent search results."
 msgstr "Umgang mit Torrent-Suchergebnissen."
 
-#: gui/slick/views/config_search.mako:859
+#: gui/slick/views/config_search.mako:883
 msgid "Search torrents"
 msgstr "Suche torrents"
 
-#: gui/slick/views/config_search.mako:864
+#: gui/slick/views/config_search.mako:888
 msgid "enable torrent search providers"
 msgstr "Torrent-Suchanbieter aktivieren"
 
-#: gui/slick/views/config_search.mako:871
+#: gui/slick/views/config_search.mako:895
 msgid "Trackers list"
 msgstr "Trackerliste"
 
 # | msgid "" "trackers that will be added to magnets without
 # | trackers<br>separate " "trackers with a comma, e.g.
 # | \"tracker1,tracker2,tracker3\""
-#: gui/slick/views/config_search.mako:882
+#: gui/slick/views/config_search.mako:906
 #, fuzzy
 msgid ""
 "trackers that will be added to magnets without trackers<br>separate "
@@ -5636,97 +5651,97 @@ msgstr ""
 " Bitte mehrere Tracker mit Komma trennen, z.B. \"tracker1, tracker2, "
 "tracker3\""
 
-#: gui/slick/views/config_search.mako:890
+#: gui/slick/views/config_search.mako:914
 msgid "Send .torrent files to"
 msgstr ".torrent Dateien senden zu"
 
-#: gui/slick/views/config_search.mako:917
+#: gui/slick/views/config_search.mako:941
 msgid ""
 "<b>.torrent</b> files are stored at this location for external software "
 "to find and use"
 msgstr "<b>.torrent</b>-Dateien werden hier für externe Software bereitgestellt"
 
-#: gui/slick/views/config_search.mako:947
+#: gui/slick/views/config_search.mako:971
 msgid "URL to your torrent client (e.g. http://localhost:8000/)"
 msgstr "Torrent-Client-URL (z. B. http://localhost: 8000 /)"
 
-#: gui/slick/views/config_search.mako:955
+#: gui/slick/views/config_search.mako:979
 msgid "Torrent RPC URL"
 msgstr "Torrent-RPC-URL"
 
-#: gui/slick/views/config_search.mako:967
+#: gui/slick/views/config_search.mako:991
 msgid "the path without leading and trailing slashes (e.g. transmission)"
 msgstr "Pfad ohne führende und nachgestellte Schrägstriche (z.B. transmission)"
 
-#: gui/slick/views/config_search.mako:975
+#: gui/slick/views/config_search.mako:999
 msgid "Http Authentication"
 msgstr "Http-Authentifizierung"
 
-#: gui/slick/views/config_search.mako:990
+#: gui/slick/views/config_search.mako:1014
 msgid "Verify certificate"
 msgstr "Zertifikat prüfen"
 
-#: gui/slick/views/config_search.mako:995
+#: gui/slick/views/config_search.mako:1019
 msgid "disable if you get \"Deluge: Authentication Error\" in your log"
 msgstr ""
 "Deaktivieren, wenn Ihr Protokoll \"Deluge: Authentifizierungsfehler\" "
 "ausgibt"
 
-#: gui/slick/views/config_search.mako:996
+#: gui/slick/views/config_search.mako:1020
 msgid "verify SSL certificates for HTTPS requests"
 msgstr "SSL-Zertifikate für HTTPS-Anforderungen überprüfen"
 
-#: gui/slick/views/config_search.mako:1044
+#: gui/slick/views/config_search.mako:1068
 msgid "Add label to torrent"
 msgstr "Label zu Torrent hinzufügen"
 
-#: gui/slick/views/config_search.mako:1057
-#: gui/slick/views/config_search.mako:1061
-#: gui/slick/views/config_search.mako:1084
-#: gui/slick/views/config_search.mako:1088
+#: gui/slick/views/config_search.mako:1081
+#: gui/slick/views/config_search.mako:1085
+#: gui/slick/views/config_search.mako:1108
+#: gui/slick/views/config_search.mako:1112
 msgid "(blank spaces are not allowed)"
 msgstr "(Leerzeichen sind nicht erlaubt)"
 
-#: gui/slick/views/config_search.mako:1058
-#: gui/slick/views/config_search.mako:1085
+#: gui/slick/views/config_search.mako:1082
+#: gui/slick/views/config_search.mako:1109
 msgid "label plugin must be enabled in Deluge clients"
 msgstr "Label-Plugin muss in Deluge-Clients aktiviert sein"
 
-#: gui/slick/views/config_search.mako:1062
+#: gui/slick/views/config_search.mako:1086
 msgid "for QBitTorrent 3.3.1 and up"
 msgstr "für QBitTorrent 3.3.1 und höher"
 
-#: gui/slick/views/config_search.mako:1071
+#: gui/slick/views/config_search.mako:1095
 msgid "Add label to torrent for anime"
 msgstr "Label zu Anime-Torrent hinzufügen"
 
-#: gui/slick/views/config_search.mako:1089
+#: gui/slick/views/config_search.mako:1113
 msgid "for QBitTorrent 3.3.1 and up "
 msgstr "für QBitTorrent 3.3.1 und höher"
 
-#: gui/slick/views/config_search.mako:1098
+#: gui/slick/views/config_search.mako:1122
 #, fuzzy
 msgid "Download directory"
 msgstr "TV Download-Verzeichnis"
 
-#: gui/slick/views/config_search.mako:1110
+#: gui/slick/views/config_search.mako:1134
 #, fuzzy
 msgid "where Deluge will save downloaded files (blank for client default)"
 msgstr "Speicherort für Synology Download Station (Freilassen für Standard)"
 
-#: gui/slick/views/config_search.mako:1115
+#: gui/slick/views/config_search.mako:1139
 #, fuzzy
 msgid "Completed Directory"
 msgstr "Verzeichnis wählen"
 
-#: gui/slick/views/config_search.mako:1127
+#: gui/slick/views/config_search.mako:1151
 #, fuzzy
 msgid ""
 "where Deluge will move files after downloading is complete (blank for "
 "client default)"
 msgstr "Speicherort für Synology Download Station (Freilassen für Standard)"
 
-#: gui/slick/views/config_search.mako:1147
+#: gui/slick/views/config_search.mako:1171
 msgid ""
 "where <span id=\"torrent_client\">the torrent client</span> will save "
 "downloaded files (blank for client default)"
@@ -5734,27 +5749,27 @@ msgstr ""
 "<p>wohin <span id=\"torrent_client\"> der Torrent-Client</span> "
 "heruntergeladene Dateien speichert (freilassen für Client-Standard)"
 
-#: gui/slick/views/config_search.mako:1152
+#: gui/slick/views/config_search.mako:1176
 msgid "the destination has to be a shared folder for Synology DS</span>"
 msgstr "Das Ziel muss ein freigegebener Ordner für Synology DS sein</span>"
 
-#: gui/slick/views/config_search.mako:1160
+#: gui/slick/views/config_search.mako:1184
 msgid "Minimum seeding time"
 msgstr "Minimale Seeding-Zeit"
 
-#: gui/slick/views/config_search.mako:1171
+#: gui/slick/views/config_search.mako:1195
 msgid "time in hours"
 msgstr "Zeit in Stunden"
 
-#: gui/slick/views/config_search.mako:1176
+#: gui/slick/views/config_search.mako:1200
 msgid "(default:'0' passes blank to client and '-1' passes nothing)"
 msgstr "(Standard: '0' übergibt Leerstelle an Client' und '-1' übergibt nichts)"
 
-#: gui/slick/views/config_search.mako:1184
+#: gui/slick/views/config_search.mako:1208
 msgid "Start torrent paused"
 msgstr "Torrent pausiert starten"
 
-#: gui/slick/views/config_search.mako:1191
+#: gui/slick/views/config_search.mako:1215
 msgid ""
 "add .torrent to client but do <b style=\"font-weight:900\">not</b> start "
 "downloading"
@@ -5762,15 +5777,15 @@ msgstr ""
 ".torrent dem Client hinzufügen, jedoch den Download <b style=\"font-"
 "weight:900\"> nicht</b> starten"
 
-#: gui/slick/views/config_search.mako:1199
+#: gui/slick/views/config_search.mako:1223
 msgid "Allow high bandwidth"
 msgstr "Hohe Bandbreiten ermöglichen"
 
-#: gui/slick/views/config_search.mako:1206
+#: gui/slick/views/config_search.mako:1230
 msgid "use high bandwidth allocation if priority is high"
 msgstr "hohe Bandbreiten verwenden, wenn Priorität hoch ist"
 
-#: gui/slick/views/config_search.mako:1220
+#: gui/slick/views/config_search.mako:1244
 msgid "Test Connection"
 msgstr "Verbindung testen"
 
@@ -6111,7 +6126,7 @@ msgstr "Info-Sprache"
 #: gui/slick/views/displayShow.mako:269 gui/slick/views/displayShow.mako:445
 #: gui/slick/views/editShow.mako:120 gui/slick/views/inc_addShowOptions.mako:20
 #: gui/slick/views/manage_massEdit.mako:251
-#: sickchill/views/config/subtitles.py:48 sickchill/views/manage/index.py:587
+#: sickchill/views/config/subtitles.py:48 sickchill/views/manage/index.py:588
 msgid "Subtitles"
 msgstr "Untertitel"
 
@@ -7396,8 +7411,8 @@ msgstr "Manuelle Nachbearbeitung"
 msgid "Mass Update"
 msgstr "Massenaktualisierung"
 
-#: gui/slick/views/layouts/main.mako:176 sickchill/views/manage/index.py:309
-#: sickchill/views/manage/index.py:310
+#: gui/slick/views/layouts/main.mako:176 sickchill/views/manage/index.py:310
+#: sickchill/views/manage/index.py:311
 msgid "Backlog Overview"
 msgstr "Rückstandsübersicht"
 
@@ -7425,7 +7440,7 @@ msgstr "Emby aktualisieren"
 msgid "Manage Torrents"
 msgstr "Torrents verwalten"
 
-#: gui/slick/views/layouts/main.mako:192 sickchill/views/manage/index.py:616
+#: gui/slick/views/layouts/main.mako:192 sickchill/views/manage/index.py:617
 msgid "Failed Downloads"
 msgstr "Fehlgeschlagene Downloads"
 
@@ -8096,7 +8111,7 @@ msgstr ""
 "Aktualiserung der Szene-Nummerierung konnte für die Serie nicht erzwungen"
 " werden."
 
-#: sickchill/views/home.py:1166 sickchill/views/manage/index.py:500
+#: sickchill/views/home.py:1166 sickchill/views/manage/index.py:501
 msgid "{num_errors:d} error{plural} while saving changes:"
 msgstr "{num_errors:d} Fehler beim Speichern der Änderungen:"
 
@@ -8295,7 +8310,7 @@ msgstr "Einstellungen - Anime"
 #: sickchill/views/config/anime.py:63 sickchill/views/config/general.py:227
 #: sickchill/views/config/notifications.py:318
 #: sickchill/views/config/post_processing.py:167
-#: sickchill/views/config/providers.py:349 sickchill/views/config/search.py:177
+#: sickchill/views/config/providers.py:349 sickchill/views/config/search.py:179
 #: sickchill/views/config/subtitles.py:103
 msgid "Configuration Saved"
 msgstr "Konfiguration gespeichert"
@@ -8341,7 +8356,7 @@ msgstr ""
 #: sickchill/views/config/general.py:224
 #: sickchill/views/config/notifications.py:315
 #: sickchill/views/config/post_processing.py:165
-#: sickchill/views/config/search.py:174
+#: sickchill/views/config/search.py:176
 msgid "Error(s) Saving Configuration"
 msgstr "Fehler beim Speichern der Einstellungen"
 
@@ -8520,35 +8535,35 @@ msgstr "Folgenübersicht"
 msgid "Missing Subtitles"
 msgstr "Fehlende Untertitel"
 
-#: sickchill/views/manage/index.py:435
+#: sickchill/views/manage/index.py:436
 msgid "Mass Edit"
 msgstr "Massenbearbeitung"
 
 # | msgid "Unable to update show: {excption_format}"
-#: sickchill/views/manage/index.py:547
+#: sickchill/views/manage/index.py:548
 #, fuzzy
 msgid "Unable to update show: {exception_format}"
 msgstr "Serie konnte nicht aktualisiert werden: {excption_format}"
 
 # | msgid "Unable to refresh show {show_name}: {excption_format}"
-#: sickchill/views/manage/index.py:555
+#: sickchill/views/manage/index.py:556
 #, fuzzy
 msgid "Unable to refresh show {show_name}: {exception_format}"
 msgstr "Serie {show_name}: {excption_format} kann nicht aktualisiert werden"
 
-#: sickchill/views/manage/index.py:566
+#: sickchill/views/manage/index.py:567
 msgid "Errors encountered"
 msgstr "Aufgetretene Fehler"
 
-#: sickchill/views/manage/index.py:577
+#: sickchill/views/manage/index.py:578
 msgid "Refreshes"
 msgstr "Aktualisierungen"
 
-#: sickchill/views/manage/index.py:582
+#: sickchill/views/manage/index.py:583
 msgid "Renames"
 msgstr "Umbennenungen"
 
-#: sickchill/views/manage/index.py:592
+#: sickchill/views/manage/index.py:593
 msgid "The following actions were queued"
 msgstr "Folgende Aktionen wurden der Warteschlange hinzugefügt"
 
