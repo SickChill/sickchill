@@ -180,9 +180,9 @@ class TVDB(Indexer):
             return location
         return 'https://artworks.thetvdb.com/banners/{path}'.format(path=location)
 
-    @ExceptionDecorator(default_return='', catch=(HTTPError, KeyError))
-    def __call_images_api(self, show, thumb, keyType, subKey=None):
-        images = self.series_images(show.indexerid, show.lang, keyType=keyType, subKey=subKey)
+    @ExceptionDecorator(default_return='', catch=(HTTPError, KeyError), image_api=True)
+    def __call_images_api(self, show, thumb, keyType, subKey=None, lang=None):
+        images = self.series_images(show.indexerid, lang or show.lang, keyType=keyType, subKey=subKey)
         return self.complete_image_url(images.all()[0][('fileName', 'thumbnail')[thumb]])
 
     @staticmethod
