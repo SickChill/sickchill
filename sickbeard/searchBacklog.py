@@ -163,6 +163,9 @@ class BacklogSearcher(object):
             if cur_status not in {common.WANTED, common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER}:
                 continue
 
+            if cur_status == common.DOWNLOADED and sickbeard.BACKLOG_MISSING_ONLY:
+                continue
+
             if cur_status != common.WANTED:
                 if preferred_qualities:
                     if cur_quality in preferred_qualities:

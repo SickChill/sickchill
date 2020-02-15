@@ -271,6 +271,30 @@
 
                             </div>
 
+                            <div id="content_backlog_missing_only">
+
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <label class="component-title">${_('Backlog search for missing only')}</label>
+                                    </div>
+                                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <input id="backlog_missing_only" type="checkbox"
+                                                       name="backlog_missing_only" ${('', 'checked="checked"')[bool(sickbeard.BACKLOG_MISSING_ONLY)]}/>
+                                                <label for="backlog_missing_only">${_('restrict backlog searches to missing episodes only?')}</label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label><b>${_('note')}:</b> ${_('if enabled, this ignores episodes that are not preferred qualities')}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
                         </fieldset>
                     </div>
                 </div>

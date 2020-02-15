@@ -294,8 +294,9 @@ class Manage(Home, WebRoot):
                 [curShow.indexerid])
 
             for curResult in sql_results:
-                curEpCat = curShow.getOverview(curResult[b"status"])
+                curEpCat = curShow.getOverview(curResult[b"status"], backlog=sickbeard.BACKLOG_MISSING_ONLY)
                 if curEpCat:
+
                     epCats['{ep}'.format(ep=episode_num(curResult[b'season'], curResult[b'episode']))] = curEpCat
                     epCounts[curEpCat] += 1
 
