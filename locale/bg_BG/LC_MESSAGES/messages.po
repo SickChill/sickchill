@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-02-12 00:10+0000\n"
+"POT-Creation-Date: 2020-02-15 16:44+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: bg_BG\n"
@@ -128,15 +128,15 @@ msgstr "Мюзикъл"
 msgid "Talk-Show"
 msgstr "Токшоу"
 
-#: sickbeard/__init__.py:666
+#: sickbeard/__init__.py:664
 msgid "Ignore (do not process contents)"
 msgstr "Игнорирай (не обработвай съдържанието)"
 
-#: sickbeard/__init__.py:667
+#: sickbeard/__init__.py:665
 msgid "Unpack (process contents)"
 msgstr "Разопаковай (обработи съдържанието)"
 
-#: sickbeard/__init__.py:668
+#: sickbeard/__init__.py:666
 msgid "Treat as video (process archive as-is)"
 msgstr ""
 
@@ -1366,7 +1366,7 @@ msgid "Indexer"
 msgstr "Индексатор"
 
 #: gui/slick/views/addShows_newShow.mako:78
-#: gui/slick/views/config_general.mako:195
+#: gui/slick/views/config_general.mako:186
 msgid "All Indexers"
 msgstr "Всички източници"
 
@@ -1789,7 +1789,7 @@ msgid "Interface"
 msgstr "Интерфейс"
 
 #: gui/slick/views/config_general.mako:20
-#: gui/slick/views/config_general.mako:851 gui/slick/views/editShow.mako:268
+#: gui/slick/views/config_general.mako:842 gui/slick/views/editShow.mako:268
 msgid "Advanced Settings"
 msgstr "Разширени настройки"
 
@@ -1857,9 +1857,9 @@ msgstr ""
 "др. Използвайте 15 за 3 часа следобяд, 4 за 4 часа сутринта и т.н."
 
 #: gui/slick/views/config_general.mako:111
-#: gui/slick/views/config_general.mako:591
-#: gui/slick/views/config_general.mako:621
-#: gui/slick/views/config_general.mako:1073
+#: gui/slick/views/config_general.mako:582
+#: gui/slick/views/config_general.mako:612
+#: gui/slick/views/config_general.mako:1064
 #: gui/slick/views/config_notifications.mako:471
 #: gui/slick/views/config_notifications.mako:837
 #: gui/slick/views/config_notifications.mako:882
@@ -1912,14 +1912,10 @@ msgstr ""
 "постоянно изтриване"
 
 #: gui/slick/views/config_general.mako:144
-msgid "Log file folder location"
-msgstr "Местоположение на папката с Log файл"
-
-#: gui/slick/views/config_general.mako:153
 msgid "Number of Log files saved"
 msgstr "Брой записани Log файлове"
 
-#: gui/slick/views/config_general.mako:163
+#: gui/slick/views/config_general.mako:154
 msgid ""
 "number of log files saved when rotating logs (default: 5) (REQUIRES "
 "RESTART)"
@@ -1927,46 +1923,46 @@ msgstr ""
 "брой Log файлове, записани при въртене на файловете (по подразбиране: 5) "
 "(ИЗИСКВА СЕ РЕСТАРТИРАНЕ)"
 
-#: gui/slick/views/config_general.mako:171
+#: gui/slick/views/config_general.mako:162
 msgid "Size of Log files saved"
 msgstr "Размер на записаните Log файлове"
 
-#: gui/slick/views/config_general.mako:181
+#: gui/slick/views/config_general.mako:172
 msgid "maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)"
 msgstr ""
 "максималният размер в МБ на Log файл (по подразбиране: 1MB) (ИЗИСКВА СЕ "
 "РЕСТАРТИРАНЕ)"
 
-#: gui/slick/views/config_general.mako:189
+#: gui/slick/views/config_general.mako:180
 msgid "Use initial indexer set to"
 msgstr "Задай първоначален индексатор да е"
 
-#: gui/slick/views/config_general.mako:204
+#: gui/slick/views/config_general.mako:195
 msgid "as the default selection when adding new shows"
 msgstr "като избор по подразбиране когато се добавя ново предаване"
 
-#: gui/slick/views/config_general.mako:212
+#: gui/slick/views/config_general.mako:203
 msgid "Timeout show indexer at"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:222
+#: gui/slick/views/config_general.mako:213
 msgid "seconds of inactivity when finding new shows (default:20)"
 msgstr "секунди без действие при намиране на нови предавания (по подразбиране: 20)"
 
-#: gui/slick/views/config_general.mako:230
+#: gui/slick/views/config_general.mako:221
 msgid "Show root directories"
 msgstr "Покажи root директории"
 
-#: gui/slick/views/config_general.mako:235
+#: gui/slick/views/config_general.mako:226
 msgid "where the files of shows are located"
 msgstr "където се намират файловете на предавания"
 
-#: gui/slick/views/config_general.mako:248
-#: gui/slick/views/config_general.mako:319
-#: gui/slick/views/config_general.mako:647
-#: gui/slick/views/config_general.mako:835
-#: gui/slick/views/config_general.mako:1086
-#: gui/slick/views/config_general.mako:1231
+#: gui/slick/views/config_general.mako:239
+#: gui/slick/views/config_general.mako:310
+#: gui/slick/views/config_general.mako:638
+#: gui/slick/views/config_general.mako:826
+#: gui/slick/views/config_general.mako:1077
+#: gui/slick/views/config_general.mako:1222
 #: gui/slick/views/config_notifications.mako:186
 #: gui/slick/views/config_notifications.mako:335
 #: gui/slick/views/config_notifications.mako:466
@@ -2000,19 +1996,19 @@ msgstr "където се намират файловете на предава�
 msgid "Save Changes"
 msgstr "Запиши промените"
 
-#: gui/slick/views/config_general.mako:262 sickchill/views/manage/index.py:572
+#: gui/slick/views/config_general.mako:253 sickchill/views/manage/index.py:572
 msgid "Updates"
 msgstr "Актуализации"
 
-#: gui/slick/views/config_general.mako:263
+#: gui/slick/views/config_general.mako:254
 msgid "Options for software updates."
 msgstr "Опции за софтуерни актуализации."
 
-#: gui/slick/views/config_general.mako:271
+#: gui/slick/views/config_general.mako:262
 msgid "Check software updates"
 msgstr "Провери за обновяване"
 
-#: gui/slick/views/config_general.mako:275
+#: gui/slick/views/config_general.mako:266
 msgid ""
 "and display notifications when updates are available. Checks are run on "
 "startup and at the frequency set below*"
@@ -2020,11 +2016,11 @@ msgstr ""
 "и покажи съобщение при наличие на обновление. Проверките се задействат "
 "при стартиране и с избраната по-долу честота*"
 
-#: gui/slick/views/config_general.mako:281
+#: gui/slick/views/config_general.mako:272
 msgid "Automatically update"
 msgstr "Автоматична актуализация"
 
-#: gui/slick/views/config_general.mako:285
+#: gui/slick/views/config_general.mako:276
 msgid ""
 "fetch and install software updates. Updates are run on startup and in the"
 " background at the frequency set below*"
@@ -2033,143 +2029,143 @@ msgstr ""
 " задейства при стартиране и във фонов режим с честотата, определена "
 "по-долу *"
 
-#: gui/slick/views/config_general.mako:291
+#: gui/slick/views/config_general.mako:282
 msgid "Check the server every*"
 msgstr "Проверете сървъра на всеки *"
 
-#: gui/slick/views/config_general.mako:301
+#: gui/slick/views/config_general.mako:292
 msgid "hours for software updates (default:1)"
 msgstr "часа за софтуерни актуализации (по подразбиране:1)"
 
-#: gui/slick/views/config_general.mako:309
+#: gui/slick/views/config_general.mako:300
 msgid "Notify on software update"
 msgstr "Уведоми за актуализация на софтуера"
 
-#: gui/slick/views/config_general.mako:313
+#: gui/slick/views/config_general.mako:304
 msgid "send a message to all enabled notifiers when SickChill has been updated"
 msgstr ""
 "Изпрати съобщение до всички разрешени услуги за уведомление, когато "
 "SickChill е бил актуализиран"
 
-#: gui/slick/views/config_general.mako:333
+#: gui/slick/views/config_general.mako:324
 msgid "User Interface"
 msgstr "Потребителски интерфейс"
 
-#: gui/slick/views/config_general.mako:334
+#: gui/slick/views/config_general.mako:325
 msgid "Options for visual appearance."
 msgstr "Опции за външния вид."
 
-#: gui/slick/views/config_general.mako:343
+#: gui/slick/views/config_general.mako:334
 msgid "Interface Language"
 msgstr "Език на интерфейса"
 
-#: gui/slick/views/config_general.mako:349
+#: gui/slick/views/config_general.mako:340
 msgid "System Language"
 msgstr "Системен език"
 
-#: gui/slick/views/config_general.mako:358
-#: gui/slick/views/config_general.mako:379
+#: gui/slick/views/config_general.mako:349
+#: gui/slick/views/config_general.mako:370
 msgid "for appearance to take effect, save then refresh your browser"
 msgstr ""
 "за да влязат в сила промените, запишете и след това презаредете наново "
 "страницата"
 
-#: gui/slick/views/config_general.mako:366
+#: gui/slick/views/config_general.mako:357
 msgid "Display theme"
 msgstr "Тема"
 
-#: gui/slick/views/config_general.mako:372
+#: gui/slick/views/config_general.mako:363
 msgid "Dark"
 msgstr "Тъмна"
 
-#: gui/slick/views/config_general.mako:373
+#: gui/slick/views/config_general.mako:364
 msgid "Light"
 msgstr "Светла"
 
-#: gui/slick/views/config_general.mako:387
+#: gui/slick/views/config_general.mako:378
 msgid "Use a background image"
 msgstr "Използвай фоново изображение"
 
-#: gui/slick/views/config_general.mako:392
+#: gui/slick/views/config_general.mako:383
 msgid "use a custom image as background for SickChill"
 msgstr "използвай на персонализирано изображение като фон за SickChill"
 
-#: gui/slick/views/config_general.mako:398
+#: gui/slick/views/config_general.mako:389
 msgid "Background Path"
 msgstr "Папка на изображение за фон"
 
-#: gui/slick/views/config_general.mako:409
+#: gui/slick/views/config_general.mako:400
 msgid "Path to the background image"
 msgstr "Път към фоново изображение"
 
-#: gui/slick/views/config_general.mako:418
+#: gui/slick/views/config_general.mako:409
 msgid "Show fanart in the background"
 msgstr "Покажи fanart във фонов режим"
 
-#: gui/slick/views/config_general.mako:422
-#: gui/slick/views/config_general.mako:482
+#: gui/slick/views/config_general.mako:413
+#: gui/slick/views/config_general.mako:473
 msgid "on the show summary page"
 msgstr "на страницата с обощението за сериала"
 
-#: gui/slick/views/config_general.mako:428
+#: gui/slick/views/config_general.mako:419
 msgid "Fanart transparency"
 msgstr "Fanart прозрачност"
 
-#: gui/slick/views/config_general.mako:438
+#: gui/slick/views/config_general.mako:429
 msgid "transparency of the fanart in the background"
 msgstr "прозрачност на fanart във фонов режим"
 
-#: gui/slick/views/config_general.mako:447
+#: gui/slick/views/config_general.mako:438
 msgid "Use a custom stylesheet file"
 msgstr "Използвай потребителски stylesheet файл"
 
-#: gui/slick/views/config_general.mako:452
+#: gui/slick/views/config_general.mako:443
 msgid "use a custom .css file to style SickChill (for advanced users)"
 msgstr "използвай потребителски .css файл за стил на SickChill (за напреднали)"
 
-#: gui/slick/views/config_general.mako:458
+#: gui/slick/views/config_general.mako:449
 msgid "Stylesheet File Path"
 msgstr "Папка със stylesheet"
 
-#: gui/slick/views/config_general.mako:469
+#: gui/slick/views/config_general.mako:460
 msgid "Path to the stylesheet (.css) file"
 msgstr "Папка към stylesheet (.css) файл"
 
-#: gui/slick/views/config_general.mako:478
+#: gui/slick/views/config_general.mako:469
 msgid "Show all seasons"
 msgstr "Покажи всички сезони"
 
-#: gui/slick/views/config_general.mako:488
+#: gui/slick/views/config_general.mako:479
 msgid "Days to wait before updating ended shows"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:500
+#: gui/slick/views/config_general.mako:491
 msgid ""
 "Ended shows will only be updated after this many days have passed, if "
 "there is an update for the show"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:509
+#: gui/slick/views/config_general.mako:500
 msgid "Sort with \"The\", \"A\", \"An\""
 msgstr "Сортиране с \"The\", \"A\", \"An\""
 
-#: gui/slick/views/config_general.mako:513
+#: gui/slick/views/config_general.mako:504
 msgid "include articles (\"The\", \"A\", \"An\") when sorting show lists"
 msgstr "включва и (\"The\", \"A\", \"An\") при сортиране на списъци"
 
-#: gui/slick/views/config_general.mako:519
+#: gui/slick/views/config_general.mako:510
 msgid "Missed episodes range"
 msgstr "Диапазон на пропуснати епизоди"
 
-#: gui/slick/views/config_general.mako:530
+#: gui/slick/views/config_general.mako:521
 msgid "set the range in days of the missed episodes in the Schedule page"
 msgstr "задайте диапазона в дни на пропуснати епизоди в страницата с графика"
 
-#: gui/slick/views/config_general.mako:538
+#: gui/slick/views/config_general.mako:529
 msgid "Display fuzzy dates"
 msgstr "Показване на неясни дати"
 
-#: gui/slick/views/config_general.mako:542
+#: gui/slick/views/config_general.mako:533
 msgid ""
 "move absolute dates into tooltips and display e.g. \"Last Thu\", \"On "
 "Tue\""
@@ -2177,46 +2173,46 @@ msgstr ""
 "премести абсолютна дати в пояснения и покажете например \"посл. Четв.\", "
 "\"в Четв.\""
 
-#: gui/slick/views/config_general.mako:548
+#: gui/slick/views/config_general.mako:539
 msgid "Trim zero padding"
 msgstr "Премахни нулата"
 
-#: gui/slick/views/config_general.mako:552
+#: gui/slick/views/config_general.mako:543
 msgid "remove the leading number \"0\" shown on hour of day, and date of month"
 msgstr "премахни \"0\" от показваните час от деня, и ден от месеца"
 
-#: gui/slick/views/config_general.mako:558
+#: gui/slick/views/config_general.mako:549
 msgid "Date style"
 msgstr "Стил на дата"
 
-#: gui/slick/views/config_general.mako:567
+#: gui/slick/views/config_general.mako:558
 msgid "Use System Default"
 msgstr "Настройка по подразбиране"
 
-#: gui/slick/views/config_general.mako:577
+#: gui/slick/views/config_general.mako:568
 msgid "Time style"
 msgstr "Стил на час"
 
-#: gui/slick/views/config_general.mako:591
+#: gui/slick/views/config_general.mako:582
 msgid "seconds are only shown on the History page"
 msgstr "секундите са показват само на страницата с история"
 
-#: gui/slick/views/config_general.mako:599
+#: gui/slick/views/config_general.mako:590
 msgid "Timezone"
 msgstr "Часовата зона"
 
-#: gui/slick/views/config_general.mako:605
+#: gui/slick/views/config_general.mako:596
 msgid "Local"
 msgstr "Локално"
 
-#: gui/slick/views/config_general.mako:611
+#: gui/slick/views/config_general.mako:602
 #: gui/slick/views/inc_home_menu.mako:48
 #: gui/slick/views/inc_home_showList.mako:183 gui/slick/views/manage.mako:40
 #: gui/slick/views/schedule.mako:58 gui/slick/views/schedule.mako:113
 msgid "Network"
 msgstr "ТВ Мрежа"
 
-#: gui/slick/views/config_general.mako:616
+#: gui/slick/views/config_general.mako:607
 msgid ""
 "display dates and times in either your timezone or the shows network "
 "timezone"
@@ -2224,7 +2220,7 @@ msgstr ""
 "показвай на дати и часове във вашата часовата зона или оригиналната "
 "часовата зона на излъчване"
 
-#: gui/slick/views/config_general.mako:621
+#: gui/slick/views/config_general.mako:612
 msgid ""
 "use local timezone to start searching for episodes minutes after show "
 "ends (depends on your dailysearch frequency)"
@@ -2233,19 +2229,19 @@ msgstr ""
 "минути след излъчването на серията (зависи от вашите настройки за честота"
 " на дневно търсене)"
 
-#: gui/slick/views/config_general.mako:629
+#: gui/slick/views/config_general.mako:620
 msgid "Download url"
 msgstr "Изтегляне url"
 
-#: gui/slick/views/config_general.mako:639
+#: gui/slick/views/config_general.mako:630
 msgid "URL where the shows can be downloaded."
 msgstr "URL адрес, от където предаванията могат да бъдат изтеглени."
 
-#: gui/slick/views/config_general.mako:662
+#: gui/slick/views/config_general.mako:653
 msgid "Web Interface"
 msgstr "Уеб интерфейс"
 
-#: gui/slick/views/config_general.mako:663
+#: gui/slick/views/config_general.mako:654
 msgid ""
 "it is recommended that you enable a username and password to secure "
 "SickChill from being tampered with remotely."
@@ -2253,11 +2249,11 @@ msgstr ""
 "препоръчително е да зададете потребителско име и парола, за да се "
 "защитите SickChill от дистанционно посегателство."
 
-#: gui/slick/views/config_general.mako:664
+#: gui/slick/views/config_general.mako:655
 msgid "these options require a manual restart to take effect."
 msgstr "тези настройки изискват ръчно рестартиране, за да влязат в сила."
 
-#: gui/slick/views/config_general.mako:672
+#: gui/slick/views/config_general.mako:663
 #: gui/slick/views/config_notifications.mako:2192
 #: gui/slick/views/config_providers.mako:164
 #: gui/slick/views/config_providers.mako:278
@@ -2265,39 +2261,39 @@ msgstr "тези настройки изискват ръчно рестарти
 msgid "API key"
 msgstr "API ключ"
 
-#: gui/slick/views/config_general.mako:683
+#: gui/slick/views/config_general.mako:674
 msgid "used to give 3rd party programs limited access to SickChill"
 msgstr "използван за даване на ограничен достъп до SickChill на външни програми"
 
-#: gui/slick/views/config_general.mako:688
+#: gui/slick/views/config_general.mako:679
 msgid "you can try all the features of the API"
 msgstr "Можете да тествате всички функции на API"
 
-#: gui/slick/views/config_general.mako:688
+#: gui/slick/views/config_general.mako:679
 msgid "here"
 msgstr "тук"
 
-#: gui/slick/views/config_general.mako:696
+#: gui/slick/views/config_general.mako:687
 msgid "HTTP logs"
 msgstr "HTTP logs"
 
-#: gui/slick/views/config_general.mako:700
+#: gui/slick/views/config_general.mako:691
 msgid "enable logs from the internal Tornado web server"
 msgstr "разреши log от вградения Tornado уеб сървър"
 
-#: gui/slick/views/config_general.mako:706
+#: gui/slick/views/config_general.mako:697
 msgid "HTTP username"
 msgstr "HTTP потребителско име"
 
-#: gui/slick/views/config_general.mako:716
+#: gui/slick/views/config_general.mako:707
 msgid "set blank for no login"
 msgstr "задайте празно за ограничение на влизането"
 
-#: gui/slick/views/config_general.mako:724
+#: gui/slick/views/config_general.mako:715
 msgid "HTTP password"
 msgstr "HTTP парола"
 
-#: gui/slick/views/config_general.mako:736
+#: gui/slick/views/config_general.mako:727
 #: gui/slick/views/config_notifications.mako:259
 #: gui/slick/views/config_notifications.mako:281
 #: gui/slick/views/config_notifications.mako:430
@@ -2305,113 +2301,113 @@ msgstr "HTTP парола"
 msgid "blank = no authentication"
 msgstr "празен = няма удостоверяване"
 
-#: gui/slick/views/config_general.mako:744
+#: gui/slick/views/config_general.mako:735
 msgid "HTTP port"
 msgstr "HTTP порт"
 
-#: gui/slick/views/config_general.mako:754
+#: gui/slick/views/config_general.mako:745
 msgid "web port to browse and access SickChill (default:8081)"
 msgstr "уеб порт за разглеждате и достъп до SickChill (по подразбиране:8081)"
 
-#: gui/slick/views/config_general.mako:762
+#: gui/slick/views/config_general.mako:753
 msgid "Notify on login"
 msgstr "Уведоми при вход"
 
-#: gui/slick/views/config_general.mako:766
+#: gui/slick/views/config_general.mako:757
 msgid "enable to be notified when a new login happens in webserver"
 msgstr ""
 "активирайте за да бъдете уведомявани, когато се осъществи нов вход в уеб "
 "сървъра"
 
-#: gui/slick/views/config_general.mako:772
+#: gui/slick/views/config_general.mako:763
 msgid "Listen on IPv6"
 msgstr "Слушайте на IPv6"
 
-#: gui/slick/views/config_general.mako:776
+#: gui/slick/views/config_general.mako:767
 msgid "attempt binding to any available IPv6 address"
 msgstr "опит за свързване с всеки наличен IPv6 адрес"
 
-#: gui/slick/views/config_general.mako:782
+#: gui/slick/views/config_general.mako:773
 msgid "Enable HTTPS"
 msgstr "Активирате на HTTPS"
 
-#: gui/slick/views/config_general.mako:786
+#: gui/slick/views/config_general.mako:777
 msgid "enable access to the web interface using a HTTPS address"
 msgstr "разрешаване на достъп до уеб интерфейсът с помощта на HTTPS адрес"
 
-#: gui/slick/views/config_general.mako:794
+#: gui/slick/views/config_general.mako:785
 msgid "HTTPS certificate"
 msgstr "HTTPS сертификат"
 
-#: gui/slick/views/config_general.mako:798
+#: gui/slick/views/config_general.mako:789
 msgid "file name or path to HTTPS certificate"
 msgstr "името на файла или път към HTTPS сертификат"
 
-#: gui/slick/views/config_general.mako:804
+#: gui/slick/views/config_general.mako:795
 msgid "HTTPS key"
 msgstr "HTTPS ключ"
 
-#: gui/slick/views/config_general.mako:808
+#: gui/slick/views/config_general.mako:799
 msgid "file name or path to HTTPS key"
 msgstr "името на файла или път към HTTPS ключ"
 
-#: gui/slick/views/config_general.mako:816
+#: gui/slick/views/config_general.mako:807
 msgid "Reverse proxy headers"
 msgstr "Reverse proxy headers"
 
-#: gui/slick/views/config_general.mako:822
+#: gui/slick/views/config_general.mako:813
 msgid "accept the following reverse proxy headers (advanced)..."
 msgstr "приемай следните reverse proxy headers (за напреднали)..."
 
-#: gui/slick/views/config_general.mako:827
+#: gui/slick/views/config_general.mako:818
 msgid "(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)"
 msgstr "(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)"
 
-#: gui/slick/views/config_general.mako:859
+#: gui/slick/views/config_general.mako:850
 msgid "CPU throttling"
 msgstr "CPU ограничение"
 
-#: gui/slick/views/config_general.mako:873
+#: gui/slick/views/config_general.mako:864
 msgid "Normal (default). High is lower and Low is higher CPU use"
 msgstr ""
 "Нормален (по подразбиране). Висок е по-ниско и Нисък е по-високо "
 "натоварване на CPU"
 
-#: gui/slick/views/config_general.mako:881
+#: gui/slick/views/config_general.mako:872
 msgid "Anonymous redirect"
 msgstr "Анонимно пренасочване"
 
-#: gui/slick/views/config_general.mako:891
+#: gui/slick/views/config_general.mako:882
 msgid "backlink protection via anonymizer service, must end in \"?\""
 msgstr "backlink защита чрез услуга за анонимност, трябва да завършва с \"?\""
 
-#: gui/slick/views/config_general.mako:899
+#: gui/slick/views/config_general.mako:890
 msgid "Enable debug"
 msgstr "Активирай debug режим"
 
-#: gui/slick/views/config_general.mako:903
+#: gui/slick/views/config_general.mako:894
 msgid "enable debug logs"
 msgstr "разрешаване debug logs"
 
-#: gui/slick/views/config_general.mako:909
+#: gui/slick/views/config_general.mako:900
 msgid "Verify SSL Certs"
 msgstr "Проверка на SSL сертификати"
 
-#: gui/slick/views/config_general.mako:913
+#: gui/slick/views/config_general.mako:904
 msgid "verify SSL Certificates (Disable this for broken SSL installs (Like QNAP))"
 msgstr ""
 "проверка на SSL сертификати (забрани при счупена SSL инсталация (като "
 "QNAP))"
 
-#: gui/slick/views/config_general.mako:919
+#: gui/slick/views/config_general.mako:910
 msgid "No Restart"
 msgstr "Без рестартиране"
 
-#: gui/slick/views/config_general.mako:925
+#: gui/slick/views/config_general.mako:916
 msgid "only shutdown when restarting SR"
 msgstr "само спирай напълно кога рестартира SR"
 
-#: gui/slick/views/config_general.mako:930
+#: gui/slick/views/config_general.mako:921
 msgid ""
 "only select this when you have external software restarting SR "
 "automatically when it stops (like FireDaemon)"
@@ -2419,171 +2415,171 @@ msgstr ""
 "изберете това само, когато имате външен софтуер, който рестартира SR "
 "автоматично, когато той спре (като FireDaemon)"
 
-#: gui/slick/views/config_general.mako:938
+#: gui/slick/views/config_general.mako:929
 msgid "Encrypt passwords"
 msgstr "Шифроване на паролите"
 
-#: gui/slick/views/config_general.mako:944
+#: gui/slick/views/config_general.mako:935
 msgid "in the <code>config.ini</code> file"
 msgstr "в файла <code>config.ini</code>"
 
-#: gui/slick/views/config_general.mako:949
+#: gui/slick/views/config_general.mako:940
 #: gui/slick/views/config_postProcessing.mako:420
 #: gui/slick/views/config_subtitles.mako:215
 msgid "warning"
 msgstr "внимание"
 
-#: gui/slick/views/config_general.mako:949
+#: gui/slick/views/config_general.mako:940
 msgid "passwords must only contain"
 msgstr "паролите трябва да съдържат само"
 
-#: gui/slick/views/config_general.mako:950
+#: gui/slick/views/config_general.mako:941
 msgid "ASCII characters"
 msgstr "ASCII знаци"
 
-#: gui/slick/views/config_general.mako:958
+#: gui/slick/views/config_general.mako:949
 msgid "Unprotected calendar"
 msgstr "Незащитен календар"
 
-#: gui/slick/views/config_general.mako:964
+#: gui/slick/views/config_general.mako:955
 msgid "allow subscribing to the calendar without user and password"
 msgstr "позволи абониране за календара без потребителско име и парола"
 
-#: gui/slick/views/config_general.mako:969
+#: gui/slick/views/config_general.mako:960
 msgid "some services like Google Calendar only work this way"
 msgstr "някои услуги като Google Календар работят само по този начин"
 
-#: gui/slick/views/config_general.mako:977
+#: gui/slick/views/config_general.mako:968
 msgid "Google Calendar Icons"
 msgstr "Google Календар икони"
 
-#: gui/slick/views/config_general.mako:981
+#: gui/slick/views/config_general.mako:972
 msgid "show an icon next to exported calendar events in Google Calendar"
 msgstr "покажи икона до експортираните календарни събития в Google Календар"
 
-#: gui/slick/views/config_general.mako:987
+#: gui/slick/views/config_general.mako:978
 msgid "Proxy host"
 msgstr "Прокси хост"
 
-#: gui/slick/views/config_general.mako:997
+#: gui/slick/views/config_general.mako:988
 msgid "blank to disable or proxy to use when connecting to providers"
 msgstr ""
 "празно за деактивиране, или прокси сървър, който да се използва при "
 "свързване към доставчици"
 
-#: gui/slick/views/config_general.mako:1003
+#: gui/slick/views/config_general.mako:994
 msgid "also use global proxy setting for indexers (tvdb, xem, anidb, etc.)"
 msgstr ""
 "също така използвай глобални прокси настройки за индексаторите (tvdb, "
 "xem, anidb и др.)"
 
-#: gui/slick/views/config_general.mako:1012
+#: gui/slick/views/config_general.mako:1003
 msgid "Skip Remove Detection"
 msgstr "Пропусни откриването на премахнати"
 
-#: gui/slick/views/config_general.mako:1018
+#: gui/slick/views/config_general.mako:1009
 msgid "skip detection of removed files"
 msgstr "пропусни откриване на премахнати файлове"
 
-#: gui/slick/views/config_general.mako:1023
+#: gui/slick/views/config_general.mako:1014
 msgid "if disabled the episode will be set to the default deleted status"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:1031
+#: gui/slick/views/config_general.mako:1022
 msgid "Ignore Broken Symbolic Links"
 msgstr "Игнориране на невалидните символични връзки"
 
-#: gui/slick/views/config_general.mako:1037
+#: gui/slick/views/config_general.mako:1028
 msgid ""
 "If checked, broken symbolic links warnings generated when calculating "
 "show size will be logged as debug"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:1045
+#: gui/slick/views/config_general.mako:1036
 msgid "Default deleted episode status"
 msgstr "Статус по подразбиране на изтрити епизоди"
 
-#: gui/slick/views/config_general.mako:1068
+#: gui/slick/views/config_general.mako:1059
 msgid "define the status to be set for media file that has been deleted."
 msgstr ""
 "задаване на статус, който да бъде зададен, за вече изтрити медийни "
 "файлове."
 
-#: gui/slick/views/config_general.mako:1073
+#: gui/slick/views/config_general.mako:1064
 msgid "Archived option will keep previous downloaded quality"
 msgstr "Избира за архивиране ще запази прешното изтеглено качество"
 
-#: gui/slick/views/config_general.mako:1078
+#: gui/slick/views/config_general.mako:1069
 msgid "example: Downloaded (1080p WEB-DL) ==> Archived (1080p WEB-DL)"
 msgstr "пример: Изтеглен (1080p WEB-DL) ==> Архивиран (1080p WEB-DL)"
 
-#: gui/slick/views/config_general.mako:1101
+#: gui/slick/views/config_general.mako:1092
 msgid "Options for github related features."
 msgstr "Опции за github свързани функции."
 
-#: gui/slick/views/config_general.mako:1110
+#: gui/slick/views/config_general.mako:1101
 msgid "GitHub remote for branch"
 msgstr "GitHub дистанционен достъп до клон"
 
-#: gui/slick/views/config_general.mako:1120
+#: gui/slick/views/config_general.mako:1111
 msgid "access repo configured remotes (save then refresh browser)"
 msgstr "настроен дистанционен достъп на repo (запазете и презаредете броузъра)"
 
-#: gui/slick/views/config_general.mako:1125
+#: gui/slick/views/config_general.mako:1116
 msgid "default"
 msgstr "по подразбиране"
 
-#: gui/slick/views/config_general.mako:1125
+#: gui/slick/views/config_general.mako:1116
 msgid "origin"
 msgstr "произход"
 
-#: gui/slick/views/config_general.mako:1133
+#: gui/slick/views/config_general.mako:1124
 msgid "Branch version"
 msgstr "Версия на branch"
 
-#: gui/slick/views/config_general.mako:1152
+#: gui/slick/views/config_general.mako:1143
 msgid "GitHub username"
 msgstr "GitHub потребителско име"
 
-#: gui/slick/views/config_general.mako:1162
+#: gui/slick/views/config_general.mako:1153
 msgid "Only used for web IRC chat"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:1170
+#: gui/slick/views/config_general.mako:1161
 msgid "GitHub personal access token"
 msgstr "GitHub персонален token за достъп"
 
-#: gui/slick/views/config_general.mako:1180
+#: gui/slick/views/config_general.mako:1171
 msgid "Generate Token"
 msgstr "Генериране на Token"
 
-#: gui/slick/views/config_general.mako:1182
+#: gui/slick/views/config_general.mako:1173
 msgid "Manage Tokens"
 msgstr "Управление на Tokens"
 
-#: gui/slick/views/config_general.mako:1188
+#: gui/slick/views/config_general.mako:1179
 msgid "*** (REQUIRED FOR SUBMITTING ISSUES) ***"
 msgstr "*** (ИЗИСКВА СЕ ЗА ПОДАВАНЕ НА СИГНАЛИ ЗА ПРОБЛЕМИ) ***"
 
-#: gui/slick/views/config_general.mako:1194
+#: gui/slick/views/config_general.mako:1185
 msgid ""
 "Provide repo:status, public_repo, write:discussion, read:discussion, "
 "user, gist, and notifications"
 msgstr ""
 
-#: gui/slick/views/config_general.mako:1203
+#: gui/slick/views/config_general.mako:1194
 msgid "Git executable path"
 msgstr "Git път до изпълнимия файл"
 
-#: gui/slick/views/config_general.mako:1213
+#: gui/slick/views/config_general.mako:1204
 msgid "only needed if OS is unable to locate git from env"
 msgstr "необходим е само ако OС не може да локализира git в системата"
 
-#: gui/slick/views/config_general.mako:1221
+#: gui/slick/views/config_general.mako:1212
 msgid "Git reset"
 msgstr "Git нулиране"
 
-#: gui/slick/views/config_general.mako:1225
+#: gui/slick/views/config_general.mako:1216
 msgid ""
 "removes untracked files and performs a hard reset on git branch "
 "automatically to help resolve update issues"
@@ -8085,7 +8081,7 @@ msgstr ""
 msgid "Config - Anime"
 msgstr "Настройки - аниме"
 
-#: sickchill/views/config/anime.py:63 sickchill/views/config/general.py:233
+#: sickchill/views/config/anime.py:63 sickchill/views/config/general.py:227
 #: sickchill/views/config/notifications.py:318
 #: sickchill/views/config/post_processing.py:167
 #: sickchill/views/config/providers.py:349 sickchill/views/config/search.py:177
@@ -8119,25 +8115,19 @@ msgstr ""
 "Вашият избор по подразбиране за \"Добави предаване\" са зададени на вашия"
 " текущ избор."
 
-#: sickchill/views/config/general.py:197
-msgid "Unable to create directory {directory}, log directory not changed."
-msgstr ""
-"Не може да се създаде директория {directory}, директорията за log файл не"
-" беше променена."
-
-#: sickchill/views/config/general.py:205
+#: sickchill/views/config/general.py:199
 msgid "Unable to create directory {directory}, https cert directory not changed."
 msgstr ""
 "Не може да се създаде директория {directory}, директорията с https "
 "сертификат не беше променена."
 
-#: sickchill/views/config/general.py:209
+#: sickchill/views/config/general.py:203
 msgid "Unable to create directory {directory}, https key directory not changed."
 msgstr ""
 "Не може да се създаде директория {directory}, директорията с https ключ "
 "не беше променена."
 
-#: sickchill/views/config/general.py:230
+#: sickchill/views/config/general.py:224
 #: sickchill/views/config/notifications.py:315
 #: sickchill/views/config/post_processing.py:165
 #: sickchill/views/config/search.py:174
