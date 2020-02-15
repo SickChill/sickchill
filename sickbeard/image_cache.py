@@ -158,9 +158,9 @@ class ImageCache(object):
         if ek(os.path.isfile, path):
             try:
                 return 'cache' + path.split(sickbeard.CACHE_DIR)[1].replace('\\', '/')
-            except:
-                logger.log('Error with cache path, path={}, cache={}, actual_cache={}, split={}'.format(
-                    path, sickbeard.CACHE_DIR, sickbeard.ACTUAL_CACHE_DIR, str(path.split(sickbeard.CACHE_DIR))))
+            except (AttributeError, ValueError, IndexError):
+                logger.log('Error with cache path, path={}, cache={}, split={}'.format(
+                    path, sickbeard.CACHE_DIR, str(path.split(sickbeard.CACHE_DIR))))
         return ('images/poster.png', 'images/banner.png')['banner' in which]
 
     BANNER = 1

@@ -155,7 +155,6 @@ INIT_LOCK = Lock()
 MESSAGES_LOCK = Lock()
 started = {}
 
-ACTUAL_LOG_DIR = None
 LOG_DIR = None
 LOG_NR = 5
 LOG_SIZE = 10.0
@@ -197,7 +196,6 @@ INDEXER_DEFAULT_LANGUAGE = None
 EP_DEFAULT_DELETED_STATUS = None
 LAUNCH_BROWSER = False
 CACHE_DIR = None
-ACTUAL_CACHE_DIR = None
 ROOT_DIRS = None
 
 TRASH_REMOVE_SHOW = False
@@ -684,7 +682,7 @@ def get_backlog_cycle_time():
 def initialize(consoleLogging=True):
     with INIT_LOCK:
 
-        global BRANCH, GIT_RESET, GIT_REMOTE, GIT_REMOTE_URL, CUR_COMMIT_HASH, CUR_COMMIT_BRANCH, ACTUAL_LOG_DIR, LOG_DIR, LOG_NR, LOG_SIZE, WEB_PORT, WEB_LOG,\
+        global BRANCH, GIT_RESET, GIT_REMOTE, GIT_REMOTE_URL, CUR_COMMIT_HASH, CUR_COMMIT_BRANCH, LOG_DIR, LOG_NR, LOG_SIZE, WEB_PORT, WEB_LOG,\
             ENCRYPTION_VERSION, ENCRYPTION_SECRET, WEB_ROOT, WEB_USERNAME, WEB_PASSWORD, WEB_HOST, WEB_IPV6, WEB_COOKIE_SECRET, WEB_USE_GZIP, API_KEY,\
             ENABLE_HTTPS, HTTPS_CERT, HTTPS_KEY, HANDLE_REVERSE_PROXY, USE_NZBS, USE_TORRENTS, NZB_METHOD, NZB_DIR, DOWNLOAD_PROPERS, RANDOMIZE_PROVIDERS, \
             CHECK_PROPERS_INTERVAL, ALLOW_HIGH_PRIORITY, SAB_FORCED, TORRENT_METHOD, NOTIFY_ON_LOGIN, SAB_USERNAME, SAB_PASSWORD, SAB_APIKEY, SAB_CATEGORY, \
@@ -715,7 +713,7 @@ def initialize(consoleLogging=True):
             PUSHBULLET_NOTIFY_ONSNATCH, PUSHBULLET_NOTIFY_ONDOWNLOAD, PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHBULLET_API, PUSHBULLET_DEVICE,\
             PUSHBULLET_CHANNEL, versionCheckScheduler, VERSION_NOTIFY, AUTO_UPDATE, NOTIFY_ON_UPDATE, PROCESS_AUTOMATICALLY, NO_DELETE, USE_ICACLS, UNPACK, \
             CPU_PRESET, UNPACK_DIR, UNRAR_TOOL, ALT_UNRAR_TOOL, KEEP_PROCESSED_DIR, PROCESS_METHOD, PROCESSOR_FOLLOW_SYMLINKS, DELRARCONTENTS, \
-            TV_DOWNLOAD_DIR, UPDATE_FREQUENCY, showQueueScheduler, searchQueueScheduler, postProcessorTaskScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, \
+            TV_DOWNLOAD_DIR, UPDATE_FREQUENCY, showQueueScheduler, searchQueueScheduler, postProcessorTaskScheduler, ROOT_DIRS, CACHE_DIR, \
             TIMEZONE_DISPLAY, NAMING_PATTERN, NAMING_MULTI_EP, NAMING_ANIME_MULTI_EP, NAMING_FORCE_FOLDERS, NAMING_ABD_PATTERN, NAMING_CUSTOM_ABD, \
             NAMING_SPORTS_PATTERN, NAMING_CUSTOM_SPORTS, NAMING_ANIME_PATTERN, NAMING_CUSTOM_ANIME, NAMING_STRIP_YEAR, RENAME_EPISODES, AIRDATE_EPISODES, \
             FILE_TIMESTAMP_TIMEZONE, properFinderScheduler, PROVIDER_ORDER, autoPostProcessorScheduler, providerList, newznabProviderList, \
@@ -792,8 +790,7 @@ def initialize(consoleLogging=True):
         if DEFAULT_PAGE not in ('home', 'schedule', 'history', 'news', 'IRC'):
             DEFAULT_PAGE = 'home'
 
-        ACTUAL_LOG_DIR = check_setting_str(CFG, 'General', 'log_dir', 'Logs')
-        LOG_DIR = ek(os.path.normpath, ek(os.path.join, DATA_DIR, ACTUAL_LOG_DIR))
+        LOG_DIR = ek(os.path.normpath, ek(os.path.join, DATA_DIR, 'Logs'))
         LOG_NR = check_setting_int(CFG, 'General', 'log_nr', 5, min_val=1)  # Default to 5 backup file (sickchill.log.x)
         LOG_SIZE = check_setting_float(CFG, 'General', 'log_size', 10.0, min_val=0.5)  # Default to max 10MB per logfile
 
@@ -831,22 +828,17 @@ def initialize(consoleLogging=True):
         # current commit branch
         CUR_COMMIT_BRANCH = check_setting_str(CFG, 'General', 'cur_commit_branch')
 
-        ACTUAL_CACHE_DIR = check_setting_str(CFG, 'General', 'cache_dir', os.path.sep.join(("gui", "slick", "cache")))
+        GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
+        GUI_LANG = check_setting_str(CFG, 'GUI', 'language')
 
-        # fix bad configs due to buggy code
-        if ACTUAL_CACHE_DIR == 'None':
-            ACTUAL_CACHE_DIR = os.path.sep.join(("gui", "slick", "cache"))
-
-        # unless they specify, put the cache dir inside the data dir
-        if not ek(os.path.isabs, ACTUAL_CACHE_DIR):
-            CACHE_DIR = ek(os.path.join, DATA_DIR, ACTUAL_CACHE_DIR)
+        if GUI_LANG:
+            gettext.translation('messages', LOCALE_DIR, languages=[GUI_LANG], codeset='UTF-8').install(unicode=1, names=["ngettext"])
         else:
-            CACHE_DIR = ACTUAL_CACHE_DIR
+            gettext.install('messages', LOCALE_DIR, unicode=1, codeset='UTF-8', names=["ngettext"])
 
-        if not helpers.makeDir(CACHE_DIR):
-            logger.log("!!! Creating local cache dir failed, using system default", logger.ERROR)
-            CACHE_DIR = ek(os.path.join, DATA_DIR, os.path.sep.join(("gui", "slick", "cache")))
-            ACTUAL_CACHE_DIR = os.path.sep.join(("gui", "slick", "cache"))
+        load_gettext_translations(LOCALE_DIR, 'messages')
+
+        CACHE_DIR = ek(os.path.normpath, ek(os.path.join, PROG_DIR, "gui", GUI_NAME, "cache"))
 
         # Check if we need to perform a restore of the cache folder
         try:
@@ -885,16 +877,6 @@ def initialize(consoleLogging=True):
                         if cleanupDir not in ['rss', 'sessions', 'indexers']:
                             logger.log("Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
 
-        if os.path.sep != '/' and CACHE_DIR.endswith("gui/slick/cache") or ACTUAL_CACHE_DIR.endswith("gui/slick/cache"):
-            ACTUAL_CACHE_DIR = ACTUAL_CACHE_DIR.replace('/', '\\')
-            CACHE_DIR = CACHE_DIR.replace('/', os.path.sep)
-
-        if CACHE_DIR in ('cache', ek(os.path.join, DATA_DIR, 'cache')):
-            new_cache_dir = ek(os.path.join, DATA_DIR, os.path.sep.join(("gui", "slick", "cache")))
-            helpers.moveFile(CACHE_DIR, new_cache_dir)
-            CACHE_DIR = new_cache_dir
-            ACTUAL_CACHE_DIR = os.path.sep.join(("gui", "slick", "cache"))
-
         IMAGE_CACHE = image_cache.ImageCache()
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
         SICKCHILL_BACKGROUND = check_setting_bool(CFG, 'GUI', 'sickchill_background')
@@ -903,16 +885,6 @@ def initialize(consoleLogging=True):
         FANART_BACKGROUND_OPACITY = check_setting_float(CFG, 'GUI', 'fanart_background_opacity', 0.4, min_val=0.1, max_val=1.0)
         CUSTOM_CSS = check_setting_bool(CFG, 'GUI', 'custom_css')
         CUSTOM_CSS_PATH = check_setting_str(CFG, 'GUI', 'custom_css_path')
-
-        GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
-        GUI_LANG = check_setting_str(CFG, 'GUI', 'language')
-
-        if GUI_LANG:
-            gettext.translation('messages', LOCALE_DIR, languages=[GUI_LANG], codeset='UTF-8').install(unicode=1, names=["ngettext"])
-        else:
-            gettext.install('messages', LOCALE_DIR, unicode=1, codeset='UTF-8', names=["ngettext"])
-
-        load_gettext_translations(LOCALE_DIR, 'messages')
 
         SOCKET_TIMEOUT = check_setting_int(CFG, 'General', 'socket_timeout', 30, min_val=0)
         socket.setdefaulttimeout(SOCKET_TIMEOUT)
@@ -1842,7 +1814,6 @@ def save_config():
             'config_version': CONFIG_VERSION,
             'encryption_version': int(ENCRYPTION_VERSION),
             'encryption_secret': ENCRYPTION_SECRET,
-            'log_dir': ACTUAL_LOG_DIR if ACTUAL_LOG_DIR else 'Logs',
             'log_nr': int(LOG_NR),
             'log_size': float(LOG_SIZE),
             'socket_timeout': SOCKET_TIMEOUT,
@@ -1930,7 +1901,6 @@ def save_config():
 
             'backlog_days': int(BACKLOG_DAYS),
 
-            'cache_dir': ACTUAL_CACHE_DIR if ACTUAL_CACHE_DIR else os.path.sep.join(("gui", "slick", "cache")),
             'root_dirs': ROOT_DIRS if ROOT_DIRS else '',
             'tv_download_dir': TV_DOWNLOAD_DIR,
             'keep_processed_dir': int(KEEP_PROCESSED_DIR),

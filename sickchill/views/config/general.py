@@ -90,7 +90,7 @@ class ConfigGeneral(Config):
         ui.notifications.message(_('Saved Defaults'), _('Your "add show" defaults have been set to your current selections.'))
 
     def saveGeneral(
-            self, log_dir=None, log_nr=5, log_size=1, web_port=None, notify_on_login=None, web_log=None, encryption_version=None, web_ipv6=None,
+            self, log_nr=5, log_size=1, web_port=None, notify_on_login=None, web_log=None, encryption_version=None, web_ipv6=None,
             trash_remove_show=None, trash_rotate_logs=None, update_frequency=None, skip_removed_files=None,
             indexerDefaultLang='en', ep_default_deleted_status=None, launch_browser=None, showupdate_hour=3, web_username=None,
             api_key=None, indexer_default=None, timezone_display=None, cpu_preset='NORMAL',
@@ -126,9 +126,9 @@ class ConfigGeneral(Config):
         config.change_version_notify(version_notify)
         sickbeard.AUTO_UPDATE = config.checkbox_to_value(auto_update)
         sickbeard.NOTIFY_ON_UPDATE = config.checkbox_to_value(notify_on_update)
-        # sickbeard.LOG_DIR is set in config.change_log_dir()
         sickbeard.LOG_NR = log_nr
         sickbeard.LOG_SIZE = float(log_size)
+        sickbeard.WEB_LOG = config.checkbox_to_value(web_log)
 
         sickbeard.TRASH_REMOVE_SHOW = config.checkbox_to_value(trash_remove_show)
         sickbeard.TRASH_ROTATE_LOGS = config.checkbox_to_value(trash_rotate_logs)
@@ -161,7 +161,6 @@ class ConfigGeneral(Config):
         logger.set_level()
 
         sickbeard.SSL_VERIFY = config.checkbox_to_value(ssl_verify)
-        # sickbeard.LOG_DIR is set in config.change_log_dir()
 
         sickbeard.COMING_EPS_MISSED_RANGE = config.min_max(coming_eps_missed_range, 7, 0, 42810)
 
@@ -169,7 +168,6 @@ class ConfigGeneral(Config):
         sickbeard.NOTIFY_ON_LOGIN = config.checkbox_to_value(notify_on_login)
         sickbeard.WEB_PORT = try_int(web_port)
         sickbeard.WEB_IPV6 = config.checkbox_to_value(web_ipv6)
-        # sickbeard.WEB_LOG is set in config.change_log_dir()
         sickbeard.ENCRYPTION_VERSION = config.checkbox_to_value(encryption_version, value_on=2, value_off=0)
         sickbeard.WEB_USERNAME = web_username
         sickbeard.WEB_PASSWORD = filters.unhide(sickbeard.WEB_PASSWORD, web_password)
@@ -191,10 +189,6 @@ class ConfigGeneral(Config):
             sickbeard.TIME_PRESET = time_preset.replace(":%S", "")
 
         sickbeard.TIMEZONE_DISPLAY = timezone_display
-
-        if not config.change_log_dir(log_dir, web_log):
-            results += [
-                _("Unable to create directory {directory}, log directory not changed.").format(directory=ek(os.path.normpath, log_dir))]
 
         sickbeard.API_KEY = api_key
 

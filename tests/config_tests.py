@@ -23,7 +23,6 @@ Methods
     change_unrar_tool
     change_sickchill_background
     change_custom_css
-    change_log_dir
     change_nzb_dir
     change_torrent_dir
     change_tv_download_dir
@@ -354,18 +353,6 @@ class ConfigTestChanges(unittest.TestCase):
         self.assertTrue(config.change_custom_css(css_file)) # real
         os.remove(css_file)
         self.assertTrue(config.change_custom_css('')) # empty
-
-    def test_change_log_dir(self):
-        """
-        Test change_log_dir
-        """
-        sickbeard.DATA_DIR = os.path.dirname(__file__)
-        sickbeard.ACTUAL_LOG_DIR = ''
-        sickbeard.LOG_DIR = os.path.join(sickbeard.DATA_DIR, sickbeard.ACTUAL_LOG_DIR)
-        sickbeard.WEB_LOG = False
-
-        self.assertFalse(config.change_log_dir('/:/Logs', True))
-        self.assertTrue(config.change_log_dir('Logs', True))
 
     def test_change_nzb_dir(self):
         """
