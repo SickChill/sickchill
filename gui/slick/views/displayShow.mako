@@ -535,8 +535,8 @@
                                                 <a href="${filename}">${_('Download')}</a>
                                             % endif
                                         </td>
-                                        <td class="col-play">
-                                            <a class="play-on-kodi${(' hidden', '')[bool(epResult[b'location'])]}"
+                                        <td class="col-play" align="center">
+                                            <a class="play-on-kodi${(' hidden', '')[bool(epResult[b'location'] and sickbeard.USE_KODI and sickbeard.KODI_HOST)]}"
                                                href="playOnKodi?show=${show.indexerid}&amp;season=${epResult[b"season"]}&amp;episode=${epResult[b"episode"]}"
                                             >
                                                 <span class="displayshow-play-icon-kodi" title="KODI"></span>
@@ -654,9 +654,11 @@
                 <div class="modal-body">
                     <div class="form-group col-md-12">
                         <select id="kodi-play-host" name="kodi-play-host" class="form-control">
-                            % for index, connection in enumerate(sickbeard.notifiers.kodi_notifier.connections):
-                                <option value="${index}">${connection.name} (${connection.host})</option>
-                            % endfor
+                            % if sickbeard.USE_KODI and sickbeard.KODI_HOST:
+                                % for index, connection in enumerate(sickbeard.notifiers.kodi_notifier.connections):
+                                    <option value="${index}">${connection.name} (${connection.host})</option>
+                                % endfor
+                            % endif
                         </select>
                     </div>
                 </div>

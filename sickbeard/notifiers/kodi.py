@@ -202,7 +202,7 @@ class Notifier(object):
         try:
             connection = self.connections[int(connection_index)]
         except IndexError:
-            logger.log('Incorrect KODI host passed to play an episode, aborting update', logger.WARNING)
+            logger.log('Incorrect KODI host passed to play an episode, aborting play', logger.WARNING)
             return False
 
         logger.log("Trying to play episode on Kodi for host: " + connection.host, logger.DEBUG)
