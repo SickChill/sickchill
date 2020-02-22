@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-02-15 22:43+0000\n"
+"POT-Creation-Date: 2020-02-22 23:36+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: nl_NL\n"
@@ -5323,9 +5323,9 @@ msgstr "verwijder alle bestanden van een mislukte download?"
 msgid "this only works if Use Failed Downloads is enabled."
 msgstr "dit werkt alleen als Gebruik Mislukte Downloads aan staat."
 
+# | msgid "Backlog search frequency"
 #: gui/slick/views/config_search.mako:278
 #, fuzzy
-#| msgid "Backlog search frequency"
 msgid "Backlog search for missing only"
 msgstr "Werkvoorraad zoekfrequentie"
 
@@ -6202,7 +6202,7 @@ msgstr "Uitzending op"
 msgid "Download"
 msgstr "Download"
 
-#: gui/slick/views/displayShow.mako:444 gui/slick/views/displayShow.mako:664
+#: gui/slick/views/displayShow.mako:444 gui/slick/views/displayShow.mako:666
 msgid "Play"
 msgstr ""
 
@@ -6277,7 +6277,7 @@ msgid "Select Kodi Player"
 msgstr ""
 
 # | msgid "Mechanical"
-#: gui/slick/views/displayShow.mako:665
+#: gui/slick/views/displayShow.mako:667
 #, fuzzy
 msgid "Cancel"
 msgstr "Mechanisch"
