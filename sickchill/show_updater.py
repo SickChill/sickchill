@@ -64,7 +64,6 @@ class ShowUpdater(object):
                         TvdbData = sickchill.indexer[1].updates(fromTime=fromTime, toTime=fromTime + self.seven_days)
                         TvdbData.series()
                         updated_shows.extend([d['id'] for d in TvdbData.series])
-
                     except Exception as error:
                         logger.log(str(error))
             else:

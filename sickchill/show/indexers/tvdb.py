@@ -182,8 +182,10 @@ class TVDB(Indexer):
 
     @ExceptionDecorator(default_return='', catch=(HTTPError, KeyError), image_api=True)
     def __call_images_api(self, show, thumb, keyType, subKey=None, lang=None):
-        images = self.series_images(show.indexerid, lang or show.lang, keyType=keyType, subKey=subKey)
-        return self.complete_image_url(images.all()[0][('fileName', 'thumbnail')[thumb]])
+        api_results = self.series_images(show.indexerid, lang or show.lang, keyType=keyType, subKey=subKey)
+        images = getattr(api_results, keyType)(lang or show.lang)
+        images = sorted(images, key=lambda img: img['ratingsInfo']['average'], reverse=True)
+        return self.complete_image_url(images[0][('fileName', 'thumbnail')[thumb]])
 
     @staticmethod
     @ExceptionDecorator()
