@@ -1,11 +1,3 @@
-require('tablesorter');
-require('bootstrap');
-// require('bootstrap-formhelpers/dist/js/bootstrap-formhelpers.js');
-require('isotope');
-require('outlayer');
-require('jquery-form');
-
-// require('open-sans-fontface');
 
 function getMeta(pyVar) {
     return $('meta[data-var="' + pyVar + '"]').data('content');
@@ -4237,4 +4229,3 @@ $.getJSON(srRoot + '/ui/locale.json', function(data) {
         $(document).ready(UTIL.init);
     }
 });
-require('./lib/jquery.scrolltopcontrol-1.1.js');
