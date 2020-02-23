@@ -2,60 +2,43 @@
   "name": "sickchill",
   "version": "4.0.72",
   "private": true,
+  "homepage": "https://github.com/SickChill/SickChill#readme",
+  "bugs": {
+    "url": "https://github.com/SickChill/SickChill/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/SickChill/SickChill.git"
   },
-  "bugs": {
-    "url": "https://github.com/SickChill/SickChill/issues"
-  },
-  "homepage": "https://github.com/SickChill/SickChill#readme",
   "scripts": {
-    "test": "xo --verbose && ava --verbose",
-    "security": "snyk test"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "ava": "^0.24.0",
-    "bower": "1.8.8",
-    "browser-env": "^3.1.0",
-    "eslint": "^6.8.0",
-    "grunt": "^1.0.1",
-    "grunt-bower-concat": "^1.0.0",
-    "grunt-bower-task": "^0.5.0",
-    "grunt-cli": "^1.2.0",
-    "grunt-contrib-clean": "^1.1.0",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-cssmin": "^2.0.0",
-    "grunt-contrib-jshint": "^1.1.0",
-    "grunt-contrib-sass": "^1.0.0",
-    "grunt-contrib-uglify": "^3.3.0",
-    "grunt-contrib-uglify-es": "^3.3.0",
-    "grunt-contrib-watch": "^1.0.0",
-    "grunt-exec": "^3.0.0",
-    "grunt-po2json": "git+https://github.com/rockykitamura/grunt-po2json.git",
-    "jquery": "^3.2.1",
-    "load-grunt-tasks": "^3.5.2",
-    "lodash": "^4.17.15",
-    "snyk": "^1.28.1",
-    "xo": "^0.18.2"
-  },
-  "ava": {
-    "require": [
-      "./tests/js/helpers/setup-browser-env.js"
-    ],
-    "files": [
-      "tests/js/**/*.js"
-    ],
-    "source": [
-      "gui/slick/js/**/*.{js,jsx}",
-      "!dist/**/*",
-      "!lib/**/*",
-      "!**/*.min.js"
-    ]
+    "security": "snyk test",
+    "test": "xo --verbose && ava --verbose"
   },
   "xo": {
-    "space": 4,
+    "envs": [
+      "browser"
+    ],
+    "esnext": false,
+    "globals": [
+      "_",
+      "srRoot",
+      "jQuery",
+      "$",
+      "metaToBool",
+      "getMeta",
+      "PNotify",
+      "themeSpinner",
+      "anonURL",
+      "Gettext",
+      "gt",
+      "_n"
+    ],
+    "ignores": [
+      "core.min.js",
+      "vendor.min.js",
+      "lib/**/*",
+      "Gruntfile.js"
+    ],
     "rules": {
       "space-before-function-paren": [
         "error",
@@ -79,29 +62,78 @@
         "never"
       ]
     },
-    "esnext": false,
-    "envs": [
-      "browser"
+    "space": 4
+  },
+  "ava": {
+    "files": [
+      "tests/js/**/*.js"
     ],
-    "globals": [
-      "_",
-      "srRoot",
-      "jQuery",
-      "$",
-      "metaToBool",
-      "getMeta",
-      "PNotify",
-      "themeSpinner",
-      "anonURL",
-      "Gettext",
-      "gt",
-      "_n"
+    "require": [
+      "./tests/js/helpers/setup-browser-env.js"
     ],
-    "ignores": [
-      "core.min.js",
-      "vendor.min.js",
-      "lib/**/*",
-      "Gruntfile.js"
+    "source": [
+      "gui/slick/js/**/*.{js,jsx}",
+      "!dist/**/*",
+      "!lib/**/*",
+      "!**/*.min.js"
     ]
+  },
+  "devDependencies": {
+    "ava": "^0.24.0",
+    "css-loader": "^3.4.2",
+    "eslint": "^6.8.0",
+    "grunt": "^1.0.1",
+    "grunt-cli": "^1.2.0",
+    "grunt-contrib-clean": "^1.1.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-cssmin": "^2.0.0",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-contrib-sass": "^1.0.0",
+    "grunt-contrib-uglify": "^3.3.0",
+    "grunt-contrib-uglify-es": "^3.3.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-exec": "^3.0.0",
+    "grunt-po2json": "git+https://github.com/rockykitamura/grunt-po2json.git",
+    "grunt-webpack": "^3.1.3",
+    "load-grunt-tasks": "^3.5.2",
+    "mini-css-extract-plugin": "^0.9.0",
+    "snyk": "^1.28.1",
+    "webpack": "^4.41.6",
+    "xo": "^0.18.2"
+  },
+  "engines": {
+    "yarn": ">= 1.0.0"
+  },
+  "dependencies": {
+    "bootstrap": "twbs/bootstrap#~3.3.6",
+    "bootstrap-formhelpers": "vlamanna/BootstrapFormHelpers#~2.3.0",
+    "bootstrap-hover-dropdown": "CWSpear/twitter-bootstrap-hover-dropdown#~2.2.1",
+    "bootstrap3-typeahead": "bassjobsen/Bootstrap-3-Typeahead#~4.0.2",
+    "browser-env": "^3.1.0",
+    "desandro-matches-selector": "desandro/matches-selector#^2.0.0",
+    "ev-emitter": "metafizzy/ev-emitter#^1.0.0",
+    "fizzy-ui-utils": "metafizzy/fizzy-ui-utils#^2.0.4",
+    "formwizard": "^1.0.2",
+    "get-size": "desandro/get-size#^2.0.0",
+    "imagesloaded": "desandro/imagesloaded#>=3.0.0",
+    "isotope": "metafizzy/isotope#~3.0.6",
+    "jquery": "^3.2.1",
+    "jquery-backstretch": "srobbin/jquery-backstretch#~2.1.15",
+    "jquery-confirm": "myclabs/jquery.confirm#~2.7.0",
+    "jquery-form": "^4.2.2",
+    "jquery-timeago": "rmm5t/jquery-timeago#~1.5.4",
+    "jquery-tokeninput": "loopj/jquery-tokeninput#~1.7.0",
+    "jquery-ui": "components/jqueryui#~1.12.1",
+    "jquery.redirect": "mgalante/jquery.redirect#^1.0.4",
+    "jqueryui-touch-punch": "furf/jquery-ui-touch-punch#*",
+    "jsgettext": "adrienrn/jsgettext#~0.8.1",
+    "lodash": "^4.17.15",
+    "masonry-layout": "desandro/masonry#^4.1.0",
+    "open-sans-fontface": "FontFaceKit/open-sans#^1.4.2",
+    "outlayer": "metafizzy/outlayer#^2.1.0",
+    "pnotify": "sciactive/pnotify#<3.0",
+    "qtip2": "^3.0.3",
+    "tablesorter": "Mottie/tablesorter#~2.28.4",
+    "underscore": "jashkenas/underscore#~1.8.3"
   }
 }

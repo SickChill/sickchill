@@ -1,15 +1,14 @@
 'use strict';
 
+const webpackConfig = require('./webpack.config.js');
+
 module.exports = function(grunt) {
     const isTravis = Boolean(process.env.TRAVIS);
 
     grunt.registerTask('default', [
         'clean',
-        'bower',
-        'bower_concat',
         'copy',
-        'uglify',
-        'cssmin'
+        'webpack'
     ]);
 
     grunt.registerTask('auto_update_trans', 'Update translations on master and push to master & develop', function() {
@@ -87,12 +86,13 @@ module.exports = function(grunt) {
     require('load-grunt-tasks')(grunt); // loads all grunt tasks matching the ['grunt-*', '@*/grunt-*'] patterns
     grunt.initConfig({
         clean: {
-            dist: './dist/',
-            'bower_components': './bower_components',
             fonts: './gui/slick/css/fonts',
             options: {
                 force: true
             }
+        },
+        webpack: {
+            myConfig: webpackConfig,
         },
         bower: {
             install: {
@@ -144,7 +144,7 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     dot: true,
-                    cwd: 'bower_components/open-sans-fontface',
+                    cwd: 'node_modules/open-sans-fontface',
                     src: [
                         'fonts/**/*'
                     ],
@@ -155,7 +155,7 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     dot: true,
-                    cwd: 'bower_components/bootstrap/fonts',
+                    cwd: 'node_modules/bootstrap/fonts',
                     src: [
                         '*.eot',
                         '*.svg',
@@ -397,6 +397,8 @@ module.exports = function(grunt) {
             }
         }
     });
+
+    grunt.loadNpmTasks('grunt-webpack');
 
     /****************************************
     *  Internal tasks                       *
