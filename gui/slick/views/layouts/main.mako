@@ -91,7 +91,7 @@
         <link rel="manifest" href="${static_url('images/ico/site.webmanifest')}">
 
 
-##         <link rel="stylesheet" type="text/css" href="${static_url('css/vendor.min.css')}"/>
+        <link rel="stylesheet" type="text/css" href="${static_url('css/vendor.min.css')}"/>
         <link rel="stylesheet" type="text/css" href="${static_url('css/browser.css')}" />
         <link rel="stylesheet" type="text/css" href="${static_url('css/font-awesome.min.css')}" />
         <link rel="stylesheet" type="text/css" href="${static_url('css/lib/jquery-ui-1.10.4.custom.min.css')}" />
@@ -360,7 +360,20 @@
                         </div>
                     </div>
                 </div>
-                <script type="text/javascript" src="${static_url('js/core.min.js')}"></script>
+                <script type="text/javascript" src="${static_url('js/vendor.min.js')}"></script>
+                <script type="text/javascript" src="${static_url('js/lib/jquery.form.min.js')}"></script>
+                <script type="text/javascript" src="${static_url('js/lib/jquery.selectboxes.min.js')}"></script>
+                <script type="text/javascript" src="${static_url('js/lib/formwizard.js')}"></script><!-- Can't be added to bower -->
+                <script type="text/javascript" src="${static_url('js/parsers.js')}"></script>
+                <script type="text/javascript" src="${static_url('js/rootDirs.js')}"></script>
+                % if sickbeard.DEVELOPER:
+                    <script type="text/javascript" src="${static_url('js/core.js')}"></script>
+                % else:
+                    <script type="text/javascript" src="${static_url('js/core.min.js')}"></script>
+                % endif
+                <script type="text/javascript" src="${static_url('js/lib/jquery.scrolltopcontrol-1.1.js')}"></script>
+                <script type="text/javascript" src="${static_url('js/browser.js')}" charset="utf-8"></script>
+                <script type="text/javascript" src="${static_url('js/ajaxNotifications.js')}"></script>
             % endif
             <%block name="scripts" />
         </div>
