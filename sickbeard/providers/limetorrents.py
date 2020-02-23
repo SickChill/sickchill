@@ -41,9 +41,9 @@ class LimeTorrentsProvider(TorrentProvider):
         TorrentProvider.__init__(self, "LimeTorrents")
 
         self.urls = {
-            'index': 'https://www.limetorrents.cc/',
-            'search': 'https://www.limetorrents.cc/searchrss/',
-            'rss': 'https://www.limetorrents.cc/rss/tv/'
+            'index': 'https://www.limetorrents.info/',
+            'search': 'https://www.limetorrents.info/searchrss/',
+            'rss': 'https://www.limetorrents.info/rss/tv/'
         }
 
         self.url = self.urls['index']
@@ -106,7 +106,7 @@ class LimeTorrentsProvider(TorrentProvider):
                             # seeders and leechers are presented diferently when doing a search and when looking for newly added
                             if mode == 'RSS':
                                 # <![CDATA[
-                                # Category: <a href="http://www.limetorrents.cc/browse-torrents/TV-shows/">TV shows</a><br /> Seeds: 1<br />Leechers: 0<br />Size: 7.71 GB<br /><br /><a href="http://www.limetorrents.cc/Owen-Hart-of-Gold-Djon91-torrent-7180661.html">More @ limetorrents.cc</a><br />
+                                # Category: <a href="http://www.limetorrents.info/browse-torrents/TV-shows/">TV shows</a><br /> Seeds: 1<br />Leechers: 0<br />Size: 7.71 GB<br /><br /><a href="http://www.limetorrents.info/Owen-Hart-of-Gold-Djon91-torrent-7180661.html">More @ limetorrents.info</a><br />
                                 # ]]>
                                 description = item.find('description')
                                 seeders = try_int(description('br')[0].next_sibling.strip().lstrip('Seeds: '))
