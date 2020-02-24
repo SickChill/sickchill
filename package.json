@@ -79,7 +79,7 @@
     ]
   },
   "dependencies": {
-    "bootstrap": "twbs/bootstrap#~3.3.6",
+    "bootstrap": "~3.3.7",
     "bootstrap-formhelpers": "vlamanna/BootstrapFormHelpers#~2.3.0",
     "bootstrap-hover-dropdown": "^2.2.1",
     "bootstrap3-typeahead": "bassjobsen/Bootstrap-3-Typeahead#~4.0.2",
