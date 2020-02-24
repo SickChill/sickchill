@@ -6,8 +6,9 @@ module.exports = function(grunt) {
     const isTravis = Boolean(process.env.TRAVIS);
 
     grunt.registerTask('default', [
-        'clean',
-        'copy',
+        // 'clean',
+        // 'copy',
+        'yarn',
         'webpack'
     ]);
 
@@ -44,6 +45,10 @@ module.exports = function(grunt) {
         }
 
         grunt.task.run(tasks);
+    });
+
+    grunt.registerTask('yarn', 'Install yarn packages', function() {
+        grunt.task.run('exec:yarn')
     });
 
     /****************************************
@@ -210,6 +215,8 @@ module.exports = function(grunt) {
             }
         },
         exec: {
+            'yarn': {cmd: 'yarn'},
+
             // Translations
             'babel_extract': {cmd: 'python setup.py extract_messages'},
             'babel_update': {cmd: 'python setup.py update_catalog'},

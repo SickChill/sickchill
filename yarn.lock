@@ -1352,9 +1352,10 @@ bootstrap-formhelpers@vlamanna/BootstrapFormHelpers#~2.3.0:
   version "2.3.0"
   resolved "https://codeload.github.com/vlamanna/BootstrapFormHelpers/tar.gz/229fe02b9aedc51a658210d39a6b7e5f1d42eafb"
 
-bootstrap-hover-dropdown@CWSpear/twitter-bootstrap-hover-dropdown#~2.2.1:
+bootstrap-hover-dropdown@^2.2.1:
   version "2.2.1"
-  resolved "https://codeload.github.com/CWSpear/twitter-bootstrap-hover-dropdown/tar.gz/56c494fbb1f4ad54180c716cc07f4919e49b423a"
+  resolved "https://registry.yarnpkg.com/bootstrap-hover-dropdown/-/bootstrap-hover-dropdown-2.2.1.tgz#735182a67231b1739512ce62394e481914dd8b1e"
+  integrity sha1-c1GCpnIxsXOVEs5iOU5IGRTdix4=
   dependencies:
     streamqueue "^0.1.1"
 
