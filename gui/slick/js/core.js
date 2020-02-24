@@ -1,3 +1,12 @@
+require('jquery-confirm');
+require('jquery-ui');
+var imagesLoaded = require('imagesloaded');
+imagesLoaded.makeJQueryPlugin($);
+var jQueryBridget = require('jquery-bridget');
+var Isotope = require('isotope-layout');
+// make Isotope a jQuery plugin
+jQueryBridget( 'isotope', Isotope, $ );
+
 function getMeta(pyVar) {
     return $('meta[data-var="' + pyVar + '"]').data('content');
 }

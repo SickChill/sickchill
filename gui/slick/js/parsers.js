@@ -1,3 +1,6 @@
+require('tablesorter');
+import metaToBool from './core.js';
+
 $.tablesorter.addParser({
     id: 'loadingNames',
     is: function() {

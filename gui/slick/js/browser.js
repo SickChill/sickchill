@@ -1,3 +1,5 @@
+import srRoot from './core.js';
+
 (function($) {
     'use strict';
 

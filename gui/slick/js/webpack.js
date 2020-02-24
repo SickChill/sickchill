@@ -1,5 +1,7 @@
-require('jquery');
+import css from '../css/style.css';
+
 require('tablesorter');
+
 require('bootstrap');
 require('isotope');
 require('outlayer');
@@ -8,17 +10,15 @@ require('jsgettext');
 
 
 // require('open-sans-fontface');
-import './core.js';
+require('./core.js');
 
-import './lib/jquery.selectboxes.min.js';
-import './lib/formwizard.js';
-import './lib/jquery.scrolltopcontrol-1.1.js';
+// require('./lib/jquery.selectboxes.min.js');
+// require('./lib/formwizard.js');
+// require('./lib/jquery.scrolltopcontrol-1.1.js');
 
-import 'bootstrap-formhelpers/dist/js/bootstrap-formhelpers.js';
+// require('bootstrap-formhelpers/dist/js/bootstrap-formhelpers.js');
 
-import "./parsers.js";
-
-import './parsers.js';
-import './rootDirs.js';
-import './browser.js';
-import './ajaxNotifications.js';
+require('./parsers.js');
+require('./rootDirs.js');
+require('./browser.js');
+// require('./ajaxNotifications.js');

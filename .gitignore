@@ -92,3 +92,5 @@ venv
 
 /genchanges.sh
 /Downloads
+
+yarn-error.log
