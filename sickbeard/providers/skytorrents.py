@@ -92,8 +92,6 @@ class SkyTorrents(TorrentProvider):
 
                             seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
                             leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
-                            if sickbeard.TORRENT_METHOD == 'blackhole':
-                                download_url = 'https://itorrents.org/torrent/{0}.torrent'.format(info_hash)
 
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":

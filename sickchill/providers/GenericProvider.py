@@ -70,10 +70,8 @@ class GenericProvider(object):
             'http://torrentproject.se/torrent/{torrent_hash}.torrent',
             'http://thetorrent.org/torrent/{torrent_hash}.torrent',
             'http://btdig.com/torrent/{torrent_hash}.torrent',
-            # 'http://torrage.com/torrent/{torrent_hash}.torrent',
             ('https://t.torrage.info/download?h={torrent_hash}', 'https://torrage.info/torrent.php?h={torrent_hash}'),
-            "https://t.torrage.info/download?h=463E408429535139A0BBB5DD676DB10D5963BF05"
-            'http://itorrents.org/torrent/{torrent_hash}.torrent',
+            'https://itorrents.org/torrent/{torrent_hash}.torrent?title={torrent_name}'
         ]
         self.cache = TVCache(self)
         self.enable_backlog = False
@@ -544,6 +542,9 @@ class GenericProvider(object):
             return '', ''
 
         filename = ''
+
+        result.url = result.url.replace('http://itorrents.org', 'https://itorrents.org')
+
         urls = [result.url]
         if result.url.startswith('magnet'):
             torrent_hash = self.hash_from_magnet(result.url)
