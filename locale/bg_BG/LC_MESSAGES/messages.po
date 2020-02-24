@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-02-24 23:00+0000\n"
+"POT-Creation-Date: 2020-02-24 23:58+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: bg_BG\n"
@@ -1831,7 +1831,7 @@ msgid "Shows"
 msgstr "Предавания"
 
 #: gui/slick/views/config_general.mako:78 gui/slick/views/layouts/main.mako:163
-#: sickchill/views/index.py:316
+#: sickchill/views/index.py:319
 msgid "Schedule"
 msgstr "График"
 
@@ -2781,8 +2781,8 @@ msgstr "(множество адреси трябва да бъдат разде
 #: gui/slick/views/config_notifications.mako:420
 #: gui/slick/views/config_notifications.mako:2547
 #: gui/slick/views/config_providers.mako:265
-#: gui/slick/views/config_providers.mako:435 gui/slick/views/login.mako:15
-#: gui/slick/views/login.mako:16 gui/slick/views/login.mako:17
+#: gui/slick/views/config_providers.mako:435 gui/slick/views/login.mako:40
+#: gui/slick/views/login.mako:41 gui/slick/views/login.mako:42
 msgid "Username"
 msgstr "Потребител"
 
@@ -2795,8 +2795,8 @@ msgstr "потребителско име за вашия KODI сървър (п�
 #: gui/slick/views/config_notifications.mako:438
 #: gui/slick/views/config_notifications.mako:1103
 #: gui/slick/views/config_providers.mako:449
-#: gui/slick/views/config_subtitles.mako:361 gui/slick/views/login.mako:24
-#: gui/slick/views/login.mako:25 gui/slick/views/login.mako:26
+#: gui/slick/views/config_subtitles.mako:361 gui/slick/views/login.mako:49
+#: gui/slick/views/login.mako:50 gui/slick/views/login.mako:51
 msgid "Password"
 msgstr "Парола"
 
@@ -6669,15 +6669,15 @@ msgstr "Редактирай"
 msgid "Set as default"
 msgstr "Задай по подразбиране"
 
-#: gui/slick/views/login.mako:33
+#: gui/slick/views/login.mako:58
 msgid "for 30 days"
 msgstr "за 30 дни"
 
-#: gui/slick/views/login.mako:34
+#: gui/slick/views/login.mako:59
 msgid "Remember me"
 msgstr "Запомни ме"
 
-#: gui/slick/views/login.mako:36 sickchill/views/authentication.py:45
+#: gui/slick/views/login.mako:61 sickchill/views/authentication.py:45
 msgid "Login"
 msgstr "Вход"
 
@@ -7451,7 +7451,7 @@ msgstr ""
 "Възникна проблем в свързването към github, Моля презаредете и опитайте "
 "отново"
 
-#: sickchill/views/common.py:115
+#: sickchill/views/common.py:117
 msgid "Mako Error"
 msgstr "Грешка в Mako"
 
@@ -8030,31 +8030,31 @@ msgstr ""
 msgid "Wrong API key used"
 msgstr "Използван е грешен API ключ"
 
-#: sickchill/views/index.py:226
+#: sickchill/views/index.py:229
 msgid "API Key not generated"
 msgstr "Не е генериран API ключ"
 
-#: sickchill/views/index.py:229
+#: sickchill/views/index.py:232
 msgid "API Builder"
 msgstr "API Builder"
 
-#: sickchill/views/index.py:340
+#: sickchill/views/index.py:343
 msgid "Test 1"
 msgstr "Тест 1"
 
-#: sickchill/views/index.py:340
+#: sickchill/views/index.py:343
 msgid "This is test number 1"
 msgstr "Това е тест номер 1"
 
-#: sickchill/views/index.py:341
+#: sickchill/views/index.py:344
 msgid "Test 2"
 msgstr "Тест 2"
 
-#: sickchill/views/index.py:341
+#: sickchill/views/index.py:344
 msgid "This is test number 2"
 msgstr "Това е тест номер 2"
 
-#: sickchill/views/index.py:366
+#: sickchill/views/index.py:369
 msgid ""
 "You're using the {branch} branch. Please use 'master' unless specifically"
 " asked"
