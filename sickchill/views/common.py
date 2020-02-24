@@ -100,6 +100,8 @@ class PageTemplate(Template):
         self.arguments['action'] = "FixME"
         self.arguments['show'] = UNDEFINED
         self.arguments['manage_torrents_url'] = helpers.manage_torrents_url()
+        self.arguments['get_secure_cookie'] = rh.get_secure_cookie
+        self.arguments['remote_ip'] = rh.request.remote_ip
 
     def render(self, *args, **kwargs):
         for key in self.arguments:
