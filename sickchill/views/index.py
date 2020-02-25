@@ -133,14 +133,15 @@ class BaseHandler(RequestHandler):
         if isinstance(self, UI):
             return True
 
-        auth_header = self.request.headers.get('Authorization')
-        if auth_header and auth_header.startswith('Basic '):
-            auth_decoded = base64.decodestring(auth_header[6:])
-            username, password = auth_decoded.split(':', 2)
-            if username == sickbeard.WEB_USERNAME and password == sickbeard.WEB_PASSWORD:
-                return True
-
         if sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
+            auth_header = self.request.headers.get('Authorization')
+            if auth_header and auth_header.startswith('Basic '):
+                auth_decoded = base64.decodestring(auth_header[6:])
+                username, password = auth_decoded.split(':', 2)
+                if username == sickbeard.WEB_USERNAME and password == sickbeard.WEB_PASSWORD:
+                    return True
+                return False
+
             return self.get_secure_cookie('sickchill_user')
         else:
             return helpers.is_ip_private(self.request.remote_ip)
