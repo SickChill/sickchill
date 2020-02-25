@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-02-25 05:02+0000\n"
+"POT-Creation-Date: 2020-02-25 06:56+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: fi_FI\n"
@@ -14,129 +14,129 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: sickbeard/__init__.py:62
+#: sickbeard/__init__.py:63
 msgid "Drama"
 msgstr "Draama"
 
-#: sickbeard/__init__.py:62
+#: sickbeard/__init__.py:63
 msgid "Mystery"
 msgstr "Mysteeri"
 
-#: sickbeard/__init__.py:62 sickbeard/__init__.py:67
+#: sickbeard/__init__.py:63 sickbeard/__init__.py:68
 msgid "Science-Fiction"
 msgstr "Science-Fiction"
 
-#: sickbeard/__init__.py:62
+#: sickbeard/__init__.py:63
 msgid "Crime"
 msgstr "Rikos"
 
-#: gui/slick/views/history.mako:62 sickbeard/__init__.py:62
+#: gui/slick/views/history.mako:62 sickbeard/__init__.py:63
 msgid "Action"
 msgstr "Toiminto"
 
-#: sickbeard/__init__.py:63
+#: sickbeard/__init__.py:64
 msgid "Comedy"
 msgstr "Komedia"
 
-#: sickbeard/__init__.py:63
+#: sickbeard/__init__.py:64
 msgid "Thriller"
 msgstr "Trilleri"
 
-#: sickbeard/__init__.py:63
+#: sickbeard/__init__.py:64
 msgid "Animation"
 msgstr "Animaatio"
 
-#: sickbeard/__init__.py:63
+#: sickbeard/__init__.py:64
 msgid "Family"
 msgstr "Perhe"
 
-#: sickbeard/__init__.py:63
+#: sickbeard/__init__.py:64
 msgid "Fantasy"
 msgstr "Fantasia"
 
-#: sickbeard/__init__.py:64
+#: sickbeard/__init__.py:65
 msgid "Adventure"
 msgstr "Seikkailu"
 
-#: sickbeard/__init__.py:64
+#: sickbeard/__init__.py:65
 msgid "Horror"
 msgstr "Kauhu"
 
-#: sickbeard/__init__.py:64
+#: sickbeard/__init__.py:65
 msgid "Film-Noir"
 msgstr "Film Noir"
 
-#: sickbeard/__init__.py:64
+#: sickbeard/__init__.py:65
 msgid "Sci-Fi"
 msgstr "Sci-Fi"
 
-#: sickbeard/__init__.py:64
+#: sickbeard/__init__.py:65
 msgid "Romance"
 msgstr "Romantiikka"
 
-#: sickbeard/__init__.py:65
+#: sickbeard/__init__.py:66
 msgid "Sport"
 msgstr "Urheilu"
 
-#: sickbeard/__init__.py:65
+#: sickbeard/__init__.py:66
 msgid "War"
 msgstr "Sota"
 
-#: sickbeard/__init__.py:65
+#: sickbeard/__init__.py:66
 msgid "Biography"
 msgstr "Elämäkerta"
 
 #: gui/slick/views/config_general.mako:79 gui/slick/views/layouts/main.mako:167
-#: sickbeard/__init__.py:65 sickchill/views/history.py:91
+#: sickbeard/__init__.py:66 sickchill/views/history.py:91
 msgid "History"
 msgstr "Historia"
 
-#: sickbeard/__init__.py:65
+#: sickbeard/__init__.py:66
 msgid "Music"
 msgstr "Musiikki"
 
-#: sickbeard/__init__.py:65
+#: sickbeard/__init__.py:66
 msgid "Western"
 msgstr "Western"
 
 #: gui/slick/views/config_general.mako:80 gui/slick/views/layouts/main.mako:235
-#: sickbeard/__init__.py:66 sickchill/views/news.py:54
+#: sickbeard/__init__.py:67 sickchill/views/news.py:54
 msgid "News"
 msgstr "Uutiset"
 
-#: sickbeard/__init__.py:66
+#: sickbeard/__init__.py:67
 msgid "Sitcom"
 msgstr "Tilannekomedia"
 
-#: sickbeard/__init__.py:66
+#: sickbeard/__init__.py:67
 msgid "Reality-TV"
 msgstr "Tosi-TV"
 
-#: sickbeard/__init__.py:66
+#: sickbeard/__init__.py:67
 msgid "Documentary"
 msgstr "Dokumentti"
 
-#: sickbeard/__init__.py:66
+#: sickbeard/__init__.py:67
 msgid "Game-Show"
 msgstr ""
 
-#: sickbeard/__init__.py:66
+#: sickbeard/__init__.py:67
 msgid "Musical"
 msgstr "Musikaali"
 
-#: sickbeard/__init__.py:67
+#: sickbeard/__init__.py:68
 msgid "Talk-Show"
 msgstr "Keskusteluohjelma"
 
-#: sickbeard/__init__.py:666
+#: sickbeard/__init__.py:667
 msgid "Ignore (do not process contents)"
 msgstr ""
 
-#: sickbeard/__init__.py:667
+#: sickbeard/__init__.py:668
 msgid "Unpack (process contents)"
 msgstr ""
 
-#: sickbeard/__init__.py:668
+#: sickbeard/__init__.py:669
 msgid "Treat as video (process archive as-is)"
 msgstr ""
 
@@ -2676,8 +2676,8 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:420
 #: gui/slick/views/config_notifications.mako:2547
 #: gui/slick/views/config_providers.mako:265
-#: gui/slick/views/config_providers.mako:435 gui/slick/views/login.mako:41
-#: gui/slick/views/login.mako:42 gui/slick/views/login.mako:43
+#: gui/slick/views/config_providers.mako:435 gui/slick/views/login.mako:45
+#: gui/slick/views/login.mako:46 gui/slick/views/login.mako:47
 msgid "Username"
 msgstr "Käyttäjätunnus"
 
@@ -2690,8 +2690,8 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:438
 #: gui/slick/views/config_notifications.mako:1103
 #: gui/slick/views/config_providers.mako:449
-#: gui/slick/views/config_subtitles.mako:361 gui/slick/views/login.mako:50
-#: gui/slick/views/login.mako:51 gui/slick/views/login.mako:52
+#: gui/slick/views/config_subtitles.mako:361 gui/slick/views/login.mako:54
+#: gui/slick/views/login.mako:55 gui/slick/views/login.mako:56
 msgid "Password"
 msgstr "Salasana"
 
@@ -6452,15 +6452,15 @@ msgstr "Muokkaa"
 msgid "Set as default"
 msgstr ""
 
-#: gui/slick/views/login.mako:59
+#: gui/slick/views/login.mako:63
 msgid "for 30 days"
 msgstr ""
 
-#: gui/slick/views/login.mako:60
+#: gui/slick/views/login.mako:64
 msgid "Remember me"
 msgstr "Muista minut"
 
-#: gui/slick/views/login.mako:62 sickchill/views/authentication.py:45
+#: gui/slick/views/login.mako:66 sickchill/views/authentication.py:45
 msgid "Login"
 msgstr "Kirjaudu"
 
