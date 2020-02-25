@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-02-24 23:58+0000\n"
+"POT-Creation-Date: 2020-02-25 05:02+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: ar_SA\n"
@@ -2744,8 +2744,8 @@ msgstr "(عناوين المضيفين المتعددة يجب أن تكون م�
 #: gui/slick/views/config_notifications.mako:420
 #: gui/slick/views/config_notifications.mako:2547
 #: gui/slick/views/config_providers.mako:265
-#: gui/slick/views/config_providers.mako:435 gui/slick/views/login.mako:40
-#: gui/slick/views/login.mako:41 gui/slick/views/login.mako:42
+#: gui/slick/views/config_providers.mako:435 gui/slick/views/login.mako:41
+#: gui/slick/views/login.mako:42 gui/slick/views/login.mako:43
 msgid "Username"
 msgstr "اسم المُستخدم"
 
@@ -2758,8 +2758,8 @@ msgstr "اسم المستخدم الخاص بـ KODI (فارغة إذا لم ي�
 #: gui/slick/views/config_notifications.mako:438
 #: gui/slick/views/config_notifications.mako:1103
 #: gui/slick/views/config_providers.mako:449
-#: gui/slick/views/config_subtitles.mako:361 gui/slick/views/login.mako:49
-#: gui/slick/views/login.mako:50 gui/slick/views/login.mako:51
+#: gui/slick/views/config_subtitles.mako:361 gui/slick/views/login.mako:50
+#: gui/slick/views/login.mako:51 gui/slick/views/login.mako:52
 msgid "Password"
 msgstr "كلمة المرور"
 
@@ -6689,15 +6689,15 @@ msgstr "تحرير"
 msgid "Set as default"
 msgstr ""
 
-#: gui/slick/views/login.mako:58
+#: gui/slick/views/login.mako:59
 msgid "for 30 days"
 msgstr ""
 
-#: gui/slick/views/login.mako:59
+#: gui/slick/views/login.mako:60
 msgid "Remember me"
 msgstr "تذكّرني"
 
-#: gui/slick/views/login.mako:61 sickchill/views/authentication.py:45
+#: gui/slick/views/login.mako:62 sickchill/views/authentication.py:45
 msgid "Login"
 msgstr "تسجيل الدخول"
 
