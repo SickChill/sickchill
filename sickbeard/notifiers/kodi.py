@@ -30,6 +30,7 @@ from kodipydent import Kodi
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
+from sickchill.helper import try_int
 
 
 class Notifier(object):
@@ -42,7 +43,7 @@ class Notifier(object):
             try:
                 if ':' in host:
                     bare_host, port = host.split(':')
-                    kodi = Kodi(bare_host, username or sickbeard.KODI_USERNAME, password or sickbeard.KODI_PASSWORD, port=port)
+                    kodi = Kodi(bare_host, username or sickbeard.KODI_USERNAME, password or sickbeard.KODI_PASSWORD, port=try_int(port, 8080))
                 else:
                     kodi = Kodi(host, username or sickbeard.KODI_USERNAME, password or sickbeard.KODI_PASSWORD)
                 kodi.host = kodi.variables()['hostname']['value']
