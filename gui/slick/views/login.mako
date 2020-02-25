@@ -1,10 +1,11 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     from sickbeard.helpers import is_ip_private
+    import sickbeard
 %>
 <%block name="content">
     <div class="row">
-        % if not (get_secure_cookie('sickchill_user') or is_ip_private(remote_ip)):
+        % if not (is_ip_private(remote_ip) or (sickbeard.WEB_PASSWORD and sickbeard.WEB_USERNAME)):
             <div class="nicetry col-md-10">
                 <div class="row">
                     <div class="col-md-12">
