@@ -6,6 +6,7 @@
 <%block name="content">
     <div class="row">
         % if not (is_ip_private(remote_ip) or (sickbeard.WEB_PASSWORD and sickbeard.WEB_USERNAME)):
+            <% sickbeard.logger.log('Remote access was attempted by {}'.format(remote_ip), sickbeard.logger.WARNING) %>
             <div class="nicetry col-md-10">
                 <div class="row">
                     <div class="col-md-12">
@@ -19,6 +20,9 @@
                             You will need access to the local network where this machine is to set the password through the interface. Otherwise, you will need to
                             stop SickChill and edit the config.ini manually before starting SickChill back up. This may seem like an inconvenience, but your logins
                             and file system being exposed is much more inconvenient.
+                        </p>
+                        <p>
+                            Your IP: ${remote_ip}
                         </p>
                         <p>
                             If you are an attacker, the party is over.
