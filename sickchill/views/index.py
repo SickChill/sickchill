@@ -129,10 +129,13 @@ class BaseHandler(RequestHandler):
         self.set_header(b"Location", urljoin(utf8(self.request.uri), utf8(url)))
 
     def get_current_user(self):
-        if not isinstance(self, UI) and sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
+        if isinstance(self, UI):
+            return True
+
+        if sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
             return self.get_secure_cookie('sickchill_user')
         else:
-            return True
+            return helpers.is_ip_private(self.request.remote_ip)
 
     def get_user_locale(self):
         return sickbeard.GUI_LANG or None

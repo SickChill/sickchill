@@ -89,20 +89,15 @@ class LimeTorrentsProvider(TorrentProvider):
                     for item in entries:
                         try:
                             title = item.title.text
-                            # Use the itorrents link limetorrents provides,
-                            # unless it is not itorrents or we are not using blackhole
-                            # because we want to use magnets if connecting direct to client
-                            # so that proxies work.
                             download_url = item.enclosure['url']
-                            if sickbeard.TORRENT_METHOD != "blackhole" or 'itorrents' not in download_url:
-                                download_url = item.enclosure['url']
-                                # http://itorrents.org/torrent/C7203982B6F000393B1CE3A013504E5F87A46A7F.torrent?title=The-Night-of-the-Generals-(1967)[BRRip-1080p-x264-by-alE13-DTS-AC3][Lektor-i-Napisy-PL-Eng][Eng]
-                                # Keep the hash a separate string for when its needed for failed
-                                torrent_hash = re.match(r"(.*)([A-F0-9]{40})(.*)", download_url, re.I).group(2)
+                            torrent_hash = re.match(r"(.*)([A-F0-9]{40})(.*)", download_url, re.I).group(2)
+
+                            if sickbeard.TORRENT_METHOD != "blackhole" and 'magnet:?' not in download_url:
                                 download_url = "magnet:?xt=urn:btih:" + torrent_hash + "&dn=" + title + self._custom_trackers
 
                             if not (title and download_url):
                                 continue
+
                             # seeders and leechers are presented diferently when doing a search and when looking for newly added
                             if mode == 'RSS':
                                 # <![CDATA[
@@ -131,7 +126,7 @@ class LimeTorrentsProvider(TorrentProvider):
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
 
-                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
+                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': torrent_hash}
                         if mode != 'RSS':
                             logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 
