@@ -849,14 +849,16 @@ def initialize(consoleLogging=True):
                     if ek(os.path.isdir, CACHE_DIR) and not ek(os.path.islink, CACHE_DIR):
                         helpers.moveFile(CACHE_DIR, DATA_CACHE)
 
-                    if not ek(os.path.isdir, DATA_CACHE):
-                        helpers.makeDir(DATA_CACHE)
-            except Exception as e:
-                pass
-            try:
+                if not ek(os.path.isdir, DATA_CACHE):
+                    helpers.makeDir(DATA_CACHE)
+
+                if ek(os.path.isdir, DATA_CACHE) and not ek(os.path.islink, CACHE_DIR):
+                    if ek(os.path.isdir, CACHE_DIR):
+                        ek(shutil.rmtree, CACHE_DIR)
+
                     helpers.symlink(DATA_CACHE, CACHE_DIR)
-            except:
-                pass
+            except Exception as e:
+                print(e)
 
         # Check if we need to perform a restore of the cache folder
         try:
