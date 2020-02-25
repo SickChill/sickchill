@@ -23,6 +23,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import datetime
 import gettext
 import os
+import platform
 import random
 import re
 import shutil
@@ -841,6 +842,23 @@ def initialize(consoleLogging=True):
         load_gettext_translations(LOCALE_DIR, 'messages')
 
         CACHE_DIR = ek(os.path.normpath, ek(os.path.join, PROG_DIR, "gui", GUI_NAME, "cache"))
+        if platform.system() != 'Windows':  # Not sure if this will work on windows yet, but it works on linux
+            DATA_CACHE = ek(os.path.join, DATA_DIR, 'cache')
+            try:
+                if not ek(os.path.isdir, DATA_CACHE):
+                    if ek(os.path.isdir, CACHE_DIR) and not ek(os.path.islink, CACHE_DIR):
+                        helpers.moveFile(CACHE_DIR, DATA_CACHE)
+
+                if not ek(os.path.isdir, DATA_CACHE):
+                    helpers.makeDir(DATA_CACHE)
+
+                if ek(os.path.isdir, DATA_CACHE) and not ek(os.path.islink, CACHE_DIR):
+                    if ek(os.path.isdir, CACHE_DIR):
+                        ek(shutil.rmtree, CACHE_DIR)
+
+                    helpers.symlink(DATA_CACHE, CACHE_DIR)
+            except Exception as e:
+                print(e)
 
         # Check if we need to perform a restore of the cache folder
         try:
