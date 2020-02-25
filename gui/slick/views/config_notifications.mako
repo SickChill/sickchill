@@ -115,7 +115,7 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('KODI IP:Port')}</label>
+                                    <label class="component-title">${_('KODI IP')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
@@ -125,7 +125,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="kodi_host" class="component-desc">${_('host running KODI (eg. 192.168.1.100:8080)')}</label>
+                                            <label for="kodi_host" class="component-desc">${_('host running KODI (eg. 192.168.1.100)')}</label>
                                         </div>
                                     </div>
                                     <div class="row">
