@@ -20,7 +20,7 @@ from urllib3.util.ssl_ import create_urllib3_context, DEFAULT_CIPHERS
 
 from .user_agents import USER_AGENTS
 
-__version__ = "2.0.8"
+__version__ = "2.1.1"
 
 DEFAULT_USER_AGENT = random.choice(USER_AGENTS)
 
@@ -233,9 +233,12 @@ class CloudflareScraper(Session):
                 )
                 return self.request(method, redirect_url, **original_kwargs)
             return self.request(method, redirect.headers["Location"], **original_kwargs)
-        elif 'cf_clearance' in redirect.headers['Set-Cookie']:
-            resp = self.request(self.org_method, submit_url, cookies = redirect.cookies)
-            return resp
+        elif "Set-Cookie" in redirect.headers:
+            if 'cf_clearance' in redirect.headers['Set-Cookie']:
+                resp = self.request(self.org_method, submit_url, cookies = redirect.cookies)
+                return resp
+            else:
+                return self.request(method, submit_url, **original_kwargs)
         else:
             resp = self.request(self.org_method, submit_url, **cloudflare_kwargs)
             return resp
