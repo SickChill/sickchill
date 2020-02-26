@@ -21,7 +21,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Stdlib Imports
 import base64
 import datetime
-import json
 import os
 import time
 import traceback
@@ -31,8 +30,8 @@ from operator import attrgetter
 
 # Third Party Imports
 import jwt
-from jwt.algorithms import RSAAlgorithm as jwt_algorithms_RSAAlgorithm
 import six
+from jwt.algorithms import RSAAlgorithm as jwt_algorithms_RSAAlgorithm
 from mako.lookup import Template
 from requests.compat import urljoin
 from tornado.concurrent import run_on_executor
