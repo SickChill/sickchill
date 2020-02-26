@@ -1772,7 +1772,7 @@ def saveAll():
 
 
 def save_config():
-    new_config = ConfigObj(CONFIG_FILE, encoding='UTF-8')
+    new_config = ConfigObj(CONFIG_FILE, encoding='UTF-8', options={'indent_type': '  '})
 
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
     # dynamically save provider settings
