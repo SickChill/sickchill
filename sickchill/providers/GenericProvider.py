@@ -559,9 +559,11 @@ class GenericProvider(object):
             urls = []
             for cache_url in self.bt_cache_urls:
                 if isinstance(cache_url, tuple):
-                    urls += cache_url[0].format(torrent_hash=torrent_hash, torrent_name=torrent_name), cache_url[1].format(torrent_hash=torrent_hash, torrent_name=torrent_name)
+                    urls.append(
+                        (cache_url[0].format(torrent_hash=torrent_hash, torrent_name=torrent_name),
+                         cache_url[1].format(torrent_hash=torrent_hash, torrent_name=torrent_name)))
                 else:
-                    urls += cache_url.format(torrent_hash=torrent_hash, torrent_name=torrent_name)
+                    urls.append(cache_url.format(torrent_hash=torrent_hash, torrent_name=torrent_name))
 
         if 'torrage.info/torrent.php' in result.url:
             torrent_hash = result.url.split('=')[1]
