@@ -1713,7 +1713,7 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
 
 
 def is_ip_private(ip):
-    priv_lo = re.compile(r"^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
+    priv_lo = re.compile(r"^(127\.\d{1,3}\.\d{1,3}\.\d{1,3}|::1)$")
     priv_24 = re.compile(r"^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
     priv_20 = re.compile(r"^192\.168\.\d{1,3}.\d{1,3}$")
     priv_16 = re.compile(r"^172.(1[6-9]|2[0-9]|3[0-1]).[0-9]{1,3}.[0-9]{1,3}$")
