@@ -21,6 +21,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Stdlib Imports
 import base64
 import datetime
+import json
 import os
 import time
 import traceback
@@ -29,6 +30,8 @@ from mimetypes import guess_type
 from operator import attrgetter
 
 # Third Party Imports
+import jwt
+from jwt.algorithms import RSAAlgorithm as jwt_algorithms_RSAAlgorithm
 import six
 from mako.lookup import Template
 from requests.compat import urljoin
@@ -134,6 +137,18 @@ class BaseHandler(RequestHandler):
             return True
 
         if sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
+            # Authenticate using jwt for CF Access
+            # NOTE: Setting a username and password is STILL required to protect poorly configured tunnels or firewalls
+            if sickbeard.CF_AUTH_DOMAIN and sickbeard.CF_POLICY_AUD:
+                CERTS_URL = "{}/cdn-cgi/access/certs".format(sickbeard.CF_AUTH_DOMAIN)
+                if 'CF_Authorization' in self.request.cookies:
+                    jwk_set = helpers.getURL(CERTS_URL, returns='json')
+                    for key_dict in jwk_set['keys']:
+                        public_key = jwt_algorithms_RSAAlgorithm.from_jwk(json.dumps(key_dict))
+                        if jwt.decode(self.request.cookies['CF_Authorization'], key=public_key, audience=sickbeard.CF_POLICY_AUD):
+                            return True
+
+            # Basic Auth at a minimum
             auth_header = self.request.headers.get('Authorization')
             if auth_header and auth_header.startswith('Basic '):
                 auth_decoded = base64.decodestring(auth_header[6:])
@@ -142,8 +157,10 @@ class BaseHandler(RequestHandler):
                     return True
                 return False
 
+            # Logged into UI?
             return self.get_secure_cookie('sickchill_user')
         else:
+            # Local network
             return helpers.is_ip_private(self.request.remote_ip)
 
     def get_user_locale(self):

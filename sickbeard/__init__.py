@@ -172,6 +172,9 @@ WEB_IPV6 = None
 WEB_COOKIE_SECRET = None
 WEB_USE_GZIP = True
 
+CF_AUTH_DOMAIN = ''
+CF_POLICY_AUD = ''
+
 DOWNLOAD_URL = None
 
 HANDLE_REVERSE_PROXY = False
@@ -746,7 +749,7 @@ def initialize(consoleLogging=True):
             SICKCHILL_BACKGROUND_PATH, FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, \
             SLACK_NOTIFY_DOWNLOAD, SLACK_NOTIFY_SUBTITLEDOWNLOAD, SLACK_WEBHOOK, SLACK_ICON_EMOJI, USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK,\
             USE_MATRIX, MATRIX_NOTIFY_SNATCH, MATRIX_NOTIFY_DOWNLOAD, MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM, \
-            ENDED_SHOWS_UPDATE_INTERVAL, IMAGE_CACHE
+            ENDED_SHOWS_UPDATE_INTERVAL, IMAGE_CACHE, CF_AUTH_DOMAIN, CF_POLICY_AUD
 
         if __INITIALIZED__:
             return False
@@ -923,6 +926,9 @@ def initialize(consoleLogging=True):
         WEB_COOKIE_SECRET = check_setting_str(CFG, 'General', 'web_cookie_secret', helpers.generateCookieSecret(), censor_log=True)
         if not WEB_COOKIE_SECRET:
             WEB_COOKIE_SECRET = helpers.generateCookieSecret()
+
+        CF_AUTH_DOMAIN = check_setting_str(CFG, 'Cloudflare', 'auth_domain', censor_log=True)
+        CF_POLICY_AUD = check_setting_str(CFG, 'Cloudflare', 'audience_policy', censor_log=True)
 
         WEB_USE_GZIP = check_setting_bool(CFG, 'General', 'web_use_gzip', True)
 
@@ -1965,6 +1971,10 @@ def save_config():
             'display_all_seasons': int(DISPLAY_ALL_SEASONS),
             'ended_shows_update_interval': int(ENDED_SHOWS_UPDATE_INTERVAL),
             'news_last_read': NEWS_LAST_READ,
+        },
+        'Cloudflare': {
+            'auth_domain': CF_AUTH_DOMAIN,
+            'audience_policy': CF_POLICY_AUD
         },
 
         'Shares': WINDOWS_SHARES,
