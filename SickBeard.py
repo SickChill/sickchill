@@ -312,7 +312,7 @@ class SickChill(object):
             failed_history.trimHistory()
 
         # Check for metadata indexer updates for shows (sets the next aired ep!)
-        sickbeard.showUpdateScheduler.forceRun()
+        # sickbeard.showUpdateScheduler.forceRun()
 
         # Launch browser
         if sickbeard.LAUNCH_BROWSER and not (self.no_launch or self.run_as_daemon):

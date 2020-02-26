@@ -1571,7 +1571,8 @@ def initialize(consoleLogging=True):
             run_delay=datetime.timedelta(seconds=20),
             cycleTime=datetime.timedelta(hours=1),
             start_time=datetime.time(hour=SHOWUPDATE_HOUR),
-            threadName="SHOWUPDATER"
+            threadName="SHOWUPDATER",
+            silent=False
         )
 
         # searchers
