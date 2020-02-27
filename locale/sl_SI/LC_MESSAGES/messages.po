@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-02-27 02:24+0000\n"
+"POT-Creation-Date: 2020-02-27 02:43+0000\n"
 "PO-Revision-Date: 2018-10-10 07:48+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: sl_SI\n"
@@ -5932,7 +5932,7 @@ msgstr "Datum predvajanja"
 msgid "Download"
 msgstr "Prenos"
 
-#: gui/slick/views/displayShow.mako:444 gui/slick/views/displayShow.mako:666
+#: gui/slick/views/displayShow.mako:444 gui/slick/views/displayShow.mako:670
 msgid "Play"
 msgstr ""
 
@@ -6007,7 +6007,7 @@ msgid "Select Kodi Player"
 msgstr ""
 
 # | msgid "Romance"
-#: gui/slick/views/displayShow.mako:667
+#: gui/slick/views/displayShow.mako:671
 #, fuzzy
 msgid "Cancel"
 msgstr "Romantična"

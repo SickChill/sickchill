@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickchill 0.0.1\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-02-27 02:24+0000\n"
+"POT-Creation-Date: 2020-02-27 02:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -5777,7 +5777,7 @@ msgstr ""
 msgid "Download"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:444 gui/slick/views/displayShow.mako:666
+#: gui/slick/views/displayShow.mako:444 gui/slick/views/displayShow.mako:670
 msgid "Play"
 msgstr ""
 
@@ -5843,7 +5843,7 @@ msgstr ""
 msgid "Select Kodi Player"
 msgstr ""
 
-#: gui/slick/views/displayShow.mako:667
+#: gui/slick/views/displayShow.mako:671
 msgid "Cancel"
 msgstr ""
 
