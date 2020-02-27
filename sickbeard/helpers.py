@@ -1716,6 +1716,7 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
 def is_ip_private(ip):
     return ipaddress.ip_address(ip.decode()).is_private
 
+
 def recursive_listdir(path):
     for directory_path, directory_names, file_names in ek(os.walk, path, topdown=False):
         for filename in file_names:
