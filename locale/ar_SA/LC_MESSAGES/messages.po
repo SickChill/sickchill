@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-02-26 02:23+0000\n"
+"POT-Creation-Date: 2020-02-27 02:24+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: ar_SA\n"
@@ -129,15 +129,15 @@ msgstr "موسيقي"
 msgid "Talk-Show"
 msgstr "برنامج حواري"
 
-#: sickbeard/__init__.py:667
+#: sickbeard/__init__.py:670
 msgid "Ignore (do not process contents)"
 msgstr ""
 
-#: sickbeard/__init__.py:668
+#: sickbeard/__init__.py:671
 msgid "Unpack (process contents)"
 msgstr ""
 
-#: sickbeard/__init__.py:669
+#: sickbeard/__init__.py:672
 msgid "Treat as video (process archive as-is)"
 msgstr ""
 
@@ -1809,7 +1809,7 @@ msgid "Shows"
 msgstr "مسلسلات"
 
 #: gui/slick/views/config_general.mako:78 gui/slick/views/layouts/main.mako:163
-#: sickchill/views/index.py:328
+#: sickchill/views/index.py:351
 msgid "Schedule"
 msgstr "مواعيد العرض"
 
@@ -8023,39 +8023,39 @@ msgstr "تم تحميل ترجمات جديدة: {new_subtitle_languages}"
 msgid "No subtitles downloaded"
 msgstr "لم يتم تحميل الترجمة"
 
-#: sickchill/views/index.py:84
+#: sickchill/views/index.py:93
 msgid "Oops: 404 Not Found"
 msgstr ""
 
-#: sickchill/views/index.py:86
+#: sickchill/views/index.py:95
 msgid "Wrong API key used"
 msgstr "تم استخدام مفتاح API خاطيء"
 
-#: sickchill/views/index.py:238
+#: sickchill/views/index.py:261
 msgid "API Key not generated"
 msgstr "لم يتم إنشاء مفتاح API"
 
-#: sickchill/views/index.py:241
+#: sickchill/views/index.py:264
 msgid "API Builder"
 msgstr "منشئ API"
 
-#: sickchill/views/index.py:352
+#: sickchill/views/index.py:375
 msgid "Test 1"
 msgstr "اختبار 1"
 
-#: sickchill/views/index.py:352
+#: sickchill/views/index.py:375
 msgid "This is test number 1"
 msgstr "هذا الاختبار رقم 1"
 
-#: sickchill/views/index.py:353
+#: sickchill/views/index.py:376
 msgid "Test 2"
 msgstr "اختبار 2"
 
-#: sickchill/views/index.py:353
+#: sickchill/views/index.py:376
 msgid "This is test number 2"
 msgstr "هذا الاختبار رقم 2"
 
-#: sickchill/views/index.py:378
+#: sickchill/views/index.py:401
 msgid ""
 "You're using the {branch} branch. Please use 'master' unless specifically"
 " asked"
