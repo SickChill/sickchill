@@ -655,9 +655,13 @@
                     <div class="form-group col-md-12">
                         <select id="kodi-play-host" name="kodi-play-host" class="form-control">
                             % if sickbeard.USE_KODI and sickbeard.KODI_HOST:
-                                % for index, connection in enumerate(sickbeard.notifiers.kodi_notifier.connections):
-                                    <option value="${index}">${connection.name} (${connection.host})</option>
-                                % endfor
+                                % try:
+                                    % for index, connection in enumerate(sickbeard.notifiers.kodi_notifier.connections):
+                                        <option value="${index}">${connection.name} (${connection.host})</option>
+                                    % endfor
+                                % except:
+                                    <% pass %>
+                                % endtry
                             % endif
                         </select>
                     </div>
