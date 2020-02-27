@@ -29,9 +29,7 @@ from mimetypes import guess_type
 from operator import attrgetter
 
 # Third Party Imports
-import jwt
 import six
-from jwt.algorithms import RSAAlgorithm as jwt_algorithms_RSAAlgorithm
 from mako.lookup import Template
 from requests.compat import urljoin
 from tornado.concurrent import run_on_executor
@@ -51,6 +49,15 @@ from sickchill.views.routes import Route
 # Local Folder Imports
 from .api.webapi import function_mapper
 from .common import PageTemplate
+
+try:
+    import jwt
+    from jwt.algorithms import RSAAlgorithm as jwt_algorithms_RSAAlgorithm
+    has_cryptography = True
+except:
+    has_cryptography = False
+
+
 
 try:
     import json
@@ -138,7 +145,7 @@ class BaseHandler(RequestHandler):
         if sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
             # Authenticate using jwt for CF Access
             # NOTE: Setting a username and password is STILL required to protect poorly configured tunnels or firewalls
-            if sickbeard.CF_AUTH_DOMAIN and sickbeard.CF_POLICY_AUD:
+            if sickbeard.CF_AUTH_DOMAIN and sickbeard.CF_POLICY_AUD and has_cryptography:
                 CERTS_URL = "{}/cdn-cgi/access/certs".format(sickbeard.CF_AUTH_DOMAIN)
                 if 'CF_Authorization' in self.request.cookies:
                     jwk_set = helpers.getURL(CERTS_URL, returns='json')
