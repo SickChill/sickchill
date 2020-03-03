@@ -50,7 +50,7 @@ class Notifier(object):
                 kodi.name = kodi.Settings.GetSettingValue(setting="services.devicename")['result']['value']
                 if kodi not in self._connections:
                     self._connections.append(kodi)
-            except (URLError, RequestTimeout):
+            except (URLError, RequestTimeout, KeyError, IndexError):
                 pass
                 # logger.log('Unable to connect to Kodi host as {0}, make sure the username and password is correct and that the http control is enabled'.format(host))
 

@@ -89,10 +89,14 @@ class Client(GenericClient):
         return self._request(method='post', data=data, cookies=self.session.cookies)
 
     def _set_torrent_priority(self, result):
-        self.url = urljoin(self.host, self.api_prefix + 'torrents/decreasePrio?hashes={}'.format(result.hash.lower))
-        if result.priority == 1:
-            self.url = urljoin(self.host, self.api_prefix + 'torrents/increasePrio?hashes={}'.format(result.hash.lower))
-        return self._request(method='get', cookies=self.session.cookies)
+        self.url = urljoin(self.host, self.api_prefix + 'app/preferences')
+        self._request(method='get', cookies=self.session.cookies)
+        json = self.response.json()
+        if json and json.get('queueing_enabled'):
+            self.url = urljoin(self.host, self.api_prefix + 'torrents/decreasePrio?hashes={}'.format(result.hash.lower))
+            if result.priority == 1:
+                self.url = urljoin(self.host, self.api_prefix + 'torrents/increasePrio?hashes={}'.format(result.hash.lower))
+            return self._request(method='get', cookies=self.session.cookies)
 
     def _set_torrent_pause(self, result):
         self.url = urljoin(self.host, self.api_prefix + 'torrents/resume?hashes={}'.format(result.hash.lower()))
