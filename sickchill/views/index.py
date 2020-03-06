@@ -154,6 +154,10 @@ class BaseHandler(RequestHandler):
                         if jwt.decode(self.request.cookies['CF_Authorization'], key=public_key, audience=sickbeard.CF_POLICY_AUD):
                             return True
 
+            # Logged into UI?
+            if self.get_secure_cookie('sickchill_user'):
+                return True
+
             # Basic Auth at a minimum
             auth_header = self.request.headers.get('Authorization')
             if auth_header and auth_header.startswith('Basic '):
@@ -163,8 +167,6 @@ class BaseHandler(RequestHandler):
                     return True
                 return False
 
-            # Logged into UI?
-            return self.get_secure_cookie('sickchill_user')
         else:
             # Local network
             return helpers.is_ip_private(self.request.remote_ip)
