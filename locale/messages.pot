@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickchill 0.0.1\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-03-07 16:10+0000\n"
+"POT-Creation-Date: 2020-03-07 16:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -927,10 +927,6 @@ msgstr ""
 
 #: gui/slick/js/browser.js:6
 msgid "Choose Directory"
-msgstr ""
-
-#: gui/slick/js/core.js:413
-msgid "Select log file folder location"
 msgstr ""
 
 #: gui/slick/js/core.js:414

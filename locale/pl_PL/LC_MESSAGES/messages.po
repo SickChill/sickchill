@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-03-07 16:10+0000\n"
+"POT-Creation-Date: 2020-03-07 16:16+0000\n"
 "PO-Revision-Date: 2018-10-10 07:47+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: pl_PL\n"
@@ -964,10 +964,6 @@ msgstr ""
 #: gui/slick/js/browser.js:6
 msgid "Choose Directory"
 msgstr "Wybierz katalog"
-
-#: gui/slick/js/core.js:413
-msgid "Select log file folder location"
-msgstr "Wybierz lokalizację folderu plików dziennika"
 
 #: gui/slick/js/core.js:414
 msgid "Select Background Image"
