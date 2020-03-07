@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-03-03 01:50+0000\n"
+"POT-Creation-Date: 2020-03-07 16:10+0000\n"
 "PO-Revision-Date: 2018-10-10 07:48+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: ro_RO\n"
@@ -1754,7 +1754,7 @@ msgid "Shows"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:78 gui/slick/views/layouts/main.mako:163
-#: sickchill/views/index.py:351
+#: sickchill/views/index.py:353
 msgid "Schedule"
 msgstr "Program"
 
@@ -7725,31 +7725,31 @@ msgstr ""
 msgid "Wrong API key used"
 msgstr "Cheie greșită pentru API"
 
-#: sickchill/views/index.py:261
+#: sickchill/views/index.py:263
 msgid "API Key not generated"
 msgstr "Cheia pentru API nu este generată"
 
-#: sickchill/views/index.py:264
+#: sickchill/views/index.py:266
 msgid "API Builder"
 msgstr "API Builder"
 
-#: sickchill/views/index.py:375
+#: sickchill/views/index.py:377
 msgid "Test 1"
 msgstr "Test 1"
 
-#: sickchill/views/index.py:375
+#: sickchill/views/index.py:377
 msgid "This is test number 1"
 msgstr "Acesta este testul numărul 1"
 
-#: sickchill/views/index.py:376
+#: sickchill/views/index.py:378
 msgid "Test 2"
 msgstr "Test 2"
 
-#: sickchill/views/index.py:376
+#: sickchill/views/index.py:378
 msgid "This is test number 2"
 msgstr "Acesta este testul numărul 2"
 
-#: sickchill/views/index.py:401
+#: sickchill/views/index.py:403
 msgid ""
 "You're using the {branch} branch. Please use 'master' unless specifically"
 " asked"
