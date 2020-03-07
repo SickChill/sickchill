@@ -59,14 +59,18 @@ class ShowUpdater(object):
 
                 if last_update:
                     logger.log('Last update: {}'.format(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_update))))
-                    # We query tvdb for updates starting from the last update time from the cache until now with increments of 7 days
-                    for fromTime in range(last_update, update_timestamp - self.seven_days, self.seven_days):  # increments of 604800 sec = 7*24*60*60
+
+                    current_check = update_timestamp
+                    while current_check >= last_update:
+
                         try:
-                            TvdbData = sickchill.indexer[1].updates(fromTime=fromTime, toTime=fromTime + self.seven_days)
+                            TvdbData = sickchill.indexer[1].updates(fromTime=current_check - self.seven_days, toTime=current_check)
                             TvdbData.series()
                             updated_shows.extend([d['id'] for d in TvdbData.series])
                         except Exception as error:
                             logger.log(str(error))
+
+                        current_check -= self.seven_days - 1
                 else:
                     logger.log(_('No last update time from the cache, so we do a full update for all shows'))
 
@@ -85,7 +89,7 @@ class ShowUpdater(object):
 
                         # Just update all of the shows for now until they fix the updates api
                         # When last_update is not set from the cache or the show was in the tvdb updated list we update the show
-                        if 1 or not last_update or cur_show.indexerid in updated_shows:
+                        if cur_show.indexerid in updated_shows or not last_update:
                             pi_list.append(sickbeard.showQueueScheduler.action.update_show(cur_show, True))
                         else:
                             pi_list.append(sickbeard.showQueueScheduler.action.refresh_show(cur_show, force))
