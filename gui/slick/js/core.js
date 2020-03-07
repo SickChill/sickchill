@@ -410,7 +410,7 @@ var SICKCHILL = {
             });
         },
         index: function() {
-            $('#log_dir').fileBrowser({title: _('Select log file folder location')});
+            // $('#log_dir').fileBrowser({title: _('Select log file folder location')});
             $('#sickchill_background_path').fileBrowser({title: _('Select Background Image'), key: 'sickchill_background_path', includeFiles: 1, fileTypes: ['images']});
             $('#custom_css_path').fileBrowser({title: _('Select CSS file'), key: 'custom_css_path', includeFiles: 1, fileTypes: ['css']});
 
