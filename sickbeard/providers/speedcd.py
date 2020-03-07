@@ -22,7 +22,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import re
-import string
 
 # Third Party Imports
 from requests.compat import urljoin
@@ -133,7 +132,7 @@ class SpeedCDProvider(TorrentProvider):
                     logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
-                search_params['search'] = search_string.translate(None, string.punctuation)
+                search_params['search'] = re.sub(r'[^\w\s]', '', search_string)
 
                 data = self.get_url(self.urls['search'], params=search_params, returns='text')
                 if not data:
