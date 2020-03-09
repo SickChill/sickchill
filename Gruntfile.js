@@ -132,6 +132,9 @@ module.exports = function(grunt) {
                     "open-sans-fontface": [
                         "*.css",
                         "fonts/**/*"
+                    ],
+                    "jqueryui-touch-punch": [
+                        "jquery.ui.touch-punch.min.js"
                     ]
                 },
                 bowerOptions: {
