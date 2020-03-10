@@ -13,6 +13,6 @@ services:
     ports:
       - 8081:8081
     volumes:
-      -  /docker/sickchill/data:/data
-      -  /docker/sickchill/downloads:/downloads
-      -  /docker/sickchill/tv:/tv
+      -  ${SICKCHILL_DIR}/data:/data
+      -  ${SICKCHILL_DIR}/downloads:/downloads
+      -  ${SICKCHILL_DIR}/tv:/tv
