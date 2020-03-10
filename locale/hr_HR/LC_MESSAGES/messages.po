@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-03-08 23:35+0000\n"
+"POT-Creation-Date: 2020-03-10 10:11+0000\n"
 "PO-Revision-Date: 2018-10-10 07:46+0000\n"
 "Last-Translator: miigotu <miigotu@gmail.com>\n"
 "Language: hr_HR\n"
@@ -320,255 +320,255 @@ msgstr ""
 msgid "Patching socket to IPv4 only"
 msgstr ""
 
-#: sickbeard/helpers.py:253
+#: sickbeard/helpers.py:254
 msgid "Invalid filename. Filename must be a string. {0}"
 msgstr ""
 
-#: sickbeard/helpers.py:407
+#: sickbeard/helpers.py:408
 msgid "Failed to create hardlink of {0} at {1}. Error: {2}. Copying instead"
 msgstr ""
 
-#: sickbeard/helpers.py:444
+#: sickbeard/helpers.py:445
 msgid "Failed to create symlink of {0} at {1}. Error: {2}. Copying instead"
 msgstr ""
 
-#: sickbeard/helpers.py:455
+#: sickbeard/helpers.py:456
 msgid "Checking if the path {0} already exists"
 msgstr ""
 
-#: sickbeard/helpers.py:461 sickbeard/helpers.py:481
+#: sickbeard/helpers.py:462 sickbeard/helpers.py:482
 msgid "Folder {0} didn't exist, creating it"
 msgstr ""
 
-#: sickbeard/helpers.py:464 sickbeard/helpers.py:488
+#: sickbeard/helpers.py:465 sickbeard/helpers.py:489
 msgid "Failed creating {0} : {1}"
 msgstr ""
 
-#: sickbeard/helpers.py:529
+#: sickbeard/helpers.py:530
 msgid "Renaming file from {0} to {1}"
 msgstr ""
 
-#: sickbeard/helpers.py:532
+#: sickbeard/helpers.py:533
 msgid "Failed renaming {0} to {1} : {2}"
 msgstr ""
 
-#: sickbeard/helpers.py:552
+#: sickbeard/helpers.py:553
 msgid "Trying to clean any empty folders under "
 msgstr ""
 
-#: sickbeard/helpers.py:562
+#: sickbeard/helpers.py:563
 msgid "Deleting empty folder: "
 msgstr ""
 
-#: sickbeard/helpers.py:568
+#: sickbeard/helpers.py:569
 msgid "Unable to delete {0}. Error: {1}"
 msgstr ""
 
-#: sickbeard/helpers.py:604
+#: sickbeard/helpers.py:605
 msgid "No parent path provided in {location} unable to get permissions from it"
 msgstr ""
 
-#: sickbeard/helpers.py:627
+#: sickbeard/helpers.py:628
 msgid "Not running as root or owner of {location}, not trying to set permissions"
 msgstr ""
 
-#: sickbeard/helpers.py:633
+#: sickbeard/helpers.py:634
 msgid "Failed to set permission for {0} to {1:o}, parent directory has {2:o}"
 msgstr ""
 
-#: sickbeard/helpers.py:665
+#: sickbeard/helpers.py:666
 msgid "Not running as root or owner of {}, not trying to set the set-group-ID"
 msgstr ""
 
-#: sickbeard/helpers.py:670
+#: sickbeard/helpers.py:671
 msgid "Respecting the set-group-ID bit on the parent directory for {0}"
 msgstr ""
 
-#: sickbeard/helpers.py:715
+#: sickbeard/helpers.py:716
 msgid "Found absolute number {absolute} for show {show} {ep}"
 msgstr ""
 
-#: sickbeard/helpers.py:719
+#: sickbeard/helpers.py:720
 msgid "No entries for absolute number for show {show} {ep}"
 msgstr ""
 
-#: sickbeard/helpers.py:801
+#: sickbeard/helpers.py:802
 msgid "pyopenssl module missing, please install for https access"
 msgstr ""
 
-#: sickbeard/helpers.py:825
+#: sickbeard/helpers.py:826
 msgid "Error creating SSL key and certificate"
 msgstr ""
 
-#: sickbeard/helpers.py:846
+#: sickbeard/helpers.py:847
 msgid "Not creating backup, {0} doesn't exist"
 msgstr ""
 
-#: sickbeard/helpers.py:850
+#: sickbeard/helpers.py:851
 msgid "Trying to back up {0} to {1}"
 msgstr ""
 
-#: sickbeard/helpers.py:852
+#: sickbeard/helpers.py:853
 msgid "Backup done"
 msgstr ""
 
-#: sickbeard/helpers.py:855
+#: sickbeard/helpers.py:856
 msgid "Error while trying to back up {0} to {1} : {2}"
 msgstr ""
 
-#: sickbeard/helpers.py:858
+#: sickbeard/helpers.py:859
 msgid "Trying again."
 msgstr ""
 
-#: sickbeard/helpers.py:861
+#: sickbeard/helpers.py:862
 msgid "Unable to back up {0} to {1} please do it manually."
 msgstr ""
 
-#: sickbeard/helpers.py:882 sickbeard/helpers.py:897
+#: sickbeard/helpers.py:883 sickbeard/helpers.py:898
 msgid "Not restoring, {0} doesn't exist"
 msgstr ""
 
-#: sickbeard/helpers.py:886
+#: sickbeard/helpers.py:887
 msgid "Trying to backup {0} to {1}.r{2} before restoring backup"
 msgstr ""
 
-#: sickbeard/helpers.py:891
+#: sickbeard/helpers.py:892
 msgid ""
 "Error while trying to backup DB file {0} before proceeding with restore: "
 "{1}"
 msgstr ""
 
-#: sickbeard/helpers.py:901
+#: sickbeard/helpers.py:902
 msgid "Trying to restore file {0} to {1}"
 msgstr ""
 
-#: sickbeard/helpers.py:903
+#: sickbeard/helpers.py:904
 msgid "Restore done"
 msgstr ""
 
-#: sickbeard/helpers.py:906
+#: sickbeard/helpers.py:907
 msgid "Error while trying to restore file {0}. Error: {1}"
 msgstr ""
 
-#: sickbeard/helpers.py:909
+#: sickbeard/helpers.py:910
 msgid "Trying again. Attempt #: {0}"
 msgstr ""
 
-#: sickbeard/helpers.py:912
+#: sickbeard/helpers.py:913
 msgid "Unable to restore file {0} to {1}"
 msgstr ""
 
-#: sickbeard/helpers.py:1049
+#: sickbeard/helpers.py:1050
 msgid "Error when attempting to find show: {0} in SickChill. Error: {1} "
 msgstr ""
 
-#: sickbeard/helpers.py:1106
+#: sickbeard/helpers.py:1107
 msgid "Usage of anidb disabled. Skiping"
 msgstr ""
 
-#: sickbeard/helpers.py:1110
+#: sickbeard/helpers.py:1111
 msgid "anidb username and/or password are not set. Aborting anidb lookup."
 msgstr ""
 
-#: sickbeard/helpers.py:1115
+#: sickbeard/helpers.py:1116
 msgid "anidb: {0} "
 msgstr ""
 
-#: sickbeard/helpers.py:1120 sickbeard/helpers.py:1129
+#: sickbeard/helpers.py:1121 sickbeard/helpers.py:1130
 msgid "anidb exception msg: {0} "
 msgstr ""
 
-#: sickbeard/helpers.py:1150 sickbeard/helpers.py:1203
+#: sickbeard/helpers.py:1151 sickbeard/helpers.py:1204
 msgid "Zip creation error: {0} "
 msgstr ""
 
-#: sickbeard/helpers.py:1182
+#: sickbeard/helpers.py:1183
 msgid "Zip extraction error: {0} "
 msgstr ""
 
-#: sickbeard/helpers.py:1232
+#: sickbeard/helpers.py:1233
 msgid "Zip extraction error: {0}"
 msgstr ""
 
-#: sickbeard/helpers.py:1272
+#: sickbeard/helpers.py:1273
 msgid "Using global proxy: {}"
 msgstr ""
 
-#: sickbeard/helpers.py:1353
+#: sickbeard/helpers.py:1354
 msgid "Requested a json response but response was not json, check the url: {0}"
 msgstr ""
 
-#: sickbeard/helpers.py:1392
+#: sickbeard/helpers.py:1393
 msgid ""
 "Problem downloading file, setting permissions or writing file to {0} - "
 "ERROR: {1}"
 msgstr ""
 
-#: sickbeard/helpers.py:1406
+#: sickbeard/helpers.py:1407
 msgid "Request failed: {0} ({1})"
 msgstr ""
 
-#: sickbeard/helpers.py:1411
+#: sickbeard/helpers.py:1412
 msgid ""
 "SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to "
 "1.0.1e+"
 msgstr ""
 
-#: sickbeard/helpers.py:1413
+#: sickbeard/helpers.py:1414
 msgid ""
 "SSL Error requesting url: '{0}' Try disabling Cert Verification on the "
 "advanced tab of /config/general"
 msgstr ""
 
-#: sickbeard/helpers.py:1453
+#: sickbeard/helpers.py:1454
 msgid "url is {0}"
 msgstr ""
 
-#: sickbeard/helpers.py:1480
+#: sickbeard/helpers.py:1481
 msgid "Unable to get size for file {0} because the link to the file is not valid"
 msgstr ""
 
-#: sickbeard/helpers.py:1486
+#: sickbeard/helpers.py:1487
 msgid "Unable to get size for file {0} Error: {1}"
 msgstr ""
 
-#: sickbeard/helpers.py:1493
+#: sickbeard/helpers.py:1494
 msgid "Generating New API key"
 msgstr ""
 
-#: sickbeard/helpers.py:1550
+#: sickbeard/helpers.py:1551
 msgid "Trying to determine free space on the destination drive"
 msgstr ""
 
-#: sickbeard/helpers.py:1553
+#: sickbeard/helpers.py:1554
 msgid "A path to a file is required for the source. {0} is not a file."
 msgstr ""
 
-#: sickbeard/helpers.py:1557
+#: sickbeard/helpers.py:1558
 msgid ""
 "A path is required for the destination. Check that the root dir and show "
 "locations are correct for {0} (I got '{1}')"
 msgstr ""
 
-#: sickbeard/helpers.py:1567
+#: sickbeard/helpers.py:1568
 msgid ""
 "Process method is 'move' and src and destination are on the same device, "
 "skipping free space check"
 msgstr ""
 
-#: sickbeard/helpers.py:1573
+#: sickbeard/helpers.py:1574
 msgid "Unable to determine free space, so I will assume there is enough."
 msgstr ""
 
-#: sickbeard/helpers.py:1574 sickbeard/helpers.py:1607
+#: sickbeard/helpers.py:1575 sickbeard/helpers.py:1608
 msgid "Error: {error}"
 msgstr ""
 
-#: sickbeard/helpers.py:1592
+#: sickbeard/helpers.py:1593
 msgid "Not enough free space: Needed: {0} bytes ( {1} ), found: {2} bytes ( {3} )"
 msgstr ""
 
-#: sickbeard/helpers.py:1606
+#: sickbeard/helpers.py:1607
 msgid "Unable to determine free space"
 msgstr ""
 
