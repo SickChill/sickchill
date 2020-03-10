@@ -2,7 +2,10 @@ FROM python:2.7-alpine
 LABEL maintainer="miigotu@gmail.com"
 ENV PYTHONIOENCODING="UTF-8"
 
-# TODO: Handle permissions so data/config isnt owned by root
+ARG SICKCHILL_UID
+ARG SICKCHILL_USER
+
+RUN adduser --uid ${SICKCHILL_UID} --disabled-password ${SICKCHILL_USER}
 
 RUN apk add --update --no-cache \
     git \
@@ -19,8 +22,12 @@ RUN apk add --update --no-cache \
     musl-dev \
     && pip install pyopenssl \
     && apk del .build-deps \
-    &&  mkdir /app /var/run/sickchill
-COPY . /app/sickchill
+    &&  mkdir -p /app /var/run/sickchill /data/config  \
+    && chown -R ${SICKCHILL_USER}:${SICKCHILL_USER} /var/run/sickchill /data/
+
+USER ${SICKCHILL_USER}
+
+COPY --chown=${SICKCHILL_USER}:${SICKCHILL_USER} . /app/sickchill
 
 WORKDIR /app/sickchill
 
