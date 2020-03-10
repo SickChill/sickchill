@@ -205,7 +205,8 @@ def remove_non_release_groups(name):
         r'\[NO-RAR\] - \[ www\.torrentday\.com \]$': 'searchre',
         r'^www\.Torrenting\.com\.-\.': 'searchre',
         r'-Scrambled$': 'searchre',
-        r'^Torrent9\.PH ---> ': 'searchre'
+        r'^Torrent9\.PH ---> ': 'searchre',
+        r'-xpost$': 'searchre'
     }
 
     _name = name
