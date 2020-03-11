@@ -2,8 +2,8 @@ FROM python:2.7-alpine
 LABEL maintainer="miigotu@gmail.com"
 ENV PYTHONIOENCODING="UTF-8"
 
-ARG SICKCHILL_UID
-ARG SICKCHILL_USER
+ARG SICKCHILL_UID=317
+ARG SICKCHILL_USER=sickchill
 
 RUN adduser --uid ${SICKCHILL_UID} --disabled-password ${SICKCHILL_USER}
 
