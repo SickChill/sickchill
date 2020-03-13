@@ -125,7 +125,7 @@ jobs:
         docker pull ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} 2>/dev/null || \
         docker pull ${{ steps.prepare.outputs.docker_image }}:latest 2>/dev/null || \
         docker pull ${{ steps.prepare.outputs.docker_image }}:master 2>/dev/null || \
-        echo '${{ steps.prepare.outputs.docker_image } has never been built yet, it will be cached next run!'
+        echo '${{ steps.prepare.outputs.docker_image }} has never been built yet, it will be cached next run!'
     - name: Run Buildx (master)
       if: success() && contains(steps.prepare.outputs.version, 'master')
       run: |
