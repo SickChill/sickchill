@@ -106,7 +106,7 @@ jobs:
       run: |
         echo ::set-output name=docker_platforms::linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/386,linux/ppc64le,linux/s390x
         echo ::set-output name=docker_username::miigotu
-        echo ::set-output name=docker_image::docker.io/miigotu/sickchill
+        echo ::set-output name=docker_image::$(echo docker.io/$GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')
         echo ::set-output name=version::${GITHUB_REF#refs/*/}
         echo ::set-output name=docker_root::$(docker info 2>/dev/null | grep -e "Docker Root Dir" | tail -c+19)
     - name: Restore docker cache
@@ -118,30 +118,32 @@ jobs:
           ${{ runner.os }}-docker-
     - name: Docker Login and pull last build
       if: success()
+      id: login
       env:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
+        echo "Looking for an image we can use as a base to use cached layers from"
+        CACHE_IMAGE_NAME=$(echo ${{ steps.prepare.outputs.docker_image }} | tail -c+10)
         echo "${DOCKER_PASSWORD}" | docker login --username "${{ steps.prepare.outputs.docker_username }}" --password-stdin docker.io
+        echo ::set-output name=cache_image::$CACHE_IMAGE_NAME:${{ steps.prepare.outputs.version }}&& \
         docker pull ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} 2>/dev/null || \
+        echo ::set-output name=cache_image::$CACHE_IMAGE_NAME:latest && \
         docker pull ${{ steps.prepare.outputs.docker_image }}:latest 2>/dev/null || \
+        echo ::set-output name=cache_image::$CACHE_IMAGE_NAME:master && \
         docker pull ${{ steps.prepare.outputs.docker_image }}:master 2>/dev/null || \
         echo '${{ steps.prepare.outputs.docker_image }} has never been built yet, it will be cached next run!'
     - name: Run Buildx (master)
       if: success() && contains(steps.prepare.outputs.version, 'master')
       run: |
-        docker buildx build \
-          --output type=image,name=${{ steps.prepare.outputs.docker_image }},push=true \
-          --platform ${{ steps.prepare.outputs.docker_platforms }} \
+        docker buildx build --output type=image,name=${{ steps.prepare.outputs.docker_image }},push=true \
+          --platform ${{ steps.prepare.outputs.docker_platforms }} --cache-from "${{ steps.login.outputs.cache_image }}" \
           --tag "${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}" \
           --tag "${{ steps.prepare.outputs.docker_image }}:latest" \
-          --cache-from "${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}" \
           --file Dockerfile .
     - name: Run Buildx (non-master)
       if: success() && !contains(steps.prepare.outputs.version, 'master')
       run: |
-        docker buildx build \
-          --output type=image,name=${{ steps.prepare.outputs.docker_image }},push=true \
-          --platform ${{ steps.prepare.outputs.docker_platforms }} \
+        docker buildx build --output type=image,name=${{ steps.prepare.outputs.docker_image }},push=true \
+          --platform ${{ steps.prepare.outputs.docker_platforms }} --cache-from "${{ steps.login.outputs.cache_image }}" \
           --tag "${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}" \
-          --cache-from "${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}" \
           --file Dockerfile .
