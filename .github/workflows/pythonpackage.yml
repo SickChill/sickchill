@@ -116,16 +116,16 @@ jobs:
         key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
         restore-keys: |
           ${{ runner.os }}-docker-
-    - name: Docker Login
+    - name: Docker Login and pull last build
       if: success()
       env:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
         echo "${DOCKER_PASSWORD}" | docker login --username "${{ steps.prepare.outputs.docker_username }}" --password-stdin docker.io
+        docker pull ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} 1>/dev/null 2>/dev/null
     - name: Run Buildx (master)
       if: success() && contains(steps.prepare.outputs.version, 'master')
       run: |
-        docker pull ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}
         docker buildx build \
           --output type=image,name=${{ steps.prepare.outputs.docker_image }},push=true \
           --platform ${{ steps.prepare.outputs.docker_platforms }} \
@@ -136,7 +136,6 @@ jobs:
     - name: Run Buildx (non-master)
       if: success() && !contains(steps.prepare.outputs.version, 'master')
       run: |
-        docker pull ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}
         docker buildx build \
           --output type=image,name=${{ steps.prepare.outputs.docker_image }},push=true \
           --platform ${{ steps.prepare.outputs.docker_platforms }} \
