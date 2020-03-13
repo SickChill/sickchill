@@ -122,7 +122,10 @@ jobs:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
         echo "${DOCKER_PASSWORD}" | docker login --username "${{ steps.prepare.outputs.docker_username }}" --password-stdin docker.io
-        docker pull ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} 1>/dev/null 2>/dev/null
+        docker pull ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} 2>/dev/null || \
+        docker pull ${{ steps.prepare.outputs.docker_image }}:latest 2>/dev/null || \
+        docker pull ${{ steps.prepare.outputs.docker_image }}:master 2>/dev/null || \
+        echo '${{ steps.prepare.outputs.docker_image } has never been built yet, it will be cached next run!'
     - name: Run Buildx (master)
       if: success() && contains(steps.prepare.outputs.version, 'master')
       run: |
