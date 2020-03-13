@@ -2,8 +2,8 @@ name: Greetings
 
 on:
   pull_request:
-   types:
-     opened
+    types:
+      opened
   issue:
     types:
       opened
