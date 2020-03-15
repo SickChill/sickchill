@@ -52,7 +52,7 @@ PySocks == 1.6.7
 pysrt == 1.1.1
 python-dateutil == 2.8.0
 #! python-fanart == 1.4.0  # <Modified: API url was updated. No newer version>
-python-twitter == 3.3
+python-twitter == 3.5
 pytz == 2019.1
 git+https://github.com/markokr/rarfile.git@3e54b222c8703eea64cd07102df7bb9408b582b3#egg=rarfile  # v3.0 Github release <Modified: See https://github.com/SickChill/SickChill/commit/059dd933b9da3a0f83c6cbb4f47c198e5a957fc6#diff-c1f4e968aa545d42d2e462672169da4a>
 rebulk == 1.0.0
