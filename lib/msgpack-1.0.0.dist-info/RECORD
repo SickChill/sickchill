@@ -1,0 +1,17 @@
+msgpack-1.0.0.dist-info/DESCRIPTION.rst,sha256=ClKPAeX5__DOLCFM6idiZ7KqmF5wOg9v3ltBLi1Tx3s,8347
+msgpack-1.0.0.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+msgpack-1.0.0.dist-info/METADATA,sha256=JBdcBN5aoJFU5PD8EwVMZvFfKQ0wXt85eKT5sy4iBVI,9398
+msgpack-1.0.0.dist-info/RECORD,,
+msgpack-1.0.0.dist-info/WHEEL,sha256=bee59qcPjkyXfMaxNWjl2CGotqfumWx9pC1hlVLr2mM,92
+msgpack-1.0.0.dist-info/metadata.json,sha256=SflhNhb5KIQwdcLt1hx7IaFSKZzpHiiiUByvQOdGpWA,1027
+msgpack-1.0.0.dist-info/top_level.txt,sha256=2tykSY1pXdiA2xYTDR6jPw0qI5ZGxRihyhf4S5hZyXk,8
+msgpack/__init__.py,sha256=2gJwcsTIaAtCM0GMi2rU-_Y6kILeeQuqRkrQ22jSANc,1118
+msgpack/__init__.pyc,,
+msgpack/_version.py,sha256=hu7lzmZ_ClOaOOmRsWb4xomhzQ4UIsLsvv8KY6UysHE,20
+msgpack/_version.pyc,,
+msgpack/exceptions.py,sha256=dCTWei8dpkrMsQDcjQk74ATl9HsIBH0ybt8zOPNqMYc,1081
+msgpack/exceptions.pyc,,
+msgpack/ext.py,sha256=nV19BzE9Be8SJHrxxYJHFbvEHJaXcP3avRkHVp5wovM,6034
+msgpack/ext.pyc,,
+msgpack/fallback.py,sha256=Z8V3iYUUPqKVy4WWTk64Vq3G0PylQIOmlWvgnMhmkdU,37133
+msgpack/fallback.pyc,,
