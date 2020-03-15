@@ -49,7 +49,7 @@ jobs:
       run: echo "::set-output name=dir::$(yarn cache dir)"
     - name: Restore yarn cache
       uses: actions/cache@v1
-      id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      id: yarn-cache
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -106,17 +106,10 @@ jobs:
       run: |
         echo ::set-output name=docker_platforms::linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/386,linux/ppc64le,linux/s390x
         echo ::set-output name=docker_username::miigotu
-        echo ::set-output name=docker_image::$(echo docker.io/$GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')
-        echo ::set-output name=version::${GITHUB_REF#refs/*/}
-        echo ::set-output name=docker_root::$(docker info 2>/dev/null | grep -e "Docker Root Dir" | tail -c+19)
+        echo ::set-output name=docker_image::docker.io/${GITHUB_REPOSITORY,,}
+        VERSION_TAG=${GITHUB_REF#refs/*/}
+        echo ::set-output name=version::${VERSION_TAG%/merge}
         echo ::set-output name=docker_cache::docker.io/miigotu/sickchill-cache
-    - name: Restore docker cache
-      uses: actions/cache@v1
-      with:
-        path: ${{ steps.prepare.outputs.docker_root }}
-        key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
-        restore-keys: |
-          ${{ runner.os }}-docker-
     - name: Docker Login and set build command
       if: success()
       id: login
@@ -124,6 +117,7 @@ jobs:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
         echo "${DOCKER_PASSWORD}" | docker login --username "${{ steps.prepare.outputs.docker_username }}" --password-stdin docker.io
+        echo  "Available target: ${{ steps.buildx.outputs.platforms }}"
         echo ::set-output name=buildx::$(echo docker buildx build --output type=image,name=${{ steps.prepare.outputs.docker_image }},push=true \
           --platform ${{ steps.prepare.outputs.docker_platforms }} \
           --cache-to "type=registry,ref=${{ steps.prepare.outputs.docker_cache }}:${{ steps.prepare.outputs.version }}" \
