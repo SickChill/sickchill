@@ -63,7 +63,7 @@ requests-oauthlib == 0.8.0
 singledispatch == 3.4.0.3
 six == 1.12.0
 git+https://github.com/zzzeek/sqlalchemy.git@ccc0c44c3a60fc4906e5e3b26cc6d2b7a69d33bf#egg=sqlalchemy
-stevedore == 1.10.0
+stevedore == 1.32.0
 #! git+https://github.com/Diaoul/subliminal.git@7eb7a53fe6bcaf3e01a6b44c8366faf7c96f7f1b#egg=subliminal  # <Modified: Subscenter provider disabled until fixed upstream, https://github.com/SickChill/SickChill/pull/3825/files#diff-ab7eb9ba0a2d4c74c16795ff40f2bd62>
 # synchronous-deluge  # <Custom: by Christian Dale>
 tmdbsimple == 0.3.0  # [NOTE] Package naming is modified.
