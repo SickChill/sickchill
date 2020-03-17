@@ -44,7 +44,7 @@ pbr >= 1.6
 profilehooks == 1.5
 putio.py == 6.1.0
 pyasn1 >= 0.1.7  # + LICENSE
-PyGithub == 1.34
+PyGithub == 1.45
 PyJWT == 1.5.0
 pymediainfo == 2.0  # as an .egg file, loaded by pkg_resources
 pynma == 1.0
