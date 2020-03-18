@@ -10,7 +10,7 @@ certifi == 2017.4.17
 cfscrape >= 1.9.5
 chardet == 3.0.4
 git+https://github.com/VeNoMouS/cloudscraper.git@dev#egg=cloudscraper
-configobj == 4.6.0
+configobj == 5.0.6
 decorator == 4.0.10
 git+https://bitbucket.org/zzzeek/dogpile.cache.git@229615be466d00c9c135a90d8965679ab3e4edaa#egg=dogpile.cache
 enum34 == 1.0.4
