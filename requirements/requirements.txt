@@ -50,7 +50,7 @@ pymediainfo == 2.0  # as an .egg file, loaded by pkg_resources
 pynma == 1.0
 PySocks == 1.7.1
 pysrt == 1.1.1
-python-dateutil == 2.8.0
+python-dateutil == 2.8.1
 #! python-fanart == 1.4.0  # <Modified: API url was updated. No newer version>
 python-twitter == 3.5
 pytz == 2019.1
