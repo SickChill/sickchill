@@ -42,7 +42,7 @@ git+https://github.com/pygobject/pgi.git@38f834902247a5851cb4c72ba018f160ae26d61
 #! pkg_resources.py  # Copied from setuptools and looks to be modified. See readme for more info.
 pbr >= 1.6
 profilehooks == 1.5
-putio.py == 6.1.0
+putio.py == 8.6.0
 pyasn1 >= 0.1.7  # + LICENSE
 PyGithub == 1.34
 PyJWT == 1.5.0
