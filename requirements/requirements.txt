@@ -45,7 +45,7 @@ profilehooks == 1.5
 putio.py == 8.6.0
 pyasn1 >= 0.1.7  # + LICENSE
 PyGithub == 1.45
-PyJWT == 1.5.0
+PyJWT == 1.7.1
 pymediainfo == 2.0  # as an .egg file, loaded by pkg_resources
 pynma == 1.0
 PySocks == 1.7.1
