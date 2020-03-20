@@ -13,7 +13,7 @@ git+https://github.com/VeNoMouS/cloudscraper.git@dev#egg=cloudscraper
 configobj == 5.0.6
 decorator == 4.4.2
 git+https://bitbucket.org/zzzeek/dogpile.cache.git@229615be466d00c9c135a90d8965679ab3e4edaa#egg=dogpile.cache
-enum34 == 1.0.4
+enum34 == 1.1.10
 enzyme == 0.4.1
 fake-useragent == 0.1.2  # [NOTE] there's a `ua.json` file that's used by sickbeard.common, should be moved to a better location.
 git+https://github.com/kurtmckee/feedparser.git@f1dd1bb923ebfe6482fc2521c1f150b4032289ec#egg=feedparser
