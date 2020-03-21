@@ -70,7 +70,7 @@ tmdbsimple == 2.2.0  # [NOTE] Package naming is modified.
 tornado == 5.1.1  # [NOTE] Contains a `routes.py` file, which is not a part of the original package
 tus.py == 1.2.0
 #! tvdb_api == 1.9  # <Heavily Modified> Deprecated API, will be disabled by October 1st, 2017
-twilio == 6.36.0
+twilio == 6.37.0
 tzlocal == 1.4
 Unidecode == 0.04.21
 urllib3>=1.23
