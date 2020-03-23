@@ -17,7 +17,7 @@ enum34 == 1.1.10
 enzyme == 0.4.1
 fake-useragent == 0.1.2  # [NOTE] there's a `ua.json` file that's used by sickbeard.common, should be moved to a better location.
 git+https://github.com/kurtmckee/feedparser.git@f1dd1bb923ebfe6482fc2521c1f150b4032289ec#egg=feedparser
-futures == 3.1.1
+futures == 3.3.0
 guessit == 3.1.0
 # hg+https://bitbucket.org/haypo/hachoir@708fdf64a982ba2e638aa59d94f143112066b8ce#egg=hachoir-core&subdirectory=hachoir-core
 # hg+hg+https://bitbucket.org/haypo/hachoir@708fdf64a982ba2e638aa59d94f143112066b8ce#egg=hachoir-core&subdirectory=hhttps://bitbucket.org/haypo/hachoir@708fdf64a982ba2e638aa59d94f143112066b8ce#egg=hachoir-metadata&subdirectory=hachoir-metadata  # Unable to install
