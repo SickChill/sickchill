@@ -41,7 +41,7 @@ oauthlib == 3.1.0
 git+https://github.com/pygobject/pgi.git@38f834902247a5851cb4c72ba018f160ae26d612#egg=pgi ; os.name != 'nt'
 #! pkg_resources.py  # Copied from setuptools and looks to be modified. See readme for more info.
 pbr >= 1.6
-profilehooks == 1.5
+profilehooks == 1.11.2
 putio.py == 8.6.0
 pyasn1 >= 0.1.7  # + LICENSE
 PyGithub == 1.45
