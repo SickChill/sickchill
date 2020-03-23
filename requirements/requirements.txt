@@ -74,7 +74,7 @@ twilio == 6.37.0
 tzlocal == 1.4
 Unidecode == 1.1.1
 urllib3>=1.23
-validators == 0.10
+validators == 0.14.2
 webencodings == 0.5.1
 win-inet-pton == 1.0.1 ; os.name == 'nt' and python_version < '3.0'
 xmltodict == 0.11.0
