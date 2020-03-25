@@ -36,7 +36,7 @@ mock
 mako == 1.0.12
 markdown2 == 2.3.8
 MarkupSafe == 1.1.1
-ndg-httpsclient == 0.3.3
+ndg-httpsclient == 0.5.1
 oauthlib == 3.1.0
 git+https://github.com/pygobject/pgi.git@38f834902247a5851cb4c72ba018f160ae26d612#egg=pgi ; os.name != 'nt'
 #! pkg_resources.py  # Copied from setuptools and looks to be modified. See readme for more info.
