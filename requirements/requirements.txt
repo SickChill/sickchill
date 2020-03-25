@@ -33,7 +33,7 @@ git+https://github.com/joshmarshall/jsonrpclib.git@e3a3cdedc9577b25b91274815b38b
 # trakt  # <Custom> Just a small note - https://github.com/fuzeman/trakt.py is a great implementation of Trakt.tv's API, if needed
 lockfile
 mock
-mako == 1.0.12
+mako == 1.1.2
 markdown2 == 2.3.8
 MarkupSafe == 1.1.1
 ndg-httpsclient == 0.3.3
