@@ -581,7 +581,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
 
             else:
 
-                if bestSeasonResult.provider.provider_type == GenericProvider.NZB:
+                if bestSeasonResult.resultType != GenericProvider.TORRENT:
                     logger.log("Breaking apart the NZB and adding the individual ones to our results", logger.DEBUG)
 
                     # if not, break it apart and add them as the lowest priority results
