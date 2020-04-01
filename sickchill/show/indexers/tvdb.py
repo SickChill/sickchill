@@ -41,7 +41,7 @@ class TVDB(Indexer):
         super(TVDB, self).__init__()
         self.name = 'theTVDB'
         self.slug = 'tvdb'
-        self.api_key = 'F9C450E78D99172E'
+        self.api_key = '6aa6e4ecae5b56e9644f6a303c0739b6'
         self.show_url = 'http://thetvdb.com/?tab=series&id='
         self.base_url = 'http://thetvdb.com/api/%(apikey)s/series/'
         self.icon = 'images/indexers/thetvdb16.png'
