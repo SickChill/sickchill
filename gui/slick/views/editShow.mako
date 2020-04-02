@@ -376,7 +376,7 @@
                                                 <input type="hidden" id="exceptions" name="exceptions_list"/>
                                                 <select id="exceptions_list" multiple
                                                         style="height:200px;" class="form-control input350" title="exceptions_list">
-                                                    % for season in range(0, len(seasonResults)):
+                                                    % for season in range(0, len(seasonResults) + 1):
                                                         %if season == 0:
                                                             <% season = -1 %>
                                                         %endif
