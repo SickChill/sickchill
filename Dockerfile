@@ -22,6 +22,5 @@ COPY --chown=${SICKCHILL_USER}:${SICKCHILL_USER} . /app/sickchill
 
 WORKDIR /app/sickchill
 VOLUME /data /downloads /tv
-COPY . /app/sickchill
 CMD /usr/local/bin/python SickBeard.py -q --nolaunch --datadir=/data --port 8081
 EXPOSE 8081
