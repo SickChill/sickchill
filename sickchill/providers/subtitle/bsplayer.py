@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Based on https://github.com/realgam3/service.subtitles.bsplayer
+Created by Nyaran, based on https://github.com/realgam3/service.subtitles.bsplayer
 """
 
+from __future__ import absolute_import, print_function, unicode_literals
+
+# Stdlib Imports
 import logging
 import os
 import random
@@ -12,12 +15,13 @@ import zlib
 from time import sleep
 from xml.etree import ElementTree
 
+# Third Party Imports
 from babelfish import Language, language_converters
 from requests import Session
 from six.moves.xmlrpc_client import ServerProxy
 from subliminal import __short_version__
 from subliminal.providers import Provider, TimeoutSafeTransport
-from subliminal.subtitle import Subtitle, fix_line_ending
+from subliminal.subtitle import fix_line_ending, Subtitle
 
 logger = logging.getLogger(__name__)
 
