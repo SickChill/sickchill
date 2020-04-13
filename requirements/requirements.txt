@@ -2,7 +2,7 @@
 babelfish == 0.5.5
 backports_abc == 0.5
 backports.ssl-match-hostname == 3.7.0.1
-beautifulsoup4 == 4.8.2
+beautifulsoup4 == 4.9.0
 bencode == 1.0  # Made vanilla with https://github.com/SickChill/SickChill/commit/8c4278a52bf30a02914aa85c9b9ba5ad61021bea. A newer version (fork) is available: https://github.com/fuzeman/bencode.py
 cachecontrol == 0.12.6
 # certgen.py == d52975cef3a36e18552aeb23de7c06aa73d76454  # Source: https://github.com/pyca/pyopenssl/blob/master/examples/certgen.py
