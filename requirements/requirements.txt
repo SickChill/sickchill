@@ -69,7 +69,7 @@ stevedore == 1.32.0
 # synchronous-deluge  # <Custom: by Christian Dale>
 tmdbsimple == 2.2.0  # [NOTE] Package naming is modified.
 #tornado == 5.1.1  # [NOTE] Contains a `routes.py` file, which is not a part of the original package
-tornado == 4.5.3
+tornado == 5.1.1
 tus.py == 1.3.4
 #! tvdb_api == 1.9  # <Heavily Modified> Deprecated API, will be disabled by October 1st, 2017
 twilio == 6.38.0
