@@ -61,11 +61,14 @@ if 'subscenter' not in provider_manager.names():
     provider_manager.register('subscenter = sickchill.providers.subtitle.subscenter:SubsCenterProvider')
 if 'subtitulamos' not in provider_manager.names():
     provider_manager.register('subtitulamos = sickchill.providers.subtitle.subtitulamos:SubtitulamosProvider')
+if 'bsplayer' not in provider_manager.names():
+    provider_manager.register('bsplayer = sickchill.providers.subtitle.bsplayer:BSPlayerProvider')
 
 subliminal.region.configure('dogpile.cache.memory')
 
 PROVIDER_URLS = {
     'addic7ed': 'http://www.addic7ed.com',
+    'bsplayer': 'http://bsplayer-subtitles.com',
     'itasa': 'http://www.italiansubs.net/',
     'legendastv': 'http://www.legendas.tv',
     'napiprojekt': 'http://www.napiprojekt.pl',
