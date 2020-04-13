@@ -1,5 +1,6 @@
 # mssql/pymssql.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -8,17 +9,24 @@
 .. dialect:: mssql+pymssql
     :name: pymssql
     :dbapi: pymssql
-    :connectstring: mssql+pymssql://<username>:<password>@<freetds_name>?charset=utf8
+    :connectstring: mssql+pymssql://<username>:<password>@<freetds_name>/?charset=utf8
     :url: http://pymssql.org/
 
 pymssql is a Python module that provides a Python DBAPI interface around
 `FreeTDS <http://www.freetds.org/>`_.  Compatible builds are available for
 Linux, MacOSX and Windows platforms.
 
-"""
-from .base import MSDialect
-from ... import types as sqltypes, util, processors
+Modern versions of this driver work very well with SQL Server and
+FreeTDS from Linux and is highly recommended.
+
+"""  # noqa
 import re
+
+from .base import MSDialect
+from .base import MSIdentifierPreparer
+from ... import processors
+from ... import types as sqltypes
+from ... import util
 
 
 class _MSNumeric_pymssql(sqltypes.Numeric):
@@ -29,50 +37,55 @@ class _MSNumeric_pymssql(sqltypes.Numeric):
             return sqltypes.Numeric.result_processor(self, dialect, type_)
 
 
+class MSIdentifierPreparer_pymssql(MSIdentifierPreparer):
+    def __init__(self, dialect):
+        super(MSIdentifierPreparer_pymssql, self).__init__(dialect)
+        # pymssql has the very unusual behavior that it uses pyformat
+        # yet does not require that percent signs be doubled
+        self._double_percents = False
+
+
 class MSDialect_pymssql(MSDialect):
-    supports_sane_rowcount = False
-    driver = 'pymssql'
+    supports_native_decimal = True
+    driver = "pymssql"
+
+    preparer = MSIdentifierPreparer_pymssql
 
     colspecs = util.update_copy(
         MSDialect.colspecs,
-        {
-            sqltypes.Numeric: _MSNumeric_pymssql,
-            sqltypes.Float: sqltypes.Float,
-        }
+        {sqltypes.Numeric: _MSNumeric_pymssql, sqltypes.Float: sqltypes.Float},
     )
 
     @classmethod
     def dbapi(cls):
-        module = __import__('pymssql')
-        # pymmsql doesn't have a Binary method.  we use string
-        # TODO: monkeypatching here is less than ideal
-        module.Binary = lambda x: x if hasattr(x, 'decode') else str(x)
-
+        module = __import__("pymssql")
+        # pymmsql < 2.1.1 doesn't have a Binary method.  we use string
         client_ver = tuple(int(x) for x in module.__version__.split("."))
-        if client_ver < (1, ):
-            util.warn("The pymssql dialect expects at least "
-                            "the 1.0 series of the pymssql DBAPI.")
-        return module
+        if client_ver < (2, 1, 1):
+            # TODO: monkeypatching here is less than ideal
+            module.Binary = lambda x: x if hasattr(x, "decode") else str(x)
 
-    def __init__(self, **params):
-        super(MSDialect_pymssql, self).__init__(**params)
-        self.use_scope_identity = True
+        if client_ver < (1,):
+            util.warn(
+                "The pymssql dialect expects at least "
+                "the 1.0 series of the pymssql DBAPI."
+            )
+        return module
 
     def _get_server_version_info(self, connection):
         vers = connection.scalar("select @@version")
-        m = re.match(
-            r"Microsoft SQL Server.*? - (\d+).(\d+).(\d+).(\d+)", vers)
+        m = re.match(r"Microsoft .*? - (\d+).(\d+).(\d+).(\d+)", vers)
         if m:
             return tuple(int(x) for x in m.group(1, 2, 3, 4))
         else:
             return None
 
     def create_connect_args(self, url):
-        opts = url.translate_connect_args(username='user')
+        opts = url.translate_connect_args(username="user")
         opts.update(url.query)
-        port = opts.pop('port', None)
-        if port and 'host' in opts:
-            opts['host'] = "%s:%s" % (opts['host'], port)
+        port = opts.pop("port", None)
+        if port and "host" in opts:
+            opts["host"] = "%s:%s" % (opts["host"], port)
         return [[], opts]
 
     def is_disconnect(self, e, connection, cursor):
@@ -82,11 +95,24 @@ class MSDialect_pymssql(MSDialect):
             "message 20003",  # connection timeout
             "Error 10054",
             "Not connected to any MS SQL server",
-            "Connection is closed"
+            "Connection is closed",
+            "message 20006",  # Write to the server failed
+            "message 20017",  # Unexpected EOF from the server
+            "message 20047",  # DBPROCESS is dead or not enabled
         ):
             if msg in str(e):
                 return True
         else:
             return False
+
+    def set_isolation_level(self, connection, level):
+        if level == "AUTOCOMMIT":
+            connection.autocommit(True)
+        else:
+            connection.autocommit(False)
+            super(MSDialect_pymssql, self).set_isolation_level(
+                connection, level
+            )
+
 
 dialect = MSDialect_pymssql

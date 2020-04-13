@@ -1,16 +1,19 @@
 # sql/annotation.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 """The :class:`.Annotated` class and related routines; creates hash-equivalent
-copies of SQL constructs which contain context-specific markers and associations.
+copies of SQL constructs which contain context-specific markers and
+associations.
 
 """
 
-from .. import util
 from . import operators
+from .. import util
+
 
 class Annotated(object):
     """clones a ClauseElement and applies an 'annotations' dictionary.
@@ -22,6 +25,13 @@ class Annotated(object):
     A reference to the original element is maintained, for the important
     reason of keeping its hash value current.  When GC'ed, the
     hash value may be reused, causing conflicts.
+
+    .. note::  The rationale for Annotated producing a brand new class,
+       rather than placing the functionality directly within ClauseElement,
+       is **performance**.  The __hash__() method is absent on plain
+       ClauseElement which leads to significantly reduced function call
+       overhead, as the use of sets and dictionaries against ClauseElement
+       objects is prevalent, but most are not "annotated".
 
     """
 
@@ -43,6 +53,7 @@ class Annotated(object):
         self.__dict__ = element.__dict__.copy()
         self.__element = element
         self._annotations = values
+        self._hash = hash(element)
 
     def _annotate(self, values):
         _values = self._annotations.copy()
@@ -82,8 +93,11 @@ class Annotated(object):
             clone.__dict__.update(self.__dict__)
             return self.__class__(clone, self._annotations)
 
+    def __reduce__(self):
+        return self.__class__, (self.__element, self._annotations)
+
     def __hash__(self):
-        return hash(self.__element)
+        return self._hash
 
     def __eq__(self, other):
         if isinstance(self.__element, operators.ColumnOperators):
@@ -92,12 +106,10 @@ class Annotated(object):
             return hash(other) == hash(self)
 
 
-
 # hard-generate Annotated subclasses.  this technique
 # is used instead of on-the-fly types (i.e. type.__new__())
 # so that the resulting objects are pickleable.
 annotated_classes = {}
-
 
 
 def _deep_annotate(element, annotations, exclude=None):
@@ -107,10 +119,13 @@ def _deep_annotate(element, annotations, exclude=None):
     Elements within the exclude collection will be cloned but not annotated.
 
     """
+
     def clone(elem):
-        if exclude and \
-                    hasattr(elem, 'proxy_set') and \
-                    elem.proxy_set.intersection(exclude):
+        if (
+            exclude
+            and hasattr(elem, "proxy_set")
+            and elem.proxy_set.intersection(exclude)
+        ):
             newelem = elem._clone()
         elif annotations != elem._annotations:
             newelem = elem._annotate(annotations)
@@ -121,6 +136,7 @@ def _deep_annotate(element, annotations, exclude=None):
 
     if element is not None:
         element = clone(element)
+    clone = None  # remove gc cycles
     return element
 
 
@@ -147,6 +163,7 @@ def _deep_deannotate(element, values=None):
 
     if element is not None:
         element = clone(element)
+    clone = None  # remove gc cycles
     return element
 
 
@@ -161,6 +178,7 @@ def _shallow_annotate(element, annotations):
     element = element._annotate(annotations)
     element._copy_internals()
     return element
+
 
 def _new_annotation_type(cls, base_cls):
     if issubclass(cls, Annotated):
@@ -177,10 +195,11 @@ def _new_annotation_type(cls, base_cls):
             break
 
     annotated_classes[cls] = anno_cls = type(
-                            "Annotated%s" % cls.__name__,
-                            (base_cls, cls), {})
+        "Annotated%s" % cls.__name__, (base_cls, cls), {}
+    )
     globals()["Annotated%s" % cls.__name__] = anno_cls
     return anno_cls
+
 
 def _prepare_annotations(target_hierarchy, base_cls):
     stack = [target_hierarchy]

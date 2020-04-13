@@ -9,8 +9,8 @@ from rebulk import Rebulk, Rule, AppendMatch, RemoveMatch
 from rebulk.match import Match
 
 from ..common import seps
-from ..common.expected import build_expected_function
 from ..common.comparators import marker_sorted
+from ..common.expected import build_expected_function
 from ..common.formatters import cleanup
 from ..common.pattern import is_disabled
 from ..common.validators import int_coercable, seps_surround
@@ -72,7 +72,9 @@ _scene_previous_names = ('video_codec', 'source', 'video_api', 'audio_codec', 'a
                          'audio_channels', 'screen_size', 'other', 'container', 'language', 'subtitle_language',
                          'subtitle_language.suffix', 'subtitle_language.prefix', 'language.suffix')
 
-_scene_previous_tags = ('release-group-prefix', )
+_scene_previous_tags = ('release-group-prefix',)
+
+_scene_no_previous_tags = ('no-release-group-prefix',)
 
 
 class DashSeparatedReleaseGroup(Rule):
@@ -193,7 +195,8 @@ class DashSeparatedReleaseGroup(Rule):
 
                 if releasegroup.value:
                     to_append.append(releasegroup)
-                return to_remove, to_append
+                if to_remove or to_append:
+                    return to_remove, to_append
 
 
 class SceneReleaseGroup(Rule):
@@ -211,6 +214,17 @@ class SceneReleaseGroup(Rule):
         """Default constructor."""
         super(SceneReleaseGroup, self).__init__()
         self.value_formatter = value_formatter
+
+    @staticmethod
+    def is_previous_match(match):
+        """
+        Check if match can precede release_group
+
+        :param match:
+        :return:
+        """
+        return not match.tagged(*_scene_no_previous_tags) if match.name in _scene_previous_names else \
+            match.tagged(*_scene_previous_tags)
 
     def when(self, matches, context):  # pylint:disable=too-many-locals
         # If a release_group is found before, ignore this kind of release_group rule.
@@ -253,13 +267,12 @@ class SceneReleaseGroup(Rule):
 
                     if match.start < filepart.start:
                         return False
-                    return not match.private or match.name in _scene_previous_names
+                    return not match.private or self.is_previous_match(match)
 
                 previous_match = matches.previous(last_hole,
                                                   previous_match_filter,
                                                   index=0)
-                if previous_match and (previous_match.name in _scene_previous_names or
-                                       any(tag in previous_match.tags for tag in _scene_previous_tags)) and \
+                if previous_match and (self.is_previous_match(previous_match)) and \
                         not matches.input_string[previous_match.end:last_hole.start].strip(seps) \
                         and not int_coercable(last_hole.value.strip(seps)):
 
@@ -300,11 +313,11 @@ class AnimeReleaseGroup(Rule):
 
         # If a release_group is found before, ignore this kind of release_group rule.
         if matches.named('release_group'):
-            return to_remove, to_append
+            return False
 
         if not matches.named('episode') and not matches.named('season') and matches.named('release_group'):
             # This doesn't seems to be an anime, and we already found another release_group.
-            return to_remove, to_append
+            return False
 
         for filepart in marker_sorted(matches.markers.named('path'), matches):
 
@@ -328,4 +341,7 @@ class AnimeReleaseGroup(Rule):
                 to_append.append(group)
                 to_remove.extend(matches.range(empty_group.start, empty_group.end,
                                                lambda m: 'weak-language' in m.tags))
-        return to_remove, to_append
+
+        if to_remove or to_append:
+            return to_remove, to_append
+        return False

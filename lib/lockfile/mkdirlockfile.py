@@ -8,6 +8,7 @@ import errno
 from . import (LockBase, LockFailed, NotLocked, NotMyLock, LockTimeout,
                AlreadyLocked)
 
+
 class MkdirLockFile(LockBase):
     """Lock file by creating a directory."""
     def __init__(self, path, threaded=True, timeout=None):
@@ -18,10 +19,10 @@ class MkdirLockFile(LockBase):
         LockBase.__init__(self, path, threaded, timeout)
         # Lock file itself is a directory.  Place the unique file name into
         # it.
-        self.unique_name  = os.path.join(self.lock_file,
-                                         "%s.%s%s" % (self.hostname,
-                                                      self.tname,
-                                                      self.pid))
+        self.unique_name = os.path.join(self.lock_file,
+                                        "%s.%s%s" % (self.hostname,
+                                                     self.tname,
+                                                     self.pid))
 
     def acquire(self, timeout=None):
         timeout = timeout if timeout is not None else self.timeout

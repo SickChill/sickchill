@@ -1,16 +1,20 @@
 # orm/scoping.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
-from .. import exc as sa_exc
-from ..util import ScopedRegistry, ThreadLocalRegistry, warn
-from . import class_mapper, exc as orm_exc
+from . import class_mapper
+from . import exc as orm_exc
 from .session import Session
+from .. import exc as sa_exc
+from ..util import ScopedRegistry
+from ..util import ThreadLocalRegistry
+from ..util import warn
 
 
-__all__ = ['scoped_session']
+__all__ = ["scoped_session"]
 
 
 class scoped_session(object):
@@ -19,6 +23,12 @@ class scoped_session(object):
     See :ref:`unitofwork_contextual` for a tutorial.
 
     """
+
+    session_factory = None
+    """The `session_factory` provided to `__init__` is stored in this
+    attribute and may be accessed at a later time.  This can be useful when
+    a new non-scoped :class:`.Session` or :class:`.Connection` to the
+    database is needed."""
 
     def __init__(self, session_factory, scopefunc=None):
         """Construct a new :class:`.scoped_session`.
@@ -37,35 +47,33 @@ class scoped_session(object):
 
         """
         self.session_factory = session_factory
+
         if scopefunc:
             self.registry = ScopedRegistry(session_factory, scopefunc)
         else:
             self.registry = ThreadLocalRegistry(session_factory)
 
     def __call__(self, **kw):
-        """Return the current :class:`.Session`, creating it
-        using the session factory if not present.
+        r"""Return the current :class:`.Session`, creating it
+        using the :attr:`.scoped_session.session_factory` if not present.
 
         :param \**kw: Keyword arguments will be passed to the
-         session factory callable, if an existing :class:`.Session`
-         is not present.  If the :class:`.Session` is present and
-         keyword arguments have been passed,
+         :attr:`.scoped_session.session_factory` callable, if an existing
+         :class:`.Session` is not present.  If the :class:`.Session` is present
+         and keyword arguments have been passed,
          :exc:`~sqlalchemy.exc.InvalidRequestError` is raised.
 
         """
         if kw:
-            scope = kw.pop('scope', False)
-            if scope is not None:
-                if self.registry.has():
-                    raise sa_exc.InvalidRequestError(
-                            "Scoped session is already present; "
-                            "no new arguments may be specified.")
-                else:
-                    sess = self.session_factory(**kw)
-                    self.registry.set(sess)
-                    return sess
+            if self.registry.has():
+                raise sa_exc.InvalidRequestError(
+                    "Scoped session is already present; "
+                    "no new arguments may be specified."
+                )
             else:
-                return self.session_factory(**kw)
+                sess = self.session_factory(**kw)
+                self.registry.set(sess)
+                return sess
         else:
             return self.registry()
 
@@ -95,9 +103,11 @@ class scoped_session(object):
         """
 
         if self.registry.has():
-            warn('At least one scoped session is already present. '
-                      ' configure() can not affect sessions that have '
-                      'already been created.')
+            warn(
+                "At least one scoped session is already present. "
+                " configure() can not affect sessions that have "
+                "already been created."
+            )
 
         self.session_factory.configure(**kwargs)
 
@@ -125,6 +135,7 @@ class scoped_session(object):
         a class.
 
         """
+
         class query(object):
             def __get__(s, instance, owner):
                 try:
@@ -138,7 +149,9 @@ class scoped_session(object):
                             return self.registry().query(mapper)
                 except orm_exc.UnmappedClassError:
                     return None
+
         return query()
+
 
 ScopedSession = scoped_session
 """Old name for backwards compatibility."""
@@ -147,30 +160,45 @@ ScopedSession = scoped_session
 def instrument(name):
     def do(self, *args, **kwargs):
         return getattr(self.registry(), name)(*args, **kwargs)
+
     return do
+
 
 for meth in Session.public_methods:
     setattr(scoped_session, meth, instrument(meth))
 
 
 def makeprop(name):
-    def set(self, attr):
+    def set_(self, attr):
         setattr(self.registry(), name, attr)
 
     def get(self):
         return getattr(self.registry(), name)
 
-    return property(get, set)
+    return property(get, set_)
 
-for prop in ('bind', 'dirty', 'deleted', 'new', 'identity_map',
-             'is_active', 'autoflush', 'no_autoflush', 'info'):
+
+for prop in (
+    "bind",
+    "dirty",
+    "deleted",
+    "new",
+    "identity_map",
+    "is_active",
+    "autoflush",
+    "no_autoflush",
+    "info",
+    "autocommit",
+):
     setattr(scoped_session, prop, makeprop(prop))
 
 
 def clslevel(name):
     def do(cls, *args, **kwargs):
         return getattr(Session, name)(*args, **kwargs)
+
     return classmethod(do)
 
-for prop in ('close_all', 'object_session', 'identity_key'):
+
+for prop in ("close_all", "object_session", "identity_key"):
     setattr(scoped_session, prop, clslevel(prop))

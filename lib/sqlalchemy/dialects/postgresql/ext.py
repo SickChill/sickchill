@@ -1,15 +1,15 @@
 # postgresql/ext.py
-# Copyright (C) 2005-2018 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
-from ...sql import expression
+from .array import ARRAY
 from ...sql import elements
+from ...sql import expression
 from ...sql import functions
 from ...sql.schema import ColumnCollectionConstraint
-from .array import ARRAY
 
 
 class aggregate_order_by(expression.ColumnElement):
@@ -39,17 +39,28 @@ class aggregate_order_by(expression.ColumnElement):
 
     .. versionadded:: 1.1
 
+    .. versionchanged:: 1.2.13 - the ORDER BY argument may be multiple terms
+
     .. seealso::
 
         :class:`.array_agg`
 
     """
 
-    __visit_name__ = 'aggregate_order_by'
+    __visit_name__ = "aggregate_order_by"
 
-    def __init__(self, target, order_by):
+    def __init__(self, target, *order_by):
         self.target = elements._literal_as_binds(target)
-        self.order_by = elements._literal_as_binds(order_by)
+
+        _lob = len(order_by)
+        if _lob == 0:
+            raise TypeError("at least one ORDER BY element is required")
+        elif _lob == 1:
+            self.order_by = elements._literal_as_binds(order_by[0])
+        else:
+            self.order_by = elements.ClauseList(
+                *order_by, _literal_as_text=elements._literal_as_binds
+            )
 
     def self_group(self, against=None):
         return self
@@ -72,14 +83,19 @@ class ExcludeConstraint(ColumnCollectionConstraint):
     Defines an EXCLUDE constraint as described in the `postgres
     documentation`__.
 
-    __ http://www.postgresql.org/docs/9.0/\
-static/sql-createtable.html#SQL-CREATETABLE-EXCLUDE
-    """
+    __ http://www.postgresql.org/docs/9.0/static/sql-createtable.html#SQL-CREATETABLE-EXCLUDE
 
-    __visit_name__ = 'exclude_constraint'
+    """  # noqa
+
+    __visit_name__ = "exclude_constraint"
 
     where = None
 
+    @elements._document_text_coercion(
+        "where",
+        ":class:`.ExcludeConstraint`",
+        ":paramref:`.ExcludeConstraint.where`",
+    )
     def __init__(self, *elements, **kw):
         r"""
         Create an :class:`.ExcludeConstraint` object.
@@ -112,21 +128,15 @@ static/sql-createtable.html#SQL-CREATETABLE-EXCLUDE
             )
 
         :param \*elements:
+
           A sequence of two tuples of the form ``(column, operator)`` where
           "column" is a SQL expression element or a raw SQL string, most
-          typically a :class:`.Column` object,
-          and "operator" is a string containing the operator to use.
-
-          .. note::
-
-                A plain string passed for the value of "column" is interpreted
-                as an arbitrary SQL  expression; when passing a plain string,
-                any necessary quoting and escaping syntaxes must be applied
-                manually. In order to specify a column name when a
-                :class:`.Column` object is not available, while ensuring that
-                any necessary quoting rules take effect, an ad-hoc
-                :class:`.Column` or :func:`.sql.expression.column` object may
-                be used.
+          typically a :class:`.Column` object, and "operator" is a string
+          containing the operator to use.   In order to specify a column name
+          when a  :class:`.Column` object is not available, while ensuring
+          that any necessary quoting rules take effect, an ad-hoc
+          :class:`.Column` or :func:`.sql.expression.column` object should be
+          used.
 
         :param name:
           Optional, the in-database name of this constraint.
@@ -148,12 +158,6 @@ static/sql-createtable.html#SQL-CREATETABLE-EXCLUDE
           If set, emit WHERE <predicate> when issuing DDL
           for this constraint.
 
-          .. note::
-
-                A plain string passed here is interpreted as an arbitrary SQL
-                expression; when passing a plain string, any necessary quoting
-                and escaping syntaxes must be applied manually.
-
         """
         columns = []
         render_exprs = []
@@ -162,8 +166,7 @@ static/sql-createtable.html#SQL-CREATETABLE-EXCLUDE
         expressions, operators = zip(*elements)
 
         for (expr, column, strname, add_element), operator in zip(
-                self._extract_col_expression_collection(expressions),
-                operators
+            self._extract_col_expression_collection(expressions), operators
         ):
             if add_element is not None:
                 columns.append(add_element)
@@ -174,34 +177,36 @@ static/sql-createtable.html#SQL-CREATETABLE-EXCLUDE
                 # backwards compat
                 self.operators[name] = operator
 
-            expr = expression._literal_as_text(expr)
+            expr = expression._literal_as_column(expr)
 
-            render_exprs.append(
-                (expr, name, operator)
-            )
+            render_exprs.append((expr, name, operator))
 
         self._render_exprs = render_exprs
+
         ColumnCollectionConstraint.__init__(
             self,
             *columns,
-            name=kw.get('name'),
-            deferrable=kw.get('deferrable'),
-            initially=kw.get('initially')
+            name=kw.get("name"),
+            deferrable=kw.get("deferrable"),
+            initially=kw.get("initially")
         )
-        self.using = kw.get('using', 'gist')
-        where = kw.get('where')
+        self.using = kw.get("using", "gist")
+        where = kw.get("where")
         if where is not None:
-            self.where = expression._literal_as_text(where)
+            self.where = expression._literal_as_text(
+                where, allow_coercion_to_text=True
+            )
 
     def copy(self, **kw):
-        elements = [(col, self.operators[col])
-                    for col in self.columns.keys()]
-        c = self.__class__(*elements,
-                           name=self.name,
-                           deferrable=self.deferrable,
-                           initially=self.initially,
-                           where=self.where,
-                           using=self.using)
+        elements = [(col, self.operators[col]) for col in self.columns.keys()]
+        c = self.__class__(
+            *elements,
+            name=self.name,
+            deferrable=self.deferrable,
+            initially=self.initially,
+            where=self.where,
+            using=self.using
+        )
         c.dispatch._update(self.dispatch)
         return c
 
@@ -209,10 +214,11 @@ static/sql-createtable.html#SQL-CREATETABLE-EXCLUDE
 def array_agg(*arg, **kw):
     """PostgreSQL-specific form of :class:`.array_agg`, ensures
     return type is :class:`.postgresql.ARRAY` and not
-    the plain :class:`.types.ARRAY`.
+    the plain :class:`.types.ARRAY`, unless an explicit ``type_``
+    is passed.
 
     .. versionadded:: 1.1
 
     """
-    kw['type_'] = ARRAY(functions._type_from_args(arg))
+    kw["_default_array_type"] = ARRAY
     return functions.func.array_agg(*arg, **kw)

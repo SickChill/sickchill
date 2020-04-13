@@ -1,5 +1,6 @@
 # sql/dml.py
-# Copyright (C) 2009-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2009-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -8,42 +9,71 @@ Provide :class:`.Insert`, :class:`.Update` and :class:`.Delete`.
 
 """
 
-from .base import Executable, _generative, _from_objects, DialectKWArgs
-from .elements import ClauseElement, _literal_as_text, Null, and_, _clone
-from .selectable import _interpret_as_from, _interpret_as_select, HasPrefixes
-from .. import util
+from .base import _from_objects
+from .base import _generative
+from .base import DialectKWArgs
+from .base import Executable
+from .elements import _clone
+from .elements import _column_as_key
+from .elements import _literal_as_text
+from .elements import and_
+from .elements import ClauseElement
+from .elements import Null
+from .selectable import _interpret_as_from
+from .selectable import _interpret_as_select
+from .selectable import HasCTE
+from .selectable import HasPrefixes
 from .. import exc
+from .. import util
 
-class UpdateBase(DialectKWArgs, HasPrefixes, Executable, ClauseElement):
+
+class UpdateBase(
+    HasCTE, DialectKWArgs, HasPrefixes, Executable, ClauseElement
+):
     """Form the base for ``INSERT``, ``UPDATE``, and ``DELETE`` statements.
 
     """
 
-    __visit_name__ = 'update_base'
+    __visit_name__ = "update_base"
 
-    _execution_options = \
-        Executable._execution_options.union({'autocommit': True})
+    _execution_options = Executable._execution_options.union(
+        {"autocommit": True}
+    )
     _hints = util.immutabledict()
+    _parameter_ordering = None
     _prefixes = ()
+    named_with_column = False
 
     def _process_colparams(self, parameters):
         def process_single(p):
             if isinstance(p, (list, tuple)):
-                return dict(
-                    (c.key, pval)
-                    for c, pval in zip(self.table.c, p)
-                )
+                return dict((c.key, pval) for c, pval in zip(self.table.c, p))
             else:
                 return p
 
-        if isinstance(parameters, (list, tuple)) and \
-                parameters and \
-              isinstance(parameters[0], (list, tuple, dict)):
+        if self._preserve_parameter_order and parameters is not None:
+            if not isinstance(parameters, list) or (
+                parameters and not isinstance(parameters[0], tuple)
+            ):
+                raise ValueError(
+                    "When preserve_parameter_order is True, "
+                    "values() only accepts a list of 2-tuples"
+                )
+            self._parameter_ordering = [key for key, value in parameters]
+
+            return dict(parameters), False
+
+        if (
+            isinstance(parameters, (list, tuple))
+            and parameters
+            and isinstance(parameters[0], (list, tuple, dict))
+        ):
 
             if not self._supports_multi_parameters:
                 raise exc.InvalidRequestError(
                     "This construct does not support "
-                    "multiple parameter sets.")
+                    "multiple parameter sets."
+                )
 
             return [process_single(p) for p in parameters], True
         else:
@@ -60,7 +90,8 @@ class UpdateBase(DialectKWArgs, HasPrefixes, Executable, ClauseElement):
         raise NotImplementedError(
             "params() is not supported for INSERT/UPDATE/DELETE statements."
             " To set the values for an INSERT or UPDATE statement, use"
-            " stmt.values(**parameters).")
+            " stmt.values(**parameters)."
+        )
 
     def bind(self):
         """Return a 'bind' linked to this :class:`.UpdateBase`
@@ -71,18 +102,20 @@ class UpdateBase(DialectKWArgs, HasPrefixes, Executable, ClauseElement):
 
     def _set_bind(self, bind):
         self._bind = bind
+
     bind = property(bind, _set_bind)
 
     @_generative
     def returning(self, *cols):
-        """Add a :term:`RETURNING` or equivalent clause to this statement.
+        r"""Add a :term:`RETURNING` or equivalent clause to this statement.
 
         e.g.::
 
-            stmt = table.update().\\
-                      where(table.c.data == 'value').\\
-                      values(status='X').\\
-                      returning(table.c.server_flag, table.c.updated_timestamp)
+            stmt = table.update().\
+                      where(table.c.data == 'value').\
+                      values(status='X').\
+                      returning(table.c.server_flag,
+                                table.c.updated_timestamp)
 
             for server_flag, updated_timestamp in connection.execute(stmt):
                 print(server_flag, updated_timestamp)
@@ -93,21 +126,20 @@ class UpdateBase(DialectKWArgs, HasPrefixes, Executable, ClauseElement):
         objects are typical, the elements can also be expressions::
 
             stmt = table.insert().returning(
-                      (table.c.first_name + " " + table.c.last_name).label('fullname')
-                    )
+                (table.c.first_name + " " + table.c.last_name).
+                label('fullname'))
 
         Upon compilation, a RETURNING clause, or database equivalent,
         will be rendered within the statement.   For INSERT and UPDATE,
         the values are the newly inserted/updated values.  For DELETE,
         the values are those of the rows which were deleted.
 
-        Upon execution, the values of the columns to be returned
-        are made available via the result set and can be iterated
-        using :meth:`.ResultProxy.fetchone` and similar.   For DBAPIs which do not
-        natively support returning values (i.e. cx_oracle),
-        SQLAlchemy will approximate this behavior at the result level
-        so that a reasonable amount of behavioral neutrality is
-        provided.
+        Upon execution, the values of the columns to be returned are made
+        available via the result set and can be iterated using
+        :meth:`.ResultProxy.fetchone` and similar.   For DBAPIs which do not
+        natively support returning values (i.e. cx_oracle), SQLAlchemy will
+        approximate this behavior at the result level so that a reasonable
+        amount of behavioral neutrality is provided.
 
         Note that not all databases/DBAPIs
         support RETURNING.   For those backends with no support,
@@ -127,7 +159,6 @@ class UpdateBase(DialectKWArgs, HasPrefixes, Executable, ClauseElement):
 
         """
         self._returning = cols
-
 
     @_generative
     def with_hint(self, text, selectable=None, dialect_name="*"):
@@ -152,8 +183,6 @@ class UpdateBase(DialectKWArgs, HasPrefixes, Executable, ClauseElement):
 
             mytable.insert().with_hint("WITH (PAGLOCK)", dialect_name="mssql")
 
-        .. versionadded:: 0.7.6
-
         :param text: Text of the hint.
         :param selectable: optional :class:`.Table` that specifies
          an element of the FROM clause within an UPDATE or DELETE
@@ -165,37 +194,39 @@ class UpdateBase(DialectKWArgs, HasPrefixes, Executable, ClauseElement):
         if selectable is None:
             selectable = self.table
 
-        self._hints = self._hints.union(
-                        {(selectable, dialect_name): text})
+        self._hints = self._hints.union({(selectable, dialect_name): text})
 
 
 class ValuesBase(UpdateBase):
     """Supplies support for :meth:`.ValuesBase.values` to
     INSERT and UPDATE constructs."""
 
-    __visit_name__ = 'values_base'
+    __visit_name__ = "values_base"
 
     _supports_multi_parameters = False
     _has_multi_parameters = False
+    _preserve_parameter_order = False
     select = None
+    _post_values_clause = None
 
     def __init__(self, table, values, prefixes):
         self.table = _interpret_as_from(table)
-        self.parameters, self._has_multi_parameters = \
-                            self._process_colparams(values)
+        self.parameters, self._has_multi_parameters = self._process_colparams(
+            values
+        )
         if prefixes:
             self._setup_prefixes(prefixes)
 
     @_generative
     def values(self, *args, **kwargs):
-        """specify a fixed VALUES clause for an INSERT statement, or the SET
+        r"""specify a fixed VALUES clause for an INSERT statement, or the SET
         clause for an UPDATE.
 
         Note that the :class:`.Insert` and :class:`.Update` constructs support
         per-execution time formatting of the VALUES and/or SET clauses,
-        based on the arguments passed to :meth:`.Connection.execute`.  However,
-        the :meth:`.ValuesBase.values` method can be used to "fix" a particular
-        set of parameters into the statement.
+        based on the arguments passed to :meth:`.Connection.execute`.
+        However, the :meth:`.ValuesBase.values` method can be used to "fix" a
+        particular set of parameters into the statement.
 
         Multiple calls to :meth:`.ValuesBase.values` will produce a new
         construct, each one with the parameter list modified to include
@@ -213,23 +244,32 @@ class ValuesBase(UpdateBase):
 
                 users.update().where(users.c.id==5).values(name="some name")
 
-        :param \*args: Alternatively, a dictionary, tuple or list
-         of dictionaries or tuples can be passed as a single positional
-         argument in order to form the VALUES or
-         SET clause of the statement.  The single dictionary form
-         works the same as the kwargs form::
+        :param \*args: As an alternative to passing key/value parameters,
+         a dictionary, tuple, or list of dictionaries or tuples can be passed
+         as a single positional argument in order to form the VALUES or
+         SET clause of the statement.  The forms that are accepted vary
+         based on whether this is an :class:`.Insert` or an :class:`.Update`
+         construct.
+
+         For either an :class:`.Insert` or :class:`.Update` construct, a
+         single dictionary can be passed, which works the same as that of
+         the kwargs form::
 
             users.insert().values({"name": "some name"})
 
-         If a tuple is passed, the tuple should contain the same number
-         of columns as the target :class:`.Table`::
+            users.update().values({"name": "some new name"})
+
+         Also for either form but more typically for the :class:`.Insert`
+         construct, a tuple that contains an entry for every column in the
+         table is also accepted::
 
             users.insert().values((5, "some name"))
 
-         The :class:`.Insert` construct also supports multiply-rendered VALUES
-         construct, for those backends which support this SQL syntax
-         (SQLite, Postgresql, MySQL).  This mode is indicated by passing a list
-         of one or more dictionaries/tuples::
+         The :class:`.Insert` construct also supports being passed a list
+         of dictionaries or full-table-tuples, which on the server will
+         render the less common SQL syntax of "multiple values" - this
+         syntax is supported on backends such as SQLite, PostgreSQL, MySQL,
+         but not necessarily others::
 
             users.insert().values([
                                 {"name": "some name"},
@@ -237,37 +277,61 @@ class ValuesBase(UpdateBase):
                                 {"name": "yet another name"},
                             ])
 
-         In the case of an :class:`.Update`
-         construct, only the single dictionary/tuple form is accepted,
-         else an exception is raised.  It is also an exception case to
-         attempt to mix the single-/multiple- value styles together,
-         either through multiple :meth:`.ValuesBase.values` calls
-         or by sending a list + kwargs at the same time.
+         The above form would render a multiple VALUES statement similar to::
 
-         .. note::
+                INSERT INTO users (name) VALUES
+                                (:name_1),
+                                (:name_2),
+                                (:name_3)
 
-             Passing a multiple values list is *not* the same
-             as passing a multiple values list to the :meth:`.Connection.execute`
-             method.  Passing a list of parameter sets to :meth:`.ValuesBase.values`
-             produces a construct of this form::
+         It is essential to note that **passing multiple values is
+         NOT the same as using traditional executemany() form**.  The above
+         syntax is a **special** syntax not typically used.  To emit an
+         INSERT statement against multiple rows, the normal method is
+         to pass a multiple values list to the :meth:`.Connection.execute`
+         method, which is supported by all database backends and is generally
+         more efficient for a very large number of parameters.
 
-                INSERT INTO table (col1, col2, col3) VALUES
-                                (col1_0, col2_0, col3_0),
-                                (col1_1, col2_1, col3_1),
-                                ...
+           .. seealso::
 
-             whereas a multiple list passed to :meth:`.Connection.execute`
-             has the effect of using the DBAPI
-             `executemany() <http://www.python.org/dev/peps/pep-0249/#id18>`_
-             method, which provides a high-performance system of invoking
-             a single-row INSERT statement many times against a series
-             of parameter sets.   The "executemany" style is supported by
-             all database backends, as it does not depend on a special SQL
-             syntax.
+               :ref:`execute_multiple` - an introduction to
+               the traditional Core method of multiple parameter set
+               invocation for INSERTs and other statements.
 
-         .. versionadded:: 0.8
-             Support for multiple-VALUES INSERT statements.
+           .. versionchanged:: 1.0.0 an INSERT that uses a multiple-VALUES
+              clause, even a list of length one,
+              implies that the :paramref:`.Insert.inline` flag is set to
+              True, indicating that the statement will not attempt to fetch
+              the "last inserted primary key" or other defaults.  The
+              statement deals with an arbitrary number of rows, so the
+              :attr:`.ResultProxy.inserted_primary_key` accessor does not
+              apply.
 
+           .. versionchanged:: 1.0.0 A multiple-VALUES INSERT now supports
+              columns with Python side default values and callables in the
+              same way as that of an "executemany" style of invocation; the
+              callable is invoked for each row.   See :ref:`bug_3288`
+              for other details.
+
+         The :class:`.Update` construct supports a special form which is a
+         list of 2-tuples, which when provided must be passed in conjunction
+         with the
+         :paramref:`~sqlalchemy.sql.expression.update.preserve_parameter_order`
+         parameter.
+         This form causes the UPDATE statement to render the SET clauses
+         using the order of parameters given to :meth:`.Update.values`, rather
+         than the ordering of columns given in the :class:`.Table`.
+
+           .. versionadded:: 1.0.10 - added support for parameter-ordered
+              UPDATE statements via the
+              :paramref:`~sqlalchemy.sql.expression.update.preserve_parameter_order`
+              flag.
+
+           .. seealso::
+
+              :ref:`updates_order_parameters` - full example of the
+              :paramref:`~sqlalchemy.sql.expression.update.preserve_parameter_order`
+              flag
 
         .. seealso::
 
@@ -281,23 +345,28 @@ class ValuesBase(UpdateBase):
         """
         if self.select is not None:
             raise exc.InvalidRequestError(
-                        "This construct already inserts from a SELECT")
+                "This construct already inserts from a SELECT"
+            )
         if self._has_multi_parameters and kwargs:
             raise exc.InvalidRequestError(
-                        "This construct already has multiple parameter sets.")
+                "This construct already has multiple parameter sets."
+            )
 
         if args:
             if len(args) > 1:
                 raise exc.ArgumentError(
-                            "Only a single dictionary/tuple or list of "
-                            "dictionaries/tuples is accepted positionally.")
+                    "Only a single dictionary/tuple or list of "
+                    "dictionaries/tuples is accepted positionally."
+                )
             v = args[0]
         else:
             v = {}
 
         if self.parameters is None:
-            self.parameters, self._has_multi_parameters = \
-                    self._process_colparams(v)
+            (
+                self.parameters,
+                self._has_multi_parameters,
+            ) = self._process_colparams(v)
         else:
             if self._has_multi_parameters:
                 self.parameters = list(self.parameters)
@@ -305,7 +374,8 @@ class ValuesBase(UpdateBase):
                 if not self._has_multi_parameters:
                     raise exc.ArgumentError(
                         "Can't mix single-values and multiple values "
-                        "formats in one statement")
+                        "formats in one statement"
+                    )
 
                 self.parameters.extend(p)
             else:
@@ -314,14 +384,16 @@ class ValuesBase(UpdateBase):
                 if self._has_multi_parameters:
                     raise exc.ArgumentError(
                         "Can't mix single-values and multiple values "
-                        "formats in one statement")
+                        "formats in one statement"
+                    )
                 self.parameters.update(p)
 
         if kwargs:
             if self._has_multi_parameters:
                 raise exc.ArgumentError(
-                            "Can't pass kwargs and multiple parameter sets "
-                            "simultaenously")
+                    "Can't pass kwargs and multiple parameter sets "
+                    "simultaneously"
+                )
             else:
                 self.parameters.update(kwargs)
 
@@ -339,47 +411,47 @@ class ValuesBase(UpdateBase):
             server_created_at = result.returned_defaults['created_at']
 
         When used against a backend that supports RETURNING, all column
-        values generated by SQL expression or server-side-default will be added
-        to any existing RETURNING clause, provided that
-        :meth:`.UpdateBase.returning` is not used simultaneously.   The column values
-        will then be available on the result using the
-        :attr:`.ResultProxy.returned_defaults` accessor as a
-        dictionary, referring to values keyed to the :class:`.Column` object
-        as well as its ``.key``.
+        values generated by SQL expression or server-side-default will be
+        added to any existing RETURNING clause, provided that
+        :meth:`.UpdateBase.returning` is not used simultaneously.  The column
+        values will then be available on the result using the
+        :attr:`.ResultProxy.returned_defaults` accessor as a dictionary,
+        referring to values keyed to the :class:`.Column` object as well as
+        its ``.key``.
 
         This method differs from :meth:`.UpdateBase.returning` in these ways:
 
         1. :meth:`.ValuesBase.return_defaults` is only intended for use with
            an INSERT or an UPDATE statement that matches exactly one row.
-           While the RETURNING construct in the general sense supports multiple
-           rows for a multi-row UPDATE or DELETE statement, or for special
-           cases of INSERT that return multiple rows (e.g. INSERT from SELECT,
-           multi-valued VALUES clause), :meth:`.ValuesBase.return_defaults`
-           is intended only
-           for an "ORM-style" single-row INSERT/UPDATE statement.  The row
-           returned by the statement is also consumed implcitly when
+           While the RETURNING construct in the general sense supports
+           multiple rows for a multi-row UPDATE or DELETE statement, or for
+           special cases of INSERT that return multiple rows (e.g. INSERT from
+           SELECT, multi-valued VALUES clause),
+           :meth:`.ValuesBase.return_defaults` is intended only for an
+           "ORM-style" single-row INSERT/UPDATE statement.  The row returned
+           by the statement is also consumed implicitly when
            :meth:`.ValuesBase.return_defaults` is used.  By contrast,
-           :meth:`.UpdateBase.returning` leaves the RETURNING result-set intact
-           with a collection of any number of rows.
+           :meth:`.UpdateBase.returning` leaves the RETURNING result-set
+           intact with a collection of any number of rows.
 
         2. It is compatible with the existing logic to fetch auto-generated
-           primary key values, also known as "implicit returning".  Backends that
-           support RETURNING will automatically make use of RETURNING in order
-           to fetch the value of newly generated primary keys; while the
+           primary key values, also known as "implicit returning".  Backends
+           that support RETURNING will automatically make use of RETURNING in
+           order to fetch the value of newly generated primary keys; while the
            :meth:`.UpdateBase.returning` method circumvents this behavior,
            :meth:`.ValuesBase.return_defaults` leaves it intact.
 
         3. It can be called against any backend.  Backends that don't support
            RETURNING will skip the usage of the feature, rather than raising
-           an exception.  The return value of :attr:`.ResultProxy.returned_defaults`
-           will be ``None``
+           an exception.  The return value of
+           :attr:`.ResultProxy.returned_defaults` will be ``None``
 
         :meth:`.ValuesBase.return_defaults` is used by the ORM to provide
         an efficient implementation for the ``eager_defaults`` feature of
         :func:`.mapper`.
 
         :param cols: optional list of column key names or :class:`.Column`
-         objects.  If omitted, all column expressions evaulated on the server
+         objects.  If omitted, all column expressions evaluated on the server
          are added to the returning list.
 
         .. versionadded:: 0.9.0
@@ -405,26 +477,30 @@ class Insert(ValuesBase):
         :ref:`coretutorial_insert_expressions`
 
     """
-    __visit_name__ = 'insert'
+
+    __visit_name__ = "insert"
 
     _supports_multi_parameters = True
 
-    def __init__(self,
-                table,
-                values=None,
-                inline=False,
-                bind=None,
-                prefixes=None,
-                returning=None,
-                return_defaults=False,
-                **dialect_kw):
+    def __init__(
+        self,
+        table,
+        values=None,
+        inline=False,
+        bind=None,
+        prefixes=None,
+        returning=None,
+        return_defaults=False,
+        **dialect_kw
+    ):
         """Construct an :class:`.Insert` object.
 
         Similar functionality is available via the
         :meth:`~.TableClause.insert` method on
         :class:`~.schema.Table`.
 
-        :param table: :class:`.TableClause` which is the subject of the insert.
+        :param table: :class:`.TableClause` which is the subject of the
+         insert.
 
         :param values: collection of values to be inserted; see
          :meth:`.Insert.values` for a description of allowed formats here.
@@ -432,15 +508,21 @@ class Insert(ValuesBase):
          dynamically render the VALUES clause at execution time based on
          the parameters passed to :meth:`.Connection.execute`.
 
-        :param inline: if True, SQL defaults will be compiled 'inline' into the
-          statement and not pre-executed.
+        :param inline: if True, no attempt will be made to retrieve the
+         SQL-generated default values to be provided within the statement;
+         in particular,
+         this allows SQL expressions to be rendered 'inline' within the
+         statement without the need to pre-execute them beforehand; for
+         backends that support "returning", this turns off the "implicit
+         returning" feature for the statement.
 
         If both `values` and compile-time bind parameters are present, the
         compile-time bind parameters override the information specified
         within `values` on a per-key basis.
 
-        The keys within `values` can be either :class:`~sqlalchemy.schema.Column`
-        objects or their string identifiers. Each key may reference one of:
+        The keys within `values` can be either
+        :class:`~sqlalchemy.schema.Column` objects or their string
+        identifiers. Each key may reference one of:
 
         * a literal data value (i.e. string, number, etc.);
         * a Column object;
@@ -460,6 +542,7 @@ class Insert(ValuesBase):
         ValuesBase.__init__(self, table, values, prefixes)
         self._bind = bind
         self.select = self.select_names = None
+        self.include_insert_from_select_defaults = False
         self.inline = inline
         self._returning = returning
         self._validate_dialect_kwargs(dialect_kw)
@@ -467,12 +550,12 @@ class Insert(ValuesBase):
 
     def get_children(self, **kwargs):
         if self.select is not None:
-            return self.select,
+            return (self.select,)
         else:
             return ()
 
     @_generative
-    def from_select(self, names, select):
+    def from_select(self, names, select, include_defaults=True):
         """Return a new :class:`.Insert` construct which represents
         an ``INSERT...FROM SELECT`` statement.
 
@@ -491,36 +574,42 @@ class Insert(ValuesBase):
          is not checked before passing along to the database, the database
          would normally raise an exception if these column lists don't
          correspond.
+        :param include_defaults: if True, non-server default values and
+         SQL expressions as specified on :class:`.Column` objects
+         (as documented in :ref:`metadata_defaults_toplevel`) not
+         otherwise specified in the list of names will be rendered
+         into the INSERT and SELECT statements, so that these values are also
+         included in the data to be inserted.
 
-        .. note::
+         .. note:: A Python-side default that uses a Python callable function
+            will only be invoked **once** for the whole statement, and **not
+            per row**.
 
-           Depending on backend, it may be necessary for the :class:`.Insert`
-           statement to be constructed using the ``inline=True`` flag; this
-           flag will prevent the implicit usage of ``RETURNING`` when the
-           ``INSERT`` statement is rendered, which isn't supported on a backend
-           such as Oracle in conjunction with an ``INSERT..SELECT`` combination::
+         .. versionadded:: 1.0.0 - :meth:`.Insert.from_select` now renders
+            Python-side and SQL expression column defaults into the
+            SELECT statement for columns otherwise not included in the
+            list of column names.
 
-             sel = select([table1.c.a, table1.c.b]).where(table1.c.c > 5)
-             ins = table2.insert(inline=True).from_select(['a', 'b'], sel)
-
-        .. note::
-
-           A SELECT..INSERT construct in SQL has no VALUES clause.  Therefore
-           :class:`.Column` objects which utilize Python-side defaults
-           (e.g. as described at :ref:`metadata_defaults_toplevel`)
-           will **not** take effect when using :meth:`.Insert.from_select`.
-
-        .. versionadded:: 0.8.3
+        .. versionchanged:: 1.0.0 an INSERT that uses FROM SELECT
+           implies that the :paramref:`.insert.inline` flag is set to
+           True, indicating that the statement will not attempt to fetch
+           the "last inserted primary key" or other defaults.  The statement
+           deals with an arbitrary number of rows, so the
+           :attr:`.ResultProxy.inserted_primary_key` accessor does not apply.
 
         """
         if self.parameters:
             raise exc.InvalidRequestError(
-                        "This construct already inserts value expressions")
+                "This construct already inserts value expressions"
+            )
 
-        self.parameters, self._has_multi_parameters = \
-                self._process_colparams(dict((n, Null()) for n in names))
+        self.parameters, self._has_multi_parameters = self._process_colparams(
+            {_column_as_key(n): Null() for n in names}
+        )
 
         self.select_names = names
+        self.inline = True
+        self.include_insert_from_select_defaults = include_defaults
         self.select = _interpret_as_select(select)
 
     def _copy_internals(self, clone=_clone, **kw):
@@ -533,36 +622,41 @@ class Insert(ValuesBase):
 class Update(ValuesBase):
     """Represent an Update construct.
 
-    The :class:`.Update` object is created using the :func:`update()` function.
+    The :class:`.Update` object is created using the :func:`update()`
+    function.
 
     """
-    __visit_name__ = 'update'
 
-    def __init__(self,
-                table,
-                whereclause=None,
-                values=None,
-                inline=False,
-                bind=None,
-                prefixes=None,
-                returning=None,
-                return_defaults=False,
-                **dialect_kw):
-        """Construct an :class:`.Update` object.
+    __visit_name__ = "update"
+
+    def __init__(
+        self,
+        table,
+        whereclause=None,
+        values=None,
+        inline=False,
+        bind=None,
+        prefixes=None,
+        returning=None,
+        return_defaults=False,
+        preserve_parameter_order=False,
+        **dialect_kw
+    ):
+        r"""Construct an :class:`.Update` object.
 
         E.g.::
 
             from sqlalchemy import update
 
-            stmt = update(users).where(users.c.id==5).\\
+            stmt = update(users).where(users.c.id==5).\
                     values(name='user #5')
 
         Similar functionality is available via the
         :meth:`~.TableClause.update` method on
         :class:`.Table`::
 
-            stmt = users.update().\\
-                        where(users.c.id==5).\\
+            stmt = users.update().\
+                        where(users.c.id==5).\
                         values(name='user #5')
 
         :param table: A :class:`.Table` object representing the database
@@ -582,13 +676,10 @@ class Update(ValuesBase):
          subquery::
 
             users.update().values(name='ed').where(
-                    users.c.name==select([addresses.c.email_address]).\\
-                                where(addresses.c.user_id==users.c.id).\\
+                    users.c.name==select([addresses.c.email_address]).\
+                                where(addresses.c.user_id==users.c.id).\
                                 as_scalar()
                     )
-
-         .. versionchanged:: 0.7.4
-             The WHERE clause can refer to multiple tables.
 
         :param values:
           Optional dictionary which specifies the ``SET`` conditions of the
@@ -608,6 +699,19 @@ class Update(ValuesBase):
           and not pre-executed.  This means that their values will not
           be available in the dictionary returned from
           :meth:`.ResultProxy.last_updated_params`.
+
+        :param preserve_parameter_order: if True, the update statement is
+          expected to receive parameters **only** via the
+          :meth:`.Update.values` method, and they must be passed as a Python
+          ``list`` of 2-tuples. The rendered UPDATE statement will emit the SET
+          clause for each referenced column maintaining this order.
+
+          .. versionadded:: 1.0.10
+
+          .. seealso::
+
+            :ref:`updates_order_parameters` - full example of the
+            :paramref:`~.update.preserve_parameter_order` flag
 
         If both ``values`` and compile-time bind parameters are present, the
         compile-time bind parameters override the information specified
@@ -638,8 +742,8 @@ class Update(ValuesBase):
         being updated::
 
             users.update().values(
-                    name=select([addresses.c.email_address]).\\
-                            where(addresses.c.user_id==users.c.id).\\
+                    name=select([addresses.c.email_address]).\
+                            where(addresses.c.user_id==users.c.id).\
                             as_scalar()
                 )
 
@@ -650,6 +754,7 @@ class Update(ValuesBase):
 
 
         """
+        self._preserve_parameter_order = preserve_parameter_order
         ValuesBase.__init__(self, table, values, prefixes)
         self._bind = bind
         self._returning = returning
@@ -661,10 +766,9 @@ class Update(ValuesBase):
         self._validate_dialect_kwargs(dialect_kw)
         self._return_defaults = return_defaults
 
-
     def get_children(self, **kwargs):
         if self._whereclause is not None:
-            return self._whereclause,
+            return (self._whereclause,)
         else:
             return ()
 
@@ -680,17 +784,16 @@ class Update(ValuesBase):
 
         """
         if self._whereclause is not None:
-            self._whereclause = and_(self._whereclause,
-                    _literal_as_text(whereclause))
+            self._whereclause = and_(
+                self._whereclause, _literal_as_text(whereclause)
+            )
         else:
             self._whereclause = _literal_as_text(whereclause)
 
     @property
     def _extra_froms(self):
-        # TODO: this could be made memoized
-        # if the memoization is reset on each generative call.
         froms = []
-        seen = set([self.table])
+        seen = {self.table}
 
         if self._whereclause is not None:
             for item in _from_objects(self._whereclause):
@@ -704,30 +807,50 @@ class Update(ValuesBase):
 class Delete(UpdateBase):
     """Represent a DELETE construct.
 
-    The :class:`.Delete` object is created using the :func:`delete()` function.
+    The :class:`.Delete` object is created using the :func:`delete()`
+    function.
 
     """
 
-    __visit_name__ = 'delete'
+    __visit_name__ = "delete"
 
-    def __init__(self,
-            table,
-            whereclause=None,
-            bind=None,
-            returning=None,
-            prefixes=None,
-            **dialect_kw):
+    def __init__(
+        self,
+        table,
+        whereclause=None,
+        bind=None,
+        returning=None,
+        prefixes=None,
+        **dialect_kw
+    ):
         """Construct :class:`.Delete` object.
 
         Similar functionality is available via the
         :meth:`~.TableClause.delete` method on
         :class:`~.schema.Table`.
 
-        :param table: The table to be updated.
+        :param table: The table to delete rows from.
 
         :param whereclause: A :class:`.ClauseElement` describing the ``WHERE``
-          condition of the ``UPDATE`` statement. Note that the
+          condition of the ``DELETE`` statement. Note that the
           :meth:`~Delete.where()` generative method may be used instead.
+
+         The WHERE clause can refer to multiple tables.
+         For databases which support this, a ``DELETE..USING`` or similar
+         clause will be generated.  The statement
+         will fail on databases that don't have support for multi-table
+         delete statements.  A SQL-standard method of referring to
+         additional tables in the WHERE clause is to use a correlated
+         subquery::
+
+            users.delete().where(
+                    users.c.name==select([addresses.c.email_address]).\
+                                where(addresses.c.user_id==users.c.id).\
+                                as_scalar()
+                    )
+
+         .. versionchanged:: 1.2.0
+             The WHERE clause of DELETE can refer to multiple tables.
 
         .. seealso::
 
@@ -750,7 +873,7 @@ class Delete(UpdateBase):
 
     def get_children(self, **kwargs):
         if self._whereclause is not None:
-            return self._whereclause,
+            return (self._whereclause,)
         else:
             return ()
 
@@ -759,12 +882,25 @@ class Delete(UpdateBase):
         """Add the given WHERE clause to a newly returned delete construct."""
 
         if self._whereclause is not None:
-            self._whereclause = and_(self._whereclause,
-                    _literal_as_text(whereclause))
+            self._whereclause = and_(
+                self._whereclause, _literal_as_text(whereclause)
+            )
         else:
             self._whereclause = _literal_as_text(whereclause)
+
+    @property
+    def _extra_froms(self):
+        froms = []
+        seen = {self.table}
+
+        if self._whereclause is not None:
+            for item in _from_objects(self._whereclause):
+                if not seen.intersection(item._cloned_set):
+                    froms.append(item)
+                seen.update(item._cloned_set)
+
+        return froms
 
     def _copy_internals(self, clone=_clone, **kw):
         # TODO: coverage
         self._whereclause = clone(self._whereclause, **kw)
-

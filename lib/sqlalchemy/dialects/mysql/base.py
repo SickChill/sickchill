@@ -1,10 +1,11 @@
 # mysql/base.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
-"""
+r"""
 
 .. dialect:: mysql
     :name: MySQL
@@ -22,14 +23,26 @@ supported in any given server release.
 
 .. _mysql_connection_timeouts:
 
-Connection Timeouts
--------------------
+Connection Timeouts and Disconnects
+-----------------------------------
 
-MySQL features an automatic connection close behavior, for connections that have
-been idle for eight hours or more.   To circumvent having this issue, use the
-``pool_recycle`` option which controls the maximum age of any connection::
+MySQL features an automatic connection close behavior, for connections that
+have been idle for a fixed period of time, defaulting to eight hours.
+To circumvent having this issue, use
+the :paramref:`.create_engine.pool_recycle` option which ensures that
+a connection will be discarded and replaced with a new one if it has been
+present in the pool for a fixed number of seconds::
 
     engine = create_engine('mysql+mysqldb://...', pool_recycle=3600)
+
+For more comprehensive disconnect detection of pooled connections, including
+accommodation of  server restarts and network issues, a pre-ping approach may
+be employed.  See :ref:`pool_disconnects` for current approaches.
+
+.. seealso::
+
+    :ref:`pool_disconnects` - Background on several techniques for dealing
+    with timed out connections as well as database restarts.
 
 .. _mysql_storage_engines:
 
@@ -37,38 +50,42 @@ CREATE TABLE arguments including Storage Engines
 ------------------------------------------------
 
 MySQL's CREATE TABLE syntax includes a wide array of special options,
-including ``ENGINE``, ``CHARSET``, ``MAX_ROWS``, ``ROW_FORMAT``, ``INSERT_METHOD``, and many more.
+including ``ENGINE``, ``CHARSET``, ``MAX_ROWS``, ``ROW_FORMAT``,
+``INSERT_METHOD``, and many more.
 To accommodate the rendering of these arguments, specify the form
 ``mysql_argument_name="value"``.  For example, to specify a table with
-``ENGINE`` of ``InnoDB``, ``CHARSET`` of ``utf8``, and ``KEY_BLOCK_SIZE`` of ``1024``::
+``ENGINE`` of ``InnoDB``, ``CHARSET`` of ``utf8mb4``, and ``KEY_BLOCK_SIZE``
+of ``1024``::
 
   Table('mytable', metadata,
         Column('data', String(32)),
         mysql_engine='InnoDB',
-        mysql_charset='utf8',
+        mysql_charset='utf8mb4',
         mysql_key_block_size="1024"
        )
 
-The MySQL dialect will normally transfer any keyword specified as ``mysql_keyword_name``
-to be rendered as ``KEYWORD_NAME`` in the ``CREATE TABLE`` statement.  A handful
-of these names will render with a space instead of an underscore; to support this,
-the MySQL dialect has awareness of these particular names, which include
-``DATA DIRECTORY`` (e.g. ``mysql_data_directory``), ``CHARACTER SET`` (e.g.
-``mysql_character_set``) and ``INDEX DIRECTORY`` (e.g. ``mysql_index_directory``).
+The MySQL dialect will normally transfer any keyword specified as
+``mysql_keyword_name`` to be rendered as ``KEYWORD_NAME`` in the
+``CREATE TABLE`` statement.  A handful of these names will render with a space
+instead of an underscore; to support this, the MySQL dialect has awareness of
+these particular names, which include ``DATA DIRECTORY``
+(e.g. ``mysql_data_directory``), ``CHARACTER SET`` (e.g.
+``mysql_character_set``) and ``INDEX DIRECTORY`` (e.g.
+``mysql_index_directory``).
 
-The most common argument is ``mysql_engine``, which refers to the storage engine
-for the table.  Historically, MySQL server installations would default
+The most common argument is ``mysql_engine``, which refers to the storage
+engine for the table.  Historically, MySQL server installations would default
 to ``MyISAM`` for this value, although newer versions may be defaulting
 to ``InnoDB``.  The ``InnoDB`` engine is typically preferred for its support
 of transactions and foreign keys.
 
 A :class:`.Table` that is created in a MySQL database with a storage engine
-of ``MyISAM`` will be essentially non-transactional, meaning any INSERT/UPDATE/DELETE
-statement referring to this table will be invoked as autocommit.   It also will have no
-support for foreign key constraints; while the ``CREATE TABLE`` statement
-accepts foreign key options, when using the ``MyISAM`` storage engine these
-arguments are discarded.  Reflecting such a table will also produce no
-foreign key constraint information.
+of ``MyISAM`` will be essentially non-transactional, meaning any
+INSERT/UPDATE/DELETE statement referring to this table will be invoked as
+autocommit.   It also will have no support for foreign key constraints; while
+the ``CREATE TABLE`` statement accepts foreign key options, when using the
+``MyISAM`` storage engine these arguments are discarded.  Reflecting such a
+table will also produce no foreign key constraint information.
 
 For fully atomic transactions as well as support for foreign key
 constraints, all participating ``CREATE TABLE`` statements must specify a
@@ -96,28 +113,56 @@ all lower case both within SQLAlchemy as well as on the MySQL
 database itself, especially if database reflection features are
 to be used.
 
+.. _mysql_isolation_level:
+
 Transaction Isolation Level
 ---------------------------
 
-:func:`.create_engine` accepts an ``isolation_level``
-parameter which results in the command ``SET SESSION
-TRANSACTION ISOLATION LEVEL <level>`` being invoked for
-every new connection. Valid values for this parameter are
-``READ COMMITTED``, ``READ UNCOMMITTED``,
-``REPEATABLE READ``, and ``SERIALIZABLE``::
+All MySQL dialects support setting of transaction isolation level both via a
+dialect-specific parameter :paramref:`.create_engine.isolation_level` accepted
+by :func:`.create_engine`, as well as the
+:paramref:`.Connection.execution_options.isolation_level` argument as passed to
+:meth:`.Connection.execution_options`. This feature works by issuing the
+command ``SET SESSION TRANSACTION ISOLATION LEVEL <level>`` for each new
+connection.  For the special AUTOCOMMIT isolation level, DBAPI-specific
+techniques are used.
+
+To set isolation level using :func:`.create_engine`::
 
     engine = create_engine(
                     "mysql://scott:tiger@localhost/test",
                     isolation_level="READ UNCOMMITTED"
                 )
 
-.. versionadded:: 0.7.6
+To set using per-connection execution options::
+
+    connection = engine.connect()
+    connection = connection.execution_options(
+        isolation_level="READ COMMITTED"
+    )
+
+Valid values for ``isolation_level`` include:
+
+* ``READ COMMITTED``
+* ``READ UNCOMMITTED``
+* ``REPEATABLE READ``
+* ``SERIALIZABLE``
+* ``AUTOCOMMIT``
+
+The special ``AUTOCOMMIT`` value makes use of the various "autocommit"
+attributes provided by specific DBAPIs, and is currently supported by
+MySQLdb, MySQL-Client, MySQL-Connector Python, and PyMySQL.   Using it,
+the MySQL connection will return true for the value of
+``SELECT @@autocommit;``.
+
+.. versionadded:: 1.1 - added support for the AUTOCOMMIT isolation level.
 
 AUTO_INCREMENT Behavior
 -----------------------
 
 When creating tables, SQLAlchemy will automatically set ``AUTO_INCREMENT`` on
-the first :class:`.Integer` primary key column which is not marked as a foreign key::
+the first :class:`.Integer` primary key column which is not marked as a
+foreign key::
 
   >>> t = Table('mytable', metadata,
   ...   Column('mytable_id', Integer, primary_key=True)
@@ -128,17 +173,128 @@ the first :class:`.Integer` primary key column which is not marked as a foreign 
           PRIMARY KEY (id)
   )
 
-You can disable this behavior by passing ``False`` to the :paramref:`~.Column.autoincrement`
-argument of :class:`.Column`.  This flag can also be used to enable
-auto-increment on a secondary column in a multi-column key for some storage
-engines::
+You can disable this behavior by passing ``False`` to the
+:paramref:`~.Column.autoincrement` argument of :class:`.Column`.  This flag
+can also be used to enable auto-increment on a secondary column in a
+multi-column key for some storage engines::
 
   Table('mytable', metadata,
         Column('gid', Integer, primary_key=True, autoincrement=False),
         Column('id', Integer, primary_key=True)
        )
 
-Ansi Quoting Style
+.. _mysql_ss_cursors:
+
+Server Side Cursors
+-------------------
+
+Server-side cursor support is available for the MySQLdb and PyMySQL dialects.
+From a MySQL point of view this means that the ``MySQLdb.cursors.SSCursor`` or
+``pymysql.cursors.SSCursor`` class is used when building up the cursor which
+will receive results.  The most typical way of invoking this feature is via the
+:paramref:`.Connection.execution_options.stream_results` connection execution
+option.   Server side cursors can also be enabled for all SELECT statements
+unconditionally by passing ``server_side_cursors=True`` to
+:func:`.create_engine`.
+
+.. versionadded:: 1.1.4 - added server-side cursor support.
+
+.. _mysql_unicode:
+
+Unicode
+-------
+
+Charset Selection
+~~~~~~~~~~~~~~~~~
+
+Most MySQL DBAPIs offer the option to set the client character set for
+a connection.   This is typically delivered using the ``charset`` parameter
+in the URL, such as::
+
+    e = create_engine(
+        "mysql+pymysql://scott:tiger@localhost/test?charset=utf8mb4")
+
+This charset is the **client character set** for the connection.  Some
+MySQL DBAPIs will default this to a value such as ``latin1``, and some
+will make use of the ``default-character-set`` setting in the ``my.cnf``
+file as well.   Documentation for the DBAPI in use should be consulted
+for specific behavior.
+
+The encoding used for Unicode has traditionally been ``'utf8'``.  However,
+for MySQL versions 5.5.3 on forward, a new MySQL-specific encoding
+``'utf8mb4'`` has been introduced, and as of MySQL 8.0 a warning is emitted
+by the server if plain ``utf8`` is specified within any server-side
+directives, replaced with ``utf8mb3``.   The rationale for this new encoding
+is due to the fact that MySQL's legacy utf-8 encoding only supports
+codepoints up to three bytes instead of four.  Therefore,
+when communicating with a MySQL database
+that includes codepoints more than three bytes in size,
+this new charset is preferred, if supported by both the database as well
+as the client DBAPI, as in::
+
+    e = create_engine(
+        "mysql+pymysql://scott:tiger@localhost/test?charset=utf8mb4")
+
+All modern DBAPIs should support the ``utf8mb4`` charset.
+
+In order to use ``utf8mb4`` encoding for a schema that was created with  legacy
+``utf8``, changes to the MySQL schema and/or server configuration may be
+required.
+
+.. seealso::
+
+    `The utf8mb4 Character Set \
+    <http://dev.mysql.com/doc/refman/5.5/en/charset-unicode-utf8mb4.html>`_ - \
+    in the MySQL documentation
+
+.. _mysql_binary_introducer:
+
+Dealing with Binary Data Warnings and Unicode
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+MySQL versions 5.6, 5.7 and later (not MariaDB at the time of this writing) now
+emit a warning when attempting to pass binary data to the database, while a
+character set encoding is also in place, when the binary data itself is not
+valid for that encoding::
+
+    default.py:509: Warning: (1300, "Invalid utf8mb4 character string:
+    'F9876A'")
+      cursor.execute(statement, parameters)
+
+This warning is due to the fact that the MySQL client library is attempting to
+interpret the binary string as a unicode object even if a datatype such
+as :class:`.LargeBinary` is in use.   To resolve this, the SQL statement requires
+a binary "character set introducer" be present before any non-NULL value
+that renders like this::
+
+    INSERT INTO table (data) VALUES (_binary %s)
+
+These character set introducers are provided by the DBAPI driver, assuming the
+use of mysqlclient or PyMySQL (both of which are recommended).  Add the query
+string parameter ``binary_prefix=true`` to the URL to repair this warning::
+
+    # mysqlclient
+    engine = create_engine(
+        "mysql+mysqldb://scott:tiger@localhost/test?charset=utf8mb4&binary_prefix=true")
+
+    # PyMySQL
+    engine = create_engine(
+        "mysql+pymysql://scott:tiger@localhost/test?charset=utf8mb4&binary_prefix=true")
+
+
+The ``binary_prefix`` flag may or may not be supported by other MySQL drivers.
+
+SQLAlchemy itself cannot render this ``_binary`` prefix reliably, as it does
+not work with the NULL value, which is valid to be sent as a bound parameter.
+As the MySQL driver renders parameters directly into the SQL string, it's the
+most efficient place for this additional keyword to be passed.
+
+.. seealso::
+
+    `Character set introducers <https://dev.mysql.com/doc/refman/5.7/en/charset-introducer.html>`_ - on the MySQL website
+
+
+ANSI Quoting Style
 ------------------
 
 MySQL features two varieties of identifier "quoting style", one using
@@ -149,9 +305,6 @@ established with a particular :class:`.Engine`.  This quoting style comes
 into play when rendering table and column names as well as when reflecting
 existing database structures.  The detection is entirely automatic and
 no special configuration is needed to use either quoting style.
-
-.. versionchanged:: 0.6 detection of ANSI quoting style is entirely automatic,
-   there's no longer any end-user ``create_engine()`` options in this regard.
 
 MySQL SQL Extensions
 --------------------
@@ -167,13 +320,130 @@ And of course any valid MySQL statement can be executed as a string as well.
 Some limited direct support for MySQL extensions to SQL is currently
 available.
 
-* SELECT pragma::
+* INSERT..ON DUPLICATE KEY UPDATE:  See
+  :ref:`mysql_insert_on_duplicate_key_update`
 
-    select(..., prefixes=['HIGH_PRIORITY', 'SQL_SMALL_RESULT'])
+* SELECT pragma, use :meth:`.Select.prefix_with` and :meth:`.Query.prefix_with`::
+
+    select(...).prefix_with(['HIGH_PRIORITY', 'SQL_SMALL_RESULT'])
 
 * UPDATE with LIMIT::
 
     update(..., mysql_limit=10)
+
+* optimizer hints, use :meth:`.Select.prefix_with` and :meth:`.Query.prefix_with`::
+
+    select(...).prefix_with("/*+ NO_RANGE_OPTIMIZATION(t4 PRIMARY) */")
+
+* index hints, use :meth:`.Select.with_hint` and :meth:`.Query.with_hint`::
+
+    select(...).with_hint(some_table, "USE INDEX xyz")
+
+.. _mysql_insert_on_duplicate_key_update:
+
+INSERT...ON DUPLICATE KEY UPDATE (Upsert)
+------------------------------------------
+
+MySQL allows "upserts" (update or insert)
+of rows into a table via the ``ON DUPLICATE KEY UPDATE`` clause of the
+``INSERT`` statement.  A candidate row will only be inserted if that row does
+not match an existing primary or unique key in the table; otherwise, an UPDATE
+will be performed.   The statement allows for separate specification of the
+values to INSERT versus the values for UPDATE.
+
+SQLAlchemy provides ``ON DUPLICATE KEY UPDATE`` support via the MySQL-specific
+:func:`.mysql.insert()` function, which provides
+the generative method :meth:`~.mysql.Insert.on_duplicate_key_update`::
+
+    from sqlalchemy.dialects.mysql import insert
+
+    insert_stmt = insert(my_table).values(
+        id='some_existing_id',
+        data='inserted value')
+
+    on_duplicate_key_stmt = insert_stmt.on_duplicate_key_update(
+        data=insert_stmt.inserted.data,
+        status='U'
+    )
+
+    conn.execute(on_duplicate_key_stmt)
+
+Unlike PostgreSQL's "ON CONFLICT" phrase, the "ON DUPLICATE KEY UPDATE"
+phrase will always match on any primary key or unique key, and will always
+perform an UPDATE if there's a match; there are no options for it to raise
+an error or to skip performing an UPDATE.
+
+``ON DUPLICATE KEY UPDATE`` is used to perform an update of the already
+existing row, using any combination of new values as well as values
+from the proposed insertion.   These values are normally specified using
+keyword arguments passed to the
+:meth:`~.mysql.Insert.on_duplicate_key_update`
+given column key values (usually the name of the column, unless it
+specifies :paramref:`.Column.key`) as keys and literal or SQL expressions
+as values::
+
+    on_duplicate_key_stmt = insert_stmt.on_duplicate_key_update(
+        data="some data",
+        updated_at=func.current_timestamp(),
+    )
+
+In a manner similar to that of :meth:`.UpdateBase.values`, other parameter
+forms are accepted, including a single dictionary::
+
+    on_duplicate_key_stmt = insert_stmt.on_duplicate_key_update(
+        {"data": "some data", "updated_at": func.current_timestamp()},
+    )
+
+as well as a list of 2-tuples, which will automatically provide
+a parameter-ordered UPDATE statement in a manner similar to that described
+at :ref:`updates_order_parameters`.  Unlike the :class:`.Update` object,
+no special flag is needed to specify the intent since the argument form is
+this context is unambiguous::
+
+    on_duplicate_key_stmt = insert_stmt.on_duplicate_key_update(
+        [
+            ("data", "some data"),
+            ("updated_at", func.current_timestamp()),
+        ],
+    )
+
+.. versionchanged:: 1.3 support for parameter-ordered UPDATE clause within
+   MySQL ON DUPLICATE KEY UPDATE
+
+.. warning::
+
+    The :meth:`.Insert.on_duplicate_key_update` method does **not** take into
+    account Python-side default UPDATE values or generation functions, e.g.
+    e.g. those specified using :paramref:`.Column.onupdate`.
+    These values will not be exercised for an ON DUPLICATE KEY style of UPDATE,
+    unless they are manually specified explicitly in the parameters.
+
+
+
+In order to refer to the proposed insertion row, the special alias
+:attr:`~.mysql.Insert.inserted` is available as an attribute on
+the :class:`.mysql.Insert` object; this object is a
+:class:`.ColumnCollection` which contains all columns of the target
+table::
+
+    from sqlalchemy.dialects.mysql import insert
+
+    stmt = insert(my_table).values(
+        id='some_id',
+        data='inserted value',
+        author='jlh')
+    do_update_stmt = stmt.on_duplicate_key_update(
+        data="updated value",
+        author=stmt.inserted.author
+    )
+    conn.execute(do_update_stmt)
+
+When rendered, the "inserted" namespace will produce the expression
+``VALUES(<columnname>)``.
+
+.. versionadded:: 1.2 Added support for MySQL ON DUPLICATE KEY UPDATE clause
+
+
 
 rowcount Support
 ----------------
@@ -182,28 +452,26 @@ SQLAlchemy standardizes the DBAPI ``cursor.rowcount`` attribute to be the
 usual definition of "number of rows matched by an UPDATE or DELETE" statement.
 This is in contradiction to the default setting on most MySQL DBAPI drivers,
 which is "number of rows actually modified/deleted".  For this reason, the
-SQLAlchemy MySQL dialects always set the ``constants.CLIENT.FOUND_ROWS`` flag,
-or whatever is equivalent for the DBAPI in use, on connect, unless the flag value
-is overridden using DBAPI-specific options
-(such as ``client_flag`` for the MySQL-Python driver, ``found_rows`` for the
-OurSQL driver).
+SQLAlchemy MySQL dialects always add the ``constants.CLIENT.FOUND_ROWS``
+flag, or whatever is equivalent for the target dialect, upon connection.
+This setting is currently hardcoded.
 
-See also:
+.. seealso::
 
-:attr:`.ResultProxy.rowcount`
+    :attr:`.ResultProxy.rowcount`
 
 
 CAST Support
 ------------
 
-MySQL documents the CAST operator as available in version 4.0.2.  When using the
-SQLAlchemy :func:`.cast` function, SQLAlchemy
-will not render the CAST token on MySQL before this version, based on server version
-detection, instead rendering the internal expression directly.
+MySQL documents the CAST operator as available in version 4.0.2.  When using
+the SQLAlchemy :func:`.cast` function, SQLAlchemy
+will not render the CAST token on MySQL before this version, based on server
+version detection, instead rendering the internal expression directly.
 
-CAST may still not be desirable on an early MySQL version post-4.0.2, as it didn't
-add all datatype support until 4.1.1.   If your application falls into this
-narrow area, the behavior of CAST can be controlled using the
+CAST may still not be desirable on an early MySQL version post-4.0.2, as it
+didn't add all datatype support until 4.1.1.   If your application falls into
+this narrow area, the behavior of CAST can be controlled using the
 :ref:`sqlalchemy.ext.compiler_toplevel` system, as per the recipe below::
 
     from sqlalchemy.sql.expression import Cast
@@ -240,7 +508,8 @@ become part of the index. SQLAlchemy provides this feature via the
 
     Index('my_index', my_table.c.data, mysql_length=10)
 
-    Index('a_b_idx', my_table.c.a, my_table.c.b, mysql_length={'a': 4, 'b': 9})
+    Index('a_b_idx', my_table.c.a, my_table.c.b, mysql_length={'a': 4,
+                                                               'b': 9})
 
 Prefix lengths are given in characters for nonbinary string types and in bytes
 for binary string types. The value passed to the keyword argument *must* be
@@ -250,8 +519,24 @@ prefix length values for corresponding columns. MySQL only allows a length for
 a column of an index if it is for a CHAR, VARCHAR, TEXT, BINARY, VARBINARY and
 BLOB.
 
-.. versionadded:: 0.8.2 ``mysql_length`` may now be specified as a dictionary
-   for use with composite indexes.
+Index Prefixes
+~~~~~~~~~~~~~~
+
+MySQL storage engines permit you to specify an index prefix when creating
+an index. SQLAlchemy provides this feature via the
+``mysql_prefix`` parameter on :class:`.Index`::
+
+    Index('my_index', my_table.c.data, mysql_prefix='FULLTEXT')
+
+The value passed to the keyword argument will be simply passed through to the
+underlying CREATE INDEX, so it *must* be a valid index prefix for your MySQL
+storage engine.
+
+.. versionadded:: 1.1.5
+
+.. seealso::
+
+    `CREATE INDEX <http://dev.mysql.com/doc/refman/5.0/en/create-index.html>`_ - MySQL documentation
 
 Index Types
 ~~~~~~~~~~~~~
@@ -276,6 +561,19 @@ http://dev.mysql.com/doc/refman/5.0/en/create-index.html
 
 http://dev.mysql.com/doc/refman/5.0/en/create-table.html
 
+Index Parsers
+~~~~~~~~~~~~~
+
+CREATE FULLTEXT INDEX in MySQL also supports a "WITH PARSER" option.  This
+is available using the keyword argument ``mysql_with_parser``::
+
+    Index(
+        'my_index', my_table.c.data,
+        mysql_prefix='FULLTEXT', mysql_with_parser="ngram")
+
+.. versionadded:: 1.3
+
+
 .. _mysql_foreign_keys:
 
 MySQL Foreign Keys
@@ -288,10 +586,10 @@ Foreign Key Arguments to Avoid
 
 MySQL does not support the foreign key arguments "DEFERRABLE", "INITIALLY",
 or "MATCH".  Using the ``deferrable`` or ``initially`` keyword argument with
-:class:`.ForeignKeyConstraint` or :class:`.ForeignKey` will have the effect of these keywords being
-rendered in a DDL expression, which will then raise an error on MySQL.
-In order to use these keywords on a foreign key while having them ignored
-on a MySQL backend, use a custom compile rule::
+:class:`.ForeignKeyConstraint` or :class:`.ForeignKey` will have the effect of
+these keywords being rendered in a DDL expression, which will then raise an
+error on MySQL.  In order to use these keywords on a foreign key while having
+them ignored on a MySQL backend, use a custom compile rule::
 
     from sqlalchemy.ext.compiler import compiles
     from sqlalchemy.schema import ForeignKeyConstraint
@@ -302,19 +600,20 @@ on a MySQL backend, use a custom compile rule::
         return compiler.visit_foreign_key_constraint(element, **kw)
 
 .. versionchanged:: 0.9.0 - the MySQL backend no longer silently ignores
-   the ``deferrable`` or ``initially`` keyword arguments of :class:`.ForeignKeyConstraint`
-   and :class:`.ForeignKey`.
+   the ``deferrable`` or ``initially`` keyword arguments of
+   :class:`.ForeignKeyConstraint` and :class:`.ForeignKey`.
 
 The "MATCH" keyword is in fact more insidious, and is explicitly disallowed
-by SQLAlchemy in conjunction with the MySQL backend.  This argument is silently
-ignored by MySQL, but in addition has the effect of ON UPDATE and ON DELETE options
-also being ignored by the backend.   Therefore MATCH should never be used with the
-MySQL backend; as is the case with DEFERRABLE and INITIALLY, custom compilation
-rules can be used to correct a MySQL ForeignKeyConstraint at DDL definition time.
+by SQLAlchemy in conjunction with the MySQL backend.  This argument is
+silently ignored by MySQL, but in addition has the effect of ON UPDATE and ON
+DELETE options also being ignored by the backend.   Therefore MATCH should
+never be used with the MySQL backend; as is the case with DEFERRABLE and
+INITIALLY, custom compilation rules can be used to correct a MySQL
+ForeignKeyConstraint at DDL definition time.
 
-.. versionadded:: 0.9.0 - the MySQL backend will raise a :class:`.CompileError`
-   when the ``match`` keyword is used with :class:`.ForeignKeyConstraint`
-   or :class:`.ForeignKey`.
+.. versionadded:: 0.9.0 - the MySQL backend will raise a
+   :class:`.CompileError` when the ``match`` keyword is used with
+   :class:`.ForeignKeyConstraint` or :class:`.ForeignKey`.
 
 Reflection of Foreign Key Constraints
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -333,1045 +632,469 @@ reflection will not include foreign keys.  For these tables, you may supply a
 
     :ref:`mysql_storage_engines`
 
-"""
+.. _mysql_unique_constraints:
 
-import datetime
+MySQL Unique Constraints and Reflection
+---------------------------------------
+
+SQLAlchemy supports both the :class:`.Index` construct with the
+flag ``unique=True``, indicating a UNIQUE index, as well as the
+:class:`.UniqueConstraint` construct, representing a UNIQUE constraint.
+Both objects/syntaxes are supported by MySQL when emitting DDL to create
+these constraints.  However, MySQL does not have a unique constraint
+construct that is separate from a unique index; that is, the "UNIQUE"
+constraint on MySQL is equivalent to creating a "UNIQUE INDEX".
+
+When reflecting these constructs, the :meth:`.Inspector.get_indexes`
+and the :meth:`.Inspector.get_unique_constraints` methods will **both**
+return an entry for a UNIQUE index in MySQL.  However, when performing
+full table reflection using ``Table(..., autoload=True)``,
+the :class:`.UniqueConstraint` construct is
+**not** part of the fully reflected :class:`.Table` construct under any
+circumstances; this construct is always represented by a :class:`.Index`
+with the ``unique=True`` setting present in the :attr:`.Table.indexes`
+collection.
+
+
+.. _mysql_timestamp_null:
+
+TIMESTAMP Columns and NULL
+--------------------------
+
+MySQL historically enforces that a column which specifies the
+TIMESTAMP datatype implicitly includes a default value of
+CURRENT_TIMESTAMP, even though this is not stated, and additionally
+sets the column as NOT NULL, the opposite behavior vs. that of all
+other datatypes::
+
+    mysql> CREATE TABLE ts_test (
+        -> a INTEGER,
+        -> b INTEGER NOT NULL,
+        -> c TIMESTAMP,
+        -> d TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        -> e TIMESTAMP NULL);
+    Query OK, 0 rows affected (0.03 sec)
+
+    mysql> SHOW CREATE TABLE ts_test;
+    +---------+-----------------------------------------------------
+    | Table   | Create Table
+    +---------+-----------------------------------------------------
+    | ts_test | CREATE TABLE `ts_test` (
+      `a` int(11) DEFAULT NULL,
+      `b` int(11) NOT NULL,
+      `c` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      `d` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      `e` timestamp NULL DEFAULT NULL
+    ) ENGINE=MyISAM DEFAULT CHARSET=latin1
+
+Above, we see that an INTEGER column defaults to NULL, unless it is specified
+with NOT NULL.   But when the column is of type TIMESTAMP, an implicit
+default of CURRENT_TIMESTAMP is generated which also coerces the column
+to be a NOT NULL, even though we did not specify it as such.
+
+This behavior of MySQL can be changed on the MySQL side using the
+`explicit_defaults_for_timestamp
+<http://dev.mysql.com/doc/refman/5.6/en/server-system-variables.html
+#sysvar_explicit_defaults_for_timestamp>`_ configuration flag introduced in
+MySQL 5.6.  With this server setting enabled, TIMESTAMP columns behave like
+any other datatype on the MySQL side with regards to defaults and nullability.
+
+However, to accommodate the vast majority of MySQL databases that do not
+specify this new flag, SQLAlchemy emits the "NULL" specifier explicitly with
+any TIMESTAMP column that does not specify ``nullable=False``.   In order to
+accommodate newer databases that specify ``explicit_defaults_for_timestamp``,
+SQLAlchemy also emits NOT NULL for TIMESTAMP columns that do specify
+``nullable=False``.   The following example illustrates::
+
+    from sqlalchemy import MetaData, Integer, Table, Column, text
+    from sqlalchemy.dialects.mysql import TIMESTAMP
+
+    m = MetaData()
+    t = Table('ts_test', m,
+            Column('a', Integer),
+            Column('b', Integer, nullable=False),
+            Column('c', TIMESTAMP),
+            Column('d', TIMESTAMP, nullable=False)
+        )
+
+
+    from sqlalchemy import create_engine
+    e = create_engine("mysql://scott:tiger@localhost/test", echo=True)
+    m.create_all(e)
+
+output::
+
+    CREATE TABLE ts_test (
+        a INTEGER,
+        b INTEGER NOT NULL,
+        c TIMESTAMP NULL,
+        d TIMESTAMP NOT NULL
+    )
+
+.. versionchanged:: 1.0.0 - SQLAlchemy now renders NULL or NOT NULL in all
+   cases for TIMESTAMP columns, to accommodate
+   ``explicit_defaults_for_timestamp``.  Prior to this version, it will
+   not render "NOT NULL" for a TIMESTAMP column that is ``nullable=False``.
+
+"""  # noqa
+
+from array import array as _array
+from collections import defaultdict
 import re
 import sys
 
+from sqlalchemy import literal_column
+from sqlalchemy.sql import visitors
+from . import reflection as _reflection
+from .enumerated import ENUM
+from .enumerated import SET
+from .json import JSON
+from .json import JSONIndexType
+from .json import JSONPathType
+from .types import _FloatType
+from .types import _IntegerType
+from .types import _MatchType
+from .types import _NumericType
+from .types import _StringType
+from .types import BIGINT
+from .types import BIT
+from .types import CHAR
+from .types import DATETIME
+from .types import DECIMAL
+from .types import DOUBLE
+from .types import FLOAT
+from .types import INTEGER
+from .types import LONGBLOB
+from .types import LONGTEXT
+from .types import MEDIUMBLOB
+from .types import MEDIUMINT
+from .types import MEDIUMTEXT
+from .types import NCHAR
+from .types import NUMERIC
+from .types import NVARCHAR
+from .types import REAL
+from .types import SMALLINT
+from .types import TEXT
+from .types import TIME
+from .types import TIMESTAMP
+from .types import TINYBLOB
+from .types import TINYINT
+from .types import TINYTEXT
+from .types import VARCHAR
+from .types import YEAR
+from ... import exc
+from ... import log
 from ... import schema as sa_schema
-from ... import exc, log, sql, util
-from ...sql import compiler
-from array import array as _array
-
-from ...engine import reflection
-from ...engine import default
+from ... import sql
 from ... import types as sqltypes
+from ... import util
+from ...engine import default
+from ...engine import reflection
+from ...sql import compiler
+from ...sql import elements
+from ...types import BINARY
+from ...types import BLOB
+from ...types import BOOLEAN
+from ...types import DATE
+from ...types import VARBINARY
 from ...util import topological
-from ...types import DATE, BOOLEAN, \
-                                BLOB, BINARY, VARBINARY
+
 
 RESERVED_WORDS = set(
-    ['accessible', 'add', 'all', 'alter', 'analyze', 'and', 'as', 'asc',
-     'asensitive', 'before', 'between', 'bigint', 'binary', 'blob', 'both',
-     'by', 'call', 'cascade', 'case', 'change', 'char', 'character', 'check',
-     'collate', 'column', 'condition', 'constraint', 'continue', 'convert',
-     'create', 'cross', 'current_date', 'current_time', 'current_timestamp',
-     'current_user', 'cursor', 'database', 'databases', 'day_hour',
-     'day_microsecond', 'day_minute', 'day_second', 'dec', 'decimal',
-     'declare', 'default', 'delayed', 'delete', 'desc', 'describe',
-     'deterministic', 'distinct', 'distinctrow', 'div', 'double', 'drop',
-     'dual', 'each', 'else', 'elseif', 'enclosed', 'escaped', 'exists',
-     'exit', 'explain', 'false', 'fetch', 'float', 'float4', 'float8',
-     'for', 'force', 'foreign', 'from', 'fulltext', 'grant', 'group', 'having',
-     'high_priority', 'hour_microsecond', 'hour_minute', 'hour_second', 'if',
-     'ignore', 'in', 'index', 'infile', 'inner', 'inout', 'insensitive',
-     'insert', 'int', 'int1', 'int2', 'int3', 'int4', 'int8', 'integer',
-     'interval', 'into', 'is', 'iterate', 'join', 'key', 'keys', 'kill',
-     'leading', 'leave', 'left', 'like', 'limit', 'linear', 'lines', 'load',
-     'localtime', 'localtimestamp', 'lock', 'long', 'longblob', 'longtext',
-     'loop', 'low_priority', 'master_ssl_verify_server_cert', 'match',
-     'mediumblob', 'mediumint', 'mediumtext', 'middleint',
-     'minute_microsecond', 'minute_second', 'mod', 'modifies', 'natural',
-     'not', 'no_write_to_binlog', 'null', 'numeric', 'on', 'optimize',
-     'option', 'optionally', 'or', 'order', 'out', 'outer', 'outfile',
-     'precision', 'primary', 'procedure', 'purge', 'range', 'read', 'reads',
-     'read_only', 'read_write', 'real', 'references', 'regexp', 'release',
-     'rename', 'repeat', 'replace', 'require', 'restrict', 'return',
-     'revoke', 'right', 'rlike', 'schema', 'schemas', 'second_microsecond',
-     'select', 'sensitive', 'separator', 'set', 'show', 'smallint', 'spatial',
-     'specific', 'sql', 'sqlexception', 'sqlstate', 'sqlwarning',
-     'sql_big_result', 'sql_calc_found_rows', 'sql_small_result', 'ssl',
-     'starting', 'straight_join', 'table', 'terminated', 'then', 'tinyblob',
-     'tinyint', 'tinytext', 'to', 'trailing', 'trigger', 'true', 'undo',
-     'union', 'unique', 'unlock', 'unsigned', 'update', 'usage', 'use',
-     'using', 'utc_date', 'utc_time', 'utc_timestamp', 'values', 'varbinary',
-     'varchar', 'varcharacter', 'varying', 'when', 'where', 'while', 'with',
-
-     'write', 'x509', 'xor', 'year_month', 'zerofill',  # 5.0
-
-     'columns', 'fields', 'privileges', 'soname', 'tables',  # 4.1
-
-     'accessible', 'linear', 'master_ssl_verify_server_cert', 'range',
-     'read_only', 'read_write',  # 5.1
-
-     'general', 'ignore_server_ids', 'master_heartbeat_period', 'maxvalue',
-     'resignal', 'signal', 'slow', # 5.5
-
-      'get', 'io_after_gtids', 'io_before_gtids', 'master_bind', 'one_shot',
-        'partition', 'sql_after_gtids', 'sql_before_gtids',  # 5.6
-
-     ])
+    [
+        "accessible",
+        "accessible",
+        "add",
+        "admin",
+        "all",
+        "alter",
+        "analyze",
+        "and",
+        "array",  # 8.0
+        "as",
+        "asc",
+        "asensitive",
+        "before",
+        "between",
+        "bigint",
+        "binary",
+        "blob",
+        "both",
+        "by",
+        "call",
+        "cascade",
+        "case",
+        "change",
+        "char",
+        "character",
+        "check",
+        "collate",
+        "column",
+        "columns",
+        "condition",
+        "constraint",
+        "continue",
+        "convert",
+        "create",
+        "cross",
+        "cume_dist",
+        "current_date",
+        "current_time",
+        "current_timestamp",
+        "current_user",
+        "cursor",
+        "database",
+        "databases",
+        "day_hour",
+        "day_microsecond",
+        "day_minute",
+        "day_second",
+        "dec",
+        "decimal",
+        "declare",
+        "default",
+        "delayed",
+        "delete",
+        "desc",
+        "describe",
+        "deterministic",
+        "distinct",
+        "distinctrow",
+        "div",
+        "double",
+        "drop",
+        "dual",
+        "each",
+        "else",
+        "elseif",
+        "empty",
+        "enclosed",
+        "escaped",
+        "except",
+        "exists",
+        "exit",
+        "explain",
+        "false",
+        "fetch",
+        "fields",
+        "first_value",
+        "float",
+        "float4",
+        "float8",
+        "for",
+        "force",
+        "foreign",
+        "from",
+        "fulltext",
+        "function",
+        "general",
+        "generated",
+        "get",
+        "grant",
+        "group",
+        "grouping",
+        "groups",
+        "having",
+        "high_priority",
+        "hour_microsecond",
+        "hour_minute",
+        "hour_second",
+        "if",
+        "ignore",
+        "ignore_server_ids",
+        "in",
+        "index",
+        "infile",
+        "inner",
+        "inout",
+        "insensitive",
+        "insert",
+        "int",
+        "int1",
+        "int2",
+        "int3",
+        "int4",
+        "int8",
+        "integer",
+        "interval",
+        "into",
+        "io_after_gtids",
+        "io_before_gtids",
+        "is",
+        "iterate",
+        "join",
+        "json_table",
+        "key",
+        "keys",
+        "kill",
+        "last_value",
+        "leading",
+        "leave",
+        "left",
+        "like",
+        "limit",
+        "linear",
+        "linear",
+        "lines",
+        "load",
+        "localtime",
+        "localtimestamp",
+        "lock",
+        "long",
+        "longblob",
+        "longtext",
+        "loop",
+        "low_priority",
+        "master_bind",
+        "master_heartbeat_period",
+        "master_ssl_verify_server_cert",
+        "master_ssl_verify_server_cert",
+        "match",
+        "maxvalue",
+        "mediumblob",
+        "mediumint",
+        "mediumtext",
+        "member",  # 8.0
+        "middleint",
+        "minute_microsecond",
+        "minute_second",
+        "mod",
+        "modifies",
+        "natural",
+        "no_write_to_binlog",
+        "not",
+        "nth_value",
+        "ntile",
+        "null",
+        "numeric",
+        "of",
+        "on",
+        "one_shot",
+        "optimize",
+        "optimizer_costs",
+        "option",
+        "optionally",
+        "or",
+        "order",
+        "out",
+        "outer",
+        "outfile",
+        "over",
+        "partition",
+        "percent_rank",
+        "persist",
+        "persist_only",
+        "precision",
+        "primary",
+        "privileges",
+        "procedure",
+        "purge",
+        "range",
+        "range",
+        "rank",
+        "read",
+        "read_only",
+        "read_only",
+        "read_write",
+        "read_write",  # 5.1
+        "reads",
+        "real",
+        "recursive",
+        "references",
+        "regexp",
+        "release",
+        "rename",
+        "repeat",
+        "replace",
+        "require",
+        "resignal",
+        "restrict",
+        "return",
+        "revoke",
+        "right",
+        "rlike",
+        "role",
+        "row",
+        "row_number",
+        "rows",
+        "schema",
+        "schemas",
+        "second_microsecond",
+        "select",
+        "sensitive",
+        "separator",
+        "set",
+        "show",
+        "signal",
+        "slow",  # 5.5
+        "smallint",
+        "soname",
+        "spatial",
+        "specific",
+        "sql",
+        "sql_after_gtids",
+        "sql_before_gtids",  # 5.6
+        "sql_big_result",
+        "sql_calc_found_rows",
+        "sql_small_result",
+        "sqlexception",
+        "sqlstate",
+        "sqlwarning",
+        "ssl",
+        "starting",
+        "stored",
+        "straight_join",
+        "system",
+        "table",
+        "tables",  # 4.1
+        "terminated",
+        "then",
+        "tinyblob",
+        "tinyint",
+        "tinytext",
+        "to",
+        "trailing",
+        "trigger",
+        "true",
+        "undo",
+        "union",
+        "unique",
+        "unlock",
+        "unsigned",
+        "update",
+        "usage",
+        "use",
+        "using",
+        "utc_date",
+        "utc_time",
+        "utc_timestamp",
+        "values",
+        "varbinary",
+        "varchar",
+        "varcharacter",
+        "varying",
+        "virtual",  # 5.7
+        "when",
+        "where",
+        "while",
+        "window",  # 8.0
+        "with",
+        "write",
+        "x509",
+        "xor",
+        "year_month",
+        "zerofill",  # 5.0
+    ]
+)
 
 AUTOCOMMIT_RE = re.compile(
-    r'\s*(?:UPDATE|INSERT|CREATE|DELETE|DROP|ALTER|LOAD +DATA|REPLACE)',
-    re.I | re.UNICODE)
+    r"\s*(?:UPDATE|INSERT|CREATE|DELETE|DROP|ALTER|LOAD +DATA|REPLACE)",
+    re.I | re.UNICODE,
+)
 SET_RE = re.compile(
-    r'\s*SET\s+(?:(?:GLOBAL|SESSION)\s+)?\w',
-    re.I | re.UNICODE)
+    r"\s*SET\s+(?:(?:GLOBAL|SESSION)\s+)?\w", re.I | re.UNICODE
+)
 
-
-class _NumericType(object):
-    """Base for MySQL numeric types.
-
-    This is the base both for NUMERIC as well as INTEGER, hence
-    it's a mixin.
-
-    """
-
-    def __init__(self, unsigned=False, zerofill=False, **kw):
-        self.unsigned = unsigned
-        self.zerofill = zerofill
-        super(_NumericType, self).__init__(**kw)
-
-    def __repr__(self):
-        return util.generic_repr(self,
-                to_inspect=[_NumericType, sqltypes.Numeric])
-
-class _FloatType(_NumericType, sqltypes.Float):
-    def __init__(self, precision=None, scale=None, asdecimal=True, **kw):
-        if isinstance(self, (REAL, DOUBLE)) and \
-            (
-                (precision is None and scale is not None) or
-                (precision is not None and scale is None)
-            ):
-            raise exc.ArgumentError(
-                "You must specify both precision and scale or omit "
-                "both altogether.")
-        super(_FloatType, self).__init__(precision=precision, asdecimal=asdecimal, **kw)
-        self.scale = scale
-
-    def __repr__(self):
-        return util.generic_repr(self,
-                to_inspect=[_FloatType, _NumericType, sqltypes.Float])
-
-class _IntegerType(_NumericType, sqltypes.Integer):
-    def __init__(self, display_width=None, **kw):
-        self.display_width = display_width
-        super(_IntegerType, self).__init__(**kw)
-
-    def __repr__(self):
-        return util.generic_repr(self,
-                to_inspect=[_IntegerType, _NumericType, sqltypes.Integer])
-
-class _StringType(sqltypes.String):
-    """Base for MySQL string types."""
-
-    def __init__(self, charset=None, collation=None,
-                 ascii=False, binary=False, unicode=False,
-                 national=False, **kw):
-        self.charset = charset
-
-        # allow collate= or collation=
-        kw.setdefault('collation', kw.pop('collate', collation))
-
-        self.ascii = ascii
-        self.unicode = unicode
-        self.binary = binary
-        self.national = national
-        super(_StringType, self).__init__(**kw)
-
-    def __repr__(self):
-        return util.generic_repr(self,
-                to_inspect=[_StringType, sqltypes.String])
-
-class NUMERIC(_NumericType, sqltypes.NUMERIC):
-    """MySQL NUMERIC type."""
-
-    __visit_name__ = 'NUMERIC'
-
-    def __init__(self, precision=None, scale=None, asdecimal=True, **kw):
-        """Construct a NUMERIC.
-
-        :param precision: Total digits in this number.  If scale and precision
-          are both None, values are stored to limits allowed by the server.
-
-        :param scale: The number of digits after the decimal point.
-
-        :param unsigned: a boolean, optional.
-
-        :param zerofill: Optional. If true, values will be stored as strings
-          left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database API, which continue to be
-          numeric.
-
-        """
-        super(NUMERIC, self).__init__(precision=precision,
-                                scale=scale, asdecimal=asdecimal, **kw)
-
-
-class DECIMAL(_NumericType, sqltypes.DECIMAL):
-    """MySQL DECIMAL type."""
-
-    __visit_name__ = 'DECIMAL'
-
-    def __init__(self, precision=None, scale=None, asdecimal=True, **kw):
-        """Construct a DECIMAL.
-
-        :param precision: Total digits in this number.  If scale and precision
-          are both None, values are stored to limits allowed by the server.
-
-        :param scale: The number of digits after the decimal point.
-
-        :param unsigned: a boolean, optional.
-
-        :param zerofill: Optional. If true, values will be stored as strings
-          left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database API, which continue to be
-          numeric.
-
-        """
-        super(DECIMAL, self).__init__(precision=precision, scale=scale,
-                                      asdecimal=asdecimal, **kw)
-
-
-class DOUBLE(_FloatType):
-    """MySQL DOUBLE type."""
-
-    __visit_name__ = 'DOUBLE'
-
-    def __init__(self, precision=None, scale=None, asdecimal=True, **kw):
-        """Construct a DOUBLE.
-
-        .. note::
-
-            The :class:`.DOUBLE` type by default converts from float
-            to Decimal, using a truncation that defaults to 10 digits.  Specify
-            either ``scale=n`` or ``decimal_return_scale=n`` in order to change
-            this scale, or ``asdecimal=False`` to return values directly as
-            Python floating points.
-
-        :param precision: Total digits in this number.  If scale and precision
-          are both None, values are stored to limits allowed by the server.
-
-        :param scale: The number of digits after the decimal point.
-
-        :param unsigned: a boolean, optional.
-
-        :param zerofill: Optional. If true, values will be stored as strings
-          left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database API, which continue to be
-          numeric.
-
-        """
-        super(DOUBLE, self).__init__(precision=precision, scale=scale,
-                                     asdecimal=asdecimal, **kw)
-
-
-class REAL(_FloatType, sqltypes.REAL):
-    """MySQL REAL type."""
-
-    __visit_name__ = 'REAL'
-
-    def __init__(self, precision=None, scale=None, asdecimal=True, **kw):
-        """Construct a REAL.
-
-        .. note::
-
-            The :class:`.REAL` type by default converts from float
-            to Decimal, using a truncation that defaults to 10 digits.  Specify
-            either ``scale=n`` or ``decimal_return_scale=n`` in order to change
-            this scale, or ``asdecimal=False`` to return values directly as
-            Python floating points.
-
-        :param precision: Total digits in this number.  If scale and precision
-          are both None, values are stored to limits allowed by the server.
-
-        :param scale: The number of digits after the decimal point.
-
-        :param unsigned: a boolean, optional.
-
-        :param zerofill: Optional. If true, values will be stored as strings
-          left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database API, which continue to be
-          numeric.
-
-        """
-        super(REAL, self).__init__(precision=precision, scale=scale,
-                                   asdecimal=asdecimal, **kw)
-
-
-class FLOAT(_FloatType, sqltypes.FLOAT):
-    """MySQL FLOAT type."""
-
-    __visit_name__ = 'FLOAT'
-
-    def __init__(self, precision=None, scale=None, asdecimal=False, **kw):
-        """Construct a FLOAT.
-
-        :param precision: Total digits in this number.  If scale and precision
-          are both None, values are stored to limits allowed by the server.
-
-        :param scale: The number of digits after the decimal point.
-
-        :param unsigned: a boolean, optional.
-
-        :param zerofill: Optional. If true, values will be stored as strings
-          left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database API, which continue to be
-          numeric.
-
-        """
-        super(FLOAT, self).__init__(precision=precision, scale=scale,
-                                    asdecimal=asdecimal, **kw)
-
-    def bind_processor(self, dialect):
-        return None
-
-
-class INTEGER(_IntegerType, sqltypes.INTEGER):
-    """MySQL INTEGER type."""
-
-    __visit_name__ = 'INTEGER'
-
-    def __init__(self, display_width=None, **kw):
-        """Construct an INTEGER.
-
-        :param display_width: Optional, maximum display width for this number.
-
-        :param unsigned: a boolean, optional.
-
-        :param zerofill: Optional. If true, values will be stored as strings
-          left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database API, which continue to be
-          numeric.
-
-        """
-        super(INTEGER, self).__init__(display_width=display_width, **kw)
-
-
-class BIGINT(_IntegerType, sqltypes.BIGINT):
-    """MySQL BIGINTEGER type."""
-
-    __visit_name__ = 'BIGINT'
-
-    def __init__(self, display_width=None, **kw):
-        """Construct a BIGINTEGER.
-
-        :param display_width: Optional, maximum display width for this number.
-
-        :param unsigned: a boolean, optional.
-
-        :param zerofill: Optional. If true, values will be stored as strings
-          left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database API, which continue to be
-          numeric.
-
-        """
-        super(BIGINT, self).__init__(display_width=display_width, **kw)
-
-
-class MEDIUMINT(_IntegerType):
-    """MySQL MEDIUMINTEGER type."""
-
-    __visit_name__ = 'MEDIUMINT'
-
-    def __init__(self, display_width=None, **kw):
-        """Construct a MEDIUMINTEGER
-
-        :param display_width: Optional, maximum display width for this number.
-
-        :param unsigned: a boolean, optional.
-
-        :param zerofill: Optional. If true, values will be stored as strings
-          left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database API, which continue to be
-          numeric.
-
-        """
-        super(MEDIUMINT, self).__init__(display_width=display_width, **kw)
-
-
-class TINYINT(_IntegerType):
-    """MySQL TINYINT type."""
-
-    __visit_name__ = 'TINYINT'
-
-    def __init__(self, display_width=None, **kw):
-        """Construct a TINYINT.
-
-        :param display_width: Optional, maximum display width for this number.
-
-        :param unsigned: a boolean, optional.
-
-        :param zerofill: Optional. If true, values will be stored as strings
-          left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database API, which continue to be
-          numeric.
-
-        """
-        super(TINYINT, self).__init__(display_width=display_width, **kw)
-
-
-class SMALLINT(_IntegerType, sqltypes.SMALLINT):
-    """MySQL SMALLINTEGER type."""
-
-    __visit_name__ = 'SMALLINT'
-
-    def __init__(self, display_width=None, **kw):
-        """Construct a SMALLINTEGER.
-
-        :param display_width: Optional, maximum display width for this number.
-
-        :param unsigned: a boolean, optional.
-
-        :param zerofill: Optional. If true, values will be stored as strings
-          left-padded with zeros. Note that this does not effect the values
-          returned by the underlying database API, which continue to be
-          numeric.
-
-        """
-        super(SMALLINT, self).__init__(display_width=display_width, **kw)
-
-
-class BIT(sqltypes.TypeEngine):
-    """MySQL BIT type.
-
-    This type is for MySQL 5.0.3 or greater for MyISAM, and 5.0.5 or greater for
-    MyISAM, MEMORY, InnoDB and BDB.  For older versions, use a MSTinyInteger()
-    type.
-
-    """
-
-    __visit_name__ = 'BIT'
-
-    def __init__(self, length=None):
-        """Construct a BIT.
-
-        :param length: Optional, number of bits.
-
-        """
-        self.length = length
-
-    def result_processor(self, dialect, coltype):
-        """Convert a MySQL's 64 bit, variable length binary string to a long.
-
-        TODO: this is MySQL-db, pyodbc specific.  OurSQL and mysqlconnector
-        already do this, so this logic should be moved to those dialects.
-
-        """
-
-        def process(value):
-            if value is not None:
-                v = 0
-                for i in map(ord, value):
-                    v = v << 8 | i
-                return v
-            return value
-        return process
-
-
-class TIME(sqltypes.TIME):
-    """MySQL TIME type. """
-
-    __visit_name__ = 'TIME'
-
-    def __init__(self, timezone=False, fsp=None):
-        """Construct a MySQL TIME type.
-
-        :param timezone: not used by the MySQL dialect.
-        :param fsp: fractional seconds precision value.
-         MySQL 5.6 supports storage of fractional seconds;
-         this parameter will be used when emitting DDL
-         for the TIME type.
-
-         .. note::
-
-            DBAPI driver support for fractional seconds may
-            be limited; current support includes
-            MySQL Connector/Python.
-
-        .. versionadded:: 0.8 The MySQL-specific TIME
-           type as well as fractional seconds support.
-
-        """
-        super(TIME, self).__init__(timezone=timezone)
-        self.fsp = fsp
-
-    def result_processor(self, dialect, coltype):
-        time = datetime.time
-
-        def process(value):
-            # convert from a timedelta value
-            if value is not None:
-                microseconds = value.microseconds
-                seconds = value.seconds
-                minutes = seconds // 60
-                return time(minutes // 60,
-                            minutes % 60,
-                            seconds - minutes * 60,
-                            microsecond=microseconds)
-            else:
-                return None
-        return process
-
-
-class TIMESTAMP(sqltypes.TIMESTAMP):
-    """MySQL TIMESTAMP type.
-
-    """
-
-    __visit_name__ = 'TIMESTAMP'
-
-    def __init__(self, timezone=False, fsp=None):
-        """Construct a MySQL TIMESTAMP type.
-
-        :param timezone: not used by the MySQL dialect.
-        :param fsp: fractional seconds precision value.
-         MySQL 5.6.4 supports storage of fractional seconds;
-         this parameter will be used when emitting DDL
-         for the TIMESTAMP type.
-
-         .. note::
-
-            DBAPI driver support for fractional seconds may
-            be limited; current support includes
-            MySQL Connector/Python.
-
-        .. versionadded:: 0.8.5 Added MySQL-specific :class:`.mysql.TIMESTAMP`
-           with fractional seconds support.
-
-        """
-        super(TIMESTAMP, self).__init__(timezone=timezone)
-        self.fsp = fsp
-
-
-class DATETIME(sqltypes.DATETIME):
-    """MySQL DATETIME type.
-
-    """
-
-    __visit_name__ = 'DATETIME'
-
-    def __init__(self, timezone=False, fsp=None):
-        """Construct a MySQL DATETIME type.
-
-        :param timezone: not used by the MySQL dialect.
-        :param fsp: fractional seconds precision value.
-         MySQL 5.6.4 supports storage of fractional seconds;
-         this parameter will be used when emitting DDL
-         for the DATETIME type.
-
-         .. note::
-
-            DBAPI driver support for fractional seconds may
-            be limited; current support includes
-            MySQL Connector/Python.
-
-        .. versionadded:: 0.8.5 Added MySQL-specific :class:`.mysql.DATETIME`
-           with fractional seconds support.
-
-        """
-        super(DATETIME, self).__init__(timezone=timezone)
-        self.fsp = fsp
-
-
-class YEAR(sqltypes.TypeEngine):
-    """MySQL YEAR type, for single byte storage of years 1901-2155."""
-
-    __visit_name__ = 'YEAR'
-
-    def __init__(self, display_width=None):
-        self.display_width = display_width
-
-
-class TEXT(_StringType, sqltypes.TEXT):
-    """MySQL TEXT type, for text up to 2^16 characters."""
-
-    __visit_name__ = 'TEXT'
-
-    def __init__(self, length=None, **kw):
-        """Construct a TEXT.
-
-        :param length: Optional, if provided the server may optimize storage
-          by substituting the smallest TEXT type sufficient to store
-          ``length`` characters.
-
-        :param charset: Optional, a column-level character set for this string
-          value.  Takes precedence to 'ascii' or 'unicode' short-hand.
-
-        :param collation: Optional, a column-level collation for this string
-          value.  Takes precedence to 'binary' short-hand.
-
-        :param ascii: Defaults to False: short-hand for the ``latin1``
-          character set, generates ASCII in schema.
-
-        :param unicode: Defaults to False: short-hand for the ``ucs2``
-          character set, generates UNICODE in schema.
-
-        :param national: Optional. If true, use the server's configured
-          national character set.
-
-        :param binary: Defaults to False: short-hand, pick the binary
-          collation type that matches the column's character set.  Generates
-          BINARY in schema.  This does not affect the type of data stored,
-          only the collation of character data.
-
-        """
-        super(TEXT, self).__init__(length=length, **kw)
-
-
-class TINYTEXT(_StringType):
-    """MySQL TINYTEXT type, for text up to 2^8 characters."""
-
-    __visit_name__ = 'TINYTEXT'
-
-    def __init__(self, **kwargs):
-        """Construct a TINYTEXT.
-
-        :param charset: Optional, a column-level character set for this string
-          value.  Takes precedence to 'ascii' or 'unicode' short-hand.
-
-        :param collation: Optional, a column-level collation for this string
-          value.  Takes precedence to 'binary' short-hand.
-
-        :param ascii: Defaults to False: short-hand for the ``latin1``
-          character set, generates ASCII in schema.
-
-        :param unicode: Defaults to False: short-hand for the ``ucs2``
-          character set, generates UNICODE in schema.
-
-        :param national: Optional. If true, use the server's configured
-          national character set.
-
-        :param binary: Defaults to False: short-hand, pick the binary
-          collation type that matches the column's character set.  Generates
-          BINARY in schema.  This does not affect the type of data stored,
-          only the collation of character data.
-
-        """
-        super(TINYTEXT, self).__init__(**kwargs)
-
-
-class MEDIUMTEXT(_StringType):
-    """MySQL MEDIUMTEXT type, for text up to 2^24 characters."""
-
-    __visit_name__ = 'MEDIUMTEXT'
-
-    def __init__(self, **kwargs):
-        """Construct a MEDIUMTEXT.
-
-        :param charset: Optional, a column-level character set for this string
-          value.  Takes precedence to 'ascii' or 'unicode' short-hand.
-
-        :param collation: Optional, a column-level collation for this string
-          value.  Takes precedence to 'binary' short-hand.
-
-        :param ascii: Defaults to False: short-hand for the ``latin1``
-          character set, generates ASCII in schema.
-
-        :param unicode: Defaults to False: short-hand for the ``ucs2``
-          character set, generates UNICODE in schema.
-
-        :param national: Optional. If true, use the server's configured
-          national character set.
-
-        :param binary: Defaults to False: short-hand, pick the binary
-          collation type that matches the column's character set.  Generates
-          BINARY in schema.  This does not affect the type of data stored,
-          only the collation of character data.
-
-        """
-        super(MEDIUMTEXT, self).__init__(**kwargs)
-
-
-class LONGTEXT(_StringType):
-    """MySQL LONGTEXT type, for text up to 2^32 characters."""
-
-    __visit_name__ = 'LONGTEXT'
-
-    def __init__(self, **kwargs):
-        """Construct a LONGTEXT.
-
-        :param charset: Optional, a column-level character set for this string
-          value.  Takes precedence to 'ascii' or 'unicode' short-hand.
-
-        :param collation: Optional, a column-level collation for this string
-          value.  Takes precedence to 'binary' short-hand.
-
-        :param ascii: Defaults to False: short-hand for the ``latin1``
-          character set, generates ASCII in schema.
-
-        :param unicode: Defaults to False: short-hand for the ``ucs2``
-          character set, generates UNICODE in schema.
-
-        :param national: Optional. If true, use the server's configured
-          national character set.
-
-        :param binary: Defaults to False: short-hand, pick the binary
-          collation type that matches the column's character set.  Generates
-          BINARY in schema.  This does not affect the type of data stored,
-          only the collation of character data.
-
-        """
-        super(LONGTEXT, self).__init__(**kwargs)
-
-
-class VARCHAR(_StringType, sqltypes.VARCHAR):
-    """MySQL VARCHAR type, for variable-length character data."""
-
-    __visit_name__ = 'VARCHAR'
-
-    def __init__(self, length=None, **kwargs):
-        """Construct a VARCHAR.
-
-        :param charset: Optional, a column-level character set for this string
-          value.  Takes precedence to 'ascii' or 'unicode' short-hand.
-
-        :param collation: Optional, a column-level collation for this string
-          value.  Takes precedence to 'binary' short-hand.
-
-        :param ascii: Defaults to False: short-hand for the ``latin1``
-          character set, generates ASCII in schema.
-
-        :param unicode: Defaults to False: short-hand for the ``ucs2``
-          character set, generates UNICODE in schema.
-
-        :param national: Optional. If true, use the server's configured
-          national character set.
-
-        :param binary: Defaults to False: short-hand, pick the binary
-          collation type that matches the column's character set.  Generates
-          BINARY in schema.  This does not affect the type of data stored,
-          only the collation of character data.
-
-        """
-        super(VARCHAR, self).__init__(length=length, **kwargs)
-
-
-class CHAR(_StringType, sqltypes.CHAR):
-    """MySQL CHAR type, for fixed-length character data."""
-
-    __visit_name__ = 'CHAR'
-
-    def __init__(self, length=None, **kwargs):
-        """Construct a CHAR.
-
-        :param length: Maximum data length, in characters.
-
-        :param binary: Optional, use the default binary collation for the
-          national character set.  This does not affect the type of data
-          stored, use a BINARY type for binary data.
-
-        :param collation: Optional, request a particular collation.  Must be
-          compatible with the national character set.
-
-        """
-        super(CHAR, self).__init__(length=length, **kwargs)
-
-    @classmethod
-    def _adapt_string_for_cast(self, type_):
-        # copy the given string type into a CHAR
-        # for the purposes of rendering a CAST expression
-        type_ = sqltypes.to_instance(type_)
-        if isinstance(type_, sqltypes.CHAR):
-            return type_
-        elif isinstance(type_, _StringType):
-            return CHAR(
-                length=type_.length,
-                charset=type_.charset,
-                collation=type_.collation,
-                ascii=type_.ascii,
-                binary=type_.binary,
-                unicode=type_.unicode,
-                national=False # not supported in CAST
-            )
-        else:
-            return CHAR(length=type_.length)
-
-class NVARCHAR(_StringType, sqltypes.NVARCHAR):
-    """MySQL NVARCHAR type.
-
-    For variable-length character data in the server's configured national
-    character set.
-    """
-
-    __visit_name__ = 'NVARCHAR'
-
-    def __init__(self, length=None, **kwargs):
-        """Construct an NVARCHAR.
-
-        :param length: Maximum data length, in characters.
-
-        :param binary: Optional, use the default binary collation for the
-          national character set.  This does not affect the type of data
-          stored, use a BINARY type for binary data.
-
-        :param collation: Optional, request a particular collation.  Must be
-          compatible with the national character set.
-
-        """
-        kwargs['national'] = True
-        super(NVARCHAR, self).__init__(length=length, **kwargs)
-
-
-class NCHAR(_StringType, sqltypes.NCHAR):
-    """MySQL NCHAR type.
-
-    For fixed-length character data in the server's configured national
-    character set.
-    """
-
-    __visit_name__ = 'NCHAR'
-
-    def __init__(self, length=None, **kwargs):
-        """Construct an NCHAR.
-
-        :param length: Maximum data length, in characters.
-
-        :param binary: Optional, use the default binary collation for the
-          national character set.  This does not affect the type of data
-          stored, use a BINARY type for binary data.
-
-        :param collation: Optional, request a particular collation.  Must be
-          compatible with the national character set.
-
-        """
-        kwargs['national'] = True
-        super(NCHAR, self).__init__(length=length, **kwargs)
-
-
-class TINYBLOB(sqltypes._Binary):
-    """MySQL TINYBLOB type, for binary data up to 2^8 bytes."""
-
-    __visit_name__ = 'TINYBLOB'
-
-
-class MEDIUMBLOB(sqltypes._Binary):
-    """MySQL MEDIUMBLOB type, for binary data up to 2^24 bytes."""
-
-    __visit_name__ = 'MEDIUMBLOB'
-
-
-class LONGBLOB(sqltypes._Binary):
-    """MySQL LONGBLOB type, for binary data up to 2^32 bytes."""
-
-    __visit_name__ = 'LONGBLOB'
-
-class _EnumeratedValues(_StringType):
-    def _init_values(self, values, kw):
-        self.quoting = kw.pop('quoting', 'auto')
-
-        if self.quoting == 'auto' and len(values):
-            # What quoting character are we using?
-            q = None
-            for e in values:
-                if len(e) == 0:
-                    self.quoting = 'unquoted'
-                    break
-                elif q is None:
-                    q = e[0]
-
-                if len(e) == 1 or e[0] != q or e[-1] != q:
-                    self.quoting = 'unquoted'
-                    break
-            else:
-                self.quoting = 'quoted'
-
-        if self.quoting == 'quoted':
-            util.warn_deprecated(
-                'Manually quoting %s value literals is deprecated.  Supply '
-                'unquoted values and use the quoting= option in cases of '
-                'ambiguity.' % self.__class__.__name__)
-
-            values = self._strip_values(values)
-
-        self._enumerated_values = values
-        length = max([len(v) for v in values] + [0])
-        return values, length
-
-    @classmethod
-    def _strip_values(cls, values):
-        strip_values = []
-        for a in values:
-            if a[0:1] == '"' or a[0:1] == "'":
-                # strip enclosing quotes and unquote interior
-                a = a[1:-1].replace(a[0] * 2, a[0])
-            strip_values.append(a)
-        return strip_values
-
-class ENUM(sqltypes.Enum, _EnumeratedValues):
-    """MySQL ENUM type."""
-
-    __visit_name__ = 'ENUM'
-
-    def __init__(self, *enums, **kw):
-        """Construct an ENUM.
-
-        E.g.::
-
-          Column('myenum', ENUM("foo", "bar", "baz"))
-
-        :param enums: The range of valid values for this ENUM.  Values will be
-          quoted when generating the schema according to the quoting flag (see
-          below).
-
-        :param strict: Defaults to False: ensure that a given value is in this
-          ENUM's range of permissible values when inserting or updating rows.
-          Note that MySQL will not raise a fatal error if you attempt to store
-          an out of range value- an alternate value will be stored instead.
-          (See MySQL ENUM documentation.)
-
-        :param charset: Optional, a column-level character set for this string
-          value.  Takes precedence to 'ascii' or 'unicode' short-hand.
-
-        :param collation: Optional, a column-level collation for this string
-          value.  Takes precedence to 'binary' short-hand.
-
-        :param ascii: Defaults to False: short-hand for the ``latin1``
-          character set, generates ASCII in schema.
-
-        :param unicode: Defaults to False: short-hand for the ``ucs2``
-          character set, generates UNICODE in schema.
-
-        :param binary: Defaults to False: short-hand, pick the binary
-          collation type that matches the column's character set.  Generates
-          BINARY in schema.  This does not affect the type of data stored,
-          only the collation of character data.
-
-        :param quoting: Defaults to 'auto': automatically determine enum value
-          quoting.  If all enum values are surrounded by the same quoting
-          character, then use 'quoted' mode.  Otherwise, use 'unquoted' mode.
-
-          'quoted': values in enums are already quoted, they will be used
-          directly when generating the schema - this usage is deprecated.
-
-          'unquoted': values in enums are not quoted, they will be escaped and
-          surrounded by single quotes when generating the schema.
-
-          Previous versions of this type always required manually quoted
-          values to be supplied; future versions will always quote the string
-          literals for you.  This is a transitional option.
-
-        """
-        values, length = self._init_values(enums, kw)
-        self.strict = kw.pop('strict', False)
-        kw.pop('metadata', None)
-        kw.pop('schema', None)
-        kw.pop('name', None)
-        kw.pop('quote', None)
-        kw.pop('native_enum', None)
-        kw.pop('inherit_schema', None)
-        _StringType.__init__(self, length=length, **kw)
-        sqltypes.Enum.__init__(self, *values)
-
-    def __repr__(self):
-        return util.generic_repr(self,
-                to_inspect=[ENUM, _StringType, sqltypes.Enum])
-
-    def bind_processor(self, dialect):
-        super_convert = super(ENUM, self).bind_processor(dialect)
-
-        def process(value):
-            if self.strict and value is not None and value not in self.enums:
-                raise exc.InvalidRequestError('"%s" not a valid value for '
-                                                     'this enum' % value)
-            if super_convert:
-                return super_convert(value)
-            else:
-                return value
-        return process
-
-    def adapt(self, cls, **kw):
-        if issubclass(cls, ENUM):
-            kw['strict'] = self.strict
-        return sqltypes.Enum.adapt(self, cls, **kw)
-
-
-class SET(_EnumeratedValues):
-    """MySQL SET type."""
-
-    __visit_name__ = 'SET'
-
-    def __init__(self, *values, **kw):
-        """Construct a SET.
-
-        E.g.::
-
-          Column('myset', SET("foo", "bar", "baz"))
-
-        :param values: The range of valid values for this SET.  Values will be
-          quoted when generating the schema according to the quoting flag (see
-          below).
-
-          .. versionchanged:: 0.9.0 quoting is applied automatically to
-             :class:`.mysql.SET` in the same way as for :class:`.mysql.ENUM`.
-
-        :param charset: Optional, a column-level character set for this string
-          value.  Takes precedence to 'ascii' or 'unicode' short-hand.
-
-        :param collation: Optional, a column-level collation for this string
-          value.  Takes precedence to 'binary' short-hand.
-
-        :param ascii: Defaults to False: short-hand for the ``latin1``
-          character set, generates ASCII in schema.
-
-        :param unicode: Defaults to False: short-hand for the ``ucs2``
-          character set, generates UNICODE in schema.
-
-        :param binary: Defaults to False: short-hand, pick the binary
-          collation type that matches the column's character set.  Generates
-          BINARY in schema.  This does not affect the type of data stored,
-          only the collation of character data.
-
-        :param quoting: Defaults to 'auto': automatically determine enum value
-          quoting.  If all enum values are surrounded by the same quoting
-          character, then use 'quoted' mode.  Otherwise, use 'unquoted' mode.
-
-          'quoted': values in enums are already quoted, they will be used
-          directly when generating the schema - this usage is deprecated.
-
-          'unquoted': values in enums are not quoted, they will be escaped and
-          surrounded by single quotes when generating the schema.
-
-          Previous versions of this type always required manually quoted
-          values to be supplied; future versions will always quote the string
-          literals for you.  This is a transitional option.
-
-          .. versionadded:: 0.9.0
-
-        """
-        values, length = self._init_values(values, kw)
-        self.values = tuple(values)
-
-        kw.setdefault('length', length)
-        super(SET, self).__init__(**kw)
-
-    def result_processor(self, dialect, coltype):
-        def process(value):
-            # The good news:
-            #   No ',' quoting issues- commas aren't allowed in SET values
-            # The bad news:
-            #   Plenty of driver inconsistencies here.
-            if isinstance(value, set):
-                # ..some versions convert '' to an empty set
-                if not value:
-                    value.add('')
-                return value
-            # ...and some versions return strings
-            if value is not None:
-                return set(value.split(','))
-            else:
-                return value
-        return process
-
-    def bind_processor(self, dialect):
-        super_convert = super(SET, self).bind_processor(dialect)
-
-        def process(value):
-            if value is None or isinstance(value, util.int_types + util.string_types):
-                pass
-            else:
-                if None in value:
-                    value = set(value)
-                    value.remove(None)
-                    value.add('')
-                value = ','.join(value)
-            if super_convert:
-                return super_convert(value)
-            else:
-                return value
-        return process
 
 # old names
 MSTime = TIME
@@ -1413,51 +1136,61 @@ colspecs = {
     sqltypes.Float: FLOAT,
     sqltypes.Time: TIME,
     sqltypes.Enum: ENUM,
+    sqltypes.MatchType: _MatchType,
+    sqltypes.JSON: JSON,
+    sqltypes.JSON.JSONIndexType: JSONIndexType,
+    sqltypes.JSON.JSONPathType: JSONPathType,
 }
 
 # Everything 3.23 through 5.1 excepting OpenGIS types.
 ischema_names = {
-    'bigint': BIGINT,
-    'binary': BINARY,
-    'bit': BIT,
-    'blob': BLOB,
-    'boolean': BOOLEAN,
-    'char': CHAR,
-    'date': DATE,
-    'datetime': DATETIME,
-    'decimal': DECIMAL,
-    'double': DOUBLE,
-    'enum': ENUM,
-    'fixed': DECIMAL,
-    'float': FLOAT,
-    'int': INTEGER,
-    'integer': INTEGER,
-    'longblob': LONGBLOB,
-    'longtext': LONGTEXT,
-    'mediumblob': MEDIUMBLOB,
-    'mediumint': MEDIUMINT,
-    'mediumtext': MEDIUMTEXT,
-    'nchar': NCHAR,
-    'nvarchar': NVARCHAR,
-    'numeric': NUMERIC,
-    'set': SET,
-    'smallint': SMALLINT,
-    'text': TEXT,
-    'time': TIME,
-    'timestamp': TIMESTAMP,
-    'tinyblob': TINYBLOB,
-    'tinyint': TINYINT,
-    'tinytext': TINYTEXT,
-    'varbinary': VARBINARY,
-    'varchar': VARCHAR,
-    'year': YEAR,
+    "bigint": BIGINT,
+    "binary": BINARY,
+    "bit": BIT,
+    "blob": BLOB,
+    "boolean": BOOLEAN,
+    "char": CHAR,
+    "date": DATE,
+    "datetime": DATETIME,
+    "decimal": DECIMAL,
+    "double": DOUBLE,
+    "enum": ENUM,
+    "fixed": DECIMAL,
+    "float": FLOAT,
+    "int": INTEGER,
+    "integer": INTEGER,
+    "json": JSON,
+    "longblob": LONGBLOB,
+    "longtext": LONGTEXT,
+    "mediumblob": MEDIUMBLOB,
+    "mediumint": MEDIUMINT,
+    "mediumtext": MEDIUMTEXT,
+    "nchar": NCHAR,
+    "nvarchar": NVARCHAR,
+    "numeric": NUMERIC,
+    "set": SET,
+    "smallint": SMALLINT,
+    "text": TEXT,
+    "time": TIME,
+    "timestamp": TIMESTAMP,
+    "tinyblob": TINYBLOB,
+    "tinyint": TINYINT,
+    "tinytext": TINYTEXT,
+    "varbinary": VARBINARY,
+    "varchar": VARCHAR,
+    "year": YEAR,
 }
 
 
 class MySQLExecutionContext(default.DefaultExecutionContext):
-
     def should_autocommit_text(self, statement):
         return AUTOCOMMIT_RE.match(statement)
+
+    def create_server_side_cursor(self):
+        if self.dialect.supports_server_side_cursors:
+            return self._dbapi_connection.cursor(self.dialect._sscursor)
+        else:
+            raise NotImplementedError()
 
 
 class MySQLCompiler(compiler.SQLCompiler):
@@ -1466,69 +1199,227 @@ class MySQLCompiler(compiler.SQLCompiler):
     """Overridden from base SQLCompiler value"""
 
     extract_map = compiler.SQLCompiler.extract_map.copy()
-    extract_map.update({'milliseconds': 'millisecond'})
+    extract_map.update({"milliseconds": "millisecond"})
 
     def visit_random_func(self, fn, **kw):
         return "rand%s" % self.function_argspec(fn)
 
-    def visit_utc_timestamp_func(self, fn, **kw):
-        return "UTC_TIMESTAMP"
-
     def visit_sysdate_func(self, fn, **kw):
         return "SYSDATE()"
 
+    def _render_json_extract_from_binary(self, binary, operator, **kw):
+        # note we are intentionally calling upon the process() calls in the
+        # order in which they appear in the SQL String as this is used
+        # by positional parameter rendering
+
+        if binary.type._type_affinity is sqltypes.JSON:
+            return "JSON_EXTRACT(%s, %s)" % (
+                self.process(binary.left, **kw),
+                self.process(binary.right, **kw),
+            )
+
+        # for non-JSON, MySQL doesn't handle JSON null at all so it has to
+        # be explicit
+        case_expression = "CASE JSON_EXTRACT(%s, %s) WHEN 'null' THEN NULL" % (
+            self.process(binary.left, **kw),
+            self.process(binary.right, **kw),
+        )
+
+        if binary.type._type_affinity is sqltypes.Integer:
+            type_expression = (
+                "ELSE CAST(JSON_EXTRACT(%s, %s) AS SIGNED INTEGER)"
+                % (
+                    self.process(binary.left, **kw),
+                    self.process(binary.right, **kw),
+                )
+            )
+        elif binary.type._type_affinity is sqltypes.Numeric:
+            # FLOAT / REAL not added in MySQL til 8.0.17
+            type_expression = (
+                "ELSE CAST(JSON_EXTRACT(%s, %s) AS DECIMAL(10, 6))"
+                % (
+                    self.process(binary.left, **kw),
+                    self.process(binary.right, **kw),
+                )
+            )
+        elif binary.type._type_affinity is sqltypes.Boolean:
+            # the NULL handling is particularly weird with boolean, so
+            # explicitly return true/false constants
+            type_expression = "WHEN true THEN true ELSE false"
+        elif binary.type._type_affinity is sqltypes.String:
+            # this fails with a JSON value that's a four byte unicode
+            # string.  SQLite has the same problem at the moment
+            type_expression = "ELSE JSON_UNQUOTE(JSON_EXTRACT(%s, %s))" % (
+                self.process(binary.left, **kw),
+                self.process(binary.right, **kw),
+            )
+        else:
+            # other affinity....this is not expected right now
+            type_expression = "ELSE JSON_EXTRACT(%s, %s)"
+
+        return case_expression + " " + type_expression + " END"
+
+    def visit_json_getitem_op_binary(self, binary, operator, **kw):
+        return self._render_json_extract_from_binary(binary, operator, **kw)
+
+    def visit_json_path_getitem_op_binary(self, binary, operator, **kw):
+        return self._render_json_extract_from_binary(binary, operator, **kw)
+
+    def visit_on_duplicate_key_update(self, on_duplicate, **kw):
+        if on_duplicate._parameter_ordering:
+            parameter_ordering = [
+                elements._column_as_key(key)
+                for key in on_duplicate._parameter_ordering
+            ]
+            ordered_keys = set(parameter_ordering)
+            cols = [
+                self.statement.table.c[key]
+                for key in parameter_ordering
+                if key in self.statement.table.c
+            ] + [
+                c for c in self.statement.table.c if c.key not in ordered_keys
+            ]
+        else:
+            cols = self.statement.table.c
+
+        clauses = []
+        # traverses through all table columns to preserve table column order
+        for column in (col for col in cols if col.key in on_duplicate.update):
+
+            val = on_duplicate.update[column.key]
+
+            if elements._is_literal(val):
+                val = elements.BindParameter(None, val, type_=column.type)
+                value_text = self.process(val.self_group(), use_schema=False)
+            else:
+
+                def replace(obj):
+                    if (
+                        isinstance(obj, elements.BindParameter)
+                        and obj.type._isnull
+                    ):
+                        obj = obj._clone()
+                        obj.type = column.type
+                        return obj
+                    elif (
+                        isinstance(obj, elements.ColumnClause)
+                        and obj.table is on_duplicate.inserted_alias
+                    ):
+                        obj = literal_column(
+                            "VALUES(" + self.preparer.quote(column.name) + ")"
+                        )
+                        return obj
+                    else:
+                        # element is not replaced
+                        return None
+
+                val = visitors.replacement_traverse(val, {}, replace)
+                value_text = self.process(val.self_group(), use_schema=False)
+
+            name_text = self.preparer.quote(column.name)
+            clauses.append("%s = %s" % (name_text, value_text))
+
+        non_matching = set(on_duplicate.update) - set(c.key for c in cols)
+        if non_matching:
+            util.warn(
+                "Additional column names not matching "
+                "any column keys in table '%s': %s"
+                % (
+                    self.statement.table.name,
+                    (", ".join("'%s'" % c for c in non_matching)),
+                )
+            )
+
+        return "ON DUPLICATE KEY UPDATE " + ", ".join(clauses)
+
     def visit_concat_op_binary(self, binary, operator, **kw):
-        return "concat(%s, %s)" % (self.process(binary.left),
-                                                self.process(binary.right))
+        return "concat(%s, %s)" % (
+            self.process(binary.left, **kw),
+            self.process(binary.right, **kw),
+        )
 
     def visit_match_op_binary(self, binary, operator, **kw):
-        return "MATCH (%s) AGAINST (%s IN BOOLEAN MODE)" % \
-                    (self.process(binary.left), self.process(binary.right))
+        return "MATCH (%s) AGAINST (%s IN BOOLEAN MODE)" % (
+            self.process(binary.left, **kw),
+            self.process(binary.right, **kw),
+        )
 
     def get_from_hint_text(self, table, text):
         return text
 
-    def visit_typeclause(self, typeclause):
-        type_ = typeclause.type.dialect_impl(self.dialect)
-        if isinstance(type_, sqltypes.Integer):
-            if getattr(type_, 'unsigned', False):
-                return 'UNSIGNED INTEGER'
+    def visit_typeclause(self, typeclause, type_=None, **kw):
+        if type_ is None:
+            type_ = typeclause.type.dialect_impl(self.dialect)
+        if isinstance(type_, sqltypes.TypeDecorator):
+            return self.visit_typeclause(typeclause, type_.impl, **kw)
+        elif isinstance(type_, sqltypes.Integer):
+            if getattr(type_, "unsigned", False):
+                return "UNSIGNED INTEGER"
             else:
-                return 'SIGNED INTEGER'
+                return "SIGNED INTEGER"
         elif isinstance(type_, sqltypes.TIMESTAMP):
-            return 'DATETIME'
-        elif isinstance(type_, (sqltypes.DECIMAL, sqltypes.DateTime,
-                                            sqltypes.Date, sqltypes.Time)):
+            return "DATETIME"
+        elif isinstance(
+            type_,
+            (
+                sqltypes.DECIMAL,
+                sqltypes.DateTime,
+                sqltypes.Date,
+                sqltypes.Time,
+            ),
+        ):
             return self.dialect.type_compiler.process(type_)
-        elif isinstance(type_, sqltypes.String) and not isinstance(type_, (ENUM, SET)):
+        elif isinstance(type_, sqltypes.String) and not isinstance(
+            type_, (ENUM, SET)
+        ):
             adapted = CHAR._adapt_string_for_cast(type_)
             return self.dialect.type_compiler.process(adapted)
         elif isinstance(type_, sqltypes._Binary):
-            return 'BINARY'
+            return "BINARY"
+        elif isinstance(type_, sqltypes.JSON):
+            return "JSON"
         elif isinstance(type_, sqltypes.NUMERIC):
-            return self.dialect.type_compiler.process(
-                                        type_).replace('NUMERIC', 'DECIMAL')
+            return self.dialect.type_compiler.process(type_).replace(
+                "NUMERIC", "DECIMAL"
+            )
         else:
             return None
 
-    def visit_cast(self, cast, **kwargs):
+    def visit_cast(self, cast, **kw):
         # No cast until 4, no decimals until 5.
         if not self.dialect._supports_cast:
-            return self.process(cast.clause.self_group())
+            util.warn(
+                "Current MySQL version does not support "
+                "CAST; the CAST will be skipped."
+            )
+            return self.process(cast.clause.self_group(), **kw)
 
         type_ = self.process(cast.typeclause)
         if type_ is None:
-            return self.process(cast.clause.self_group())
+            util.warn(
+                "Datatype %s does not support CAST on MySQL; "
+                "the CAST will be skipped."
+                % self.dialect.type_compiler.process(cast.typeclause.type)
+            )
+            return self.process(cast.clause.self_group(), **kw)
 
-        return 'CAST(%s AS %s)' % (self.process(cast.clause), type_)
+        return "CAST(%s AS %s)" % (self.process(cast.clause, **kw), type_)
 
     def render_literal_value(self, value, type_):
         value = super(MySQLCompiler, self).render_literal_value(value, type_)
         if self.dialect._backslash_escapes:
-            value = value.replace('\\', '\\\\')
+            value = value.replace("\\", "\\\\")
         return value
 
-    def get_select_precolumns(self, select):
+    # override native_boolean=False behavior here, as
+    # MySQL still supports native boolean
+    def visit_true(self, element, **kw):
+        return "true"
+
+    def visit_false(self, element, **kw):
+        return "false"
+
+    def get_select_precolumns(self, select, **kw):
         """Add special MySQL keywords in place of DISTINCT.
 
         .. note::
@@ -1546,20 +1437,30 @@ class MySQLCompiler(compiler.SQLCompiler):
             return ""
 
     def visit_join(self, join, asfrom=False, **kwargs):
-        return ''.join(
-            (self.process(join.left, asfrom=True, **kwargs),
-             (join.isouter and " LEFT OUTER JOIN " or " INNER JOIN "),
-             self.process(join.right, asfrom=True, **kwargs),
-             " ON ",
-             self.process(join.onclause, **kwargs)))
+        if join.full:
+            join_type = " FULL OUTER JOIN "
+        elif join.isouter:
+            join_type = " LEFT OUTER JOIN "
+        else:
+            join_type = " INNER JOIN "
 
-    def for_update_clause(self, select):
+        return "".join(
+            (
+                self.process(join.left, asfrom=True, **kwargs),
+                join_type,
+                self.process(join.right, asfrom=True, **kwargs),
+                " ON ",
+                self.process(join.onclause, **kwargs),
+            )
+        )
+
+    def for_update_clause(self, select, **kw):
         if select._for_update_arg.read:
             return " LOCK IN SHARE MODE"
         else:
             return " FOR UPDATE"
 
-    def limit_clause(self, select):
+    def limit_clause(self, select, **kw):
         # MySQL supports:
         #   LIMIT <limit>
         #   LIMIT <offset>, <limit>
@@ -1568,102 +1469,147 @@ class MySQLCompiler(compiler.SQLCompiler):
         # The latter is more readable for offsets but we're stuck with the
         # former until we can refine dialects by server revision.
 
-        limit, offset = select._limit, select._offset
+        limit_clause, offset_clause = (
+            select._limit_clause,
+            select._offset_clause,
+        )
 
-        if (limit, offset) == (None, None):
-            return ''
-        elif offset is not None:
+        if limit_clause is None and offset_clause is None:
+            return ""
+        elif offset_clause is not None:
             # As suggested by the MySQL docs, need to apply an
             # artificial limit if one wasn't provided
             # http://dev.mysql.com/doc/refman/5.0/en/select.html
-            if limit is None:
+            if limit_clause is None:
                 # hardwire the upper limit.  Currently
                 # needed by OurSQL with Python 3
                 # (https://bugs.launchpad.net/oursql/+bug/686232),
                 # but also is consistent with the usage of the upper
                 # bound as part of MySQL's "syntax" for OFFSET with
                 # no LIMIT
-                return ' \n LIMIT %s, %s' % (
-                                self.process(sql.literal(offset)),
-                                "18446744073709551615")
+                return " \n LIMIT %s, %s" % (
+                    self.process(offset_clause, **kw),
+                    "18446744073709551615",
+                )
             else:
-                return ' \n LIMIT %s, %s' % (
-                                self.process(sql.literal(offset)),
-                                self.process(sql.literal(limit)))
+                return " \n LIMIT %s, %s" % (
+                    self.process(offset_clause, **kw),
+                    self.process(limit_clause, **kw),
+                )
         else:
             # No offset provided, so just use the limit
-            return ' \n LIMIT %s' % (self.process(sql.literal(limit)),)
+            return " \n LIMIT %s" % (self.process(limit_clause, **kw),)
 
     def update_limit_clause(self, update_stmt):
-        limit = update_stmt.kwargs.get('%s_limit' % self.dialect.name, None)
+        limit = update_stmt.kwargs.get("%s_limit" % self.dialect.name, None)
         if limit:
             return "LIMIT %s" % limit
         else:
             return None
 
     def update_tables_clause(self, update_stmt, from_table, extra_froms, **kw):
-        return ', '.join(t._compiler_dispatch(self, asfrom=True, **kw)
-                    for t in [from_table] + list(extra_froms))
+        return ", ".join(
+            t._compiler_dispatch(self, asfrom=True, **kw)
+            for t in [from_table] + list(extra_froms)
+        )
 
-    def update_from_clause(self, update_stmt, from_table,
-                                extra_froms, from_hints, **kw):
+    def update_from_clause(
+        self, update_stmt, from_table, extra_froms, from_hints, **kw
+    ):
         return None
 
+    def delete_table_clause(self, delete_stmt, from_table, extra_froms):
+        """If we have extra froms make sure we render any alias as hint."""
+        ashint = False
+        if extra_froms:
+            ashint = True
+        return from_table._compiler_dispatch(
+            self, asfrom=True, iscrud=True, ashint=ashint
+        )
 
-# ug.  "InnoDB needs indexes on foreign keys and referenced keys [...].
-#       Starting with MySQL 4.1.2, these indexes are created automatically.
-#       In older versions, the indexes must be created explicitly or the
-#       creation of foreign key constraints fails."
+    def delete_extra_from_clause(
+        self, delete_stmt, from_table, extra_froms, from_hints, **kw
+    ):
+        """Render the DELETE .. USING clause specific to MySQL."""
+        return "USING " + ", ".join(
+            t._compiler_dispatch(self, asfrom=True, fromhints=from_hints, **kw)
+            for t in [from_table] + extra_froms
+        )
+
+    def visit_empty_set_expr(self, element_types):
+        return (
+            "SELECT %(outer)s FROM (SELECT %(inner)s) "
+            "as _empty_set WHERE 1!=1"
+            % {
+                "inner": ", ".join(
+                    "1 AS _in_%s" % idx
+                    for idx, type_ in enumerate(element_types)
+                ),
+                "outer": ", ".join(
+                    "_in_%s" % idx for idx, type_ in enumerate(element_types)
+                ),
+            }
+        )
+
+    def visit_is_distinct_from_binary(self, binary, operator, **kw):
+        return "NOT (%s <=> %s)" % (
+            self.process(binary.left),
+            self.process(binary.right),
+        )
+
+    def visit_isnot_distinct_from_binary(self, binary, operator, **kw):
+        return "%s <=> %s" % (
+            self.process(binary.left),
+            self.process(binary.right),
+        )
+
 
 class MySQLDDLCompiler(compiler.DDLCompiler):
-    def create_table_constraints(self, table):
-        """Get table constraints."""
-        constraint_string = super(
-                        MySQLDDLCompiler, self).create_table_constraints(table)
-
-        # why self.dialect.name and not 'mysql'?  because of drizzle
-        is_innodb = 'engine' in table.dialect_options[self.dialect.name] and \
-                    table.dialect_options[self.dialect.name]['engine'].lower() == 'innodb'
-
-        auto_inc_column = table._autoincrement_column
-
-        if is_innodb and \
-                auto_inc_column is not None and \
-                auto_inc_column is not list(table.primary_key)[0]:
-            if constraint_string:
-                constraint_string += ", \n\t"
-            constraint_string += "KEY %s (%s)" % (
-                        self.preparer.quote(
-                            "idx_autoinc_%s" % auto_inc_column.name
-                        ),
-                        self.preparer.format_column(auto_inc_column)
-                    )
-
-        return constraint_string
-
     def get_column_specification(self, column, **kw):
         """Builds column DDL."""
 
-        colspec = [self.preparer.format_column(column),
-                    self.dialect.type_compiler.process(column.type)
-                   ]
+        colspec = [
+            self.preparer.format_column(column),
+            self.dialect.type_compiler.process(
+                column.type, type_expression=column
+            ),
+        ]
+
+        if column.computed is not None:
+            colspec.append(self.process(column.computed))
+
+        is_timestamp = isinstance(
+            column.type._unwrapped_dialect_impl(self.dialect),
+            sqltypes.TIMESTAMP,
+        )
+
+        if not column.nullable:
+            colspec.append("NOT NULL")
+
+        # see: http://docs.sqlalchemy.org/en/latest/dialects/
+        #   mysql.html#mysql_timestamp_null
+        elif column.nullable and is_timestamp:
+            colspec.append("NULL")
 
         default = self.get_column_default_string(column)
         if default is not None:
-            colspec.append('DEFAULT ' + default)
+            colspec.append("DEFAULT " + default)
 
-        is_timestamp = isinstance(column.type, sqltypes.TIMESTAMP)
-        if not column.nullable and not is_timestamp:
-            colspec.append('NOT NULL')
+        comment = column.comment
+        if comment is not None:
+            literal = self.sql_compiler.render_literal_value(
+                comment, sqltypes.String()
+            )
+            colspec.append("COMMENT " + literal)
 
-        elif column.nullable and is_timestamp and default is None:
-            colspec.append('NULL')
+        if (
+            column.table is not None
+            and column is column.table._autoincrement_column
+            and column.server_default is None
+        ):
+            colspec.append("AUTO_INCREMENT")
 
-        if column is column.table._autoincrement_column and \
-                    column.server_default is None:
-            colspec.append('AUTO_INCREMENT')
-
-        return ' '.join(colspec)
+        return " ".join(colspec)
 
     def post_create_table(self, table):
         """Build table-level CREATE options like ENGINE and COLLATE."""
@@ -1671,85 +1617,149 @@ class MySQLDDLCompiler(compiler.DDLCompiler):
         table_opts = []
 
         opts = dict(
-            (
-                k[len(self.dialect.name) + 1:].upper(),
-                v
-            )
+            (k[len(self.dialect.name) + 1 :].upper(), v)
             for k, v in table.kwargs.items()
-            if k.startswith('%s_' % self.dialect.name)
+            if k.startswith("%s_" % self.dialect.name)
         )
 
-        for opt in topological.sort([
-            ('DEFAULT_CHARSET', 'COLLATE'),
-            ('DEFAULT_CHARACTER_SET', 'COLLATE'),
-            ('PARTITION_BY', 'PARTITIONS'),  # only for test consistency
-        ], opts):
+        if table.comment is not None:
+            opts["COMMENT"] = table.comment
+
+        partition_options = [
+            "PARTITION_BY",
+            "PARTITIONS",
+            "SUBPARTITIONS",
+            "SUBPARTITION_BY",
+        ]
+
+        nonpart_options = set(opts).difference(partition_options)
+        part_options = set(opts).intersection(partition_options)
+
+        for opt in topological.sort(
+            [
+                ("DEFAULT_CHARSET", "COLLATE"),
+                ("DEFAULT_CHARACTER_SET", "COLLATE"),
+            ],
+            nonpart_options,
+        ):
             arg = opts[opt]
-            if opt in _options_of_type_string:
-                arg = "'%s'" % arg.replace("\\", "\\\\").replace("'", "''")
+            if opt in _reflection._options_of_type_string:
 
-            if opt in ('DATA_DIRECTORY', 'INDEX_DIRECTORY',
-                       'DEFAULT_CHARACTER_SET', 'CHARACTER_SET',
-                       'DEFAULT_CHARSET',
-                       'DEFAULT_COLLATE', 'PARTITION_BY'):
-                opt = opt.replace('_', ' ')
+                arg = self.sql_compiler.render_literal_value(
+                    arg, sqltypes.String()
+                )
 
-            joiner = '='
-            if opt in ('TABLESPACE', 'DEFAULT CHARACTER SET',
-                       'CHARACTER SET', 'COLLATE', 'PARTITION BY', 'PARTITIONS'):
-                joiner = ' '
+            if opt in (
+                "DATA_DIRECTORY",
+                "INDEX_DIRECTORY",
+                "DEFAULT_CHARACTER_SET",
+                "CHARACTER_SET",
+                "DEFAULT_CHARSET",
+                "DEFAULT_COLLATE",
+            ):
+                opt = opt.replace("_", " ")
+
+            joiner = "="
+            if opt in (
+                "TABLESPACE",
+                "DEFAULT CHARACTER SET",
+                "CHARACTER SET",
+                "COLLATE",
+            ):
+                joiner = " "
 
             table_opts.append(joiner.join((opt, arg)))
-        return ' '.join(table_opts)
 
-    def visit_create_index(self, create):
+        for opt in topological.sort(
+            [
+                ("PARTITION_BY", "PARTITIONS"),
+                ("PARTITION_BY", "SUBPARTITION_BY"),
+                ("PARTITION_BY", "SUBPARTITIONS"),
+                ("PARTITIONS", "SUBPARTITIONS"),
+                ("PARTITIONS", "SUBPARTITION_BY"),
+                ("SUBPARTITION_BY", "SUBPARTITIONS"),
+            ],
+            part_options,
+        ):
+            arg = opts[opt]
+            if opt in _reflection._options_of_type_string:
+                arg = self.sql_compiler.render_literal_value(
+                    arg, sqltypes.String()
+                )
+
+            opt = opt.replace("_", " ")
+            joiner = " "
+
+            table_opts.append(joiner.join((opt, arg)))
+
+        return " ".join(table_opts)
+
+    def visit_create_index(self, create, **kw):
         index = create.element
         self._verify_index_table(index)
         preparer = self.preparer
         table = preparer.format_table(index.table)
-        columns = [self.sql_compiler.process(expr, include_table=False,
-                        literal_binds=True)
-                for expr in index.expressions]
+        columns = [
+            self.sql_compiler.process(
+                expr, include_table=False, literal_binds=True
+            )
+            for expr in index.expressions
+        ]
 
         name = self._prepared_index_name(index)
 
         text = "CREATE "
         if index.unique:
             text += "UNIQUE "
+
+        index_prefix = index.kwargs.get("mysql_prefix", None)
+        if index_prefix:
+            text += index_prefix + " "
+
         text += "INDEX %s ON %s " % (name, table)
 
-        length = index.dialect_options['mysql']['length']
+        length = index.dialect_options["mysql"]["length"]
         if length is not None:
 
             if isinstance(length, dict):
-                # length value can be a (column_name --> integer value) mapping
-                # specifying the prefix length for each column of the index
-                columns = ', '.join(
-                    ('%s(%d)' % (col, length[col])
-                     if col in length else '%s' % col)
-                    for col in columns
+                # length value can be a (column_name --> integer value)
+                # mapping specifying the prefix length for each column of the
+                # index
+                columns = ", ".join(
+                    "%s(%d)" % (expr, length[col.name])
+                    if col.name in length
+                    else (
+                        "%s(%d)" % (expr, length[expr])
+                        if expr in length
+                        else "%s" % expr
+                    )
+                    for col, expr in zip(index.expressions, columns)
                 )
             else:
                 # or can be an integer value specifying the same
                 # prefix length for all columns of the index
-                columns = ', '.join(
-                    '%s(%d)' % (col, length)
-                    for col in columns
+                columns = ", ".join(
+                    "%s(%d)" % (col, length) for col in columns
                 )
         else:
-            columns = ', '.join(columns)
-        text += '(%s)' % columns
+            columns = ", ".join(columns)
+        text += "(%s)" % columns
 
-        using = index.dialect_options['mysql']['using']
+        parser = index.dialect_options["mysql"]["with_parser"]
+        if parser is not None:
+            text += " WITH PARSER %s" % (parser,)
+
+        using = index.dialect_options["mysql"]["using"]
         if using is not None:
             text += " USING %s" % (preparer.quote(using))
 
         return text
 
     def visit_primary_key_constraint(self, constraint):
-        text = super(MySQLDDLCompiler, self).\
-            visit_primary_key_constraint(constraint)
-        using = constraint.dialect_options['mysql']['using']
+        text = super(MySQLDDLCompiler, self).visit_primary_key_constraint(
+            constraint
+        )
+        using = constraint.dialect_options["mysql"]["using"]
         if using:
             text += " USING %s" % (self.preparer.quote(using))
         return text
@@ -1758,9 +1768,9 @@ class MySQLDDLCompiler(compiler.DDLCompiler):
         index = drop.element
 
         return "\nDROP INDEX %s ON %s" % (
-                    self._prepared_index_name(index,
-                                        include_schema=False),
-                     self.preparer.format_table(index.table))
+            self._prepared_index_name(index, include_schema=False),
+            self.preparer.format_table(index.table),
+        )
 
     def visit_drop_constraint(self, drop):
         constraint = drop.element
@@ -1773,19 +1783,49 @@ class MySQLDDLCompiler(compiler.DDLCompiler):
         elif isinstance(constraint, sa_schema.UniqueConstraint):
             qual = "INDEX "
             const = self.preparer.format_constraint(constraint)
+        elif isinstance(constraint, sa_schema.CheckConstraint):
+            if self.dialect._is_mariadb:
+                qual = "CONSTRAINT "
+            else:
+                qual = "CHECK "
+            const = self.preparer.format_constraint(constraint)
         else:
             qual = ""
             const = self.preparer.format_constraint(constraint)
-        return "ALTER TABLE %s DROP %s%s" % \
-                    (self.preparer.format_table(constraint.table),
-                    qual, const)
+        return "ALTER TABLE %s DROP %s%s" % (
+            self.preparer.format_table(constraint.table),
+            qual,
+            const,
+        )
 
     def define_constraint_match(self, constraint):
         if constraint.match is not None:
             raise exc.CompileError(
-                    "MySQL ignores the 'MATCH' keyword while at the same time "
-                    "causes ON UPDATE/ON DELETE clauses to be ignored.")
+                "MySQL ignores the 'MATCH' keyword while at the same time "
+                "causes ON UPDATE/ON DELETE clauses to be ignored."
+            )
         return ""
+
+    def visit_set_table_comment(self, create):
+        return "ALTER TABLE %s COMMENT %s" % (
+            self.preparer.format_table(create.element),
+            self.sql_compiler.render_literal_value(
+                create.element.comment, sqltypes.String()
+            ),
+        )
+
+    def visit_drop_table_comment(self, create):
+        return "ALTER TABLE %s COMMENT ''" % (
+            self.preparer.format_table(create.element)
+        )
+
+    def visit_set_column_comment(self, create):
+        return "ALTER TABLE %s CHANGE %s %s" % (
+            self.preparer.format_table(create.element.table),
+            self.preparer.format_column(create.element),
+            self.get_column_specification(create.element),
+        )
+
 
 class MySQLTypeCompiler(compiler.GenericTypeCompiler):
     def _extend_numeric(self, type_, spec):
@@ -1795,9 +1835,9 @@ class MySQLTypeCompiler(compiler.GenericTypeCompiler):
             return spec
 
         if type_.unsigned:
-            spec += ' UNSIGNED'
+            spec += " UNSIGNED"
         if type_.zerofill:
-            spec += ' ZEROFILL'
+            spec += " ZEROFILL"
         return spec
 
     def _extend_string(self, type_, defaults, spec):
@@ -1809,255 +1849,287 @@ class MySQLTypeCompiler(compiler.GenericTypeCompiler):
         def attr(name):
             return getattr(type_, name, defaults.get(name))
 
-        if attr('charset'):
-            charset = 'CHARACTER SET %s' % attr('charset')
-        elif attr('ascii'):
-            charset = 'ASCII'
-        elif attr('unicode'):
-            charset = 'UNICODE'
+        if attr("charset"):
+            charset = "CHARACTER SET %s" % attr("charset")
+        elif attr("ascii"):
+            charset = "ASCII"
+        elif attr("unicode"):
+            charset = "UNICODE"
         else:
             charset = None
 
-        if attr('collation'):
-            collation = 'COLLATE %s' % type_.collation
-        elif attr('binary'):
-            collation = 'BINARY'
+        if attr("collation"):
+            collation = "COLLATE %s" % type_.collation
+        elif attr("binary"):
+            collation = "BINARY"
         else:
             collation = None
 
-        if attr('national'):
+        if attr("national"):
             # NATIONAL (aka NCHAR/NVARCHAR) trumps charsets.
-            return ' '.join([c for c in ('NATIONAL', spec, collation)
-                             if c is not None])
-        return ' '.join([c for c in (spec, charset, collation)
-                         if c is not None])
+            return " ".join(
+                [c for c in ("NATIONAL", spec, collation) if c is not None]
+            )
+        return " ".join(
+            [c for c in (spec, charset, collation) if c is not None]
+        )
 
     def _mysql_type(self, type_):
         return isinstance(type_, (_StringType, _NumericType))
 
-    def visit_NUMERIC(self, type_):
+    def visit_NUMERIC(self, type_, **kw):
         if type_.precision is None:
             return self._extend_numeric(type_, "NUMERIC")
         elif type_.scale is None:
-            return self._extend_numeric(type_,
-                            "NUMERIC(%(precision)s)" %
-                            {'precision': type_.precision})
+            return self._extend_numeric(
+                type_,
+                "NUMERIC(%(precision)s)" % {"precision": type_.precision},
+            )
         else:
-            return self._extend_numeric(type_,
-                            "NUMERIC(%(precision)s, %(scale)s)" %
-                            {'precision': type_.precision,
-                            'scale': type_.scale})
+            return self._extend_numeric(
+                type_,
+                "NUMERIC(%(precision)s, %(scale)s)"
+                % {"precision": type_.precision, "scale": type_.scale},
+            )
 
-    def visit_DECIMAL(self, type_):
+    def visit_DECIMAL(self, type_, **kw):
         if type_.precision is None:
             return self._extend_numeric(type_, "DECIMAL")
         elif type_.scale is None:
-            return self._extend_numeric(type_,
-                            "DECIMAL(%(precision)s)" %
-                            {'precision': type_.precision})
+            return self._extend_numeric(
+                type_,
+                "DECIMAL(%(precision)s)" % {"precision": type_.precision},
+            )
         else:
-            return self._extend_numeric(type_,
-                            "DECIMAL(%(precision)s, %(scale)s)" %
-                            {'precision': type_.precision,
-                            'scale': type_.scale})
+            return self._extend_numeric(
+                type_,
+                "DECIMAL(%(precision)s, %(scale)s)"
+                % {"precision": type_.precision, "scale": type_.scale},
+            )
 
-    def visit_DOUBLE(self, type_):
+    def visit_DOUBLE(self, type_, **kw):
         if type_.precision is not None and type_.scale is not None:
-            return self._extend_numeric(type_,
-                                "DOUBLE(%(precision)s, %(scale)s)" %
-                                {'precision': type_.precision,
-                                 'scale': type_.scale})
+            return self._extend_numeric(
+                type_,
+                "DOUBLE(%(precision)s, %(scale)s)"
+                % {"precision": type_.precision, "scale": type_.scale},
+            )
         else:
-            return self._extend_numeric(type_, 'DOUBLE')
+            return self._extend_numeric(type_, "DOUBLE")
 
-    def visit_REAL(self, type_):
+    def visit_REAL(self, type_, **kw):
         if type_.precision is not None and type_.scale is not None:
-            return self._extend_numeric(type_,
-                                "REAL(%(precision)s, %(scale)s)" %
-                                {'precision': type_.precision,
-                                 'scale': type_.scale})
+            return self._extend_numeric(
+                type_,
+                "REAL(%(precision)s, %(scale)s)"
+                % {"precision": type_.precision, "scale": type_.scale},
+            )
         else:
-            return self._extend_numeric(type_, 'REAL')
+            return self._extend_numeric(type_, "REAL")
 
-    def visit_FLOAT(self, type_):
-        if self._mysql_type(type_) and \
-            type_.scale is not None and \
-            type_.precision is not None:
-            return self._extend_numeric(type_,
-                            "FLOAT(%s, %s)" % (type_.precision, type_.scale))
+    def visit_FLOAT(self, type_, **kw):
+        if (
+            self._mysql_type(type_)
+            and type_.scale is not None
+            and type_.precision is not None
+        ):
+            return self._extend_numeric(
+                type_, "FLOAT(%s, %s)" % (type_.precision, type_.scale)
+            )
         elif type_.precision is not None:
-            return self._extend_numeric(type_,
-                                            "FLOAT(%s)" % (type_.precision,))
+            return self._extend_numeric(
+                type_, "FLOAT(%s)" % (type_.precision,)
+            )
         else:
             return self._extend_numeric(type_, "FLOAT")
 
-    def visit_INTEGER(self, type_):
+    def visit_INTEGER(self, type_, **kw):
         if self._mysql_type(type_) and type_.display_width is not None:
-            return self._extend_numeric(type_,
-                        "INTEGER(%(display_width)s)" %
-                        {'display_width': type_.display_width})
+            return self._extend_numeric(
+                type_,
+                "INTEGER(%(display_width)s)"
+                % {"display_width": type_.display_width},
+            )
         else:
             return self._extend_numeric(type_, "INTEGER")
 
-    def visit_BIGINT(self, type_):
+    def visit_BIGINT(self, type_, **kw):
         if self._mysql_type(type_) and type_.display_width is not None:
-            return self._extend_numeric(type_,
-                        "BIGINT(%(display_width)s)" %
-                        {'display_width': type_.display_width})
+            return self._extend_numeric(
+                type_,
+                "BIGINT(%(display_width)s)"
+                % {"display_width": type_.display_width},
+            )
         else:
             return self._extend_numeric(type_, "BIGINT")
 
-    def visit_MEDIUMINT(self, type_):
+    def visit_MEDIUMINT(self, type_, **kw):
         if self._mysql_type(type_) and type_.display_width is not None:
-            return self._extend_numeric(type_,
-                        "MEDIUMINT(%(display_width)s)" %
-                        {'display_width': type_.display_width})
+            return self._extend_numeric(
+                type_,
+                "MEDIUMINT(%(display_width)s)"
+                % {"display_width": type_.display_width},
+            )
         else:
             return self._extend_numeric(type_, "MEDIUMINT")
 
-    def visit_TINYINT(self, type_):
+    def visit_TINYINT(self, type_, **kw):
         if self._mysql_type(type_) and type_.display_width is not None:
-            return self._extend_numeric(type_,
-                                        "TINYINT(%s)" % type_.display_width)
+            return self._extend_numeric(
+                type_, "TINYINT(%s)" % type_.display_width
+            )
         else:
             return self._extend_numeric(type_, "TINYINT")
 
-    def visit_SMALLINT(self, type_):
+    def visit_SMALLINT(self, type_, **kw):
         if self._mysql_type(type_) and type_.display_width is not None:
-            return self._extend_numeric(type_,
-                        "SMALLINT(%(display_width)s)" %
-                        {'display_width': type_.display_width}
-                    )
+            return self._extend_numeric(
+                type_,
+                "SMALLINT(%(display_width)s)"
+                % {"display_width": type_.display_width},
+            )
         else:
             return self._extend_numeric(type_, "SMALLINT")
 
-    def visit_BIT(self, type_):
+    def visit_BIT(self, type_, **kw):
         if type_.length is not None:
             return "BIT(%s)" % type_.length
         else:
             return "BIT"
 
-    def visit_DATETIME(self, type_):
-        if getattr(type_, 'fsp', None):
+    def visit_DATETIME(self, type_, **kw):
+        if getattr(type_, "fsp", None):
             return "DATETIME(%d)" % type_.fsp
         else:
             return "DATETIME"
 
-    def visit_DATE(self, type_):
+    def visit_DATE(self, type_, **kw):
         return "DATE"
 
-    def visit_TIME(self, type_):
-        if getattr(type_, 'fsp', None):
+    def visit_TIME(self, type_, **kw):
+        if getattr(type_, "fsp", None):
             return "TIME(%d)" % type_.fsp
         else:
             return "TIME"
 
-    def visit_TIMESTAMP(self, type_):
-        if getattr(type_, 'fsp', None):
+    def visit_TIMESTAMP(self, type_, **kw):
+        if getattr(type_, "fsp", None):
             return "TIMESTAMP(%d)" % type_.fsp
         else:
             return "TIMESTAMP"
 
-    def visit_YEAR(self, type_):
+    def visit_YEAR(self, type_, **kw):
         if type_.display_width is None:
             return "YEAR"
         else:
             return "YEAR(%s)" % type_.display_width
 
-    def visit_TEXT(self, type_):
+    def visit_TEXT(self, type_, **kw):
         if type_.length:
             return self._extend_string(type_, {}, "TEXT(%d)" % type_.length)
         else:
             return self._extend_string(type_, {}, "TEXT")
 
-    def visit_TINYTEXT(self, type_):
+    def visit_TINYTEXT(self, type_, **kw):
         return self._extend_string(type_, {}, "TINYTEXT")
 
-    def visit_MEDIUMTEXT(self, type_):
+    def visit_MEDIUMTEXT(self, type_, **kw):
         return self._extend_string(type_, {}, "MEDIUMTEXT")
 
-    def visit_LONGTEXT(self, type_):
+    def visit_LONGTEXT(self, type_, **kw):
         return self._extend_string(type_, {}, "LONGTEXT")
 
-    def visit_VARCHAR(self, type_):
+    def visit_VARCHAR(self, type_, **kw):
         if type_.length:
             return self._extend_string(type_, {}, "VARCHAR(%d)" % type_.length)
         else:
             raise exc.CompileError(
-                    "VARCHAR requires a length on dialect %s" %
-                    self.dialect.name)
+                "VARCHAR requires a length on dialect %s" % self.dialect.name
+            )
 
-    def visit_CHAR(self, type_):
+    def visit_CHAR(self, type_, **kw):
         if type_.length:
-            return self._extend_string(type_, {}, "CHAR(%(length)s)" %
-                                        {'length': type_.length})
+            return self._extend_string(
+                type_, {}, "CHAR(%(length)s)" % {"length": type_.length}
+            )
         else:
             return self._extend_string(type_, {}, "CHAR")
 
-    def visit_NVARCHAR(self, type_):
+    def visit_NVARCHAR(self, type_, **kw):
         # We'll actually generate the equiv. "NATIONAL VARCHAR" instead
         # of "NVARCHAR".
         if type_.length:
-            return self._extend_string(type_, {'national': True},
-                        "VARCHAR(%(length)s)" % {'length': type_.length})
+            return self._extend_string(
+                type_,
+                {"national": True},
+                "VARCHAR(%(length)s)" % {"length": type_.length},
+            )
         else:
             raise exc.CompileError(
-                    "NVARCHAR requires a length on dialect %s" %
-                    self.dialect.name)
+                "NVARCHAR requires a length on dialect %s" % self.dialect.name
+            )
 
-    def visit_NCHAR(self, type_):
+    def visit_NCHAR(self, type_, **kw):
         # We'll actually generate the equiv.
         # "NATIONAL CHAR" instead of "NCHAR".
         if type_.length:
-            return self._extend_string(type_, {'national': True},
-                        "CHAR(%(length)s)" % {'length': type_.length})
+            return self._extend_string(
+                type_,
+                {"national": True},
+                "CHAR(%(length)s)" % {"length": type_.length},
+            )
         else:
-            return self._extend_string(type_, {'national': True}, "CHAR")
+            return self._extend_string(type_, {"national": True}, "CHAR")
 
-    def visit_VARBINARY(self, type_):
+    def visit_VARBINARY(self, type_, **kw):
         return "VARBINARY(%d)" % type_.length
 
-    def visit_large_binary(self, type_):
+    def visit_JSON(self, type_, **kw):
+        return "JSON"
+
+    def visit_large_binary(self, type_, **kw):
         return self.visit_BLOB(type_)
 
-    def visit_enum(self, type_):
+    def visit_enum(self, type_, **kw):
         if not type_.native_enum:
             return super(MySQLTypeCompiler, self).visit_enum(type_)
         else:
             return self._visit_enumerated_values("ENUM", type_, type_.enums)
 
-    def visit_BLOB(self, type_):
+    def visit_BLOB(self, type_, **kw):
         if type_.length:
             return "BLOB(%d)" % type_.length
         else:
             return "BLOB"
 
-    def visit_TINYBLOB(self, type_):
+    def visit_TINYBLOB(self, type_, **kw):
         return "TINYBLOB"
 
-    def visit_MEDIUMBLOB(self, type_):
+    def visit_MEDIUMBLOB(self, type_, **kw):
         return "MEDIUMBLOB"
 
-    def visit_LONGBLOB(self, type_):
+    def visit_LONGBLOB(self, type_, **kw):
         return "LONGBLOB"
 
     def _visit_enumerated_values(self, name, type_, enumerated_values):
         quoted_enums = []
         for e in enumerated_values:
             quoted_enums.append("'%s'" % e.replace("'", "''"))
-        return self._extend_string(type_, {}, "%s(%s)" % (
-                                    name, ",".join(quoted_enums))
-                                        )
+        return self._extend_string(
+            type_, {}, "%s(%s)" % (name, ",".join(quoted_enums))
+        )
 
-    def visit_ENUM(self, type_):
-        return self._visit_enumerated_values("ENUM", type_,
-                                                    type_._enumerated_values)
+    def visit_ENUM(self, type_, **kw):
+        return self._visit_enumerated_values(
+            "ENUM", type_, type_._enumerated_values
+        )
 
-    def visit_SET(self, type_):
-        return self._visit_enumerated_values("SET", type_,
-                                                    type_._enumerated_values)
+    def visit_SET(self, type_, **kw):
+        return self._visit_enumerated_values(
+            "SET", type_, type_._enumerated_values
+        )
 
-    def visit_BOOLEAN(self, type):
+    def visit_BOOLEAN(self, type_, **kw):
         return "BOOL"
 
 
@@ -2072,9 +2144,8 @@ class MySQLIdentifierPreparer(compiler.IdentifierPreparer):
             quote = '"'
 
         super(MySQLIdentifierPreparer, self).__init__(
-                                                dialect,
-                                                initial_quote=quote,
-                                                escape_quote=quote)
+            dialect, initial_quote=quote, escape_quote=quote
+        )
 
     def _quote_free_identifiers(self, *ids):
         """Unilaterally identifier-quote any number of strings."""
@@ -2084,10 +2155,16 @@ class MySQLIdentifierPreparer(compiler.IdentifierPreparer):
 
 @log.class_logger
 class MySQLDialect(default.DefaultDialect):
-    """Details of the MySQL dialect.  Not used directly in application code."""
+    """Details of the MySQL dialect.
+    Not used directly in application code.
+    """
 
-    name = 'mysql'
+    name = "mysql"
     supports_alter = True
+
+    # MySQL has no true "boolean" type; we
+    # allow for the "true" and "false" keywords, however
+    supports_native_boolean = False
 
     # identifiers are 64, however aliases can be 255...
     max_identifier_length = 255
@@ -2099,8 +2176,12 @@ class MySQLDialect(default.DefaultDialect):
     supports_sane_multi_rowcount = False
     supports_multivalues_insert = True
 
-    default_paramstyle = 'format'
+    supports_comments = True
+    inline_comments = True
+    default_paramstyle = "format"
     colspecs = colspecs
+
+    cte_follows_insert = True
 
     statement_compiler = MySQLCompiler
     ddl_compiler = MySQLDDLCompiler
@@ -2115,45 +2196,70 @@ class MySQLDialect(default.DefaultDialect):
     _server_ansiquotes = False
 
     construct_arguments = [
-        (sa_schema.Table, {
-            "*": None
-        }),
-        (sql.Update, {
-            "limit": None
-        }),
-        (sa_schema.PrimaryKeyConstraint, {
-            "using": None
-        }),
-        (sa_schema.Index, {
-            "using": None,
-            "length": None,
-        })
+        (sa_schema.Table, {"*": None}),
+        (sql.Update, {"limit": None}),
+        (sa_schema.PrimaryKeyConstraint, {"using": None}),
+        (
+            sa_schema.Index,
+            {
+                "using": None,
+                "length": None,
+                "prefix": None,
+                "with_parser": None,
+            },
+        ),
     ]
 
-    def __init__(self, isolation_level=None, **kwargs):
-        kwargs.pop('use_ansiquotes', None)   # legacy
+    def __init__(
+        self,
+        isolation_level=None,
+        json_serializer=None,
+        json_deserializer=None,
+        **kwargs
+    ):
+        kwargs.pop("use_ansiquotes", None)  # legacy
         default.DefaultDialect.__init__(self, **kwargs)
         self.isolation_level = isolation_level
+        self._json_serializer = json_serializer
+        self._json_deserializer = json_deserializer
 
     def on_connect(self):
         if self.isolation_level is not None:
+
             def connect(conn):
                 self.set_isolation_level(conn, self.isolation_level)
+
             return connect
         else:
             return None
 
-    _isolation_lookup = set(['SERIALIZABLE',
-                'READ UNCOMMITTED', 'READ COMMITTED', 'REPEATABLE READ'])
+    _isolation_lookup = set(
+        [
+            "SERIALIZABLE",
+            "READ UNCOMMITTED",
+            "READ COMMITTED",
+            "REPEATABLE READ",
+        ]
+    )
 
     def set_isolation_level(self, connection, level):
-        level = level.replace('_', ' ')
+        level = level.replace("_", " ")
+
+        # adjust for ConnectionFairy being present
+        # allows attribute set e.g. "connection.autocommit = True"
+        # to work properly
+        if hasattr(connection, "connection"):
+            connection = connection.connection
+
+        self._set_isolation_level(connection, level)
+
+    def _set_isolation_level(self, connection, level):
         if level not in self._isolation_lookup:
             raise exc.ArgumentError(
                 "Invalid value '%s' for isolation_level. "
-                "Valid isolation levels for %s are %s" %
-                (level, self.name, ", ".join(self._isolation_lookup))
-                )
+                "Valid isolation levels for %s are %s"
+                % (level, self.name, ", ".join(self._isolation_lookup))
+            )
         cursor = connection.cursor()
         cursor.execute("SET SESSION TRANSACTION ISOLATION LEVEL %s" % level)
         cursor.execute("COMMIT")
@@ -2161,24 +2267,63 @@ class MySQLDialect(default.DefaultDialect):
 
     def get_isolation_level(self, connection):
         cursor = connection.cursor()
-        cursor.execute('SELECT @@tx_isolation')
-        val = cursor.fetchone()[0]
+        if self._is_mysql and self.server_version_info >= (5, 7, 20):
+            cursor.execute("SELECT @@transaction_isolation")
+        else:
+            cursor.execute("SELECT @@tx_isolation")
+        row = cursor.fetchone()
+        if row is None:
+            util.warn(
+                "Could not retrieve transaction isolation level for MySQL "
+                "connection."
+            )
+            raise NotImplementedError()
+        val = row[0]
         cursor.close()
         if util.py3k and isinstance(val, bytes):
             val = val.decode()
         return val.upper().replace("-", " ")
 
+    def _get_server_version_info(self, connection):
+        # get database server version info explicitly over the wire
+        # to avoid proxy servers like MaxScale getting in the
+        # way with their own values, see #4205
+        dbapi_con = connection.connection
+        cursor = dbapi_con.cursor()
+        cursor.execute("SELECT VERSION()")
+        val = cursor.fetchone()[0]
+        cursor.close()
+        if util.py3k and isinstance(val, bytes):
+            val = val.decode()
+
+        return self._parse_server_version(val)
+
+    def _parse_server_version(self, val):
+        version = []
+        r = re.compile(r"[.\-]")
+        for n in r.split(val):
+            try:
+                version.append(int(n))
+            except ValueError:
+                mariadb = re.match(r"(.*)(MariaDB)(.*)", n)
+                if mariadb:
+                    version.extend(g for g in mariadb.groups() if g)
+                else:
+                    version.append(n)
+        return tuple(version)
+
     def do_commit(self, dbapi_connection):
         """Execute a COMMIT."""
 
         # COMMIT/ROLLBACK were introduced in 3.23.15.
-        # Yes, we have at least one user who has to talk to these old versions!
+        # Yes, we have at least one user who has to talk to these old
+        # versions!
         #
-        # Ignore commit/rollback if support isn't present, otherwise even basic
-        # operations via autocommit fail.
+        # Ignore commit/rollback if support isn't present, otherwise even
+        # basic operations via autocommit fail.
         try:
             dbapi_connection.commit()
-        except:
+        except Exception:
             if self.server_version_info < (3, 23, 15):
                 args = sys.exc_info()[1].args
                 if args and args[0] == 1064:
@@ -2190,7 +2335,7 @@ class MySQLDialect(default.DefaultDialect):
 
         try:
             dbapi_connection.rollback()
-        except:
+        except Exception:
             if self.server_version_info < (3, 23, 15):
                 args = sys.exc_info()[1].args
                 if args and args[0] == 1064:
@@ -2204,27 +2349,38 @@ class MySQLDialect(default.DefaultDialect):
         connection.execute(sql.text("XA END :xid"), xid=xid)
         connection.execute(sql.text("XA PREPARE :xid"), xid=xid)
 
-    def do_rollback_twophase(self, connection, xid, is_prepared=True,
-                             recover=False):
+    def do_rollback_twophase(
+        self, connection, xid, is_prepared=True, recover=False
+    ):
         if not is_prepared:
             connection.execute(sql.text("XA END :xid"), xid=xid)
         connection.execute(sql.text("XA ROLLBACK :xid"), xid=xid)
 
-    def do_commit_twophase(self, connection, xid, is_prepared=True,
-                           recover=False):
+    def do_commit_twophase(
+        self, connection, xid, is_prepared=True, recover=False
+    ):
         if not is_prepared:
             self.do_prepare_twophase(connection, xid)
         connection.execute(sql.text("XA COMMIT :xid"), xid=xid)
 
     def do_recover_twophase(self, connection):
         resultset = connection.execute("XA RECOVER")
-        return [row['data'][0:row['gtrid_length']] for row in resultset]
+        return [row["data"][0 : row["gtrid_length"]] for row in resultset]
 
     def is_disconnect(self, e, connection, cursor):
-        if isinstance(e, self.dbapi.OperationalError):
-            return self._extract_error_code(e) in \
-                        (2006, 2013, 2014, 2045, 2055)
-        elif isinstance(e, self.dbapi.InterfaceError):
+        if isinstance(
+            e, (self.dbapi.OperationalError, self.dbapi.ProgrammingError)
+        ):
+            return self._extract_error_code(e) in (
+                2006,
+                2013,
+                2014,
+                2045,
+                2055,
+            )
+        elif isinstance(
+            e, (self.dbapi.InterfaceError, self.dbapi.InternalError)
+        ):
             # if underlying connection is closed,
             # this is the error you get
             return "(0, '')" in str(e)
@@ -2241,19 +2397,27 @@ class MySQLDialect(default.DefaultDialect):
         """Proxy a result row to smooth over MySQL-Python driver
         inconsistencies."""
 
-        return _DecodingRowProxy(rp.fetchone(), charset)
+        row = rp.fetchone()
+        if row:
+            return _DecodingRowProxy(row, charset)
+        else:
+            return None
 
     def _compat_first(self, rp, charset=None):
         """Proxy a result row to smooth over MySQL-Python driver
         inconsistencies."""
 
-        return _DecodingRowProxy(rp.first(), charset)
+        row = rp.first()
+        if row:
+            return _DecodingRowProxy(row, charset)
+        else:
+            return None
 
     def _extract_error_code(self, exception):
         raise NotImplementedError()
 
     def _get_default_schema_name(self, connection):
-        return connection.execute('SELECT DATABASE()').scalar()
+        return connection.execute("SELECT DATABASE()").scalar()
 
     def has_table(self, connection, table_name, schema=None):
         # SHOW TABLE STATUS LIKE and SHOW TABLES LIKE do not function properly
@@ -2266,14 +2430,19 @@ class MySQLDialect(default.DefaultDialect):
         # full_name = self.identifier_preparer.format_table(table,
         #                                                   use_schema=True)
 
-        full_name = '.'.join(self.identifier_preparer._quote_free_identifiers(
-            schema, table_name))
+        full_name = ".".join(
+            self.identifier_preparer._quote_free_identifiers(
+                schema, table_name
+            )
+        )
 
         st = "DESCRIBE %s" % full_name
         rs = None
         try:
             try:
-                rs = connection.execute(st)
+                rs = connection.execution_options(
+                    skip_user_error_events=True
+                ).execute(st)
                 have = rs.fetchone() is not None
                 rs.close()
                 return have
@@ -2287,19 +2456,72 @@ class MySQLDialect(default.DefaultDialect):
 
     def initialize(self, connection):
         self._connection_charset = self._detect_charset(connection)
+        self._detect_sql_mode(connection)
         self._detect_ansiquotes(connection)
+        self._detect_casing(connection)
         if self._server_ansiquotes:
             # if ansiquotes == True, build a new IdentifierPreparer
             # with the new setting
-            self.identifier_preparer = self.preparer(self,
-                                server_ansiquotes=self._server_ansiquotes)
+            self.identifier_preparer = self.preparer(
+                self, server_ansiquotes=self._server_ansiquotes
+            )
 
         default.DefaultDialect.initialize(self, connection)
 
+        self._needs_correct_for_88718_96365 = (
+            not self._is_mariadb and self.server_version_info >= (8,)
+        )
+
+        self._warn_for_known_db_issues()
+
+    def _warn_for_known_db_issues(self):
+        if self._is_mariadb:
+            mdb_version = self._mariadb_normalized_version_info
+            if mdb_version > (10, 2) and mdb_version < (10, 2, 9):
+                util.warn(
+                    "MariaDB %r before 10.2.9 has known issues regarding "
+                    "CHECK constraints, which impact handling of NULL values "
+                    "with SQLAlchemy's boolean datatype (MDEV-13596). An "
+                    "additional issue prevents proper migrations of columns "
+                    "with CHECK constraints (MDEV-11114).  Please upgrade to "
+                    "MariaDB 10.2.9 or greater, or use the MariaDB 10.1 "
+                    "series, to avoid these issues." % (mdb_version,)
+                )
+
+    @property
+    def _is_mariadb(self):
+        return (
+            self.server_version_info and "MariaDB" in self.server_version_info
+        )
+
+    @property
+    def _is_mysql(self):
+        return not self._is_mariadb
+
+    @property
+    def _is_mariadb_102(self):
+        return self._is_mariadb and self._mariadb_normalized_version_info > (
+            10,
+            2,
+        )
+
+    @property
+    def _mariadb_normalized_version_info(self):
+        # MariaDB's wire-protocol prepends the server_version with
+        # the string "5.5"; now that we use @@version we no longer see this.
+
+        if self._is_mariadb:
+            idx = self.server_version_info.index("MariaDB")
+            return self.server_version_info[idx - 3 : idx]
+        else:
+            return self.server_version_info
+
     @property
     def _supports_cast(self):
-        return self.server_version_info is None or \
-                    self.server_version_info >= (4, 0, 2)
+        return (
+            self.server_version_info is None
+            or self.server_version_info >= (4, 0, 2)
+        )
 
     @reflection.cache
     def get_schema_names(self, connection, **kw):
@@ -2316,17 +2538,24 @@ class MySQLDialect(default.DefaultDialect):
 
         charset = self._connection_charset
         if self.server_version_info < (5, 0, 2):
-            rp = connection.execute("SHOW TABLES FROM %s" %
-                self.identifier_preparer.quote_identifier(current_schema))
-            return [row[0] for
-                        row in self._compat_fetchall(rp, charset=charset)]
+            rp = connection.execute(
+                "SHOW TABLES FROM %s"
+                % self.identifier_preparer.quote_identifier(current_schema)
+            )
+            return [
+                row[0] for row in self._compat_fetchall(rp, charset=charset)
+            ]
         else:
-            rp = connection.execute("SHOW FULL TABLES FROM %s" %
-                    self.identifier_preparer.quote_identifier(current_schema))
+            rp = connection.execute(
+                "SHOW FULL TABLES FROM %s"
+                % self.identifier_preparer.quote_identifier(current_schema)
+            )
 
-            return [row[0]
-                        for row in self._compat_fetchall(rp, charset=charset)
-                                                if row[1] == 'BASE TABLE']
+            return [
+                row[0]
+                for row in self._compat_fetchall(rp, charset=charset)
+                if row[1] == "BASE TABLE"
+            ]
 
     @reflection.cache
     def get_view_names(self, connection, schema=None, **kw):
@@ -2337,137 +2566,268 @@ class MySQLDialect(default.DefaultDialect):
         if self.server_version_info < (5, 0, 2):
             return self.get_table_names(connection, schema)
         charset = self._connection_charset
-        rp = connection.execute("SHOW FULL TABLES FROM %s" %
-                self.identifier_preparer.quote_identifier(schema))
-        return [row[0]
-                    for row in self._compat_fetchall(rp, charset=charset)
-                                    if row[1] in ('VIEW', 'SYSTEM VIEW')]
+        rp = connection.execute(
+            "SHOW FULL TABLES FROM %s"
+            % self.identifier_preparer.quote_identifier(schema)
+        )
+        return [
+            row[0]
+            for row in self._compat_fetchall(rp, charset=charset)
+            if row[1] in ("VIEW", "SYSTEM VIEW")
+        ]
 
     @reflection.cache
     def get_table_options(self, connection, table_name, schema=None, **kw):
 
         parsed_state = self._parsed_state_or_create(
-                                        connection, table_name, schema, **kw)
+            connection, table_name, schema, **kw
+        )
         return parsed_state.table_options
 
     @reflection.cache
     def get_columns(self, connection, table_name, schema=None, **kw):
         parsed_state = self._parsed_state_or_create(
-                                        connection, table_name, schema, **kw)
+            connection, table_name, schema, **kw
+        )
         return parsed_state.columns
 
     @reflection.cache
     def get_pk_constraint(self, connection, table_name, schema=None, **kw):
         parsed_state = self._parsed_state_or_create(
-                                        connection, table_name, schema, **kw)
+            connection, table_name, schema, **kw
+        )
         for key in parsed_state.keys:
-            if key['type'] == 'PRIMARY':
+            if key["type"] == "PRIMARY":
                 # There can be only one.
-                cols = [s[0] for s in key['columns']]
-                return {'constrained_columns': cols, 'name': None}
-        return {'constrained_columns': [], 'name': None}
+                cols = [s[0] for s in key["columns"]]
+                return {"constrained_columns": cols, "name": None}
+        return {"constrained_columns": [], "name": None}
 
     @reflection.cache
     def get_foreign_keys(self, connection, table_name, schema=None, **kw):
 
         parsed_state = self._parsed_state_or_create(
-                                        connection, table_name, schema, **kw)
+            connection, table_name, schema, **kw
+        )
         default_schema = None
 
         fkeys = []
 
-        for spec in parsed_state.constraints:
-            # only FOREIGN KEYs
-            ref_name = spec['table'][-1]
-            ref_schema = len(spec['table']) > 1 and spec['table'][-2] or schema
+        for spec in parsed_state.fk_constraints:
+            ref_name = spec["table"][-1]
+            ref_schema = len(spec["table"]) > 1 and spec["table"][-2] or schema
 
             if not ref_schema:
                 if default_schema is None:
-                    default_schema = \
-                        connection.dialect.default_schema_name
+                    default_schema = connection.dialect.default_schema_name
                 if schema == default_schema:
                     ref_schema = schema
 
-            loc_names = spec['local']
-            ref_names = spec['foreign']
+            loc_names = spec["local"]
+            ref_names = spec["foreign"]
 
             con_kw = {}
-            for opt in ('onupdate', 'ondelete'):
+            for opt in ("onupdate", "ondelete"):
                 if spec.get(opt, False):
                     con_kw[opt] = spec[opt]
 
             fkey_d = {
-                'name': spec['name'],
-                'constrained_columns': loc_names,
-                'referred_schema': ref_schema,
-                'referred_table': ref_name,
-                'referred_columns': ref_names,
-                'options': con_kw
+                "name": spec["name"],
+                "constrained_columns": loc_names,
+                "referred_schema": ref_schema,
+                "referred_table": ref_name,
+                "referred_columns": ref_names,
+                "options": con_kw,
             }
             fkeys.append(fkey_d)
+
+        if self._needs_correct_for_88718_96365:
+            self._correct_for_mysql_bugs_88718_96365(fkeys, connection)
+
         return fkeys
+
+    def _correct_for_mysql_bugs_88718_96365(self, fkeys, connection):
+        # Foreign key is always in lower case (MySQL 8.0)
+        # https://bugs.mysql.com/bug.php?id=88718
+        # issue #4344 for SQLAlchemy
+
+        # table name also for MySQL 8.0
+        # https://bugs.mysql.com/bug.php?id=96365
+        # issue #4751 for SQLAlchemy
+
+        # for lower_case_table_names=2, information_schema.columns
+        # preserves the original table/schema casing, but SHOW CREATE
+        # TABLE does not.   this problem is not in lower_case_table_names=1,
+        # but use case-insensitive matching for these two modes in any case.
+
+        if self._casing in (1, 2):
+
+            def lower(s):
+                return s.lower()
+
+        else:
+            # if on case sensitive, there can be two tables referenced
+            # with the same name different casing, so we need to use
+            # case-sensitive matching.
+            def lower(s):
+                return s
+
+        default_schema_name = connection.dialect.default_schema_name
+        col_tuples = [
+            (
+                lower(rec["referred_schema"] or default_schema_name),
+                lower(rec["referred_table"]),
+                col_name,
+            )
+            for rec in fkeys
+            for col_name in rec["referred_columns"]
+        ]
+
+        if col_tuples:
+
+            correct_for_wrong_fk_case = connection.execute(
+                sql.text(
+                    """
+                    select table_schema, table_name, column_name
+                    from information_schema.columns
+                    where (table_schema, table_name, lower(column_name)) in
+                    :table_data;
+                """
+                ).bindparams(sql.bindparam("table_data", expanding=True)),
+                table_data=col_tuples,
+            )
+
+            # in casing=0, table name and schema name come back in their
+            # exact case.
+            # in casing=1, table name and schema name come back in lower
+            # case.
+            # in casing=2, table name and schema name come back from the
+            # information_schema.columns view in the case
+            # that was used in CREATE DATABASE and CREATE TABLE, but
+            # SHOW CREATE TABLE converts them to *lower case*, therefore
+            # not matching.  So for this case, case-insensitive lookup
+            # is necessary
+            d = defaultdict(dict)
+            for schema, tname, cname in correct_for_wrong_fk_case:
+                d[(lower(schema), lower(tname))]["SCHEMANAME"] = schema
+                d[(lower(schema), lower(tname))]["TABLENAME"] = tname
+                d[(lower(schema), lower(tname))][cname.lower()] = cname
+
+            for fkey in fkeys:
+                rec = d[
+                    (
+                        lower(fkey["referred_schema"] or default_schema_name),
+                        lower(fkey["referred_table"]),
+                    )
+                ]
+
+                fkey["referred_table"] = rec["TABLENAME"]
+                if fkey["referred_schema"] is not None:
+                    fkey["referred_schema"] = rec["SCHEMANAME"]
+
+                fkey["referred_columns"] = [
+                    rec[col.lower()] for col in fkey["referred_columns"]
+                ]
+
+    @reflection.cache
+    def get_check_constraints(self, connection, table_name, schema=None, **kw):
+        parsed_state = self._parsed_state_or_create(
+            connection, table_name, schema, **kw
+        )
+
+        return [
+            {"name": spec["name"], "sqltext": spec["sqltext"]}
+            for spec in parsed_state.ck_constraints
+        ]
+
+    @reflection.cache
+    def get_table_comment(self, connection, table_name, schema=None, **kw):
+        parsed_state = self._parsed_state_or_create(
+            connection, table_name, schema, **kw
+        )
+        return {"text": parsed_state.table_options.get("mysql_comment", None)}
 
     @reflection.cache
     def get_indexes(self, connection, table_name, schema=None, **kw):
 
         parsed_state = self._parsed_state_or_create(
-                                        connection, table_name, schema, **kw)
+            connection, table_name, schema, **kw
+        )
 
         indexes = []
+
         for spec in parsed_state.keys:
+            dialect_options = {}
             unique = False
-            flavor = spec['type']
-            if flavor == 'PRIMARY':
+            flavor = spec["type"]
+            if flavor == "PRIMARY":
                 continue
-            if flavor == 'UNIQUE':
+            if flavor == "UNIQUE":
                 unique = True
-            elif flavor in (None, 'FULLTEXT', 'SPATIAL'):
+            elif flavor in ("FULLTEXT", "SPATIAL"):
+                dialect_options["mysql_prefix"] = flavor
+            elif flavor is None:
                 pass
             else:
                 self.logger.info(
-                    "Converting unknown KEY type %s to a plain KEY" % flavor)
+                    "Converting unknown KEY type %s to a plain KEY", flavor
+                )
                 pass
+
+            if spec["parser"]:
+                dialect_options["mysql_with_parser"] = spec["parser"]
+
             index_d = {}
-            index_d['name'] = spec['name']
-            index_d['column_names'] = [s[0] for s in spec['columns']]
-            index_d['unique'] = unique
-            index_d['type'] = flavor
+            if dialect_options:
+                index_d["dialect_options"] = dialect_options
+
+            index_d["name"] = spec["name"]
+            index_d["column_names"] = [s[0] for s in spec["columns"]]
+            index_d["unique"] = unique
+            if flavor:
+                index_d["type"] = flavor
             indexes.append(index_d)
         return indexes
 
     @reflection.cache
-    def get_unique_constraints(self, connection, table_name,
-                               schema=None, **kw):
+    def get_unique_constraints(
+        self, connection, table_name, schema=None, **kw
+    ):
         parsed_state = self._parsed_state_or_create(
-            connection, table_name, schema, **kw)
+            connection, table_name, schema, **kw
+        )
 
         return [
             {
-                'name': key['name'],
-                'column_names': [col[0] for col in key['columns']]
+                "name": key["name"],
+                "column_names": [col[0] for col in key["columns"]],
+                "duplicates_index": key["name"],
             }
             for key in parsed_state.keys
-            if key['type'] == 'UNIQUE'
+            if key["type"] == "UNIQUE"
         ]
 
     @reflection.cache
     def get_view_definition(self, connection, view_name, schema=None, **kw):
 
         charset = self._connection_charset
-        full_name = '.'.join(self.identifier_preparer._quote_free_identifiers(
-            schema, view_name))
-        sql = self._show_create_table(connection, None, charset,
-                                      full_name=full_name)
+        full_name = ".".join(
+            self.identifier_preparer._quote_free_identifiers(schema, view_name)
+        )
+        sql = self._show_create_table(
+            connection, None, charset, full_name=full_name
+        )
         return sql
 
-    def _parsed_state_or_create(self, connection, table_name,
-                                                            schema=None, **kw):
+    def _parsed_state_or_create(
+        self, connection, table_name, schema=None, **kw
+    ):
         return self._setup_parser(
-                        connection,
-                        table_name,
-                        schema,
-                        info_cache=kw.get('info_cache', None)
-                    )
+            connection,
+            table_name,
+            schema,
+            info_cache=kw.get("info_cache", None),
+        )
 
     @util.memoized_property
     def _tabledef_parser(self):
@@ -2477,25 +2837,30 @@ class MySQLDialect(default.DefaultDialect):
         retrieved server version information first.
 
         """
-        if (self.server_version_info < (4, 1) and self._server_ansiquotes):
+        if self.server_version_info < (4, 1) and self._server_ansiquotes:
             # ANSI_QUOTES doesn't affect SHOW CREATE TABLE on < 4.1
             preparer = self.preparer(self, server_ansiquotes=False)
         else:
             preparer = self.identifier_preparer
-        return MySQLTableDefinitionParser(self, preparer)
+        return _reflection.MySQLTableDefinitionParser(self, preparer)
 
     @reflection.cache
     def _setup_parser(self, connection, table_name, schema=None, **kw):
         charset = self._connection_charset
         parser = self._tabledef_parser
-        full_name = '.'.join(self.identifier_preparer._quote_free_identifiers(
-            schema, table_name))
-        sql = self._show_create_table(connection, None, charset,
-                                      full_name=full_name)
-        if sql.startswith('CREATE ALGORITHM'):
+        full_name = ".".join(
+            self.identifier_preparer._quote_free_identifiers(
+                schema, table_name
+            )
+        )
+        sql = self._show_create_table(
+            connection, None, charset, full_name=full_name
+        )
+        if re.match(r"^CREATE (?:ALGORITHM)?.* VIEW", sql):
             # Adapt views to something table-like.
-            columns = self._describe_table(connection, None, charset,
-                                           full_name=full_name)
+            columns = self._describe_table(
+                connection, None, charset, full_name=full_name
+            )
             sql = parser._describe_to_create(table_name, columns)
         return parser.parse(sql, charset)
 
@@ -2512,20 +2877,22 @@ class MySQLDialect(default.DefaultDialect):
         # http://dev.mysql.com/doc/refman/5.0/en/name-case-sensitivity.html
 
         charset = self._connection_charset
-        row = self._compat_first(connection.execute(
-            "SHOW VARIABLES LIKE 'lower_case_table_names'"),
-                               charset=charset)
+        row = self._compat_first(
+            connection.execute("SHOW VARIABLES LIKE 'lower_case_table_names'"),
+            charset=charset,
+        )
         if not row:
             cs = 0
         else:
             # 4.0.15 returns OFF or ON according to [ticket:489]
             # 3.23 doesn't, 4.0.27 doesn't..
-            if row[1] == 'OFF':
+            if row[1] == "OFF":
                 cs = 0
-            elif row[1] == 'ON':
+            elif row[1] == "ON":
                 cs = 1
             else:
                 cs = int(row[1])
+        self._casing = cs
         return cs
 
     def _detect_collations(self, connection):
@@ -2539,35 +2906,44 @@ class MySQLDialect(default.DefaultDialect):
             pass
         else:
             charset = self._connection_charset
-            rs = connection.execute('SHOW COLLATION')
+            rs = connection.execute("SHOW COLLATION")
             for row in self._compat_fetchall(rs, charset):
                 collations[row[0]] = row[1]
         return collations
 
+    def _detect_sql_mode(self, connection):
+        row = self._compat_first(
+            connection.execute("SHOW VARIABLES LIKE 'sql_mode'"),
+            charset=self._connection_charset,
+        )
+
+        if not row:
+            util.warn(
+                "Could not retrieve SQL_MODE; please ensure the "
+                "MySQL user has permissions to SHOW VARIABLES"
+            )
+            self._sql_mode = ""
+        else:
+            self._sql_mode = row[1] or ""
+
     def _detect_ansiquotes(self, connection):
         """Detect and adjust for the ANSI_QUOTES sql mode."""
 
-        row = self._compat_first(
-            connection.execute("SHOW VARIABLES LIKE 'sql_mode'"),
-                                charset=self._connection_charset)
+        mode = self._sql_mode
+        if not mode:
+            mode = ""
+        elif mode.isdigit():
+            mode_no = int(mode)
+            mode = (mode_no | 4 == mode_no) and "ANSI_QUOTES" or ""
 
-        if not row:
-            mode = ''
-        else:
-            mode = row[1] or ''
-            # 4.0
-            if mode.isdigit():
-                mode_no = int(mode)
-                mode = (mode_no | 4 == mode_no) and 'ANSI_QUOTES' or ''
-
-        self._server_ansiquotes = 'ANSI_QUOTES' in mode
+        self._server_ansiquotes = "ANSI_QUOTES" in mode
 
         # as of MySQL 5.0.1
-        self._backslash_escapes = 'NO_BACKSLASH_ESCAPES' not in mode
+        self._backslash_escapes = "NO_BACKSLASH_ESCAPES" not in mode
 
-
-    def _show_create_table(self, connection, table, charset=None,
-                           full_name=None):
+    def _show_create_table(
+        self, connection, table, charset=None, full_name=None
+    ):
         """Run SHOW CREATE TABLE for a ``Table``."""
 
         if full_name is None:
@@ -2576,10 +2952,12 @@ class MySQLDialect(default.DefaultDialect):
 
         rp = None
         try:
-            rp = connection.execute(st)
+            rp = connection.execution_options(
+                skip_user_error_events=True
+            ).execute(st)
         except exc.DBAPIError as e:
             if self._extract_error_code(e.orig) == 1146:
-                raise exc.NoSuchTableError(full_name)
+                util.raise_(exc.NoSuchTableError(full_name), replace_context=e)
             else:
                 raise
         row = self._compat_first(rp, charset=charset)
@@ -2589,8 +2967,7 @@ class MySQLDialect(default.DefaultDialect):
 
         return sql
 
-    def _describe_table(self, connection, table, charset=None,
-                             full_name=None):
+    def _describe_table(self, connection, table, charset=None, full_name=None):
         """Run DESCRIBE for a ``Table`` and return processed rows."""
 
         if full_name is None:
@@ -2600,10 +2977,23 @@ class MySQLDialect(default.DefaultDialect):
         rp, rows = None, None
         try:
             try:
-                rp = connection.execute(st)
+                rp = connection.execution_options(
+                    skip_user_error_events=True
+                ).execute(st)
             except exc.DBAPIError as e:
-                if self._extract_error_code(e.orig) == 1146:
-                    raise exc.NoSuchTableError(full_name)
+                code = self._extract_error_code(e.orig)
+                if code == 1146:
+                    util.raise_(
+                        exc.NoSuchTableError(full_name), replace_context=e
+                    )
+                elif code == 1356:
+                    util.raise_(
+                        exc.UnreflectableTableError(
+                            "Table or view named %s could not be "
+                            "reflected: %s" % (full_name, e)
+                        ),
+                        replace_context=e,
+                    )
                 else:
                     raise
             rows = self._compat_fetchall(rp, charset=charset)
@@ -2611,422 +3001,6 @@ class MySQLDialect(default.DefaultDialect):
             if rp:
                 rp.close()
         return rows
-
-
-class ReflectedState(object):
-    """Stores raw information about a SHOW CREATE TABLE statement."""
-
-    def __init__(self):
-        self.columns = []
-        self.table_options = {}
-        self.table_name = None
-        self.keys = []
-        self.constraints = []
-
-
-@log.class_logger
-class MySQLTableDefinitionParser(object):
-    """Parses the results of a SHOW CREATE TABLE statement."""
-
-    def __init__(self, dialect, preparer):
-        self.dialect = dialect
-        self.preparer = preparer
-        self._prep_regexes()
-
-    def parse(self, show_create, charset):
-        state = ReflectedState()
-        state.charset = charset
-        for line in re.split(r'\r?\n', show_create):
-            if line.startswith('  ' + self.preparer.initial_quote):
-                self._parse_column(line, state)
-            # a regular table options line
-            elif line.startswith(') '):
-                self._parse_table_options(line, state)
-            # an ANSI-mode table options line
-            elif line == ')':
-                pass
-            elif line.startswith('CREATE '):
-                self._parse_table_name(line, state)
-            # Not present in real reflection, but may be if
-            # loading from a file.
-            elif not line:
-                pass
-            else:
-                type_, spec = self._parse_constraints(line)
-                if type_ is None:
-                    util.warn("Unknown schema content: %r" % line)
-                elif type_ == 'key':
-                    state.keys.append(spec)
-                elif type_ == 'constraint':
-                    state.constraints.append(spec)
-                else:
-                    pass
-        return state
-
-    def _parse_constraints(self, line):
-        """Parse a KEY or CONSTRAINT line.
-
-        :param line: A line of SHOW CREATE TABLE output
-        """
-
-        # KEY
-        m = self._re_key.match(line)
-        if m:
-            spec = m.groupdict()
-            # convert columns into name, length pairs
-            spec['columns'] = self._parse_keyexprs(spec['columns'])
-            return 'key', spec
-
-        # CONSTRAINT
-        m = self._re_constraint.match(line)
-        if m:
-            spec = m.groupdict()
-            spec['table'] = \
-              self.preparer.unformat_identifiers(spec['table'])
-            spec['local'] = [c[0]
-                             for c in self._parse_keyexprs(spec['local'])]
-            spec['foreign'] = [c[0]
-                               for c in self._parse_keyexprs(spec['foreign'])]
-            return 'constraint', spec
-
-        # PARTITION and SUBPARTITION
-        m = self._re_partition.match(line)
-        if m:
-            # Punt!
-            return 'partition', line
-
-        # No match.
-        return (None, line)
-
-    def _parse_table_name(self, line, state):
-        """Extract the table name.
-
-        :param line: The first line of SHOW CREATE TABLE
-        """
-
-        regex, cleanup = self._pr_name
-        m = regex.match(line)
-        if m:
-            state.table_name = cleanup(m.group('name'))
-
-    def _parse_table_options(self, line, state):
-        """Build a dictionary of all reflected table-level options.
-
-        :param line: The final line of SHOW CREATE TABLE output.
-        """
-
-        options = {}
-
-        if not line or line == ')':
-            pass
-
-        else:
-            rest_of_line = line[:]
-            for regex, cleanup in self._pr_options:
-                m = regex.search(rest_of_line)
-                if not m:
-                    continue
-                directive, value = m.group('directive'), m.group('val')
-                if cleanup:
-                    value = cleanup(value)
-                options[directive.lower()] = value
-                rest_of_line = regex.sub('', rest_of_line)
-
-        for nope in ('auto_increment', 'data directory', 'index directory'):
-            options.pop(nope, None)
-
-        for opt, val in options.items():
-            state.table_options['%s_%s' % (self.dialect.name, opt)] = val
-
-    def _parse_column(self, line, state):
-        """Extract column details.
-
-        Falls back to a 'minimal support' variant if full parse fails.
-
-        :param line: Any column-bearing line from SHOW CREATE TABLE
-        """
-
-        spec = None
-        m = self._re_column.match(line)
-        if m:
-            spec = m.groupdict()
-            spec['full'] = True
-        else:
-            m = self._re_column_loose.match(line)
-            if m:
-                spec = m.groupdict()
-                spec['full'] = False
-        if not spec:
-            util.warn("Unknown column definition %r" % line)
-            return
-        if not spec['full']:
-            util.warn("Incomplete reflection of column definition %r" % line)
-
-        name, type_, args, notnull = \
-              spec['name'], spec['coltype'], spec['arg'], spec['notnull']
-
-        try:
-            col_type = self.dialect.ischema_names[type_]
-        except KeyError:
-            util.warn("Did not recognize type '%s' of column '%s'" %
-                      (type_, name))
-            col_type = sqltypes.NullType
-
-        # Column type positional arguments eg. varchar(32)
-        if args is None or args == '':
-            type_args = []
-        elif args[0] == "'" and args[-1] == "'":
-            type_args = self._re_csv_str.findall(args)
-        else:
-            type_args = [int(v) for v in self._re_csv_int.findall(args)]
-
-        # Column type keyword options
-        type_kw = {}
-        for kw in ('unsigned', 'zerofill'):
-            if spec.get(kw, False):
-                type_kw[kw] = True
-        for kw in ('charset', 'collate'):
-            if spec.get(kw, False):
-                type_kw[kw] = spec[kw]
-
-        if issubclass(col_type, _EnumeratedValues):
-            type_args = _EnumeratedValues._strip_values(type_args)
-
-        type_instance = col_type(*type_args, **type_kw)
-
-        col_args, col_kw = [], {}
-
-        # NOT NULL
-        col_kw['nullable'] = True
-        if spec.get('notnull', False):
-            col_kw['nullable'] = False
-
-        # AUTO_INCREMENT
-        if spec.get('autoincr', False):
-            col_kw['autoincrement'] = True
-        elif issubclass(col_type, sqltypes.Integer):
-            col_kw['autoincrement'] = False
-
-        # DEFAULT
-        default = spec.get('default', None)
-
-        if default == 'NULL':
-            # eliminates the need to deal with this later.
-            default = None
-
-        col_d = dict(name=name, type=type_instance, default=default)
-        col_d.update(col_kw)
-        state.columns.append(col_d)
-
-    def _describe_to_create(self, table_name, columns):
-        """Re-format DESCRIBE output as a SHOW CREATE TABLE string.
-
-        DESCRIBE is a much simpler reflection and is sufficient for
-        reflecting views for runtime use.  This method formats DDL
-        for columns only- keys are omitted.
-
-        :param columns: A sequence of DESCRIBE or SHOW COLUMNS 6-tuples.
-          SHOW FULL COLUMNS FROM rows must be rearranged for use with
-          this function.
-        """
-
-        buffer = []
-        for row in columns:
-            (name, col_type, nullable, default, extra) = \
-                   [row[i] for i in (0, 1, 2, 4, 5)]
-
-            line = [' ']
-            line.append(self.preparer.quote_identifier(name))
-            line.append(col_type)
-            if not nullable:
-                line.append('NOT NULL')
-            if default:
-                if 'auto_increment' in default:
-                    pass
-                elif (col_type.startswith('timestamp') and
-                      default.startswith('C')):
-                    line.append('DEFAULT')
-                    line.append(default)
-                elif default == 'NULL':
-                    line.append('DEFAULT')
-                    line.append(default)
-                else:
-                    line.append('DEFAULT')
-                    line.append("'%s'" % default.replace("'", "''"))
-            if extra:
-                line.append(extra)
-
-            buffer.append(' '.join(line))
-
-        return ''.join([('CREATE TABLE %s (\n' %
-                         self.preparer.quote_identifier(table_name)),
-                        ',\n'.join(buffer),
-                        '\n) '])
-
-    def _parse_keyexprs(self, identifiers):
-        """Unpack '"col"(2),"col" ASC'-ish strings into components."""
-
-        return self._re_keyexprs.findall(identifiers)
-
-    def _prep_regexes(self):
-        """Pre-compile regular expressions."""
-
-        self._re_columns = []
-        self._pr_options = []
-
-        _final = self.preparer.final_quote
-
-        quotes = dict(zip(('iq', 'fq', 'esc_fq'),
-                          [re.escape(s) for s in
-                           (self.preparer.initial_quote,
-                            _final,
-                            self.preparer._escape_identifier(_final))]))
-
-        self._pr_name = _pr_compile(
-            r'^CREATE (?:\w+ +)?TABLE +'
-            r'%(iq)s(?P<name>(?:%(esc_fq)s|[^%(fq)s])+)%(fq)s +\($' % quotes,
-            self.preparer._unescape_identifier)
-
-        # `col`,`col2`(32),`col3`(15) DESC
-        #
-        # Note: ASC and DESC aren't reflected, so we'll punt...
-        self._re_keyexprs = _re_compile(
-            r'(?:'
-            r'(?:%(iq)s((?:%(esc_fq)s|[^%(fq)s])+)%(fq)s)'
-            r'(?:\((\d+)\))?(?=\,|$))+' % quotes)
-
-        # 'foo' or 'foo','bar' or 'fo,o','ba''a''r'
-        self._re_csv_str = _re_compile(r'\x27(?:\x27\x27|[^\x27])*\x27')
-
-        # 123 or 123,456
-        self._re_csv_int = _re_compile(r'\d+')
-
-        # `colname` <type> [type opts]
-        #  (NOT NULL | NULL)
-        #   DEFAULT ('value' | CURRENT_TIMESTAMP...)
-        #   COMMENT 'comment'
-        #  COLUMN_FORMAT (FIXED|DYNAMIC|DEFAULT)
-        #  STORAGE (DISK|MEMORY)
-        self._re_column = _re_compile(
-            r'  '
-            r'%(iq)s(?P<name>(?:%(esc_fq)s|[^%(fq)s])+)%(fq)s +'
-            r'(?P<coltype>\w+)'
-            r'(?:\((?P<arg>(?:\d+|\d+,\d+|'
-              r'(?:\x27(?:\x27\x27|[^\x27])*\x27,?)+))\))?'
-            r'(?: +(?P<unsigned>UNSIGNED))?'
-            r'(?: +(?P<zerofill>ZEROFILL))?'
-            r'(?: +CHARACTER SET +(?P<charset>[\w_]+))?'
-            r'(?: +COLLATE +(?P<collate>[\w_]+))?'
-            r'(?: +(?P<notnull>NOT NULL))?'
-            r'(?: +DEFAULT +(?P<default>'
-              r'(?:NULL|\x27(?:\x27\x27|[^\x27])*\x27|\w+'
-              r'(?: +ON UPDATE \w+)?)'
-            r'))?'
-            r'(?: +(?P<autoincr>AUTO_INCREMENT))?'
-            r'(?: +COMMENT +(P<comment>(?:\x27\x27|[^\x27])+))?'
-            r'(?: +COLUMN_FORMAT +(?P<colfmt>\w+))?'
-            r'(?: +STORAGE +(?P<storage>\w+))?'
-            r'(?: +(?P<extra>.*))?'
-            r',?$'
-            % quotes
-            )
-
-        # Fallback, try to parse as little as possible
-        self._re_column_loose = _re_compile(
-            r'  '
-            r'%(iq)s(?P<name>(?:%(esc_fq)s|[^%(fq)s])+)%(fq)s +'
-            r'(?P<coltype>\w+)'
-            r'(?:\((?P<arg>(?:\d+|\d+,\d+|\x27(?:\x27\x27|[^\x27])+\x27))\))?'
-            r'.*?(?P<notnull>NOT NULL)?'
-            % quotes
-            )
-
-        # (PRIMARY|UNIQUE|FULLTEXT|SPATIAL) INDEX `name` (USING (BTREE|HASH))?
-        # (`col` (ASC|DESC)?, `col` (ASC|DESC)?)
-        # KEY_BLOCK_SIZE size | WITH PARSER name
-        self._re_key = _re_compile(
-            r'  '
-            r'(?:(?P<type>\S+) )?KEY'
-            r'(?: +%(iq)s(?P<name>(?:%(esc_fq)s|[^%(fq)s])+)%(fq)s)?'
-            r'(?: +USING +(?P<using_pre>\S+))?'
-            r' +\((?P<columns>.+?)\)'
-            r'(?: +USING +(?P<using_post>\S+))?'
-            r'(?: +KEY_BLOCK_SIZE +(?P<keyblock>\S+))?'
-            r'(?: +WITH PARSER +(?P<parser>\S+))?'
-            r',?$'
-            % quotes
-            )
-
-        # CONSTRAINT `name` FOREIGN KEY (`local_col`)
-        # REFERENCES `remote` (`remote_col`)
-        # MATCH FULL | MATCH PARTIAL | MATCH SIMPLE
-        # ON DELETE CASCADE ON UPDATE RESTRICT
-        #
-        # unique constraints come back as KEYs
-        kw = quotes.copy()
-        kw['on'] = 'RESTRICT|CASCADE|SET NULL|NOACTION'
-        self._re_constraint = _re_compile(
-            r'  '
-            r'CONSTRAINT +'
-            r'%(iq)s(?P<name>(?:%(esc_fq)s|[^%(fq)s])+)%(fq)s +'
-            r'FOREIGN KEY +'
-            r'\((?P<local>[^\)]+?)\) REFERENCES +'
-            r'(?P<table>%(iq)s[^%(fq)s]+%(fq)s(?:\.%(iq)s[^%(fq)s]+%(fq)s)?) +'
-            r'\((?P<foreign>[^\)]+?)\)'
-            r'(?: +(?P<match>MATCH \w+))?'
-            r'(?: +ON DELETE (?P<ondelete>%(on)s))?'
-            r'(?: +ON UPDATE (?P<onupdate>%(on)s))?'
-            % kw
-            )
-
-        # PARTITION
-        #
-        # punt!
-        self._re_partition = _re_compile(r'(?:.*)(?:SUB)?PARTITION(?:.*)')
-
-        # Table-level options (COLLATE, ENGINE, etc.)
-        # Do the string options first, since they have quoted
-        # strings we need to get rid of.
-        for option in _options_of_type_string:
-            self._add_option_string(option)
-
-        for option in ('ENGINE', 'TYPE', 'AUTO_INCREMENT',
-                       'AVG_ROW_LENGTH', 'CHARACTER SET',
-                       'DEFAULT CHARSET', 'CHECKSUM',
-                       'COLLATE', 'DELAY_KEY_WRITE', 'INSERT_METHOD',
-                       'MAX_ROWS', 'MIN_ROWS', 'PACK_KEYS', 'ROW_FORMAT',
-                       'KEY_BLOCK_SIZE'):
-            self._add_option_word(option)
-
-        self._add_option_regex('UNION', r'\([^\)]+\)')
-        self._add_option_regex('TABLESPACE', r'.*? STORAGE DISK')
-        self._add_option_regex('RAID_TYPE',
-          r'\w+\s+RAID_CHUNKS\s*\=\s*\w+RAID_CHUNKSIZE\s*=\s*\w+')
-
-    _optional_equals = r'(?:\s*(?:=\s*)|\s+)'
-
-    def _add_option_string(self, directive):
-        regex = (r'(?P<directive>%s)%s'
-                 r"'(?P<val>(?:[^']|'')*?)'(?!')" %
-                 (re.escape(directive), self._optional_equals))
-        self._pr_options.append(_pr_compile(regex, lambda v:
-                                v.replace("\\\\", "\\").replace("''", "'")))
-
-    def _add_option_word(self, directive):
-        regex = (r'(?P<directive>%s)%s'
-                 r'(?P<val>\w+)' %
-                 (re.escape(directive), self._optional_equals))
-        self._pr_options.append(_pr_compile(regex))
-
-    def _add_option_regex(self, directive, regex):
-        regex = (r'(?P<directive>%s)%s'
-                 r'(?P<val>%s)' %
-                 (re.escape(directive), self._optional_equals, regex))
-        self._pr_options.append(_pr_compile(regex))
-
-_options_of_type_string = ('COMMENT', 'DATA DIRECTORY', 'INDEX DIRECTORY',
-                           'PASSWORD', 'CONNECTION')
-
 
 
 class _DecodingRowProxy(object):
@@ -3042,9 +3016,17 @@ class _DecodingRowProxy(object):
     # sets.Set(['value']) (seriously) but thankfully that doesn't
     # seem to come up in DDL queries.
 
+    _encoding_compat = {
+        "koi8r": "koi8_r",
+        "koi8u": "koi8_u",
+        "utf16": "utf-16-be",  # MySQL's uft16 is always bigendian
+        "utf8mb4": "utf8",  # real utf8
+        "eucjpms": "ujis",
+    }
+
     def __init__(self, rowproxy, charset):
         self.rowproxy = rowproxy
-        self.charset = charset
+        self.charset = self._encoding_compat.get(charset, charset)
 
     def __getitem__(self, index):
         item = self.rowproxy[index]
@@ -3064,15 +3046,3 @@ class _DecodingRowProxy(object):
             return item.decode(self.charset)
         else:
             return item
-
-
-def _pr_compile(regex, cleanup=None):
-    """Prepare a 2-tuple of compiled regex and callable."""
-
-    return (_re_compile(regex), cleanup)
-
-
-def _re_compile(regex):
-    """Compile a string to regex, I and UNICODE."""
-
-    return re.compile(regex, re.I | re.UNICODE)

@@ -1,5 +1,6 @@
 # mssql/adodbapi.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -13,14 +14,17 @@
 
 .. note::
 
-    The adodbapi dialect is not implemented SQLAlchemy versions 0.6 and
+    The adodbapi dialect is not implemented in SQLAlchemy versions 0.6 and
     above at this time.
 
 """
 import datetime
-from sqlalchemy import types as sqltypes, util
-from sqlalchemy.dialects.mssql.base import MSDateTime, MSDialect
 import sys
+
+from sqlalchemy import types as sqltypes
+from sqlalchemy import util
+from sqlalchemy.dialects.mssql.base import MSDateTime
+from sqlalchemy.dialects.mssql.base import MSDialect
 
 
 class MSDateTime_adodbapi(MSDateTime):
@@ -32,6 +36,7 @@ class MSDateTime_adodbapi(MSDateTime):
             if type(value) is datetime.date:
                 return datetime.datetime(value.year, value.month, value.day)
             return value
+
         return process
 
 
@@ -40,27 +45,31 @@ class MSDialect_adodbapi(MSDialect):
     supports_sane_multi_rowcount = True
     supports_unicode = sys.maxunicode == 65535
     supports_unicode_statements = True
-    driver = 'adodbapi'
+    driver = "adodbapi"
 
     @classmethod
     def import_dbapi(cls):
         import adodbapi as module
+
         return module
 
     colspecs = util.update_copy(
-        MSDialect.colspecs,
-        {
-            sqltypes.DateTime: MSDateTime_adodbapi
-        }
+        MSDialect.colspecs, {sqltypes.DateTime: MSDateTime_adodbapi}
     )
 
     def create_connect_args(self, url):
-        keys = url.query
+        def check_quote(token):
+            if ";" in str(token):
+                token = "'%s'" % token
+            return token
+
+        keys = dict((k, check_quote(v)) for k, v in url.query.items())
 
         connectors = ["Provider=SQLOLEDB"]
-        if 'port' in keys:
-            connectors.append("Data Source=%s, %s" %
-                                (keys.get("host"), keys.get("port")))
+        if "port" in keys:
+            connectors.append(
+                "Data Source=%s, %s" % (keys.get("host"), keys.get("port"))
+            )
         else:
             connectors.append("Data Source=%s" % keys.get("host"))
         connectors.append("Initial Catalog=%s" % keys.get("database"))
@@ -73,7 +82,9 @@ class MSDialect_adodbapi(MSDialect):
         return [[";".join(connectors)], {}]
 
     def is_disconnect(self, e, connection, cursor):
-        return isinstance(e, self.dbapi.adodbapi.DatabaseError) and \
-                            "'connection failure'" in str(e)
+        return isinstance(
+            e, self.dbapi.adodbapi.DatabaseError
+        ) and "'connection failure'" in str(e)
+
 
 dialect = MSDialect_adodbapi

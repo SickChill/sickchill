@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# Keep in mind that you have to configure s3cmd with yout access_key and secret_key
+
+today="`date +'%Y-%m-%d'`"
+
+mkdir -p "${today}"
+for f in title.basics.tsv.gz title.crew.tsv.gz title.episode.tsv.gz title.principals.tsv.gz title.ratings.tsv.gz name.basics.tsv.gz
+do
+	s3cmd --requester-pays --continue get s3://imdb-datasets/documents/v1/current/$f "${today}/${f}"
+done

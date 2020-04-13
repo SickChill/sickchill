@@ -323,8 +323,8 @@ class SemanticVersion(object):
             version number of the component to preserve sorting. (Used for
             rpm support)
         """
-        if ((self._prerelease_type or self._dev_count)
-                and pre_separator is None):
+        if ((self._prerelease_type or self._dev_count) and
+                pre_separator is None):
             segments = [self.decrement().brief_string()]
             pre_separator = "."
         else:

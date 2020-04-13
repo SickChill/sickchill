@@ -1,7 +1,9 @@
+rarfile-3.0.dist-info/DESCRIPTION.rst,sha256=OXQnwFt9gHcRC79ghkEU69lIpNciYBdnoVJ6nkTfH0Y,1122
 rarfile-3.0.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
-rarfile-3.0.dist-info/METADATA,sha256=J0KPlrwRElRx3sA80urlp9n1pSCbCBDp9F_YmbFOThU,1798
+rarfile-3.0.dist-info/METADATA,sha256=rB-Ld8Xn7xa7q_FCCwhrwspOYPpnQ-RkMtSoQd_ICF8,1798
 rarfile-3.0.dist-info/RECORD,,
-rarfile-3.0.dist-info/WHEEL,sha256=wLvyNmuHsIIXglMCStC__HFly8WQA92frpgDnrFynbs,93
+rarfile-3.0.dist-info/WHEEL,sha256=bee59qcPjkyXfMaxNWjl2CGotqfumWx9pC1hlVLr2mM,92
+rarfile-3.0.dist-info/metadata.json,sha256=v5FThROSWhOHBdeWFJEEIh7qeNTBb9AHLjCaAImzGDI,820
 rarfile-3.0.dist-info/top_level.txt,sha256=xJJpMMlbN1jihTp6tmMSBdb4mrmIcEOp1rsb-9oPxkQ,8
 rarfile.py,sha256=ZRlafeFLc4V0fCVlZkCgKlDSDDkitU29RuQ5f_XtZ0k,86551
 rarfile.pyc,,

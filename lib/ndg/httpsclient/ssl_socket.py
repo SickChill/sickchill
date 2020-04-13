@@ -12,7 +12,7 @@ __revision__ = '$Id$'
 from datetime import datetime
 import logging
 import socket
-from cStringIO import StringIO
+from io import BytesIO
 
 from OpenSSL import SSL
 
@@ -61,22 +61,20 @@ class SSLSocket(object):
     @buf_size.setter
     def buf_size(self, value):
         """Buffer size for makefile method recv() operations"""
-        if not isinstance(value, (int, long)):
-            raise TypeError('Expecting int or long type for "buf_size"; '
+        if not isinstance(value, int):
+            raise TypeError('Expecting int type for "buf_size"; '
                             'got %r instead' % type(value))
         self.__buf_size = value
 
     def close(self):
         """Shutdown the SSL connection and call the close method of the
         underlying socket"""
-#        try:
-#            self.__ssl_conn.shutdown()
-#        except SSL.Error:
-#            # Make errors on shutdown non-fatal
-#            pass
-
         if self._makefile_refs < 1:        
-            self.__ssl_conn.shutdown()
+            try:
+                self.__ssl_conn.shutdown()
+            except (SSL.Error, SSL.SysCallError):
+                # Make errors on shutdown non-fatal
+                pass
         else:
             self._makefile_refs -= 1
 
@@ -236,7 +234,7 @@ class SSLSocket(object):
         _buf_size = self.buf_size
 
         i=0
-        stream = StringIO()
+        stream = BytesIO()
         startTime = datetime.utcnow()
         try:
             dat = self.__ssl_conn.recv(_buf_size)
@@ -261,17 +259,6 @@ class SSLSocket(object):
         stream.seek(0)
 
         return stream
-
-#    def makefile(self, mode='r', bufsize=-1):
-#
-#        """Make and return a file-like object that
-#        works with the SSL connection.  Just use the code
-#        from the socket module."""
-#
-#        self._makefile_refs += 1
-#        # close=True so as to decrement the reference count when done with
-#        # the file-like object.
-#        return socket._fileobject(self.socket, mode, bufsize, close=True)
     
     def getsockname(self):
         """

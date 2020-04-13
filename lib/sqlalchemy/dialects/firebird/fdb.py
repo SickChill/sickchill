@@ -1,5 +1,6 @@
 # firebird/fdb.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -13,8 +14,6 @@
 
     fdb is a kinterbasdb compatible DBAPI for Firebird.
 
-    .. versionadded:: 0.8 - Support for the fdb Firebird driver.
-
     .. versionchanged:: 0.9 - The fdb dialect is now the default dialect
        under the ``firebird://`` URL space, as ``fdb`` is now the official
        Python driver for Firebird.
@@ -22,8 +21,9 @@
 Arguments
 ----------
 
-The ``fdb`` dialect is based on the :mod:`sqlalchemy.dialects.firebird.kinterbasdb`
-dialect, however does not accept every argument that Kinterbasdb does.
+The ``fdb`` dialect is based on the
+:mod:`sqlalchemy.dialects.firebird.kinterbasdb` dialect, however does not
+accept every argument that Kinterbasdb does.
 
 * ``enable_rowcount`` - True by default, setting this to False disables
   the usage of "cursor.rowcount" with the
@@ -42,7 +42,7 @@ dialect, however does not accept every argument that Kinterbasdb does.
 
       conn = engine.connect().execution_options(enable_rowcount=True)
       r = conn.execute(stmt)
-      print r.rowcount
+      print(r.rowcount)
 
 * ``retaining`` - False by default.   Setting this to True will pass the
   ``retaining=True`` keyword argument to the ``.commit()`` and ``.rollback()``
@@ -51,44 +51,38 @@ dialect, however does not accept every argument that Kinterbasdb does.
   Please read the fdb and/or kinterbasdb DBAPI documentation in order to
   understand the implications of this flag.
 
-  .. versionadded:: 0.8.2 - ``retaining`` keyword argument specifying
-     transaction retaining behavior - in 0.8 it defaults to ``True``
-     for backwards compatibility.
-
   .. versionchanged:: 0.9.0 - the ``retaining`` flag defaults to ``False``.
      In 0.8 it defaulted to ``True``.
 
   .. seealso::
 
-    http://pythonhosted.org/fdb/usage-guide.html#retaining-transactions - information
-    on the "retaining" flag.
+    http://pythonhosted.org/fdb/usage-guide.html#retaining-transactions
+    - information on the "retaining" flag.
 
-"""
+"""  # noqa
 
 from .kinterbasdb import FBDialect_kinterbasdb
 from ... import util
 
 
 class FBDialect_fdb(FBDialect_kinterbasdb):
-
-    def __init__(self, enable_rowcount=True,
-                            retaining=False, **kwargs):
+    def __init__(self, enable_rowcount=True, retaining=False, **kwargs):
         super(FBDialect_fdb, self).__init__(
-                            enable_rowcount=enable_rowcount,
-                            retaining=retaining, **kwargs)
+            enable_rowcount=enable_rowcount, retaining=retaining, **kwargs
+        )
 
     @classmethod
     def dbapi(cls):
-        return  __import__('fdb')
+        return __import__("fdb")
 
     def create_connect_args(self, url):
-        opts = url.translate_connect_args(username='user')
-        if opts.get('port'):
-            opts['host'] = "%s/%s" % (opts['host'], opts['port'])
-            del opts['port']
+        opts = url.translate_connect_args(username="user")
+        if opts.get("port"):
+            opts["host"] = "%s/%s" % (opts["host"], opts["port"])
+            del opts["port"]
         opts.update(url.query)
 
-        util.coerce_kw_type(opts, 'type_conv', int)
+        util.coerce_kw_type(opts, "type_conv", int)
 
         return ([], opts)
 
@@ -111,5 +105,6 @@ class FBDialect_fdb(FBDialect_kinterbasdb):
         version = fbconn.db_info(isc_info_firebird_version)
 
         return self._parse_version_info(version)
+
 
 dialect = FBDialect_fdb

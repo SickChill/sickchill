@@ -43,7 +43,6 @@ import email.errors
 import imp
 import os
 import re
-import sys
 import sysconfig
 import tempfile
 import textwrap
@@ -56,7 +55,7 @@ import testscenarios
 import testtools
 from testtools import matchers
 import virtualenv
-import wheel.install
+from wheel import wheelfile
 
 from pbr import git
 from pbr import packaging
@@ -109,7 +108,7 @@ class GPGKeyFixture(fixtures.Fixture):
     def setUp(self):
         super(GPGKeyFixture, self).setUp()
         tempdir = self.useFixture(fixtures.TempDir())
-        gnupg_version_re = re.compile('^gpg\s.*\s([\d+])\.([\d+])\.([\d+])')
+        gnupg_version_re = re.compile(r'^gpg\s.*\s([\d+])\.([\d+])\.([\d+])')
         gnupg_version = base._run_cmd(['gpg', '--version'], tempdir.path)
         for line in gnupg_version[0].split('\n'):
             gnupg_version = gnupg_version_re.match(line)
@@ -121,9 +120,9 @@ class GPGKeyFixture(fixtures.Fixture):
         else:
             if gnupg_version is None:
                 gnupg_version = (0, 0, 0)
-        config_file = tempdir.path + '/key-config'
-        f = open(config_file, 'wt')
-        try:
+
+        config_file = os.path.join(tempdir.path, 'key-config')
+        with open(config_file, 'wt') as f:
             if gnupg_version[0] == 2 and gnupg_version[1] >= 1:
                 f.write("""
                 %no-protection
@@ -139,8 +138,7 @@ class GPGKeyFixture(fixtures.Fixture):
             Preferences: (setpref)
             %commit
             """)
-        finally:
-            f.close()
+
         # Note that --quick-random (--debug-quick-random in GnuPG 2.x)
         # does not have a corresponding preferences file setting and
         # must be passed explicitly on the command line instead
@@ -150,6 +148,7 @@ class GPGKeyFixture(fixtures.Fixture):
             gnupg_random = '--debug-quick-random'
         else:
             gnupg_random = ''
+
         base._run_cmd(
             ['gpg', '--gen-key', '--batch', gnupg_random, config_file],
             tempdir.path)
@@ -294,23 +293,23 @@ class TestPackagingInGitRepoWithCommit(base.BaseTestCase):
         self.run_setup('sdist', allow_fail=False)
         with open(os.path.join(self.package_dir, 'ChangeLog'), 'r') as f:
             body = f.read()
-        self.assertIn('\*', body)
+        self.assertIn(r'\*', body)
 
     def test_changelog_handles_dead_links_in_commit(self):
         self.repo.commit(message_content="See os_ for to_do about qemu_.")
         self.run_setup('sdist', allow_fail=False)
         with open(os.path.join(self.package_dir, 'ChangeLog'), 'r') as f:
             body = f.read()
-        self.assertIn('os\_', body)
-        self.assertIn('to\_do', body)
-        self.assertIn('qemu\_', body)
+        self.assertIn(r'os\_', body)
+        self.assertIn(r'to\_do', body)
+        self.assertIn(r'qemu\_', body)
 
     def test_changelog_handles_backticks(self):
         self.repo.commit(message_content="Allow `openstack.org` to `work")
         self.run_setup('sdist', allow_fail=False)
         with open(os.path.join(self.package_dir, 'ChangeLog'), 'r') as f:
             body = f.read()
-        self.assertIn('\`', body)
+        self.assertIn(r'\`', body)
 
     def test_manifest_exclude_honoured(self):
         self.run_setup('sdist', allow_fail=False)
@@ -372,13 +371,13 @@ class TestPackagingWheels(base.BaseTestCase):
         relative_wheel_filename = os.listdir(dist_dir)[0]
         absolute_wheel_filename = os.path.join(
             dist_dir, relative_wheel_filename)
-        wheel_file = wheel.install.WheelFile(absolute_wheel_filename)
+        wheel_file = wheelfile.WheelFile(absolute_wheel_filename)
         wheel_name = wheel_file.parsed_filename.group('namever')
         # Create a directory path to unpack the wheel to
         self.extracted_wheel_dir = os.path.join(dist_dir, wheel_name)
         # Extract the wheel contents to the directory we just created
-        wheel_file.zipfile.extractall(self.extracted_wheel_dir)
-        wheel_file.zipfile.close()
+        wheel_file.extractall(self.extracted_wheel_dir)
+        wheel_file.close()
 
     def test_data_directory_has_wsgi_scripts(self):
         # Build the path to the scripts directory
@@ -532,11 +531,13 @@ class ParseRequirementsTest(base.BaseTestCase):
         tempdir = tempfile.mkdtemp()
         requirements = os.path.join(tempdir, 'requirements.txt')
         with open(requirements, 'w') as f:
-            f.write('-i https://myindex.local')
-            f.write('  --index-url https://myindex.local')
-            f.write(' --extra-index-url https://myindex.local')
+            f.write('-i https://myindex.local\n')
+            f.write('  --index-url https://myindex.local\n')
+            f.write(' --extra-index-url https://myindex.local\n')
+            f.write('--find-links https://myindex.local\n')
+            f.write('arequirement>=1.0\n')
         result = packaging.parse_requirements([requirements])
-        self.assertEqual([], result)
+        self.assertEqual(['arequirement>=1.0'], result)
 
     def test_nested_requirements(self):
         tempdir = tempfile.mkdtemp()
@@ -549,34 +550,17 @@ class ParseRequirementsTest(base.BaseTestCase):
         result = packaging.parse_requirements([requirements])
         self.assertEqual(['pbr'], result)
 
-    @mock.patch('warnings.warn')
-    def test_python_version(self, mock_warn):
-        with open("requirements-py%d.txt" % sys.version_info[0],
-                  "w") as fh:
-            fh.write("# this is a comment\nfoobar\n# and another one\nfoobaz")
-        self.assertEqual(['foobar', 'foobaz'],
-                         packaging.parse_requirements())
-        mock_warn.assert_called_once_with(mock.ANY, DeprecationWarning)
-
-    @mock.patch('warnings.warn')
-    def test_python_version_multiple_options(self, mock_warn):
-        with open("requirements-py1.txt", "w") as fh:
-            fh.write("thisisatrap")
-        with open("requirements-py%d.txt" % sys.version_info[0],
-                  "w") as fh:
-            fh.write("# this is a comment\nfoobar\n# and another one\nfoobaz")
-        self.assertEqual(['foobar', 'foobaz'],
-                         packaging.parse_requirements())
-        # even though we have multiple offending files, this should only be
-        # called once
-        mock_warn.assert_called_once_with(mock.ANY, DeprecationWarning)
-
 
 class ParseRequirementsTestScenarios(base.BaseTestCase):
 
     versioned_scenarios = [
         ('non-versioned', {'versioned': False, 'expected': ['bar']}),
         ('versioned', {'versioned': True, 'expected': ['bar>=1.2.3']})
+    ]
+
+    subdirectory_scenarios = [
+        ('non-subdirectory', {'has_subdirectory': False}),
+        ('has-subdirectory', {'has_subdirectory': True})
     ]
 
     scenarios = [
@@ -591,7 +575,7 @@ class ParseRequirementsTestScenarios(base.BaseTestCase):
         ('ssh_egg_url', {'url': 'git+ssh://foo.com/zipball#egg=bar'}),
         ('git_https_egg_url', {'url': 'git+https://foo.com/zipball#egg=bar'}),
         ('http_egg_url', {'url': 'https://foo.com/zipball#egg=bar'}),
-    ], versioned_scenarios)
+    ], versioned_scenarios, subdirectory_scenarios)
 
     scenarios = scenarios + testscenarios.multiply_scenarios(
         [
@@ -601,7 +585,7 @@ class ParseRequirementsTestScenarios(base.BaseTestCase):
             ('non-editable', {'editable': False}),
             ('editable', {'editable': True}),
         ],
-        versioned_scenarios)
+        versioned_scenarios, subdirectory_scenarios)
 
     def test_parse_requirements(self):
         tmp_file = tempfile.NamedTemporaryFile()
@@ -610,6 +594,8 @@ class ParseRequirementsTestScenarios(base.BaseTestCase):
             req_string = ("-e %s" % req_string)
         if hasattr(self, 'versioned') and self.versioned:
             req_string = ("%s-1.2.3" % req_string)
+        if hasattr(self, 'has_subdirectory') and self.has_subdirectory:
+            req_string = ("%s&subdirectory=baz" % req_string)
         with open(tmp_file.name, 'w') as fh:
             fh.write(req_string)
         self.assertEqual(self.expected,
@@ -684,6 +670,12 @@ class TestVersions(base.BaseTestCase):
         version = packaging._get_version_from_git('1.2.3')
         self.assertEqual('1.2.3', version)
 
+    def test_tagged_version_with_semver_compliant_prerelease(self):
+        self.repo.commit()
+        self.repo.tag('1.2.3-rc2')
+        version = packaging._get_version_from_git()
+        self.assertEqual('1.2.3.0rc2', version)
+
     def test_non_canonical_tagged_version_bump(self):
         self.repo.commit()
         self.repo.tag('1.4')
@@ -740,6 +732,13 @@ class TestVersions(base.BaseTestCase):
         version = packaging._get_version_from_git('1.2.3')
         self.assertThat(version, matchers.StartsWith('1.2.3.0a2.dev1'))
 
+    def test_untagged_version_after_semver_compliant_prerelease_tag(self):
+        self.repo.commit()
+        self.repo.tag('1.2.3-rc2')
+        self.repo.commit()
+        version = packaging._get_version_from_git()
+        self.assertEqual('1.2.3.0rc3.dev1', version)
+
     def test_preversion_too_low_simple(self):
         # That is, the target version is either already released or not high
         # enough for the semver requirements given api breaks etc.
@@ -766,8 +765,10 @@ class TestVersions(base.BaseTestCase):
 
     def test_get_kwargs_corner_cases(self):
         # No tags:
-        git_dir = self.repo._basedir + '/.git'
-        get_kwargs = lambda tag: packaging._get_increment_kwargs(git_dir, tag)
+
+        def get_kwargs(tag):
+            git_dir = self.repo._basedir + '/.git'
+            return packaging._get_increment_kwargs(git_dir, tag)
 
         def _check_combinations(tag):
             self.repo.commit()
@@ -917,6 +918,179 @@ class TestRequirementParsing(base.BaseTestCase):
                 for s in generated_requirements[section]
             ]
             self.assertEqual(exp_parsed, gen_parsed)
+
+
+class TestRepositoryURLDependencies(base.BaseTestCase):
+
+    def setUp(self):
+        super(TestRepositoryURLDependencies, self).setUp()
+        self.requirements = os.path.join(tempfile.mkdtemp(),
+                                         'requirements.txt')
+        with open(self.requirements, 'w') as f:
+            f.write('\n'.join([
+                '-e git+git://git.pro-ject.org/oslo.messaging#egg=oslo.messaging-1.0.0-rc',  # noqa
+                '-e git+git://git.pro-ject.org/django-thumborize#egg=django-thumborize',  # noqa
+                '-e git+git://git.pro-ject.org/django-thumborize#egg=django-thumborize-beta',  # noqa
+                '-e git+git://git.pro-ject.org/django-thumborize#egg=django-thumborize2-beta',  # noqa
+                '-e git+git://git.pro-ject.org/django-thumborize#egg=django-thumborize2-beta-4.0.1',  # noqa
+                '-e git+git://git.pro-ject.org/django-thumborize#egg=django-thumborize2-beta-1.0.0-alpha.beta.1',  # noqa
+                '-e git+git://git.pro-ject.org/django-thumborize#egg=django-thumborize2-beta-1.0.0-alpha-a.b-c-somethinglong+build.1-aef.1-its-okay',  # noqa
+                '-e git+git://git.pro-ject.org/django-thumborize#egg=django-thumborize2-beta-2.0.0-rc.1+build.123',  # noqa
+                '-e git+git://git.project.org/Proj#egg=Proj1',
+                'git+https://git.project.org/Proj#egg=Proj2-0.0.1',
+                '-e git+ssh://git.project.org/Proj#egg=Proj3',
+                'svn+svn://svn.project.org/svn/Proj#egg=Proj4-0.0.2',
+                '-e svn+http://svn.project.org/svn/Proj/trunk@2019#egg=Proj5',
+                'hg+http://hg.project.org/Proj@da39a3ee5e6b#egg=Proj-0.0.3',
+                '-e hg+http://hg.project.org/Proj@2019#egg=Proj',
+                'hg+http://hg.project.org/Proj@v1.0#egg=Proj-0.0.4',
+                '-e hg+http://hg.project.org/Proj@special_feature#egg=Proj',
+                'git://foo.com/zipball#egg=foo-bar-1.2.4',
+                'pypi-proj1', 'pypi-proj2']))
+
+    def test_egg_fragment(self):
+        expected = [
+            'django-thumborize',
+            'django-thumborize-beta',
+            'django-thumborize2-beta',
+            'django-thumborize2-beta>=4.0.1',
+            'django-thumborize2-beta>=1.0.0-alpha.beta.1',
+            'django-thumborize2-beta>=1.0.0-alpha-a.b-c-long+build.1-aef.1-its-okay',  # noqa
+            'django-thumborize2-beta>=2.0.0-rc.1+build.123',
+            'django-thumborize-beta>=0.0.4',
+            'django-thumborize-beta>=1.2.3',
+            'django-thumborize-beta>=10.20.30',
+            'django-thumborize-beta>=1.1.2-prerelease+meta',
+            'django-thumborize-beta>=1.1.2+meta',
+            'django-thumborize-beta>=1.1.2+meta-valid',
+            'django-thumborize-beta>=1.0.0-alpha',
+            'django-thumborize-beta>=1.0.0-beta',
+            'django-thumborize-beta>=1.0.0-alpha.beta',
+            'django-thumborize-beta>=1.0.0-alpha.beta.1',
+            'django-thumborize-beta>=1.0.0-alpha.1',
+            'django-thumborize-beta>=1.0.0-alpha0.valid',
+            'django-thumborize-beta>=1.0.0-alpha.0valid',
+            'django-thumborize-beta>=1.0.0-alpha-a.b-c-somethinglong+build.1-aef.1-its-okay',  # noqa
+            'django-thumborize-beta>=1.0.0-rc.1+build.1',
+            'django-thumborize-beta>=2.0.0-rc.1+build.123',
+            'django-thumborize-beta>=1.2.3-beta',
+            'django-thumborize-beta>=10.2.3-DEV-SNAPSHOT',
+            'django-thumborize-beta>=1.2.3-SNAPSHOT-123',
+            'django-thumborize-beta>=1.0.0',
+            'django-thumborize-beta>=2.0.0',
+            'django-thumborize-beta>=1.1.7',
+            'django-thumborize-beta>=2.0.0+build.1848',
+            'django-thumborize-beta>=2.0.1-alpha.1227',
+            'django-thumborize-beta>=1.0.0-alpha+beta',
+            'django-thumborize-beta>=1.2.3----RC-SNAPSHOT.12.9.1--.12+788',
+            'django-thumborize-beta>=1.2.3----R-S.12.9.1--.12+meta',
+            'django-thumborize-beta>=1.2.3----RC-SNAPSHOT.12.9.1--.12',
+            'django-thumborize-beta>=1.0.0+0.build.1-rc.10000aaa-kk-0.1',
+            'django-thumborize-beta>=999999999999999999.99999999999999.9999999999999',  # noqa
+            'Proj1',
+            'Proj2>=0.0.1',
+            'Proj3',
+            'Proj4>=0.0.2',
+            'Proj5',
+            'Proj>=0.0.3',
+            'Proj',
+            'Proj>=0.0.4',
+            'Proj',
+            'foo-bar>=1.2.4',
+        ]
+        tests = [
+            'egg=django-thumborize',
+            'egg=django-thumborize-beta',
+            'egg=django-thumborize2-beta',
+            'egg=django-thumborize2-beta-4.0.1',
+            'egg=django-thumborize2-beta-1.0.0-alpha.beta.1',
+            'egg=django-thumborize2-beta-1.0.0-alpha-a.b-c-long+build.1-aef.1-its-okay',  # noqa
+            'egg=django-thumborize2-beta-2.0.0-rc.1+build.123',
+            'egg=django-thumborize-beta-0.0.4',
+            'egg=django-thumborize-beta-1.2.3',
+            'egg=django-thumborize-beta-10.20.30',
+            'egg=django-thumborize-beta-1.1.2-prerelease+meta',
+            'egg=django-thumborize-beta-1.1.2+meta',
+            'egg=django-thumborize-beta-1.1.2+meta-valid',
+            'egg=django-thumborize-beta-1.0.0-alpha',
+            'egg=django-thumborize-beta-1.0.0-beta',
+            'egg=django-thumborize-beta-1.0.0-alpha.beta',
+            'egg=django-thumborize-beta-1.0.0-alpha.beta.1',
+            'egg=django-thumborize-beta-1.0.0-alpha.1',
+            'egg=django-thumborize-beta-1.0.0-alpha0.valid',
+            'egg=django-thumborize-beta-1.0.0-alpha.0valid',
+            'egg=django-thumborize-beta-1.0.0-alpha-a.b-c-somethinglong+build.1-aef.1-its-okay',  # noqa
+            'egg=django-thumborize-beta-1.0.0-rc.1+build.1',
+            'egg=django-thumborize-beta-2.0.0-rc.1+build.123',
+            'egg=django-thumborize-beta-1.2.3-beta',
+            'egg=django-thumborize-beta-10.2.3-DEV-SNAPSHOT',
+            'egg=django-thumborize-beta-1.2.3-SNAPSHOT-123',
+            'egg=django-thumborize-beta-1.0.0',
+            'egg=django-thumborize-beta-2.0.0',
+            'egg=django-thumborize-beta-1.1.7',
+            'egg=django-thumborize-beta-2.0.0+build.1848',
+            'egg=django-thumborize-beta-2.0.1-alpha.1227',
+            'egg=django-thumborize-beta-1.0.0-alpha+beta',
+            'egg=django-thumborize-beta-1.2.3----RC-SNAPSHOT.12.9.1--.12+788',  # noqa
+            'egg=django-thumborize-beta-1.2.3----R-S.12.9.1--.12+meta',
+            'egg=django-thumborize-beta-1.2.3----RC-SNAPSHOT.12.9.1--.12',
+            'egg=django-thumborize-beta-1.0.0+0.build.1-rc.10000aaa-kk-0.1',  # noqa
+            'egg=django-thumborize-beta-999999999999999999.99999999999999.9999999999999',  # noqa
+            'egg=Proj1',
+            'egg=Proj2-0.0.1',
+            'egg=Proj3',
+            'egg=Proj4-0.0.2',
+            'egg=Proj5',
+            'egg=Proj-0.0.3',
+            'egg=Proj',
+            'egg=Proj-0.0.4',
+            'egg=Proj',
+            'egg=foo-bar-1.2.4',
+        ]
+        for index, test in enumerate(tests):
+            self.assertEqual(expected[index],
+                             re.sub(r'egg=([^&]+).*$',
+                                    packaging.egg_fragment,
+                                    test))
+
+    def test_parse_repo_url_requirements(self):
+        result = packaging.parse_requirements([self.requirements])
+        self.assertEqual(['oslo.messaging>=1.0.0-rc',
+                          'django-thumborize',
+                          'django-thumborize-beta',
+                          'django-thumborize2-beta',
+                          'django-thumborize2-beta>=4.0.1',
+                          'django-thumborize2-beta>=1.0.0-alpha.beta.1',
+                          'django-thumborize2-beta>=1.0.0-alpha-a.b-c-somethinglong+build.1-aef.1-its-okay',  # noqa
+                          'django-thumborize2-beta>=2.0.0-rc.1+build.123',
+                          'Proj1', 'Proj2>=0.0.1', 'Proj3',
+                          'Proj4>=0.0.2', 'Proj5', 'Proj>=0.0.3',
+                          'Proj', 'Proj>=0.0.4', 'Proj',
+                          'foo-bar>=1.2.4', 'pypi-proj1',
+                          'pypi-proj2'], result)
+
+    def test_parse_repo_url_dependency_links(self):
+        result = packaging.parse_dependency_links([self.requirements])
+        self.assertEqual(
+            [
+             'git+git://git.pro-ject.org/oslo.messaging#egg=oslo.messaging-1.0.0-rc',  # noqa
+             'git+git://git.pro-ject.org/django-thumborize#egg=django-thumborize',  # noqa
+             'git+git://git.pro-ject.org/django-thumborize#egg=django-thumborize-beta',  # noqa
+             'git+git://git.pro-ject.org/django-thumborize#egg=django-thumborize2-beta',  # noqa
+             'git+git://git.pro-ject.org/django-thumborize#egg=django-thumborize2-beta-4.0.1',  # noqa
+             'git+git://git.pro-ject.org/django-thumborize#egg=django-thumborize2-beta-1.0.0-alpha.beta.1',  # noqa
+             'git+git://git.pro-ject.org/django-thumborize#egg=django-thumborize2-beta-1.0.0-alpha-a.b-c-somethinglong+build.1-aef.1-its-okay',  # noqa
+             'git+git://git.pro-ject.org/django-thumborize#egg=django-thumborize2-beta-2.0.0-rc.1+build.123',  # noqa
+             'git+git://git.project.org/Proj#egg=Proj1',
+             'git+https://git.project.org/Proj#egg=Proj2-0.0.1',
+             'git+ssh://git.project.org/Proj#egg=Proj3',
+             'svn+svn://svn.project.org/svn/Proj#egg=Proj4-0.0.2',
+             'svn+http://svn.project.org/svn/Proj/trunk@2019#egg=Proj5',
+             'hg+http://hg.project.org/Proj@da39a3ee5e6b#egg=Proj-0.0.3',
+             'hg+http://hg.project.org/Proj@2019#egg=Proj',
+             'hg+http://hg.project.org/Proj@v1.0#egg=Proj-0.0.4',
+             'hg+http://hg.project.org/Proj@special_feature#egg=Proj',
+             'git://foo.com/zipball#egg=foo-bar-1.2.4'], result)
 
 
 def get_soabi():

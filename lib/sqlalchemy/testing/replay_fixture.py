@@ -1,17 +1,17 @@
-from . import fixtures
-from . import profiling
-from .. import util
-import types
 from collections import deque
 import contextlib
+import types
+
 from . import config
-from sqlalchemy import MetaData
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
+from . import fixtures
+from . import profiling
+from .. import create_engine
+from .. import MetaData
+from .. import util
+from ..orm import Session
 
 
 class ReplayFixtureTest(fixtures.TestBase):
-
     @contextlib.contextmanager
     def _dummy_ctx(self, *arg, **kw):
         yield
@@ -20,10 +20,13 @@ class ReplayFixtureTest(fixtures.TestBase):
 
         dbapi_session = ReplayableSession()
         creator = config.db.pool._creator
-        recorder = lambda: dbapi_session.recorder(creator())
+
+        def recorder():
+            return dbapi_session.recorder(creator())
+
         engine = create_engine(
-            config.db.url, creator=recorder,
-            use_native_hstore=False)
+            config.db.url, creator=recorder, use_native_hstore=False
+        )
         self.metadata = MetaData(engine)
         self.engine = engine
         self.session = Session(engine)
@@ -35,10 +38,12 @@ class ReplayFixtureTest(fixtures.TestBase):
             self.teardown_engine()
             engine.dispose()
 
-        player = lambda: dbapi_session.player()
+        def player():
+            return dbapi_session.player()
+
         engine = create_engine(
-            config.db.url, creator=player,
-            use_native_hstore=False)
+            config.db.url, creator=player, use_native_hstore=False
+        )
 
         self.metadata = MetaData(engine)
         self.engine = engine
@@ -74,21 +79,49 @@ class ReplayableSession(object):
     NoAttribute = object()
 
     if util.py2k:
-        Natives = set([getattr(types, t)
-                       for t in dir(types) if not t.startswith('_')]).\
-            difference([getattr(types, t)
-                        for t in ('FunctionType', 'BuiltinFunctionType',
-                                  'MethodType', 'BuiltinMethodType',
-                                  'LambdaType', 'UnboundMethodType',)])
+        Natives = set(
+            [getattr(types, t) for t in dir(types) if not t.startswith("_")]
+        ).difference(
+            [
+                getattr(types, t)
+                for t in (
+                    "FunctionType",
+                    "BuiltinFunctionType",
+                    "MethodType",
+                    "BuiltinMethodType",
+                    "LambdaType",
+                    "UnboundMethodType",
+                )
+            ]
+        )
     else:
-        Natives = set([getattr(types, t)
-                       for t in dir(types) if not t.startswith('_')]).\
-            union([type(t) if not isinstance(t, type)
-                   else t for t in __builtins__.values()]).\
-            difference([getattr(types, t)
-                        for t in ('FunctionType', 'BuiltinFunctionType',
-                                  'MethodType', 'BuiltinMethodType',
-                                  'LambdaType', )])
+        Natives = (
+            set(
+                [
+                    getattr(types, t)
+                    for t in dir(types)
+                    if not t.startswith("_")
+                ]
+            )
+            .union(
+                [
+                    type(t) if not isinstance(t, type) else t
+                    for t in __builtins__.values()
+                ]
+            )
+            .difference(
+                [
+                    getattr(types, t)
+                    for t in (
+                        "FunctionType",
+                        "BuiltinFunctionType",
+                        "MethodType",
+                        "BuiltinMethodType",
+                        "LambdaType",
+                    )
+                ]
+            )
+        )
 
     def __init__(self):
         self.buffer = deque()
@@ -105,8 +138,10 @@ class ReplayableSession(object):
             self._subject = subject
 
         def __call__(self, *args, **kw):
-            subject, buffer = [object.__getattribute__(self, x)
-                               for x in ('_subject', '_buffer')]
+            subject, buffer = [
+                object.__getattribute__(self, x)
+                for x in ("_subject", "_buffer")
+            ]
 
             result = subject(*args, **kw)
             if type(result) not in ReplayableSession.Natives:
@@ -126,8 +161,10 @@ class ReplayableSession(object):
             except AttributeError:
                 pass
 
-            subject, buffer = [object.__getattribute__(self, x)
-                               for x in ('_subject', '_buffer')]
+            subject, buffer = [
+                object.__getattribute__(self, x)
+                for x in ("_subject", "_buffer")
+            ]
             try:
                 result = type(subject).__getattribute__(subject, key)
             except AttributeError:
@@ -146,7 +183,7 @@ class ReplayableSession(object):
             self._buffer = buffer
 
         def __call__(self, *args, **kw):
-            buffer = object.__getattribute__(self, '_buffer')
+            buffer = object.__getattribute__(self, "_buffer")
             result = buffer.popleft()
             if result is ReplayableSession.Callable:
                 return self
@@ -162,7 +199,7 @@ class ReplayableSession(object):
                 return object.__getattribute__(self, key)
             except AttributeError:
                 pass
-            buffer = object.__getattribute__(self, '_buffer')
+            buffer = object.__getattribute__(self, "_buffer")
             result = buffer.popleft()
             if result is ReplayableSession.Callable:
                 return self

@@ -6,9 +6,9 @@ Provides backends for talking to `memcached <http://memcached.org>`_.
 
 """
 
-from ..api import CacheBackend, NO_VALUE
-from ...util import compat
-from ... import util
+from dogpile.cache.api import CacheBackend, NO_VALUE
+from dogpile.cache import compat
+from dogpile.cache import util
 import random
 import time
 
@@ -24,16 +24,15 @@ class MemcachedLock(object):
 
     """
 
-    def __init__(self, client_fn, key, timeout=0):
+    def __init__(self, client_fn, key):
         self.client_fn = client_fn
         self.key = "_lock" + key
-        self.timeout = timeout
 
     def acquire(self, wait=True):
         client = self.client_fn()
         i = 0
         while True:
-            if client.add(self.key, 1, self.timeout):
+            if client.add(self.key, 1):
                 return True
             elif not wait:
                 return False
@@ -63,12 +62,6 @@ class GenericMemcachedBackend(CacheBackend):
      processes will be talking to the same memcached instance.
      When left at False, dogpile will coordinate on a regular
      threading mutex.
-    :param lock_timeout: integer, number of seconds after acquiring a lock that
-     memcached should expire it.  This argument is only valid when
-     ``distributed_lock`` is ``True``.
-
-     .. versionadded:: 0.5.7
-
     :param memcached_expire_time: integer, when present will
      be passed as the ``time`` parameter to ``pylibmc.Client.set``.
      This is used to set the memcached expiry time for a value.
@@ -113,12 +106,8 @@ class GenericMemcachedBackend(CacheBackend):
         # automatically.
         self.url = util.to_list(arguments['url'])
         self.distributed_lock = arguments.get('distributed_lock', False)
-        self.lock_timeout = arguments.get('lock_timeout', 0)
         self.memcached_expire_time = arguments.get(
             'memcached_expire_time', 0)
-
-    def has_lock_timeout(self):
-        return self.lock_timeout != 0
 
     def _imports(self):
         """client library imports go here."""
@@ -152,8 +141,7 @@ class GenericMemcachedBackend(CacheBackend):
 
     def get_mutex(self, key):
         if self.distributed_lock:
-            return MemcachedLock(lambda: self.client, key,
-                                 timeout=self.lock_timeout)
+            return MemcachedLock(lambda: self.client, key)
         else:
             return None
 
@@ -342,10 +330,9 @@ class BMemcachedBackend(GenericMemcachedBackend):
 
             """
 
-            def add(self, key, value, timeout=0):
+            def add(self, key, value):
                 try:
-                    return super(RepairBMemcachedAPI, self).add(
-                        key, value, timeout)
+                    return super(RepairBMemcachedAPI, self).add(key, value)
                 except ValueError:
                     return False
 

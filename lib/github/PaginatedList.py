@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# ########################## Copyrights and license ############################
+############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2012 Vincent Jacques <vincent@vincent-jacques.net>                 #
 # Copyright 2012 Zearin <zearin@gonk.net>                                      #
@@ -8,9 +8,19 @@
 # Copyright 2013 Bill Mill <bill.mill@gmail.com>                               #
 # Copyright 2013 Vincent Jacques <vincent@vincent-jacques.net>                 #
 # Copyright 2013 davidbrai <davidbrai@gmail.com>                               #
+# Copyright 2014 Thialfihar <thi@thialfihar.org>                               #
+# Copyright 2014 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2015 Dan Vanderkam <danvdk@gmail.com>                              #
+# Copyright 2015 Eliot Walker <eliot@lyft.com>                                 #
+# Copyright 2016 Peter Buckley <dx-pbuckley@users.noreply.github.com>          #
+# Copyright 2017 Jannis Gebauer <ja.geb@me.com>                                #
+# Copyright 2018 Gilad Shefer <gshefer@redhat.com>                             #
+# Copyright 2018 Joel Koglin <JoelKoglin@gmail.com>                            #
+# Copyright 2018 Wan Liuyang <tsfdye@gmail.com>                                #
+# Copyright 2018 sfdye <tsfdye@gmail.com>                                      #
 #                                                                              #
 # This file is part of PyGithub.                                               #
-# http://pygithub.github.io/PyGithub/v1/index.html                             #
+# http://pygithub.readthedocs.io/                                              #
 #                                                                              #
 # PyGithub is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free  #
@@ -25,9 +35,12 @@
 # You should have received a copy of the GNU Lesser General Public License     #
 # along with PyGithub. If not, see <http://www.gnu.org/licenses/>.             #
 #                                                                              #
-# ##############################################################################
+################################################################################
 
-import github.GithubObject
+from __future__ import absolute_import
+
+import six
+from six.moves.urllib.parse import parse_qs
 
 
 class PaginatedListBase:
@@ -36,7 +49,7 @@ class PaginatedListBase:
 
     def __getitem__(self, index):
         assert isinstance(index, (int, slice))
-        if isinstance(index, (int, long)):
+        if isinstance(index, six.integer_types):
             self.__fetchToIndex(index)
             return self.__elements[index]
         else:
@@ -89,7 +102,12 @@ class PaginatedList(PaginatedListBase):
     You can simply enumerate through instances of this class::
 
         for repo in user.get_repos():
-            print repo.name
+            print(repo.name)
+
+    If you want to know the total number of items in the list::
+
+        print(user.get_repos().totalCount)
+        print(len(user.get_repos()))
 
     You can also index them or take slices::
 
@@ -99,15 +117,23 @@ class PaginatedList(PaginatedListBase):
     If you want to iterate in reversed order, just do::
 
         for repo in user.get_repos().reversed:
-            print repo.name
+            print(repo.name)
 
-    And if you really need it, you can explicitely access a specific page::
+    And if you really need it, you can explicitly access a specific page::
 
         some_repos = user.get_repos().get_page(0)
         some_other_repos = user.get_repos().get_page(3)
     """
 
-    def __init__(self, contentClass, requester, firstUrl, firstParams, headers=None, list_item="items"):
+    def __init__(
+        self,
+        contentClass,
+        requester,
+        firstUrl,
+        firstParams,
+        headers=None,
+        list_item="items",
+    ):
         PaginatedListBase.__init__(self)
         self.__requester = requester
         self.__contentClass = contentClass
@@ -125,16 +151,28 @@ class PaginatedList(PaginatedListBase):
     @property
     def totalCount(self):
         if not self.__totalCount:
-            self._grow()
-
+            params = {} if self.__nextParams is None else self.__nextParams.copy()
+            # set per_page = 1 so the totalCount is just the number of pages
+            params.update({"per_page": 1})
+            headers, data = self.__requester.requestJsonAndCheck(
+                "GET", self.__firstUrl, parameters=params, headers=self.__headers
+            )
+            if "link" not in headers:
+                if data and "total_count" in data:
+                    self.__totalCount = data["total_count"]
+                elif data:
+                    self.__totalCount = len(data)
+                else:
+                    self.__totalCount = 0
+            else:
+                links = self.__parseLinkHeader(headers)
+                lastUrl = links.get("last")
+                self.__totalCount = int(parse_qs(lastUrl)["page"][0])
         return self.__totalCount
 
     def _getLastPageUrl(self):
         headers, data = self.__requester.requestJsonAndCheck(
-            "GET",
-            self.__firstUrl,
-            parameters=self.__nextParams,
-            headers=self.__headers
+            "GET", self.__firstUrl, parameters=self.__nextParams, headers=self.__headers
         )
         links = self.__parseLinkHeader(headers)
         lastUrl = links.get("last")
@@ -142,7 +180,14 @@ class PaginatedList(PaginatedListBase):
 
     @property
     def reversed(self):
-        r = PaginatedList(self.__contentClass, self.__requester, self.__firstUrl, self.__firstParams)
+        r = PaginatedList(
+            self.__contentClass,
+            self.__requester,
+            self.__firstUrl,
+            self.__firstParams,
+            self.__headers,
+            self.__list_item,
+        )
         r.__reverse()
         return r
 
@@ -157,10 +202,7 @@ class PaginatedList(PaginatedListBase):
 
     def _fetchNextPage(self):
         headers, data = self.__requester.requestJsonAndCheck(
-            "GET",
-            self.__nextUrl,
-            parameters=self.__nextParams,
-            headers=self.__headers
+            "GET", self.__nextUrl, parameters=self.__nextParams, headers=self.__headers
         )
         data = data if data else []
 
@@ -175,12 +217,13 @@ class PaginatedList(PaginatedListBase):
         self.__nextParams = None
 
         if self.__list_item in data:
-            self.__totalCount = data.get('total_count')
+            self.__totalCount = data.get("total_count")
             data = data[self.__list_item]
 
         content = [
             self.__contentClass(self.__requester, headers, element, completed=False)
-            for element in data if element is not None
+            for element in data
+            if element is not None
         ]
         if self._reversed:
             return content[::-1]
@@ -204,14 +247,11 @@ class PaginatedList(PaginatedListBase):
         if self.__requester.per_page != 30:
             params["per_page"] = self.__requester.per_page
         headers, data = self.__requester.requestJsonAndCheck(
-            "GET",
-            self.__firstUrl,
-            parameters=params,
-            headers=self.__headers
+            "GET", self.__firstUrl, parameters=params, headers=self.__headers
         )
 
         if self.__list_item in data:
-            self.__totalCount = data.get('total_count')
+            self.__totalCount = data.get("total_count")
             data = data[self.__list_item]
 
         return [

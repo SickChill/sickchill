@@ -1,5 +1,6 @@
 # orm/query.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -20,29 +21,45 @@ database to return iterable result sets.
 
 from itertools import chain
 
-from . import (
-    attributes, interfaces, object_mapper, persistence,
-    exc as orm_exc, loading
-    )
-from .base import _entity_descriptor, _is_aliased_class, \
-            _is_mapped_class, _orm_columns, _generative
-from .path_registry import PathRegistry
-from .util import (
-    AliasedClass, ORMAdapter, join as orm_join, with_parent, aliased
-    )
-from .. import sql, util, log, exc as sa_exc, inspect, inspection
-from ..sql.expression import _interpret_as_from
-from ..sql import (
-        util as sql_util,
-        expression, visitors
-    )
-from ..sql.base import ColumnCollection
+from . import attributes
+from . import exc as orm_exc
+from . import interfaces
+from . import loading
+from . import persistence
 from . import properties
+from .base import _entity_descriptor
+from .base import _generative
+from .base import _is_aliased_class
+from .base import _is_mapped_class
+from .base import _orm_columns
+from .base import InspectionAttr
+from .path_registry import PathRegistry
+from .util import _entity_corresponds_to
+from .util import aliased
+from .util import AliasedClass
+from .util import join as orm_join
+from .util import object_mapper
+from .util import ORMAdapter
+from .util import with_parent
+from .. import exc as sa_exc
+from .. import inspect
+from .. import inspection
+from .. import log
+from .. import sql
+from .. import util
+from ..sql import expression
+from ..sql import util as sql_util
+from ..sql import visitors
+from ..sql.base import ColumnCollection
+from ..sql.expression import _interpret_as_from
+from ..sql.selectable import ForUpdateArg
 
-__all__ = ['Query', 'QueryContext', 'aliased']
+
+__all__ = ["Query", "QueryContext", "aliased"]
 
 
 _path_registry = PathRegistry.root
+
 
 @inspection._self_inspects
 @log.class_logger
@@ -57,12 +74,17 @@ class Query(object):
     criteria and options associated with it.
 
     :class:`.Query` objects are normally initially generated using the
-    :meth:`~.Session.query` method of :class:`.Session`.  For a full
-    walkthrough of :class:`.Query` usage, see the
+    :meth:`~.Session.query` method of :class:`.Session`, and in
+    less common cases by instantiating the :class:`.Query` directly and
+    associating with a :class:`.Session` using the :meth:`.Query.with_session`
+    method.
+
+    For a full walkthrough of :class:`.Query` usage, see the
     :ref:`ormtutorial_toplevel`.
 
     """
 
+    _only_return_tuples = False
     _enable_eagerloads = True
     _enable_assertions = True
     _with_labels = False
@@ -73,6 +95,7 @@ class Query(object):
     _having = None
     _distinct = False
     _prefixes = None
+    _suffixes = None
     _offset = None
     _limit = None
     _for_update_arg = None
@@ -84,11 +107,12 @@ class Query(object):
     _autoflush = True
     _only_load_props = None
     _refresh_state = None
+    _refresh_identity_token = None
     _from_obj = ()
     _join_entities = ()
     _select_from_entity = None
     _mapper_adapter_map = {}
-    _filter_aliases = None
+    _filter_aliases = ()
     _from_obj_alias = None
     _joinpath = _joinpoint = util.immutabledict()
     _execution_options = util.immutabledict()
@@ -97,10 +121,71 @@ class Query(object):
     _with_options = ()
     _with_hints = ()
     _enable_single_crit = True
-
+    _orm_only_adapt = True
+    _orm_only_from_obj_alias = True
     _current_path = _path_registry
+    _has_mapper_entities = False
+    _bake_ok = True
+
+    lazy_loaded_from = None
+    """An :class:`.InstanceState` that is using this :class:`.Query` for a
+    lazy load operation.
+
+    The primary rationale for this attribute is to support the horizontal
+    sharding extension, where it is available within specific query
+    execution time hooks created by this extension.   To that end, the
+    attribute is only intended to be meaningful at **query execution time**,
+    and importantly not any time prior to that, including query compilation
+    time.
+
+    .. note::
+
+        Within the realm of regular :class:`.Query` usage, this attribute is
+        set by the lazy loader strategy before the query is invoked.  However
+        there is no established hook that is available to reliably intercept
+        this value programmatically.  It is set by the lazy loading strategy
+        after any  mapper option objects would have been applied, and now that
+        the lazy  loading strategy in the ORM makes use of "baked" queries to
+        cache SQL  compilation, the :meth:`.QueryEvents.before_compile` hook is
+        also not reliable.
+
+        Currently, setting the :paramref:`.relationship.bake_queries` to
+        ``False`` on the target :func:`.relationship`, and then making use of
+        the :meth:`.QueryEvents.before_compile` event hook, is the only
+        available programmatic path to intercepting this attribute. In future
+        releases, there will be new hooks available that allow interception of
+        the :class:`.Query` before it is executed, rather than before it is
+        compiled.
+
+    .. versionadded:: 1.2.9
+
+    """
 
     def __init__(self, entities, session=None):
+        """Construct a :class:`.Query` directly.
+
+        E.g.::
+
+            q = Query([User, Address], session=some_session)
+
+        The above is equivalent to::
+
+            q = some_session.query(User, Address)
+
+        :param entities: a sequence of entities and/or SQL expressions.
+
+        :param session: a :class:`.Session` with which the :class:`.Query`
+         will be associated.   Optional; a :class:`.Query` can be associated
+         with a :class:`.Session` generatively via the
+         :meth:`.Query.with_session` method as well.
+
+        .. seealso::
+
+            :meth:`.Session.query`
+
+            :meth:`.Query.with_session`
+
+        """
         self.session = session
         self._polymorphic_adapters = {}
         self._set_entities(entities)
@@ -110,10 +195,28 @@ class Query(object):
             entity_wrapper = _QueryEntity
         self._entities = []
         self._primary_entity = None
-        for ent in util.to_list(entities):
-            entity_wrapper(self, ent)
+        self._has_mapper_entities = False
 
-        self._set_entity_selectables(self._entities)
+        # 1. don't run util.to_list() or _set_entity_selectables
+        #    if no entities were passed - major performance bottleneck
+        #    from lazy loader implementation when it seeks to use Query
+        #    class for an identity lookup, causes test_orm.py to fail
+        #    with thousands of extra function calls, see issue #4228
+        #    for why this use had to be added
+        # 2. can't use classmethod on Query because session.query_cls
+        #    is an arbitrary callable in some user recipes, not
+        #    necessarily a class, so we don't have the class available.
+        #    see issue #4256
+        # 3. can't do "if entities is not None" because we usually get here
+        #    from session.query() which takes in *entities.
+        # 4. can't do "if entities" because users make use of undocumented
+        #    to_list() behavior here and they pass clause expressions that
+        #    can't be evaluated as boolean.  See issue #4269.
+        if entities != ():
+            for ent in util.to_list(entities):
+                entity_wrapper(self, ent)
+
+            self._set_entity_selectables(self._entities)
 
     def _set_entity_selectables(self, entities):
         self._mapper_adapter_map = d = self._mapper_adapter_map.copy()
@@ -122,30 +225,28 @@ class Query(object):
             for entity in ent.entities:
                 if entity not in d:
                     ext_info = inspect(entity)
-                    if not ext_info.is_aliased_class and \
-                        ext_info.mapper.with_polymorphic:
-                        if ext_info.mapper.mapped_table not in \
-                                            self._polymorphic_adapters:
+                    if (
+                        not ext_info.is_aliased_class
+                        and ext_info.mapper.with_polymorphic
+                    ):
+                        if (
+                            ext_info.mapper.persist_selectable
+                            not in self._polymorphic_adapters
+                        ):
                             self._mapper_loads_polymorphically_with(
                                 ext_info.mapper,
                                 sql_util.ColumnAdapter(
-                                        ext_info.selectable,
-                                        ext_info.mapper._equivalent_columns
-                                )
+                                    ext_info.selectable,
+                                    ext_info.mapper._equivalent_columns,
+                                ),
                             )
                         aliased_adapter = None
                     elif ext_info.is_aliased_class:
-                        aliased_adapter = sql_util.ColumnAdapter(
-                                    ext_info.selectable,
-                                    ext_info.mapper._equivalent_columns
-                                    )
+                        aliased_adapter = ext_info._adapter
                     else:
                         aliased_adapter = None
 
-                    d[entity] = (
-                        ext_info,
-                        aliased_adapter
-                    )
+                    d[entity] = (ext_info, aliased_adapter)
                 ent.setup_entity(*d[entity])
 
     def _mapper_loads_polymorphically_with(self, mapper, adapter):
@@ -160,18 +261,21 @@ class Query(object):
 
         for from_obj in obj:
             info = inspect(from_obj)
-
-            if hasattr(info, 'mapper') and \
-                (info.is_mapper or info.is_aliased_class):
-                if set_base_alias:
+            if hasattr(info, "mapper") and (
+                info.is_mapper or info.is_aliased_class
+            ):
+                self._select_from_entity = info
+                if set_base_alias and not info.is_aliased_class:
                     raise sa_exc.ArgumentError(
-                            "A selectable (FromClause) instance is "
-                            "expected when the base alias is being set.")
+                        "A selectable (FromClause) instance is "
+                        "expected when the base alias is being set."
+                    )
                 fa.append(info.selectable)
             elif not info.is_selectable:
                 raise sa_exc.ArgumentError(
-                        "argument is not a mapped class, mapper, "
-                        "aliased(), or FromClause instance.")
+                    "argument is not a mapped class, mapper, "
+                    "aliased(), or FromClause instance."
+                )
             else:
                 if isinstance(from_obj, expression.SelectBase):
                     from_obj = from_obj.alias()
@@ -181,12 +285,22 @@ class Query(object):
 
         self._from_obj = tuple(fa)
 
-        if set_base_alias and \
-            len(self._from_obj) == 1 and \
-            isinstance(select_from_alias, expression.Alias):
+        if (
+            set_base_alias
+            and len(self._from_obj) == 1
+            and isinstance(select_from_alias, expression.Alias)
+        ):
             equivs = self.__all_equivs()
             self._from_obj_alias = sql_util.ColumnAdapter(
-                                                self._from_obj[0], equivs)
+                self._from_obj[0], equivs
+            )
+        elif (
+            set_base_alias
+            and len(self._from_obj) == 1
+            and hasattr(info, "mapper")
+            and info.is_aliased_class
+        ):
+            self._from_obj_alias = info._adapter
 
     def _reset_polymorphic_adapter(self, mapper):
         for m2 in mapper._with_polymorphic_mappers:
@@ -196,14 +310,14 @@ class Query(object):
 
     def _adapt_polymorphic_element(self, element):
         if "parententity" in element._annotations:
-            search = element._annotations['parententity']
+            search = element._annotations["parententity"]
             alias = self._polymorphic_adapters.get(search, None)
             if alias:
                 return alias.adapt_clause(element)
 
         if isinstance(element, expression.FromClause):
             search = element
-        elif hasattr(element, 'table'):
+        elif hasattr(element, "table"):
             search = element.table
         else:
             return None
@@ -214,11 +328,15 @@ class Query(object):
 
     def _adapt_col_list(self, cols):
         return [
-                    self._adapt_clause(
-                                expression._literal_as_text(o),
-                                True, True)
-                    for o in cols
-                ]
+            self._adapt_clause(
+                expression._literal_as_label_reference(o), True, True
+            )
+            for o in cols
+        ]
+
+    @_generative()
+    def _set_lazyload_from(self, state):
+        self.lazy_loaded_from = state
 
     @_generative()
     def _adapt_all_clauses(self):
@@ -231,15 +349,12 @@ class Query(object):
         adapters = []
         # do we adapt all expression elements or only those
         # tagged as 'ORM' constructs ?
-        orm_only = getattr(self, '_orm_only_adapt', orm_only)
+        if not self._orm_only_adapt:
+            orm_only = False
 
         if as_filter and self._filter_aliases:
-            for fa in self._filter_aliases._visitor_iterator:
-                adapters.append(
-                    (
-                        orm_only, fa.replace
-                    )
-                )
+            for fa in self._filter_aliases:
+                adapters.append((orm_only, fa.replace))
 
         if self._from_obj_alias:
             # for the "from obj" alias, apply extra rule to the
@@ -248,45 +363,48 @@ class Query(object):
             # to all SQL constructs.
             adapters.append(
                 (
-                    getattr(self, '_orm_only_from_obj_alias', orm_only),
-                    self._from_obj_alias.replace
+                    orm_only if self._orm_only_from_obj_alias else False,
+                    self._from_obj_alias.replace,
                 )
             )
 
         if self._polymorphic_adapters:
-            adapters.append(
-                (
-                    orm_only, self._adapt_polymorphic_element
-                )
-            )
+            adapters.append((orm_only, self._adapt_polymorphic_element))
 
         if not adapters:
             return clause
 
         def replace(elem):
+            is_orm_adapt = (
+                "_orm_adapt" in elem._annotations
+                or "parententity" in elem._annotations
+            )
             for _orm_only, adapter in adapters:
-                # if 'orm only', look for ORM annotations
-                # in the element before adapting.
-                if not _orm_only or \
-                    '_orm_adapt' in elem._annotations or \
-                    "parententity" in elem._annotations:
-
+                if not _orm_only or is_orm_adapt:
                     e = adapter(elem)
                     if e is not None:
                         return e
 
-        return visitors.replacement_traverse(
-                            clause,
-                            {},
-                            replace
-                        )
+        return visitors.replacement_traverse(clause, {}, replace)
 
-    def _entity_zero(self):
+    def _query_entity_zero(self):
+        """Return the first QueryEntity."""
         return self._entities[0]
 
     def _mapper_zero(self):
-        return self._select_from_entity or \
-            self._entity_zero().entity_zero
+        """return the Mapper associated with the first QueryEntity."""
+        return self._entities[0].mapper
+
+    def _entity_zero(self):
+        """Return the 'entity' (mapper or AliasedClass) associated
+        with the first QueryEntity, or alternatively the 'select from'
+        entity if specified."""
+
+        return (
+            self._select_from_entity
+            if self._select_from_entity is not None
+            else self._query_entity_zero().entity_zero
+        )
 
     @property
     def _mapper_entities(self):
@@ -295,40 +413,32 @@ class Query(object):
                 yield ent
 
     def _joinpoint_zero(self):
-        return self._joinpoint.get(
-            '_joinpoint_entity',
-            self._mapper_zero()
-        )
+        return self._joinpoint.get("_joinpoint_entity", self._entity_zero())
 
-    def _mapper_zero_or_none(self):
-        if self._primary_entity:
-            return self._primary_entity.mapper
-        else:
-            return None
+    def _bind_mapper(self):
+        ezero = self._entity_zero()
+        if ezero is not None:
+            insp = inspect(ezero)
+            if not insp.is_clause_element:
+                return insp.mapper
 
-    def _only_mapper_zero(self, rationale=None):
-        if len(self._entities) > 1:
-            raise sa_exc.InvalidRequestError(
-                    rationale or
-                    "This operation requires a Query "
-                    "against a single mapper."
-                )
-        return self._mapper_zero()
+        return None
 
     def _only_full_mapper_zero(self, methname):
         if self._entities != [self._primary_entity]:
             raise sa_exc.InvalidRequestError(
-                    "%s() can only be used against "
-                    "a single mapped class." % methname)
+                "%s() can only be used against "
+                "a single mapped class." % methname
+            )
         return self._primary_entity.entity_zero
 
     def _only_entity_zero(self, rationale=None):
         if len(self._entities) > 1:
             raise sa_exc.InvalidRequestError(
-                    rationale or
-                    "This operation requires a Query "
-                    "against a single mapper."
-                )
+                rationale
+                or "This operation requires a Query "
+                "against a single mapper."
+            )
         return self._entity_zero()
 
     def __all_equivs(self):
@@ -338,7 +448,9 @@ class Query(object):
         return equivs
 
     def _get_condition(self):
-        return self._no_criterion_condition("get", order_by=False, distinct=False)
+        return self._no_criterion_condition(
+            "get", order_by=False, distinct=False
+        )
 
     def _get_existing_condition(self):
         self._no_criterion_assertion("get", order_by=False, distinct=False)
@@ -346,14 +458,20 @@ class Query(object):
     def _no_criterion_assertion(self, meth, order_by=True, distinct=True):
         if not self._enable_assertions:
             return
-        if self._criterion is not None or \
-                self._statement is not None or self._from_obj or \
-                self._limit is not None or self._offset is not None or \
-                self._group_by or (order_by and self._order_by) or \
-                (distinct and self._distinct):
+        if (
+            self._criterion is not None
+            or self._statement is not None
+            or self._from_obj
+            or self._limit is not None
+            or self._offset is not None
+            or self._group_by
+            or (order_by and self._order_by)
+            or (distinct and self._distinct)
+        ):
             raise sa_exc.InvalidRequestError(
-                                "Query.%s() being called on a "
-                                "Query with existing criterion. " % meth)
+                "Query.%s() being called on a "
+                "Query with existing criterion. " % meth
+            )
 
     def _no_criterion_condition(self, meth, order_by=True, distinct=True):
         self._no_criterion_assertion(meth, order_by, distinct)
@@ -367,8 +485,9 @@ class Query(object):
             return
         if self._order_by:
             raise sa_exc.InvalidRequestError(
-                                "Query.%s() being called on a "
-                                "Query with existing criterion. " % meth)
+                "Query.%s() being called on a "
+                "Query with existing criterion. " % meth
+            )
         self._no_criterion_condition(meth)
 
     def _no_statement_condition(self, meth):
@@ -376,8 +495,12 @@ class Query(object):
             return
         if self._statement is not None:
             raise sa_exc.InvalidRequestError(
-                ("Query.%s() being called on a Query with an existing full "
-                 "statement - can't apply criterion.") % meth)
+                (
+                    "Query.%s() being called on a Query with an existing full "
+                    "statement - can't apply criterion."
+                )
+                % meth
+            )
 
     def _no_limit_offset(self, meth):
         if not self._enable_assertions:
@@ -388,30 +511,17 @@ class Query(object):
                 "or OFFSET applied. To modify the row-limited results of a "
                 " Query, call from_self() first.  "
                 "Otherwise, call %s() before limit() or offset() "
-                "are applied."
-                % (meth, meth)
+                "are applied." % (meth, meth)
             )
 
-    def _no_select_modifiers(self, meth):
-        if not self._enable_assertions:
-            return
-        for attr, methname, notset in (
-            ('_limit', 'limit()', None),
-            ('_offset', 'offset()', None),
-            ('_order_by', 'order_by()', False),
-            ('_group_by', 'group_by()', False),
-            ('_distinct', 'distinct()', False),
-        ):
-            if getattr(self, attr) is not notset:
-                raise sa_exc.InvalidRequestError(
-                    "Can't call Query.%s() when %s has been called" %
-                    (meth, methname)
-                )
-
-    def _get_options(self, populate_existing=None,
-                            version_check=None,
-                            only_load_props=None,
-                            refresh_state=None):
+    def _get_options(
+        self,
+        populate_existing=None,
+        version_check=None,
+        only_load_props=None,
+        refresh_state=None,
+        identity_token=None,
+    ):
         if populate_existing:
             self._populate_existing = populate_existing
         if version_check:
@@ -420,6 +530,8 @@ class Query(object):
             self._refresh_state = refresh_state
         if only_load_props:
             self._only_load_props = set(only_load_props)
+        if identity_token:
+            self._refresh_identity_token = identity_token
         return self
 
     def _clone(self):
@@ -438,15 +550,11 @@ class Query(object):
 
         """
 
-        stmt = self._compile_context(labels=self._with_labels).\
-                        statement
+        stmt = self._compile_context(labels=self._with_labels).statement
         if self._params:
             stmt = stmt.params(self._params)
 
-
-        # TODO: there's no tests covering effects of
-        # the annotation not being there
-        return stmt._annotate({'no_replacement_traverse': True})
+        return stmt
 
     def subquery(self, name=None, with_labels=False, reduce_columns=False):
         """return the full SELECT statement represented by
@@ -468,29 +576,25 @@ class Query(object):
          to remove same-named columns where one also refers to the other
          via foreign key or WHERE clause equivalence.
 
-         .. versionchanged:: 0.8 the ``with_labels`` and ``reduce_columns``
-            keyword arguments were added.
-
         """
         q = self.enable_eagerloads(False)
         if with_labels:
             q = q.with_labels()
         q = q.statement
+
         if reduce_columns:
             q = q.reduce_columns()
         return q.alias(name=name)
 
     def cte(self, name=None, recursive=False):
-        """Return the full SELECT statement represented by this
+        r"""Return the full SELECT statement represented by this
         :class:`.Query` represented as a common table expression (CTE).
-
-        .. versionadded:: 0.7.6
 
         Parameters and usage are the same as those of the
         :meth:`.SelectBase.cte` method; see that method for
         further details.
 
-        Here is the `Postgresql WITH
+        Here is the `PostgreSQL WITH
         RECURSIVE example
         <http://www.postgresql.org/docs/8.4/static/queries-with.html>`_.
         Note that, in this example, the ``included_parts`` cte and the
@@ -511,17 +615,17 @@ class Query(object):
             included_parts = session.query(
                             Part.sub_part,
                             Part.part,
-                            Part.quantity).\\
-                                filter(Part.part=="our part").\\
+                            Part.quantity).\
+                                filter(Part.part=="our part").\
                                 cte(name="included_parts", recursive=True)
 
             incl_alias = aliased(included_parts, name="pr")
             parts_alias = aliased(Part, name="p")
             included_parts = included_parts.union_all(
                 session.query(
-                    parts_alias.part,
                     parts_alias.sub_part,
-                    parts_alias.quantity).\\
+                    parts_alias.part,
+                    parts_alias.quantity).\
                         filter(parts_alias.part==incl_alias.c.sub_part)
                 )
 
@@ -529,16 +633,17 @@ class Query(object):
                     included_parts.c.sub_part,
                     func.sum(included_parts.c.quantity).
                         label('total_quantity')
-                ).\\
+                ).\
                 group_by(included_parts.c.sub_part)
 
         .. seealso::
 
-            :meth:`.SelectBase.cte`
+            :meth:`.HasCTE.cte`
 
         """
-        return self.enable_eagerloads(False).\
-            statement.cte(name=name, recursive=recursive)
+        return self.enable_eagerloads(False).statement.cte(
+            name=name, recursive=recursive
+        )
 
     def label(self, name):
         """Return the full SELECT statement represented by this
@@ -546,8 +651,6 @@ class Query(object):
         to a scalar subquery with a label of the given name.
 
         Analogous to :meth:`sqlalchemy.sql.expression.SelectBase.label`.
-
-        .. versionadded:: 0.6.5
 
         """
 
@@ -558,8 +661,6 @@ class Query(object):
         :class:`.Query`, converted to a scalar subquery.
 
         Analogous to :meth:`sqlalchemy.sql.expression.SelectBase.as_scalar`.
-
-        .. versionadded:: 0.6.5
 
         """
 
@@ -580,6 +681,42 @@ class Query(object):
         return self.enable_eagerloads(False).with_labels().statement
 
     @_generative()
+    def only_return_tuples(self, value):
+        """When set to True, the query results will always be a tuple.
+
+        This is specifically for single element queries. The default is False.
+
+        .. versionadded:: 1.2.5
+
+        .. seealso::
+
+            :meth:`.Query.is_single_entity`
+
+        """
+        self._only_return_tuples = value
+
+    @property
+    def is_single_entity(self):
+        """Indicates if this :class:`.Query` returns tuples or single entities.
+
+        Returns True if this query returns a single entity for each instance
+        in its result list, and False if this query returns a tuple of entities
+        for each result.
+
+        .. versionadded:: 1.3.11
+
+        .. seealso::
+
+            :meth:`.Query.only_return_tuples`
+
+        """
+        return (
+            not self._only_return_tuples
+            and len(self._entities) == 1
+            and self._entities[0].supports_single_entity
+        )
+
+    @_generative()
     def enable_eagerloads(self, value):
         """Control whether or not eager joins and subqueries are
         rendered.
@@ -592,10 +729,19 @@ class Query(object):
 
         This is used primarily when nesting the Query's
         statement into a subquery or other
-        selectable.
+        selectable, or when using :meth:`.Query.yield_per`.
 
         """
         self._enable_eagerloads = value
+
+    def _no_yield_per(self, message):
+        raise sa_exc.InvalidRequestError(
+            "The yield_per Query option is currently not "
+            "compatible with %s eager loading.  Please "
+            "specify lazyload('*') or query.enable_eagerloads(False) in "
+            "order to "
+            "proceed with query.yield_per()." % message
+        )
 
     @_generative()
     def with_labels(self):
@@ -609,6 +755,16 @@ class Query(object):
 
         When the `Query` actually issues SQL to load rows, it always
         uses column labeling.
+
+        .. note:: The :meth:`.Query.with_labels` method *only* applies
+           the output of :attr:`.Query.statement`, and *not* to any of
+           the result-row invoking systems of :class:`.Query` itself, e.g.
+           :meth:`.Query.first`, :meth:`.Query.all`, etc.   To execute
+           a query using :meth:`.Query.with_labels`, invoke the
+           :attr:`.Query.statement` using :meth:`.Session.execute`::
+
+                result = session.execute(query.with_labels().statement)
+
 
         """
         self._with_labels = True
@@ -659,10 +815,9 @@ class Query(object):
         self._current_path = path
 
     @_generative(_no_clauseelement_condition)
-    def with_polymorphic(self,
-                                    cls_or_mappers,
-                                    selectable=None,
-                                    polymorphic_on=None):
+    def with_polymorphic(
+        self, cls_or_mappers, selectable=None, polymorphic_on=None
+    ):
         """Load columns for inheriting classes.
 
         :meth:`.Query.with_polymorphic` applies transformations
@@ -678,52 +833,90 @@ class Query(object):
         See the documentation section :ref:`with_polymorphic` for
         details on how this method is used.
 
-        .. versionchanged:: 0.8
-            A new and more flexible function
-            :func:`.orm.with_polymorphic` supersedes
-            :meth:`.Query.with_polymorphic`, as it can apply the equivalent
-            functionality to any set of columns or classes in the
-            :class:`.Query`, not just the "zero mapper".  See that
-            function for a description of arguments.
-
         """
 
         if not self._primary_entity:
             raise sa_exc.InvalidRequestError(
-                            "No primary mapper set up for this Query.")
+                "No primary mapper set up for this Query."
+            )
         entity = self._entities[0]._clone()
         self._entities = [entity] + self._entities[1:]
-        entity.set_with_polymorphic(self,
-                                        cls_or_mappers,
-                                        selectable=selectable,
-                                        polymorphic_on=polymorphic_on)
+        entity.set_with_polymorphic(
+            self,
+            cls_or_mappers,
+            selectable=selectable,
+            polymorphic_on=polymorphic_on,
+        )
 
     @_generative()
     def yield_per(self, count):
-        """Yield only ``count`` rows at a time.
+        r"""Yield only ``count`` rows at a time.
 
-        WARNING: use this method with caution; if the same instance is present
-        in more than one batch of rows, end-user changes to attributes will be
-        overwritten.
+        The purpose of this method is when fetching very large result sets
+        (> 10K rows), to batch results in sub-collections and yield them
+        out partially, so that the Python interpreter doesn't need to declare
+        very large areas of memory which is both time consuming and leads
+        to excessive memory use.   The performance from fetching hundreds of
+        thousands of rows can often double when a suitable yield-per setting
+        (e.g. approximately 1000) is used, even with DBAPIs that buffer
+        rows (which are most).
 
-        In particular, it's usually impossible to use this setting with
-        eagerly loaded collections (i.e. any lazy='joined' or 'subquery')
-        since those collections will be cleared for a new load when
-        encountered in a subsequent result batch.   In the case of 'subquery'
-        loading, the full result for all rows is fetched which generally
-        defeats the purpose of :meth:`~sqlalchemy.orm.query.Query.yield_per`.
+        The :meth:`.Query.yield_per` method **is not compatible
+        subqueryload eager loading or joinedload eager loading when
+        using collections**.  It is potentially compatible with "select in"
+        eager loading, **provided the database driver supports multiple,
+        independent cursors** (pysqlite and psycopg2 are known to work,
+        MySQL and SQL Server ODBC drivers do not).
 
-        Also note that while :meth:`~sqlalchemy.orm.query.Query.yield_per`
-        will set the ``stream_results`` execution option to True, currently
-        this is only understood by :mod:`~sqlalchemy.dialects.postgresql.psycopg2` dialect
-        which will stream results using server side cursors instead of pre-buffer
-        all rows for this query. Other DBAPIs pre-buffer all rows before
-        making them available.
+        Therefore in some cases, it may be helpful to disable
+        eager loads, either unconditionally with
+        :meth:`.Query.enable_eagerloads`::
+
+            q = sess.query(Object).yield_per(100).enable_eagerloads(False)
+
+        Or more selectively using :func:`.lazyload`; such as with
+        an asterisk to specify the default loader scheme::
+
+            q = sess.query(Object).yield_per(100).\
+                options(lazyload('*'), joinedload(Object.some_related))
+
+        .. warning::
+
+            Use this method with caution; if the same instance is
+            present in more than one batch of rows, end-user changes
+            to attributes will be overwritten.
+
+            In particular, it's usually impossible to use this setting
+            with eagerly loaded collections (i.e. any lazy='joined' or
+            'subquery') since those collections will be cleared for a
+            new load when encountered in a subsequent result batch.
+            In the case of 'subquery' loading, the full result for all
+            rows is fetched which generally defeats the purpose of
+            :meth:`~sqlalchemy.orm.query.Query.yield_per`.
+
+            Also note that while
+            :meth:`~sqlalchemy.orm.query.Query.yield_per` will set the
+            ``stream_results`` execution option to True, currently
+            this is only understood by
+            :mod:`~sqlalchemy.dialects.postgresql.psycopg2`,
+            :mod:`~sqlalchemy.dialects.mysql.mysqldb` and
+            :mod:`~sqlalchemy.dialects.mysql.pymysql` dialects
+            which will stream results using server side cursors
+            instead of pre-buffer all rows for this query. Other
+            DBAPIs **pre-buffer all rows** before making them
+            available.  The memory use of raw database rows is much less
+            than that of an ORM-mapped object, but should still be taken into
+            consideration when benchmarking.
+
+        .. seealso::
+
+            :meth:`.Query.enable_eagerloads`
 
         """
         self._yield_per = count
         self._execution_options = self._execution_options.union(
-                                        {"stream_results": True})
+            {"stream_results": True, "max_row_buffer": count}
+        )
 
     def get(self, ident):
         """Return an instance based on the given primary key identifier,
@@ -734,6 +927,9 @@ class Query(object):
             my_user = session.query(User).get(5)
 
             some_object = session.query(VersionedFoo).get((5, 10))
+
+            some_object = session.query(VersionedFoo).get(
+                {"id": 5, "version_id": 10})
 
         :meth:`~.Query.get` is special in that it provides direct
         access to the identity map of the owning :class:`.Session`.
@@ -767,44 +963,151 @@ class Query(object):
         foreign-key-to-primary-key criterion, will also use an
         operation equivalent to :meth:`~.Query.get` in order to retrieve
         the target value from the local identity map
-        before querying the database.  See :doc:`/orm/loading`
+        before querying the database.  See :doc:`/orm/loading_relationships`
         for further details on relationship loading.
 
-        :param ident: A scalar or tuple value representing
-         the primary key.   For a composite primary key,
-         the order of identifiers corresponds in most cases
-         to that of the mapped :class:`.Table` object's
-         primary key columns.  For a :func:`.mapper` that
-         was given the ``primary key`` argument during
-         construction, the order of identifiers corresponds
-         to the elements present in this collection.
+        :param ident: A scalar, tuple, or dictionary representing the
+         primary key.  For a composite (e.g. multiple column) primary key,
+         a tuple or dictionary should be passed.
+
+         For a single-column primary key, the scalar calling form is typically
+         the most expedient.  If the primary key of a row is the value "5",
+         the call looks like::
+
+            my_object = query.get(5)
+
+         The tuple form contains primary key values typically in
+         the order in which they correspond to the mapped :class:`.Table`
+         object's primary key columns, or if the
+         :paramref:`.Mapper.primary_key` configuration parameter were used, in
+         the order used for that parameter. For example, if the primary key
+         of a row is represented by the integer
+         digits "5, 10" the call would look like::
+
+             my_object = query.get((5, 10))
+
+         The dictionary form should include as keys the mapped attribute names
+         corresponding to each element of the primary key.  If the mapped class
+         has the attributes ``id``, ``version_id`` as the attributes which
+         store the object's primary key value, the call would look like::
+
+            my_object = query.get({"id": 5, "version_id": 10})
+
+         .. versionadded:: 1.3 the :meth:`.Query.get` method now optionally
+            accepts a dictionary of attribute names to values in order to
+            indicate a primary key identifier.
+
 
         :return: The object instance, or ``None``.
 
         """
+        return self._get_impl(ident, loading.load_on_pk_identity)
 
+    def _identity_lookup(
+        self,
+        mapper,
+        primary_key_identity,
+        identity_token=None,
+        passive=attributes.PASSIVE_OFF,
+        lazy_loaded_from=None,
+    ):
+        """Locate an object in the identity map.
+
+        Given a primary key identity, constructs an identity key and then
+        looks in the session's identity map.  If present, the object may
+        be run through unexpiration rules (e.g. load unloaded attributes,
+        check if was deleted).
+
+        For performance reasons, while the :class:`.Query` must be
+        instantiated, it may be instantiated with no entities, and the
+        mapper is passed::
+
+            obj = session.query()._identity_lookup(inspect(SomeClass), (1, ))
+
+        :param mapper: mapper in use
+        :param primary_key_identity: the primary key we are searching for, as
+         a tuple.
+        :param identity_token: identity token that should be used to create
+         the identity key.  Used as is, however overriding subclasses can
+         repurpose this in order to interpret the value in a special way,
+         such as if None then look among multiple target tokens.
+        :param passive: passive load flag passed to
+         :func:`.loading.get_from_identity`, which impacts the behavior if
+         the object is found; the object may be validated and/or unexpired
+         if the flag allows for SQL to be emitted.
+        :param lazy_loaded_from: an :class:`.InstanceState` that is
+         specifically asking for this identity as a related identity.  Used
+         for sharding schemes where there is a correspondence between an object
+         and a related object being lazy-loaded (or otherwise
+         relationship-loaded).
+
+         .. versionadded:: 1.2.9
+
+        :return: None if the object is not found in the identity map, *or*
+         if the object was unexpired and found to have been deleted.
+         if passive flags disallow SQL and the object is expired, returns
+         PASSIVE_NO_RESULT.   In all other cases the instance is returned.
+
+        .. versionadded:: 1.2.7
+
+        """
+
+        key = mapper.identity_key_from_primary_key(
+            primary_key_identity, identity_token=identity_token
+        )
+        return loading.get_from_identity(self.session, mapper, key, passive)
+
+    def _get_impl(self, primary_key_identity, db_load_fn, identity_token=None):
         # convert composite types to individual args
-        if hasattr(ident, '__composite_values__'):
-            ident = ident.__composite_values__()
-
-        ident = util.to_list(ident)
+        if hasattr(primary_key_identity, "__composite_values__"):
+            primary_key_identity = primary_key_identity.__composite_values__()
 
         mapper = self._only_full_mapper_zero("get")
 
-        if len(ident) != len(mapper.primary_key):
+        is_dict = isinstance(primary_key_identity, dict)
+        if not is_dict:
+            primary_key_identity = util.to_list(
+                primary_key_identity, default=(None,)
+            )
+
+        if len(primary_key_identity) != len(mapper.primary_key):
             raise sa_exc.InvalidRequestError(
-            "Incorrect number of values in identifier to formulate "
-            "primary key for query.get(); primary key columns are %s" %
-            ','.join("'%s'" % c for c in mapper.primary_key))
+                "Incorrect number of values in identifier to formulate "
+                "primary key for query.get(); primary key columns are %s"
+                % ",".join("'%s'" % c for c in mapper.primary_key)
+            )
 
-        key = mapper.identity_key_from_primary_key(ident)
+        if is_dict:
+            try:
+                primary_key_identity = list(
+                    primary_key_identity[prop.key]
+                    for prop in mapper._identity_key_props
+                )
 
-        if not self._populate_existing and \
-                not mapper.always_refresh and \
-                self._for_update_arg is None:
+            except KeyError as err:
+                util.raise_(
+                    sa_exc.InvalidRequestError(
+                        "Incorrect names of values in identifier to formulate "
+                        "primary key for query.get(); primary key attribute "
+                        "names are %s"
+                        % ",".join(
+                            "'%s'" % prop.key
+                            for prop in mapper._identity_key_props
+                        )
+                    ),
+                    replace_context=err,
+                )
 
-            instance = loading.get_from_identity(
-                self.session, key, attributes.PASSIVE_OFF)
+        if (
+            not self._populate_existing
+            and not mapper.always_refresh
+            and self._for_update_arg is None
+        ):
+
+            instance = self._identity_lookup(
+                mapper, primary_key_identity, identity_token=identity_token
+            )
+
             if instance is not None:
                 self._get_existing_condition()
                 # reject calls for id in identity map but class
@@ -812,8 +1115,10 @@ class Query(object):
                 if not issubclass(instance.__class__, mapper.class_):
                     return None
                 return instance
+            elif instance is attributes.PASSIVE_CLASS_MISMATCH:
+                return None
 
-        return loading.load_on_ident(self, key)
+        return db_load_fn(self, primary_key_identity)
 
     @_generative()
     def correlate(self, *args):
@@ -834,12 +1139,15 @@ class Query(object):
         a subquery as returned by :meth:`.Query.subquery` is
         embedded in another :func:`~.expression.select` construct.
 
-         """
+        """
 
-        self._correlate = self._correlate.union(
-                                        _interpret_as_from(s)
-                                        if s is not None else None
-                                        for s in args)
+        for s in args:
+            if s is None:
+                self._correlate = self._correlate.union([None])
+            else:
+                self._correlate = self._correlate.union(
+                    sql_util.surface_selectables(_interpret_as_from(s))
+                )
 
     @_generative()
     def autoflush(self, setting):
@@ -878,7 +1186,7 @@ class Query(object):
         """
         self._invoke_all_eagers = value
 
-    def with_parent(self, instance, property=None):
+    def with_parent(self, instance, property=None, from_entity=None):  # noqa
         """Add filtering criterion that relates the given instance
         to a child object or collection, using its attribute state
         as well as an established :func:`.relationship()`
@@ -891,26 +1199,46 @@ class Query(object):
         that the given property can be None, in which case a search is
         performed against this :class:`.Query` object's target mapper.
 
+        :param instance:
+          An instance which has some :func:`.relationship`.
+
+        :param property:
+          String property name, or class-bound attribute, which indicates
+          what relationship from the instance should be used to reconcile the
+          parent/child relationship.
+
+        :param from_entity:
+          Entity in which to consider as the left side.  This defaults to the
+          "zero" entity of the :class:`.Query` itself.
+
         """
 
+        if from_entity:
+            entity_zero = inspect(from_entity)
+        else:
+            entity_zero = self._entity_zero()
         if property is None:
+
             mapper = object_mapper(instance)
 
             for prop in mapper.iterate_properties:
-                if isinstance(prop, properties.RelationshipProperty) and \
-                    prop.mapper is self._mapper_zero():
-                    property = prop
+                if (
+                    isinstance(prop, properties.RelationshipProperty)
+                    and prop.mapper is entity_zero.mapper
+                ):
+                    property = prop  # noqa
                     break
             else:
                 raise sa_exc.InvalidRequestError(
-                        "Could not locate a property which relates instances "
-                        "of class '%s' to instances of class '%s'" %
-                        (
-                            self._mapper_zero().class_.__name__,
-                            instance.__class__.__name__)
-                        )
+                    "Could not locate a property which relates instances "
+                    "of class '%s' to instances of class '%s'"
+                    % (
+                        entity_zero.mapper.class_.__name__,
+                        instance.__class__.__name__,
+                    )
+                )
 
-        return self.filter(with_parent(instance, property))
+        return self.filter(with_parent(instance, property, entity_zero.entity))
 
     @_generative()
     def add_entity(self, entity, alias=None):
@@ -928,39 +1256,223 @@ class Query(object):
     def with_session(self, session):
         """Return a :class:`.Query` that will use the given :class:`.Session`.
 
+        While the :class:`.Query` object is normally instantiated using the
+        :meth:`.Session.query` method, it is legal to build the :class:`.Query`
+        directly without necessarily using a :class:`.Session`.  Such a
+        :class:`.Query` object, or any :class:`.Query` already associated
+        with a different :class:`.Session`, can produce a new :class:`.Query`
+        object associated with a target session using this method::
+
+            from sqlalchemy.orm import Query
+
+            query = Query([MyClass]).filter(MyClass.id == 5)
+
+            result = query.with_session(my_session).one()
+
         """
 
         self.session = session
 
     def from_self(self, *entities):
-        """return a Query that selects from this Query's
+        r"""return a Query that selects from this Query's
         SELECT statement.
 
-        \*entities - optional list of entities which will replace
-        those being selected.
+        :meth:`.Query.from_self` essentially turns the SELECT statement
+        into a SELECT of itself.  Given a query such as::
+
+            q = session.query(User).filter(User.name.like('e%'))
+
+        Given the :meth:`.Query.from_self` version::
+
+            q = session.query(User).filter(User.name.like('e%')).from_self()
+
+        This query renders as:
+
+        .. sourcecode:: sql
+
+            SELECT anon_1.user_id AS anon_1_user_id,
+                   anon_1.user_name AS anon_1_user_name
+            FROM (SELECT "user".id AS user_id, "user".name AS user_name
+            FROM "user"
+            WHERE "user".name LIKE :name_1) AS anon_1
+
+        There are lots of cases where :meth:`.Query.from_self` may be useful.
+        A simple one is where above, we may want to apply a row LIMIT to
+        the set of user objects we query against, and then apply additional
+        joins against that row-limited set::
+
+            q = session.query(User).filter(User.name.like('e%')).\
+                limit(5).from_self().\
+                join(User.addresses).filter(Address.email.like('q%'))
+
+        The above query joins to the ``Address`` entity but only against the
+        first five results of the ``User`` query:
+
+        .. sourcecode:: sql
+
+            SELECT anon_1.user_id AS anon_1_user_id,
+                   anon_1.user_name AS anon_1_user_name
+            FROM (SELECT "user".id AS user_id, "user".name AS user_name
+            FROM "user"
+            WHERE "user".name LIKE :name_1
+             LIMIT :param_1) AS anon_1
+            JOIN address ON anon_1.user_id = address.user_id
+            WHERE address.email LIKE :email_1
+
+        **Automatic Aliasing**
+
+        Another key behavior of :meth:`.Query.from_self` is that it applies
+        **automatic aliasing** to the entities inside the subquery, when
+        they are referenced on the outside.  Above, if we continue to
+        refer to the ``User`` entity without any additional aliasing applied
+        to it, those references wil be in terms of the subquery::
+
+            q = session.query(User).filter(User.name.like('e%')).\
+                limit(5).from_self().\
+                join(User.addresses).filter(Address.email.like('q%')).\
+                order_by(User.name)
+
+        The ORDER BY against ``User.name`` is aliased to be in terms of the
+        inner subquery:
+
+        .. sourcecode:: sql
+
+            SELECT anon_1.user_id AS anon_1_user_id,
+                   anon_1.user_name AS anon_1_user_name
+            FROM (SELECT "user".id AS user_id, "user".name AS user_name
+            FROM "user"
+            WHERE "user".name LIKE :name_1
+             LIMIT :param_1) AS anon_1
+            JOIN address ON anon_1.user_id = address.user_id
+            WHERE address.email LIKE :email_1 ORDER BY anon_1.user_name
+
+        The automatic aliasing feature only works in a **limited** way,
+        for simple filters and orderings.   More ambitious constructions
+        such as referring to the entity in joins should prefer to use
+        explicit subquery objects, typically making use of the
+        :meth:`.Query.subquery` method to produce an explicit subquery object.
+        Always test the structure of queries by viewing the SQL to ensure
+        a particular structure does what's expected!
+
+        **Changing the Entities**
+
+        :meth:`.Query.from_self` also includes the ability to modify what
+        columns are being queried.   In our example, we want ``User.id``
+        to be queried by the inner query, so that we can join to the
+        ``Address`` entity on the outside, but we only wanted the outer
+        query to return the ``Address.email`` column::
+
+            q = session.query(User).filter(User.name.like('e%')).\
+                limit(5).from_self(Address.email).\
+                join(User.addresses).filter(Address.email.like('q%'))
+
+        yielding:
+
+        .. sourcecode:: sql
+
+            SELECT address.email AS address_email
+            FROM (SELECT "user".id AS user_id, "user".name AS user_name
+            FROM "user"
+            WHERE "user".name LIKE :name_1
+             LIMIT :param_1) AS anon_1
+            JOIN address ON anon_1.user_id = address.user_id
+            WHERE address.email LIKE :email_1
+
+        **Looking out for Inner / Outer Columns**
+
+        Keep in mind that when referring to columns that originate from
+        inside the subquery, we need to ensure they are present in the
+        columns clause of the subquery itself; this is an ordinary aspect of
+        SQL.  For example, if we wanted to load from a joined entity inside
+        the subquery using :func:`.contains_eager`, we need to add those
+        columns.   Below illustrates a join of ``Address`` to ``User``,
+        then a subquery, and then we'd like :func:`.contains_eager` to access
+        the ``User`` columns::
+
+            q = session.query(Address).join(Address.user).\
+                filter(User.name.like('e%'))
+
+            q = q.add_entity(User).from_self().\
+                options(contains_eager(Address.user))
+
+        We use :meth:`.Query.add_entity` above **before** we call
+        :meth:`.Query.from_self` so that the ``User`` columns are present
+        in the inner subquery, so that they are available to the
+        :func:`.contains_eager` modifier we are using on the outside,
+        producing:
+
+        .. sourcecode:: sql
+
+            SELECT anon_1.address_id AS anon_1_address_id,
+                   anon_1.address_email AS anon_1_address_email,
+                   anon_1.address_user_id AS anon_1_address_user_id,
+                   anon_1.user_id AS anon_1_user_id,
+                   anon_1.user_name AS anon_1_user_name
+            FROM (
+                SELECT address.id AS address_id,
+                address.email AS address_email,
+                address.user_id AS address_user_id,
+                "user".id AS user_id,
+                "user".name AS user_name
+            FROM address JOIN "user" ON "user".id = address.user_id
+            WHERE "user".name LIKE :name_1) AS anon_1
+
+        If we didn't call ``add_entity(User)``, but still asked
+        :func:`.contains_eager` to load the ``User`` entity, it would be
+        forced to add the table on the outside without the correct
+        join criteria - note the ``anon1, "user"`` phrase at
+        the end:
+
+        .. sourcecode:: sql
+
+            -- incorrect query
+            SELECT anon_1.address_id AS anon_1_address_id,
+                   anon_1.address_email AS anon_1_address_email,
+                   anon_1.address_user_id AS anon_1_address_user_id,
+                   "user".id AS user_id,
+                   "user".name AS user_name
+            FROM (
+                SELECT address.id AS address_id,
+                address.email AS address_email,
+                address.user_id AS address_user_id
+            FROM address JOIN "user" ON "user".id = address.user_id
+            WHERE "user".name LIKE :name_1) AS anon_1, "user"
+
+        :param \*entities: optional list of entities which will replace
+         those being selected.
 
         """
-        fromclause = self.with_labels().enable_eagerloads(False).\
-                                    _enable_single_crit(False).\
-                                    statement.correlate(None)
+        fromclause = (
+            self.with_labels()
+            .enable_eagerloads(False)
+            .statement.correlate(None)
+        )
         q = self._from_selectable(fromclause)
+        q._enable_single_crit = False
+        q._select_from_entity = self._entity_zero()
         if entities:
             q._set_entities(entities)
         return q
 
     @_generative()
-    def _enable_single_crit(self, val):
+    def _set_enable_single_crit(self, val):
         self._enable_single_crit = val
 
     @_generative()
     def _from_selectable(self, fromclause):
         for attr in (
-                '_statement', '_criterion',
-                '_order_by', '_group_by',
-                '_limit', '_offset',
-                '_joinpath', '_joinpoint',
-                '_distinct', '_having',
-                '_prefixes',
+            "_statement",
+            "_criterion",
+            "_order_by",
+            "_group_by",
+            "_limit",
+            "_offset",
+            "_joinpath",
+            "_joinpoint",
+            "_distinct",
+            "_having",
+            "_prefixes",
+            "_suffixes",
         ):
             self.__dict__.pop(attr, None)
         self._set_select_from([fromclause], True)
@@ -985,6 +1497,7 @@ class Query(object):
         if not q._yield_per:
             q._yield_per = 10
         return iter(q)
+
     _values = values
 
     def value(self, column):
@@ -997,28 +1510,26 @@ class Query(object):
 
     @_generative()
     def with_entities(self, *entities):
-        """Return a new :class:`.Query` replacing the SELECT list with the
+        r"""Return a new :class:`.Query` replacing the SELECT list with the
         given entities.
 
         e.g.::
 
             # Users, filtered on some arbitrary criterion
             # and then ordered by related email address
-            q = session.query(User).\\
-                        join(User.address).\\
-                        filter(User.name.like('%ed%')).\\
+            q = session.query(User).\
+                        join(User.address).\
+                        filter(User.name.like('%ed%')).\
                         order_by(Address.email)
 
             # given *only* User.id==5, Address.email, and 'q', what
             # would the *next* User in the result be ?
-            subq = q.with_entities(Address.email).\\
-                        order_by(None).\\
-                        filter(User.id==5).\\
+            subq = q.with_entities(Address.email).\
+                        order_by(None).\
+                        filter(User.id==5).\
                         subquery()
-            q = q.join((subq, subq.c.email < Address.email)).\\
+            q = q.join((subq, subq.c.email < Address.email)).\
                         limit(1)
-
-        .. versionadded:: 0.6.5
 
         """
         self._set_entities(entities)
@@ -1036,9 +1547,11 @@ class Query(object):
         # given arg is a FROM clause
         self._set_entity_selectables(self._entities[l:])
 
-    @util.pending_deprecation("0.7",
-                ":meth:`.add_column` is superseded by :meth:`.add_columns`",
-                False)
+    @util.pending_deprecation(
+        "0.7",
+        ":meth:`.add_column` is superseded " "by :meth:`.add_columns`",
+        False,
+    )
     def add_column(self, column):
         """Add a column expression to the list of result columns to be
         returned.
@@ -1050,13 +1563,17 @@ class Query(object):
         return self.add_columns(column)
 
     def options(self, *args):
-        """Return a new Query object, applying the given list of
+        """Return a new :class:`.Query` object, applying the given list of
         mapper options.
 
         Most supplied options regard changing how column- and
-        relationship-mapped attributes are loaded. See the sections
-        :ref:`deferred` and :doc:`/orm/loading` for reference
-        documentation.
+        relationship-mapped attributes are loaded.
+
+        .. seealso::
+
+            :ref:`deferred_options`
+
+            :ref:`relationship_loader_options`
 
         """
         return self._options(False, *args)
@@ -1069,6 +1586,8 @@ class Query(object):
         # most MapperOptions write to the '_attributes' dictionary,
         # so copy that as well
         self._attributes = self._attributes.copy()
+        if "_unbound_load_dedupes" not in self._attributes:
+            self._attributes["_unbound_load_dedupes"] = set()
         opts = tuple(util.flatten_iterator(args))
         self._with_options = self._with_options + opts
         if conditional:
@@ -1094,14 +1613,13 @@ class Query(object):
         This allows ad-hoc recipes to be created for :class:`.Query`
         objects.  See the example at :ref:`hybrid_transformers`.
 
-        .. versionadded:: 0.7.4
-
         """
         return fn(self)
 
     @_generative()
-    def with_hint(self, selectable, text, dialect_name='*'):
-        """Add an indexing hint for the given entity or selectable to
+    def with_hint(self, selectable, text, dialect_name="*"):
+        """Add an indexing or other executional context
+        hint for the given entity or selectable to
         this :class:`.Query`.
 
         Functionality is passed straight through to
@@ -1109,10 +1627,49 @@ class Query(object):
         with the addition that ``selectable`` can be a
         :class:`.Table`, :class:`.Alias`, or ORM entity / mapped class
         /etc.
+
+        .. seealso::
+
+            :meth:`.Query.with_statement_hint`
+
+            :meth:.`.Query.prefix_with` - generic SELECT prefixing which also
+            can suit some database-specific HINT syntaxes such as MySQL
+            optimizer hints
+
         """
-        selectable = inspect(selectable).selectable
+        if selectable is not None:
+            selectable = inspect(selectable).selectable
 
         self._with_hints += ((selectable, text, dialect_name),)
+
+    def with_statement_hint(self, text, dialect_name="*"):
+        """add a statement hint to this :class:`.Select`.
+
+        This method is similar to :meth:`.Select.with_hint` except that
+        it does not require an individual table, and instead applies to the
+        statement as a whole.
+
+        This feature calls down into :meth:`.Select.with_statement_hint`.
+
+        .. versionadded:: 1.0.0
+
+        .. seealso::
+
+            :meth:`.Query.with_hint`
+
+        """
+        return self.with_hint(None, text, dialect_name)
+
+    def get_execution_options(self):
+        """ Get the non-SQL options which will take effect during execution.
+
+        .. versionadded:: 1.3
+
+        .. seealso::
+
+            :meth:`.Query.execution_options`
+        """
+        return self._execution_options
 
     @_generative()
     def execution_options(self, **kwargs):
@@ -1125,15 +1682,23 @@ class Query(object):
         automatically if the :meth:`~sqlalchemy.orm.query.Query.yield_per()`
         method is used.
 
+        .. seealso::
+
+            :meth:`.Query.get_execution_options`
+
         """
         self._execution_options = self._execution_options.union(kwargs)
 
     @_generative()
+    @util.deprecated(
+        "0.9",
+        "The :meth:`.Query.with_lockmode` method is deprecated and will "
+        "be removed in a future release.  Please refer to "
+        ":meth:`.Query.with_for_update`. ",
+    )
     def with_lockmode(self, mode):
         """Return a new :class:`.Query` object with the specified "locking mode",
         which essentially refers to the ``FOR UPDATE`` clause.
-
-        .. deprecated:: 0.9.0 superseded by :meth:`.Query.with_for_update`.
 
         :param mode: a string representing the desired locking mode.
          Valid values are:
@@ -1158,7 +1723,14 @@ class Query(object):
         self._for_update_arg = LockmodeArg.parse_legacy_query(mode)
 
     @_generative()
-    def with_for_update(self, read=False, nowait=False, of=None):
+    def with_for_update(
+        self,
+        read=False,
+        nowait=False,
+        of=None,
+        skip_locked=False,
+        key_share=False,
+    ):
         """return a new :class:`.Query` with the specified options for the
         ``FOR UPDATE`` clause.
 
@@ -1173,7 +1745,7 @@ class Query(object):
 
             q = sess.query(User).with_for_update(nowait=True, of=User)
 
-        The above query on a Postgresql backend will render like::
+        The above query on a PostgreSQL backend will render like::
 
             SELECT users.id AS users_id FROM users FOR UPDATE OF users NOWAIT
 
@@ -1186,11 +1758,17 @@ class Query(object):
             full argument and behavioral description.
 
         """
-        self._for_update_arg = LockmodeArg(read=read, nowait=nowait, of=of)
+        self._for_update_arg = LockmodeArg(
+            read=read,
+            nowait=nowait,
+            of=of,
+            skip_locked=skip_locked,
+            key_share=key_share,
+        )
 
     @_generative()
     def params(self, *args, **kwargs):
-        """add values for bind parameters which may have been
+        r"""add values for bind parameters which may have been
         specified in filter().
 
         parameters may be specified using \**kwargs, or optionally a single
@@ -1203,31 +1781,31 @@ class Query(object):
             kwargs.update(args[0])
         elif len(args) > 0:
             raise sa_exc.ArgumentError(
-                            "params() takes zero or one positional argument, "
-                            "which is a dictionary.")
+                "params() takes zero or one positional argument, "
+                "which is a dictionary."
+            )
         self._params = self._params.copy()
         self._params.update(kwargs)
 
     @_generative(_no_statement_condition, _no_limit_offset)
     def filter(self, *criterion):
-        """apply the given filtering criterion to a copy
+        r"""apply the given filtering criterion to a copy
         of this :class:`.Query`, using SQL expressions.
 
         e.g.::
 
             session.query(MyClass).filter(MyClass.name == 'some name')
 
-        Multiple criteria are joined together by AND::
+        Multiple criteria may be specified as comma separated; the effect
+        is that they will be joined together using the :func:`.and_`
+        function::
 
-            session.query(MyClass).\\
+            session.query(MyClass).\
                 filter(MyClass.name == 'some name', MyClass.id > 5)
 
         The criterion is any SQL expression object applicable to the
         WHERE clause of a select.   String expressions are coerced
         into SQL expression constructs via the :func:`.text` construct.
-
-        .. versionchanged:: 0.7.5
-            Multiple criteria joined by AND.
 
         .. seealso::
 
@@ -1235,7 +1813,7 @@ class Query(object):
 
         """
         for criterion in list(criterion):
-            criterion = expression._literal_as_text(criterion)
+            criterion = expression._expression_literal_as_text(criterion)
 
             criterion = self._adapt_clause(criterion, True, True)
 
@@ -1245,16 +1823,18 @@ class Query(object):
                 self._criterion = criterion
 
     def filter_by(self, **kwargs):
-        """apply the given filtering criterion to a copy
+        r"""apply the given filtering criterion to a copy
         of this :class:`.Query`, using keyword expressions.
 
         e.g.::
 
             session.query(MyClass).filter_by(name = 'some name')
 
-        Multiple criteria are joined together by AND::
+        Multiple criteria may be specified as comma separated; the effect
+        is that they will be joined together using the :func:`.and_`
+        function::
 
-            session.query(MyClass).\\
+            session.query(MyClass).\
                 filter_by(name = 'some name', id = 5)
 
         The keyword expressions are extracted from the primary
@@ -1267,9 +1847,11 @@ class Query(object):
 
         """
 
-        clauses = [_entity_descriptor(self._joinpoint_zero(), key) == value
-            for key, value in kwargs.items()]
-        return self.filter(sql.and_(*clauses))
+        clauses = [
+            _entity_descriptor(self._joinpoint_zero(), key) == value
+            for key, value in kwargs.items()
+        ]
+        return self.filter(*clauses)
 
     @_generative(_no_statement_condition, _no_limit_offset)
     def order_by(self, *criterion):
@@ -1277,20 +1859,16 @@ class Query(object):
         the newly resulting ``Query``
 
         All existing ORDER BY settings can be suppressed by
-        passing ``None`` - this will suppress any ORDER BY configured
-        on mappers as well.
-
-        Alternatively, an existing ORDER BY setting on the Query
-        object can be entirely cancelled by passing ``False``
-        as the value - use this before calling methods where
-        an ORDER BY is invalid.
+        passing ``None`` - this will suppress any ordering configured
+        on the :func:`.mapper` object using the deprecated
+        :paramref:`.mapper.order_by` parameter.
 
         """
 
         if len(criterion) == 1:
             if criterion[0] is False:
-                if '_order_by' in self.__dict__:
-                    del self._order_by
+                if "_order_by" in self.__dict__:
+                    self._order_by = False
                 return
             if criterion[0] is None:
                 self._order_by = None
@@ -1306,7 +1884,21 @@ class Query(object):
     @_generative(_no_statement_condition, _no_limit_offset)
     def group_by(self, *criterion):
         """apply one or more GROUP BY criterion to the query and return
-        the newly resulting :class:`.Query`"""
+        the newly resulting :class:`.Query`
+
+        All existing GROUP BY settings can be suppressed by
+        passing ``None`` - this will suppress any GROUP BY configured
+        on mappers as well.
+
+        .. versionadded:: 1.1 GROUP BY can be cancelled by passing None,
+           in the same way as ORDER BY.
+
+        """
+
+        if len(criterion) == 1:
+            if criterion[0] is None:
+                self._group_by = False
+                return
 
         criterion = list(chain(*[_orm_columns(c) for c in criterion]))
         criterion = self._adapt_col_list(criterion)
@@ -1318,29 +1910,31 @@ class Query(object):
 
     @_generative(_no_statement_condition, _no_limit_offset)
     def having(self, criterion):
-        """apply a HAVING criterion to the query and return the
+        r"""apply a HAVING criterion to the query and return the
         newly resulting :class:`.Query`.
 
-        :meth:`~.Query.having` is used in conjunction with :meth:`~.Query.group_by`.
+        :meth:`~.Query.having` is used in conjunction with
+        :meth:`~.Query.group_by`.
 
         HAVING criterion makes it possible to use filters on aggregate
         functions like COUNT, SUM, AVG, MAX, and MIN, eg.::
 
-            q = session.query(User.id).\\
-                        join(User.addresses).\\
-                        group_by(User.id).\\
+            q = session.query(User.id).\
+                        join(User.addresses).\
+                        group_by(User.id).\
                         having(func.count(Address.id) > 2)
 
         """
 
-        if isinstance(criterion, util.string_types):
-            criterion = sql.text(criterion)
+        criterion = expression._expression_literal_as_text(criterion)
 
-        if criterion is not None and \
-                not isinstance(criterion, sql.ClauseElement):
+        if criterion is not None and not isinstance(
+            criterion, sql.ClauseElement
+        ):
             raise sa_exc.ArgumentError(
-                    "having() argument must be of type "
-                    "sqlalchemy.sql.ClauseElement or string")
+                "having() argument must be of type "
+                "sqlalchemy.sql.ClauseElement or string"
+            )
 
         criterion = self._adapt_clause(criterion, True, True)
 
@@ -1348,6 +1942,11 @@ class Query(object):
             self._having = self._having & criterion
         else:
             self._having = criterion
+
+    def _set_op(self, expr_fn, *q):
+        return self._from_selectable(
+            expr_fn(*([self] + list(q)))
+        )._set_enable_single_crit(False)
 
     def union(self, *q):
         """Produce a UNION of this Query against one or more queries.
@@ -1386,9 +1985,7 @@ class Query(object):
         its SELECT statement.
 
         """
-
-        return self._from_selectable(
-                    expression.union(*([self] + list(q))))
+        return self._set_op(expression.union, *q)
 
     def union_all(self, *q):
         """Produce a UNION ALL of this Query against one or more queries.
@@ -1397,9 +1994,7 @@ class Query(object):
         that method for usage examples.
 
         """
-        return self._from_selectable(
-                    expression.union_all(*([self] + list(q)))
-                )
+        return self._set_op(expression.union_all, *q)
 
     def intersect(self, *q):
         """Produce an INTERSECT of this Query against one or more queries.
@@ -1408,9 +2003,7 @@ class Query(object):
         that method for usage examples.
 
         """
-        return self._from_selectable(
-                    expression.intersect(*([self] + list(q)))
-                )
+        return self._set_op(expression.intersect, *q)
 
     def intersect_all(self, *q):
         """Produce an INTERSECT ALL of this Query against one or more queries.
@@ -1419,9 +2012,7 @@ class Query(object):
         that method for usage examples.
 
         """
-        return self._from_selectable(
-                    expression.intersect_all(*([self] + list(q)))
-                )
+        return self._set_op(expression.intersect_all, *q)
 
     def except_(self, *q):
         """Produce an EXCEPT of this Query against one or more queries.
@@ -1430,9 +2021,7 @@ class Query(object):
         that method for usage examples.
 
         """
-        return self._from_selectable(
-                    expression.except_(*([self] + list(q)))
-                )
+        return self._set_op(expression.except_, *q)
 
     def except_all(self, *q):
         """Produce an EXCEPT ALL of this Query against one or more queries.
@@ -1441,20 +2030,18 @@ class Query(object):
         that method for usage examples.
 
         """
-        return self._from_selectable(
-                    expression.except_all(*([self] + list(q)))
-                )
+        return self._set_op(expression.except_all, *q)
 
     def join(self, *props, **kwargs):
-        """Create a SQL JOIN against this :class:`.Query` object's criterion
+        r"""Create a SQL JOIN against this :class:`.Query` object's criterion
         and apply generatively, returning the newly resulting :class:`.Query`.
 
         **Simple Relationship Joins**
 
         Consider a mapping between two classes ``User`` and ``Address``,
         with a relationship ``User.addresses`` representing a collection
-        of ``Address`` objects associated with each ``User``.   The most common
-        usage of :meth:`~.Query.join` is to create a JOIN along this
+        of ``Address`` objects associated with each ``User``.   The most
+        common usage of :meth:`~.Query.join` is to create a JOIN along this
         relationship, using the ``User.addresses`` attribute as an indicator
         for how this should occur::
 
@@ -1484,9 +2071,9 @@ class Query(object):
         :meth:`~.Query.join`, each using an explicit attribute to indicate
         the source entity::
 
-            q = session.query(User).\\
-                    join(User.orders).\\
-                    join(Order.items).\\
+            q = session.query(User).\
+                    join(User.orders).\
+                    join(Order.items).\
                     join(Item.keywords)
 
         **Joins to a Target Entity or Selectable**
@@ -1521,10 +2108,10 @@ class Query(object):
 
             a_alias = aliased(Address)
 
-            q = session.query(User).\\
-                    join(User.addresses).\\
-                    join(a_alias, User.addresses).\\
-                    filter(Address.email_address=='ed@foo.com').\\
+            q = session.query(User).\
+                    join(User.addresses).\
+                    join(a_alias, User.addresses).\
+                    filter(Address.email_address=='ed@foo.com').\
                     filter(a_alias.email_address=='ed@bar.com')
 
         Where above, the generated SQL would be similar to::
@@ -1544,16 +2131,6 @@ class Query(object):
 
             q = session.query(User).join(Address, User.id==Address.user_id)
 
-        .. versionchanged:: 0.7
-            In SQLAlchemy 0.6 and earlier, the two argument form of
-            :meth:`~.Query.join` requires the usage of a tuple:
-            ``query(User).join((Address, User.id==Address.user_id))``\ .
-            This calling form is accepted in 0.7 and further, though
-            is not necessary unless multiple join conditions are passed to
-            a single :meth:`~.Query.join` call, which itself is also not
-            generally necessary as it is now equivalent to multiple
-            calls (this wasn't always the case).
-
         **Advanced Join Targeting and Adaption**
 
         There is a lot of flexibility in what the "target" can be when using
@@ -1562,11 +2139,11 @@ class Query(object):
         :func:`.alias` and :func:`.select` constructs, with either the one
         or two-argument forms::
 
-            addresses_q = select([Address.user_id]).\\
-                        where(Address.email_address.endswith("@bar.com")).\\
+            addresses_q = select([Address.user_id]).\
+                        where(Address.email_address.endswith("@bar.com")).\
                         alias()
 
-            q = session.query(User).\\
+            q = session.query(User).\
                         join(addresses_q, addresses_q.c.user_id==User.id)
 
         :meth:`~.Query.join` also features the ability to *adapt* a
@@ -1575,8 +2152,8 @@ class Query(object):
         against ``Address``, allowing the relationship denoted by
         ``User.addresses`` to *adapt* itself to the altered target::
 
-            address_subq = session.query(Address).\\
-                            filter(Address.email_address == 'ed@foo.com').\\
+            address_subq = session.query(Address).\
+                            filter(Address.email_address == 'ed@foo.com').\
                             subquery()
 
             q = session.query(User).join(address_subq, User.addresses)
@@ -1595,7 +2172,7 @@ class Query(object):
         The above form allows one to fall back onto an explicit ON
         clause at any time::
 
-            q = session.query(User).\\
+            q = session.query(User).\
                     join(address_subq, User.id==address_subq.c.user_id)
 
         **Controlling what to Join From**
@@ -1608,8 +2185,8 @@ class Query(object):
         the :class:`.Query` to select first from the ``User``
         entity::
 
-            q = session.query(Address).select_from(User).\\
-                            join(User.addresses).\\
+            q = session.query(Address).select_from(User).\
+                            join(User.addresses).\
                             filter(User.name == 'ed')
 
         Which will produce SQL similar to::
@@ -1625,7 +2202,7 @@ class Query(object):
         when a query is being joined algorithmically, such as
         when querying self-referentially to an arbitrary depth::
 
-            q = session.query(Node).\\
+            q = session.query(Node).\
                     join("children", "children", aliased=True)
 
         When ``aliased=True`` is used, the actual "alias" construct
@@ -1633,8 +2210,8 @@ class Query(object):
         :meth:`.Query.filter` will adapt the incoming entity to
         the last join point::
 
-            q = session.query(Node).\\
-                    join("children", "children", aliased=True).\\
+            q = session.query(Node).\
+                    join("children", "children", aliased=True).\
                     filter(Node.name == 'grandchild 1')
 
         When using automatic aliasing, the ``from_joinpoint=True``
@@ -1642,19 +2219,19 @@ class Query(object):
         multiple calls to :meth:`~.Query.join`, so that
         each path along the way can be further filtered::
 
-            q = session.query(Node).\\
-                    join("children", aliased=True).\\
-                    filter(Node.name='child 1').\\
-                    join("children", aliased=True, from_joinpoint=True).\\
+            q = session.query(Node).\
+                    join("children", aliased=True).\
+                    filter(Node.name='child 1').\
+                    join("children", aliased=True, from_joinpoint=True).\
                     filter(Node.name == 'grandchild 1')
 
         The filtering aliases above can then be reset back to the
         original ``Node`` entity using :meth:`~.Query.reset_joinpoint`::
 
-            q = session.query(Node).\\
-                    join("children", "children", aliased=True).\\
-                    filter(Node.name == 'grandchild 1').\\
-                    reset_joinpoint().\\
+            q = session.query(Node).\
+                    join("children", "children", aliased=True).\
+                    filter(Node.name == 'grandchild 1').\
+                    reset_joinpoint().\
                     filter(Node.name == 'parent 1)
 
         For an example of ``aliased=True``, see the distribution
@@ -1671,6 +2248,18 @@ class Query(object):
          anonymously aliased.  Subsequent calls to :meth:`~.Query.filter`
          and similar will adapt the incoming criterion to the target
          alias, until :meth:`~.Query.reset_joinpoint` is called.
+        :param isouter=False: If True, the join used will be a left outer join,
+         just as if the :meth:`.Query.outerjoin` method were called.  This
+         flag is here to maintain consistency with the same flag as accepted
+         by :meth:`.FromClause.join` and other Core constructs.
+
+
+         .. versionadded:: 1.0.0
+
+        :param full=False: render FULL OUTER JOIN; implies ``isouter``.
+
+         .. versionadded:: 1.1
+
         :param from_joinpoint=False: When using ``aliased=True``, a setting
          of True here will cause the join to be from the most recent
          joined target, rather than starting back from the original
@@ -1680,22 +2269,31 @@ class Query(object):
 
             :ref:`ormtutorial_joins` in the ORM tutorial.
 
-            :ref:`inheritance_toplevel` for details on how :meth:`~.Query.join`
-            is used for inheritance relationships.
+            :ref:`inheritance_toplevel` for details on how
+            :meth:`~.Query.join` is used for inheritance relationships.
 
             :func:`.orm.join` - a standalone ORM-level join function,
             used internally by :meth:`.Query.join`, which in previous
             SQLAlchemy versions was the primary ORM-level joining interface.
 
         """
-        aliased, from_joinpoint = kwargs.pop('aliased', False),\
-                                    kwargs.pop('from_joinpoint', False)
+        aliased, from_joinpoint, isouter, full = (
+            kwargs.pop("aliased", False),
+            kwargs.pop("from_joinpoint", False),
+            kwargs.pop("isouter", False),
+            kwargs.pop("full", False),
+        )
         if kwargs:
-            raise TypeError("unknown arguments: %s" %
-                                ','.join(kwargs.keys))
-        return self._join(props,
-                            outerjoin=False, create_aliases=aliased,
-                            from_joinpoint=from_joinpoint)
+            raise TypeError(
+                "unknown arguments: %s" % ", ".join(sorted(kwargs))
+            )
+        return self._join(
+            props,
+            outerjoin=isouter,
+            full=full,
+            create_aliases=aliased,
+            from_joinpoint=from_joinpoint,
+        )
 
     def outerjoin(self, *props, **kwargs):
         """Create a left outer join against this ``Query`` object's criterion
@@ -1704,29 +2302,37 @@ class Query(object):
         Usage is the same as the ``join()`` method.
 
         """
-        aliased, from_joinpoint = kwargs.pop('aliased', False), \
-                                kwargs.pop('from_joinpoint', False)
+        aliased, from_joinpoint, full = (
+            kwargs.pop("aliased", False),
+            kwargs.pop("from_joinpoint", False),
+            kwargs.pop("full", False),
+        )
         if kwargs:
-            raise TypeError("unknown arguments: %s" %
-                    ','.join(kwargs))
-        return self._join(props,
-                            outerjoin=True, create_aliases=aliased,
-                            from_joinpoint=from_joinpoint)
+            raise TypeError(
+                "unknown arguments: %s" % ", ".join(sorted(kwargs))
+            )
+        return self._join(
+            props,
+            outerjoin=True,
+            full=full,
+            create_aliases=aliased,
+            from_joinpoint=from_joinpoint,
+        )
 
     def _update_joinpoint(self, jp):
         self._joinpoint = jp
         # copy backwards to the root of the _joinpath
         # dict, so that no existing dict in the path is mutated
-        while 'prev' in jp:
-            f, prev = jp['prev']
+        while "prev" in jp:
+            f, prev = jp["prev"]
             prev = prev.copy()
-            prev[f] = jp
-            jp['prev'] = (f, prev)
+            prev[f] = jp.copy()
+            jp["prev"] = (f, prev)
             jp = prev
         self._joinpath = jp
 
     @_generative(_no_statement_condition, _no_limit_offset)
-    def _join(self, keys, outerjoin, create_aliases, from_joinpoint):
+    def _join(self, keys, outerjoin, full, create_aliases, from_joinpoint):
         """consumes arguments from join() or outerjoin(), places them into a
         consistent format with which to form the actual JOIN constructs.
 
@@ -1735,79 +2341,109 @@ class Query(object):
         if not from_joinpoint:
             self._reset_joinpoint()
 
-        if len(keys) == 2 and \
-            isinstance(keys[0], (expression.FromClause,
-                                    type, AliasedClass)) and \
-            isinstance(keys[1], (str, expression.ClauseElement,
-                                        interfaces.PropComparator)):
+        if (
+            len(keys) == 2
+            and isinstance(
+                keys[0], (expression.FromClause, type, AliasedClass)
+            )
+            and isinstance(
+                keys[1],
+                (str, expression.ClauseElement, interfaces.PropComparator),
+            )
+        ):
             # detect 2-arg form of join and
             # convert to a tuple.
             keys = (keys,)
 
-        for arg1 in util.to_list(keys):
+        # Query.join() accepts a list of join paths all at once.
+        # step one is to iterate through these paths and determine the
+        # intent of each path individually.  as we encounter a path token,
+        # we add a new ORMJoin construct to the self._from_obj tuple,
+        # either by adding a new element to it, or by replacing an existing
+        # element with a new ORMJoin.
+        keylist = util.to_list(keys)
+        for idx, arg1 in enumerate(keylist):
             if isinstance(arg1, tuple):
                 # "tuple" form of join, multiple
                 # tuples are accepted as well.   The simpler
-                # "2-arg" form is preferred.  May deprecate
-                # the "tuple" usage.
+                # "2-arg" form is preferred.
                 arg1, arg2 = arg1
             else:
                 arg2 = None
 
             # determine onclause/right_entity.  there
             # is a little bit of legacy behavior still at work here
-            # which means they might be in either order.  may possibly
-            # lock this down to (right_entity, onclause) in 0.6.
-            if isinstance(arg1, (interfaces.PropComparator, util.string_types)):
-                right_entity, onclause = arg2, arg1
+            # which means they might be in either order.
+            if isinstance(
+                arg1, (interfaces.PropComparator, util.string_types)
+            ):
+                right, onclause = arg2, arg1
             else:
-                right_entity, onclause = arg1, arg2
+                right, onclause = arg1, arg2
 
-            left_entity = prop = None
-
-            if isinstance(onclause, util.string_types):
-                left_entity = self._joinpoint_zero()
-
-                descriptor = _entity_descriptor(left_entity, onclause)
-                onclause = descriptor
-
-            # check for q.join(Class.propname, from_joinpoint=True)
-            # and Class is that of the current joinpoint
-            elif from_joinpoint and \
-                        isinstance(onclause, interfaces.PropComparator):
-                left_entity = onclause._parententity
-
-                info = inspect(self._joinpoint_zero())
-                left_mapper, left_selectable, left_is_aliased = \
-                    getattr(info, 'mapper', None), \
-                    info.selectable, \
-                    getattr(info, 'is_aliased_class', None)
-
-                if left_mapper is left_entity:
-                    left_entity = self._joinpoint_zero()
-                    descriptor = _entity_descriptor(left_entity,
-                                                            onclause.key)
-                    onclause = descriptor
+            if onclause is None:
+                r_info = inspect(right)
+                if not r_info.is_selectable and not hasattr(r_info, "mapper"):
+                    raise sa_exc.ArgumentError(
+                        "Expected mapped entity or "
+                        "selectable/table as join target"
+                    )
 
             if isinstance(onclause, interfaces.PropComparator):
-                if right_entity is None:
-                    right_entity = onclause.property.mapper
-                    of_type = getattr(onclause, '_of_type', None)
-                    if of_type:
-                        right_entity = of_type
-                    else:
-                        right_entity = onclause.property.mapper
+                of_type = getattr(onclause, "_of_type", None)
+            else:
+                of_type = None
 
-                left_entity = onclause._parententity
+            if isinstance(onclause, util.string_types):
+                # string given, e.g. query(Foo).join("bar").
+                # we look to the left entity or what we last joined
+                # towards
+                onclause = _entity_descriptor(self._joinpoint_zero(), onclause)
+
+            # check for q.join(Class.propname, from_joinpoint=True)
+            # and Class corresponds at the mapper level to the current
+            # joinpoint.  this match intentionally looks for a non-aliased
+            # class-bound descriptor as the onclause and if it matches the
+            # current joinpoint at the mapper level, it's used.  This
+            # is a very old use case that is intended to make it easier
+            # to work with the aliased=True flag, which is also something
+            # that probably shouldn't exist on join() due to its high
+            # complexity/usefulness ratio
+            elif from_joinpoint and isinstance(
+                onclause, interfaces.PropComparator
+            ):
+                jp0 = self._joinpoint_zero()
+                info = inspect(jp0)
+
+                if getattr(info, "mapper", None) is onclause._parententity:
+                    onclause = _entity_descriptor(jp0, onclause.key)
+
+            if isinstance(onclause, interfaces.PropComparator):
+                # descriptor/property given (or determined); this tells
+                # us explicitly what the expected "left" side of the join is.
+                if right is None:
+                    if of_type:
+                        right = of_type
+                    else:
+                        right = onclause.property.entity
+
+                left = onclause._parententity
+
+                alias = self._polymorphic_adapters.get(left, None)
+
+                # could be None or could be ColumnAdapter also
+                if isinstance(alias, ORMAdapter) and alias.mapper.isa(left):
+                    left = alias.aliased_class
+                    onclause = getattr(left, onclause.key)
 
                 prop = onclause.property
-                if not isinstance(onclause,  attributes.QueryableAttribute):
+                if not isinstance(onclause, attributes.QueryableAttribute):
                     onclause = prop
 
                 if not create_aliases:
                     # check for this path already present.
                     # don't render in that case.
-                    edge = (left_entity, right_entity, prop.key)
+                    edge = (left, right, prop.key)
                     if edge in self._joinpoint:
                         # The child's prev reference might be stale --
                         # it could point to a parent older than the
@@ -1817,48 +2453,286 @@ class Query(object):
                         # and then mutate the child, which might be
                         # shared by a different query object.
                         jp = self._joinpoint[edge].copy()
-                        jp['prev'] = (edge, self._joinpoint)
+                        jp["prev"] = (edge, self._joinpoint)
                         self._update_joinpoint(jp)
+
+                        # warn only on the last element of the list
+                        if idx == len(keylist) - 1:
+                            util.warn(
+                                "Pathed join target %s has already "
+                                "been joined to; skipping" % prop
+                            )
                         continue
+            else:
+                # no descriptor/property given; we will need to figure out
+                # what the effective "left" side is
+                prop = left = None
 
-            elif onclause is not None and right_entity is None:
-                # TODO: no coverage here
-                raise NotImplementedError("query.join(a==b) not supported.")
-
+            # figure out the final "left" and "right" sides and create an
+            # ORMJoin to add to our _from_obj tuple
             self._join_left_to_right(
-                                left_entity,
-                                right_entity, onclause,
-                                outerjoin, create_aliases, prop)
+                left, right, onclause, prop, create_aliases, outerjoin, full
+            )
 
+    def _join_left_to_right(
+        self, left, right, onclause, prop, create_aliases, outerjoin, full
+    ):
+        """given raw "left", "right", "onclause" parameters consumed from
+        a particular key within _join(), add a real ORMJoin object to
+        our _from_obj list (or augment an existing one)
 
-    def _join_left_to_right(self, left, right,
-                            onclause, outerjoin, create_aliases, prop):
-        """append a JOIN to the query's from clause."""
+        """
 
         self._polymorphic_adapters = self._polymorphic_adapters.copy()
 
         if left is None:
-            if self._from_obj:
-                left = self._from_obj[0]
-            elif self._entities:
-                left = self._entities[0].entity_zero_or_selectable
+            # left not given (e.g. no relationship object/name specified)
+            # figure out the best "left" side based on our existing froms /
+            # entities
+            assert prop is None
+            (
+                left,
+                replace_from_obj_index,
+                use_entity_index,
+            ) = self._join_determine_implicit_left_side(left, right, onclause)
+        else:
+            # left is given via a relationship/name.  Determine where in our
+            # "froms" list it should be spliced/appended as well as what
+            # existing entity it corresponds to.
+            assert prop is not None
+            (
+                replace_from_obj_index,
+                use_entity_index,
+            ) = self._join_place_explicit_left_side(left)
 
-        if left is None:
+        if left is right and not create_aliases:
             raise sa_exc.InvalidRequestError(
-                            "Don't know how to join from %s; please use "
-                            "select_from() to establish the left "
-                            "entity/selectable of this join" % self._entities[0])
+                "Can't construct a join from %s to %s, they "
+                "are the same entity" % (left, right)
+            )
 
-        if left is right and \
-                not create_aliases:
+        # the right side as given often needs to be adapted.  additionally
+        # a lot of things can be wrong with it.  handle all that and
+        # get back the new effective "right" side
+        r_info, right, onclause = self._join_check_and_adapt_right_side(
+            left, right, onclause, prop, create_aliases
+        )
+
+        if replace_from_obj_index is not None:
+            # splice into an existing element in the
+            # self._from_obj list
+            left_clause = self._from_obj[replace_from_obj_index]
+
+            self._from_obj = (
+                self._from_obj[:replace_from_obj_index]
+                + (
+                    orm_join(
+                        left_clause,
+                        right,
+                        onclause,
+                        isouter=outerjoin,
+                        full=full,
+                    ),
+                )
+                + self._from_obj[replace_from_obj_index + 1 :]
+            )
+        else:
+            # add a new element to the self._from_obj list
+
+            if use_entity_index is not None:
+                # why doesn't this work as .entity_zero_or_selectable?
+                left_clause = self._entities[use_entity_index].selectable
+            else:
+                left_clause = left
+
+            self._from_obj = self._from_obj + (
+                orm_join(
+                    left_clause, right, onclause, isouter=outerjoin, full=full
+                ),
+            )
+
+    def _join_determine_implicit_left_side(self, left, right, onclause):
+        """When join conditions don't express the left side explicitly,
+        determine if an existing FROM or entity in this query
+        can serve as the left hand side.
+
+        """
+
+        # when we are here, it means join() was called without an ORM-
+        # specific way of telling us what the "left" side is, e.g.:
+        #
+        # join(RightEntity)
+        #
+        # or
+        #
+        # join(RightEntity, RightEntity.foo == LeftEntity.bar)
+        #
+
+        r_info = inspect(right)
+
+        replace_from_obj_index = use_entity_index = None
+
+        if self._from_obj:
+            # we have a list of FROMs already.  So by definition this
+            # join has to connect to one of those FROMs.
+
+            indexes = sql_util.find_left_clause_to_join_from(
+                self._from_obj, r_info.selectable, onclause
+            )
+
+            if len(indexes) == 1:
+                replace_from_obj_index = indexes[0]
+                left = self._from_obj[replace_from_obj_index]
+            elif len(indexes) > 1:
+                raise sa_exc.InvalidRequestError(
+                    "Can't determine which FROM clause to join "
+                    "from, there are multiple FROMS which can "
+                    "join to this entity. Please use the .select_from() "
+                    "method to establish an explicit left side, as well as "
+                    "providing an explcit ON clause if not present already to "
+                    "help resolve the ambiguity."
+                )
+            else:
+                raise sa_exc.InvalidRequestError(
+                    "Don't know how to join to %r. "
+                    "Please use the .select_from() "
+                    "method to establish an explicit left side, as well as "
+                    "providing an explcit ON clause if not present already to "
+                    "help resolve the ambiguity." % (right,)
+                )
+
+        elif self._entities:
+            # we have no explicit FROMs, so the implicit left has to
+            # come from our list of entities.
+
+            potential = {}
+            for entity_index, ent in enumerate(self._entities):
+                entity = ent.entity_zero_or_selectable
+                if entity is None:
+                    continue
+                ent_info = inspect(entity)
+                if ent_info is r_info:  # left and right are the same, skip
+                    continue
+
+                # by using a dictionary with the selectables as keys this
+                # de-duplicates those selectables as occurs when the query is
+                # against a series of columns from the same selectable
+                if isinstance(ent, _MapperEntity):
+                    potential[ent.selectable] = (entity_index, entity)
+                else:
+                    potential[ent_info.selectable] = (None, entity)
+
+            all_clauses = list(potential.keys())
+            indexes = sql_util.find_left_clause_to_join_from(
+                all_clauses, r_info.selectable, onclause
+            )
+
+            if len(indexes) == 1:
+                use_entity_index, left = potential[all_clauses[indexes[0]]]
+            elif len(indexes) > 1:
+                raise sa_exc.InvalidRequestError(
+                    "Can't determine which FROM clause to join "
+                    "from, there are multiple FROMS which can "
+                    "join to this entity. Please use the .select_from() "
+                    "method to establish an explicit left side, as well as "
+                    "providing an explcit ON clause if not present already to "
+                    "help resolve the ambiguity."
+                )
+            else:
+                raise sa_exc.InvalidRequestError(
+                    "Don't know how to join to %r. "
+                    "Please use the .select_from() "
+                    "method to establish an explicit left side, as well as "
+                    "providing an explcit ON clause if not present already to "
+                    "help resolve the ambiguity." % (right,)
+                )
+        else:
             raise sa_exc.InvalidRequestError(
-                        "Can't construct a join from %s to %s, they "
-                        "are the same entity" %
-                       (left, right))
+                "No entities to join from; please use "
+                "select_from() to establish the left "
+                "entity/selectable of this join"
+            )
+
+        return left, replace_from_obj_index, use_entity_index
+
+    def _join_place_explicit_left_side(self, left):
+        """When join conditions express a left side explicitly, determine
+        where in our existing list of FROM clauses we should join towards,
+        or if we need to make a new join, and if so is it from one of our
+        existing entities.
+
+        """
+
+        # when we are here, it means join() was called with an indicator
+        # as to an exact left side, which means a path to a
+        # RelationshipProperty was given, e.g.:
+        #
+        # join(RightEntity, LeftEntity.right)
+        #
+        # or
+        #
+        # join(LeftEntity.right)
+        #
+        # as well as string forms:
+        #
+        # join(RightEntity, "right")
+        #
+        # etc.
+        #
+
+        replace_from_obj_index = use_entity_index = None
+
+        l_info = inspect(left)
+        if self._from_obj:
+            indexes = sql_util.find_left_clause_that_matches_given(
+                self._from_obj, l_info.selectable
+            )
+
+            if len(indexes) > 1:
+                raise sa_exc.InvalidRequestError(
+                    "Can't identify which entity in which to assign the "
+                    "left side of this join.   Please use a more specific "
+                    "ON clause."
+                )
+
+            # have an index, means the left side is already present in
+            # an existing FROM in the self._from_obj tuple
+            if indexes:
+                replace_from_obj_index = indexes[0]
+
+            # no index, means we need to add a new element to the
+            # self._from_obj tuple
+
+        # no from element present, so we will have to add to the
+        # self._from_obj tuple.  Determine if this left side matches up
+        # with existing mapper entities, in which case we want to apply the
+        # aliasing / adaptation rules present on that entity if any
+        if (
+            replace_from_obj_index is None
+            and self._entities
+            and hasattr(l_info, "mapper")
+        ):
+            for idx, ent in enumerate(self._entities):
+                # TODO: should we be checking for multiple mapper entities
+                # matching?
+                if isinstance(ent, _MapperEntity) and ent.corresponds_to(left):
+                    use_entity_index = idx
+                    break
+
+        return replace_from_obj_index, use_entity_index
+
+    def _join_check_and_adapt_right_side(
+        self, left, right, onclause, prop, create_aliases
+    ):
+        """transform the "right" side of the join as well as the onclause
+        according to polymorphic mapping translations, aliasing on the query
+        or on the join, special cases where the right and left side have
+        overlapping tables.
+
+        """
 
         l_info = inspect(left)
         r_info = inspect(right)
-
 
         overlap = False
         if not create_aliases:
@@ -1866,171 +2740,153 @@ class Query(object):
             # if the target is a joined inheritance mapping,
             # be more liberal about auto-aliasing.
             if right_mapper and (
-                        right_mapper.with_polymorphic or
-                        isinstance(right_mapper.mapped_table, expression.Join)
-                    ):
+                right_mapper.with_polymorphic
+                or isinstance(right_mapper.persist_selectable, expression.Join)
+            ):
                 for from_obj in self._from_obj or [l_info.selectable]:
-                    if sql_util.selectables_overlap(l_info.selectable, from_obj) and \
-                        sql_util.selectables_overlap(from_obj, r_info.selectable):
+                    if sql_util.selectables_overlap(
+                        l_info.selectable, from_obj
+                    ) and sql_util.selectables_overlap(
+                        from_obj, r_info.selectable
+                    ):
                         overlap = True
                         break
-            elif sql_util.selectables_overlap(l_info.selectable, r_info.selectable):
-                overlap = True
 
-
-        if overlap and l_info.selectable is r_info.selectable:
+        if (
+            overlap or not create_aliases
+        ) and l_info.selectable is r_info.selectable:
             raise sa_exc.InvalidRequestError(
-                    "Can't join table/selectable '%s' to itself" %
-                        l_info.selectable)
-
-        right, onclause = self._prepare_right_side(
-                                r_info, right, onclause,
-                                            create_aliases,
-                                            prop, overlap)
-
-        # if joining on a MapperProperty path,
-        # track the path to prevent redundant joins
-        if not create_aliases and prop:
-            self._update_joinpoint({
-                '_joinpoint_entity': right,
-                'prev': ((left, right, prop.key), self._joinpoint)
-            })
-        else:
-            self._joinpoint = {'_joinpoint_entity': right}
-
-        self._join_to_left(l_info, left, right, onclause, outerjoin)
-
-    def _prepare_right_side(self, r_info, right, onclause, create_aliases,
-                                    prop, overlap):
-        info = r_info
-
-        right_mapper, right_selectable, right_is_aliased = \
-            getattr(info, 'mapper', None), \
-            info.selectable, \
-            getattr(info, 'is_aliased_class', False)
-
-        if right_mapper:
-            self._join_entities += (info, )
-
-        if right_mapper and prop and \
-                not right_mapper.common_parent(prop.mapper):
-            raise sa_exc.InvalidRequestError(
-                    "Join target %s does not correspond to "
-                    "the right side of join condition %s" % (right, onclause)
+                "Can't join table/selectable '%s' to itself"
+                % l_info.selectable
             )
 
-        if not right_mapper and prop:
-            right_mapper = prop.mapper
+        right_mapper, right_selectable, right_is_aliased = (
+            getattr(r_info, "mapper", None),
+            r_info.selectable,
+            getattr(r_info, "is_aliased_class", False),
+        )
+
+        if (
+            right_mapper
+            and prop
+            and not right_mapper.common_parent(prop.mapper)
+        ):
+            raise sa_exc.InvalidRequestError(
+                "Join target %s does not correspond to "
+                "the right side of join condition %s" % (right, onclause)
+            )
+
+        # _join_entities is used as a hint for single-table inheritance
+        # purposes at the moment
+        if hasattr(r_info, "mapper"):
+            self._join_entities += (r_info,)
 
         need_adapter = False
 
-        if right_mapper and right is right_selectable:
-            if not right_selectable.is_derived_from(
-                                    right_mapper.mapped_table):
+        # test for joining to an unmapped selectable as the target
+        if r_info.is_clause_element:
+
+            if prop:
+                right_mapper = prop.mapper
+
+            if right_selectable._is_lateral:
+                # orm_only is disabled to suit the case where we have to
+                # adapt an explicit correlate(Entity) - the select() loses
+                # the ORM-ness in this case right now, ideally it would not
+                right = self._adapt_clause(right, True, False)
+
+            elif prop:
+                # joining to selectable with a mapper property given
+                # as the ON clause
+
+                if not right_selectable.is_derived_from(
+                    right_mapper.persist_selectable
+                ):
+                    raise sa_exc.InvalidRequestError(
+                        "Selectable '%s' is not derived from '%s'"
+                        % (
+                            right_selectable.description,
+                            right_mapper.persist_selectable.description,
+                        )
+                    )
+
+                # if the destination selectable is a plain select(),
+                # turn it into an alias().
+                if isinstance(right_selectable, expression.SelectBase):
+                    right_selectable = right_selectable.alias()
+                    need_adapter = True
+
+                # make the right hand side target into an ORM entity
+                right = aliased(right_mapper, right_selectable)
+            elif create_aliases:
+                # it *could* work, but it doesn't right now and I'd rather
+                # get rid of aliased=True completely
                 raise sa_exc.InvalidRequestError(
-                    "Selectable '%s' is not derived from '%s'" %
-                    (right_selectable.description,
-                    right_mapper.mapped_table.description))
+                    "The aliased=True parameter on query.join() only works "
+                    "with an ORM entity, not a plain selectable, as the "
+                    "target."
+                )
 
-            if isinstance(right_selectable, expression.SelectBase):
-                # TODO: this isn't even covered now!
-                right_selectable = right_selectable.alias()
-                need_adapter = True
-
-            right = aliased(right_mapper, right_selectable)
-
-        aliased_entity = right_mapper and \
-                            not right_is_aliased and \
-                            (
-                                right_mapper.with_polymorphic and isinstance(
-                                    right_mapper._with_polymorphic_selectable,
-                                    expression.Alias)
-                                or
-                                overlap # test for overlap:
-                                        # orm/inheritance/relationships.py
-                                        # SelfReferentialM2MTest
-                            )
+        aliased_entity = (
+            right_mapper
+            and not right_is_aliased
+            and (
+                right_mapper.with_polymorphic
+                and isinstance(
+                    right_mapper._with_polymorphic_selectable, expression.Alias
+                )
+                or overlap
+                # test for overlap:
+                # orm/inheritance/relationships.py
+                # SelfReferentialM2MTest
+            )
+        )
 
         if not need_adapter and (create_aliases or aliased_entity):
             right = aliased(right, flat=True)
             need_adapter = True
 
-        # if an alias() of the right side was generated here,
-        # apply an adapter to all subsequent filter() calls
-        # until reset_joinpoint() is called.
         if need_adapter:
-            self._filter_aliases = ORMAdapter(right,
-                        equivalents=right_mapper and
-                                    right_mapper._equivalent_columns or {},
-                        chain_to=self._filter_aliases)
+            assert right_mapper
+
+            # if an alias() of the right side was generated,
+            # apply an adapter to all subsequent filter() calls
+            # until reset_joinpoint() is called.
+            adapter = ORMAdapter(
+                right, equivalents=right_mapper._equivalent_columns
+            )
+            # current adapter takes highest precedence
+            self._filter_aliases = (adapter,) + self._filter_aliases
+
+            # if an alias() on the right side was generated,
+            # which is intended to wrap a the right side in a subquery,
+            # ensure that columns retrieved from this target in the result
+            # set are also adapted.
+            if not create_aliases:
+                self._mapper_loads_polymorphically_with(right_mapper, adapter)
 
         # if the onclause is a ClauseElement, adapt it with any
         # adapters that are in place right now
         if isinstance(onclause, expression.ClauseElement):
             onclause = self._adapt_clause(onclause, True, True)
 
-        # if an alias() on the right side was generated,
-        # which is intended to wrap a the right side in a subquery,
-        # ensure that columns retrieved from this target in the result
-        # set are also adapted.
-        if aliased_entity and not create_aliases:
-            self._mapper_loads_polymorphically_with(
-                        right_mapper,
-                        ORMAdapter(
-                            right,
-                            equivalents=right_mapper._equivalent_columns
-                        )
-                    )
-
-        return right, onclause
-
-    def _join_to_left(self, l_info, left, right, onclause, outerjoin):
-        info = l_info
-        left_mapper = getattr(info, 'mapper', None)
-        left_selectable = info.selectable
-
-        if self._from_obj:
-            replace_clause_index, clause = sql_util.find_join_source(
-                                                    self._from_obj,
-                                                    left_selectable)
-            if clause is not None:
-                try:
-                    clause = orm_join(clause,
-                                    right,
-                                    onclause, isouter=outerjoin)
-                except sa_exc.ArgumentError as ae:
-                    raise sa_exc.InvalidRequestError(
-                            "Could not find a FROM clause to join from.  "
-                            "Tried joining to %s, but got: %s" % (right, ae))
-
-                self._from_obj = \
-                        self._from_obj[:replace_clause_index] + \
-                        (clause, ) + \
-                        self._from_obj[replace_clause_index + 1:]
-                return
-
-        if left_mapper:
-            for ent in self._entities:
-                if ent.corresponds_to(left):
-                    clause = ent.selectable
-                    break
-            else:
-                clause = left
+        # if joining on a MapperProperty path,
+        # track the path to prevent redundant joins
+        if not create_aliases and prop:
+            self._update_joinpoint(
+                {
+                    "_joinpoint_entity": right,
+                    "prev": ((left, right, prop.key), self._joinpoint),
+                }
+            )
         else:
-            clause = left_selectable
+            self._joinpoint = {"_joinpoint_entity": right}
 
-        assert clause is not None
-        try:
-            clause = orm_join(clause, right, onclause, isouter=outerjoin)
-        except sa_exc.ArgumentError as ae:
-            raise sa_exc.InvalidRequestError(
-                    "Could not find a FROM clause to join from.  "
-                    "Tried joining to %s, but got: %s" % (right, ae))
-        self._from_obj = self._from_obj + (clause,)
+        return right, inspect(right), onclause
 
     def _reset_joinpoint(self):
         self._joinpoint = self._joinpath
-        self._filter_aliases = None
+        self._filter_aliases = ()
 
     @_generative(_no_statement_condition)
     def reset_joinpoint(self):
@@ -2047,7 +2903,7 @@ class Query(object):
 
     @_generative(_no_clauseelement_condition)
     def select_from(self, *from_obj):
-        """Set the FROM clause of this :class:`.Query` explicitly.
+        r"""Set the FROM clause of this :class:`.Query` explicitly.
 
         :meth:`.Query.select_from` is often used in conjunction with
         :meth:`.Query.join` in order to control which entity is selected
@@ -2061,8 +2917,8 @@ class Query(object):
 
         A typical example::
 
-            q = session.query(Address).select_from(User).\\
-                join(User.addresses).\\
+            q = session.query(Address).select_from(User).\
+                join(User.addresses).\
                 filter(User.name == 'ed')
 
         Which produces SQL equivalent to::
@@ -2095,33 +2951,39 @@ class Query(object):
 
     @_generative(_no_clauseelement_condition)
     def select_entity_from(self, from_obj):
-        """Set the FROM clause of this :class:`.Query` to a
+        r"""Set the FROM clause of this :class:`.Query` to a
         core selectable, applying it as a replacement FROM clause
         for corresponding mapped entities.
 
-        This method is similar to the :meth:`.Query.select_from`
-        method, in that it sets the FROM clause of the query.  However,
-        where :meth:`.Query.select_from` only affects what is placed
-        in the FROM, this method also applies the given selectable
-        to replace the FROM which the selected entities would normally
-        select from.
+        The :meth:`.Query.select_entity_from` method supplies an alternative
+        approach to the use case of applying an :func:`.aliased` construct
+        explicitly throughout a query.  Instead of referring to the
+        :func:`.aliased` construct explicitly,
+        :meth:`.Query.select_entity_from` automatically *adapts* all
+        occurrences of the entity to the target selectable.
 
-        The given ``from_obj`` must be an instance of a :class:`.FromClause`,
-        e.g. a :func:`.select` or :class:`.Alias` construct.
-
-        An example would be a :class:`.Query` that selects ``User`` entities,
-        but uses :meth:`.Query.select_entity_from` to have the entities
-        selected from a :func:`.select` construct instead of the
-        base ``user`` table::
+        Given a case for :func:`.aliased` such as selecting ``User``
+        objects from a SELECT statement::
 
             select_stmt = select([User]).where(User.id == 7)
+            user_alias = aliased(User, select_stmt)
 
-            q = session.query(User).\\
-                    select_entity_from(select_stmt).\\
-                    filter(User.name == 'ed')
+            q = session.query(user_alias).\
+                filter(user_alias.name == 'ed')
 
-        The query generated will select ``User`` entities directly
-        from the given :func:`.select` construct, and will be::
+        Above, we apply the ``user_alias`` object explicitly throughout the
+        query.  When it's not feasible for ``user_alias`` to be referenced
+        explicitly in many places, :meth:`.Query.select_entity_from` may be
+        used at the start of the query to adapt the existing ``User`` entity::
+
+            q = session.query(User).\
+                select_entity_from(select_stmt).\
+                filter(User.name == 'ed')
+
+        Above, the generated SQL will show that the ``User`` entity is
+        adapted to our statement, even in the case of the WHERE clause:
+
+        .. sourcecode:: sql
 
             SELECT anon_1.id AS anon_1_id, anon_1.name AS anon_1_name
             FROM (SELECT "user".id AS id, "user".name AS name
@@ -2129,50 +2991,63 @@ class Query(object):
             WHERE "user".id = :id_1) AS anon_1
             WHERE anon_1.name = :name_1
 
-        Notice above that even the WHERE criterion was "adapted" such that
-        the ``anon_1`` subquery effectively replaces all references to the
-        ``user`` table, except for the one that it refers to internally.
+        The :meth:`.Query.select_entity_from` method is similar to the
+        :meth:`.Query.select_from` method, in that it sets the FROM clause
+        of the query.  The difference is that it additionally applies
+        adaptation to the other parts of the query that refer to the
+        primary entity.  If above we had used :meth:`.Query.select_from`
+        instead, the SQL generated would have been:
 
-        Compare this to :meth:`.Query.select_from`, which as of
-        version 0.9, does not affect existing entities.  The
-        statement below::
+        .. sourcecode:: sql
 
-            q = session.query(User).\\
-                    select_from(select_stmt).\\
-                    filter(User.name == 'ed')
-
-        Produces SQL where both the ``user`` table as well as the
-        ``select_stmt`` construct are present as separate elements
-        in the FROM clause.  No "adaptation" of the ``user`` table
-        is applied::
-
+            -- uses plain select_from(), not select_entity_from()
             SELECT "user".id AS user_id, "user".name AS user_name
             FROM "user", (SELECT "user".id AS id, "user".name AS name
             FROM "user"
             WHERE "user".id = :id_1) AS anon_1
             WHERE "user".name = :name_1
 
-        :meth:`.Query.select_entity_from` maintains an older
-        behavior of :meth:`.Query.select_from`.  In modern usage,
-        similar results can also be achieved using :func:`.aliased`::
+        To supply textual SQL to the :meth:`.Query.select_entity_from` method,
+        we can make use of the :func:`.text` construct.  However, the
+        :func:`.text` construct needs to be aligned with the columns of our
+        entity, which is achieved by making use of the
+        :meth:`.TextClause.columns` method::
 
-            select_stmt = select([User]).where(User.id == 7)
-            user_from_select = aliased(User, select_stmt.alias())
+            text_stmt = text("select id, name from user").columns(
+                User.id, User.name)
+            q = session.query(User).select_entity_from(text_stmt)
 
-            q = session.query(user_from_select)
+        :meth:`.Query.select_entity_from` itself accepts an :func:`.aliased`
+        object, so that the special options of :func:`.aliased` such as
+        :paramref:`.aliased.adapt_on_names` may be used within the
+        scope of the :meth:`.Query.select_entity_from` method's adaptation
+        services.  Suppose
+        a view ``user_view`` also returns rows from ``user``.    If
+        we reflect this view into a :class:`.Table`, this view has no
+        relationship to the :class:`.Table` to which we are mapped, however
+        we can use name matching to select from it::
+
+            user_view = Table('user_view', metadata,
+                              autoload_with=engine)
+            user_view_alias = aliased(
+                User, user_view, adapt_on_names=True)
+            q = session.query(User).\
+                select_entity_from(user_view_alias).\
+                order_by(User.name)
+
+        .. versionchanged:: 1.1.7 The :meth:`.Query.select_entity_from`
+           method now accepts an :func:`.aliased` object as an alternative
+           to a :class:`.FromClause` object.
 
         :param from_obj: a :class:`.FromClause` object that will replace
-         the FROM clause of this :class:`.Query`.
+         the FROM clause of this :class:`.Query`.  It also may be an instance
+         of :func:`.aliased`.
+
+
 
         .. seealso::
 
             :meth:`.Query.select_from`
-
-        .. versionadded:: 0.8
-            :meth:`.Query.select_entity_from` was added to specify
-            the specific behavior of entity replacement, however
-            the :meth:`.Query.select_from` maintains this behavior
-            as well until 0.9.
 
         """
 
@@ -2182,48 +3057,80 @@ class Query(object):
         if isinstance(item, slice):
             start, stop, step = util.decode_slice(item)
 
-            if isinstance(stop, int) and \
-                isinstance(start, int) and \
-                stop - start <= 0:
+            if (
+                isinstance(stop, int)
+                and isinstance(start, int)
+                and stop - start <= 0
+            ):
                 return []
 
             # perhaps we should execute a count() here so that we
             # can still use LIMIT/OFFSET ?
-            elif (isinstance(start, int) and start < 0) \
-                or (isinstance(stop, int) and stop < 0):
+            elif (isinstance(start, int) and start < 0) or (
+                isinstance(stop, int) and stop < 0
+            ):
                 return list(self)[item]
 
             res = self.slice(start, stop)
             if step is not None:
-                return list(res)[None:None:item.step]
+                return list(res)[None : None : item.step]
             else:
                 return list(res)
         else:
             if item == -1:
                 return list(self)[-1]
             else:
-                return list(self[item:item + 1])[0]
+                return list(self[item : item + 1])[0]
 
     @_generative(_no_statement_condition)
     def slice(self, start, stop):
-        """apply LIMIT/OFFSET to the ``Query`` based on a "
-        "range and return the newly resulting ``Query``."""
+        """Computes the "slice" of the :class:`.Query` represented by
+        the given indices and returns the resulting :class:`.Query`.
 
+        The start and stop indices behave like the argument to Python's
+        built-in :func:`range` function. This method provides an
+        alternative to using ``LIMIT``/``OFFSET`` to get a slice of the
+        query.
+
+        For example, ::
+
+            session.query(User).order_by(User.id).slice(1, 3)
+
+        renders as
+
+        .. sourcecode:: sql
+
+           SELECT users.id AS users_id,
+                  users.name AS users_name
+           FROM users ORDER BY users.id
+           LIMIT ? OFFSET ?
+           (2, 1)
+
+        .. seealso::
+
+           :meth:`.Query.limit`
+
+           :meth:`.Query.offset`
+
+        """
         if start is not None and stop is not None:
-            self._offset = (self._offset or 0) + start
+            self._offset = self._offset if self._offset is not None else 0
+            if start != 0:
+                self._offset += start
             self._limit = stop - start
         elif start is None and stop is not None:
             self._limit = stop
         elif start is not None and stop is None:
-            self._offset = (self._offset or 0) + start
+            self._offset = self._offset if self._offset is not None else 0
+            if start != 0:
+                self._offset += start
 
-        if self._offset == 0:
+        if isinstance(self._offset, int) and self._offset == 0:
             self._offset = None
 
     @_generative(_no_statement_condition)
     def limit(self, limit):
         """Apply a ``LIMIT`` to the query and return the newly resulting
-
         ``Query``.
 
         """
@@ -2238,44 +3145,61 @@ class Query(object):
         self._offset = offset
 
     @_generative(_no_statement_condition)
-    def distinct(self, *criterion):
-        """Apply a ``DISTINCT`` to the query and return the newly resulting
+    def distinct(self, *expr):
+        r"""Apply a ``DISTINCT`` to the query and return the newly resulting
         ``Query``.
 
+
+        .. note::
+
+            The :meth:`.distinct` call includes logic that will automatically
+            add columns from the ORDER BY of the query to the columns
+            clause of the SELECT statement, to satisfy the common need
+            of the database backend that ORDER BY columns be part of the
+            SELECT list when DISTINCT is used.   These columns *are not*
+            added to the list of columns actually fetched by the
+            :class:`.Query`, however, so would not affect results.
+            The columns are passed through when using the
+            :attr:`.Query.statement` accessor, however.
+
         :param \*expr: optional column expressions.  When present,
-         the Postgresql dialect will render a ``DISTINCT ON (<expressions>>)``
+         the PostgreSQL dialect will render a ``DISTINCT ON (<expressions>)``
          construct.
 
         """
-        if not criterion:
+        if not expr:
             self._distinct = True
         else:
-            criterion = self._adapt_col_list(criterion)
+            expr = self._adapt_col_list(expr)
             if isinstance(self._distinct, list):
-                self._distinct += criterion
+                self._distinct += expr
             else:
-                self._distinct = criterion
+                self._distinct = expr
 
     @_generative()
     def prefix_with(self, *prefixes):
-        """Apply the prefixes to the query and return the newly resulting
+        r"""Apply the prefixes to the query and return the newly resulting
         ``Query``.
 
         :param \*prefixes: optional prefixes, typically strings,
-         not using any commas.   In particular is useful for MySQL keywords.
+         not using any commas.   In particular is useful for MySQL keywords
+         and optimizer hints:
 
         e.g.::
 
-            query = sess.query(User.name).\\
-                prefix_with('HIGH_PRIORITY').\\
-                prefix_with('SQL_SMALL_RESULT', 'ALL')
+            query = sess.query(User.name).\
+                prefix_with('HIGH_PRIORITY').\
+                prefix_with('SQL_SMALL_RESULT', 'ALL').\
+                prefix_with('/*+ BKA(user) */')
 
         Would render::
 
-            SELECT HIGH_PRIORITY SQL_SMALL_RESULT ALL users.name AS users_name
-            FROM users
+            SELECT HIGH_PRIORITY SQL_SMALL_RESULT ALL /*+ BKA(user) */
+            users.name AS users_name FROM users
 
-        .. versionadded:: 0.7.7
+        .. seealso::
+
+            :meth:`.HasPrefixes.prefix_with`
 
         """
         if self._prefixes:
@@ -2283,11 +3207,41 @@ class Query(object):
         else:
             self._prefixes = prefixes
 
+    @_generative()
+    def suffix_with(self, *suffixes):
+        r"""Apply the suffix to the query and return the newly resulting
+        ``Query``.
+
+        :param \*suffixes: optional suffixes, typically strings,
+         not using any commas.
+
+        .. versionadded:: 1.0.0
+
+        .. seealso::
+
+            :meth:`.Query.prefix_with`
+
+            :meth:`.HasSuffixes.suffix_with`
+
+        """
+        if self._suffixes:
+            self._suffixes += suffixes
+        else:
+            self._suffixes = suffixes
+
     def all(self):
-        """Return the results represented by this ``Query`` as a list.
+        """Return the results represented by this :class:`.Query` as a list.
 
-        This results in an execution of the underlying query.
+        This results in an execution of the underlying SQL statement.
 
+        .. warning::  The :class:`.Query` object, when asked to return either
+           a sequence or iterator that consists of full ORM-mapped entities,
+           will **deduplicate entries based on primary key**.  See the FAQ for
+           more details.
+
+            .. seealso::
+
+                :ref:`faq_query_deduplicating`
         """
         return list(self)
 
@@ -2298,20 +3252,26 @@ class Query(object):
         This method bypasses all internal statement compilation, and the
         statement is executed without modification.
 
-        The statement argument is either a string, a ``select()`` construct,
-        or a ``text()`` construct, and should return the set of columns
-        appropriate to the entity class represented by this ``Query``.
+        The statement is typically either a :func:`~.expression.text`
+        or :func:`~.expression.select` construct, and should return the set
+        of columns
+        appropriate to the entity class represented by this :class:`.Query`.
+
+        .. seealso::
+
+            :ref:`orm_tutorial_literal_sql` - usage examples in the
+            ORM tutorial
 
         """
-        if isinstance(statement, util.string_types):
-            statement = sql.text(statement)
+        statement = expression._expression_literal_as_text(statement)
 
-        if not isinstance(statement,
-                            (expression.TextClause,
-                            expression.SelectBase)):
+        if not isinstance(
+            statement, (expression.TextClause, expression.SelectBase)
+        ):
             raise sa_exc.ArgumentError(
-                            "from_statement accepts text(), select(), "
-                            "and union() objects only.")
+                "from_statement accepts text(), select(), "
+                "and union() objects only."
+            )
 
         self._statement = statement
 
@@ -2324,7 +3284,14 @@ class Query(object):
         (note this may consist of multiple result rows if join-loaded
         collections are present).
 
-        Calling ``first()`` results in an execution of the underlying query.
+        Calling :meth:`.Query.first` results in an execution of the underlying
+        query.
+
+        .. seealso::
+
+            :meth:`.Query.one`
+
+            :meth:`.Query.one_or_none`
 
         """
         if self._statement is not None:
@@ -2336,26 +3303,27 @@ class Query(object):
         else:
             return None
 
-    def one(self):
-        """Return exactly one result or raise an exception.
+    def one_or_none(self):
+        """Return at most one result or raise an exception.
 
-        Raises ``sqlalchemy.orm.exc.NoResultFound`` if the query selects
+        Returns ``None`` if the query selects
         no rows.  Raises ``sqlalchemy.orm.exc.MultipleResultsFound``
         if multiple object identities are returned, or if multiple
-        rows are returned for a query that does not return object
-        identities.
+        rows are returned for a query that returns only scalar values
+        as opposed to full identity-mapped entities.
 
-        Note that an entity query, that is, one which selects one or
-        more mapped classes as opposed to individual column attributes,
-        may ultimately represent many rows but only one row of
-        unique entity or entities - this is a successful result for one().
+        Calling :meth:`.Query.one_or_none` results in an execution of the
+        underlying query.
 
-        Calling ``one()`` results in an execution of the underlying query.
+        .. versionadded:: 1.0.9
 
-        .. versionchanged:: 0.6
-            ``one()`` fully fetches all results instead of applying
-            any kind of limit, so that the "unique"-ing of entities does not
-            conceal multiple object identities.
+            Added :meth:`.Query.one_or_none`
+
+        .. seealso::
+
+            :meth:`.Query.first`
+
+            :meth:`.Query.one`
 
         """
         ret = list(self)
@@ -2364,10 +3332,43 @@ class Query(object):
         if l == 1:
             return ret[0]
         elif l == 0:
-            raise orm_exc.NoResultFound("No row was found for one()")
+            return None
         else:
             raise orm_exc.MultipleResultsFound(
-                "Multiple rows were found for one()")
+                "Multiple rows were found for one_or_none()"
+            )
+
+    def one(self):
+        """Return exactly one result or raise an exception.
+
+        Raises ``sqlalchemy.orm.exc.NoResultFound`` if the query selects
+        no rows.  Raises ``sqlalchemy.orm.exc.MultipleResultsFound``
+        if multiple object identities are returned, or if multiple
+        rows are returned for a query that returns only scalar values
+        as opposed to full identity-mapped entities.
+
+        Calling :meth:`.one` results in an execution of the underlying query.
+
+        .. seealso::
+
+            :meth:`.Query.first`
+
+            :meth:`.Query.one_or_none`
+
+        """
+        try:
+            ret = self.one_or_none()
+        except orm_exc.MultipleResultsFound as err:
+            util.raise_(
+                orm_exc.MultipleResultsFound(
+                    "Multiple rows were found for one()"
+                ),
+                replace_context=err,
+            )
+        else:
+            if ret is None:
+                raise orm_exc.NoResultFound("No row was found for one()")
+            return ret
 
     def scalar(self):
         """Return the first element of the first result or None
@@ -2403,21 +3404,43 @@ class Query(object):
             self.session._autoflush()
         return self._execute_and_instances(context)
 
+    def __str__(self):
+        context = self._compile_context()
+        try:
+            bind = (
+                self._get_bind_args(context, self.session.get_bind)
+                if self.session
+                else None
+            )
+        except sa_exc.UnboundExecutionError:
+            bind = None
+        return str(context.statement.compile(bind))
+
     def _connection_from_session(self, **kw):
-        conn = self.session.connection(
-                        **kw)
+        conn = self.session.connection(**kw)
         if self._execution_options:
             conn = conn.execution_options(**self._execution_options)
         return conn
 
     def _execute_and_instances(self, querycontext):
-        conn = self._connection_from_session(
-                        mapper=self._mapper_zero_or_none(),
-                        clause=querycontext.statement,
-                        close_with_result=True)
+        conn = self._get_bind_args(
+            querycontext, self._connection_from_session, close_with_result=True
+        )
 
         result = conn.execute(querycontext.statement, self._params)
-        return loading.instances(self, result, querycontext)
+        return loading.instances(querycontext.query, result, querycontext)
+
+    def _execute_crud(self, stmt, mapper):
+        conn = self._connection_from_session(
+            mapper=mapper, clause=stmt, close_with_result=True
+        )
+
+        return conn.execute(stmt, self._params)
+
+    def _get_bind_args(self, querycontext, fn, **kw):
+        return fn(
+            mapper=self._bind_mapper(), clause=querycontext.statement, **kw
+        )
 
     @property
     def column_descriptions(self):
@@ -2439,30 +3462,48 @@ class Query(object):
                     'type':User,
                     'aliased':False,
                     'expr':User,
+                    'entity': User
                 },
                 {
                     'name':'id',
                     'type':Integer(),
                     'aliased':False,
                     'expr':User.id,
+                    'entity': User
                 },
                 {
                     'name':'user2',
                     'type':User,
                     'aliased':True,
-                    'expr':user_alias
+                    'expr':user_alias,
+                    'entity': user_alias
                 }
             ]
 
         """
+
         return [
             {
-                'name': ent._label_name,
-                'type': ent.type,
-                'aliased': getattr(ent, 'is_aliased_class', False),
-                'expr': ent.expr
+                "name": ent._label_name,
+                "type": ent.type,
+                "aliased": getattr(insp_ent, "is_aliased_class", False),
+                "expr": ent.expr,
+                "entity": getattr(insp_ent, "entity", None)
+                if ent.entity_zero is not None
+                and not insp_ent.is_clause_element
+                else None,
             }
-            for ent in self._entities
+            for ent, insp_ent in [
+                (
+                    _ent,
+                    (
+                        inspect(_ent.entity_zero)
+                        if _ent.entity_zero is not None
+                        else None
+                    ),
+                )
+                for _ent in self._entities
+            ]
         ]
 
     def instances(self, cursor, __context=None):
@@ -2510,20 +3551,24 @@ class Query(object):
     @property
     def _select_args(self):
         return {
-            'limit': self._limit,
-            'offset': self._offset,
-            'distinct': self._distinct,
-            'prefixes': self._prefixes,
-            'group_by': self._group_by or None,
-            'having': self._having
+            "limit": self._limit,
+            "offset": self._offset,
+            "distinct": self._distinct,
+            "prefixes": self._prefixes,
+            "suffixes": self._suffixes,
+            "group_by": self._group_by or None,
+            "having": self._having,
         }
 
     @property
     def _should_nest_selectable(self):
         kwargs = self._select_args
-        return (kwargs.get('limit') is not None or
-                kwargs.get('offset') is not None or
-                kwargs.get('distinct', False))
+        return (
+            kwargs.get("limit") is not None
+            or kwargs.get("offset") is not None
+            or kwargs.get("distinct", False)
+            or kwargs.get("group_by", False)
+        )
 
     def exists(self):
         """A convenience method that turns a query into an EXISTS subquery
@@ -2540,7 +3585,18 @@ class Query(object):
                 SELECT 1 FROM users WHERE users.name = :name_1
             ) AS anon_1
 
-        .. versionadded:: 0.8.1
+        The EXISTS construct is usually used in the WHERE clause::
+
+            session.query(User.id).filter(q.exists()).scalar()
+
+        Note that some databases such as SQL Server don't allow an
+        EXISTS expression to be present in the columns clause of a
+        SELECT.    To select a simple boolean value based on the exists
+        as a WHERE, use :func:`.literal`::
+
+            from sqlalchemy import literal
+
+            session.query(literal(True)).filter(q.exists()).scalar()
 
         """
 
@@ -2549,11 +3605,16 @@ class Query(object):
         # omitting the FROM clause from a query(X) (#2818);
         # .with_only_columns() after we have a core select() so that
         # we get just "SELECT 1" without any entities.
-        return sql.exists(self.add_columns('1').with_labels().
-                                statement.with_only_columns(['1']))
+        return sql.exists(
+            self.enable_eagerloads(False)
+            .add_columns(sql.literal_column("1"))
+            .with_labels()
+            .statement.with_only_columns([1])
+        )
 
     def count(self):
-        """Return a count of rows this Query would return.
+        r"""Return a count of rows this the SQL formed by this :class:`Query`
+        would return.
 
         This generates the SQL for this Query as follows::
 
@@ -2561,16 +3622,31 @@ class Query(object):
                 SELECT <rest of query follows...>
             ) AS anon_1
 
-        .. versionchanged:: 0.7
-            The above scheme is newly refined as of 0.7b3.
+        The above SQL returns a single row, which is the aggregate value
+        of the count function; the :meth:`.Query.count` method then returns
+        that single integer value.
 
-        For fine grained control over specific columns
-        to count, to skip the usage of a subquery or
-        otherwise control of the FROM clause,
-        or to use other aggregate functions,
-        use :attr:`~sqlalchemy.sql.expression.func`
-        expressions in conjunction
-        with :meth:`~.Session.query`, i.e.::
+        .. warning::
+
+            It is important to note that the value returned by
+            count() is **not the same as the number of ORM objects that this
+            Query would return from a method such as the .all() method**.
+            The :class:`.Query` object, when asked to return full entities,
+            will **deduplicate entries based on primary key**, meaning if the
+            same primary key value would appear in the results more than once,
+            only one object of that primary key would be present.  This does
+            not apply to a query that is against individual columns.
+
+            .. seealso::
+
+                :ref:`faq_query_deduplicating`
+
+                :ref:`orm_tutorial_query_returning`
+
+        For fine grained control over specific columns to count, to skip the
+        usage of a subquery or otherwise control of the FROM clause, or to use
+        other aggregate functions, use :attr:`~sqlalchemy.sql.expression.func`
+        expressions in conjunction with :meth:`~.Session.query`, i.e.::
 
             from sqlalchemy import func
 
@@ -2580,7 +3656,7 @@ class Query(object):
 
             # return count of user "id" grouped
             # by "name"
-            session.query(func.count(User.id)).\\
+            session.query(func.count(User.id)).\
                     group_by(User.name)
 
             from sqlalchemy import distinct
@@ -2589,13 +3665,25 @@ class Query(object):
             session.query(func.count(distinct(User.name)))
 
         """
-        col = sql.func.count(sql.literal_column('*'))
+        col = sql.func.count(sql.literal_column("*"))
         return self.from_self(col).scalar()
 
-    def delete(self, synchronize_session='evaluate'):
-        """Perform a bulk delete query.
+    def delete(self, synchronize_session="evaluate"):
+        r"""Perform a bulk delete query.
 
         Deletes rows matched by this query from the database.
+
+        E.g.::
+
+            sess.query(User).filter(User.age == 25).\
+                delete(synchronize_session=False)
+
+            sess.query(User).filter(User.age == 25).\
+                delete(synchronize_session='evaluate')
+
+        .. warning:: The :meth:`.Query.delete` method is a "bulk" operation,
+           which bypasses ORM unit-of-work automation in favor of greater
+           performance.  **Please read all caveats and warnings below.**
 
         :param synchronize_session: chooses the strategy for the removal of
             matched objects from the session. Valid values are:
@@ -2615,8 +3703,7 @@ class Query(object):
 
             ``'evaluate'`` - Evaluate the query's criteria in Python straight
             on the objects in the session. If evaluation of the criteria isn't
-            implemented, an error is raised.  In that case you probably
-            want to use the 'fetch' strategy as a fallback.
+            implemented, an error is raised.
 
             The expression evaluator currently doesn't account for differing
             string collations between the database and Python.
@@ -2624,28 +3711,73 @@ class Query(object):
         :return: the count of rows matched as returned by the database's
           "row count" feature.
 
-        This method has several key caveats:
+        .. warning:: **Additional Caveats for bulk query deletes**
 
-        * The method does **not** offer in-Python cascading of relationships - it
-          is assumed that ON DELETE CASCADE/SET NULL/etc. is configured for any foreign key
-          references which require it, otherwise the database may emit an
-          integrity violation if foreign key references are being enforced.
+            * This method does **not work for joined
+              inheritance mappings**, since the **multiple table
+              deletes are not supported by SQL** as well as that the
+              **join condition of an inheritance mapper is not
+              automatically rendered**.  Care must be taken in any
+              multiple-table delete to first accommodate via some other means
+              how the related table will be deleted, as well as to
+              explicitly include the joining
+              condition between those tables, even in mappings where
+              this is normally automatic. E.g. if a class ``Engineer``
+              subclasses ``Employee``, a DELETE against the ``Employee``
+              table would look like::
 
-          After the DELETE, dependent objects in the :class:`.Session` which
-          were impacted by an ON DELETE may not contain the current
-          state, or may have been deleted. This issue is resolved once the
-          :class:`.Session` is expired,
-          which normally occurs upon :meth:`.Session.commit` or can be forced
-          by using :meth:`.Session.expire_all`.  Accessing an expired object
-          whose row has been deleted will invoke a SELECT to locate the
-          row; when the row is not found, an :class:`~sqlalchemy.orm.exc.ObjectDeletedError`
-          is raised.
+                    session.query(Engineer).\
+                        filter(Engineer.id == Employee.id).\
+                        filter(Employee.name == 'dilbert').\
+                        delete()
 
-        * The :meth:`.MapperEvents.before_delete` and
-          :meth:`.MapperEvents.after_delete`
-          events are **not** invoked from this method.  Instead, the
-          :meth:`.SessionEvents.after_bulk_delete` method is provided to act
-          upon a mass DELETE of entity rows.
+              However the above SQL will not delete from the Engineer table,
+              unless an ON DELETE CASCADE rule is established in the database
+              to handle it.
+
+              Short story, **do not use this method for joined inheritance
+              mappings unless you have taken the additional steps to make
+              this feasible**.
+
+            * The polymorphic identity WHERE criteria is **not** included
+              for single- or
+              joined- table updates - this must be added **manually** even
+              for single table inheritance.
+
+            * The method does **not** offer in-Python cascading of
+              relationships - it is assumed that ON DELETE CASCADE/SET
+              NULL/etc. is configured for any foreign key references
+              which require it, otherwise the database may emit an
+              integrity violation if foreign key references are being
+              enforced.
+
+              After the DELETE, dependent objects in the
+              :class:`.Session` which were impacted by an ON DELETE
+              may not contain the current state, or may have been
+              deleted. This issue is resolved once the
+              :class:`.Session` is expired, which normally occurs upon
+              :meth:`.Session.commit` or can be forced by using
+              :meth:`.Session.expire_all`.  Accessing an expired
+              object whose row has been deleted will invoke a SELECT
+              to locate the row; when the row is not found, an
+              :class:`~sqlalchemy.orm.exc.ObjectDeletedError` is
+              raised.
+
+            * The ``'fetch'`` strategy results in an additional
+              SELECT statement emitted and will significantly reduce
+              performance.
+
+            * The ``'evaluate'`` strategy performs a scan of
+              all matching objects within the :class:`.Session`; if the
+              contents of the :class:`.Session` are expired, such as
+              via a proceeding :meth:`.Session.commit` call, **this will
+              result in SELECT queries emitted for every matching object**.
+
+            * The :meth:`.MapperEvents.before_delete` and
+              :meth:`.MapperEvents.after_delete`
+              events **are not invoked** from this method.  Instead, the
+              :meth:`.SessionEvents.after_bulk_delete` method is provided to
+              act upon a mass DELETE of entity rows.
 
         .. seealso::
 
@@ -2654,23 +3786,47 @@ class Query(object):
             :ref:`inserts_and_updates` - Core SQL tutorial
 
         """
-        #TODO: cascades need handling.
 
-        delete_op = persistence.BulkDelete.factory(
-                            self, synchronize_session)
+        delete_op = persistence.BulkDelete.factory(self, synchronize_session)
         delete_op.exec_()
         return delete_op.rowcount
 
-    def update(self, values, synchronize_session='evaluate'):
-        """Perform a bulk update query.
+    def update(self, values, synchronize_session="evaluate", update_args=None):
+        r"""Perform a bulk update query.
 
         Updates rows matched by this query in the database.
 
-        :param values: a dictionary with attributes names as keys and literal
-          values or sql expressions as values.
+        E.g.::
+
+            sess.query(User).filter(User.age == 25).\
+                update({User.age: User.age - 10}, synchronize_session=False)
+
+            sess.query(User).filter(User.age == 25).\
+                update({"age": User.age - 10}, synchronize_session='evaluate')
+
+
+        .. warning:: The :meth:`.Query.update` method is a "bulk" operation,
+           which bypasses ORM unit-of-work automation in favor of greater
+           performance.  **Please read all caveats and warnings below.**
+
+
+        :param values: a dictionary with attributes names, or alternatively
+         mapped attributes or SQL expressions, as keys, and literal
+         values or sql expressions as values.   If :ref:`parameter-ordered
+         mode <updates_order_parameters>` is desired, the values can be
+         passed as a list of 2-tuples;
+         this requires that the
+         :paramref:`~sqlalchemy.sql.expression.update.preserve_parameter_order`
+         flag is passed to the :paramref:`.Query.update.update_args` dictionary
+         as well.
+
+          .. versionchanged:: 1.0.0 - string names in the values dictionary
+             are now resolved against the mapped entity; previously, these
+             strings were passed as literal column names with no mapper-level
+             translation.
 
         :param synchronize_session: chooses the strategy to update the
-            attributes on objects in the session. Valid values are:
+         attributes on objects in the session. Valid values are:
 
             ``False`` - don't synchronize the session. This option is the most
             efficient and is reliable once the session is expired, which
@@ -2690,44 +3846,70 @@ class Query(object):
             The expression evaluator currently doesn't account for differing
             string collations between the database and Python.
 
+        :param update_args: Optional dictionary, if present will be passed
+         to the underlying :func:`.update` construct as the ``**kw`` for
+         the object.  May be used to pass dialect-specific arguments such
+         as ``mysql_limit``, as well as other special arguments such as
+         :paramref:`~sqlalchemy.sql.expression.update.preserve_parameter_order`.
+
+         .. versionadded:: 1.0.0
+
         :return: the count of rows matched as returned by the database's
-          "row count" feature.
+         "row count" feature.
 
-        This method has several key caveats:
+        .. warning:: **Additional Caveats for bulk query updates**
 
-        * The method does **not** offer in-Python cascading of relationships - it
-          is assumed that ON UPDATE CASCADE is configured for any foreign key
-          references which require it, otherwise the database may emit an
-          integrity violation if foreign key references are being enforced.
+            * The method does **not** offer in-Python cascading of
+              relationships - it is assumed that ON UPDATE CASCADE is
+              configured for any foreign key references which require
+              it, otherwise the database may emit an integrity
+              violation if foreign key references are being enforced.
 
-          After the UPDATE, dependent objects in the :class:`.Session` which
-          were impacted by an ON UPDATE CASCADE may not contain the current
-          state; this issue is resolved once the :class:`.Session` is expired,
-          which normally occurs upon :meth:`.Session.commit` or can be forced
-          by using :meth:`.Session.expire_all`.
+              After the UPDATE, dependent objects in the
+              :class:`.Session` which were impacted by an ON UPDATE
+              CASCADE may not contain the current state; this issue is
+              resolved once the :class:`.Session` is expired, which
+              normally occurs upon :meth:`.Session.commit` or can be
+              forced by using :meth:`.Session.expire_all`.
 
-        * As of 0.8, this method will support multiple table updates, as detailed
-          in :ref:`multi_table_updates`, and this behavior does extend to support
-          updates of joined-inheritance and other multiple table mappings.  However,
-          the **join condition of an inheritance mapper is currently not
-          automatically rendered**.
-          Care must be taken in any multiple-table update to explicitly include
-          the joining condition between those tables, even in mappings where
-          this is normally automatic.
-          E.g. if a class ``Engineer`` subclasses ``Employee``, an UPDATE of the
-          ``Engineer`` local table using criteria against the ``Employee``
-          local table might look like::
+            * The ``'fetch'`` strategy results in an additional
+              SELECT statement emitted and will significantly reduce
+              performance.
 
-                session.query(Engineer).\\
-                    filter(Engineer.id == Employee.id).\\
-                    filter(Employee.name == 'dilbert').\\
-                    update({"engineer_type": "programmer"})
+            * The ``'evaluate'`` strategy performs a scan of
+              all matching objects within the :class:`.Session`; if the
+              contents of the :class:`.Session` are expired, such as
+              via a proceeding :meth:`.Session.commit` call, **this will
+              result in SELECT queries emitted for every matching object**.
 
-        * The :meth:`.MapperEvents.before_update` and
-          :meth:`.MapperEvents.after_update`
-          events are **not** invoked from this method.  Instead, the
-          :meth:`.SessionEvents.after_bulk_update` method is provided to act
-          upon a mass UPDATE of entity rows.
+            * The method supports multiple table updates, as detailed
+              in :ref:`multi_table_updates`, and this behavior does
+              extend to support updates of joined-inheritance and
+              other multiple table mappings.  However, the **join
+              condition of an inheritance mapper is not
+              automatically rendered**. Care must be taken in any
+              multiple-table update to explicitly include the joining
+              condition between those tables, even in mappings where
+              this is normally automatic. E.g. if a class ``Engineer``
+              subclasses ``Employee``, an UPDATE of the ``Engineer``
+              local table using criteria against the ``Employee``
+              local table might look like::
+
+                    session.query(Engineer).\
+                        filter(Engineer.id == Employee.id).\
+                        filter(Employee.name == 'dilbert').\
+                        update({"engineer_type": "programmer"})
+
+            * The polymorphic identity WHERE criteria is **not** included
+              for single- or
+              joined- table updates - this must be added **manually**, even
+              for single table inheritance.
+
+            * The :meth:`.MapperEvents.before_update` and
+              :meth:`.MapperEvents.after_update`
+              events **are not invoked from this method**.  Instead, the
+              :meth:`.SessionEvents.after_bulk_update` method is provided to
+              act upon a mass UPDATE of entity rows.
 
         .. seealso::
 
@@ -2737,19 +3919,22 @@ class Query(object):
 
         """
 
-        #TODO: value keys need to be mapped to corresponding sql cols and
-        # instr.attr.s to string keys
-        #TODO: updates of manytoone relationships need to be converted to
-        # fk assignments
-        #TODO: cascades need handling.
-
+        update_args = update_args or {}
         update_op = persistence.BulkUpdate.factory(
-                            self, synchronize_session, values)
+            self, synchronize_session, values, update_args
+        )
         update_op.exec_()
         return update_op.rowcount
 
-
     def _compile_context(self, labels=True):
+        if self.dispatch.before_compile:
+            for fn in self.dispatch.before_compile:
+                new_query = fn(self)
+                if new_query is not None and new_query is not self:
+                    self = new_query
+                    if not fn._bake_ok:
+                        self._bake_ok = False
+
         context = QueryContext(self)
 
         if context.statement is not None:
@@ -2764,16 +3949,14 @@ class Query(object):
 
         for rec in context.create_eager_joins:
             strategy = rec[0]
-            strategy(*rec[1:])
+            strategy(context, *rec[1:])
 
         if context.from_clause:
             # "load from explicit FROMs" mode,
             # i.e. when select_from() or join() is used
             context.froms = list(context.from_clause)
-        else:
-            # "load from discrete FROMs" mode,
-            # i.e. when each _MappedEntity has its own FROM
-            context.froms = context.froms
+        # else "load from discrete FROMs" mode,
+        # i.e. when each _MappedEntity has its own FROM
 
         if self._enable_single_crit:
             self._adjust_for_single_inheritance(context)
@@ -2781,18 +3964,20 @@ class Query(object):
         if not context.primary_columns:
             if self._only_load_props:
                 raise sa_exc.InvalidRequestError(
-                            "No column-based properties specified for "
-                            "refresh operation. Use session.expire() "
-                            "to reload collections and related items.")
+                    "No column-based properties specified for "
+                    "refresh operation. Use session.expire() "
+                    "to reload collections and related items."
+                )
             else:
                 raise sa_exc.InvalidRequestError(
-                            "Query contains no columns with which to "
-                            "SELECT from.")
+                    "Query contains no columns with which to " "SELECT from."
+                )
 
         if context.multi_row_eager_loaders and self._should_nest_selectable:
             context.statement = self._compound_eager_statement(context)
         else:
             context.statement = self._simple_statement(context)
+
         return context
 
     def _compound_eager_statement(self, context):
@@ -2801,27 +3986,27 @@ class Query(object):
         # then append eager joins onto that
 
         if context.order_by:
-            order_by_col_expr = list(
-                                    chain(*[
-                                        sql_util.unwrap_order_by(o)
-                                        for o in context.order_by
-                                    ])
-                                )
+            order_by_col_expr = sql_util.expand_column_list_from_order_by(
+                context.primary_columns, context.order_by
+            )
         else:
             context.order_by = None
             order_by_col_expr = []
 
         inner = sql.select(
-                    context.primary_columns + order_by_col_expr,
-                    context.whereclause,
-                    from_obj=context.froms,
-                    use_labels=context.labels,
-                    # TODO: this order_by is only needed if
-                    # LIMIT/OFFSET is present in self._select_args,
-                    # else the application on the outside is enough
-                    order_by=context.order_by,
-                    **self._select_args
-                )
+            context.primary_columns + order_by_col_expr,
+            context.whereclause,
+            from_obj=context.froms,
+            use_labels=context.labels,
+            # TODO: this order_by is only needed if
+            # LIMIT/OFFSET is present in self._select_args,
+            # else the application on the outside is enough
+            order_by=context.order_by,
+            **self._select_args
+        )
+        # put FOR UPDATE on the inner query, where MySQL will honor it,
+        # as well as if it has an OF so PostgreSQL can use it.
+        inner._for_update_arg = context._for_update_arg
 
         for hint in self._with_hints:
             inner = inner.with_hint(*hint)
@@ -2836,10 +4021,18 @@ class Query(object):
         context.adapter = sql_util.ColumnAdapter(inner, equivs)
 
         statement = sql.select(
-                            [inner] + context.secondary_columns,
-                            use_labels=context.labels)
+            [inner] + context.secondary_columns, use_labels=context.labels
+        )
 
-        statement._for_update_arg = context._for_update_arg
+        # Oracle however does not allow FOR UPDATE on the subquery,
+        # and the Oracle dialect ignores it, plus for PostgreSQL, MySQL
+        # we expect that all elements of the row are locked, so also put it
+        # on the outside (except in the case of PG when OF is used)
+        if (
+            context._for_update_arg is not None
+            and context._for_update_arg.of is None
+        ):
+            statement._for_update_arg = context._for_update_arg
 
         from_clause = inner
         for eager_join in context.eager_joins.values():
@@ -2847,16 +4040,14 @@ class Query(object):
             # giving us a marker as to where the "splice point" of
             # the join should be
             from_clause = sql_util.splice_joins(
-                                        from_clause,
-                                        eager_join, eager_join.stop_on)
+                from_clause, eager_join, eager_join.stop_on
+            )
 
         statement.append_from(from_clause)
 
         if context.order_by:
             statement.append_order_by(
-                *context.adapter.copy_and_process(
-                    context.order_by
-                )
+                *context.adapter.copy_and_process(context.order_by)
             )
 
         statement.append_order_by(*context.eager_order_by)
@@ -2866,27 +4057,20 @@ class Query(object):
         if not context.order_by:
             context.order_by = None
 
-        if self._distinct and context.order_by:
-            order_by_col_expr = list(
-                                    chain(*[
-                                        sql_util.unwrap_order_by(o)
-                                        for o in context.order_by
-                                    ])
-                                )
-            context.primary_columns += order_by_col_expr
-
+        if self._distinct is True and context.order_by:
+            context.primary_columns += (
+                sql_util.expand_column_list_from_order_by
+            )(context.primary_columns, context.order_by)
         context.froms += tuple(context.eager_joins.values())
 
         statement = sql.select(
-                        context.primary_columns +
-                                context.secondary_columns,
-                        context.whereclause,
-                        from_obj=context.froms,
-                        use_labels=context.labels,
-                        order_by=context.order_by,
-                        **self._select_args
-                    )
-
+            context.primary_columns + context.secondary_columns,
+            context.whereclause,
+            from_obj=context.froms,
+            use_labels=context.labels,
+            order_by=context.order_by,
+            **self._select_args
+        )
         statement._for_update_arg = context._for_update_arg
 
         for hint in self._with_hints:
@@ -2903,27 +4087,38 @@ class Query(object):
         """Apply single-table-inheritance filtering.
 
         For all distinct single-table-inheritance mappers represented in
-        the columns clause of this query, add criterion to the WHERE
+        the columns clause of this query, as well as the "select from entity",
+        add criterion to the WHERE
         clause of the given QueryContext such that only the appropriate
         subtypes are selected from the total results.
 
         """
-        for (ext_info, adapter) in self._mapper_adapter_map.values():
+
+        search = set(self._mapper_adapter_map.values())
+        if (
+            self._select_from_entity
+            and self._select_from_entity not in self._mapper_adapter_map
+        ):
+            insp = inspect(self._select_from_entity)
+            if insp.is_aliased_class:
+                adapter = insp._adapter
+            else:
+                adapter = None
+            search = search.union([(self._select_from_entity, adapter)])
+
+        for (ext_info, adapter) in search:
             if ext_info in self._join_entities:
                 continue
             single_crit = ext_info.mapper._single_table_criterion
             if single_crit is not None:
                 if adapter:
                     single_crit = adapter.traverse(single_crit)
+
                 single_crit = self._adapt_clause(single_crit, False, False)
                 context.whereclause = sql.and_(
-                                    sql.True_._ifnone(context.whereclause),
-                                    single_crit)
+                    sql.True_._ifnone(context.whereclause), single_crit
+                )
 
-    def __str__(self):
-        return str(self._compile_context().statement)
-
-from ..sql.selectable import ForUpdateArg
 
 class LockmodeArg(ForUpdateArg):
     @classmethod
@@ -2941,9 +4136,11 @@ class LockmodeArg(ForUpdateArg):
             read = False
         else:
             raise sa_exc.ArgumentError(
-                        "Unknown with_lockmode argument: %r" % mode)
+                "Unknown with_lockmode argument: %r" % mode
+            )
 
         return LockmodeArg(read=read, nowait=nowait)
+
 
 class _QueryEntity(object):
     """represent an entity column returned within a Query result."""
@@ -2951,8 +4148,9 @@ class _QueryEntity(object):
     def __new__(cls, *args, **kwargs):
         if cls is _QueryEntity:
             entity = args[1]
-            if not isinstance(entity, util.string_types) and \
-                        _is_mapped_class(entity):
+            if not isinstance(entity, util.string_types) and _is_mapped_class(
+                entity
+            ):
                 cls = _MapperEntity
             elif isinstance(entity, Bundle):
                 cls = _BundleEntity
@@ -2973,11 +4171,13 @@ class _MapperEntity(_QueryEntity):
         if not query._primary_entity:
             query._primary_entity = self
         query._entities.append(self)
-
+        query._has_mapper_entities = True
         self.entities = [entity]
         self.expr = entity
 
     supports_single_entity = True
+
+    use_id_for_hash = True
 
     def setup_entity(self, ext_info, aliased_adapter):
         self.mapper = ext_info.mapper
@@ -2985,18 +4185,17 @@ class _MapperEntity(_QueryEntity):
         self.selectable = ext_info.selectable
         self.is_aliased_class = ext_info.is_aliased_class
         self._with_polymorphic = ext_info.with_polymorphic_mappers
-        self._polymorphic_discriminator = \
-                ext_info.polymorphic_on
+        self._polymorphic_discriminator = ext_info.polymorphic_on
         self.entity_zero = ext_info
         if ext_info.is_aliased_class:
             self._label_name = self.entity_zero.name
         else:
             self._label_name = self.mapper.class_.__name__
         self.path = self.entity_zero._path_registry
-        self.custom_rows = bool(self.mapper.dispatch.append_result)
 
-    def set_with_polymorphic(self, query, cls_or_mappers,
-                                selectable, polymorphic_on):
+    def set_with_polymorphic(
+        self, query, cls_or_mappers, selectable, polymorphic_on
+    ):
         """Receive an update from a call to query.with_polymorphic().
 
         Note the newer style of using a free standing with_polymporphic()
@@ -3007,25 +4206,24 @@ class _MapperEntity(_QueryEntity):
         if self.is_aliased_class:
             # TODO: invalidrequest ?
             raise NotImplementedError(
-                        "Can't use with_polymorphic() against "
-                        "an Aliased object"
-                        )
+                "Can't use with_polymorphic() against " "an Aliased object"
+            )
 
         if cls_or_mappers is None:
             query._reset_polymorphic_adapter(self.mapper)
             return
 
         mappers, from_obj = self.mapper._with_polymorphic_args(
-                                                cls_or_mappers, selectable)
+            cls_or_mappers, selectable
+        )
         self._with_polymorphic = mappers
         self._polymorphic_discriminator = polymorphic_on
 
         self.selectable = from_obj
-        query._mapper_loads_polymorphically_with(self.mapper,
-                sql_util.ColumnAdapter(from_obj,
-                        self.mapper._equivalent_columns))
-
-    filter_fn = id
+        query._mapper_loads_polymorphically_with(
+            self.mapper,
+            sql_util.ColumnAdapter(from_obj, self.mapper._equivalent_columns),
+        )
 
     @property
     def type(self):
@@ -3036,18 +4234,7 @@ class _MapperEntity(_QueryEntity):
         return self.entity_zero
 
     def corresponds_to(self, entity):
-        if entity.is_aliased_class:
-            if self.is_aliased_class:
-                if entity._base_alias is self.entity_zero._base_alias:
-                    return True
-            return False
-        elif self.is_aliased_class:
-            if self.entity_zero._use_mapper_path:
-                return entity in self._with_polymorphic
-            else:
-                return entity is self.entity_zero
-
-        return entity.common_parent(self.entity_zero)
+        return _entity_corresponds_to(self.entity_zero, entity)
 
     def adapt_to_selectable(self, query, sel):
         query._entities.append(self)
@@ -3072,7 +4259,7 @@ class _MapperEntity(_QueryEntity):
 
         return ret
 
-    def row_processor(self, query, context, custom_rows):
+    def row_processor(self, query, context, result):
         adapter = self._get_entity_clauses(query, context)
 
         if context.adapter and adapter:
@@ -3085,34 +4272,32 @@ class _MapperEntity(_QueryEntity):
         # require row aliasing unconditionally.
         if not adapter and self.mapper._requires_row_aliasing:
             adapter = sql_util.ColumnAdapter(
-                self.selectable,
-                self.mapper._equivalent_columns)
+                self.selectable, self.mapper._equivalent_columns
+            )
 
         if query._primary_entity is self:
-            _instance = loading.instance_processor(
-                self.mapper,
-                context,
-                self.path,
-                adapter,
-                only_load_props=query._only_load_props,
-                refresh_state=context.refresh_state,
-                polymorphic_discriminator=self._polymorphic_discriminator
-            )
+            only_load_props = query._only_load_props
+            refresh_state = context.refresh_state
         else:
-            _instance = loading.instance_processor(
-                self.mapper,
-                context,
-                self.path,
-                adapter,
-                polymorphic_discriminator=self._polymorphic_discriminator
-            )
+            only_load_props = refresh_state = None
+
+        _instance = loading._instance_processor(
+            self.mapper,
+            context,
+            result,
+            self.path,
+            adapter,
+            only_load_props=only_load_props,
+            refresh_state=refresh_state,
+            polymorphic_discriminator=self._polymorphic_discriminator,
+        )
 
         return _instance, self._label_name
 
     def setup_context(self, query, context):
         adapter = self._get_entity_clauses(query, context)
 
-        #if self._adapted_selectable is None:
+        # if self._adapted_selectable is None:
         context.froms += (self.selectable,)
 
         if context.order_by is False and self.mapper.order_by:
@@ -3121,45 +4306,27 @@ class _MapperEntity(_QueryEntity):
             # apply adaptation to the mapper's order_by if needed.
             if adapter:
                 context.order_by = adapter.adapt_list(
-                                        util.to_list(
-                                            context.order_by
-                                        )
-                                    )
+                    util.to_list(context.order_by)
+                )
 
-        if self._with_polymorphic:
-            poly_properties = self.mapper._iterate_polymorphic_properties(
-                self._with_polymorphic)
-        else:
-            poly_properties = self.mapper._polymorphic_properties
-
-        for value in poly_properties:
-            if query._only_load_props and \
-                    value.key not in query._only_load_props:
-                continue
-            value.setup(
-                context,
-                self,
-                self.path,
-                adapter,
-                only_load_props=query._only_load_props,
-                column_collection=context.primary_columns
-            )
-
-        if self._polymorphic_discriminator is not None and \
-            self._polymorphic_discriminator \
-                is not self.mapper.polymorphic_on:
-
-            if adapter:
-                pd = adapter.columns[self._polymorphic_discriminator]
-            else:
-                pd = self._polymorphic_discriminator
-            context.primary_columns.append(pd)
+        loading._setup_entity_query(
+            context,
+            self.mapper,
+            self,
+            self.path,
+            adapter,
+            context.primary_columns,
+            with_polymorphic=self._with_polymorphic,
+            only_load_props=query._only_load_props,
+            polymorphic_discriminator=self._polymorphic_discriminator,
+        )
 
     def __str__(self):
         return str(self.mapper)
 
+
 @inspection._self_inspects
-class Bundle(object):
+class Bundle(InspectionAttr):
     """A grouping of SQL expressions that are returned by a :class:`.Query`
     under one namespace.
 
@@ -3182,14 +4349,21 @@ class Bundle(object):
     """If True, queries for a single Bundle will be returned as a single
     entity, rather than an element within a keyed tuple."""
 
+    is_clause_element = False
+
+    is_mapper = False
+
+    is_aliased_class = False
+
     def __init__(self, name, *exprs, **kw):
-        """Construct a new :class:`.Bundle`.
+        r"""Construct a new :class:`.Bundle`.
 
         e.g.::
 
             bn = Bundle("mybundle", MyClass.x, MyClass.y)
 
-            for row in session.query(bn).filter(bn.c.x == 5).filter(bn.c.y == 4):
+            for row in session.query(bn).filter(
+                    bn.c.x == 5).filter(bn.c.y == 4):
                 print(row.mybundle.x, row.mybundle.y)
 
         :param name: name of the bundle.
@@ -3202,9 +4376,10 @@ class Bundle(object):
         self.name = self._label = name
         self.exprs = exprs
         self.c = self.columns = ColumnCollection()
-        self.columns.update((getattr(col, "key", col._label), col)
-                    for col in exprs)
-        self.single_entity = kw.pop('single_entity', self.single_entity)
+        self.columns.update(
+            (getattr(col, "key", col._label), col) for col in exprs
+        )
+        self.single_entity = kw.pop("single_entity", self.single_entity)
 
     columns = None
     """A namespace of SQL expressions referred to by this :class:`.Bundle`.
@@ -3222,7 +4397,8 @@ class Bundle(object):
                     Bundle('b3', MyClass.x, MyClass.y)
                 )
 
-            q = sess.query(b1).filter(b1.c.b2.c.a == 5).filter(b1.c.b3.c.y == 9)
+            q = sess.query(b1).filter(
+                b1.c.b2.c.a == 5).filter(b1.c.b3.c.y == 9)
 
     .. seealso::
 
@@ -3239,7 +4415,7 @@ class Bundle(object):
         return cloned
 
     def __clause_element__(self):
-        return expression.ClauseList(group=False, *self.c)
+        return expression.ClauseList(group=False, *self.exprs)
 
     @property
     def clauses(self):
@@ -3262,12 +4438,17 @@ class Bundle(object):
             :ref:`bundles` - includes an example of subclassing.
 
         """
-        def proc(row, result):
-            return util.KeyedTuple([proc(row, None) for proc in procs], labels)
+        keyed_tuple = util.lightweight_named_tuple("result", labels)
+
+        def proc(row):
+            return keyed_tuple([proc(row) for proc in procs])
+
         return proc
 
 
 class _BundleEntity(_QueryEntity):
+    use_id_for_hash = False
+
     def __init__(self, query, bundle, setup_entities=True):
         query._entities.append(self)
         self.bundle = self.expr = bundle
@@ -3280,15 +4461,24 @@ class _BundleEntity(_QueryEntity):
                 if isinstance(expr, Bundle):
                     _BundleEntity(self, expr)
                 else:
-                    _ColumnEntity(self, expr, namespace=self)
-
-        self.entities = ()
-
-        self.filter_fn = lambda item: item
+                    _ColumnEntity(self, expr)
 
         self.supports_single_entity = self.bundle.single_entity
 
-    custom_rows = False
+    @property
+    def mapper(self):
+        ezero = self.entity_zero
+        if ezero is not None:
+            return ezero.mapper
+        else:
+            return None
+
+    @property
+    def entities(self):
+        entities = []
+        for ent in self._entities:
+            entities.extend(ent.entities)
+        return entities
 
     @property
     def entity_zero(self):
@@ -3300,8 +4490,8 @@ class _BundleEntity(_QueryEntity):
             return None
 
     def corresponds_to(self, entity):
-        # TODO: this seems to have no effect for
-        # _ColumnEntity either
+        # TODO: we might be able to implement this but for now
+        # we are working around it
         return False
 
     @property
@@ -3315,9 +4505,9 @@ class _BundleEntity(_QueryEntity):
 
     def adapt_to_selectable(self, query, sel):
         c = _BundleEntity(query, self.bundle, setup_entities=False)
-        #c._label_name = self._label_name
-        #c.entity_zero = self.entity_zero
-        #c.entities = self.entities
+        # c._label_name = self._label_name
+        # c.entity_zero = self.entity_zero
+        # c.entities = self.entities
 
         for ent in self._entities:
             ent.adapt_to_selectable(c, sel)
@@ -3330,15 +4520,18 @@ class _BundleEntity(_QueryEntity):
         for ent in self._entities:
             ent.setup_context(query, context)
 
-    def row_processor(self, query, context, custom_rows):
+    def row_processor(self, query, context, result):
         procs, labels = zip(
-                *[ent.row_processor(query, context, custom_rows)
-                for ent in self._entities]
-            )
+            *[
+                ent.row_processor(query, context, result)
+                for ent in self._entities
+            ]
+        )
 
         proc = self.bundle.create_row_processor(query, procs, labels)
 
         return proc, self._label_name
+
 
 class _ColumnEntity(_QueryEntity):
     """Column/expression based entity."""
@@ -3346,43 +4539,55 @@ class _ColumnEntity(_QueryEntity):
     def __init__(self, query, column, namespace=None):
         self.expr = column
         self.namespace = namespace
+        search_entities = True
+        check_column = False
 
         if isinstance(column, util.string_types):
+            util.warn_deprecated(
+                "Plain string expression passed to Query() should be "
+                "explicitly declared using literal_column(); "
+                "automatic coercion of this value will be removed in "
+                "SQLAlchemy 1.4"
+            )
             column = sql.literal_column(column)
             self._label_name = column.name
-        elif isinstance(column, (
-                                    attributes.QueryableAttribute,
-                                    interfaces.PropComparator
-                                )):
+            search_entities = False
+            check_column = True
+            _entity = None
+        elif isinstance(
+            column, (attributes.QueryableAttribute, interfaces.PropComparator)
+        ):
+            _entity = getattr(column, "_parententity", None)
+            if _entity is not None:
+                search_entities = False
             self._label_name = column.key
             column = column._query_clause_element()
-        else:
-            self._label_name = getattr(column, 'key', None)
-
-        if not isinstance(column, expression.ColumnElement) and \
-                            hasattr(column, '_select_iterable'):
-            for c in column._select_iterable:
-                if c is column:
-                    break
-                _ColumnEntity(query, c, namespace=column)
-            else:
+            check_column = True
+            if isinstance(column, Bundle):
+                _BundleEntity(query, column)
                 return
-        elif isinstance(column, Bundle):
-            _BundleEntity(query, column)
-            return
 
         if not isinstance(column, sql.ColumnElement):
+            if hasattr(column, "_select_iterable"):
+                # break out an object like Table into
+                # individual columns
+                for c in column._select_iterable:
+                    if c is column:
+                        break
+                    _ColumnEntity(query, c, namespace=column)
+                else:
+                    return
+
             raise sa_exc.InvalidRequestError(
                 "SQL expression, column, or mapped entity "
-                "expected - got '%r'" % (column, )
+                "expected - got '%r'" % (column,)
             )
+        elif not check_column:
+            self._label_name = getattr(column, "key", None)
+            search_entities = True
 
         self.type = type_ = column.type
-        if type_.hashable:
-            self.filter_fn = lambda item: item
-        else:
-            counter = util.counter()
-            self.filter_fn = lambda item: counter()
+        self.use_id_for_hash = not type_.hashable
 
         # If the Column is unnamed, give it a
         # label() so that mutable column expressions
@@ -3390,7 +4595,7 @@ class _ColumnEntity(_QueryEntity):
         # if the expression's identity has been changed
         # due to adaption.
 
-        if not column._label and not getattr(column, 'is_literal', False):
+        if not column._label and not getattr(column, "is_literal", False):
             column = column.label(self._label_name)
 
         query._entities.append(self)
@@ -3404,31 +4609,61 @@ class _ColumnEntity(_QueryEntity):
         # of FROMs for the overall expression - this helps
         # subqueries which were built from ORM constructs from
         # leaking out their entities into the main select construct
-        self.actual_froms = actual_froms = set(column._from_objects)
+        self.actual_froms = list(column._from_objects)
+        actual_froms = set(self.actual_froms)
 
-        self.entities = util.OrderedSet(
-            elem._annotations['parententity']
-            for elem in visitors.iterate(column, {})
-            if 'parententity' in elem._annotations
-            and actual_froms.intersection(elem._from_objects)
+        if not search_entities:
+            self.entity_zero = _entity
+            if _entity:
+                self.entities = [_entity]
+                self.mapper = _entity.mapper
+            else:
+                self.entities = []
+                self.mapper = None
+            self._from_entities = set(self.entities)
+        else:
+            all_elements = [
+                elem
+                for elem in sql_util.surface_column_elements(
+                    column, include_scalar_selects=False
+                )
+                if "parententity" in elem._annotations
+            ]
+
+            self.entities = util.unique_list(
+                [
+                    elem._annotations["parententity"]
+                    for elem in all_elements
+                    if "parententity" in elem._annotations
+                ]
             )
 
-        if self.entities:
-            self.entity_zero = list(self.entities)[0]
-        elif self.namespace is not None:
-            self.entity_zero = self.namespace
-        else:
-            self.entity_zero = None
+            self._from_entities = set(
+                [
+                    elem._annotations["parententity"]
+                    for elem in all_elements
+                    if "parententity" in elem._annotations
+                    and actual_froms.intersection(elem._from_objects)
+                ]
+            )
+            if self.entities:
+                self.entity_zero = self.entities[0]
+                self.mapper = self.entity_zero.mapper
+            elif self.namespace is not None:
+                self.entity_zero = self.namespace
+                self.mapper = None
+            else:
+                self.entity_zero = None
+                self.mapper = None
 
     supports_single_entity = False
-    custom_rows = False
 
     @property
     def entity_zero_or_selectable(self):
         if self.entity_zero is not None:
             return self.entity_zero
         elif self.actual_froms:
-            return list(self.actual_froms)[0]
+            return self.actual_froms[0]
         else:
             return None
 
@@ -3439,59 +4674,99 @@ class _ColumnEntity(_QueryEntity):
         c.entities = self.entities
 
     def setup_entity(self, ext_info, aliased_adapter):
-        if 'selectable' not in self.__dict__:
+        if "selectable" not in self.__dict__:
             self.selectable = ext_info.selectable
-        self.froms.add(ext_info.selectable)
+
+        if set(self.actual_froms).intersection(
+            ext_info.selectable._from_objects
+        ):
+            self.froms.add(ext_info.selectable)
 
     def corresponds_to(self, entity):
-        # TODO: just returning False here,
-        # no tests fail
         if self.entity_zero is None:
             return False
         elif _is_aliased_class(entity):
             # TODO: polymorphic subclasses ?
             return entity is self.entity_zero
         else:
-            return not _is_aliased_class(self.entity_zero) and \
-                    entity.common_parent(self.entity_zero)
+            return not _is_aliased_class(
+                self.entity_zero
+            ) and entity.common_parent(self.entity_zero)
 
-    def _resolve_expr_against_query_aliases(self, query, expr, context):
-        return query._adapt_clause(expr, False, True)
+    def row_processor(self, query, context, result):
+        if ("fetch_column", self) in context.attributes:
+            column = context.attributes[("fetch_column", self)]
+        else:
+            column = query._adapt_clause(self.column, False, True)
 
-    def row_processor(self, query, context, custom_rows):
-        column = self._resolve_expr_against_query_aliases(
-                                            query, self.column, context)
+        if column._annotations:
+            # annotated columns perform more slowly in compiler and
+            # result due to the __eq__() method, so use deannotated
+            column = column._deannotate()
 
         if context.adapter:
             column = context.adapter.columns[column]
 
-        def proc(row, result):
-            return row[column]
-
-        return proc, self._label_name
+        getter = result._getter(column)
+        return getter, self._label_name
 
     def setup_context(self, query, context):
-        column = self._resolve_expr_against_query_aliases(
-                                            query, self.column, context)
+        column = query._adapt_clause(self.column, False, True)
+
+        if column._annotations:
+            # annotated columns perform more slowly in compiler and
+            # result due to the __eq__() method, so use deannotated
+            column = column._deannotate()
+
         context.froms += tuple(self.froms)
         context.primary_columns.append(column)
+
+        context.attributes[("fetch_column", self)] = column
 
     def __str__(self):
         return str(self.column)
 
 
 class QueryContext(object):
-    multi_row_eager_loaders = False
-    adapter = None
-    froms = ()
-    for_update = None
+    __slots__ = (
+        "multi_row_eager_loaders",
+        "adapter",
+        "froms",
+        "for_update",
+        "query",
+        "session",
+        "autoflush",
+        "populate_existing",
+        "invoke_all_eagers",
+        "version_check",
+        "refresh_state",
+        "primary_columns",
+        "secondary_columns",
+        "eager_order_by",
+        "eager_joins",
+        "create_eager_joins",
+        "propagate_options",
+        "attributes",
+        "statement",
+        "from_clause",
+        "whereclause",
+        "order_by",
+        "labels",
+        "_for_update_arg",
+        "runid",
+        "partials",
+        "post_load_paths",
+        "identity_token",
+    )
 
     def __init__(self, query):
 
         if query._statement is not None:
-            if isinstance(query._statement, expression.SelectBase) and \
-                                not query._statement._textual and \
-                                not query._statement.use_labels:
+            if (
+                isinstance(query._statement, expression.SelectBase)
+                and not query._statement._textual
+                and not query._statement.use_labels
+            ):
                 self.statement = query._statement.apply_labels()
             else:
                 self.statement = query._statement
@@ -3501,8 +4776,13 @@ class QueryContext(object):
             self.whereclause = query._criterion
             self.order_by = query._order_by
 
+        self.multi_row_eager_loaders = False
+        self.adapter = None
+        self.froms = ()
+        self.for_update = None
         self.query = query
         self.session = query.session
+        self.autoflush = query._autoflush
         self.populate_existing = query._populate_existing
         self.invoke_all_eagers = query._invoke_all_eagers
         self.version_check = query._version_check
@@ -3512,15 +4792,19 @@ class QueryContext(object):
         self.eager_order_by = []
         self.eager_joins = {}
         self.create_eager_joins = []
-        self.propagate_options = set(o for o in query._with_options if
-                                        o.propagate_to_loaders)
+        self.propagate_options = set(
+            o for o in query._with_options if o.propagate_to_loaders
+        )
         self.attributes = query._attributes.copy()
+        if self.refresh_state is not None:
+            self.identity_token = query._refresh_identity_token
+        else:
+            self.identity_token = None
 
 
 class AliasOption(interfaces.MapperOption):
-
     def __init__(self, alias):
-        """Return a :class:`.MapperOption` that will indicate to the :class:`.Query`
+        r"""Return a :class:`.MapperOption` that will indicate to the :class:`.Query`
         that the main table has been aliased.
 
         This is a seldom-used option to suit the
@@ -3529,12 +4813,12 @@ class AliasOption(interfaces.MapperOption):
         statement that aliases the parent table.  E.g.::
 
             # define an aliased UNION called 'ulist'
-            ulist = users.select(users.c.user_id==7).\\
-                            union(users.select(users.c.user_id>7)).\\
+            ulist = users.select(users.c.user_id==7).\
+                            union(users.select(users.c.user_id>7)).\
                             alias('ulist')
 
             # add on an eager load of "addresses"
-            statement = ulist.outerjoin(addresses).\\
+            statement = ulist.outerjoin(addresses).\
                             select().apply_labels()
 
             # create query, indicating "ulist" will be an
@@ -3556,9 +4840,7 @@ class AliasOption(interfaces.MapperOption):
 
     def process_query(self, query):
         if isinstance(self.alias, util.string_types):
-            alias = query._mapper_zero().mapped_table.alias(self.alias)
+            alias = query._mapper_zero().persist_selectable.alias(self.alias)
         else:
             alias = self.alias
         query._from_obj_alias = sql_util.ColumnAdapter(alias)
-
-

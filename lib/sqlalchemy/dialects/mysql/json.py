@@ -1,5 +1,5 @@
 # mysql/json.py
-# Copyright (C) 2005-2018 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -7,11 +7,7 @@
 
 from __future__ import absolute_import
 
-import json
-
-from ...sql import elements
 from ... import types as sqltypes
-from ... import util
 
 
 class JSON(sqltypes.JSON):
@@ -60,7 +56,6 @@ class _FormatTypeMixin(object):
 
 
 class JSONIndexType(_FormatTypeMixin, sqltypes.JSON.JSONIndexType):
-
     def _format_value(self, value):
         if isinstance(value, int):
             value = "$[%s]" % value
@@ -72,8 +67,10 @@ class JSONIndexType(_FormatTypeMixin, sqltypes.JSON.JSONIndexType):
 class JSONPathType(_FormatTypeMixin, sqltypes.JSON.JSONPathType):
     def _format_value(self, value):
         return "$%s" % (
-            "".join([
-                "[%s]" % elem if isinstance(elem, int)
-                else '."%s"' % elem for elem in value
-            ])
+            "".join(
+                [
+                    "[%s]" % elem if isinstance(elem, int) else '."%s"' % elem
+                    for elem in value
+                ]
+            )
         )

@@ -7,8 +7,8 @@ Provides backends for talking to `Redis <http://redis.io>`_.
 """
 
 from __future__ import absolute_import
-from ..api import CacheBackend, NO_VALUE
-from ...util.compat import pickle, u
+from dogpile.cache.api import CacheBackend, NO_VALUE
+from dogpile.cache.compat import pickle, u
 
 redis = None
 
@@ -91,7 +91,6 @@ class RedisBackend(CacheBackend):
     """
 
     def __init__(self, arguments):
-        arguments = arguments.copy()
         self._imports()
         self.url = arguments.pop('url', None)
         self.host = arguments.pop('host', 'localhost')

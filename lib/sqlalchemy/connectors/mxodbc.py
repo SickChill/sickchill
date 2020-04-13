@@ -1,11 +1,12 @@
 # connectors/mxodbc.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 """
-Provide an SQLALchemy connector for the eGenix mxODBC commercial
+Provide a SQLALchemy connector for the eGenix mxODBC commercial
 Python adapter for ODBC. This is not a free product, but eGenix
 provides SQLAlchemy with a license for use in continuous integration
 testing.
@@ -18,15 +19,15 @@ For more info on mxODBC, see http://www.egenix.com/
 
 """
 
-import sys
 import re
+import sys
 import warnings
 
 from . import Connector
 
 
 class MxODBCConnector(Connector):
-    driver = 'mxodbc'
+    driver = "mxodbc"
 
     supports_sane_multi_rowcount = False
     supports_unicode_statements = True
@@ -40,16 +41,16 @@ class MxODBCConnector(Connector):
         # attribute of the same name, so this is normally only called once.
         cls._load_mx_exceptions()
         platform = sys.platform
-        if platform == 'win32':
-            from mx.ODBC import Windows as module
+        if platform == "win32":
+            from mx.ODBC import Windows as Module
         # this can be the string "linux2", and possibly others
-        elif 'linux' in platform:
-            from mx.ODBC import unixODBC as module
-        elif platform == 'darwin':
-            from mx.ODBC import iODBC as module
+        elif "linux" in platform:
+            from mx.ODBC import unixODBC as Module
+        elif platform == "darwin":
+            from mx.ODBC import iODBC as Module
         else:
             raise ImportError("Unrecognized platform for mxODBC import")
-        return module
+        return Module
 
     @classmethod
     def _load_mx_exceptions(cls):
@@ -67,6 +68,7 @@ class MxODBCConnector(Connector):
             conn.datetimeformat = self.dbapi.PYDATETIME_DATETIMEFORMAT
             conn.decimalformat = self.dbapi.DECIMAL_DECIMALFORMAT
             conn.errorhandler = self._error_handler()
+
         return connect
 
     def _error_handler(self):
@@ -78,15 +80,16 @@ class MxODBCConnector(Connector):
         def error_handler(connection, cursor, errorclass, errorvalue):
             if issubclass(errorclass, MxOdbcWarning):
                 errorclass.__bases__ = (Warning,)
-                warnings.warn(message=str(errorvalue),
-                          category=errorclass,
-                          stacklevel=2)
+                warnings.warn(
+                    message=str(errorvalue), category=errorclass, stacklevel=2
+                )
             else:
                 raise errorclass(errorvalue)
+
         return error_handler
 
     def create_connect_args(self, url):
-        """ Return a tuple of *args,**kwargs for creating a connection.
+        r"""Return a tuple of \*args, \**kwargs for creating a connection.
 
         The mxODBC 3.x connection constructor looks like this:
 
@@ -100,11 +103,11 @@ class MxODBCConnector(Connector):
         not be populated.
 
         """
-        opts = url.translate_connect_args(username='user')
+        opts = url.translate_connect_args(username="user")
         opts.update(url.query)
-        args = opts.pop('host')
-        opts.pop('port', None)
-        opts.pop('database', None)
+        args = opts.pop("host")
+        opts.pop("port", None)
+        opts.pop("database", None)
         return (args,), opts
 
     def is_disconnect(self, e, connection, cursor):
@@ -113,7 +116,7 @@ class MxODBCConnector(Connector):
         if isinstance(e, self.dbapi.ProgrammingError):
             return "connection already closed" in str(e)
         elif isinstance(e, self.dbapi.Error):
-            return '[08S01]' in str(e)
+            return "[08S01]" in str(e)
         else:
             return False
 
@@ -122,7 +125,7 @@ class MxODBCConnector(Connector):
         # of what we're doing here
         dbapi_con = connection.connection
         version = []
-        r = re.compile('[.\-]')
+        r = re.compile(r"[.\-]")
         # 18 == pyodbc.SQL_DBMS_VER
         for n in r.split(dbapi_con.getinfo(18)[1]):
             try:
@@ -133,8 +136,9 @@ class MxODBCConnector(Connector):
 
     def _get_direct(self, context):
         if context:
-            native_odbc_execute = context.execution_options.\
-                                        get('native_odbc_execute', 'auto')
+            native_odbc_execute = context.execution_options.get(
+                "native_odbc_execute", "auto"
+            )
             # default to direct=True in all cases, is more generally
             # compatible especially with SQL Server
             return False if native_odbc_execute is True else True
@@ -143,7 +147,8 @@ class MxODBCConnector(Connector):
 
     def do_executemany(self, cursor, statement, parameters, context=None):
         cursor.executemany(
-            statement, parameters, direct=self._get_direct(context))
+            statement, parameters, direct=self._get_direct(context)
+        )
 
     def do_execute(self, cursor, statement, parameters, context=None):
         cursor.execute(statement, parameters, direct=self._get_direct(context))

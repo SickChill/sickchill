@@ -1,19 +1,25 @@
 # mysql/gaerdbms.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
-"""
+r"""
 .. dialect:: mysql+gaerdbms
     :name: Google Cloud SQL
     :dbapi: rdbms
     :connectstring: mysql+gaerdbms:///<dbname>?instance=<instancename>
     :url: https://developers.google.com/appengine/docs/python/cloud-sql/developers-guide
 
-    This dialect is based primarily on the :mod:`.mysql.mysqldb` dialect with minimal
-    changes.
+    This dialect is based primarily on the :mod:`.mysql.mysqldb` dialect with
+    minimal changes.
 
-    .. versionadded:: 0.7.8
+    .. deprecated:: 1.0 This dialect is **no longer necessary** for
+        Google Cloud SQL; the MySQLdb dialect can be used directly.
+        Cloud SQL now recommends creating connections via the
+        mysql dialect using the URL format
+
+        ``mysql+mysqldb://root@/<dbname>?unix_socket=/cloudsql/<projectid>:<instancename>``
 
 
 Pooling
@@ -24,39 +30,50 @@ so the dialect does not pool connections.  The :class:`.NullPool`
 implementation is installed within the :class:`.Engine` by
 default.
 
-"""
+"""  # noqa
 
 import os
+import re
 
+from sqlalchemy.util import warn_deprecated
 from .mysqldb import MySQLDialect_mysqldb
 from ...pool import NullPool
-import re
 
 
 def _is_dev_environment():
-    return os.environ.get('SERVER_SOFTWARE', '').startswith('Development/')
+    return os.environ.get("SERVER_SOFTWARE", "").startswith("Development/")
 
 
 class MySQLDialect_gaerdbms(MySQLDialect_mysqldb):
-
     @classmethod
     def dbapi(cls):
+
+        warn_deprecated(
+            "Google Cloud SQL now recommends creating connections via the "
+            "MySQLdb dialect directly, using the URL format "
+            "mysql+mysqldb://root@/<dbname>?unix_socket=/cloudsql/"
+            "<projectid>:<instancename>"
+        )
+
         # from django:
         # http://code.google.com/p/googleappengine/source/
         #     browse/trunk/python/google/storage/speckle/
-        #     python/django/backend/base.py#118
+        # python/django/backend/base.py#118
         # see also [ticket:2649]
         # see also http://stackoverflow.com/q/14224679/34549
         from google.appengine.api import apiproxy_stub_map
 
         if _is_dev_environment():
             from google.appengine.api import rdbms_mysqldb
+
             return rdbms_mysqldb
-        elif apiproxy_stub_map.apiproxy.GetStub('rdbms'):
+        elif apiproxy_stub_map.apiproxy.GetStub("rdbms"):
             from google.storage.speckle.python.api import rdbms_apiproxy
+
             return rdbms_apiproxy
         else:
             from google.storage.speckle.python.api import rdbms_googleapi
+
             return rdbms_googleapi
 
     @classmethod
@@ -69,8 +86,8 @@ class MySQLDialect_gaerdbms(MySQLDialect_mysqldb):
         if not _is_dev_environment():
             # 'dsn' and 'instance' are because we are skipping
             # the traditional google.api.rdbms wrapper
-            opts['dsn'] = ''
-            opts['instance'] = url.query['instance']
+            opts["dsn"] = ""
+            opts["instance"] = url.query["instance"]
         return [], opts
 
     def _extract_error_code(self, exception):
@@ -80,5 +97,6 @@ class MySQLDialect_gaerdbms(MySQLDialect_mysqldb):
         code = match.group(1) or match.group(2) if match else None
         if code:
             return int(code)
+
 
 dialect = MySQLDialect_gaerdbms

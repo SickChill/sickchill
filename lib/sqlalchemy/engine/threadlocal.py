@@ -1,5 +1,6 @@
 # engine/threadlocal.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -12,13 +13,13 @@ This module is semi-private and is invoked automatically when the threadlocal
 engine strategy is used.
 """
 
-from .. import util
-from . import base
 import weakref
+
+from . import base
+from .. import util
 
 
 class TLConnection(base.Connection):
-
     def __init__(self, *arg, **kw):
         super(TLConnection, self).__init__(*arg, **kw)
         self.__opencount = 0
@@ -42,14 +43,26 @@ class TLEngine(base.Engine):
     transactions.
 
     """
+
     _tl_connection_cls = TLConnection
 
+    @util.deprecated(
+        "1.3",
+        "The 'threadlocal' engine strategy is deprecated, and will be "
+        "removed in a future release.  The strategy is no longer relevant "
+        "to modern usage patterns (including that of the ORM "
+        ":class:`.Session` object) which make use of a :class:`.Connection` "
+        "object in order to invoke statements.",
+    )
     def __init__(self, *args, **kwargs):
         super(TLEngine, self).__init__(*args, **kwargs)
         self._connections = util.threading.local()
 
     def contextual_connect(self, **kw):
-        if not hasattr(self._connections, 'conn'):
+        return self._contextual_connect(**kw)
+
+    def _contextual_connect(self, **kw):
+        if not hasattr(self._connections, "conn"):
             connection = None
         else:
             connection = self._connections.conn()
@@ -58,56 +71,67 @@ class TLEngine(base.Engine):
             # guards against pool-level reapers, if desired.
             # or not connection.connection.is_valid:
             connection = self._tl_connection_cls(
-                self, self.pool.connect(), **kw)
+                self,
+                self._wrap_pool_connect(self.pool.connect, connection),
+                **kw
+            )
             self._connections.conn = weakref.ref(connection)
 
         return connection._increment_connect()
 
     def begin_twophase(self, xid=None):
-        if not hasattr(self._connections, 'trans'):
+        if not hasattr(self._connections, "trans"):
             self._connections.trans = []
         self._connections.trans.append(
-            self.contextual_connect().begin_twophase(xid=xid))
+            self._contextual_connect().begin_twophase(xid=xid)
+        )
         return self
 
     def begin_nested(self):
-        if not hasattr(self._connections, 'trans'):
+        if not hasattr(self._connections, "trans"):
             self._connections.trans = []
         self._connections.trans.append(
-            self.contextual_connect().begin_nested())
+            self._contextual_connect().begin_nested()
+        )
         return self
 
     def begin(self):
-        if not hasattr(self._connections, 'trans'):
+        if not hasattr(self._connections, "trans"):
             self._connections.trans = []
-        self._connections.trans.append(self.contextual_connect().begin())
+        self._connections.trans.append(self._contextual_connect().begin())
         return self
 
     def __enter__(self):
         return self
 
-    def __exit__(self, type, value, traceback):
-        if type is None:
+    def __exit__(self, type_, value, traceback):
+        if type_ is None:
             self.commit()
         else:
             self.rollback()
 
     def prepare(self):
-        if not hasattr(self._connections, 'trans') or \
-            not self._connections.trans:
+        if (
+            not hasattr(self._connections, "trans")
+            or not self._connections.trans
+        ):
             return
         self._connections.trans[-1].prepare()
 
     def commit(self):
-        if not hasattr(self._connections, 'trans') or \
-            not self._connections.trans:
+        if (
+            not hasattr(self._connections, "trans")
+            or not self._connections.trans
+        ):
             return
         trans = self._connections.trans.pop(-1)
         trans.commit()
 
     def rollback(self):
-        if not hasattr(self._connections, 'trans') or \
-            not self._connections.trans:
+        if (
+            not hasattr(self._connections, "trans")
+            or not self._connections.trans
+        ):
             return
         trans = self._connections.trans.pop(-1)
         trans.rollback()
@@ -118,17 +142,19 @@ class TLEngine(base.Engine):
 
     @property
     def closed(self):
-        return not hasattr(self._connections, 'conn') or \
-                self._connections.conn() is None or \
-                self._connections.conn().closed
+        return (
+            not hasattr(self._connections, "conn")
+            or self._connections.conn() is None
+            or self._connections.conn().closed
+        )
 
     def close(self):
         if not self.closed:
-            self.contextual_connect().close()
+            self._contextual_connect().close()
             connection = self._connections.conn()
             connection._force_close()
             del self._connections.conn
             self._connections.trans = []
 
     def __repr__(self):
-        return 'TLEngine(%s)' % str(self.url)
+        return "TLEngine(%r)" % self.url

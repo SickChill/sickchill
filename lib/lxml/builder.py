@@ -1,3 +1,5 @@
+# cython: language_level=2
+
 #
 # Element generator factory by Fredrik Lundh.
 #
@@ -36,6 +38,8 @@
 """
 The ``E`` Element factory for generating XML documents.
 """
+
+from __future__ import absolute_import
 
 import lxml.etree as ET
 

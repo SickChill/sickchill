@@ -27,6 +27,7 @@ html5lib == 1.0.1
 httplib2 == 0.17.1  # + tests folder from cf631a73e2f3f43897b65206127ced82382d35f5
 idna == 2.9
 # IMDbPY == 5.1.1 --no-deps --global-option="--without-sqlobject" --global-option="--without-sqlalchemy"  # doesn't work because --no-deps isn't supported in reqs file context
+IMDbPY == 6.8
 git+https://github.com/PiotrDabkowski/Js2Py.git@05e77f0d4ffe91ef418a93860e666962cfd193b8#egg=js2py
 git+https://github.com/joshmarshall/jsonrpclib.git@e3a3cdedc9577b25b91274815b38ba7f3bc43c68#egg=jsonrpclib
 # growl  # <Custom: by Sick-Beard's midgetspy. Some of the code is from https://github.com/kfdm/gntp>
@@ -67,7 +68,8 @@ stevedore == 1.32.0
 #! git+https://github.com/Diaoul/subliminal.git@7eb7a53fe6bcaf3e01a6b44c8366faf7c96f7f1b#egg=subliminal  # <Modified: Subscenter provider disabled until fixed upstream, https://github.com/SickChill/SickChill/pull/3825/files#diff-ab7eb9ba0a2d4c74c16795ff40f2bd62>
 # synchronous-deluge  # <Custom: by Christian Dale>
 tmdbsimple == 2.2.0  # [NOTE] Package naming is modified.
-tornado == 5.1.1  # [NOTE] Contains a `routes.py` file, which is not a part of the original package
+#tornado == 5.1.1  # [NOTE] Contains a `routes.py` file, which is not a part of the original package
+tornado == 4.5
 tus.py == 1.3.4
 #! tvdb_api == 1.9  # <Heavily Modified> Deprecated API, will be disabled by October 1st, 2017
 twilio == 6.38.0

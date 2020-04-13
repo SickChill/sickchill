@@ -1,3 +1,5 @@
+# cython: language_level=2
+
 #
 # ElementTree
 # $Id: ElementPath.py 3375 2008-02-13 08:05:08Z fredrik $
@@ -53,6 +55,8 @@
 # you, if needed.
 ##
 
+from __future__ import absolute_import
+
 import re
 
 xpath_tokenizer_re = re.compile(
@@ -68,24 +72,28 @@ xpath_tokenizer_re = re.compile(
     )
 
 def xpath_tokenizer(pattern, namespaces=None):
-    default_namespace = namespaces.get(None) if namespaces else None
+    # ElementTree uses '', lxml used None originally.
+    default_namespace = (namespaces.get(None) or namespaces.get('')) if namespaces else None
+    parsing_attribute = False
     for token in xpath_tokenizer_re.findall(pattern):
-        tag = token[1]
+        ttype, tag = token
         if tag and tag[0] != "{":
             if ":" in tag:
                 prefix, uri = tag.split(":", 1)
                 try:
                     if not namespaces:
                         raise KeyError
-                    yield token[0], "{%s}%s" % (namespaces[prefix], uri)
+                    yield ttype, "{%s}%s" % (namespaces[prefix], uri)
                 except KeyError:
                     raise SyntaxError("prefix %r not found in prefix map" % prefix)
-            elif default_namespace:
-                yield token[0], "{%s}%s" % (default_namespace, tag)
+            elif default_namespace and not parsing_attribute:
+                yield ttype, "{%s}%s" % (default_namespace, tag)
             else:
                 yield token
+            parsing_attribute = False
         else:
             yield token
+            parsing_attribute = ttype == '@'
 
 
 def prepare_child(next, token):
@@ -250,9 +258,13 @@ def _build_path_iterator(path, namespaces):
 
     cache_key = (path,)
     if namespaces:
-        if '' in namespaces:
-            raise ValueError("empty namespace prefix must be passed as None, not the empty string")
+        # lxml originally used None for the default namespace but ElementTree uses the
+        # more convenient (all-strings-dict) empty string, so we support both here,
+        # preferring the more convenient '', as long as they aren't ambiguous.
         if None in namespaces:
+            if '' in namespaces and namespaces[None] != namespaces['']:
+                raise ValueError("Ambiguous default namespace provided: %r versus %r" % (
+                    namespaces[None], namespaces['']))
             cache_key += (namespaces[None],) + tuple(sorted(
                 item for item in namespaces.items() if item[0] is not None))
         else:

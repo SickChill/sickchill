@@ -165,7 +165,7 @@ class GuessItApi(object):
         self.config = config
         return self.config
 
-    def guessit(self, string, options=None):
+    def guessit(self, string, options=None):  # pylint: disable=too-many-branches
         """
         Retrieves all matches from string as a dict
         :param string: the filename or release name

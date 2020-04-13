@@ -1,5 +1,6 @@
 # sql/visitors.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -12,34 +13,44 @@ they apply functionality.  The most common use of this pattern
 is statement compilation, where individual expression classes match
 up to rendering methods that produce a string result.   Beyond this,
 the visitor system is also used to inspect expressions for various
-information and patterns, as well as for usage in
-some kinds of expression transformation.  Other kinds of transformation
-use a non-visitor traversal system.
+information and patterns, as well as for the purposes of applying
+transformations to expressions.
 
-For many examples of how the visit system is used, see the
-sqlalchemy.sql.util and the sqlalchemy.sql.compiler modules.
-For an introduction to clause adaption, see
-http://techspot.zzzeek.org/2008/01/23/expression-transformations/
+Examples of how the visit system is used can be seen in the source code
+of for example the ``sqlalchemy.sql.util`` and the ``sqlalchemy.sql.compiler``
+modules.  Some background on clause adaption is also at
+http://techspot.zzzeek.org/2008/01/23/expression-transformations/ .
 
 """
 
 from collections import deque
-from .. import util
 import operator
-from .. import exc
 
-__all__ = ['VisitableType', 'Visitable', 'ClauseVisitor',
-    'CloningVisitor', 'ReplacingCloningVisitor', 'iterate',
-    'iterate_depthfirst', 'traverse_using', 'traverse',
-    'traverse_depthfirst',
-    'cloned_traverse', 'replacement_traverse']
+from .. import exc
+from .. import util
+
+
+__all__ = [
+    "VisitableType",
+    "Visitable",
+    "ClauseVisitor",
+    "CloningVisitor",
+    "ReplacingCloningVisitor",
+    "iterate",
+    "iterate_depthfirst",
+    "traverse_using",
+    "traverse",
+    "traverse_depthfirst",
+    "cloned_traverse",
+    "replacement_traverse",
+]
 
 
 class VisitableType(type):
-    """Metaclass which assigns a `_compiler_dispatch` method to classes
-    having a `__visit_name__` attribute.
+    """Metaclass which assigns a ``_compiler_dispatch`` method to classes
+    having a ``__visit_name__`` attribute.
 
-    The _compiler_dispatch attribute becomes an instance method which
+    The ``_compiler_dispatch`` attribute becomes an instance method which
     looks approximately like the following::
 
         def _compiler_dispatch (self, visitor, **kw):
@@ -48,11 +59,12 @@ class VisitableType(type):
             visit_attr = 'visit_%s' % self.__visit_name__
             return getattr(visitor, visit_attr)(self, **kw)
 
-    Classes having no __visit_name__ attribute will remain unaffected.
+    Classes having no ``__visit_name__`` attribute will remain unaffected.
+
     """
+
     def __init__(cls, clsname, bases, clsdict):
-        if clsname != 'Visitable' and \
-                hasattr(cls, '__visit_name__'):
+        if clsname != "Visitable" and hasattr(cls, "__visit_name__"):
             _generate_dispatch(cls)
 
         super(VisitableType, cls).__init__(clsname, bases, clsdict)
@@ -62,9 +74,10 @@ def _generate_dispatch(cls):
     """Return an optimized visit dispatch function for the cls
     for use by the compiler.
     """
-    if '__visit_name__' in cls.__dict__:
+    if "__visit_name__" in cls.__dict__:
         visit_name = cls.__visit_name__
-        if isinstance(visit_name, str):
+
+        if isinstance(visit_name, util.compat.string_types):
             # There is an optimization opportunity here because the
             # the string name of the class's __visit_name__ is known at
             # this early stage (import time) so it can be pre-constructed.
@@ -73,25 +86,31 @@ def _generate_dispatch(cls):
             def _compiler_dispatch(self, visitor, **kw):
                 try:
                     meth = getter(visitor)
-                except AttributeError:
-                    raise exc.UnsupportedCompilationError(visitor, cls)
+                except AttributeError as err:
+                    util.raise_(
+                        exc.UnsupportedCompilationError(visitor, cls),
+                        replace_context=err,
+                    )
                 else:
                     return meth(self, **kw)
+
         else:
             # The optimization opportunity is lost for this case because the
             # __visit_name__ is not yet a string. As a result, the visit
             # string has to be recalculated with each compilation.
             def _compiler_dispatch(self, visitor, **kw):
-                visit_attr = 'visit_%s' % self.__visit_name__
+                visit_attr = "visit_%s" % self.__visit_name__
                 try:
                     meth = getattr(visitor, visit_attr)
-                except AttributeError:
-                    raise exc.UnsupportedCompilationError(visitor, cls)
+                except AttributeError as err:
+                    util.raise_(
+                        exc.UnsupportedCompilationError(visitor, cls),
+                        replace_context=err,
+                    )
                 else:
                     return meth(self, **kw)
 
-        _compiler_dispatch.__doc__ = \
-          """Look for an attribute named "visit_" + self.__visit_name__
+        _compiler_dispatch.__doc__ = """Look for an attribute named "visit_" + self.__visit_name__
             on the visitor, and call it with the same kw params.
             """
         cls._compiler_dispatch = _compiler_dispatch
@@ -99,21 +118,27 @@ def _generate_dispatch(cls):
 
 class Visitable(util.with_metaclass(VisitableType, object)):
     """Base class for visitable objects, applies the
-    ``VisitableType`` metaclass.
+    :class:`.visitors.VisitableType` metaclass.
+
+    The :class:`.Visitable` class is essentially at the base of the
+    :class:`.ClauseElement` hierarchy.
 
     """
 
 
 class ClauseVisitor(object):
     """Base class for visitor objects which can traverse using
-    the traverse() function.
+    the :func:`.visitors.traverse` function.
+
+    Direct usage of the :func:`.visitors.traverse` function is usually
+    preferred.
 
     """
 
     __traverse_options__ = {}
 
     def traverse_single(self, obj, **kw):
-        for v in self._visitor_iterator:
+        for v in self.visitor_iterator:
             meth = getattr(v, "visit_%s" % obj.__visit_name__, None)
             if meth:
                 return meth(obj, **kw)
@@ -135,18 +160,18 @@ class ClauseVisitor(object):
         visitors = {}
 
         for name in dir(self):
-            if name.startswith('visit_'):
+            if name.startswith("visit_"):
                 visitors[name[6:]] = getattr(self, name)
         return visitors
 
     @property
-    def _visitor_iterator(self):
+    def visitor_iterator(self):
         """iterate through this visitor and each 'chained' visitor."""
 
         v = self
         while v:
             yield v
-            v = getattr(v, '_next', None)
+            v = getattr(v, "_next", None)
 
     def chain(self, visitor):
         """'chain' an additional ClauseVisitor onto this ClauseVisitor.
@@ -154,14 +179,18 @@ class ClauseVisitor(object):
         the chained visitor will receive all visit events after this one.
 
         """
-        tail = list(self._visitor_iterator)[-1]
+        tail = list(self.visitor_iterator)[-1]
         tail._next = visitor
         return self
 
 
 class CloningVisitor(ClauseVisitor):
     """Base class for visitor objects which can traverse using
-    the cloned_traverse() function.
+    the :func:`.visitors.cloned_traverse` function.
+
+    Direct usage of the :func:`.visitors.cloned_traverse` function is usually
+    preferred.
+
 
     """
 
@@ -176,12 +205,16 @@ class CloningVisitor(ClauseVisitor):
         """traverse and visit the given expression structure."""
 
         return cloned_traverse(
-            obj, self.__traverse_options__, self._visitor_dict)
+            obj, self.__traverse_options__, self._visitor_dict
+        )
 
 
 class ReplacingCloningVisitor(CloningVisitor):
     """Base class for visitor objects which can traverse using
-    the replacement_traverse() function.
+    the :func:`.visitors.replacement_traverse` function.
+
+    Direct usage of the :func:`.visitors.replacement_traverse` function is
+    usually preferred.
 
     """
 
@@ -198,25 +231,47 @@ class ReplacingCloningVisitor(CloningVisitor):
         """traverse and visit the given expression structure."""
 
         def replace(elem):
-            for v in self._visitor_iterator:
+            for v in self.visitor_iterator:
                 e = v.replace(elem)
                 if e is not None:
                     return e
+
         return replacement_traverse(obj, self.__traverse_options__, replace)
 
 
 def iterate(obj, opts):
-    """traverse the given expression structure, returning an iterator.
+    r"""traverse the given expression structure, returning an iterator.
 
     traversal is configured to be breadth-first.
 
+    The central API feature used by the :func:`.visitors.iterate` and
+    :func:`.visitors.iterate_depthfirst` functions is the
+    :meth:`.ClauseElement.get_children` method of :class:`.ClauseElement`
+    objects.  This method should return all the :class:`.ClauseElement` objects
+    which are associated with a particular :class:`.ClauseElement` object.
+    For example, a :class:`.Case` structure will refer to a series of
+    :class:`.ColumnElement` objects within its "whens" and "else\_" member
+    variables.
+
+    :param obj: :class:`.ClauseElement` structure to be traversed
+
+    :param opts: dictionary of iteration options.   This dictionary is usually
+     empty in modern usage.
+
     """
+    # fasttrack for atomic elements like columns
+    children = obj.get_children(**opts)
+    if not children:
+        return [obj]
+
+    traversal = deque()
     stack = deque([obj])
     while stack:
         t = stack.popleft()
-        yield t
+        traversal.append(t)
         for c in t.get_children(**opts):
             stack.append(c)
+    return iter(traversal)
 
 
 def iterate_depthfirst(obj, opts):
@@ -224,7 +279,21 @@ def iterate_depthfirst(obj, opts):
 
     traversal is configured to be depth-first.
 
+    :param obj: :class:`.ClauseElement` structure to be traversed
+
+    :param opts: dictionary of iteration options.   This dictionary is usually
+     empty in modern usage.
+
+    .. seealso::
+
+        :func:`.visitors.iterate` - includes a general overview of iteration.
+
     """
+    # fasttrack for atomic elements like columns
+    children = obj.get_children(**opts)
+    if not children:
+        return [obj]
+
     stack = deque([obj])
     traversal = deque()
     while stack:
@@ -239,6 +308,27 @@ def traverse_using(iterator, obj, visitors):
     """visit the given expression structure using the given iterator of
     objects.
 
+    :func:`.visitors.traverse_using` is usually called internally as the result
+    of the :func:`.visitors.traverse` or :func:`.visitors.traverse_depthfirst`
+    functions.
+
+    :param iterator: an iterable or sequence which will yield
+     :class:`.ClauseElement` structures; the iterator is assumed to be the
+     product of the :func:`.visitors.iterate` or
+     :func:`.visitors.iterate_depthfirst` functions.
+
+    :param obj: the :class:`.ClauseElement` that was used as the target of the
+     :func:`.iterate` or :func:`.iterate_depthfirst` function.
+
+    :param visitors: dictionary of visit functions.  See :func:`.traverse`
+     for details on this dictionary.
+
+    .. seealso::
+
+        :func:`.traverse`
+
+        :func:`.traverse_depthfirst`
+
     """
     for target in iterator:
         meth = visitors.get(target.__visit_name__, None)
@@ -249,7 +339,32 @@ def traverse_using(iterator, obj, visitors):
 
 def traverse(obj, opts, visitors):
     """traverse and visit the given expression structure using the default
-     iterator.
+    iterator.
+
+     e.g.::
+
+        from sqlalchemy.sql import visitors
+
+        stmt = select([some_table]).where(some_table.c.foo == 'bar')
+
+        def visit_bindparam(bind_param):
+            print("found bound value: %s" % bind_param.value)
+
+        visitors.traverse(stmt, {}, {"bindparam": visit_bindparam})
+
+    The iteration of objects uses the :func:`.visitors.iterate` function,
+    which does a breadth-first traversal using a stack.
+
+    :param obj: :class:`.ClauseElement` structure to be traversed
+
+    :param opts: dictionary of iteration options.   This dictionary is usually
+     empty in modern usage.
+
+    :param visitors: dictionary of visit functions.   The dictionary should
+     have strings as keys, each of which would correspond to the
+     ``__visit_name__`` of a particular kind of SQL expression object, and
+     callable functions  as values, each of which represents a visitor function
+     for that kind of object.
 
     """
     return traverse_using(iterate(obj, opts), obj, visitors)
@@ -259,24 +374,50 @@ def traverse_depthfirst(obj, opts, visitors):
     """traverse and visit the given expression structure using the
     depth-first iterator.
 
+    The iteration of objects uses the :func:`.visitors.iterate_depthfirst`
+    function, which does a depth-first traversal using a stack.
+
+    Usage is the same as that of :func:`.visitors.traverse` function.
+
+
     """
     return traverse_using(iterate_depthfirst(obj, opts), obj, visitors)
 
 
 def cloned_traverse(obj, opts, visitors):
-    """clone the given expression structure, allowing
-    modifications by visitors."""
+    """clone the given expression structure, allowing modifications by
+    visitors.
+
+    Traversal usage is the same as that of :func:`.visitors.traverse`.
+    The visitor functions present in the ``visitors`` dictionary may also
+    modify the internals of the given structure as the traversal proceeds.
+
+    The central API feature used by the :func:`.visitors.cloned_traverse`
+    and :func:`.visitors.replacement_traverse` functions, in addition to the
+    :meth:`.ClauseElement.get_children` function that is used to achieve
+    the iteration, is the :meth:`.ClauseElement._copy_internals` method.
+    For a :class:`.ClauseElement` structure to support cloning and replacement
+    traversals correctly, it needs to be able to pass a cloning function into
+    its internal members in order to make copies of them.
+
+    .. seealso::
+
+        :func:`.visitors.traverse`
+
+        :func:`.visitors.replacement_traverse`
+
+    """
 
     cloned = {}
-    stop_on = set(opts.get('stop_on', []))
+    stop_on = set(opts.get("stop_on", []))
 
-    def clone(elem):
+    def clone(elem, **kw):
         if elem in stop_on:
             return elem
         else:
             if id(elem) not in cloned:
                 cloned[id(elem)] = newelem = elem._clone()
-                newelem._copy_internals(clone=clone)
+                newelem._copy_internals(clone=clone, **kw)
                 meth = visitors.get(newelem.__visit_name__, None)
                 if meth:
                     meth(newelem)
@@ -284,19 +425,44 @@ def cloned_traverse(obj, opts, visitors):
 
     if obj is not None:
         obj = clone(obj)
+
+    clone = None  # remove gc cycles
+
     return obj
 
 
 def replacement_traverse(obj, opts, replace):
     """clone the given expression structure, allowing element
-    replacement by a given replacement function."""
+    replacement by a given replacement function.
+
+    This function is very similar to the :func:`.visitors.cloned_traverse`
+    function, except instead of being passed a dictionary of visitors, all
+    elements are unconditionally passed into the given replace function.
+    The replace function then has the option to return an entirely new object
+    which will replace the one given.  if it returns ``None``, then the object
+    is kept in place.
+
+    The difference in usage between :func:`.visitors.cloned_traverse` and
+    :func:`.visitors.replacement_traverse` is that in the former case, an
+    already-cloned object is passed to the visitor function, and the visitor
+    function can then manipulate the internal state of the object.
+    In the case of the latter, the visitor function should only return an
+    entirely different object, or do nothing.
+
+    The use case for :func:`.visitors.replacement_traverse` is that of
+    replacing a FROM clause inside of a SQL structure with a different one,
+    as is a common use case within the ORM.
+
+    """
 
     cloned = {}
-    stop_on = set([id(x) for x in opts.get('stop_on', [])])
+    stop_on = {id(x) for x in opts.get("stop_on", [])}
 
     def clone(elem, **kw):
-        if id(elem) in stop_on or \
-            'no_replacement_traverse' in elem._annotations:
+        if (
+            id(elem) in stop_on
+            or "no_replacement_traverse" in elem._annotations
+        ):
             return elem
         else:
             newelem = replace(elem)
@@ -311,4 +477,5 @@ def replacement_traverse(obj, opts, replace):
 
     if obj is not None:
         obj = clone(obj, **opts)
+    clone = None  # remove gc cycles
     return obj

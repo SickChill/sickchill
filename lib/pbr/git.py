@@ -156,9 +156,9 @@ def _clean_changelog_message(msg):
     * Escapes '`' which is interpreted as a literal
     """
 
-    msg = msg.replace('*', '\*')
-    msg = msg.replace('_', '\_')
-    msg = msg.replace('`', '\`')
+    msg = msg.replace('*', r'\*')
+    msg = msg.replace('_', r'\_')
+    msg = msg.replace('`', r'\`')
 
     return msg
 
@@ -223,6 +223,11 @@ def _iter_log_inner(git_dir):
     presentation logic to the output - making it suitable for different
     uses.
 
+    .. caution:: this function risk to return a tag that doesn't exist really
+                 inside the git objects list due to replacement made
+                 to tag name to also list pre-release suffix.
+                 Compliant with the SemVer specification (e.g 1.2.3-rc1)
+
     :return: An iterator of (hash, tags_set, 1st_line) tuples.
     """
     log.info('[pbr] Generating ChangeLog')
@@ -248,7 +253,7 @@ def _iter_log_inner(git_dir):
             for tag_string in refname.split("refs/tags/")[1:]:
                 # git tag does not allow : or " " in tag names, so we split
                 # on ", " which is the separator between elements
-                candidate = tag_string.split(", ")[0]
+                candidate = tag_string.split(", ")[0].replace("-", ".")
                 if _is_valid_version(candidate):
                     tags.add(candidate)
 
@@ -271,13 +276,14 @@ def write_git_changelog(git_dir=None, dest_dir=os.path.curdir,
             changelog = _iter_changelog(changelog)
     if not changelog:
         return
+
     new_changelog = os.path.join(dest_dir, 'ChangeLog')
-    # If there's already a ChangeLog and it's not writable, just use it
-    if (os.path.exists(new_changelog)
-            and not os.access(new_changelog, os.W_OK)):
+    if os.path.exists(new_changelog) and not os.access(new_changelog, os.W_OK):
+        # If there's already a ChangeLog and it's not writable, just use it
         log.info('[pbr] ChangeLog not written (file already'
                  ' exists and it is not writeable)')
         return
+
     log.info('[pbr] Writing ChangeLog')
     with io.open(new_changelog, "w", encoding="utf-8") as changelog_file:
         for release, content in changelog:
@@ -292,15 +298,16 @@ def generate_authors(git_dir=None, dest_dir='.', option_dict=dict()):
                                              'SKIP_GENERATE_AUTHORS')
     if should_skip:
         return
+
     start = time.time()
     old_authors = os.path.join(dest_dir, 'AUTHORS.in')
     new_authors = os.path.join(dest_dir, 'AUTHORS')
-    # If there's already an AUTHORS file and it's not writable, just use it
-    if (os.path.exists(new_authors)
-            and not os.access(new_authors, os.W_OK)):
+    if os.path.exists(new_authors) and not os.access(new_authors, os.W_OK):
+        # If there's already an AUTHORS file and it's not writable, just use it
         return
+
     log.info('[pbr] Generating AUTHORS')
-    ignore_emails = '(jenkins@review|infra@lists|jenkins@openstack)'
+    ignore_emails = '((jenkins|zuul)@review|infra@lists|jenkins@openstack)'
     if git_dir is None:
         git_dir = _get_git_directory()
     if git_dir:

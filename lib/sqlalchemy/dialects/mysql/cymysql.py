@@ -1,10 +1,10 @@
 # mysql/cymysql.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
-
-"""
+r"""
 
 .. dialect:: mysql+cymysql
     :name: CyMySQL
@@ -12,12 +12,19 @@
     :connectstring: mysql+cymysql://<username>:<password>@<host>/<dbname>[?<options>]
     :url: https://github.com/nakagami/CyMySQL
 
-"""
-import re
+.. note::
 
+    The CyMySQL dialect is **not tested as part of SQLAlchemy's continuous
+    integration** and may have unresolved issues.  The recommended MySQL
+    dialects are mysqlclient and PyMySQL.
+
+"""  # noqa
+
+from .base import BIT
+from .base import MySQLDialect
 from .mysqldb import MySQLDialect_mysqldb
-from .base import (BIT, MySQLDialect)
 from ... import util
+
 
 class _cymysqlBIT(BIT):
     def result_processor(self, dialect, coltype):
@@ -31,38 +38,23 @@ class _cymysqlBIT(BIT):
                     v = v << 8 | i
                 return v
             return value
+
         return process
 
 
 class MySQLDialect_cymysql(MySQLDialect_mysqldb):
-    driver = 'cymysql'
+    driver = "cymysql"
 
     description_encoding = None
     supports_sane_rowcount = True
     supports_sane_multi_rowcount = False
     supports_unicode_statements = True
 
-    colspecs = util.update_copy(
-        MySQLDialect.colspecs,
-        {
-            BIT: _cymysqlBIT,
-        }
-    )
+    colspecs = util.update_copy(MySQLDialect.colspecs, {BIT: _cymysqlBIT})
 
     @classmethod
     def dbapi(cls):
-        return __import__('cymysql')
-
-    def _get_server_version_info(self, connection):
-        dbapi_con = connection.connection
-        version = []
-        r = re.compile('[.\-]')
-        for n in r.split(dbapi_con.server_version):
-            try:
-                version.append(int(n))
-            except ValueError:
-                version.append(n)
-        return tuple(version)
+        return __import__("cymysql")
 
     def _detect_charset(self, connection):
         return connection.connection.charset
@@ -72,13 +64,19 @@ class MySQLDialect_cymysql(MySQLDialect_mysqldb):
 
     def is_disconnect(self, e, connection, cursor):
         if isinstance(e, self.dbapi.OperationalError):
-            return self._extract_error_code(e) in \
-                        (2006, 2013, 2014, 2045, 2055)
+            return self._extract_error_code(e) in (
+                2006,
+                2013,
+                2014,
+                2045,
+                2055,
+            )
         elif isinstance(e, self.dbapi.InterfaceError):
             # if underlying connection is closed,
             # this is the error you get
             return True
         else:
             return False
+
 
 dialect = MySQLDialect_cymysql

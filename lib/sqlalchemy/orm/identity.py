@@ -1,17 +1,26 @@
 # orm/identity.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 import weakref
+
 from . import attributes
+from . import util as orm_util
+from .. import exc as sa_exc
 from .. import util
 
-class IdentityMap(dict):
+
+class IdentityMap(object):
     def __init__(self):
+        self._dict = {}
         self._modified = set()
         self._wr = weakref.ref(self)
+
+    def keys(self):
+        return self._dict.keys()
 
     def replace(self, state):
         raise NotImplementedError()
@@ -19,7 +28,12 @@ class IdentityMap(dict):
     def add(self, state):
         raise NotImplementedError()
 
-    def update(self, dict):
+    def _add_unpresent(self, state, key):
+        """optional inlined form of add() which can assume item isn't present
+        in the map"""
+        self.add(state)
+
+    def update(self, dict_):
         raise NotImplementedError("IdentityMap uses add() to insert data")
 
     def clear(self):
@@ -33,7 +47,8 @@ class IdentityMap(dict):
 
     def _manage_removed_state(self, state):
         del state._instance_dict
-        self._modified.discard(state)
+        if state.modified:
+            self._modified.discard(state)
 
     def _dirty_states(self):
         return self._modified
@@ -57,6 +72,9 @@ class IdentityMap(dict):
     def setdefault(self, key, default=None):
         raise NotImplementedError("IdentityMap uses add() to insert data")
 
+    def __len__(self):
+        return len(self._dict)
+
     def copy(self):
         raise NotImplementedError()
 
@@ -68,11 +86,8 @@ class IdentityMap(dict):
 
 
 class WeakInstanceDict(IdentityMap):
-    def __init__(self):
-        IdentityMap.__init__(self)
-
     def __getitem__(self, key):
-        state = dict.__getitem__(self, key)
+        state = self._dict[key]
         o = state.obj()
         if o is None:
             raise KeyError(key)
@@ -80,8 +95,8 @@ class WeakInstanceDict(IdentityMap):
 
     def __contains__(self, key):
         try:
-            if dict.__contains__(self, key):
-                state = dict.__getitem__(self, key)
+            if key in self._dict:
+                state = self._dict[key]
                 o = state.obj()
             else:
                 return False
@@ -91,49 +106,78 @@ class WeakInstanceDict(IdentityMap):
             return o is not None
 
     def contains_state(self, state):
-        return dict.get(self, state.key) is state
+        if state.key in self._dict:
+            try:
+                return self._dict[state.key] is state
+            except KeyError:
+                return False
+        else:
+            return False
 
     def replace(self, state):
-        if dict.__contains__(self, state.key):
-            existing = dict.__getitem__(self, state.key)
-            if existing is not state:
-                self._manage_removed_state(existing)
+        if state.key in self._dict:
+            try:
+                existing = self._dict[state.key]
+            except KeyError:
+                # catch gc removed the key after we just checked for it
+                pass
             else:
-                return
+                if existing is not state:
+                    self._manage_removed_state(existing)
+                else:
+                    return None
+        else:
+            existing = None
 
-        dict.__setitem__(self, state.key, state)
+        self._dict[state.key] = state
         self._manage_incoming_state(state)
+        return existing
 
     def add(self, state):
         key = state.key
         # inline of self.__contains__
-        if dict.__contains__(self, key):
+        if key in self._dict:
             try:
-                existing_state = dict.__getitem__(self, key)
+                existing_state = self._dict[key]
+            except KeyError:
+                # catch gc removed the key after we just checked for it
+                pass
+            else:
                 if existing_state is not state:
                     o = existing_state.obj()
                     if o is not None:
-                        raise AssertionError(
-                            "A conflicting state is already "
-                            "present in the identity map for key %r"
-                            % (key, ))
+                        raise sa_exc.InvalidRequestError(
+                            "Can't attach instance "
+                            "%s; another instance with key %s is already "
+                            "present in this session."
+                            % (orm_util.state_str(state), state.key)
+                        )
                 else:
-                    return
-            except KeyError:
-                pass
-        dict.__setitem__(self, key, state)
+                    return False
+        self._dict[key] = state
         self._manage_incoming_state(state)
+        return True
+
+    def _add_unpresent(self, state, key):
+        # inlined form of add() called by loading.py
+        self._dict[key] = state
+        state._instance_dict = self._wr
 
     def get(self, key, default=None):
-        state = dict.get(self, key, default)
-        if state is default:
+        if key not in self._dict:
             return default
-        o = state.obj()
-        if o is None:
+        try:
+            state = self._dict[key]
+        except KeyError:
+            # catch gc removed the key after we just checked for it
             return default
-        return o
+        else:
+            o = state.obj()
+            if o is None:
+                return default
+            return o
 
-    def _items(self):
+    def items(self):
         values = self.all_states()
         result = []
         for state in values:
@@ -142,7 +186,7 @@ class WeakInstanceDict(IdentityMap):
                 result.append((state.key, value))
         return result
 
-    def _values(self):
+    def values(self):
         values = self.all_states()
         result = []
         for state in values:
@@ -152,76 +196,158 @@ class WeakInstanceDict(IdentityMap):
 
         return result
 
+    def __iter__(self):
+        return iter(self.keys())
+
     if util.py2k:
-        items = _items
-        values = _values
 
         def iteritems(self):
             return iter(self.items())
 
         def itervalues(self):
             return iter(self.values())
-    else:
-        def items(self):
-            return iter(self._items())
-
-        def values(self):
-            return iter(self._values())
 
     def all_states(self):
         if util.py2k:
-            return dict.values(self)
+            return self._dict.values()
         else:
-            return list(dict.values(self))
+            return list(self._dict.values())
+
+    def _fast_discard(self, state):
+        # used by InstanceState for state being
+        # GC'ed, inlines _managed_removed_state
+        try:
+            st = self._dict[state.key]
+        except KeyError:
+            # catch gc removed the key after we just checked for it
+            pass
+        else:
+            if st is state:
+                self._dict.pop(state.key, None)
 
     def discard(self, state):
-        st = dict.get(self, state.key, None)
-        if st is state:
-            dict.pop(self, state.key, None)
-            self._manage_removed_state(state)
+        self.safe_discard(state)
+
+    def safe_discard(self, state):
+        if state.key in self._dict:
+            try:
+                st = self._dict[state.key]
+            except KeyError:
+                # catch gc removed the key after we just checked for it
+                pass
+            else:
+                if st is state:
+                    self._dict.pop(state.key, None)
+                    self._manage_removed_state(state)
 
     def prune(self):
         return 0
 
 
 class StrongInstanceDict(IdentityMap):
+    """A 'strong-referencing' version of the identity map.
+
+    .. deprecated 1.1::
+        The strong
+        reference identity map is legacy.  See the
+        recipe at :ref:`session_referencing_behavior` for
+        an event-based approach to maintaining strong identity
+        references.
+
+
+    """
+
+    if util.py2k:
+
+        def itervalues(self):
+            return self._dict.itervalues()
+
+        def iteritems(self):
+            return self._dict.iteritems()
+
+    def __iter__(self):
+        return iter(self.dict_)
+
+    def __getitem__(self, key):
+        return self._dict[key]
+
+    def __contains__(self, key):
+        return key in self._dict
+
+    def get(self, key, default=None):
+        return self._dict.get(key, default)
+
+    def values(self):
+        return self._dict.values()
+
+    def items(self):
+        return self._dict.items()
+
     def all_states(self):
         return [attributes.instance_state(o) for o in self.values()]
 
     def contains_state(self, state):
         return (
-            state.key in self and
-            attributes.instance_state(self[state.key]) is state)
+            state.key in self
+            and attributes.instance_state(self[state.key]) is state
+        )
 
     def replace(self, state):
-        if dict.__contains__(self, state.key):
-            existing = dict.__getitem__(self, state.key)
+        if state.key in self._dict:
+            existing = self._dict[state.key]
             existing = attributes.instance_state(existing)
             if existing is not state:
                 self._manage_removed_state(existing)
             else:
                 return
+        else:
+            existing = None
 
-        dict.__setitem__(self, state.key, state.obj())
+        self._dict[state.key] = state.obj()
         self._manage_incoming_state(state)
+        return existing
 
     def add(self, state):
         if state.key in self:
-            if attributes.instance_state(dict.__getitem__(self,
-                    state.key)) is not state:
-                raise AssertionError('A conflicting state is already '
-                        'present in the identity map for key %r'
-                        % (state.key, ))
+            if attributes.instance_state(self._dict[state.key]) is not state:
+                raise sa_exc.InvalidRequestError(
+                    "Can't attach instance "
+                    "%s; another instance with key %s is already "
+                    "present in this session."
+                    % (orm_util.state_str(state), state.key)
+                )
+            return False
         else:
-            dict.__setitem__(self, state.key, state.obj())
+            self._dict[state.key] = state.obj()
             self._manage_incoming_state(state)
+            return True
+
+    def _add_unpresent(self, state, key):
+        # inlined form of add() called by loading.py
+        self._dict[key] = state.obj()
+        state._instance_dict = self._wr
+
+    def _fast_discard(self, state):
+        # used by InstanceState for state being
+        # GC'ed, inlines _managed_removed_state
+        try:
+            obj = self._dict[state.key]
+        except KeyError:
+            # catch gc removed the key after we just checked for it
+            pass
+        else:
+            if attributes.instance_state(obj) is state:
+                self._dict.pop(state.key, None)
 
     def discard(self, state):
-        obj = dict.get(self, state.key, None)
-        if obj is not None:
+        self.safe_discard(state)
+
+    def safe_discard(self, state):
+        if state.key in self._dict:
+            obj = self._dict[state.key]
             st = attributes.instance_state(obj)
             if st is state:
-                dict.pop(self, state.key, None)
+                self._dict.pop(state.key, None)
                 self._manage_removed_state(state)
 
     def prune(self):
@@ -234,7 +360,7 @@ class StrongInstanceDict(IdentityMap):
         keepers = weakref.WeakValueDictionary()
         keepers.update(self)
 
-        dict.clear(self)
-        dict.update(self, keepers)
+        self._dict.clear()
+        self._dict.update(keepers)
         self.modified = bool(dirty)
         return ref_count - len(self)

@@ -1,5 +1,6 @@
 # sqlalchemy/interfaces.py
-# Copyright (C) 2007-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2007-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 # Copyright (C) 2007 Jason Kirtland jek@discorporate.us
 #
 # This module is part of SQLAlchemy and is released under
@@ -7,21 +8,27 @@
 
 """Deprecated core event interfaces.
 
-This module is **deprecated** and is superseded by the
-event system.
+
+.. deprecated:: 0.7
+    As of SQLAlchemy 0.7, the new event system described in
+    :ref:`event_toplevel` replaces the extension/proxy/listener system,
+    providing a consistent interface to all events without the need for
+    subclassing.
 
 """
 
-from . import event, util
+from . import event
+from . import util
 
 
 class PoolListener(object):
     """Hooks into the lifecycle of connections in a :class:`.Pool`.
 
-    .. note::
+    .. deprecated:: 0.7
 
-       :class:`.PoolListener` is deprecated.   Please
-       refer to :class:`.PoolEvents`.
+       :class:`.PoolListener` is deprecated and will be removed in a future
+       release.  Please refer to :func:`.event.listen` in conjunction with
+       the :class:`.PoolEvents` listener interface.
 
     Usage::
 
@@ -79,16 +86,31 @@ class PoolListener(object):
 
         """
 
-        listener = util.as_interface(listener, methods=('connect',
-                                'first_connect', 'checkout', 'checkin'))
-        if hasattr(listener, 'connect'):
-            event.listen(self, 'connect', listener.connect)
-        if hasattr(listener, 'first_connect'):
-            event.listen(self, 'first_connect', listener.first_connect)
-        if hasattr(listener, 'checkout'):
-            event.listen(self, 'checkout', listener.checkout)
-        if hasattr(listener, 'checkin'):
-            event.listen(self, 'checkin', listener.checkin)
+        methods = ["connect", "first_connect", "checkout", "checkin"]
+        listener = util.as_interface(listener, methods=methods)
+
+        for meth in methods:
+            me_meth = getattr(PoolListener, meth)
+            ls_meth = getattr(listener, meth, None)
+
+            if ls_meth is not None and not util.methods_equivalent(
+                me_meth, ls_meth
+            ):
+                util.warn_deprecated(
+                    "PoolListener.%s is deprecated.  The "
+                    "PoolListener class will be removed in a future "
+                    "release.  Please transition to the @event interface, "
+                    "using @event.listens_for(Engine, '%s')." % (meth, meth)
+                )
+
+        if hasattr(listener, "connect"):
+            event.listen(self, "connect", listener.connect)
+        if hasattr(listener, "first_connect"):
+            event.listen(self, "first_connect", listener.first_connect)
+        if hasattr(listener, "checkout"):
+            event.listen(self, "checkout", listener.checkout)
+        if hasattr(listener, "checkin"):
+            event.listen(self, "checkin", listener.checkin)
 
     def connect(self, dbapi_con, con_record):
         """Called once for each new DB-API connection or Pool's ``creator()``.
@@ -152,10 +174,11 @@ class PoolListener(object):
 class ConnectionProxy(object):
     """Allows interception of statement execution by Connections.
 
-    .. note::
+    .. deprecated:: 0.7
 
-       :class:`.ConnectionProxy` is deprecated.   Please
-       refer to :class:`.ConnectionEvents`.
+       :class:`.ConnectionProxy` is deprecated and will be removed in a future
+       release.  Please refer to :func:`.event.listen` in conjunction with
+       the :class:`.ConnectionEvents` listener interface.
 
     Either or both of the ``execute()`` and ``cursor_execute()``
     may be implemented to intercept compiled statement and
@@ -186,26 +209,46 @@ class ConnectionProxy(object):
     @classmethod
     def _adapt_listener(cls, self, listener):
 
-        def adapt_execute(conn, clauseelement, multiparams, params):
+        methods = [
+            "execute",
+            "cursor_execute",
+            "begin",
+            "rollback",
+            "commit",
+            "savepoint",
+            "rollback_savepoint",
+            "release_savepoint",
+            "begin_twophase",
+            "prepare_twophase",
+            "rollback_twophase",
+            "commit_twophase",
+        ]
+        for meth in methods:
+            me_meth = getattr(ConnectionProxy, meth)
+            ls_meth = getattr(listener, meth)
 
+            if not util.methods_equivalent(me_meth, ls_meth):
+                util.warn_deprecated(
+                    "ConnectionProxy.%s is deprecated.  The "
+                    "ConnectionProxy class will be removed in a future "
+                    "release.  Please transition to the @event interface, "
+                    "using @event.listens_for(Engine, '%s')." % (meth, meth)
+                )
+
+        def adapt_execute(conn, clauseelement, multiparams, params):
             def execute_wrapper(clauseelement, *multiparams, **params):
                 return clauseelement, multiparams, params
 
-            return listener.execute(conn, execute_wrapper,
-                                    clauseelement, *multiparams,
-                                    **params)
+            return listener.execute(
+                conn, execute_wrapper, clauseelement, *multiparams, **params
+            )
 
-        event.listen(self, 'before_execute', adapt_execute)
+        event.listen(self, "before_execute", adapt_execute)
 
-        def adapt_cursor_execute(conn, cursor, statement,
-                                 parameters, context, executemany):
-
-            def execute_wrapper(
-                cursor,
-                statement,
-                parameters,
-                context,
-                ):
+        def adapt_cursor_execute(
+            conn, cursor, statement, parameters, context, executemany
+        ):
+            def execute_wrapper(cursor, statement, parameters, context):
                 return statement, parameters
 
             return listener.cursor_execute(
@@ -215,46 +258,56 @@ class ConnectionProxy(object):
                 parameters,
                 context,
                 executemany,
-                )
+            )
 
-        event.listen(self, 'before_cursor_execute', adapt_cursor_execute)
+        event.listen(self, "before_cursor_execute", adapt_cursor_execute)
 
         def do_nothing_callback(*arg, **kw):
             pass
 
         def adapt_listener(fn):
-
             def go(conn, *arg, **kw):
                 fn(conn, do_nothing_callback, *arg, **kw)
 
             return util.update_wrapper(go, fn)
 
-        event.listen(self, 'begin', adapt_listener(listener.begin))
-        event.listen(self, 'rollback',
-                     adapt_listener(listener.rollback))
-        event.listen(self, 'commit', adapt_listener(listener.commit))
-        event.listen(self, 'savepoint',
-                     adapt_listener(listener.savepoint))
-        event.listen(self, 'rollback_savepoint',
-                     adapt_listener(listener.rollback_savepoint))
-        event.listen(self, 'release_savepoint',
-                     adapt_listener(listener.release_savepoint))
-        event.listen(self, 'begin_twophase',
-                     adapt_listener(listener.begin_twophase))
-        event.listen(self, 'prepare_twophase',
-                     adapt_listener(listener.prepare_twophase))
-        event.listen(self, 'rollback_twophase',
-                     adapt_listener(listener.rollback_twophase))
-        event.listen(self, 'commit_twophase',
-                     adapt_listener(listener.commit_twophase))
+        event.listen(self, "begin", adapt_listener(listener.begin))
+        event.listen(self, "rollback", adapt_listener(listener.rollback))
+        event.listen(self, "commit", adapt_listener(listener.commit))
+        event.listen(self, "savepoint", adapt_listener(listener.savepoint))
+        event.listen(
+            self,
+            "rollback_savepoint",
+            adapt_listener(listener.rollback_savepoint),
+        )
+        event.listen(
+            self,
+            "release_savepoint",
+            adapt_listener(listener.release_savepoint),
+        )
+        event.listen(
+            self, "begin_twophase", adapt_listener(listener.begin_twophase)
+        )
+        event.listen(
+            self, "prepare_twophase", adapt_listener(listener.prepare_twophase)
+        )
+        event.listen(
+            self,
+            "rollback_twophase",
+            adapt_listener(listener.rollback_twophase),
+        )
+        event.listen(
+            self, "commit_twophase", adapt_listener(listener.commit_twophase)
+        )
 
     def execute(self, conn, execute, clauseelement, *multiparams, **params):
         """Intercept high level execute() events."""
 
         return execute(clauseelement, *multiparams, **params)
 
-    def cursor_execute(self, execute, cursor, statement, parameters,
-                       context, executemany):
+    def cursor_execute(
+        self, execute, cursor, statement, parameters, context, executemany
+    ):
         """Intercept low-level cursor execute() events."""
 
         return execute(cursor, statement, parameters, context)

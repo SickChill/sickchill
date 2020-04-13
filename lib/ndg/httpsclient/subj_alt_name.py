@@ -14,7 +14,7 @@ __revision__ = '$Id$'
 try:
     from pyasn1.type import univ, constraint, char, namedtype, tag
     
-except ImportError, e:
+except ImportError as e:
     import_error_msg = ('Error importing pyasn1, subjectAltName check for SSL '
                         'peer verification will be disabled.  Import error '
                         'is: %s' % e)
@@ -25,7 +25,7 @@ except ImportError, e:
     raise Pyasn1ImportError(import_error_msg)
     
     
-MAX = 64
+MAX = 1024
 
 
 class DirectoryString(univ.Choice):

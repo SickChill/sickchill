@@ -1,26 +1,30 @@
 # postgresql/on_conflict.py
-# Copyright (C) 2005-2018 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
-from ...sql.elements import ClauseElement, _literal_as_binds
-from ...sql.dml import Insert as StandardInsert
-from ...sql.expression import alias
-from ...sql import schema
-from ...util.langhelpers import public_factory
-from ...sql.base import _generative
-from ... import util
 from . import ext
+from ... import util
+from ...sql import schema
+from ...sql.base import _generative
+from ...sql.dml import Insert as StandardInsert
+from ...sql.elements import ClauseElement
+from ...sql.expression import alias
+from ...util.langhelpers import public_factory
 
-__all__ = ('Insert', 'insert')
+
+__all__ = ("Insert", "insert")
 
 
 class Insert(StandardInsert):
     """PostgreSQL-specific implementation of INSERT.
 
     Adds methods for PG-specific syntaxes such as ON CONFLICT.
+
+    The :class:`.postgresql.Insert` object is created using the
+    :func:`sqlalchemy.dialects.postgresql.insert` function.
 
     .. versionadded:: 1.1
 
@@ -32,7 +36,7 @@ class Insert(StandardInsert):
 
         PG's ON CONFLICT clause allows reference to the row that would
         be inserted, known as ``excluded``.  This attribute provides
-        all columns in this row to be referenaceable.
+        all columns in this row to be referenceable.
 
         .. seealso::
 
@@ -40,14 +44,18 @@ class Insert(StandardInsert):
             to use :attr:`.Insert.excluded`
 
         """
-        return alias(self.table, name='excluded').columns
+        return alias(self.table, name="excluded").columns
 
     @_generative
     def on_conflict_do_update(
-            self,
-            constraint=None, index_elements=None,
-            index_where=None, set_=None, where=None):
-        """
+        self,
+        constraint=None,
+        index_elements=None,
+        index_where=None,
+        set_=None,
+        where=None,
+    ):
+        r"""
         Specifies a DO UPDATE SET action for ON CONFLICT clause.
 
         Either the ``constraint`` or ``index_elements`` argument is
@@ -66,7 +74,7 @@ class Insert(StandardInsert):
          Additional WHERE criterion that can be used to infer a
          conditional target index.
 
-        :param set_:
+        :param set\_:
          Required argument. A dictionary or other mapping object
          with column names as keys and expressions or literals as values,
          specifying the ``SET`` actions to take.
@@ -96,13 +104,14 @@ class Insert(StandardInsert):
 
         """
         self._post_values_clause = OnConflictDoUpdate(
-            constraint, index_elements, index_where, set_, where)
+            constraint, index_elements, index_where, set_, where
+        )
         return self
 
     @_generative
     def on_conflict_do_nothing(
-            self,
-            constraint=None, index_elements=None, index_where=None):
+        self, constraint=None, index_elements=None, index_where=None
+    ):
         """
         Specifies a DO NOTHING action for ON CONFLICT clause.
 
@@ -130,30 +139,31 @@ class Insert(StandardInsert):
 
         """
         self._post_values_clause = OnConflictDoNothing(
-            constraint, index_elements, index_where)
+            constraint, index_elements, index_where
+        )
         return self
 
-insert = public_factory(Insert, '.dialects.postgresql.insert')
+
+insert = public_factory(
+    Insert, ".dialects.postgresql.insert", ".dialects.postgresql.Insert"
+)
 
 
 class OnConflictClause(ClauseElement):
-    def __init__(
-            self,
-            constraint=None,
-            index_elements=None,
-            index_where=None):
+    def __init__(self, constraint=None, index_elements=None, index_where=None):
 
         if constraint is not None:
-            if not isinstance(constraint, util.string_types) and \
-                    isinstance(constraint, (
-                        schema.Index, schema.Constraint,
-                        ext.ExcludeConstraint)):
-                constraint = getattr(constraint, 'name') or constraint
+            if not isinstance(constraint, util.string_types) and isinstance(
+                constraint,
+                (schema.Index, schema.Constraint, ext.ExcludeConstraint),
+            ):
+                constraint = getattr(constraint, "name") or constraint
 
         if constraint is not None:
             if index_elements is not None:
                 raise ValueError(
-                    "'constraint' and 'index_elements' are mutually exclusive")
+                    "'constraint' and 'index_elements' are mutually exclusive"
+                )
 
             if isinstance(constraint, util.string_types):
                 self.constraint_target = constraint
@@ -161,54 +171,61 @@ class OnConflictClause(ClauseElement):
                 self.inferred_target_whereclause = None
             elif isinstance(constraint, schema.Index):
                 index_elements = constraint.expressions
-                index_where = \
-                    constraint.dialect_options['postgresql'].get("where")
+                index_where = constraint.dialect_options["postgresql"].get(
+                    "where"
+                )
             elif isinstance(constraint, ext.ExcludeConstraint):
                 index_elements = constraint.columns
                 index_where = constraint.where
             else:
                 index_elements = constraint.columns
-                index_where = \
-                    constraint.dialect_options['postgresql'].get("where")
+                index_where = constraint.dialect_options["postgresql"].get(
+                    "where"
+                )
 
         if index_elements is not None:
             self.constraint_target = None
             self.inferred_target_elements = index_elements
             self.inferred_target_whereclause = index_where
         elif constraint is None:
-            self.constraint_target = self.inferred_target_elements = \
-                self.inferred_target_whereclause = None
+            self.constraint_target = (
+                self.inferred_target_elements
+            ) = self.inferred_target_whereclause = None
 
 
 class OnConflictDoNothing(OnConflictClause):
-    __visit_name__ = 'on_conflict_do_nothing'
+    __visit_name__ = "on_conflict_do_nothing"
 
 
 class OnConflictDoUpdate(OnConflictClause):
-    __visit_name__ = 'on_conflict_do_update'
+    __visit_name__ = "on_conflict_do_update"
 
     def __init__(
-            self,
-            constraint=None,
-            index_elements=None,
-            index_where=None,
-            set_=None,
-            where=None):
+        self,
+        constraint=None,
+        index_elements=None,
+        index_where=None,
+        set_=None,
+        where=None,
+    ):
         super(OnConflictDoUpdate, self).__init__(
             constraint=constraint,
             index_elements=index_elements,
-            index_where=index_where)
+            index_where=index_where,
+        )
 
-        if self.inferred_target_elements is None and \
-                self.constraint_target is None:
+        if (
+            self.inferred_target_elements is None
+            and self.constraint_target is None
+        ):
             raise ValueError(
                 "Either constraint or index_elements, "
-                "but not both, must be specified unless DO NOTHING")
+                "but not both, must be specified unless DO NOTHING"
+            )
 
-        if (not isinstance(set_, dict) or not set_):
+        if not isinstance(set_, dict) or not set_:
             raise ValueError("set parameter must be a non-empty dictionary")
         self.update_values_to_set = [
-            (key, value)
-            for key, value in set_.items()
+            (key, value) for key, value in set_.items()
         ]
         self.update_whereclause = where

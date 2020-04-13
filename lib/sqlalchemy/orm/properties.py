@@ -1,26 +1,28 @@
 # orm/properties.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 """MapperProperty implementations.
 
-This is a private module which defines the behavior of invidual ORM-
+This is a private module which defines the behavior of individual ORM-
 mapped attributes.
 
 """
 from __future__ import absolute_import
 
-from .. import util, log
-from ..sql import expression
 from . import attributes
+from .interfaces import PropComparator
+from .interfaces import StrategizedProperty
 from .util import _orm_full_deannotate
+from .. import log
+from .. import util
+from ..sql import expression
 
-from .interfaces import PropComparator, StrategizedProperty
 
-__all__ = ['ColumnProperty', 'CompositeProperty', 'SynonymProperty',
-           'ComparableProperty', 'RelationshipProperty']
+__all__ = ["ColumnProperty"]
 
 
 @log.class_logger
@@ -31,19 +33,51 @@ class ColumnProperty(StrategizedProperty):
 
     """
 
-    strategy_wildcard_key = 'column'
+    strategy_wildcard_key = "column"
 
+    __slots__ = (
+        "_orig_columns",
+        "columns",
+        "group",
+        "deferred",
+        "instrument",
+        "comparator_factory",
+        "descriptor",
+        "extension",
+        "active_history",
+        "expire_on_flush",
+        "info",
+        "doc",
+        "strategy_key",
+        "_creation_order",
+        "_is_polymorphic_discriminator",
+        "_mapped_by_synonym",
+        "_deferred_column_loader",
+    )
+
+    @util.deprecated_params(
+        extension=(
+            "0.7",
+            ":class:`.AttributeExtension` is deprecated in favor of the "
+            ":class:`.AttributeEvents` listener interface.  The "
+            ":paramref:`.column_property.extension` parameter will be "
+            "removed in a future release.",
+        )
+    )
     def __init__(self, *columns, **kwargs):
-        """Provide a column-level property for use with a Mapper.
+        r"""Provide a column-level property for use with a mapping.
 
         Column-based properties can normally be applied to the mapper's
         ``properties`` dictionary using the :class:`.Column` element directly.
-        Use this function when the given column is not directly present within the
-        mapper's selectable; examples include SQL expressions, functions, and
-        scalar SELECT queries.
+        Use this function when the given column is not directly present within
+        the mapper's selectable; examples include SQL expressions, functions,
+        and scalar SELECT queries.
 
-        Columns that aren't present in the mapper's selectable won't be persisted
-        by the mapper and are effectively "read-only" attributes.
+        The :func:`.orm.column_property` function returns an instance of
+        :class:`.ColumnProperty`.
+
+        Columns that aren't present in the mapper's selectable won't be
+        persisted by the mapper and are effectively "read-only" attributes.
 
         :param \*cols:
               list of Column objects to be mapped.
@@ -59,11 +93,9 @@ class ColumnProperty(StrategizedProperty):
           which also need to know
           the "previous" value of the attribute.
 
-          .. versionadded:: 0.6.6
-
         :param comparator_factory: a class which extends
-           :class:`.ColumnProperty.Comparator` which provides custom SQL clause
-           generation for comparison operations.
+           :class:`.ColumnProperty.Comparator` which provides custom SQL
+           clause generation for comparison operations.
 
         :param group:
             a group name for this property when marked as deferred.
@@ -92,43 +124,47 @@ class ColumnProperty(StrategizedProperty):
             settings still expires
             all attributes after a :meth:`.Session.commit` call, however.
 
-            .. versionadded:: 0.7.3
-
         :param info: Optional data dictionary which will be populated into the
             :attr:`.MapperProperty.info` attribute of this object.
 
-            .. versionadded:: 0.8
-
         :param extension:
-            an
-            :class:`.AttributeExtension`
-            instance, or list of extensions, which will be prepended
-            to the list of attribute listeners for the resulting
-            descriptor placed on the class.
-            **Deprecated.** Please see :class:`.AttributeEvents`.
+            an :class:`.AttributeExtension` instance, or list of extensions,
+            which will be prepended to the list of attribute listeners for the
+            resulting descriptor placed on the class.
+
+        .. seealso::
+
+            :ref:`column_property_options` - to map columns while including
+            mapping options
+
+            :ref:`mapper_column_property_sql_expressions` - to map SQL
+            expressions
 
         """
+        super(ColumnProperty, self).__init__()
         self._orig_columns = [expression._labeled(c) for c in columns]
-        self.columns = [expression._labeled(_orm_full_deannotate(c))
-                            for c in columns]
-        self.group = kwargs.pop('group', None)
-        self.deferred = kwargs.pop('deferred', False)
-        self.instrument = kwargs.pop('_instrument', True)
-        self.comparator_factory = kwargs.pop('comparator_factory',
-                                            self.__class__.Comparator)
-        self.descriptor = kwargs.pop('descriptor', None)
-        self.extension = kwargs.pop('extension', None)
-        self.active_history = kwargs.pop('active_history', False)
-        self.expire_on_flush = kwargs.pop('expire_on_flush', True)
+        self.columns = [
+            expression._labeled(_orm_full_deannotate(c)) for c in columns
+        ]
+        self.group = kwargs.pop("group", None)
+        self.deferred = kwargs.pop("deferred", False)
+        self.instrument = kwargs.pop("_instrument", True)
+        self.comparator_factory = kwargs.pop(
+            "comparator_factory", self.__class__.Comparator
+        )
+        self.descriptor = kwargs.pop("descriptor", None)
+        self.extension = kwargs.pop("extension", None)
+        self.active_history = kwargs.pop("active_history", False)
+        self.expire_on_flush = kwargs.pop("expire_on_flush", True)
 
-        if 'info' in kwargs:
-            self.info = kwargs.pop('info')
+        if "info" in kwargs:
+            self.info = kwargs.pop("info")
 
-        if 'doc' in kwargs:
-            self.doc = kwargs.pop('doc')
+        if "doc" in kwargs:
+            self.doc = kwargs.pop("doc")
         else:
             for col in reversed(self.columns):
-                doc = getattr(col, 'doc', None)
+                doc = getattr(col, "doc", None)
                 if doc is not None:
                     self.doc = doc
                     break
@@ -137,20 +173,50 @@ class ColumnProperty(StrategizedProperty):
 
         if kwargs:
             raise TypeError(
-                "%s received unexpected keyword argument(s): %s" % (
-                    self.__class__.__name__,
-                    ', '.join(sorted(kwargs.keys()))))
+                "%s received unexpected keyword argument(s): %s"
+                % (self.__class__.__name__, ", ".join(sorted(kwargs.keys())))
+            )
 
         util.set_creation_order(self)
 
-        self.strategy_class = self._strategy_lookup(
-                                    ("deferred", self.deferred),
-                                    ("instrument", self.instrument)
-                                    )
+        self.strategy_key = (
+            ("deferred", self.deferred),
+            ("instrument", self.instrument),
+        )
+
+    @util.dependencies("sqlalchemy.orm.state", "sqlalchemy.orm.strategies")
+    def _memoized_attr__deferred_column_loader(self, state, strategies):
+        return state.InstanceState._instance_level_callable_processor(
+            self.parent.class_manager,
+            strategies.LoadDeferredColumns(self.key),
+            self.key,
+        )
+
+    def __clause_element__(self):
+        """Allow the ColumnProperty to work in expression before it is turned
+        into an instrumented attribute.
+        """
+
+        return self.expression
 
     @property
     def expression(self):
         """Return the primary column or expression for this ColumnProperty.
+
+        E.g.::
+
+
+            class File(Base):
+                # ...
+
+                name = Column(String(64))
+                extension = Column(String(8))
+                filename = column_property(name + '.' + extension)
+                path = column_property('C:/' + filename.expression)
+
+        .. seealso::
+
+            :ref:`mapper_column_property_sql_expressions_composed`
 
         """
         return self.columns[0]
@@ -164,34 +230,50 @@ class ColumnProperty(StrategizedProperty):
             self.key,
             comparator=self.comparator_factory(self, mapper),
             parententity=mapper,
-            doc=self.doc
-            )
+            doc=self.doc,
+        )
 
     def do_init(self):
         super(ColumnProperty, self).do_init()
-        if len(self.columns) > 1 and \
-                set(self.parent.primary_key).issuperset(self.columns):
+        if len(self.columns) > 1 and set(self.parent.primary_key).issuperset(
+            self.columns
+        ):
             util.warn(
-                ("On mapper %s, primary key column '%s' is being combined "
-                 "with distinct primary key column '%s' in attribute '%s'.  "
-                 "Use explicit properties to give each column its own mapped "
-                 "attribute name.") % (self.parent, self.columns[1],
-                                       self.columns[0], self.key))
+                (
+                    "On mapper %s, primary key column '%s' is being combined "
+                    "with distinct primary key column '%s' in attribute '%s'. "
+                    "Use explicit properties to give each column its own "
+                    "mapped attribute name."
+                )
+                % (self.parent, self.columns[1], self.columns[0], self.key)
+            )
 
     def copy(self):
         return ColumnProperty(
-                        deferred=self.deferred,
-                        group=self.group,
-                        active_history=self.active_history,
-                        *self.columns)
+            deferred=self.deferred,
+            group=self.group,
+            active_history=self.active_history,
+            *self.columns
+        )
 
-    def _getcommitted(self, state, dict_, column,
-                    passive=attributes.PASSIVE_OFF):
-        return state.get_impl(self.key).\
-                    get_committed_value(state, dict_, passive=passive)
+    def _getcommitted(
+        self, state, dict_, column, passive=attributes.PASSIVE_OFF
+    ):
+        return state.get_impl(self.key).get_committed_value(
+            state, dict_, passive=passive
+        )
 
-    def merge(self, session, source_state, source_dict, dest_state,
-                                dest_dict, load, _recursive):
+    def merge(
+        self,
+        session,
+        source_state,
+        source_dict,
+        dest_state,
+        dest_dict,
+        load,
+        _recursive,
+        _resolve_conflict_map,
+    ):
         if not self.instrument:
             return
         elif self.key in source_dict:
@@ -203,44 +285,52 @@ class ColumnProperty(StrategizedProperty):
                 impl = dest_state.get_impl(self.key)
                 impl.set(dest_state, dest_dict, value, None)
         elif dest_state.has_identity and self.key not in dest_dict:
-            dest_state._expire_attributes(dest_dict, [self.key])
+            dest_state._expire_attributes(
+                dest_dict, [self.key], no_loader=True
+            )
 
-    class Comparator(PropComparator):
+    class Comparator(util.MemoizedSlots, PropComparator):
         """Produce boolean, comparison, and other operators for
         :class:`.ColumnProperty` attributes.
 
         See the documentation for :class:`.PropComparator` for a brief
         overview.
 
-        See also:
+        .. seealso::
 
-        :class:`.PropComparator`
+            :class:`.PropComparator`
 
-        :class:`.ColumnOperators`
+            :class:`.ColumnOperators`
 
-        :ref:`types_operators`
+            :ref:`types_operators`
 
-        :attr:`.TypeEngine.comparator_factory`
+            :attr:`.TypeEngine.comparator_factory`
 
         """
-        @util.memoized_instancemethod
-        def __clause_element__(self):
+
+        __slots__ = "__clause_element__", "info"
+
+        def _memoized_method___clause_element__(self):
             if self.adapter:
                 return self.adapter(self.prop.columns[0])
             else:
-                return self.prop.columns[0]._annotate({
-                    "parententity": self._parentmapper,
-                    "parentmapper": self._parentmapper})
+                # no adapter, so we aren't aliased
+                # assert self._parententity is self._parentmapper
+                return self.prop.columns[0]._annotate(
+                    {
+                        "parententity": self._parententity,
+                        "parentmapper": self._parententity,
+                    }
+                )
 
-        @util.memoized_property
-        def info(self):
+        def _memoized_attr_info(self):
             ce = self.__clause_element__()
             try:
                 return ce.info
             except AttributeError:
                 return self.prop.info
 
-        def __getattr__(self, key):
+        def _fallback_getattr(self, key):
             """proxy attribute access down to the mapped column.
 
             this allows user-defined comparison methods to be accessed.
@@ -256,4 +346,3 @@ class ColumnProperty(StrategizedProperty):
 
     def __str__(self):
         return str(self.parent.class_.__name__) + "." + self.key
-

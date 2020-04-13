@@ -53,14 +53,11 @@ Exceptions:
 
 from __future__ import absolute_import
 
-import sys
-import socket
-import os
-import threading
-import time
-import urllib
-import warnings
 import functools
+import os
+import socket
+import threading
+import warnings
 
 # Work with PEP8 and non-PEP8 versions of threading module.
 if not hasattr(threading, "current_thread"):
@@ -73,6 +70,7 @@ __all__ = ['Error', 'LockError', 'LockTimeout', 'AlreadyLocked',
            'LinkFileLock', 'MkdirFileLock', 'SQLiteFileLock',
            'LockBase', 'locked']
 
+
 class Error(Exception):
     """
     Base class for other exceptions.
@@ -83,6 +81,7 @@ class Error(Exception):
     ...   pass
     """
     pass
+
 
 class LockError(Error):
     """
@@ -95,6 +94,7 @@ class LockError(Error):
     """
     pass
 
+
 class LockTimeout(LockError):
     """Raised when lock creation fails within a user-defined period of time.
 
@@ -104,6 +104,7 @@ class LockTimeout(LockError):
     ...   pass
     """
     pass
+
 
 class AlreadyLocked(LockError):
     """Some other thread/process is locking the file.
@@ -115,6 +116,7 @@ class AlreadyLocked(LockError):
     """
     pass
 
+
 class LockFailed(LockError):
     """Lock file creation failed for some other reason.
 
@@ -124,6 +126,7 @@ class LockFailed(LockError):
     ...   pass
     """
     pass
+
 
 class UnlockError(Error):
     """
@@ -136,6 +139,7 @@ class UnlockError(Error):
     """
     pass
 
+
 class NotLocked(UnlockError):
     """Raised when an attempt is made to unlock an unlocked file.
 
@@ -146,6 +150,7 @@ class NotLocked(UnlockError):
     """
     pass
 
+
 class NotMyLock(UnlockError):
     """Raised when an attempt is made to unlock a file someone else locked.
 
@@ -155,6 +160,7 @@ class NotMyLock(UnlockError):
     ...   pass
     """
     pass
+
 
 class _SharedBase(object):
     def __init__(self, path):
@@ -199,6 +205,7 @@ class _SharedBase(object):
 
     def __repr__(self):
         return "<%s: %r>" % (self.__class__.__name__, self.path)
+
 
 class LockBase(_SharedBase):
     """Base class for platform-specific lock classes."""
@@ -257,6 +264,7 @@ class LockBase(_SharedBase):
         return "<%s: %r -- %r>" % (self.__class__.__name__, self.unique_name,
                                    self.path)
 
+
 def _fl_helper(cls, mod, *args, **kwds):
     warnings.warn("Import from %s module instead of lockfile package" % mod,
                   DeprecationWarning, stacklevel=2)
@@ -270,6 +278,7 @@ def _fl_helper(cls, mod, *args, **kwds):
         kwds["threaded"] = True
     return cls(*args, **kwds)
 
+
 def LinkFileLock(*args, **kwds):
     """Factory function provided for backwards compatibility.
 
@@ -279,6 +288,7 @@ def LinkFileLock(*args, **kwds):
     from . import linklockfile
     return _fl_helper(linklockfile.LinkLockFile, "lockfile.linklockfile",
                       *args, **kwds)
+
 
 def MkdirFileLock(*args, **kwds):
     """Factory function provided for backwards compatibility.
@@ -290,6 +300,7 @@ def MkdirFileLock(*args, **kwds):
     return _fl_helper(mkdirlockfile.MkdirLockFile, "lockfile.mkdirlockfile",
                       *args, **kwds)
 
+
 def SQLiteFileLock(*args, **kwds):
     """Factory function provided for backwards compatibility.
 
@@ -299,6 +310,7 @@ def SQLiteFileLock(*args, **kwds):
     from . import sqlitelockfile
     return _fl_helper(sqlitelockfile.SQLiteLockFile, "lockfile.sqlitelockfile",
                       *args, **kwds)
+
 
 def locked(path, timeout=None):
     """Decorator which enables locks for decorated function.
@@ -324,6 +336,7 @@ def locked(path, timeout=None):
         return wrapper
     return decor
 
+
 if hasattr(os, "link"):
     from . import linklockfile as _llf
     LockFile = _llf.LinkLockFile
@@ -332,4 +345,3 @@ else:
     LockFile = _mlf.MkdirLockFile
 
 FileLock = LockFile
-

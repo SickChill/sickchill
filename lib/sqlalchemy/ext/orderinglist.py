@@ -1,5 +1,6 @@
 # ext/orderinglist.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -82,11 +83,11 @@ With the above mapping the ``Bullet.position`` attribute is managed::
     s.bullets[2].position
     >>> 2
 
-The :class:`.OrderingList` construct only works with **changes** to a collection,
-and not the initial load from the database, and requires that the list be
-sorted when loaded.  Therefore, be sure to
-specify ``order_by`` on the :func:`.relationship` against the target ordering
-attribute, so that the ordering is correct when first loaded.
+The :class:`.OrderingList` construct only works with **changes** to a
+collection, and not the initial load from the database, and requires that the
+list be sorted when loaded.  Therefore, be sure to specify ``order_by`` on the
+:func:`.relationship` against the target ordering attribute, so that the
+ordering is correct when first loaded.
 
 .. warning::
 
@@ -103,25 +104,27 @@ attribute, so that the ordering is correct when first loaded.
       SQLAlchemy's unit of work performs all INSERTs before DELETEs within a
       single flush.  In the case of a primary key, it will trade
       an INSERT/DELETE of the same primary key for an UPDATE statement in order
-      to lessen the impact of this lmitation, however this does not take place
+      to lessen the impact of this limitation, however this does not take place
       for a UNIQUE column.
       A future feature will allow the "DELETE before INSERT" behavior to be
-      possible, allevating this limitation, though this feature will require
+      possible, alleviating this limitation, though this feature will require
       explicit configuration at the mapper level for sets of columns that
       are to be handled in this way.
 
-:func:`.ordering_list` takes the name of the related object's ordering attribute as
-an argument.  By default, the zero-based integer index of the object's
-position in the :func:`.ordering_list` is synchronized with the ordering attribute:
-index 0 will get position 0, index 1 position 1, etc.  To start numbering at 1
-or some other integer, provide ``count_from=1``.
+:func:`.ordering_list` takes the name of the related object's ordering
+attribute as an argument.  By default, the zero-based integer index of the
+object's position in the :func:`.ordering_list` is synchronized with the
+ordering attribute: index 0 will get position 0, index 1 position 1, etc.  To
+start numbering at 1 or some other integer, provide ``count_from=1``.
 
 
 """
-from ..orm.collections import collection
 from .. import util
+from ..orm.collections import collection
+from ..orm.collections import collection_adapter
 
-__all__ = ['ordering_list']
+
+__all__ = ["ordering_list"]
 
 
 def ordering_list(attr, count_from=None, **kw):
@@ -179,8 +182,9 @@ def count_from_n_factory(start):
 
     def f(index, collection):
         return index + start
+
     try:
-        f.__name__ = 'count_from_%i' % start
+        f.__name__ = "count_from_%i" % start
     except TypeError:
         pass
     return f
@@ -193,14 +197,14 @@ def _unsugar_count_from(**kw):
     ``count_from`` argument, otherwise passes ``ordering_func`` on unchanged.
     """
 
-    count_from = kw.pop('count_from', None)
-    if kw.get('ordering_func', None) is None and count_from is not None:
+    count_from = kw.pop("count_from", None)
+    if kw.get("ordering_func", None) is None and count_from is not None:
         if count_from == 0:
-            kw['ordering_func'] = count_from_0
+            kw["ordering_func"] = count_from_0
         elif count_from == 1:
-            kw['ordering_func'] = count_from_1
+            kw["ordering_func"] = count_from_1
         else:
-            kw['ordering_func'] = count_from_n_factory(count_from)
+            kw["ordering_func"] = count_from_n_factory(count_from)
     return kw
 
 
@@ -213,8 +217,9 @@ class OrderingList(list):
 
     """
 
-    def __init__(self, ordering_attr=None, ordering_func=None,
-                 reorder_on_append=False):
+    def __init__(
+        self, ordering_attr=None, ordering_func=None, reorder_on_append=False
+    ):
         """A custom list that manages position information for its children.
 
         ``OrderingList`` is a ``collection_class`` list implementation that
@@ -310,6 +315,7 @@ class OrderingList(list):
         """Append without any ordering behavior."""
 
         super(OrderingList, self).append(entity)
+
     _raw_append = collection.adds(1)(_raw_append)
 
     def insert(self, index, entity):
@@ -318,7 +324,10 @@ class OrderingList(list):
 
     def remove(self, entity):
         super(OrderingList, self).remove(entity)
-        self._reorder()
+
+        adapter = collection_adapter(self)
+        if adapter and adapter._referenced_by_owner:
+            self._reorder()
 
     def pop(self, index=-1):
         entity = super(OrderingList, self).pop(index)
@@ -357,8 +366,12 @@ class OrderingList(list):
         return _reconstitute, (self.__class__, self.__dict__, list(self))
 
     for func_name, func in list(locals().items()):
-        if (util.callable(func) and func.__name__ == func_name and
-            not func.__doc__ and hasattr(list, func_name)):
+        if (
+            util.callable(func)
+            and func.__name__ == func_name
+            and not func.__doc__
+            and hasattr(list, func_name)
+        ):
             func.__doc__ = getattr(list, func_name).__doc__
     del func_name, func
 

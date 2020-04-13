@@ -6,7 +6,7 @@ import six
 from decorator import decorator
 
 
-class ValidationFailure(object):
+class ValidationFailure(Exception):
     def __init__(self, func, args):
         self.func = func
         self.__dict__.update(args)
@@ -37,10 +37,15 @@ def func_args_as_dict(func, args, kwargs):
     Return given function's positional and key value arguments as an ordered
     dictionary.
     """
+    if six.PY2:
+        _getargspec = inspect.getargspec
+    else:
+        _getargspec = inspect.getfullargspec
+
     arg_names = list(
         OrderedDict.fromkeys(
             itertools.chain(
-                inspect.getargspec(func)[0],
+                _getargspec(func)[0],
                 kwargs.keys()
             )
         )

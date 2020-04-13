@@ -40,8 +40,11 @@ def get_sha(args):
 
 
 def get_info(args):
-    print("{name}\t{version}\t{released}\t{sha}".format(
-        **_get_info(args.name)))
+    if args.short:
+        print("{version}".format(**_get_info(args.name)))
+    else:
+        print("{name}\t{version}\t{released}\t{sha}".format(
+            **_get_info(args.name)))
 
 
 def _get_info(name):
@@ -86,7 +89,9 @@ def main():
         version=str(pbr.version.VersionInfo('pbr')))
 
     subparsers = parser.add_subparsers(
-        title='commands', description='valid commands', help='additional help')
+        title='commands', description='valid commands', help='additional help',
+        dest='cmd')
+    subparsers.required = True
 
     cmd_sha = subparsers.add_parser('sha', help='print sha of package')
     cmd_sha.set_defaults(func=get_sha)
@@ -96,6 +101,8 @@ def main():
         'info', help='print version info for package')
     cmd_info.set_defaults(func=get_info)
     cmd_info.add_argument('name', help='package to print info of')
+    cmd_info.add_argument('-s', '--short', action="store_true",
+                          help='only display package version')
 
     cmd_freeze = subparsers.add_parser(
         'freeze', help='print version info for all installed packages')

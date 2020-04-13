@@ -40,8 +40,6 @@ class HookManager(NamedExtensionManager):
         dependencies of the plugin(s) being loaded. Defaults to False.
     :type verify_requirements: bool
     :type on_missing_entrypoints_callback: function
-    :param verify_requirements: Use setuptools to enforce the
-        dependencies of the plugin(s) being loaded. Defaults to False.
     :param warn_on_missing_entrypoint: Flag to control whether failing
         to load a plugin is reported via a log mess. Only applies if
         on_missing_entrypoints_callback is None.

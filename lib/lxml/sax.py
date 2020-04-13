@@ -1,3 +1,5 @@
+# cython: language_level=2
+
 """
 SAX-based adapter to copy trees from/to the Python standard library.
 
@@ -9,6 +11,8 @@ the SAX events of an ElementTree against a SAX ContentHandler.
 
 See http://codespeak.net/lxml/sax.html
 """
+
+from __future__ import absolute_import
 
 from xml.sax.handler import ContentHandler
 from lxml import etree
@@ -25,7 +29,7 @@ def _getNsTag(tag):
     if tag[0] == '{':
         return tuple(tag[1:].split('}', 1))
     else:
-        return (None, tag)
+        return None, tag
 
 
 class ElementTreeContentHandler(ContentHandler):
@@ -189,19 +193,26 @@ class ElementTreeProducer(object):
 
         self._content_handler.endDocument()
 
-    def _recursive_saxify(self, element, prefixes):
+    def _recursive_saxify(self, element, parent_nsmap):
         content_handler = self._content_handler
         tag = element.tag
         if tag is Comment or tag is ProcessingInstruction:
             if tag is ProcessingInstruction:
                 content_handler.processingInstruction(
                     element.target, element.text)
-            if element.tail:
-                content_handler.characters(element.tail)
+            tail = element.tail
+            if tail:
+                content_handler.characters(tail)
             return
 
+        element_nsmap = element.nsmap
         new_prefixes = []
-        build_qname = self._build_qname
+        if element_nsmap != parent_nsmap:
+            # There have been updates to the namespace
+            for prefix, ns_uri in element_nsmap.items():
+                if parent_nsmap.get(prefix) != ns_uri:
+                    new_prefixes.append( (prefix, ns_uri) )
+
         attribs = element.items()
         if attribs:
             attr_values = {}
@@ -209,38 +220,56 @@ class ElementTreeProducer(object):
             for attr_ns_name, value in attribs:
                 attr_ns_tuple = _getNsTag(attr_ns_name)
                 attr_values[attr_ns_tuple] = value
-                attr_qnames[attr_ns_tuple] = build_qname(
-                    attr_ns_tuple[0], attr_ns_tuple[1], prefixes, new_prefixes)
+                attr_qnames[attr_ns_tuple] = self._build_qname(
+                    attr_ns_tuple[0], attr_ns_tuple[1], element_nsmap,
+                    preferred_prefix=None, is_attribute=True)
             sax_attributes = self._attr_class(attr_values, attr_qnames)
         else:
             sax_attributes = self._empty_attributes
 
         ns_uri, local_name = _getNsTag(tag)
-        qname = build_qname(ns_uri, local_name, prefixes, new_prefixes)
+        qname = self._build_qname(
+            ns_uri, local_name, element_nsmap, element.prefix, is_attribute=False)
 
         for prefix, uri in new_prefixes:
             content_handler.startPrefixMapping(prefix, uri)
-        content_handler.startElementNS((ns_uri, local_name),
-                                       qname, sax_attributes)
-        if element.text:
-            content_handler.characters(element.text)
+        content_handler.startElementNS(
+            (ns_uri, local_name), qname, sax_attributes)
+        text = element.text
+        if text:
+            content_handler.characters(text)
         for child in element:
-            self._recursive_saxify(child, prefixes)
+            self._recursive_saxify(child, element_nsmap)
         content_handler.endElementNS((ns_uri, local_name), qname)
         for prefix, uri in new_prefixes:
             content_handler.endPrefixMapping(prefix)
-        if element.tail:
-            content_handler.characters(element.tail)
+        tail = element.tail
+        if tail:
+            content_handler.characters(tail)
 
-    def _build_qname(self, ns_uri, local_name, prefixes, new_prefixes):
+    def _build_qname(self, ns_uri, local_name, nsmap, preferred_prefix, is_attribute):
         if ns_uri is None:
             return local_name
-        try:
-            prefix = prefixes[ns_uri]
-        except KeyError:
-            prefix = prefixes[ns_uri] = 'ns%02d' % len(prefixes)
-            new_prefixes.append( (prefix, ns_uri) )
+
+        if not is_attribute and nsmap.get(preferred_prefix) == ns_uri:
+            prefix = preferred_prefix
+        else:
+            # Pick the first matching prefix, in alphabetical order.
+            candidates = [
+                pfx for (pfx, uri) in nsmap.items()
+                if pfx is not None and uri == ns_uri
+            ]
+            prefix = (
+                candidates[0] if len(candidates) == 1
+                else min(candidates) if candidates
+                else None
+            )
+
+        if prefix is None:
+            # Default namespace
+            return local_name
         return prefix + ':' + local_name
+
 
 def saxify(element_or_tree, content_handler):
     """One-shot helper to generate SAX events from an XML tree and fire

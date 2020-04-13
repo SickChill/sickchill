@@ -1,12 +1,16 @@
 import binascii
 import json
 import warnings
-from collections import Mapping
+try:
+    # import required by mypy to perform type checking, not used for normal execution
+    from typing import Callable, Dict, List, Optional, Union # NOQA
+except ImportError:
+    pass
 
 from .algorithms import (
     Algorithm, get_default_algorithms, has_crypto, requires_cryptography  # NOQA
 )
-from .compat import binary_type, string_types, text_type
+from .compat import Mapping, binary_type, string_types, text_type
 from .exceptions import (
     DecodeError, InvalidAlgorithmError, InvalidSignatureError,
     InvalidTokenError
@@ -69,8 +73,13 @@ class PyJWS(object):
         """
         return list(self._valid_algs)
 
-    def encode(self, payload, key, algorithm='HS256', headers=None,
-               json_encoder=None):
+    def encode(self,
+               payload,  # type: Union[Dict, bytes]
+               key,  # type: str
+               algorithm='HS256',  # type: str
+               headers=None,  # type: Optional[Dict]
+               json_encoder=None  # type: Optional[Callable]
+               ):
         segments = []
 
         if algorithm is None:
@@ -117,7 +126,12 @@ class PyJWS(object):
 
         return b'.'.join(segments)
 
-    def decode(self, jws, key='', verify=True, algorithms=None, options=None,
+    def decode(self,
+               jwt,  # type: str
+               key='',   # type: str
+               verify=True,  # type: bool
+               algorithms=None,  # type: List[str]
+               options=None,  # type: Dict
                **kwargs):
 
         merged_options = merge_dict(self.options, options)
@@ -131,7 +145,7 @@ class PyJWS(object):
                 DeprecationWarning
             )
 
-        payload, signing_input, header, signature = self._load(jws)
+        payload, signing_input, header, signature = self._load(jwt)
 
         if not verify:
             warnings.warn('The verify parameter is deprecated. '

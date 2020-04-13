@@ -3,7 +3,7 @@
 """
 language and subtitle_language properties
 """
-
+# pylint: disable=no-member
 import copy
 from collections import defaultdict, namedtuple
 
@@ -76,7 +76,7 @@ MULTIPLE = babelfish.Language('mul')
 NON_SPECIFIC_LANGUAGES = frozenset([UNDETERMINED, MULTIPLE])
 
 
-class GuessitConverter(babelfish.LanguageReverseConverter):
+class GuessitConverter(babelfish.LanguageReverseConverter):  # pylint: disable=missing-docstring
     _with_country_regexp = re.compile(r'(.*)\((.*)\)')
     _with_country_regexp2 = re.compile(r'(.*)-(.*)')
 
@@ -91,7 +91,7 @@ class GuessitConverter(babelfish.LanguageReverseConverter):
                 self.guessit_exceptions[syn.lower()] = (alpha3, country, None)
 
     @property
-    def codes(self):
+    def codes(self):  # pylint: disable=missing-docstring
         return (babelfish.language_converters['alpha3b'].codes |
                 babelfish.language_converters['alpha2'].codes |
                 babelfish.language_converters['name'].codes |
@@ -390,7 +390,9 @@ class SubtitlePrefixLanguageRule(Rule):
                 to_remove.extend(matches.conflicting(lang))
                 if prefix in to_remove:
                     to_remove.remove(prefix)
-        return to_rename, to_remove
+        if to_rename or to_remove:
+            return to_rename, to_remove
+        return False
 
     def then(self, matches, when_response, context):
         to_rename, to_remove = when_response
@@ -427,7 +429,9 @@ class SubtitleSuffixLanguageRule(Rule):
                 to_append.append(lang)
                 if suffix in to_remove:
                     to_remove.remove(suffix)
-        return to_append, to_remove
+        if to_append or to_remove:
+            return to_append, to_remove
+        return False
 
     def then(self, matches, when_response, context):
         to_rename, to_remove = when_response

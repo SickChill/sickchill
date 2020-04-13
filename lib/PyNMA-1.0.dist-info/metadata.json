@@ -1,0 +1,1 @@
+{"extensions": {"python.details": {"document_names": {"description": "DESCRIPTION.rst"}, "project_urls": {"Home": "https://github.com/uskr/pynma"}}}, "generator": "bdist_wheel (0.29.0)", "metadata_version": "2.0", "name": "PyNMA", "summary": "Python Module for NotifyMyAndroid API", "version": "1.0"}

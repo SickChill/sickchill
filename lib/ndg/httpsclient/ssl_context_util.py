@@ -8,7 +8,12 @@ __copyright__ = "(C) 2012 Science and Technology Facilities Council"
 __license__ = "BSD - see LICENSE file in top-level directory"
 __contact__ = "Philip.Kershaw@stfc.ac.uk"
 __revision__ = '$Id$'
-import urlparse
+import sys
+
+if sys.version_info[0] > 2:
+    import urllib.parse as urlparse_
+else:
+    import urlparse as urlparse_
 
 from OpenSSL import SSL
 
@@ -36,7 +41,7 @@ def make_ssl_context_from_config(ssl_config=False, url=None):
 
 
 def make_ssl_context(key_file=None, cert_file=None, pem_file=None, ca_dir=None,
-                     verify_peer=False, url=None, method=SSL.TLSv1_METHOD,
+                     verify_peer=False, url=None, method=SSL.TLSv1_2_METHOD,
                      key_file_passphrase=None):
     """
     Creates SSL context containing certificate and key file locations.
@@ -59,6 +64,8 @@ def make_ssl_context(key_file=None, cert_file=None, pem_file=None, ca_dir=None,
 
     if pem_file or ca_dir:
         ssl_context.load_verify_locations(pem_file, ca_dir)
+    else:
+        ssl_context.set_default_verify_paths() # Use OS CA bundle
 
     def _callback(conn, x509, errnum, errdepth, preverify_ok):
         """Default certification verification callback.
@@ -85,7 +92,7 @@ def set_peer_verification_for_url_hostname(ssl_context, url,
     '''Convenience routine to set peer verification callback based on
     ServerSSLCertVerification class'''
     if not if_verify_enabled or (ssl_context.get_verify_mode() & SSL.VERIFY_PEER):
-        urlObj = urlparse.urlparse(url)
+        urlObj = urlparse_.urlparse(url)
         hostname = urlObj.hostname
         server_ssl_cert_verif = ServerSSLCertVerification(hostname=hostname)
         verify_callback_ = server_ssl_cert_verif.get_verify_server_cert_func()

@@ -2,11 +2,14 @@
 Pure-Python implementation of a Python 2-like str object for Python 3.
 """
 
-from collections import Iterable
 from numbers import Integral
 
 from past.utils import PY2, with_metaclass
 
+if PY2:
+    from collections import Iterable
+else:
+    from collections.abc import Iterable
 
 _builtin_bytes = bytes
 
@@ -32,7 +35,7 @@ def unescape(s):
     def
     """
     return s.encode().decode('unicode_escape')
-    
+
 
 class oldstr(with_metaclass(BaseOldStr, _builtin_bytes)):
     """
@@ -55,14 +58,14 @@ class oldstr(with_metaclass(BaseOldStr, _builtin_bytes)):
     #     bytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer
     #     bytes(int) -> bytes object of size given by the parameter initialized with null bytes
     #     bytes() -> empty bytes object
-    #     
+    #
     #     Construct an immutable array of bytes from:
     #       - an iterable yielding integers in range(256)
     #       - a text string encoded using the specified encoding
     #       - any object implementing the buffer API.
     #       - an integer
     #     """
-    #     
+    #
     #     if len(args) == 0:
     #         return super(newbytes, cls).__new__(cls)
     #     # Was: elif isinstance(args[0], newbytes):
@@ -84,7 +87,7 @@ class oldstr(with_metaclass(BaseOldStr, _builtin_bytes)):
     #         if 'errors' in kwargs:
     #             newargs.append(kwargs['errors'])
     #         value = args[0].encode(*newargs)
-    #         ### 
+    #         ###
     #     elif isinstance(args[0], Iterable):
     #         if len(args[0]) == 0:
     #             # What is this?
@@ -101,7 +104,7 @@ class oldstr(with_metaclass(BaseOldStr, _builtin_bytes)):
     #     else:
     #         value = args[0]
     #     return super(newbytes, cls).__new__(cls, value)
-        
+
     def __repr__(self):
         s = super(oldstr, self).__repr__()   # e.g. b'abc' on Py3, b'abc' on Py3
         return s[1:]
@@ -124,7 +127,7 @@ class oldstr(with_metaclass(BaseOldStr, _builtin_bytes)):
     def __contains__(self, key):
         if isinstance(key, int):
             return False
-    
+
     def __native__(self):
         return bytes(self)
 

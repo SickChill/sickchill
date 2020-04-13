@@ -1,10 +1,9 @@
 # vim:ts=4 sw=4 expandtab softtabstop=4
 from __future__ import print_function
-import optparse
+import argparse
 import locale
 import os
 import sys
-import warnings
 
 from unidecode import unidecode
 
@@ -17,33 +16,34 @@ def fatal(msg):
 def main():
     default_encoding = locale.getpreferredencoding()
 
-    parser = optparse.OptionParser('%prog [options] [FILE]',
+    parser = argparse.ArgumentParser(
             description="Transliterate Unicode text into ASCII. FILE is path to file to transliterate. "
             "Standard input is used if FILE is omitted and -c is not specified.")
-    parser.add_option('-e', '--encoding', metavar='ENCODING', default=default_encoding,
+    parser.add_argument('-e', '--encoding', metavar='ENCODING', default=default_encoding,
             help='Specify an encoding (default is %s)' % (default_encoding,))
-    parser.add_option('-c', metavar='TEXT', dest='text',
+    parser.add_argument('-c', metavar='TEXT', dest='text',
             help='Transliterate TEXT instead of FILE')
+    parser.add_argument('path', nargs='?', metavar='FILE')
 
-    options, args = parser.parse_args()
+    args = parser.parse_args()
 
-    encoding = options.encoding
+    encoding = args.encoding
 
-    if args:
-        if options.text:
+    if args.path:
+        if args.text:
             fatal("Can't use both FILE and -c option")
         else:
-            with open(args[0], 'rb') as f:
+            with open(args.path, 'rb') as f:
                 stream = f.read()
-    elif options.text:
+    elif args.text:
         if PY3:
-            stream = os.fsencode(options.text)
+            stream = os.fsencode(args.text)
         else:
-            stream = options.text
+            stream = args.text
         # add a newline to the string if it comes from the
         # command line so that the result is printed nicely
         # on the console.
-        stream += '\n'.encode('ascii')
+        stream += b'\n'
     else:
         if PY3:
             stream = sys.stdin.buffer.read()

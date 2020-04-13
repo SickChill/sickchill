@@ -201,9 +201,9 @@
 ? Series/My Name Is Earl/My.Name.Is.Earl.S01Extras.-.Bad.Karma.DVDRip.XviD.avi
 : title: My Name Is Earl
   season: 1
-  episode_title: Extras - Bad Karma
+  episode_title: Bad Karma
   source: DVD
-  other: Rip
+  other: [Extras, Rip]
   video_codec: Xvid
 
 ? series/Freaks And Geeks/Season 1/Episode 4 - Kim Kelly Is My Friend-eng(1).srt
@@ -3029,7 +3029,7 @@
   title: Show Name
   episode: [493, 494, 495, 496, 497, 498, 500, 501, 502, 503, 504, 505, 506, 507]
   screen_size: 720p
-  subtitle_language: fr
+  other: Variable Frame Rate
   video_codec: H.264
   audio_codec: AAC
   type: episode

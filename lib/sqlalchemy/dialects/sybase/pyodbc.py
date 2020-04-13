@@ -1,5 +1,6 @@
 # sybase/pyodbc.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -30,13 +31,15 @@ Currently *not* supported are::
     UNITEXT
     UNIVARCHAR
 
-"""
+"""  # noqa
 
-from sqlalchemy.dialects.sybase.base import SybaseDialect,\
-                                            SybaseExecutionContext
-from sqlalchemy.connectors.pyodbc import PyODBCConnector
-from sqlalchemy import types as sqltypes, processors
 import decimal
+
+from sqlalchemy import processors
+from sqlalchemy import types as sqltypes
+from sqlalchemy.connectors.pyodbc import PyODBCConnector
+from sqlalchemy.dialects.sybase.base import SybaseDialect
+from sqlalchemy.dialects.sybase.base import SybaseExecutionContext
 
 
 class _SybNumeric_pyodbc(sqltypes.Numeric):
@@ -49,12 +52,10 @@ class _SybNumeric_pyodbc(sqltypes.Numeric):
     """
 
     def bind_processor(self, dialect):
-        super_process = super(_SybNumeric_pyodbc, self).\
-                                    bind_processor(dialect)
+        super_process = super(_SybNumeric_pyodbc, self).bind_processor(dialect)
 
         def process(value):
-            if self.asdecimal and \
-                    isinstance(value, decimal.Decimal):
+            if self.asdecimal and isinstance(value, decimal.Decimal):
 
                 if value.adjusted() < -6:
                     return processors.to_float(value)
@@ -63,6 +64,7 @@ class _SybNumeric_pyodbc(sqltypes.Numeric):
                 return super_process(value)
             else:
                 return value
+
         return process
 
 
@@ -77,8 +79,7 @@ class SybaseExecutionContext_pyodbc(SybaseExecutionContext):
 class SybaseDialect_pyodbc(PyODBCConnector, SybaseDialect):
     execution_ctx_cls = SybaseExecutionContext_pyodbc
 
-    colspecs = {
-        sqltypes.Numeric: _SybNumeric_pyodbc,
-    }
+    colspecs = {sqltypes.Numeric: _SybNumeric_pyodbc}
+
 
 dialect = SybaseDialect_pyodbc

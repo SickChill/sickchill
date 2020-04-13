@@ -13,7 +13,7 @@ from ...rules.common import seps, dash
 from ...rules.common.validators import seps_before, seps_after
 
 
-def streaming_service(config):
+def streaming_service(config):  # pylint: disable=too-many-statements,unused-argument
     """Streaming service property.
 
     :param config: rule configuration
@@ -41,7 +41,7 @@ def streaming_service(config):
 class ValidateStreamingService(Rule):
     """Validate streaming service matches."""
 
-    priority = 32
+    priority = 128
     consequence = RemoveMatch
 
     def when(self, matches, context):

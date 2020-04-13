@@ -1,5 +1,6 @@
 # sqlalchemy/log.py
-# Copyright (C) 2006-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2006-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 # Includes alterations by Vinay Sajip vinay_sajip@yahoo.co.uk
 #
 # This module is part of SQLAlchemy and is released under
@@ -20,18 +21,20 @@ instance only.
 import logging
 import sys
 
+
 # set initial level to WARN.  This so that
-# log statements don't occur in the absense of explicit
+# log statements don't occur in the absence of explicit
 # logging being enabled for 'sqlalchemy'.
-rootlogger = logging.getLogger('sqlalchemy')
+rootlogger = logging.getLogger("sqlalchemy")
 if rootlogger.level == logging.NOTSET:
     rootlogger.setLevel(logging.WARN)
 
 
 def _add_default_handler(logger):
     handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(logging.Formatter(
-        '%(asctime)s %(levelname)s %(name)s %(message)s'))
+    handler.setFormatter(
+        logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s")
+    )
     logger.addHandler(handler)
 
 
@@ -45,6 +48,7 @@ def class_logger(cls):
     cls.logger = logger
     _logged_classes.add(cls)
     return cls
+
 
 class Identified(object):
     logging_name = None
@@ -70,8 +74,8 @@ class InstanceLogger(object):
 
     'debug' -> logging.DEBUG
     True    -> logging.INFO
-    False   -> Effective level of underlying logger
-               (logging.WARNING by default)
+    False   -> Effective level of underlying logger (
+    logging.WARNING by default)
     None    -> same as False
     """
 
@@ -80,7 +84,7 @@ class InstanceLogger(object):
         None: logging.NOTSET,
         False: logging.NOTSET,
         True: logging.INFO,
-        'debug': logging.DEBUG,
+        "debug": logging.DEBUG,
     }
 
     def __init__(self, echo, name):
@@ -89,8 +93,7 @@ class InstanceLogger(object):
 
         # if echo flag is enabled and no handlers,
         # add a handler to the list
-        if self._echo_map[echo] <= logging.INFO \
-            and not self.logger.handlers:
+        if self._echo_map[echo] <= logging.INFO and not self.logger.handlers:
             _add_default_handler(self.logger)
 
     #
@@ -172,11 +175,16 @@ def instance_logger(instance, echoflag=None):
     """create a logger for an instance that implements :class:`.Identified`."""
 
     if instance.logging_name:
-        name = "%s.%s.%s" % (instance.__class__.__module__,
-                      instance.__class__.__name__, instance.logging_name)
+        name = "%s.%s.%s" % (
+            instance.__class__.__module__,
+            instance.__class__.__name__,
+            instance.logging_name,
+        )
     else:
-        name = "%s.%s" % (instance.__class__.__module__,
-                  instance.__class__.__name__)
+        name = "%s.%s" % (
+            instance.__class__.__module__,
+            instance.__class__.__name__,
+        )
 
     instance._echo = echoflag
 

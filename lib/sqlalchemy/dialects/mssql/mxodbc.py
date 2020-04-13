@@ -1,5 +1,6 @@
 # mssql/mxodbc.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -42,12 +43,15 @@ of ``False`` will unconditionally use string-escaped parameters.
 """
 
 
+from .base import _MSDate
+from .base import _MSDateTime
+from .base import _MSTime
+from .base import MSDialect
+from .base import VARBINARY
+from .pyodbc import _MSNumeric_pyodbc
+from .pyodbc import MSExecutionContext_pyodbc
 from ... import types as sqltypes
 from ...connectors.mxodbc import MxODBCConnector
-from .pyodbc import MSExecutionContext_pyodbc, _MSNumeric_pyodbc
-from .base import (MSDialect,
-                                            MSSQLStrictCompiler,
-                                            _MSDateTime, _MSDate, _MSTime)
 
 
 class _MSNumeric_mxodbc(_MSNumeric_pyodbc):
@@ -62,6 +66,7 @@ class _MSDate_mxodbc(_MSDate):
                 return "%s-%s-%s" % (value.year, value.month, value.day)
             else:
                 return None
+
         return process
 
 
@@ -72,6 +77,32 @@ class _MSTime_mxodbc(_MSTime):
                 return "%s:%s:%s" % (value.hour, value.minute, value.second)
             else:
                 return None
+
+        return process
+
+
+class _VARBINARY_mxodbc(VARBINARY):
+
+    """
+    mxODBC Support for VARBINARY column types.
+
+    This handles the special case for null VARBINARY values,
+    which maps None values to the mx.ODBC.Manager.BinaryNull symbol.
+    """
+
+    def bind_processor(self, dialect):
+        if dialect.dbapi is None:
+            return None
+
+        DBAPIBinary = dialect.dbapi.Binary
+
+        def process(value):
+            if value is not None:
+                return DBAPIBinary(value)
+            else:
+                # should pull from mx.ODBC.Manager.BinaryNull
+                return dialect.dbapi.BinaryNull
+
         return process
 
 
@@ -81,7 +112,8 @@ class MSExecutionContext_mxodbc(MSExecutionContext_pyodbc):
     SELECT SCOPE_IDENTITY in cases where OUTPUT clause
     does not work (tables with insert triggers).
     """
-    #todo - investigate whether the pyodbc execution context
+
+    # todo - investigate whether the pyodbc execution context
     #       is really only being used in cases where OUTPUT
     #       won't work.
 
@@ -90,7 +122,7 @@ class MSDialect_mxodbc(MxODBCConnector, MSDialect):
 
     # this is only needed if "native ODBC" mode is used,
     # which is now disabled by default.
-    #statement_compiler = MSSQLStrictCompiler
+    # statement_compiler = MSSQLStrictCompiler
 
     execution_ctx_cls = MSExecutionContext_mxodbc
 
@@ -102,10 +134,13 @@ class MSDialect_mxodbc(MxODBCConnector, MSDialect):
         sqltypes.DateTime: _MSDateTime,
         sqltypes.Date: _MSDate_mxodbc,
         sqltypes.Time: _MSTime_mxodbc,
+        VARBINARY: _VARBINARY_mxodbc,
+        sqltypes.LargeBinary: _VARBINARY_mxodbc,
     }
 
     def __init__(self, description_encoding=None, **params):
         super(MSDialect_mxodbc, self).__init__(**params)
         self.description_encoding = description_encoding
+
 
 dialect = MSDialect_mxodbc

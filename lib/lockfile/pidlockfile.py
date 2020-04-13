@@ -14,9 +14,8 @@
 
 from __future__ import absolute_import
 
-import os
-import sys
 import errno
+import os
 import time
 
 from . import (LockBase, AlreadyLocked, LockFailed, NotLocked, NotMyLock,
@@ -38,8 +37,6 @@ class PIDLockFile(LockBase):
         # pid lockfiles don't support threaded operation, so always force
         # False as the threaded arg.
         LockBase.__init__(self, path, False, timeout)
-        dirname = os.path.dirname(self.lock_file)
-        basename = os.path.split(self.path)[-1]
         self.unique_name = self.path
 
     def read_pid(self):
@@ -89,7 +86,7 @@ class PIDLockFile(LockBase):
                         else:
                             raise AlreadyLocked("%s is already locked" %
                                                 self.path)
-                    time.sleep(timeout is not None and timeout/10 or 0.1)
+                    time.sleep(timeout is not None and timeout / 10 or 0.1)
                 else:
                     raise LockFailed("failed to create %s" % self.path)
             else:
@@ -117,6 +114,7 @@ class PIDLockFile(LockBase):
             """
         remove_existing_pidfile(self.path)
 
+
 def read_pid_from_pidfile(pidfile_path):
     """ Read the PID recorded in the named PID file.
 
@@ -132,10 +130,10 @@ def read_pid_from_pidfile(pidfile_path):
         pass
     else:
         # According to the FHS 2.3 section on PID files in /var/run:
-        # 
+        #
         #   The file must consist of the process identifier in
         #   ASCII-encoded decimal, followed by a newline character.
-        # 
+        #
         #   Programs that read PID files should be somewhat flexible
         #   in what they accept; i.e., they should ignore extra
         #   whitespace, leading zeroes, absence of the trailing
@@ -171,8 +169,7 @@ def write_pid_to_pidfile(pidfile_path):
     #   would contain three characters: two, five, and newline.
 
     pid = os.getpid()
-    line = "%(pid)d\n" % vars()
-    pidfile.write(line)
+    pidfile.write("%s\n" % pid)
     pidfile.close()
 
 

@@ -1,5 +1,5 @@
 # mako/exceptions.py
-# Copyright 2006-2019 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -159,13 +159,15 @@ class RichTraceback(object):
             if not line:
                 line = ""
             try:
-                (line_map, template_lines) = mods[filename]
+                (line_map, template_lines, template_filename) = mods[filename]
             except KeyError:
                 try:
                     info = mako.template._get_module_info(filename)
                     module_source = info.code
                     template_source = info.source
-                    template_filename = info.template_filename or filename
+                    template_filename = (
+                        info.template_filename or info.template_uri or filename
+                    )
                 except KeyError:
                     # A normal .py file (not a Template)
                     if not compat.py3k:
@@ -204,7 +206,7 @@ class RichTraceback(object):
                 template_lines = [
                     line_ for line_ in template_source.split("\n")
                 ]
-                mods[filename] = (line_map, template_lines)
+                mods[filename] = (line_map, template_lines, template_filename)
 
             template_ln = line_map[lineno - 1]
 

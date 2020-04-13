@@ -3,7 +3,7 @@
 """Transliterate Unicode text into plain 7-bit ASCII.
 
 Example usage:
->>> from unidecode import unidecode:
+>>> from unidecode import unidecode
 >>> unidecode(u"\u5317\u4EB0")
 "Bei Jing "
 

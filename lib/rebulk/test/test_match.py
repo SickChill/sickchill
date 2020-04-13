@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+# pylint: disable=no-self-use, pointless-statement, missing-docstring, unneeded-not, len-as-condition
 
 import pytest
 import six
@@ -115,6 +115,9 @@ class TestMatchesClass(object):
 
         assert "tag1" in matches.tags
         assert "tag2" in matches.tags
+
+        assert self.match3.tagged("tag1")
+        assert not self.match3.tagged("start")
 
         tag1 = matches.tagged("tag1")
         assert len(tag1) == 2

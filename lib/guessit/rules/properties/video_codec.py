@@ -3,9 +3,8 @@
 """
 video_codec and video_profile property
 """
-from rebulk.remodule import re
-
 from rebulk import Rebulk, Rule, RemoveMatch
+from rebulk.remodule import re
 
 from ..common import dash
 from ..common.pattern import is_disabled
@@ -43,7 +42,8 @@ def video_codec(config):  # pylint:disable=unused-argument
 
     # http://blog.mediacoderhq.com/h264-profiles-and-levels/
     # https://en.wikipedia.org/wiki/H.264/MPEG-4_AVC
-    rebulk.defaults(name="video_profile",
+    rebulk.defaults(clear=True,
+                    name="video_profile",
                     validator=seps_surround,
                     disabled=lambda context: is_disabled(context, 'video_profile'))
 
@@ -66,7 +66,8 @@ def video_codec(config):  # pylint:disable=unused-argument
     rebulk.string('DXVA', value='DXVA', name='video_api',
                   disabled=lambda context: is_disabled(context, 'video_api'))
 
-    rebulk.defaults(name='color_depth',
+    rebulk.defaults(clear=True,
+                    name='color_depth',
                     validator=seps_surround,
                     disabled=lambda context: is_disabled(context, 'color_depth'))
     rebulk.regex('12.?bits?', value='12-bit')

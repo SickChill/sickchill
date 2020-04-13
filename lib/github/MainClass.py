@@ -1,15 +1,37 @@
 # -*- coding: utf-8 -*-
 
-# ########################## Copyrights and license ############################
+############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2013 AKFish <akfish@gmail.com>                                     #
 # Copyright 2013 Ed Jackson <ed.jackson@gmail.com>                             #
 # Copyright 2013 Jonathan J Hunt <hunt@braincorporation.com>                   #
 # Copyright 2013 Peter Golm <golm.peter@gmail.com>                             #
+# Copyright 2013 Steve Brown <steve@evolvedlight.co.uk>                        #
 # Copyright 2013 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2014 C. R. Oldham <cro@ncbt.org>                                   #
+# Copyright 2014 Thialfihar <thi@thialfihar.org>                               #
+# Copyright 2014 Tyler Treat <ttreat31@gmail.com>                              #
+# Copyright 2014 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2015 Daniel Pocock <daniel@pocock.pro>                             #
+# Copyright 2015 Joseph Rawson <joseph.rawson.works@littledebian.org>          #
+# Copyright 2015 Uriel Corfa <uriel@corfa.fr>                                  #
+# Copyright 2015 edhollandAL <eholland@alertlogic.com>                         #
+# Copyright 2016 Jannis Gebauer <ja.geb@me.com>                                #
+# Copyright 2016 Peter Buckley <dx-pbuckley@users.noreply.github.com>          #
+# Copyright 2017 Colin Hoglund <colinhoglund@users.noreply.github.com>         #
+# Copyright 2017 Jannis Gebauer <ja.geb@me.com>                                #
+# Copyright 2018 Agor Maxime <maxime.agor23@gmail.com>                         #
+# Copyright 2018 Joshua Hoblitt <josh@hoblitt.com>                             #
+# Copyright 2018 Maarten Fonville <mfonville@users.noreply.github.com>         #
+# Copyright 2018 Mike Miller <github@mikeage.net>                              #
+# Copyright 2018 Svend Sorensen <svend@svends.net>                             #
+# Copyright 2018 Wan Liuyang <tsfdye@gmail.com>                                #
+# Copyright 2018 sfdye <tsfdye@gmail.com>                                      #
+# Copyright 2018 itsbruce <it.is.bruce@gmail.com>                              #
+# Copyright 2019 Tomas Tomecek <tomas@tomecek.net>                             #
 #                                                                              #
 # This file is part of PyGithub.                                               #
-# http://pygithub.github.io/PyGithub/v1/index.html                             #
+# http://pygithub.readthedocs.io/                                              #
 #                                                                              #
 # PyGithub is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free  #
@@ -24,47 +46,67 @@
 # You should have received a copy of the GNU Lesser General Public License     #
 # along with PyGithub. If not, see <http://www.gnu.org/licenses/>.             #
 #                                                                              #
-# ##############################################################################
+################################################################################
 
-import urllib
+from __future__ import absolute_import
+
+import datetime
 import pickle
 import time
-import sys
-from httplib import HTTPSConnection
+
 import jwt
+import requests
+import six
+import urllib3
 
-from Requester import Requester, json
-import AuthenticatedUser
-import NamedUser
-import Organization
-import Gist
-import github.PaginatedList
-import Repository
-import Installation
-import Legacy
+import github.Gist
 import github.GithubObject
-import HookDescription
-import GitignoreTemplate
-import Status
-import StatusMessage
-import RateLimit
-import InstallationAuthorization
-import GithubException
-import Invitation
+import github.License
+import github.NamedUser
+import github.PaginatedList
+import github.Topic
 
-atLeastPython3 = sys.hexversion >= 0x03000000
+from . import (
+    AuthenticatedUser,
+    Consts,
+    GithubException,
+    GitignoreTemplate,
+    HookDescription,
+    Installation,
+    InstallationAuthorization,
+    RateLimit,
+    Repository,
+)
+from .Requester import Requester
 
 DEFAULT_BASE_URL = "https://api.github.com"
-DEFAULT_TIMEOUT = 10
+DEFAULT_STATUS_URL = "https://status.github.com"
+# As of 2018-05-17, Github imposes a 10s limit for completion of API requests.
+# Thus, the timeout should be slightly > 10s to account for network/front-end
+# latency.
+DEFAULT_TIMEOUT = 15
 DEFAULT_PER_PAGE = 30
 
 
 class Github(object):
     """
-    This is the main class you instanciate to access the Github API v3. Optional parameters allow different authentication methods.
+    This is the main class you instantiate to access the Github API v3. Optional parameters allow different authentication methods.
     """
 
-    def __init__(self, login_or_token=None, password=None, base_url=DEFAULT_BASE_URL, timeout=DEFAULT_TIMEOUT, client_id=None, client_secret=None, user_agent='PyGithub/Python', per_page=DEFAULT_PER_PAGE, api_preview=False):
+    def __init__(
+        self,
+        login_or_token=None,
+        password=None,
+        jwt=None,
+        base_url=DEFAULT_BASE_URL,
+        timeout=DEFAULT_TIMEOUT,
+        client_id=None,
+        client_secret=None,
+        user_agent="PyGithub/Python",
+        per_page=DEFAULT_PER_PAGE,
+        verify=True,
+        retry=None,
+    ):
         """
         :param login_or_token: string
         :param password: string
@@ -74,17 +116,44 @@ class Github(object):
         :param client_secret: string
         :param user_agent: string
         :param per_page: int
+        :param verify: boolean or string
+        :param retry: int or urllib3.util.retry.Retry object
         """
 
-        assert login_or_token is None or isinstance(login_or_token, (str, unicode)), login_or_token
-        assert password is None or isinstance(password, (str, unicode)), password
-        assert isinstance(base_url, (str, unicode)), base_url
-        assert isinstance(timeout, (int, long)), timeout
-        assert client_id is None or isinstance(client_id, (str, unicode)), client_id
-        assert client_secret is None or isinstance(client_secret, (str, unicode)), client_secret
-        assert user_agent is None or isinstance(user_agent, (str, unicode)), user_agent
-        assert isinstance(api_preview, (bool))
-        self.__requester = Requester(login_or_token, password, base_url, timeout, client_id, client_secret, user_agent, per_page, api_preview)
+        assert login_or_token is None or isinstance(
+            login_or_token, (str, six.text_type)
+        ), login_or_token
+        assert password is None or isinstance(password, (str, six.text_type)), password
+        assert jwt is None or isinstance(jwt, (str, six.text_type)), jwt
+        assert isinstance(base_url, (str, six.text_type)), base_url
+        assert isinstance(timeout, six.integer_types), timeout
+        assert client_id is None or isinstance(
+            client_id, (str, six.text_type)
+        ), client_id
+        assert client_secret is None or isinstance(
+            client_secret, (str, six.text_type)
+        ), client_secret
+        assert user_agent is None or isinstance(
+            user_agent, (str, six.text_type)
+        ), user_agent
+        assert (
+            retry is None
+            or isinstance(retry, (int))
+            or isinstance(retry, (urllib3.util.Retry))
+        )
+        self.__requester = Requester(
+            login_or_token,
+            password,
+            jwt,
+            base_url,
+            timeout,
+            client_id,
+            client_secret,
+            user_agent,
+            per_page,
+            verify,
+            retry,
+        )
 
     def __get_FIX_REPO_GET_GIT_REF(self):
         """
@@ -95,7 +164,9 @@ class Github(object):
     def __set_FIX_REPO_GET_GIT_REF(self, value):
         self.__requester.FIX_REPO_GET_GIT_REF = value
 
-    FIX_REPO_GET_GIT_REF = property(__get_FIX_REPO_GET_GIT_REF, __set_FIX_REPO_GET_GIT_REF)
+    FIX_REPO_GET_GIT_REF = property(
+        __get_FIX_REPO_GET_GIT_REF, __set_FIX_REPO_GET_GIT_REF
+    )
 
     def __get_per_page(self):
         """
@@ -116,6 +187,7 @@ class Github(object):
     def rate_limiting(self):
         """
         First value is requests remaining, second value is request limit.
+
         :type: (int, int)
         """
         remaining, limit = self.__requester.rate_limiting
@@ -127,6 +199,7 @@ class Github(object):
     def rate_limiting_resettime(self):
         """
         Unix timestamp indicating when rate limiting will reset.
+
         :type: int
         """
         if self.__requester.rate_limiting_resettime == 0:
@@ -135,16 +208,13 @@ class Github(object):
 
     def get_rate_limit(self):
         """
-        Don't forget you can access the rate limit returned in headers of last Github API v3 response, by :attr:`github.MainClass.Github.rate_limiting` and :attr:`github.MainClass.Github.rate_limiting_resettime`.
+        Rate limit status for different resources (core/search/graphql).
 
         :calls: `GET /rate_limit <http://developer.github.com/v3/rate_limit>`_
         :rtype: :class:`github.RateLimit.RateLimit`
         """
-        headers, attributes = self.__requester.requestJsonAndCheck(
-            'GET',
-            '/rate_limit'
-        )
-        return RateLimit.RateLimit(self.__requester, headers, attributes, True)
+        headers, data = self.__requester.requestJsonAndCheck("GET", "/rate_limit")
+        return RateLimit.RateLimit(self.__requester, headers, data["resources"], True)
 
     @property
     def oauth_scopes(self):
@@ -153,21 +223,49 @@ class Github(object):
         """
         return self.__requester.oauth_scopes
 
+    def get_license(self, key=github.GithubObject.NotSet):
+        """
+        :calls: `GET /license/:license <https://developer.github.com/v3/licenses/#get-an-individual-license>`_
+        :param key: string
+        :rtype: :class:`github.License.License`
+        """
+
+        assert isinstance(key, (str, six.text_type)), key
+        headers, data = self.__requester.requestJsonAndCheck("GET", "/licenses/" + key)
+        return github.License.License(self.__requester, headers, data, completed=True)
+
+    def get_licenses(self):
+        """
+        :calls: `GET /licenses <https://developer.github.com/v3/licenses/#list-all-licenses>`_
+        :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.License.License`
+        """
+
+        url_parameters = dict()
+
+        return github.PaginatedList.PaginatedList(
+            github.License.License, self.__requester, "/licenses", url_parameters
+        )
+
     def get_user(self, login=github.GithubObject.NotSet):
         """
         :calls: `GET /users/:user <http://developer.github.com/v3/users>`_ or `GET /user <http://developer.github.com/v3/users>`_
         :param login: string
         :rtype: :class:`github.NamedUser.NamedUser`
         """
-        assert login is github.GithubObject.NotSet or isinstance(login, (str, unicode)), login
+        assert login is github.GithubObject.NotSet or isinstance(
+            login, (str, six.text_type)
+        ), login
         if login is github.GithubObject.NotSet:
-            return AuthenticatedUser.AuthenticatedUser(self.__requester, {}, {"url": "/user"}, completed=False)
+            return AuthenticatedUser.AuthenticatedUser(
+                self.__requester, {}, {"url": "/user"}, completed=False
+            )
         else:
             headers, data = self.__requester.requestJsonAndCheck(
-                "GET",
-                "/users/" + login
+                "GET", "/users/" + login
             )
-            return github.NamedUser.NamedUser(self.__requester, headers, data, completed=True)
+            return github.NamedUser.NamedUser(
+                self.__requester, headers, data, completed=True
+            )
 
     def get_users(self, since=github.GithubObject.NotSet):
         """
@@ -175,15 +273,14 @@ class Github(object):
         :param since: integer
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.NamedUser.NamedUser`
         """
-        assert since is github.GithubObject.NotSet or isinstance(since, (int, long)), since
+        assert since is github.GithubObject.NotSet or isinstance(
+            since, six.integer_types
+        ), since
         url_parameters = dict()
         if since is not github.GithubObject.NotSet:
             url_parameters["since"] = since
         return github.PaginatedList.PaginatedList(
-            github.NamedUser.NamedUser,
-            self.__requester,
-            "/users",
-            url_parameters
+            github.NamedUser.NamedUser, self.__requester, "/users", url_parameters
         )
 
     def get_organization(self, login):
@@ -192,45 +289,85 @@ class Github(object):
         :param login: string
         :rtype: :class:`github.Organization.Organization`
         """
-        assert isinstance(login, (str, unicode)), login
-        headers, data = self.__requester.requestJsonAndCheck(
-            "GET",
-            "/orgs/" + login
+        assert isinstance(login, (str, six.text_type)), login
+        headers, data = self.__requester.requestJsonAndCheck("GET", "/orgs/" + login)
+        return github.Organization.Organization(
+            self.__requester, headers, data, completed=True
         )
-        return github.Organization.Organization(self.__requester, headers, data, completed=True)
 
-    def get_repo(self, full_name_or_id, lazy=True):
+    def get_organizations(self, since=github.GithubObject.NotSet):
         """
-        :calls: `GET /repos/:owner/:repo <http://developer.github.com/v3/repos>`_ or `GET /repositories/:id <http://developer.github.com/v3/repos>`_
-        :rtype: :class:`github.Repository.Repository`
-        """
-        assert isinstance(full_name_or_id, (str, unicode, int, long)), full_name_or_id
-        url_base = "/repositories/" if isinstance(full_name_or_id, int) or isinstance(full_name_or_id, long) else "/repos/"
-        url = "%s%s" % (url_base, full_name_or_id)
-        if lazy:
-            return Repository.Repository(self.__requester, {}, {"url": url}, completed=False)
-        headers, data = self.__requester.requestJsonAndCheck(
-            "GET",
-            "%s%s" % (url_base, full_name_or_id)
-        )
-        return Repository.Repository(self.__requester, headers, data, completed=True)
-
-    def get_repos(self, since=github.GithubObject.NotSet):
-        """
-        :calls: `GET /repositories <http://developer.github.com/v3/repos/#list-all-public-repositories>`_
+        :calls: `GET /organizations <http://developer.github.com/v3/orgs#list-all-organizations>`_
         :param since: integer
-        :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Repository.Repository`
+        :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Organization.Organization`
         """
-        assert since is github.GithubObject.NotSet or isinstance(since, (int, long)), since
+        assert since is github.GithubObject.NotSet or isinstance(
+            since, six.integer_types
+        ), since
         url_parameters = dict()
         if since is not github.GithubObject.NotSet:
             url_parameters["since"] = since
         return github.PaginatedList.PaginatedList(
+            github.Organization.Organization,
+            self.__requester,
+            "/organizations",
+            url_parameters,
+        )
+
+    def get_repo(self, full_name_or_id, lazy=False):
+        """
+        :calls: `GET /repos/:owner/:repo <http://developer.github.com/v3/repos>`_ or `GET /repositories/:id <http://developer.github.com/v3/repos>`_
+        :rtype: :class:`github.Repository.Repository`
+        """
+        assert isinstance(full_name_or_id, (str, six.text_type, int)), full_name_or_id
+        url_base = "/repositories/" if isinstance(full_name_or_id, int) else "/repos/"
+        url = "%s%s" % (url_base, full_name_or_id)
+        if lazy:
+            return Repository.Repository(
+                self.__requester, {}, {"url": url}, completed=False
+            )
+        headers, data = self.__requester.requestJsonAndCheck(
+            "GET", "%s%s" % (url_base, full_name_or_id)
+        )
+        return Repository.Repository(self.__requester, headers, data, completed=True)
+
+    def get_repos(
+        self, since=github.GithubObject.NotSet, visibility=github.GithubObject.NotSet
+    ):
+        """
+        :calls: `GET /repositories <http://developer.github.com/v3/repos/#list-all-public-repositories>`_
+        :param since: integer
+        :param visibility: string ('all','public')
+        :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Repository.Repository`
+        """
+        assert since is github.GithubObject.NotSet or isinstance(
+            since, six.integer_types
+        ), since
+        url_parameters = dict()
+        if since is not github.GithubObject.NotSet:
+            url_parameters["since"] = since
+        if visibility is not github.GithubObject.NotSet:
+            assert visibility in ("public", "all"), visibility
+            url_parameters["visibility"] = visibility
+        return github.PaginatedList.PaginatedList(
             github.Repository.Repository,
             self.__requester,
             "/repositories",
-            url_parameters
+            url_parameters,
         )
+
+    def get_project(self, id):
+        """
+        :calls: `GET /projects/:project_id <https://developer.github.com/v3/projects/#get-a-project>`_
+        :rtype: :class:`github.Project.Project`
+        :param id: integer
+        """
+        headers, data = self.__requester.requestJsonAndCheck(
+            "GET",
+            "/projects/%d" % (id),
+            headers={"Accept": Consts.mediaTypeProjectsPreview},
+        )
+        return github.Project.Project(self.__requester, headers, data, completed=True)
 
     def get_gist(self, id):
         """
@@ -238,74 +375,33 @@ class Github(object):
         :param id: string
         :rtype: :class:`github.Gist.Gist`
         """
-        assert isinstance(id, (str, unicode)), id
-        headers, data = self.__requester.requestJsonAndCheck(
-            "GET",
-            "/gists/" + id
-        )
+        assert isinstance(id, (str, six.text_type)), id
+        headers, data = self.__requester.requestJsonAndCheck("GET", "/gists/" + id)
         return github.Gist.Gist(self.__requester, headers, data, completed=True)
 
-    def get_gists(self):
+    def get_gists(self, since=github.GithubObject.NotSet):
         """
         :calls: `GET /gists/public <http://developer.github.com/v3/gists>`_
+        :param since: datetime.datetime format YYYY-MM-DDTHH:MM:SSZ
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Gist.Gist`
         """
+        assert since is github.GithubObject.NotSet or isinstance(
+            since, datetime.datetime
+        ), since
+        url_parameters = dict()
+        if since is not github.GithubObject.NotSet:
+            url_parameters["since"] = since.strftime("%Y-%m-%dT%H:%M:%SZ")
         return github.PaginatedList.PaginatedList(
-            github.Gist.Gist,
-            self.__requester,
-            "/gists/public",
-            None
+            github.Gist.Gist, self.__requester, "/gists/public", url_parameters
         )
 
-    def legacy_search_repos(self, keyword, language=github.GithubObject.NotSet):
-        """
-        :calls: `GET /legacy/repos/search/:keyword <http://developer.github.com/v3/search/legacy>`_
-        :param keyword: string
-        :param language: string
-        :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Repository.Repository`
-        """
-        assert isinstance(keyword, (str, unicode)), keyword
-        assert language is github.GithubObject.NotSet or isinstance(language, (str, unicode)), language
-        args = {} if language is github.GithubObject.NotSet else {"language": language}
-        return Legacy.PaginatedList(
-            "/legacy/repos/search/" + urllib.quote_plus(keyword, safe='/%:><'),
-            args,
-            self.__requester,
-            "repositories",
-            Legacy.convertRepo,
-            github.Repository.Repository,
-        )
-
-    def legacy_search_users(self, keyword):
-        """
-        :calls: `GET /legacy/user/search/:keyword <http://developer.github.com/v3/search/legacy>`_
-        :param keyword: string
-        :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.NamedUser.NamedUser`
-        """
-        assert isinstance(keyword, (str, unicode)), keyword
-        return Legacy.PaginatedList(
-            "/legacy/user/search/" + urllib.quote_plus(keyword, safe='/%:><'),
-            {},
-            self.__requester,
-            "users",
-            Legacy.convertUser,
-            github.NamedUser.NamedUser,
-        )
-
-    def legacy_search_user_by_email(self, email):
-        """
-        :calls: `GET /legacy/user/email/:email <http://developer.github.com/v3/search/legacy>`_
-        :param email: string
-        :rtype: :class:`github.NamedUser.NamedUser`
-        """
-        assert isinstance(email, (str, unicode)), email
-        headers, data = self.__requester.requestJsonAndCheck(
-            "GET",
-            "/legacy/user/email/" + email
-        )
-        return github.NamedUser.NamedUser(self.__requester, headers, Legacy.convertUser(data["user"]), completed=False)
-
-    def search_repositories(self, query, sort=github.GithubObject.NotSet, order=github.GithubObject.NotSet, **qualifiers):
+    def search_repositories(
+        self,
+        query,
+        sort=github.GithubObject.NotSet,
+        order=github.GithubObject.NotSet,
+        **qualifiers
+    ):
         """
         :calls: `GET /search/repositories <http://developer.github.com/v3/search>`_
         :param query: string
@@ -314,13 +410,17 @@ class Github(object):
         :param qualifiers: keyword dict query qualifiers
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Repository.Repository`
         """
-        assert isinstance(query, (str, unicode)), query
+        assert isinstance(query, (str, six.text_type)), query
         url_parameters = dict()
-        if sort is not github.GithubObject.NotSet:  # pragma no branch (Should be covered)
-            assert sort in ('stars', 'forks', 'updated'), sort
+        if (
+            sort is not github.GithubObject.NotSet
+        ):  # pragma no branch (Should be covered)
+            assert sort in ("stars", "forks", "updated"), sort
             url_parameters["sort"] = sort
-        if order is not github.GithubObject.NotSet:  # pragma no branch (Should be covered)
-            assert order in ('asc', 'desc'), order
+        if (
+            order is not github.GithubObject.NotSet
+        ):  # pragma no branch (Should be covered)
+            assert order in ("asc", "desc"), order
             url_parameters["order"] = order
 
         query_chunks = []
@@ -330,17 +430,23 @@ class Github(object):
         for qualifier, value in qualifiers.items():
             query_chunks.append("%s:%s" % (qualifier, value))
 
-        url_parameters["q"] = ' '.join(query_chunks)
+        url_parameters["q"] = " ".join(query_chunks)
         assert url_parameters["q"], "need at least one qualifier"
 
         return github.PaginatedList.PaginatedList(
             github.Repository.Repository,
             self.__requester,
             "/search/repositories",
-            url_parameters
+            url_parameters,
         )
 
-    def search_users(self, query, sort=github.GithubObject.NotSet, order=github.GithubObject.NotSet, **qualifiers):
+    def search_users(
+        self,
+        query,
+        sort=github.GithubObject.NotSet,
+        order=github.GithubObject.NotSet,
+        **qualifiers
+    ):
         """
         :calls: `GET /search/users <http://developer.github.com/v3/search>`_
         :param query: string
@@ -349,13 +455,13 @@ class Github(object):
         :param qualifiers: keyword dict query qualifiers
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.NamedUser.NamedUser`
         """
-        assert isinstance(query, (str, unicode)), query
+        assert isinstance(query, (str, six.text_type)), query
         url_parameters = dict()
         if sort is not github.GithubObject.NotSet:
-            assert sort in ('followers', 'repositories', 'joined'), sort
+            assert sort in ("followers", "repositories", "joined"), sort
             url_parameters["sort"] = sort
         if order is not github.GithubObject.NotSet:
-            assert order in ('asc', 'desc'), order
+            assert order in ("asc", "desc"), order
             url_parameters["order"] = order
 
         query_chunks = []
@@ -365,17 +471,23 @@ class Github(object):
         for qualifier, value in qualifiers.items():
             query_chunks.append("%s:%s" % (qualifier, value))
 
-        url_parameters["q"] = ' '.join(query_chunks)
+        url_parameters["q"] = " ".join(query_chunks)
         assert url_parameters["q"], "need at least one qualifier"
 
         return github.PaginatedList.PaginatedList(
             github.NamedUser.NamedUser,
             self.__requester,
             "/search/users",
-            url_parameters
+            url_parameters,
         )
 
-    def search_issues(self, query, sort=github.GithubObject.NotSet, order=github.GithubObject.NotSet, **qualifiers):
+    def search_issues(
+        self,
+        query,
+        sort=github.GithubObject.NotSet,
+        order=github.GithubObject.NotSet,
+        **qualifiers
+    ):
         """
         :calls: `GET /search/issues <http://developer.github.com/v3/search>`_
         :param query: string
@@ -384,13 +496,13 @@ class Github(object):
         :param qualifiers: keyword dict query qualifiers
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Issue.Issue`
         """
-        assert isinstance(query, (str, unicode)), query
+        assert isinstance(query, (str, six.text_type)), query
         url_parameters = dict()
         if sort is not github.GithubObject.NotSet:
-            assert sort in ('comments', 'created', 'updated'), sort
+            assert sort in ("comments", "created", "updated"), sort
             url_parameters["sort"] = sort
         if order is not github.GithubObject.NotSet:
-            assert order in ('asc', 'desc'), order
+            assert order in ("asc", "desc"), order
             url_parameters["order"] = order
 
         query_chunks = []
@@ -400,32 +512,41 @@ class Github(object):
         for qualifier, value in qualifiers.items():
             query_chunks.append("%s:%s" % (qualifier, value))
 
-        url_parameters["q"] = ' '.join(query_chunks)
+        url_parameters["q"] = " ".join(query_chunks)
         assert url_parameters["q"], "need at least one qualifier"
 
         return github.PaginatedList.PaginatedList(
-            github.Issue.Issue,
-            self.__requester,
-            "/search/issues",
-            url_parameters
+            github.Issue.Issue, self.__requester, "/search/issues", url_parameters
         )
 
-    def search_code(self, query, sort=github.GithubObject.NotSet, order=github.GithubObject.NotSet, **qualifiers):
+    def search_code(
+        self,
+        query,
+        sort=github.GithubObject.NotSet,
+        order=github.GithubObject.NotSet,
+        highlight=False,
+        **qualifiers
+    ):
         """
         :calls: `GET /search/code <http://developer.github.com/v3/search>`_
         :param query: string
         :param sort: string ('indexed')
         :param order: string ('asc', 'desc')
+        :param highlight: boolean (True, False)
         :param qualifiers: keyword dict query qualifiers
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.ContentFile.ContentFile`
         """
-        assert isinstance(query, (str, unicode)), query
+        assert isinstance(query, (str, six.text_type)), query
         url_parameters = dict()
-        if sort is not github.GithubObject.NotSet:  # pragma no branch (Should be covered)
-            assert sort in ('indexed',), sort
+        if (
+            sort is not github.GithubObject.NotSet
+        ):  # pragma no branch (Should be covered)
+            assert sort in ("indexed",), sort
             url_parameters["sort"] = sort
-        if order is not github.GithubObject.NotSet:  # pragma no branch (Should be covered)
-            assert order in ('asc', 'desc'), order
+        if (
+            order is not github.GithubObject.NotSet
+        ):  # pragma no branch (Should be covered)
+            assert order in ("asc", "desc"), order
             url_parameters["order"] = order
 
         query_chunks = []
@@ -435,14 +556,91 @@ class Github(object):
         for qualifier, value in qualifiers.items():
             query_chunks.append("%s:%s" % (qualifier, value))
 
-        url_parameters["q"] = ' '.join(query_chunks)
+        url_parameters["q"] = " ".join(query_chunks)
         assert url_parameters["q"], "need at least one qualifier"
+
+        headers = {"Accept": Consts.highLightSearchPreview} if highlight else None
 
         return github.PaginatedList.PaginatedList(
             github.ContentFile.ContentFile,
             self.__requester,
             "/search/code",
-            url_parameters
+            url_parameters,
+            headers=headers,
+        )
+
+    def search_commits(
+        self,
+        query,
+        sort=github.GithubObject.NotSet,
+        order=github.GithubObject.NotSet,
+        **qualifiers
+    ):
+        """
+        :calls: `GET /search/commits <http://developer.github.com/v3/search>`_
+        :param query: string
+        :param sort: string ('author-date', 'committer-date')
+        :param order: string ('asc', 'desc')
+        :param qualifiers: keyword dict query qualifiers
+        :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Commit.Commit`
+        """
+        assert isinstance(query, (str, six.text_type)), query
+        url_parameters = dict()
+        if (
+            sort is not github.GithubObject.NotSet
+        ):  # pragma no branch (Should be covered)
+            assert sort in ("author-date", "committer-date"), sort
+            url_parameters["sort"] = sort
+        if (
+            order is not github.GithubObject.NotSet
+        ):  # pragma no branch (Should be covered)
+            assert order in ("asc", "desc"), order
+            url_parameters["order"] = order
+
+        query_chunks = []
+        if query:  # pragma no branch (Should be covered)
+            query_chunks.append(query)
+
+        for qualifier, value in qualifiers.items():
+            query_chunks.append("%s:%s" % (qualifier, value))
+
+        url_parameters["q"] = " ".join(query_chunks)
+        assert url_parameters["q"], "need at least one qualifier"
+
+        return github.PaginatedList.PaginatedList(
+            github.Commit.Commit,
+            self.__requester,
+            "/search/commits",
+            url_parameters,
+            headers={"Accept": Consts.mediaTypeCommitSearchPreview},
+        )
+
+    def search_topics(self, query, **qualifiers):
+        """
+        :calls: `GET /search/topics <http://developer.github.com/v3/search>`_
+        :param query: string
+        :param qualifiers: keyword dict query qualifiers
+        :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Topic.Topic`
+        """
+        assert isinstance(query, (str, six.text_type)), query
+        url_parameters = dict()
+
+        query_chunks = []
+        if query:  # pragma no branch (Should be covered)
+            query_chunks.append(query)
+
+        for qualifier, value in qualifiers.items():
+            query_chunks.append("%s:%s" % (qualifier, value))
+
+        url_parameters["q"] = " ".join(query_chunks)
+        assert url_parameters["q"], "need at least one qualifier"
+
+        return github.PaginatedList.PaginatedList(
+            github.Topic.Topic,
+            self.__requester,
+            "/search/topics",
+            url_parameters,
+            headers={"Accept": Consts.mediaTypeTopicsPreview},
         )
 
     def render_markdown(self, text, context=github.GithubObject.NotSet):
@@ -452,18 +650,16 @@ class Github(object):
         :param context: :class:`github.Repository.Repository`
         :rtype: string
         """
-        assert isinstance(text, (str, unicode)), text
-        assert context is github.GithubObject.NotSet or isinstance(context, github.Repository.Repository), context
-        post_parameters = {
-            "text": text
-        }
+        assert isinstance(text, (str, six.text_type)), text
+        assert context is github.GithubObject.NotSet or isinstance(
+            context, github.Repository.Repository
+        ), context
+        post_parameters = {"text": text}
         if context is not github.GithubObject.NotSet:
             post_parameters["mode"] = "gfm"
             post_parameters["context"] = context._identity
         status, headers, data = self.__requester.requestJson(
-            "POST",
-            "/markdown",
-            input=post_parameters
+            "POST", "/markdown", input=post_parameters
         )
         return data
 
@@ -473,23 +669,26 @@ class Github(object):
         :param name: string
         :rtype: :class:`github.HookDescription.HookDescription`
         """
-        assert isinstance(name, (str, unicode)), name
+        assert isinstance(name, (str, six.text_type)), name
         headers, attributes = self.__requester.requestJsonAndCheck(
-            "GET",
-            "/hooks/" + name
+            "GET", "/hooks/" + name
         )
-        return HookDescription.HookDescription(self.__requester, headers, attributes, completed=True)
+        return HookDescription.HookDescription(
+            self.__requester, headers, attributes, completed=True
+        )
 
     def get_hooks(self):
         """
         :calls: `GET /hooks <http://developer.github.com/v3/repos/hooks/>`_
         :rtype: list of :class:`github.HookDescription.HookDescription`
         """
-        headers, data = self.__requester.requestJsonAndCheck(
-            "GET",
-            "/hooks"
-        )
-        return [HookDescription.HookDescription(self.__requester, headers, attributes, completed=True) for attributes in data]
+        headers, data = self.__requester.requestJsonAndCheck("GET", "/hooks")
+        return [
+            HookDescription.HookDescription(
+                self.__requester, headers, attributes, completed=True
+            )
+            for attributes in data
+        ]
 
     def get_gitignore_templates(self):
         """
@@ -497,8 +696,7 @@ class Github(object):
         :rtype: list of string
         """
         headers, data = self.__requester.requestJsonAndCheck(
-            "GET",
-            "/gitignore/templates"
+            "GET", "/gitignore/templates"
         )
         return data
 
@@ -507,22 +705,20 @@ class Github(object):
         :calls: `GET /gitignore/templates/:name <http://developer.github.com/v3/gitignore>`_
         :rtype: :class:`github.GitignoreTemplate.GitignoreTemplate`
         """
-        assert isinstance(name, (str, unicode)), name
+        assert isinstance(name, (str, six.text_type)), name
         headers, attributes = self.__requester.requestJsonAndCheck(
-            "GET",
-            "/gitignore/templates/" + name
+            "GET", "/gitignore/templates/" + name
         )
-        return GitignoreTemplate.GitignoreTemplate(self.__requester, headers, attributes, completed=True)
+        return GitignoreTemplate.GitignoreTemplate(
+            self.__requester, headers, attributes, completed=True
+        )
 
     def get_emojis(self):
         """
         :calls: `GET /emojis <http://developer.github.com/v3/emojis/>`_
         :rtype: dictionary of type => url for emoji`
         """
-        headers, attributes = self.__requester.requestJsonAndCheck(
-            "GET",
-            "/emojis"
-        )
+        headers, attributes = self.__requester.requestJsonAndCheck("GET", "/emojis")
         return attributes
 
     def create_from_raw_data(self, klass, raw_data, headers={}):
@@ -558,55 +754,15 @@ class Github(object):
         """
         return self.create_from_raw_data(*pickle.load(f))
 
-    def get_api_status(self):
-        """
-        This doesn't work with a Github Enterprise installation, because it always targets https://status.github.com.
-
-        :calls: `GET /api/status.json <https://status.github.com/api>`_
-        :rtype: :class:`github.Status.Status`
-        """
-        headers, attributes = self.__requester.requestJsonAndCheck(
-            "GET",
-            "/api/status.json",
-            cnx="status"
-        )
-        return Status.Status(self.__requester, headers, attributes, completed=True)
-
-    def get_last_api_status_message(self):
-        """
-        This doesn't work with a Github Enterprise installation, because it always targets https://status.github.com.
-
-        :calls: `GET /api/last-message.json <https://status.github.com/api>`_
-        :rtype: :class:`github.StatusMessage.StatusMessage`
-        """
-        headers, attributes = self.__requester.requestJsonAndCheck(
-            "GET",
-            "/api/last-message.json",
-            cnx="status"
-        )
-        return StatusMessage.StatusMessage(self.__requester, headers, attributes, completed=True)
-
-    def get_api_status_messages(self):
-        """
-        This doesn't work with a Github Enterprise installation, because it always targets https://status.github.com.
-
-        :calls: `GET /api/messages.json <https://status.github.com/api>`_
-        :rtype: list of :class:`github.StatusMessage.StatusMessage`
-        """
-        headers, data = self.__requester.requestJsonAndCheck(
-            "GET",
-            "/api/messages.json",
-            cnx="status"
-        )
-        return [StatusMessage.StatusMessage(self.__requester, headers, attributes, completed=True) for attributes in data]
-
     def get_installation(self, id):
         """
 
         :param id:
         :return:
         """
-        return Installation.Installation(self.__requester, headers={}, attributes={"id": id}, completed=True)
+        return Installation.Installation(
+            self.__requester, headers={}, attributes={"id": id}, completed=True
+        )
 
 
 class GithubIntegration(object):
@@ -614,84 +770,92 @@ class GithubIntegration(object):
     Main class to obtain tokens for a GitHub integration.
     """
 
-    def __init__(self, integration_id, private_key):
+    def __init__(self, integration_id, private_key, base_url=DEFAULT_BASE_URL):
         """
+        :param base_url: string
         :param integration_id: int
         :param private_key: string
         """
+        self.base_url = base_url
         self.integration_id = integration_id
         self.private_key = private_key
+        assert isinstance(base_url, (str, six.text_type)), base_url
 
-    def create_jwt(self):
+    def create_jwt(self, expiration=60):
         """
-        Creates a signed JWT, valid for 60 seconds.
+        Creates a signed JWT, valid for 60 seconds by default.
+        The expiration can be extended beyond this, to a maximum of 600 seconds.
+
+        :param expiration: int
         :return:
         """
         now = int(time.time())
-        payload = {
-            "iat": now,
-            "exp": now + 60,
-            "iss": self.integration_id
-        }
-        encrypted = jwt.encode(
-            payload,
-            key=self.private_key,
-            algorithm="RS256"
-        )
+        payload = {"iat": now, "exp": now + expiration, "iss": self.integration_id}
+        encrypted = jwt.encode(payload, key=self.private_key, algorithm="RS256")
 
-        if atLeastPython3:
-            encrypted = encrypted.decode('utf-8')
+        if isinstance(encrypted, bytes):
+            encrypted = encrypted.decode("utf-8")
 
         return encrypted
 
     def get_access_token(self, installation_id, user_id=None):
         """
         Get an access token for the given installation id.
-        POSTs https://api.github.com/installations/<installation_id>/access_tokens
+        POSTs https://api.github.com/app/installations/<installation_id>/access_tokens
         :param user_id: int
         :param installation_id: int
         :return: :class:`github.InstallationAuthorization.InstallationAuthorization`
         """
-        body = None
+        body = {}
         if user_id:
-            body = json.dumps({"user_id": user_id})
-        conn = HTTPSConnection("api.github.com")
-        conn.request(
-            method="POST",
-            url="/installations/{}/access_tokens".format(installation_id),
+            body = {"user_id": user_id}
+        response = requests.post(
+            "{}/app/installations/{}/access_tokens".format(
+                self.base_url, installation_id
+            ),
             headers={
                 "Authorization": "Bearer {}".format(self.create_jwt()),
-                "Accept": "application/vnd.github.machine-man-preview+json",
-                "User-Agent": "PyGithub/Python"
+                "Accept": Consts.mediaTypeIntegrationPreview,
+                "User-Agent": "PyGithub/Python",
             },
-            body=body
+            json=body,
         )
-        response = conn.getresponse()
-        response_text = response.read()
 
-        if atLeastPython3:
-            response_text = response_text.decode('utf-8')
-
-        conn.close()
-        if response.status == 201:
-            data = json.loads(response_text)
+        if response.status_code == 201:
             return InstallationAuthorization.InstallationAuthorization(
                 requester=None,  # not required, this is a NonCompletableGithubObject
                 headers={},  # not required, this is a NonCompletableGithubObject
-                attributes=data,
-                completed=True
+                attributes=response.json(),
+                completed=True,
             )
-        elif response.status == 403:
+        elif response.status_code == 403:
             raise GithubException.BadCredentialsException(
-                status=response.status,
-                data=response_text
+                status=response.status_code, data=response.text
             )
-        elif response.status == 404:
+        elif response.status_code == 404:
             raise GithubException.UnknownObjectException(
-                status=response.status,
-                data=response_text
+                status=response.status_code, data=response.text
             )
         raise GithubException.GithubException(
-            status=response.status,
-            data=response_text
+            status=response.status_code, data=response.text
         )
+
+    def get_installation(self, owner, repo):
+        """
+        :calls: `GET /repos/:owner/:repo/installation <https://developer.github.com/v3/apps/#get-a-repository-installation>`_
+        :param owner: str
+        :param repo: str
+        :rtype: :class:`github.Installation.Installation`
+        """
+        headers = {
+            "Authorization": "Bearer {}".format(self.create_jwt()),
+            "Accept": Consts.mediaTypeIntegrationPreview,
+            "User-Agent": "PyGithub/Python",
+        }
+
+        response = requests.get(
+            "{}/repos/{}/{}/installation".format(self.base_url, owner, repo),
+            headers=headers,
+        )
+        response_dict = response.json()
+        return Installation.Installation(None, headers, response_dict, True)

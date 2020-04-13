@@ -1,5 +1,6 @@
 # mssql/zxjdbc.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -11,11 +12,14 @@
     :connectstring: mssql+zxjdbc://user:pass@host:port/dbname[?key=value&key=value...]
     :driverurl: http://jtds.sourceforge.net/
 
+    .. note:: Jython is not supported by current versions of SQLAlchemy.  The
+       zxjdbc dialect should be considered as experimental.
 
-"""
-from ...connectors.zxJDBC import ZxJDBCConnector
-from .base import MSDialect, MSExecutionContext
+"""  # noqa
+from .base import MSDialect
+from .base import MSExecutionContext
 from ... import engine
+from ...connectors.zxJDBC import ZxJDBCConnector
 
 
 class MSExecutionContext_zxjdbc(MSExecutionContext):
@@ -40,26 +44,28 @@ class MSExecutionContext_zxjdbc(MSExecutionContext):
                     self.cursor.nextset()
             self._lastrowid = int(row[0])
 
-        if (self.isinsert or self.isupdate or self.isdelete) and \
-            self.compiled.returning:
+        if (
+            self.isinsert or self.isupdate or self.isdelete
+        ) and self.compiled.returning:
             self._result_proxy = engine.FullyBufferedResultProxy(self)
 
         if self._enable_identity_insert:
             table = self.dialect.identifier_preparer.format_table(
-                                        self.compiled.statement.table)
+                self.compiled.statement.table
+            )
             self.cursor.execute("SET IDENTITY_INSERT %s OFF" % table)
 
 
 class MSDialect_zxjdbc(ZxJDBCConnector, MSDialect):
-    jdbc_db_name = 'jtds:sqlserver'
-    jdbc_driver_name = 'net.sourceforge.jtds.jdbc.Driver'
+    jdbc_db_name = "jtds:sqlserver"
+    jdbc_driver_name = "net.sourceforge.jtds.jdbc.Driver"
 
     execution_ctx_cls = MSExecutionContext_zxjdbc
 
     def _get_server_version_info(self, connection):
         return tuple(
-                    int(x)
-                    for x in connection.connection.dbversion.split('.')
-                )
+            int(x) for x in connection.connection.dbversion.split(".")
+        )
+
 
 dialect = MSDialect_zxjdbc

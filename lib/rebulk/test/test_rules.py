@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+# pylint: disable=no-self-use, pointless-statement, missing-docstring, invalid-name, no-member, len-as-condition
 import pytest
 from rebulk.test.default_rules_module import RuleRemove0, RuleAppend0, RuleRename0, RuleAppend1, RuleRemove1, \
     RuleRename1, RuleAppend2, RuleRename2, RuleAppend3, RuleRename3, RuleAppendTags0, RuleRemoveTags0, \

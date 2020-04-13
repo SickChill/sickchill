@@ -8,16 +8,35 @@ __license__ = "BSD - see LICENSE file in top-level directory"
 __contact__ = "Philip.Kershaw@stfc.ac.uk"
 __revision__ = '$Id$'
 
-import cookielib
-import httplib
 import logging
 from optparse import OptionParser
 import os
-import urllib2
-from urllib2 import (HTTPHandler, HTTPCookieProcessor, 
-                     HTTPBasicAuthHandler, HTTPPasswordMgrWithDefaultRealm)
+import sys
 
-import urlparse
+if sys.version_info[0] > 2:
+    import http.cookiejar as cookiejar_
+    import http.client as http_client_
+    from urllib.request import Request as Request_
+    from urllib.request import HTTPHandler as HTTPHandler_
+    from urllib.request import HTTPCookieProcessor as HTTPCookieProcessor_
+    from urllib.request import HTTPBasicAuthHandler as HTTPBasicAuthHandler_
+    from urllib.request import HTTPPasswordMgrWithDefaultRealm as \
+                                            HTTPPasswordMgrWithDefaultRealm_
+    from urllib.request import ProxyHandler as ProxyHandler_
+    from urllib.error import HTTPError as HTTPError_
+    import urllib.parse as urlparse_
+else:
+    import cookielib as cookiejar_
+    import httplib as http_client_
+    from urllib2 import Request as Request_
+    from urllib2 import HTTPHandler as HTTPHandler_
+    from urllib2 import HTTPCookieProcessor as HTTPCookieProcessor_
+    from urllib2 import HTTPBasicAuthHandler as HTTPBasicAuthHandler_
+    from urllib2 import HTTPPasswordMgrWithDefaultRealm as \
+                                            HTTPPasswordMgrWithDefaultRealm_
+    from urllib2 import ProxyHandler as ProxyHandler_
+    from urllib2 import HTTPError as HTTPError_
+    import urlparse as urlparse_
 
 from ndg.httpsclient.urllib2_build_opener import build_opener
 from ndg.httpsclient.https import HTTPSContextHandler
@@ -25,7 +44,7 @@ from ndg.httpsclient import ssl_context_util
 
 log = logging.getLogger(__name__)
 
-class AccumulatingHTTPCookieProcessor(HTTPCookieProcessor):
+class AccumulatingHTTPCookieProcessor(HTTPCookieProcessor_):
     """Cookie processor that adds new cookies (instead of replacing the existing
     ones as HTTPCookieProcessor does)
     """
@@ -37,7 +56,7 @@ class AccumulatingHTTPCookieProcessor(HTTPCookieProcessor):
         @rtype: urllib2.Request
         """
         COOKIE_HEADER_NAME = "Cookie"
-        tmp_request = urllib2.Request(request.get_full_url(), request.data, {},
+        tmp_request = Request_(request.get_full_url(), request.data, {},
                                       request.origin_req_host,
                                       request.unverifiable)
         self.cookiejar.add_cookie_header(tmp_request)
@@ -73,7 +92,7 @@ def fetch_from_url(url, config, data=None, handlers=None):
     """
     return_code, return_message, response = open_url(url, config, data=data,
                                                      handlers=handlers)
-    if return_code and return_code == httplib.OK:
+    if return_code and return_code == http_client_.OK:
         return_data = response.read()
         response.close()
         return return_data
@@ -95,14 +114,14 @@ def fetch_from_url_to_file(url, config, output_file, data=None, handlers=None):
     """
     return_code, return_message, response = open_url(url, config, data=data,
                                                      handlers=handlers)
-    if return_code == httplib.OK:
+    if return_code == http_client_.OK:
         return_data = response.read()
         response.close()
         outfile = open(output_file, "w")
         outfile.write(return_data)
         outfile.close()
         
-    return return_code, return_message, return_code == httplib.OK
+    return return_code, return_message, return_code == http_client_.OK
 
 
 def fetch_stream_from_url(url, config, data=None, handlers=None):
@@ -120,7 +139,7 @@ def fetch_stream_from_url(url, config, data=None, handlers=None):
     """
     return_code, return_message, response = open_url(url, config, data=data,
                                                      handlers=handlers)
-    if return_code and return_code == httplib.OK:
+    if return_code and return_code == http_client_.OK:
         return response
     else:
         raise URLFetchError(return_message)
@@ -146,7 +165,7 @@ def open_url(url, config, data=None, handlers=None):
     if config.cookie:
         cj = config.cookie
     else:
-        cj = cookielib.CookieJar()
+        cj = cookiejar_.CookieJar()
         
     # Use a cookie processor that accumulates cookies when redirects occur so
     # that an application can redirect for authentication and retain both any
@@ -160,17 +179,17 @@ def open_url(url, config, data=None, handlers=None):
     handlers.append(cookie_handler)
 
     if config.debug:
-        http_handler = HTTPHandler(debuglevel=debuglevel)
+        http_handler = HTTPHandler_(debuglevel=debuglevel)
         https_handler = HTTPSContextHandler(config.ssl_context, 
                                             debuglevel=debuglevel)
         handlers.extend([http_handler, https_handler])
         
     if config.http_basicauth:
         # currently only supports http basic auth
-        auth_handler = HTTPBasicAuthHandler(HTTPPasswordMgrWithDefaultRealm())
+        auth_handler = HTTPBasicAuthHandler_(HTTPPasswordMgrWithDefaultRealm_())
         auth_handler.add_password(realm=None, uri=url,
-                                  user=config.httpauth[0],
-                                  passwd=config.httpauth[1])
+                                  user=config.http_basicauth[0],
+                                  passwd=config.http_basicauth[1])
         handlers.append(auth_handler)
 
 
@@ -179,10 +198,10 @@ def open_url(url, config, data=None, handlers=None):
     # set via http_proxy and https_proxy, but does not take the no_proxy value 
     # into account.
     if not _should_use_proxy(url, config.no_proxy):
-        handlers.append(urllib2.ProxyHandler({}))
+        handlers.append(ProxyHandler_({}))
         log.debug("Not using proxy")
     elif config.proxies:
-        handlers.append(urllib2.ProxyHandler(config.proxies))
+        handlers.append(ProxyHandler_(config.proxies))
         log.debug("Configuring proxies: %s" % config.proxies)
 
     opener = build_opener(*handlers, ssl_context=config.ssl_context)
@@ -191,12 +210,13 @@ def open_url(url, config, data=None, handlers=None):
     if headers is None: 
         headers = {}
         
-    request = urllib2.Request(url, data, headers)
+    request = Request_(url, data, headers)
 
     # Open the URL and check the response.
     return_code = 0
     return_message = ''
     response = None
+    
     try:
         response = opener.open(request)
         return_message = response.msg
@@ -205,13 +225,13 @@ def open_url(url, config, data=None, handlers=None):
             for index, cookie in enumerate(cj):
                 log.debug("%s  :  %s", index, cookie)
                 
-    except urllib2.HTTPError, exc:
+    except HTTPError_ as exc:
         return_code = exc.code
         return_message = "Error: %s" % exc.msg
         if log.isEnabledFor(logging.DEBUG):
             log.debug("%s %s", exc.code, exc.msg)
             
-    except Exception, exc:
+    except Exception as exc:
         return_message = "Error: %s" % exc.__str__()
         if log.isEnabledFor(logging.DEBUG):
             import traceback
@@ -231,7 +251,7 @@ def _should_use_proxy(url, no_proxy=None):
     else:
         no_proxy_effective = no_proxy
 
-    urlObj = urlparse.urlparse(_url_as_string(url))
+    urlObj = urlparse_.urlparse(_url_as_string(url))
     for np in [h.strip() for h in no_proxy_effective.split(',')]:
         if urlObj.hostname == np:
             return False
@@ -246,13 +266,13 @@ def _url_as_string(url):
     @return: URL string
     @rtype: basestring
     """
-    if isinstance(url, urllib2.Request):
+    if isinstance(url, Request_):
         return url.get_full_url()
-    elif isinstance(url, basestring):
+    elif isinstance(url, str):
         return url
     else:
         raise TypeError("Expected type %r or %r" %
-                        (basestring, urllib2.Request))
+                        (str, Request_))
 
 
 class Configuration(object):
@@ -270,7 +290,7 @@ class Configuration(object):
         @param no_proxy: hosts for which a proxy should not be used
         @type no_proxy: basestring
         @param cookie: cookies to set for request
-        @type cookie: cookielib.CookieJar
+        @type cookie: cookielib.CookieJar (python 3 - http.cookiejar)
         @param http_basicauth: http authentication, or None
         @type http_basicauth: tuple of (username,password)
         @param headers: http headers

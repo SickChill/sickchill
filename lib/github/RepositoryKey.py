@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# ########################## Copyrights and license ############################
+############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2012 Vincent Jacques <vincent@vincent-jacques.net>                 #
 # Copyright 2012 Zearin <zearin@gonk.net>                                      #
@@ -8,9 +8,17 @@
 # Copyright 2013 Srijan Choudhary <srijan4@gmail.com>                          #
 # Copyright 2013 Vincent Jacques <vincent@vincent-jacques.net>                 #
 # Copyright 2013 martinqt <m.ki2@laposte.net>                                  #
+# Copyright 2014 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2016 Jannis Gebauer <ja.geb@me.com>                                #
+# Copyright 2016 Peter Buckley <dx-pbuckley@users.noreply.github.com>          #
+# Copyright 2017 Jimmy Zelinskie <jimmy.zelinskie+git@gmail.com>               #
+# Copyright 2017 Simon <spam@esemi.ru>                                         #
+# Copyright 2018 Laurent Raufaste <analogue@glop.org>                          #
+# Copyright 2018 Wan Liuyang <tsfdye@gmail.com>                                #
+# Copyright 2018 sfdye <tsfdye@gmail.com>                                      #
 #                                                                              #
 # This file is part of PyGithub.                                               #
-# http://pygithub.github.io/PyGithub/v1/index.html                             #
+# http://pygithub.readthedocs.io/                                              #
 #                                                                              #
 # PyGithub is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free  #
@@ -25,7 +33,9 @@
 # You should have received a copy of the GNU Lesser General Public License     #
 # along with PyGithub. If not, see <http://www.gnu.org/licenses/>.             #
 #                                                                              #
-# ##############################################################################
+################################################################################
+
+from __future__ import absolute_import
 
 import github.GithubObject
 
@@ -35,16 +45,16 @@ class RepositoryKey(github.GithubObject.CompletableGithubObject):
     This class represents RepositoryKeys. The reference can be found here http://developer.github.com/v3/repos/keys/
     """
 
-    def __init__(self, requester, headers, attributes, completed, repoUrl):
-        github.GithubObject.CompletableGithubObject.__init__(self, requester, headers, attributes, completed)
-        self.__repoUrl = repoUrl
-
     def __repr__(self):
-        return self.get__repr__({"id": self._id.value})
+        return self.get__repr__({"id": self._id.value, "title": self._title.value})
 
     @property
-    def __customUrl(self):
-        return self.__repoUrl + "/keys/" + str(self.id)
+    def created_at(self):
+        """
+        :type: datetime.datetime
+        """
+        self._completeIfNotSet(self._created_at)
+        return self._created_at.value
 
     @property
     def id(self):
@@ -99,33 +109,10 @@ class RepositoryKey(github.GithubObject.CompletableGithubObject):
         :calls: `DELETE /repos/:owner/:repo/keys/:id <http://developer.github.com/v3/repos/keys>`_
         :rtype: None
         """
-        headers, data = self._requester.requestJsonAndCheck(
-            "DELETE",
-            self.__customUrl
-        )
-
-    def edit(self, title=github.GithubObject.NotSet, key=github.GithubObject.NotSet):
-        """
-        :calls: `PATCH /repos/:owner/:repo/keys/:id <http://developer.github.com/v3/repos/keys>`_
-        :param title: string
-        :param key: string
-        :rtype: None
-        """
-        assert title is github.GithubObject.NotSet or isinstance(title, (str, unicode)), title
-        assert key is github.GithubObject.NotSet or isinstance(key, (str, unicode)), key
-        post_parameters = dict()
-        if title is not github.GithubObject.NotSet:
-            post_parameters["title"] = title
-        if key is not github.GithubObject.NotSet:
-            post_parameters["key"] = key
-        headers, data = self._requester.requestJsonAndCheck(
-            "PATCH",
-            self.__customUrl,
-            input=post_parameters
-        )
-        self._useAttributes(data)
+        headers, data = self._requester.requestJsonAndCheck("DELETE", self.url)
 
     def _initAttributes(self):
+        self._created_at = github.GithubObject.NotSet
         self._id = github.GithubObject.NotSet
         self._key = github.GithubObject.NotSet
         self._title = github.GithubObject.NotSet
@@ -134,6 +121,8 @@ class RepositoryKey(github.GithubObject.CompletableGithubObject):
         self._read_only = github.GithubObject.NotSet
 
     def _useAttributes(self, attributes):
+        if "created_at" in attributes:  # pragma no branch
+            self._created_at = self._makeDatetimeAttribute(attributes["created_at"])
         if "id" in attributes:  # pragma no branch
             self._id = self._makeIntAttribute(attributes["id"])
         if "key" in attributes:  # pragma no branch

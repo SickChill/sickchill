@@ -14,7 +14,8 @@ try:
     from ndg.httpsclient.subj_alt_name import SubjectAltName
     from pyasn1.codec.der import decoder as der_decoder
     SUBJ_ALT_NAME_SUPPORT = True
-except ImportError, e:
+    
+except ImportError as e:
     SUBJ_ALT_NAME_SUPPORT = False
     SUBJ_ALT_NAME_SUPPORT_MSG = (
         'SubjectAltName support is disabled - check pyasn1 package '
@@ -39,8 +40,9 @@ class ServerSSLCertVerification(object):
         'domainComponent':          'DC',
         'userid':                   'UID'
     }
-    SUBJ_ALT_NAME_EXT_NAME = 'subjectAltName'
-    PARSER_RE_STR = '/(%s)=' % '|'.join(DN_LUT.keys() + DN_LUT.values())
+    SUBJ_ALT_NAME_EXT_NAME = b'subjectAltName'
+    PARSER_RE_STR = '/(%s)=' % '|'.join(list(DN_LUT.keys()) + \
+                                        list(DN_LUT.values()))
     PARSER_RE = re.compile(PARSER_RE_STR)
 
     __slots__ = ('__hostname', '__certDN', '__subj_alt_name_match')
@@ -156,12 +158,12 @@ class ServerSSLCertVerification(object):
             return preverifyOK
 
     def get_verify_server_cert_func(self):
-         def verify_server_cert(connection, peerCert, errorStatus, errorDepth,
-                 preverifyOK):
-              return self.__call__(connection, peerCert, errorStatus,
-                                   errorDepth, preverifyOK)
-
-         return verify_server_cert
+        def verify_server_cert(connection, peerCert, errorStatus, errorDepth,
+                preverifyOK):
+            return self.__call__(connection, peerCert, errorStatus,
+                                 errorDepth, preverifyOK)
+        
+        return verify_server_cert
 
     @classmethod
     def _get_subj_alt_name(cls, peer_cert):
@@ -195,7 +197,7 @@ class ServerSSLCertVerification(object):
         return self.__certDN
 
     def _setCertDN(self, val):
-        if isinstance(val, basestring):
+        if isinstance(val, str):
             # Allow for quoted DN
             certDN = val.strip('"')
 
@@ -203,7 +205,7 @@ class ServerSSLCertVerification(object):
             if len(dnFields) < 2:
                 raise TypeError('Error parsing DN string: "%s"' % certDN)
 
-            self.__certDN = zip(dnFields[1::2], dnFields[2::2])
+            self.__certDN = list(zip(dnFields[1::2], dnFields[2::2]))
             self.__certDN.sort()
 
         elif not isinstance(val, list):
@@ -226,7 +228,7 @@ class ServerSSLCertVerification(object):
         return self.__hostname
 
     def _setHostname(self, val):
-        if not isinstance(val, basestring):
+        if not isinstance(val, str):
             raise TypeError("Expecting string type for hostname "
                                  "attribute")
         self.__hostname = val

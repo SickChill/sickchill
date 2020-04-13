@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 
-# ########################## Copyrights and license ############################
+############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2012 Vincent Jacques <vincent@vincent-jacques.net>                 #
 # Copyright 2012 Zearin <zearin@gonk.net>                                      #
 # Copyright 2013 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2014 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2016 Peter Buckley <dx-pbuckley@users.noreply.github.com>          #
+# Copyright 2018 Wan Liuyang <tsfdye@gmail.com>                                #
+# Copyright 2018 sfdye <tsfdye@gmail.com>                                      #
 #                                                                              #
 # This file is part of PyGithub.                                               #
-# http://pygithub.github.io/PyGithub/v1/index.html                             #
+# http://pygithub.readthedocs.io/                                              #
 #                                                                              #
 # PyGithub is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free  #
@@ -22,13 +26,18 @@
 # You should have received a copy of the GNU Lesser General Public License     #
 # along with PyGithub. If not, see <http://www.gnu.org/licenses/>.             #
 #                                                                              #
-# ##############################################################################
+################################################################################
+
+from __future__ import absolute_import
+
+import six
 
 import github.GithubObject
 
 
 class InputFileContent(object):
     """
+    This class represents InputFileContents
     """
 
     def __init__(self, content, new_name=github.GithubObject.NotSet):
@@ -37,8 +46,10 @@ class InputFileContent(object):
         :param new_name: string
         """
 
-        assert isinstance(content, (str, unicode)), content
-        assert new_name is github.GithubObject.NotSet or isinstance(new_name, (str, unicode)), new_name
+        assert isinstance(content, (str, six.text_type)), content
+        assert new_name is github.GithubObject.NotSet or isinstance(
+            new_name, (str, six.text_type)
+        ), new_name
         self.__newName = new_name
         self.__content = content
 

@@ -1,5 +1,6 @@
 # sqlalchemy/processors.py
-# Copyright (C) 2010-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2010-2020 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 # Copyright (C) 2010 Gaetan de Menten gdementen@gmail.com
 #
 # This module is part of SQLAlchemy and is released under
@@ -13,8 +14,9 @@ They all share one common characteristic: None is passed through unchanged.
 """
 
 import codecs
-import re
 import datetime
+import re
+
 from . import util
 
 
@@ -30,27 +32,35 @@ def str_to_datetime_processor_factory(regexp, type_):
         else:
             try:
                 m = rmatch(value)
-            except TypeError:
-                raise ValueError("Couldn't parse %s string '%r' "
-                                "- value is not a string." %
-                                (type_.__name__, value))
+            except TypeError as err:
+                util.raise_(
+                    ValueError(
+                        "Couldn't parse %s string '%r' "
+                        "- value is not a string." % (type_.__name__, value)
+                    ),
+                    from_=err,
+                )
             if m is None:
-                raise ValueError("Couldn't parse %s string: "
-                                "'%s'" % (type_.__name__, value))
+                raise ValueError(
+                    "Couldn't parse %s string: "
+                    "'%s'" % (type_.__name__, value)
+                )
             if has_named_groups:
                 groups = m.groupdict(0)
-                return type_(**dict(list(zip(iter(groups.keys()),
-                                        list(map(int, iter(groups.values())))))))
+                return type_(
+                    **dict(
+                        list(
+                            zip(
+                                iter(groups.keys()),
+                                list(map(int, iter(groups.values()))),
+                            )
+                        )
+                    )
+                )
             else:
                 return type_(*list(map(int, m.groups(0))))
+
     return process
-
-
-def boolean_to_int(value):
-    if value is None:
-        return None
-    else:
-        return int(value)
 
 
 def py_fallback():
@@ -65,6 +75,7 @@ def py_fallback():
                 # len part is safe: it is done that way in the normal
                 # 'xx'.decode(encoding) code path.
                 return decoder(value, errors)[0]
+
         return process
 
     def to_conditional_unicode_processor_factory(encoding, errors=None):
@@ -80,6 +91,7 @@ def py_fallback():
                 # len part is safe: it is done that way in the normal
                 # 'xx'.decode(encoding) code path.
                 return decoder(value, errors)[0]
+
         return process
 
     def to_decimal_processor_factory(target_class, scale):
@@ -90,43 +102,54 @@ def py_fallback():
                 return None
             else:
                 return target_class(fstring % value)
+
         return process
 
-    def to_float(value):
+    def to_float(value):  # noqa
         if value is None:
             return None
         else:
             return float(value)
 
-    def to_str(value):
+    def to_str(value):  # noqa
         if value is None:
             return None
         else:
             return str(value)
 
-    def int_to_boolean(value):
+    def int_to_boolean(value):  # noqa
         if value is None:
             return None
         else:
-            return value and True or False
+            return bool(value)
 
     DATETIME_RE = re.compile(
-                        "(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)(?:\.(\d+))?")
-    TIME_RE = re.compile("(\d+):(\d+):(\d+)(?:\.(\d+))?")
-    DATE_RE = re.compile("(\d+)-(\d+)-(\d+)")
+        r"(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)(?:\.(\d+))?"
+    )
+    TIME_RE = re.compile(r"(\d+):(\d+):(\d+)(?:\.(\d+))?")
+    DATE_RE = re.compile(r"(\d+)-(\d+)-(\d+)")
 
-    str_to_datetime = str_to_datetime_processor_factory(DATETIME_RE,
-                                                        datetime.datetime)
-    str_to_time = str_to_datetime_processor_factory(TIME_RE, datetime.time)
-    str_to_date = str_to_datetime_processor_factory(DATE_RE, datetime.date)
+    str_to_datetime = str_to_datetime_processor_factory(  # noqa
+        DATETIME_RE, datetime.datetime
+    )
+    str_to_time = str_to_datetime_processor_factory(  # noqa
+        TIME_RE, datetime.time
+    )  # noqa
+    str_to_date = str_to_datetime_processor_factory(  # noqa
+        DATE_RE, datetime.date
+    )  # noqa
     return locals()
 
+
 try:
-    from sqlalchemy.cprocessors import UnicodeResultProcessor, \
-                                       DecimalResultProcessor, \
-                                       to_float, to_str, int_to_boolean, \
-                                       str_to_datetime, str_to_time, \
-                                       str_to_date
+    from sqlalchemy.cprocessors import DecimalResultProcessor  # noqa
+    from sqlalchemy.cprocessors import int_to_boolean  # noqa
+    from sqlalchemy.cprocessors import str_to_date  # noqa
+    from sqlalchemy.cprocessors import str_to_datetime  # noqa
+    from sqlalchemy.cprocessors import str_to_time  # noqa
+    from sqlalchemy.cprocessors import to_float  # noqa
+    from sqlalchemy.cprocessors import to_str  # noqa
+    from sqlalchemy.cprocessors import UnicodeResultProcessor  # noqa
 
     def to_unicode_processor_factory(encoding, errors=None):
         if errors is not None:
@@ -147,6 +170,7 @@ try:
         # Decimal('5.00000') whereas the C implementation will
         # return Decimal('5'). These are equivalent of course.
         return DecimalResultProcessor(target_class, "%%.%df" % scale).process
+
 
 except ImportError:
     globals().update(py_fallback())

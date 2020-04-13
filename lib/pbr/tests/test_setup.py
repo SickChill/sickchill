@@ -93,8 +93,9 @@ class SkipFileWrites(base.BaseTestCase):
                       option_dict=self.option_dict)
         self.assertEqual(
             not os.path.exists(self.filename),
-            (self.option_value.lower() in options.TRUE_VALUES
-             or self.env_value is not None))
+            (self.option_value.lower() in options.TRUE_VALUES or
+             self.env_value is not None))
+
 
 _changelog_content = """7780758\x00Break parser\x00 (tag: refs/tags/1_foo.1)
 04316fe\x00Make python\x00 (refs/heads/review/monty_taylor/27519)
@@ -124,6 +125,7 @@ def _make_old_git_changelog_format(line):
     sha, msg, refname = line.split('\x00')
     refname = refname.replace('tag: ', '')
     return '\x00'.join((sha, msg, refname))
+
 
 _old_git_changelog_content = '\n'.join(
     _make_old_git_changelog_format(line)
@@ -162,7 +164,7 @@ class GitLogsTest(base.BaseTestCase):
             self.assertIn("------", changelog_contents)
             self.assertIn("Refactor hooks file", changelog_contents)
             self.assertIn(
-                "Bug fix: create\_stack() fails when waiting",
+                r"Bug fix: create\_stack() fails when waiting",
                 changelog_contents)
             self.assertNotIn("Refactor hooks file.", changelog_contents)
             self.assertNotIn("182feb3", changelog_contents)
@@ -176,7 +178,7 @@ class GitLogsTest(base.BaseTestCase):
             self.assertNotIn("ev)il", changelog_contents)
             self.assertNotIn("e(vi)l", changelog_contents)
             self.assertNotIn('Merge "', changelog_contents)
-            self.assertNotIn('1\_foo.1', changelog_contents)
+            self.assertNotIn(r'1\_foo.1', changelog_contents)
 
     def test_generate_authors(self):
         author_old = u"Foo Foo <email@foo.com>"

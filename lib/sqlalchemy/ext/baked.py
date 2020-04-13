@@ -1,5 +1,5 @@
 # sqlalchemy/ext/baked.py
-# Copyright (C) 2005-2018 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -13,17 +13,19 @@ compiled result to be fully cached.
 
 """
 
-from ..orm.query import Query
-from ..orm import strategies, attributes, properties, \
-    strategy_options, util as orm_util, interfaces
-from .. import log as sqla_log
-from ..sql import util as sql_util, func, literal_column
-from ..orm import exc as orm_exc
-from .. import exc as sa_exc
-from .. import util
-
 import copy
 import logging
+
+from .. import exc as sa_exc
+from .. import util
+from ..orm import exc as orm_exc
+from ..orm import strategy_options
+from ..orm.query import Query
+from ..orm.session import Session
+from ..sql import func
+from ..sql import literal_column
+from ..sql import util as sql_util
+
 
 log = logging.getLogger(__name__)
 
@@ -39,7 +41,8 @@ class Bakery(object):
 
 
     """
-    __slots__ = 'cls', 'cache'
+
+    __slots__ = "cls", "cache"
 
     def __init__(self, cls_, cache):
         self.cls = cls_
@@ -52,7 +55,7 @@ class Bakery(object):
 class BakedQuery(object):
     """A builder object for :class:`.query.Query` objects."""
 
-    __slots__ = 'steps', '_bakery', '_cache_key', '_spoiled'
+    __slots__ = "steps", "_bakery", "_cache_key", "_spoiled"
 
     def __init__(self, bakery, initial_fn, args=()):
         self._cache_key = ()
@@ -149,10 +152,30 @@ class BakedQuery(object):
         """
         if not full and not self._spoiled:
             _spoil_point = self._clone()
-            _spoil_point._cache_key += ('_query_only', )
+            _spoil_point._cache_key += ("_query_only",)
             self.steps = [_spoil_point._retrieve_baked_query]
         self._spoiled = True
         return self
+
+    def _effective_key(self, session):
+        """Return the key that actually goes into the cache dictionary for
+        this :class:`.BakedQuery`, taking into account the given
+        :class:`.Session`.
+
+        This basically means we also will include the session's query_class,
+        as the actual :class:`.Query` object is part of what's cached
+        and needs to match the type of :class:`.Query` that a later
+        session will want to use.
+
+        """
+        return self._cache_key + (session._query_cls,)
+
+    def _with_lazyload_options(self, options, effective_path, cache_path=None):
+        """Cloning version of _add_lazyload_options.
+        """
+        q = self._clone()
+        q._add_lazyload_options(options, effective_path, cache_path=cache_path)
+        return q
 
     def _add_lazyload_options(self, options, effective_path, cache_path=None):
         """Used by per-state lazy loaders to add options to the
@@ -182,22 +205,27 @@ class BakedQuery(object):
                     key += cache_key
 
         self.add_criteria(
-            lambda q: q._with_current_path(effective_path).
-            _conditional_options(*options),
-            cache_path.path, key
+            lambda q: q._with_current_path(
+                effective_path
+            )._conditional_options(*options),
+            cache_path.path,
+            key,
         )
 
     def _retrieve_baked_query(self, session):
-        query = self._bakery.get(self._cache_key, None)
+        query = self._bakery.get(self._effective_key(session), None)
         if query is None:
             query = self._as_query(session)
-            self._bakery[self._cache_key] = query.with_session(None)
+            self._bakery[self._effective_key(session)] = query.with_session(
+                None
+            )
         return query.with_session(session)
 
     def _bake(self, session):
         query = self._as_query(session)
 
         context = query._compile_context()
+
         self._bake_subquery_loaders(session, context)
         context.session = None
         context.query = query = context.query.with_session(None)
@@ -208,11 +236,73 @@ class BakedQuery(object):
         # so delete some compilation-use-only attributes that can take up
         # space
         for attr in (
-                '_correlate', '_from_obj', '_mapper_adapter_map',
-                '_joinpath', '_joinpoint'):
+            "_correlate",
+            "_from_obj",
+            "_mapper_adapter_map",
+            "_joinpath",
+            "_joinpoint",
+        ):
             query.__dict__.pop(attr, None)
-        self._bakery[self._cache_key] = context
+
+        # if the query is not safe to cache, we still do everything as though
+        # we did cache it, since the receiver of _bake() assumes subqueryload
+        # context was set up, etc.
+        if context.query._bake_ok:
+            self._bakery[self._effective_key(session)] = context
+
         return context
+
+    def to_query(self, query_or_session):
+        """Return the :class:`.Query` object for use as a subquery.
+
+        This method should be used within the lambda callable being used
+        to generate a step of an enclosing :class:`.BakedQuery`.   The
+        parameter should normally be the :class:`.Query` object that
+        is passed to the lambda::
+
+            sub_bq = self.bakery(lambda s: s.query(User.name))
+            sub_bq += lambda q: q.filter(
+                User.id == Address.user_id).correlate(Address)
+
+            main_bq = self.bakery(lambda s: s.query(Address))
+            main_bq += lambda q: q.filter(
+                sub_bq.to_query(q).exists())
+
+        In the case where the subquery is used in the first callable against
+        a :class:`.Session`, the :class:`.Session` is also accepted::
+
+            sub_bq = self.bakery(lambda s: s.query(User.name))
+            sub_bq += lambda q: q.filter(
+                User.id == Address.user_id).correlate(Address)
+
+            main_bq = self.bakery(
+                lambda s: s.query(Address.id, sub_bq.to_query(q).as_scalar())
+            )
+
+        :param query_or_session: a :class:`.Query` object or a class
+         :class:`.Session` object, that is assumed to be within the context
+         of an enclosing :class:`.BakedQuery` callable.
+
+
+         .. versionadded:: 1.3
+
+
+        """
+
+        if isinstance(query_or_session, Session):
+            session = query_or_session
+        elif isinstance(query_or_session, Query):
+            session = query_or_session.session
+            if session is None:
+                raise sa_exc.ArgumentError(
+                    "Given Query needs to be associated with a Session"
+                )
+        else:
+            raise TypeError(
+                "Query or Session object expected, got %r."
+                % type(query_or_session)
+            )
+        return self._as_query(session)
 
     def _as_query(self, session):
         query = self.steps[0](session)
@@ -230,27 +320,36 @@ class BakedQuery(object):
         a "baked" query so that we save on performance too.
 
         """
-        context.attributes['baked_queries'] = baked_queries = []
+        context.attributes["baked_queries"] = baked_queries = []
         for k, v in list(context.attributes.items()):
             if isinstance(v, Query):
-                if 'subquery' in k:
+                if "subquery" in k:
                     bk = BakedQuery(self._bakery, lambda *args: v)
                     bk._cache_key = self._cache_key + k
                     bk._bake(session)
                     baked_queries.append((k, bk._cache_key, v))
                 del context.attributes[k]
 
-    def _unbake_subquery_loaders(self, session, context, params):
+    def _unbake_subquery_loaders(
+        self, session, context, params, post_criteria
+    ):
         """Retrieve subquery eager loaders stored by _bake_subquery_loaders
         and turn them back into Result objects that will iterate just
         like a Query object.
 
         """
+        if "baked_queries" not in context.attributes:
+            return
+
         for k, cache_key, query in context.attributes["baked_queries"]:
-            bk = BakedQuery(self._bakery,
-                            lambda sess, q=query: q.with_session(sess))
+            bk = BakedQuery(
+                self._bakery, lambda sess, q=query: q.with_session(sess)
+            )
             bk._cache_key = cache_key
-            context.attributes[k] = bk.for_session(session).params(**params)
+            q = bk.for_session(session)
+            for fn in post_criteria:
+                q = q.with_post_criteria(fn)
+            context.attributes[k] = q.params(**params)
 
 
 class Result(object):
@@ -261,7 +360,8 @@ class Result(object):
     against a target :class:`.Session`, and is then invoked for results.
 
     """
-    __slots__ = 'bq', 'session', '_params', '_post_criteria'
+
+    __slots__ = "bq", "session", "_params", "_post_criteria"
 
     def __init__(self, bq, session):
         self.bq = bq
@@ -277,7 +377,8 @@ class Result(object):
         elif len(args) > 0:
             raise sa_exc.ArgumentError(
                 "params() takes zero or one positional argument, "
-                "which is a dictionary.")
+                "which is a dictionary."
+            )
         self._params.update(kw)
         return self
 
@@ -321,7 +422,7 @@ class Result(object):
         if not self.session.enable_baked_queries or bq._spoiled:
             return iter(self._as_query())
 
-        baked_context = bq._bakery.get(bq._cache_key, None)
+        baked_context = bq._bakery.get(bq._effective_key(self.session), None)
         if baked_context is None:
             baked_context = bq._bake(self.session)
 
@@ -329,7 +430,9 @@ class Result(object):
         context.session = self.session
         context.attributes = context.attributes.copy()
 
-        bq._unbake_subquery_loaders(self.session, context, self._params)
+        bq._unbake_subquery_loaders(
+            self.session, context, self._params, self._post_criteria
+        )
 
         context.statement.use_labels = True
         if context.autoflush and not context.populate_existing:
@@ -352,7 +455,7 @@ class Result(object):
 
         """
 
-        col = func.count(literal_column('*'))
+        col = func.count(literal_column("*"))
         bq = self.bq.with_criteria(lambda q: q.from_self(col))
         return bq.for_session(self.session).params(self._params).scalar()
 
@@ -382,8 +485,10 @@ class Result(object):
         """
         bq = self.bq.with_criteria(lambda q: q.slice(0, 1))
         ret = list(
-            bq.for_session(self.session).params(self._params).
-            _using_post_criteria(self._post_criteria))
+            bq.for_session(self.session)
+            .params(self._params)
+            ._using_post_criteria(self._post_criteria)
+        )
         if len(ret) > 0:
             return ret[0]
         else:
@@ -397,9 +502,13 @@ class Result(object):
         """
         try:
             ret = self.one_or_none()
-        except orm_exc.MultipleResultsFound:
-            raise orm_exc.MultipleResultsFound(
-                "Multiple rows were found for one()")
+        except orm_exc.MultipleResultsFound as err:
+            util.raise_(
+                orm_exc.MultipleResultsFound(
+                    "Multiple rows were found for one()"
+                ),
+                replace_context=err,
+            )
         else:
             if ret is None:
                 raise orm_exc.NoResultFound("No row was found for one()")
@@ -423,7 +532,8 @@ class Result(object):
             return None
         else:
             raise orm_exc.MultipleResultsFound(
-                "Multiple rows were found for one_or_none()")
+                "Multiple rows were found for one_or_none()"
+            )
 
     def all(self):
         """Return all rows.
@@ -441,12 +551,10 @@ class Result(object):
         """
 
         query = self.bq.steps[0](self.session)
-        return query._get_impl(ident, self._load_on_ident)
+        return query._get_impl(ident, self._load_on_pk_identity)
 
-    def _load_on_ident(self, query, key):
-        """Load the given identity key from the database."""
-
-        ident = key[1]
+    def _load_on_pk_identity(self, query, primary_key_identity):
+        """Load the given primary key identity from the database."""
 
         mapper = query._mapper_zero()
 
@@ -460,13 +568,19 @@ class Result(object):
 
             # None present in ident - turn those comparisons
             # into "IS NULL"
-            if None in ident:
-                nones = set([
-                    _get_params[col].key for col, value in
-                    zip(mapper.primary_key, ident) if value is None
-                ])
+            if None in primary_key_identity:
+                nones = set(
+                    [
+                        _get_params[col].key
+                        for col, value in zip(
+                            mapper.primary_key, primary_key_identity
+                        )
+                        if value is None
+                    ]
+                )
                 _lcl_get_clause = sql_util.adapt_criterion_to_null(
-                    _lcl_get_clause, nones)
+                    _lcl_get_clause, nones
+                )
 
             _lcl_get_clause = q._adapt_clause(_lcl_get_clause, True, False)
             q._criterion = _lcl_get_clause
@@ -483,14 +597,20 @@ class Result(object):
         # key so that if a race causes multiple calls to _get_clause,
         # we've cached on ours
         bq = bq._clone()
-        bq._cache_key += (_get_clause, )
+        bq._cache_key += (_get_clause,)
 
-        bq = bq.with_criteria(setup, tuple(elem is None for elem in ident))
+        bq = bq.with_criteria(
+            setup, tuple(elem is None for elem in primary_key_identity)
+        )
 
-        params = dict([
-            (_get_params[primary_key].key, id_val)
-            for id_val, primary_key in zip(ident, mapper.primary_key)
-        ])
+        params = dict(
+            [
+                (_get_params[primary_key].key, id_val)
+                for id_val, primary_key in zip(
+                    primary_key_identity, mapper.primary_key
+                )
+            ]
+        )
 
         result = list(bq.for_session(self.session).params(**params))
         l = len(result)
@@ -503,7 +623,8 @@ class Result(object):
 
 
 @util.deprecated(
-    "1.2", "Baked lazy loading is now the default implementation.")
+    "1.2", "Baked lazy loading is now the default implementation."
+)
 def bake_lazy_loaders():
     """Enable the use of baked queries for all lazyloaders systemwide.
 
@@ -515,18 +636,20 @@ def bake_lazy_loaders():
 
 
 @util.deprecated(
-    "1.2", "Baked lazy loading is now the default implementation.")
+    "1.2", "Baked lazy loading is now the default implementation."
+)
 def unbake_lazy_loaders():
     """Disable the use of baked queries for all lazyloaders systemwide.
 
-    This method now raises NotImplmentedError() as the "baked" implementation
+    This method now raises NotImplementedError() as the "baked" implementation
     is the only lazy load implementation.  The
     :paramref:`.relationship.bake_queries` flag may be used to disable
     the caching of queries on a per-relationship basis.
 
     """
     raise NotImplementedError(
-        "Baked lazy loading is now the default implementation")
+        "Baked lazy loading is now the default implementation"
+    )
 
 
 @strategy_options.loader_option()
@@ -540,20 +663,27 @@ def baked_lazyload(loadopt, attr):
 
 @baked_lazyload._add_unbound_fn
 @util.deprecated(
-    "1.2", "Baked lazy loading is now the default "
-    "implementation for lazy loading.")
+    "1.2",
+    "Baked lazy loading is now the default "
+    "implementation for lazy loading.",
+)
 def baked_lazyload(*keys):
     return strategy_options._UnboundLoad._from_keys(
-        strategy_options._UnboundLoad.baked_lazyload, keys, False, {})
+        strategy_options._UnboundLoad.baked_lazyload, keys, False, {}
+    )
 
 
 @baked_lazyload._add_unbound_all_fn
 @util.deprecated(
-    "1.2", "Baked lazy loading is now the default "
-    "implementation for lazy loading.")
+    "1.2",
+    "Baked lazy loading is now the default "
+    "implementation for lazy loading.",
+)
 def baked_lazyload_all(*keys):
     return strategy_options._UnboundLoad._from_keys(
-        strategy_options._UnboundLoad.baked_lazyload, keys, True, {})
+        strategy_options._UnboundLoad.baked_lazyload, keys, True, {}
+    )
+
 
 baked_lazyload = baked_lazyload._unbound_fn
 baked_lazyload_all = baked_lazyload_all._unbound_all_fn

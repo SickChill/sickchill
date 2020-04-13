@@ -11,12 +11,13 @@ from rebulk.match import Match
 from rebulk.remodule import re
 from rebulk.utils import is_iterable
 
+from guessit.rules import match_processors
+from guessit.rules.common.numeral import parse_numeral, numeral
 from .title import TitleFromPosition
 from ..common import dash, alt_dash, seps, seps_no_fs
 from ..common.formatters import strip
-from ..common.numeral import numeral, parse_numeral
 from ..common.pattern import is_disabled
-from ..common.validators import compose, seps_surround, seps_before, int_coercable
+from ..common.validators import seps_surround, int_coercable, and_
 from ...reutils import build_or_pattern
 
 
@@ -30,15 +31,10 @@ def episodes(config):
     :rtype: Rebulk
     """
 
+    # pylint: disable=too-many-branches,too-many-statements,too-many-locals
     def is_season_episode_disabled(context):
         """Whether season and episode rules should be enabled."""
         return is_disabled(context, 'episode') or is_disabled(context, 'season')
-
-    rebulk = Rebulk().regex_defaults(flags=re.IGNORECASE).string_defaults(ignore_case=True)
-    rebulk.defaults(private_names=['episodeSeparator', 'seasonSeparator', 'episodeMarker', 'seasonMarker'])
-
-    episode_max_range = config['episode_max_range']
-    season_max_range = config['season_max_range']
 
     def episodes_season_chain_breaker(matches):
         """
@@ -57,8 +53,6 @@ def episodes(config):
             return True
         return False
 
-    rebulk.chain_defaults(chain_breaker=episodes_season_chain_breaker)
-
     def season_episode_conflict_solver(match, other):
         """
         Conflict solver for episode/season patterns
@@ -76,7 +70,6 @@ def episodes(config):
                 if (other.name == 'audio_channels' and 'weak-audio_channels' not in other.tags
                         and not match.initiator.children.named(match.name + 'Marker')) or (
                             other.name == 'screen_size' and not int_coercable(other.raw)):
-
                     return match
                 if other.name in ('season', 'episode') and match.initiator != other.initiator:
                     if (match.initiator.name in ('weak_episode', 'weak_duplicate')
@@ -86,21 +79,6 @@ def episodes(config):
                         if 'weak-episode' in current.tags or 'x' in current.initiator.raw.lower():
                             return current
         return '__default__'
-
-    season_words = config['season_words']
-    episode_words = config['episode_words']
-    of_words = config['of_words']
-    all_words = config['all_words']
-    season_markers = config['season_markers']
-    season_ep_markers = config['season_ep_markers']
-    disc_markers = config['disc_markers']
-    episode_markers = config['episode_markers']
-    range_separators = config['range_separators']
-    weak_discrete_separators = list(sep for sep in seps_no_fs if sep not in range_separators)
-    strong_discrete_separators = config['discrete_separators']
-    discrete_separators = strong_discrete_separators + weak_discrete_separators
-
-    max_range_gap = config['max_range_gap']
 
     def ordering_validator(match):
         """
@@ -135,64 +113,17 @@ def episodes(config):
                                             lambda m: m.name == property_name + 'Separator')
                     separator = match.children.previous(current_match,
                                                         lambda m: m.name == property_name + 'Separator', 0)
-                    if separator.raw not in range_separators and separator.raw in weak_discrete_separators:
-                        if not 0 < current_match.value - previous_match.value <= max_range_gap + 1:
-                            valid = False
-                    if separator.raw in strong_discrete_separators:
-                        valid = True
-                        break
+                    if separator:
+                        if separator.raw not in range_separators and separator.raw in weak_discrete_separators:
+                            if not 0 < current_match.value - previous_match.value <= max_range_gap + 1:
+                                valid = False
+                        if separator.raw in strong_discrete_separators:
+                            valid = True
+                            break
                 previous_match = current_match
             return valid
 
         return is_consecutive('episode') and is_consecutive('season')
-
-    # S01E02, 01x02, S01S02S03
-    rebulk.chain(formatter={'season': int, 'episode': int},
-                 tags=['SxxExx'],
-                 abbreviations=[alt_dash],
-                 children=True,
-                 private_parent=True,
-                 validate_all=True,
-                 validator={'__parent__': ordering_validator},
-                 conflict_solver=season_episode_conflict_solver,
-                 disabled=is_season_episode_disabled) \
-        .regex(build_or_pattern(season_markers, name='seasonMarker') + r'(?P<season>\d+)@?' +
-               build_or_pattern(episode_markers + disc_markers, name='episodeMarker') + r'@?(?P<episode>\d+)',
-               validate_all=True,
-               validator={'__parent__': seps_before}).repeater('+') \
-        .regex(build_or_pattern(episode_markers + disc_markers + discrete_separators + range_separators,
-                                name='episodeSeparator',
-                                escape=True) +
-               r'(?P<episode>\d+)').repeater('*') \
-        .chain() \
-        .regex(r'(?P<season>\d+)@?' +
-               build_or_pattern(season_ep_markers, name='episodeMarker') +
-               r'@?(?P<episode>\d+)',
-               validate_all=True,
-               validator={'__parent__': seps_before}) \
-        .chain() \
-        .regex(r'(?P<season>\d+)@?' +
-               build_or_pattern(season_ep_markers, name='episodeMarker') +
-               r'@?(?P<episode>\d+)',
-               validate_all=True,
-               validator={'__parent__': seps_before}) \
-        .regex(build_or_pattern(season_ep_markers + discrete_separators + range_separators,
-                                name='episodeSeparator',
-                                escape=True) +
-               r'(?P<episode>\d+)').repeater('*') \
-        .chain() \
-        .regex(build_or_pattern(season_markers, name='seasonMarker') + r'(?P<season>\d+)',
-               validate_all=True,
-               validator={'__parent__': seps_before}) \
-        .regex(build_or_pattern(season_markers + discrete_separators + range_separators,
-                                name='seasonSeparator',
-                                escape=True) +
-               r'(?P<season>\d+)').repeater('*')
-
-    # episode_details property
-    for episode_detail in ('Special', 'Pilot', 'Unaired', 'Final'):
-        rebulk.string(episode_detail, value=episode_detail, name='episode_details',
-                      disabled=lambda context: is_disabled(context, 'episode_details'))
 
     def validate_roman(match):
         """
@@ -206,117 +137,203 @@ def episodes(config):
             return True
         return seps_surround(match)
 
+    season_words = config['season_words']
+    episode_words = config['episode_words']
+    of_words = config['of_words']
+    all_words = config['all_words']
+    season_markers = config['season_markers']
+    season_ep_markers = config['season_ep_markers']
+    disc_markers = config['disc_markers']
+    episode_markers = config['episode_markers']
+    range_separators = config['range_separators']
+    weak_discrete_separators = list(sep for sep in seps_no_fs if sep not in range_separators)
+    strong_discrete_separators = config['discrete_separators']
+    discrete_separators = strong_discrete_separators + weak_discrete_separators
+    episode_max_range = config['episode_max_range']
+    season_max_range = config['season_max_range']
+    max_range_gap = config['max_range_gap']
+
+    rebulk = Rebulk() \
+        .regex_defaults(flags=re.IGNORECASE) \
+        .string_defaults(ignore_case=True) \
+        .chain_defaults(chain_breaker=episodes_season_chain_breaker) \
+        .defaults(private_names=['episodeSeparator', 'seasonSeparator', 'episodeMarker', 'seasonMarker'],
+                  formatter={'season': int, 'episode': int, 'version': int, 'count': int},
+                  children=True,
+                  private_parent=True,
+                  conflict_solver=season_episode_conflict_solver,
+                  abbreviations=[alt_dash])
+
+    # S01E02, 01x02, S01S02S03
+    rebulk.chain(
+        tags=['SxxExx'],
+        validate_all=True,
+        validator={'__parent__': and_(seps_surround, ordering_validator)},
+        disabled=is_season_episode_disabled) \
+        .defaults(tags=['SxxExx']) \
+        .regex(build_or_pattern(season_markers, name='seasonMarker') + r'(?P<season>\d+)@?' +
+               build_or_pattern(episode_markers + disc_markers, name='episodeMarker') + r'@?(?P<episode>\d+)')\
+        .repeater('+') \
+        .regex(build_or_pattern(episode_markers + disc_markers + discrete_separators + range_separators,
+                                name='episodeSeparator',
+                                escape=True) +
+               r'(?P<episode>\d+)').repeater('*')
+
+    rebulk.chain(tags=['SxxExx'],
+                 validate_all=True,
+                 validator={'__parent__': and_(seps_surround, ordering_validator)},
+                 disabled=is_season_episode_disabled) \
+        .defaults(tags=['SxxExx']) \
+        .regex(r'(?P<season>\d+)@?' +
+               build_or_pattern(season_ep_markers, name='episodeMarker') +
+               r'@?(?P<episode>\d+)').repeater('+') \
+
+    rebulk.chain(tags=['SxxExx'],
+                 validate_all=True,
+                 validator={'__parent__': and_(seps_surround, ordering_validator)},
+                 disabled=is_season_episode_disabled) \
+        .defaults(tags=['SxxExx']) \
+        .regex(r'(?P<season>\d+)@?' +
+               build_or_pattern(season_ep_markers, name='episodeMarker') +
+               r'@?(?P<episode>\d+)') \
+        .regex(build_or_pattern(season_ep_markers + discrete_separators + range_separators,
+                                name='episodeSeparator',
+                                escape=True) +
+               r'(?P<episode>\d+)').repeater('*')
+
+    rebulk.chain(tags=['SxxExx'],
+                 validate_all=True,
+                 validator={'__parent__': and_(seps_surround, ordering_validator)},
+                 disabled=is_season_episode_disabled) \
+        .defaults(tags=['SxxExx']) \
+        .regex(build_or_pattern(season_markers, name='seasonMarker') + r'(?P<season>\d+)') \
+        .regex('(?P<other>Extras)', name='other', value='Extras', tags=['no-release-group-prefix']).repeater('?') \
+        .regex(build_or_pattern(season_markers + discrete_separators + range_separators,
+                                name='seasonSeparator',
+                                escape=True) +
+               r'(?P<season>\d+)').repeater('*')
+
+    # episode_details property
+    for episode_detail in ('Special', 'Pilot', 'Unaired', 'Final'):
+        rebulk.string(episode_detail,
+                      private_parent=False,
+                      children=False,
+                      value=episode_detail,
+                      name='episode_details',
+                      disabled=lambda context: is_disabled(context, 'episode_details'))
+
     rebulk.defaults(private_names=['episodeSeparator', 'seasonSeparator', 'episodeMarker', 'seasonMarker'],
-                    validate_all=True, validator={'__parent__': seps_surround}, children=True, private_parent=True,
+                    validate_all=True,
+                    validator={'__parent__': and_(seps_surround, ordering_validator)},
+                    children=True,
+                    private_parent=True,
                     conflict_solver=season_episode_conflict_solver)
 
-    rebulk.chain(abbreviations=[alt_dash],
+    rebulk.chain(validate_all=True,
+                 conflict_solver=season_episode_conflict_solver,
                  formatter={'season': parse_numeral, 'count': parse_numeral},
-                 validator={'__parent__': compose(seps_surround, ordering_validator),
+                 validator={'__parent__': and_(seps_surround, ordering_validator),
                             'season': validate_roman,
                             'count': validate_roman},
                  disabled=lambda context: context.get('type') == 'movie' or is_disabled(context, 'season')) \
-        .defaults(validator=None) \
+        .defaults(formatter={'season': parse_numeral, 'count': parse_numeral},
+                  validator={'season': validate_roman, 'count': validate_roman},
+                  conflict_solver=season_episode_conflict_solver) \
         .regex(build_or_pattern(season_words, name='seasonMarker') + '@?(?P<season>' + numeral + ')') \
         .regex(r'' + build_or_pattern(of_words) + '@?(?P<count>' + numeral + ')').repeater('?') \
         .regex(r'@?' + build_or_pattern(range_separators + discrete_separators + ['@'],
                                         name='seasonSeparator', escape=True) +
                r'@?(?P<season>\d+)').repeater('*')
 
+    rebulk.defaults(abbreviations=[dash])
+
     rebulk.regex(build_or_pattern(episode_words, name='episodeMarker') + r'-?(?P<episode>\d+)' +
                  r'(?:v(?P<version>\d+))?' +
                  r'(?:-?' + build_or_pattern(of_words) + r'-?(?P<count>\d+))?',  # Episode 4
-                 abbreviations=[dash], formatter={'episode': int, 'version': int, 'count': int},
                  disabled=lambda context: context.get('type') == 'episode' or is_disabled(context, 'episode'))
 
     rebulk.regex(build_or_pattern(episode_words, name='episodeMarker') + r'-?(?P<episode>' + numeral + ')' +
                  r'(?:v(?P<version>\d+))?' +
                  r'(?:-?' + build_or_pattern(of_words) + r'-?(?P<count>\d+))?',  # Episode 4
-                 abbreviations=[dash],
                  validator={'episode': validate_roman},
-                 formatter={'episode': parse_numeral, 'version': int, 'count': int},
+                 formatter={'episode': parse_numeral},
                  disabled=lambda context: context.get('type') != 'episode' or is_disabled(context, 'episode'))
 
     rebulk.regex(r'S?(?P<season>\d+)-?(?:xE|Ex|E|x)-?(?P<other>' + build_or_pattern(all_words) + ')',
                  tags=['SxxExx'],
-                 abbreviations=[dash],
-                 validator=None,
-                 formatter={'season': int, 'other': lambda match: 'Complete'},
+                 formatter={'other': lambda match: 'Complete'},
                  disabled=lambda context: is_disabled(context, 'season'))
 
     # 12, 13
-    rebulk.chain(tags=['weak-episode'], formatter={'episode': int, 'version': int},
+    rebulk.chain(tags=['weak-episode'],
                  disabled=lambda context: context.get('type') == 'movie' or is_disabled(context, 'episode')) \
-        .defaults(validator=None) \
+        .defaults(validator=None, tags=['weak-episode']) \
         .regex(r'(?P<episode>\d{2})') \
         .regex(r'v(?P<version>\d+)').repeater('?') \
-        .regex(r'(?P<episodeSeparator>[x-])(?P<episode>\d{2})').repeater('*')
+        .regex(r'(?P<episodeSeparator>[x-])(?P<episode>\d{2})', abbreviations=None).repeater('*')
 
     # 012, 013
-    rebulk.chain(tags=['weak-episode'], formatter={'episode': int, 'version': int},
+    rebulk.chain(tags=['weak-episode'],
                  disabled=lambda context: context.get('type') == 'movie' or is_disabled(context, 'episode')) \
-        .defaults(validator=None) \
+        .defaults(validator=None, tags=['weak-episode']) \
         .regex(r'0(?P<episode>\d{1,2})') \
         .regex(r'v(?P<version>\d+)').repeater('?') \
-        .regex(r'(?P<episodeSeparator>[x-])0(?P<episode>\d{1,2})').repeater('*')
+        .regex(r'(?P<episodeSeparator>[x-])0(?P<episode>\d{1,2})', abbreviations=None).repeater('*')
 
     # 112, 113
     rebulk.chain(tags=['weak-episode'],
-                 formatter={'episode': int, 'version': int},
                  name='weak_episode',
                  disabled=lambda context: context.get('type') == 'movie' or is_disabled(context, 'episode')) \
-        .defaults(validator=None) \
+        .defaults(validator=None, tags=['weak-episode'], name='weak_episode') \
         .regex(r'(?P<episode>\d{3,4})') \
         .regex(r'v(?P<version>\d+)').repeater('?') \
-        .regex(r'(?P<episodeSeparator>[x-])(?P<episode>\d{3,4})').repeater('*')
+        .regex(r'(?P<episodeSeparator>[x-])(?P<episode>\d{3,4})', abbreviations=None).repeater('*')
 
     # 1, 2, 3
-    rebulk.chain(tags=['weak-episode'], formatter={'episode': int, 'version': int},
+    rebulk.chain(tags=['weak-episode'],
                  disabled=lambda context: context.get('type') != 'episode' or is_disabled(context, 'episode')) \
-        .defaults(validator=None) \
+        .defaults(validator=None, tags=['weak-episode']) \
         .regex(r'(?P<episode>\d)') \
         .regex(r'v(?P<version>\d+)').repeater('?') \
-        .regex(r'(?P<episodeSeparator>[x-])(?P<episode>\d{1,2})').repeater('*')
+        .regex(r'(?P<episodeSeparator>[x-])(?P<episode>\d{1,2})', abbreviations=None).repeater('*')
 
     # e112, e113, 1e18, 3e19
-    # TODO: Enhance rebulk for validator to be used globally (season_episode_validator)
-    rebulk.chain(formatter={'season': int, 'episode': int, 'version': int},
-                 disabled=lambda context: is_disabled(context, 'episode')) \
+    rebulk.chain(disabled=lambda context: is_disabled(context, 'episode')) \
         .defaults(validator=None) \
         .regex(r'(?P<season>\d{1,2})?(?P<episodeMarker>e)(?P<episode>\d{1,4})') \
         .regex(r'v(?P<version>\d+)').repeater('?') \
-        .regex(r'(?P<episodeSeparator>e|x|-)(?P<episode>\d{1,4})').repeater('*')
+        .regex(r'(?P<episodeSeparator>e|x|-)(?P<episode>\d{1,4})', abbreviations=None).repeater('*')
 
     # ep 112, ep113, ep112, ep113
-    rebulk.chain(abbreviations=[dash], formatter={'episode': int, 'version': int},
-                 disabled=lambda context: is_disabled(context, 'episode')) \
+    rebulk.chain(disabled=lambda context: is_disabled(context, 'episode')) \
         .defaults(validator=None) \
         .regex(r'ep-?(?P<episode>\d{1,4})') \
         .regex(r'v(?P<version>\d+)').repeater('?') \
-        .regex(r'(?P<episodeSeparator>ep|e|x|-)(?P<episode>\d{1,4})').repeater('*')
+        .regex(r'(?P<episodeSeparator>ep|e|x|-)(?P<episode>\d{1,4})', abbreviations=None).repeater('*')
 
     # cap 112, cap 112_114
-    rebulk.chain(abbreviations=[dash],
-                 tags=['see-pattern'],
-                 formatter={'season': int, 'episode': int},
+    rebulk.chain(tags=['see-pattern'],
                  disabled=is_season_episode_disabled) \
-        .defaults(validator=None) \
+        .defaults(validator=None, tags=['see-pattern']) \
         .regex(r'(?P<seasonMarker>cap)-?(?P<season>\d{1,2})(?P<episode>\d{2})') \
         .regex(r'(?P<episodeSeparator>-)(?P<season>\d{1,2})(?P<episode>\d{2})').repeater('?')
 
     # 102, 0102
     rebulk.chain(tags=['weak-episode', 'weak-duplicate'],
-                 formatter={'season': int, 'episode': int, 'version': int},
                  name='weak_duplicate',
                  conflict_solver=season_episode_conflict_solver,
                  disabled=lambda context: (context.get('episode_prefer_number', False) or
                                            context.get('type') == 'movie') or is_season_episode_disabled(context)) \
-        .defaults(validator=None) \
+        .defaults(tags=['weak-episode', 'weak-duplicate'],
+                  name='weak_duplicate',
+                  validator=None,
+                  conflict_solver=season_episode_conflict_solver) \
         .regex(r'(?P<season>\d{1,2})(?P<episode>\d{2})') \
         .regex(r'v(?P<version>\d+)').repeater('?') \
-        .regex(r'(?P<episodeSeparator>x|-)(?P<episode>\d{2})').repeater('*')
+        .regex(r'(?P<episodeSeparator>x|-)(?P<episode>\d{2})', abbreviations=None).repeater('*')
 
-    rebulk.regex(r'v(?P<version>\d+)', children=True, private_parent=True, formatter=int,
+    rebulk.regex(r'v(?P<version>\d+)',
+                 formatter=int,
                  disabled=lambda context: is_disabled(context, 'version'))
 
     rebulk.defaults(private_names=['episodeSeparator', 'seasonSeparator'])
@@ -325,18 +342,23 @@ def episodes(config):
     # detached of X count (season/episode)
     rebulk.regex(r'(?P<episode>\d+)-?' + build_or_pattern(of_words) +
                  r'-?(?P<count>\d+)-?' + build_or_pattern(episode_words) + '?',
-                 abbreviations=[dash], children=True, private_parent=True, formatter=int,
+                 formatter=int,
+                 pre_match_processor=match_processors.strip,
                  disabled=lambda context: is_disabled(context, 'episode'))
 
-    rebulk.regex(r'Minisodes?', name='episode_format', value="Minisode",
+    rebulk.regex(r'Minisodes?',
+                 children=False,
+                 private_parent=False,
+                 name='episode_format',
+                 value="Minisode",
                  disabled=lambda context: is_disabled(context, 'episode_format'))
 
     rebulk.rules(WeakConflictSolver, RemoveInvalidSeason, RemoveInvalidEpisode,
                  SeePatternRange(range_separators + ['_']),
                  EpisodeNumberSeparatorRange(range_separators),
-                 SeasonSeparatorRange(range_separators), RemoveWeakIfMovie, RemoveWeakIfSxxExx,
-                 RemoveWeakDuplicate, EpisodeDetailValidator, RemoveDetachedEpisodeNumber, VersionValidator,
-                 RemoveWeak, RenameToAbsoluteEpisode, CountValidator, EpisodeSingleDigitValidator, RenameToDiscMatch)
+                 SeasonSeparatorRange(range_separators), RemoveWeakIfMovie, RemoveWeakIfSxxExx, RemoveWeakDuplicate,
+                 EpisodeDetailValidator, RemoveDetachedEpisodeNumber, VersionValidator, RemoveWeak(episode_words),
+                 RenameToAbsoluteEpisode, CountValidator, EpisodeSingleDigitValidator, RenameToDiscMatch)
 
     return rebulk
 
@@ -416,7 +438,9 @@ class WeakConflictSolver(Rule):
                 if to_append:
                     to_remove.extend(weak_dup_matches)
 
-        return to_remove, to_append
+        if to_remove or to_append:
+            return to_remove, to_append
+        return False
 
 
 class CountValidator(Rule):
@@ -442,7 +466,9 @@ class CountValidator(Rule):
                     season_count.append(count)
             else:
                 to_remove.append(count)
-        return to_remove, episode_count, season_count
+        if to_remove or episode_count or season_count:
+            return to_remove, episode_count, season_count
+        return False
 
 
 class SeePatternRange(Rule):
@@ -477,7 +503,9 @@ class SeePatternRange(Rule):
 
             to_remove.append(separator)
 
-        return to_remove, to_append
+        if to_remove or to_append:
+            return to_remove, to_append
+        return False
 
 
 class AbstractSeparatorRange(Rule):
@@ -533,7 +561,9 @@ class AbstractSeparatorRange(Rule):
 
             previous_match = next_match
 
-        return to_remove, to_append
+        if to_remove or to_append:
+            return to_remove, to_append
+        return False
 
 
 class RenameToAbsoluteEpisode(Rule):
@@ -631,29 +661,39 @@ class RemoveWeak(Rule):
     priority = 16
     consequence = RemoveMatch, AppendMatch
 
+    def __init__(self, episode_words):
+        super(RemoveWeak, self).__init__()
+        self.episode_words = episode_words
+
     def when(self, matches, context):
         to_remove = []
         to_append = []
         for filepart in matches.markers.named('path'):
             weaks = matches.range(filepart.start, filepart.end, predicate=lambda m: 'weak-episode' in m.tags)
             if weaks:
-                previous = matches.previous(weaks[0], predicate=lambda m: m.name in (
+                weak = weaks[0]
+                previous = matches.previous(weak, predicate=lambda m: m.name in (
                     'audio_codec', 'screen_size', 'streaming_service', 'source', 'video_profile',
                     'audio_channels', 'audio_profile'), index=0)
                 if previous and not matches.holes(
-                        previous.end, weaks[0].start, predicate=lambda m: m.raw.strip(seps)):
-                    if previous.raw.lower() == 'ep':
-                        episode = copy.copy(weaks[0])
-                        episode.name = 'episode'
-                        episode.value = int(weaks[0].value)
-                        episode.start = previous.start
-                        episode.private = False
-                        episode.tags = []
+                        previous.end, weak.start, predicate=lambda m: m.raw.strip(seps)):
+                    if previous.raw.lower() in self.episode_words:
+                        try:
+                            episode = copy.copy(weak)
+                            episode.name = 'episode'
+                            episode.value = int(weak.value)
+                            episode.start = previous.start
+                            episode.private = False
+                            episode.tags = []
 
-                        to_append.append(episode)
+                            to_append.append(episode)
+                        except ValueError:
+                            pass
 
                     to_remove.extend(weaks)
-        return to_remove, to_append
+        if to_remove or to_append:
+            return to_remove, to_append
+        return False
 
 
 class RemoveWeakIfSxxExx(Rule):
@@ -867,4 +907,6 @@ class RenameToDiscMatch(Rule):
             markers.append(marker)
             discs.extend(sorted(marker.initiator.children.named('episode'), key=lambda m: m.value))
 
-        return discs, markers, to_remove
+        if discs or markers or to_remove:
+            return discs, markers, to_remove
+        return False

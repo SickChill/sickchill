@@ -12,9 +12,18 @@ __contact__ = "Philip.Kershaw@stfc.ac.uk"
 __revision__ = '$Id$'
 import logging
 import socket
-from httplib import HTTPS_PORT
-from httplib import HTTPConnection
-from urllib2 import AbstractHTTPHandler
+import sys
+
+if sys.version_info[0] > 2:
+    from http.client import HTTPS_PORT
+    from http.client import HTTPConnection
+
+    from urllib.request import AbstractHTTPHandler
+else:
+    from httplib import HTTPS_PORT
+    from httplib import HTTPConnection
+
+    from urllib2 import AbstractHTTPHandler
 
 
 from OpenSSL import SSL
@@ -39,7 +48,7 @@ class HTTPSConnection(HTTPConnection):
     @type default_ssl_method: int
     """
     default_port = HTTPS_PORT
-    default_ssl_method = SSL.SSLv23_METHOD
+    default_ssl_method = SSL.TLSv1_2_METHOD
     
     def __init__(self, host, port=None, strict=None,
                  timeout=socket._GLOBAL_DEFAULT_TIMEOUT, ssl_context=None):
@@ -69,7 +78,7 @@ class HTTPSConnection(HTTPConnection):
 
         sock = socket.create_connection((self.host, self.port), self.timeout)
         
-        # Tunnel if using a proxy - ONLY available for Python 2.6.2 and above      
+        # Tunnel if using a proxy - ONLY available for Python 2.6.2 and above
         if getattr(self, '_tunnel_host', None):
             self.sock = sock
             self._tunnel()
@@ -81,7 +90,8 @@ class HTTPSConnection(HTTPConnection):
 
     def close(self):
         """Close socket and shut down SSL connection"""
-        self.sock.close()
+        if hasattr(self.sock, "close"):
+            self.sock.close()
         
         
 class HTTPSContextHandler(AbstractHTTPHandler):
@@ -90,6 +100,8 @@ class HTTPSContextHandler(AbstractHTTPHandler):
     '''
     https_request = AbstractHTTPHandler.do_request_
 
+    SSL_METHOD = SSL.TLSv1_2_METHOD
+    
     def __init__(self, ssl_context, debuglevel=0):
         """
         @param ssl_context:SSL context
@@ -106,7 +118,7 @@ class HTTPSContextHandler(AbstractHTTPHandler):
                                 ssl_context)
             self.ssl_context = ssl_context
         else:
-            self.ssl_context = SSL.Context(SSL.SSLv23_METHOD)
+            self.ssl_context = SSL.Context(self.__class__.SSL_METHOD)
 
     def https_open(self, req):
         """Opens HTTPS request

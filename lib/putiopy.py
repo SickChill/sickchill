@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import division
 import os
+import io
 import json
 import logging
 import binascii
 import webbrowser
+import pkg_resources
 try:
     from urllib import urlencode
 except ImportError:
@@ -15,7 +20,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
-__version__ = '6.1.0'
+__version__ = pkg_resources.get_distribution('putio.py').version
 
 KB = 1024
 MB = 1024 * KB
@@ -48,10 +53,10 @@ def _set_domain(domain='put.io', scheme='https'):
 
     BASE_URL = api_base
     UPLOAD_URL = upload_base + '/v2/files/upload'
-    TUS_UPLOAD_URL = upload_base + '/files'
+    TUS_UPLOAD_URL = upload_base + '/files/'
     ACCESS_TOKEN_URL = api_base + '/oauth2/access_token'
     AUTHENTICATION_URL = api_base + '/oauth2/authenticate'
-    AUTHORIZATION_URL = api_base + '/oauth2/authorizations/clients/{client_id}'
+    AUTHORIZATION_URL = api_base + '/oauth2/authorizations/clients/{client_id}/{fingerprint}'
 
 
 _set_domain()
@@ -131,21 +136,29 @@ class AuthHelper(object):
         return _process_response(response)['access_token']
 
 
-def create_access_token(client_id, client_secret, user, password):
-    url = AUTHORIZATION_URL.format(client_id=client_id)
+def create_access_token(client_id, client_secret, user, password, fingerprint=''):
+    url = AUTHORIZATION_URL.format(client_id=client_id, fingerprint=fingerprint)
     data = {'client_secret': client_secret}
     auth = (user, password)
     response = requests.put(url, data=data, auth=auth)
     return _process_response(response)['access_token']
 
 
+def revoke_access_token(access_token):
+    url = BASE_URL + '/oauth/grants/logout'
+    headers = {'Authorization': 'token %s' % access_token}
+    response = requests.post(url, headers=headers)
+    _process_response(response)
+
+
 class Client(object):
 
-    def __init__(self, access_token, use_retry=False, extra_headers=None):
+    def __init__(self, access_token, use_retry=False, extra_headers=None, timeout=5):
         self.access_token = access_token
         self.session = requests.session()
         self.session.headers['User-Agent'] = 'putio.py/%s' % __version__
         self.session.headers['Accept'] = 'application/json'
+        self.timeout = timeout
         if extra_headers:
             self.session.headers.update(extra_headers)
 
@@ -173,7 +186,8 @@ class Client(object):
         self.session.close()
 
     def request(self, path, method='GET', params=None, data=None, files=None,
-                headers=None, raw=False, allow_redirects=True, stream=False):
+                headers=None, raw=False, allow_redirects=True, stream=False,
+                timeout=None):
         """
         Wrapper around requests.request()
 
@@ -184,6 +198,9 @@ class Client(object):
         """
         if not headers:
             headers = {}
+
+        if timeout is None:
+            timeout = self.timeout
 
         # All requests must include oauth_token
         headers['Authorization'] = 'token %s' % self.access_token
@@ -196,7 +213,8 @@ class Client(object):
 
         response = self.session.request(
             method, url, params=params, data=data, files=files,
-            headers=headers, allow_redirects=allow_redirects, stream=stream)
+            headers=headers, allow_redirects=allow_redirects, stream=stream,
+            timeout=self.timeout)
         logger.debug('response: %s', response)
         if raw:
             return response
@@ -218,7 +236,7 @@ def _process_response(response):
     try:
         exception_class = exception_classes[http_error_type]
     except KeyError:
-        raise ServerError(response, 'InvalidStatusCode', str(response.status_code))
+        raise ServerError(response, 'UnknownStatusCode', str(response.status_code))
 
     if exception_class:
         try:
@@ -280,14 +298,42 @@ class _File(_BaseResource):
         return cls(t)
 
     @classmethod
-    def list(cls, parent_id=0):
-        d = cls.client.request('/files/list', params={'parent_id': parent_id})
+    def list(cls, parent_id=0, per_page=1000, sort_by=None, content_type=None,
+             file_type=None, stream_url=False, stream_url_parent=False, mp4_stream_url=False,
+             mp4_stream_url_parent=False, hidden=False, mp4_status=False):
+        """ List files and their properties.
+
+         parent_id List files under a folder. If not specified, it will show files listed at the root folder
+
+         """
+        params = {
+                'parent_id': parent_id,
+                'per_page': str(per_page),
+                'sort_by': sort_by or '',
+                'content_type': content_type or '',
+                'file_type': file_type or '',
+                'stream_url': str(stream_url),
+                'stream_url_parent': str(stream_url_parent),
+                'mp4_stream_url':  str(mp4_stream_url),
+                'mp4_stream_url_parent': str(mp4_stream_url_parent),
+                'hidden': str(hidden),
+                'mp4_status':  str(mp4_status),
+        }
+        d = cls.client.request('/files/list', params=params)
         files = d['files']
+        while d['cursor']:
+            d = cls.client.request('/files/list/continue', method='POST', data={'cursor': d['cursor']})
+            files.extend(d['files'])
+
         return [cls(f) for f in files]
 
     @classmethod
     def upload(cls, path, name=None, parent_id=0):
-        with open(path) as f:
+        """ If the uploaded file is a torrent file, starts it as a transfer. This endpoint must be used with upload.put.io domain.
+        name: override the file name
+        parent_id: where to put the file
+        """
+        with io.open(path, 'rb') as f:
             if name:
                 files = {'file': (name, f)}
             else:
@@ -307,8 +353,22 @@ class _File(_BaseResource):
         metadata = {'parent_id': str(parent_id)}
         if name:
             metadata['name'] = name
-        with open(path) as f:
+        else:
+            metadata['name'] = os.path.basename(path)
+        with io.open(path, 'rb') as f:
             tus.upload(f, TUS_UPLOAD_URL, file_name=name, headers=headers, metadata=metadata)
+
+    @classmethod
+    def search(cls, query, per_page=100):
+        """
+        Search makes a search request with the given query
+        query: The keyword to search
+        per_page: Number of files to be returned in response.
+        """
+        path = '/files/search'
+        result = cls.client.request(path, params={'query': query, 'per_page': per_page})
+        files = result['files']
+        return [cls(f) for f in files]
 
     def dir(self):
         """List the files under directory."""
@@ -341,7 +401,7 @@ class _File(_BaseResource):
             return False
 
         crcbin = 0
-        with open(filepath, 'rb') as f:
+        with io.open(filepath, 'rb') as f:
             while True:
                 chunk = f.read(CHUNK_SIZE)
                 if not chunk:
@@ -375,15 +435,22 @@ class _File(_BaseResource):
 
         if self.size == 0:
             # Create an empty file
-            open(filepath, 'w').close()
+            io.open(filepath, 'wb').close()
             logger.debug('created empty file %s' % filepath)
         else:
             if first_byte < self.size:
-                with open(filepath, 'ab') as f:
+                with io.open(filepath, 'ab') as f:
                     headers = {'Range': 'bytes=%d-' % first_byte}
 
                     logger.debug('request range: bytes=%d-' % first_byte)
-                    response = self.client.request('/files/%s/download' % self.id,
+                    path = '/files/%d/url' % self.id
+                    response = self.client.request(path, raw=True)
+                    if str(response.status_code)[0] != '2':
+                        # Raises exception on 4xx and 5xx
+                        _process_response(response)
+                    
+                    download_link = str(response.json().get('url'))
+                    response = self.client.request(download_link,
                                                    headers=headers,
                                                    raw=True,
                                                    stream=True)
@@ -399,14 +466,15 @@ class _File(_BaseResource):
             if delete_after_download:
                 self.delete()
 
-    def convert_to_mp4(self):
-        path = '/files/%d/mp4' % self.id
-        self.client.request(path, method='POST')
+    def _get_link(self, path, params):
+        response = self.client.request(path, method='HEAD', params=params, raw=True, allow_redirects=False)
+        if str(response.status_code)[0] == '2':
+            return response.url
+        elif response.status_code == 302:
+            return response.headers['Location']
 
-    def get_mp4_status(self):
-        path = '/files/%d/mp4' % self.id
-        response = self.client.request(path)
-        return response['mp4']
+        # Raises exception on 4xx and 5xx
+        _process_response(response)
 
     def get_stream_link(self, tunnel=True, prefer_mp4=False):
         if prefer_mp4 and self.get_mp4_status()['status'] == 'COMPLETED':
@@ -418,14 +486,22 @@ class _File(_BaseResource):
         if not tunnel:
             params['notunnel'] = '1'
 
-        response = self.client.request(path, method='HEAD', params=params, raw=True, allow_redirects=False)
-        if str(response.status_code)[0] == '2':
-            return response.url
-        elif response.status_code == 302:
-            return response.headers['Location']
+        return self._get_link(path, params)
 
-        # Raises exception on 4xx and 5xx
-        _process_response(response)
+    def get_download_link(self):
+        path = '/files/%d/download' % self.id
+        params = {}
+
+        return self._get_link(path, params)
+
+    def convert_to_mp4(self):
+        path = '/files/%d/mp4' % self.id
+        self.client.request(path, method='POST')
+
+    def get_mp4_status(self):
+        path = '/files/%d/mp4' % self.id
+        response = self.client.request(path)
+        return response['mp4']
 
     def get_subtitles(cls):
         path = '/files/%d/subtitles' % cls.id
@@ -467,18 +543,23 @@ class _Transfer(_BaseResource):
 
     @classmethod
     def list(cls):
+        """ List all transfers """
+
         d = cls.client.request('/transfers/list')
         transfers = d['transfers']
         return [cls(t) for t in transfers]
 
     @classmethod
     def get(cls, id):
+        """ Get transfer details """
         d = cls.client.request('/transfers/%i' % id, method='GET')
         t = d['transfer']
         return cls(t)
 
     @classmethod
     def add_url(cls, url, parent_id=0, callback_url=None):
+        """ Add new transfer from URI"""
+
         data = {'url': url, 'save_parent_id': parent_id}
         if callback_url:
             data['callback_url'] = callback_url
@@ -488,21 +569,26 @@ class _Transfer(_BaseResource):
 
     @classmethod
     def add_torrent(cls, path, parent_id=0, callback_url=None):
+        params = {'torrent': 'true'}
         data = {'parent_id': parent_id}
         if callback_url:
             data['callback_url'] = callback_url
 
-        with open(path) as f:
+        with io.open(path, 'rb') as f:
             files = {'file': f}
-            d = cls.client.request(UPLOAD_URL, method='POST', data=data, files=files)
+            d = cls.client.request(UPLOAD_URL, method='POST', params=params, data=data, files=files)
 
         return cls(d['transfer'])
 
     @classmethod
     def clean(cls):
+        """ Clean finished transfers"""
+
         return cls.client.request('/transfers/clean', method='POST')
 
     def cancel(self):
+        """ Cancel or remove  transfers"""
+
         return self.client.request('/transfers/cancel',
                                    method='POST',
                                    data={'transfer_ids': self.id})
@@ -518,10 +604,12 @@ class _Account(_BaseResource):
 
     @classmethod
     def info(cls):
+        """ Get Account info"""
         return cls.client.request('/account/info', method='GET')
 
     @classmethod
     def settings(cls):
+        """ Get account settings"""
         return cls.client.request('/account/settings', method='GET')
 
 
@@ -549,7 +637,7 @@ class _Subtitle(_BaseResource):
         filepath = os.path.join(dest, name)
         logger.info('downloading subtitle file to: %s', filepath)
         response = self.client.request(path, method='GET', raw=True)
-        with open(filepath, 'w') as f:
+        with io.open(filepath, 'wb') as f:
             f.write(response.content)
 
         return filepath
@@ -569,7 +657,8 @@ def strptime(date):
         'second': date[17:],
     }
 
-    d = dict((k, int(v)) for k, v in d.iteritems())
+    d = dict((k, int(v)) for k, v in d.items())
+
     return datetime(**d)
 
 
