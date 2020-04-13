@@ -1,4 +1,4 @@
-Metadata-Version: 2.0
+Metadata-Version: 2.1
 Name: validators
 Version: 0.14.2
 Summary: Python Data Validation for Humans™.
@@ -23,13 +23,12 @@ Classifier: Programming Language :: Python :: Implementation :: CPython
 Classifier: Programming Language :: Python :: Implementation :: PyPy
 Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
 Classifier: Topic :: Software Development :: Libraries :: Python Modules
-Provides-Extra: test
-Requires-Dist: decorator (>=3.4.0)
 Requires-Dist: six (>=1.4.0)
+Requires-Dist: decorator (>=3.4.0)
 Provides-Extra: test
-Requires-Dist: flake8 (>=2.4.0); extra == 'test'
-Requires-Dist: isort (>=4.2.2); extra == 'test'
-Requires-Dist: pytest (>=2.2.3); extra == 'test'
+Requires-Dist: pytest (>=2.2.3) ; extra == 'test'
+Requires-Dist: flake8 (>=2.4.0) ; extra == 'test'
+Requires-Dist: isort (>=4.2.2) ; extra == 'test'
 
 validators
 ----------

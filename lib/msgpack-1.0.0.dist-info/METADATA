@@ -1,4 +1,4 @@
-Metadata-Version: 2.0
+Metadata-Version: 2.1
 Name: msgpack
 Version: 1.0.0
 Summary: MessagePack (de)serializer.

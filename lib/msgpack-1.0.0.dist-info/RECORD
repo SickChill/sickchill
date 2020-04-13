@@ -1,9 +1,8 @@
-msgpack-1.0.0.dist-info/DESCRIPTION.rst,sha256=ClKPAeX5__DOLCFM6idiZ7KqmF5wOg9v3ltBLi1Tx3s,8347
+msgpack-1.0.0.dist-info/COPYING,sha256=SS3tuoXaWHL3jmCRvNH-pHTWYNNay03ulkuKqz8AdCc,614
 msgpack-1.0.0.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
-msgpack-1.0.0.dist-info/METADATA,sha256=JBdcBN5aoJFU5PD8EwVMZvFfKQ0wXt85eKT5sy4iBVI,9398
+msgpack-1.0.0.dist-info/METADATA,sha256=QYHiDMFKVOSw8ZklF2xtx4nUSY7gYSfC1MEgNE8BbwY,9398
 msgpack-1.0.0.dist-info/RECORD,,
-msgpack-1.0.0.dist-info/WHEEL,sha256=bee59qcPjkyXfMaxNWjl2CGotqfumWx9pC1hlVLr2mM,92
-msgpack-1.0.0.dist-info/metadata.json,sha256=SflhNhb5KIQwdcLt1hx7IaFSKZzpHiiiUByvQOdGpWA,1027
+msgpack-1.0.0.dist-info/WHEEL,sha256=rhIUU3k_gV2iCypONLq-yw8hAvGuX-BoDgL_ovBiHW0,93
 msgpack-1.0.0.dist-info/top_level.txt,sha256=2tykSY1pXdiA2xYTDR6jPw0qI5ZGxRihyhf4S5hZyXk,8
 msgpack/__init__.py,sha256=2gJwcsTIaAtCM0GMi2rU-_Y6kILeeQuqRkrQ22jSANc,1118
 msgpack/__init__.pyc,,

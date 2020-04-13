@@ -1,9 +1,9 @@
-PyGithub-1.45.dist-info/DESCRIPTION.rst,sha256=TsmuzZuaXOUBtT6ppVjpk3PZYUK43hNCNxbbKWrF_oI,479
+PyGithub-1.45.dist-info/COPYING,sha256=jOtLnuWt7d5Hsx6XXB2QxzrSe2sWWh3NgMfFRetluQM,35147
+PyGithub-1.45.dist-info/COPYING.LESSER,sha256=2n6rt7r999OuXp8iOqW9we7ORaxWncIbOwN1ILRGR2g,7651
 PyGithub-1.45.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
-PyGithub-1.45.dist-info/METADATA,sha256=MOHXkN1yAewX5vaO2U8AQF4If5YrQhp8DmibLfxlcao,1713
+PyGithub-1.45.dist-info/METADATA,sha256=ghlOPFyP5ghw19jet32oB0IaNADa5UEJ3sfT3E53Sw8,1685
 PyGithub-1.45.dist-info/RECORD,,
-PyGithub-1.45.dist-info/WHEEL,sha256=bee59qcPjkyXfMaxNWjl2CGotqfumWx9pC1hlVLr2mM,92
-PyGithub-1.45.dist-info/metadata.json,sha256=X3bv-tWxlaCrtPP1m1mFRKm6_0AReC-0Dklq9EIQMx4,1373
+PyGithub-1.45.dist-info/WHEEL,sha256=rhIUU3k_gV2iCypONLq-yw8hAvGuX-BoDgL_ovBiHW0,93
 PyGithub-1.45.dist-info/top_level.txt,sha256=X_Dn8Q-zPGudQV37mRBM5uHhwhEsv4x1AeAuB1dfEls,7
 github/AuthenticatedUser.py,sha256=RXvnaRttt6X8IOsaVXzk7lR3i4hzP0YPEshYuVYnrFU,57278
 github/AuthenticatedUser.pyc,,

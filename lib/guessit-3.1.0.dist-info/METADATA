@@ -1,4 +1,4 @@
-Metadata-Version: 2.0
+Metadata-Version: 2.1
 Name: guessit
 Version: 3.1.0
 Summary: GuessIt - a library for guessing information from video filenames.
@@ -22,22 +22,20 @@ Classifier: Programming Language :: Python :: 3.6
 Classifier: Programming Language :: Python :: 3.7
 Classifier: Topic :: Multimedia
 Classifier: Topic :: Software Development :: Libraries :: Python Modules
-Provides-Extra: test
-Provides-Extra: dev
+Requires-Dist: rebulk (==2.*)
 Requires-Dist: babelfish
 Requires-Dist: python-dateutil
-Requires-Dist: rebulk (==2.*)
 Requires-Dist: six
 Provides-Extra: dev
-Requires-Dist: pylint; extra == 'dev'
-Requires-Dist: sphinx; extra == 'dev'
-Requires-Dist: sphinx-autobuild; extra == 'dev'
-Requires-Dist: tox; extra == 'dev'
-Requires-Dist: zest.releaser[recommended]; extra == 'dev'
+Requires-Dist: zest.releaser[recommended] ; extra == 'dev'
+Requires-Dist: pylint ; extra == 'dev'
+Requires-Dist: tox ; extra == 'dev'
+Requires-Dist: sphinx ; extra == 'dev'
+Requires-Dist: sphinx-autobuild ; extra == 'dev'
 Provides-Extra: test
-Requires-Dist: PyYAML; extra == 'test'
-Requires-Dist: pytest (>=3.3); extra == 'test'
-Requires-Dist: pytest-benchmark; extra == 'test'
+Requires-Dist: pytest (>=3.3) ; extra == 'test'
+Requires-Dist: pytest-benchmark ; extra == 'test'
+Requires-Dist: PyYAML ; extra == 'test'
 
 GuessIt
 =======

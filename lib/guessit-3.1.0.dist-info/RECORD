@@ -1,11 +1,11 @@
-../../bin/guessit,sha256=eRH-WkX0k4m_KuANLxRnnZhfBA9P8iEut_uJ9QOABZg,215
-guessit-3.1.0.dist-info/DESCRIPTION.rst,sha256=4-7F_-4KuIAaFvgo3hnXtJE5pVquKRKyMpYRiPnm-Kc,24248
+../../bin/guessit,sha256=AaTtAP1O6PCNd1b2Nsz0rmWuOzaTMbp0Fc6UjYG9JfQ,250
+guessit-3.1.0.dist-info/AUTHORS.rst,sha256=e2oKGGR6OA11pAyAf0CgyCzpn2AuDQm2Ye0A06ed3sI,534
 guessit-3.1.0.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
-guessit-3.1.0.dist-info/METADATA,sha256=fYwVipyrSQiazdWJbT-QXgSVllEoC4Y9UdkiDQqOo6E,25903
+guessit-3.1.0.dist-info/LICENSE,sha256=6or154nLLU6bELzjh0mCreFjt0m2v72zLi3yHE0QbeE,7650
+guessit-3.1.0.dist-info/METADATA,sha256=g6VJPsWP1fldr6EgBAF7elCBpC4e8-aND_4_7fjQmnQ,25870
 guessit-3.1.0.dist-info/RECORD,,
-guessit-3.1.0.dist-info/WHEEL,sha256=bee59qcPjkyXfMaxNWjl2CGotqfumWx9pC1hlVLr2mM,92
+guessit-3.1.0.dist-info/WHEEL,sha256=rhIUU3k_gV2iCypONLq-yw8hAvGuX-BoDgL_ovBiHW0,93
 guessit-3.1.0.dist-info/entry_points.txt,sha256=8YE9FLMQjwgkRm9AAXEVQksZ0bP-rPG9dqqF_TSC9S0,51
-guessit-3.1.0.dist-info/metadata.json,sha256=j29rcVjbtAG9oE0eYxL7YPpPtFcY1bCHt4e2OB1bPxE,1788
 guessit-3.1.0.dist-info/top_level.txt,sha256=VXrxhYsS5fHWY-GfzrQYnsL1u_zplTpwxe7eOdfFQAU,8
 guessit-3.1.0.dist-info/zip-safe,sha256=AbpHGcgLb-kRsJGnwFEktk7uzpZOCcBY74-YBdrKVGs,1
 guessit/__init__.py,sha256=muM1TZ8H9JGjFJWiuz0L6fpMJTQ13DK0htFU0w8LQlg,351

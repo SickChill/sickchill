@@ -1,4 +1,4 @@
-Metadata-Version: 2.0
+Metadata-Version: 2.1
 Name: putio.py
 Version: 8.6.2
 Summary: Python client for put.io API v2
@@ -12,8 +12,8 @@ Classifier: Programming Language :: Python :: 3
 Classifier: Programming Language :: Python :: 3.5
 Classifier: License :: OSI Approved :: MIT License
 Requires-Dist: requests
-Requires-Dist: six
 Requires-Dist: tus.py
+Requires-Dist: six
 
 UNKNOWN
 

@@ -1,11 +1,9 @@
 _version.py,sha256=Kp7sR4cODRPi7lBgDu-q0bdVhI9y2SJ5O0SyDpUJuXE,21
 _version.pyc,,
-configobj-5.0.6.dist-info/DESCRIPTION.rst,sha256=H3C2UrUWFYsEGKmQJQznVdyttOH9RVS_GuKGSauZx3s,1603
 configobj-5.0.6.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
-configobj-5.0.6.dist-info/METADATA,sha256=5Sx4-krdtoy2UIUHwEatc3PYDQml_9LqruneWq7l2SI,2746
+configobj-5.0.6.dist-info/METADATA,sha256=bNPf3aYtFdjDcciWNY3Bw6hOJ72yFfEUWm_y4ikT4bg,2746
 configobj-5.0.6.dist-info/RECORD,,
-configobj-5.0.6.dist-info/WHEEL,sha256=bee59qcPjkyXfMaxNWjl2CGotqfumWx9pC1hlVLr2mM,92
-configobj-5.0.6.dist-info/metadata.json,sha256=ikGcSyRrNUKx-tKfHFihgAo_4U0jCE7PNpYs2B_ZA9o,1271
+configobj-5.0.6.dist-info/WHEEL,sha256=rhIUU3k_gV2iCypONLq-yw8hAvGuX-BoDgL_ovBiHW0,93
 configobj-5.0.6.dist-info/top_level.txt,sha256=71JM8Cly0jMKph1dtL-OA_SxNE6cKmAj0iULBkdsAVg,28
 configobj.py,sha256=zAA280S1KS6NBlWBK6KoN_Q2gkW1LV2wXgqcUxo07hU,89627
 configobj.pyc,,

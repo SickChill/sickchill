@@ -1,4 +1,4 @@
-Metadata-Version: 2.0
+Metadata-Version: 2.1
 Name: SQLAlchemy
 Version: 1.3.16
 Summary: Database Abstraction Library
@@ -27,36 +27,26 @@ Classifier: Programming Language :: Python :: Implementation :: PyPy
 Classifier: Topic :: Database :: Front-Ends
 Classifier: Operating System :: OS Independent
 Requires-Python: >=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*
-Provides-Extra: postgresql_pg8000
-Provides-Extra: postgresql
-Provides-Extra: postgresql_psycopg2cffi
-Provides-Extra: pymysql
-Provides-Extra: mssql_pymssql
-Provides-Extra: postgresql_psycopg2binary
-Provides-Extra: mysql
-Provides-Extra: oracle
 Provides-Extra: mssql
-Provides-Extra: mssql_pyodbc
-Provides-Extra: mssql
-Requires-Dist: pyodbc; extra == 'mssql'
+Requires-Dist: pyodbc ; extra == 'mssql'
 Provides-Extra: mssql_pymssql
-Requires-Dist: pymssql; extra == 'mssql_pymssql'
+Requires-Dist: pymssql ; extra == 'mssql_pymssql'
 Provides-Extra: mssql_pyodbc
-Requires-Dist: pyodbc; extra == 'mssql_pyodbc'
+Requires-Dist: pyodbc ; extra == 'mssql_pyodbc'
 Provides-Extra: mysql
-Requires-Dist: mysqlclient; extra == 'mysql'
+Requires-Dist: mysqlclient ; extra == 'mysql'
 Provides-Extra: oracle
-Requires-Dist: cx-oracle; extra == 'oracle'
+Requires-Dist: cx-oracle ; extra == 'oracle'
 Provides-Extra: postgresql
-Requires-Dist: psycopg2; extra == 'postgresql'
+Requires-Dist: psycopg2 ; extra == 'postgresql'
 Provides-Extra: postgresql_pg8000
-Requires-Dist: pg8000; extra == 'postgresql_pg8000'
+Requires-Dist: pg8000 ; extra == 'postgresql_pg8000'
 Provides-Extra: postgresql_psycopg2binary
-Requires-Dist: psycopg2-binary; extra == 'postgresql_psycopg2binary'
+Requires-Dist: psycopg2-binary ; extra == 'postgresql_psycopg2binary'
 Provides-Extra: postgresql_psycopg2cffi
-Requires-Dist: psycopg2cffi; extra == 'postgresql_psycopg2cffi'
+Requires-Dist: psycopg2cffi ; extra == 'postgresql_psycopg2cffi'
 Provides-Extra: pymysql
-Requires-Dist: pymysql; extra == 'pymysql'
+Requires-Dist: pymysql ; extra == 'pymysql'
 
 SQLAlchemy
 ==========

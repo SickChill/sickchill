@@ -1,11 +1,9 @@
-../../bin/srt,sha256=MdMH_o_TlW9szsMraqDWsbOI9HzuFUtibszrGKr0Ugs,213
-pysrt-1.1.2.dist-info/DESCRIPTION.rst,sha256=wurj9OhkRW5TJQO4rOUbfW9QxJR4pOQaolzFvRv1ZSs,2418
+../../bin/srt,sha256=5NC35esYuAfpSwdcLS96bAy1gd1bvQqgt7AQrk2YwSM,248
 pysrt-1.1.2.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
-pysrt-1.1.2.dist-info/METADATA,sha256=mEqYDaAy08padt95IGfannO-AQ3HK6y8bu7IYeXBubo,3314
+pysrt-1.1.2.dist-info/METADATA,sha256=ektxfJ_SGLqNeA8cgc1jFS-0Jd2GMA4c-nwzRH5XlnA,3314
 pysrt-1.1.2.dist-info/RECORD,,
-pysrt-1.1.2.dist-info/WHEEL,sha256=bee59qcPjkyXfMaxNWjl2CGotqfumWx9pC1hlVLr2mM,92
+pysrt-1.1.2.dist-info/WHEEL,sha256=rhIUU3k_gV2iCypONLq-yw8hAvGuX-BoDgL_ovBiHW0,93
 pysrt-1.1.2.dist-info/entry_points.txt,sha256=Ze8RB_MniL-vBpUqtjp4qeMuP_IQkyplgMJt6jtmHV8,45
-pysrt-1.1.2.dist-info/metadata.json,sha256=tHmnvYk6u-sFKEm5_axJJMvdAES0clQd4xzVV3-iQgc,1203
 pysrt-1.1.2.dist-info/top_level.txt,sha256=A50x279xb8-j59bZ6AKUIYW7v5OECmpkKMKJLBtFgTc,6
 pysrt/__init__.py,sha256=hR58_n9HAwsjk_ozaiCkXS-MKWuQMqQfGfm2-AJSIJo,560
 pysrt/__init__.pyc,,

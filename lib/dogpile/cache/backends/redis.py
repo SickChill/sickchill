@@ -7,12 +7,15 @@ Provides backends for talking to `Redis <http://redis.io>`_.
 """
 
 from __future__ import absolute_import
-from dogpile.cache.api import CacheBackend, NO_VALUE
-from dogpile.cache.compat import pickle, u
+
+from ..api import CacheBackend
+from ..api import NO_VALUE
+from ...util.compat import pickle
+from ...util.compat import u
 
 redis = None
 
-__all__ = 'RedisBackend',
+__all__ = ("RedisBackend",)
 
 
 class RedisBackend(CacheBackend):
@@ -91,20 +94,21 @@ class RedisBackend(CacheBackend):
     """
 
     def __init__(self, arguments):
+        arguments = arguments.copy()
         self._imports()
-        self.url = arguments.pop('url', None)
-        self.host = arguments.pop('host', 'localhost')
-        self.password = arguments.pop('password', None)
-        self.port = arguments.pop('port', 6379)
-        self.db = arguments.pop('db', 0)
-        self.distributed_lock = arguments.get('distributed_lock', False)
-        self.socket_timeout = arguments.pop('socket_timeout', None)
+        self.url = arguments.pop("url", None)
+        self.host = arguments.pop("host", "localhost")
+        self.password = arguments.pop("password", None)
+        self.port = arguments.pop("port", 6379)
+        self.db = arguments.pop("db", 0)
+        self.distributed_lock = arguments.get("distributed_lock", False)
+        self.socket_timeout = arguments.pop("socket_timeout", None)
 
-        self.lock_timeout = arguments.get('lock_timeout', None)
-        self.lock_sleep = arguments.get('lock_sleep', 0.1)
+        self.lock_timeout = arguments.get("lock_timeout", None)
+        self.lock_sleep = arguments.get("lock_sleep", 0.1)
 
-        self.redis_expiration_time = arguments.pop('redis_expiration_time', 0)
-        self.connection_pool = arguments.get('connection_pool', None)
+        self.redis_expiration_time = arguments.pop("redis_expiration_time", 0)
+        self.connection_pool = arguments.get("connection_pool", None)
         self.client = self._create_client()
 
     def _imports(self):
@@ -121,22 +125,25 @@ class RedisBackend(CacheBackend):
 
         args = {}
         if self.socket_timeout:
-            args['socket_timeout'] = self.socket_timeout
+            args["socket_timeout"] = self.socket_timeout
 
         if self.url is not None:
             args.update(url=self.url)
             return redis.StrictRedis.from_url(**args)
         else:
             args.update(
-                host=self.host, password=self.password,
-                port=self.port, db=self.db
+                host=self.host,
+                password=self.password,
+                port=self.port,
+                db=self.db,
             )
             return redis.StrictRedis(**args)
 
     def get_mutex(self, key):
         if self.distributed_lock:
-            return self.client.lock(u('_lock{0}').format(key),
-                                    self.lock_timeout, self.lock_sleep)
+            return self.client.lock(
+                u("_lock{0}").format(key), self.lock_timeout, self.lock_sleep
+            )
         else:
             return None
 
@@ -150,14 +157,15 @@ class RedisBackend(CacheBackend):
         if not keys:
             return []
         values = self.client.mget(keys)
-        return [
-            pickle.loads(v) if v is not None else NO_VALUE
-            for v in values]
+        return [pickle.loads(v) if v is not None else NO_VALUE for v in values]
 
     def set(self, key, value):
         if self.redis_expiration_time:
-            self.client.setex(key, self.redis_expiration_time,
-                              pickle.dumps(value, pickle.HIGHEST_PROTOCOL))
+            self.client.setex(
+                key,
+                self.redis_expiration_time,
+                pickle.dumps(value, pickle.HIGHEST_PROTOCOL),
+            )
         else:
             self.client.set(key, pickle.dumps(value, pickle.HIGHEST_PROTOCOL))
 

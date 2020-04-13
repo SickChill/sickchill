@@ -1,5 +1,5 @@
-../../bin/easy_install,sha256=tKkhcT0YHvS7wFVUH5U0tUMfpZk2jkxoqy7p5cMX7uY,230
-../../bin/easy_install-2.7,sha256=tKkhcT0YHvS7wFVUH5U0tUMfpZk2jkxoqy7p5cMX7uY,230
+../../bin/easy_install,sha256=hrnu1dPNMaEWxxv-2HDvBcazh3zTFR_23cxf12TL7Gg,265
+../../bin/easy_install-2.7,sha256=hrnu1dPNMaEWxxv-2HDvBcazh3zTFR_23cxf12TL7Gg,265
 easy_install.py,sha256=MDC9vt5AxDsXX5qcKlBz2TnW6Tpuv_AobnfhCJ9X3PM,126
 easy_install.pyc,,
 pkg_resources/__init__.py,sha256=0IssxXPnaDKpYZRra8Ime0JG4hwosQljItGD0bnIkGk,108349

@@ -59,13 +59,13 @@ class ProxyBackend(CacheBackend):
         self.proxied = None
 
     def wrap(self, backend):
-        ''' Take a backend as an argument and setup the self.proxied property.
+        """ Take a backend as an argument and setup the self.proxied property.
         Return an object that be used as a backend by a :class:`.CacheRegion`
         object.
-        '''
-        assert(
-            isinstance(backend, CacheBackend) or
-            isinstance(backend, ProxyBackend))
+        """
+        assert isinstance(backend, CacheBackend) or isinstance(
+            backend, ProxyBackend
+        )
         self.proxied = backend
         return self
 
@@ -85,8 +85,8 @@ class ProxyBackend(CacheBackend):
     def get_multi(self, keys):
         return self.proxied.get_multi(keys)
 
-    def set_multi(self, keys):
-        self.proxied.set_multi(keys)
+    def set_multi(self, mapping):
+        self.proxied.set_multi(mapping)
 
     def delete_multi(self, keys):
         self.proxied.delete_multi(keys)

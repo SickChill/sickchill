@@ -1,4 +1,4 @@
-Metadata-Version: 2.0
+Metadata-Version: 2.1
 Name: pymediainfo
 Version: 4.1
 Summary: A Python wrapper for the mediainfo library.

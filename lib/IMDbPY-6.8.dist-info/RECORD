@@ -18,7 +18,7 @@
 ../../bin/get_person.pyc,,
 ../../bin/get_top_bottom_movies.py,sha256=olTZQjenMfhWCSMf7VbiymCDn3jcWC8Ej1cloCKT0b4,801
 ../../bin/get_top_bottom_movies.pyc,,
-../../bin/imdbpy,sha256=27Z4g4UxGi4acVx5Gwzfle6PQsGg9fwQ6iB_iXWezTg,207
+../../bin/imdbpy,sha256=h3C47n3Cs_8FnHWHxEQLmm5yZFeQ33yFMHYOk-awFc0,242
 ../../bin/imdbpy2sql.py,sha256=H_58zCRvpNYpn6S7vbkyTWb8NNJ9GQvditP76w7efyI,115006
 ../../bin/s32imdbpy.py,sha256=jSmZpUKRyUCoVezZNAStOh25QE_WaQ78af46Jd9YLss,6450
 ../../bin/s32imdbpy.pyc,,
@@ -32,13 +32,11 @@
 ../../bin/search_movie.pyc,,
 ../../bin/search_person.py,sha256=3reFA3Gi2TTIDeddeK4H5pNkF5VqE1CWGou4RtBsyGw,1221
 ../../bin/search_person.pyc,,
-IMDbPY-6.8.dist-info/DESCRIPTION.rst,sha256=r5LaPX57QrnbgvwNDcRFyi2BCz0mTKmqJ1cgDbaifAQ,587
 IMDbPY-6.8.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
-IMDbPY-6.8.dist-info/METADATA,sha256=toZJJiV29vsEmgOqnlmWJpovWuP9tznt5JeRbFD9dvc,2721
+IMDbPY-6.8.dist-info/METADATA,sha256=pcqh0hRIiQXnkiLAWMhKQXvxry3Bm8p2Hbquo94edrg,2668
 IMDbPY-6.8.dist-info/RECORD,,
-IMDbPY-6.8.dist-info/WHEEL,sha256=bee59qcPjkyXfMaxNWjl2CGotqfumWx9pC1hlVLr2mM,92
+IMDbPY-6.8.dist-info/WHEEL,sha256=rhIUU3k_gV2iCypONLq-yw8hAvGuX-BoDgL_ovBiHW0,93
 IMDbPY-6.8.dist-info/entry_points.txt,sha256=_D66hz79OlGRN9IPcl5OnL1yIhnAZ9Q30i0lqhAWAMI,60
-IMDbPY-6.8.dist-info/metadata.json,sha256=pjd6KfqfljVnMZ7tLe5_jIopCS7-T0UB3KusA3NNlks,2192
 IMDbPY-6.8.dist-info/top_level.txt,sha256=L5m5gPwYS8sLwc0o4BbulTmfyRr2WZ4Du-AYAKsIfio,5
 imdb/Character.py,sha256=FkspGm5MH5IXM9GkpWJYKk8djGO0zQ0nP6gJFF7-kts,7142
 imdb/Character.pyc,,

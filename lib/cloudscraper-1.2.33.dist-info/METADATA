@@ -1,4 +1,4 @@
-Metadata-Version: 2.0
+Metadata-Version: 2.1
 Name: cloudscraper
 Version: 1.2.33
 Summary: A Python module to bypass Cloudflare's anti-bot page.

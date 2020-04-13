@@ -1,4 +1,4 @@
-Metadata-Version: 2.0
+Metadata-Version: 2.1
 Name: IMDbPY
 Version: 6.8
 Summary: Python package to access the IMDb's database
@@ -32,22 +32,19 @@ Classifier: Operating System :: OS Independent
 Classifier: Topic :: Database :: Front-Ends
 Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content :: CGI Tools/Libraries
 Classifier: Topic :: Software Development :: Libraries :: Python Modules
-Provides-Extra: test
-Provides-Extra: doc
-Provides-Extra: dev
 Requires-Dist: SQLAlchemy
 Requires-Dist: lxml
 Provides-Extra: dev
-Requires-Dist: flake8; extra == 'dev'
-Requires-Dist: flake8-isort; extra == 'dev'
-Requires-Dist: readme-renderer; extra == 'dev'
+Requires-Dist: flake8 ; extra == 'dev'
+Requires-Dist: flake8-isort ; extra == 'dev'
+Requires-Dist: readme-renderer ; extra == 'dev'
 Provides-Extra: doc
-Requires-Dist: sphinx; extra == 'doc'
-Requires-Dist: sphinx-rtd-theme; extra == 'doc'
+Requires-Dist: sphinx ; extra == 'doc'
+Requires-Dist: sphinx-rtd-theme ; extra == 'doc'
 Provides-Extra: test
-Requires-Dist: pytest; extra == 'test'
-Requires-Dist: pytest-cov; extra == 'test'
-Requires-Dist: pytest-profiling; extra == 'test'
+Requires-Dist: pytest ; extra == 'test'
+Requires-Dist: pytest-cov ; extra == 'test'
+Requires-Dist: pytest-profiling ; extra == 'test'
 
 IMDbPY is a Python package useful to retrieve and
 manage the data of the IMDb movie database about movies, people,
