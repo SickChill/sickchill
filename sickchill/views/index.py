@@ -169,7 +169,8 @@ class BaseHandler(RequestHandler):
 
         else:
             # Local network
-            return helpers.is_ip_private(self.request.remote_ip)
+            # strip <scope id> / <zone id> (%value/if_name) from remote_ip IPv6 scoped literal IP Addresses (RFC 4007) until phihag/ipaddress is updated tracking cpython 3.9.
+            return helpers.is_ip_private(self.request.remote_ip.rsplit('%')[0])
 
     def get_user_locale(self):
         return sickbeard.GUI_LANG or None
