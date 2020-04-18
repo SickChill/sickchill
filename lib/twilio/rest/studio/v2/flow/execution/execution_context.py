@@ -22,8 +22,8 @@ class ExecutionContextList(ListResource):
         Initialize the ExecutionContextList
 
         :param Version version: Version that contains the resource
-        :param flow_sid: The flow_sid
-        :param execution_sid: The execution_sid
+        :param flow_sid: The SID of the Flow
+        :param execution_sid: The SID of the Execution
 
         :returns: twilio.rest.studio.v2.flow.execution.execution_context.ExecutionContextList
         :rtype: twilio.rest.studio.v2.flow.execution.execution_context.ExecutionContextList
@@ -79,8 +79,8 @@ class ExecutionContextPage(Page):
 
         :param Version version: Version that contains the resource
         :param Response response: Response from the API
-        :param flow_sid: The flow_sid
-        :param execution_sid: The execution_sid
+        :param flow_sid: The SID of the Flow
+        :param execution_sid: The SID of the Execution
 
         :returns: twilio.rest.studio.v2.flow.execution.execution_context.ExecutionContextPage
         :rtype: twilio.rest.studio.v2.flow.execution.execution_context.ExecutionContextPage
@@ -125,8 +125,8 @@ class ExecutionContextContext(InstanceContext):
         Initialize the ExecutionContextContext
 
         :param Version version: Version that contains the resource
-        :param flow_sid: The flow_sid
-        :param execution_sid: The execution_sid
+        :param flow_sid: The SID of the Flow
+        :param execution_sid: The SID of the Execution
 
         :returns: twilio.rest.studio.v2.flow.execution.execution_context.ExecutionContextContext
         :rtype: twilio.rest.studio.v2.flow.execution.execution_context.ExecutionContextContext
@@ -210,7 +210,7 @@ class ExecutionContextInstance(InstanceResource):
     @property
     def account_sid(self):
         """
-        :returns: The account_sid
+        :returns: The SID of the Account that created the resource
         :rtype: unicode
         """
         return self._properties['account_sid']
@@ -218,7 +218,7 @@ class ExecutionContextInstance(InstanceResource):
     @property
     def context(self):
         """
-        :returns: The context
+        :returns: The current state of the flow
         :rtype: dict
         """
         return self._properties['context']
@@ -226,7 +226,7 @@ class ExecutionContextInstance(InstanceResource):
     @property
     def flow_sid(self):
         """
-        :returns: The flow_sid
+        :returns: The SID of the Flow
         :rtype: unicode
         """
         return self._properties['flow_sid']
@@ -234,7 +234,7 @@ class ExecutionContextInstance(InstanceResource):
     @property
     def execution_sid(self):
         """
-        :returns: The execution_sid
+        :returns: The SID of the Execution
         :rtype: unicode
         """
         return self._properties['execution_sid']
@@ -242,7 +242,7 @@ class ExecutionContextInstance(InstanceResource):
     @property
     def url(self):
         """
-        :returns: The url
+        :returns: The absolute URL of the resource
         :rtype: unicode
         """
         return self._properties['url']

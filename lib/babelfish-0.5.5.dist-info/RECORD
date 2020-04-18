@@ -1,9 +1,8 @@
-babelfish-0.5.5.dist-info/DESCRIPTION.rst,sha256=68RqXT7IvhSK0Y8n__kuNYDw1L8SLQ6WByq7dmSA95s,2384
 babelfish-0.5.5.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
-babelfish-0.5.5.dist-info/METADATA,sha256=FM7XONIA3K5vf00xpq-SawKROi_fe75U6kwcacCVCu0,3423
+babelfish-0.5.5.dist-info/LICENSE,sha256=Oks1Oz6Ct0po2CM5dQD3S8oXrnJOJ1jMNj28Y5yXpao,1529
+babelfish-0.5.5.dist-info/METADATA,sha256=skyPlNLtPvqmTNeMO4xTzqWK1yZwZyQcFlyGeGR67dM,3423
 babelfish-0.5.5.dist-info/RECORD,,
-babelfish-0.5.5.dist-info/WHEEL,sha256=bee59qcPjkyXfMaxNWjl2CGotqfumWx9pC1hlVLr2mM,92
-babelfish-0.5.5.dist-info/metadata.json,sha256=ngeLun9GyWzRwh2i8hnd8mdOKAl8U5ze1fEDCiC_ZYw,1123
+babelfish-0.5.5.dist-info/WHEEL,sha256=rhIUU3k_gV2iCypONLq-yw8hAvGuX-BoDgL_ovBiHW0,93
 babelfish-0.5.5.dist-info/pbr.json,sha256=07qIOzq91t1w27eSFXwoLTwOSv96g9jH4eUL5XqGFZU,47
 babelfish-0.5.5.dist-info/top_level.txt,sha256=LleCR650_CPhaSxtMJ7cHlu59gDOVRuelRh0_JpoepM,10
 babelfish/__init__.py,sha256=8nt3PQL7nHgOo1fOa524omv9uUUUHPHIjamkFT5hfhA,917

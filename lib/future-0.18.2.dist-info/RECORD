@@ -1,5 +1,5 @@
-../../bin/futurize,sha256=VbvJu-fcbeG8JMcRGkzPFKus4FXqw2DiT6Cr44z_DWU,250
-../../bin/pasteurize,sha256=hRpymSZ9cy2_O7xNEugTNZ7tKZomhHzUgXF60hPGPs8,252
+../../bin/futurize,sha256=wBmUeibh_NKo2FBTVUg0DTSbmRQ3EwA6Gz1YVUVPGUU,238
+../../bin/pasteurize,sha256=913kiAyqcz2lwBqltWxxcjlGFy3VpPPPEbccqh99tYE,240
 _dummy_thread/__init__.py,sha256=begqpGBCVphDD2uFYcyjJbBx0MxXUVUsEU7Gc_uju-E,382
 _dummy_thread/__init__.pyc,,
 _markupbase/__init__.py,sha256=OilSwOSJKVzseSZ99XzFfwbSlR1Hy29Bc6jDod1Iic8,380
@@ -10,14 +10,12 @@ builtins/__init__.py,sha256=ap2ury-2CspMkFhENf-NBXOvycVcXHDyKbpQAkHEvCc,493
 builtins/__init__.pyc,,
 copyreg/__init__.py,sha256=r-OjTdT3JaOrTaESjThKNHOyPJU_Ys1RnWeMgXZqQNw,353
 copyreg/__init__.pyc,,
-future-0.18.2.dist-info/DESCRIPTION.rst,sha256=GMstpb9NrnYdkARDFCgFBeg3xDDkxjPBOvfaF-zghIs,2663
 future-0.18.2.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
 future-0.18.2.dist-info/LICENSE.txt,sha256=kW5WE5LUhHG5wjQ39W4mUvMgyzsRnOqhYu30EBb3Rrk,1083
-future-0.18.2.dist-info/METADATA,sha256=X66vv-KPE1ifGoTfbdd7jvmfIqQW2QzaRbbv799nHGw,3702
+future-0.18.2.dist-info/METADATA,sha256=PaXl_oz0R4NZiBhzUGyvGxUJ8VjGlP_qxgXFuX667wM,3702
 future-0.18.2.dist-info/RECORD,,
-future-0.18.2.dist-info/WHEEL,sha256=bee59qcPjkyXfMaxNWjl2CGotqfumWx9pC1hlVLr2mM,92
+future-0.18.2.dist-info/WHEEL,sha256=rhIUU3k_gV2iCypONLq-yw8hAvGuX-BoDgL_ovBiHW0,93
 future-0.18.2.dist-info/entry_points.txt,sha256=-ATQtLUC2gkzrCYqc1Twac093xrI164NuMwsRALJWnM,89
-future-0.18.2.dist-info/metadata.json,sha256=uUK1E_Hs9FHW46DXFj7z8Hu4Nun0FkKaumLt0wSX6xE,1420
 future-0.18.2.dist-info/top_level.txt,sha256=FeMOZFDhPdQ7-OS54GrX6l-U-WxUqVqO7i1sSXHbdkU,148
 future/__init__.py,sha256=TsDq1XoGk6Jfach_rEhwAi07zR5OKYZ6hhUlG5Bj6Ag,2991
 future/__init__.pyc,,

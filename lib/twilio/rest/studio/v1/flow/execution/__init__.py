@@ -275,6 +275,26 @@ class ExecutionContext(InstanceContext):
         """
         return self._version.delete(method='DELETE', uri=self._uri, )
 
+    def update(self, status):
+        """
+        Update the ExecutionInstance
+
+        :param ExecutionInstance.Status status: The status of the Execution
+
+        :returns: The updated ExecutionInstance
+        :rtype: twilio.rest.studio.v1.flow.execution.ExecutionInstance
+        """
+        data = values.of({'Status': status, })
+
+        payload = self._version.update(method='POST', uri=self._uri, data=data, )
+
+        return ExecutionInstance(
+            self._version,
+            payload,
+            flow_sid=self._solution['flow_sid'],
+            sid=self._solution['sid'],
+        )
+
     @property
     def steps(self):
         """
@@ -475,6 +495,17 @@ class ExecutionInstance(InstanceResource):
         :rtype: bool
         """
         return self._proxy.delete()
+
+    def update(self, status):
+        """
+        Update the ExecutionInstance
+
+        :param ExecutionInstance.Status status: The status of the Execution
+
+        :returns: The updated ExecutionInstance
+        :rtype: twilio.rest.studio.v1.flow.execution.ExecutionInstance
+        """
+        return self._proxy.update(status, )
 
     @property
     def steps(self):

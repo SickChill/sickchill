@@ -354,6 +354,7 @@ class FlowInstance(InstanceResource):
             'commit_message': payload.get('commit_message'),
             'valid': payload.get('valid'),
             'errors': payload.get('errors'),
+            'warnings': payload.get('warnings'),
             'date_created': deserialize.iso8601_datetime(payload.get('date_created')),
             'date_updated': deserialize.iso8601_datetime(payload.get('date_updated')),
             'webhook_url': payload.get('webhook_url'),
@@ -449,6 +450,14 @@ class FlowInstance(InstanceResource):
         :rtype: dict
         """
         return self._properties['errors']
+
+    @property
+    def warnings(self):
+        """
+        :returns: List of warnings in the flow definition
+        :rtype: dict
+        """
+        return self._properties['warnings']
 
     @property
     def date_created(self):

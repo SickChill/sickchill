@@ -1,4 +1,4 @@
-#!/home/dusted/Projects/SickChill/.tox/tox/bin/python
+#!/home/dusted/Envs/sickchill/bin/python2
 # -*- coding: utf-8 -*-
 import re
 import sys

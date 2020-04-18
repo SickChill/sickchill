@@ -2,13 +2,13 @@ cloudscraper-1.2.33.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP
 cloudscraper-1.2.33.dist-info/LICENSE,sha256=luC9NJPEX0JAQUKWkzWlAOaaE69fNKnW1uIuDKmWERc,1091
 cloudscraper-1.2.33.dist-info/METADATA,sha256=wjYwfl80rtGkwoAwmO8BZEk88_CUiknCZ1wTBrW6vPs,18821
 cloudscraper-1.2.33.dist-info/RECORD,,
-cloudscraper-1.2.33.dist-info/WHEEL,sha256=CbUdLTqD3-4zWemf83rgR_2_MC4TeXw9qXwrXte5w4w,92
+cloudscraper-1.2.33.dist-info/WHEEL,sha256=Ph_z28wTcU7HnQwSQ6yCQ-zkcGK4h4ehDfP8b6UoHVE,92
 cloudscraper-1.2.33.dist-info/top_level.txt,sha256=OFEsobVl62sa2NzpgNtfHZkIw_qZr_wljhjmlP9oGiM,13
-cloudscraper/__init__.py,sha256=JcrXDwhqii77wqJswqtgrhwWiS4Kf9PPuH1E_88E8bE,25374
+cloudscraper/__init__.py,sha256=QpqvuYGLY9pdVQFdjypVEY4vE1AuWP7zOgqNrLpKWow,25479
 cloudscraper/__init__.pyc,,
-cloudscraper/exceptions.py,sha256=am1uV8ac7oUaVfW3HfJlWKSwvy3amQ2wpTDfB--0QnE,2183
+cloudscraper/exceptions.py,sha256=j-BosEcBSCz5_OV4intB5fcmw3pCurNkL92Cy_4VrAw,2293
 cloudscraper/exceptions.pyc,,
-cloudscraper/interpreters/__init__.py,sha256=9Oj44tEm7q49q0m86gfRxZe_i_NEVe3k5k0sZ0DcE4M,1717
+cloudscraper/interpreters/__init__.py,sha256=UjgtDqdmVky_-wNnZyxCnAUTrqMBjaZDymzc5b_GGNk,1715
 cloudscraper/interpreters/__init__.pyc,,
 cloudscraper/interpreters/chakracore.py,sha256=IgbZsjxb-3YeDOF7uQOjVmiVTYxQV2pH4GSsne7SuIM,3355
 cloudscraper/interpreters/chakracore.pyc,,
@@ -30,7 +30,7 @@ cloudscraper/reCaptcha/9kw.py,sha256=dryadz701-9ovT2AVv8cw_a_NmKkv8hkpBzRXZgSPV4
 cloudscraper/reCaptcha/9kw.pyc,,
 cloudscraper/reCaptcha/__init__.py,sha256=66WAB4L0GU_VkuUsxbt91SU1pr8lfDUv8UvOsth7Uhg,1492
 cloudscraper/reCaptcha/__init__.pyc,,
-cloudscraper/reCaptcha/anticaptcha.py,sha256=WhlXCSRnSggzz0MZnY4vJoJr9fhKFyvpFlBjXgG7BvM,2162
+cloudscraper/reCaptcha/anticaptcha.py,sha256=chUGyKnKYi8SGGnnMoDPbzTQ44P9PMPlGw8fc4zhB2g,2477
 cloudscraper/reCaptcha/anticaptcha.pyc,,
 cloudscraper/reCaptcha/deathbycaptcha.py,sha256=GyO9Mabot_7m5vFTmyRo6ptOxT7mwmkdBVuJM3zVdgM,7187
 cloudscraper/reCaptcha/deathbycaptcha.pyc,,

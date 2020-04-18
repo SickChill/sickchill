@@ -56,11 +56,11 @@ class Studio(Domain):
         return self.v2.flows
 
     @property
-    def flow_valid(self):
+    def flow_validate(self):
         """
         :rtype: twilio.rest.studio.v2.flow_validate.FlowValidateList
         """
-        return self.v2.flow_valid
+        return self.v2.flow_validate
 
     def __repr__(self):
         """

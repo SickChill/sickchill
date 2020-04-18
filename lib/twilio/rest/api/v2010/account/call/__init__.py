@@ -93,7 +93,7 @@ class CallList(ListResource):
         :param unicode async_amd_status_callback: The URL we should call to send amd status information to your application
         :param unicode async_amd_status_callback_method: HTTP Method to use with async_amd_status_callback
         :param unicode byoc: BYOC trunk SID (Beta)
-        :param unicode call_reason: Reason for the call (Beta)
+        :param unicode call_reason: Reason for the call (Branded Calls Beta)
         :param unicode url: The absolute URL that returns TwiML for this call
         :param unicode twiml: TwiML instructions for the call
         :param unicode application_sid: The SID of the Application resource that will handle the call

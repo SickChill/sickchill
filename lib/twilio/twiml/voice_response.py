@@ -118,7 +118,7 @@ class VoiceResponse(TwiML):
                finish_on_key=None, num_digits=None, partial_result_callback=None,
                partial_result_callback_method=None, language=None, hints=None,
                barge_in=None, debug=None, action_on_empty_result=None,
-               speech_model=None, **kwargs):
+               speech_model=None, enhanced=None, **kwargs):
         """
         Create a <Gather> element
 
@@ -139,6 +139,7 @@ class VoiceResponse(TwiML):
         :param debug: Allow debug for gather
         :param action_on_empty_result: Force webhook to the action URL event if there is no input
         :param speech_model: Specify the model that is best suited for your use case
+        :param enhanced: Use enhanced speech model
         :param kwargs: additional attributes
 
         :returns: <Gather> element
@@ -161,6 +162,7 @@ class VoiceResponse(TwiML):
             debug=debug,
             action_on_empty_result=action_on_empty_result,
             speech_model=speech_model,
+            enhanced=enhanced,
             **kwargs
         ))
 

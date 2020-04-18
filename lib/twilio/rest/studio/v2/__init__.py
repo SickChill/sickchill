@@ -23,7 +23,7 @@ class V2(Version):
         super(V2, self).__init__(domain)
         self.version = 'v2'
         self._flows = None
-        self._flow_valid = None
+        self._flow_validate = None
 
     @property
     def flows(self):
@@ -35,13 +35,13 @@ class V2(Version):
         return self._flows
 
     @property
-    def flow_valid(self):
+    def flow_validate(self):
         """
         :rtype: twilio.rest.studio.v2.flow_validate.FlowValidateList
         """
-        if self._flow_valid is None:
-            self._flow_valid = FlowValidateList(self)
-        return self._flow_valid
+        if self._flow_validate is None:
+            self._flow_validate = FlowValidateList(self)
+        return self._flow_validate
 
     def __repr__(self):
         """
