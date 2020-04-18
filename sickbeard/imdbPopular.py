@@ -7,6 +7,7 @@ import os
 import posixpath
 import re
 from datetime import date
+from requests.compat import urljoin
 
 # Third Party Imports
 from bs4 import BeautifulSoup
@@ -23,8 +24,8 @@ class imdbPopular(object):
     def __init__(self):
         """Gets a list of most popular TV series from imdb"""
 
-        # Use akas.imdb.com, just like the imdb lib.
-        self.url = 'http://akas.imdb.com/search/title'
+        self.base_url = 'https://imdb.com'
+        self.url = urljoin(self.base_url, 'search/title')
 
         self.params = {
             'at': 0,
@@ -40,7 +41,7 @@ class imdbPopular(object):
 
         popular_shows = []
 
-        data = helpers.getURL(self.url, session=self.session, params=self.params, headers={'Referer': 'http://akas.imdb.com/'}, returns='text')
+        data = helpers.getURL(self.url, session=self.session, params=self.params, headers={'Referer': self.base_url}, returns='text')
         if not data:
             return None
 
