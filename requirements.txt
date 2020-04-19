@@ -41,5 +41,11 @@ python3-fanart # Works on python2
 gntp
 pymediainfo
 git+https://github.com/SickChill/rtorrent-python@rtorrent9#egg=rtorrent9
-#syncronous-deluge
+tus.py == 1.3.4
 rtorrent-python
+win-inet-pton == 1.0.1 ; os.name == 'nt' and python_version < '3.0'
+pynma == 1.0
+putio.py == 8.6.2
+profilehooks
+httplib2 == 0.17.2
+PySocks

@@ -1,0 +1,20 @@
+Metadata-Version: 2.1
+Name: putio.py
+Version: 8.6.2
+Summary: Python client for put.io API v2
+Home-page: https://github.com/cenkalti/putio.py
+Author: Cenk Altı
+Author-email: cenkalti@gmail.com
+License: MIT
+Platform: any
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.5
+Classifier: License :: OSI Approved :: MIT License
+Requires-Dist: requests
+Requires-Dist: tus.py
+Requires-Dist: six
+
+UNKNOWN
+
+
