@@ -7,19 +7,18 @@ Documents
  - Apache POI (HPSF Internals):
    http://poi.apache.org/hpsf/internals.html
 """
-from hachoir_core.endian import BIG_ENDIAN,LITTLE_ENDIAN
 from hachoir_parser import HachoirParser
 from hachoir_core.field import (FieldSet, ParserError,
-    SeekableFieldSet,
+    RootSeekableFieldSet, SeekableFieldSet,
     Bit, Bits, NullBits,
     UInt8, UInt16, UInt32, TimestampWin64, TimedeltaWin64, Enum,
-    Bytes, RawBytes, NullBytes, PaddingBits, String,
+    Bytes, RawBytes, NullBytes, String,
     Int8, Int32, Float32, Float64, PascalString32)
 from hachoir_core.text_handler import textHandler, hexadecimal, filesizeHandler
-from hachoir_core.tools import createDict, paddingSize
+from hachoir_core.tools import createDict
+from hachoir_core.endian import LITTLE_ENDIAN, BIG_ENDIAN
 from hachoir_parser.common.win32 import GUID, PascalStringWin32, CODEPAGE_CHARSET
 from hachoir_parser.image.bmp import BmpHeader, parseImageData
-from hachoir_parser.misc.ole2_util import OLE2FragmentParser
 
 MAX_SECTION_COUNT = 100
 
@@ -166,37 +165,10 @@ class Thumbnail(FieldSet):
             yield RawBytes(self, "data", size)
 
 class PropertyContent(FieldSet):
-    class NullHandler(FieldSet):
-        def createFields(self):
-            yield UInt32(self, "unknown[]")
-            yield PascalString32(self, "data")
-        def createValue(self):
-            return self["data"].value
-    class BlobHandler(FieldSet):
-        def createFields(self):
-            self.osconfig = self.parent.osconfig
-            yield UInt32(self, "size")
-            yield UInt32(self, "count")
-            for i in range(self["count"].value):
-                yield PropertyContent(self, "item[]")
-                n=paddingSize(self.current_size,32)
-                if n: yield PaddingBits(self, "padding[]", n)
-    class WidePascalString32(FieldSet):
-        ''' uses number of characters instead of number of bytes '''
-        def __init__(self,parent,name,charset='ASCII'):
-            FieldSet.__init__(self,parent,name)
-            self.charset=charset
-        def createFields(self):
-            yield UInt32(self, "length", "Length of this string")
-            yield String(self, "data", self["length"].value*2, charset=self.charset)
-        def createValue(self):
-            return self["data"].value
-        def createDisplay(self):
-            return 'u'+self["data"].display
     TYPE_LPSTR = 30
     TYPE_INFO = {
         0: ("EMPTY", None),
-        1: ("NULL", NullHandler),
+        1: ("NULL", None),
         2: ("UInt16", UInt16),
         3: ("UInt32", UInt32),
         4: ("Float32", Float32),
@@ -225,9 +197,9 @@ class PropertyContent(FieldSet):
         28: ("CARRAY", None),
         29: ("USERDEFINED", None),
         30: ("LPSTR", PascalString32),
-        31: ("LPWSTR", WidePascalString32),
+        31: ("LPWSTR", PascalString32),
         64: ("FILETIME", TimestampWin64),
-        65: ("BLOB", BlobHandler),
+        65: ("BLOB", None),
         66: ("STREAM", None),
         67: ("STORAGE", None),
         68: ("STREAMED_OBJECT", None),
@@ -251,13 +223,8 @@ class PropertyContent(FieldSet):
         kw = {}
         try:
             handler = self.TYPE_INFO[tag][1]
-            if handler in (self.WidePascalString32,PascalString32):
-                cur = self
-                while not hasattr(cur,'osconfig'):
-                    cur=cur.parent
-                    if cur is None:
-                        raise LookupError('Cannot find osconfig')
-                osconfig = cur.osconfig
+            if handler == PascalString32:
+                osconfig = self.osconfig
                 if tag == self.TYPE_LPSTR:
                     kw["charset"] = osconfig.charset
                 else:
@@ -268,10 +235,9 @@ class PropertyContent(FieldSet):
         except LookupError:
             handler = None
         if not handler:
-            self.warning("OLE2: Unable to parse property of type %s" \
+            raise ParserError("OLE2: Unable to parse property of type %s" \
                 % self["type"].display)
-            # raise ParserError(
-        elif self["is_vector"].value:
+        if self["is_vector"].value:
             yield UInt32(self, "count")
             for index in xrange(self["count"].value):
                 yield handler(self, "item[]", **kw)
@@ -310,16 +276,20 @@ class SummaryIndex(FieldSet):
         yield String(self, "name", 16)
         yield UInt32(self, "offset")
 
-class Summary(OLE2FragmentParser):
-    ENDIAN_CHECK=True
+class BaseSummary:
+    endian = LITTLE_ENDIAN
 
-    def __init__(self, stream, **args):
-        OLE2FragmentParser.__init__(self, stream, **args)
-        #self.osconfig = OSConfig(self["os_type"].value == OS_MAC)
-        self.osconfig = OSConfig(self.endian == BIG_ENDIAN)
+    def __init__(self):
+        if self["endian"].value == "\xFF\xFE":
+            self.endian = BIG_ENDIAN
+        elif self["endian"].value == "\xFE\xFF":
+            self.endian = LITTLE_ENDIAN
+        else:
+            raise ParserError("OLE2: Invalid endian value")
+        self.osconfig = OSConfig(self["os_type"].value == OS_MAC)
 
     def createFields(self):
-        yield Bytes(self, "endian", 2, "Endian (\\xfe\\xff for little endian)")
+        yield Bytes(self, "endian", 2, "Endian (0xFF 0xFE for Intel)")
         yield UInt16(self, "format", "Format (0)")
         yield UInt8(self, "os_version")
         yield UInt8(self, "os_revision")
@@ -343,20 +313,35 @@ class Summary(OLE2FragmentParser):
         if 0 < size:
             yield NullBytes(self, "end_padding", size)
 
-class CompObj(OLE2FragmentParser):
-    ENDIAN_CHECK=True
+class SummaryParser(BaseSummary, HachoirParser, RootSeekableFieldSet):
+    PARSER_TAGS = {
+        "description": "Microsoft Office summary",
+    }
 
-    def __init__(self, stream, **args):
-        OLE2FragmentParser.__init__(self, stream, **args)
-        self.osconfig = OSConfig(self["os"].value == OS_MAC)
-        
+    def __init__(self, stream, **kw):
+        RootSeekableFieldSet.__init__(self, None, "root", stream, None, stream.askSize(self))
+        HachoirParser.__init__(self, stream, **kw)
+        BaseSummary.__init__(self)
+
+    def validate(self):
+        return True
+
+class SummaryFieldSet(BaseSummary, FieldSet):
+    def __init__(self, parent, name, description=None, size=None):
+        FieldSet.__init__(self, parent, name, description=description, size=size)
+        BaseSummary.__init__(self)
+
+class CompObj(FieldSet):
+    OS_VERSION = {
+        0x0a03: "Windows 3.1",
+    }
     def createFields(self):
         # Header
         yield UInt16(self, "version", "Version (=1)")
-        yield Bytes(self, "endian", 2, "Endian (\\xfe\\xff for little endian)")
+        yield textHandler(UInt16(self, "endian", "Endian (0xFF 0xFE for Intel)"), hexadecimal)
         yield UInt8(self, "os_version")
         yield UInt8(self, "os_revision")
-        yield Enum(UInt16(self, "os"), OS_NAME)
+        yield Enum(UInt16(self, "os_type"), OS_NAME)
         yield Int32(self, "unused", "(=-1)")
         yield GUID(self, "clsid")
 
@@ -364,12 +349,12 @@ class CompObj(OLE2FragmentParser):
         yield PascalString32(self, "user_type", strip="\0")
 
         # Clipboard format
-        if self["os"].value == OS_MAC:
+        if self["os_type"].value == OS_MAC:
             yield Int32(self, "unused[]", "(=-2)")
             yield String(self, "clipboard_format", 4)
         else:
             yield PascalString32(self, "clipboard_format", strip="\0")
-        if self._current_size // 8 == self.datasize:
+        if self.current_size == self.size:
             return
 
         #-- OLE 2.01 ---
@@ -377,7 +362,7 @@ class CompObj(OLE2FragmentParser):
         # Program ID
         yield PascalString32(self, "prog_id", strip="\0")
 
-        if self["os"].value != OS_MAC:
+        if self["os_type"].value != OS_MAC:
             # Magic number
             yield textHandler(UInt32(self, "magic", "Magic number (0x71B239F4)"), hexadecimal)
 
@@ -386,8 +371,7 @@ class CompObj(OLE2FragmentParser):
             yield PascalStringWin32(self, "clipboard_format_unicode", strip="\0")
             yield PascalStringWin32(self, "prog_id_unicode", strip="\0")
 
-        size = self.datasize - (self._current_size // 8) # _current_size because current_size returns _current_max_size
+        size = (self.size - self.current_size) // 8
         if size:
             yield NullBytes(self, "end_padding", size)
 
-        if self.datasize<self.size//8: yield RawBytes(self,"slack_space",(self.size//8)-self.datasize)

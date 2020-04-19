@@ -58,5 +58,5 @@ def domain(value):
     """
     try:
         return pattern.match(to_unicode(value).encode('idna').decode('ascii'))
-    except UnicodeError:
+    except (UnicodeError, AttributeError):
         return False

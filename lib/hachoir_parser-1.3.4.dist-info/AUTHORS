@@ -1,0 +1,27 @@
+ * Team
+
+Julien Muchembled <jm AT jm10 DOT no-ip DOT com>
+Victor Stinner aka haypo <victor DOT stinner AT haypocalc DOT com>
+
+ * Contributors
+
+Alexandre Boeglin <alex AT boeglin DOT org> - PIFV parser
+Aurélien Jacobs <aurel AT gnuage DOT org> - AVI parser big contributor
+Christophe Fergeau <teuf AT gnome.org> - Improve iTunesDB parser
+Christophe Gisquet <christophe.gisquet AT free.fr> - Write RAR parser
+Cyril Zorin <cyril.zorin AT gmail.com> - Author of 3DO parser
+Frédéric Weisbecker <chantecode AT gmail.com> - Author of ReiserFS parser
+Gottfried Ganßauge <ganssauge AT gmx DOT de> - Fix Win32 curses issues
+Jason Gorski <jgorski AT gmail.com> - Author of zsnes parser
+Mickaël Kenikssi <k DOT mickael AT gmail DOT com> - Write CDDA parser
+Mike Melanson <mike AT multimedia.cx> - Write RealMedia and SpiderMan video parser
+Olivier SCHWAB <le.poulpe303 AT laposte.net> - Write 7-zip parser
+Robert Xiao aka nneonneo <nneonneo AT gmail.com> - improve LNK parser
+Romain Hérault <romain DOT herault AT gmail DOT com> - Author of iTunesDB parser
+Sebastien Ponce <sebastien.ponce AT cern.ch> - ActionScript (for SWF) parser
+Thomas de Grenier de Latour aka TGL <degrenier AT easyconnect DOT fr> - Java class parser
+
+ * Packagers
+
+(same then hachoir-core packagers, see AUTHORS file from hachoir-core)
+

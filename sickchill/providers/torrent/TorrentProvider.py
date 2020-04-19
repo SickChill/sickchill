@@ -22,7 +22,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 from datetime import datetime
 
 # Third Party Imports
-from feedparser.util import FeedParserDict
+from feedparser import FeedParserDict
 from hachoir_parser import createParser
 
 # First Party Imports

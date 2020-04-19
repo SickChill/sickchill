@@ -70,8 +70,6 @@ class Field(Logger):
         assert issubclass(parent.__class__, Field)
         assert (size is None) or (0 <= size)
         self._parent = parent
-        if not name:
-            raise ValueError("empty field name")
         self._name = name
         self._address = parent.nextFieldAddress()
         self._size = size
@@ -168,7 +166,7 @@ class Field(Logger):
             return '/'
         names = []
         field = self
-        while field is not None:
+        while field:
             names.append(field._name)
             field = field._parent
         names[-1] = ''

@@ -24,7 +24,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import socket
 
 # Third Party Imports
-from growl import gntp
+import gntp
 
 # First Party Imports
 import sickbeard

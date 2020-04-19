@@ -109,42 +109,45 @@ class OLE2_Metadata(RootMetadata):
     def extract(self, ole2):
         self._extract(ole2)
 
-    def _extract(self, fieldset):
-        try:
+    def _extract(self, fieldset, main_document=True):
+        if main_document:
+            # _feedAll() is needed to make sure that we get all root[*] fragments
             fieldset._feedAll()
-        except StopIteration:
-            pass
-        if "root[0]" in fieldset:
-            self._extract(self.getFragment(fieldset["root[0]"]))
-        doc_summary = self.getField(fieldset, "doc_summary[0]")
+            if "root[0]" in fieldset:
+                self.useRoot(fieldset["root[0]"])
+        doc_summary = self.getField(fieldset, main_document, "doc_summary[0]")
         if doc_summary:
             self.useSummary(doc_summary, True)
-        word_doc = self.getField(fieldset, "word_doc[0]")
+        word_doc = self.getField(fieldset, main_document, "word_doc[0]")
         if word_doc:
             self.useWordDocument(word_doc)
-        summary = self.getField(fieldset, "summary[0]")
+        summary = self.getField(fieldset, main_document, "summary[0]")
         if summary:
             self.useSummary(summary, False)
 
-    def getFragment(self, frag):
-        stream = frag.getSubIStream()
+    @fault_tolerant
+    def useRoot(self, root):
+        stream = root.getSubIStream()
         ministream = guessParser(stream)
         if not ministream:
             warning("Unable to create the OLE2 mini stream parser!")
-            return frag
-        return ministream
+            return
+        self._extract(ministream, main_document=False)
 
-    def getField(self, fieldset, name):
-        # _feedAll() is needed to make sure that we get all fragments
-        # eg. summary[0], summary[1], ..., summary[n]
-        try:
-            fieldset._feedAll()
-        except StopIteration:
-            pass
+    def getField(self, fieldset, main_document, name):
         if name not in fieldset:
             return None
+        # _feedAll() is needed to make sure that we get all fragments
+        # eg. summary[0], summary[1], ..., summary[n]
+        fieldset._feedAll()
         field = fieldset[name]
-        return self.getFragment(field)
+        if main_document:
+            stream = field.getSubIStream()
+            field = guessParser(stream)
+            if not field:
+                warning("Unable to create the OLE2 parser for %s!" % name)
+                return None
+        return field
 
     @fault_tolerant
     def useSummary(self, summary, is_doc_summary):
@@ -158,7 +161,7 @@ class OLE2_Metadata(RootMetadata):
 
     @fault_tolerant
     def useWordDocument(self, doc):
-        self.comment = "Encrypted: %s" % doc["FIB/fEncrypted"].value
+        self.comment = "Encrypted: %s" % doc["fEncrypted"].value
 
     @fault_tolerant
     def useProperty(self, summary, property, is_doc_summary):

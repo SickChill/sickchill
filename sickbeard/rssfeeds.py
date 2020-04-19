@@ -2,7 +2,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Third Party Imports
-from feedparser.api import parse
+from feedparser import parse
 
 # First Party Imports
 from sickchill.helper.exceptions import ex

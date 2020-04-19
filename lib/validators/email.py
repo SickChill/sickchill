@@ -61,6 +61,9 @@ def email(value, whitelist=None):
 
     if not user_regex.match(user_part):
         return False
+        
+    if len(user_part.encode("utf-8")) > 64:
+        return False
 
     if domain_part not in whitelist and not domain_regex.match(domain_part):
         # Try for possible IDN domain-part

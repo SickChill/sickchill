@@ -1,4 +1,4 @@
-#!/home/dusted/Envs/sickchill/bin/python2
+#!/home/dusted/Envs/ok/bin/python
 # -*- coding: utf-8 -*-
 """
 get_movie.py

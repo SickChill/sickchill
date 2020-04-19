@@ -1,4 +1,4 @@
-#!/home/dusted/Envs/sickchill/bin/python2
+#!/home/dusted/Envs/ok/bin/python
 
 import sys
 from os.path import join, dirname, exists

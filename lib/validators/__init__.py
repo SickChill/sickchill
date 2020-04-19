@@ -19,4 +19,4 @@ __all__ = ('between', 'domain', 'email', 'Max', 'Min', 'md5', 'sha1', 'sha224',
            'ipv4_cidr', 'ipv6', 'ipv6_cidr', 'length', 'mac_address', 'slug',
            'truthy', 'url', 'ValidationFailure', 'validator', 'uuid')
 
-__version__ = '0.14.2'
+__version__ = '0.14.3'

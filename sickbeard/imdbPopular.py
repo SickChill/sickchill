@@ -7,10 +7,10 @@ import os
 import posixpath
 import re
 from datetime import date
-from requests.compat import urljoin
 
 # Third Party Imports
 from bs4 import BeautifulSoup
+from requests.compat import urljoin
 
 # First Party Imports
 import sickbeard
