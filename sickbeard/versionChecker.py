@@ -32,6 +32,7 @@ import traceback
 
 # First Party Imports
 import sickbeard
+from sickchill.helper import glob
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
 
@@ -112,7 +113,6 @@ class CheckVersion(object):
         if not backupDir:
             return False
 
-        from sickchill.helper import glob
         # noinspection PyUnresolvedReferences
         files = glob.glob(ek(os.path.join, glob.escape(backupDir), '*.zip'))
         if not files:
@@ -342,6 +342,16 @@ class UpdateManager(object):
     @staticmethod
     def get_update_url():
         return sickbeard.WEB_ROOT + "/home/update/?pid=" + str(sickbeard.PID)
+
+    @staticmethod
+    def remove_pyc(path):
+        path_parts = [sickbeard.PROG_DIR, path, '*.pyc']
+        for f in glob.iglob(ek(os.path.join, *path_parts)):
+            ek(os.remove, f)
+
+        path_parts.insert(-1, '**')
+        for f in glob.iglob(ek(os.path.join, *path_parts)):
+            ek(os.remove, f)
 
 
 class GitUpdateManager(UpdateManager):
@@ -621,6 +631,7 @@ class GitUpdateManager(UpdateManager):
 
         if exit_status == 0:
             self._find_installed_version()
+            self.clean_libs()
 
             # Notify update successful
             notifiers.notify_git_update(sickbeard.CUR_COMMIT_HASH or "")
@@ -636,6 +647,17 @@ class GitUpdateManager(UpdateManager):
         stdout_, stderr_, exit_status = self._run_git(self._git_path, 'clean -df ""')  # @UnusedVariable
         if exit_status == 0:
             return True
+
+    def clean_libs(self):
+        """
+        Calls git clean to remove all untracked files in the lib dir before restart. Returns a bool depending
+        on the call's success.
+        """
+        stdout_, stderr_, exit_status = self._run_git(self._git_path, 'clean -df lib')  # @UnusedVariable
+        if exit_status == 0:
+            return True
+
+        self.remove_pyc('lib')
 
     def reset(self):
         """
@@ -851,9 +873,31 @@ class SourceUpdateManager(UpdateManager):
             logger.log("Traceback: " + traceback.format_exc(), logger.DEBUG)
             return False
 
+        self.clean_libs()
+
         # Notify update successful
         notifiers.notify_git_update(sickbeard.CUR_COMMIT_HASH or "")
         return True
+
+    def clean_libs(self):
+        lib_path = ek(os.path.join(sickbeard.PROG_DIR, 'lib'))
+
+        def removeEmptyFolders(path):
+            if not ek(os.path.isdir, path):
+                return
+
+            files = ek(os.listdir, path)
+            for f in files:
+                full_path = ek(os.path.join, path, f)
+                if ek(os.path.isdir, full_path):
+                    removeEmptyFolders(full_path)
+
+            files = ek(os.listdir, path)
+            if len(files) == 0 and path != lib_path:
+                ek(os.rmdir, path)
+
+        self.remove_pyc('lib')
+        removeEmptyFolders(lib_path)
 
     @staticmethod
     def list_remote_branches():
