@@ -128,15 +128,15 @@ class ProperFinder(object):
             if not parse_result.series_name:
                 continue
 
-            if not parse_result.episode_numbers:
-                logger.log(
-                    "Ignoring " + curProper.name + " because it's for a full season rather than specific episode",
-                    logger.DEBUG)
+            if parse_result.show.paused:
+                logger.log("Ignoring " + curProper.name + " because " + parse_result.show.name + " is paused", logger.DEBUG)
                 continue
 
-            logger.log(
-                "Successful match! Result " + parse_result.original_name + " matched to show " + parse_result.show.name,
-                logger.DEBUG)
+            if not parse_result.episode_numbers:
+                logger.log("Ignoring " + curProper.name + " because it's for a full season rather than specific episode", logger.DEBUG)
+                continue
+
+            logger.log("Successful match! Result " + parse_result.original_name + " matched to show " + parse_result.show.name, logger.DEBUG)
 
             # set the indexerid in the db to the show's indexerid
             curProper.indexerid = parse_result.show.indexerid
@@ -212,7 +212,6 @@ class ProperFinder(object):
         """
 
         for curProper in properList:
-
             historyLimit = datetime.datetime.today() - datetime.timedelta(days=30)
 
             # make sure the episode has been downloaded before
