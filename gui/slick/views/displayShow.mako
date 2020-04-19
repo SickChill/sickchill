@@ -120,7 +120,7 @@
                                      style="max-height:50px;border:1px solid black;" class="pull-right">
                             </div>
                             <div class="pull-left col-lg-8 col-md-8 col-sm-12 col-xs-12">
-                                % if 'rating' in show.imdb_info:
+                                % if 'rating' in show.imdb_info and 'votes' in show.imdb_info:
                                     <% rating_tip = str(show.imdb_info['rating']) + " / 10" + _('Stars') + "<br>" + str(show.imdb_info['votes']) +  _('Votes') %>
                                     <span class="imdbstars" qtip-content="${rating_tip}">${show.imdb_info['rating']}</span>
                                 % endif
@@ -135,9 +135,11 @@
                                     % endif
                                     <span>
                                     % if show.imdb_info.get('year'):
-                                        (${show.imdb_info['year']}) -
+                                        (${show.imdb_info['year']})
                                     % endif
-                                            ${show.imdb_info['runtimes']} ${_('minutes')}
+                                    % if show.imdb_info.get('runtime'):
+                                        ${show.imdb_info['runtimes']} ${_('minutes')}
+                                    % endif
                                     </span>
                                     <a href="${anon_url('http://www.imdb.com/title/', show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><span class="displayshow-icon-imdb" /></a>
                                     <a href="${anon_url('https://trakt.tv/shows/', show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="https://trakt.tv/shows/${show.imdbid}"><span class="displayshow-icon-trakt" /></a>
