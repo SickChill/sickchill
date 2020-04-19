@@ -23,7 +23,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Third Party Imports
-from lib.rtorrent9 import RTorrent
+from rtorrent9 import RTorrent
 
 # First Party Imports
 import sickbeard
