@@ -1,0 +1,179 @@
+#!/home/dusted/Envs/ok/bin/python
+
+import sys
+try:
+    from hachoir_core.error import error, HachoirError
+    from hachoir_core.cmd_line import unicodeFilename
+    from hachoir_core.i18n import getTerminalCharset, _
+    from hachoir_core.benchmark import Benchmark
+    from hachoir_core.stream import InputStreamError
+    from hachoir_core.tools import makePrintable
+    from hachoir_parser import createParser, ParserList
+    import hachoir_core.config as hachoir_config
+    from hachoir_metadata import config
+except ImportError, err:
+    raise
+    print >>sys.stderr, "Unable to import an Hachoir module: %s" % err
+    sys.exit(1)
+from optparse import OptionGroup, OptionParser
+from hachoir_metadata import extractMetadata
+from hachoir_metadata.metadata import extractors as metadata_extractors
+
+
+def displayParserList(*args):
+    parser_list = ParserList()
+    for parser in metadata_extractors.keys():
+        parser_list.add(parser)
+    parser_list.print_(_("List of metadata extractors."))
+    sys.exit(0)
+
+def displayVersion(*args):
+    import hachoir_core
+    from hachoir_metadata import __version__
+    print _("Metadata extractor version %s") % __version__
+    print _("Hachoir library version %s") % hachoir_core.__version__
+    print
+    print _("Website: %s/wiki/hachoir-metadata") % hachoir_core.WEBSITE
+    sys.exit(0)
+
+def parseOptions():
+    parser = OptionParser(usage="%prog [options] files")
+    parser.add_option("--type", help=_("Only display file type (description)"),
+        action="store_true", default=False)
+    parser.add_option("--mime", help=_("Only display MIME type"),
+        action="store_true", default=False)
+    parser.add_option("--level",
+        help=_("Quantity of information to display from 1 to 9 (9 is the maximum)"),
+        action="store", default="9", type="choice",
+        choices=[ str(choice) for choice in xrange(1,9+1) ])
+    parser.add_option("--raw", help=_("Raw output"),
+        action="store_true", default=False)
+    parser.add_option("--bench", help=_("Run benchmark"),
+        action="store_true", default=False)
+    parser.add_option("--force-parser",help=_("List all parsers then exit"),
+        type="str")
+    parser.add_option("--parser-list",help=_("List all parsers then exit"),
+        action="callback", callback=displayParserList)
+    parser.add_option("--profiler", help=_("Run profiler"),
+        action="store_true", default=False)
+    parser.add_option("--version", help=_("Display version and exit"),
+        action="callback", callback=displayVersion)
+    parser.add_option("--quality", help=_("Information quality (0.0=fastest, 1.0=best, and default is 0.5)"),
+        action="store", type="float", default="0.5")
+    parser.add_option("--maxlen", help=_("Maximum string length in characters, 0 means unlimited (default: %s)" % config.MAX_STR_LENGTH),
+        type="int", default=config.MAX_STR_LENGTH)
+    parser.add_option("--verbose", help=_("Verbose mode"),
+        default=False, action="store_true")
+    parser.add_option("--debug", help=_("Debug mode"),
+        default=False, action="store_true")
+
+    values, filename = parser.parse_args()
+    if len(filename) == 0:
+        parser.print_help()
+        sys.exit(1)
+
+    # Update limits
+    config.MAX_STR_LENGTH = values.maxlen
+    if values.raw:
+        config.RAW_OUTPUT = True
+
+    return values, filename
+
+def processFile(values, filename,
+display_filename=False, priority=None, human=True, display=True):
+    charset = getTerminalCharset()
+    filename, real_filename = unicodeFilename(filename, charset), filename
+
+    # Create parser
+    try:
+        if values.force_parser:
+            tags = [ ("id", values.force_parser), None ]
+        else:
+            tags = None
+        parser = createParser(filename, real_filename=real_filename, tags=tags)
+    except InputStreamError, err:
+        error(unicode(err))
+        return False
+    if not parser:
+        error(_("Unable to parse file: %s") % filename)
+        return False
+
+    # Extract metadata
+    extract_metadata = not(values.mime or values.type)
+    if extract_metadata:
+        try:
+            metadata = extractMetadata(parser, values.quality)
+        except HachoirError, err:
+            error(unicode(err))
+            metadata = None
+        if not metadata:
+            parser.error(_("Hachoir can't extract metadata, but is able to parse: %s")
+                % filename)
+            return False
+
+    if display:
+        # Display metadatas on stdout
+        if extract_metadata:
+            text = metadata.exportPlaintext(priority=priority, human=human)
+            if not text:
+                text = [_("(no metadata, priority may be too small)")]
+            if display_filename:
+                for line in text:
+                    line = "%s: %s" % (filename, line)
+                    print makePrintable(line, charset)
+            else:
+                for line in text:
+                    print makePrintable(line, charset)
+        else:
+            if values.type:
+                text = parser.description
+            else:
+                text = parser.mime_type
+            if display_filename:
+                text = "%s: %s" % (filename, text)
+            print text
+    return True
+
+def processFiles(values, filenames, display=True):
+    human = not(values.raw)
+    ok = True
+    priority = int(values.level)*100 + 99
+    display_filename = (1 < len(filenames))
+    for filename in filenames:
+        ok &= processFile(values, filename, display_filename, priority, human, display)
+    return ok
+
+def benchmarkMetadata(values, filenames):
+    bench = Benchmark()
+    bench.run(processFiles, values, filenames, display=False)
+
+def profile(values, filenames):
+    from hachoir_core.profiler import runProfiler
+    return runProfiler(processFiles, (values, filenames), {'display': False})
+
+def main():
+    try:
+        # Parser options and initialize Hachoir
+        values, filenames = parseOptions()
+
+        if values.debug:
+            hachoir_config.debug = True
+        elif values.verbose:
+            hachoir_config.verbose = True
+        else:
+            hachoir_config.quiet = True
+
+        if values.profiler:
+            ok = profile(values, filenames)
+        elif values.bench:
+            ok = benchmarkMetadata(values, filenames)
+        else:
+            ok = processFiles(values, filenames)
+    except KeyboardInterrupt:
+        print _("Program interrupted (CTRL+C).")
+        ok = False
+    sys.exit(int(not ok))
+
+if __name__ == "__main__":
+    main()
+

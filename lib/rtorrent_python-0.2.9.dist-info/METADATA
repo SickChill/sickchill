@@ -1,0 +1,51 @@
+Metadata-Version: 2.1
+Name: rtorrent-python
+Version: 0.2.9
+Summary: A simple rTorrent interface written in Python
+Home-page: https://github.com/cjlucas/rtorrent-python
+Author: Chris Lucas
+Author-email: chris@chrisjlucas.com
+Maintainer: Chris Lucas
+Maintainer-email: chris@chrisjlucas.com
+License: MIT
+Keywords: rtorrent p2p
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Communications :: File Sharing
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+
+ABOUT THIS PROJECT
+------------------
+The xmlrpc interface to rTorrent is extremely unintuitive and has very little documentation, this project aims to make interfacing with rTorrent much easier.
+
+NOTE: This project is considered beta, so expect the API to change. All API changes will be noted in the CHANGELOG.
+
+REQUIREMENTS
+------------
+- [Python](http://www.python.org/) 2.6 or higher, 3.0 or higher (might work on older versions, but these are the only ones I'm supporting).
+- [rTorrent](http://libtorrent.rakshasa.no/) 0.8.1 or later, with xmlrpc-c support (see [this guide](http://libtorrent.rakshasa.no/wiki/RTorrentXMLRPCGuide)).
+- [xmlrpc-c](http://xmlrpc-c.sourceforge.net/) 1.00 or later. 1.07 or later for 64bit integer support (highly recommended, download either the stable or advanced branches).
+- [Apache](http://www.apache.org/) or [lighttpd](http://www.lighttpd.net/)
+
+INSTALLATION
+------------
+
+If you're downloading the source:
+
+```$ python setup.py install```
+
+Or you can install directly from PyPI:
+
+```$ pip install rtorrent-python```
+
+TODO
+----
+- Add support for views
+- Logging support
+- Documentation and examples
+

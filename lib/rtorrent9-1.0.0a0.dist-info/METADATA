@@ -1,0 +1,24 @@
+Metadata-Version: 2.1
+Name: rtorrent9
+Version: 1.0.0a0
+Summary: A simple rTorrent interface written in Python
+Home-page: https://github.com/sickchill/rtorrent-python
+Author: Chris Lucas
+Author-email: miigotu@gmail.com
+Maintainer: Dustyn Gibson
+Maintainer-email: miigotu@gmail.com
+License: MIT
+Keywords: rtorrent p2p
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Communications :: File Sharing
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+
+UNKNOWN
+
+
