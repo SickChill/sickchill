@@ -1,4 +1,4 @@
-# Copyright 2004-2019 Davide Alberani <da@erlug.linux.it>
+# Copyright 2004-2020 Davide Alberani <da@erlug.linux.it>
 #           2008-2018 H. Turgut Uyar <uyar@tekir.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@ from .movieParser import (
     DOMHTMLTechParser
 )
 from .piculet import Path, Rule, Rules, transformers
-from .utils import DOMParserBase, analyze_imdbid, build_movie
+from .utils import DOMParserBase, analyze_imdbid, build_movie, build_person
 
 
 _re_spaces = re.compile(r'\s+')
@@ -202,6 +202,11 @@ class DOMHTMLMaindetailsParser(DOMParserBase):
                     status=x.get('status') or None
                 )
             )
+        ),
+        Rule(
+            key='imdbID',
+            extractor=Path('//meta[@property="pageId"]/@content',
+                           transform=lambda x: (x or '').replace('nm', ''))
         )
     ]
 
@@ -210,6 +215,13 @@ class DOMHTMLMaindetailsParser(DOMParserBase):
     ]
 
     def postprocess_data(self, data):
+        filmo = {}
+        for job in (data.get('filmography') or []):
+            if not isinstance(job, dict) or not job:
+                continue
+            filmo.update(job)
+        if filmo:
+            data['filmography'] = filmo
         for key in ['name']:
             if (key in data) and isinstance(data[key], dict):
                 subdata = data[key]
@@ -226,21 +238,6 @@ class DOMHTMLMaindetailsParser(DOMParserBase):
         # XXX: the code below is for backwards compatibility
         # probably could be removed
         for key in list(data.keys()):
-            if key.startswith('actor '):
-                if 'actor' not in data:
-                    data['actor'] = []
-                data['actor'].extend(data[key])
-                del data[key]
-            if key.startswith('actress '):
-                if 'actress' not in data:
-                    data['actress'] = []
-                data['actress'].extend(data[key])
-                del data[key]
-            if key.startswith('self '):
-                if 'self' not in data:
-                    data['self'] = []
-                data['self'].extend(data[key])
-                del data[key]
             if key == 'birth place':
                 data['birth notes'] = data[key]
                 del data[key]
@@ -535,13 +532,116 @@ class DOMHTMLPersonGenresParser(DOMParserBase):
             return {}
         return {self.kind: data}
 
+def _process_person_award(x):
+    awards = {}
+    movies = x.get('movies')
+    year = x.get('year')
+    result = x.get('result')
+    prize = x.get('prize')
+    category = x.get('category')
+    award = x.get('award')
+    sharedWith = x.get('shared with')
+
+    if year:
+        awards['year'] = int(year.strip())
+    if result:
+        awards['result'] = result.strip()
+    if prize:
+        awards['prize'] = prize.strip()
+    if category:
+        awards['category'] = category.strip()
+    if movies:
+        awards['movies'] = movies
+    if award:
+        awards['award'] = award.strip()
+    if sharedWith:
+        awards['shared with'] = sharedWith
+    return awards
+
+
+class DOMHTMLPersonAwardsParser(DOMParserBase):
+    _defGetRefs = True
+
+    rules = [
+        Rule(
+            key='awards',
+            extractor=Rules(
+                foreach='//table[@class="awards"]/tr',
+                rules=[
+                    Rule(
+                        key='year',
+                        extractor=Path('./td[@class="award_year"]/a/text()')
+                    ),
+                    Rule(
+                        key='result',
+                        extractor=Path('./td[@class="award_outcome"]/b/text()')
+                    ),
+                    Rule(
+                        key='prize',
+                        extractor=Path('.//span[@class="award_category"]/text()')
+                    ),
+                    Rule(
+                        key='movies',
+                        foreach='./td[@class="award_description"]/a',
+                        extractor=Rules([
+                            Rule(
+                                key='title',
+                                extractor=Path('./text()')
+                            ),
+                            Rule(
+                                key='link',
+                                extractor=Path('./@href')
+                            ),
+                            Rule(
+                                key='year',
+                                extractor=Path('./following-sibling::span[@class="title_year"][1]/text()')
+                            )
+                        ],
+                        transform=lambda x: build_movie(
+                            x.get('title') or '',
+                            movieID=analyze_imdbid(x.get('link')),
+                            year=x.get('year')
+                        )
+                    )),
+                    Rule(
+                        key='shared with',
+                        foreach='./td[@class="award_description"]/div[@class="shared_with"]/following-sibling::ul//a',
+                        extractor=Rules([
+                            Rule(
+                                key='name',
+                                extractor=Path('./text()')
+                            ),
+                            Rule(
+                                key='link',
+                                extractor=Path('./@href')
+                            )],
+                            transform=lambda x: build_person(
+                                x.get('name') or '',
+                                personID=analyze_imdbid(x.get('link'))
+                            )
+                        )
+                    ),
+                    Rule(
+                        key='category',
+                        extractor=Path('./td[@class="award_description"]/text()')
+                    ),
+                    Rule(
+                        key='award',
+                        extractor=Path('../preceding-sibling::h3[1]/text()')
+                    ),
+                ],
+                transform=_process_person_award
+            )
+        )
+    ]
+
 
 _OBJECTS = {
     'maindetails_parser': ((DOMHTMLMaindetailsParser,), None),
     'bio_parser': ((DOMHTMLBioParser,), None),
     'otherworks_parser': ((DOMHTMLOtherWorksParser,), None),
     'person_officialsites_parser': ((DOMHTMLOfficialsitesParser,), None),
-    'person_awards_parser': ((DOMHTMLAwardsParser,), {'subject': 'name'}),
+    'person_awards_parser': ((DOMHTMLPersonAwardsParser,), None),
     'publicity_parser': ((DOMHTMLTechParser,), {'kind': 'publicity'}),
     'person_contacts_parser': ((DOMHTMLTechParser,), {'kind': 'contacts'}),
     'person_genres_parser': ((DOMHTMLPersonGenresParser,), None),

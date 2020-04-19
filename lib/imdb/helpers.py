@@ -27,7 +27,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import difflib
 import gettext
 import re
-from cgi import escape
+from html import escape
 from gettext import gettext as _
 
 # The modClearRefs can be used to strip names and titles references from
@@ -55,7 +55,7 @@ def makeCgiPrintEncoding(encoding):
     def cgiPrint(s):
         """Encode the given string using the %s encoding, and replace
         chars outside the given charset with XML char references.""" % encoding
-        s = escape(s, quote=1)
+        s = escape(s, quote = 1)
         if isinstance(s, str):
             s = s.encode(encoding, 'xmlcharrefreplace')
         return s

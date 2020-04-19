@@ -56,7 +56,7 @@ def _parse_secondary_info(info):
     if match.group(4):
         kind = 'tv series'
     if match.group(6):
-        parsed['end_year'] = int(match.group(6))
+        parsed['series years'] = match.group(3) + "-" + match.group(6)
     if match.group(8):
         kind = match.group(8).lower()
     if kind is None:

@@ -1121,10 +1121,9 @@ def _seq2xml(seq, _l=None, withRefs=False, modFunct=None,
 
 
 _xmlHead = """<?xml version="1.0"?>
-<!DOCTYPE %s SYSTEM "http://imdbpy.sf.net/dtd/imdbpy{VERSION}.dtd">
+<!DOCTYPE %s SYSTEM "https://imdbpy.github.io/static/dtd/imdbpy.dtd">
 
 """
-_xmlHead = _xmlHead.replace('{VERSION}', VERSION.replace('.', '').split('dev')[0][:2])
 
 
 @total_ordering

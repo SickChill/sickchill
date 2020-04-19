@@ -13,7 +13,9 @@ hachoir-core==1.3.3
 hachoir-metadata==1.3.3
 hachoir-parser==1.3.4
 html5lib==1.0.1
-IMDbPY==6.8
+# IMDbPY==6.8
+git+https://github.com/alberanid/imdbpy
+
 ipaddress==1.0.23
 Js2Py==0.70
 jsonrpclib==0.1.7

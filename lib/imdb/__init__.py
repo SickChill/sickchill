@@ -25,7 +25,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 __all__ = ['IMDb', 'IMDbError', 'Movie', 'Person', 'Character', 'Company',
            'available_access_systems']
-__version__ = VERSION = '6.8'
+__version__ = VERSION = '6.9dev20200322'
 
 
 import logging
@@ -76,7 +76,7 @@ imdbURL_company_base = '%scompany/' % imdbURL_base
 # http://www.imdb.com/company/co%s/
 imdbURL_company_main = imdbURL_company_base + 'co%s/'
 # http://www.imdb.com/keyword/%s/
-imdbURL_keyword_main = imdbURL_base + 'keyword/%s/'
+imdbURL_keyword_main = imdbURL_base + 'search/keyword/?keywords=%s'
 # http://www.imdb.com/chart/top
 imdbURL_top250 = imdbURL_base + 'chart/top'
 # http://www.imdb.com/chart/bottom
@@ -292,7 +292,7 @@ class IMDbBase:
         # http://www.imdb.com/company/co%s/
         imdbURL_company_main = imdbURL_company_base + 'co%s/'
         # http://www.imdb.com/keyword/%s/
-        imdbURL_keyword_main = imdbURL_base + 'keyword/%s/'
+        imdbURL_keyword_main = imdbURL_base + '/search/keyword?keywords=%s'
         # http://www.imdb.com/chart/top
         imdbURL_top250 = imdbURL_base + 'chart/top'
         # http://www.imdb.com/chart/bottom
@@ -603,13 +603,13 @@ class IMDbBase:
             results = 100
         return self._search_keyword(keyword, results)
 
-    def _get_keyword(self, keyword, results):
+    def _get_keyword(self, keyword, results, page):
         """Return a list of tuples (movieID, {movieData})"""
         # XXX: for the real implementation, see the method of the
         #      subclass, somewhere under the imdb.parser package.
         raise NotImplementedError('override this method')
 
-    def get_keyword(self, keyword, results=None):
+    def get_keyword(self, keyword, results=None, page=None):
         """Return a list of movies for the given keyword."""
         if results is None:
             results = self._keywordsResults
@@ -617,7 +617,7 @@ class IMDbBase:
             results = int(results)
         except (ValueError, OverflowError):
             results = 100
-        res = self._get_keyword(keyword, results)
+        res = self._get_keyword(keyword, results, page)
         return [Movie.Movie(movieID=self._get_real_movieID(mi),
                 data=md, modFunct=self._defModFunct,
                 accessSystem=self.accessSystem) for mi, md in res][:results]
@@ -756,6 +756,68 @@ class IMDbBase:
                 mop.update_namesRefs(ret['namesRefs'])
             if 'charactersRefs' in ret:
                 mop.update_charactersRefs(ret['charactersRefs'])
+        mop.set_data(res, override=0)
+
+    def update_series_seasons(self, mop, season_nums, override=0):
+        """Given a Movie object with only retrieve the season data.
+
+        season_nums is the list of the specific seasons to retrieve.
+
+        If override is set, the information are retrieved and updated
+        even if they're already in the object."""
+        mopID = None
+        if isinstance(mop, Movie.Movie):
+            mopID = mop.movieID
+        else:
+            raise IMDbError('object ' + repr(mop) + ' is not a Movie instance')
+        if mopID is None:
+            raise IMDbDataAccessError('supplied object has null movieID, personID or companyID')
+        if mop.accessSystem == self.accessSystem:
+            aSystem = self
+        else:
+            aSystem = IMDb(mop.accessSystem)
+
+        info = 'episodes'
+
+        res = {}
+        
+        if info in mop.current_info and not override:
+            return
+        _imdb_logger.debug('retrieving "%s" info set', info)
+        try:
+            method = getattr(aSystem, 'get_movie_episodes')
+        except AttributeError:
+            _imdb_logger.error('unknown information set "%s"', info)
+            # Keeps going.
+            method = lambda *x: {}
+        try:
+            ret = method(mopID, season_nums)
+        except Exception:
+            _imdb_logger.critical(
+                'caught an exception retrieving or parsing "%s" info set'
+                ' for mopID "%s" (accessSystem: %s)',
+                info, mopID, mop.accessSystem, exc_info=True
+            )
+            ret = {}
+            # If requested by the user, reraise the exception.
+            if self._reraise_exceptions:
+                raise
+        keys = None
+        if 'data' in ret:
+            res.update(ret['data'])
+            if isinstance(ret['data'], dict):
+                keys = list(ret['data'].keys())
+        if 'info sets' in ret:
+            for ri in ret['info sets']:
+                mop.add_to_current_info(ri, keys, mainInfoset=info)
+        else:
+            mop.add_to_current_info(info, keys)
+        if 'titlesRefs' in ret:
+            mop.update_titlesRefs(ret['titlesRefs'])
+        if 'namesRefs' in ret:
+            mop.update_namesRefs(ret['namesRefs'])
+        if 'charactersRefs' in ret:
+            mop.update_charactersRefs(ret['charactersRefs'])
         mop.set_data(res, override=0)
 
     def get_imdbMovieID(self, movieID):

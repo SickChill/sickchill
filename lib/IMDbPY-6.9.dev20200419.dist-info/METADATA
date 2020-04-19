@@ -1,14 +1,14 @@
 Metadata-Version: 2.1
 Name: IMDbPY
-Version: 6.8
+Version: 6.9.dev20200419
 Summary: Python package to access the IMDb's database
-Home-page: https://imdbpy.sourceforge.io/
+Home-page: https://imdbpy.github.io/
 Author: Davide Alberani
 Author-email: da@erlug.linux.it
 Maintainer: Davide Alberani
 Maintainer-email: da@erlug.linux.it
 License: GPL
-Download-URL: https://imdbpy.sourceforge.io/downloads.html
+Download-URL: https://imdbpy.github.io/downloads/
 Keywords: imdb,movie,people,database,cinema,film,person,cast,actor,actress,director,sql,character,company,package,plain text data files,keywords,top250,bottom100,xml
 Platform: any
 Classifier: Development Status :: 5 - Production/Stable
@@ -59,6 +59,6 @@ to provide access to the IMDb's data to their programs.
 
 Some simple example scripts - useful for the end users - are included
 in this package; other IMDbPY-based programs are available at the
-home page: https://imdbpy.sourceforge.io/
+home page: https://imdbpy.github.io/
 
 

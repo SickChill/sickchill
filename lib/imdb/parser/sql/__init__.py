@@ -1569,7 +1569,7 @@ class IMDbSqlAccessSystem(IMDbBase):
         return filterSimilarKeywords(keyword,
                                      _iterKeywords(Keyword.select(constr)))[:results]
 
-    def _get_keyword(self, keyword, results):
+    def _get_keyword(self, keyword, results, page=None):
         keyID = Keyword.select(Keyword.q.keyword == keyword)
         if keyID.count() == 0:
             return []

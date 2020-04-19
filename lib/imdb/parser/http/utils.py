@@ -1,4 +1,4 @@
-# Copyright 2004-2018 Davide Alberani <da@erlug.linux.it>
+# Copyright 2004-2019 Davide Alberani <da@erlug.linux.it>
 #           2008-2018 H. Turgut Uyar <uyar@tekir.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -346,8 +346,6 @@ def build_movie(txt, movieID=None, roleID=None, status=None,
         if notes:
             notes += ' '
         notes += additionalNotes
-    if role and isinstance(role, list) and notes.endswith(role[-1].replace('\n', ' ')):
-        role = role[:-1]
     m = Movie(title=title, movieID=movieID, notes=notes, currentRole=role,
               roleID=roleID, roleIsPerson=_parsingCharacter,
               modFunct=modFunct, accessSystem=accessSystem)

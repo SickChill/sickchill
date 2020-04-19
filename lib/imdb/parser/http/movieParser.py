@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright 2004-2019 Davide Alberani <da@erlug.linux.it>
+# Copyright 2004-2020 Davide Alberani <da@erlug.linux.it>
 #           2008-2018 H. Turgut Uyar <uyar@tekir.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -46,14 +46,12 @@ from imdb.Person import Person
 from imdb.utils import _Container, KIND_MAP
 
 from .piculet import Path, Rule, Rules, preprocessors, transformers
-from .utils import DOMParserBase, analyze_imdbid, build_person
-
+from .utils import DOMParserBase, analyze_imdbid, build_person, build_movie
 
 if PY2:
     from urllib import unquote
 else:
     from urllib.parse import unquote
-
 
 # Dictionary used to convert some section's names.
 _SECT_CONV = {
@@ -137,6 +135,7 @@ _reRolesMovie = re.compile(r'(<td class="character">)(.*?)(</td>)', re.I | re.M 
 def makeSplitter(lstrip=None, sep='|', comments=True,
                  origNotesSep=' (', newNotesSep='::(', strip=None):
     """Return a splitter function suitable for a given set of data."""
+
     def splitter(x):
         if not x:
             return x
@@ -152,6 +151,7 @@ def makeSplitter(lstrip=None, sep='|', comments=True,
         if strip:
             lx[:] = [j.strip(strip) for j in lx]
         return lx
+
     return splitter
 
 
@@ -222,6 +222,7 @@ def analyze_certificates(certificates):
                 el,
             )
         return acc
+
     certificates = [el.strip() for el in certificates.split('\n') if el.strip()]
     return functools.reduce(reducer, certificates, [])
 
@@ -251,6 +252,11 @@ class DOMHTMLMovieParser(DOMParserBase):
             key='title',
             extractor=Path('//meta[@property="og:title"]/@content',
                            transform=analyze_og_title)
+        ),
+        Rule(
+            key='original title',
+            extractor=Path('//div[@class="titlereference-header"]//h3[@itemprop="name"]//text()',
+                           transform=lambda x: re_space.sub(' ', x).strip())
         ),
 
         # parser for misc sections like 'casting department', 'stunts', ...
@@ -305,6 +311,29 @@ class DOMHTMLMovieParser(DOMParserBase):
                     personID=analyze_imdbid(x.get('link')),
                     roleID=(x.get('roleID') or '').split('/')
                 )
+            )
+        ),
+        Rule(
+            key='recommendations',
+            extractor=Rules(
+                foreach='//div[@class="rec_overview"]',
+                rules=[
+                    Rule(
+                        key='movieID',
+                        extractor=Path(
+                            './@data-tconst',
+                            transform=lambda x: (x or '').replace('tt', '')
+                        )
+                    ),
+                    Rule(
+                        key='title',
+                        extractor=Path(
+                            './/div[@class="rec-title"]//text()',
+                            transform=lambda x: re_space.sub(' ', x or '').strip()
+                        )
+                    ),
+                ],
+                transform=lambda x: build_movie(x.get('title', ''), movieID=x.get('movieID'))
             )
         ),
         Rule(
@@ -633,6 +662,11 @@ class DOMHTMLMovieParser(DOMParserBase):
         Rule(
             key='cover url',
             extractor=Path('//img[@alt="Poster"]/@src')
+        ),
+        Rule(
+            key='imdbID',
+            extractor=Path('//meta[@property="pageId"]/@content',
+                           transform=lambda x: (x or '').replace('tt', ''))
         )
     ]
 
@@ -650,7 +684,7 @@ class DOMHTMLMovieParser(DOMParserBase):
         # Handle series information.
         xpath = self.xpath(dom, "//b[text()='Series Crew']")
         if xpath:
-            b = xpath[-1]   # In doubt, take the last one.
+            b = xpath[-1]  # In doubt, take the last one.
             for a in self.xpath(b, "./following::h5/a[@class='glossary']"):
                 name = a.get('name')
                 if name:
@@ -868,7 +902,8 @@ def _process_award(x):
         award['with'] = received_with.strip()
     notes = x.get('notes')
     if notes is not None:
-        notes = notes.strip()
+        notes = notes.strip().split('\n', 2)[0]
+        notes = re_space.sub(' ', notes)
         if notes:
             award['notes'] = notes
     award['anchor'] = x.get('anchor')
@@ -893,61 +928,40 @@ class DOMHTMLAwardsParser(DOMParserBase):
         Rule(
             key='awards',
             extractor=Rules(
-                foreach='//table//big',
+                foreach='//*[@id="main"]/div[1]/div/table//tr',
                 rules=[
                     Rule(
-                        key=Path('./a'),
-                        extractor=Rules(
-                            foreach='./ancestor::tr[1]/following-sibling::tr/td[last()][not(@colspan)]',
-                            rules=[
-                                Rule(
-                                    key='year',
-                                    extractor=Path('./td[1]/a/text()')
-                                ),
-                                Rule(
-                                    key='result',
-                                    extractor=Path('../td[2]/b/text()')
-                                ),
-                                Rule(
-                                    key='award',
-                                    extractor=Path('./td[3]/text()')
-                                ),
-                                Rule(
-                                    key='category',
-                                    extractor=Path('./text()[1]')
-                                ),
-                                Rule(
-                                    key='with',
-                                    extractor=Path(
-                                        './small[starts-with(text(), "Shared with:")]/'
-                                        'following-sibling::a[1]/text()'
-                                    )
-                                ),
-                                Rule(
-                                    key='notes',
-                                    extractor=Path('./small[last()]//text()')
-                                ),
-                                Rule(
-                                    key='anchor',
-                                    extractor=Path('.//text()')
-                                )
-                            ],
-                            transform=_process_award
-                        )
+                        key='year',
+                        extractor=Path('normalize-space(./ancestor::table/preceding-sibling::*[1]/a/text())')
+                    ),
+                    Rule(
+                        key='result',
+                        extractor=Path('./td[1]/b/text()')
+                    ),
+                    Rule(
+                        key='award',
+                        extractor=Path('./td[1]/span/text()')
+                    ),
+                    Rule(
+                        key='category',
+                        extractor=Path('normalize-space(./ancestor::table/preceding-sibling::*[1]/text())')
+                    ),
+                    Rule(
+                        key='notes',
+                        extractor=Path('./td[2]/text()')
+                    ),
+                    Rule(
+                        key='anchor',
+                        extractor=Path('.//text()')
                     )
-                ]
+                ],
+                transform=_process_award
             )
         ),
         Rule(
             key='recipients',
             extractor=Rules(
-                foreach='//table//big',
-                rules=[
-                    Rule(
-                        key=Path('./a'),
-                        extractor=Rules(
-                            foreach='./ancestor::tr[1]/following-sibling::tr'
-                                    '/td[last()]/small[1]/preceding-sibling::a',
+                foreach='//*[@id="main"]/div[1]/div/table//tr/td[2]/a',
                             rules=[
                                 Rule(
                                     key='name',
@@ -959,12 +973,9 @@ class DOMHTMLAwardsParser(DOMParserBase):
                                 ),
                                 Rule(
                                     key='anchor',
-                                    extractor=Path('..//text()')
+                                    extractor=Path('./ancestor::tr//text()')
                                 )
                             ]
-                        )
-                    )
-                ]
             )
         )
     ]
@@ -999,35 +1010,28 @@ class DOMHTMLAwardsParser(DOMParserBase):
         if len(data) == 0:
             return {}
         nd = []
-        for key in list(data.keys()):
-            dom = self.get_dom(key)
-            assigner = self.xpath(dom, "//a/text()")[0]
-            for entry in data[key]:
-                if 'name' not in entry:
-                    if not entry:
-                        continue
-                    # this is an award, not a recipient
-                    entry['assigner'] = assigner.strip()
-                    # find the recipients
-                    matches = [p for p in data[key]
-                               if 'name' in p and (entry['anchor'] == p['anchor'])]
-                    if self.subject == 'title':
-                        recipients = [
-                            Person(name=recipient['name'],
-                                   personID=analyze_imdbid(recipient['link']))
-                            for recipient in matches
-                        ]
-                        entry['to'] = recipients
-                    elif self.subject == 'name':
-                        recipients = [
-                            Movie(title=recipient['name'],
-                                  movieID=analyze_imdbid(recipient['link']))
-                            for recipient in matches
-                        ]
-                        entry['for'] = recipients
-                    nd.append(entry)
-                del entry['anchor']
+        for award in data['awards']:
+            matches = [p for p in data.get('recipients', [])
+                       if 'nm' in p.get('link') and award.get('anchor') == p.get('anchor')]
+            if self.subject == 'title':
+                recipients = [
+                    Person(name=recipient['name'],
+                           personID=analyze_imdbid(recipient['link']))
+                    for recipient in matches
+                ]
+                award['to'] = recipients
+            elif self.subject == 'name':
+                recipients = [
+                    Movie(title=recipient['name'],
+                          movieID=analyze_imdbid(recipient['link']))
+                    for recipient in matches
+                ]
+                award['for'] = recipients
+            nd.append(award)
+            if 'anchor' in award:
+                del award['anchor']
         return {'awards': nd}
+
 
 
 class DOMHTMLTaglinesParser(DOMParserBase):
@@ -1077,8 +1081,8 @@ class DOMHTMLKeywordsParser(DOMParserBase):
         Rule(
             key='keywords',
             extractor=Path(
-                foreach='//a[starts-with(@href, "/search/keyword?keywords=")]',
-                path='./text()',
+                foreach='//td[@data-item-keyword]',
+                path='./@data-item-keyword',
                 transform=lambda x: x.lower().replace(' ', '-')
             )
         )
@@ -1235,10 +1239,9 @@ class DOMHTMLCrazyCreditsParser(DOMParserBase):
 
 
 def _process_goof(x):
-    if x['spoiler_category']:
-        return x['spoiler_category'].strip() + ': SPOILER: ' + x['text'].strip()
-    else:
-        return x['category'].strip() + ': ' + x['text'].strip()
+    text = (x.get('text') or '').strip()
+    category = (x.get('category') or 'Goof').strip()
+    return {"category": category, "text": text}
 
 
 class DOMHTMLGoofsParser(DOMParserBase):
@@ -1258,19 +1261,15 @@ class DOMHTMLGoofsParser(DOMParserBase):
         Rule(
             key='goofs',
             extractor=Rules(
-                foreach='//div[@class="soda odd"]',
+                foreach='//div[contains(@class, "soda sodavote")]',
                 rules=[
                     Rule(
                         key='text',
-                        extractor=Path('./text()')
+                        extractor=Path('./div[@class="sodatext"]/text()')
                     ),
                     Rule(
                         key='category',
                         extractor=Path('./preceding-sibling::h4[1]/text()')
-                    ),
-                    Rule(
-                        key='spoiler_category',
-                        extractor=Path('./h4/text()')
                     )
                 ],
                 transform=_process_goof
@@ -1294,21 +1293,9 @@ class DOMHTMLQuotesParser(DOMParserBase):
 
     rules = [
         Rule(
-            key='quotes_odd',
+            key='quotes',
             extractor=Path(
-                foreach='//div[@class="quote soda odd"]',
-                path='.//text()',
-                transform=lambda x: x
-                    .strip()
-                    .replace(' \n', '::')
-                    .replace('::\n', '::')
-                    .replace('\n', ' ')
-            )
-        ),
-        Rule(
-            key='quotes_even',
-            extractor=Path(
-                foreach='//div[@class="quote soda even"]',
+                foreach='//div[@class="sodatext"]',
                 path='.//text()',
                 transform=lambda x: x
                     .strip()
@@ -1319,18 +1306,12 @@ class DOMHTMLQuotesParser(DOMParserBase):
         )
     ]
 
-    preprocessors = [
-        (re.compile('<a href="#" class="hidesoda hidden">Hide options</a><br>', re.I), '')
-    ]
-
     def preprocess_dom(self, dom):
-        # Remove "link this quote" links.
-        preprocessors.remove(dom, '//span[@class="linksoda"]')
-        preprocessors.remove(dom, '//div[@class="sharesoda_pre"]')
+        preprocessors.remove(dom, '//div[@class="did-you-know-actions"]')
         return dom
 
     def postprocess_data(self, data):
-        quotes = data.get('quotes_odd', []) + data.get('quotes_even', [])
+        quotes = data.get('quotes', [])
         if not quotes:
             return {}
         quotes = [q.split('::') for q in quotes]
