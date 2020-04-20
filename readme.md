@@ -1,4 +1,4 @@
-SickChill [![Build Status](https://travis-ci.org/SickChill/SickChill.svg?branch=master)](https://travis-ci.org/SickChill/SickChill) [![Build status](https://ci.appveyor.com/api/projects/status/s8bb0iqroecnhya2/branch/master?svg=true)](https://ci.appveyor.com/project/miigotu/SickChill/branch/master) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/SickChill/SickChill.svg)](http://isitmaintained.com/project/SickChill/SickChill "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/SickChill/SickChill.svg)](http://isitmaintained.com/project/SickChill/SickChill "Percentage of issues still open") [![Coverage Status](https://codecov.io/gh/SickChill/SickChill/branch/master/graph/badge.svg)](https://codecov.io/gh/SickChill/SickChill) [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo) [![Donate](https://img.shields.io/badge/donations-appreciated-green.svg)](https://github.com/SickChill/SickChill/wiki/Donations)
+SickChill [![Build Status](https://travis-ci.org/SickChill/SickChill.svg?branch=master)](https://travis-ci.org/SickChill/SickChill) [![Build status](https://ci.appveyor.com/api/projects/status/s8bb0iqroecnhya2/branch/master?svg=true)](https://ci.appveyor.com/project/miigotu/SickChill/branch/master) [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo) [![Donate](https://img.shields.io/badge/donations-appreciated-green.svg)](https://github.com/SickChill/SickChill/wiki/Donations)
 ====================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
 
 #### Please do not confuse us with SickRageTV aka Sickrage.ca, which took over the `sickrage/sickrage` repository in Oct 2018
@@ -52,15 +52,7 @@ We HIGHLY recommend starting out with no database files at all to make this a fr
 
 #### Supported providers
 
-A full list can be found here: [Link](https://github.com/SickChill/SickChill/wiki/SickChill-Search-Providers)
-
-#### Special Thanks to:
-![image](https://rarbg.com/favicon.ico)[RARBG](https://rarbg.to)  
-![image](https://torrentproject2.se/favicon.ico)[TorrentProject](https://torrentproject.se/about)  
-![image](https://thepiratebay.org/favicon.ico)[ThePirateBay](https://thepiratebay.se/)  
-![image](https://nzb.cat/favicon.ico)[NZB.cat](https://nzb.cat/)  
-![image](https://nzbgeek.info/favicon.ico)[NZBGeek](https://nzbgeek.info)  
-![image](https://raw.githubusercontent.com/SickChill/SickChill/master/gui/slick/images/providers/dognzb.png)[DOGnzb](dognzb.cr)  
+A full list can be found here: [Link](https://github.com/SickChill/SickChill/wiki/SickChill-Search-Providers) 
 
 #### News and Changelog
 [news.md and CHANGES.md have moved to a separate repo, click here](https://github.com/SickChill/SickChill.github.io)
