@@ -198,7 +198,7 @@ class WDTVMetadata(generic.GenericMetadata):
                     curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.idxr.name))
                 return None
 
-            if str(ep_obj.airdate) != str(datetime.date.fromordinal(1)) and not myEp.get('firstAired'):
+            if ep_obj.airdate != datetime.date.min and not myEp.get('firstAired'):
                 myEp["firstAired"] = str(ep_obj.airdate)
 
             if not (myEp.get('episodeName') and myEp.get('firstAired')):
@@ -232,7 +232,7 @@ class WDTVMetadata(generic.GenericMetadata):
 
             firstAired = etree.SubElement(episode, "firstAired")
 
-            if curEpToWrite.airdate != datetime.date.fromordinal(1):
+            if curEpToWrite.airdate != datetime.date.min:
                 firstAired.text = str(curEpToWrite.airdate)
 
             if getattr(myShow, 'firstAired', None):

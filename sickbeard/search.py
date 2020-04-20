@@ -369,7 +369,7 @@ def searchForNeededEpisodes():
     didSearch = False
 
     show_list = sickbeard.showList
-    fromDate = datetime.date.fromordinal(1)
+    fromDate = datetime.date.min
     episodes = []
 
     for curShow in show_list:

@@ -177,7 +177,7 @@ class TIVOMetadata(generic.GenericMetadata):
                     curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.indexer_name))
                 return False
 
-            if str(ep_obj.airdate) != str(datetime.date.fromordinal(1)) and not myEp.get('firstAired'):
+            if ep_obj.airdate != datetime.date.min and not myEp.get('firstAired'):
                 myEp["firstAired"] = str(ep_obj.airdate)
 
             if not (myEp.get('episodeName') and myEp.get('firstAired')):
@@ -228,7 +228,7 @@ class TIVOMetadata(generic.GenericMetadata):
             # This must be entered as yyyy-mm-ddThh:mm:ssZ (the t is capitalized and never changes, the Z is also
             # capitalized and never changes). This is the original air date of the episode.
             # NOTE: Hard coded the time to T00:00:00Z as we really don't know when during the day the first run happened.
-            if curEpToWrite.airdate != datetime.date.fromordinal(1):
+            if curEpToWrite.airdate != datetime.date.min:
                 data += ("originalAirDate : " + str(curEpToWrite.airdate) + "T00:00:00Z\n")
 
             # This shows up at the beginning of the description on the Program screen and on the Details screen.

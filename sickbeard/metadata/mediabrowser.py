@@ -392,12 +392,12 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 # root (or single) episode
 
                 # default to today's date for specials if firstAired is not set
-                if str(ep_obj.airdate) != str(datetime.date.fromordinal(1)) and myEp.get('firstAired'):
+                if ep_obj.airdate != datetime.date.min and myEp.get('firstAired'):
                     myEp['firstAired'] = str(ep_obj.airdate)
 
                 if ep_obj.season == 0 and not myEp.get('firstAired'):
                     if ep_obj.show and ep_obj.show.startyear:
-                        myEp['firstAired'] = str(datetime.date.fromordinal(1).replace(year=ep_obj.show.startyear))
+                        myEp['firstAired'] = str(datetime.date.min.replace(year=ep_obj.show.startyear))
                     else:
                         myEp['firstAired'] = str(datetime.date.today())
 
@@ -429,7 +429,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                     absolute_number = etree.SubElement(episode, "absolute_number")
                     absolute_number.text = str(myEp['absoluteNumber'])
 
-                if curEpToWrite.airdate != datetime.date.fromordinal(1):
+                if curEpToWrite.airdate != datetime.date.min:
                     FirstAired = etree.SubElement(episode, "FirstAired")
                     FirstAired.text = str(curEpToWrite.airdate)
 

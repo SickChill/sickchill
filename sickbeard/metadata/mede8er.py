@@ -224,7 +224,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             if curEpToWrite == ep_obj:
                 # root (or single) episode
 
-                if str(ep_obj.airdate) != str(datetime.date.fromordinal(1)) and not myEp.get('firstAired'):
+                if ep_obj.airdate != datetime.date.min and not myEp.get('firstAired'):
                     myEp['firstAired'] = str(ep_obj.airdate)
 
                 if not (myEp.get('episodeName') and myEp.get('firstAired')):

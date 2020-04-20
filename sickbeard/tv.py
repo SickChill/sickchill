@@ -311,7 +311,7 @@ class TVShow(object):
 
         graceperiod = datetime.timedelta(days=30)
 
-        last_airdate = datetime.date.fromordinal(1)
+        last_airdate = datetime.date.min
 
         # get latest aired episode to compare against today - graceperiod and today + graceperiod
         main_db_con = db.DBConnection()
@@ -1308,7 +1308,7 @@ class TVEpisode(object):
         self._subtitles = list()
         self._subtitles_searchcount = 0
         self._subtitles_lastsearch = str(datetime.datetime.min)
-        self._airdate = datetime.date.fromordinal(1)
+        self._airdate = datetime.date.min
         self._hasnfo = False
         self._hastbn = False
         self._status = UNKNOWN
@@ -1613,15 +1613,21 @@ class TVEpisode(object):
 
         first_aired = myEp.get('firstAired')
         if not first_aired or first_aired == "0000-00-00":
-            first_aired = str(self.airdate)
+            if self.status in (WANTED, UNAIRED, UNKNOWN):
+                # Allow changing the airdate of wanted/unaired/unknown in cases of postponed episodes
+                first_aired = str(datetime.date.min)
+            else:
+                first_aired = str(self.airdate)
+
         rawAirdate = [int(x) for x in first_aired.split("-")]
 
         try:
             self.airdate = datetime.date(rawAirdate[0], rawAirdate[1], rawAirdate[2])
-        except (ValueError, IndexError):
+        except (ValueError, IndexError, TypeError):
+            # Changed this to error because it should NEVER happen now
             logger.log("Malformed air date of {aired} retrieved from {indexer} for ({show} - {ep})".format
                        (aired=first_aired, indexer=self.indexer_name, show=self.show.name,
-                        ep=episode_num(season, episode)), logger.WARNING)
+                        ep=episode_num(season, episode)), logger.ERROR)
             # if I'm incomplete on the indexer but I once was complete then just delete myself from the DB for now
             if self.indexerid != -1:
                 self.deleteEpisode()
@@ -1648,7 +1654,7 @@ class TVEpisode(object):
                         status=statusStrings[self.status], location=self.location), logger.DEBUG)
 
         if not ek(os.path.isfile, self.location):
-            if self.airdate >= datetime.date.today() or self.airdate == datetime.date.fromordinal(1):
+            if self.airdate >= datetime.date.today() or self.airdate == datetime.date.min:
                 logger.log("{0}: Episode airs in the future or has no airdate, marking it {1}".format(self.show.indexerid, statusStrings[UNAIRED]), logger.DEBUG)
                 self.status = UNAIRED
             elif self.status in [UNAIRED, UNKNOWN]:

@@ -49,7 +49,7 @@ def setEpisodeToWanted(show, s, e):
     if epObj:
 
         with epObj.lock:
-            if epObj.status != SKIPPED or epObj.airdate == datetime.date.fromordinal(1):
+            if epObj.status != SKIPPED or epObj.airdate == datetime.date.min:
                 return
 
             logger.log("Setting episode {show} {ep} to wanted".format

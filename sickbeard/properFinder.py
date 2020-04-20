@@ -295,6 +295,6 @@ class ProperFinder(object):
         try:
             last_proper_search = datetime.date.fromordinal(int(sql_results[0][b"last_proper_search"]))
         except Exception:
-            return datetime.date.fromordinal(1)
+            return datetime.date.min
 
         return last_proper_search
