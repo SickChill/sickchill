@@ -41,6 +41,10 @@ __all__ = [
     'torrentbytes', 'torrentday', 'torrentleech', 'torrentproject', 'torrentz', 'tvchaosuk', 'xthor', 'yggtorrent'
 ]
 
+broken_providers = [
+    'torrentz', 'yggtorrent'
+]
+
 
 def sortedProviderList(randomize=False):
     initialList = sickbeard.providerList + sickbeard.newznabProviderList + sickbeard.torrentRssProviderList
@@ -70,7 +74,7 @@ def sortedProviderList(randomize=False):
 
 
 def makeProviderList():
-    return [x.provider for x in (getProviderModule(y) for y in __all__) if x]
+    return [x.provider for x in (getProviderModule(y) for y in __all__ if y not in broken_providers) if x]
 
 
 def getProviderModule(name):

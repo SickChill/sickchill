@@ -684,7 +684,7 @@ class QueueItemUpdate(ShowQueueItem):
                        (self.show.idxr.name, error), logger.ERROR)
             IndexerEpList = None
 
-        if IndexerEpList is not None:
+        if IndexerEpList:
             for curSeason in IndexerEpList:
                 for curEpisode in IndexerEpList[curSeason]:
                     curEp = self.show.getEpisode(curSeason, curEpisode)
