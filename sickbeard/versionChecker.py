@@ -880,7 +880,7 @@ class SourceUpdateManager(UpdateManager):
         return True
 
     def clean_libs(self):
-        lib_path = ek(os.path.join(sickbeard.PROG_DIR, 'lib'))
+        lib_path = ek(os.path.join, sickbeard.PROG_DIR, 'lib')
 
         def removeEmptyFolders(path):
             if not ek(os.path.isdir, path):
