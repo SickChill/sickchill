@@ -60,5 +60,7 @@ class PostProcess(Home):
         if config.checkbox_to_value(quiet):
             return result
 
-        result = result.replace("\n", "<br>\n")
+        if result:
+            result = result.replace("\n", "<br>\n")
+
         return self._genericMessage("Postprocessing results", result)
