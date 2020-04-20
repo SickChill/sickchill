@@ -24,6 +24,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import os
 import shutil
 import stat
+import traceback
 
 # Third Party Imports
 from rarfile import BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRCError, RarExecError, RarFile, RarOpenError, RarWrongPassword
@@ -37,7 +38,7 @@ from sickchill.helper.exceptions import EpisodePostProcessingFailedException, ex
 # Local Folder Imports
 from . import common, db, failedProcessor, helpers, logger, postProcessor
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-import traceback
+
 
 class ProcessResult(object):
     def __init__(self):
