@@ -92,7 +92,7 @@
                         den = 1
                         download_stat_tip = _('Unaired')
 
-                    progressbar_percent = nom * 100 / den
+                    progressbar_percent = nom * 100 / float(den)
 
                     data_date = '6000000000.0'
                     if cur_airs_next:
@@ -105,7 +105,8 @@
                         elif display_status == 'Ended':
                             data_date = '5000000100.0'
                 %>
-                <div class="show-container" id="show${curShow.indexerid}" data-name="${curShow.sort_name}" data-date="${data_date}" data-network="${curShow.network}" data-progress="${progressbar_percent}" data-status="${curShow.status}">
+                <div class="show-container" id="show${curShow.indexerid}" data-name="${curShow.sort_name}" data-date="${data_date}" data-network="${curShow.network}"
+                     data-progress="${int(progressbar_percent)}" data-progress-sort="${progressbar_percent}" data-status="${curShow.status}">
                     <div class="show-image">
                         <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">
                             <img alt="" class="show-image" src="${static_url("images/poster.png")}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}" />
@@ -113,7 +114,8 @@
                     </div>
 
                     <div class="show-information">
-                        <div class="progressbar hidden-print" style="position:relative;" data-show-id="${curShow.indexerid}" data-progress-percentage="${progressbar_percent}"></div>
+                        <div class="progressbar hidden-print" style="position:relative;" data-show-id="${curShow.indexerid}"
+                             data-progress-percentage="${int(progressbar_percent)}" data-progress-sort="${progressbar_percent}"></div>
 
                         <div class="show-title">
                             ${curShow.name}
@@ -205,7 +207,8 @@
                 % for curLoadingShow in sickbeard.showQueueScheduler.action.loading_show_list:
                     <% loading_show = curLoadingShow.info %>
                     <tr>
-                        <td align="center">(${_('loading')})</td><td align="center"></td>
+                        <td align="center">(${_('loading')})</td>
+                        <td align="center"></td>
                         % if sickbeard.HOME_LAYOUT == 'small':
                             <td class="tvShow">
                                 <div class="imgsmallposter ${sickbeard.HOME_LAYOUT}">
@@ -304,7 +307,7 @@
                             den = 1
                             download_stat_tip = _('Unaired')
 
-                        progressbar_percent = nom * 100 / den
+                        progressbar_percent = nom * 100 / float(den)
                     %>
                     <tr>
                         % if cur_airs_next:
@@ -383,9 +386,12 @@
                         <td align="center">${renderQualityPill(curShow.quality, showTitle=True)}</td>
 
                         <td align="center">
-                            ## This first span is used for sorting and is never displayed to user
-                            <span style="display: none;">${download_stat}</span>
-                            <div class="progressbar hidden-print" style="position:relative;" data-show-id="${curShow.indexerid}" data-progress-percentage="${progressbar_percent}" data-progress-text="${download_stat}" data-progress-tip="${download_stat_tip}"></div>
+                            <div class="progressbar hidden-print" style="position:relative;" data-show-id="${curShow.indexerid}"
+                                 data-progress-text="${download_stat}"
+                                 data-progress-tip="${download_stat_tip}"
+                                 data-progress-percentage="${int(progressbar_percent)}"
+                                 data-progress-sort="${progressbar_percent}"
+                            ></div>
                             <span class="visible-print-inline">${download_stat}</span>
                         </td>
 

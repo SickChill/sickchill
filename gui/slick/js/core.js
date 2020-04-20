@@ -2218,7 +2218,8 @@ var SICKCHILL = {
                         return $(node).find('span').text().toLowerCase();
                     },
                     5: function(node) {
-                        return $(node).find('span:first').text();
+                        let progress = $(node).find('div').attr('data-progress-sort');
+                        return (progress.length && parseFloat(progress)) || Number.NEGATIVE_INFINITY;
                     },
                     6: function(node) {
                         return $(node).data('show-size');
@@ -2233,7 +2234,7 @@ var SICKCHILL = {
                     1: {sorter: 'realISODate'},
                     2: {sorter: 'loadingNames'},
                     4: {sorter: 'quality'},
-                    5: {sorter: 'eps'},
+                    5: {sorter: 'digit'},
                     6: {sorter: 'digit'},
                     7: {filter: 'parsed'}
                 },
@@ -2329,8 +2330,8 @@ var SICKCHILL = {
                             return (date.length && parseInt(date, 10)) || Number.POSITIVE_INFINITY;
                         },
                         progress: function(itemElem) {
-                            const progress = $(itemElem).attr('data-progress');
-                            return (progress.length && parseInt(progress, 10)) || Number.NEGATIVE_INFINITY;
+                            const progress = $(itemElem).attr('data-progress-sort');
+                            return (progress.length && parseFloat(progress)) || Number.NEGATIVE_INFINITY;
                         },
                         status: '[data-status]'
                     }
