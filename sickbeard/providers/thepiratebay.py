@@ -25,13 +25,21 @@ import datetime
 import time
 
 # Third Party Imports
-import js2py
 from requests.compat import urljoin
 
 # First Party Imports
 from sickbeard import db, logger, tvcache
 from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+
+try:
+    # https://github.com/SickChill/SickChill/issues/6236
+    # Python lower than 2.7.9 Throws a syntax error here.
+    import js2py
+except SyntaxError:
+    js2py = None
+
+
 
 
 class ThePirateBayProvider(TorrentProvider):
@@ -79,6 +87,9 @@ class ThePirateBayProvider(TorrentProvider):
         return TrackerCacheDBConnection(self)
 
     def get_tracker_list(self):
+        if js2py is None:
+            return ''
+
         script = self.get_url(self.script_url)
         context = js2py.EvalJs()
         context.execute(
@@ -105,6 +116,12 @@ class ThePirateBayProvider(TorrentProvider):
             "cat": '208,205',
             "q": None
         }
+
+        if not (self.get_tracker_list() or self._custom_trackers):
+            logger.log("Cannot use tpb provider without python 2.7.9+ unless you set some custom trackers in config/search on the torrents tab. Re-enable "
+                       "this provider after fixing this issue.")
+            self.enabled = False
+            return results
 
         for mode in search_strings:
             items = []
