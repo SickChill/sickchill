@@ -806,7 +806,7 @@ class Home(WebRoot):
                                    'confirm': True,
                                    'icon': 'fa fa-trash'
                                    })
-                submenu.append({'title': _('Re-scan files'), 'path': 'home/refreshShow?show={0:d}'.format(show_obj.indexerid), 'icon': 'fa fa-refresh'})
+                submenu.append({'title': _('Re-scan files'), 'path': 'home/refreshShow?show={0:d}&amp;force=1'.format(show_obj.indexerid), 'icon': 'fa fa-refresh'})
                 # noinspection PyPep8
                 submenu.append(
                     {'title': _('Force Full Update'), 'path': 'home/updateShow?show={0:d}&amp;force=1'.format(show_obj.indexerid), 'icon': 'fa fa-exchange'})
@@ -1204,8 +1204,8 @@ class Home(WebRoot):
         # Don't redirect to the default page, so the user can confirm that the show was deleted
         return self.redirect('/home/')
 
-    def refreshShow(self, show=None):
-        error, show = Show.refresh(show)
+    def refreshShow(self, show=None, force=False):
+        error, show = Show.refresh(show, force)
 
         # This is a show validation error
         if error and not show:

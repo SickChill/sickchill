@@ -148,9 +148,10 @@ class Show(object):
         return None, show
 
     @staticmethod
-    def refresh(indexer_id):
+    def refresh(indexer_id, force=False):
         """
         Try to refresh a show
+        :param force: Force refresh
         :param indexer_id: The unique id of the show to refresh
         :return: A tuple containing:
          - an error message if the show could not be refreshed, ``None`` otherwise
@@ -163,7 +164,7 @@ class Show(object):
             return error, show
 
         try:
-            sickbeard.showQueueScheduler.action.refresh_show(show)
+            sickbeard.showQueueScheduler.action.refresh_show(show, force)
         except CantRefreshShowException as exception:
             return ex(exception), show
 
