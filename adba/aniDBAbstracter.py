@@ -58,7 +58,7 @@ class aniDBabstractObject(object):
                         try:
                             newList.append(int(i))
                         except:
-                            newList.append(str(i, "utf-8"))
+                            newList.append(i)
                     self.__dict__[key] = newList
                     continue
             except:
@@ -66,7 +66,7 @@ class aniDBabstractObject(object):
             try:
                 self.__dict__[key] = int(dataline[key])
             except:
-                self.__dict__[key] = str(dataline[key], "utf-8")
+                self.__dict__[key] = dataline[key]
             key = property(lambda x: dataline[key])
 
     def __getattr__(self, name):
@@ -171,10 +171,7 @@ class Anime(aniDBabstractObject):
         self.rawData = self.aniDB.groupstatus(aid=self.aid)
         self.release_groups = []
         for line in self.rawData.datalines:
-            self.release_groups.append({"name": str(line["name"], "utf-8"),
-                                        "rating": line["rating"],
-                                        "range": line["episode_range"]
-            })
+            self.release_groups.append({"name": line["name"], "rating": line["rating"], "range": line["episode_range"]})
         return sorted(self.release_groups, key=lambda x: x['name'].lower())
 
     # TODO: refactor and use the new functions in anidbFileinfo
