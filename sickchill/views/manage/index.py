@@ -19,11 +19,11 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
-import ntpath
 import os
 import posixpath
 
 # Third Party Imports
+import ntpath
 import six
 
 # First Party Imports
