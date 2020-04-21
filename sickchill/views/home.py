@@ -1474,24 +1474,11 @@ class Home(WebRoot):
             return self._genericMessage(_("Error"), _("Can't rename episodes when the show dir is missing."))
 
         ep_obj_list = show_obj.getAllEpisodes(has_location=True)
-        ep_obj_list = [x for x in ep_obj_list if x.location]
-        ep_obj_rename_list = []
-        for ep_obj in ep_obj_list:
-            has_already = False
-            for check in ep_obj.relatedEps + [ep_obj]:
-                if check in ep_obj_rename_list:
-                    has_already = True
-                    break
-            if not has_already:
-                ep_obj_rename_list.append(ep_obj)
-
-        if ep_obj_rename_list:
-            ep_obj_rename_list.reverse()
 
         t = PageTemplate(rh=self, filename="testRename.mako")
         submenu = [{'title': _('Edit'), 'path': 'home/editShow?show={0:d}'.format(show_obj.indexerid), 'icon': 'ui-icon ui-icon-pencil'}]
 
-        return t.render(submenu=submenu, ep_obj_list=ep_obj_rename_list,
+        return t.render(submenu=submenu, ep_obj_list=ep_obj_list,
                         show=show_obj, title=_('Preview Rename'),
                         header=_('Preview Rename'),
                         controller="home", action="previewRename")

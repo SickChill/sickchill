@@ -59,14 +59,16 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            % for cur_ep_obj in ep_obj_list:
+            <% last_season = ep_obj_list[-1].season if ep_obj_list else 0 %>
+            % while ep_obj_list:
                 <%
+                    cur_ep_obj = ep_obj_list.pop()
                     curLoc = cur_ep_obj.location[len(cur_ep_obj.show._location)+1:]
                     curExt = curLoc.split('.')[-1]
                     newLoc = cur_ep_obj.proper_path() + '.' + curExt
                 %>
                 % if int(cur_ep_obj.season) != curSeason:
-                    % if cur_ep_obj.season != ep_obj_list[0].season:
+                    % if cur_ep_obj.season != last_season:
                                     </tbody>
                                 </table>
                             </div>
@@ -110,7 +112,7 @@
                                             <td width="50%" class="col-name">${curLoc}</td>
                                             <td width="50%" class="col-name">${newLoc}</td>
                                         </tr>
-            % endfor
+            % endwhile
                             </tbody>
                         </table>
                     </div>
