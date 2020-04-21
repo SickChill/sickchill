@@ -11,7 +11,7 @@ on:
 jobs:
   greeting:
     runs-on: ubuntu-latest
-    if: github.repo == 'SickChill/SickChill'
+    if: github.repository == 'SickChill/SickChill'
     steps:
     - uses: actions/first-interaction@v1
       with:
