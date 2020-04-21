@@ -1122,7 +1122,7 @@ class Home(WebRoot):
                     try:
                         show_obj.location = location
                         try:
-                            sickbeard.showQueueScheduler.action.refresh_show(show_obj)
+                            sickbeard.showQueueScheduler.action.refresh_show(show_obj, True)
                         except CantRefreshShowException as e:
                             errors.append(_("Unable to refresh this show: {error}").format(error=e))
                             # grab updated info from TVDB

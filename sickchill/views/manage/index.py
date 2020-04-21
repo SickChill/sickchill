@@ -19,7 +19,9 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
+import ntpath
 import os
+import posixpath
 
 # Third Party Imports
 import six
@@ -310,6 +312,17 @@ class Manage(Home, WebRoot):
             action='backlogOverview', title=_('Backlog Overview'),
             header=_('Backlog Overview'), topmenu='manage')
 
+    @staticmethod
+    def __gooey_path(name, method):
+        result = ek(getattr(os.path, method), name)
+        if result == name or not result:
+            result = ek(getattr(ntpath, method), name)
+            if result == name or not result:
+                result = ek(getattr(posixpath, method), name)
+
+        return result
+
+    # noinspection PyProtectedMember
     def massEdit(self, toEdit=None):
         t = PageTemplate(rh=self, filename="manage_massEdit.mako")
 
@@ -357,9 +370,8 @@ class Manage(Home, WebRoot):
 
         for curShow in showList:
 
-            # noinspection PyProtectedMember
-            cur_root_dir = ek(os.path.dirname, curShow._location)
-            if cur_root_dir not in root_dir_list:
+            cur_root_dir = self.__gooey_path(curShow._location, 'dirname')
+            if cur_root_dir and cur_root_dir != curShow._location and cur_root_dir not in root_dir_list:
                 root_dir_list.append(cur_root_dir)
 
             # if we know they're not all the same then no point even bothering
@@ -428,7 +440,6 @@ class Manage(Home, WebRoot):
         scene_value = last_scene if scene_all_same else None
         sports_value = last_sports if sports_all_same else None
         air_by_date_value = last_air_by_date if air_by_date_all_same else None
-        root_dir_list = root_dir_list
 
         return t.render(showList=toEdit, showNames=showNames, default_ep_status_value=default_ep_status_value,
                         paused_value=paused_value, anime_value=anime_value, season_folders_value=season_folders_value,
@@ -436,7 +447,7 @@ class Manage(Home, WebRoot):
                         air_by_date_value=air_by_date_value, root_dir_list=root_dir_list, title=_('Mass Edit'), header=_('Mass Edit'),
                         controller='manage', action='massEdit', topmenu='manage')
 
-    # noinspection PyUnusedLocal
+    # noinspection PyProtectedMember, PyUnusedLocal
     def massEditSubmit(self, paused=None, default_ep_status=None,
                        anime=None, sports=None, scene=None, season_folders=None, quality_preset=None,
                        subtitles=None, air_by_date=None, anyQualities=None, bestQualities=None, toEdit=None, *args,
@@ -453,17 +464,12 @@ class Manage(Home, WebRoot):
             if not show_obj:
                 continue
 
-            # noinspection PyProtectedMember
-            cur_root_dir = ek(os.path.dirname, show_obj._location)
-            # noinspection PyProtectedMember
-            cur_show_dir = ek(os.path.basename, show_obj._location)
-            if cur_root_dir in dir_map and cur_root_dir != dir_map[cur_root_dir]:
+            cur_root_dir = self.__gooey_path(show_obj._location, 'dirname')
+            cur_show_dir = self.__gooey_path(show_obj._location, 'basename')
+            if cur_root_dir and dir_map.get(cur_root_dir) and cur_root_dir != dir_map.get(cur_root_dir):
                 new_show_dir = ek(os.path.join, dir_map[cur_root_dir], cur_show_dir)
-                # noinspection PyProtectedMember
-                logger.log(
-                    "For show " + show_obj.name + " changing dir from " + show_obj._location + " to " + new_show_dir)
+                logger.log("For show " + show_obj.name + " changing dir from " + show_obj._location + " to " + new_show_dir)
             else:
-                # noinspection PyProtectedMember
                 new_show_dir = show_obj._location
 
             new_paused = ('off', 'on')[(paused == 'enable', show_obj.paused)[paused == 'keep']]
