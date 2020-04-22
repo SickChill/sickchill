@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 10:10\n"
+"PO-Revision-Date: 2020-04-22 12:09\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -2183,7 +2183,7 @@ msgstr "Bez Reštartu"
 
 #: gui/slick/views/config_general.mako:916
 msgid "only shutdown when restarting SR"
-msgstr "pri zvolení možnosti reštartu sa SickRage vypne"
+msgstr "pri zvolení možnosti reštartu sa SickChill vypne"
 
 #: gui/slick/views/config_general.mako:921
 msgid "only select this when you have external software restarting SR automatically when it stops (like FireDaemon)"
