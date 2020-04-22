@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 12:50\n"
+"PO-Revision-Date: 2020-04-22 13:00\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -496,7 +496,7 @@ msgstr "Problème de téléchargement du fichier, réglage des permissions ou é
 
 #: sickbeard/helpers.py:1407
 msgid "Request failed: {0} ({1})"
-msgstr ""
+msgstr "Échec de la requête : {0} ({1})"
 
 #: sickbeard/helpers.py:1412
 msgid "SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to 1.0.1e+"
@@ -3668,7 +3668,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3129
 msgid "Matrix"
-msgstr ""
+msgstr "Matrix"
 
 #: gui/slick/views/config_notifications.mako:3131
 msgid "Matrix is an open fabric for communication that anyone can participate in."
@@ -3676,19 +3676,19 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3145
 msgid "should SickChill post messages on Matrix?"
-msgstr ""
+msgstr "SickChill doit-il poster des messages sur Matrix ?"
 
 #: gui/slick/views/config_notifications.mako:3185
 msgid "matrix User Auth Token"
-msgstr ""
+msgstr "Jeton d'authentification utilisateur de Matrix"
 
 #: gui/slick/views/config_notifications.mako:3198
 msgid "matrix server address"
-msgstr ""
+msgstr "adresse du serveur Matrix"
 
 #: gui/slick/views/config_notifications.mako:3212
 msgid "matrix server room"
-msgstr ""
+msgstr "salle de serveur Matrix"
 
 #: gui/slick/views/config_notifications.mako:3250
 msgid "Discord"
@@ -3771,7 +3771,7 @@ msgstr "Le dossier où votre logiciel de téléchargement enregistre les téléc
 
 #: gui/slick/views/config_postProcessing.mako:71
 msgid "please use separate downloading and completed folders in your download client if possible."
-msgstr ""
+msgstr "Si possible, dans votre logiciel de téléchargement, utilisez des dossiers différents pour les téléchargements en cours et terminés."
 
 #: gui/slick/views/config_postProcessing.mako:79
 msgid "Processing Method"
@@ -3807,7 +3807,7 @@ msgstr "Extension des fichiers déjà synchronisés"
 
 #: gui/slick/views/config_postProcessing.mako:145
 msgid "comma separated list of extensions or filename globs SickChill ignores when Post Processing"
-msgstr ""
+msgstr "liste des extensions ou nom de fichier, séparée par des virgules, que SickChill ignore lors du post-traitement"
 
 #: gui/slick/views/config_postProcessing.mako:153
 msgid "Rename Episodes"
@@ -3875,7 +3875,7 @@ msgstr "Modifier la date du fichier"
 
 #: gui/slick/views/config_postProcessing.mako:238
 msgid "set last modified file date to the date that the episode aired?"
-msgstr ""
+msgstr "remplacer la date de dernière modification du fichier par celle de diffusion ?"
 
 #: gui/slick/views/config_postProcessing.mako:243
 msgid "some systems may ignore this feature."
@@ -4703,7 +4703,7 @@ msgstr "les résultats contenant un ou plusieurs mots de cette liste seront igno
 
 #: gui/slick/views/config_search.mako:153
 msgid "Prefer words"
-msgstr ""
+msgstr "Mots préférés"
 
 #: gui/slick/views/config_search.mako:164
 msgid "search results with these words will be preferred in this order<br>separate words with a comma, e.g. \"word1,word2,word3\""
