@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 10:10\n"
+"PO-Revision-Date: 2020-04-22 12:09\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "MIME-Version: 1.0\n"
@@ -120,7 +120,7 @@ msgstr "Documentário"
 
 #: sickbeard/__init__.py:67
 msgid "Game-Show"
-msgstr "Game-Show"
+msgstr "Concurso"
 
 #: sickbeard/__init__.py:67
 msgid "Musical"
@@ -801,7 +801,7 @@ msgstr "A atualização falhou!"
 #: sickbeard/versionChecker.py:99 sickbeard/versionChecker.py:103
 #: sickbeard/versionChecker.py:107
 msgid "Backup"
-msgstr "Backup"
+msgstr "Cópia de segurança"
 
 #: sickbeard/versionChecker.py:91
 msgid "Config backup in progress..."
@@ -1413,7 +1413,7 @@ msgstr "Valores permitidos"
 
 #: gui/slick/views/apiBuilder.mako:171
 msgid "Playground"
-msgstr "Playground"
+msgstr "Recrieio"
 
 #: gui/slick/views/apiBuilder.mako:212
 msgid "Clear"
@@ -1499,7 +1499,7 @@ msgstr "Site"
 
 #: gui/slick/views/config.mako:190
 msgid "Wiki"
-msgstr "Wiki"
+msgstr "Wiki:"
 
 #: gui/slick/views/config.mako:201
 msgid "Source"
@@ -2297,7 +2297,7 @@ msgstr "padrão"
 
 #: gui/slick/views/config_general.mako:1116
 msgid "origin"
-msgstr "origin"
+msgstr "origem"
 
 #: gui/slick/views/config_general.mako:1124
 msgid "Branch version"
@@ -3036,7 +3036,7 @@ msgstr "Bicicleta"
 
 #: gui/slick/views/config_notifications.mako:1494
 msgid "Bugle"
-msgstr "Bugle"
+msgstr "Corneta"
 
 #: gui/slick/views/config_notifications.mako:1495
 msgid "Cash Register"
@@ -3088,7 +3088,7 @@ msgstr "Space alarm"
 
 #: gui/slick/views/config_notifications.mako:1507
 msgid "Tug Boat"
-msgstr "Tug Boat"
+msgstr "Barco Rebocador"
 
 #: gui/slick/views/config_notifications.mako:1508
 msgid "Alien Alarm (long)"
@@ -3104,7 +3104,7 @@ msgstr "Persistente (longo)"
 
 #: gui/slick/views/config_notifications.mako:1511
 msgid "Pushover Echo (long)"
-msgstr "Pushover Echo (long)"
+msgstr "Pushover Echo (longo)"
 
 #: gui/slick/views/config_notifications.mako:1512
 msgid "Up Down (long)"
@@ -3299,7 +3299,7 @@ msgstr "entre em contato com @BotFather através Telegram para configurar uma"
 #: gui/slick/views/config_notifications.mako:2121
 #: gui/slick/views/config_notifications.mako:2122
 msgid "Join"
-msgstr "Join"
+msgstr "Aderir"
 
 #: gui/slick/views/config_notifications.mako:2123
 msgid "Join all of your devices together!"
@@ -4490,7 +4490,7 @@ msgstr "PIN"
 
 #: gui/slick/views/config_providers.mako:521
 msgid "Seed ratio"
-msgstr "Seed ratio"
+msgstr "Relação de envio"
 
 #: gui/slick/views/config_providers.mako:533
 msgid "stop transfer when ratio is reached<br>(-1 SickChill default to seed forever, or leave blank for downloader default)"
@@ -5460,7 +5460,7 @@ msgstr "Legendas"
 
 #: gui/slick/views/displayShow.mako:274
 msgid "Subtitles SR Metadata"
-msgstr "Legendas metadados SickRage"
+msgstr "Legendas metadados SickChill"
 
 #: gui/slick/views/displayShow.mako:278 gui/slick/views/inc_addShowOptions.mako:67
 msgid "Season Folders"
@@ -5563,7 +5563,7 @@ msgstr ""
 #: gui/slick/views/inc_home_showList.mako:188 gui/slick/views/manage.mako:49
 #: sickchill/views/home.py:634
 msgid "Status"
-msgstr "Status"
+msgstr "Estado"
 
 #: gui/slick/views/displayShow.mako:479
 msgid "Change the value here if scene numbering differs from the indexer episode numbering"
@@ -6004,7 +6004,7 @@ msgstr "Poster pequeno"
 #: gui/slick/views/inc_home_menu.mako:38 gui/slick/views/schedule.mako:87
 #: gui/slick/views/schedule.mako:110
 msgid "Banner"
-msgstr "Banner"
+msgstr "Faixa"
 
 #: gui/slick/views/inc_home_menu.mako:39
 msgid "Simple"
@@ -6105,7 +6105,7 @@ msgstr "Lembrar-me"
 
 #: gui/slick/views/login.mako:66 sickchill/views/authentication.py:45
 msgid "Login"
-msgstr "Login"
+msgstr "Iníciar Sessão"
 
 #: gui/slick/views/manage.mako:15 gui/slick/views/manage.mako:118
 msgid "Edit Selected"
@@ -6194,7 +6194,7 @@ msgstr "500"
 
 #: gui/slick/views/manage_failedDownloads.mako:37
 msgid "Release"
-msgstr "Release"
+msgstr "Lançamento"
 
 #: gui/slick/views/layouts/main.mako:349
 #: gui/slick/views/manage_manageSearches.mako:16
@@ -7396,7 +7396,7 @@ msgstr "Arquivo de log"
 
 #: sickchill/views/logs.py:96
 msgid "Logs"
-msgstr "Logs"
+msgstr "Logs:"
 
 #: sickchill/views/news.py:45
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
