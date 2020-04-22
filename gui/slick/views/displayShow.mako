@@ -9,7 +9,7 @@
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, FAILED, DOWNLOADED
     from sickbeard.common import Quality, qualityPresets, statusStrings, Overview
     from sickbeard.helpers import anon_url
-    from sickchill.helper.common import pretty_file_size
+    from sickchill.helper.common import pretty_file_size, try_int
 %>
 
 <%block name="scripts">
@@ -459,7 +459,7 @@
                 % endif
                                     <tr class="${Overview.overviewStrings[epCats[epStr]]} season-${curSeason} seasonstyle" id="${'S' + str(epResult[b"season"]) + 'E' + str(epResult[b"episode"])}">
                                         <td class="col-checkbox">
-                                            % if int(epResult[b"status"]) != UNAIRED:
+                                            % if try_int(epResult[b"status"]) != UNAIRED:
                                                 <input type="checkbox" class="epCheck" id="${str(epResult[b"season"])+'x'+str(epResult[b"episode"])}" name="${str(epResult[b"season"]) +"x"+str(epResult[b"episode"])}" />
                                             % endif
                                         </td>
