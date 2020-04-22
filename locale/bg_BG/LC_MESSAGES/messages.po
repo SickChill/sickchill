@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 09:33\n"
+"PO-Revision-Date: 2020-04-22 10:10\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Bulgarian\n"
 "MIME-Version: 1.0\n"
@@ -176,19 +176,19 @@ msgstr ""
 
 #: sickbeard/common.py:117
 msgid "Repeat"
-msgstr "Повтори"
+msgstr "Repeat"
 
 #: sickbeard/common.py:118
 msgid "Repeat (Separated)"
-msgstr "Повтори (поотделно)"
+msgstr "Repeat (Separated)"
 
 #: sickbeard/common.py:120
 msgid "Extend"
-msgstr "Разшири"
+msgstr "Extend"
 
 #: sickbeard/common.py:121
 msgid "Extend (Limited)"
-msgstr "Разшири (ограничено)"
+msgstr "Extend (Limited)"
 
 #: sickbeard/common.py:122
 msgid "Extend (Limited, E-prefixed)"
@@ -268,11 +268,11 @@ msgstr "Моля проверете правата owner/permissions на баз
 
 #: sickbeard/db.py:101
 msgid "{exception_severity} error executing query with {method} in database {db_location}: "
-msgstr "{exception_severity} error executing query with {method} in database {db_location}: "
+msgstr "{exception_severity} грешка при изпълнение на заявка с {method} в база данни {db_location}: "
 
 #: sickbeard/db.py:108
 msgid "If this happened in cache.db, you can safely stop SickChill, and delete the cache.db file without losing any data"
-msgstr ""
+msgstr "Ако това се случи в cache.db, можете безопасно да спрете SickChill и и да изтриете файла cache.db без загуба на данни"
 
 #: sickbeard/db.py:111
 msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables:s}"
@@ -938,7 +938,7 @@ msgstr ""
 
 #: gui/slick/js/core.js:1016
 msgid "You must provide a recipient email address!"
-msgstr "Трябва да въведете е-мейл адрес за получател!"
+msgstr ""
 
 #: gui/slick/js/core.js:1080
 msgid "You didn't supply a Pushbullet api key"
@@ -1645,7 +1645,7 @@ msgstr "Опции за стартиране. Опции за индексира
 
 #: gui/slick/views/config_general.mako:34
 msgid "Some options may require a manual restart to take effect."
-msgstr "Някои настройки може да се нуждаят от ръчно рестартиране на SickChill, за да влязат в сила."
+msgstr "Някои настройки може да се нуждаят от ръчно рестартиране на SickRage, за да влязат в сила."
 
 #: gui/slick/views/config_general.mako:42
 msgid "Default Indexer Language"
@@ -3014,7 +3014,7 @@ msgstr "щракнете тук"
 
 #: gui/slick/views/config_notifications.mako:1460
 msgid " to create a Pushover API key"
-msgstr " за да създадете Pushover API ключ"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1468
 msgid "Pushover devices"
@@ -3710,7 +3710,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3312
 msgid "Discord Bot Name"
-msgstr "Discord Bot Name"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3320
 msgid "Blank will use webhook default Name."
@@ -3726,7 +3726,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3344
 msgid "Discord TTS"
-msgstr "Discord TTS"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3348
 msgid "Send notifications using text-to-speech"
@@ -7385,11 +7385,11 @@ msgstr "Logs &amp; грешки"
 
 #: sickchill/views/logs.py:96
 msgid "Log File"
-msgstr "Лог файлове"
+msgstr "Log File"
 
 #: sickchill/views/logs.py:96
 msgid "Logs"
-msgstr "Логове"
+msgstr "Logs"
 
 #: sickchill/views/news.py:45
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
