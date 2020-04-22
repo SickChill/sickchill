@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 10:11\n"
+"PO-Revision-Date: 2020-04-22 12:09\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -1829,7 +1829,8 @@ msgstr "Comprobar actualizaciones"
 
 #: gui/slick/views/config_general.mako:266
 msgid "and display notifications when updates are available. Checks are run on startup and at the frequency set below*"
-msgstr "y mostrar notificaciones cuando haya actualizaciones disponibles.\\n Se comprueba al inicio y a la frecuencia fijada más abajo*"
+msgstr "y mostrar notificaciones cuando haya actualizaciones disponibles.\n"
+" Se comprueba al inicio y a la frecuencia fijada más abajo*"
 
 #: gui/slick/views/config_general.mako:272
 msgid "Automatically update"
@@ -1837,7 +1838,8 @@ msgstr "Actualizar automáticamente"
 
 #: gui/slick/views/config_general.mako:276
 msgid "fetch and install software updates. Updates are run on startup and in the background at the frequency set below*"
-msgstr "descargar e instalar actualizaciones. \\n Las actualizaciones se instalan en segundo plano, al inicio y con la frecuencia configurada más abajo*"
+msgstr "descargar e instalar actualizaciones. \n"
+" Las actualizaciones se instalan en segundo plano, al inicio y con la frecuencia configurada más abajo*"
 
 #: gui/slick/views/config_general.mako:282
 msgid "Check the server every*"
