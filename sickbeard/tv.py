@@ -2043,6 +2043,9 @@ class TVEpisode(object):
                 logger.log("Unable to get parse release_group: {0}".format(error), logger.DEBUG)
                 return ''
 
+            if not parse_result.release_group:
+                return ''
+
             # return guess_result.get('release_group', '').strip('.- []{}')
             return parse_result.release_group.strip('.- []{}')
 
