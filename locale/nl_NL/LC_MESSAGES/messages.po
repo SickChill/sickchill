@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 10:10\n"
+"PO-Revision-Date: 2020-04-22 12:09\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -156,11 +156,11 @@ msgstr "Ondertiteling-download Voltooid"
 
 #: sickbeard/common.py:88
 msgid "SickChill Updated"
-msgstr "SickChill bijgewerkt"
+msgstr "SickChill Bijgewerkt"
 
 #: sickbeard/common.py:89
 msgid "SickChill Updated To Commit#: "
-msgstr "SickChill bijgewerkt naar Commit#: "
+msgstr "SickChill Bijgewerkt naar Commit#: "
 
 #: sickbeard/common.py:90
 msgid "SickChill new login"
@@ -272,7 +272,7 @@ msgstr "{exception_severity} fout opgetreden bij query met {method} in database 
 
 #: sickbeard/db.py:108
 msgid "If this happened in cache.db, you can safely stop SickChill, and delete the cache.db file without losing any data"
-msgstr "Als dit is gebeurd in cache.db, kun je veilig SickChill afsluiten en cache.db verwijderen zonder gegevens te verliezen"
+msgstr "Als dit gebeurde in cache.db, dan kun je veilig SickChill stoppen en het bestand cache.db verwijderen zonder data kwijt te raken"
 
 #: sickbeard/db.py:111
 msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables:s}"
@@ -786,7 +786,7 @@ msgstr ""
 
 #: sickbeard/versionChecker.py:71
 msgid "New update found for SickChill, starting auto-updater"
-msgstr "Nieuwe update gevonden voor SickChill, auto-update wordt gestart"
+msgstr "Nieuwe update gevonden voor SickChill, auto-updater start"
 
 #: sickbeard/versionChecker.py:75
 msgid "Update was successful"
@@ -821,7 +821,7 @@ msgstr "Geen update nodig"
 
 #: sickbeard/versionChecker.py:420
 msgid "Unable to find your git executable - Shutdown SickChill and EITHER set git_path in your config.ini OR delete your .git folder and run from source to enable updates."
-msgstr "Git executable niet gevonden - sluit SickChill af (shutdown) en configureer het git bestandspad in je config.ini, óf verwijder je .git map en installeer git opnieuw om te kunnen updaten."
+msgstr "Kan jouw git executable niet vinden - sluit SickChill af en stel het juiste git bestandspad in in je config.ini of verwijder je .git folder en installeer git opnieuw om updates mogelijk te maken."
 
 #: sickbeard/versionChecker.py:571 sickbeard/versionChecker.py:774
 msgid "(you're {num_commits} commit behind)"
@@ -833,7 +833,7 @@ msgstr "Is er een <a href=\"{compare_url}\" onclick=\"window.open(this.href); re
 
 #: sickbeard/versionChecker.py:762
 msgid "Unknown current version number: If you've never used the SickChill upgrade system before then current version is not set. &mdash; <a href=\"{update_url}\">Update Now</a>"
-msgstr "Huidige versienummer is onbekend: Als je nog nooit het SickChill update systeem hebt gebruikt dan is er nog geen huidige versie vastgesteld. &mdash; <a href=\"{update_url}\">Update Now</a>"
+msgstr "Onbekend huidig versienummer: Als je nog nooit het SickChill upgrade systeem hebt gebruikt dan is de huidige versie niet bekend. &mdash; <a href=\"{update_url}\">Update Nu</a>"
 
 #: sickbeard/metadata/generic.py:702
 msgid "Can't load the metadata file from {0}, it doesn't exist"
@@ -873,7 +873,7 @@ msgstr ""
 
 #: sickbeard/notifiers/twilio_notify.py:71
 msgid "This is a test notification from SickChill"
-msgstr "Dit is een testmelding van SickChill"
+msgstr "Dit is een test-notificatie van SickChill"
 
 #: sickbeard/providers/__init__.py:111
 msgid "daily searches and backlog searches"
@@ -1184,7 +1184,7 @@ msgstr "Toon de instellingen opnieuw voor elke afzonderlijke serie"
 
 #: gui/slick/views/addShows_addExistingShow.mako:55
 msgid "Displaying folders within these directories which aren't already added to SickChill"
-msgstr "Tonen van mappen die nog niet zijn toegevoegd aan SickChill"
+msgstr "Tonen van mappen die niet al zijn toegevoegd aan SickChill"
 
 #: gui/slick/views/addShows_addExistingShow.mako:71 gui/slick/views/manage.mako:16
 #: gui/slick/views/manage.mako:119 gui/slick/views/manage_failedDownloads.mako:78
@@ -1846,7 +1846,7 @@ msgstr "Controleer op Updates iedere"
 
 #: gui/slick/views/config_general.mako:292
 msgid "hours for software updates (default:1)"
-msgstr "uur op software-updates voor Sickrage (standaard: 1 uur)"
+msgstr "uur op software-updates voor SickChill (standaard: 1 uur)"
 
 #: gui/slick/views/config_general.mako:300
 msgid "Notify on software update"
@@ -2048,7 +2048,7 @@ msgstr "API sleutel"
 
 #: gui/slick/views/config_general.mako:674
 msgid "used to give 3rd party programs limited access to SickChill"
-msgstr "Benodigd om andere programma's beperkt toegang te geven tot SickChill"
+msgstr "Benodigd om andere programma's toegang te geven tot SickChill"
 
 #: gui/slick/views/config_general.mako:679
 msgid "you can try all the features of the API"
@@ -2116,7 +2116,7 @@ msgstr "Activeer HTTPS"
 
 #: gui/slick/views/config_general.mako:777
 msgid "enable access to the web interface using a HTTPS address"
-msgstr "activeer HTTPS toegang tot de webinterface van Sickrage"
+msgstr "activeer HTTPS toegang tot de webinterface van SickChill"
 
 #: gui/slick/views/config_general.mako:785
 msgid "HTTPS certificate"
@@ -5898,7 +5898,7 @@ msgstr "Download de ondertiteling voor deze serie?"
 
 #: gui/slick/views/inc_addShowOptions.mako:31
 msgid "use SickChill metadata when searching for subtitle, <br />this will override the autodiscovered metadata"
-msgstr "bij gebruik van SickChill metadata bij het zoeken naar ondertiteling, <br />overschrijft dit de automatisch gevonden metadata"
+msgstr "Bij gebruik van SickChill metadata bij het zoeken naar ondertiteling, <br />overschrijft dit de automatisch gevonden metadata"
 
 #: gui/slick/views/inc_addShowOptions.mako:39
 msgid "Status for previously aired episodes"
@@ -6364,7 +6364,7 @@ msgstr "De standaardpagina wordt geladen"
 
 #: gui/slick/views/restart.mako:45
 msgid "Error: The restart has timed out, perhaps something prevented SickChill from starting again?"
-msgstr "Fout: De herstart heeft een time-out, misschien verhindert er iets om SickChill opnieuw te starten?"
+msgstr "Fout: De herstart heeft een time-out, misschien verhinderd er iets om SickChill opnieuw te starten?"
 
 #: gui/slick/views/schedule.mako:26
 msgid "Key"
@@ -6694,7 +6694,7 @@ msgstr "Veranderingen"
 
 #: gui/slick/views/layouts/main.mako:238
 msgid "Support SickChill"
-msgstr "Support SickChill"
+msgstr "Ondersteun SickChill"
 
 #: gui/slick/views/layouts/main.mako:241
 msgid "View Errors"
@@ -7103,7 +7103,7 @@ msgstr "Fout bij verzenden van Pushbullet melding"
 
 #: sickchill/views/home.py:653 sickchill/views/home.py:683
 msgid "Restarting SickChill"
-msgstr "SickChill wordt nu herstart"
+msgstr "SickChill aan het herstarten"
 
 #: sickchill/views/home.py:686
 msgid "Update Failed"
