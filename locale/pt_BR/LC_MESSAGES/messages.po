@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 09:34\n"
+"PO-Revision-Date: 2020-04-22 10:10\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "MIME-Version: 1.0\n"
@@ -124,7 +124,7 @@ msgstr "Game-Show"
 
 #: sickbeard/__init__.py:67
 msgid "Musical"
-msgstr "Música"
+msgstr "Musical"
 
 #: sickbeard/__init__.py:68
 msgid "Talk-Show"
@@ -276,7 +276,7 @@ msgstr "Se isso aconteceu no cache.bd, você pode parar o SickRage seguramente e
 
 #: sickbeard/db.py:111
 msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables:s}"
-msgstr "Aqui estão os argumentos que foram passados para esta função (Isto é o que os desenvolvedores precisam saber): {local_variables:s}"
+msgstr "Aqui estão os argumentos que foram passados para essa função (isto é o que os desenvolvedores precisam saber): {local_variables:s}"
 
 #: sickbeard/db.py:119
 msgid "unable to open database file"
@@ -284,7 +284,7 @@ msgstr "não é possível abrir o arquivo de banco de dados"
 
 #: sickbeard/db.py:119
 msgid "database is locked"
-msgstr "banco de dados bloqueado"
+msgstr "banco de dados está bloqueado"
 
 #: sickbeard/db.py:213
 msgid "You passed a non-iterable to mass_action: {0!r}"
@@ -5460,7 +5460,7 @@ msgstr "Legendas"
 
 #: gui/slick/views/displayShow.mako:274
 msgid "Subtitles SR Metadata"
-msgstr "Legendas metadados SickChill"
+msgstr "Legendas metadados SickRage"
 
 #: gui/slick/views/displayShow.mako:278 gui/slick/views/inc_addShowOptions.mako:67
 msgid "Season Folders"
