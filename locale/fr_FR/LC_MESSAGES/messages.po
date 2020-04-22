@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 12:09\n"
+"PO-Revision-Date: 2020-04-22 13:00\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -172,7 +172,7 @@ msgstr "Nouvelle connexion de l'IP {0}. http://geomaplookup.net/?ip={0}"
 
 #: sickbeard/common.py:92
 msgid "Finished Post Processing"
-msgstr ""
+msgstr "Post-traitement terminé"
 
 #: sickbeard/common.py:117
 msgid "Repeat"
@@ -256,11 +256,11 @@ msgstr "Sous-titré"
 
 #: sickbeard/config.py:194
 msgid "Disabling UNPACK setting because no unrar is found and accessible."
-msgstr ""
+msgstr "Désactivation des paramètres de DECOMPRESSION car aucun unrar n'est trouvé et accessible."
 
 #: sickbeard/dailysearcher.py:51
 msgid "Searching for new released episodes ..."
-msgstr ""
+msgstr "Recherche de nouveaux épisodes en cours ..."
 
 #: sickbeard/db.py:91
 msgid "Please check your database owner/permissions: {db_filename}"
@@ -312,55 +312,55 @@ msgstr "Le dictionnaire de contrôle à upsert ne peut pas avoir de valeurs vide
 
 #: sickbeard/helpers.py:97
 msgid "Patching socket to IPv4 only"
-msgstr ""
+msgstr "Modification du socket en IPv4 seulement"
 
 #: sickbeard/helpers.py:254
 msgid "Invalid filename. Filename must be a string. {0}"
-msgstr ""
+msgstr "Nom de fichier invalide. Le nom du fichier doit être une chaîne de caractères. {0}"
 
 #: sickbeard/helpers.py:408
 msgid "Failed to create hardlink of {0} at {1}. Error: {2}. Copying instead"
-msgstr ""
+msgstr "Impossible de créer le lien en dur de {0} à {1}. Erreur: {2}. Je fais une copie à la place"
 
 #: sickbeard/helpers.py:445
 msgid "Failed to create symlink of {0} at {1}. Error: {2}. Copying instead"
-msgstr ""
+msgstr "Impossible de créer le lien symbolique de {0} à {1}. Erreur: {2}. Je fais une copie à la place"
 
 #: sickbeard/helpers.py:456
 msgid "Checking if the path {0} already exists"
-msgstr ""
+msgstr "Vérification de l’existence du chemin {0}"
 
 #: sickbeard/helpers.py:462 sickbeard/helpers.py:482
 msgid "Folder {0} didn't exist, creating it"
-msgstr ""
+msgstr "Le dossier {0} n'existe pas, création..."
 
 #: sickbeard/helpers.py:465 sickbeard/helpers.py:489
 msgid "Failed creating {0} : {1}"
-msgstr ""
+msgstr "Échec de la création de {0} : {1}"
 
 #: sickbeard/helpers.py:530
 msgid "Renaming file from {0} to {1}"
-msgstr ""
+msgstr "Renommage du fichier de {0} vers {1}"
 
 #: sickbeard/helpers.py:533
 msgid "Failed renaming {0} to {1} : {2}"
-msgstr ""
+msgstr "Échec du renommage de {0} en {1} : {2}"
 
 #: sickbeard/helpers.py:553
 msgid "Trying to clean any empty folders under "
-msgstr ""
+msgstr "Tentative de nettoyage de tous les dossiers vides sous "
 
 #: sickbeard/helpers.py:563
 msgid "Deleting empty folder: "
-msgstr ""
+msgstr "Suppression du dossier vide : "
 
 #: sickbeard/helpers.py:569
 msgid "Unable to delete {0}. Error: {1}"
-msgstr ""
+msgstr "Impossible de supprimer {0}. Erreur: {1}"
 
 #: sickbeard/helpers.py:605
 msgid "No parent path provided in {location} unable to get permissions from it"
-msgstr ""
+msgstr "Aucun chemin parent fourni dans {location} impossible d'en obtenir les permissions"
 
 #: sickbeard/helpers.py:628
 msgid "Not running as root or owner of {location}, not trying to set permissions"
@@ -368,7 +368,7 @@ msgstr ""
 
 #: sickbeard/helpers.py:634
 msgid "Failed to set permission for {0} to {1:o}, parent directory has {2:o}"
-msgstr ""
+msgstr "Impossible de définir les permissions pour {0} à {1:o}, le répertoire parent a {2:o}"
 
 #: sickbeard/helpers.py:666
 msgid "Not running as root or owner of {}, not trying to set the set-group-ID"
@@ -376,127 +376,127 @@ msgstr ""
 
 #: sickbeard/helpers.py:671
 msgid "Respecting the set-group-ID bit on the parent directory for {0}"
-msgstr ""
+msgstr "Respect du bit set-group-ID sur le répertoire parent de {0}"
 
 #: sickbeard/helpers.py:716
 msgid "Found absolute number {absolute} for show {show} {ep}"
-msgstr ""
+msgstr "Numéro absolu {absolute} trouvé pour la série {show} {ep}"
 
 #: sickbeard/helpers.py:720
 msgid "No entries for absolute number for show {show} {ep}"
-msgstr ""
+msgstr "Aucune entrée pour le nombre absolu pour la série {show} {ep}"
 
 #: sickbeard/helpers.py:802
 msgid "pyopenssl module missing, please install for https access"
-msgstr ""
+msgstr "module pyopenssl manquant, veuillez installer pour un accès https"
 
 #: sickbeard/helpers.py:826
 msgid "Error creating SSL key and certificate"
-msgstr ""
+msgstr "Erreur lors de la création de la clé et du certificat SSL"
 
 #: sickbeard/helpers.py:847
 msgid "Not creating backup, {0} doesn't exist"
-msgstr ""
+msgstr "Pas de création de sauvegarde, {0} n'existe pas"
 
 #: sickbeard/helpers.py:851
 msgid "Trying to back up {0} to {1}"
-msgstr ""
+msgstr "Tentative de sauvegarde de {0} vers {1}"
 
 #: sickbeard/helpers.py:853
 msgid "Backup done"
-msgstr ""
+msgstr "Sauvegarde faite"
 
 #: sickbeard/helpers.py:856
 msgid "Error while trying to back up {0} to {1} : {2}"
-msgstr ""
+msgstr "Erreur lors de la sauvegarde de {0} vers {1} : {2}"
 
 #: sickbeard/helpers.py:859
 msgid "Trying again."
-msgstr ""
+msgstr "Je recommence."
 
 #: sickbeard/helpers.py:862
 msgid "Unable to back up {0} to {1} please do it manually."
-msgstr ""
+msgstr "Impossible de sauvegarder {0} vers {1} , veuillez le faire manuellement."
 
 #: sickbeard/helpers.py:883 sickbeard/helpers.py:898
 msgid "Not restoring, {0} doesn't exist"
-msgstr ""
+msgstr "Pas de restauration, {0} n'existe pas"
 
 #: sickbeard/helpers.py:887
 msgid "Trying to backup {0} to {1}.r{2} before restoring backup"
-msgstr ""
+msgstr "Tentative de sauvegarde de {0} vers {1}.r{2} avant de restaurer la sauvegarde"
 
 #: sickbeard/helpers.py:892
 msgid "Error while trying to backup DB file {0} before proceeding with restore: {1}"
-msgstr ""
+msgstr "Erreur lors de la sauvegarde du fichier {0} de la base de données avant de procéder à la restauration de : {1}"
 
 #: sickbeard/helpers.py:902
 msgid "Trying to restore file {0} to {1}"
-msgstr ""
+msgstr "Tentative de restauration du fichier {0} à {1}"
 
 #: sickbeard/helpers.py:904
 msgid "Restore done"
-msgstr ""
+msgstr "Restauration effectuée"
 
 #: sickbeard/helpers.py:907
 msgid "Error while trying to restore file {0}. Error: {1}"
-msgstr ""
+msgstr "Erreur lors de la restauration du fichier {0}. Erreur: {1}"
 
 #: sickbeard/helpers.py:910
 msgid "Trying again. Attempt #: {0}"
-msgstr ""
+msgstr "Nouvel essai. Tentative #: {0}"
 
 #: sickbeard/helpers.py:913
 msgid "Unable to restore file {0} to {1}"
-msgstr ""
+msgstr "Impossible de restaurer le fichier {0} vers {1}"
 
 #: sickbeard/helpers.py:1050
 msgid "Error when attempting to find show: {0} in SickChill. Error: {1} "
-msgstr ""
+msgstr "Erreur lors de la tentative de trouver la série : {0} dans SickChill. Erreur: {1} "
 
 #: sickbeard/helpers.py:1107
 msgid "Usage of anidb disabled. Skiping"
-msgstr ""
+msgstr "Utilisation de l'anidb désactivée. Passe"
 
 #: sickbeard/helpers.py:1111
 msgid "anidb username and/or password are not set. Aborting anidb lookup."
-msgstr ""
+msgstr "Le nom d'utilisateur anidb et/ou le mot de passe ne sont pas définis. Abandon de la recherche anidb."
 
 #: sickbeard/helpers.py:1116
 msgid "anidb: {0} "
-msgstr ""
+msgstr "anidb : {0} "
 
 #: sickbeard/helpers.py:1121 sickbeard/helpers.py:1130
 msgid "anidb exception msg: {0} "
-msgstr ""
+msgstr "msg d'exception anidb : {0} "
 
 #: sickbeard/helpers.py:1151 sickbeard/helpers.py:1204
 msgid "Zip creation error: {0} "
-msgstr ""
+msgstr "Erreur de création du Zip : {0} "
 
 #: sickbeard/helpers.py:1183
 msgid "Zip extraction error: {0} "
-msgstr ""
+msgstr "Erreur d'extraction du Zip : {0} "
 
 #: sickbeard/helpers.py:1233
 msgid "Zip extraction error: {0}"
-msgstr ""
+msgstr "Erreur d'extraction du Zip : {0}"
 
 #: sickbeard/helpers.py:1273
 msgid "Using global proxy: {}"
-msgstr ""
+msgstr "Utilisation du proxy global : {}"
 
 #: sickbeard/helpers.py:1354
 msgid "Requested a json response but response was not json, check the url: {0}"
-msgstr ""
+msgstr "Demandé une réponse json mais la réponse n'a pas été json, vérifiez l'URL : {0}"
 
 #: sickbeard/helpers.py:1393
 msgid "Problem downloading file, setting permissions or writing file to {0} - ERROR: {1}"
-msgstr ""
+msgstr "Problème de téléchargement du fichier, réglage des permissions ou écriture du fichier sur {0} - ERREUR : {1}"
 
 #: sickbeard/helpers.py:1407
 msgid "Request failed: {0} ({1})"
-msgstr ""
+msgstr "Échec de la requête : {0} ({1})"
 
 #: sickbeard/helpers.py:1412
 msgid "SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to 1.0.1e+"
@@ -3668,7 +3668,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3129
 msgid "Matrix"
-msgstr ""
+msgstr "Matrix"
 
 #: gui/slick/views/config_notifications.mako:3131
 msgid "Matrix is an open fabric for communication that anyone can participate in."
@@ -3676,19 +3676,19 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3145
 msgid "should SickChill post messages on Matrix?"
-msgstr ""
+msgstr "SickChill doit-il poster des messages sur Matrix ?"
 
 #: gui/slick/views/config_notifications.mako:3185
 msgid "matrix User Auth Token"
-msgstr ""
+msgstr "Jeton d'authentification utilisateur de Matrix"
 
 #: gui/slick/views/config_notifications.mako:3198
 msgid "matrix server address"
-msgstr ""
+msgstr "adresse du serveur Matrix"
 
 #: gui/slick/views/config_notifications.mako:3212
 msgid "matrix server room"
-msgstr ""
+msgstr "salle de serveur Matrix"
 
 #: gui/slick/views/config_notifications.mako:3250
 msgid "Discord"
@@ -3771,7 +3771,7 @@ msgstr "Le dossier où votre logiciel de téléchargement enregistre les téléc
 
 #: gui/slick/views/config_postProcessing.mako:71
 msgid "please use separate downloading and completed folders in your download client if possible."
-msgstr ""
+msgstr "Si possible, dans votre logiciel de téléchargement, utilisez des dossiers différents pour les téléchargements en cours et terminés."
 
 #: gui/slick/views/config_postProcessing.mako:79
 msgid "Processing Method"
@@ -3807,7 +3807,7 @@ msgstr "Extension des fichiers déjà synchronisés"
 
 #: gui/slick/views/config_postProcessing.mako:145
 msgid "comma separated list of extensions or filename globs SickChill ignores when Post Processing"
-msgstr ""
+msgstr "liste des extensions ou nom de fichier, séparée par des virgules, que SickChill ignore lors du post-traitement"
 
 #: gui/slick/views/config_postProcessing.mako:153
 msgid "Rename Episodes"
@@ -3875,7 +3875,7 @@ msgstr "Modifier la date du fichier"
 
 #: gui/slick/views/config_postProcessing.mako:238
 msgid "set last modified file date to the date that the episode aired?"
-msgstr ""
+msgstr "remplacer la date de dernière modification du fichier par celle de diffusion ?"
 
 #: gui/slick/views/config_postProcessing.mako:243
 msgid "some systems may ignore this feature."
@@ -4703,7 +4703,7 @@ msgstr "les résultats contenant un ou plusieurs mots de cette liste seront igno
 
 #: gui/slick/views/config_search.mako:153
 msgid "Prefer words"
-msgstr ""
+msgstr "Mots préférés"
 
 #: gui/slick/views/config_search.mako:164
 msgid "search results with these words will be preferred in this order<br>separate words with a comma, e.g. \"word1,word2,word3\""
