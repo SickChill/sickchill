@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 10:10\n"
+"PO-Revision-Date: 2020-04-22 12:09\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Czech\n"
 "MIME-Version: 1.0\n"
@@ -160,7 +160,7 @@ msgstr "SickChill aktualizován"
 
 #: sickbeard/common.py:89
 msgid "SickChill Updated To Commit#: "
-msgstr "SickChill aktualizován na verzi#: "
+msgstr "SickChill aktualizován na verzi #: "
 
 #: sickbeard/common.py:90
 msgid "SickChill new login"
@@ -1141,7 +1141,7 @@ msgstr "Přidat ze seznamu Trakt"
 
 #: gui/slick/views/addShows.mako:31
 msgid "For shows that you haven't downloaded yet, this option lets you choose from a show from one of the Trakt lists to add to SickChill."
-msgstr "Pro seriály které zatím nebyly staženy, tato možnost umožňuje vybrat seriál z jednoho ze seznamů Trakt a přidat ho do SickChill."
+msgstr "Vyberte pokud seriál ještě nemáte stažený. Tato možnost Vám nabídne seriál z Trakt listu a přidáho do SickChill."
 
 #: gui/slick/views/addShows.mako:42
 msgid "Add From IMDB's Popular Shows"
@@ -1157,7 +1157,7 @@ msgstr "Přidat existující seriál"
 
 #: gui/slick/views/addShows.mako:55
 msgid "Use this option to add shows that already have a folder created on your hard drive. SickChill will scan your existing metadata/episodes and add the show accordingly."
-msgstr "Použijte toto nastavení pro přidání seriálu, který má již vytvořen adresář na vašem hard disku. SickChill prohledá stávající metadata/epizody a přidá seriál odpovídajícím způsobem."
+msgstr "Použijte tuto možnost pro přidání seriálu, který už máte na vašem úložišti. SickChill prohledá složku a podle toho seriál zařadí."
 
 #: gui/slick/views/addShows_addExistingShow.mako:21
 msgid "Add Existing Show"
@@ -1175,7 +1175,7 @@ msgstr "Upravit předvolby"
 
 #: gui/slick/views/addShows_addExistingShow.mako:43
 msgid "SickChill can add existing shows, using the current options, by using locally stored NFO/XML metadata to eliminate user interaction. If you would rather have SickChill prompt you to customize each show, then use the checkbox below."
-msgstr "SickChill může přidat existující seriál se stávajícím nastavením, na základě lokálně uložených NFO/XML metadat bez nutnosti vašeho zásahu. Pokud by jste raději aby SickChill vyzýval k upravení každého seriálu, zaškrtněte pole níže."
+msgstr "SickChill může přidat existující seriál, na základě uložených NFO/XML, metadat bez vašeho zásahu. Pokud by jste raději si upravili každý přidávaný seriál, zaškrtněte dole."
 
 #: gui/slick/views/addShows_addExistingShow.mako:49
 msgid "Prompt me to set settings for each show"
@@ -2928,7 +2928,9 @@ msgstr "-- Vyberte seriál –-"
 msgid "Configure per-show notifications here by entering Prowl API key(s), separated by commas, '\n"
 "                                                'after selecting a show in the drop-down box.   Be sure to activate the 'Save for this show' '\n"
 "                                                'button below after each entry."
-msgstr ""
+msgstr "Konfigurovat notifikace na pořad zadáním Prowl API klíče/klíčů, oddělených čárkami, '\n"
+"                                                'po výběru seriálu v rozbalovacím okně.   Nezapomeňte stisknout tlačítko 'Uložit pro tento seriál' '\n"
+"                                                'níže, po každém zadání."
 
 #: gui/slick/views/config_notifications.mako:1261
 #: gui/slick/views/config_notifications.mako:3003
@@ -4002,7 +4004,7 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:481
 msgid "How SickChill will name and sort your episodes."
-msgstr "Jak bude SickChill pojmenovávat a řadit vaše epizody."
+msgstr "Jak bude SickChill pojmenovávat a řadit epizody."
 
 #: gui/slick/views/config_postProcessing.mako:489
 #: gui/slick/views/config_postProcessing.mako:761
@@ -4723,7 +4725,9 @@ msgstr ""
 msgid "ignore subbed releases based on language names <br>\n"
 "                            Example: \"dk\" will ignore words: dksub, dksubs, dksubbed, dksubed <br>\n"
 "                            separate languages with a comma, e.g. \"lang1,lang2,lang3"
-msgstr ""
+msgstr "ignorovat otitulkované releasy na základě jazyku názvů <br>\n"
+"                            Například: \"dk\" bude ignorovat slova: dksub, dksubs, dksubbed, dksubed <br>\n"
+"                            oddělujte jazyky čárkami, např. \"jazyk1,jazyk2,jazyk3"
 
 #: gui/slick/views/config_search.mako:212
 msgid "Allow high priority"
@@ -5930,7 +5934,12 @@ msgid "<p>Select your preferred fansub groups from the <b>Available Groups</b> a
 "            <p>You may also add any fansub group not listed to either list manually.</p>\n"
 "            <p>When doing this please note that you can only use groups listed on anidb for this anime.\n"
 "            <br>If a group is not listed on anidb but subbed this anime, please correct anidb's data.</p>"
-msgstr ""
+msgstr "<p>Vyberte vámi preferované fanouškovské skupiny pro titlky z <b>Dostupné skupiny</b> a přidejte je na <b>Whitelist</b>. Na <b>Blacklist</b> přidejte skupiny v případě ignorování.</p>\n"
+"            <p> <b>Whitelist</b> je kontrolován <i>před</i> <b>Blacklistem</b>.</p>\n"
+"            <p>Skupiny jsou zobrazeny jako <b>Název</b> | <b>Hodnocení</b> | <b>Počet otitulkovaných epizod</b>.</p>\n"
+"            <p>Můžete také přidat jakékoliv skupiny, které nejsou uvedeny v jednotlivém seznamu, manuálně.</p>\n"
+"            <p>Při manuálním přidání berte prosím v potaz, že lze přidat pouze skupiny ze seznamu anidb pro toto anime.\n"
+"            <br>Pokud není skupina uvedena na anidb ale tvoří titulky pro toto anime, prosím opravte data na anidb.</p>"
 
 #: gui/slick/views/inc_blackwhitelist.mako:26
 msgid "Whitelist"
