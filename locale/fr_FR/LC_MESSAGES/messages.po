@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 12:40\n"
+"PO-Revision-Date: 2020-04-22 12:50\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -428,71 +428,71 @@ msgstr "Tentative de sauvegarde de {0} vers {1}.r{2} avant de restaurer la sauve
 
 #: sickbeard/helpers.py:892
 msgid "Error while trying to backup DB file {0} before proceeding with restore: {1}"
-msgstr ""
+msgstr "Erreur lors de la sauvegarde du fichier {0} de la base de données avant de procéder à la restauration de : {1}"
 
 #: sickbeard/helpers.py:902
 msgid "Trying to restore file {0} to {1}"
-msgstr ""
+msgstr "Tentative de restauration du fichier {0} à {1}"
 
 #: sickbeard/helpers.py:904
 msgid "Restore done"
-msgstr ""
+msgstr "Restauration effectuée"
 
 #: sickbeard/helpers.py:907
 msgid "Error while trying to restore file {0}. Error: {1}"
-msgstr ""
+msgstr "Erreur lors de la restauration du fichier {0}. Erreur: {1}"
 
 #: sickbeard/helpers.py:910
 msgid "Trying again. Attempt #: {0}"
-msgstr ""
+msgstr "Nouvel essai. Tentative #: {0}"
 
 #: sickbeard/helpers.py:913
 msgid "Unable to restore file {0} to {1}"
-msgstr ""
+msgstr "Impossible de restaurer le fichier {0} vers {1}"
 
 #: sickbeard/helpers.py:1050
 msgid "Error when attempting to find show: {0} in SickChill. Error: {1} "
-msgstr ""
+msgstr "Erreur lors de la tentative de trouver la série : {0} dans SickChill. Erreur: {1} "
 
 #: sickbeard/helpers.py:1107
 msgid "Usage of anidb disabled. Skiping"
-msgstr ""
+msgstr "Utilisation de l'anidb désactivée. Passe"
 
 #: sickbeard/helpers.py:1111
 msgid "anidb username and/or password are not set. Aborting anidb lookup."
-msgstr ""
+msgstr "Le nom d'utilisateur anidb et/ou le mot de passe ne sont pas définis. Abandon de la recherche anidb."
 
 #: sickbeard/helpers.py:1116
 msgid "anidb: {0} "
-msgstr ""
+msgstr "anidb : {0} "
 
 #: sickbeard/helpers.py:1121 sickbeard/helpers.py:1130
 msgid "anidb exception msg: {0} "
-msgstr ""
+msgstr "msg d'exception anidb : {0} "
 
 #: sickbeard/helpers.py:1151 sickbeard/helpers.py:1204
 msgid "Zip creation error: {0} "
-msgstr ""
+msgstr "Erreur de création du Zip : {0} "
 
 #: sickbeard/helpers.py:1183
 msgid "Zip extraction error: {0} "
-msgstr ""
+msgstr "Erreur d'extraction du Zip : {0} "
 
 #: sickbeard/helpers.py:1233
 msgid "Zip extraction error: {0}"
-msgstr ""
+msgstr "Erreur d'extraction du Zip : {0}"
 
 #: sickbeard/helpers.py:1273
 msgid "Using global proxy: {}"
-msgstr ""
+msgstr "Utilisation du proxy global : {}"
 
 #: sickbeard/helpers.py:1354
 msgid "Requested a json response but response was not json, check the url: {0}"
-msgstr ""
+msgstr "Demandé une réponse json mais la réponse n'a pas été json, vérifiez l'URL : {0}"
 
 #: sickbeard/helpers.py:1393
 msgid "Problem downloading file, setting permissions or writing file to {0} - ERROR: {1}"
-msgstr ""
+msgstr "Problème de téléchargement du fichier, réglage des permissions ou écriture du fichier sur {0} - ERREUR : {1}"
 
 #: sickbeard/helpers.py:1407
 msgid "Request failed: {0} ({1})"
