@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 09:33\n"
+"PO-Revision-Date: 2020-04-22 10:10\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Czech\n"
 "MIME-Version: 1.0\n"
@@ -160,7 +160,7 @@ msgstr "SickChill aktualizován"
 
 #: sickbeard/common.py:89
 msgid "SickChill Updated To Commit#: "
-msgstr "SickChill aktualizován na verzi #: "
+msgstr "SickChill aktualizován na verzi#: "
 
 #: sickbeard/common.py:90
 msgid "SickChill new login"
@@ -821,7 +821,7 @@ msgstr "Aktualizace není potřeba"
 
 #: sickbeard/versionChecker.py:420
 msgid "Unable to find your git executable - Shutdown SickChill and EITHER set git_path in your config.ini OR delete your .git folder and run from source to enable updates."
-msgstr ""
+msgstr "Nelze nalézt .EXE soubor git - Vypněte SickChill a BUĎ nastavte git_path ve vašem config.ini souboru NEBO odstraňte .git adresář a spusťte SickChill ze zdroje pro povolení aktualizací."
 
 #: sickbeard/versionChecker.py:571 sickbeard/versionChecker.py:774
 msgid "(you're {num_commits} commit behind)"
@@ -833,7 +833,7 @@ msgstr "Je zde <a href=\"{compare_url}\" onclick=\"window.open(this.href); retur
 
 #: sickbeard/versionChecker.py:762
 msgid "Unknown current version number: If you've never used the SickChill upgrade system before then current version is not set. &mdash; <a href=\"{update_url}\">Update Now</a>"
-msgstr "Neznámé číslo aktuální verze: pokud jste nikdy dříve nepoužíval/a aktualizace SickChill, pak není nastavena aktuální verze. &mdash; <a href=\"{update_url}\">Aktualizovat nyní</a>"
+msgstr "Neznámé číslo aktuální verze: pokud jste nikdy dříve nepoužíval aktualizace SickChill, pak není nastavena aktuální verze. &amp;mdash; <a href=\"{update_url}\">Aktualizovat nyní</a>"
 
 #: sickbeard/metadata/generic.py:702
 msgid "Can't load the metadata file from {0}, it doesn't exist"
@@ -1057,7 +1057,7 @@ msgstr "Vybrat cestu k seriálu"
 
 #: gui/slick/js/core.js:2941 gui/slick/views/editShow.mako:391
 msgid "None"
-msgstr "Žádné"
+msgstr "Žádný"
 
 #: gui/slick/js/core.js:2951
 msgid "Select Unprocessed Episode Folder"
@@ -1141,7 +1141,7 @@ msgstr "Přidat ze seznamu Trakt"
 
 #: gui/slick/views/addShows.mako:31
 msgid "For shows that you haven't downloaded yet, this option lets you choose from a show from one of the Trakt lists to add to SickChill."
-msgstr "Vyberte pokud seriál ještě nemáte stažený. Tato možnost Vám nabídne seriál z Trakt listu a přidáho do SickChill."
+msgstr "Pro seriály které zatím nebyly staženy, tato možnost umožňuje vybrat seriál z jednoho ze seznamů Trakt a přidat ho do SickChill."
 
 #: gui/slick/views/addShows.mako:42
 msgid "Add From IMDB's Popular Shows"
@@ -1157,7 +1157,7 @@ msgstr "Přidat existující seriál"
 
 #: gui/slick/views/addShows.mako:55
 msgid "Use this option to add shows that already have a folder created on your hard drive. SickChill will scan your existing metadata/episodes and add the show accordingly."
-msgstr "Použijte tuto možnost pro přidání seriálu, který už máte na vašem úložišti. SickChill prohledá složku a podle toho seriál zařadí."
+msgstr "Použijte toto nastavení pro přidání seriálu, který má již vytvořen adresář na vašem hard disku. SickChill prohledá stávající metadata/epizody a přidá seriál odpovídajícím způsobem."
 
 #: gui/slick/views/addShows_addExistingShow.mako:21
 msgid "Add Existing Show"
@@ -1175,7 +1175,7 @@ msgstr "Upravit předvolby"
 
 #: gui/slick/views/addShows_addExistingShow.mako:43
 msgid "SickChill can add existing shows, using the current options, by using locally stored NFO/XML metadata to eliminate user interaction. If you would rather have SickChill prompt you to customize each show, then use the checkbox below."
-msgstr "SickChill může přidat existující seriál, na základě uložených NFO/XML, metadat bez vašeho zásahu. Pokud by jste raději si upravili každý přidávaný seriál, zaškrtněte dole."
+msgstr "SickChill může přidat existující seriál se stávajícím nastavením, na základě lokálně uložených NFO/XML metadat bez nutnosti vašeho zásahu. Pokud by jste raději aby SickChill vyzýval k upravení každého seriálu, zaškrtněte pole níže."
 
 #: gui/slick/views/addShows_addExistingShow.mako:49
 msgid "Prompt me to set settings for each show"
@@ -1192,7 +1192,7 @@ msgstr "Potvrdit"
 
 #: gui/slick/views/addShows_newShow.mako:24
 msgid "Search for a Show"
-msgstr "Hledat seriál"
+msgstr "Hledat pro Seriál"
 
 #: gui/slick/views/addShows_newShow.mako:30
 msgid "Show retrieved from existing metadata"
@@ -2297,7 +2297,7 @@ msgstr "výchozí"
 
 #: gui/slick/views/config_general.mako:1116
 msgid "origin"
-msgstr "původ"
+msgstr ""
 
 #: gui/slick/views/config_general.mako:1124
 msgid "Branch version"
@@ -2609,7 +2609,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:301
 msgid "Plex Media Server IP:Port"
-msgstr "Plex Media Server IP:port"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:311
 msgid "one or more hosts running Plex Media Server<br/>(eg. 192.168.1.1:32400, 192.168.1.2:32400)"
@@ -2641,7 +2641,7 @@ msgstr "odesílat notifikace do Plex Home Theater?"
 
 #: gui/slick/views/config_notifications.mako:402
 msgid "Plex Home Theater IP:Port"
-msgstr "Plex Home Theater IP:Port"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:412
 msgid "one or more hosts running Plex Home Theater<br>(eg. 192.168.1.100:3000, 192.168.1.101:3000)"
@@ -2653,7 +2653,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:465
 msgid "Test Plex Home Theater"
-msgstr "Testovat Plex Home Theater"
+msgstr "Test Plex Home Theater"
 
 #: gui/slick/views/config_notifications.mako:471
 msgid "some Plex Home Theaters <b class=\"boldest\">do not</b> support notifications e.g. Plexapp for Samsung TVs"
@@ -2828,7 +2828,7 @@ msgstr "ke zpřístupnění pyTivo vyžaduje stažené soubory."
 
 #: gui/slick/views/config_notifications.mako:967
 msgid "pyTivo IP:Port"
-msgstr "pyTivo IP:port"
+msgstr "pyTivo IP:Port"
 
 #: gui/slick/views/config_notifications.mako:977
 msgid "host running pyTivo (eg. 192.168.1.1:9032)"
@@ -3234,7 +3234,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1965
 msgid "Free Mobile API key"
-msgstr "Volný mobilní API klíč"
+msgstr ""
 
 #: gui/slick/views/config_notifications.mako:1975
 msgid "find your API key in your customer portal."
@@ -3297,7 +3297,7 @@ msgstr ""
 #: gui/slick/views/config_notifications.mako:2121
 #: gui/slick/views/config_notifications.mako:2122
 msgid "Join"
-msgstr "Připojit se"
+msgstr "Join"
 
 #: gui/slick/views/config_notifications.mako:2123
 msgid "Join all of your devices together!"
@@ -3877,7 +3877,7 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:243
 msgid "some systems may ignore this feature."
-msgstr "některé systémy mohou ignorovat tuto funkci."
+msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:251
 msgid "Timezone for File Date"
@@ -3913,7 +3913,7 @@ msgstr "Windows"
 
 #: gui/slick/views/config_postProcessing.mako:301
 msgid "WinRar is required on windows"
-msgstr "Je vyžadován WinRar ve Windows"
+msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:310
 msgid "Unpack Directory"
@@ -3941,7 +3941,7 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:367
 msgid "Delete RAR contents"
-msgstr "Smazat RAR obsah"
+msgstr "Smazat obsahy RAR"
 
 #: gui/slick/views/config_postProcessing.mako:373
 msgid "delete content of RAR files, even if Process Method not set to move?"
@@ -4002,7 +4002,7 @@ msgstr ""
 
 #: gui/slick/views/config_postProcessing.mako:481
 msgid "How SickChill will name and sort your episodes."
-msgstr "Jak bude SickChill pojmenovávat a řadit epizody."
+msgstr "Jak bude SickChill pojmenovávat a řadit vaše epizody."
 
 #: gui/slick/views/config_postProcessing.mako:489
 #: gui/slick/views/config_postProcessing.mako:761
@@ -4463,7 +4463,7 @@ msgstr "Api klíč"
 
 #: gui/slick/views/config_providers.mako:408
 msgid "Digest"
-msgstr "Digest"
+msgstr ""
 
 #: gui/slick/views/config_providers.mako:422
 msgid "Hash"
@@ -4583,11 +4583,11 @@ msgstr "URL webu"
 
 #: gui/slick/views/config_providers.mako:835
 msgid "Newznab search categories"
-msgstr "Kategorie hledání Newznab"
+msgstr ""
 
 #: gui/slick/views/config_providers.mako:846
 msgid "select your Newznab categories on the left, and click the \"update categories\" button to use them for searching.) <b>don't forget to to save the form!"
-msgstr "vyberte vaše Newznab kategorie vlevo a klikněte na tlačítko \"aktualizovat kategorie\" pro použití kategorií u vyhledávání.)<b>nezapomeňte uložit formulář!"
+msgstr "vyberte vaše Newznab kategorie vlevo a klikněte na tlačítko \"aktualizovat kategorie\" pro použití kategorií při vyhledávání.) <b>nezapomeňte uložit formulář!"
 
 #: gui/slick/views/config_providers.mako:851
 msgid "Update Categories"
@@ -4873,7 +4873,7 @@ msgstr ""
 
 #: gui/slick/views/config_search.mako:543 gui/slick/views/config_search.mako:929
 msgid "Black hole folder location"
-msgstr "Umístění složky Black hole"
+msgstr ""
 
 #: gui/slick/views/config_search.mako:554
 msgid "<b>.nzb</b> files are stored at this location for external software to find and use"
@@ -5006,7 +5006,7 @@ msgstr ""
 #: gui/slick/views/config_search.mako:847 gui/slick/views/config_search.mako:848
 #: gui/slick/views/config_search.mako:1238
 msgid "Click below to test"
-msgstr "Klikněte níže k testování"
+msgstr "Klikněte níže pro test"
 
 #: gui/slick/views/config_search.mako:873
 msgid "How to handle Torrent search results."
@@ -5561,7 +5561,7 @@ msgstr ""
 #: gui/slick/views/inc_home_showList.mako:188 gui/slick/views/manage.mako:49
 #: sickchill/views/home.py:634
 msgid "Status"
-msgstr "Stav"
+msgstr "Status"
 
 #: gui/slick/views/displayShow.mako:479
 msgid "Change the value here if scene numbering differs from the indexer episode numbering"
@@ -5809,7 +5809,7 @@ msgstr "Čas"
 
 #: gui/slick/views/history.mako:63
 msgid "Provider"
-msgstr "Poskytovatel"
+msgstr "Provider"
 
 #: gui/slick/views/history.mako:101
 msgid "Missing Provider"
@@ -6090,7 +6090,7 @@ msgstr "Nastavit jako výchozí"
 
 #: gui/slick/views/login.mako:63
 msgid "for 30 days"
-msgstr "na 30 dní"
+msgstr "po 30 dní"
 
 #: gui/slick/views/login.mako:64
 msgid "Remember me"
