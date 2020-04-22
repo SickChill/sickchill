@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 09:33\n"
+"PO-Revision-Date: 2020-04-22 10:10\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Portuguese\n"
 "MIME-Version: 1.0\n"
@@ -1149,7 +1149,7 @@ msgstr "Adicionar de Séries Populares no IMDB"
 
 #: gui/slick/views/addShows.mako:43
 msgid "View IMDB's list of the most popular shows. This feature uses IMDB's MOVIEMeter algorithm to identify popular TV Series."
-msgstr "Esta opção deixa-te ver uma lista das séries mais populares no IMDB permitindo adicioná-las ao SickChill."
+msgstr "Esta opção deixa-te ver uma lista das séries mais populares no IMDB permitindo adicioná-las ao SickRage."
 
 #: gui/slick/views/addShows.mako:54
 msgid "Add Existing Shows"
