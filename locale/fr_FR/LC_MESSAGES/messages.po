@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 12:31\n"
+"PO-Revision-Date: 2020-04-22 12:40\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -348,19 +348,19 @@ msgstr "Échec du renommage de {0} en {1} : {2}"
 
 #: sickbeard/helpers.py:553
 msgid "Trying to clean any empty folders under "
-msgstr ""
+msgstr "Tentative de nettoyage de tous les dossiers vides sous "
 
 #: sickbeard/helpers.py:563
 msgid "Deleting empty folder: "
-msgstr ""
+msgstr "Suppression du dossier vide : "
 
 #: sickbeard/helpers.py:569
 msgid "Unable to delete {0}. Error: {1}"
-msgstr ""
+msgstr "Impossible de supprimer {0}. Erreur: {1}"
 
 #: sickbeard/helpers.py:605
 msgid "No parent path provided in {location} unable to get permissions from it"
-msgstr ""
+msgstr "Aucun chemin parent fourni dans {location} impossible d'en obtenir les permissions"
 
 #: sickbeard/helpers.py:628
 msgid "Not running as root or owner of {location}, not trying to set permissions"
@@ -368,7 +368,7 @@ msgstr ""
 
 #: sickbeard/helpers.py:634
 msgid "Failed to set permission for {0} to {1:o}, parent directory has {2:o}"
-msgstr ""
+msgstr "Impossible de définir les permissions pour {0} à {1:o}, le répertoire parent a {2:o}"
 
 #: sickbeard/helpers.py:666
 msgid "Not running as root or owner of {}, not trying to set the set-group-ID"
@@ -376,55 +376,55 @@ msgstr ""
 
 #: sickbeard/helpers.py:671
 msgid "Respecting the set-group-ID bit on the parent directory for {0}"
-msgstr ""
+msgstr "Respect du bit set-group-ID sur le répertoire parent de {0}"
 
 #: sickbeard/helpers.py:716
 msgid "Found absolute number {absolute} for show {show} {ep}"
-msgstr ""
+msgstr "Numéro absolu {absolute} trouvé pour la série {show} {ep}"
 
 #: sickbeard/helpers.py:720
 msgid "No entries for absolute number for show {show} {ep}"
-msgstr ""
+msgstr "Aucune entrée pour le nombre absolu pour la série {show} {ep}"
 
 #: sickbeard/helpers.py:802
 msgid "pyopenssl module missing, please install for https access"
-msgstr ""
+msgstr "module pyopenssl manquant, veuillez installer pour un accès https"
 
 #: sickbeard/helpers.py:826
 msgid "Error creating SSL key and certificate"
-msgstr ""
+msgstr "Erreur lors de la création de la clé et du certificat SSL"
 
 #: sickbeard/helpers.py:847
 msgid "Not creating backup, {0} doesn't exist"
-msgstr ""
+msgstr "Pas de création de sauvegarde, {0} n'existe pas"
 
 #: sickbeard/helpers.py:851
 msgid "Trying to back up {0} to {1}"
-msgstr ""
+msgstr "Tentative de sauvegarde de {0} vers {1}"
 
 #: sickbeard/helpers.py:853
 msgid "Backup done"
-msgstr ""
+msgstr "Sauvegarde faite"
 
 #: sickbeard/helpers.py:856
 msgid "Error while trying to back up {0} to {1} : {2}"
-msgstr ""
+msgstr "Erreur lors de la sauvegarde de {0} vers {1} : {2}"
 
 #: sickbeard/helpers.py:859
 msgid "Trying again."
-msgstr ""
+msgstr "Je recommence."
 
 #: sickbeard/helpers.py:862
 msgid "Unable to back up {0} to {1} please do it manually."
-msgstr ""
+msgstr "Impossible de sauvegarder {0} vers {1} , veuillez le faire manuellement."
 
 #: sickbeard/helpers.py:883 sickbeard/helpers.py:898
 msgid "Not restoring, {0} doesn't exist"
-msgstr ""
+msgstr "Pas de restauration, {0} n'existe pas"
 
 #: sickbeard/helpers.py:887
 msgid "Trying to backup {0} to {1}.r{2} before restoring backup"
-msgstr ""
+msgstr "Tentative de sauvegarde de {0} vers {1}.r{2} avant de restaurer la sauvegarde"
 
 #: sickbeard/helpers.py:892
 msgid "Error while trying to backup DB file {0} before proceeding with restore: {1}"
