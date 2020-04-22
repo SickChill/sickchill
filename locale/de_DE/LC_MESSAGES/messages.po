@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 10:10\n"
+"PO-Revision-Date: 2020-04-22 12:09\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -1838,7 +1838,8 @@ msgstr "Automatisch aktualisieren"
 
 #: gui/slick/views/config_general.mako:276
 msgid "fetch and install software updates. Updates are run on startup and in the background at the frequency set below*"
-msgstr "Software Aktualisierungen abrufen und installieren. \\n Updates werden beim Start und gemäß dem unten angegebenen Takt im Hintergrund ausgeführt*"
+msgstr "Software Aktualisierungen abrufen und installieren. \n"
+" Updates werden beim Start und gemäß dem unten angegebenen Takt im Hintergrund ausgeführt*"
 
 #: gui/slick/views/config_general.mako:282
 msgid "Check the server every*"
@@ -2873,7 +2874,7 @@ msgstr "Growl-Host (z.B. 192.168.1.100:23053)"
 
 #: gui/slick/views/config_notifications.mako:1116
 msgid "may leave blank if SickChill is on the same host."
-msgstr "Freilassen, wenn SickChill auf dem gleichen Host ausgeführt wird."
+msgstr "Freilassen wenn SickChill auf dem gleichen Host ausgeführt wird."
 
 #: gui/slick/views/config_notifications.mako:1121
 msgid "otherwise Growl <b>requires</b> a password to be used."
@@ -2971,7 +2972,7 @@ msgstr "Notfall"
 
 #: gui/slick/views/config_notifications.mako:1284
 msgid "priority of Prowl messages from SickChill."
-msgstr "Priorität der Prowl-Nachrichten von SickChill."
+msgstr "priorität der Prowl Nachrichten von SickChill."
 
 #: gui/slick/views/config_notifications.mako:1304
 msgid "Libnotify"
@@ -3332,7 +3333,7 @@ msgstr "Twilio ist ein Webservice-API, das direkt mit einer Handynummer kommuniz
 
 #: gui/slick/views/config_notifications.mako:2249
 msgid "should SickChill text your mobile device?"
-msgstr "Soll SickChill Ihrem Mobilgerät SMS senden?"
+msgstr "sollte SickChill Ihrem Mobilgerät SMS senden?"
 
 #: gui/slick/views/config_notifications.mako:2289
 msgid "Twilio Account SID"
@@ -3525,7 +3526,7 @@ msgstr "Gesehene Serie entfernen"
 
 #: gui/slick/views/config_notifications.mako:2717
 msgid "remove the show from sickchill if it's ended and completely watched"
-msgstr "Entfernen der Serie aus SickChill, wenn sie beendet ist und vollständig gesehen wurde"
+msgstr "Entfernen Sie die Serie aus SickChill, wenn sie beendet ist und vollständig gesehen wurde"
 
 #: gui/slick/views/config_notifications.mako:2723
 msgid "Start paused"
@@ -4717,7 +4718,8 @@ msgstr "Erforderliche Wörter"
 
 #: gui/slick/views/config_search.mako:183
 msgid "results with no word from this list will be ignored<br>separate words with a comma, e.g. \"word1,word2,word3\""
-msgstr "Ergebnisse mit keinem einzigen Wort aus dieser Liste werden ignoriert <br>\\n Bitte Wörter mit Komma trennen, z.B. \"Wort1, Wort2, Wort3\""
+msgstr "Ergebnisse mit keinem einzigen Wort aus dieser Liste werden ignoriert <br>\n"
+" Bitte Wörter mit Komma trennen, z.B. \"Wort1, Wort2, Wort3\""
 
 #: gui/slick/views/config_search.mako:191
 msgid "Ignore language names in subbed results"
@@ -5664,7 +5666,7 @@ msgstr ""
 
 #: gui/slick/views/editShow.mako:134
 msgid "use SickChill metadata when searching for subtitle, this will override the autodiscovered metadata"
-msgstr "verwende SickChill Metadaten bei der Suche nach Untertiteln, dies überschreibt die automatisch ermittelten Metadaten"
+msgstr "verwende SickChill Metadaten bei der Suche nach Untertiteln, dies wird die automatisch ermittelten Metadaten überschreiben"
 
 #: gui/slick/views/editShow.mako:145
 msgid "pause this show (SickChill will not download episodes)"
@@ -6295,7 +6297,7 @@ msgstr "Folgen nach Staffelordnern gruppieren (bei \"Nein\" in einem einzigen Or
 
 #: gui/slick/views/manage_massEdit.mako:156
 msgid "Pause these shows (SickChill will not download episodes)."
-msgstr "Serien pausieren (SickChill wird keine Folgen herunterladen)."
+msgstr "Pausieren Sie diese Serien (SickChill wird keine Folgen herunterladen)."
 
 #: gui/slick/views/manage_massEdit.mako:171
 msgid "This will set the status for future episodes."
