@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 09:33\n"
+"PO-Revision-Date: 2020-04-22 10:11\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Arabic\n"
 "MIME-Version: 1.0\n"
@@ -148,7 +148,7 @@ msgstr "بدأ التحميل"
 
 #: sickbeard/common.py:86
 msgid "Finished Download"
-msgstr "التنزيلات المكتملة"
+msgstr ""
 
 #: sickbeard/common.py:87
 msgid "Subtitle Download Finished"
@@ -264,11 +264,11 @@ msgstr ""
 
 #: sickbeard/db.py:91
 msgid "Please check your database owner/permissions: {db_filename}"
-msgstr "يرجى التحقق من مالك / أذونات قاعدة البيانات الخاصة بك: {db_filename}"
+msgstr ""
 
 #: sickbeard/db.py:101
 msgid "{exception_severity} error executing query with {method} in database {db_location}: "
-msgstr "{exception_severity} خطأ في تنفيذ الاستعلام باستخدام {method} في قاعدة البيانات {db_location}: "
+msgstr ""
 
 #: sickbeard/db.py:108
 msgid "If this happened in cache.db, you can safely stop SickChill, and delete the cache.db file without losing any data"
@@ -276,15 +276,15 @@ msgstr "إذا حدث هذا في cache.db، فيمكنك إيقاف SickChill �
 
 #: sickbeard/db.py:111
 msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables:s}"
-msgstr "هذه هي القِيَم التي تم تمريرها إلى هذه الدالة (هذا ما يحتاج المطورون إلى معرفته): {local_variables:s}"
+msgstr ""
 
 #: sickbeard/db.py:119
 msgid "unable to open database file"
-msgstr "غير قادر على فتح ملف قاعدة البيانات"
+msgstr ""
 
 #: sickbeard/db.py:119
 msgid "database is locked"
-msgstr "قاعدة البيانات مؤمنة"
+msgstr ""
 
 #: sickbeard/db.py:213
 msgid "You passed a non-iterable to mass_action: {0!r}"
@@ -292,7 +292,7 @@ msgstr ""
 
 #: sickbeard/db.py:229
 msgid "{filename}: {query}"
-msgstr "{filename}: {query}"
+msgstr ""
 
 #: sickbeard/db.py:233
 msgid "{filename}: {query} with args {args:s}"
@@ -1830,8 +1830,7 @@ msgstr "التحقق من تحديثات البرنامج"
 
 #: gui/slick/views/config_general.mako:266
 msgid "and display notifications when updates are available. Checks are run on startup and at the frequency set below*"
-msgstr "وعرض إعلامات عند توفر تحديثات. \n"
-" التحقق يعمل عند بدء التشغيل وعند التكرار الموضح أدناه*"
+msgstr "وعرض إعلامات عند توفر تحديثات. \\n التحقق يعمل عند بدء التشغيل وعند التكرار الموضح أدناه*"
 
 #: gui/slick/views/config_general.mako:272
 msgid "Automatically update"
@@ -1839,8 +1838,7 @@ msgstr "تحديث تلقائي"
 
 #: gui/slick/views/config_general.mako:276
 msgid "fetch and install software updates. Updates are run on startup and in the background at the frequency set below*"
-msgstr "جلب وتثبيت تحديثات البرنامج. \n"
-" التحديثات يتم تشغيلها عند بدء التشغيل وفي الخلفية بناءً على التكرار الموضح أدناه*"
+msgstr "جلب وتثبيت تحديثات البرنامج. \\n التحديثات يتم تشغيلها عند بدء التشغيل وفي الخلفية بناءً على التكرار الموضح أدناه*"
 
 #: gui/slick/views/config_general.mako:282
 msgid "Check the server every*"
@@ -2186,11 +2184,11 @@ msgstr "لا يتطلب إعادة التشغيل"
 
 #: gui/slick/views/config_general.mako:916
 msgid "only shutdown when restarting SR"
-msgstr "إيقاف التشغيل فقط عند إعادة تشغيل SickChill"
+msgstr "إيقاف التشغيل فقط عند إعادة تشغيل SickRage"
 
 #: gui/slick/views/config_general.mako:921
 msgid "only select this when you have external software restarting SR automatically when it stops (like FireDaemon)"
-msgstr "فقط حدد هذا الخيار عندما يكون لديك برامج خارجية تقوم بإعادة تشغيل SickChill عندما يتوقف تلقائياً (مثل FireDaemon)"
+msgstr "فقط حدد هذا الخيار عندما يكون لديك برامج خارجية تقوم بإعادة تشغيل SickRage عندما يتوقف تلقائياً (مثل FireDaemon)"
 
 #: gui/slick/views/config_general.mako:929
 msgid "Encrypt passwords"
@@ -6606,7 +6604,7 @@ msgstr "إضافة مسلسلات"
 
 #: gui/slick/views/layouts/main.mako:151
 msgid "Manual Post-Processing"
-msgstr "المعالجة اليدوية"
+msgstr "المالجة اليدوية"
 
 #: gui/slick/views/layouts/main.mako:175 sickchill/views/manage/index.py:53
 msgid "Mass Update"
