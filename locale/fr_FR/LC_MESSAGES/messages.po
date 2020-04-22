@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 10:22\n"
+"PO-Revision-Date: 2020-04-22 10:30\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -5739,7 +5739,7 @@ msgstr "Les résultats de recherche qui ne contiennent pas un des mots de cette 
 
 #: gui/slick/views/editShow.mako:349
 msgid "this option overrides the globally required words!"
-msgstr ""
+msgstr "cette option remplace les mots requis au niveau global !"
 
 #: gui/slick/views/editShow.mako:357
 msgid "Scene Exception"
@@ -6793,11 +6793,11 @@ msgstr ""
 
 #: sickchill/providers/GenericProvider.py:58
 msgid "Not working"
-msgstr "Ne fonctionne ne pas"
+msgstr "Ne fonctionne pas"
 
 #: sickchill/providers/GenericProvider.py:59
 msgid "Daily/RSS only"
-msgstr "Quotidien/RSS uniquement"
+msgstr "Quotidienne/RSS uniquement"
 
 #: sickchill/providers/GenericProvider.py:60
 msgid "Backlog/Manual Search only"
