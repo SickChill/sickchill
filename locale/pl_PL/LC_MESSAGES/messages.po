@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 09:33\n"
+"PO-Revision-Date: 2020-04-22 12:09\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Polish\n"
 "MIME-Version: 1.0\n"
@@ -243,7 +243,7 @@ msgstr "Pominięto"
 #: gui/slick/views/manage_backlogOverview.mako:26
 #: gui/slick/views/manage_backlogOverview.mako:66 sickbeard/common.py:618
 msgid "Wanted"
-msgstr "Pożądany"
+msgstr "Porządany"
 
 #: sickbeard/common.py:620
 msgid "Ignored"
