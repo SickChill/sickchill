@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 09:33\n"
+"PO-Revision-Date: 2020-04-22 10:10\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Hebrew\n"
 "MIME-Version: 1.0\n"
@@ -148,7 +148,7 @@ msgstr "החל הורדה"
 
 #: sickbeard/common.py:86
 msgid "Finished Download"
-msgstr "ההורדה הסתיימה"
+msgstr ""
 
 #: sickbeard/common.py:87
 msgid "Subtitle Download Finished"
@@ -264,7 +264,7 @@ msgstr ""
 
 #: sickbeard/db.py:91
 msgid "Please check your database owner/permissions: {db_filename}"
-msgstr "אנא בדוק את ההרשאות/בעלים של מסד הנתונים שלך: {db_filename}"
+msgstr ""
 
 #: sickbeard/db.py:101
 msgid "{exception_severity} error executing query with {method} in database {db_location}: "
