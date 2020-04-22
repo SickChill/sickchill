@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 10:11\n"
+"PO-Revision-Date: 2020-04-22 12:09\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Arabic\n"
 "MIME-Version: 1.0\n"
@@ -1830,7 +1830,8 @@ msgstr "التحقق من تحديثات البرنامج"
 
 #: gui/slick/views/config_general.mako:266
 msgid "and display notifications when updates are available. Checks are run on startup and at the frequency set below*"
-msgstr "وعرض إعلامات عند توفر تحديثات. \\n التحقق يعمل عند بدء التشغيل وعند التكرار الموضح أدناه*"
+msgstr "وعرض إعلامات عند توفر تحديثات. \n"
+" التحقق يعمل عند بدء التشغيل وعند التكرار الموضح أدناه*"
 
 #: gui/slick/views/config_general.mako:272
 msgid "Automatically update"
@@ -1838,7 +1839,8 @@ msgstr "تحديث تلقائي"
 
 #: gui/slick/views/config_general.mako:276
 msgid "fetch and install software updates. Updates are run on startup and in the background at the frequency set below*"
-msgstr "جلب وتثبيت تحديثات البرنامج. \\n التحديثات يتم تشغيلها عند بدء التشغيل وفي الخلفية بناءً على التكرار الموضح أدناه*"
+msgstr "جلب وتثبيت تحديثات البرنامج. \n"
+" التحديثات يتم تشغيلها عند بدء التشغيل وفي الخلفية بناءً على التكرار الموضح أدناه*"
 
 #: gui/slick/views/config_general.mako:282
 msgid "Check the server every*"
@@ -2184,11 +2186,11 @@ msgstr "لا يتطلب إعادة التشغيل"
 
 #: gui/slick/views/config_general.mako:916
 msgid "only shutdown when restarting SR"
-msgstr "إيقاف التشغيل فقط عند إعادة تشغيل SickRage"
+msgstr "إيقاف التشغيل فقط عند إعادة تشغيل SickChill"
 
 #: gui/slick/views/config_general.mako:921
 msgid "only select this when you have external software restarting SR automatically when it stops (like FireDaemon)"
-msgstr "فقط حدد هذا الخيار عندما يكون لديك برامج خارجية تقوم بإعادة تشغيل SickRage عندما يتوقف تلقائياً (مثل FireDaemon)"
+msgstr "فقط حدد هذا الخيار عندما يكون لديك برامج خارجية تقوم بإعادة تشغيل SickChill عندما يتوقف تلقائياً (مثل FireDaemon)"
 
 #: gui/slick/views/config_general.mako:929
 msgid "Encrypt passwords"
