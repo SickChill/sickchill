@@ -145,7 +145,7 @@ class ThePirateBayProvider(TorrentProvider):
                     else:
                         data = self.get_url(search_url, returns="json")
 
-                    if not data:
+                    if not (data and isinstance(data, dict)):
                         logger.log("URL did not return data", logger.DEBUG)
                         continue
 
