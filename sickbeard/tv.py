@@ -29,7 +29,7 @@ import threading
 import traceback
 
 # Third Party Imports
-import guessit
+# import guessit
 import six
 from imdb import imdb
 from unidecode import unidecode
@@ -2037,12 +2037,14 @@ class TVEpisode(object):
                 return ''
 
             try:
-                guess_result = guessit.guessit(name, dict(single_value=True))
+                # guess_result = guessit.guessit(name, dict(single_value=True))
+                parse_result = NameParser(name, showObj=show, naming_pattern=True).parse(name)
             except (InvalidNameException, InvalidShowException) as error:
                 logger.log("Unable to get parse release_group: {0}".format(error), logger.DEBUG)
                 return ''
 
-            return guess_result.get('release_group', '').strip('.- []{}')
+            # return guess_result.get('release_group', '').strip('.- []{}')
+            return parse_result.release_group.strip('.- []{}')
 
         epStatus_, epQual = Quality.splitCompositeStatus(self.status)  # @UnusedVariable
 
