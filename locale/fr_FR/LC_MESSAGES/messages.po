@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 10:10\n"
+"PO-Revision-Date: 2020-04-22 10:22\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -2257,11 +2257,11 @@ msgstr "Si désactivé, l'épisode aura le statut \"supprimé\" par défaut"
 
 #: gui/slick/views/config_general.mako:1022
 msgid "Ignore Broken Symbolic Links"
-msgstr "Ignorer les liens symboliques invalides"
+msgstr "Ignorer les liens symboliques brisés"
 
 #: gui/slick/views/config_general.mako:1028
 msgid "If checked, broken symbolic links warnings generated when calculating show size will be logged as debug"
-msgstr "Si cochée, les liens symboliques invalides générerons un avertissements de niveau DEBUG lors du calcul de la taille d'une série"
+msgstr "Si cochée, les liens symboliques brisés généreront un avertissements de niveau DEBUG lors du calcul de la taille d'une série"
 
 #: gui/slick/views/config_general.mako:1036
 msgid "Default deleted episode status"
@@ -4399,7 +4399,7 @@ msgstr "autoriser les fournisseurs à effectuer des recherches quotidiennes."
 #: gui/slick/views/config_providers.mako:301
 #: gui/slick/views/config_providers.mako:660
 msgid "Daily search is currently not working on this provider"
-msgstr "La recherche quotidienne ne fonctionne pas actuellement sur ce fournisseur"
+msgstr "La recherche quotidienne ne fonctionne pas actuellement avec ce fournisseur"
 
 #: gui/slick/views/config_providers.mako:197
 #: gui/slick/views/config_providers.mako:310
@@ -4417,7 +4417,7 @@ msgstr "activer la recherche d'épisodes désirés pour ce fournisseur."
 #: gui/slick/views/config_providers.mako:320
 #: gui/slick/views/config_providers.mako:680
 msgid "Backlog search is currently not working on this provider"
-msgstr "La recherche quotidienne ne fonctionne pas actuellement sur ce fournisseur"
+msgstr "La recherche d'épisodes désirés ne fonctionne pas actuellement sur ce fournisseur"
 
 #: gui/slick/views/config_providers.mako:216
 #: gui/slick/views/config_providers.mako:329
@@ -5723,7 +5723,7 @@ msgstr "Résultat de la recherche avec un ou plusieurs mots ignoré(s)."
 
 #: gui/slick/views/editShow.mako:294
 msgid "this option overrides the globally ignored words!"
-msgstr "cette option remplace les mots ignorés globalement !"
+msgstr "cette option remplace les mots ignorés au niveau global !"
 
 #: gui/slick/views/editShow.mako:320
 msgid "search results with these words will be preferred in this order."
@@ -5739,7 +5739,7 @@ msgstr "Les résultats de recherche qui ne contiennent pas un des mots de cette 
 
 #: gui/slick/views/editShow.mako:349
 msgid "this option overrides the globally required words!"
-msgstr "cette option remplace les mots obligatoires ignorés globalement !"
+msgstr ""
 
 #: gui/slick/views/editShow.mako:357
 msgid "Scene Exception"
