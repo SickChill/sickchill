@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 10:10\n"
+"PO-Revision-Date: 2020-04-22 12:09\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Bulgarian\n"
 "MIME-Version: 1.0\n"
@@ -1645,7 +1645,7 @@ msgstr "Опции за стартиране. Опции за индексира
 
 #: gui/slick/views/config_general.mako:34
 msgid "Some options may require a manual restart to take effect."
-msgstr "Някои настройки може да се нуждаят от ръчно рестартиране на SickRage, за да влязат в сила."
+msgstr "Някои настройки може да се нуждаят от ръчно рестартиране на SickChill, за да влязат в сила."
 
 #: gui/slick/views/config_general.mako:42
 msgid "Default Indexer Language"
