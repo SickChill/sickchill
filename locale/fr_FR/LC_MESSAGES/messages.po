@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 10:30\n"
+"PO-Revision-Date: 2020-04-22 12:09\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -148,7 +148,7 @@ msgstr "Téléchargement commencé"
 
 #: sickbeard/common.py:86
 msgid "Finished Download"
-msgstr "Téléchargements terminés"
+msgstr "Téléchargement terminé"
 
 #: sickbeard/common.py:87
 msgid "Subtitle Download Finished"
@@ -156,11 +156,11 @@ msgstr "Téléchargement de sous-titres terminé"
 
 #: sickbeard/common.py:88
 msgid "SickChill Updated"
-msgstr "SickChill a été mis à jour"
+msgstr "SickChill mis à jour"
 
 #: sickbeard/common.py:89
 msgid "SickChill Updated To Commit#: "
-msgstr "SickChill a été mis à jour jusqu'au commit # : "
+msgstr "SickChill mis à jour sur le commit # : "
 
 #: sickbeard/common.py:90
 msgid "SickChill new login"
@@ -292,7 +292,7 @@ msgstr "Vous avez passé un élément non parcourable par itérateur à une mass
 
 #: sickbeard/db.py:229
 msgid "{filename}: {query}"
-msgstr "{filename}: {query}"
+msgstr "{filename} : {query}"
 
 #: sickbeard/db.py:233
 msgid "{filename}: {query} with args {args:s}"
@@ -786,7 +786,7 @@ msgstr ""
 
 #: sickbeard/versionChecker.py:71
 msgid "New update found for SickChill, starting auto-updater"
-msgstr "Nouvelle mise à jour trouvée pour SickChill, démarrage de la mise a jour automatique"
+msgstr "Nouvelle mise à jour trouvée pour SickChill, démarrage de la mise à jour automatique"
 
 #: sickbeard/versionChecker.py:75
 msgid "Update was successful"
@@ -821,7 +821,7 @@ msgstr "Aucune mise à jour nécessaire"
 
 #: sickbeard/versionChecker.py:420
 msgid "Unable to find your git executable - Shutdown SickChill and EITHER set git_path in your config.ini OR delete your .git folder and run from source to enable updates."
-msgstr "Impossible de trouver votre exécutable git - arrêtez SickChill et configurer la variable git_path dans votre fichier config.ini ou supprimez votre dossier .git et exécuter à partir des sources pour faire la mise à jour."
+msgstr "Impossible de trouver l'exécutable de git - Arrêtez SickChill et SOIT ajouter git_path dans le fichier config.ini OU supprimez votre dossier .git et exécuter à partir des source pour effectuer les mises à jour."
 
 #: sickbeard/versionChecker.py:571 sickbeard/versionChecker.py:774
 msgid "(you're {num_commits} commit behind)"
@@ -833,35 +833,35 @@ msgstr "Il y a une <a href=\"{compare_url}\" onclick=\"window.open(this.href); r
 
 #: sickbeard/versionChecker.py:762
 msgid "Unknown current version number: If you've never used the SickChill upgrade system before then current version is not set. &mdash; <a href=\"{update_url}\">Update Now</a>"
-msgstr "Numéro de version actuel inconnu : Si vous n’avez jamais utilisé le système de mise à niveau SickChill avant alors la version actuelle n’est pas définie. &mdash; <a href=\"{update_url}\">mettre à jour maintenant</a>"
+msgstr "Numéro de version actuel inconnu : Si vous n’avez jamais utilisé le système de mise à niveau SickChill avant, alors la version actuelle n’est pas définie. &mdash; <a href=\"{update_url}\">Mettre à jour maintenant</a>"
 
 #: sickbeard/metadata/generic.py:702
 msgid "Can't load the metadata file from {0}, it doesn't exist"
-msgstr ""
+msgstr "Impossible de charger le fichier de métadonnées de {0}, il n'existe pas"
 
 #: sickbeard/metadata/generic.py:705
 msgid "Loading show info from metadata file in {0}"
-msgstr ""
+msgstr "Chargement des informations de la série à partir du fichier de métadonnées dans {0}"
 
 #: sickbeard/metadata/generic.py:716
 msgid "There was an error loading {0}, trying to repair it by fixing & symbols. If it still has problems, please check the file manually"
-msgstr ""
+msgstr "Il y a eu une erreur lors du chargement de {0}, en essayant de le réparer en corrigeant les symboles &. Si le problème persiste, veuillez vérifier le fichier manuellement"
 
 #: sickbeard/metadata/generic.py:731
 msgid "Can't load the metadata file from {0}, error reading file"
-msgstr ""
+msgstr "Impossible de charger le fichier de métadonnées à partir de {0}, erreur de lecture du fichier"
 
 #: sickbeard/metadata/generic.py:735
 msgid "Invalid info in tvshow.nfo (missing name or id): {0} {1} {2}"
-msgstr ""
+msgstr "Informations invalides dans tvshow.nfo (nom ou id manquant): {0} {1} {2}"
 
 #: sickbeard/metadata/generic.py:745
 msgid "Invalid Indexer ID ({0}), not using metadata file"
-msgstr ""
+msgstr "ID d'indexeur ({0}) invalide, je n'utilise pas le fichier de métadonnées"
 
 #: sickbeard/metadata/generic.py:748
 msgid "Empty <id> or <tvdbid> field in NFO, unable to find a ID, not using metadata file"
-msgstr ""
+msgstr "Champ <id> ou <tvdbid> vide dans le NFO, impossible de trouver un ID, je n'utilise pas le fichier de métadonnées"
 
 #: sickbeard/metadata/generic.py:757
 msgid "Invalid Indexer ID ({0}), not using metadata file because it has TVRage info"
@@ -869,11 +869,11 @@ msgstr ""
 
 #: sickbeard/metadata/generic.py:764
 msgid "There was an error parsing your existing metadata file: '{0}' error: {1}"
-msgstr ""
+msgstr "Une erreur s'est produite lors de l'analyse de votre fichier de métadonnées existantes: '{0}' erreur : {1}"
 
 #: sickbeard/notifiers/twilio_notify.py:71
 msgid "This is a test notification from SickChill"
-msgstr "Ceci est une notification du test de SickChill"
+msgstr "Ceci est un message test de la part de SickChill"
 
 #: sickbeard/providers/__init__.py:111
 msgid "daily searches and backlog searches"
@@ -881,7 +881,7 @@ msgstr "recherches quotidiennes et recherches en arrière-plan"
 
 #: sickbeard/providers/__init__.py:111
 msgid "daily searches"
-msgstr "recherches quotidiennes"
+msgstr "recherches quotidienne"
 
 #: sickbeard/providers/__init__.py:112
 msgid "backlog searches"
@@ -897,11 +897,11 @@ msgstr "Choisir un répertoire"
 
 #: gui/slick/js/core.js:414
 msgid "Select Background Image"
-msgstr "Sélectionnez l'image d'arrière-plan"
+msgstr "Sélection de l'arrière-plan"
 
 #: gui/slick/js/core.js:415
 msgid "Select CSS file"
-msgstr "Sélectionnez le fichier CSS"
+msgstr "Sélection du fichier CSS"
 
 #: gui/slick/js/core.js:431
 msgid "select branch to use (restart required)"
@@ -913,11 +913,11 @@ msgstr "erreur : Aucune branche trouvée."
 
 #: gui/slick/js/core.js:460
 msgid "Select backup folder to save to"
-msgstr "Sélectionnez le dossier de sauvegarde"
+msgstr "Sélection du dossier de sauvegarde"
 
 #: gui/slick/js/core.js:461
 msgid "Select backup files to restore"
-msgstr "Sélectionnez les sauvegardes à restaurer"
+msgstr "Sélection des sauvegardes à restaurer"
 
 #: gui/slick/js/core.js:470 gui/slick/js/core.js:491 gui/slick/js/core.js:513
 #: gui/slick/js/core.js:537 gui/slick/js/core.js:562 gui/slick/js/core.js:585
@@ -1141,7 +1141,7 @@ msgstr "Ajouter depuis les listes Trakt"
 
 #: gui/slick/views/addShows.mako:31
 msgid "For shows that you haven't downloaded yet, this option lets you choose from a show from one of the Trakt lists to add to SickChill."
-msgstr "Pour les séries que vous n’avez pas encore téléchargé, cette option vous permet de choisir une série d’une des listes Trakt à ajouter à SickChill."
+msgstr "Pour les séries que vous n'avez pas encore téléchargé, cette option vous laisse choisir une série dans une de vos listes Trakt pour l'ajouter à SickChill."
 
 #: gui/slick/views/addShows.mako:42
 msgid "Add From IMDB's Popular Shows"
@@ -1157,7 +1157,7 @@ msgstr "Ajouter des séries existantes"
 
 #: gui/slick/views/addShows.mako:55
 msgid "Use this option to add shows that already have a folder created on your hard drive. SickChill will scan your existing metadata/episodes and add the show accordingly."
-msgstr "Utiliser cette option pour ajouter des séries ayant déjà un dossier sur votre stockage. SickChill va scanner vos métadonnées/épisodes existant et ajouter la série en conséquence."
+msgstr "Cette option permet d'ajouter des séries qui ont déjà un dossier créé sur votre disque dur. SickChill va scanner vos métadonnées/épisodes existants et ajouter la série en conséquence."
 
 #: gui/slick/views/addShows_addExistingShow.mako:21
 msgid "Add Existing Show"
@@ -1175,7 +1175,7 @@ msgstr "Personnaliser les Options"
 
 #: gui/slick/views/addShows_addExistingShow.mako:43
 msgid "SickChill can add existing shows, using the current options, by using locally stored NFO/XML metadata to eliminate user interaction. If you would rather have SickChill prompt you to customize each show, then use the checkbox below."
-msgstr "SickChill peut ajouter des séries existantes, en utilisant les options actuelles, à l’aide de métadonnées NFO/XML stockées localement pour éliminer l’interaction de l’utilisateur. Si vous préférez que SickChill vous invite à personnaliser chaque série veuillez cocher la case ci-dessous."
+msgstr "SickChill peut ajouter des séries existantes, en utilisant les options actuelles, à l'aide des métadonnées NFO/XML stockées localement pour éviter à l’utilisateur d'intervenir. Si vous préférez que SickChill vous invite à personnaliser chaque série, utilisez la case ci-dessous."
 
 #: gui/slick/views/addShows_addExistingShow.mako:49
 msgid "Prompt me to set settings for each show"
@@ -1183,7 +1183,7 @@ msgstr "M'inviter à définir des paramètres pour chaque série"
 
 #: gui/slick/views/addShows_addExistingShow.mako:55
 msgid "Displaying folders within these directories which aren't already added to SickChill"
-msgstr "Affichage des dossiers contenus dans ces répertoires qui ne sont pas déjà ajoutés à SickChill"
+msgstr "Affiche les sous répertoires de ces répertoires qui n'ont pas encore été ajouté à SickChill"
 
 #: gui/slick/views/addShows_addExistingShow.mako:71 gui/slick/views/manage.mako:16
 #: gui/slick/views/manage.mako:119 gui/slick/views/manage_failedDownloads.mako:78
@@ -1209,11 +1209,11 @@ msgstr "Langue des métadonnées"
 
 #: gui/slick/views/addShows_newShow.mako:64
 msgid "This will only affect the language of the retrieved metadata file contents and episode file names."
-msgstr ""
+msgstr "Ceci affectera seulement la langue du contenu du fichier de métadonnées récupérées et les noms de fichiers des épisodes."
 
 #: gui/slick/views/addShows_newShow.mako:66
 msgid "This <b>DOES NOT</b> allow SickChill to download non-english TV episodes!"
-msgstr "Ce <b>n'autorise pas</b> SickChill a télécharger des épisodes de séries TV non-anglais !"
+msgstr "Ceci <b>N'AUTORISE PAS</b> SickChill à télécharger les épisodes directement en français !"
 
 #: gui/slick/views/addShows_newShow.mako:73
 #: gui/slick/views/home_massAddTable.mako:14
@@ -1554,7 +1554,7 @@ msgstr "Activer"
 
 #: gui/slick/views/config_anime.mako:37
 msgid "should SickChill use data from AniDB?"
-msgstr "SickChill doit-il utiliser les données de AniDB ?"
+msgstr "SickChill doit-il utiliser les données fournies par AniDB ?"
 
 #: gui/slick/views/config_anime.mako:45
 msgid "AniDB Username"
@@ -1661,7 +1661,7 @@ msgstr "Au lancement du navigateur"
 
 #: gui/slick/views/config_general.mako:65
 msgid "open the SickChill home page on startup"
-msgstr "ouvrir la page d’accueil de SickChill au démarrage"
+msgstr "ouvrir la page d'accueil de SickChill au démarrage"
 
 #: gui/slick/views/config_general.mako:71
 msgid "Initial page"
@@ -1721,7 +1721,7 @@ msgstr "remarque"
 
 #: gui/slick/views/config_general.mako:111
 msgid "minutes are randomized each time SickChill is started"
-msgstr "minutes générées aléatoirement à chaque démarrage de SickChill"
+msgstr "Chaque fois que SickChill démarre, les minutes sont aléatoires"
 
 #: gui/slick/views/config_general.mako:119
 msgid "Send to trash for actions"
@@ -1849,11 +1849,11 @@ msgstr "intervalle de temps pour les mises à jour logiciel en heure (par défau
 
 #: gui/slick/views/config_general.mako:300
 msgid "Notify on software update"
-msgstr "Notification lors des mises à jour de SickRage"
+msgstr "Notification lors des mises à jour de SickChill"
 
 #: gui/slick/views/config_general.mako:304
 msgid "send a message to all enabled notifiers when SickChill has been updated"
-msgstr "envoi un message à tous les services de notifications activés lorsque SickChill a été mis à jour"
+msgstr "envoyer un message à tous les services de notifications activés lorsque SickChill a été mis à jour"
 
 #: gui/slick/views/config_general.mako:324
 msgid "User Interface"
@@ -1893,7 +1893,7 @@ msgstr "Utiliser une image d'arrière-plan"
 
 #: gui/slick/views/config_general.mako:383
 msgid "use a custom image as background for SickChill"
-msgstr "utiliser une image personnalisée comme arrière-plan pour SickChill"
+msgstr "Utiliser une image d'arrière-plan personnalisée pour SickChill"
 
 #: gui/slick/views/config_general.mako:389
 msgid "Background Path"
@@ -1925,7 +1925,7 @@ msgstr "Utiliser une feuille de style personnalisée"
 
 #: gui/slick/views/config_general.mako:443
 msgid "use a custom .css file to style SickChill (for advanced users)"
-msgstr "utiliser un fichier .css personnalisé pour SickChill (pour les utilisateurs avancés)"
+msgstr "utiliser un fichier .css personnalisé pour configurer l'apparence de SickChill (pour les utilisateurs avancés)"
 
 #: gui/slick/views/config_general.mako:449
 msgid "Stylesheet File Path"
@@ -2031,7 +2031,7 @@ msgstr "Interface Web"
 
 #: gui/slick/views/config_general.mako:654
 msgid "it is recommended that you enable a username and password to secure SickChill from being tampered with remotely."
-msgstr "il est recommandé d'activer un nom d'utilisateur et mot de passe pour garantir l’accès à distance a SickRage."
+msgstr "il est recommandé de définir un nom d'utilisateur et mot de passe pour sécuriser l’accès à distance de SickChill."
 
 #: gui/slick/views/config_general.mako:655
 msgid "these options require a manual restart to take effect."
@@ -2187,7 +2187,7 @@ msgstr "arrêter seulement quand SR redémarre"
 
 #: gui/slick/views/config_general.mako:921
 msgid "only select this when you have external software restarting SR automatically when it stops (like FireDaemon)"
-msgstr "Ne sélectionner cette option que si vous avez un service externe qui redémarre SickRage automatiquement quand il s'arrête (comme FireDaemon)"
+msgstr "Ne sélectionner cette option que si vous avez un service externe qui redémarre SickChill automatiquement quand il s'arrête (comme FireDaemon)"
 
 #: gui/slick/views/config_general.mako:929
 msgid "Encrypt passwords"
@@ -2257,11 +2257,11 @@ msgstr "Si désactivé, l'épisode aura le statut \"supprimé\" par défaut"
 
 #: gui/slick/views/config_general.mako:1022
 msgid "Ignore Broken Symbolic Links"
-msgstr "Ignorer les liens symboliques brisés"
+msgstr "Ignorer les liens symboliques invalides"
 
 #: gui/slick/views/config_general.mako:1028
 msgid "If checked, broken symbolic links warnings generated when calculating show size will be logged as debug"
-msgstr "Si cochée, les liens symboliques brisés généreront un avertissements de niveau DEBUG lors du calcul de la taille d'une série"
+msgstr "Si cochée, les liens symboliques invalides générerons un avertissements de niveau DEBUG lors du calcul de la taille d'une série"
 
 #: gui/slick/views/config_general.mako:1036
 msgid "Default deleted episode status"
@@ -2872,7 +2872,7 @@ msgstr "hôte exécutant Growl (par exemple. 192.168.1.100:23053)"
 
 #: gui/slick/views/config_notifications.mako:1116
 msgid "may leave blank if SickChill is on the same host."
-msgstr "laisser vide if SickChill est en localhost."
+msgstr "ne pas remplir si SickChill est en localhost."
 
 #: gui/slick/views/config_notifications.mako:1121
 msgid "otherwise Growl <b>requires</b> a password to be used."
@@ -3331,7 +3331,7 @@ msgstr "Twilio est une API qui vous permet de communiquer directement avec un nu
 
 #: gui/slick/views/config_notifications.mako:2249
 msgid "should SickChill text your mobile device?"
-msgstr "SickChill doit-il vous envoyer un message sur votre téléphone ?"
+msgstr "Est-ce que SickChill doit vous envoyer un message sur votre téléphone ?"
 
 #: gui/slick/views/config_notifications.mako:2289
 msgid "Twilio Account SID"
@@ -3372,7 +3372,7 @@ msgstr "Un réseau social et service de microblogging, permet aux utilisateurs d
 
 #: gui/slick/views/config_notifications.mako:2401
 msgid "should SickChill post tweets on Twitter?"
-msgstr "SickChill doit-il poster des tweets sur Twitter ?"
+msgstr "Est-ce que SickChill doit poster des tweets sur Twitter ?"
 
 #: gui/slick/views/config_notifications.mako:2406
 msgid "you may want to use a secondary account."
@@ -3468,7 +3468,7 @@ msgstr "Supprimer les épisodes de la collection"
 
 #: gui/slick/views/config_notifications.mako:2642
 msgid "remove an episode from your Trakt Collection if it is not in your SickChill Library."
-msgstr "retirer un épisode de votre collection Trakt s'il n'est pas dans votre bibliothèque SickChill."
+msgstr "Retirer un épisode de votre collection Trakt s'il n'est pas dans votre bibliothèque SickChill."
 
 #: gui/slick/views/config_notifications.mako:2650
 msgid "Sync watchlist"
@@ -3632,7 +3632,7 @@ msgstr "Utiliser un sujet personnalisé pour la protection de la vie privée ?"
 
 #: gui/slick/views/config_notifications.mako:2968
 msgid "(leave blank for the default SickChill subject)"
-msgstr "(Laissez vide pour utiliser SickChill comme objet par défaut)"
+msgstr "(Laissez vide pour utiliser SickChill comme sujet par défaut)"
 
 #: gui/slick/views/config_notifications.mako:2995
 msgid "configure per-show notifications here by entering email address(es), separated by commas,"
@@ -3656,7 +3656,7 @@ msgstr "Slack regroupe toutes vos communications en un seul endroit. C’est en 
 
 #: gui/slick/views/config_notifications.mako:3049
 msgid "should SickChill post messages on Slack?"
-msgstr "SickChill doit-il poster des messages sur Slack ?"
+msgstr "Est-ce que SickChill doit poster des messages sur Slack ?"
 
 #: gui/slick/views/config_notifications.mako:3089
 msgid "Slack Incoming Webhook"
@@ -3700,7 +3700,7 @@ msgstr "Le service tout-en-un de communication vocale et textuelle pour les joue
 
 #: gui/slick/views/config_notifications.mako:3266
 msgid "Should SickChill post messages on Discord?"
-msgstr "SickChill doit-il poster des messages sur Discord ?"
+msgstr "Est-ce que SickChill doit poster des messages sur Discord ?"
 
 #: gui/slick/views/config_notifications.mako:3296
 msgid "Discord Incoming Webhook"
@@ -3855,7 +3855,7 @@ msgstr "Extensions de fichier associées"
 
 #: gui/slick/views/config_postProcessing.mako:209
 msgid "comma separated list of associated file extensions SickChill should keep while post processing."
-msgstr "liste des extensions de fichier séparées par des virgules, que SickChill doit conserver durant le post-traitement."
+msgstr "la liste des extensions de fichier associées à SickChill, séparée par des virgules, doit être conservée pendant le post-traitement."
 
 #: gui/slick/views/config_postProcessing.mako:214
 msgid "leaving it empty means no associated files will be post processed"
@@ -4146,7 +4146,7 @@ msgstr "Nom de sortie"
 #: gui/slick/views/config_postProcessing.mako:1087
 #: gui/slick/views/config_postProcessing.mako:1268
 msgid "SickChill' is used in place of RLSGROUP if it could not be properly detected"
-msgstr "SickChill est utilisé à la place de RLSGROUP s'il n'a pas pu être détecté correctement"
+msgstr "SickChill' est utilisé à la place de RLSGROUP s'il n'a pas pu être détecté correctement"
 
 #: gui/slick/views/config_postProcessing.mako:677
 #: gui/slick/views/config_postProcessing.mako:902
@@ -4353,7 +4353,7 @@ msgstr "Au moins un fournisseur est requis mais deux sont recommandés."
 
 #: gui/slick/views/config_providers.mako:53
 msgid "Torrent and NZB providers can be toggled in "
-msgstr "Les fournisseurs de torrent et NZB peuvent être affiché/masqués dans "
+msgstr "Fournisseurs de torrent et NZB peuvent être affiché/masqués dans "
 
 #: gui/slick/views/config_providers.mako:60
 msgid "Provider does not support backlog or manual searches"
@@ -4399,7 +4399,7 @@ msgstr "autoriser les fournisseurs à effectuer des recherches quotidiennes."
 #: gui/slick/views/config_providers.mako:301
 #: gui/slick/views/config_providers.mako:660
 msgid "Daily search is currently not working on this provider"
-msgstr "La recherche quotidienne ne fonctionne pas actuellement avec ce fournisseur"
+msgstr "La recherche quotidienne ne fonctionne pas actuellement sur ce fournisseur"
 
 #: gui/slick/views/config_providers.mako:197
 #: gui/slick/views/config_providers.mako:310
@@ -4417,7 +4417,7 @@ msgstr "activer la recherche d'épisodes désirés pour ce fournisseur."
 #: gui/slick/views/config_providers.mako:320
 #: gui/slick/views/config_providers.mako:680
 msgid "Backlog search is currently not working on this provider"
-msgstr "La recherche d'épisodes désirés ne fonctionne pas actuellement sur ce fournisseur"
+msgstr "La recherche quotidienne ne fonctionne pas actuellement sur ce fournisseur"
 
 #: gui/slick/views/config_providers.mako:216
 #: gui/slick/views/config_providers.mako:329
@@ -4494,7 +4494,7 @@ msgstr "Ratio d'envoi"
 
 #: gui/slick/views/config_providers.mako:533
 msgid "stop transfer when ratio is reached<br>(-1 SickChill default to seed forever, or leave blank for downloader default)"
-msgstr "arrêter le téléchargement quand le ratio est atteint<br>(-1 est la valeur par défaut pour partager indéfiniment, ou laisser vide pour utiliser la valeur par défaut de votre logiciel de téléchargement)"
+msgstr "arrêter le téléchargement quand le ratio est atteint<br>(-1 est la valeur par défaut pour envoyer indéfiniment, ou laisser vide afin que ce soit la valeur par défaut de votre logiciel de téléchargement qui soit prise en compte)"
 
 #: gui/slick/views/config_providers.mako:543
 msgid "Minimum seeders"
@@ -5189,7 +5189,7 @@ msgstr "Configuration du plugin"
 
 #: gui/slick/views/config_subtitles.mako:45
 msgid "Settings that dictate how SickChill handles subtitles search results."
-msgstr "Paramètres indiquant comment SickChill gére les résultats de la recherche de sous-titres."
+msgstr "Ces paramètres déterminent comment SickChill gérera les résultats de la recherche de sous-titres"
 
 #: gui/slick/views/config_subtitles.mako:52
 msgid "Search Subtitles"
@@ -5205,7 +5205,7 @@ msgstr "Répertoire des sous-titres"
 
 #: gui/slick/views/config_subtitles.mako:87
 msgid "the directory where SickChill should store your <i>Subtitles</i> files."
-msgstr "le répertoire où SickChill doit stocker vos fichiers de <i>sous-titres</i>."
+msgstr "Le répertoire où SickChill doit stocker vos fichiers de <i>sous-titres</i>."
 
 #: gui/slick/views/config_subtitles.mako:92
 msgid "leave empty if you want store subtitle in episode path."
@@ -5650,7 +5650,7 @@ msgstr "Ceci définira le statut des futurs épisodes."
 
 #: gui/slick/views/editShow.mako:112
 msgid "this only applies to episode file names and the contents of metadata files."
-msgstr ""
+msgstr "s'applique uniquement aux noms des fichiers d'épisode et aux contenus des fichiers de métadonnées."
 
 #: gui/slick/views/editShow.mako:124
 msgid "search for subtitles"
@@ -5658,15 +5658,15 @@ msgstr "rechercher des sous-titres"
 
 #: gui/slick/views/editShow.mako:130 gui/slick/views/inc_addShowOptions.mako:27
 msgid "Use SR Metadata"
-msgstr ""
+msgstr "Utiliser les métadonnées de SC"
 
 #: gui/slick/views/editShow.mako:134
 msgid "use SickChill metadata when searching for subtitle, this will override the autodiscovered metadata"
-msgstr "utiliser les métadonnées de SickChill pour rechercher des sous-titres, cela remplacera les métadonnées présentes"
+msgstr "Utiliser les métadonnées de SickChill lorsque vous recherchez des sous-titres, < br / > cela remplacera les métadonnées déjà présentes"
 
 #: gui/slick/views/editShow.mako:145
 msgid "pause this show (SickChill will not download episodes)"
-msgstr "suspendre cette série (SickChill ne téléchargera pas d'épisodes)"
+msgstr "mettre cette série en suspend (SickChill ne téléchargera pas d'épisodes)"
 
 #: gui/slick/views/editShow.mako:156
 msgid "Format Settings"
@@ -5686,7 +5686,7 @@ msgstr "Dans le cas d'un conflit de dates entre les épisodes ordinaires et spé
 
 #: gui/slick/views/editShow.mako:189
 msgid "check if the show is Anime and episodes are released as Show.265 rather than Show.S02E03"
-msgstr "A cocher si les séries de type animé sortent sous la forme Série.03 plutôt que Série.S01E03"
+msgstr "vérifier si les séries de type animé apparaissent comme Show.03.02.2010 plutôt que Show.S02E03"
 
 #: gui/slick/views/editShow.mako:210
 msgid "check if the show is a sporting or MMA event released as Show.03.02.2010 rather than Show.S02E03"
@@ -5723,7 +5723,7 @@ msgstr "Résultat de la recherche avec un ou plusieurs mots ignoré(s)."
 
 #: gui/slick/views/editShow.mako:294
 msgid "this option overrides the globally ignored words!"
-msgstr "cette option remplace les mots ignorés au niveau global !"
+msgstr "cette option remplace les mots globalement ignorés !"
 
 #: gui/slick/views/editShow.mako:320
 msgid "search results with these words will be preferred in this order."
@@ -5739,7 +5739,7 @@ msgstr "Les résultats de recherche qui ne contiennent pas un des mots de cette 
 
 #: gui/slick/views/editShow.mako:349
 msgid "this option overrides the globally required words!"
-msgstr "cette option remplace les mots requis au niveau global !"
+msgstr "cette option remplace les mots obligatoires globalement ignorés !"
 
 #: gui/slick/views/editShow.mako:357
 msgid "Scene Exception"
@@ -5897,7 +5897,7 @@ msgstr "Télécharger les sous-titres pour cette série ?"
 
 #: gui/slick/views/inc_addShowOptions.mako:31
 msgid "use SickChill metadata when searching for subtitle, <br />this will override the autodiscovered metadata"
-msgstr "utiliser les métadonnées de SickChill pour rechercher des sous-titres, <br/> cela remplacera les métadonnées présentes"
+msgstr "Utiliser les métadonnées de SickChill lorsque vous recherchez des sous-titres, < br / > cela remplacera les métadonnées déjà présentes"
 
 #: gui/slick/views/inc_addShowOptions.mako:39
 msgid "Status for previously aired episodes"
@@ -6293,7 +6293,7 @@ msgstr "Grouper les épisodes par saison (Définir a \"Non\" pour sauvegarder da
 
 #: gui/slick/views/manage_massEdit.mako:156
 msgid "Pause these shows (SickChill will not download episodes)."
-msgstr "Suspendre ces séries (SickChill ne téléchargera pas d'épisodes)."
+msgstr "Mettre ces séries en suspend (SickChill ne téléchargera pas d'épisodes)."
 
 #: gui/slick/views/manage_massEdit.mako:171
 msgid "This will set the status for future episodes."
@@ -6351,11 +6351,11 @@ msgstr "Effectuer le redémarrage"
 
 #: gui/slick/views/restart.mako:27
 msgid "Waiting for SickChill to shut down"
-msgstr "En attente de l'arrêt de SickChill"
+msgstr "En attente de la fermeture de SickChill"
 
 #: gui/slick/views/restart.mako:33
 msgid "Waiting for SickChill to start again"
-msgstr "En attente du démarrage de SickChill"
+msgstr "En attente du redémarrage de SickChill"
 
 #: gui/slick/views/restart.mako:40
 msgid "Loading the default page"
@@ -6363,7 +6363,7 @@ msgstr "Chargement de la page par défaut"
 
 #: gui/slick/views/restart.mako:45
 msgid "Error: The restart has timed out, perhaps something prevented SickChill from starting again?"
-msgstr "Erreur: Le délai de redémarrage est dépassé, quelque chose a peut-être empêché SickChill de redémarrer ?"
+msgstr "Erreur : Le redémarrage a expiré, peut-être que quelque chose a empêché SickChill de redémarrer ?"
 
 #: gui/slick/views/schedule.mako:26
 msgid "Key"
@@ -6793,11 +6793,11 @@ msgstr ""
 
 #: sickchill/providers/GenericProvider.py:58
 msgid "Not working"
-msgstr "Ne fonctionne pas"
+msgstr "Ne fonctionne ne pas"
 
 #: sickchill/providers/GenericProvider.py:59
 msgid "Daily/RSS only"
-msgstr "Quotidienne/RSS uniquement"
+msgstr "Quotidien/RSS uniquement"
 
 #: sickchill/providers/GenericProvider.py:60
 msgid "Backlog/Manual Search only"
@@ -7102,7 +7102,7 @@ msgstr "Erreur d'envoi de notification sur Pushbullet"
 
 #: sickchill/views/home.py:653 sickchill/views/home.py:683
 msgid "Restarting SickChill"
-msgstr "Redémarrage de SickChill"
+msgstr "Redémarrage de SickChill en cours"
 
 #: sickchill/views/home.py:686
 msgid "Update Failed"
@@ -7505,7 +7505,7 @@ msgstr "Configuration - Partages"
 
 #: sickchill/views/config/shares.py:43
 msgid "Windows Shares Configuration"
-msgstr "Configuration des Partages Windows"
+msgstr "Configuration du Partage Windows"
 
 #: sickchill/views/config/shares.py:71
 msgid "Saved Shares"
