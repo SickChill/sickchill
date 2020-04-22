@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 09:33\n"
+"PO-Revision-Date: 2020-04-22 10:10\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Norwegian\n"
 "MIME-Version: 1.0\n"
@@ -2051,7 +2051,7 @@ msgstr "brukes til å gi tredjepartsprogrammer begrenset tilgang til SickChill"
 
 #: gui/slick/views/config_general.mako:679
 msgid "you can try all the features of the API"
-msgstr "du kan prøve alle funksjonene til SickChill sitt API"
+msgstr "du kan prøve alle funksjonene til SickRage sitt API"
 
 #: gui/slick/views/config_general.mako:679
 msgid "here"
