@@ -24,7 +24,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import socket
 
 # Third Party Imports
-import gntp
+import gntp.core
 
 # First Party Imports
 import sickbeard
@@ -64,7 +64,7 @@ class Notifier(object):
     def _send_growl(self, options, message=None):
 
         # Send Notification
-        notice = gntp.GNTPNotice()
+        notice = gntp.core.GNTPNotice()
 
         # Required
         notice.add_header('Application-Name', options['app'])
@@ -86,7 +86,7 @@ class Notifier(object):
             notice.add_header('Notification-Text', message)
 
         response = self._send(options['host'], options['port'], notice.encode(), options['debug'])
-        return True if isinstance(response, gntp.GNTPOK) else False
+        return True if isinstance(response, gntp.core.GNTPOK) else False
 
     @staticmethod
     def _send(host, port, data, debug=False):
@@ -96,7 +96,7 @@ class Notifier(object):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((host, port))
         s.send(data)
-        response = gntp.parse_gntp(s.recv(1024))
+        response = gntp.core.parse_gntp(s.recv(1024))
         s.close()
 
         if debug:
@@ -181,7 +181,7 @@ class Notifier(object):
         opts['debug'] = False
 
         # Send Registration
-        register = gntp.GNTPRegister()
+        register = gntp.core.GNTPRegister()
         register.add_header('Application-Name', opts['app'])
         register.add_header('Application-Icon', sickbeard.LOGO_URL)
 
