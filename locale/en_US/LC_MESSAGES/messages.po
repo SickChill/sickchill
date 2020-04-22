@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 09:34\n"
+"PO-Revision-Date: 2020-04-22 12:09\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: English\n"
 "MIME-Version: 1.0\n"
@@ -148,7 +148,7 @@ msgstr "Started Download"
 
 #: sickbeard/common.py:86
 msgid "Finished Download"
-msgstr ""
+msgstr "Finished Download"
 
 #: sickbeard/common.py:87
 msgid "Subtitle Download Finished"
@@ -2928,7 +2928,9 @@ msgstr "-- Select a Show --"
 msgid "Configure per-show notifications here by entering Prowl API key(s), separated by commas, '\n"
 "                                                'after selecting a show in the drop-down box.   Be sure to activate the 'Save for this show' '\n"
 "                                                'button below after each entry."
-msgstr ""
+msgstr "Configure per-show notifications here by entering Prowl API key(s), separated by commas, '\n"
+"                                                'after selecting a show in the drop-down box.   Be sure to activate the 'Save for this show' '\n"
+"                                                'button below after each entry."
 
 #: gui/slick/views/config_notifications.mako:1261
 #: gui/slick/views/config_notifications.mako:3003
@@ -4723,7 +4725,9 @@ msgstr "Ignore language names in subbed results"
 msgid "ignore subbed releases based on language names <br>\n"
 "                            Example: \"dk\" will ignore words: dksub, dksubs, dksubbed, dksubed <br>\n"
 "                            separate languages with a comma, e.g. \"lang1,lang2,lang3"
-msgstr ""
+msgstr "ignore subbed releases based on language names <br>\n"
+"                            Example: \"dk\" will ignore words: dksub, dksubs, dksubbed, dksubed <br>\n"
+"                            separate languages with a comma, e.g. \"lang1,lang2,lang3"
 
 #: gui/slick/views/config_search.mako:212
 msgid "Allow high priority"
