@@ -1473,12 +1473,11 @@ class Home(WebRoot):
         except ShowDirectoryNotFoundException:
             return self._genericMessage(_("Error"), _("Can't rename episodes when the show dir is missing."))
 
-        ep_obj_list = show_obj.getAllEpisodes(has_location=True)
-
+        show_obj.getAllEpisodes(has_location=True)
         t = PageTemplate(rh=self, filename="testRename.mako")
         submenu = [{'title': _('Edit'), 'path': 'home/editShow?show={0:d}'.format(show_obj.indexerid), 'icon': 'ui-icon ui-icon-pencil'}]
 
-        return t.render(submenu=submenu, ep_obj_list=ep_obj_list,
+        return t.render(submenu=submenu,
                         show=show_obj, title=_('Preview Rename'),
                         header=_('Preview Rename'),
                         controller="home", action="previewRename")

@@ -29,6 +29,7 @@ import threading
 import traceback
 
 # Third Party Imports
+import guessit
 import six
 from imdb import imdb
 from unidecode import unidecode
@@ -257,6 +258,9 @@ class TVShow(object):
         season = try_int(season, None)
         episode = try_int(episode, None)
         absolute_number = try_int(absolute_number, None)
+
+        if season in self.episodes and episode in self.episodes[season]:
+            return self.episodes[season][episode]
 
         # if we get an anime get the real season and episode
         if self.is_anime and absolute_number and not season and not episode:
@@ -2033,14 +2037,12 @@ class TVEpisode(object):
                 return ''
 
             try:
-                parse_result = NameParser(name, showObj=show, naming_pattern=True).parse(name)
+                guess_result = guessit.guessit(name, dict(single_value=True))
             except (InvalidNameException, InvalidShowException) as error:
                 logger.log("Unable to get parse release_group: {0}".format(error), logger.DEBUG)
                 return ''
 
-            if not parse_result.release_group:
-                return ''
-            return parse_result.release_group.strip('.- []{}')
+            return guess_result.get('release_group', '').strip('.- []{}')
 
         epStatus_, epQual = Quality.splitCompositeStatus(self.status)  # @UnusedVariable
 
