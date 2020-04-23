@@ -2697,10 +2697,10 @@ var SICKCHILL = {
                 });
 
                 // Hide season headers with no episodes under them
-                $('tr.seasonheader').each(function() {
+                $('div.seasonheader').each(function() {
                     let numRows = 0;
-                    const seasonNo = $(this).attr('id');
-                    $('tr.' + seasonNo + ' :visible').each(function() {
+                    const seasonNo = $(this).attr('data-season-id');
+                    $('tr.season-' + seasonNo + ' :visible').each(function() {
                         numRows++;
                     });
                     if (numRows === 0) {
