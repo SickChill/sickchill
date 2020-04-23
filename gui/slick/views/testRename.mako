@@ -82,15 +82,19 @@
                                     if not ep_obj._location:
                                         continue
 
+                                    odd = not odd
+                                    epStr = str(ep_obj.season) + "x" + str(ep_obj.episode)
+
+                                    epList = sorted([ep_obj.episode] + [x.episode for x in ep_obj.relatedEps])
+                                    if ep_obj.episode != min(epList):
+                                        continue
+
+                                    if len(epList) > 1:
+                                        epList = [min(epList), max(epList)]
+
                                     curLoc = ep_obj.location[len(show._location)+1:]
                                     curExt = curLoc.split('.')[-1]
                                     newLoc = ep_obj.proper_path() + '.' + curExt
-
-                                    odd = not odd
-                                    epStr = str(ep_obj.season) + "x" + str(ep_obj.episode)
-                                    epList = sorted([ep_obj.episode] + [x.episode for x in ep_obj.relatedEps])
-                                    if len(epList) > 1:
-                                        epList = [min(epList), max(epList)]
                                 %>
                                 <tr class="season-${current_season} ${('wanted', 'good')[curLoc == newLoc]} seasonstyle">
                                     <td class="col-checkbox">
