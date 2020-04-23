@@ -5,7 +5,7 @@ bencode==1.0
 CacheControl==0.12.6
 cfscrape==2.1.1
 chardet==3.0.4
-cloudscraper==1.2.33
+cloudscraper==1.2.34
 configobj==5.0.6
 fake-useragent==0.1.11
 feedparser==5.2.1
