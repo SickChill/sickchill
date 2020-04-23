@@ -26,6 +26,7 @@ from urllib2 import URLError
 # Third Party Imports
 from beekeeper.exceptions import RequestTimeout
 from kodipydent import Kodi
+from requests.compat import unquote_plus
 
 # First Party Imports
 import sickbeard
@@ -101,7 +102,7 @@ class Notifier(object):
                 results[connection.host] = self.success(response)
             else:
                 if sickbeard.KODI_ALWAYS_ON or force:
-                    logger.log("Failed to send notification to {0} for '{1}', check configuration and try again.".format(dest_app, self.hostname(connection)),
+                    logger.log("Failed to send notification to {0} for '{1}', check configuration and try again.".format(dest_app, connection.host),
                                logger.WARNING)
                 results[connection.host] = False
 
@@ -143,8 +144,9 @@ class Notifier(object):
                             logger.log("KODI: No tvshows in KODI TV show list", logger.DEBUG)
                             continue
 
+                    check = (show_name, unquote_plus(show_name))
                     for show in shows:
-                        if ("label" in show and show["label"] == show_name) or ("title" in show and show["title"] == show_name):
+                        if ("label" in show and show["label"] in check) or ("title" in show and show["title"] in check):
                             tvshowid = show["tvshowid"]
                             path = show["file"]
                             break
@@ -171,6 +173,9 @@ class Notifier(object):
                             result += 1
                             continue
 
+                if show_name and not sickbeard.KODI_UPDATE_FULL:
+                    continue
+
                 logger.log("Doing Full Library KODI update on host: " + connection.host, logger.DEBUG)
                 response = connection.VideoLibrary.Scan()
                 if not response:
@@ -187,14 +192,13 @@ class Notifier(object):
         return result > 0
 
     def play_episode(self, episode, connection_index=0):
-        """Handles updating KODI host via HTTP JSON-RPC
+        """Handles playing videos on a KODI host via HTTP JSON-RPC
 
-        Attempts to update the KODI video library for a specific tv show if passed,
-        otherwise update the whole library if enabled.
+        Attempts to play an episode on a KODI host.
 
         Args:
-            host: KODI webserver host:port
-            show_name: Name of a TV show to specifically target the library update for
+            episode: The episode to play
+            connection_index: Index of the selected host to play the episode on
 
         Returns:
             Returns True or False
@@ -209,12 +213,22 @@ class Notifier(object):
         logger.log("Trying to play episode on Kodi for host: " + connection.host, logger.DEBUG)
 
         response = connection.VideoLibrary.GetTVShows(filter={"field": "title", "operator": "is", "value": episode.show.name})
+
+        shows = []
+        tvshowid = None
         if response and "result" in response and "tvshows" in response["result"]:
             shows = response["result"]["tvshows"]
 
+        check = (episode.show.name, unquote_plus(episode.show.name))
         for show in shows:
-            if ("label" in show and show["label"] == episode.show.name) or ("title" in show and show["title"] == episode.show.name):
+            if ("label" in show and show["label"] in check) or ("title" in show and show["title"] in check):
                 tvshowid = show["tvshowid"]
+
+        del shows
+
+        if tvshowid is None:
+            logger.log('Could not play the item, could not find the show on Kodi')
+            return
 
         response = connection.VideoLibrary.GetEpisodes(
             filter={"field": "title", "operator": "is", "value": episode.name},
