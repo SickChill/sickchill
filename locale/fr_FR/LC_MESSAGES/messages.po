@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 13:00\n"
+"PO-Revision-Date: 2020-04-22 21:00\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -364,7 +364,7 @@ msgstr "Aucun chemin parent fourni dans {location} impossible d'en obtenir les p
 
 #: sickbeard/helpers.py:628
 msgid "Not running as root or owner of {location}, not trying to set permissions"
-msgstr ""
+msgstr "Pas lancé en tant que root ou propriétaire de {location}, n'essaye pas de définir les permissions"
 
 #: sickbeard/helpers.py:634
 msgid "Failed to set permission for {0} to {1:o}, parent directory has {2:o}"
@@ -372,7 +372,7 @@ msgstr "Impossible de définir les permissions pour {0} à {1:o}, le répertoire
 
 #: sickbeard/helpers.py:666
 msgid "Not running as root or owner of {}, not trying to set the set-group-ID"
-msgstr ""
+msgstr "Pas lancé en tant que root ou propriétaire de {}, n'essaye pas de définir le set-group-ID"
 
 #: sickbeard/helpers.py:671
 msgid "Respecting the set-group-ID bit on the parent directory for {0}"
@@ -500,63 +500,63 @@ msgstr "Échec de la requête : {0} ({1})"
 
 #: sickbeard/helpers.py:1412
 msgid "SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to 1.0.1e+"
-msgstr ""
+msgstr "Erreur SSL demandant l'url: '{0}' Vous avez {1}, essayez de mettre à jour OpenSSL vers 1.0.1e+"
 
 #: sickbeard/helpers.py:1414
 msgid "SSL Error requesting url: '{0}' Try disabling Cert Verification on the advanced tab of /config/general"
-msgstr ""
+msgstr "Erreur SSL demandant l'url: '{0}' Essayez de désactiver la vérification du certificat dans l'onglet avancé de /config/générale"
 
 #: sickbeard/helpers.py:1454
 msgid "url is {0}"
-msgstr ""
+msgstr "l'url est {0}"
 
 #: sickbeard/helpers.py:1481
 msgid "Unable to get size for file {0} because the link to the file is not valid"
-msgstr ""
+msgstr "Impossible d'obtenir la taille du fichier {0} car le lien vers le fichier n'est pas valide"
 
 #: sickbeard/helpers.py:1487
 msgid "Unable to get size for file {0} Error: {1}"
-msgstr ""
+msgstr "Impossible d'obtenir la taille du fichier {0} Erreur: {1}"
 
 #: sickbeard/helpers.py:1494
 msgid "Generating New API key"
-msgstr ""
+msgstr "Génération d'une nouvelle clé API"
 
 #: sickbeard/helpers.py:1551
 msgid "Trying to determine free space on the destination drive"
-msgstr ""
+msgstr "Essaye de déterminer l'espace libre sur le lecteur de destination"
 
 #: sickbeard/helpers.py:1554
 msgid "A path to a file is required for the source. {0} is not a file."
-msgstr ""
+msgstr "Un chemin vers un fichier est requis pour la source. {0} n'est pas un fichier."
 
 #: sickbeard/helpers.py:1558
 msgid "A path is required for the destination. Check that the root dir and show locations are correct for {0} (I got '{1}')"
-msgstr ""
+msgstr "Un chemin d'accès est requis pour la destination. Vérifiez que le répertoire racine et l'emplacement des séries sont corrects pour {0} (J'ai '{1}')"
 
 #: sickbeard/helpers.py:1568
 msgid "Process method is 'move' and src and destination are on the same device, skipping free space check"
-msgstr ""
+msgstr "La méthode du processus est 'move' et la src et la destination sont sur le même appareil, j'ignore la vérification de l'espace libre"
 
 #: sickbeard/helpers.py:1574
 msgid "Unable to determine free space, so I will assume there is enough."
-msgstr ""
+msgstr "Impossible de déterminer l'espace libre, je suppose donc qu'il y en a assez."
 
 #: sickbeard/helpers.py:1575 sickbeard/helpers.py:1608
 msgid "Error: {error}"
-msgstr ""
+msgstr "Erreur : {error}"
 
 #: sickbeard/helpers.py:1593
 msgid "Not enough free space: Needed: {0} bytes ( {1} ), found: {2} bytes ( {3} )"
-msgstr ""
+msgstr "Pas assez d'espace libre : Besoin : {0} octets ( {1} ), trouvés : {2} octets ( {3})"
 
 #: sickbeard/helpers.py:1607
 msgid "Unable to determine free space"
-msgstr ""
+msgstr "Impossible de déterminer l'espace libre"
 
 #: sickbeard/logger.py:246
 msgid "Missing time zone for network"
-msgstr ""
+msgstr "Fuseau horaire manquant pour le réseau"
 
 #: sickbeard/logger.py:479
 msgid "&lt;No Filter&gt;"
@@ -658,15 +658,15 @@ msgstr "Général"
 
 #: sickbeard/network_timezones.py:131
 msgid "Missing time zone for network: {0}. Check valid network is set in indexer (theTVDB) before filing issue."
-msgstr ""
+msgstr "Fuseau horaire manquant pour le réseau: {0}. Vérifiez que le réseau valide est défini dans l'indexeur (theTVDB) avant de déposer le problème."
 
 #: sickbeard/search.py:483 sickbeard/search.py:764
 msgid "Performing {episode_or_season} search for {show}"
-msgstr ""
+msgstr "Exécution de la recherche {episode_or_season} pour {show}"
 
 #: sickbeard/search.py:484 sickbeard/search.py:765
 msgid "season pack"
-msgstr ""
+msgstr "paquet d'une saison"
 
 #: gui/slick/views/apiBuilder.mako:317 sickbeard/search.py:484
 #: sickbeard/search.py:765
@@ -675,7 +675,7 @@ msgstr "épisode"
 
 #: sickbeard/show_queue.py:210
 msgid "Refresh"
-msgstr ""
+msgstr "Actualiser"
 
 #: gui/slick/views/config_providers.mako:860
 #: gui/slick/views/config_providers.mako:957 gui/slick/views/editShow.mako:371
@@ -689,7 +689,7 @@ msgstr "Mettre à jour"
 
 #: sickbeard/show_queue.py:213
 msgid "Force Update"
-msgstr ""
+msgstr "Forcer la mise à jour"
 
 #: gui/slick/views/manage.mako:52 sickbeard/show_queue.py:214
 msgid "Rename"
@@ -711,19 +711,19 @@ msgstr "Chargement"
 
 #: sickbeard/show_queue.py:323
 msgid "Starting to add show {0}"
-msgstr ""
+msgstr "Commence à ajouter la série {0}"
 
 #: sickbeard/show_queue.py:323
 msgid "by ShowDir: {0}"
-msgstr ""
+msgstr "par ShowDir: {0}"
 
 #: sickbeard/show_queue.py:323
 msgid "by Indexer Id: {0}"
-msgstr ""
+msgstr "par ID de l'indexeur : {0}"
 
 #: sickbeard/show_queue.py:329
 msgid "Could not find show with id:{0} on {1}, skipping"
-msgstr ""
+msgstr "Impossible de trouver la série avec l'id :{0} sur {1}, sautée"
 
 #: sickbeard/show_queue.py:333 sickbeard/show_queue.py:375
 #: sickbeard/show_queue.py:384 sickbeard/show_queue.py:457
@@ -734,55 +734,55 @@ msgstr "Impossible d'ajouter la série"
 
 #: sickbeard/show_queue.py:342
 msgid "Unable to get a show {0}, can't add the show"
-msgstr ""
+msgstr "Impossible d'obtenir une série {0}, impossible d'ajouter la série"
 
 #: sickbeard/show_queue.py:353 sickchill/views/manage/add_shows.py:533
 msgid "Could not append the show year folder for the show: {0}"
-msgstr ""
+msgstr "Impossible d'ajouter le dossier de l'année de série pour la série : {0}"
 
 #: sickbeard/show_queue.py:358
 msgid "Skipping initial creation of {0} due to config.ini setting"
-msgstr ""
+msgstr "La création initiale de {0} a été ignorée en raison du paramètre config.ini"
 
 #: sickbeard/show_queue.py:362
 msgid "Unable to create the folder {0}, can't add the show"
-msgstr ""
+msgstr "Impossible de créer le dossier {0}, impossible d'ajouter la série"
 
 #: sickbeard/show_queue.py:371
 msgid "Show in {0} has no name on {1}, probably searched with the wrong language. Delete .nfo and add manually in the correct language."
-msgstr ""
+msgstr "La série dans {0} n'a pas de nom sur {1}, probablement recherchée avec la mauvaise langue. Supprimez .nfo et ajoutez manuellement dans la langue correcte."
 
 #: sickbeard/show_queue.py:430
 msgid "Setting all episodes to the specified default status: {0}"
-msgstr ""
+msgstr "Réglage de tous les épisodes au statut par défaut spécifié : {0}"
 
 #: sickbeard/show_queue.py:463
 msgid "The show in {0} is already in your show list, skipping"
-msgstr ""
+msgstr "La série dans {0} est déjà dans votre liste de séries, passée"
 
 #: sickbeard/show_queue.py:465
 msgid "Show skipped"
-msgstr ""
+msgstr "Série sautée"
 
 #: sickbeard/show_queue.py:470
 msgid "Retrieving show info from IMDb"
-msgstr ""
+msgstr "Récupération des informations de la série depuis IMDb"
 
 #: sickbeard/show_queue.py:474
 msgid "Something wrong on IMDb api: {0}"
-msgstr ""
+msgstr "Quelque chose ne va pas sur l'api IMDb : {0}"
 
 #: sickbeard/show_queue.py:738
 msgid "Unable to delete show from Trakt: {0}. Error: {1}"
-msgstr ""
+msgstr "Impossible de supprimer la série de Trakt: {0}. Erreur: {1}"
 
 #: sickbeard/show_queue.py:764
 msgid "Some notifications could not be sent. Continuing removal of {}..."
-msgstr ""
+msgstr "Certaines notifications n'ont pas pu être envoyées. La suppression de {} continue..."
 
 #: sickbeard/tv.py:521
 msgid "{show_id}: Loading all episodes from {indexer_name}..."
-msgstr ""
+msgstr "{show_id}: Chargement de tous les épisodes à partir de {indexer_name}..."
 
 #: sickbeard/versionChecker.py:71
 msgid "New update found for SickChill, starting auto-updater"
@@ -825,7 +825,7 @@ msgstr "Impossible de trouver l'exécutable de git - Arrêtez SickChill et SOIT 
 
 #: sickbeard/versionChecker.py:571 sickbeard/versionChecker.py:774
 msgid "(you're {num_commits} commit behind)"
-msgstr ""
+msgstr "(vous êtes en retard de {num_commits} commits)"
 
 #: sickbeard/versionChecker.py:572 sickbeard/versionChecker.py:775
 msgid "There is a <a href=\"{compare_url}\" onclick=\"window.open(this.href); return false;\">newer version available</a> {commits_behind} &mdash; <a href=\"{update_url}\">Update Now</a>"
@@ -865,7 +865,7 @@ msgstr "Champ <id> ou <tvdbid> vide dans le NFO, impossible de trouver un ID, je
 
 #: sickbeard/metadata/generic.py:757
 msgid "Invalid Indexer ID ({0}), not using metadata file because it has TVRage info"
-msgstr ""
+msgstr "ID d'indexeur invalide ({0}), n'utilisant pas de fichier de métadonnées car il a des informations TVRage"
 
 #: sickbeard/metadata/generic.py:764
 msgid "There was an error parsing your existing metadata file: '{0}' error: {1}"
@@ -985,7 +985,7 @@ msgstr "Sélectionnez l’emplacement de téléchargement des fichiers .torrent"
 
 #: gui/slick/js/core.js:1772
 msgid "Select .torrent completed location"
-msgstr ""
+msgstr "Sélectionnez l’emplacement de téléchargement des fichiers .torrent terminés"
 
 #: gui/slick/js/core.js:1850
 msgid "Minimum seeding time is"
@@ -1121,7 +1121,7 @@ msgstr "Accueil"
 msgid "A mako error has occurred.<br>\n"
 "            If this happened during an update a simple page refresh may be the solution.<br>\n"
 "            Mako errors that happen during updates may be a one time error if there were significant ui changes."
-msgstr ""
+msgstr "Une erreur mako est survenue. <br>Si cela s'est passé pendant une mise à jour un simple rafraîchissement de la page devrait corriger le problème. <br>Les erreurs mako qui se produisent pendant les mises à jour peuvent être ponctuelles s'il y a eu un changement significatif dans l'interface utilisateur."
 
 #: gui/slick/views/500.mako:12
 msgid "Show/Hide Error"
@@ -1133,7 +1133,7 @@ msgstr "Ajouter une nouvelle série"
 
 #: gui/slick/views/addShows.mako:19
 msgid "For shows that you haven't downloaded yet, this option finds a show on theTVDB.com, creates a directory for its episodes, and adds it to SickChill."
-msgstr ""
+msgstr "Pour les séries que vous n’avez pas encore téléchargé, cette option trouve une série sur theTVDB.com, crée un répertoire pour ses épisodes et l'ajoute à SickChill."
 
 #: gui/slick/views/addShows.mako:30
 msgid "Add From Trakt Lists"
@@ -1941,11 +1941,11 @@ msgstr "Afficher toutes les saisons"
 
 #: gui/slick/views/config_general.mako:479
 msgid "Days to wait before updating ended shows"
-msgstr ""
+msgstr "Jours à attendre avant la mise à jour des séries terminées"
 
 #: gui/slick/views/config_general.mako:491
 msgid "Ended shows will only be updated after this many days have passed, if there is an update for the show"
-msgstr ""
+msgstr "Les séries terminées ne seront mises à jour qu'après ce nombre de jours écoulés, s'il y a une mise à jour pour la série"
 
 #: gui/slick/views/config_general.mako:500
 msgid "Sort with \"The\", \"A\", \"An\""
@@ -2309,7 +2309,7 @@ msgstr "Nom d'utilisateur GitHub"
 
 #: gui/slick/views/config_general.mako:1153
 msgid "Only used for web IRC chat"
-msgstr ""
+msgstr "Utilisé uniquement pour le chat IRC web"
 
 #: gui/slick/views/config_general.mako:1161
 msgid "GitHub personal access token"
@@ -2329,7 +2329,7 @@ msgstr "*** (REQUIS POUR SOUMETTRE DES FAITS TECHNIQUES) ***"
 
 #: gui/slick/views/config_general.mako:1185
 msgid "Provide repo:status, public_repo, write:discussion, read:discussion, user, gist, and notifications"
-msgstr ""
+msgstr "Fournis repo:status public_repo, write:discussion, read:discussion, user, gist et notifications"
 
 #: gui/slick/views/config_general.mako:1194
 msgid "Git executable path"
@@ -3556,11 +3556,11 @@ msgstr "Envoyer des notifications par mail ?"
 
 #: gui/slick/views/config_notifications.mako:2815
 msgid "Notify on postprocess"
-msgstr ""
+msgstr "Notifie lors du post-process"
 
 #: gui/slick/views/config_notifications.mako:2819
 msgid "send a notification when a postprocessing finishes?"
-msgstr ""
+msgstr "envoyer une notification quand un téléchargement se termine ?"
 
 #: gui/slick/views/config_notifications.mako:2835
 msgid "SMTP host"
@@ -3664,7 +3664,7 @@ msgstr "Webhook Slack entrant"
 
 #: gui/slick/views/config_notifications.mako:3098
 msgid "Slack Icon Emoji"
-msgstr ""
+msgstr "Emoji Icône Slack"
 
 #: gui/slick/views/config_notifications.mako:3129
 msgid "Matrix"
@@ -3672,7 +3672,7 @@ msgstr "Matrix"
 
 #: gui/slick/views/config_notifications.mako:3131
 msgid "Matrix is an open fabric for communication that anyone can participate in."
-msgstr ""
+msgstr "Matrix est un tissu ouvert à la communication auquel n'importe qui peut participer."
 
 #: gui/slick/views/config_notifications.mako:3145
 msgid "should SickChill post messages on Matrix?"
@@ -4707,7 +4707,7 @@ msgstr "Mots préférés"
 
 #: gui/slick/views/config_search.mako:164
 msgid "search results with these words will be preferred in this order<br>separate words with a comma, e.g. \"word1,word2,word3\""
-msgstr ""
+msgstr "les résultats de recherche avec ces mots seront préférés dans cet ordre<br>séparez les mots par une virgule, par exemple \"mot1, mot2, mot3\""
 
 #: gui/slick/views/config_search.mako:172
 msgid "Require words"
@@ -4739,11 +4739,11 @@ msgstr "définir les téléchargements d'épisodes récemment diffusés sur prio
 
 #: gui/slick/views/config_search.mako:222
 msgid "Allow downloading HEVC x265 releases"
-msgstr ""
+msgstr "Autoriser le téléchargement des versions HEVC x265"
 
 #: gui/slick/views/config_search.mako:227
 msgid "whether we should download HEVC x265 releases"
-msgstr ""
+msgstr "si nous devons télécharger les versions HEVC x265"
 
 #: gui/slick/views/config_search.mako:232
 msgid "Use Failed Downloads"
@@ -4771,15 +4771,15 @@ msgstr "Cela ne fonctionnera que si la gestion des téléchargements échoués e
 
 #: gui/slick/views/config_search.mako:278
 msgid "Backlog search for missing only"
-msgstr ""
+msgstr "Recherche manuelle des manquants uniquement"
 
 #: gui/slick/views/config_search.mako:285
 msgid "restrict backlog searches to missing episodes only?"
-msgstr ""
+msgstr "restreindre les recherches manuelles aux épisodes manquants seulement ?"
 
 #: gui/slick/views/config_search.mako:290
 msgid "if enabled, this ignores episodes that are not preferred qualities"
-msgstr ""
+msgstr "si activé, cela ignore les épisodes qui ne sont pas dans la qualité préférée"
 
 #: gui/slick/views/config_search.mako:309
 msgid "How to handle NZB search results."
@@ -5031,7 +5031,7 @@ msgstr "Liste de trackers"
 #: gui/slick/views/config_search.mako:906
 msgid "trackers that will be added to magnets without trackers<br>separate trackers '\n"
 "                                                'with a comma, e.g. \"tracker1,tracker2,tracker3\""
-msgstr ""
+msgstr "les trackers qui seront ajoutés aux magnets sans tracker, <br>\\n séparés par une virgule, par exemple \"tracker1, tracker2, tracker3\""
 
 #: gui/slick/views/config_search.mako:914
 msgid "Send .torrent files to"
@@ -5096,19 +5096,19 @@ msgstr "pour QBitTorrent 3.3.1 et plus "
 
 #: gui/slick/views/config_search.mako:1122
 msgid "Download directory"
-msgstr ""
+msgstr "Dossier de téléchargement"
 
 #: gui/slick/views/config_search.mako:1134
 msgid "where Deluge will save downloaded files (blank for client default)"
-msgstr ""
+msgstr "Emplacement où Deluge sauvegardera les fichiers téléchargés (vide pour garder les paramètres par défaut du client)"
 
 #: gui/slick/views/config_search.mako:1139
 msgid "Completed Directory"
-msgstr ""
+msgstr "Répertoire des terminés"
 
 #: gui/slick/views/config_search.mako:1151
 msgid "where Deluge will move files after downloading is complete (blank for client default)"
-msgstr ""
+msgstr "Emplacement où Deluge déplacera les fichiers téléchargés terminés (vide pour garder les paramètres par défaut du client)"
 
 #: gui/slick/views/config_search.mako:1171
 msgid "where <span id=\"torrent_client\">the torrent client</span> will save downloaded files (blank for client default)"
@@ -5253,7 +5253,7 @@ msgstr "Sous-titres multilingues"
 
 #: gui/slick/views/config_subtitles.mako:175
 msgid "append language codes to subtitle file names?"
-msgstr ""
+msgstr "Ajouter le code de la langue aux noms des fichiers de sous-titres ?"
 
 #: gui/slick/views/config_subtitles.mako:180
 msgid "this option is required if you use multiple subtitle languages"
@@ -5437,7 +5437,7 @@ msgstr "Mots requis"
 
 #: gui/slick/views/displayShow.mako:231 gui/slick/views/editShow.mako:302
 msgid "Preferred Words"
-msgstr ""
+msgstr "Mots préférés"
 
 #: gui/slick/views/displayShow.mako:238 gui/slick/views/editShow.mako:276
 msgid "Ignored Words"
@@ -5559,7 +5559,7 @@ msgstr " Télécharger"
 
 #: gui/slick/views/displayShow.mako:444 gui/slick/views/displayShow.mako:670
 msgid "Play"
-msgstr ""
+msgstr "Lecture"
 
 #: gui/slick/views/displayShow.mako:446 gui/slick/views/inc_home_menu.mako:50
 #: gui/slick/views/inc_home_showList.mako:188 gui/slick/views/manage.mako:49
@@ -5609,15 +5609,15 @@ msgstr "Cela remplacera vos sous-titres actuels"
 
 #: gui/slick/views/displayShow.mako:650
 msgid "Close"
-msgstr ""
+msgstr "Fermer"
 
 #: gui/slick/views/displayShow.mako:652
 msgid "Select Kodi Player"
-msgstr ""
+msgstr "Sélectionnez le lecteur Kodi"
 
 #: gui/slick/views/displayShow.mako:671
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: gui/slick/views/editShow.mako:39
 msgid "Format"
@@ -5686,7 +5686,7 @@ msgstr "Dans le cas d'un conflit de dates entre les épisodes ordinaires et spé
 
 #: gui/slick/views/editShow.mako:189
 msgid "check if the show is Anime and episodes are released as Show.265 rather than Show.S02E03"
-msgstr "vérifier si les séries de type animé apparaissent comme Show.03.02.2010 plutôt que Show.S02E03"
+msgstr "A cocher si les séries de type animé sortent sous la forme Série.03 plutôt que Série.S01E03"
 
 #: gui/slick/views/editShow.mako:210
 msgid "check if the show is a sporting or MMA event released as Show.03.02.2010 rather than Show.S02E03"
@@ -5727,11 +5727,11 @@ msgstr "cette option remplace les mots globalement ignorés !"
 
 #: gui/slick/views/editShow.mako:320
 msgid "search results with these words will be preferred in this order."
-msgstr ""
+msgstr "les résultats de recherche avec ces mots seront préférés dans cet ordre."
 
 #: gui/slick/views/editShow.mako:321
 msgid "this option overrides the globally preferred words!"
-msgstr ""
+msgstr "cette option remplace les mots requis au niveau global !"
 
 #: gui/slick/views/editShow.mako:348
 msgid "search results with no words from this list will be ignored."
@@ -6305,7 +6305,7 @@ msgstr "Recherche selon la numérotation de la scène (mettre \"Non\" à la rech
 
 #: gui/slick/views/manage_massEdit.mako:199
 msgid "Set if these shows are Anime and episodes are released as Show.265 rather than Show.S02E03"
-msgstr "Définir si ces séries sont de type Animés et doivent apparaître comme Show.03.02.2010 plutôt que Show.S02E03"
+msgstr "Définir si ces séries sont de type Animés qui sortent sous la forme Série.03 plutôt que Série.S01E03"
 
 #: gui/slick/views/manage_massEdit.mako:215
 msgid "Set if these shows are sporting or MMA events released as Show.03.02.2010 rather than Show.S02E03."
@@ -6753,43 +6753,43 @@ msgstr "Actuellement"
 
 #: sickchill/show_updater.py:75
 msgid "No last update time from the cache, so we do a full update for all shows"
-msgstr ""
+msgstr "Pas de date de dernière mise à jour dans le cache, donc nous faisons une mise à jour complète pour toutes les séries"
 
 #: sickchill/show_updater.py:97
 msgid "Automatic update failed: {0}"
-msgstr ""
+msgstr "La mise à jour automatique a échouée : {0}"
 
 #: sickchill/helper/common.py:385
 msgid "Unable to setup GitHub properly with your github token. Please check your credentials. Error: {0}"
-msgstr ""
+msgstr "Impossible de configurer GitHub correctement avec votre jeton github. Veuillez vérifier vos identifiants. Erreur: {0}"
 
 #: sickchill/helper/common.py:389
 msgid "Unable to setup GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {0}"
-msgstr ""
+msgstr "Impossible de configurer GitHub correctement avec votre jeton github en raison de 2FA - Assurez-vous que ce jeton fonctionne avec 2FA. Erreur: {0}"
 
 #: sickchill/helper/common.py:395
 msgid "Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests. Error: {0}"
-msgstr ""
+msgstr "Impossible de configurer GitHub correctement, vous êtes actuellement en train d'être limité par une limitation de débit pour trop de requêtes. Erreur: {0}"
 
 #: sickchill/helper/common.py:398
 msgid "Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests - Try adding an access token. Error: {0}"
-msgstr ""
+msgstr "Impossible de configurer GitHub correctement, vous êtes actuellement limité par une limitation de débit pour trop de requêtes - Essayez d'ajouter un jeton d'accès. Erreur: {0}"
 
 #: sickchill/helper/common.py:401
 msgid "Unable to setup GitHub properly, it seems to be down or your organization/repo is set wrong. Error: {0}"
-msgstr ""
+msgstr "Impossible de configurer GitHub correctement, il semble être en panne ou votre organisation/dépôt est mal défini. Erreur: {0}"
 
 #: sickchill/helper/common.py:405
 msgid "Unable to setup GitHub properly, GitHub doesn't like the user-agent. Error: {0}"
-msgstr ""
+msgstr "Impossible de configurer GitHub correctement, GitHub n'aime pas cet user-agent. Erreur: {0}"
 
 #: sickchill/helper/common.py:408
 msgid "Unable to setup GitHub properly, There might be an error with the library. Error: {0}"
-msgstr ""
+msgstr "Impossible de configurer GitHub correctement, il peut y avoir une erreur avec la bibliothèque. Erreur: {0}"
 
 #: sickchill/helper/common.py:411
 msgid "Unable to setup GitHub properly. GitHub will not be available. Error: {0}"
-msgstr ""
+msgstr "Impossible de configurer GitHub correctement. GitHub ne sera pas disponible. Erreur: {0}"
 
 #: sickchill/providers/GenericProvider.py:58
 msgid "Not working"
@@ -6809,11 +6809,11 @@ msgstr "Recherches quotidiennes/RSS et Backlog/manuelles en cours"
 
 #: sickchill/views/api/authentication.py:45 sickchill/views/authentication.py:79
 msgid "Failed authentication while getting api key"
-msgstr ""
+msgstr "Échec de l'authentification lors de l'obtention de la clé api"
 
 #: sickchill/views/api/authentication.py:46 sickchill/views/authentication.py:80
 msgid "Authentication failed during api key request: {0}"
-msgstr ""
+msgstr "L'authentification a échoué lors de la demande de clé api: {0}"
 
 #: sickchill/views/changelog.py:44
 msgid "Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})"
@@ -6993,11 +6993,11 @@ msgstr "Échec de l’envoi du message"
 
 #: sickchill/views/home.py:380
 msgid "Matrix message successful"
-msgstr ""
+msgstr "Message envoyé sur Matrix"
 
 #: sickchill/views/home.py:382
 msgid "Matrix message failed"
-msgstr ""
+msgstr "Échec de l’envoi du message sur Matrix"
 
 #: sickchill/views/home.py:388
 msgid "Discord message successful"
@@ -7009,7 +7009,7 @@ msgstr "Échec de l’envoi du message sur Discord"
 
 #: sickchill/views/home.py:400
 msgid "Test KODI notice {result} to {kodi_host}"
-msgstr ""
+msgstr "La notification de test KODI a échoué vers {kodi_host}"
 
 #: sickchill/views/home.py:413
 msgid "Successful test notice sent to Plex Home Theater ... {plex_clients}"
@@ -7342,7 +7342,7 @@ msgstr "Aucun sous-titres téléchargé"
 
 #: sickchill/views/index.py:93
 msgid "Oops: 404 Not Found"
-msgstr ""
+msgstr "Oups : 404 Non Trouvé"
 
 #: sickchill/views/index.py:95
 msgid "Wrong API key used"
@@ -7614,11 +7614,11 @@ msgstr "Édition par lots"
 
 #: sickchill/views/manage/index.py:548
 msgid "Unable to update show: {exception_format}"
-msgstr ""
+msgstr "Impossible de mettre à jour la série : {exception_format}"
 
 #: sickchill/views/manage/index.py:556
 msgid "Unable to refresh show {show_name}: {exception_format}"
-msgstr ""
+msgstr "Impossible d'actualiser la série {show_name} : {exception_format}"
 
 #: sickchill/views/manage/index.py:567
 msgid "Errors encountered"
