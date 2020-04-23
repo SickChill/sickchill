@@ -259,7 +259,7 @@ class TVShow(object):
         episode = try_int(episode, None)
         absolute_number = try_int(absolute_number, None)
 
-        if season in self.episodes and episode in self.episodes[season]:
+        if season in self.episodes and episode in self.episodes[season] and self.episodes[season][episode]:
             return self.episodes[season][episode]
 
         # if we get an anime get the real season and episode
