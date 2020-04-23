@@ -3880,7 +3880,11 @@ var SICKCHILL = {
                 if (object.showName.length) {
                     $.post(srRoot + '/addShows/sanitizeFileName', {name: object.showName}, function(data) {
                         $('#desc-show-name').text(object.showName);
-                        $('#desc-directory-name').html(object.dir + data + object.sepChar);
+                        if (object.dir === $('#fullShowPath').val()) {
+                            $('#desc-directory-name').html(object.dir);
+                        } else {
+                            $('#desc-directory-name').html(object.dir + data + object.sepChar);
+                        }
                     });
                 } else { // If not then it's unknown
                     $('#desc-show-name').text(object.showName);
