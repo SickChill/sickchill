@@ -429,7 +429,7 @@ class DOMParserBase(object):
                 try:
                     self.gather_refs(dom)
                 except Exception:
-                    self._logger.warn('%s: unable to gather refs: %s',
+                    self._logger.warn('%s: unable to gather refs',
                                       self._cname, exc_info=True)
             data = self.parse_dom(dom)
         else:
