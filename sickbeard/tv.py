@@ -259,7 +259,7 @@ class TVShow(object):
         episode = try_int(episode, None)
         absolute_number = try_int(absolute_number, None)
 
-        if season in self.episodes and episode in self.episodes[season]:
+        if season in self.episodes and episode in self.episodes[season] and self.episodes[season][episode]:
             return self.episodes[season][episode]
 
         # if we get an anime get the real season and episode
@@ -2041,6 +2041,9 @@ class TVEpisode(object):
                 parse_result = NameParser(name, showObj=show, naming_pattern=True).parse(name)
             except (InvalidNameException, InvalidShowException) as error:
                 logger.log("Unable to get parse release_group: {0}".format(error), logger.DEBUG)
+                return ''
+
+            if not parse_result.release_group:
                 return ''
 
             # return guess_result.get('release_group', '').strip('.- []{}')
