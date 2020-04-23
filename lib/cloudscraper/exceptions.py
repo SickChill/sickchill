@@ -36,6 +36,12 @@ class CloudflareIUAMError(CloudflareException):
     """
 
 
+class CloudflareSolveError(CloudflareException):
+    """
+    Raise an error when issue with solving Cloudflare challenge
+    """
+
+
 class CloudflareReCaptchaError(CloudflareException):
     """
     Raise an error for problem extracting reCaptcha paramters

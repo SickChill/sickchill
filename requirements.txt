@@ -49,3 +49,4 @@ putio.py == 8.6.2
 profilehooks
 httplib2 == 0.17.3
 PySocks
+win_inet_pton
