@@ -33,7 +33,7 @@ import uuid
 from os import path
 
 # Third Party Imports
-from fake_useragent import settings as UA_SETTINGS, UserAgent
+import fake_useragent
 # noinspection PyUnresolvedReferences
 from six.moves import reduce
 
@@ -53,12 +53,13 @@ gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 # It is no different than us going to a provider if we have questions or issues. Be a team player here.
 # This is disabled, was only added for testing, and has no config.ini or web ui setting. To enable, set SPOOF_USER_AGENT = True
 SPOOF_USER_AGENT = False
-INSTANCE_ID = str(uuid.uuid1())
-USER_AGENT = ('SickChill.CE.1/(' + platform.system() + '; ' + platform.release() + '; ' + INSTANCE_ID + ')')
-UA_SETTINGS.DB = ek(path.abspath, ek(path.join, ek(path.dirname, __file__), '../lib/fake_useragent/ua.json'))
-UA_POOL = UserAgent()
+ua_pool = fake_useragent.FakeUserAgent(path=ek(path.join, ek(path.dirname, __file__), '../fake_useragent.ua.json'))
+
 if SPOOF_USER_AGENT:
-    USER_AGENT = UA_POOL.random
+    USER_AGENT = ua_pool.random
+else:
+    INSTANCE_ID = str(uuid.uuid1())
+    USER_AGENT = ('SickChill.CE.1/(' + platform.system() + '; ' + platform.release() + '; ' + INSTANCE_ID + ')')
 
 cpu_presets = {
     'HIGH': 5,

@@ -34,7 +34,7 @@ from requests.utils import add_dict_to_cookiejar
 import sickbeard
 from sickbeard import logger
 from sickbeard.classes import Proper, SearchResult
-from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, UA_POOL
+from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, ua_pool
 from sickbeard.db import DBConnection
 from sickbeard.helpers import download_file, getURL, make_session, remove_file_failed
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
@@ -77,7 +77,7 @@ class GenericProvider(object):
         self.enable_backlog = False
         self.enable_daily = False
         self.enabled = False
-        self.headers = {'User-Agent': UA_POOL.random}
+        self.headers = {'User-Agent': ua_pool.random}
         self.proper_strings = ['PROPER|REPACK|REAL']
         self.provider_type = None
         self.public = False
