@@ -267,7 +267,7 @@
                                             <% info_flag = subtitles.code_from_code(show.lang) if show.lang else '' %>
                                             <tr>
                                                 <td class="showLegend">${_('Info Language')}:</td>
-                                                <td><img src="${static_url('images/subtitles/flags/' + info_flag + '.png') }" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${ static_url('images/flags/unknown.png')}';"/></td>
+                                                <td><img src="${static_url('images/subtitles/flags/' + info_flag + '.png') }" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${static_url('images/flags/unknown.png')}';"/></td>
                                             </tr>
                                             % if sickbeard.USE_SUBTITLES:
                                                 <tr>
@@ -293,11 +293,11 @@
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Sports')}: </td>
-                                                <td><span class="displayshow-icon-${("disable", "enable")[bool(show.is_sports)]}" title=${("N", "Y")[bool(show.is_sports)]}></span></td>
+                                                <td><span class="displayshow-icon-${("disable", "enable")[show.is_sports]}" title=${("N", "Y")[show.is_sports]}></span></td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Anime')}: </td>
-                                                <td><span class="displayshow-icon-${("disable", "enable")[bool(show.is_anime)]}" title=${("N", "Y")[bool(show.is_anime)]}></span></td>
+                                                <td><span class="displayshow-icon-${("disable", "enable")[show.is_anime]}" title=${("N", "Y")[show.is_anime]}></span></td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('DVD Order')}: </td>
@@ -415,8 +415,7 @@
                     <div class="row seasonheader" data-season-id="${epResult[b"season"]}">
                         <div class="col-md-12">
                             <br/>
-                            <h3 style="display: inline;"><a name="season-${epResult[b"season"]}"></a>${(_("Specials"), _("Season") + ' ' + str(epResult[b"season"]))[int
-                            (epResult[b"season"]) > 0]}</h3>
+                            <h3 style="display: inline;"><a name="season-${epResult[b"season"]}"></a>${(_("Specials"), _("Season") + ' ' + str(epResult[b"season"]))[int(epResult[b"season"]) > 0]}</h3>
                             % if len(seasonResults) > 3 or not sickbeard.DISPLAY_ALL_SEASONS:
                                 % if curSeason == -1 or seasonResults and int(seasonResults[0]["season"]) - abs(curSeason) < 2:
                                     <button id="showseason-${epResult[b'season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult[b'season']}" aria-expanded="true">${_('Hide Episodes')}</button>
@@ -429,7 +428,7 @@
                     <div class="row" id="${epResult[b"season"]}-cols">
                         <div class="col-md-12">
                             <div class="horizontal-scroll">
-                                <table id="${("showTable", "animeTable")[bool(show.is_anime)]}" class="displayShowTable display_show" cellspacing="0" border="0" cellpadding="0">
+                                <table id="${("showTable", "animeTable")[show.is_anime]}" class="displayShowTable display_show" cellspacing="0" border="0" cellpadding="0">
                                     <thead>
                                         <tr class="seasoncols ${epResult[b"season"]}">
                                             <th data-sorter="false" data-priority="critical" class="col-checkbox">
@@ -466,8 +465,14 @@
                                                 <input type="checkbox" class="epCheck" id="${epStr}" name="${epStr}" />
                                             % endif
                                         </td>
-                                        <td align="center"><img src="${static_url('images/' + ("nfo-no.gif", "nfo.gif")[epResult[b"hasnfo"]])}" alt="${("N", "Y")[epResult[b"hasnfo"]]}" width="23" height="11" /></td>
-                                        <td align="center"><img src="${static_url('images/' + ("tbn-no.gif", "tbn.gif")[epResult[b"hastbn"]])}" alt="${("N", "Y")[epResult[b"hastbn"]]}" width="23" height="11" /></td>
+                                        <td align="center">
+                                            <img src="${static_url('images/' + ("nfo-no.gif", "nfo.gif")[bool(epResult[b"hasnfo"])])}"
+                                                                alt="${("N", "Y")[bool(epResult[b"hasnfo"])]}" width="23" height="11" />
+                                        </td>
+                                        <td align="center">
+                                            <img src="${static_url('images/' + ("tbn-no.gif", "tbn.gif")[bool(epResult[b"hastbn"])])}"
+                                                 alt="${("N", "Y")[bool(epResult[b"hastbn"])]}" width="23" height="11" />
+                                        </td>
                                         <td align="center" class="episode">
                                             <%
                                                 text = str(epResult[b'episode'])
@@ -502,7 +507,7 @@
                                                    style="padding: 0; text-align: center; max-width: 60px;" autocapitalize="off" />
                                         </td>
                                         <td class="col-name">
-                                            % if epResult[b"description"] != "" and epResult[b"description"] is not None:
+                                            % if epResult[b"description"]:
                                                 <img src="${static_url('images/info32.png')}" width="16" height="16" class="plotInfo" alt="" id="plot_info_${str(show.indexerid)}_${epResult[b"season"]}_${epResult[b"episode"]}" />
                                             % else:
                                                 <img src="${static_url('images/info32.png')}" width="16" height="16" class="plotInfoNone" alt="" />
@@ -552,10 +557,10 @@
                                                 % if flag.strip():
                                                     % if flag != 'und':
                                                         <a class="epRetrySubtitlesSearch" href="retrySearchSubtitles?show=${show.indexerid}&amp;season=${epResult[b"season"]}&amp;episode=${epResult[b"episode"]}&amp;lang=${flag}">
-                                                            <img src="${static_url('images/subtitles/flags/' + flag + '.png') }" data-image-url="${ static_url('images/subtitles/flags/' + flag + '.png') }" width="16" height="11" alt="${subtitles.name_from_code(flag)}" onError="this.onerror=null;this.src='${ static_url('images/flags/unknown.png')}';" />
+                                                            <img src="${static_url('images/subtitles/flags/' + flag + '.png')}" data-image-url="${static_url('images/subtitles/flags/' + flag + '.png')}" width="16" height="11" alt="${subtitles.name_from_code(flag)}" onError="this.onerror=null;this.src='${static_url('images/flags/unknown.png')}';" />
                                                         </a>
                                                     % else:
-                                                        <img src="${static_url('images/subtitles/flags/' + flag + '.png') }" width="16" height="11" alt="${subtitles.name_from_code(flag)}" onError="this.onerror=null;this.src='${ static_url('images/flags/unknown.png')}';" />
+                                                        <img src="${static_url('images/subtitles/flags/' + flag + '.png')}" width="16" height="11" alt="${subtitles.name_from_code(flag)}" onError="this.onerror=null;this.src='${static_url('images/flags/unknown.png')}';" />
                                                     % endif
                                                 % endif
                                             % endfor
