@@ -883,7 +883,7 @@ class TVShow(object):
             'title': imdb_title.title or self.name,
             'year': imdb_title.year or self.startyear,
             'akas': '|'.join(
-                set('{} ({})'.format(alternate['title'], babelfish.COUNTRIES[alternate['region']].title())
+                set('{} ({})'.format(alternate['title'], babelfish.COUNTRIES.get(alternate['region'], _('World Wide')).title())
                     for alternate in title_versions['alternateTitles']
                     if 'region' in alternate and 'title' in alternate and alternate['title'] != imdb_title.title)
             ),
