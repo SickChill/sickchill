@@ -20,7 +20,6 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
-import babelfish
 import datetime
 import os.path
 import re
@@ -30,10 +29,9 @@ import threading
 import traceback
 
 # Third Party Imports
+import babelfish
 # import guessit
-from imdbpie import ImdbFacade, Imdb
-
-
+from imdbpie import Imdb, ImdbFacade
 from unidecode import unidecode
 
 # First Party Imports
