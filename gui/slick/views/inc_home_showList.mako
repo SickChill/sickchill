@@ -19,7 +19,8 @@
         <div class="posterview">
             % for curLoadingShow in sickbeard.showQueueScheduler.action.loading_show_list:
                 <% loading_show = curLoadingShow.info %>
-                <div class="show-container" data-name="${loading_show.sort_name}" data-date="1" data-network="0" data-progress="0" data-status="Loading">
+                <div class="show-container" data-name="${loading_show.sort_name}"
+                     data-date="1" data-network="0" data-progress="0" data-progress-sort="0" data-status="Loading">
                     <div class="show-image">
                         <img alt="" title="${loading_show.name}" class="show-image" style="border-bottom: 1px solid #111;" src="${static_url("images/poster.png")}"
                              data-src="${static_url(loading_show.show_image_url('poster_thumb'))}" />
@@ -87,12 +88,11 @@
 
                     nom = cur_downloaded
                     if cur_total:
-                        den = cur_total
+                        progressbar_percent = nom * 100 / float(cur_total)
                     else:
-                        den = 1
+                        progressbar_percent = 100.0
                         download_stat_tip = _('Unaired')
 
-                    progressbar_percent = nom * 100 / float(den)
 
                     data_date = '6000000000.0'
                     if cur_airs_next:
@@ -106,7 +106,7 @@
                             data_date = '5000000100.0'
                 %>
                 <div class="show-container" id="show${curShow.indexerid}" data-name="${curShow.sort_name}" data-date="${data_date}" data-network="${curShow.network}"
-                     data-progress="${int(progressbar_percent)}" data-progress-sort="${progressbar_percent}" data-status="${curShow.status}">
+                     data-progress="${int(progressbar_percent)}" data-progress-sort="${progressbar_percent + (cur_total/1000000.0)}" data-status="${curShow.status}">
                     <div class="show-image">
                         <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">
                             <img alt="" class="show-image" src="${static_url("images/poster.png")}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}" />
@@ -115,7 +115,7 @@
 
                     <div class="show-information">
                         <div class="progressbar hidden-print" style="position:relative;" data-show-id="${curShow.indexerid}"
-                             data-progress-percentage="${int(progressbar_percent)}" data-progress-sort="${progressbar_percent}"></div>
+                             data-progress-percentage="${int(progressbar_percent)}" data-progress-sort="${progressbar_percent + (cur_total/1000000.0)}"></div>
 
                         <div class="show-title">
                             ${curShow.name}
@@ -302,12 +302,10 @@
 
                         nom = cur_downloaded
                         if cur_total:
-                            den = cur_total
+                            progressbar_percent = nom * 100 / float(cur_total)
                         else:
-                            den = 1
+                            progressbar_percent = 100.0
                             download_stat_tip = _('Unaired')
-
-                        progressbar_percent = nom * 100 / float(den)
                     %>
                     <tr>
                         % if cur_airs_next:
@@ -390,7 +388,7 @@
                                  data-progress-text="${download_stat}"
                                  data-progress-tip="${download_stat_tip}"
                                  data-progress-percentage="${int(progressbar_percent)}"
-                                 data-progress-sort="${progressbar_percent}"
+                                 data-progress-sort="${progressbar_percent + (cur_total/1000000.0)}"
                             ></div>
                             <span class="visible-print-inline">${download_stat}</span>
                         </td>
