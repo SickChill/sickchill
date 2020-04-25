@@ -521,10 +521,10 @@
                                             % endif
                                         </td>
                                         <td class="col-airdate">
-                                            % if int(epResult[b'airdate']) != 1:
+                                            % if int(epResult[b'airdate']) > 1:
                                                 ## Lets do this exactly like ComingEpisodes and History
                                                 ## Avoid issues with dateutil's _isdst on Windows but still provide air dates
-                                                <% airDate = datetime.datetime.fromordinal(epResult[b'airdate']) %>
+                                                <% airDate = datetime.datetime.fromordinal(epResult[b'airdate'] or 1) %>
                                                 % if airDate.year >= 1970 or show.network:
                                                     <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult[b'airdate'], show.airs, show.network)) %>
                                                 % endif
