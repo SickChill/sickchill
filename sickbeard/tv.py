@@ -129,7 +129,7 @@ class TVShow(object):
     genre = property(lambda self: self._genre, dirty_setter("_genre"))
     classification = property(lambda self: self._classification, dirty_setter("_classification"))
     runtime = property(lambda self: self._runtime, dirty_setter("_runtime"))
-    imdb_info = property(lambda self: self._imdb_info, dirty_setter("_imdb_info"))
+    # imdb_info = property(lambda self: self._imdb_info, dirty_setter("_imdb_info"))
     quality = property(lambda self: self._quality, dirty_setter("_quality"))
     season_folders = property(lambda self: self._season_folders, dirty_setter("_season_folders"))
     status = property(lambda self: self._status, dirty_setter("_status"))
@@ -201,6 +201,14 @@ class TVShow(object):
             raise NoNFOException("Invalid folder for the show!")
 
     location = property(_getLocation, _setLocation)
+
+    def _get_imdb_info(self):
+        return self._imdb_info
+
+    def _set_imdb_info(self, imdb_info):
+        dirty_setter("_imdb_info")(self, imdb_info)
+
+    imdb_info = property(_get_imdb_info, _set_imdb_info)
 
     # delete references to anything that's not in the internal lists
     def flushEpisodes(self):
@@ -792,7 +800,7 @@ class TVShow(object):
                 logger.log(str(self.indexerid) + ": Unable to find IMDb show info in the database")
                 return
 
-        self.imdb_info = dict(zip(sql_results[0].keys(), sql_results[0]))
+        self._imdb_info = dict(zip(sql_results[0].keys(), sql_results[0]))
         self.dirty = False
         return True
 
@@ -871,20 +879,21 @@ class TVShow(object):
 
         self.imdb_info = {
             'indexer_id': self.indexerid,
-            'imdb_id': imdb_title.imdb_id,
-            'title': imdb_title.title,
+            'imdb_id': imdb_title.imdb_id or self.imdbid,
+            'title': imdb_title.title or self.name,
             'year': imdb_title.year or self.startyear,
             'akas': '|'.join(
                 set('{} ({})'.format(alternate['title'], babelfish.COUNTRIES[alternate['region']].title())
-                    for alternate in title_versions['alternateTitles'] if 'region' in alternate and alternate['title'] != imdb_title.title)
+                    for alternate in title_versions['alternateTitles']
+                    if 'region' in alternate and 'title' in alternate and alternate['title'] != imdb_title.title)
             ),
             'runtimes': imdb_title.runtime or self.runtime,
             'genres': '|'.join(imdb_title.genres or []),
-            'countries': '|'.join(babelfish.COUNTRIES[x].title() for x in title_versions['origins']),
-            'country_codes': '|'.join(title_versions['origins']).lower(),
-            'certificates': imdb_title.certification,
-            'rating': imdb_title.rating,
-            'votes': imdb_title.rating_count,
+            'countries': '|'.join(babelfish.COUNTRIES[x].title() for x in title_versions.get('origins', [])),
+            'country_codes': '|'.join(title_versions.get('origins', [])).lower(),
+            'certificates': imdb_title.certification or '',
+            'rating': str(imdb_title.rating or 0.0),
+            'votes': imdb_title.rating_count or 0,
             'last_update': datetime.date.today().toordinal()
         }
 
