@@ -27,7 +27,6 @@ from collections import namedtuple
 # Third Party Imports
 import dateutil
 import six
-from imdb import _exceptions as imdb_exceptions
 from trakt import TraktAPI
 
 # First Party Imports
@@ -467,13 +466,7 @@ class QueueItemAdd(ShowQueueItem):
             self._finish_early()
             return
 
-        logger.log(_('Retrieving show info from IMDb'), logger.DEBUG)
-        try:
-            self.show.loadIMDbInfo()
-        except imdb_exceptions.IMDbError as error:
-            logger.log(_('Something wrong on IMDb api: {0}').format(error), logger.WARNING)
-        except Exception as error:
-            logger.log('Error loading IMDb info: {0}'.format(error), logger.ERROR)
+        self.show.loadIMDbInfo()
 
         try:
             self.show.saveToDB()
