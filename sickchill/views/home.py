@@ -103,7 +103,7 @@ class Home(WebRoot):
     def index(self):
         t = PageTemplate(rh=self, filename="home.mako")
 
-        selected_root = self.get_argument('root')
+        selected_root = self.get_argument('root', None)
         if selected_root and sickbeard.ROOT_DIRS:
             backend_pieces = sickbeard.ROOT_DIRS.split('|')
             backend_dirs = backend_pieces[1:]
