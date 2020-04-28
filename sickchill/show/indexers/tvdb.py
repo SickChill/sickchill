@@ -29,6 +29,7 @@ from requests.exceptions import HTTPError
 
 # First Party Imports
 # from sickbeard import logger
+import sickbeard
 from sickbeard.tv import TVEpisode
 
 # Local Folder Imports
@@ -217,3 +218,26 @@ class TVDB(Indexer):
         # https://forum.kodi.tv/showthread.php?tid=323588
         data = cgi.escape(json.dumps({'apikey': self.api_key, 'id': show.indexerid}), True).replace(' ', '')
         return tvdbsimple.base.TVDB(key=self.api_key)._get_complete_url('login') + '?' + data + '|Content-Type=application/json'
+
+    def get_favorites(self):
+        user = tvdbsimple.User(sickbeard.TVDB_USER, sickbeard.TVDB_USER_KEY)
+        results = []
+        for tvdbid in user.favorites():
+            results.append(self.get_series_by_id(tvdbid))
+
+        return results
+
+    def test_user_key(self, user, key):
+        if key == 'HIDDEN_VALUE':
+            key = sickbeard.TVDB_USER_KEY
+
+        user_object = tvdbsimple.User(user, key)
+        try:
+            user_object.info()
+        except:
+            return False
+
+        sickbeard.TVDB_USER = user
+        sickbeard.TVDB_USER_KEY = key
+
+        return True

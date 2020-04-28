@@ -102,6 +102,9 @@ CLIENT_WEB_URLS = {'torrent': '', 'newznab': ''}
 DAEMON = None
 NO_RESIZE = False
 
+TVDB_USER = None
+TVDB_USER_KEY = None
+
 # system events
 events = None
 
@@ -959,6 +962,9 @@ def initialize(consoleLogging=True):
         INDEXER_TIMEOUT = check_setting_int(CFG, 'General', 'indexer_timeout', 20, min_val=0)
 
         sickchill.indexer = sickchill.ShowIndexer()
+
+        TVDB_USER = check_setting_str(CFG, 'General', 'tvdb_username')
+        TVDB_USER_KEY = check_setting_str(CFG, 'General', 'tvdb_user_key', censor_log=True)
 
         TRASH_REMOVE_SHOW = check_setting_bool(CFG, 'General', 'trash_remove_show')
         TRASH_ROTATE_LOGS = check_setting_bool(CFG, 'General', 'trash_rotate_logs')
@@ -1860,6 +1866,8 @@ def save_config():
             'localhost_ip': LOCALHOST_IP,
             'cpu_preset': CPU_PRESET,
             'anon_redirect': ANON_REDIRECT,
+            'tvdb_user': TVDB_USER,
+            'tvdb_user_key': TVDB_USER,
             'api_key': API_KEY,
             'debug': int(DEBUG),
             'dbdebug': int(DBDEBUG),

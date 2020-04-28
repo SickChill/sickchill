@@ -264,7 +264,7 @@ class TVCache(object):
             if not parse_result or not parse_result.series_name:
                 return None
 
-        # if we made it this far then lets add the parsed result to cache for usager later on
+        # if we made it this far then lets add the parsed result to cache for usage later on
         season = parse_result.season_number if parse_result.season_number else 1
         episodes = parse_result.episode_numbers
 

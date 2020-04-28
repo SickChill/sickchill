@@ -48,6 +48,18 @@
     <br/>
     <div class="row">
         <div class="col-md-12">
+            <a href="${static_url("addShows/favoriteShows/", include_version=False)}" id="btnNewShow" class="btn btn-large btn-block">
+                <div class="button"><div class="add-list-icon-addtvdb"></div></div>
+                <div class="buttontext">
+                    <h3>${_('Add From TVDB\'s Favorited Shows')}</h3>
+                    <p>${_('View the list of shows you have marked as favorite on theTVDB.')}</p>
+                </div>
+            </a>
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col-md-12">
             <a href="${static_url("addShows/existingShows/", include_version=False)}" id="btnExistingShow" class="btn btn-large">
                 <div class="button"><div class="add-list-icon-addexistingshow"></div></div>
                 <div class="buttontext">

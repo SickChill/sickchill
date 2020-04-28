@@ -21,7 +21,6 @@ class AnidbPopular(object):
     def fetch_latest_hot_shows(self):
         """Get popular show information from IMDB"""
 
-        shows = []
         result = []
 
         shows = anidbquery.query(QUERY_HOT)
