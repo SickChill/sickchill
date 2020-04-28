@@ -944,15 +944,17 @@ class Home(WebRoot):
             action="displayShow"
         )
 
-    @staticmethod
-    def plotDetails(show, season, episode):
+    def plotDetails(self):
+        show = self.get_argument('show')
+        season = self.get_argument('season')
+        episode = self.get_argument('episode')
         main_db_con = db.DBConnection()
         result = main_db_con.select_one(
             "SELECT description FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?", (int(show), int(season), int(episode)))
         return result[b'description'] if result else 'Episode not found.'
 
-    @staticmethod
-    def sceneExceptions(show):
+    def sceneExceptions(self):
+        show = self.get_argument('show')
         exceptionsList = sickbeard.scene_exceptions.get_all_scene_exceptions(show)
         if not exceptionsList:
             return _("No scene exceptions")
