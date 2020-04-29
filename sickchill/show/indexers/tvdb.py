@@ -22,7 +22,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import cgi
 import json
 import re
-
+import traceback
 # Third Party Imports
 import tvdbsimple
 from requests.exceptions import HTTPError
@@ -31,6 +31,7 @@ from requests.exceptions import HTTPError
 # from sickbeard import logger
 import sickbeard
 from sickbeard.tv import TVEpisode
+from sickbeard import logger
 
 # Local Folder Imports
 from .base import Indexer
@@ -220,24 +221,27 @@ class TVDB(Indexer):
         return tvdbsimple.base.TVDB(key=self.api_key)._get_complete_url('login') + '?' + data + '|Content-Type=application/json'
 
     def get_favorites(self):
-        user = tvdbsimple.User(sickbeard.TVDB_USER, sickbeard.TVDB_USER_KEY)
         results = []
+        if not (sickbeard.TVDB_USER and sickbeard.TVDB_USER_KEY):
+            return results
+
+        user = tvdbsimple.User(sickbeard.TVDB_USER, sickbeard.TVDB_USER_KEY)
         for tvdbid in user.favorites():
             results.append(self.get_series_by_id(tvdbid))
 
         return results
 
     def test_user_key(self, user, key):
-        if key == 'HIDDEN_VALUE':
-            key = sickbeard.TVDB_USER_KEY
-
         user_object = tvdbsimple.User(user, key)
         try:
             user_object.info()
-        except:
+        except Exception:
+            logger.log(traceback.format_exc(), logger.ERROR)
             return False
 
         sickbeard.TVDB_USER = user
         sickbeard.TVDB_USER_KEY = key
+
+        sickbeard.save_config()
 
         return True

@@ -20,6 +20,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import datetime
+import traceback
 import os
 import re
 
@@ -33,7 +34,7 @@ from trakt import TraktAPI
 # First Party Imports
 import sickbeard
 import sickchill
-from sickbeard import config, db, helpers, logger, ui
+from sickbeard import config, db, helpers, logger, ui, filters
 from sickbeard.blackandwhitelist import short_group_names
 from sickbeard.common import Quality
 from sickbeard.traktTrending import trakt_trending
@@ -348,14 +349,16 @@ class AddShows(Home):
         t = PageTemplate(rh=self, filename="addShows_favoriteShows.mako")
         e = None
 
+        tvdb_user_key = filters.unhide(sickbeard.TVDB_USER_KEY, tvdb_user_key)
         if submit and tvdb_user and tvdb_user_key:
-            if tvdb_user not in (sickbeard.TVDB_USER, 'None') and tvdb_user_key not in (sickbeard.TVDB_USER_KEY, 'HIDDEN_VALUE', 'None'):
+            if tvdb_user != sickbeard.TVDB_USER and tvdb_user_key != sickbeard.TVDB_USER:
                 favorites.test_user_key(tvdb_user, tvdb_user_key, 1)
 
         try:
             favorite_shows = favorites.fetch_indexer_favorites()
         except Exception as e:
-            logger.log("Could not get popular shows: {0}".format(ex(e)), logger.WARNING)
+            logger.log(traceback.format_exc(), logger.ERROR)
+            logger.log(_("Could not get favorite shows: {0}").format(ex(e)), logger.WARNING)
             favorite_shows = None
 
         return t.render(title=_("Favorite Shows"), header=_("Favorite Shows"),

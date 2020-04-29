@@ -40,18 +40,18 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12 text-center">
                 <form name="set_tvdb_key" class="form form-inline" method="post" action="">
 
                     <div class="form-group">
                         <label for="tvdb_user">${_('TVDB Username')}</label>
                         <input class="form-control" title="${_('TVDB Username')}" name="tvdb_user"
-                               type="text" value="${sickbeard.TVDB_USER}" autocomplete="off"/>
+                               type="text" value="${sickbeard.TVDB_USER or ''}" autocomplete="off"/>
                     </div>
                     <div class="form-group">
                         <label for="password">${_('TVDB User Key')}</label>
                         <input class="form-control" title="${_('TVDB User Key')}" name="tvdb_user_key"
-                               type="password" value="HIDDEN_VALUE" autocomplete="off"/>
+                               type="password" value="${sickbeard.filters.hide(sickbeard.TVDB_USER_KEY)}" autocomplete="off"/>
                     </div>
                     <div class="form-group">
                         <input class="btn btn-default pull-right" name="submit" type="submit" value="${_('Submit')}"/>
@@ -63,11 +63,15 @@
         <div class="row">
             <div id="favoriteShows">
                 <div id="container">
-                    % if not favorite_shows:
+                    % if favorite_shows is None:
                         <div class="trakt_show" style="width:100%; margin-top:20px">
                             <p class="red-text">${_('Fetching of Favorites Data failed. Have you set your user name and key correctly?')}
                                 <strong>${_('Exception')}:</strong>
                             <p>${favorites_exception}</p>
+                        </div>
+                    % elif not favorite_shows:
+                        <div class="trakt_show text-center" style="width:100%; margin-top:20px">
+                            ${_('No favorites found that are not already in your show list, or fetching failed. Make sure your username and user key are set correctly above if you feel this is an error')}
                         </div>
                     % else:
                         % for cur_result in favorite_shows:
