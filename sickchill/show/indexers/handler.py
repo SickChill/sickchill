@@ -202,3 +202,10 @@ class ShowIndexer(object):
 
     def episode_image_url(self, episode):
         return self.indexers[episode.show.indexer].episode_image_url(episode)
+
+    def get_indexer_favorites(self):
+        results = []
+        for indexer in self.indexers.values():
+            results.extend(indexer.get_favorites())
+
+        return results

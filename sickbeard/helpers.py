@@ -1251,6 +1251,20 @@ def touchFile(fname, atime=None):
     return False
 
 
+def make_indexer_session(use_cfscrape=True):
+    session = make_session(use_cfscrape)
+    session.verify = (False, certifi.where())[sickbeard.SSL_VERIFY]
+    if sickbeard.PROXY_SETTING and sickbeard.PROXY_INDEXERS:
+        logger.log(_("Using global proxy: {}").format(sickbeard.PROXY_SETTING), logger.DEBUG)
+        parsed_url = urlparse(sickbeard.PROXY_SETTING)
+        address = sickbeard.PROXY_SETTING if parsed_url.scheme else 'http://' + sickbeard.PROXY_SETTING
+        session.proxies = {
+            "http": address,
+            "https": address,
+        }
+    return session
+
+
 def make_session(use_cfscrape=True):
     if use_cfscrape and sys.version_info < (2, 7, 9):
         session = cfscrape.create_scraper()

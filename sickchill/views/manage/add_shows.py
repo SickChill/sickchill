@@ -22,6 +22,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import datetime
 import os
 import re
+import traceback
 
 # Third Party Imports
 import dateutil
@@ -33,14 +34,15 @@ from trakt import TraktAPI
 # First Party Imports
 import sickbeard
 import sickchill
-from sickbeard import config, db, helpers, logger, ui
+from sickbeard import config, db, filters, helpers, logger, ui
 from sickbeard.blackandwhitelist import short_group_names
 from sickbeard.common import Quality
-from sickbeard.imdbPopular import imdb_popular
 from sickbeard.traktTrending import trakt_trending
 from sickchill.helper import sanitize_filename, try_int
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
+from sickchill.show.recommendations.favorites import favorites
+from sickchill.show.recommendations.imdb import imdb_popular
 from sickchill.show.Show import Show
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home
@@ -337,6 +339,30 @@ class AddShows(Home):
 
         return t.render(title=_("Popular Shows"), header=_("Popular Shows"),
                         popular_shows=popular_shows, imdb_exception=e,
+                        topmenu="home",
+                        controller="addShows", action="popularShows")
+
+    def favoriteShows(self, tvdb_user=None, tvdb_user_key=None, submit=False):
+        """
+        Fetches data from IMDB to show a list of popular shows.
+        """
+        t = PageTemplate(rh=self, filename="addShows_favoriteShows.mako")
+        e = None
+
+        tvdb_user_key = filters.unhide(sickbeard.TVDB_USER_KEY, tvdb_user_key)
+        if submit and tvdb_user and tvdb_user_key:
+            if tvdb_user != sickbeard.TVDB_USER and tvdb_user_key != sickbeard.TVDB_USER:
+                favorites.test_user_key(tvdb_user, tvdb_user_key, 1)
+
+        try:
+            favorite_shows = favorites.fetch_indexer_favorites()
+        except Exception as e:
+            logger.log(traceback.format_exc(), logger.ERROR)
+            logger.log(_("Could not get favorite shows: {0}").format(ex(e)), logger.WARNING)
+            favorite_shows = None
+
+        return t.render(title=_("Favorite Shows"), header=_("Favorite Shows"),
+                        favorite_shows=favorite_shows, favorites_exception=e,
                         topmenu="home",
                         controller="addShows", action="popularShows")
 

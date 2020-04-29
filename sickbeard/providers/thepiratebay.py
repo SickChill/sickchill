@@ -87,24 +87,27 @@ class ThePirateBayProvider(TorrentProvider):
         return TrackerCacheDBConnection(self)
 
     def get_tracker_list(self):
-        if js2py is None:
+        try:
+            if js2py is None:
+                return ''
+
+            script = self.get_url(self.script_url)
+            context = js2py.EvalJs()
+            context.execute(
+                """
+                escape = function(text){pyimport urllib; return urllib.quote(text)};
+                unescape = function(text){pyimport urllib; return urllib.unquote(text)};
+                encodeURI = function(text){pyimport urllib; return urllib.quote(text, safe='~@#$&()*!+=:;,.?/\\'')};
+                decodeURI = unescape;
+                encodeURIComponent = function(text){pyimport urllib; return urllib.quote(text, safe='~()*!.\\'')};
+                decodeURIComponent = unescape;
+                """
+            )
+
+            context.execute(script)
+            return context.print_trackers()
+        except:
             return ''
-
-        script = self.get_url(self.script_url)
-        context = js2py.EvalJs()
-        context.execute(
-            """
-            escape = function(text){pyimport urllib; return urllib.quote(text)};
-            unescape = function(text){pyimport urllib; return urllib.unquote(text)};
-            encodeURI = function(text){pyimport urllib; return urllib.quote(text, safe='~@#$&()*!+=:;,.?/\\'')};
-            decodeURI = unescape;
-            encodeURIComponent = function(text){pyimport urllib; return urllib.quote(text, safe='~()*!.\\'')};
-            decodeURIComponent = unescape;
-            """
-        )
-
-        context.execute(script)
-        return context.print_trackers()
 
     def make_magnet(self, name, info_hash):
         trackers = self.tracker_cache.get_trackers()
@@ -117,7 +120,7 @@ class ThePirateBayProvider(TorrentProvider):
             "q": None
         }
 
-        if not (self.get_tracker_list() or self._custom_trackers):
+        if not (self.tracker_cache.get_trackers() or self._custom_trackers):
             logger.log("Cannot use tpb provider without python 2.7.9+ unless you set some custom trackers in config/search on the torrents tab. Re-enable "
                        "this provider after fixing this issue.")
             self.enabled = False

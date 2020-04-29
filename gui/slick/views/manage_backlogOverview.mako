@@ -108,7 +108,7 @@
                                 <td>
                                     <% epResult = curResult %>
                                     <% show = curShow %>
-                                    % if int(epResult[b'airdate']) != 1:
+                                    % if int(epResult[b'airdate']) > 1:
                                     ## Lets do this exactly like ComingEpisodes and History
                                     ## Avoid issues with dateutil's _isdst on Windows but still provide air dates
                                     <% airDate = datetime.datetime.fromordinal(epResult[b'airdate']) %>

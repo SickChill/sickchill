@@ -102,6 +102,9 @@ CLIENT_WEB_URLS = {'torrent': '', 'newznab': ''}
 DAEMON = None
 NO_RESIZE = False
 
+TVDB_USER = None
+TVDB_USER_KEY = None
+
 # system events
 events = None
 
@@ -749,7 +752,7 @@ def initialize(consoleLogging=True):
             SICKCHILL_BACKGROUND_PATH, FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, \
             SLACK_NOTIFY_DOWNLOAD, SLACK_NOTIFY_SUBTITLEDOWNLOAD, SLACK_WEBHOOK, SLACK_ICON_EMOJI, USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK,\
             USE_MATRIX, MATRIX_NOTIFY_SNATCH, MATRIX_NOTIFY_DOWNLOAD, MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM, \
-            ENDED_SHOWS_UPDATE_INTERVAL, IMAGE_CACHE, CF_AUTH_DOMAIN, CF_POLICY_AUD
+            ENDED_SHOWS_UPDATE_INTERVAL, IMAGE_CACHE, CF_AUTH_DOMAIN, CF_POLICY_AUD, TVDB_USER, TVDB_USER_KEY
 
         if __INITIALIZED__:
             return False
@@ -959,6 +962,9 @@ def initialize(consoleLogging=True):
         INDEXER_TIMEOUT = check_setting_int(CFG, 'General', 'indexer_timeout', 20, min_val=0)
 
         sickchill.indexer = sickchill.ShowIndexer()
+
+        TVDB_USER = check_setting_str(CFG, 'General', 'tvdb_user')
+        TVDB_USER_KEY = check_setting_str(CFG, 'General', 'tvdb_user_key', censor_log=True)
 
         TRASH_REMOVE_SHOW = check_setting_bool(CFG, 'General', 'trash_remove_show')
         TRASH_ROTATE_LOGS = check_setting_bool(CFG, 'General', 'trash_rotate_logs')
@@ -1860,6 +1866,8 @@ def save_config():
             'localhost_ip': LOCALHOST_IP,
             'cpu_preset': CPU_PRESET,
             'anon_redirect': ANON_REDIRECT,
+            'tvdb_user': TVDB_USER,
+            'tvdb_user_key': TVDB_USER_KEY,
             'api_key': API_KEY,
             'debug': int(DEBUG),
             'dbdebug': int(DBDEBUG),

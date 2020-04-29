@@ -2219,7 +2219,13 @@ var SICKCHILL = {
                     },
                     5: function(node) {
                         let progress = $(node).find('div').attr('data-progress-sort');
-                        return (progress.length && parseFloat(progress)) || Number.NEGATIVE_INFINITY;
+                        let result;
+                        if (progress === undefined) {
+                            result = Number.NEGATIVE_INFINITY;
+                        } else {
+                            result = (progress.length && parseFloat(progress)) || Number.NEGATIVE_INFINITY;
+                        }
+                        return result;
                     },
                     6: function(node) {
                         return $(node).data('show-size');
