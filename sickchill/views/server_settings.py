@@ -15,8 +15,8 @@ import sickbeard
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates, generateApiKey
 from sickchill.helper.encoding import ek
-from sickchill.views import CalendarHandler, KeyHandler, LoginHandler, LogoutHandler
-from sickchill.views.api.webapi import ApiHandler
+from sickchill.views import CalendarHandler, LoginHandler, LogoutHandler
+from sickchill.views.api import ApiHandler, KeyHandler
 
 # Local Folder Imports
 from .routes import Route

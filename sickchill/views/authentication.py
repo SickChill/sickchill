@@ -44,11 +44,11 @@ class LoginHandler(BaseHandler):
             t = PageTemplate(rh=self, filename="login.mako")
             self.finish(t.render(title=_("Login"), header=_("Login"), topmenu="login"))
 
-    def post(self, *args, **kwargs):
+    def post(self):
         notifiers.notify_login(self.request.remote_ip)
 
-        if self.get_argument('username', '') == sickbeard.WEB_USERNAME and self.get_argument('password', '') == sickbeard.WEB_PASSWORD:
-            remember_me = (None, 30)[try_int(self.get_argument('remember_me', default=0), 0) > 0]
+        if self.get_body_argument('username', None) == sickbeard.WEB_USERNAME and self.get_body_argument('password', None) == sickbeard.WEB_PASSWORD:
+            remember_me = (None, 30)[try_int(self.get_body_argument('remember_me'), 0) > 0]
             self.set_secure_cookie('sickchill_user', sickbeard.API_KEY, expires_days=remember_me)
             logger.log('User logged into the SickChill web interface', logger.INFO)
         else:
@@ -61,22 +61,3 @@ class LogoutHandler(BaseHandler):
     def get(self, *args, **kwargs):
         self.clear_cookie("sickchill_user")
         self.redirect('/login/')
-
-
-class KeyHandler(RequestHandler):
-    def data_received(self, chunk):
-        pass
-
-    def __init__(self, *args, **kwargs):
-        super(KeyHandler, self).__init__(*args, **kwargs)
-
-    def get(self, *args, **kwargs):
-        if self.get_argument('u', '') == sickbeard.WEB_USERNAME and self.get_argument('p', '') == sickbeard.WEB_PASSWORD:
-            if not len(sickbeard.API_KEY or ''):
-                sickbeard.API_KEY = helpers.generateApiKey()
-            result = {'success': True, 'api_key': sickbeard.API_KEY}
-        else:
-            result = {'success': False, 'error': _('Failed authentication while getting api key')}
-            logger.log(_('Authentication failed during api key request: {0}').format((traceback.format_exc())), logger.WARNING)
-
-        return self.finish(result)

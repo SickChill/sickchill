@@ -519,7 +519,7 @@ class Home(WebRoot):
 
     def testTrakt(self):
         username = self.get_body_argument('username')
-        blacklist_name = self.get_body_argument('blacklist_name',)
+        blacklist_name = self.get_body_argument('blacklist_name')
         return notifiers.trakt_notifier.test_notify(username, blacklist_name)
 
     @staticmethod
@@ -551,10 +551,10 @@ class Home(WebRoot):
 
     def saveShowNotifyList(self):
         show = self.get_body_argument('show')
-        emails = self.get_body_argument('emails', None)
-        prowlAPIs = self.get_body_argument('prowlAPIs', None)
+        emails = self.get_body_argument('emails', '')
+        prowlAPIs = self.get_body_argument('prowlAPIs', '')
 
-        entries = {'emails': '', 'prowlAPIs': ''}
+        entries = {'emails': emails or '', 'prowlAPIs': prowlAPIs or ''}
         main_db_con = db.DBConnection()
 
         # Get current data
@@ -566,11 +566,6 @@ class Home(WebRoot):
                 else:
                     entries = dict(ast.literal_eval(subs[b'notify_list']))
 
-        if emails:
-            entries['emails'] = emails
-        if prowlAPIs:
-            entries['prowlAPIs'] = prowlAPIs
-
         if emails or prowlAPIs:
             if not main_db_con.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
                 return 'ERROR'
@@ -578,7 +573,7 @@ class Home(WebRoot):
         return 'OK'
 
     def testEmail(self):
-        port = self.get_body_argument('port',)
+        port = self.get_body_argument('port')
         smtp_from = self.get_body_argument('smtp_from')
         use_tls = self.get_body_argument('use_tls')
         user = self.get_body_argument('user')
