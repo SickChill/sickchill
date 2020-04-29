@@ -65,7 +65,7 @@ class ErrorLogs(WebRoot):
 
     @addslash
     def index(self):
-        level = try_int(self.get_argument('level'), logger.ERROR)
+        level = try_int(self.get_query_argument('level', logger.ERROR), logger.ERROR)
 
         t = PageTemplate(rh=self, filename="errorlogs.mako")
         return t.render(header=_("Logs &amp; Errors"), title=_("Logs &amp; Errors"),
@@ -81,7 +81,7 @@ class ErrorLogs(WebRoot):
         return len(classes.WarningViewer.errors) > 0
 
     def clearerrors(self):
-        level = try_int(self.get_argument('level'), logger.ERROR)
+        level = try_int(self.get_query_argument('level', logger.ERROR), logger.ERROR)
         if int(level) == logger.WARNING:
             classes.WarningViewer.clear()
         else:
