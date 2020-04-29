@@ -23,6 +23,7 @@ import cgi
 import json
 import re
 import traceback
+
 # Third Party Imports
 import tvdbsimple
 from requests.exceptions import HTTPError
@@ -30,8 +31,8 @@ from requests.exceptions import HTTPError
 # First Party Imports
 # from sickbeard import logger
 import sickbeard
-from sickbeard.tv import TVEpisode
 from sickbeard import logger
+from sickbeard.tv import TVEpisode
 
 # Local Folder Imports
 from .base import Indexer

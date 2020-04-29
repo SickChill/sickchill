@@ -1,16 +1,15 @@
 # coding=utf-8
 from __future__ import absolute_import, print_function, unicode_literals
 
-# Third Party Imports
-import sickchill
-import sickbeard
+# Stdlib Imports
 import os
+
+# First Party Imports
+import sickbeard
+import sickchill
+from sickbeard import helpers
 from sickbeard.helpers import ek
 from sickchill.show.Show import Show
-# First Party Imports
-from sickbeard import helpers
-
-# Local Folder Imports
 
 
 class IndexerFavorites(object):
