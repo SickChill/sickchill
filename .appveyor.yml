@@ -14,6 +14,8 @@ environment:
       PYTHON_VERSION: "2.7.x" # currently 2.7.13
       PYTHON_ARCH: "64"
 
+  nodejs_version: "14"
+
 cache:
   # - c:\python27\lib\site-packages
   - "%APPDATA%\\npm"
@@ -59,10 +61,10 @@ install:
   - pip install --disable-pip-version-check "zipp<0.6.0" "tox"
 
   # Install node/npm
-  - ps: Install-Product node $env:8
+  - ps: Install-Product node $env:nodejs_version
   - set PATH=%APPDATA%\npm;%PATH%
-  - npm -g install xo
-  - npm install --quiet
+  - npm -g install xo webpack grunt-cli bower
+  - yarn --silent
 
 test_script:
   - xo
