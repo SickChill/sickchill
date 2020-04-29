@@ -69,7 +69,7 @@ class ErrorLogs(WebRoot):
 
         t = PageTemplate(rh=self, filename="errorlogs.mako")
         return t.render(header=_("Logs &amp; Errors"), title=_("Logs &amp; Errors"),
-                        topmenu="system", submenu=self.ErrorLogsMenu(level),
+                        topmenu="system", submenu=self.__ErrorLogsMenu(level),
                         logLevel=level, controller="errorlogs", action="index")
 
     @staticmethod
