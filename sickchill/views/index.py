@@ -185,7 +185,7 @@ class WebHandler(BaseHandler):
 
     @authenticated
     @coroutine
-    def get(self, route, *args, **kwargs):
+    def get(self, route):
         try:
             # route -> method obj
             route = route.strip('/').replace('.', '_').replace('-', '_') or 'index'
@@ -202,6 +202,8 @@ class WebHandler(BaseHandler):
     @run_on_executor
     def async_call(self, function):
         try:
+            # TODO: Make all routes use get_argument so we can take advantage of tornado's argument sanitization, separate post and get, and get rid of this
+            # nonsense loop so we can just yield the method directly
             kwargs = self.request.arguments
             for arg, value in six.iteritems(kwargs):
                 if len(value) == 1:
@@ -212,9 +214,9 @@ class WebHandler(BaseHandler):
                     kwargs[arg] = [xhtml_escape(v) for v in value]
                 else:
                     raise Exception
-
-            result = function(**kwargs)
-            return result
+            return function(**kwargs)
+        except TypeError:
+            return function()
         except OSError as e:
             return Template("Looks like we do not have enough disk space to render the page! {error}").render_unicode(data=e.message)
         except Exception:
@@ -267,8 +269,8 @@ class WebRoot(WebHandler):
         return t.render(title=_('API Builder'), header=_('API Builder'), shows=shows, episodes=episodes, apikey=apikey,
                         commands=function_mapper)
 
-    def setHomeLayout(self, layout):
-
+    def setHomeLayout(self):
+        layout = self.get_argument('layout')
         if layout not in ('poster', 'small', 'banner', 'simple', 'coverflow'):
             layout = 'poster'
 
@@ -276,23 +278,22 @@ class WebRoot(WebHandler):
         # Don't redirect to default page so user can see new layout
         return self.redirect("/home/")
 
-    @staticmethod
-    def setPosterSortBy(sort):
-
+    def setPosterSortBy(self):
+        sort = self.get_argument('sort')
         if sort not in ('name', 'date', 'network', 'progress'):
             sort = 'name'
 
         sickbeard.POSTER_SORTBY = sort
         sickbeard.save_config()
 
-    @staticmethod
-    def setPosterSortDir(direction):
+    def setPosterSortDir(self):
+        direction = self.get_argument('direction')
 
         sickbeard.POSTER_SORTDIR = int(direction)
         sickbeard.save_config()
 
-    def setHistoryLayout(self, layout):
-
+    def setHistoryLayout(self):
+        layout = self.get_argument('layout')
         if layout not in ('compact', 'detailed'):
             layout = 'detailed'
 
@@ -300,13 +301,14 @@ class WebRoot(WebHandler):
 
         return self.redirect("/history/")
 
-    def toggleDisplayShowSpecials(self, show):
-
+    def toggleDisplayShowSpecials(self):
+        show = self.get_argument('show')
         sickbeard.DISPLAY_SHOW_SPECIALS = not sickbeard.DISPLAY_SHOW_SPECIALS
 
         return self.redirect("/home/displayShow?show=" + show)
 
-    def setScheduleLayout(self, layout):
+    def setScheduleLayout(self):
+        layout = self.get_argument('layout')
         if layout not in ('poster', 'banner', 'list', 'calendar'):
             layout = 'banner'
 
@@ -329,7 +331,8 @@ class WebRoot(WebHandler):
 
         return self.redirect("/schedule/")
 
-    def setScheduleSort(self, sort):
+    def setScheduleSort(self):
+        sort = self.get_argument('sort')
         if sort not in ('date', 'network', 'show') or sickbeard.COMING_EPS_LAYOUT == 'calendar':
             sort = 'date'
 
@@ -337,7 +340,8 @@ class WebRoot(WebHandler):
 
         return self.redirect("/schedule/")
 
-    def schedule(self, layout=None):
+    def schedule(self):
+        layout = self.get_argument('layout')
         next_week = datetime.date.today() + datetime.timedelta(days=7)
         next_week1 = datetime.datetime.combine(next_week, datetime.time(tzinfo=network_timezones.sb_timezone))
         results = ComingEpisodes.get_coming_episodes(ComingEpisodes.categories, sickbeard.COMING_EPS_SORT, False)
@@ -395,7 +399,10 @@ class UI(WebRoot):
 
         return json.dumps(messages)
 
-    def set_site_message(self, message, tag, level):
+    def set_site_message(self):
+        message = self.get_argument('message')
+        tag = self.get_argument('tag')
+        level = self.get_argument('level')
         self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
         if message:
             helpers.add_site_message(message, tag=tag, level=level)
@@ -411,7 +418,8 @@ class UI(WebRoot):
         self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
         return sickbeard.SITE_MESSAGES
 
-    def dismiss_site_message(self, index):
+    def dismiss_site_message(self):
+        index = self.get_argument('index')
         self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
         helpers.remove_site_message(key=index)
         return sickbeard.SITE_MESSAGES

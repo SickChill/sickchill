@@ -29,6 +29,8 @@ import dateutil
 import six
 from requests.compat import unquote_plus
 from tornado.escape import xhtml_unescape
+from tornado.web import HTTPError
+
 from trakt import TraktAPI
 
 # First Party Imports
@@ -342,17 +344,19 @@ class AddShows(Home):
                         topmenu="home",
                         controller="addShows", action="popularShows")
 
-    def favoriteShows(self, tvdb_user=None, tvdb_user_key=None, submit=False):
+    def favoriteShows(self):
         """
         Fetches data from IMDB to show a list of popular shows.
         """
         t = PageTemplate(rh=self, filename="addShows_favoriteShows.mako")
         e = None
 
-        tvdb_user_key = filters.unhide(sickbeard.TVDB_USER_KEY, tvdb_user_key)
-        if submit and tvdb_user and tvdb_user_key:
-            if tvdb_user != sickbeard.TVDB_USER and tvdb_user_key != sickbeard.TVDB_USER:
-                favorites.test_user_key(tvdb_user, tvdb_user_key, 1)
+        if self.get_argument('submit', None):
+            tvdb_user = self.get_argument('tvdb_user', None)
+            tvdb_user_key = filters.unhide(sickbeard.TVDB_USER_KEY, self.get_argument('tvdb_user_key', None))
+            if tvdb_user and tvdb_user_key:
+                if tvdb_user != sickbeard.TVDB_USER or tvdb_user_key != sickbeard.TVDB_USER_KEY:
+                    favorites.test_user_key(tvdb_user, tvdb_user_key, 1)
 
         try:
             favorite_shows = favorites.fetch_indexer_favorites()
@@ -368,6 +372,11 @@ class AddShows(Home):
 
     def addShowToBlacklist(self, indexer_id):
         # URL parameters
+
+        indexer_id = self.get_argument('indexer_id')
+        if not indexer_id:
+            raise HTTPError(404)
+
         data = {'shows': [{'ids': {'tvdb': indexer_id}}]}
 
         trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)

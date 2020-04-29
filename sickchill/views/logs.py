@@ -37,7 +37,8 @@ class ErrorLogs(WebRoot):
     def __init__(self, *args, **kwargs):
         super(ErrorLogs, self).__init__(*args, **kwargs)
 
-    def ErrorLogsMenu(self, level):
+    def ErrorLogsMenu(self):
+        level = try_int(self.get_argument('level'), logger.ERROR)
         menu = [
             {
                 'title': _('Clear Errors'),
@@ -64,12 +65,12 @@ class ErrorLogs(WebRoot):
         return menu
 
     @addslash
-    def index(self, level=logger.ERROR):
-        level = try_int(level, logger.ERROR)
+    def index(self):
+        level = try_int(self.get_argument('level'), logger.ERROR)
 
         t = PageTemplate(rh=self, filename="errorlogs.mako")
         return t.render(header=_("Logs &amp; Errors"), title=_("Logs &amp; Errors"),
-                        topmenu="system", submenu=self.ErrorLogsMenu(level),
+                        topmenu="system", submenu=self.ErrorLogsMenu(),
                         logLevel=level, controller="errorlogs", action="index")
 
     @staticmethod
@@ -80,7 +81,8 @@ class ErrorLogs(WebRoot):
     def haveWarnings():
         return len(classes.WarningViewer.errors) > 0
 
-    def clearerrors(self, level=logger.ERROR):
+    def clearerrors(self):
+        level = try_int(self.get_argument('level'), logger.ERROR)
         if int(level) == logger.WARNING:
             classes.WarningViewer.clear()
         else:
@@ -88,7 +90,11 @@ class ErrorLogs(WebRoot):
 
         return self.redirect("/errorlogs/viewlog/")
 
-    def viewlog(self, min_level=logger.INFO, log_filter="<NONE>", log_search='', max_lines=500):
+    def viewlog(self):
+        min_level = try_int(self.get_argument('min_level', logger.INFO))
+        log_filter = self.get_argument('log_filter', "<NONE>")
+        log_search = self.get_argument('log_search', '')
+        max_lines = try_int(self.get_argument('max_lines', 500))
         data = sickbeard.logger.log_data(min_level, log_filter, log_search, max_lines)
 
         t = PageTemplate(rh=self, filename="viewlogs.mako")

@@ -36,7 +36,7 @@ class HomeNews(Home):
     def __init__(self, *args, **kwargs):
         super(HomeNews, self).__init__(*args, **kwargs)
 
-    def index(self, *args_, **kwargs_):
+    def index(self,):
         # noinspection PyBroadException
         try:
             news = sickbeard.versionCheckScheduler.action.check_for_new_news()

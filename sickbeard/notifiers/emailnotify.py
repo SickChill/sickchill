@@ -34,7 +34,7 @@ from email.utils import formatdate
 
 # First Party Imports
 import sickbeard
-from sickbeard import db, logger
+from sickbeard import db, logger, filters
 from sickchill.helper.encoding import ss
 
 
@@ -49,8 +49,7 @@ class Notifier(object):
         else:
             msg[b'Subject'] = 'SickChill: Test Message'
 
-        if pwd == 'hidden_value':
-            pwd == sickbeard.EMAIL_PASSWORD
+        pwd = filters.unhide(sickbeard.EMAIL_PASSWORD, pwd)
 
         msg[b'From'] = smtp_from
         msg[b'To'] = to
