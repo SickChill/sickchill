@@ -49,8 +49,6 @@ class Notifier(object):
         else:
             msg[b'Subject'] = 'SickChill: Test Message'
 
-        pwd = filters.unhide(sickbeard.EMAIL_PASSWORD, pwd)
-
         msg[b'From'] = smtp_from
         msg[b'To'] = to
         msg[b'Date'] = formatdate(localtime=True)

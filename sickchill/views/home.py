@@ -589,7 +589,7 @@ class Home(WebRoot):
         smtp_from = self.get_argument('smtp_from', None)
         use_tls = self.get_argument('use_tls', None)
         user = self.get_argument('user', None)
-        pwd = self.get_argument('pwd', None)
+        pwd = filters.unhide(sickbeard.EMAIL_PASSWORD, self.get_argument('pwd', None))
         to = self.get_argument('to', None)
 
         host = config.clean_host(self.get_argument('host', ''))

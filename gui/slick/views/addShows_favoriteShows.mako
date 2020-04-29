@@ -2,6 +2,7 @@
 <%!
     from sickbeard.helpers import anon_url
     import sickbeard
+    from sickbeard.filters import hide
 %>
 <%block name="metas">
     <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
@@ -51,7 +52,7 @@
                     <div class="form-group">
                         <label for="password">${_('TVDB User Key')}</label>
                         <input class="form-control" title="${_('TVDB User Key')}" name="tvdb_user_key"
-                               type="password" value="${sickbeard.filters.hide(sickbeard.TVDB_USER_KEY)}" autocomplete="off"/>
+                               type="password" value="${sickbeard.TVDB_USER_KEY|hide}" autocomplete="off"/>
                     </div>
                     <div class="form-group">
                         <input class="btn btn-default pull-right" name="submit" type="submit" value="${_('Submit')}"/>
