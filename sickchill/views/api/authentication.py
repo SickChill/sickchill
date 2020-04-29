@@ -36,8 +36,8 @@ class KeyHandler(RequestHandler):
     def __init__(self, *args, **kwargs):
         super(KeyHandler, self).__init__(*args, **kwargs)
 
-    def get(self, *args, **kwargs):
-        if self.get_query_argument('u', '') == sickbeard.WEB_USERNAME and self.get_query_argument('p', '') == sickbeard.WEB_PASSWORD:
+    def get(self):
+        if self.get_query_argument('u', None) == sickbeard.WEB_USERNAME and self.get_query_argument('p', None) == sickbeard.WEB_PASSWORD:
             if not len(sickbeard.API_KEY or ''):
                 sickbeard.API_KEY = helpers.generateApiKey()
             result = {'success': True, 'api_key': sickbeard.API_KEY}

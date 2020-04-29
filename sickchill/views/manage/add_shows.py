@@ -350,9 +350,9 @@ class AddShows(Home):
         t = PageTemplate(rh=self, filename="addShows_favoriteShows.mako")
         e = None
 
-        if self.get_argument('submit', None):
-            tvdb_user = self.get_argument('tvdb_user', None)
-            tvdb_user_key = filters.unhide(sickbeard.TVDB_USER_KEY, self.get_argument('tvdb_user_key', None))
+        if self.get_body_argument('submit', None):
+            tvdb_user = self.get_body_argument('tvdb_user', None)
+            tvdb_user_key = filters.unhide(sickbeard.TVDB_USER_KEY, self.get_body_argument('tvdb_user_key', None))
             if tvdb_user and tvdb_user_key:
                 if tvdb_user != sickbeard.TVDB_USER or tvdb_user_key != sickbeard.TVDB_USER_KEY:
                     favorites.test_user_key(tvdb_user, tvdb_user_key, 1)
@@ -369,10 +369,10 @@ class AddShows(Home):
                         topmenu="home",
                         controller="addShows", action="popularShows")
 
-    def addShowToBlacklist(self, indexer_id):
+    def addShowToBlacklist(self):
         # URL parameters
 
-        indexer_id = self.get_argument('indexer_id')
+        indexer_id = self.get_query_argument('indexer_id')
         if not indexer_id:
             raise HTTPError(404)
 
