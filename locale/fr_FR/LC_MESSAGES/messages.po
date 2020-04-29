@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-23 20:20\n"
+"PO-Revision-Date: 2020-04-29 03:00\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -5678,7 +5678,7 @@ msgstr "Diffusion par date"
 
 #: gui/slick/views/editShow.mako:169
 msgid "check if the show is released as Show.03.02.2010 rather than Show.S02E03."
-msgstr "vérifier si ces séries apparaissent comme Show.03.02.2010 plutôt que comme Show.S02E03."
+msgstr "Cocher si cette série paraît comme Show.03.02.2010 plutôt que Show.S02E03."
 
 #: gui/slick/views/editShow.mako:174 gui/slick/views/editShow.mako:215
 msgid "in case of an air date conflict between regular and special episodes, the later will be ignored."
@@ -5690,7 +5690,7 @@ msgstr "A cocher si les séries de type animé sortent sous la forme Série.03 p
 
 #: gui/slick/views/editShow.mako:210
 msgid "check if the show is a sporting or MMA event released as Show.03.02.2010 rather than Show.S02E03"
-msgstr "vérifier si les séries de type sportif ou événements de MMA apparaissent comme Show.03.02.2010 plutôt que Show.S02E03"
+msgstr "Cocher si la série est de type sportif ou événements de MMA paraît comme Show.03.02.2010 plutôt que Show.S02E03"
 
 #: gui/slick/views/editShow.mako:223 gui/slick/views/manage.mako:45
 msgid "Season folders"
@@ -6305,11 +6305,11 @@ msgstr "Recherche selon la numérotation de la scène (mettre \"Non\" à la rech
 
 #: gui/slick/views/manage_massEdit.mako:199
 msgid "Set if these shows are Anime and episodes are released as Show.265 rather than Show.S02E03"
-msgstr "Cocher si ces séries sont de type Animés qui sortent sous la forme Série.03 plutôt que Série.S01E03"
+msgstr "Cocher si ces séries sont de type Animés et parraissent sous la forme Série.03 plutôt que Série.S01E03"
 
 #: gui/slick/views/manage_massEdit.mako:215
 msgid "Set if these shows are sporting or MMA events released as Show.03.02.2010 rather than Show.S02E03."
-msgstr "Cocher si ces séries sont de type sportif ou événements de MMA et doivent apparaître comme Show.03.02.2010 plutôt que Show.S02E03."
+msgstr "Cocher si ces séries sont de type sportif ou événements de MMA et paraissent comme Show.03.02.2010 plutôt que Show.S02E03."
 
 #: gui/slick/views/manage_massEdit.mako:220
 #: gui/slick/views/manage_massEdit.mako:243

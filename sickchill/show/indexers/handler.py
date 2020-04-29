@@ -209,4 +209,3 @@ class ShowIndexer(object):
             results.extend(indexer.get_favorites())
 
         return results
-

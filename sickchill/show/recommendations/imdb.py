@@ -14,10 +14,8 @@ from requests.compat import urljoin
 
 # First Party Imports
 import sickbeard
-from sickchill.helper.encoding import ek
-
-# Local Folder Imports
 from sickbeard import helpers
+from sickchill.helper.encoding import ek
 
 
 class imdbPopular(object):

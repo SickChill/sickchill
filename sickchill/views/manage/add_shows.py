@@ -20,9 +20,9 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import datetime
-import traceback
 import os
 import re
+import traceback
 
 # Third Party Imports
 import dateutil
@@ -36,15 +36,15 @@ from trakt import TraktAPI
 # First Party Imports
 import sickbeard
 import sickchill
-from sickbeard import config, db, helpers, logger, ui, filters
+from sickbeard import config, db, filters, helpers, logger, ui
 from sickbeard.blackandwhitelist import short_group_names
 from sickbeard.common import Quality
 from sickbeard.traktTrending import trakt_trending
 from sickchill.helper import sanitize_filename, try_int
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
-from sickchill.show.recommendations.imdb import imdb_popular
 from sickchill.show.recommendations.favorites import favorites
+from sickchill.show.recommendations.imdb import imdb_popular
 from sickchill.show.Show import Show
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home
