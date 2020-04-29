@@ -19,15 +19,9 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
-# Stdlib Imports
-import traceback
-
-# Third Party Imports
-from tornado.web import RequestHandler
-
 # First Party Imports
 import sickbeard
-from sickbeard import helpers, logger, notifiers
+from sickbeard import logger, notifiers
 from sickchill.helper import try_int
 
 # Local Folder Imports
