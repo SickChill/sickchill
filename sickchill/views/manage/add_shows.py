@@ -351,8 +351,8 @@ class AddShows(Home):
         e = None
 
         if self.get_body_argument('submit', None):
-            tvdb_user = self.get_body_argument('tvdb_user', None)
-            tvdb_user_key = filters.unhide(sickbeard.TVDB_USER_KEY, self.get_body_argument('tvdb_user_key', None))
+            tvdb_user = self.get_body_argument('tvdb_user')
+            tvdb_user_key = filters.unhide(sickbeard.TVDB_USER_KEY, self.get_body_argument('tvdb_user_key'))
             if tvdb_user and tvdb_user_key:
                 if tvdb_user != sickbeard.TVDB_USER or tvdb_user_key != sickbeard.TVDB_USER_KEY:
                     favorites.test_user_key(tvdb_user, tvdb_user_key, 1)
