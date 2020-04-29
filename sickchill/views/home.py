@@ -670,9 +670,7 @@ class Home(WebRoot):
 
         return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
-    def update(self):
-        pid = self.get_query_argument('pid')
-        branch = self.get_query_argument('branch', None)
+    def update(self, pid, branch=None):
         if str(pid) != str(sickbeard.PID):
             return self.redirect('/home/')
 
