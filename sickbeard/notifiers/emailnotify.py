@@ -34,7 +34,7 @@ from email.utils import formatdate
 
 # First Party Imports
 import sickbeard
-from sickbeard import db, logger, filters
+from sickbeard import db, logger
 from sickchill.helper.encoding import ss
 
 

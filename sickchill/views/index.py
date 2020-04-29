@@ -270,7 +270,7 @@ class WebRoot(WebHandler):
                         commands=function_mapper)
 
     def setHomeLayout(self):
-        layout = self.get_argument('layout')
+        layout = self.get_query_argument('layout')
         if layout not in ('poster', 'small', 'banner', 'simple', 'coverflow'):
             layout = 'poster'
 
@@ -279,7 +279,7 @@ class WebRoot(WebHandler):
         return self.redirect("/home/")
 
     def setPosterSortBy(self):
-        sort = self.get_argument('sort')
+        sort = self.get_query_argument('sort')
         if sort not in ('name', 'date', 'network', 'progress'):
             sort = 'name'
 
@@ -287,13 +287,13 @@ class WebRoot(WebHandler):
         sickbeard.save_config()
 
     def setPosterSortDir(self):
-        direction = self.get_argument('direction')
+        direction = self.get_query_argument('direction')
 
         sickbeard.POSTER_SORTDIR = int(direction)
         sickbeard.save_config()
 
     def setHistoryLayout(self):
-        layout = self.get_argument('layout')
+        layout = self.get_query_argument('layout')
         if layout not in ('compact', 'detailed'):
             layout = 'detailed'
 
@@ -302,13 +302,13 @@ class WebRoot(WebHandler):
         return self.redirect("/history/")
 
     def toggleDisplayShowSpecials(self):
-        show = self.get_argument('show')
+        show = self.get_query_argument('show')
         sickbeard.DISPLAY_SHOW_SPECIALS = not sickbeard.DISPLAY_SHOW_SPECIALS
 
         return self.redirect("/home/displayShow?show=" + show)
 
     def setScheduleLayout(self):
-        layout = self.get_argument('layout')
+        layout = self.get_query_argument('layout')
         if layout not in ('poster', 'banner', 'list', 'calendar'):
             layout = 'banner'
 
@@ -332,7 +332,7 @@ class WebRoot(WebHandler):
         return self.redirect("/schedule/")
 
     def setScheduleSort(self):
-        sort = self.get_argument('sort')
+        sort = self.get_query_argument('sort')
         if sort not in ('date', 'network', 'show') or sickbeard.COMING_EPS_LAYOUT == 'calendar':
             sort = 'date'
 
@@ -341,7 +341,7 @@ class WebRoot(WebHandler):
         return self.redirect("/schedule/")
 
     def schedule(self):
-        layout = self.get_argument('layout')
+        layout = self.get_query_argument('layout')
         next_week = datetime.date.today() + datetime.timedelta(days=7)
         next_week1 = datetime.datetime.combine(next_week, datetime.time(tzinfo=network_timezones.sb_timezone))
         results = ComingEpisodes.get_coming_episodes(ComingEpisodes.categories, sickbeard.COMING_EPS_SORT, False)
@@ -400,9 +400,9 @@ class UI(WebRoot):
         return json.dumps(messages)
 
     def set_site_message(self):
-        message = self.get_argument('message')
-        tag = self.get_argument('tag')
-        level = self.get_argument('level')
+        message = self.get_body_argument('message', None)
+        tag = self.get_body_argument('tag', None)
+        level = self.get_body_argument('level')
         self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
         if message:
             helpers.add_site_message(message, tag=tag, level=level)
@@ -419,7 +419,7 @@ class UI(WebRoot):
         return sickbeard.SITE_MESSAGES
 
     def dismiss_site_message(self):
-        index = self.get_argument('index')
+        index = self.get_query_argument('index')
         self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
         helpers.remove_site_message(key=index)
         return sickbeard.SITE_MESSAGES

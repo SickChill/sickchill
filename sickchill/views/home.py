@@ -68,18 +68,11 @@ class Home(WebRoot):
     def __init__(self, *args, **kwargs):
         super(Home, self).__init__(*args, **kwargs)
 
-    def _genericMessage(self):
-        subject = self.get_argument('subject')
-        message = self.get_query_argument('message')
+    def _genericMessage(self, subject=None, message=None):
         t = PageTemplate(rh=self, filename="genericMessage.mako")
         return t.render(message=message, subject=subject, topmenu="home", title="")
 
-    def _getEpisode(self):
-        show = self.get_argument('show')
-        season = self.get_argument('season', None)
-        episode = self.get_argument('episode', None)
-        absolute = self.get_argument('absolute', None)
-
+    def _getEpisode(self, show, season=None, episode=None, absolute=None):
         if not show:
             return None, _("Invalid show parameters")
 
@@ -103,7 +96,7 @@ class Home(WebRoot):
     def index(self):
         t = PageTemplate(rh=self, filename="home.mako")
 
-        selected_root = self.get_argument('root', None)
+        selected_root = self.get_body_argument('root', None)
         if selected_root and sickbeard.ROOT_DIRS:
             backend_pieces = sickbeard.ROOT_DIRS.split('|')
             backend_dirs = backend_pieces[1:]
@@ -192,7 +185,7 @@ class Home(WebRoot):
         return show_stat, max_download_count
 
     def is_alive(self):
-        callback, jq_obj = self.get_argument('callback'), self.get_argument('_')
+        callback, jq_obj = self.get_body_argument('callback'), self.get_body_argument('_')
         if not callback and jq_obj:
             return _("Error: Unsupported Request. Send jsonp request with 'callback' variable in the query string.")
 
@@ -221,20 +214,19 @@ class Home(WebRoot):
 
     @staticmethod
     def haveTORRENT():
-        if sickbeard.USE_TORRENTS and sickbeard.TORRENT_METHOD != 'blackhole' and \
-            (sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'https' or not
-            sickbeard.ENABLE_HTTPS and sickbeard.TORRENT_HOST[:5] == 'http:'):
+        host_good = (sickbeard.TORRENT_HOST[:5] == 'http:', sickbeard.TORRENT_HOST[:5] == 'https')[sickbeard.ENABLE_HTTPS]
+        if sickbeard.USE_TORRENTS and sickbeard.TORRENT_METHOD != 'blackhole' and host_good:
             return True
         else:
             return False
 
     def testSABnzbd(self):
         # self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
-        username = self.get_argument('username', None)
-        password = filters.unhide(sickbeard.SAB_PASSWORD, self.get_argument('password', None))
-        apikey = filters.unhide(sickbeard.SAB_APIKEY, self.get_argument('apikey', None))
+        username = self.get_body_argument('username')
+        password = filters.unhide(sickbeard.SAB_PASSWORD, self.get_body_argument('password'))
+        apikey = filters.unhide(sickbeard.SAB_APIKEY, self.get_body_argument('apikey'))
 
-        host = config.clean_url(self.get_argument('host', None))
+        host = config.clean_url(self.get_body_argument('host'))
         connection, accesMsg = sab.getSabAccesMethod(host)
         if connection:
             authed, authMsg = sab.testAuthentication(host, username, password, apikey)  # @UnusedVariable
@@ -245,27 +237,28 @@ class Home(WebRoot):
         else:
             return _("Unable to connect to host")
 
+    @staticmethod
+    def __torrent_test(host, username, password, method):
+        client = clients.getClientInstance(method)
+        result, message = client(host, username, password).testAuthentication()
+        return message
+
     def testDSM(self):
-        host = self.get_argument('host', None)
-        username = self.get_argument('username', None)
-        password = filters.unhide(sickbeard.SYNOLOGY_DSM_PASSWORD, self.get_argument('password', None))
-        return self.testTorrent('download_station', host, username, password)
+        host = config.clean_host(self.get_body_argument('host'))
+        username = self.get_body_argument('username')
+        password = filters.unhide(sickbeard.SYNOLOGY_DSM_PASSWORD, self.get_body_argument('password'))
+        return self.__torrent_test(host, username, password, 'download_station')
 
     def testTorrent(self):
-        torrent_method = self.get_argument('torrent_method', None)
-        host = self.get_argument('host', None)
-        username = self.get_argument('username', None)
-        password = filters.unhide(sickbeard.TORRENT_PASSWORD, self.get_argument('password', None))
-
-        host = config.clean_url(host)
-        client = clients.getClientInstance(torrent_method)
-        result_, accesMsg = client(host, username, password).testAuthentication()
-
-        return accesMsg
+        torrent_method = self.get_body_argument('torrent_method')
+        host = config.clean_host(self.get_body_argument('host'))
+        username = self.get_body_argument('username')
+        password = filters.unhide(sickbeard.TORRENT_PASSWORD, self.get_body_argument('password'))
+        return self.__torrent_test(host, username, password, torrent_method)
 
     def testFreeMobile(self):
-        freemobile_id = self.get_argument('freemobile_id', None)
-        freemobile_apikey = filters.unhide(sickbeard.FREEMOBILE_APIKEY, self.get_argument('freemobile_apikey', None))
+        freemobile_id = self.get_body_argument('freemobile_id')
+        freemobile_apikey = filters.unhide(sickbeard.FREEMOBILE_APIKEY, self.get_body_argument('freemobile_apikey'))
 
         result, message = notifiers.freemobile_notifier.test_notify(freemobile_id, freemobile_apikey)
         if result:
@@ -274,8 +267,8 @@ class Home(WebRoot):
             return _("Problem sending SMS: {message}").format(message=message)
 
     def testTelegram(self):
-        telegram_id = self.get_argument('telegram_id', None)
-        telegram_apikey = filters.unhide(sickbeard.TELEGRAM_APIKEY, self.get_argument('telegram_apikey', None))
+        telegram_id = self.get_body_argument('telegram_id')
+        telegram_apikey = filters.unhide(sickbeard.TELEGRAM_APIKEY, self.get_body_argument('telegram_apikey'))
         result, message = notifiers.telegram_notifier.test_notify(telegram_id, telegram_apikey)
         if result:
             return _("Telegram notification succeeded. Check your Telegram clients to make sure it worked")
@@ -283,8 +276,8 @@ class Home(WebRoot):
             return _("Error sending Telegram notification: {message}").format(message=message)
 
     def testJoin(self):
-        join_id = self.get_argument('join_id', None)
-        join_apikey = filters.unhide(sickbeard.JOIN_APIKEY, self.get_argument('join_apikey', None))
+        join_id = self.get_body_argument('join_id')
+        join_apikey = filters.unhide(sickbeard.JOIN_APIKEY, self.get_body_argument('join_apikey'))
 
         result, message = notifiers.join_notifier.test_notify(join_id, join_apikey)
         if result:
@@ -293,8 +286,8 @@ class Home(WebRoot):
             return _("Error sending join notification: {message}").format(message=message)
 
     def testGrowl(self):
-        host = self.get_argument('host', None)
-        password = filters.unhide(sickbeard.GROWL_PASSWORD, self.get_argument('password', None))
+        host = self.get_query_argument('host')
+        password = filters.unhide(sickbeard.GROWL_PASSWORD, self.get_query_argument('password'))
         # self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
 
         host = config.clean_host(host, default_port=23053)
@@ -308,8 +301,8 @@ class Home(WebRoot):
 
     def testProwl(self):
 
-        prowl_api = self.get_argument('prowl_api', None)
-        prowl_priority = self.get_argument('prowl_priority', 0)
+        prowl_api = self.get_query_argument('prowl_api')
+        prowl_priority = self.get_query_argument('prowl_priority')
         result = notifiers.prowl_notifier.test_notify(prowl_api, prowl_priority)
         if result:
             return _("Test prowl notice sent successfully")
@@ -317,7 +310,7 @@ class Home(WebRoot):
             return _("Test prowl notice failed")
 
     def testBoxcar2(self):
-        accesstoken = self.get_argument('accesstoken', None)
+        accesstoken = self.get_query_argument('accesstoken')
         result = notifiers.boxcar2_notifier.test_notify(accesstoken)
         if result:
             return _("Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure it worked")
@@ -325,8 +318,8 @@ class Home(WebRoot):
             return _("Error sending Boxcar2 notification")
 
     def testPushover(self):
-        userKey = self.get_argument('userKey', None)
-        apiKey = self.get_argument('apiKey', None)
+        userKey = self.get_query_argument('userKey')
+        apiKey = self.get_query_argument('apiKey')
 
         result = notifiers.pushover_notifier.test_notify(userKey, apiKey)
         if result:
@@ -340,7 +333,7 @@ class Home(WebRoot):
         return notifiers.twitter_notifier._get_authorization()
 
     def twitterStep2(self):
-        key = self.get_argument('key')
+        key = self.get_query_argument('key')
         # noinspection PyProtectedMember
         result = notifiers.twitter_notifier._get_credentials(key)
         logger.log("result: " + str(result))
@@ -403,9 +396,9 @@ class Home(WebRoot):
             return _("Discord message failed")
 
     def testKODI(self):
-        username = self.get_argument('username', None)
-        host = config.clean_hosts(self.get_argument('host', None))
-        password = filters.unhide(sickbeard.KODI_PASSWORD, self.get_argument('password', None))
+        username = self.get_query_argument('username')
+        host = config.clean_hosts(self.get_query_argument('host'))
+        password = filters.unhide(sickbeard.KODI_PASSWORD, self.get_query_argument('password'))
 
         results = notifiers.kodi_notifier.test_notify(unquote_plus(host), username, password)
         final_results = [
@@ -416,9 +409,9 @@ class Home(WebRoot):
     def testPHT(self):
         self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
 
-        username = self.get_argument('username', None)
-        host = config.clean_host(self.get_argument('host', ''))
-        password = filters.unhide(sickbeard.PLEX_CLIENT_PASSWORD, self.get_argument('password', None))
+        username = self.get_query_argument('username')
+        host = config.clean_hosts(self.get_query_argument('host'))
+        password = filters.unhide(sickbeard.PLEX_CLIENT_PASSWORD, self.get_query_argument('password'))
 
         finalResult = ''
         for curHost in [x.strip() for x in host.split(',')]:
@@ -436,10 +429,10 @@ class Home(WebRoot):
     def testPMS(self):
         self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
 
-        username = self.get_argument('username', None)
-        host = config.clean_host(self.get_argument('host', ''))
-        password = filters.unhide(sickbeard.PLEX_SERVER_PASSWORD, self.get_argument('password', None))
-        plex_server_token = self.get_argument('plex_server_token', None)
+        username = self.get_query_argument('username')
+        host = config.clean_hosts(self.get_query_argument('host'))
+        password = filters.unhide(sickbeard.PLEX_SERVER_PASSWORD, self.get_query_argument('password'))
+        plex_server_token = self.get_query_argument('plex_server_token')
 
         finalResult = ''
 
@@ -463,8 +456,8 @@ class Home(WebRoot):
         return notifiers.libnotify_notifier.diagnose()
 
     def testEMBY(self):
-        host = config.clean_host(self.get_argument('host', ''))
-        emby_apikey = filters.unhide(sickbeard.EMBY_APIKEY, self.get_argument('emby_apikey', None))
+        host = config.clean_host(self.get_query_argument('host'))
+        emby_apikey = filters.unhide(sickbeard.EMBY_APIKEY, self.get_query_argument('emby_apikey'))
         result = notifiers.emby_notifier.test_notify(unquote_plus(host), emby_apikey)
         if result:
             return _("Test notice sent successfully to {emby_host}").format(emby_host=unquote_plus(host))
@@ -472,9 +465,9 @@ class Home(WebRoot):
             return _("Test notice failed to {emby_host}").format(emby_host=unquote_plus(host))
 
     def testNMJ(self):
-        host = config.clean_host(self.get_argument('host', ''))
-        database = self.get_argument('database', None)
-        mount = self.get_argument('mount', None)
+        host = config.clean_host(self.get_body_argument('host'))
+        database = self.get_body_argument('database')
+        mount = self.get_body_argument('mount')
 
         result = notifiers.nmj_notifier.test_notify(unquote_plus(host), database, mount)
         if result:
@@ -483,7 +476,7 @@ class Home(WebRoot):
             return _("Test failed to start the scan update")
 
     def settingsNMJ(self):
-        host = config.clean_host(self.get_argument('host', ''))
+        host = config.clean_host(self.get_body_argument('host'))
         result = notifiers.nmj_notifier.notify_settings(unquote_plus(host))
         if result:
             return '{{"message": _("Got settings from {host}"), "database": "{database}", "mount": "{mount}"}}'.format(**{
@@ -494,7 +487,7 @@ class Home(WebRoot):
             return '{"message": _("Failed! Make sure your Popcorn is on and NMJ is running. (see Log & Errors -> Debug for detailed info)"), "database": "", "mount": ""}'
 
     def testNMJv2(self):
-        host = config.clean_host(self.get_argument('host', ''))
+        host = config.clean_host(self.get_body_argument('host'))
         result = notifiers.nmjv2_notifier.test_notify(unquote_plus(host))
         if result:
             return _("Test notice sent successfully to {nmj2_host}").format(nmj2_host=unquote_plus(host))
@@ -502,9 +495,9 @@ class Home(WebRoot):
             return _("Test notice failed to {nmj2_host}").format(nmj2_host=unquote_plus(host))
 
     def settingsNMJv2(self):
-        host = config.clean_host(self.get_argument('host', None))
-        dbloc = self.get_argument('dbloc', None)
-        instance = self.get_argument('instance', None)
+        host = config.clean_host(self.get_body_argument('host'))
+        dbloc = self.get_body_argument('dbloc')
+        instance = self.get_body_argument('instance')
         result = notifiers.nmjv2_notifier.notify_settings(unquote_plus(host), dbloc, instance)
         if result:
             return '{{"message": _("NMJ Database found at: {host}"), "database": "{database}"}}'.format(
@@ -517,7 +510,7 @@ class Home(WebRoot):
                 })
 
     def getTraktToken(self):
-        trakt_pin = self.get_argument('trakt_pin', None)
+        trakt_pin = self.get_body_argument('trakt_pin')
         trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
         response = trakt_api.traktToken(trakt_pin)
         if response:
@@ -525,8 +518,8 @@ class Home(WebRoot):
         return _("Trakt Not Authorized!")
 
     def testTrakt(self):
-        username = self.get_argument('username', None)
-        blacklist_name = self.get_argument('blacklist_name', None)
+        username = self.get_body_argument('username')
+        blacklist_name = self.get_body_argument('blacklist_name',)
         return notifiers.trakt_notifier.test_notify(username, blacklist_name)
 
     @staticmethod
@@ -557,9 +550,9 @@ class Home(WebRoot):
         return json.dumps(data)
 
     def saveShowNotifyList(self):
-        show = self.get_argument('show', None)
-        emails = self.get_argument('emails', None)
-        prowlAPIs = self.get_argument('prowlAPIs', None)
+        show = self.get_body_argument('show')
+        emails = self.get_body_argument('emails', None)
+        prowlAPIs = self.get_body_argument('prowlAPIs', None)
 
         entries = {'emails': '', 'prowlAPIs': ''}
         main_db_con = db.DBConnection()
@@ -585,14 +578,14 @@ class Home(WebRoot):
         return 'OK'
 
     def testEmail(self):
-        port = self.get_argument('port', None)
-        smtp_from = self.get_argument('smtp_from', None)
-        use_tls = self.get_argument('use_tls', None)
-        user = self.get_argument('user', None)
-        pwd = filters.unhide(sickbeard.EMAIL_PASSWORD, self.get_argument('pwd', None))
-        to = self.get_argument('to', None)
+        port = self.get_body_argument('port',)
+        smtp_from = self.get_body_argument('smtp_from')
+        use_tls = self.get_body_argument('use_tls')
+        user = self.get_body_argument('user')
+        pwd = filters.unhide(sickbeard.EMAIL_PASSWORD, self.get_body_argument('pwd'))
+        to = self.get_body_argument('to')
 
-        host = config.clean_host(self.get_argument('host', ''))
+        host = config.clean_host(self.get_body_argument('host'))
 
         if notifiers.email_notifier.test_notify(host, port, smtp_from, use_tls, user, pwd, to):
             return _('Test email sent successfully! Check inbox.')
@@ -600,7 +593,7 @@ class Home(WebRoot):
             return _('ERROR: {last_error}').format(last_error=notifiers.email_notifier.last_err)
 
     def testPushalot(self):
-        authorizationToken = self.get_argument('authorizationToken', None)
+        authorizationToken = self.get_body_argument('authorizationToken')
         result = notifiers.pushalot_notifier.test_notify(authorizationToken)
         if result:
             return _("Pushalot notification succeeded. Check your Pushalot clients to make sure it worked")
@@ -608,7 +601,7 @@ class Home(WebRoot):
             return _("Error sending Pushalot notification")
 
     def testPushbullet(self):
-        api = self.get_argument('api', None)
+        api = self.get_body_argument('api')
         result = notifiers.pushbullet_notifier.test_notify(api)
         if result:
             return _("Pushbullet notification succeeded. Check your device to make sure it worked")
@@ -616,7 +609,7 @@ class Home(WebRoot):
             return _("Error sending Pushbullet notification")
 
     def getPushbulletDevices(self):
-        api = self.get_argument('api', None)
+        api = self.get_body_argument('api')
         # self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
 
         result = notifiers.pushbullet_notifier.get_devices(api)
@@ -626,7 +619,7 @@ class Home(WebRoot):
             return _("Error sending Pushbullet notification")
 
     def getPushbulletChannels(self):
-        api = self.get_argument('api', None)
+        api = self.get_body_argument('api')
         result = notifiers.pushbullet_notifier.get_channels(api)
         if result:
             return result
@@ -653,7 +646,7 @@ class Home(WebRoot):
                         controller="home", action="status")
 
     def shutdown(self):
-        pid = self.get_argument('pid')
+        pid = self.get_query_argument('pid')
         if not Shutdown.stop(pid):
             return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
@@ -663,7 +656,7 @@ class Home(WebRoot):
         return self._genericMessage(title, message)
 
     def restart(self):
-        pid = self.get_argument('pid')
+        pid = self.get_query_argument('pid')
         if not Restart.restart(pid):
             return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
@@ -673,7 +666,7 @@ class Home(WebRoot):
                         controller="home", action="restart")
 
     def updateCheck(self):
-        pid = self.get_argument('pid')
+        pid = self.get_query_argument('pid')
         if str(pid) != str(sickbeard.PID):
             return self.redirect('/home/')
 
@@ -683,8 +676,8 @@ class Home(WebRoot):
         return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
     def update(self):
-        pid = self.get_argument('pid')
-        branch = self.get_argument('branch')
+        pid = self.get_query_argument('pid')
+        branch = self.get_query_argument('branch', None)
         if str(pid) != str(sickbeard.PID):
             return self.redirect('/home/')
 
@@ -729,7 +722,7 @@ class Home(WebRoot):
         return json.dumps(response)
 
     def branchCheckout(self):
-        branch = self.get_argument('branch')
+        branch = self.get_query_argument('branch')
         if sickbeard.BRANCH != branch:
             sickbeard.BRANCH = branch
             ui.notifications.message(_('Checking out branch') + ': ', branch)
@@ -758,11 +751,10 @@ class Home(WebRoot):
             return json.dumps({"status": "error", 'message': 'General exception'})
 
     def displayShow(self):
-        show = self.get_argument('show')
+        show = self.get_query_argument('show')
         # todo: add more comprehensive show validation
         try:
-            show = int(show)  # fails if show id ends in a period SickChill/SickChill#65
-            show_obj = Show.find(sickbeard.showList, show)
+            show_obj = Show.find(sickbeard.showList, int(show))
         except (ValueError, TypeError):
             return self._genericMessage(_("Error"), _("Invalid show ID: {show}").format(show=str(show)))
 
@@ -945,16 +937,16 @@ class Home(WebRoot):
         )
 
     def plotDetails(self):
-        show = self.get_argument('show')
-        season = self.get_argument('season')
-        episode = self.get_argument('episode')
+        show = self.get_query_argument('show')
+        season = self.get_query_argument('season')
+        episode = self.get_query_argument('episode')
         main_db_con = db.DBConnection()
         result = main_db_con.select_one(
             "SELECT description FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?", (int(show), int(season), int(episode)))
         return result[b'description'] if result else 'Episode not found.'
 
     def sceneExceptions(self):
-        show = self.get_argument('show')
+        show = self.get_query_argument('show')
         exceptionsList = sickbeard.scene_exceptions.get_all_scene_exceptions(show)
         if not exceptionsList:
             return _("No scene exceptions")

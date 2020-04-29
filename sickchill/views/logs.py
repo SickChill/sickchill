@@ -37,8 +37,7 @@ class ErrorLogs(WebRoot):
     def __init__(self, *args, **kwargs):
         super(ErrorLogs, self).__init__(*args, **kwargs)
 
-    def ErrorLogsMenu(self):
-        level = try_int(self.get_argument('level'), logger.ERROR)
+    def __ErrorLogsMenu(self, level):
         menu = [
             {
                 'title': _('Clear Errors'),
@@ -70,7 +69,7 @@ class ErrorLogs(WebRoot):
 
         t = PageTemplate(rh=self, filename="errorlogs.mako")
         return t.render(header=_("Logs &amp; Errors"), title=_("Logs &amp; Errors"),
-                        topmenu="system", submenu=self.ErrorLogsMenu(),
+                        topmenu="system", submenu=self.ErrorLogsMenu(level),
                         logLevel=level, controller="errorlogs", action="index")
 
     @staticmethod
@@ -91,10 +90,10 @@ class ErrorLogs(WebRoot):
         return self.redirect("/errorlogs/viewlog/")
 
     def viewlog(self):
-        min_level = try_int(self.get_argument('min_level', logger.INFO))
-        log_filter = self.get_argument('log_filter', "<NONE>")
-        log_search = self.get_argument('log_search', '')
-        max_lines = try_int(self.get_argument('max_lines', 500))
+        min_level = try_int(self.get_body_argument('min_level', logger.INFO))
+        log_filter = self.get_body_argument('log_filter', "<NONE>")
+        log_search = self.get_body_argument('log_search', '')
+        max_lines = try_int(self.get_body_argument('max_lines', 500))
         data = sickbeard.logger.log_data(min_level, log_filter, log_search, max_lines)
 
         t = PageTemplate(rh=self, filename="viewlogs.mako")
