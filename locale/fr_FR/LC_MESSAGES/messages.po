@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-29 03:00\n"
+"PO-Revision-Date: 2020-05-03 07:20\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -5662,7 +5662,7 @@ msgstr "Utiliser les métadonnées de SC"
 
 #: gui/slick/views/editShow.mako:134
 msgid "use SickChill metadata when searching for subtitle, this will override the autodiscovered metadata"
-msgstr "Utiliser les métadonnées de SickChill lorsque vous recherchez des sous-titres, < br / > cela remplacera les métadonnées déjà présentes"
+msgstr "utiliser les métadonnées de SickChill pour rechercher des sous-titres, cela remplacera les métadonnées présentes"
 
 #: gui/slick/views/editShow.mako:145
 msgid "pause this show (SickChill will not download episodes)"
@@ -6305,7 +6305,7 @@ msgstr "Recherche selon la numérotation de la scène (mettre \"Non\" à la rech
 
 #: gui/slick/views/manage_massEdit.mako:199
 msgid "Set if these shows are Anime and episodes are released as Show.265 rather than Show.S02E03"
-msgstr "Cocher si ces séries sont de type Animés et parraissent sous la forme Série.03 plutôt que Série.S01E03"
+msgstr "Cocher si ces séries sont de type Animés et paraissent sous la forme Série.03 plutôt que Série.S01E03"
 
 #: gui/slick/views/manage_massEdit.mako:215
 msgid "Set if these shows are sporting or MMA events released as Show.03.02.2010 rather than Show.S02E03."
