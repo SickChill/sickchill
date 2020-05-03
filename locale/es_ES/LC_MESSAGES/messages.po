@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 12:09\n"
+"PO-Revision-Date: 2020-05-03 07:20\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -452,7 +452,7 @@ msgstr ""
 
 #: sickbeard/helpers.py:1050
 msgid "Error when attempting to find show: {0} in SickChill. Error: {1} "
-msgstr ""
+msgstr "Error al intentar encontrar el show: {0} en SickChill. Error: {1} "
 
 #: sickbeard/helpers.py:1107
 msgid "Usage of anidb disabled. Skiping"
@@ -861,7 +861,7 @@ msgstr ""
 
 #: sickbeard/metadata/generic.py:748
 msgid "Empty <id> or <tvdbid> field in NFO, unable to find a ID, not using metadata file"
-msgstr ""
+msgstr "Campo <id> o <tvdbid> vacío en NFO, no se puede encontrar un ID, no se puede usar el archivo de metadatos"
 
 #: sickbeard/metadata/generic.py:757
 msgid "Invalid Indexer ID ({0}), not using metadata file because it has TVRage info"
@@ -1133,7 +1133,7 @@ msgstr "Agregar nueva serie"
 
 #: gui/slick/views/addShows.mako:19
 msgid "For shows that you haven't downloaded yet, this option finds a show on theTVDB.com, creates a directory for its episodes, and adds it to SickChill."
-msgstr ""
+msgstr "Para series que aún no has descargado, esta opción busca la serie en theTVB.com, crea un directorio para sus episodios, y lo agrega a SickChill."
 
 #: gui/slick/views/addShows.mako:30
 msgid "Add From Trakt Lists"
@@ -6763,7 +6763,7 @@ msgstr ""
 
 #: sickchill/helper/common.py:385
 msgid "Unable to setup GitHub properly with your github token. Please check your credentials. Error: {0}"
-msgstr ""
+msgstr "No se puede configurar GitHub correctamente con su token github. Por favor, compruebe sus credenciales. Error: {0}"
 
 #: sickchill/helper/common.py:389
 msgid "Unable to setup GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {0}"
@@ -7344,7 +7344,7 @@ msgstr "No se descargaron los subtítulos"
 
 #: sickchill/views/index.py:93
 msgid "Oops: 404 Not Found"
-msgstr ""
+msgstr "Oops: 404 Elemento no encontrado"
 
 #: sickchill/views/index.py:95
 msgid "Wrong API key used"
@@ -7616,11 +7616,11 @@ msgstr "Edición masiva"
 
 #: sickchill/views/manage/index.py:548
 msgid "Unable to update show: {exception_format}"
-msgstr ""
+msgstr "No se ha podido actualizar la serie: {exception_format}"
 
 #: sickchill/views/manage/index.py:556
 msgid "Unable to refresh show {show_name}: {exception_format}"
-msgstr ""
+msgstr "Imposible actualizar serie {show_name}: {exception_format}"
 
 #: sickchill/views/manage/index.py:567
 msgid "Errors encountered"
