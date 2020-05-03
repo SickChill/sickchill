@@ -90,10 +90,10 @@ class ErrorLogs(WebRoot):
         return self.redirect("/errorlogs/viewlog/")
 
     def viewlog(self):
-        min_level = try_int(self.get_body_argument('min_level', logger.INFO))
+        min_level = try_int(self.get_body_argument('min_level', logger.INFO), logger.INFO)
         log_filter = self.get_body_argument('log_filter', "<NONE>")
         log_search = self.get_body_argument('log_search', '')
-        max_lines = try_int(self.get_body_argument('max_lines', 500))
+        max_lines = try_int(self.get_body_argument('max_lines', 500), 500)
         data = sickbeard.logger.log_data(min_level, log_filter, log_search, max_lines)
 
         t = PageTemplate(rh=self, filename="viewlogs.mako")
