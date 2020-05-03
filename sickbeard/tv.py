@@ -725,7 +725,7 @@ class TVShow(object):
         if len(sql_results) > 1:
             raise MultipleShowsInDatabaseException()
         elif not sql_results:
-            logger.log(str(self.indexerid) + ": Unable to find the show in the database")
+            # logger.log(str(self.indexerid) + ": Unable to find the show in the database")
             return
         else:
             self.indexer = int(sql_results[0][b"indexer"] or 0)
@@ -1628,7 +1628,7 @@ class TVEpisode(object):
                         status=statusStrings[self.status], location=self.location), logger.DEBUG)
 
         if not ek(os.path.isfile, self.location):
-            if self.airdate >= datetime.date.today() or self.airdate == datetime.date.min:
+            if self.airdate >= datetime.date.today() or self.airdate <= datetime.date.min:
                 logger.log("{0}: Episode airs in the future or has no airdate, marking it {1}".format(self.show.indexerid, statusStrings[UNAIRED]), logger.DEBUG)
                 self.status = UNAIRED
             elif self.status in [UNAIRED, UNKNOWN]:

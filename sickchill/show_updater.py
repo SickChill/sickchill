@@ -90,7 +90,7 @@ class ShowUpdater(object):
                         # Just update all of the shows for now until they fix the updates api
                         # When last_update is not set from the cache or the show was in the tvdb updated list we update the show
                         if cur_show.indexerid in updated_shows or not last_update:
-                            pi_list.append(sickbeard.showQueueScheduler.action.update_show(cur_show, force))
+                            pi_list.append(sickbeard.showQueueScheduler.action.update_show(cur_show, True))
                         else:
                             pi_list.append(sickbeard.showQueueScheduler.action.refresh_show(cur_show, force))
                     except (CantUpdateShowException, CantRefreshShowException) as error:
