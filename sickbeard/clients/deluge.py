@@ -108,7 +108,7 @@ class Client(GenericClient):
             }
 
             post_data = json.dumps({"method": "core.add_torrent_magnet",
-                            "params": [result.url, {}],
+                            "params": [result.url, options],
                             "id": 2})
         else:
             post_data = json.dumps({"method": "core.add_torrent_magnet",
