@@ -68,8 +68,8 @@ class Movie(ResourceItem):
     WS = fanart.WS.MOVIE
 
     @Immutable.mutablemethod
-    def __init__(self, name, imdbid, tmdbid, arts, logos, discs, posters, backgrounds, hdlogos, hdarts,
-                 banners, thumbs):
+    def __init__(self, name, imdbid, tmdbid, arts, logos, discs, posters,
+                 backgrounds, hdlogos, hdarts, banners, thumbs):
         self.name = name
         self.imdbid = imdbid
         self.tmdbid = tmdbid
@@ -85,10 +85,10 @@ class Movie(ResourceItem):
 
     @classmethod
     def from_dict(cls, resource):
-        assert len(resource) == 1, 'Bad Format Map'
-        name, resource = resource.items()[0]
+        minimal_keys = {'name', 'imdb_id', 'tmdb_id'}
+        assert all(k in resource for k in minimal_keys), 'Bad Format Map'
         return cls(
-            name=name,
+            name=resource['name'],
             imdbid=resource['imdb_id'],
             tmdbid=resource['tmdb_id'],
             arts=ArtItem.extract(resource),

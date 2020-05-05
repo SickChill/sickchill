@@ -4,6 +4,7 @@
     from sickbeard import common
     from sickbeard.common import SKIPPED, WANTED, IGNORED
     from sickbeard.common import statusStrings
+    from sickchill import indexer as show_indexer
 %>
 
 <%block name="metas">
@@ -102,13 +103,13 @@
                                                 <select name="indexerLang" id="indexerLangSelect"
                                                         class="form-control input-sm input150 bfh-languages"
                                                         data-language="${show.lang}"
-                                                        data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}" title="indexerLang">
+                                                        data-available="${','.join(show_indexer.languages())}" title="indexerLang">
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label for="indexerLang">${_('this only applies to episode filenames and the contents of metadata files.')}</label>
+                                                <label for="indexerLang">${_('this only applies to episode file names and the contents of metadata files.')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -126,7 +127,7 @@
                                 <div id="content_subtitles">
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                            <span class="component-title">${_('Use SR Metdata')}</span>
+                                            <span class="component-title">${_('Use SR Metadata')}</span>
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" id="subtitles_sr_metadata" name="subtitles_sr_metadata" ${('', 'checked="checked"')[show.subtitles_sr_metadata == 1 ]} />
@@ -298,6 +299,34 @@
 
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <span class="component-title">${_('Preferred Words')}</span>
+                                    </div>
+                                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <input type="text" id="rls_prefer_words" name="rls_prefer_words"
+                                                       value="${show.rls_prefer_words}" autocapitalize="off"
+                                                       class="form-control input-sm input350"/>
+                                                <br/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label for="rls_prefer_words">${_('comma-separated <i>e.g. "word1,word2,word3</i>"')}</label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>${_('search results with these words will be preferred in this order.')}</label>
+                                                <label><b>${_('note')}:</b> ${_('this option overrides the globally preferred words!')}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                         <span class="component-title">${_('Required Words')}</span>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
@@ -332,7 +361,7 @@
                                             <div class="col-md-12">
                                                 <input type="text" id="SceneName" class="form-control input-sm input250" autocapitalize="off"/>
                                                 <select id="SceneSeason" class="form-control input-sm" style="width: 95px">
-                                                    % for season in range(0, len(seasonResults)):
+                                                    % for season in range(0, len(seasonResults) + 1):
                                                         %if season == 0:
                                                             <% season = -1 %>
                                                         %endif
@@ -347,7 +376,7 @@
                                                 <input type="hidden" id="exceptions" name="exceptions_list"/>
                                                 <select id="exceptions_list" multiple
                                                         style="height:200px;" class="form-control input350" title="exceptions_list">
-                                                    % for season in range(0, len(seasonResults)):
+                                                    % for season in range(0, len(seasonResults) + 1):
                                                         %if season == 0:
                                                             <% season = -1 %>
                                                         %endif

@@ -41,7 +41,7 @@ def streaming_service(config):  # pylint: disable=too-many-statements,unused-arg
 class ValidateStreamingService(Rule):
     """Validate streaming service matches."""
 
-    priority = 32
+    priority = 128
     consequence = RemoveMatch
 
     def when(self, matches, context):

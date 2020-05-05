@@ -8,9 +8,10 @@
     from sickbeard.filters import hide
     from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
     from sickbeard.helpers import anon_url, LOCALE_NAMES
+    import sickchill
 
     def lang_name(code):
-        return LOCALE_NAMES.get(code, {}).get("name", u"Unknown")
+        return LOCALE_NAMES.get(code, {}).get("name", "Unknown")
 %>
 
 <%block name="tabs">
@@ -43,7 +44,8 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm input350 bfh-languages" data-language=${sickbeard.INDEXER_DEFAULT_LANGUAGE} data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}"></select>
+                                        <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm input350
+                                        bfh-languages" data-language="${sickbeard.INDEXER_DEFAULT_LANGUAGE}" data-available="${','.join(sickchill.indexer.languages())}"></select>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -139,15 +141,6 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Log file folder location')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="text" name="log_dir" id="log_dir" value="${sickbeard.ACTUAL_LOG_DIR}" class="form-control input-sm input250" autocapitalize="off"  title="log_dir"/>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('Number of Log files saved')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
@@ -191,8 +184,8 @@
                                     <div class="col-md-12">
                                         <select id="indexer_default" name="indexer_default" class="form-control input-sm input150">
                                             <option value="0" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == 0]}>${_('All Indexers')}</option>
-                                            % for indexer in sickbeard.indexerApi().indexers:
-                                                <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
+                                            % for indexer, instance in sickchill.indexer:
+                                                <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${instance.name}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -478,6 +471,27 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" name="display_all_seasons" id="display_all_seasons" ${('', 'checked="checked"')[bool(sickbeard.DISPLAY_ALL_SEASONS)]}>
                                 <label for="display_all_seasons">${_('on the show summary page')}</label>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Days to wait before updating ended shows')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input class="form-control input-sm input75" type="number" name="ended_shows_update_interval" id="ended_shows_update_interval" min="-1" max="365"
+                                               value="${sickbeard.ENDED_SHOWS_UPDATE_INTERVAL}">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="ended_shows_update_interval">
+                                            ${_('Ended shows will only be updated after this many days have passed, if there is an update for the show')}
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -1084,6 +1098,29 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('GitHub remote for branch')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="text" name="git_remote" id="git_remote" value="${sickbeard.GIT_REMOTE}" class="form-control input-sm input300" autocapitalize="off" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="git_remote">${_('access repo configured remotes (save then refresh browser)')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="git_remote"><b>${_('default')}:</b>&nbsp;${_('origin')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('Branch version')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
@@ -1101,94 +1138,19 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Authorization Type')}</label>
+                                <label class="component-title">${_('GitHub username')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="radio" name="git_auth_type" id="git_auth_type_basic" value="0" ${('', 'checked="checked"')[sickbeard.GIT_AUTH_TYPE == 0]}/>
-                                        <label for="git_auth_type_basic">${_('Username and password')}</label>
+                                        <input type="text" name="git_username" id="git_username" value="${sickbeard.GIT_USERNAME}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="radio" name="git_auth_type" id="git_auth_type_token" value="1" ${('', 'checked="checked"')[sickbeard.GIT_AUTH_TYPE == 1]}/>
-                                        <label for="git_auth_type_token">${_('Personal access token')}</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label><b>${_('note')}:</b>&nbsp;${_('You must use a personal access token if you\'re using "two-factor authentication" on GitHub.')}</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div name="content_github_auth_type">
-                            <div class="field-pair row">
-                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('GitHub username')}</label>
-                                </div>
-                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <input type="text" name="git_username" id="git_username" value="${sickbeard.GIT_USERNAME}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label for="git_username">${_('*** (REQUIRED FOR SUBMITTING ISSUES) ***')}</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="field-pair row">
-                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('GitHub password')}</label>
-                                </div>
-                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <input type="password" name="git_password" id="git_password" value="${sickbeard.GIT_PASSWORD|hide}"
-                                                   class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label for="git_password">${_('*** (REQUIRED FOR SUBMITTING ISSUES) ***')}</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div name="content_github_auth_type">
-                            <div class="field-pair row">
-                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('GitHub personal access token')}</label>
-                                </div>
-                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <input
-                                                type="text" name="git_token" id="git_token" value="${sickbeard.GIT_TOKEN|hide}"
-                                                class="form-control input-sm input350" autocapitalize="off" autocomplete="no"
-                                            />
-                                            % if not sickbeard.GIT_TOKEN:
-                                                <input class="btn btn-inline" type="button" id="create_access_token" value="${_('Generate Token')}">
-                                            % else:
-                                                <input class="btn btn-inline" type="button" id="manage_tokens" value="${_('Manage Tokens')}">
-                                            % endif
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label for="git_token">${_('*** (REQUIRED FOR SUBMITTING ISSUES) ***')}</label>
-                                        </div>
+                                        <label for="git_username">${_('Only used for web IRC chat')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -1196,22 +1158,32 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('GitHub remote for branch')}</label>
+                                <label class="component-title">${_('GitHub personal access token')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="text" name="git_remote" id="git_remote" value="${sickbeard.GIT_REMOTE}" class="form-control input-sm input300" autocapitalize="off" />
+                                        <input
+                                            type="password" name="git_token" id="git_token" value="${sickbeard.GIT_TOKEN|hide}"
+                                            class="form-control input-sm input350" autocapitalize="off" autocomplete="no"
+                                        />
+                                        % if not sickbeard.GIT_TOKEN:
+                                            <input class="btn btn-inline" type="button" id="create_access_token" value="${_('Generate Token')}">
+                                        % else:
+                                            <input class="btn btn-inline" type="button" id="manage_tokens" value="${_('Manage Tokens')}">
+                                        % endif
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="git_remote">${_('access repo configured remotes (save then refresh browser)')}</label>
+                                        <label for="git_token">${_('*** (REQUIRED FOR SUBMITTING ISSUES) ***')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="git_remote"><b>${_('default')}:</b>&nbsp;${_('origin')}</label>
+                                        <label for="git_token">
+                                            ${_('Provide repo:status, public_repo, write:discussion, read:discussion, user, gist, and notifications')}
+                                        </label>
                                     </div>
                                 </div>
                             </div>

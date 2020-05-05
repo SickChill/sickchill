@@ -23,7 +23,6 @@ Methods
     change_unrar_tool
     change_sickchill_background
     change_custom_css
-    change_log_dir
     change_nzb_dir
     change_torrent_dir
     change_tv_download_dir
@@ -51,7 +50,6 @@ Methods
     check_setting_bool
 """
 
-# pylint: disable=line-too-long
 from __future__ import absolute_import, unicode_literals
 
 import logging
@@ -80,7 +78,7 @@ class ConfigTestBasic(unittest.TestCase):
         """
         Test check_section
         """
-        CFG = ConfigObj('config.ini', encoding='UTF-8')
+        CFG = ConfigObj('config.ini', encoding='UTF-8', options={'indent_type': '  '})
         self.assertFalse(config.check_section(CFG, 'General'))
         self.assertTrue(config.check_section(CFG, 'General'))
 
@@ -162,7 +160,7 @@ class ConfigTestBasic(unittest.TestCase):
         Test check_setting_int
         """
         # setup
-        CFG = ConfigObj('config.ini', encoding='UTF-8')
+        CFG = ConfigObj('config.ini', encoding='UTF-8', options={'indent_type': '  '})
         config.check_section(CFG, 'General')
         CFG['General']['indexer_timeout'] = 60
         CFG['General']['use_icacls'] = 'True'
@@ -200,7 +198,7 @@ class ConfigTestBasic(unittest.TestCase):
         Test check_setting_float
         """
         # setup
-        CFG = ConfigObj('config.ini', encoding='UTF-8')
+        CFG = ConfigObj('config.ini', encoding='UTF-8', options={'indent_type': '  '})
         config.check_section(CFG, 'General')
         CFG['General']['fanart_background_opacity'] = 0.5
         CFG['General']['log_size'] = None
@@ -231,7 +229,7 @@ class ConfigTestBasic(unittest.TestCase):
         Test check_setting_str
         """
         # setup
-        CFG = ConfigObj('config.ini', encoding='UTF-8')
+        CFG = ConfigObj('config.ini', encoding='UTF-8', options={'indent_type': '  '})
         config.check_section(CFG, 'General')
         CFG['General']['process_method'] = "copy"
         CFG['General']['git_password'] = "SFa342FHb_"
@@ -252,7 +250,7 @@ class ConfigTestBasic(unittest.TestCase):
         Test check_setting_bool
         """
         # setup
-        CFG = ConfigObj('config.ini', encoding='UTF-8')
+        CFG = ConfigObj('config.ini', encoding='UTF-8', options={'indent_type': '  '})
         config.check_section(CFG, 'General')
         CFG['General']['debug'] = True
         CFG['General']['season_folders_default'] = False
@@ -355,18 +353,6 @@ class ConfigTestChanges(unittest.TestCase):
         self.assertTrue(config.change_custom_css(css_file)) # real
         os.remove(css_file)
         self.assertTrue(config.change_custom_css('')) # empty
-
-    def test_change_log_dir(self):
-        """
-        Test change_log_dir
-        """
-        sickbeard.DATA_DIR = os.path.dirname(__file__)
-        sickbeard.ACTUAL_LOG_DIR = ''
-        sickbeard.LOG_DIR = os.path.join(sickbeard.DATA_DIR, sickbeard.ACTUAL_LOG_DIR)
-        sickbeard.WEB_LOG = False
-
-        self.assertFalse(config.change_log_dir('/:/Logs', True))
-        self.assertTrue(config.change_log_dir('Logs', True))
 
     def test_change_nzb_dir(self):
         """
@@ -571,7 +557,7 @@ class ConfigTestMigrator(unittest.TestCase):
         """
         # TODO: Assert the 'too-advanced-config-version' error
 
-        CFG = ConfigObj('config.ini', encoding='UTF-8')
+        CFG = ConfigObj('config.ini', encoding='UTF-8', options={'indent_type': '  '})
         config.check_section(CFG, 'General')
         CFG['General']['config_version'] = 0
         sickbeard.CONFIG_VERSION = 11

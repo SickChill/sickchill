@@ -1,0 +1,14 @@
+Metadata-Version: 2.1
+Name: bencode
+Version: 1.0
+Summary: The BitTorrent bencode module as light-weight, standalone package.
+Home-page: http://bittorrent.com/
+Author: Thomas Rampelberg
+Author-email: thomas@bittorrent.com
+License: BitTorrent Open Source License
+Keywords: bittorrent bencode bdecode
+Platform: UNKNOWN
+
+This package simply re-packages the existing bencoding and bdecoding implemention from the 'official' BitTorrent client as a separate, leight-weight package for re-using them without having the entire BitTorrent software as a dependency.
+
+

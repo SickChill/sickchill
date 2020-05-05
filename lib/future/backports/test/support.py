@@ -666,7 +666,7 @@ TESTFN = "{0}_{1}_tmp".format(TESTFN, os.getpid())
 #     # First try printable and common characters to have a readable filename.
 #     # For each character, the encoding list are just example of encodings able
 #     # to encode the character (the list is not exhaustive).
-# 
+#
 #     # U+00E6 (Latin Small Letter Ae): cp1252, iso-8859-1
 #     '\u00E6',
 #     # U+0130 (Latin Capital Letter I With Dot Above): cp1254, iso8859_3
@@ -685,11 +685,11 @@ TESTFN = "{0}_{1}_tmp".format(TESTFN, os.getpid())
 #     '\u062A',
 #     # U+0E01 (Thai Character Ko Kai): cp874
 #     '\u0E01',
-# 
+#
 #     # Then try more "special" characters. "special" because they may be
 #     # interpreted or displayed differently depending on the exact locale
 #     # encoding and the font.
-# 
+#
 #     # U+00A0 (No-Break Space)
 #     '\u00A0',
 #     # U+20AC (Euro Sign)
@@ -702,7 +702,7 @@ TESTFN = "{0}_{1}_tmp".format(TESTFN, os.getpid())
 #     else:
 #         FS_NONASCII = character
 #         break
-# 
+#
 # # TESTFN_UNICODE is a non-ascii filename
 # TESTFN_UNICODE = TESTFN + "-\xe0\xf2\u0258\u0141\u011f"
 # if sys.platform == 'darwin':
@@ -712,7 +712,7 @@ TESTFN = "{0}_{1}_tmp".format(TESTFN, os.getpid())
 #     import unicodedata
 #     TESTFN_UNICODE = unicodedata.normalize('NFD', TESTFN_UNICODE)
 # TESTFN_ENCODING = sys.getfilesystemencoding()
-# 
+#
 # # TESTFN_UNENCODABLE is a filename (str type) that should *not* be able to be
 # # encoded by the filesystem encoding (in strict mode). It can be None if we
 # # cannot generate such filename.
@@ -745,7 +745,7 @@ TESTFN = "{0}_{1}_tmp".format(TESTFN, os.getpid())
 #         # File system encoding (eg. ISO-8859-* encodings) can encode
 #         # the byte 0xff. Skip some unicode filename tests.
 #         pass
-# 
+#
 # # TESTFN_UNDECODABLE is a filename (bytes type) that should *not* be able to be
 # # decoded from the filesystem encoding (in strict mode). It can be None if we
 # # cannot generate such filename (ex: the latin1 encoding can decode any byte
@@ -775,7 +775,7 @@ TESTFN = "{0}_{1}_tmp".format(TESTFN, os.getpid())
 #     except UnicodeDecodeError:
 #         TESTFN_UNDECODABLE = os.fsencode(TESTFN) + name
 #         break
-# 
+#
 # if FS_NONASCII:
 #     TESTFN_NONASCII = TESTFN + '-' + FS_NONASCII
 # else:
@@ -1667,15 +1667,15 @@ def run_unittest(*classes):
 # We don't have sysconfig on Py2.6:
 # #=======================================================================
 # # Check for the presence of docstrings.
-# 
+#
 # HAVE_DOCSTRINGS = (check_impl_detail(cpython=False) or
 #                    sys.platform == 'win32' or
 #                    sysconfig.get_config_var('WITH_DOC_STRINGS'))
-# 
+#
 # requires_docstrings = unittest.skipUnless(HAVE_DOCSTRINGS,
 #                                           "test requires docstrings")
-# 
-# 
+#
+#
 # #=======================================================================
 # doctest driver.
 

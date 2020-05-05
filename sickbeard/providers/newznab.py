@@ -18,15 +18,18 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 import re
 import time
 
+# Third Party Imports
 import validators
 from requests.compat import urljoin
 
+# First Party Imports
 import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
@@ -36,13 +39,13 @@ from sickchill.helper.encoding import ek, ss
 from sickchill.providers.nzb.NZBProvider import NZBProvider
 
 
-class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attributes, too-many-arguments
+class NewznabProvider(NZBProvider):
     """
     Generic provider for built in and custom providers who expose a newznab
     compatible api.
     Tested with: newznab, nzedb, spotweb, torznab
     """
-    # pylint: disable=too-many-arguments
+
 
     def __init__(self, name, url, key='0', catIDs='5030,5040', search_mode='eponly',
                  search_fallback=False, enable_daily=True, enable_backlog=False):
@@ -104,9 +107,8 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 continue
 
             if default.name not in providers_dict:
-                default.default = True
-                providers_list.append(default)
-            else:
+                providers_dict[default.name] = default
+
                 providers_dict[default.name].default = True
                 providers_dict[default.name].name = default.name
                 providers_dict[default.name].url = default.url
@@ -117,6 +119,9 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 providers_dict[default.name].enable_backlog = default.enable_backlog
                 providers_dict[default.name].catIDs = ','.join([x for x in providers_dict[default.name].catIDs.split(',')
                                                                 if 5000 <= try_int(x) <= 5999]) or default.catIDs
+
+                if sickbeard.QUALITY_ALLOW_HEVC and '5090' not in providers_dict[default.name].catIDs:
+                    providers_dict[default.name].catIDs += ',5090'
 
         return [x for x in providers_list if x]
 
@@ -269,7 +274,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
 
         return new_provider
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-arguments, too-many-locals, too-many-branches, too-many-statements
+    def search(self, search_strings, age=0, ep_obj=None):
         """
         Searches indexer using the params in search_strings, either for latest releases, or a string/id search
         Returns: list of results in dict form

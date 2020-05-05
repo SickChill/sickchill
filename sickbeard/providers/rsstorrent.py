@@ -18,15 +18,18 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import io
 import os
 import re
 
+# Third Party Imports
 from bencode.BTL import BTFailure
 from requests.utils import add_dict_to_cookiejar
 
+# First Party Imports
 import sickbeard
 from sickbeard import helpers, logger, tvcache
 from sickchill.helper.encoding import ek
@@ -34,9 +37,9 @@ from sickchill.helper.exceptions import ex
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class TorrentRssProvider(TorrentProvider):
 
-    def __init__(self, name, url, cookies='',  # pylint: disable=too-many-arguments
+    def __init__(self, name, url, cookies='',
                  titleTAG='title', search_mode='eponly', search_fallback=False,
                  enable_daily=False, enable_backlog=False):
 
@@ -55,7 +58,7 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.cookies = cookies
         self.titleTAG = titleTAG
 
-    def configStr(self):  # pylint: disable=too-many-arguments
+    def configStr(self):
         return '{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}'.format(
             self.name or '',
             self.url or '',
@@ -145,7 +148,7 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         return new_provider
 
-    def validateRSS(self):  # pylint: disable=too-many-return-statements
+    def validateRSS(self):
 
         try:
             if self.cookies:
@@ -154,7 +157,7 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     return False, 'Cookie is not correctly formatted: {0}'.format(self.cookies)
                 add_dict_to_cookiejar(self.session.cookies, dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
 
-            # pylint: disable=protected-access
+
             # Access to a protected member of a client class
             data = self.cache._get_rss_data()['entries']
             if not data:

@@ -60,7 +60,7 @@ class FixUnpacking(fixer_base.BaseFix):
         setup_line = Assign(Name(self.LISTNAME), Call(Name(u"list"), [source.clone()]))
         power_line = Assign(target, assignment_source(len(pre), len(post), self.LISTNAME, self.ITERNAME))
         return setup_line, power_line
-        
+
     def fix_implicit_context(self, node, results):
         u"""
         Only example of the implicit context is

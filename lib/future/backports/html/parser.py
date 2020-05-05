@@ -534,4 +534,3 @@ class HTMLParser(_markupbase.ParserBase):
 
         return re.sub(r"&(#?[xX]?(?:[0-9a-fA-F]+;|\w{1,32};?))",
                       replaceEntities, s)
-

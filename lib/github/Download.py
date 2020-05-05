@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
 
-# ########################## Copyrights and license ############################
+############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2012 Vincent Jacques <vincent@vincent-jacques.net>                 #
 # Copyright 2012 Zearin <zearin@gonk.net>                                      #
 # Copyright 2013 AKFish <akfish@gmail.com>                                     #
 # Copyright 2013 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2014 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2016 Jannis Gebauer <ja.geb@me.com>                                #
+# Copyright 2016 Peter Buckley <dx-pbuckley@users.noreply.github.com>          #
+# Copyright 2018 Wan Liuyang <tsfdye@gmail.com>                                #
+# Copyright 2018 sfdye <tsfdye@gmail.com>                                      #
 #                                                                              #
 # This file is part of PyGithub.                                               #
-# http://pygithub.github.io/PyGithub/v1/index.html                             #
+# http://pygithub.readthedocs.io/                                              #
 #                                                                              #
 # PyGithub is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free  #
@@ -23,14 +28,16 @@
 # You should have received a copy of the GNU Lesser General Public License     #
 # along with PyGithub. If not, see <http://www.gnu.org/licenses/>.             #
 #                                                                              #
-# ##############################################################################
+################################################################################
+
+from __future__ import absolute_import
 
 import github.GithubObject
 
 
 class Download(github.GithubObject.CompletableGithubObject):
     """
-    This class represents Downloads as returned for example by http://developer.github.com/v3/todo
+    This class represents Downloads. The reference can be found here https://developer.github.com/v3/repos/downloads/
     """
 
     def __repr__(self):
@@ -201,10 +208,7 @@ class Download(github.GithubObject.CompletableGithubObject):
         :calls: `DELETE /repos/:owner/:repo/downloads/:id <http://developer.github.com/v3/repos/downloads>`_
         :rtype: None
         """
-        headers, data = self._requester.requestJsonAndCheck(
-            "DELETE",
-            self.url
-        )
+        headers, data = self._requester.requestJsonAndCheck("DELETE", self.url)
 
     def _initAttributes(self):
         self._accesskeyid = github.GithubObject.NotSet
@@ -230,11 +234,17 @@ class Download(github.GithubObject.CompletableGithubObject):
 
     def _useAttributes(self, attributes):
         if "accesskeyid" in attributes:  # pragma no branch
-            self._accesskeyid = self._makeStringAttribute(attributes["accesskeyid"])  # pragma no cover (was covered only by create_download, which has been removed)
+            self._accesskeyid = self._makeStringAttribute(
+                attributes["accesskeyid"]
+            )  # pragma no cover (was covered only by create_download, which has been removed)
         if "acl" in attributes:  # pragma no branch
-            self._acl = self._makeStringAttribute(attributes["acl"])  # pragma no cover (was covered only by create_download, which has been removed)
+            self._acl = self._makeStringAttribute(
+                attributes["acl"]
+            )  # pragma no cover (was covered only by create_download, which has been removed)
         if "bucket" in attributes:  # pragma no branch
-            self._bucket = self._makeStringAttribute(attributes["bucket"])  # pragma no cover (was covered only by create_download, which has been removed)
+            self._bucket = self._makeStringAttribute(
+                attributes["bucket"]
+            )  # pragma no cover (was covered only by create_download, which has been removed)
         if "content_type" in attributes:  # pragma no branch
             self._content_type = self._makeStringAttribute(attributes["content_type"])
         if "created_at" in attributes:  # pragma no branch
@@ -244,27 +254,43 @@ class Download(github.GithubObject.CompletableGithubObject):
         if "download_count" in attributes:  # pragma no branch
             self._download_count = self._makeIntAttribute(attributes["download_count"])
         if "expirationdate" in attributes:  # pragma no branch
-            self._expirationdate = self._makeDatetimeAttribute(attributes["expirationdate"])  # pragma no cover (was covered only by create_download, which has been removed)
+            self._expirationdate = self._makeDatetimeAttribute(
+                attributes["expirationdate"]
+            )  # pragma no cover (was covered only by create_download, which has been removed)
         if "html_url" in attributes:  # pragma no branch
             self._html_url = self._makeStringAttribute(attributes["html_url"])
         if "id" in attributes:  # pragma no branch
             self._id = self._makeIntAttribute(attributes["id"])
         if "mime_type" in attributes:  # pragma no branch
-            self._mime_type = self._makeStringAttribute(attributes["mime_type"])  # pragma no cover (was covered only by create_download, which has been removed)
+            self._mime_type = self._makeStringAttribute(
+                attributes["mime_type"]
+            )  # pragma no cover (was covered only by create_download, which has been removed)
         if "name" in attributes:  # pragma no branch
             self._name = self._makeStringAttribute(attributes["name"])
         if "path" in attributes:  # pragma no branch
-            self._path = self._makeStringAttribute(attributes["path"])  # pragma no cover (was covered only by create_download, which has been removed)
+            self._path = self._makeStringAttribute(
+                attributes["path"]
+            )  # pragma no cover (was covered only by create_download, which has been removed)
         if "policy" in attributes:  # pragma no branch
-            self._policy = self._makeStringAttribute(attributes["policy"])  # pragma no cover (was covered only by create_download, which has been removed)
+            self._policy = self._makeStringAttribute(
+                attributes["policy"]
+            )  # pragma no cover (was covered only by create_download, which has been removed)
         if "prefix" in attributes:  # pragma no branch
-            self._prefix = self._makeStringAttribute(attributes["prefix"])  # pragma no cover (was covered only by create_download, which has been removed)
+            self._prefix = self._makeStringAttribute(
+                attributes["prefix"]
+            )  # pragma no cover (was covered only by create_download, which has been removed)
         if "redirect" in attributes:  # pragma no branch
-            self._redirect = self._makeBoolAttribute(attributes["redirect"])  # pragma no cover (was covered only by create_download, which has been removed)
+            self._redirect = self._makeBoolAttribute(
+                attributes["redirect"]
+            )  # pragma no cover (was covered only by create_download, which has been removed)
         if "s3_url" in attributes:  # pragma no branch
-            self._s3_url = self._makeStringAttribute(attributes["s3_url"])  # pragma no cover (was covered only by create_download, which has been removed)
+            self._s3_url = self._makeStringAttribute(
+                attributes["s3_url"]
+            )  # pragma no cover (was covered only by create_download, which has been removed)
         if "signature" in attributes:  # pragma no branch
-            self._signature = self._makeStringAttribute(attributes["signature"])  # pragma no cover (was covered only by create_download, which has been removed)
+            self._signature = self._makeStringAttribute(
+                attributes["signature"]
+            )  # pragma no cover (was covered only by create_download, which has been removed)
         if "size" in attributes:  # pragma no branch
             self._size = self._makeIntAttribute(attributes["size"])
         if "url" in attributes:  # pragma no branch

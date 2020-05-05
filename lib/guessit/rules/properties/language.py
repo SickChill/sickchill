@@ -390,7 +390,9 @@ class SubtitlePrefixLanguageRule(Rule):
                 to_remove.extend(matches.conflicting(lang))
                 if prefix in to_remove:
                     to_remove.remove(prefix)
-        return to_rename, to_remove
+        if to_rename or to_remove:
+            return to_rename, to_remove
+        return False
 
     def then(self, matches, when_response, context):
         to_rename, to_remove = when_response
@@ -427,7 +429,9 @@ class SubtitleSuffixLanguageRule(Rule):
                 to_append.append(lang)
                 if suffix in to_remove:
                     to_remove.remove(suffix)
-        return to_append, to_remove
+        if to_append or to_remove:
+            return to_append, to_remove
+        return False
 
     def then(self, matches, when_response, context):
         to_rename, to_remove = when_response

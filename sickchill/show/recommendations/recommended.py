@@ -20,12 +20,13 @@
 """
 Recommend shows based on lists from indexers
 """
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import os
 import posixpath
 
+# First Party Imports
 import sickbeard
 from sickbeard import helpers
 from sickchill.helper.encoding import ek
@@ -62,7 +63,7 @@ class RecommendedShow(object):
 
         # Check if the show is currently already in the db
         self.show_in_list = self.indexer_id in {show.indexerid for show in sickbeard.showList if show.indexerid}
-        self.session = helpers.make_session()
+        self.session = helpers.make_indexer_session()
 
     def cache_image(self, image_url):
         """
@@ -80,7 +81,7 @@ class RecommendedShow(object):
         if not ek(os.path.exists, path):
             ek(os.makedirs, path)
 
-        full_path = ek(posixpath.join, path, ek(os.path.basename, image_url))
+        full_path = ek(os.path.join, path, ek(os.path.basename, image_url))
 
         if not ek(os.path.isfile, full_path):
             helpers.download_file(image_url, full_path, session=self.session)

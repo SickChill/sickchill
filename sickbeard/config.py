@@ -18,23 +18,28 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import os.path
 import platform
 import re
 
+# Third Party Imports
 import rarfile
 import six
 # noinspection PyUnresolvedReferences
 from six.moves.urllib import parse
 from tornado.escape import xhtml_unescape
 
+# First Party Imports
 import sickbeard
-from sickbeard import db, helpers, logger, naming
 from sickchill.helper.common import try_int
 from sickchill.helper.encoding import ek
+
+# Local Folder Imports
+from . import db, helpers, logger, naming
 
 # Address poor support for scgi over unix domain sockets
 # this is not nicely handled by python currently
@@ -232,30 +237,6 @@ def change_custom_css(new_css):
         return False
 
     sickbeard.CUSTOM_CSS_PATH = new_css
-    return True
-
-
-def change_log_dir(log_dir, web_log):
-    """
-    Change logging directory for application and webserver
-
-    :param log_dir: Path to new logging directory
-    :param web_log: Enable/disable web logging
-    :return: True on success, False on failure
-    """
-    abs_log_dir = ek(os.path.normpath, ek(os.path.join, sickbeard.DATA_DIR, log_dir))
-    sickbeard.WEB_LOG = checkbox_to_value(web_log)
-
-    if ek(os.path.normpath, sickbeard.LOG_DIR) != abs_log_dir:
-        if not helpers.makeDir(abs_log_dir):
-            return False
-
-        sickbeard.ACTUAL_LOG_DIR = ek(os.path.normpath, log_dir)
-        sickbeard.LOG_DIR = abs_log_dir
-
-        logger.init_logging()
-        logger.log("Initialized new log file in " + sickbeard.LOG_DIR)
-
     return True
 
 

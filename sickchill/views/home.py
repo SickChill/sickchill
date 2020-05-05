@@ -16,27 +16,26 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import ast
 import datetime
 import os
 import time
 from operator import attrgetter
 
+# Third Party Imports
 import adba
 import six
-from common import PageTemplate
 from github.GithubException import GithubException
-from index import WebRoot
-from libtrakt import TraktAPI
 from requests.compat import unquote_plus
-from routes import Route
+# noinspection PyUnresolvedReferences
 from six.moves import urllib
 from tornado.escape import xhtml_unescape
+from trakt import TraktAPI
 
+# First Party Imports
 import sickbeard
 from sickbeard import clients, config, db, filters, helpers, logger, notifiers, sab, search_queue, subtitles as subtitle_module, ui
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
@@ -51,6 +50,11 @@ from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShow
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
+
+# Local Folder Imports
+from .common import PageTemplate
+from .index import WebRoot
+from .routes import Route
 
 try:
     import json
@@ -389,17 +393,13 @@ class Home(WebRoot):
     def testKODI(host=None, username=None, password=None):
 
         host = config.clean_hosts(host)
-        finalResult = ''
         password = filters.unhide(sickbeard.KODI_PASSWORD, password)
-        for curHost in [x.strip() for x in host.split(",")]:
-            curResult = notifiers.kodi_notifier.test_notify(unquote_plus(curHost), username, password)
-            if len(curResult.split(":")) > 2 and 'OK' in curResult.split(":")[2]:
-                finalResult += _("Test KODI notice sent successfully to {kodi_host}").format(kodi_host=unquote_plus(curHost))
-            else:
-                finalResult += _("Test KODI notice failed to {kodi_host}").format(kodi_host=unquote_plus(curHost))
-            finalResult += "<br>\n"
 
-        return finalResult
+        results = notifiers.kodi_notifier.test_notify(unquote_plus(host), username, password)
+        final_results = [
+            _("Test KODI notice {result} to {kodi_host}").format(kodi_host=host, result=('failed', 'sent successfully')[result]) for host, result in results.items()]
+
+        return "<br>\n".join(final_results)
 
     def testPHT(self, host=None, username=None, password=None):
         self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
@@ -697,14 +697,12 @@ class Home(WebRoot):
             gh_branches = None
 
         if gh_branches:
-            gh_credentials = (sickbeard.GIT_AUTH_TYPE == 0 and sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD or
-                              sickbeard.GIT_AUTH_TYPE == 1 and sickbeard.GIT_TOKEN)
             for cur_branch in gh_branches:
                 branch_obj = {'name': cur_branch}
                 if cur_branch == sickbeard.BRANCH:
                     branch_obj['current'] = True
 
-                if cur_branch == 'master' or (gh_credentials and (sickbeard.DEVELOPER == 1 or cur_branch == 'develop')):
+                if cur_branch == 'master' or (sickbeard.GIT_TOKEN and (sickbeard.DEVELOPER == 1 or cur_branch == 'develop')):
                     response.append(branch_obj)
 
         return json.dumps(response)
@@ -808,7 +806,7 @@ class Home(WebRoot):
                                    'confirm': True,
                                    'icon': 'fa fa-trash'
                                    })
-                submenu.append({'title': _('Re-scan files'), 'path': 'home/refreshShow?show={0:d}'.format(show_obj.indexerid), 'icon': 'fa fa-refresh'})
+                submenu.append({'title': _('Re-scan files'), 'path': 'home/refreshShow?show={0:d}&amp;force=1'.format(show_obj.indexerid), 'icon': 'fa fa-refresh'})
                 # noinspection PyPep8
                 submenu.append(
                     {'title': _('Force Full Update'), 'path': 'home/updateShow?show={0:d}&amp;force=1'.format(show_obj.indexerid), 'icon': 'fa fa-exchange'})
@@ -946,7 +944,7 @@ class Home(WebRoot):
     def editShow(self, show=None, location=None, anyQualities=None, bestQualities=None,
                  exceptions_list=None, season_folders=None, paused=None, directCall=False,
                  air_by_date=None, sports=None, dvdorder=None, indexerLang=None,
-                 subtitles=None, subtitles_sr_metadata=None, rls_ignore_words=None, rls_require_words=None,
+                 subtitles=None, subtitles_sr_metadata=None, rls_ignore_words=None, rls_require_words=None, rls_prefer_words=None,
                  anime=None, blacklist=None, whitelist=None, scene=None,
                  defaultEpStatus=None, quality_preset=None):
 
@@ -1016,7 +1014,7 @@ class Home(WebRoot):
         subtitles = config.checkbox_to_value(subtitles)
         subtitles_sr_metadata = config.checkbox_to_value(subtitles_sr_metadata)
 
-        if indexerLang and indexerLang in sickbeard.indexerApi(show_obj.indexer).indexer().config['valid_languages']:
+        if indexerLang and indexerLang in show_obj.idxr.languages:
             indexer_lang = indexerLang
         else:
             indexer_lang = show_obj.lang
@@ -1106,6 +1104,7 @@ class Home(WebRoot):
                 show_obj.dvdorder = dvdorder
                 show_obj.rls_ignore_words = rls_ignore_words.strip()
                 show_obj.rls_require_words = rls_require_words.strip()
+                show_obj.rls_prefer_words = rls_prefer_words.strip()
 
             if not isinstance(location, six.text_type):
                 location = ek(six.text_type, location, 'utf-8')
@@ -1123,7 +1122,7 @@ class Home(WebRoot):
                     try:
                         show_obj.location = location
                         try:
-                            sickbeard.showQueueScheduler.action.refresh_show(show_obj)
+                            sickbeard.showQueueScheduler.action.refresh_show(show_obj, True)
                         except CantRefreshShowException as e:
                             errors.append(_("Unable to refresh this show: {error}").format(error=e))
                             # grab updated info from TVDB
@@ -1205,8 +1204,8 @@ class Home(WebRoot):
         # Don't redirect to the default page, so the user can confirm that the show was deleted
         return self.redirect('/home/')
 
-    def refreshShow(self, show=None):
-        error, show = Show.refresh(show)
+    def refreshShow(self, show=None, force=False):
+        error, show = Show.refresh(show, force)
 
         # This is a show validation error
         if error and not show:
@@ -1272,7 +1271,7 @@ class Home(WebRoot):
         else:
             host = sickbeard.KODI_HOST
 
-        if notifiers.kodi_notifier.update_library(showName=showName):
+        if notifiers.kodi_notifier.update_library(show_name=showName):
             ui.notifications.message(_("Library update command sent to KODI host(s)): {kodi_hosts}").format(kodi_hosts=host))
         else:
             ui.notifications.error(_("Unable to contact one or more KODI host(s)): {kodi_hosts}").format(kodi_hosts=host))
@@ -1474,25 +1473,11 @@ class Home(WebRoot):
         except ShowDirectoryNotFoundException:
             return self._genericMessage(_("Error"), _("Can't rename episodes when the show dir is missing."))
 
-        ep_obj_list = show_obj.getAllEpisodes(has_location=True)
-        ep_obj_list = [x for x in ep_obj_list if x.location]
-        ep_obj_rename_list = []
-        for ep_obj in ep_obj_list:
-            has_already = False
-            for check in ep_obj.relatedEps + [ep_obj]:
-                if check in ep_obj_rename_list:
-                    has_already = True
-                    break
-            if not has_already:
-                ep_obj_rename_list.append(ep_obj)
-
-        if ep_obj_rename_list:
-            ep_obj_rename_list.reverse()
-
+        show_obj.getAllEpisodes(has_location=True)
         t = PageTemplate(rh=self, filename="testRename.mako")
         submenu = [{'title': _('Edit'), 'path': 'home/editShow?show={0:d}'.format(show_obj.indexerid), 'icon': 'ui-icon ui-icon-pencil'}]
 
-        return t.render(submenu=submenu, ep_obj_list=ep_obj_rename_list,
+        return t.render(submenu=submenu,
                         show=show_obj, title=_('Preview Rename'),
                         header=_('Preview Rename'),
                         controller="home", action="previewRename")
@@ -1692,7 +1677,7 @@ class Home(WebRoot):
 
         # noinspection PyBroadException
         try:
-            new_subtitles = ep_obj.download_subtitles()  # pylint: disable=no-member
+            new_subtitles = ep_obj.download_subtitles()
         except Exception:
             return json.dumps({'result': 'failure'})
 
@@ -1703,8 +1688,17 @@ class Home(WebRoot):
         else:
             status = _('No subtitles downloaded')
 
-        ui.notifications.message(ep_obj.show.name, status)  # pylint: disable=no-member
-        return json.dumps({'result': status, 'subtitles': ','.join(ep_obj.subtitles)})  # pylint: disable=no-member
+        ui.notifications.message(ep_obj.show.name, status)
+        return json.dumps({'result': status, 'subtitles': ','.join(ep_obj.subtitles)})
+
+    def playOnKodi(self, show, season, episode, host):
+        ep_obj, error_msg = self._getEpisode(show, season, episode)
+        if error_msg or not ep_obj:
+            print('error')
+            return json.dumps({'result': 'failure', 'errorMessage': error_msg})
+
+        sickbeard.notifiers.kodi_notifier.play_episode(ep_obj, host)
+        return json.dumps({'result': 'success'})
 
     def retrySearchSubtitles(self, show, season, episode, lang):
         # retrieve the episode object and fail if we can't get one

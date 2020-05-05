@@ -11,19 +11,8 @@ if PY3:
                                 proxy_bypass,
                                 quote,
                                 request_host,
-                                splitattr,
-                                splithost,
-                                splitpasswd,
-                                splitport,
-                                splitquery,
-                                splittag,
-                                splittype,
-                                splituser,
-                                splitvalue,
                                 thishost,
-                                to_bytes,
                                 unquote,
-                                unwrap,
                                 url2pathname,
                                 urlcleanup,
                                 urljoin,
@@ -32,6 +21,18 @@ if PY3:
                                 urlretrieve,
                                 urlsplit,
                                 urlunparse)
+
+    from urllib.parse import (splitattr,
+                              splithost,
+                              splitpasswd,
+                              splitport,
+                              splitquery,
+                              splittag,
+                              splittype,
+                              splituser,
+                              splitvalue,
+                              to_bytes,
+                              unwrap)
 else:
     __future_module__ = True
     with suspend_hooks():
@@ -51,7 +52,7 @@ else:
         #                     URLopener,
         #                     FancyURLopener,
         #                     proxy_bypass)
-    
+
         # from urllib2 import (
         #                  AbstractBasicAuthHandler,
         #                  AbstractDigestAuthHandler,
@@ -80,7 +81,7 @@ else:
         #                  UnknownHandler,
         #                  urlopen,
         #                 )
-    
+
         # from urlparse import (
         #                  urldefrag
         #                  urljoin,

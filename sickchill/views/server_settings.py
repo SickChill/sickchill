@@ -1,21 +1,25 @@
 # coding=utf-8
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import os
 import threading
 from socket import errno, error as socket_error
 
-from routes import Route
+# Third Party Imports
 from tornado.ioloop import IOLoop
 from tornado.web import Application, RedirectHandler, StaticFileHandler, url
 
+# First Party Imports
 import sickbeard
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates, generateApiKey
 from sickchill.helper.encoding import ek
 from sickchill.views import CalendarHandler, KeyHandler, LoginHandler, LogoutHandler
 from sickchill.views.api.webapi import ApiHandler
+
+# Local Folder Imports
+from .routes import Route
 
 # class Custom404Handler(RequestHandler):
 #     startTime = 0.
@@ -28,12 +32,12 @@ from sickchill.views.api.webapi import ApiHandler
 #         return self.finish(t.render(title='404', header=_('Oops')))
 
 
-class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attributes
+class SRWebServer(threading.Thread):
     def __init__(self, options=None):
         threading.Thread.__init__(self)
         self.daemon = True
         self.alive = True
-        self.name = "TORNADO"
+        self.name = "WEBSERVER"
         self.io_loop = IOLoop.current()
 
         self.options = options or {}
@@ -89,7 +93,7 @@ class SRWebServer(threading.Thread):  # pylint: disable=too-many-instance-attrib
             [],
             debug=False,  # enables autoreload, compiled_template_cache, static_hash_cache, serve_traceback - This fixes the 404 page and fixes autoreload for
             #  devs. We could now update without restart possibly if we check DB version hasnt changed!
-            autoreload=True,
+            autoreload=False,
             gzip=sickbeard.WEB_USE_GZIP,
             cookie_secret=sickbeard.WEB_COOKIE_SECRET,
             login_url='{0}/login/'.format(self.options['web_root']),

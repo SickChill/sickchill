@@ -2,6 +2,7 @@
     import six
     import sickbeard
     from sickbeard.helpers import anon_url
+    import sickchill
 %>
 
 <table id="addRootDirTable" class="sickbeardTable tablesorter">
@@ -35,15 +36,15 @@
                 <td><label for="${show_id}">${curDir['display_dir']}</label></td>
                 % if curDir['existing_info'][1] and indexer > 0:
                     <td>
-                        <a href="${anon_url(sickbeard.indexerApi(indexer).config['show_url'], curDir['existing_info'][0])}">${curDir['existing_info'][1]}</a>
+                        <a href="${anon_url(sickchill.indexer[indexer].show_url, curDir['existing_info'][0])}">${curDir['existing_info'][1]}</a>
                     </td>
                 % else:
                     <td>?</td>
                 % endif
                 <td align="center">
                     <select name="indexer">
-                        % for curIndexer in six.iteritems(sickbeard.indexerApi().indexers):
-                            <option value="${curIndexer[0]}" ${('', 'selected="selected"')[curIndexer[0] == indexer]}>${curIndexer[1]}</option>
+                        % for index, curIndexer in sickchill.indexer:
+                            <option value="${index}" ${('', 'selected="selected"')[index == indexer]}>${curIndexer.name}</option>
                         % endfor
                     </select>
                 </td>

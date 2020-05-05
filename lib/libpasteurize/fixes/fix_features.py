@@ -71,7 +71,7 @@ class FixFeatures(fixer_base.BaseFix):
             # if it's there, so we don't care if it fails for normal reasons.
             pass
         return to_ret
-    
+
     def transform(self, node, results):
         for feature_name in results:
             if feature_name in self.features_warned:

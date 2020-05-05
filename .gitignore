@@ -1,6 +1,7 @@
 #  SR User Related   #
 ######################
 /cache/
+/gui/slick/cache
 /Logs/
 /data/
 restore/

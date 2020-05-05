@@ -3,9 +3,8 @@
 """
 audio_codec, audio_profile and audio_channels property
 """
-from rebulk.remodule import re
-
 from rebulk import Rebulk, Rule, RemoveMatch
+from rebulk.remodule import re
 
 from ..common import dash
 from ..common.pattern import is_disabled
@@ -23,7 +22,9 @@ def audio_codec(config):  # pylint:disable=unused-argument
     :return: Created Rebulk object
     :rtype: Rebulk
     """
-    rebulk = Rebulk().regex_defaults(flags=re.IGNORECASE, abbreviations=[dash]).string_defaults(ignore_case=True)
+    rebulk = Rebulk()\
+        .regex_defaults(flags=re.IGNORECASE, abbreviations=[dash])\
+        .string_defaults(ignore_case=True)
 
     def audio_codec_priority(match1, match2):
         """
@@ -61,7 +62,9 @@ def audio_codec(config):  # pylint:disable=unused-argument
     rebulk.string('PCM', value='PCM')
     rebulk.string('LPCM', value='LPCM')
 
-    rebulk.defaults(name='audio_profile', disabled=lambda context: is_disabled(context, 'audio_profile'))
+    rebulk.defaults(clear=True,
+                    name='audio_profile',
+                    disabled=lambda context: is_disabled(context, 'audio_profile'))
     rebulk.string('MA', value='Master Audio', tags=['audio_profile.rule', 'DTS-HD'])
     rebulk.string('HR', 'HRA', value='High Resolution Audio', tags=['audio_profile.rule', 'DTS-HD'])
     rebulk.string('ES', value='Extended Surround', tags=['audio_profile.rule', 'DTS'])
@@ -70,7 +73,9 @@ def audio_codec(config):  # pylint:disable=unused-argument
     rebulk.string('HQ', value='High Quality', tags=['audio_profile.rule', 'Dolby Digital'])
     rebulk.string('EX', value='EX', tags=['audio_profile.rule', 'Dolby Digital'])
 
-    rebulk.defaults(name="audio_channels", disabled=lambda context: is_disabled(context, 'audio_channels'))
+    rebulk.defaults(clear=True,
+                    name="audio_channels",
+                    disabled=lambda context: is_disabled(context, 'audio_channels'))
     rebulk.regex('7[01]', value='7.1', validator=seps_after, tags='weak-audio_channels')
     rebulk.regex('5[01]', value='5.1', validator=seps_after, tags='weak-audio_channels')
     rebulk.string('20', value='2.0', validator=seps_after, tags='weak-audio_channels')

@@ -32,8 +32,6 @@
                     ${sickbeard.NAMING_PATTERN}
                 % endif
             </blockquote>
-
-            <% curSeason = -1 %>
             <% odd = False%>
 
         </div>
@@ -59,63 +57,63 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            % for cur_ep_obj in ep_obj_list:
-                <%
-                    curLoc = cur_ep_obj.location[len(cur_ep_obj.show.location)+1:]
-                    curExt = curLoc.split('.')[-1]
-                    newLoc = cur_ep_obj.proper_path() + '.' + curExt
-                %>
-                % if int(cur_ep_obj.season) != curSeason:
-                    % if cur_ep_obj.season != ep_obj_list[0].season:
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    % endif
-                    <div class="row">
-                        <div class="col-md-12">
-                            <h2>${('Season '+str(cur_ep_obj.season), 'Specials')[int(cur_ep_obj.season) == 0]}</h2>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="horizontal-scroll">
-                                <table id="testRenameTable" class="sickbeardTable" cellspacing="1" border="0" cellpadding="0">
-                                    <thead>
-                                        <tr class="seasoncols" id="season-${cur_ep_obj.season}-cols">
-                                            <th class="col-checkbox"><input type="checkbox" class="seasonCheck" id="${cur_ep_obj.season}" /></th>
-                                            <th class="nowrap">${_('Episode')}</th>
-                                            <th class="col-name">${_('Old Location')}</th>
-                                            <th class="col-name">${_('New Location')}</th>
-                                        </tr>
-                                    </thead>
-                                    <% curSeason = int(cur_ep_obj.season) %>
-                                    <tbody>
-                % endif
-                                        <%
-                                            odd = not odd
-                                            epStr = str(cur_ep_obj.season) + "x" + str(cur_ep_obj.episode)
-                                            epList = sorted([cur_ep_obj.episode] + [x.episode for x in cur_ep_obj.relatedEps])
-                                            if len(epList) > 1:
-                                                epList = [min(epList), max(epList)]
-                                        %>
-                                        <tr class="season-${curSeason} ${('wanted', 'good')[curLoc == newLoc]} seasonstyle">
-                                            <td class="col-checkbox">
-                                                % if curLoc != newLoc:
-                                                    <input type="checkbox" class="epCheck" id="${str(cur_ep_obj.season) + 'x' + str(cur_ep_obj.episode)}" name="${str(cur_ep_obj.season) + "x" + str(cur_ep_obj.episode)}"  title="Episode check"/>
-                                                % endif
-                                            </td>
-                                            <td align="center" valign="top" class="nowrap">${"-".join(map(str, epList))}</td>
-                                            <td width="50%" class="col-name">${curLoc}</td>
-                                            <td width="50%" class="col-name">${newLoc}</td>
-                                        </tr>
-            % endfor
+        % for current_season in sorted(show.episodes.keys(), reverse=True):
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>${('Season '+ str(current_season), 'Specials')[int(current_season) == 0]}</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="horizontal-scroll">
+                        <table id="testRenameTable" class="sickbeardTable" cellspacing="1" border="0" cellpadding="0">
+                            <thead>
+                                <tr class="seasoncols" id="season-${current_season}-cols">
+                                    <th class="col-checkbox"><input type="checkbox" title="check_season" class="seasonCheck" id="${current_season}" /></th>
+                                    <th class="nowrap">${_('Episode')}</th>
+                                    <th class="col-name">${_('Old Location')}</th>
+                                    <th class="col-name">${_('New Location')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            % for current_episode in sorted(show.episodes[current_season].keys(), reverse=True):
+                                <%
+                                    ep_obj = show.episodes[current_season][current_episode]
+                                    if not ep_obj._location:
+                                        continue
+
+                                    odd = not odd
+                                    epStr = str(ep_obj.season) + "x" + str(ep_obj.episode)
+
+                                    epList = sorted([ep_obj.episode] + [x.episode for x in ep_obj.relatedEps])
+                                    if ep_obj.episode != min(epList):
+                                        continue
+
+                                    if len(epList) > 1:
+                                        epList = [min(epList), max(epList)]
+
+                                    curLoc = ep_obj.location[len(show._location)+1:]
+                                    curExt = curLoc.split('.')[-1]
+                                    newLoc = ep_obj.proper_path() + '.' + curExt
+                                %>
+                                <tr class="season-${current_season} ${('wanted', 'good')[curLoc == newLoc]} seasonstyle">
+                                    <td class="col-checkbox">
+                                        % if curLoc != newLoc:
+                                            <input type="checkbox" class="epCheck" id="${epStr}" name="${epStr}"  title="Episode check"/>
+                                        % endif
+                                    </td>
+                                    <td align="center" valign="top" class="nowrap">${"-".join(map(str, epList))}</td>
+                                    <td width="50%" class="col-name">${curLoc}</td>
+                                    <td width="50%" class="col-name">${newLoc}</td>
+
+                                </tr>
+                            % endfor
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+        % endfor
         </div>
     </div>
     <br/>

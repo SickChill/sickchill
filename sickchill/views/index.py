@@ -16,22 +16,20 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
+import base64
 import datetime
 import os
 import time
 import traceback
-# noinspection PyCompatibility
 from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
 from operator import attrgetter
 
+# Third Party Imports
 import six
-from api.webapi import function_mapper
-from common import PageTemplate
 from mako.lookup import Template
 from requests.compat import urljoin
 from tornado.concurrent import run_on_executor
@@ -41,15 +39,25 @@ from tornado.ioloop import IOLoop
 from tornado.process import cpu_count
 from tornado.web import authenticated, HTTPError, RequestHandler
 
+# First Party Imports
 import sickbeard
 from sickbeard import db, helpers, logger, network_timezones, ui
 from sickbeard.common import ek
-from sickchill.media.ShowBanner import ShowBanner
-from sickchill.media.ShowFanArt import ShowFanArt
-from sickchill.media.ShowNetworkLogo import ShowNetworkLogo
-from sickchill.media.ShowPoster import ShowPoster
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.views.routes import Route
+
+# Local Folder Imports
+from .api.webapi import function_mapper
+from .common import PageTemplate
+
+try:
+    import jwt
+    from jwt.algorithms import RSAAlgorithm as jwt_algorithms_RSAAlgorithm
+    has_cryptography = True
+except:
+    has_cryptography = False
+
+
 
 try:
     import json
@@ -131,10 +139,38 @@ class BaseHandler(RequestHandler):
         self.set_header(b"Location", urljoin(utf8(self.request.uri), utf8(url)))
 
     def get_current_user(self):
-        if not isinstance(self, UI) and sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
-            return self.get_secure_cookie('sickchill_user')
-        else:
+        if isinstance(self, UI):
             return True
+
+        if sickbeard.WEB_USERNAME and sickbeard.WEB_PASSWORD:
+            # Authenticate using jwt for CF Access
+            # NOTE: Setting a username and password is STILL required to protect poorly configured tunnels or firewalls
+            if sickbeard.CF_AUTH_DOMAIN and sickbeard.CF_POLICY_AUD and has_cryptography:
+                CERTS_URL = "{}/cdn-cgi/access/certs".format(sickbeard.CF_AUTH_DOMAIN)
+                if 'CF_Authorization' in self.request.cookies:
+                    jwk_set = helpers.getURL(CERTS_URL, returns='json')
+                    for key_dict in jwk_set['keys']:
+                        public_key = jwt_algorithms_RSAAlgorithm.from_jwk(json.dumps(key_dict))
+                        if jwt.decode(self.request.cookies['CF_Authorization'], key=public_key, audience=sickbeard.CF_POLICY_AUD):
+                            return True
+
+            # Logged into UI?
+            if self.get_secure_cookie('sickchill_user'):
+                return True
+
+            # Basic Auth at a minimum
+            auth_header = self.request.headers.get('Authorization')
+            if auth_header and auth_header.startswith('Basic '):
+                auth_decoded = base64.decodestring(auth_header[6:])
+                username, password = auth_decoded.split(':', 2)
+                if username == sickbeard.WEB_USERNAME and password == sickbeard.WEB_PASSWORD:
+                    return True
+                return False
+
+        else:
+            # Local network
+            # strip <scope id> / <zone id> (%value/if_name) from remote_ip IPv6 scoped literal IP Addresses (RFC 4007) until phihag/ipaddress is updated tracking cpython 3.9.
+            return helpers.is_ip_private(self.request.remote_ip.rsplit('%')[0])
 
     def get_user_locale(self):
         return sickbeard.GUI_LANG or None
@@ -145,7 +181,7 @@ class WebHandler(BaseHandler):
         super(WebHandler, self).__init__(*args, **kwargs)
         self.io_loop = IOLoop.current()
 
-    executor = ThreadPoolExecutor(cpu_count())
+        self.executor = ThreadPoolExecutor(cpu_count(), thread_name_prefix='WEBSERVER-' + self.__class__.__name__.upper())
 
     @authenticated
     @coroutine
@@ -230,28 +266,6 @@ class WebRoot(WebHandler):
         t = PageTemplate(rh=self, filename='apiBuilder.mako')
         return t.render(title=_('API Builder'), header=_('API Builder'), shows=shows, episodes=episodes, apikey=apikey,
                         commands=function_mapper)
-
-    def showPoster(self, show=None, which=None):
-
-        media_format = ('normal', 'thumb')[which in ('banner_thumb', 'poster_thumb', 'small')]
-
-        if which[0:6] == 'banner':
-            media = ShowBanner(show, media_format)
-        elif which[0:6] == 'fanart':
-            media = ShowFanArt(show, media_format)
-        elif which[0:6] == 'poster':
-            media = ShowPoster(show, media_format)
-        elif which[0:7] == 'network':
-            media = ShowNetworkLogo(show, media_format)
-        else:
-            media = None
-
-        if media:
-            self.set_header(b'Content-Type', media.get_media_type())
-
-            return media.get_media()
-
-        return None
 
     def setHomeLayout(self, layout):
 

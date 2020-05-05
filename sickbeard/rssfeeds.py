@@ -1,10 +1,14 @@
 # coding=utf-8
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
-from feedparser.api import parse
+# Third Party Imports
+from feedparser import parse
 
-from sickbeard import logger
+# First Party Imports
 from sickchill.helper.exceptions import ex
+
+# Local Folder Imports
+from . import logger
 
 
 def getFeed(url, params=None, request_hook=None):

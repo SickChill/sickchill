@@ -394,28 +394,12 @@ var SICKCHILL = {
                 });
             });
 
-            // GitHub Auth Types
-            function setupGithubAuthTypes() {
-                const selected = parseInt($('input[name="git_auth_type"]').filter(':checked').val(), 10);
-
-                $('div[name="content_github_auth_type"]').each(function(index) {
-                    if (index === selected) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
-                });
-            }
-
-            setupGithubAuthTypes();
-
-            $('input[name="git_auth_type"]').on('click', setupGithubAuthTypes);
-
             $('#git_token').on('click', $('#git_token').select());
 
             $('#create_access_token').on('click', function() {
                 notifyModal(
                     '<p>Copy the generated token and paste it in the token input box.</p>' +
+                    '<p>Provide permissions for repo:status, public_repo, write:discussion, read:discussion, user, gist, and notifications</p>' +
                     '<p><a href="' + anonURL + 'https://github.com/settings/tokens/new?description=SickChill&scopes=user,gist,public_repo" target="_blank">' +
                     '<input class="btn" type="button" value="Continue to Github..."></a></p>');
                 $('#git_token').select();
@@ -426,7 +410,7 @@ var SICKCHILL = {
             });
         },
         index: function() {
-            $('#log_dir').fileBrowser({title: _('Select log file folder location')});
+            // $('#log_dir').fileBrowser({title: _('Select log file folder location')});
             $('#sickchill_background_path').fileBrowser({title: _('Select Background Image'), key: 'sickchill_background_path', includeFiles: 1, fileTypes: ['images']});
             $('#custom_css_path').fileBrowser({title: _('Select CSS file'), key: 'custom_css_path', includeFiles: 1, fileTypes: ['css']});
 
@@ -1832,10 +1816,6 @@ var SICKCHILL = {
                 $('#options_torrent_blackhole').hide();
 
                 const selectedProvider = $('#torrent_method :selected').val();
-                const host = ' host:port';
-                const username = ' username';
-                const password = ' password';
-                const rpcurl = ' RPC URL';
 
                 let optionPanel = '#options_torrent_blackhole';
                 let client = '';
@@ -1911,7 +1891,7 @@ var SICKCHILL = {
                         $('#torrent_path_option').find('.fileBrowser').hide();
                         $('#host_desc_torrent').text(_('URL to your Synology DS client (e.g. http://localhost:5000)'));
                         $('#path_synology').show();
-                    } else if (selectedProvider.toLowerCase() === 'rtorrent') {
+                    } else if (selectedProvider.toLowerCase() === 'rtorrent' || selectedProvider.toLowerCase() === 'rtorrent9') {
                         client = 'rTorrent';
                         $('#host_desc_torrent').html(_('URL to your rTorrent client (e.g. scgi://localhost:5000 <br> ' +
                                                         'or https://localhost/rutorrent/plugins/httprpc/action.php)'));
@@ -1919,8 +1899,8 @@ var SICKCHILL = {
                         $('#torrent_verify_deluge').hide();
                         $('#torrent_verify_rtorrent').show();
                         $('#torrent_auth_type_option').show();
-                    } else if (selectedProvider.toLowerCase() === 'qbittorrent') {
-                        client = 'qbittorrent';
+                    } else if (selectedProvider.toLowerCase() === 'qbittorrent' || selectedProvider.toLowerCase() === 'new_qbittorrent') {
+                        client = 'qBittorrent';
                         $('#torrent_path_option').hide();
                         $('#label_warning_qbittorrent').show();
                         $('#label_anime_warning_qbittorrent').show();
@@ -1952,18 +1932,18 @@ var SICKCHILL = {
                         $('#username_title.component-title').text(_('Put.io Parent Folder'));
                         $('#password_title.component-title').text(_('Put.io OAuth Token'));
                     }
-                    $('#host_title').text(client + host);
-                    $('#username_title').text(client + username);
-                    $('#password_title').text(client + password);
+                    $('#host_title').text(client + ' host:port');
+                    $('#username_title').text(client + ' Username');
+                    $('#password_title').text(client + ' Password');
                     $('#torrent_client').text(client);
-                    $('#rpcurl_title').text(client + rpcurl);
+                    $('#rpcurl_title').text(client + ' RPC URL');
                     optionPanel = '#options_torrent_clients';
                 }
                 $(optionPanel).show();
             };
 
             $('#torrent_host').on('input', function() {
-                if ($('#torrent_method :selected').val().toLowerCase() === 'rtorrent') {
+                if ($('#torrent_method :selected').val().toLowerCase() === 'rtorrent' || $('#torrent_method :selected').val().toLowerCase() === 'rtorrent9') {
                     const hostname = $('#torrent_host').val();
                     const isMatch = hostname.substr(0, 7) === 'scgi://';
 
@@ -2238,7 +2218,14 @@ var SICKCHILL = {
                         return $(node).find('span').text().toLowerCase();
                     },
                     5: function(node) {
-                        return $(node).find('span:first').text();
+                        let progress = $(node).find('div').attr('data-progress-sort');
+                        let result;
+                        if (progress === undefined) {
+                            result = Number.NEGATIVE_INFINITY;
+                        } else {
+                            result = (progress.length && parseFloat(progress)) || Number.NEGATIVE_INFINITY;
+                        }
+                        return result;
                     },
                     6: function(node) {
                         return $(node).data('show-size');
@@ -2253,7 +2240,7 @@ var SICKCHILL = {
                     1: {sorter: 'realISODate'},
                     2: {sorter: 'loadingNames'},
                     4: {sorter: 'quality'},
-                    5: {sorter: 'eps'},
+                    5: {sorter: 'digit'},
                     6: {sorter: 'digit'},
                     7: {filter: 'parsed'}
                 },
@@ -2328,10 +2315,11 @@ var SICKCHILL = {
             });
 
             $('.show-grid').imagesLoaded(function() {
+                var sort = getMeta('sickbeard.POSTER_SORTBY') === 'date' ? ['status', 'date', 'name'] : getMeta('sickbeard.POSTER_SORTBY');
                 $('.loading-spinner').hide();
                 $('.show-grid').show().isotope({
                     itemSelector: '.show-container',
-                    sortBy: getMeta('sickbeard.POSTER_SORTBY'),
+                    sortBy: sort,
                     sortAscending: getMeta('sickbeard.POSTER_SORTDIR'),
                     layoutMode: 'masonry',
                     masonry: {
@@ -2348,9 +2336,10 @@ var SICKCHILL = {
                             return (date.length && parseInt(date, 10)) || Number.POSITIVE_INFINITY;
                         },
                         progress: function(itemElem) {
-                            const progress = $(itemElem).attr('data-progress');
-                            return (progress.length && parseInt(progress, 10)) || Number.NEGATIVE_INFINITY;
-                        }
+                            const progress = $(itemElem).attr('data-progress-sort');
+                            return (progress.length && parseFloat(progress)) || Number.NEGATIVE_INFINITY;
+                        },
+                        status: '[data-status]'
                     }
                 });
 
@@ -2423,7 +2412,7 @@ var SICKCHILL = {
             });
 
             $('#postersort').on('change', function() {
-                $('.show-grid').isotope({sortBy: $(this).val()});
+                $('.show-grid').isotope({sortBy: $(this).val() === 'date' ? ['status', 'date', 'name'] : $(this).val()});
                 $.post($(this).find('option[value=' + $(this).val() + ']').attr('data-sort'));
             });
 
@@ -2446,7 +2435,7 @@ var SICKCHILL = {
         },
         displayShow: function() {
             if (metaToBool('sickbeard.FANART_BACKGROUND')) {
-                $.backstretch(srRoot + '/showPoster/?show=' + $('#showID').attr('value') + '&which=fanart');
+                $.backstretch(srRoot + '/cache/images/' + $('#showID').attr('value') + '.fanart.jpg');
                 $('.backstretch').css('opacity', getMeta('sickbeard.FANART_BACKGROUND_OPACITY')).fadeIn('500');
             }
 
@@ -2474,6 +2463,43 @@ var SICKCHILL = {
                 link.prop('enableClick', '0');
                 link.fadeTo('fast', 0.5);
             }
+
+            $('.play-on-kodi').on('click', function() {
+                if ($(this).prop('enableClick') === '0') {
+                    return false;
+                }
+
+                const selectedEpisode = $(this);
+                const playModal = $('#playOnKodiModal');
+
+                $('#playOnKodiModal .btn.btn-success').on('click', function() {
+                    disableLink(selectedEpisode);
+                    playModal.modal('hide');
+
+                    const img = selectedEpisode.children('img');
+                    img.hide();
+
+                    selectedEpisode.append($('<span/>').attr({class: 'loading-spinner16', title: 'Playing'}));
+                    const icon = selectedEpisode.children('span');
+
+                    const host = $('#kodi-play-host').val();
+                    $.getJSON(selectedEpisode.prop('href') + '&host=' + host, function(data) {
+                        if (data.result.toLowerCase() === 'failure') {
+                            icon.prop('class', 'displayshow-icon-disable');
+                            icon.prop('title', 'Failed');
+                        } else {
+                            img.prop('title', 'Success');
+                            img.prop('alt', 'Success');
+                            icon.hide();
+                            img.show();
+                        }
+                    });
+                    enableLink(selectedEpisode);
+                    return false;
+                });
+                playModal.modal('show');
+                return false;
+            });
 
             $('.epSubtitlesSearch').on('click', function() {
                 if ($(this).prop('enableClick') === '0') {
@@ -2677,10 +2703,10 @@ var SICKCHILL = {
                 });
 
                 // Hide season headers with no episodes under them
-                $('tr.seasonheader').each(function() {
+                $('div.seasonheader').each(function() {
                     let numRows = 0;
-                    const seasonNo = $(this).attr('id');
-                    $('tr.' + seasonNo + ' :visible').each(function() {
+                    const seasonNo = $(this).attr('data-season-id');
+                    $('tr.season-' + seasonNo + ' :visible').each(function() {
                         numRows++;
                     });
                     if (numRows === 0) {
@@ -3368,7 +3394,7 @@ var SICKCHILL = {
             });
 
             // Clears all visible episode checkboxes and the season selectors
-            $('.unselectAllShows').on('click', function() {
+            $('.deselectAllShows').on('click', function() {
                 $('.allCheck').each(function() {
                     this.checked = false;
                 });
@@ -3425,7 +3451,7 @@ var SICKCHILL = {
             });
 
             // Clears all visible episode checkboxes and the season selectors
-            $('.unselectAllShows').on('click', function() {
+            $('.deselectAllShows').on('click', function() {
                 $('.allCheck').each(function() {
                     this.checked = false;
                 });
@@ -3860,7 +3886,11 @@ var SICKCHILL = {
                 if (object.showName.length) {
                     $.post(srRoot + '/addShows/sanitizeFileName', {name: object.showName}, function(data) {
                         $('#desc-show-name').text(object.showName);
-                        $('#desc-directory-name').html(object.dir + data + object.sepChar);
+                        if (object.dir === $('#fullShowPath').val()) {
+                            $('#desc-directory-name').html(object.dir);
+                        } else {
+                            $('#desc-directory-name').html(object.dir + data + object.sepChar);
+                        }
                     });
                 } else { // If not then it's unknown
                     $('#desc-show-name').text(object.showName);
@@ -3889,15 +3919,16 @@ var SICKCHILL = {
                 let table =
                     '<div class="row">' +
                     '<div class="col-lg-6 col-md-12">' +
-                    '<table class="sickbeardTable new-show-table">' +
+                    '<table class="sickbeardTable new-show-table tablesorter">' +
                     '<thead>' +
                     '<tr>' +
-                    '<th style="width:40px;">&nbsp;</th>' +
+                    '<th></th>' +
                     '<th>Show Name</th>' +
                     '<th>Premiere</th>' +
                     '<th>Indexer</th>' +
                     '</tr>' +
-                    '<thead>';
+                    '</thead>' +
+                    '<tbody>';
 
                 const selectedIndex = shows.indexOf(function(show) {
                     return !show.inShowList;
@@ -3929,6 +3960,7 @@ var SICKCHILL = {
                 });
 
                 table +=
+                    '</tbody>' +
                     '</table>' +
                     '</div>' +
                     '</div>';
@@ -3999,6 +4031,11 @@ var SICKCHILL = {
 
                         $('#searchResults').html(resultStr);
                         updateSampleText();
+                        $('.new-show-table').tablesorter(
+                            {
+                                widgets: ['stickyHeaders', 'zebra', 'saveSort'],
+                                headers: {0: {sorter: false}}
+                            });
                     }
                 });
             };

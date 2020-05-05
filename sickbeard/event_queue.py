@@ -1,14 +1,20 @@
 # coding=utf-8
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import threading
 import traceback
 
+# Third Party Imports
+# noinspection PyUnresolvedReferences
 from six.moves.queue import Empty, Queue
 
-from sickbeard import logger
+# First Party Imports
 from sickchill.helper.exceptions import ex
+
+# Local Folder Imports
+from . import logger
 
 
 class Event(object):

@@ -26,7 +26,7 @@ class Immutable(object):
         )
 
     def __iter__(self):
-        l = self.__dict__.keys()
+        l = list(self.__dict__.keys())
         l.sort()
         for k in l:
             if not k.startswith('_'):

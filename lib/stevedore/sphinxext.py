@@ -18,9 +18,12 @@ from docutils import nodes
 from docutils.parsers import rst
 from docutils.parsers.rst import directives
 from docutils.statemachine import ViewList
+from sphinx.util import logging
 from sphinx.util.nodes import nested_parse_with_titles
 
 from stevedore import extension
+
+LOG = logging.getLogger(__name__)
 
 
 def _get_docstring(plugin):
@@ -72,16 +75,13 @@ class ListPluginsDirective(rst.Directive):
     has_content = True
 
     def run(self):
-        env = self.state.document.settings.env
-        app = env.app
-
         namespace = ' '.join(self.content).strip()
-        app.info('documenting plugins from %r' % namespace)
+        LOG.info('documenting plugins from %r' % namespace)
         overline_style = self.options.get('overline-style', '')
         underline_style = self.options.get('underline-style', '=')
 
         def report_load_failure(mgr, ep, err):
-            app.warn(u'Failed to load %s: %s' % (ep.module_name, err))
+            LOG.warning(u'Failed to load %s: %s' % (ep.module_name, err))
 
         mgr = extension.ExtensionManager(
             namespace,
@@ -111,5 +111,5 @@ class ListPluginsDirective(rst.Directive):
 
 
 def setup(app):
-    app.info('loading stevedore.sphinxext')
+    LOG.info('loading stevedore.sphinxext')
     app.add_directive('list-plugins', ListPluginsDirective)

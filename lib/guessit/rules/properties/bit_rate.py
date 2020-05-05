@@ -69,4 +69,6 @@ class BitRateTypeRule(Rule):
                     else:
                         to_rename.append(match)
 
-        return to_rename, to_remove
+        if to_rename or to_remove:
+            return to_rename, to_remove
+        return False

@@ -10,4 +10,3 @@ else:
                             addclosehook,
                             addinfo,
                             addinfourl)
-

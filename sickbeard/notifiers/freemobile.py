@@ -20,11 +20,13 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
-import six
+# Third Party Imports
+# noinspection PyUnresolvedReferences
 from six.moves import urllib
 
+# First Party Imports
 import sickbeard
 from sickbeard import logger
 from sickbeard.common import (NOTIFY_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, NOTIFY_SNATCH,
@@ -113,7 +115,7 @@ class Notifier(object):
             title = notifyStrings[NOTIFY_LOGIN]
             self._notifyFreeMobile(title, update_text.format(ipaddress))
 
-    def _notifyFreeMobile(self, title, message, cust_id=None, apiKey=None, force=False):  # pylint: disable=too-many-arguments
+    def _notifyFreeMobile(self, title, message, cust_id=None, apiKey=None, force=False):
         """
         Sends a SMS notification
 

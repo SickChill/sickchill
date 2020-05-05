@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-# pylint: disable=line-too-long
 
 """
 Test SNI and SSL
@@ -33,8 +32,8 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../l
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from sickbeard import ex
-import certifi  # pylint: disable=import-error
-import requests  # pylint: disable=import-error
+import certifi
+import requests
 import sickbeard.providers as providers
 
 

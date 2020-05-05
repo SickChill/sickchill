@@ -18,11 +18,11 @@ TK_BASE_NAMES = (u'ACTIVE', u'ALL', u'ANCHOR', u'ARC',u'BASELINE', u'BEVEL', u'B
                  u'RADIOBUTTON', u'RAISED', u'READABLE', u'RIDGE', u'RIGHT',
                  u'ROUND', u'S', u'SCROLL', u'SE', u'SEL', u'SEL_FIRST', u'SEL_LAST',
                  u'SEPARATOR', u'SINGLE', u'SOLID', u'SUNKEN', u'SW', u'StringTypes',
-                 u'TOP', u'TRUE', u'TclVersion', u'TkVersion', u'UNDERLINE', 
+                 u'TOP', u'TRUE', u'TclVersion', u'TkVersion', u'UNDERLINE',
                  u'UNITS', u'VERTICAL', u'W', u'WORD', u'WRITABLE', u'X', u'Y', u'YES',
                  u'wantobjects')
 
-PY2MODULES = { 
+PY2MODULES = {
               u'urllib2' : (
                   u'AbstractBasicAuthHandler', u'AbstractDigestAuthHandler',
                   u'AbstractHTTPHandler', u'BaseHandler', u'CacheFTPHandler',
@@ -172,4 +172,3 @@ class FixImports2(fixer_base.BaseFix):
 
     def transform(self, node, results):
         touch_import_top(u'future', u'standard_library', node)
-

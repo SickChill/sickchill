@@ -8,4 +8,3 @@ else:
     __future_module__ = True
     with suspend_hooks():
         from test.test_support import *
-

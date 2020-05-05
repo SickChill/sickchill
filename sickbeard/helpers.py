@@ -19,14 +19,16 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint:disable=too-many-lines
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import ast
 import base64
 import ctypes
 import datetime
 import hashlib
 import io
+import ipaddress
 import operator
 import os
 import platform
@@ -36,6 +38,7 @@ import shutil
 import socket
 import ssl
 import stat
+import sys
 import time
 import traceback
 import uuid
@@ -44,10 +47,12 @@ import zipfile
 from contextlib import closing
 from itertools import cycle, izip
 
+# Third Party Imports
 import adba
 import bencode
 import certifi
 import cfscrape
+import cloudscraper
 import rarfile
 import requests
 import six
@@ -57,17 +62,19 @@ from requests.compat import urljoin
 from requests.utils import urlparse
 # noinspection PyUnresolvedReferences
 from six.moves import urllib
-# noinspection PyProtectedMember
 from tornado._locale_data import LOCALE_NAMES
 
+# First Party Imports
 import sickbeard
-from sickbeard import classes, db, logger
-from sickbeard.common import USER_AGENT
+import sickchill
 from sickchill.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS
 from sickchill.helper.common import replace_extension
 from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex
 from sickchill.show.Show import Show
+
+# Local Folder Imports
+from . import classes, db, logger
+from .common import USER_AGENT
 
 # Add some missing languages
 LOCALE_NAMES.update({
@@ -75,7 +82,6 @@ LOCALE_NAMES.update({
     "no_NO": {"name_en": "Norwegian", "name": "Norsk"},
 })
 
-# pylint: disable=protected-access
 # Access to a protected member of a client class
 urllib._urlopener = classes.SickBeardURLopener()
 orig_getaddrinfo = socket.getaddrinfo
@@ -92,6 +98,8 @@ if socket.getaddrinfo.__module__ in ('socket', '_socket'):
     socket.getaddrinfo = getaddrinfo_wrapper
 
 # Patches urllib3 default ciphers to match those of cfscrape
+# noinspection PyUnresolvedReferences
+# TODO: Not sure if this is needed anymore
 urllib3.util.ssl_.DEFAULT_CIPHERS = cfscrape.DEFAULT_CIPHERS
 
 # Override original shutil function to increase its speed by increasing its buffer to 10MB (optimal)
@@ -197,7 +205,8 @@ def remove_non_release_groups(name):
         r'\[NO-RAR\] - \[ www\.torrentday\.com \]$': 'searchre',
         r'^www\.Torrenting\.com\.-\.': 'searchre',
         r'-Scrambled$': 'searchre',
-        r'^Torrent9\.PH ---> ': 'searchre'
+        r'^Torrent9\.PH ---> ': 'searchre',
+        r'-xpost$': 'searchre'
     }
 
     _name = name
@@ -242,7 +251,7 @@ def is_media_file(filename):
 
         return filname_parts[-1].lower() in MEDIA_EXTENSIONS or (sickbeard.UNPACK == sickbeard.UNPACK_PROCESS_INTACT and is_rar)
     except (TypeError, AssertionError) as error:  # Not a string
-        logger.log(_('Invalid filename. Filename must be a string. {0}').format(error), logger.DEBUG)  # pylint: disable=no-member
+        logger.log(_('Invalid filename. Filename must be a string. {0}').format(error), logger.DEBUG)
         return False
 
 
@@ -294,63 +303,6 @@ def makeDir(path):
         except OSError:
             return False
     return True
-
-
-def searchIndexerForShowID(regShowName, indexer=None, indexer_id=None, ui=None):
-    """
-    Contacts indexer to check for information on shows by showid
-
-    :param regShowName: Name of show
-    :param indexer: Which indexer to use
-    :param indexer_id: Which indexer ID to look for
-    :param ui: Custom UI for indexer use
-    :return:
-    """
-
-    showNames = [re.sub('[. -]', ' ', regShowName)]
-
-    # Query Indexers for each search term and build the list of results
-    for i in sickbeard.indexerApi().indexers if not indexer else int(indexer or []):
-        # Query Indexers for each search term and build the list of results
-        lINDEXER_API_PARMS = sickbeard.indexerApi(i).api_params.copy()
-        if ui is not None:
-            lINDEXER_API_PARMS['custom_ui'] = ui
-        t = sickbeard.indexerApi(i).indexer(**lINDEXER_API_PARMS)
-
-        for name in showNames:
-            logger.log(_("Trying to find {} on {}").format(name, sickbeard.indexerApi(i).name), logger.DEBUG)
-
-            # noinspection PyBroadException
-            try:
-                search = t[indexer_id] if indexer_id else t[name]
-            except Exception:
-                continue
-
-            # noinspection PyBroadException
-            try:
-                seriesname = search[0][b'seriesname']
-            except Exception:
-                seriesname = None
-
-            # noinspection PyBroadException
-            try:
-                series_id = search[0][b'id']
-            except Exception:
-                series_id = None
-
-            if not (seriesname and series_id):
-                continue
-            ShowObj = Show.find(sickbeard.showList, int(series_id))
-            # Check if we can find the show in our list (if not, it's not the right show)
-            if (indexer_id is None) and (ShowObj is not None) and (ShowObj.indexerid == int(series_id)):
-                return seriesname, i, int(series_id)
-            elif (indexer_id is not None) and (int(indexer_id) == int(series_id)):
-                return seriesname, i, int(indexer_id)
-
-        if indexer:
-            break
-
-    return None, None, None
 
 
 def list_media_files(path):
@@ -669,7 +621,7 @@ def chmodAsParent(childPath):
     if childPath_mode == childMode:
         return
 
-    childPath_owner = childPathStat.st_uid  # pylint: disable=no-member
+    childPath_owner = childPathStat.st_uid
     user_id = os.geteuid()  # @UndefinedVariable - only available on UNIX
 
     if user_id not in (childPath_owner, 0):
@@ -707,7 +659,7 @@ def fixSetGroupID(childPath):
         if childGID == parentGID:
             return
 
-        childPath_owner = childStat.st_uid  # pylint: disable=no-member
+        childPath_owner = childStat.st_uid
         user_id = os.geteuid()  # @UndefinedVariable - only available on UNIX
 
         if user_id not in (childPath_owner, 0):
@@ -866,7 +818,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     # Save the key and certificate to disk
     # noinspection PyBroadException
     try:
-        # pylint: disable=no-member
+
         # Module has no member
         io.open(ssl_key, 'wb').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
         io.open(ssl_cert, 'wb').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
@@ -1080,13 +1032,16 @@ def get_show(name, tryIndexers=False):
         # try indexers
         if not showObj and tryIndexers:
             showObj = Show.find(
-                sickbeard.showList, searchIndexerForShowID(full_sanitizeSceneName(name), ui=classes.ShowListUI)[2])
+                sickbeard.showList, sickchill.indexer.search_indexers_for_series_id(name=full_sanitizeSceneName(name))[1].id)
 
         # try scene exceptions
         if not showObj:
-            ShowID = sickbeard.scene_exceptions.get_scene_exception_by_name(name)[0]
-            if ShowID:
-                showObj = Show.find(sickbeard.showList, int(ShowID))
+            scene_exceptions = sickbeard.scene_exceptions.get_scene_exception_by_name_multiple(name)
+            for scene_exception in scene_exceptions:
+                if scene_exception[1]:
+                    showObj = Show.find(sickbeard.showList, scene_exception[1])
+                    if showObj:
+                        break
 
         # add show to cache
         if showObj and not fromCache:
@@ -1143,26 +1098,6 @@ def is_subdirectory(subdir_path, topdir_path):
     # checks if the common prefix of both is equal to directory
     # e.g. /a/b/c/d.rst and directory is /a/b, the common prefix is /a/b
     return os.path.commonprefix([subdir_path, topdir_path]) == topdir_path
-
-
-def validateShow(show, season=None, episode=None):
-    indexer_lang = show.lang
-
-    try:
-        lINDEXER_API_PARMS = sickbeard.indexerApi(show.indexer).api_params.copy()
-
-        lINDEXER_API_PARMS['language'] = indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-        if show.dvdorder:
-            lINDEXER_API_PARMS['dvdorder'] = True
-
-        t = sickbeard.indexerApi(show.indexer).indexer(**lINDEXER_API_PARMS)
-        if season is None and episode is None:
-            return t
-
-        return t[show.indexerid][season][episode]
-    except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-        pass
 
 
 def set_up_anidb_connection():
@@ -1300,64 +1235,6 @@ def restore_config_zip(archive, targetDir):
         return False
 
 
-def mapIndexersToShow(showObj):
-    mapped = {}
-
-    # init mapped indexers object
-    for indexer in sickbeard.indexerApi().indexers:
-        mapped[indexer] = showObj.indexerid if int(indexer) == int(showObj.indexer) else 0
-
-    main_db_con = db.DBConnection()
-    sql_results = main_db_con.select(
-        "SELECT * FROM indexer_mapping WHERE indexer_id = ? AND indexer = ?",
-        [showObj.indexerid, showObj.indexer])
-
-    # for each mapped entry
-    for curResult in sql_results:
-        nlist = [i for i in curResult if i is not None]
-        # Check if its mapped with both tvdb and tvrage.
-        if len(nlist) >= 4:
-            logger.log(_("Found indexer mapping in cache for show: ") + showObj.name, logger.DEBUG)
-            mapped[int(curResult[b'mindexer'])] = int(curResult[b'mindexer_id'])
-            break
-    else:
-        sql_l = []
-        for indexer in sickbeard.indexerApi().indexers:
-            if indexer == showObj.indexer:
-                mapped[indexer] = showObj.indexerid
-                continue
-
-            lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
-            lINDEXER_API_PARMS['custom_ui'] = classes.ShowListUI
-            t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
-
-            # noinspection PyBroadException
-            try:
-                mapped_show = t[showObj.name]
-            except Exception:
-                logger.log(_("Unable to map {} -> {} for show: {}, skipping it").format(
-                    sickbeard.indexerApi(showObj.indexer).name, sickbeard.indexerApi(indexer).name, showObj.name), logger.DEBUG)
-                continue
-
-            if mapped_show and len(mapped_show) == 1:
-                logger.log(_("Mapping {} -> {} for show: {}").format(
-                    sickbeard.indexerApi(showObj.indexer).name, sickbeard.indexerApi(indexer).name, showObj.name), logger.DEBUG)
-
-                mapped[indexer] = int(mapped_show[0][b'id'])
-
-                logger.log(_("Adding indexer mapping to DB for show: {}").format(showObj.name), logger.DEBUG)
-
-                sql_l.append([
-                    "INSERT OR IGNORE INTO indexer_mapping (indexer_id, indexer, mindexer_id, mindexer) VALUES (?,?,?,?)",
-                    [showObj.indexerid, showObj.indexer, int(mapped_show[0][b'id']), indexer]])
-
-        if sql_l:
-            main_db_con = db.DBConnection()
-            main_db_con.mass_action(sql_l)
-
-    return mapped
-
-
 def touchFile(fname, atime=None):
     """
     Touch a file (change modification date)
@@ -1374,8 +1251,26 @@ def touchFile(fname, atime=None):
     return False
 
 
-def make_session():
-    session = cfscrape.create_scraper()
+def make_indexer_session(use_cfscrape=True):
+    session = make_session(use_cfscrape)
+    session.verify = (False, certifi.where())[sickbeard.SSL_VERIFY]
+    if sickbeard.PROXY_SETTING and sickbeard.PROXY_INDEXERS:
+        logger.log(_("Using global proxy: {}").format(sickbeard.PROXY_SETTING), logger.DEBUG)
+        parsed_url = urlparse(sickbeard.PROXY_SETTING)
+        address = sickbeard.PROXY_SETTING if parsed_url.scheme else 'http://' + sickbeard.PROXY_SETTING
+        session.proxies = {
+            "http": address,
+            "https": address,
+        }
+    return session
+
+
+def make_session(use_cfscrape=True):
+    if use_cfscrape and sys.version_info < (2, 7, 9):
+        session = cfscrape.create_scraper()
+    else:
+        session = cloudscraper.create_scraper()
+
     session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
 
     return CacheControl(sess=session, cache_etags=True)
@@ -1410,6 +1305,7 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
     try:
         response_type = kwargs.pop('returns', 'text')
         stream = kwargs.pop('stream', False)
+        allow_redirects = kwargs.pop('allow_redirects', True)
 
         hooks, cookies, verify, proxies = request_defaults(kwargs)
 
@@ -1457,7 +1353,7 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
 
         resp = session.request(
             'POST' if post_data else 'GET', url, data=post_data or {}, params=params or {},
-            timeout=timeout, allow_redirects=True, hooks=hooks, stream=stream,
+            timeout=timeout, allow_redirects=allow_redirects, hooks=hooks, stream=stream,
             headers=headers, cookies=cookies, proxies=proxies, verify=verify
         )
         resp.raise_for_status()
@@ -1518,7 +1414,7 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
     return True if not return_filename else filename
 
 
-def handle_requests_exception(requests_exception):  # pylint: disable=too-many-branches, too-many-statements
+def handle_requests_exception(requests_exception):
     def get_level(exception):
         return (logger.ERROR, logger.WARNING)[exception.message and 's,t,o,p,b,r,e,a,k,i,n,g,f' in exception.message]
 
@@ -1646,7 +1542,7 @@ def disk_usage(path):
                 pass
 
         st = ek(os.statvfs, path)
-        return st.f_bavail * st.f_frsize  # pylint: disable=no-member
+        return st.f_bavail * st.f_frsize
 
     else:
         raise Exception("Unable to determine free space on your OS")
@@ -1771,7 +1667,7 @@ def is_file_locked(checkfile, write_check=False):
         return True
     try:
         f = ek(io.open, checkfile, 'rb')
-        f.close()  # pylint: disable=no-member
+        f.close()
     except IOError:
         return True
 
@@ -1832,32 +1728,8 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
         return tvdb_id
 
 
-def get_showname_from_indexer(indexer, indexer_id, lang='en'):
-    try:
-        lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
-        lINDEXER_API_PARMS['language'] = lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-        logger.log('{0}: {1!r}'.format(sickbeard.indexerApi(indexer).name, lINDEXER_API_PARMS))
-
-        t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
-        s = t[int(indexer_id)]
-
-        if hasattr(s, 'data'):
-            return s.data.get('seriesname')
-    except (sickbeard.indexer_error, IOError) as e:
-        logger.log(_("Show id {} not found on {}, not adding the show: {}").format(
-            indexer_id, sickbeard.indexerApi(indexer).name, ex(e)), logger.WARNING)
-        return None
-
-    return None
-
-
 def is_ip_private(ip):
-    priv_lo = re.compile(r"^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
-    priv_24 = re.compile(r"^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
-    priv_20 = re.compile(r"^192\.168\.\d{1,3}.\d{1,3}$")
-    priv_16 = re.compile(r"^172.(1[6-9]|2[0-9]|3[0-1]).[0-9]{1,3}.[0-9]{1,3}$")
-    return priv_lo.match(ip) or priv_24.match(ip) or priv_20.match(ip) or priv_16.match(ip)
+    return ipaddress.ip_address(ip.decode()).is_private
 
 
 def recursive_listdir(path):

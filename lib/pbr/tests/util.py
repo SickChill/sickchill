@@ -53,9 +53,9 @@ except ImportError:
 @contextlib.contextmanager
 def open_config(filename):
     if sys.version_info >= (3, 2):
-            cfg = configparser.ConfigParser()
+        cfg = configparser.ConfigParser()
     else:
-            cfg = configparser.SafeConfigParser()
+        cfg = configparser.SafeConfigParser()
     cfg.read(filename)
     yield cfg
     with open(filename, 'w') as fp:

@@ -1,15 +1,26 @@
 # -*- coding: utf-8 -*-
 
-# ########################## Copyrights and license ############################
+############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2012 Steve English <steve.english@navetas.com>                     #
 # Copyright 2012 Vincent Jacques <vincent@vincent-jacques.net>                 #
 # Copyright 2012 Zearin <zearin@gonk.net>                                      #
 # Copyright 2013 AKFish <akfish@gmail.com>                                     #
 # Copyright 2013 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2014 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2016 Jannis Gebauer <ja.geb@me.com>                                #
+# Copyright 2016 Peter Buckley <dx-pbuckley@users.noreply.github.com>          #
+# Copyright 2017 Simon <spam@esemi.ru>                                         #
+# Copyright 2018 Iraquitan Cordeiro Filho <iraquitanfilho@gmail.com>           #
+# Copyright 2018 Steve Kowalik <steven@wedontsleep.org>                        #
+# Copyright 2018 Victor Granic <vmg@boreal321.com>                             #
+# Copyright 2018 Wan Liuyang <tsfdye@gmail.com>                                #
+# Copyright 2018 namc <namratachaudhary@users.noreply.github.com>              #
+# Copyright 2018 sfdye <tsfdye@gmail.com>                                      #
+# Copyright 2018 itsbruce <it.is.bruce@gmail.com>                              #
 #                                                                              #
 # This file is part of PyGithub.                                               #
-# http://pygithub.github.io/PyGithub/v1/index.html                             #
+# http://pygithub.readthedocs.io/                                              #
 #                                                                              #
 # PyGithub is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free  #
@@ -24,33 +35,50 @@
 # You should have received a copy of the GNU Lesser General Public License     #
 # along with PyGithub. If not, see <http://www.gnu.org/licenses/>.             #
 #                                                                              #
-# ##############################################################################
+################################################################################
 
-import github.GithubObject
-import github.PaginatedList
+from __future__ import absolute_import
 
+import datetime
+
+import six
+
+import github.Event
 import github.Gist
-import github.Repository
+import github.GithubObject
 import github.NamedUser
+import github.Organization
+import github.PaginatedList
 import github.Permissions
 import github.Plan
-import github.Organization
-import github.Event
+import github.Repository
 
 
 class NamedUser(github.GithubObject.CompletableGithubObject):
     """
-    This class represents NamedUsers as returned for example by http://developer.github.com/v3/todo
+    This class represents NamedUsers. The reference can be found here https://developer.github.com/v3/users/#get-a-single-user
     """
 
     def __repr__(self):
         return self.get__repr__({"login": self._login.value})
 
+    @property
+    def node_id(self):
+        """
+        :type: string
+        """
+        self._completeIfNotSet(self._node_id)
+        return self._node_id.value
+
     def __hash__(self):
         return hash((self.id, self.login))
 
     def __eq__(self, other):
-        return isinstance(other, type(self)) and self.login == other.login and self.id == other.id
+        return (
+            isinstance(other, type(self))
+            and self.login == other.login
+            and self.id == other.id
+        )
 
     @property
     def avatar_url(self):
@@ -205,6 +233,22 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         return self._id.value
 
     @property
+    def invitation_teams_url(self):
+        """
+        :type: string
+        """
+        self._completeIfNotSet(self._invitation_teams_url)
+        return self._invitation_teams_url.value
+
+    @property
+    def inviter(self):
+        """
+        :type: github.NamedUser.NamedUser
+        """
+        self._completeIfNotSet(self._inviter)
+        return self._inviter.value
+
+    @property
     def location(self):
         """
         :type: string
@@ -301,6 +345,22 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         return self._repos_url.value
 
     @property
+    def role(self):
+        """
+        :type: string
+        """
+        self._completeIfNotSet(self._role)
+        return self._role.value
+
+    @property
+    def site_admin(self):
+        """
+        :type: bool
+        """
+        self._completeIfNotSet(self._site_admin)
+        return self._site_admin.value
+
+    @property
     def starred_url(self):
         """
         :type: string
@@ -315,6 +375,22 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         """
         self._completeIfNotSet(self._subscriptions_url)
         return self._subscriptions_url.value
+
+    @property
+    def suspended_at(self):
+        """
+        :type: datetime.datetime
+        """
+        self._completeIfNotSet(self._suspended_at)
+        return self._suspended_at.value
+
+    @property
+    def team_count(self):
+        """
+        :type: integer
+        """
+        self._completeIfNotSet(self._team_count)
+        return self._team_count.value
 
     @property
     def total_private_repos(self):
@@ -354,10 +430,7 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Event.Event`
         """
         return github.PaginatedList.PaginatedList(
-            github.Event.Event,
-            self._requester,
-            self.url + "/events",
-            None
+            github.Event.Event, self._requester, self.url + "/events", None
         )
 
     def get_followers(self):
@@ -366,10 +439,7 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.NamedUser.NamedUser`
         """
         return github.PaginatedList.PaginatedList(
-            NamedUser,
-            self._requester,
-            self.url + "/followers",
-            None
+            NamedUser, self._requester, self.url + "/followers", None
         )
 
     def get_following(self):
@@ -378,22 +448,23 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.NamedUser.NamedUser`
         """
         return github.PaginatedList.PaginatedList(
-            NamedUser,
-            self._requester,
-            self.url + "/following",
-            None
+            NamedUser, self._requester, self.url + "/following", None
         )
 
-    def get_gists(self):
+    def get_gists(self, since=github.GithubObject.NotSet):
         """
         :calls: `GET /users/:user/gists <http://developer.github.com/v3/gists>`_
+        :param since: datetime.datetime format YYYY-MM-DDTHH:MM:SSZ
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Gist.Gist`
         """
+        assert since is github.GithubObject.NotSet or isinstance(
+            since, datetime.datetime
+        ), since
+        url_parameters = dict()
+        if since is not github.GithubObject.NotSet:
+            url_parameters["since"] = since.strftime("%Y-%m-%dT%H:%M:%SZ")
         return github.PaginatedList.PaginatedList(
-            github.Gist.Gist,
-            self._requester,
-            self.url + "/gists",
-            None
+            github.Gist.Gist, self._requester, self.url + "/gists", url_parameters
         )
 
     def get_keys(self):
@@ -402,10 +473,7 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.UserKey.UserKey`
         """
         return github.PaginatedList.PaginatedList(
-            github.UserKey.UserKey,
-            self._requester,
-            self.url + "/keys",
-            None
+            github.UserKey.UserKey, self._requester, self.url + "/keys", None
         )
 
     def get_orgs(self):
@@ -414,10 +482,7 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Organization.Organization`
         """
         return github.PaginatedList.PaginatedList(
-            github.Organization.Organization,
-            self._requester,
-            self.url + "/orgs",
-            None
+            github.Organization.Organization, self._requester, self.url + "/orgs", None
         )
 
     def get_public_events(self):
@@ -426,10 +491,7 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Event.Event`
         """
         return github.PaginatedList.PaginatedList(
-            github.Event.Event,
-            self._requester,
-            self.url + "/events/public",
-            None
+            github.Event.Event, self._requester, self.url + "/events/public", None
         )
 
     def get_public_received_events(self):
@@ -441,7 +503,7 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
             github.Event.Event,
             self._requester,
             self.url + "/received_events/public",
-            None
+            None,
         )
 
     def get_received_events(self):
@@ -450,10 +512,7 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Event.Event`
         """
         return github.PaginatedList.PaginatedList(
-            github.Event.Event,
-            self._requester,
-            self.url + "/received_events",
-            None
+            github.Event.Event, self._requester, self.url + "/received_events", None
         )
 
     def get_repo(self, name):
@@ -462,15 +521,20 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         :param name: string
         :rtype: :class:`github.Repository.Repository`
         """
-        assert isinstance(name, (str, unicode)), name
+        assert isinstance(name, (str, six.text_type)), name
         headers, data = self._requester.requestJsonAndCheck(
-            "GET",
-            "/repos/" + self.login + "/" + name
+            "GET", "/repos/" + self.login + "/" + name
         )
-        return github.Repository.Repository(self._requester, headers, data, completed=True)
+        return github.Repository.Repository(
+            self._requester, headers, data, completed=True
+        )
 
-    def get_repos(self, type=github.GithubObject.NotSet, sort=github.GithubObject.NotSet,
-                  direction=github.GithubObject.NotSet):
+    def get_repos(
+        self,
+        type=github.GithubObject.NotSet,
+        sort=github.GithubObject.NotSet,
+        direction=github.GithubObject.NotSet,
+    ):
         """
         :calls: `GET /users/:user/repos <http://developer.github.com/v3/repos>`_
         :param type: string
@@ -478,9 +542,15 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         :param direction: string
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Repository.Repository`
         """
-        assert type is github.GithubObject.NotSet or isinstance(type, (str, unicode)), type
-        assert sort is github.GithubObject.NotSet or isinstance(sort, (str, unicode)), sort
-        assert direction is github.GithubObject.NotSet or isinstance(direction, (str, unicode)), direction
+        assert type is github.GithubObject.NotSet or isinstance(
+            type, (str, six.text_type)
+        ), type
+        assert sort is github.GithubObject.NotSet or isinstance(
+            sort, (str, six.text_type)
+        ), sort
+        assert direction is github.GithubObject.NotSet or isinstance(
+            direction, (str, six.text_type)
+        ), direction
         url_parameters = dict()
         if type is not github.GithubObject.NotSet:
             url_parameters["type"] = type
@@ -492,7 +562,7 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
             github.Repository.Repository,
             self._requester,
             self.url + "/repos",
-            url_parameters
+            url_parameters,
         )
 
     def get_starred(self):
@@ -501,10 +571,7 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Repository.Repository`
         """
         return github.PaginatedList.PaginatedList(
-            github.Repository.Repository,
-            self._requester,
-            self.url + "/starred",
-            None
+            github.Repository.Repository, self._requester, self.url + "/starred", None
         )
 
     def get_subscriptions(self):
@@ -516,7 +583,7 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
             github.Repository.Repository,
             self._requester,
             self.url + "/subscriptions",
-            None
+            None,
         )
 
     def get_watched(self):
@@ -525,10 +592,7 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Repository.Repository`
         """
         return github.PaginatedList.PaginatedList(
-            github.Repository.Repository,
-            self._requester,
-            self.url + "/watched",
-            None
+            github.Repository.Repository, self._requester, self.url + "/watched", None
         )
 
     def has_in_following(self, following):
@@ -539,14 +603,31 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         """
         assert isinstance(following, github.NamedUser.NamedUser), following
         status, headers, data = self._requester.requestJson(
-            "GET",
-            self.url + "/following/" + following._identity
+            "GET", self.url + "/following/" + following._identity
         )
         return status == 204
 
     @property
     def _identity(self):
         return self.login
+
+    def get_organization_membership(self, org):
+        """
+        :calls: `GET /orgs/:org/memberships/:username <https://developer.github.com/v3/orgs/members/#get-organization-membership>`_
+        :param org: string or :class:`github.Organization.Organization`
+        :rtype: :class:`github.Membership.Membership`
+        """
+        assert isinstance(org, (str, six.text_type)) or isinstance(
+            org, github.Organization.Organization
+        ), org
+        if isinstance(org, github.Organization.Organization):
+            org = org.login
+        headers, data = self._requester.requestJsonAndCheck(
+            "GET", "/orgs/" + org + "/memberships/" + self.login
+        )
+        return github.Membership.Membership(
+            self._requester, headers, data, completed=True
+        )
 
     def _initAttributes(self):
         self._avatar_url = github.GithubObject.NotSet
@@ -568,9 +649,12 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         self._hireable = github.GithubObject.NotSet
         self._html_url = github.GithubObject.NotSet
         self._id = github.GithubObject.NotSet
+        self._invitation_teams_url = github.GithubObject.NotSet
+        self._inviter = github.GithubObject.NotSet
         self._location = github.GithubObject.NotSet
         self._login = github.GithubObject.NotSet
         self._name = github.GithubObject.NotSet
+        self._node_id = github.GithubObject.NotSet
         self._organizations_url = github.GithubObject.NotSet
         self._owned_private_repos = github.GithubObject.NotSet
         self._permissions = github.GithubObject.NotSet
@@ -580,8 +664,12 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         self._public_repos = github.GithubObject.NotSet
         self._received_events_url = github.GithubObject.NotSet
         self._repos_url = github.GithubObject.NotSet
+        self._role = github.GithubObject.NotSet
+        self._site_admin = github.GithubObject.NotSet
         self._starred_url = github.GithubObject.NotSet
         self._subscriptions_url = github.GithubObject.NotSet
+        self._suspended_at = github.GithubObject.NotSet
+        self._team_count = github.GithubObject.NotSet
         self._total_private_repos = github.GithubObject.NotSet
         self._type = github.GithubObject.NotSet
         self._updated_at = github.GithubObject.NotSet
@@ -626,18 +714,34 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
             self._html_url = self._makeStringAttribute(attributes["html_url"])
         if "id" in attributes:  # pragma no branch
             self._id = self._makeIntAttribute(attributes["id"])
+        if "invitation_teams_url" in attributes:  # pragma no branch
+            self._invitation_teams_url = self._makeStringAttribute(
+                attributes["invitation_teams_url"]
+            )
+        if "inviter" in attributes:  # pragma no branch
+            self._inviter = self._makeClassAttribute(
+                github.NamedUser.NamedUser, attributes["inviter"]
+            )
         if "location" in attributes:  # pragma no branch
             self._location = self._makeStringAttribute(attributes["location"])
         if "login" in attributes:  # pragma no branch
             self._login = self._makeStringAttribute(attributes["login"])
         if "name" in attributes:  # pragma no branch
             self._name = self._makeStringAttribute(attributes["name"])
+        if "node_id" in attributes:  # pragma no branch
+            self._node_id = self._makeStringAttribute(attributes["node_id"])
         if "organizations_url" in attributes:  # pragma no branch
-            self._organizations_url = self._makeStringAttribute(attributes["organizations_url"])
+            self._organizations_url = self._makeStringAttribute(
+                attributes["organizations_url"]
+            )
         if "owned_private_repos" in attributes:  # pragma no branch
-            self._owned_private_repos = self._makeIntAttribute(attributes["owned_private_repos"])
+            self._owned_private_repos = self._makeIntAttribute(
+                attributes["owned_private_repos"]
+            )
         if "permissions" in attributes:  # pragma no branch
-            self._permissions = self._makeClassAttribute(github.Permissions.Permissions, attributes["permissions"])
+            self._permissions = self._makeClassAttribute(
+                github.Permissions.Permissions, attributes["permissions"]
+            )
         if "plan" in attributes:  # pragma no branch
             self._plan = self._makeClassAttribute(github.Plan.Plan, attributes["plan"])
         if "private_gists" in attributes:  # pragma no branch
@@ -647,15 +751,29 @@ class NamedUser(github.GithubObject.CompletableGithubObject):
         if "public_repos" in attributes:  # pragma no branch
             self._public_repos = self._makeIntAttribute(attributes["public_repos"])
         if "received_events_url" in attributes:  # pragma no branch
-            self._received_events_url = self._makeStringAttribute(attributes["received_events_url"])
+            self._received_events_url = self._makeStringAttribute(
+                attributes["received_events_url"]
+            )
         if "repos_url" in attributes:  # pragma no branch
             self._repos_url = self._makeStringAttribute(attributes["repos_url"])
+        if "role" in attributes:  # pragma no branch
+            self._role = self._makeStringAttribute(attributes["role"])
+        if "site_admin" in attributes:  # pragma no branch
+            self._site_admin = self._makeBoolAttribute(attributes["site_admin"])
         if "starred_url" in attributes:  # pragma no branch
             self._starred_url = self._makeStringAttribute(attributes["starred_url"])
         if "subscriptions_url" in attributes:  # pragma no branch
-            self._subscriptions_url = self._makeStringAttribute(attributes["subscriptions_url"])
+            self._subscriptions_url = self._makeStringAttribute(
+                attributes["subscriptions_url"]
+            )
+        if "suspended_at" in attributes:  # pragma no branch
+            self._suspended_at = self._makeDatetimeAttribute(attributes["suspended_at"])
+        if "team_count" in attributes:
+            self._team_count = self._makeIntAttribute(attributes["team_count"])
         if "total_private_repos" in attributes:  # pragma no branch
-            self._total_private_repos = self._makeIntAttribute(attributes["total_private_repos"])
+            self._total_private_repos = self._makeIntAttribute(
+                attributes["total_private_repos"]
+            )
         if "type" in attributes:  # pragma no branch
             self._type = self._makeStringAttribute(attributes["type"])
         if "updated_at" in attributes:  # pragma no branch

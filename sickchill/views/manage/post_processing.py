@@ -16,25 +16,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Third Party Imports
 from tornado.escape import xhtml_unescape
 from tornado.web import addslash
 
+# First Party Imports
 import sickbeard
 from sickbeard import config
 from sickchill.helper.encoding import ss
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home
 from sickchill.views.routes import Route
-
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
 
 
 @Route('/home/postprocess(/?.*)', name='home:postprocess')
@@ -66,5 +60,7 @@ class PostProcess(Home):
         if config.checkbox_to_value(quiet):
             return result
 
-        result = result.replace("\n", "<br>\n")
+        if result:
+            result = result.replace("\n", "<br>\n")
+
         return self._genericMessage("Postprocessing results", result)

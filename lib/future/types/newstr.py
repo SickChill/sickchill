@@ -37,10 +37,9 @@ Note that ``str()`` (and ``print()``) would then normally call the
 ``__unicode__`` method on objects in Python 2. To define string
 representations of your objects portably across Py3 and Py2, use the
 :func:`python_2_unicode_compatible` decorator in  :mod:`future.utils`.
-    
+
 """
 
-from collections import Iterable
 from numbers import Number
 
 from future.utils import PY3, istext, with_metaclass, isnewbytes
@@ -51,6 +50,9 @@ from future.types.newobject import newobject
 if PY3:
     # We'll probably never use newstr on Py3 anyway...
     unicode = str
+    from collections.abc import Iterable
+else:
+    from collections import Iterable
 
 
 class BaseNewStr(type):
@@ -73,7 +75,7 @@ class newstr(with_metaclass(BaseNewStr, unicode)):
 
           str(object='') -> str
           str(bytes_or_buffer[, encoding[, errors]]) -> str
-          
+
           Create a new string object from the given object. If encoding or
           errors is specified, then the object must expose a data buffer
           that will be decoded using the given encoding and error handler.
@@ -81,7 +83,7 @@ class newstr(with_metaclass(BaseNewStr, unicode)):
           or repr(object).
           encoding defaults to sys.getdefaultencoding().
           errors defaults to 'strict'.
-        
+
         """
         if len(args) == 0:
             return super(newstr, cls).__new__(cls)
@@ -100,11 +102,12 @@ class newstr(with_metaclass(BaseNewStr, unicode)):
         else:
             value = args[0]
         return super(newstr, cls).__new__(cls, value)
-        
+
     def __repr__(self):
         """
         Without the u prefix
         """
+
         value = super(newstr, self).__repr__()
         # assert value[0] == u'u'
         return value[1:]
@@ -128,7 +131,7 @@ class newstr(with_metaclass(BaseNewStr, unicode)):
         else:
             raise TypeError(errmsg.format(type(key)))
         return issubset(list(newkey), list(self))
-    
+
     @no('newbytes')
     def __add__(self, other):
         return newstr(super(newstr, self).__add__(other))
@@ -290,7 +293,14 @@ class newstr(with_metaclass(BaseNewStr, unicode)):
             isinstance(other, bytes) and not isnewbytes(other)):
             return super(newstr, self).__eq__(other)
         else:
-            return False
+            return NotImplemented
+
+    def __hash__(self):
+        if (isinstance(self, unicode) or
+            isinstance(self, bytes) and not isnewbytes(self)):
+            return super(newstr, self).__hash__()
+        else:
+            raise NotImplementedError()
 
     def __ne__(self, other):
         if (isinstance(other, unicode) or
@@ -302,24 +312,28 @@ class newstr(with_metaclass(BaseNewStr, unicode)):
     unorderable_err = 'unorderable types: str() and {0}'
 
     def __lt__(self, other):
-        if not istext(other):
-            raise TypeError(self.unorderable_err.format(type(other)))
-        return super(newstr, self).__lt__(other)
+        if (isinstance(other, unicode) or
+            isinstance(other, bytes) and not isnewbytes(other)):
+            return super(newstr, self).__lt__(other)
+        raise TypeError(self.unorderable_err.format(type(other)))
 
     def __le__(self, other):
-        if not istext(other):
-            raise TypeError(self.unorderable_err.format(type(other)))
-        return super(newstr, self).__le__(other)
+        if (isinstance(other, unicode) or
+            isinstance(other, bytes) and not isnewbytes(other)):
+            return super(newstr, self).__le__(other)
+        raise TypeError(self.unorderable_err.format(type(other)))
 
     def __gt__(self, other):
-        if not istext(other):
-            raise TypeError(self.unorderable_err.format(type(other)))
-        return super(newstr, self).__gt__(other)
+        if (isinstance(other, unicode) or
+            isinstance(other, bytes) and not isnewbytes(other)):
+            return super(newstr, self).__gt__(other)
+        raise TypeError(self.unorderable_err.format(type(other)))
 
     def __ge__(self, other):
-        if not istext(other):
-            raise TypeError(self.unorderable_err.format(type(other)))
-        return super(newstr, self).__ge__(other)
+        if (isinstance(other, unicode) or
+            isinstance(other, bytes) and not isnewbytes(other)):
+            return super(newstr, self).__ge__(other)
+        raise TypeError(self.unorderable_err.format(type(other)))
 
     def __getattribute__(self, name):
         """

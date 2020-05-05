@@ -49,6 +49,7 @@ import six
 disabled_provider_tests = {
     # ???
     'Cpasbien': ['test_rss_search', 'test_episode_search', 'test_season_search'],
+    'SkyTorrents': ['test_rss_search', 'test_episode_search', 'test_season_search'],
     # api_maintenance still
     'TorrentProject': ['test_rss_search', 'test_episode_search', 'test_season_search', 'test_cache_update', 'test_result_values'],
     # Have to trick it into thinking is an anime search, and add string overrides
@@ -56,6 +57,7 @@ disabled_provider_tests = {
     'LimeTorrents': ['test_rss_search', 'test_episode_search', 'test_season_search'],
     'Torrentz': ['test_rss_search', 'test_episode_search', 'test_season_search', 'test_cache_update', 'test_result_values'],
     'ThePirateBay': ['test_rss_search', 'test_episode_search', 'test_season_search', 'test_cache_update', 'test_result_values'],
+    'Demonoid': ['test_rss_search']
 }
 test_string_overrides = {
     'Cpasbien': {'Episode': ['The 100 S02E16'], 'Season': ['The 100 S02']},
@@ -63,6 +65,7 @@ test_string_overrides = {
     'Nyaa': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
     'TokyoToshokan': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
     'HorribleSubs': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
+    'Demonoid': {'Episode': ['Star Trek Picard S01E04'], 'Season': ['Locke and Key 2020 S01']},
 }
 
 magnet_regex = re.compile(r'magnet:\?xt=urn:btih:\w{32,40}(:?&dn=[\w. %+-]+)*(:?&tr=(:?tcp|https?|udp)[\w%. +-]+)*')
@@ -83,12 +86,12 @@ class BaseParser(type):
             self.provider.password = self.password
 
         @property
-        def username(self):  # pylint: disable=no-self-use
+        def username(self):
             # TODO: Make this read usernames from somewhere
             return ''
 
         @property
-        def password(self):  # pylint: disable=no-self-use
+        def password(self):
             # TODO: Make this read passwords from somewhere
             return ''
 
@@ -191,17 +194,17 @@ class BaseParser(type):
                 else:
                     self.assertTrue(validators.url(result[b'link']), result[b'link'])
 
-                self.assertIsInstance(self.provider._get_size(result), six.integer_types)  # pylint: disable=protected-access
-                self.assertTrue(all(self.provider._get_title_and_url(result)))  # pylint: disable=protected-access
-                self.assertTrue(self.provider._get_size(result))  # pylint: disable=protected-access
+                self.assertIsInstance(self.provider._get_size(result), six.integer_types)
+                self.assertTrue(all(self.provider._get_title_and_url(result)))
+                self.assertTrue(self.provider._get_size(result))
 
             @unittest.skip('Not yet implemented')
-            def test_season_search_strings_format(self):  # pylint: disable=no-self-use, unused-argument, unused-variable
+            def test_season_search_strings_format(self):
                 """Check format of the provider's season search strings"""
                 pass
 
             @unittest.skip('Not yet implemented')
-            def test_episode_search_strings_format(self):  # pylint: disable=no-self-use, unused-argument, unused-variable
+            def test_episode_search_strings_format(self):
                 """Check format of the provider's season search strings"""
                 pass
 

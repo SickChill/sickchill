@@ -24,4 +24,3 @@ class FixRemoveOldFutureImports(fixer_base.BaseFix):
         remove_future_import(u"with_statement", node)
         remove_future_import(u"nested_scopes", node)
         remove_future_import(u"generators", node)
-

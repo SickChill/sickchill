@@ -70,7 +70,7 @@ import logging
 import optparse
 import os
 
-from lib2to3.main import main, warn, StdoutRefactoringTool
+from lib2to3.main import warn, StdoutRefactoringTool
 from lib2to3 import refactor
 
 from libfuturize.fixes import (lib2to3_fix_names_stage1,
@@ -91,7 +91,7 @@ def main(args=None):
 
     Returns a suggested exit status (0, 1, 2).
     """
-    
+
     # Set up option parser
     parser = optparse.OptionParser(usage="futurize [options] file|dir ...")
     parser.add_option("-V", "--version", action="store_true",
@@ -205,7 +205,27 @@ def main(args=None):
         print("Use --help to show usage.", file=sys.stderr)
         return 2
 
-    unwanted_fixes = set(fixer_pkg + ".fix_" + fix for fix in options.nofix)
+    unwanted_fixes = set()
+    for fix in options.nofix:
+        if ".fix_" in fix:
+            unwanted_fixes.add(fix)
+        else:
+            # Infer the full module name for the fixer.
+            # First ensure that no names clash (e.g.
+            # lib2to3.fixes.fix_blah and libfuturize.fixes.fix_blah):
+            found = [f for f in avail_fixes
+                     if f.endswith('fix_{0}'.format(fix))]
+            if len(found) > 1:
+                print("Ambiguous fixer name. Choose a fully qualified "
+                      "module name instead from these:\n" +
+                      "\n".join("  " + myf for myf in found),
+                      file=sys.stderr)
+                return 2
+            elif len(found) == 0:
+                print("Unknown fixer. Use --list-fixes or -l for a list.",
+                      file=sys.stderr)
+                return 2
+            unwanted_fixes.add(found[0])
 
     extra_fixes = set()
     if options.all_imports:

@@ -20,13 +20,16 @@
 
 """Provider code for BJ-Share."""
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import re
 
+# Third Party Imports
 from requests.compat import urljoin
 from requests.utils import add_dict_to_cookiejar, dict_from_cookiejar
 
+# First Party Imports
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickchill.helper.common import convert_size, try_int
@@ -82,7 +85,7 @@ class BJShareProvider(TorrentProvider):
             'One Piece', 'Boruto: Naruto Next Generations'
         ]
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
+    def search(self, search_strings, age=0, ep_obj=None):
         """
         Search a provider and parse the results.
 
@@ -118,7 +121,7 @@ class BJShareProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log(u'Search Mode: {0}'.format(mode), logger.DEBUG)
+            logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
 
             # if looking for season, look for more pages
             if mode == 'Season':
@@ -126,7 +129,7 @@ class BJShareProvider(TorrentProvider):
 
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log(u'Search string: {0}'.format(search_string.decode('utf-8')), logger.DEBUG)
+                    logger.log('Search string: {0}'.format(search_string.decode('utf-8')), logger.DEBUG)
 
                 # Remove season / episode from search (not supported by tracker)
                 search_str = re.sub(r'\d+$' if anime else r'[S|E]\d\d', '', search_string).strip()
@@ -136,7 +139,7 @@ class BJShareProvider(TorrentProvider):
 
                 while has_next_page and next_page <= self.max_back_pages:
                     search_params['page'] = next_page
-                    logger.log(u'Page Search: {0}'.format(next_page), logger.DEBUG)
+                    logger.log('Page Search: {0}'.format(next_page), logger.DEBUG)
                     next_page += 1
 
                     response = self.session.get(self.urls['search'], params=search_params)
@@ -163,7 +166,7 @@ class BJShareProvider(TorrentProvider):
         """
 
         def process_column_header(td):
-            ret = u''
+            ret = ''
             if td.a and td.a.img:
                 ret = td.a.img.get('title', td.a.get_text(strip=True))
             if not ret:
@@ -178,7 +181,7 @@ class BJShareProvider(TorrentProvider):
 
             # ignore next page in RSS mode
             has_next_page = mode != 'RSS' and html.find('a', class_='pager_next') is not None
-            logger.log(u'More Pages? {0}'.format(has_next_page), logger.DEBUG)
+            logger.log('More Pages? {0}'.format(has_next_page), logger.DEBUG)
 
             # Continue only if at least one Release is found
             if len(torrent_rows) < 2:
@@ -187,7 +190,7 @@ class BJShareProvider(TorrentProvider):
 
             # '', '', 'Name /Year', 'Files', 'Time', 'Size', 'Snatches', 'Seeders', 'Leechers'
             labels = [process_column_header(label) for label in torrent_rows[0]('td')]
-            group_title = u''
+            group_title = ''
 
             # Skip column headers
             for result in torrent_rows[1:]:
@@ -221,8 +224,11 @@ class BJShareProvider(TorrentProvider):
                     if not all([title, download_url]):
                         continue
 
-                    seeders = try_int(cells[labels.index('Seeders') + group_index].get_text(strip=True))
-                    leechers = try_int(cells[labels.index('Leechers') + group_index].get_text(strip=True))
+                    # seeders = try_int(cells[labels.index('Seeders') + group_index].get_text(strip=True))
+                    # leechers = try_int(cells[labels.index('Leechers') + group_index].get_text(strip=True))
+
+                    seeders = try_int(cells[4].get_text(strip=True))
+                    leechers = try_int(cells[5].get_text(strip=True))
 
                     # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
@@ -244,7 +250,9 @@ class BJShareProvider(TorrentProvider):
                     torrent_details = torrent_details.replace('[', ' ').replace(']', ' ').replace('/', ' ')
                     torrent_details = torrent_details.replace('Full HD ', '1080p').replace('HD ', '720p')
 
-                    torrent_size = cells[labels.index('Tamanho') + group_index].get_text(strip=True)
+                    # torrent_size = cells[labels.index('Tamanho') + group_index].get_text(strip=True)
+                    torrent_size = cells[2].get_text(strip=True)
+
                     size = convert_size(torrent_size) or -1
 
                     torrent_name = '{0} {1}'.format(title, torrent_details.strip()).strip()
@@ -290,11 +298,11 @@ class BJShareProvider(TorrentProvider):
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
-            logger.log(u"Unable to connect to provider", logger.WARNING)
+            logger.log("Unable to connect to provider", logger.WARNING)
             return False
 
         if re.search('<title>Login :: BJ-Share</title>', response):
-            logger.log(u"Invalid username or password. Check your settings", logger.WARNING)
+            logger.log("Invalid username or password. Check your settings", logger.WARNING)
             return False
 
         return True

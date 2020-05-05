@@ -16,11 +16,12 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import unicode_literals
-
+# Stdlib Imports
 from datetime import date
 
+# First Party Imports
 import sickbeard
 from sickbeard.common import Quality, SKIPPED, WANTED
 from sickbeard.db import DBConnection
@@ -147,9 +148,10 @@ class Show(object):
         return None, show
 
     @staticmethod
-    def refresh(indexer_id):
+    def refresh(indexer_id, force=False):
         """
         Try to refresh a show
+        :param force: Force refresh
         :param indexer_id: The unique id of the show to refresh
         :return: A tuple containing:
          - an error message if the show could not be refreshed, ``None`` otherwise
@@ -162,7 +164,7 @@ class Show(object):
             return error, show
 
         try:
-            sickbeard.showQueueScheduler.action.refresh_show(show)
+            sickbeard.showQueueScheduler.action.refresh_show(show, force)
         except CantRefreshShowException as exception:
             return ex(exception), show
 

@@ -1,13 +1,29 @@
 import re
 
+import six
+
 from .utils import validator
 
+if six.PY3:
+    text_type = str
+    unicode = str
+else:
+    text_type = unicode
+
 pattern = re.compile(
-    r'^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|'  # domain pt.1
-    r'([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|'  # domain pt.2
-    r'([a-zA-Z0-9][-_.a-zA-Z0-9]{0,61}[a-zA-Z0-9]))\.'  # domain pt.3
-    r'([a-zA-Z]{2,13}|(xn--[a-zA-Z0-9]{2,30}))$'  # TLD
+    r'^(?:[a-zA-Z0-9]'  # First character of the domain
+    r'(?:[a-zA-Z0-9-_]{0,61}[A-Za-z0-9])?\.)'  # Sub domain + hostname
+    r'+[A-Za-z0-9][A-Za-z0-9-_]{0,61}'  # First 61 characters of the gTLD
+    r'[A-Za-z]$'  # Last character of the gTLD
 )
+
+
+def to_unicode(obj, charset='utf-8', errors='strict'):
+    if obj is None:
+        return None
+    if not isinstance(obj, bytes):
+        return text_type(obj)
+    return obj.decode(charset, errors)
 
 
 @validator
@@ -40,4 +56,7 @@ def domain(value):
 
     :param value: domain string to validate
     """
-    return pattern.match(value)
+    try:
+        return pattern.match(to_unicode(value).encode('idna').decode('ascii'))
+    except (UnicodeError, AttributeError):
+        return False

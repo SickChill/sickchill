@@ -187,7 +187,9 @@ class CapturedSubprocess(fixtures.Fixture):
         self.addDetail(self.label + '-stderr', content.text_content(self.err))
         self.returncode = proc.returncode
         if proc.returncode:
-            raise AssertionError('Failed process %s' % proc.returncode)
+            raise AssertionError(
+                'Failed process args=%r, kwargs=%r, returncode=%s' % (
+                    self.args, self.kwargs, proc.returncode))
         self.addCleanup(delattr, self, 'out')
         self.addCleanup(delattr, self, 'err')
         self.addCleanup(delattr, self, 'returncode')

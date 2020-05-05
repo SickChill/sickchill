@@ -40,7 +40,7 @@ class Features(set):
         Called every time we care about the mapping of names to features.
         """
         self.mapping = dict([(f.name, f) for f in iter(self)])
-    
+
     @property
     def PATTERN(self):
         u"""

@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
 
-# ########################## Copyrights and license ############################
+############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2012 Vincent Jacques <vincent@vincent-jacques.net>                 #
 # Copyright 2012 Zearin <zearin@gonk.net>                                      #
 # Copyright 2013 AKFish <akfish@gmail.com>                                     #
 # Copyright 2013 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2014 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2016 Jannis Gebauer <ja.geb@me.com>                                #
+# Copyright 2016 Peter Buckley <dx-pbuckley@users.noreply.github.com>          #
+# Copyright 2018 Wan Liuyang <tsfdye@gmail.com>                                #
+# Copyright 2018 sfdye <tsfdye@gmail.com>                                      #
 #                                                                              #
 # This file is part of PyGithub.                                               #
-# http://pygithub.github.io/PyGithub/v1/index.html                             #
+# http://pygithub.readthedocs.io/                                              #
 #                                                                              #
 # PyGithub is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free  #
@@ -23,17 +28,18 @@
 # You should have received a copy of the GNU Lesser General Public License     #
 # along with PyGithub. If not, see <http://www.gnu.org/licenses/>.             #
 #                                                                              #
-# ##############################################################################
+################################################################################
 
-import github.GithubObject
+from __future__ import absolute_import
 
 import github.GitAuthor
+import github.GithubObject
 import github.GitTree
 
 
 class GitCommit(github.GithubObject.CompletableGithubObject):
     """
-    This class represents GitCommits as returned for example by http://developer.github.com/v3/todo
+    This class represents GitCommits. The reference can be found here https://developer.github.com/v3/git/commits/
     """
 
     def __repr__(self):
@@ -119,18 +125,26 @@ class GitCommit(github.GithubObject.CompletableGithubObject):
 
     def _useAttributes(self, attributes):
         if "author" in attributes:  # pragma no branch
-            self._author = self._makeClassAttribute(github.GitAuthor.GitAuthor, attributes["author"])
+            self._author = self._makeClassAttribute(
+                github.GitAuthor.GitAuthor, attributes["author"]
+            )
         if "committer" in attributes:  # pragma no branch
-            self._committer = self._makeClassAttribute(github.GitAuthor.GitAuthor, attributes["committer"])
+            self._committer = self._makeClassAttribute(
+                github.GitAuthor.GitAuthor, attributes["committer"]
+            )
         if "html_url" in attributes:  # pragma no branch
             self._html_url = self._makeStringAttribute(attributes["html_url"])
         if "message" in attributes:  # pragma no branch
             self._message = self._makeStringAttribute(attributes["message"])
         if "parents" in attributes:  # pragma no branch
-            self._parents = self._makeListOfClassesAttribute(GitCommit, attributes["parents"])
+            self._parents = self._makeListOfClassesAttribute(
+                GitCommit, attributes["parents"]
+            )
         if "sha" in attributes:  # pragma no branch
             self._sha = self._makeStringAttribute(attributes["sha"])
         if "tree" in attributes:  # pragma no branch
-            self._tree = self._makeClassAttribute(github.GitTree.GitTree, attributes["tree"])
+            self._tree = self._makeClassAttribute(
+                github.GitTree.GitTree, attributes["tree"]
+            )
         if "url" in attributes:  # pragma no branch
             self._url = self._makeStringAttribute(attributes["url"])

@@ -18,10 +18,13 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Third Party Imports
+# noinspection PyUnresolvedReferences
 from six.moves import urllib
 
+# First Party Imports
 import sickbeard
 from sickbeard import logger
 from sickchill.helper.exceptions import ex
@@ -29,6 +32,7 @@ from sickchill.helper.exceptions import ex
 try:
     import json
 except ImportError:
+    # noinspection PyUnresolvedReferences
     import simplejson as json
 
 

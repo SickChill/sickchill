@@ -75,6 +75,12 @@ def _worker(executor_reference, work_queue):
                 work_item.run()
                 # Delete references to object. See issue16284
                 del work_item
+
+                # attempt to increment idle count
+                executor = executor_reference()
+                if executor is not None:
+                    executor._idle_semaphore.release()
+                del executor
                 continue
             executor = executor_reference()
             # Exit if:
@@ -112,6 +118,7 @@ class ThreadPoolExecutor(_base.Executor):
 
         self._max_workers = max_workers
         self._work_queue = queue.Queue()
+        self._idle_semaphore = threading.Semaphore(0)
         self._threads = set()
         self._shutdown = False
         self._shutdown_lock = threading.Lock()
@@ -132,12 +139,15 @@ class ThreadPoolExecutor(_base.Executor):
     submit.__doc__ = _base.Executor.submit.__doc__
 
     def _adjust_thread_count(self):
+        # if idle threads are available, don't spin new threads
+        if self._idle_semaphore.acquire(False):
+            return
+
         # When the executor gets lost, the weakref callback will wake up
         # the worker threads.
         def weakref_cb(_, q=self._work_queue):
             q.put(None)
-        # TODO(bquinlan): Should avoid creating new threads if there are more
-        # idle threads than items in the work queue.
+
         num_threads = len(self._threads)
         if num_threads < self._max_workers:
             thread_name = '%s_%d' % (self._thread_name_prefix or self,

@@ -1,0 +1,29 @@
+Metadata-Version: 2.1
+Name: xmltodict
+Version: 0.10.1
+Summary: Makes working with XML feel like you are working with JSON
+Home-page: https://github.com/martinblech/xmltodict
+Author: Martin Blech
+Author-email: martinblech@gmail.com
+License: MIT
+Platform: all
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.5
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.2
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: Implementation :: Jython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Topic :: Text Processing :: Markup :: XML
+
+UNKNOWN
+
+

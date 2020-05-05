@@ -59,13 +59,13 @@ class ProxyBackend(CacheBackend):
         self.proxied = None
 
     def wrap(self, backend):
-        ''' Take a backend as an argument and setup the self.proxied property.
+        """ Take a backend as an argument and setup the self.proxied property.
         Return an object that be used as a backend by a :class:`.CacheRegion`
         object.
-        '''
-        assert(
-            isinstance(backend, CacheBackend) or
-            isinstance(backend, ProxyBackend))
+        """
+        assert isinstance(backend, CacheBackend) or isinstance(
+            backend, ProxyBackend
+        )
         self.proxied = backend
         return self
 

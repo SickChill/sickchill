@@ -16,29 +16,33 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import datetime
 import os
 import re
+import traceback
 
+# Third Party Imports
+import dateutil
 import six
-from libtrakt import TraktAPI
 from requests.compat import unquote_plus
 from tornado.escape import xhtml_unescape
+from trakt import TraktAPI
 
+# First Party Imports
 import sickbeard
-from sickbeard import classes, config, db, helpers, logger, ui
+import sickchill
+from sickbeard import config, db, filters, helpers, logger, ui
 from sickbeard.blackandwhitelist import short_group_names
 from sickbeard.common import Quality
-from sickbeard.helpers import get_showname_from_indexer
-from sickbeard.imdbPopular import imdb_popular
 from sickbeard.traktTrending import trakt_trending
 from sickchill.helper import sanitize_filename, try_int
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
+from sickchill.show.recommendations.favorites import favorites
+from sickchill.show.recommendations.imdb import imdb_popular
 from sickchill.show.Show import Show
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home
@@ -59,12 +63,6 @@ class AddShows(Home):
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="addShows.mako")
         return t.render(title=_('Add Shows'), header=_('Add Shows'), topmenu='home', controller="addShows", action="index")
-
-    @staticmethod
-    def getIndexerLanguages():
-        result = sickbeard.indexerApi().config['valid_languages']
-
-        return json.dumps({'results': result})
 
     @staticmethod
     def sanitizeFileName(name):
@@ -95,30 +93,27 @@ class AddShows(Home):
         final_results = []
 
         # Query Indexers for each search term and build the list of results
-        for indexer in sickbeard.indexerApi().indexers if not int(indexer) else [int(indexer)]:
-            lINDEXER_API_PARMS = sickbeard.indexerApi(indexer).api_params.copy()
-            lINDEXER_API_PARMS['language'] = lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-            lINDEXER_API_PARMS['custom_ui'] = classes.AllShowsListUI
-            t = sickbeard.indexerApi(indexer).indexer(**lINDEXER_API_PARMS)
-
+        for i, j in sickchill.indexer if not int(indexer) else [(int(indexer), None)]:
             logger.log("Searching for Show with searchterm(s): {0} on Indexer: {1}".format(
-                searchTerms, sickbeard.indexerApi(indexer).name), logger.DEBUG)
+                searchTerms, 'theTVDB'), logger.DEBUG)
             for searchTerm in searchTerms:
                 # noinspection PyBroadException
                 try:
-                    indexerResults = t[searchTerm]
+                    indexerResults = sickchill.indexer[i].search(searchTerm, language=lang)
                 except Exception:
                     # logger.log(traceback.format_exc(), logger.ERROR)
                     continue
 
                 # add search results
-                results.setdefault(indexer, []).extend(indexerResults)
+                results.setdefault(i, []).extend(indexerResults)
 
         for i, shows in six.iteritems(results):
-            final_results.extend({(sickbeard.indexerApi(i).name, i, sickbeard.indexerApi(i).config["show_url"], int(show['id']),
-                                   show['seriesname'], show['firstaired'], show['in_show_list']) for show in shows})
+            # noinspection PyUnresolvedReferences
+            final_results.extend({(sickchill.indexer.name(i), i, sickchill.indexer[i].show_url, show['id'],
+                                   show['seriesName'], show['firstAired'], sickbeard.tv.Show.find(sickbeard.showList, show['id']) is not None
+                                   ) for show in shows})
 
-        lang_id = sickbeard.indexerApi().config['langabbv_to_id'][lang]
+        lang_id = sickchill.indexer.lang_dict()[lang]
         return json.dumps({'results': final_results, 'langid': lang_id, 'success': len(final_results) > 0})
 
     def massAddTable(self, rootDir=None):
@@ -168,6 +163,7 @@ class AddShows(Home):
 
                 cur_dir = {
                     'dir': cur_path,
+                    'existing_info': (None, None, None),
                     'display_dir': '<b>' + ek(os.path.dirname, cur_path) + os.sep + '</b>' + ek(
                         os.path.basename,
                         cur_path),
@@ -187,19 +183,11 @@ class AddShows(Home):
                 for cur_provider in sickbeard.metadata_provider_dict.values():
                     if not (indexer_id and show_name):
                         (indexer_id, show_name, indexer) = cur_provider.retrieveShowMetadata(cur_path)
+                        if all((indexer_id, show_name, indexer)):
+                            break
 
-                        # default to TVDB if indexer was not detected
-                        if show_name and not (indexer or indexer_id):
-                            (show_name_, idxr, i) = helpers.searchIndexerForShowID(show_name, indexer, indexer_id)
-
-                            # set indexer and indexer_id from found info
-                            if not indexer and idxr:
-                                indexer = idxr
-
-                            if not indexer_id and i:
-                                indexer_id = i
-
-                cur_dir['existing_info'] = (indexer_id, show_name, indexer)
+                if all((indexer_id, show_name, indexer)):
+                    cur_dir['existing_info'] = (indexer_id, show_name, indexer)
 
                 if indexer_id and Show.find(sickbeard.showList, indexer_id):
                     cur_dir['added_already'] = True
@@ -248,7 +236,7 @@ class AddShows(Home):
             default_show_name=default_show_name, other_shows=other_shows,
             provided_show_dir=show_dir, provided_indexer_id=provided_indexer_id,
             provided_indexer_name=provided_indexer_name, provided_indexer=provided_indexer,
-            indexers=sickbeard.indexerApi().indexers, whitelist=[], blacklist=[], groups=[],
+            whitelist=[], blacklist=[], groups=[],
             title=_('New Show'), header=_('New Show'), topmenu='home',
             controller="addShows", action="newShow"
         )
@@ -330,7 +318,7 @@ class AddShows(Home):
 
     @staticmethod
     def getTrendingShowImage(indexerId):
-        image_url = trakt_trending.get_image_url(indexerId)
+        image_url = sickchill.indexer.series_poster_url_by_id(indexerId)
         if image_url:
             image_path = trakt_trending.get_image_path(trakt_trending.get_image_name(indexerId))
             trakt_trending.cache_image(image_url, image_path)
@@ -354,6 +342,30 @@ class AddShows(Home):
                         topmenu="home",
                         controller="addShows", action="popularShows")
 
+    def favoriteShows(self, tvdb_user=None, tvdb_user_key=None, submit=False):
+        """
+        Fetches data from IMDB to show a list of popular shows.
+        """
+        t = PageTemplate(rh=self, filename="addShows_favoriteShows.mako")
+        e = None
+
+        tvdb_user_key = filters.unhide(sickbeard.TVDB_USER_KEY, tvdb_user_key)
+        if submit and tvdb_user and tvdb_user_key:
+            if tvdb_user != sickbeard.TVDB_USER and tvdb_user_key != sickbeard.TVDB_USER:
+                favorites.test_user_key(tvdb_user, tvdb_user_key, 1)
+
+        try:
+            favorite_shows = favorites.fetch_indexer_favorites()
+        except Exception as e:
+            logger.log(traceback.format_exc(), logger.ERROR)
+            logger.log(_("Could not get favorite shows: {0}").format(ex(e)), logger.WARNING)
+            favorite_shows = None
+
+        return t.render(title=_("Favorite Shows"), header=_("Favorite Shows"),
+                        favorite_shows=favorite_shows, favorites_exception=e,
+                        topmenu="home",
+                        controller="addShows", action="popularShows")
+
     def addShowToBlacklist(self, indexer_id):
         # URL parameters
         data = {'shows': [{'ids': {'tvdb': indexer_id}}]}
@@ -374,7 +386,7 @@ class AddShows(Home):
                         controller="addShows", action="addExistingShow")
 
     # noinspection PyUnusedLocal
-    def addShowByID(  # pylint: disable=unused-argument
+    def addShowByID(
             self, indexer_id, show_name, indexer="TVDB", which_series=None,
             indexer_lang=None, root_dir=None, default_status=None,
             quality_preset=None, any_qualities=None, best_qualities=None,
@@ -451,7 +463,7 @@ class AddShows(Home):
             logger.log("There was an error creating the show, no root directory setting found")
             return _("No root directories setup, please go back and add one.")
 
-        show_name = get_showname_from_indexer(1, indexer_id)
+        show_name = sickchill.indexer[1].get_series_by_id(indexer_id, indexer_lang).seriesName
         show_dir = None
 
         if not show_name:
@@ -513,7 +525,7 @@ class AddShows(Home):
         series_pieces = whichSeries.split('|')
         if (whichSeries and rootDir) or (whichSeries and fullShowPath and len(series_pieces) > 1):
             if len(series_pieces) < 6:
-                logger.log("Unable to add show due to show selection. Not anough arguments: {0}".format((repr(series_pieces))),
+                logger.log("Unable to add show due to show selection. Not enough arguments: {0}".format((repr(series_pieces))),
                            logger.ERROR)
                 ui.notifications.error(_("Unknown error. Unable to add show due to problem with show selection."))
                 return self.redirect('/addShows/existingShows/')
@@ -534,11 +546,23 @@ class AddShows(Home):
         # use the whole path if it's given, or else append the show name to the root dir to get the full show path
         if fullShowPath:
             show_dir = ek(os.path.normpath, xhtml_unescape(fullShowPath))
+            extra_check_dir = show_dir
         else:
-            show_dir = ek(os.path.join, rootDir, sanitize_filename(xhtml_unescape(show_name)))
+            folder_name = show_name
+            s = sickchill.indexer.series_by_id(indexerid=indexer_id, indexer=indexer, language=indexerLang)
+            if sickbeard.ADD_SHOWS_WITH_YEAR and s.firstAired:
+                try:
+                    year = '({0})'.format(dateutil.parser.parse(s.firstAired).year)
+                    if year not in folder_name:
+                        folder_name = '{0} {1}'.format(s.seriesName, year)
+                except (TypeError, ValueError):
+                    logger.log(_('Could not append the show year folder for the show: {0}').format(folder_name))
+
+            show_dir = ek(os.path.join, rootDir, sanitize_filename(xhtml_unescape(folder_name)))
+            extra_check_dir = ek(os.path.join, rootDir, sanitize_filename(xhtml_unescape(show_name)))
 
         # blanket policy - if the dir exists you should have used "add existing show" numbnuts
-        if ek(os.path.isdir, show_dir) and not fullShowPath:
+        if (ek(os.path.isdir, show_dir) or ek(os.path.isdir, extra_check_dir)) and not fullShowPath:
             ui.notifications.error(_("Unable to add show"), _("Folder {show_dir} exists already").format(show_dir=show_dir))
             return self.redirect('/addShows/existingShows/')
 
@@ -583,7 +607,7 @@ class AddShows(Home):
             indexer, indexer_id, showDir=show_dir, default_status=int(defaultStatus), quality=newQuality,
             season_folders=season_folders, lang=indexerLang, subtitles=subtitles, subtitles_sr_metadata=subtitles_sr_metadata,
             anime=anime, scene=scene, paused=None, blacklist=blacklist, whitelist=whitelist,
-            default_status_after=int(defaultStatusAfter), root_dir=None)
+            default_status_after=int(defaultStatusAfter), root_dir=rootDir)
         ui.notifications.message(_('Show added'), _('Adding the specified show into {show_dir}').format(show_dir=show_dir))
 
         return finishAddShow()

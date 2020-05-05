@@ -17,19 +17,24 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import fnmatch
 import os
 import re
 
+# Third Party Imports
 import six
 
+# First Party Imports
 import sickbeard
-from sickbeard import common, logger
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickbeard.scene_exceptions import get_scene_exceptions
 from sickchill.helper.encoding import ek
+
+# Local Folder Imports
+from . import common, logger
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from .scene_exceptions import get_scene_exceptions
 
 resultFilters = {
     "sub(bed|ed|pack|s)",
@@ -201,3 +206,40 @@ def determineReleaseName(dir_name=None, nzb_name=None):
         return folder
 
     return None
+
+
+def hasPreferredWords(name, show=None):
+    """Determine based on the full episode (file)name combined with the preferred words what the weight its preference should be"""
+
+    name = name.lower()
+
+    def clean_set(words):
+        weighted_words = []
+
+        words = words.lower().strip().split(',')
+        val = len(words)
+
+        for word in words:
+            weighted_words.append({"word": word, "weight": val})
+            val = val - 1
+
+        return weighted_words
+
+    prefer_words = []
+
+    ## Because we weigh values, we can not union global and show based values, so we don't do that
+    if sickbeard.PREFER_WORDS:
+        prefer_words = clean_set(sickbeard.PREFER_WORDS)
+    if show and show.rls_prefer_words:
+        prefer_words = clean_set(show.rls_prefer_words or '')
+
+    ## if nothing set, return position 0
+    if len(prefer_words) <= 0:
+        return 0
+
+    value = 0
+    for word_pair in prefer_words:
+        if word_pair['weight'] > value and word_pair['word'] in name:
+            value = word_pair['weight']
+
+    return value

@@ -18,20 +18,26 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 from base64 import standard_b64encode
 
+# Third Party Imports
+# noinspection PyUnresolvedReferences
 from six.moves import http_client, xmlrpc_client
 
+# First Party Imports
 import sickbeard
-from sickbeard import logger
-from sickbeard.common import Quality
 from sickchill.helper.common import try_int
 
+# Local Folder Imports
+from . import logger
+from .common import Quality
 
-def sendNZB(nzb, proper=False):  # pylint: disable=too-many-locals, too-many-statements, too-many-branches, too-many-return-statements
+
+def sendNZB(nzb, proper=False):
     '''
     Sends NZB to NZBGet client
 

@@ -1,0 +1,4 @@
+[console_scripts]
+tus-resume = tus:_cmd_resume
+tus-upload = tus:_cmd_upload
+

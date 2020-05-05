@@ -16,18 +16,21 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import os
 
-from index import WebRoot
-from routes import Route
+# Third Party Imports
 from tornado.escape import xhtml_unescape
 
+# First Party Imports
 from sickbeard.browser import foldersAtPath
 from sickchill.helper.encoding import ek
+
+# Local Folder Imports
+from .index import WebRoot
+from .routes import Route
 
 try:
     import json
@@ -41,7 +44,7 @@ class WebFileBrowser(WebRoot):
     def __init__(self, *args, **kwargs):
         super(WebFileBrowser, self).__init__(*args, **kwargs)
 
-    def index(self, path='', includeFiles=False, fileTypes=''):  # pylint: disable=arguments-differ
+    def index(self, path='', includeFiles=False, fileTypes=''):
 
         self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header(b'Content-Type', 'application/json')

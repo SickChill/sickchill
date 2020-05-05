@@ -16,24 +16,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
-from common import PageTemplate
-from index import WebRoot
-from routes import Route
-
+# First Party Imports
 import sickbeard
 from sickbeard import ui
 from sickchill.helper import try_int
 from sickchill.show.History import History as HistoryTool
 
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
+# Local Folder Imports
+from .common import PageTemplate
+from .index import WebRoot
+from .routes import Route
 
 
 @Route('/history(/?.*)', name='history')
@@ -43,7 +37,7 @@ class History(WebRoot):
 
         self.history = HistoryTool()
 
-    def index(self, limit=None):  # pylint: disable=arguments-differ
+    def index(self, limit=None):
         sickbeard.HISTORY_LIMIT = limit = try_int(limit or sickbeard.HISTORY_LIMIT or 100, 100)
         sickbeard.save_config()
 

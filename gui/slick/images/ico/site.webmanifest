@@ -50,6 +50,6 @@
     ],
     "theme_color": "#15528f",
     "background_color": "#15528f",
-    "start_url": "https://sickchill.github.io",
+    "start_url": "../../home/",
     "display": "standalone"
 }

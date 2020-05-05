@@ -57,4 +57,3 @@ class FixFutureBuiltins(fixer_base.BaseFix):
         name = results["name"]
         touch_import_top(u'builtins', name.value, node)
         # name.replace(Name(u"input", prefix=name.prefix))
-

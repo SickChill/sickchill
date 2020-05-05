@@ -22,5 +22,3 @@ class FixFutureStandardLibrary(FixImports):
         # TODO: add a blank line between any __future__ imports and this?
         touch_import_top(u'future', u'standard_library', node)
         return result
-
-

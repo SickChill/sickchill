@@ -3,6 +3,7 @@
     import six
     import sickbeard
     from sickbeard.filters import hide
+    from sickbeard.clients import getClientListDict
 %>
 
 <%block name="tabs">
@@ -149,6 +150,25 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Prefer words')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="prefer_words" value="${sickbeard.PREFER_WORDS}"
+                                                   id="prefer_words" class="form-control input-sm input350" autocapitalize="off"/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="prefer_words">${_('''search results with these words will be preferred in this order<br>separate words with a comma, e.g. "word1,word2,word3"''')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Require words')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
@@ -165,6 +185,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Ignore language names in subbed results')}</label>
@@ -243,6 +264,30 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label><b>${_('note')}:</b> ${_('this only works if Use Failed Downloads is enabled.')}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div id="content_backlog_missing_only">
+
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <label class="component-title">${_('Backlog search for missing only')}</label>
+                                    </div>
+                                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <input id="backlog_missing_only" type="checkbox"
+                                                       name="backlog_missing_only" ${('', 'checked="checked"')[bool(sickbeard.BACKLOG_MISSING_ONLY)]}/>
+                                                <label for="backlog_missing_only">${_('restrict backlog searches to missing episodes only?')}</label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label><b>${_('note')}:</b> ${_('if enabled, this ignores episodes that are not preferred qualities')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -870,9 +915,9 @@
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <select name="torrent_method" id="torrent_method" class="form-control input-sm input200" title="torrent_method">
-                                            <% torrent_method_text = {'blackhole': "Black hole", 'utorrent': "uTorrent", 'transmission': "Transmission/Biglybt/Vuze", 'deluge': "Deluge (via WebUI)", 'deluged': "Deluge (via Daemon)", 'download_station': "Synology DS", 'rtorrent': "rTorrent", 'qbittorrent': "qbittorrent", 'mlnet': "MLDonkey", 'putio' : "Putio"} %>
-                                            % for curAction in ('blackhole', 'utorrent', 'transmission', 'deluge', 'deluged', 'download_station', 'rtorrent', 'qbittorrent', 'mlnet', 'putio'):
-                                                <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${torrent_method_text[curAction]}</option>
+                                            <% client_list = getClientListDict() %>
+                                            % for curAction in client_list.keys():
+                                                <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${client_list[curAction]}</option>
                                             % endfor
                                         </select>
                                     </div>

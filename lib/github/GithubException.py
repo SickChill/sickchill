@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
 
-# ########################## Copyrights and license ############################
+############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2012 Vincent Jacques <vincent@vincent-jacques.net>                 #
 # Copyright 2012 Zearin <zearin@gonk.net>                                      #
 # Copyright 2013 AKFish <akfish@gmail.com>                                     #
+# Copyright 2013 Cameron White <cawhite@pdx.edu>                               #
 # Copyright 2013 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2014 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2016 Peter Buckley <dx-pbuckley@users.noreply.github.com>          #
+# Copyright 2016 humbug <bah>                                                  #
+# Copyright 2018 sfdye <tsfdye@gmail.com>                                      #
 #                                                                              #
 # This file is part of PyGithub.                                               #
-# http://pygithub.github.io/PyGithub/v1/index.html                             #
+# http://pygithub.readthedocs.io/                                              #
 #                                                                              #
 # PyGithub is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free  #
@@ -23,7 +28,9 @@
 # You should have received a copy of the GNU Lesser General Public License     #
 # along with PyGithub. If not, see <http://www.gnu.org/licenses/>.             #
 #                                                                              #
-# ##############################################################################
+################################################################################
+
+import json
 
 
 class GithubException(Exception):
@@ -54,7 +61,7 @@ class GithubException(Exception):
         return self.__data
 
     def __str__(self):
-        return str(self.status) + " " + str(self.data)
+        return "{status} {data}".format(status=self.status, data=json.dumps(self.data))
 
 
 class BadCredentialsException(GithubException):
@@ -85,6 +92,7 @@ class BadAttributeException(Exception):
     """
     Exception raised when Github returns an attribute with the wrong type.
     """
+
     def __init__(self, actualValue, expectedType, transformationException):
         self.__actualValue = actualValue
         self.__expectedType = expectedType
@@ -115,4 +123,10 @@ class BadAttributeException(Exception):
 class TwoFactorException(GithubException):
     """
     Exception raised when Github requires a onetime password for two-factor authentication
+    """
+
+
+class IncompletableObject(GithubException):
+    """
+    Exception raised when we can not request an object from Github because the data returned did not include a URL
     """

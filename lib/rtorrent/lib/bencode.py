@@ -40,42 +40,35 @@ import sys
 
 _py3 = sys.version_info[0] == 3
 
-if _py3:
-    _VALID_STRING_TYPES = (str,)
-    _VALID_INT_TYPES = (int,)
-else:
-    _VALID_STRING_TYPES = (str, unicode)  # @UndefinedVariable
-    _VALID_INT_TYPES = (int, long)  # @UndefinedVariable
+if _py3: _VALID_STRING_TYPES = (str,)
+else: _VALID_STRING_TYPES = (str, unicode) #@UndefinedVariable
 
-_TYPE_INT = 1
-_TYPE_STRING = 2
-_TYPE_LIST = 3
+_TYPE_INT		 = 1
+_TYPE_STRING	 = 2
+_TYPE_LIST	 = 3
 _TYPE_DICTIONARY = 4
-_TYPE_END = 5
-_TYPE_INVALID = 6
+_TYPE_END		 = 5
+_TYPE_INVALID	 = 6
 
 # Function to determine the type of he next value/item
 #   Arguments:
 #	   char		First character of the string that is to be decoded
 #   Return value:
 #	   Returns an integer that describes what type the next value/item is
-
-
 def _gettype(char):
-    if not isinstance(char, int):
-        char = ord(char)
-    if char == 0x6C:						# 'l'
-        return _TYPE_LIST
-    elif char == 0x64:					  # 'd'
-        return _TYPE_DICTIONARY
-    elif char == 0x69:					  # 'i'
-        return _TYPE_INT
-    elif char == 0x65:					  # 'e'
-        return _TYPE_END
-    elif char >= 0x30 and char <= 0x39:	 # '0' '9'
-        return _TYPE_STRING
-    else:
-        return _TYPE_INVALID
+	if not isinstance(char, int): char = ord(char)
+	if char == 0x6C:						# 'l'
+		return _TYPE_LIST
+	elif char == 0x64:					  # 'd'
+		return _TYPE_DICTIONARY
+	elif char == 0x69:					  # 'i'
+		return _TYPE_INT
+	elif char == 0x65:					  # 'e'
+		return _TYPE_END
+	elif char >= 0x30 and char <= 0x39:	 # '0' '9'
+		return _TYPE_STRING
+	else:
+		return _TYPE_INVALID
 
 # Function to parse a string from the bendcoded data
 #   Arguments:
@@ -84,21 +77,17 @@ def _gettype(char):
 #	   Returns a tuple, the first member of the tuple is the parsed string
 #	   The second member is whatever remains of the bencoded data so it can
 #	   be used to parse the next part of the data
-
-
 def _decode_string(data):
-    end = 1
-    # if py3, data[end] is going to be an int
-    # if py2, data[end] will be a string
-    if _py3:
-        char = 0x3A
-    else:
-        char = chr(0x3A)
+	end = 1
+	# if py3, data[end] is going to be an int
+	# if py2, data[end] will be a string
+	if _py3: char = 0x3A
+	else: char = chr(0x3A)
 
-    while data[end] != char:  # ':'
-        end = end + 1
-    strlen = int(data[:end])
-    return (data[end + 1:strlen + end + 1], data[strlen + end + 1:])
+	while data[end] != char:	# ':'
+		end = end + 1
+	strlen = int(data[:end])
+	return (data[end + 1:strlen + end + 1], data[strlen + end + 1:])
 
 # Function to parse an integer from the bencoded data
 #   Arguments:
@@ -107,20 +96,16 @@ def _decode_string(data):
 #	   Returns a tuple, the first member of the tuple is the parsed string
 #	   The second member is whatever remains of the bencoded data so it can
 #	   be used to parse the next part of the data
-
-
 def _decode_int(data):
-    end = 1
-    # if py3, data[end] is going to be an int
-    # if py2, data[end] will be a string
-    if _py3:
-        char = 0x65
-    else:
-        char = chr(0x65)
+	end = 1
+	# if py3, data[end] is going to be an int
+	# if py2, data[end] will be a string
+	if _py3: char = 0x65
+	else: char = chr(0x65)
 
-    while data[end] != char:	 # 'e'
-        end = end + 1
-    return (int(data[1:end]), data[end + 1:])
+	while data[end] != char:	 # 'e'
+		end = end + 1
+	return (int(data[1:end]), data[end + 1:])
 
 # Function to parse a bencoded list
 #   Arguments:
@@ -129,20 +114,18 @@ def _decode_int(data):
 #	   Returns a tuple, the first member of the tuple is the parsed list
 #	   The second member is whatever remains of the bencoded data so it can
 #	   be used to parse the next part of the data
-
-
 def _decode_list(data):
-    x = []
-    overflow = data[1:]
-    while True:										 # Loop over the data
-        if _gettype(overflow[0]) == _TYPE_END:		  # - Break if we reach the end of the list
-            return (x, overflow[1:])  # and return the list and overflow
+	x = []
+	overflow = data[1:]
+	while True:										 # Loop over the data
+		if _gettype(overflow[0]) == _TYPE_END:		  # - Break if we reach the end of the list
+			return (x, overflow[1:])					#	 and return the list and overflow
 
-        value, overflow = _decode(overflow)			 #
-        if isinstance(value, bool) or overflow == '':   # - if we have a parse error
-            return (False, False)  # Die with error
-        else:										   # - Otherwise
-            x.append(value)  # add the value to the list
+		value, overflow = _decode(overflow)			 #
+		if isinstance(value, bool) or overflow == '':   # - if we have a parse error
+			return (False, False)					   #	 Die with error
+		else:										   # - Otherwise
+			x.append(value)							 #	 add the value to the list
 
 
 # Function to parse a bencoded list
@@ -153,26 +136,26 @@ def _decode_list(data):
 #	   The second member is whatever remains of the bencoded data so it can
 #	   be used to parse the next part of the data
 def _decode_dict(data):
-    x = {}
-    overflow = data[1:]
-    while True:										 # Loop over the data
-        if _gettype(overflow[0]) != _TYPE_STRING:	   # - If the key is not a string
-            return (False, False)  # Die with error
-        key, overflow = _decode(overflow)			   #
-        if key == False or overflow == '':			  # - If parse error
-            return (False, False)  # Die with error
-        value, overflow = _decode(overflow)			 #
-        if isinstance(value, bool) or overflow == '':   # - If parse error
-            print("Error parsing value")
-            print(value)
-            print(overflow)
-            return (False, False)  # Die with error
-        else:
-            # don't use bytes for the key
-            key = key.decode()
-            x[key] = value
-        if _gettype(overflow[0]) == _TYPE_END:
-            return (x, overflow[1:])
+	x = {}
+	overflow = data[1:]
+	while True:										 # Loop over the data
+		if _gettype(overflow[0]) != _TYPE_STRING:	   # - If the key is not a string
+			return (False, False)					   #	 Die with error
+		key, overflow = _decode(overflow)			   #
+		if key == False or overflow == '':			  # - If parse error
+			return (False, False)					   #	 Die with error
+		value, overflow = _decode(overflow)			 #
+		if isinstance(value, bool) or overflow == '':   # - If parse error
+			print("Error parsing value")
+			print(value)
+			print(overflow)
+			return (False, False)					   #	 Die with error
+		else:
+			# don't use bytes for the key
+			key = key.decode()
+			x[key] = value
+		if _gettype(overflow[0]) == _TYPE_END:
+			return (x, overflow[1:])
 
 #   Arguments:
 #	   data		bencoded data in bytes format
@@ -181,20 +164,18 @@ def _decode_dict(data):
 #	   an integer, a list or a dictionary, or a combination of those
 #	   The second member is the leftover of parsing, if everything parses correctly this
 #	   should be an empty byte string
-
-
 def _decode(data):
-    btype = _gettype(data[0])
-    if btype == _TYPE_INT:
-        return _decode_int(data)
-    elif btype == _TYPE_STRING:
-        return _decode_string(data)
-    elif btype == _TYPE_LIST:
-        return _decode_list(data)
-    elif btype == _TYPE_DICTIONARY:
-        return _decode_dict(data)
-    else:
-        return (False, False)
+	btype = _gettype(data[0])
+	if btype == _TYPE_INT:
+		return _decode_int(data)
+	elif btype == _TYPE_STRING:
+		return _decode_string(data)
+	elif btype == _TYPE_LIST:
+		return _decode_list(data)
+	elif btype == _TYPE_DICTIONARY:
+		return _decode_dict(data)
+	else:
+		return (False, False)
 
 # Function to decode bencoded data
 #   Arguments:
@@ -203,60 +184,50 @@ def _decode(data):
 #	   Returns the decoded data on success, this coud be bytes, int, dict or list
 #	   or a combinatin of those
 #	   If an error occurs the return value is False
-
-
 def decode(data):
-    # if isinstance(data, str):
-    #	data = data.encode()
-    decoded, overflow = _decode(data)
-    return decoded
+	#if isinstance(data, str):
+	#	data = data.encode()
+	decoded, overflow = _decode(data)
+	return decoded
 
 #   Args: data as integer
 # return: encoded byte string
-
-
 def _encode_int(data):
-    return b'i' + str(data).encode() + b'e'
+	return b'i' + str(data).encode() + b'e'
 
 #   Args: data as string or bytes
 # Return: encoded byte string
-
-
 def _encode_string(data):
-    return str(len(data)).encode() + b':' + data
+	return str(len(data)).encode() + b':' + data
 
 #   Args: data as list
 # Return: Encoded byte string, false on error
-
-
 def _encode_list(data):
-    elist = b'l'
-    for item in data:
-        eitem = encode(item)
-        if eitem == False:
-            return False
-        elist += eitem
-    return elist + b'e'
+	elist = b'l'
+	for item in data:
+		eitem = encode(item)
+		if eitem == False:
+			return False
+		elist += eitem
+	return elist + b'e'
 
 #   Args: data as dict
 # Return: encoded byte string, false on error
-
-
 def _encode_dict(data):
-    edict = b'd'
-    keys = []
-    for key in data:
-        if not isinstance(key, _VALID_STRING_TYPES) and not isinstance(key, bytes):
-            return False
-        keys.append(key)
-    keys.sort()
-    for key in keys:
-        ekey = encode(key)
-        eitem = encode(data[key])
-        if ekey == False or eitem == False:
-            return False
-        edict += ekey + eitem
-    return edict + b'e'
+	edict = b'd'
+	keys = []
+	for key in data:
+		if not isinstance(key, _VALID_STRING_TYPES) and not isinstance(key, bytes):
+			return False
+		keys.append(key)
+	keys.sort()
+	for key in keys:
+		ekey = encode(key)
+		eitem = encode(data[key])
+		if ekey == False or eitem == False:
+			return False
+		edict += ekey + eitem
+	return edict + b'e'
 
 # Function to encode a variable in bencoding
 #   Arguments:
@@ -264,20 +235,18 @@ def _encode_dict(data):
 #   Return Values:
 #	   Returns the encoded data as a byte string when successful
 #	   If an error occurs the return value is False
-
-
 def encode(data):
-    if isinstance(data, bool):
-        return False
-    elif isinstance(data, _VALID_INT_TYPES):
-        return _encode_int(data)
-    elif isinstance(data, bytes):
-        return _encode_string(data)
-    elif isinstance(data, _VALID_STRING_TYPES):
-        return _encode_string(data.encode())
-    elif isinstance(data, list):
-        return _encode_list(data)
-    elif isinstance(data, dict):
-        return _encode_dict(data)
-    else:
-        return False
+	if isinstance(data, bool):
+		return False;
+	elif isinstance(data, int):
+		return _encode_int(data)
+	elif isinstance(data, bytes):
+		return _encode_string(data)
+	elif isinstance(data, _VALID_STRING_TYPES):
+		return _encode_string(data.encode())
+	elif isinstance(data, list):
+		return _encode_list(data)
+	elif isinstance(data, dict):
+		return _encode_dict(data)
+	else:
+		return False

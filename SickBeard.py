@@ -40,15 +40,13 @@ import traceback
 codecs.register(lambda name: codecs.lookup('utf-8') if name == 'cp65001' else None)
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), 'lib')))
 
-if (2, 7, 99) < sys.version_info < (2, 7):
-    print('Sorry, requires Python 2.7')
+if (2, 7, 99) < sys.version_info or sys.version_info < (2, 7, 1):
+    print('Sorry, requires Python at least 2.7 but less than 3')
     sys.exit(1)
 
-# https://mail.python.org/pipermail/python-dev/2014-September/136300.html
-if sys.version_info >= (2, 7, 9):
+if sys.version_info > (2, 7, 9):
     import ssl
-    ssl._create_default_https_context = ssl._create_unverified_context  # pylint: disable=protected-access
-
+    ssl._create_default_https_context = ssl._create_unverified_context  # TODO: Not sure we need this anymore
 
 # Fix mimetypes on misconfigured systems
 import mimetypes
@@ -72,7 +70,7 @@ from sickbeard.tv import TVShow
 from sickchill.views.server_settings import SRWebServer
 from sickbeard.event_queue import Events
 from sickbeard.versionChecker import SourceUpdateManager, GitUpdateManager
-from configobj import ConfigObj  # pylint: disable=import-error
+from configobj import ConfigObj
 
 from sickchill.helper.encoding import ek
 from sickchill.helper.argument_parser import SickChillArgumentParser
@@ -89,7 +87,7 @@ signal.signal(signal.SIGTERM, sickbeard.sig_handler)
 
 
 class SickChill(object):
-    # pylint: disable=too-many-instance-attributes
+
     """
     Main SickChill module
     """
@@ -124,7 +122,7 @@ class SickChill(object):
             cache_folder = ek(os.path.join, sickbeard.CACHE_DIR, 'mako')
             if os.path.isdir(cache_folder):
                 shutil.rmtree(cache_folder)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.log('Unable to remove the cache/mako directory!', logger.WARNING)
 
     @staticmethod
@@ -138,7 +136,7 @@ class SickChill(object):
 
         return help_msg
 
-    def start(self):  # pylint: disable=too-many-branches,too-many-statements
+    def start(self):
         """
         Start SickChill
         """
@@ -156,7 +154,7 @@ class SickChill(object):
         except (locale.Error, IOError):
             sickbeard.SYS_ENCODING = 'UTF-8'
 
-        # pylint: disable=no-member
+
         if not sickbeard.SYS_ENCODING or sickbeard.SYS_ENCODING.lower() in ('ansi_x3.4-1968', 'us-ascii', 'ascii', 'charmap') or \
                 (sys.platform.startswith('win') and sys.getwindowsversion()[0] >= 6 and str(getattr(sys.stdout, 'device', sys.stdout).encoding).lower() in ('cp65001', 'charmap')):
             sickbeard.SYS_ENCODING = 'UTF-8'
@@ -167,7 +165,7 @@ class SickChill(object):
 
         try:
             # On non-unicode builds this will raise an AttributeError, if encoding type is not valid it throws a LookupError
-            sys.setdefaultencoding(sickbeard.SYS_ENCODING)  # pylint: disable=no-member
+            sys.setdefaultencoding(sickbeard.SYS_ENCODING)
         except (AttributeError, LookupError):
             sys.exit('Sorry, you MUST add the SickChill folder to the PYTHONPATH environment variable\n'
                      'or find another way to force Python to use {} for string encoding.'.format(sickbeard.SYS_ENCODING))
@@ -244,7 +242,7 @@ class SickChill(object):
         if self.console_logging and not ek(os.path.isfile, sickbeard.CONFIG_FILE):
             sys.stdout.write('Unable to find {0}, all settings will be default!\n'.format(sickbeard.CONFIG_FILE))
 
-        sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE, encoding='UTF-8')
+        sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE, encoding='UTF-8', options={'indent_type': '  '})
 
         # Initialize the config and our threads
         sickbeard.initialize(consoleLogging=self.console_logging)
@@ -328,7 +326,7 @@ class SickChill(object):
         """
         Fork off as a daemon
         """
-        # pylint: disable=protected-access
+
         # An object is accessed for a non-existent member.
         # Access to a protected member of a client class
         # Make a non-session-leader child process
@@ -366,7 +364,7 @@ class SickChill(object):
             logger.log('Writing PID: {pid} to {filename}'.format(pid=pid, filename=self.pid_file))
 
             try:
-                with io.open(self.pid_file, 'w') as f_pid:
+                with os.fdopen(os.open(self.pid_file, os.O_CREAT | os.O_WRONLY, 0o644), 'w') as f_pid:
                     f_pid.write('{0}\n'.format(pid))
             except EnvironmentError as error:
                 logger.log_error_and_exit('Unable to write PID file: {filename} Error {error_num}: {error_message}'.format
@@ -418,7 +416,7 @@ class SickChill(object):
                 cur_show = TVShow(sql_show[b'indexer'], sql_show[b'indexer_id'])
                 cur_show.nextEpisode()
                 sickbeard.showList.append(cur_show)
-            except Exception as error:  # pylint: disable=broad-except
+            except Exception as error:
                 logger.log('There was an error creating the show in {0}: Error {1}'.format
                            (sql_show[b'location'], error), logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)
@@ -443,7 +441,7 @@ class SickChill(object):
                     shutil.move(dst_file, bak_file)
                 shutil.move(src_file, dst_file)
             return True
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             return False
 
     def shutdown(self, event):
@@ -463,7 +461,7 @@ class SickChill(object):
 
                 try:
                     self.web_server.join(10)
-                except Exception:  # pylint: disable=broad-except
+                except Exception:
                     pass
 
             self.clear_cache()  # Clean cache
@@ -494,7 +492,7 @@ class SickChill(object):
 
         # Make sure the logger has stopped, just in case
         logger.shutdown()
-        os._exit(0)  # pylint: disable=protected-access
+        os._exit(0)
 
     @staticmethod
     def force_update():

@@ -22,9 +22,9 @@
 Common interface for Quality and Status
 """
 
-# pylint: disable=line-too-long
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import gettext
 import operator
 import platform
@@ -32,16 +32,20 @@ import re
 import uuid
 from os import path
 
-from fake_useragent import settings as UA_SETTINGS, UserAgent
+# Third Party Imports
+import fake_useragent
 # noinspection PyUnresolvedReferences
 from six.moves import reduce
 
+# First Party Imports
 import sickbeard
-from sickbeard.numdict import NumDict
 from sickchill.helper import video_screen_size
 from sickchill.helper.encoding import ek
 from sickchill.recompiled import tags
 from sickchill.tagger.episode import EpisodeTags
+
+# Local Folder Imports
+from .numdict import NumDict
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 
@@ -49,12 +53,13 @@ gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 # It is no different than us going to a provider if we have questions or issues. Be a team player here.
 # This is disabled, was only added for testing, and has no config.ini or web ui setting. To enable, set SPOOF_USER_AGENT = True
 SPOOF_USER_AGENT = False
-INSTANCE_ID = str(uuid.uuid1())
-USER_AGENT = ('SickChill.CE.1/(' + platform.system() + '; ' + platform.release() + '; ' + INSTANCE_ID + ')')
-UA_SETTINGS.DB = ek(path.abspath, ek(path.join, ek(path.dirname, __file__), '../lib/fake_useragent/ua.json'))
-UA_POOL = UserAgent()
+ua_pool = fake_useragent.FakeUserAgent(path=ek(path.join, ek(path.dirname, __file__), '../fake_useragent.ua.json'))
+
 if SPOOF_USER_AGENT:
-    USER_AGENT = UA_POOL.random
+    USER_AGENT = ua_pool.random
+else:
+    INSTANCE_ID = str(uuid.uuid1())
+    USER_AGENT = ('SickChill.CE.1/(' + platform.system() + '; ' + platform.release() + '; ' + INSTANCE_ID + ')')
 
 cpu_presets = {
     'HIGH': 5,
@@ -77,7 +82,7 @@ NOTIFY_LOGIN_TEXT = 7
 NOTIFY_POSTPROCESS = 8
 
 notifyStrings = NumDict({
-    # pylint: disable=undefined-variable
+
     NOTIFY_SNATCH: _("Started Download"),
     NOTIFY_DOWNLOAD: _("Finished Download"),
     NOTIFY_SUBTITLE_DOWNLOAD: _("Subtitle Download Finished"),
@@ -296,7 +301,7 @@ class Quality(object):
             return Quality.UNKNOWN
 
     @staticmethod
-    def scene_quality(name, anime=False):  # pylint: disable=too-many-branches, too-many-statements
+    def scene_quality(name, anime=False):
         """
         Return The quality from the scene episode File
 
@@ -331,31 +336,33 @@ class Quality(object):
             # SD TV
             elif sd_options:
                 result = Quality.SDTV
+        elif ep.hevc and not sickbeard.QUALITY_ALLOW_HEVC:
+            result = Quality.NONE
+        elif ep.mpeg:
+            result = Quality.RAWHDTV
         # Is it UHD?
         elif ep.vres in {2160, 4320} and ep.scan == 'p':
             # BluRay
             full_res = (ep.vres == 4320)
-            if ep.avc and ep.bluray:
+            if ep.bluray:
                 result = (Quality.UHD_4K_BLURAY, Quality.UHD_8K_BLURAY)[full_res]
             # WEB-DL
-            elif (ep.avc and (ep.itunes or ep.amazon or ep.netflix)) or ep.web:  # I think this ep.web should be in the `or` chain to also require ep.avc
+            elif ep.itunes or ep.amazon or ep.netflix or ep.web:
                 result = (Quality.UHD_4K_WEBDL, Quality.UHD_8K_WEBDL)[full_res]
             # HDTV
-            elif ep.avc and ep.tv == 'hd':
+            elif ep.tv == 'hd':
                 result = (Quality.UHD_4K_TV, Quality.UHD_8K_TV)[full_res]
-        elif ep.hevc and not sickbeard.QUALITY_ALLOW_HEVC:
-            result = Quality.NONE
         elif ep.vres in {1080, 720}:
             if ep.scan == 'p':
                 # BluRay
                 full_res = (ep.vres == 1080)
-                if ep.avc and (ep.bluray or ep.hddvd):
+                if ep.bluray or ep.hddvd:
                     result = (Quality.HDBLURAY, Quality.FULLHDBLURAY)[full_res]
                 # WEB-DL
-                elif (ep.avc and (ep.itunes or ep.amazon or ep.netflix)) or ep.web:  # I think this ep.web should be in the `or` chain to also require ep.avc
+                elif ep.itunes or ep.amazon or ep.netflix or ep.web:
                     result = (Quality.HDWEBDL, Quality.FULLHDWEBDL)[full_res]
                 # HDTV
-                elif ep.avc and (ep.tv == 'hd' or ep.hevc):
+                elif ep.tv == 'hd' or ep.hevc:
                     result = (Quality.HDTV, Quality.FULLHDTV)[full_res]  # 1080 HDTV h264
                 # MPEG2 encoded
                 elif all([full_res, ep.tv == 'hd', ep.mpeg]):
@@ -382,12 +389,15 @@ class Quality(object):
             result = Quality.SDDVD
         elif ep.tv:
             # SD TV/HD TV
-            result = Quality.SDTV
+            result = (Quality.SDTV, Quality.HDTV)[ep.tv == 'hd']
+        elif ep.raw or ep.mpeg:
+            # RawHD
+            result = Quality.RAWHDTV
 
         return Quality.UNKNOWN if result is None else result
 
     @staticmethod
-    def qualityFromFileMeta(filename):  # pylint: disable=too-many-branches
+    def qualityFromFileMeta(filename):
         """
         Get quality file file metadata
 
@@ -446,7 +456,7 @@ class Quality(object):
         return status, Quality.NONE
 
     @staticmethod
-    def sceneQualityFromName(name, quality):  # pylint: disable=too-many-branches
+    def sceneQualityFromName(name, quality):
         """
         Get scene naming parameters from filename and quality
 
@@ -599,7 +609,7 @@ class StatusStrings(NumDict):
 
 # Assign strings to statuses
 statusStrings = StatusStrings({
-    # pylint: disable=undefined-variable
+
     UNKNOWN: _("Unknown"),
     UNAIRED: _("Unaired"),
     SNATCHED: _("Snatched"),
@@ -615,7 +625,7 @@ statusStrings = StatusStrings({
 })
 
 
-class Overview(object):  # pylint: disable=too-few-public-methods
+class Overview(object):
     UNAIRED = UNAIRED  # 1
     SNATCHED = SNATCHED  # 2
     WANTED = WANTED  # 3

@@ -22,6 +22,16 @@ from __future__ import unicode_literals
 
 from distutils.command import install as du_install
 from distutils import log
+
+# (hberaud) do not use six here to import urlparse
+# to keep this module free from external dependencies
+# to avoid cross dependencies errors on minimal system
+# free from dependencies.
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
+
 import email
 import email.errors
 import os
@@ -81,14 +91,16 @@ def _any_existing(file_list):
 def get_reqs_from_files(requirements_files):
     existing = _any_existing(requirements_files)
 
+    # TODO(stephenfin): Remove this in pbr 6.0+
     deprecated = [f for f in existing if f in PY_REQUIREMENTS_FILES]
     if deprecated:
         warnings.warn('Support for \'-pyN\'-suffixed requirements files is '
-                      'deprecated in pbr 4.0 and will be removed in 5.0. '
+                      'removed in pbr 5.0 and these files are now ignored. '
                       'Use environment markers instead. Conflicting files: '
                       '%r' % deprecated,
                       DeprecationWarning)
 
+    existing = [f for f in existing if f not in PY_REQUIREMENTS_FILES]
     for requirements_file in existing:
         with open(requirements_file, 'r') as fil:
             return fil.read().split('\n')
@@ -96,18 +108,30 @@ def get_reqs_from_files(requirements_files):
     return []
 
 
+def egg_fragment(match):
+    return re.sub(r'(?P<PackageName>[\w.-]+)-'
+                  r'(?P<GlobalVersion>'
+                  r'(?P<VersionTripple>'
+                  r'(?P<Major>0|[1-9][0-9]*)\.'
+                  r'(?P<Minor>0|[1-9][0-9]*)\.'
+                  r'(?P<Patch>0|[1-9][0-9]*)){1}'
+                  r'(?P<Tags>(?:\-'
+                  r'(?P<Prerelease>(?:(?=[0]{1}[0-9A-Za-z-]{0})(?:[0]{1})|'
+                  r'(?=[1-9]{1}[0-9]*[A-Za-z]{0})(?:[0-9]+)|'
+                  r'(?=[0-9]*[A-Za-z-]+[0-9A-Za-z-]*)(?:[0-9A-Za-z-]+)){1}'
+                  r'(?:\.(?=[0]{1}[0-9A-Za-z-]{0})(?:[0]{1})|'
+                  r'\.(?=[1-9]{1}[0-9]*[A-Za-z]{0})(?:[0-9]+)|'
+                  r'\.(?=[0-9]*[A-Za-z-]+[0-9A-Za-z-]*)'
+                  r'(?:[0-9A-Za-z-]+))*){1}){0,1}(?:\+'
+                  r'(?P<Meta>(?:[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))){0,1}))',
+                  r'\g<PackageName>>=\g<GlobalVersion>',
+                  match.groups()[-1])
+
+
 def parse_requirements(requirements_files=None, strip_markers=False):
 
     if requirements_files is None:
         requirements_files = get_requirements_files()
-
-    def egg_fragment(match):
-        # take a versioned egg fragment and return a
-        # versioned package requirement e.g.
-        # nova-1.2.3 becomes nova>=1.2.3
-        return re.sub(r'([\w.]+)-([\w.-]+)',
-                      r'\1>=\2',
-                      match.groups()[-1])
 
     requirements = []
     for line in get_reqs_from_files(requirements_files):
@@ -116,7 +140,8 @@ def parse_requirements(requirements_files=None, strip_markers=False):
             continue
 
         # Ignore index URL lines
-        if re.match(r'^\s*(-i|--index-url|--extra-index-url).*', line):
+        if re.match(r'^\s*(-i|--index-url|--extra-index-url|--find-links).*',
+                    line):
             continue
 
         # Handle nested requirements files such as:
@@ -137,15 +162,20 @@ def parse_requirements(requirements_files=None, strip_markers=False):
         # such as:
         # -e git://github.com/openstack/nova/master#egg=nova
         # -e git://github.com/openstack/nova/master#egg=nova-1.2.3
-        if re.match(r'\s*-e\s+', line):
-            line = re.sub(r'\s*-e\s+.*#egg=(.*)$', egg_fragment, line)
-        # such as:
+        # -e git+https://foo.com/zipball#egg=bar&subdirectory=baz
         # http://github.com/openstack/nova/zipball/master#egg=nova
         # http://github.com/openstack/nova/zipball/master#egg=nova-1.2.3
-        elif re.match(r'\s*(https?|git(\+(https|ssh))?):', line):
-            line = re.sub(r'\s*(https?|git(\+(https|ssh))?):.*#egg=(.*)$',
-                          egg_fragment, line)
+        # git+https://foo.com/zipball#egg=bar&subdirectory=baz
+        # git+[ssh]://github.com/openstack/nova/zipball/master#egg=nova-1.2.3
+        # hg+[ssh]://github.com/openstack/nova/zipball/master#egg=nova-1.2.3
+        # svn+[proto]://github.com/openstack/nova/zipball/master#egg=nova-1.2.3
         # -f lines are for index locations, and don't get used here
+        if re.match(r'\s*-e\s+', line):
+            extract = re.match(r'\s*-e\s+(.*)$', line)
+            line = extract.group(1)
+        egg = urlparse(line)
+        if egg.scheme:
+            line = re.sub(r'egg=([^&]+).*$', egg_fragment, egg.fragment)
         elif re.match(r'\s*-f\s+', line):
             line = None
             reason = 'Index Location'
@@ -179,7 +209,7 @@ def parse_dependency_links(requirements_files=None):
         if re.match(r'\s*-[ef]\s+', line):
             dependency_links.append(re.sub(r'\s*-[ef]\s+', '', line))
         # lines that are only urls can go in unmolested
-        elif re.match(r'\s*(https?|git(\+(https|ssh))?):', line):
+        elif re.match(r'^\s*(https?|git(\+(https|ssh))?|svn|hg)\S*:', line):
             dependency_links.append(line)
     return dependency_links
 
@@ -217,8 +247,14 @@ class TestrTest(testr_command.Testr):
     """Make setup.py test do the right thing."""
 
     command_name = 'test'
+    description = 'DEPRECATED: Run unit tests using testr'
 
     def run(self):
+        warnings.warn('testr integration is deprecated in pbr 4.2 and will '
+                      'be removed in a future release. Please call your test '
+                      'runner directly',
+                      DeprecationWarning)
+
         # Can't use super - base class old-style class
         testr_command.Testr.run(self)
 
@@ -292,6 +328,7 @@ except ImportError:
 def have_nose():
     return _have_nose
 
+
 _wsgi_text = """#PBR Generated from %(group)r
 
 import threading
@@ -303,8 +340,6 @@ if __name__ == "__main__":
     import socket
     import sys
     import wsgiref.simple_server as wss
-
-    my_ip = socket.gethostbyname(socket.gethostname())
 
     parser = argparse.ArgumentParser(
         description=%(import_target)s.__doc__,
@@ -409,6 +444,8 @@ class LocalDevelop(develop.develop):
     command_name = 'develop'
 
     def install_wrapper_scripts(self, dist):
+        if sys.platform == 'win32':
+            return develop.develop.install_wrapper_scripts(self, dist)
         if not self.exclude_scripts:
             for args in override_get_script_args(dist):
                 self.write_script(*args)
@@ -462,7 +499,13 @@ class LocalInstallScripts(install_scripts.install_scripts):
             # entry-points listed for this package.
             return
 
-        for args in override_get_script_args(dist, executable, is_wininst):
+        if os.name != 'nt':
+            get_script_args = override_get_script_args
+        else:
+            get_script_args = easy_install.get_script_args
+            executable = '"%s"' % executable
+
+        for args in get_script_args(dist, executable, is_wininst):
             self.write_script(*args)
 
 
@@ -480,6 +523,15 @@ class LocalManifestMaker(egg_info.manifest_maker):
             self.filelist.process_template_line(template_line)
 
     def add_defaults(self):
+        """Add all the default files to self.filelist:
+
+        Extends the functionality provided by distutils to also included
+        additional sane defaults, such as the ``AUTHORS`` and ``ChangeLog``
+        files generated by *pbr*.
+
+        Warns if (``README`` or ``README.txt``) or ``setup.py`` are missing;
+        everything else is optional.
+        """
         option_dict = self.distribution.get_option_dict('pbr')
 
         sdist.sdist.add_defaults(self)
@@ -552,6 +604,13 @@ class LocalSDist(sdist.sdist):
         if hasattr(self, '_has_reno'):
             return self._has_reno
 
+        option_dict = self.distribution.get_option_dict('pbr')
+        should_skip = options.get_boolean_option(option_dict, 'skip_reno',
+                                                 'SKIP_GENERATE_RENO')
+        if should_skip:
+            self._has_reno = False
+            return False
+
         try:
             # versions of reno witout this module will not have the required
             # feature, hence the import
@@ -593,6 +652,7 @@ class LocalSDist(sdist.sdist):
             self.filelist.extend(self._files)
             self.filelist.sort()
         sdist.sdist.make_distribution(self)
+
 
 try:
     from pbr import builddoc

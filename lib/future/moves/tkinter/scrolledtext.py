@@ -10,4 +10,3 @@ else:
     except ImportError:
         raise ImportError('The ScrolledText module is missing. Does your Py2 '
                           'installation include tkinter?')
-

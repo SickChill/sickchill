@@ -16,12 +16,12 @@ MAPPING = {'UserDict':  'collections',
 
 # def alternates(members):
 #     return "(" + "|".join(map(repr, members)) + ")"
-# 
-# 
+#
+#
 # def build_pattern(mapping=MAPPING):
 #     mod_list = ' | '.join(["module_name='%s'" % key for key in mapping])
 #     bare_names = alternates(mapping.keys())
-# 
+#
 #     yield """name_import=import_name< 'import' ((%s) |
 #                multiple_imports=dotted_as_names< any* (%s) any* >) >
 #           """ % (mod_list, mod_list)
@@ -33,7 +33,7 @@ MAPPING = {'UserDict':  'collections',
 #                multiple_imports=dotted_as_names<
 #                  any* dotted_as_name< (%s) 'as' any > any* >) >
 #           """ % (mod_list, mod_list)
-# 
+#
 #     # Find usages of module members in code e.g. thread.foo(bar)
 #     yield "power< bare_with_attr=(%s) trailer<'.' any > any* >" % bare_names
 
@@ -100,4 +100,3 @@ class FixUserdict(FixImports):
             new_name = self.replace.get(bare_name.value)
             if new_name:
                 bare_name.replace(Name(new_name, prefix=bare_name.prefix))
-

@@ -35,4 +35,3 @@ class FixExecfile(fixer_base.BaseFix):
     def transform(self, node, results):
         name = results["name"]
         touch_import_top(u'past.builtins', name.value, node)
-

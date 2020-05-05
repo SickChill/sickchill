@@ -18,12 +18,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import re
 
+# Third Party Imports
 from requests.compat import urljoin
 
+# First Party Imports
 from sickbeard import helpers, logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickchill.helper.common import convert_size
@@ -43,7 +46,7 @@ class newpctProvider(TorrentProvider):
 
         self.cache = tvcache.TVCache(self, min_time=20)
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals
+    def search(self, search_strings, age=0, ep_obj=None):
         """
         Search query:
         http://www.newpct.com/index.php?l=doSearch&q=fringe&category_=All&idioma_=1&bus_de_=All
@@ -133,7 +136,7 @@ class newpctProvider(TorrentProvider):
 
         return results
 
-    def get_url(self, url, post_data=None, params=None, timeout=30, **kwargs):  # pylint: disable=too-many-arguments
+    def get_url(self, url, post_data=None, params=None, timeout=30, **kwargs):
         """
         returns='content' when trying access to torrent info (For calling torrent client). Previously we must parse
         the URL to get torrent file

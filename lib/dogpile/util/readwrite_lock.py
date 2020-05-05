@@ -1,6 +1,7 @@
+import logging
+
 from .compat import threading
 
-import logging
 log = logging.getLogger(__name__)
 
 
@@ -67,8 +68,10 @@ class ReadWriteMutex(object):
                 if self.current_sync_operation is not None:
                     self.condition.notifyAll()
             elif self.async_ < 0:
-                raise LockError("Synchronizer error - too many "
-                                "release_read_locks called")
+                raise LockError(
+                    "Synchronizer error - too many "
+                    "release_read_locks called"
+                )
             log.debug("%s released read lock", self)
         finally:
             self.condition.release()
@@ -116,8 +119,10 @@ class ReadWriteMutex(object):
         self.condition.acquire()
         try:
             if self.current_sync_operation is not threading.currentThread():
-                raise LockError("Synchronizer error - current thread doesn't "
-                                "have the write lock")
+                raise LockError(
+                    "Synchronizer error - current thread doesn't "
+                    "have the write lock"
+                )
 
             # reset the current sync operation so
             # another can get it

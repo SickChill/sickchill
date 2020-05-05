@@ -10,7 +10,8 @@ places the value as given into the dictionary.
 
 """
 
-from ..api import CacheBackend, NO_VALUE
+from ..api import CacheBackend
+from ..api import NO_VALUE
 from ...util.compat import pickle
 
 
@@ -47,6 +48,7 @@ class MemoryBackend(CacheBackend):
 
 
     """
+
     pickle_values = False
 
     def __init__(self, arguments):
@@ -59,13 +61,10 @@ class MemoryBackend(CacheBackend):
         return value
 
     def get_multi(self, keys):
-        ret = [
-            self._cache.get(key, NO_VALUE)
-            for key in keys]
+        ret = [self._cache.get(key, NO_VALUE) for key in keys]
         if self.pickle_values:
             ret = [
-                pickle.loads(value)
-                if value is not NO_VALUE else value
+                pickle.loads(value) if value is not NO_VALUE else value
                 for value in ret
             ]
         return ret
@@ -121,4 +120,5 @@ class MemoryPickleBackend(MemoryBackend):
     .. versionadded:: 0.5.3
 
     """
+
     pickle_values = True

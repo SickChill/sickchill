@@ -10,4 +10,3 @@ else:
     except ImportError:
         raise ImportError('The Dialog module is missing. Does your Py2 '
                           'installation include tkinter?')
-

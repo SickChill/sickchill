@@ -16,17 +16,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
-from anime import ConfigAnime
-from backup import ConfigBackupRestore
-from index import Config
-from general import ConfigGeneral
-from notifications import ConfigNotifications
-from post_processing import ConfigPostProcessing
-from providers import ConfigProviders
-from search import ConfigSearch
-from shares import ConfigShares
-from subtitles import ConfigSubtitles
+# Local Folder Imports
+from .anime import ConfigAnime
+from .backup import ConfigBackupRestore
+from .general import ConfigGeneral
+from .index import Config
+from .notifications import ConfigNotifications
+from .post_processing import ConfigPostProcessing
+from .providers import ConfigProviders
+from .search import ConfigSearch
+from .shares import ConfigShares
+from .subtitles import ConfigSubtitles

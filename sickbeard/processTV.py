@@ -18,23 +18,29 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 import shutil
 import stat
+import traceback
 
+# Third Party Imports
 from rarfile import BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRCError, RarExecError, RarFile, RarOpenError, RarWrongPassword
 
+# First Party Imports
 import sickbeard
-from sickbeard import common, db, failedProcessor, helpers, logger, postProcessor
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper.common import is_sync_file, is_torrent_or_nzb_file
-from sickchill.helper.encoding import ek, ss
+from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import EpisodePostProcessingFailedException, ex, FailedPostProcessingFailedException
 
+# Local Folder Imports
+from . import common, db, failedProcessor, helpers, logger, postProcessor
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
-class ProcessResult(object):  # pylint: disable=too-few-public-methods
+
+class ProcessResult(object):
     def __init__(self):
         self.result = True
         self.output = ''
@@ -125,7 +131,6 @@ def log_helper(message, level=logger.INFO):
     return message + "\n"
 
 
-# pylint: disable=too-many-arguments,too-many-branches,too-many-statements,too-many-locals
 def process_dir(process_path, release_name=None, process_method=None, force=False, is_priority=None, delete_on=False, failed=False, mode="auto"):
     """
     Scans through the files in process_path and processes whatever media files it finds
@@ -139,117 +144,119 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
     :param failed: Boolean for whether or not the download failed
     :param mode: Type of postprocessing auto or manual
     """
-
     result = ProcessResult()
+    try:
+        # if they passed us a real dir then assume it's the one we want
+        if ek(os.path.isdir, process_path):
+            process_path = ek(os.path.realpath, process_path)
+            result.output += log_helper("Processing in folder {0}".format(process_path), logger.DEBUG)
 
-    # if they passed us a real dir then assume it's the one we want
-    if ek(os.path.isdir, process_path):
-        process_path = ek(os.path.realpath, process_path)
-        result.output += log_helper("Processing in folder {0}".format(process_path), logger.DEBUG)
+        # if the client and SickChill are not on the same machine translate the directory into a network directory
+        elif all([sickbeard.TV_DOWNLOAD_DIR,
+                  ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR),
+                  ek(os.path.normpath, process_path) == ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)]):
+            process_path = ek(os.path.join, sickbeard.TV_DOWNLOAD_DIR, ek(os.path.abspath, process_path).split(os.path.sep)[-1])
+            result.output += log_helper("Trying to use folder: {0} ".format(process_path), logger.DEBUG)
 
-    # if the client and SickChill are not on the same machine translate the directory into a network directory
-    elif all([sickbeard.TV_DOWNLOAD_DIR,
-              ek(os.path.isdir, sickbeard.TV_DOWNLOAD_DIR),
-              ek(os.path.normpath, process_path) == ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR)]):
-        process_path = ek(os.path.join, sickbeard.TV_DOWNLOAD_DIR, ek(os.path.abspath, process_path).split(os.path.sep)[-1])
-        result.output += log_helper("Trying to use folder: {0} ".format(process_path), logger.DEBUG)
+        # if we didn't find a real dir then quit
+        if not ek(os.path.isdir, process_path):
+            result.output += log_helper("Unable to figure out what folder to process. "
+                                        "If your downloader and SickChill aren't on the same PC "
+                                        "make sure you fill out your TV download dir in the config.",
+                                        logger.DEBUG)
+            return result.output
 
-    # if we didn't find a real dir then quit
-    if not ek(os.path.isdir, process_path):
-        result.output += log_helper("Unable to figure out what folder to process. "
-                                    "If your downloader and SickChill aren't on the same PC "
-                                    "make sure you fill out your TV download dir in the config.",
-                                    logger.DEBUG)
+        process_method = process_method or sickbeard.PROCESS_METHOD
+
+        directories_from_rars = set()
+
+        # If we have a release name (probably from nzbToMedia), and it is a rar/video, only process that file
+        if release_name and (helpers.is_media_file(release_name) or helpers.is_rar_file(release_name)):
+            result.output += log_helper("Processing {}".format(release_name), logger.INFO)
+            generator_to_use = [(process_path, [], [release_name])]
+        else:
+            result.output += log_helper("Processing {}".format(process_path), logger.INFO)
+            generator_to_use = ek(os.walk, process_path, followlinks=sickbeard.PROCESSOR_FOLLOW_SYMLINKS)
+
+        for current_directory, directory_names, file_names in generator_to_use:
+            result.result = True
+
+            file_names = [f for f in file_names if not is_torrent_or_nzb_file(f)]
+            rar_files = [x for x in file_names if helpers.is_rar_file(ek(os.path.join, current_directory, x))]
+            if rar_files:
+                extracted_directories = unrar(current_directory, rar_files, force, result)
+                if extracted_directories:
+                    for extracted_directory in extracted_directories:
+                        if extracted_directory.split(current_directory)[-1] not in directory_names:
+                            result.output += log_helper(
+                                "Adding extracted directory to the list of directories to process: {0}".format(extracted_directory), logger.DEBUG
+                            )
+                            directories_from_rars.add(extracted_directory)
+
+            if not validate_dir(current_directory, release_name, failed, result):
+                continue
+
+            video_files = filter(helpers.is_media_file, file_names)
+            if video_files:
+                process_media(current_directory, video_files, release_name, process_method, force, is_priority, result)
+            else:
+                result.result = False
+
+            # Delete all file not needed and avoid deleting files if Manual PostProcessing
+            if not(process_method == "move" and result.result) or (mode == "manual" and not delete_on):
+                continue
+
+            # noinspection PyTypeChecker
+            unwanted_files = filter(lambda x: x in video_files + rar_files, file_names)
+            if unwanted_files:
+                result.output += log_helper("Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
+
+            delete_folder(ek(os.path.join, current_directory, '@eaDir'), False)
+            delete_files(current_directory, unwanted_files, result)
+            if delete_folder(current_directory, check_empty=not delete_on):
+                result.output += log_helper("Deleted folder: {0}".format(current_directory), logger.DEBUG)
+
+        # For processing extracted rars, only allow methods 'move' and 'copy'.
+        # On different methods fall back to 'move'.
+        method_fallback = ('move', process_method)[process_method in ('move', 'copy')]
+
+        # auto post-processing deletes rar content by default if method is 'move',
+        # sickbeard.DELRARCONTENTS allows to override even if method is NOT 'move'
+        # manual post-processing will only delete when prompted by delete_on
+        delete_rar_contents = any([sickbeard.DELRARCONTENTS and mode != 'manual',
+                                   not sickbeard.DELRARCONTENTS and mode == 'auto' and method_fallback == 'move',
+                                   mode == 'manual' and delete_on])
+
+        for directory_from_rar in directories_from_rars:
+            process_dir(
+                process_path=directory_from_rar,
+                release_name=ek(os.path.basename, directory_from_rar),
+                process_method=method_fallback,
+                force=force,
+                is_priority=is_priority,
+                delete_on=delete_rar_contents,
+                failed=failed,
+                mode=mode
+            )
+
+            # Delete rar file only if the extracted dir was successfully processed
+            if mode == 'auto' and method_fallback == 'move' or mode == 'manual' and delete_on:
+                this_rar = [rar_file for rar_file in rar_files if os.path.basename(directory_from_rar) == rar_file.rpartition('.')[0]]
+                delete_files(current_directory, this_rar, result) # Deletes only if result.result == True
+
+        result.output += log_helper(("Processing Failed", "Successfully processed")[result.aggresult], (logger.WARNING, logger.INFO)[result.aggresult])
+        if result.missed_files:
+            result.output += log_helper("Some items were not processed.")
+            for missed_file in result.missed_files:
+                result.output += log_helper(missed_file)
+
+        return result.output
+    except Exception as error:
+        logger.log(traceback.format_exc(), logger.DEBUG)
         return result.output
 
-    process_method = process_method or sickbeard.PROCESS_METHOD
 
-    directories_from_rars = set()
-
-    # If we have a release name (probably from nzbToMedia), and it is a rar/video, only process that file
-    if release_name and (helpers.is_media_file(release_name) or helpers.is_rar_file(release_name)):
-        result.output += log_helper("Processing {}".format(release_name), logger.INFO)
-        generator_to_use = [(process_path, [], [release_name])]
-    else:
-        result.output += log_helper("Processing {}".format(process_path), logger.INFO)
-        generator_to_use = ek(os.walk, process_path, followlinks=sickbeard.PROCESSOR_FOLLOW_SYMLINKS)
-
-    for current_directory, directory_names, file_names in generator_to_use:
-        result.result = True
-
-        file_names = [f for f in file_names if not is_torrent_or_nzb_file(f)]
-        rar_files = [x for x in file_names if helpers.is_rar_file(ek(os.path.join, current_directory, x))]
-        if rar_files:
-            extracted_directories = unrar(current_directory, rar_files, force, result)
-            if extracted_directories:
-                for extracted_directory in extracted_directories:
-                    if extracted_directory.split(current_directory)[-1] not in directory_names:
-                        result.output += log_helper(
-                            "Adding extracted directory to the list of directories to process: {0}".format(extracted_directory), logger.DEBUG
-                        )
-                        directories_from_rars.add(extracted_directory)
-
-        if not validate_dir(current_directory, release_name, failed, result):
-            continue
-
-        video_files = filter(helpers.is_media_file, file_names)
-        if video_files:
-            process_media(current_directory, video_files, release_name, process_method, force, is_priority, result)
-        else:
-            result.result = False
-
-        # Delete all file not needed and avoid deleting files if Manual PostProcessing
-        if not(process_method == "move" and result.result) or (mode == "manual" and not delete_on):
-            continue
-
-        # noinspection PyTypeChecker
-        unwanted_files = filter(lambda x: x in video_files + rar_files, file_names)
-        if unwanted_files:
-            result.output += log_helper("Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
-
-        delete_folder(ek(os.path.join, current_directory, '@eaDir'), False)
-        delete_files(current_directory, unwanted_files, result)
-        if delete_folder(current_directory, check_empty=not delete_on):
-            result.output += log_helper("Deleted folder: {0}".format(current_directory), logger.DEBUG)
-
-    # For processing extracted rars, only allow methods 'move' and 'copy'.
-    # On different methods fall back to 'move'.
-    method_fallback = ('move', process_method)[process_method in ('move', 'copy')]
-
-    # auto post-processing deletes rar content by default if method is 'move',
-    # sickbeard.DELRARCONTENTS allows to override even if method is NOT 'move'
-    # manual post-processing will only delete when prompted by delete_on
-    delete_rar_contents = any([sickbeard.DELRARCONTENTS and mode != 'manual',
-                               not sickbeard.DELRARCONTENTS and mode == 'auto' and method_fallback == 'move',
-                               mode == 'manual' and delete_on])
-
-    for directory_from_rar in directories_from_rars:
-        process_dir(
-            process_path=directory_from_rar,
-            release_name=ek(os.path.basename, directory_from_rar),
-            process_method=method_fallback,
-            force=force,
-            is_priority=is_priority,
-            delete_on=delete_rar_contents,
-            failed=failed,
-            mode=mode
-        )
-
-        # Delete rar file only if the extracted dir was successfully processed
-        if mode == 'auto' and method_fallback == 'move' or mode == 'manual' and delete_on:
-            this_rar = [rar_file for rar_file in rar_files if os.path.basename(directory_from_rar) == rar_file.rpartition('.')[0]]
-            delete_files(current_directory, this_rar, result) # Deletes only if result.result == True
-
-    result.output += log_helper(("Processing Failed", "Successfully processed")[result.aggresult], (logger.WARNING, logger.INFO)[result.aggresult])
-    if result.missed_files:
-        result.output += log_helper("Some items were not processed.")
-        for missed_file in result.missed_files:
-            result.output += log_helper(missed_file)
-
-    return result.output
-
-
-def validate_dir(process_path, release_name, failed, result):  # pylint: disable=too-many-locals,too-many-branches,too-many-return-statements
+def validate_dir(process_path, release_name, failed, result):
     """
     Check if directory is valid for processing
 
@@ -263,13 +270,13 @@ def validate_dir(process_path, release_name, failed, result):  # pylint: disable
     result.output += log_helper("Processing folder " + process_path, logger.DEBUG)
 
     upper_name = ek(os.path.basename, process_path).upper()
-    if upper_name.startswith('_FAILED_') or upper_name.endswith('_FAILED_'):
+    if upper_name.startswith('_FAILED_') or upper_name.endswith('_FAILED_') or (os.sep + '_FAILED_') in upper_name or ('_FAILED_' + os.sep ) in upper_name:
         result.output += log_helper("The directory name indicates it failed to extract.", logger.DEBUG)
         failed = True
-    elif upper_name.startswith('_UNDERSIZED_') or upper_name.endswith('_UNDERSIZED_'):
+    elif upper_name.startswith('_UNDERSIZED_') or upper_name.endswith('_UNDERSIZED_') or (os.sep + '_UNDERSIZED_') in upper_name or ('_UNDERSIZED_' + os.sep ) in upper_name:
         result.output += log_helper("The directory name indicates that it was previously rejected for being undersized.", logger.DEBUG)
         failed = True
-    elif upper_name.startswith('_UNPACK') or upper_name.endswith('_UNPACK'):
+    elif upper_name.startswith('_UNPACK') or upper_name.endswith('_UNPACK') or (os.sep + '_UNPACK') in upper_name or ('_UNPACK' + os.sep ) in upper_name:
         result.output += log_helper("The directory name indicates that this release is in the process of being unpacked.", logger.DEBUG)
         result.missed_files.append("{0} : Being unpacked".format(process_path))
         return False
@@ -316,7 +323,7 @@ def validate_dir(process_path, release_name, failed, result):  # pylint: disable
             try:
                 NameParser().parse(found_file, cache_result=False)
             except (InvalidNameException, InvalidShowException) as e:
-                pass
+                logger.log('Could not properly parse a show and episode from [{}]'.format(found_file), logger.DEBUG)
             else:
                 return True
 
@@ -324,7 +331,7 @@ def validate_dir(process_path, release_name, failed, result):  # pylint: disable
     return False
 
 
-def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,too-many-statements
+def unrar(path, rar_files, force, result):
     """
     Extracts RAR files
 
@@ -428,7 +435,7 @@ def unrar(path, rar_files, force, result):  # pylint: disable=too-many-branches,
     return unpacked_dirs
 
 
-def already_processed(process_path, video_file, force, result):  # pylint: disable=unused-argument
+def already_processed(process_path, video_file, force, result):
     """
     Check if we already post processed a file
 
@@ -453,7 +460,7 @@ def already_processed(process_path, video_file, force, result):  # pylint: disab
     try:  # if it fails to find any info (because we're doing an unparsable folder (like the TV root dir) it will throw an exception, which we want to ignore
         parse_result = NameParser(process_path, tryIndexers=True).parse(process_path)
     except (InvalidNameException, InvalidShowException):  # ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
-        parse_result = False  # pylint: disable=redefined-variable-type
+        parse_result = False
 
     search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid" # This part is always the same
     search_sql += " WHERE history.season=tv_episodes.season AND history.episode=tv_episodes.episode"
@@ -473,7 +480,7 @@ def already_processed(process_path, video_file, force, result):  # pylint: disab
     return False
 
 
-def process_media(process_path, video_files, release_name, process_method, force, is_priority, result):  # pylint: disable=too-many-arguments
+def process_media(process_path, video_files, release_name, process_method, force, is_priority, result):
     """
     Postprocess mediafiles
 

@@ -16,20 +16,21 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import os
 import re
 import time
 
+# Third Party Imports
 from mako.exceptions import RichTraceback
 from mako.lookup import TemplateLookup
 from mako.runtime import UNDEFINED
 from mako.template import Template
 from tornado.escape import linkify
 
+# First Party Imports
 import sickbeard
 from sickbeard import classes, helpers
 from sickchill.helper.encoding import ek
@@ -99,6 +100,8 @@ class PageTemplate(Template):
         self.arguments['action'] = "FixME"
         self.arguments['show'] = UNDEFINED
         self.arguments['manage_torrents_url'] = helpers.manage_torrents_url()
+        self.arguments['get_current_user'] = rh.get_current_user
+        self.arguments['remote_ip'] = rh.request.remote_ip
 
     def render(self, *args, **kwargs):
         for key in self.arguments:

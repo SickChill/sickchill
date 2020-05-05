@@ -55,10 +55,10 @@ class TVShowTests(test.SickbeardTestDBCase):
         """
         test change indexer id
         """
-        show = TVShow(1, 1, "en")
+        show = TVShow(1, 257655, "en")
         show.name = "show name"
         show.network = "cbs"
-        show.genre = "crime"
+        show.genre = ["crime"]
         show.runtime = 40
         show.status = "Ended"
         show.default_ep_status = "5"
@@ -68,11 +68,11 @@ class TVShowTests(test.SickbeardTestDBCase):
         show.saveToDB()
         show.loadFromDB()
 
-        show.indexerid = 2
+        show.indexerid = 295759
         show.saveToDB()
         show.loadFromDB()
 
-        self.assertEqual(show.indexerid, 2)
+        self.assertEqual(show.indexerid, 295759)
 
     def test_set_name(self):
         """
@@ -127,7 +127,7 @@ class TVTests(test.SickbeardTestDBCase):
         show = TVShow(1, 1, "en")
         show.name = "show name"
         show.network = "cbs"
-        show.genre = "crime"
+        show.genre = ["crime"]
         show.runtime = 40
         show.status = "Ended"
         show.default_ep_status = "5"

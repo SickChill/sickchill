@@ -8,6 +8,7 @@
     from sickbeard.helpers import anon_url
     from sickbeard import sbdatetime
     from sickbeard.common import Quality
+    from sickchill import indexer as show_indexer
 
     SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list
 %>
@@ -106,6 +107,7 @@
                                 <th>${_('Airdate')} (${('local', 'network')[sickbeard.TIMEZONE_DISPLAY == 'network']})</th>
                                 <th>${_('Ends')}</th>
                                 <th>${_('Show')}</th>
+                                <th>${_('Banner')}</th>
                                 <th>${_('Next Ep')}</th>
                                 <th>${_('Next Ep Name')}</th>
                                 <th>${_('Network')}</th>
@@ -166,6 +168,14 @@
                                             <span class="pause">[paused]</span>
                                         % endif
                                     </td>
+                                    <td class="banner">
+                                        <a href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">
+                                            <img alt="" class="bannerThumb"
+                                                 src="${static_url("images/banner.png")}"
+                                                 data-src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result[b'showid'], 'banner_thumb'))}"
+                                            />
+                                        </a>
+                                    </td>
                                     <td nowrap="nowrap" align="center">
                                         ${'S%02iE%02i' % (int(cur_result[b'season']), int(cur_result[b'episode']))}
                                     </td>
@@ -194,12 +204,17 @@
                                                title="http://www.imdb.com/title/${cur_result[b'imdb_id']}">
                                                 <span class="displayshow-icon-imdb"></span>
                                             </a>
+                                            <a href="${anon_url('https://trakt.tv/shows/', cur_result[b'imdb_id'])}" rel="noreferrer"
+                                               onclick="window.open(this.href, '_blank'); return false;"
+                                               title="https://trakt.tv/shows/${cur_result[b'imdb_id']}">
+                                                <span class="displayshow-icon-trakt" />
+                                            </a>
                                         % endif
-                                        <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result[b'showid'])}"
+                                        <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result[b'showid'])}"
                                            rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
-                                           title="${sickbeard.indexerApi(cur_indexer).config['show_url']}${cur_result[b'showid']}">
-                                            <img alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16"
-                                                 src="${static_url('images/indexers/' + sickbeard.indexerApi(cur_indexer).config['icon'])}"/>
+                                           title="${show_indexer.show_url(cur_indexer)}${cur_result[b'showid']}">
+                                            <img alt="${show_indexer.name(cur_indexer)}" height="16" width="16"
+                                                 src="${static_url(show_indexer.icon(cur_indexer))}"/>
                                         </a>
                                     </td>
                                     <td align="center">
@@ -215,7 +230,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th rowspan="1" colspan="10" align="center">&nbsp</th>
+                                <th rowspan="1" colspan="11" align="center">&nbsp</th>
                             </tr>
                         </tfoot>
                     </table>
@@ -266,7 +281,9 @@
                                                 <td class="calendarShow">
                                                     <div class="poster">
                                                         <a title="${cur_result[b'show_name']}" href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">
-                                                            <img alt="" src="${srRoot}/showPoster/?show=${cur_result[b'showid']}&amp;which=poster_thumb"/>
+                                                            <img alt=""
+                                                                 src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result[b'showid'], 'poster_thumb'))}"
+                                                            />
                                                         </a>
                                                     </div>
                                                     <div class="text">
@@ -413,7 +430,8 @@
                                     <th ${('class="nobg"', 'rowspan="3"')[layout == 'poster']} valign="top">
                                         <a href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">
                                             <img alt="" class="${('posterThumb', 'bannerThumb')[layout == 'banner']}"
-                                                 src="${srRoot}/showPoster/?show=${cur_result[b'showid']}&amp;which=${(layout, 'poster_thumb')[layout == 'poster']}"/>
+                                                 src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result[b'showid'], (layout, 'poster_thumb')[layout == 'poster']))}"
+                                            />
                                         </a>
                                     </th>
                                 </tr>
@@ -432,12 +450,16 @@
                                                    onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result[b'imdb_id']}">
                                                     <span class="displayshow-icon-imdb"></span>
                                                 </a>
+                                                <a href="${anon_url('https://trakt.tv/shows/', cur_result[b'imdb_id'])}" rel="noreferrer"
+                                                   onclick="window.open(this.href, '_blank'); return false;" title="https://trakt.tv/shows/${cur_result[b'imdb_id']}">
+                                                    <span class="displayshow-icon-trakt" />
+                                                </a>
                                             % endif
-                                            <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result[b'showid'])}"
+                                            <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result[b'showid'])}"
                                                rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
-                                               title="${sickbeard.indexerApi(cur_indexer).config['show_url']}"><img
-                                                    alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16"
-                                                    src="${static_url('images/indexers/' + sickbeard.indexerApi(cur_indexer).config['icon'])}"/>
+                                               title="${show_indexer.show_url(cur_indexer)}"><img
+                                                    alt="${show_indexer.name(cur_indexer)}" height="16" width="16"
+                                                    src="${static_url(show_indexer.icon(cur_indexer))}"/>
                                             </a>
                                             <span>
                                                 <a href="${srRoot}/home/searchEpisode?show=${cur_result[b'showid']}&amp;season=${cur_result[b'season']}&amp;episode=${cur_result[b'episode']}"

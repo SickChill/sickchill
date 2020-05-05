@@ -61,33 +61,30 @@ this::
 
     $ python3
 
-    >>> from past import autotranslate
+    >>> from past.translation import autotranslate
     >>> authotranslate('mypy2module')
     >>> import mypy2module
 
 until the authors of the Python 2 modules have upgraded their code. Then, for
 example::
-    
+
     >>> mypy2module.func_taking_py2_string(oldstr(b'abcd'))
 
 
 Credits
 -------
 
-:Author:  Ed Schofield
+:Author:  Ed Schofield, Jordan M. Adler, et al
 :Sponsor: Python Charmers Pty Ltd, Australia: http://pythoncharmers.com
 
 
 Licensing
 ---------
-Copyright 2013-2016 Python Charmers Pty Ltd, Australia.
+Copyright 2013-2019 Python Charmers Pty Ltd, Australia.
 The software is distributed under an MIT licence. See LICENSE.txt.
 """
 
-
-from past.translation import install_hooks as autotranslate
 from future import __version__, __copyright__, __license__
 
 __title__ = 'past'
 __author__ = 'Ed Schofield'
-

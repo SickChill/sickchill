@@ -17,23 +17,26 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import re
 import time
 from base64 import b16encode, b32decode
 from hashlib import sha1
 
+# Third Party Imports
 import bencode
 import six
 from requests.compat import urlencode
 from requests.models import HTTPError
 
+# First Party Imports
 import sickbeard
 from sickbeard import helpers, logger
 
 
-class GenericClient(object):  # pylint: disable=too-many-instance-attributes
+class GenericClient(object):
     def __init__(self, name, host=None, username=None, password=None):
         """
         Initializes the client
@@ -44,9 +47,9 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
         """
 
         self.name = name
-        self.username = sickbeard.TORRENT_USERNAME if not username else username
-        self.password = sickbeard.TORRENT_PASSWORD if not password else password
-        self.host = sickbeard.TORRENT_HOST if not host else host
+        self.username = username or sickbeard.TORRENT_USERNAME
+        self.password = password or sickbeard.TORRENT_PASSWORD
+        self.host = host or sickbeard.TORRENT_HOST
 
         self.url = None
         self.response = None
@@ -55,7 +58,7 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
         self.session = helpers.make_session()
         self.session.auth = (self.username, self.password)
 
-    def _request(self, method='get', params=None, data=None, files=None, cookies=None):  # pylint: disable=too-many-arguments, too-many-return-statements
+    def _request(self, method='get', params=None, data=None, files=None, cookies=None):
         """
         Makes the actual request for the client, for everything except auth
         """

@@ -9,5 +9,4 @@ from hachoir_parser.archive.rar import RarFile
 from hachoir_parser.archive.rpm import RpmFile
 from hachoir_parser.archive.sevenzip import SevenZipParser
 from hachoir_parser.archive.mar import MarFile
-from hachoir_parser.archive.mozilla_ar import MozillaArchive
-from hachoir_parser.archive.zlib import ZlibData
+

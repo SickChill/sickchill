@@ -18,22 +18,26 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import os
 import re
 import threading
 import traceback
 
+# First Party Imports
 import sickbeard
-from sickbeard import clients, common, db, failed_history, helpers, history, logger, notifiers, nzbget, nzbSplitter, sab, show_name_helpers, ui
-from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper.common import try_int
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import AuthException, ex
 from sickchill.providers.GenericProvider import GenericProvider
+
+# Local Folder Imports
+from . import clients, common, db, failed_history, helpers, history, logger, notifiers, nzbget, nzbSplitter, sab, show_name_helpers, ui
+from .common import MULTI_EP_RESULT, Quality, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 
 def _downloadResult(result):
@@ -79,7 +83,7 @@ def _downloadResult(result):
     return newResult
 
 
-def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branches, too-many-statements
+def snatchEpisode(result, endStatus=SNATCHED):
     """
     Contains the internal logic necessary to actually "snatch" a result that
     has been found.
@@ -100,6 +104,12 @@ def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branc
                 result.priority = 1
 
     endStatus = SNATCHED_PROPER if re.search(r'\b(proper|repack|real)\b', result.name, re.I) else endStatus
+
+    # This is breaking if newznab protocol, expecting a torrent from a url and getting a magnet instead.
+    if result.url and 'jackett_apikey' in result.url:
+        response = result.provider.get_url(result.url, allow_redirects=False, returns='response')
+        if response.next and response.next.url and response.next.url.startswith('magnet'):
+            result.url = response.next.url
 
     # NZBs can be sent straight to SAB or saved to disk
     if result.resultType in (GenericProvider.NZB, GenericProvider.NZBDATA):
@@ -162,7 +172,7 @@ def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branc
 
         if curEpObj.status not in Quality.DOWNLOADED:
             try:
-                notifiers.notify_snatch("{0} from {1}".format(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN'), result.provider.name))  # pylint: disable=protected-access
+                notifiers.notify_snatch("{0} from {1}".format(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN'), result.provider.name))
             except Exception:
                 # Without this, when notification fail, it crashes the snatch thread and SR will
                 # keep snatching until notification is sent
@@ -184,7 +194,7 @@ def snatchEpisode(result, endStatus=SNATCHED):  # pylint: disable=too-many-branc
     return True
 
 
-def pickBestResult(results, show):  # pylint: disable=too-many-branches
+def pickBestResult(results, show):
     """
     Find the best result out of a list of search results for a show
 
@@ -197,6 +207,9 @@ def pickBestResult(results, show):  # pylint: disable=too-many-branches
     logger.log("Picking the best result out of " + str([x.name for x in results]), logger.DEBUG)
 
     bestResult = None
+
+    # order the list so that preferred releases are at the top
+    results.sort(key=lambda ep: show_name_helpers.hasPreferredWords(ep.name, ep.show), reverse=True)
 
     # find the best result for the current episode
     for cur_result in results:
@@ -356,7 +369,7 @@ def searchForNeededEpisodes():
     didSearch = False
 
     show_list = sickbeard.showList
-    fromDate = datetime.date.fromordinal(1)
+    fromDate = datetime.date.min
     episodes = []
 
     for curShow in show_list:
@@ -421,7 +434,7 @@ def searchForNeededEpisodes():
     return foundResults.values()
 
 
-def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
     """
     Walk providers for information on shows
 
@@ -568,7 +581,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
 
             else:
 
-                if bestSeasonResult.provider.provider_type == GenericProvider.NZB:
+                if bestSeasonResult.resultType != GenericProvider.TORRENT:
                     logger.log("Breaking apart the NZB and adding the individual ones to our results", logger.DEBUG)
 
                     # if not, break it apart and add them as the lowest priority results
@@ -705,14 +718,13 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):  
     return finalResults
 
 
-def searchProvidersList(show, episodes, search_mode='eponly'):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+def searchProvidersList(show, episodes, search_mode='eponly'):
     """
     Walk providers for information on shows
 
     :param show: Show we are looking for
     :param episodes: Episodes we hope to find
-    :param manualSearch: Boolean, is this a manual search?
-    :param downCurQuality: Boolean, should we re-download currently available quality file
+    :param search_mode: String, eponly|sponly: Episode search or Season Pack Search?
     :return: results for search
     """
     foundResults = {"results": []}

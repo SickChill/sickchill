@@ -3,6 +3,11 @@ version: '2'
 services:
   sickchill:
     image: sickchill/sickchill:latest
+    build:
+      context: .
+      args:
+        - SICKCHILL_UID=317
+        - SICKCHILL_USER=sickchill
     container_name: sickchill
     restart: unless-stopped
     ports:

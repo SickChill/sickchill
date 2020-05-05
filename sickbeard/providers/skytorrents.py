@@ -17,18 +17,21 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Third Party Imports
 import validators
 from requests.compat import urljoin
 
+# First Party Imports
+import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class SkyTorrents(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class SkyTorrents(TorrentProvider):
 
     def __init__(self):
 
@@ -40,14 +43,15 @@ class SkyTorrents(TorrentProvider):  # pylint: disable=too-many-instance-attribu
         self.minleech = None
 
         self.url = "https://www.skytorrents.lol"
-        # https://www.skytorrents.lol/rss?query=game+of+thrones&type=video&sort=seeders
-        self.urls = {"search": urljoin(self.url, "/rss")}
+        # https://www.skytorrents.lol/?query=arrow&category=show&tag=hd&sort=seeders&type=video
+        # https://www.skytorrents.lol/top100?category=show&type=video&sort=created
+        self.urls = {"search": urljoin(self.url, "/"), 'rss': urljoin(self.url, "/top100")}
 
         self.custom_url = None
 
         self.cache = tvcache.TVCache(self, search_params={"RSS": [""]})
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches, too-many-locals, too-many-statements
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         for mode in search_strings:
             items = []
@@ -57,35 +61,37 @@ class SkyTorrents(TorrentProvider):  # pylint: disable=too-many-instance-attribu
                     logger.log("Search string: {0}".format
                                (search_string.decode("utf-8")), logger.DEBUG)
 
-                search_url = self.urls["search"]
+                search_url = (self.urls["search"], self.urls["rss"])[mode == "RSS"]
                 if self.custom_url:
                     if not validators.url(self.custom_url):
                         logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
-                search_params = {'query': search_string, 'sort': ('seeders', 'created')[mode == 'RSS'], 'type': 'video', 'tag': 'hd'}
+                if mode != "RSS":
+                    search_params = {'query': search_string, 'sort': ('seeders', 'created')[mode == 'RSS'], 'type': 'video', 'tag': 'hd', 'category': 'show'}
+                else:
+                    search_params = {'category': 'show', 'type': 'video', 'sort': 'created'}
+
                 data = self.get_url(search_url, params=search_params, returns='text')
                 if not data:
                     logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
-                    for item in html('item'):
+                    labels = [label.get_text(strip=True) for label in html('th')]
+                    for item in html('tr', attrs={'data-size': True}):
                         try:
-                            title = item.title.get_text(strip=True)
-                            download_url = item.magneturl.get_text(strip=True)
-                            if not (title and download_url):
-                                continue
+                            size = try_int(item['data-size'])
+                            cells = item.findChildren('td')
 
-                            size = try_int(item.size.get_text(strip=True))
-                            seeders = leechers = 0
-                            info_hash = None
+                            title_block_links = cells[labels.index('Name')].find_all('a')
+                            title = title_block_links[0].get_text(strip=True)
+                            info_hash = title_block_links[0]['href'].split('/')[1]
+                            download_url = title_block_links[2]['href']
 
-                            for attr in item.find_all(['newznab:attr', 'torznab:attr']):
-                                seeders = try_int(attr['value']) if attr['name'] == 'seeders' else seeders
-                                leechers = try_int(attr['value']) if attr['name'] == 'peers' else leechers
-                                info_hash = attr['value'] if attr['name'] == 'infohash' else info_hash
+                            seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
+                            leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
 
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":

@@ -17,10 +17,12 @@
   "dependencies": {},
   "devDependencies": {
     "ava": "^0.24.0",
+    "bower": "^1.8.8",
     "browser-env": "^3.1.0",
+    "eslint": "^6.8.0",
     "grunt": "^1.0.1",
-    "grunt-bower-concat": "^1.0.0",
-    "grunt-bower-task": "^0.5.0",
+    "grunt-bower-concat": "git+https://github.com/miigotu/grunt-bower-concat.git",
+    "grunt-bower-task": "git+https://github.com/miigotu/grunt-bower-task.git",
     "grunt-cli": "^1.2.0",
     "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-copy": "^1.0.0",
@@ -34,6 +36,7 @@
     "grunt-po2json": "git+https://github.com/rockykitamura/grunt-po2json.git",
     "jquery": "^3.2.1",
     "load-grunt-tasks": "^3.5.2",
+    "lodash": "^4.17.15",
     "snyk": "^1.28.1",
     "xo": "^0.18.2"
   },
@@ -96,7 +99,7 @@
     ],
     "ignores": [
       "core.min.js",
-      "vender.min.js",
+      "vendor.min.js",
       "lib/**/*",
       "Gruntfile.js"
     ]

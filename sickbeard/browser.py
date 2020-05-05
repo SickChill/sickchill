@@ -18,17 +18,22 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 import string
 from operator import itemgetter
 
+# Third Party Imports
 import six
 
+# First Party Imports
 import sickbeard
-from sickbeard import logger
 from sickchill.helper.encoding import ek
+
+# Local Folder Imports
+from . import logger
 
 
 # adapted from http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490
@@ -54,8 +59,7 @@ def getFileList(path, includeFiles, fileTypes):
     hide_list += ['.fseventd', '.spotlight', '.trashes', '.vol', 'cachedmessages', 'caches', 'trash']  # osx specific
     hide_list += ['.git']
 
-    file_list = []
-    dir_list = []
+    file_list, dir_list = [], []
     for filename in ek(os.listdir, path):
         if filename.lower() in hide_list:
             continue
@@ -109,16 +113,17 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=None)
     :return: list of folders/files
     """
 
-    # walk up the tree until we find a valid path
-    while path and not ek(os.path.isdir, path):
+    # walk up the tree until we find a valid directory path
+    while path and not ek(os.path.isdir, path) and path != '/':
         if path == ek(os.path.dirname, path):
             path = ''
-            break
         else:
             path = ek(os.path.dirname, path)
 
     if path == '':
-        if os.name == 'nt':
+        if os.name != 'nt':
+            path = '/'
+        else:
             entries = [{'currentPath': 'Root'}]
             for letter in getWinDrives():
                 letter_path = letter + ':\\'
@@ -128,8 +133,6 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=None)
                 entries.append({'name': name, 'path': r'\\{server}\{path}'.format(server=share['server'], path=share['path'])})
 
             return entries
-        else:
-            path = '/'
 
     # fix up the path and find the parent
     path = ek(os.path.abspath, ek(os.path.normpath, path))

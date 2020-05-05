@@ -791,6 +791,10 @@ div.buttontext p {
     background-position: -76px 0;
 }
 
+add-list-icon-addtvdb {
+    background-position: 0px 0;
+}
+
 .add-list-icon-addexistingshow {
     background-position: -113px 0;
 }
@@ -1394,6 +1398,10 @@ td.col-search {
     background-position: -439px 0;
 }
 
+.displayshow-icon-trakt {
+    background-position: -456px 0;
+}
+
 /* =======================================================================
 schedule.mako
 ========================================================================== */
@@ -1875,7 +1883,7 @@ select .selected {
     background-position: -106px 0;
 }
 
-.add-client-icon-qbittorrent {
+.add-client-icon-qbittorrent, .add-client-icon-new-qbittorrent {
     background-position: -138px 0;
 }
 
@@ -3699,4 +3707,17 @@ input.tablesorter-filter.disabled {
 
 #episodeDir {
     width: 100%;
+}
+
+[class^="displayshow-play-icon-"], [class*=" displayshow-play-icon-"] {
+    background: url("../images/16px_sprite_colored_display-show-players.png");
+    height: 16px;
+    width: 16px;
+    display: inline-block;
+    position: unset;
+    top: 3px;
+}
+
+.displayshow-play-icon-kodi {
+    background-position: 0 0;
 }

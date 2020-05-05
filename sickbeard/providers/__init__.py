@@ -18,25 +18,31 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 from os import sys
 from random import shuffle
 
+# First Party Imports
 import sickbeard
-from sickbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, bitcannon, bjshare, btn, cpasbien, danishbits, elitetorrent, filelist,
+from sickbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, bitcannon, bjshare, btn, cpasbien, danishbits, demonoid, elitetorrent, filelist,
                                  gftracker, gimmepeers, hd4free, hdbits, hdspace, hdtorrents, hdtorrents_it, horriblesubs, hounddawgs, ilcorsaronero,
-                                 immortalseed, iptorrents, limetorrents, magnetdl, morethantv, ncore, nebulance, newpct, norbits, nyaa, omgwtfnzbs, pretome,
-                                 rarbg, scc, scenetime, shazbat, skytorrents, speedcd, thepiratebay, tntvillage, tokyotoshokan, torrent9, torrentbytes,
+                                 immortalseed, iptorrents, kat, limetorrents, magnetdl, morethantv, ncore, nebulance, newpct, norbits, nyaa, omgwtfnzbs,
+                                 pretome, rarbg, scc, scenetime, shazbat, skytorrents, speedcd, thepiratebay, tntvillage, tokyotoshokan, torrent9, torrentbytes,
                                  torrentday, torrentleech, torrentproject, torrentz, tvchaosuk, xthor, yggtorrent)
 
 __all__ = [
-    'abnormal', 'alpharatio', 'archetorrent', 'binsearch', 'bitcannon', 'bjshare', 'btn', 'cpasbien', 'danishbits',
+    'abnormal', 'alpharatio', 'archetorrent', 'binsearch', 'bitcannon', 'bjshare', 'btn', 'cpasbien', 'danishbits', 'demonoid',
     'elitetorrent', 'filelist', 'gftracker', 'gimmepeers', 'hd4free', 'hdbits', 'hdspace', 'hdtorrents', 'hdtorrents_it',
-    'horriblesubs', 'hounddawgs', 'ilcorsaronero', 'immortalseed', 'iptorrents', 'limetorrents', 'magnetdl', 'morethantv',
+    'horriblesubs', 'hounddawgs', 'ilcorsaronero', 'immortalseed', 'iptorrents', 'kat', 'limetorrents', 'magnetdl', 'morethantv',
     'ncore', 'nebulance', 'newpct', 'norbits', 'nyaa', 'omgwtfnzbs', 'pretome', 'rarbg', 'scc', 'scenetime',
     'shazbat', 'skytorrents', 'speedcd', 'thepiratebay', 'tntvillage', 'tokyotoshokan', 'torrent9',
     'torrentbytes', 'torrentday', 'torrentleech', 'torrentproject', 'torrentz', 'tvchaosuk', 'xthor', 'yggtorrent'
+]
+
+broken_providers = [
+    'torrentz', 'yggtorrent'
 ]
 
 
@@ -68,7 +74,7 @@ def sortedProviderList(randomize=False):
 
 
 def makeProviderList():
-    return [x.provider for x in (getProviderModule(y) for y in __all__) if x]
+    return [x.provider for x in (getProviderModule(y) for y in __all__ if y not in broken_providers) if x]
 
 
 def getProviderModule(name):

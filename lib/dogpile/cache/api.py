@@ -1,4 +1,5 @@
 import operator
+
 from ..util.compat import py3k
 
 
@@ -9,6 +10,7 @@ class NoValue(object):
     should be used.
 
     """
+
     @property
     def payload(self):
         return self
@@ -18,12 +20,15 @@ class NoValue(object):
         fill another cache key.
 
         """
-        return '<dogpile.cache.api.NoValue object>'
+        return "<dogpile.cache.api.NoValue object>"
 
     if py3k:
+
         def __bool__(self):  # pragma NO COVERAGE
             return False
+
     else:
+
         def __nonzero__(self):  # pragma NO COVERAGE
             return False
 
@@ -44,6 +49,7 @@ class CachedValue(tuple):
     the backend requires serialization.
 
     """
+
     payload = property(operator.itemgetter(0))
     """Named accessor for the payload."""
 

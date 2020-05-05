@@ -16,16 +16,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=abstract-method,too-many-lines, R
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import gettext
 import os
 
-from index import Config
+# Third Party Imports
 from tornado.web import addslash
 
+# First Party Imports
 import sickbeard
 from sickbeard import config, filters, helpers, logger, ui
 from sickbeard.common import Quality, WANTED
@@ -34,11 +34,8 @@ from sickchill.helper.encoding import ek
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
+# Local Folder Imports
+from .index import Config
 
 
 @Route('/config/general(/?.*)', name='config:general')
@@ -92,8 +89,8 @@ class ConfigGeneral(Config):
 
         ui.notifications.message(_('Saved Defaults'), _('Your "add show" defaults have been set to your current selections.'))
 
-    def saveGeneral(  # pylint: disable=unused-argument
-            self, log_dir=None, log_nr=5, log_size=1, web_port=None, notify_on_login=None, web_log=None, encryption_version=None, web_ipv6=None,
+    def saveGeneral(
+            self, log_nr=5, log_size=1, web_port=None, notify_on_login=None, web_log=None, encryption_version=None, web_ipv6=None,
             trash_remove_show=None, trash_rotate_logs=None, update_frequency=None, skip_removed_files=None,
             indexerDefaultLang='en', ep_default_deleted_status=None, launch_browser=None, showupdate_hour=3, web_username=None,
             api_key=None, indexer_default=None, timezone_display=None, cpu_preset='NORMAL',
@@ -104,8 +101,8 @@ class ConfigGeneral(Config):
             fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
             indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None, fanart_background=None, fanart_background_opacity=None,
             sickchill_background=None, sickchill_background_path=None, custom_css=None, custom_css_path=None,
-            git_reset=None, git_auth_type=0, git_username=None, git_password=None, git_token=None,
-            display_all_seasons=None, gui_language=None, ignore_broken_symlinks=None):
+            git_reset=None, git_username=None, git_token=None,
+            display_all_seasons=None, gui_language=None, ignore_broken_symlinks=None, ended_shows_update_interval=None):
 
         results = []
 
@@ -129,9 +126,9 @@ class ConfigGeneral(Config):
         config.change_version_notify(version_notify)
         sickbeard.AUTO_UPDATE = config.checkbox_to_value(auto_update)
         sickbeard.NOTIFY_ON_UPDATE = config.checkbox_to_value(notify_on_update)
-        # sickbeard.LOG_DIR is set in config.change_log_dir()
         sickbeard.LOG_NR = log_nr
         sickbeard.LOG_SIZE = float(log_size)
+        sickbeard.WEB_LOG = config.checkbox_to_value(web_log)
 
         sickbeard.TRASH_REMOVE_SHOW = config.checkbox_to_value(trash_remove_show)
         sickbeard.TRASH_ROTATE_LOGS = config.checkbox_to_value(trash_rotate_logs)
@@ -144,14 +141,12 @@ class ConfigGeneral(Config):
         sickbeard.PROXY_SETTING = proxy_setting
         sickbeard.PROXY_INDEXERS = config.checkbox_to_value(proxy_indexers)
 
-        sickbeard.GIT_AUTH_TYPE = int(git_auth_type)
         sickbeard.GIT_USERNAME = git_username
-        sickbeard.GIT_PASSWORD = filters.unhide(sickbeard.GIT_PASSWORD, git_password)
-        sickbeard.GIT_TOKEN = filters.unhide(sickbeard.GIT_TOKEN, git_token)
 
-        # noinspection PyPep8
-        if (sickbeard.GIT_AUTH_TYPE, sickbeard.GIT_USERNAME, sickbeard.GIT_PASSWORD, sickbeard.GIT_TOKEN) != (git_auth_type, git_username, git_password, git_token):
+        tmp_git_token = filters.unhide(sickbeard.GIT_TOKEN, git_token)
+        if sickbeard.GIT_TOKEN != tmp_git_token:
             # Re-Initializes sickbeard.gh, so a restart isn't necessary
+            sickbeard.GIT_TOKEN = tmp_git_token
             setup_github()
 
         # sickbeard.GIT_RESET = config.checkbox_to_value(git_reset)
@@ -166,7 +161,6 @@ class ConfigGeneral(Config):
         logger.set_level()
 
         sickbeard.SSL_VERIFY = config.checkbox_to_value(ssl_verify)
-        # sickbeard.LOG_DIR is set in config.change_log_dir()
 
         sickbeard.COMING_EPS_MISSED_RANGE = config.min_max(coming_eps_missed_range, 7, 0, 42810)
 
@@ -174,7 +168,6 @@ class ConfigGeneral(Config):
         sickbeard.NOTIFY_ON_LOGIN = config.checkbox_to_value(notify_on_login)
         sickbeard.WEB_PORT = try_int(web_port)
         sickbeard.WEB_IPV6 = config.checkbox_to_value(web_ipv6)
-        # sickbeard.WEB_LOG is set in config.change_log_dir()
         sickbeard.ENCRYPTION_VERSION = config.checkbox_to_value(encryption_version, value_on=2, value_off=0)
         sickbeard.WEB_USERNAME = web_username
         sickbeard.WEB_PASSWORD = filters.unhide(sickbeard.WEB_PASSWORD, web_password)
@@ -197,10 +190,6 @@ class ConfigGeneral(Config):
 
         sickbeard.TIMEZONE_DISPLAY = timezone_display
 
-        if not config.change_log_dir(log_dir, web_log):
-            results += [
-                _("Unable to create directory {directory}, log directory not changed.").format(directory=ek(os.path.normpath, log_dir))]
-
         sickbeard.API_KEY = api_key
 
         sickbeard.ENABLE_HTTPS = config.checkbox_to_value(enable_https)
@@ -222,6 +211,8 @@ class ConfigGeneral(Config):
         sickbeard.FANART_BACKGROUND_OPACITY = fanart_background_opacity
         sickbeard.CUSTOM_CSS = config.checkbox_to_value(custom_css)
         config.change_custom_css(custom_css_path)
+
+        sickbeard.ENDED_SHOWS_UPDATE_INTERVAL = int(ended_shows_update_interval)
 
         sickbeard.DEFAULT_PAGE = default_page
 

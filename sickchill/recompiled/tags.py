@@ -1,7 +1,7 @@
 # coding=utf-8
+from __future__ import absolute_import, print_function, unicode_literals
 
-from __future__ import unicode_literals
-
+# Stdlib Imports
 import re
 
 # Resolutions
@@ -13,7 +13,7 @@ resolution = [
 # Sources
 tv = re.compile(r'([sph]d).?tv|tv(rip|mux)', re.I)
 dvd = re.compile(r'(?P<hd>hd)?dvd(?P<rip>rip|mux)?', re.I)
-web = re.compile(r'(web(?P<type>rip|mux|hd|.?dl|\b))', re.I)
+web = re.compile(r'(web(?P<type>rip|mux|hd|uhd|.?dl|\b))', re.I)
 bluray = re.compile(r'(blue?-?ray|b[rd](?:rip|mux))', re.I)
 sat = re.compile(r'(dsr|satrip)', re.I)
 itunes = re.compile(r'itunes(hd|uhd)?', re.I)

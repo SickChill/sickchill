@@ -19,7 +19,7 @@ class FixAnnotations(fixer_base.BaseFix):
         if not self.warned:
             self.warned = True
             self.warning(node, reason=reason)
-    
+
     PATTERN = u"""
               funcdef< 'def' any parameters< '(' [params=any] ')' > ['->' ret=any] ':' any* >
               """

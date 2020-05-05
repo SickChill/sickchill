@@ -172,7 +172,7 @@
                                         <div class="col-md-12">
                                             <input type="checkbox" name="subtitles_multi"
                                                    id="subtitles_multi" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_MULTI)]}/>
-                                            <label for="subtitles_multi">${_('append language codes to subtitle filenames?')}</label>
+                                            <label for="subtitles_multi">${_('append language codes to subtitle file names?')}</label>
                                         </div>
                                     </div>
                                     <div class="row">

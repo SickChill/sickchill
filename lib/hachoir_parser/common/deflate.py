@@ -12,8 +12,8 @@ try:
 
         def __call__(self, size, data=None):
             if data is None:
-                data = ''
-            return self.gzip.decompress(self.gzip.unconsumed_tail+data, size)
+                data = self.gzip.unconsumed_tail
+            return self.gzip.decompress(data, size)
 
     class DeflateStreamWbits(DeflateStream):
         def __init__(self, stream):

@@ -8,7 +8,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)
           AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36']
     method: GET
-    uri: https://www.limetorrents.cc/rss/tv/
+    uri: https://www.limetorrents.info/rss/tv/
   response:
     body: {string: !!python/unicode ''}
     headers:
@@ -189,7 +189,7 @@ interactions:
       User-Agent: [!!python/unicode 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3)
           AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36']
     method: GET
-    uri: https://www.limetorrents.cc/searchrss/Game%20of%20Thrones%20S05E08/
+    uri: https://www.limetorrents.info/searchrss/Game%20of%20Thrones%20S05E08/
   response:
     body: {string: !!python/unicode ''}
     headers:

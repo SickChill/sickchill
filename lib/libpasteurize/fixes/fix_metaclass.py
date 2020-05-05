@@ -61,7 +61,7 @@ class FixMetaclass(fixer_base.BaseFix):
         name = meta
         name.prefix = u" "
         stmt_node = Node(syms.atom, [target, equal, name])
-        
+
         suitify(node)
         for item in node.children:
             if item.type == syms.suite:

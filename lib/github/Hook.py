@@ -1,14 +1,20 @@
 # -*- coding: utf-8 -*-
 
-# ########################## Copyrights and license ############################
+############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2012 Vincent Jacques <vincent@vincent-jacques.net>                 #
 # Copyright 2012 Zearin <zearin@gonk.net>                                      #
 # Copyright 2013 AKFish <akfish@gmail.com>                                     #
 # Copyright 2013 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2014 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2016 Jannis Gebauer <ja.geb@me.com>                                #
+# Copyright 2016 Peter Buckley <dx-pbuckley@users.noreply.github.com>          #
+# Copyright 2017 Wan Liuyang <tsfdye@gmail.com>                                #
+# Copyright 2018 Wan Liuyang <tsfdye@gmail.com>                                #
+# Copyright 2018 sfdye <tsfdye@gmail.com>                                      #
 #                                                                              #
 # This file is part of PyGithub.                                               #
-# http://pygithub.github.io/PyGithub/v1/index.html                             #
+# http://pygithub.readthedocs.io/                                              #
 #                                                                              #
 # PyGithub is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free  #
@@ -23,16 +29,19 @@
 # You should have received a copy of the GNU Lesser General Public License     #
 # along with PyGithub. If not, see <http://www.gnu.org/licenses/>.             #
 #                                                                              #
-# ##############################################################################
+################################################################################
+
+from __future__ import absolute_import
+
+import six
 
 import github.GithubObject
-
 import github.HookResponse
 
 
 class Hook(github.GithubObject.CompletableGithubObject):
     """
-    This class represents Hooks as returned for example by http://developer.github.com/v3/repos/hooks
+    This class represents Hooks. The reference can be found here http://developer.github.com/v3/repos/hooks
     """
 
     def __repr__(self):
@@ -131,12 +140,17 @@ class Hook(github.GithubObject.CompletableGithubObject):
         :calls: `DELETE /repos/:owner/:repo/hooks/:id <http://developer.github.com/v3/repos/hooks>`_
         :rtype: None
         """
-        headers, data = self._requester.requestJsonAndCheck(
-            "DELETE",
-            self.url
-        )
+        headers, data = self._requester.requestJsonAndCheck("DELETE", self.url)
 
-    def edit(self, name, config, events=github.GithubObject.NotSet, add_events=github.GithubObject.NotSet, remove_events=github.GithubObject.NotSet, active=github.GithubObject.NotSet):
+    def edit(
+        self,
+        name,
+        config,
+        events=github.GithubObject.NotSet,
+        add_events=github.GithubObject.NotSet,
+        remove_events=github.GithubObject.NotSet,
+        active=github.GithubObject.NotSet,
+    ):
         """
         :calls: `PATCH /repos/:owner/:repo/hooks/:id <http://developer.github.com/v3/repos/hooks>`_
         :param name: string
@@ -147,11 +161,17 @@ class Hook(github.GithubObject.CompletableGithubObject):
         :param active: bool
         :rtype: None
         """
-        assert isinstance(name, (str, unicode)), name
+        assert isinstance(name, (str, six.text_type)), name
         assert isinstance(config, dict), config
-        assert events is github.GithubObject.NotSet or all(isinstance(element, (str, unicode)) for element in events), events
-        assert add_events is github.GithubObject.NotSet or all(isinstance(element, (str, unicode)) for element in add_events), add_events
-        assert remove_events is github.GithubObject.NotSet or all(isinstance(element, (str, unicode)) for element in remove_events), remove_events
+        assert events is github.GithubObject.NotSet or all(
+            isinstance(element, (str, six.text_type)) for element in events
+        ), events
+        assert add_events is github.GithubObject.NotSet or all(
+            isinstance(element, (str, six.text_type)) for element in add_events
+        ), add_events
+        assert remove_events is github.GithubObject.NotSet or all(
+            isinstance(element, (str, six.text_type)) for element in remove_events
+        ), remove_events
         assert active is github.GithubObject.NotSet or isinstance(active, bool), active
         post_parameters = {
             "name": name,
@@ -166,9 +186,7 @@ class Hook(github.GithubObject.CompletableGithubObject):
         if active is not github.GithubObject.NotSet:
             post_parameters["active"] = active
         headers, data = self._requester.requestJsonAndCheck(
-            "PATCH",
-            self.url,
-            input=post_parameters
+            "PATCH", self.url, input=post_parameters
         )
         self._useAttributes(data)
 
@@ -177,20 +195,14 @@ class Hook(github.GithubObject.CompletableGithubObject):
         :calls: `POST /repos/:owner/:repo/hooks/:id/tests <http://developer.github.com/v3/repos/hooks>`_
         :rtype: None
         """
-        headers, data = self._requester.requestJsonAndCheck(
-            "POST",
-            self.url + "/tests"
-        )
+        headers, data = self._requester.requestJsonAndCheck("POST", self.url + "/tests")
 
     def ping(self):
         """
         :calls: `POST /repos/:owner/:repo/hooks/:id/pings <http://developer.github.com/v3/repos/hooks>`_
         :rtype: None
         """
-        headers, data = self._requester.requestJsonAndCheck(
-            "POST",
-            self.url + "/pings"
-        )
+        headers, data = self._requester.requestJsonAndCheck("POST", self.url + "/pings")
 
     def _initAttributes(self):
         self._active = github.GithubObject.NotSet
@@ -217,7 +229,9 @@ class Hook(github.GithubObject.CompletableGithubObject):
         if "id" in attributes:  # pragma no branch
             self._id = self._makeIntAttribute(attributes["id"])
         if "last_response" in attributes:  # pragma no branch
-            self._last_response = self._makeClassAttribute(github.HookResponse.HookResponse, attributes["last_response"])
+            self._last_response = self._makeClassAttribute(
+                github.HookResponse.HookResponse, attributes["last_response"]
+            )
         if "name" in attributes:  # pragma no branch
             self._name = self._makeStringAttribute(attributes["name"])
         if "test_url" in attributes:  # pragma no branch

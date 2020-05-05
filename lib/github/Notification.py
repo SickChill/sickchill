@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 
-# ########################## Copyrights and license ############################
+############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2013 AKFish <akfish@gmail.com>                                     #
 # Copyright 2013 Peter Golm <golm.peter@gmail.com>                             #
 # Copyright 2013 Vincent Jacques <vincent@vincent-jacques.net>                 #
 # Copyright 2013 martinqt <m.ki2@laposte.net>                                  #
+# Copyright 2014 Vincent Jacques <vincent@vincent-jacques.net>                 #
+# Copyright 2016 Jannis Gebauer <ja.geb@me.com>                                #
+# Copyright 2016 Peter Buckley <dx-pbuckley@users.noreply.github.com>          #
+# Copyright 2018 sfdye <tsfdye@gmail.com>                                      #
 #                                                                              #
 # This file is part of PyGithub.                                               #
-# http://pygithub.github.io/PyGithub/v1/index.html                             #
+# http://pygithub.readthedocs.io/                                              #
 #                                                                              #
 # PyGithub is free software: you can redistribute it and/or modify it under    #
 # the terms of the GNU Lesser General Public License as published by the Free  #
@@ -23,12 +27,13 @@
 # You should have received a copy of the GNU Lesser General Public License     #
 # along with PyGithub. If not, see <http://www.gnu.org/licenses/>.             #
 #                                                                              #
-# ##############################################################################
+################################################################################
+
+from __future__ import absolute_import
 
 import github.GithubObject
-
-import github.Repository
 import github.NotificationSubject
+import github.Repository
 
 
 class Notification(github.GithubObject.CompletableGithubObject):
@@ -111,6 +116,22 @@ class Notification(github.GithubObject.CompletableGithubObject):
         self._completeIfNotSet(self._url)
         return self._url.value
 
+    def mark_as_read(self):
+        """
+        :calls: `PATCH /notifications/threads/:id <https://developer.github.com/v3/activity/notifications/>`_
+        """
+        headers, data = self._requester.requestJsonAndCheck("PATCH", self.url,)
+
+    def get_pull_request(self):
+        headers, data = self._requester.requestJsonAndCheck("GET", self.subject.url)
+        return github.PullRequest.PullRequest(
+            self._requester, headers, data, completed=True
+        )
+
+    def get_issue(self):
+        headers, data = self._requester.requestJsonAndCheck("GET", self.subject.url)
+        return github.Issue.Issue(self._requester, headers, data, completed=True)
+
     def _initAttributes(self):
         self._id = github.GithubObject.NotSet
         self._last_read_at = github.GithubObject.NotSet
@@ -127,13 +148,19 @@ class Notification(github.GithubObject.CompletableGithubObject):
         if "last_read_at" in attributes:  # pragma no branch
             self._last_read_at = self._makeDatetimeAttribute(attributes["last_read_at"])
         if "repository" in attributes:  # pragma no branch
-            self._repository = self._makeClassAttribute(github.Repository.Repository, attributes["repository"])
+            self._repository = self._makeClassAttribute(
+                github.Repository.Repository, attributes["repository"]
+            )
         if "subject" in attributes:  # pragma no branch
-            self._subject = self._makeClassAttribute(github.NotificationSubject.NotificationSubject, attributes["subject"])
+            self._subject = self._makeClassAttribute(
+                github.NotificationSubject.NotificationSubject, attributes["subject"]
+            )
         if "reason" in attributes:  # pragma no branch
             self._reason = self._makeStringAttribute(attributes["reason"])
         if "subscription_url" in attributes:  # pragma no branch
-            self._subscription_url = self._makeStringAttribute(attributes["subscription_url"])
+            self._subscription_url = self._makeStringAttribute(
+                attributes["subscription_url"]
+            )
         if "unread" in attributes:  # pragma no branch
             self._unread = self._makeBoolAttribute(attributes["unread"])
         if "updated_at" in attributes:  # pragma no branch

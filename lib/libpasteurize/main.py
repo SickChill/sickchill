@@ -114,8 +114,27 @@ def main(args=None):
     level = logging.DEBUG if options.verbose else logging.INFO
     logging.basicConfig(format='%(name)s: %(message)s', level=level)
 
-    # Initialize the refactoring tool
-    unwanted_fixes = set(fixer_pkg + ".fix_" + fix for fix in options.nofix)
+    unwanted_fixes = set()
+    for fix in options.nofix:
+        if ".fix_" in fix:
+            unwanted_fixes.add(fix)
+        else:
+            # Infer the full module name for the fixer.
+            # First ensure that no names clash (e.g.
+            # lib2to3.fixes.fix_blah and libfuturize.fixes.fix_blah):
+            found = [f for f in avail_fixes
+                     if f.endswith('fix_{0}'.format(fix))]
+            if len(found) > 1:
+                print("Ambiguous fixer name. Choose a fully qualified "
+                      "module name instead from these:\n" +
+                      "\n".join("  " + myf for myf in found),
+                      file=sys.stderr)
+                return 2
+            elif len(found) == 0:
+                print("Unknown fixer. Use --list-fixes or -l for a list.",
+                      file=sys.stderr)
+                return 2
+            unwanted_fixes.add(found[0])
 
     extra_fixes = set()
     if options.all_imports:
@@ -124,8 +143,45 @@ def main(args=None):
         extra_fixes.add(prefix + 'fix_add_future_standard_library_import')
         extra_fixes.add(prefix + 'fix_add_all_future_builtins')
 
-    fixer_names = avail_fixes | extra_fixes - unwanted_fixes
+    explicit = set()
+    if options.fix:
+        all_present = False
+        for fix in options.fix:
+            if fix == 'all':
+                all_present = True
+            else:
+                if ".fix_" in fix:
+                    explicit.add(fix)
+                else:
+                    # Infer the full module name for the fixer.
+                    # First ensure that no names clash (e.g.
+                    # lib2to3.fixes.fix_blah and libpasteurize.fixes.fix_blah):
+                    found = [f for f in avail_fixes
+                             if f.endswith('fix_{0}'.format(fix))]
+                    if len(found) > 1:
+                        print("Ambiguous fixer name. Choose a fully qualified "
+                              "module name instead from these:\n" +
+                              "\n".join("  " + myf for myf in found),
+                              file=sys.stderr)
+                        return 2
+                    elif len(found) == 0:
+                        print("Unknown fixer. Use --list-fixes or -l for a list.",
+                              file=sys.stderr)
+                        return 2
+                    explicit.add(found[0])
+        if len(explicit & unwanted_fixes) > 0:
+            print("Conflicting usage: the following fixers have been "
+                  "simultaneously requested and disallowed:\n" +
+                  "\n".join("  " + myf for myf in (explicit & unwanted_fixes)),
+                  file=sys.stderr)
+            return 2
+        requested = avail_fixes.union(explicit) if all_present else explicit
+    else:
+        requested = avail_fixes.union(explicit)
 
+    fixer_names = requested | extra_fixes - unwanted_fixes
+
+    # Initialize the refactoring tool
     rt = StdoutRefactoringTool(sorted(fixer_names), flags, set(),
                                options.nobackups, not options.no_diffs)
 
@@ -146,4 +202,3 @@ def main(args=None):
 
     # Return error status (0 if rt.errors is zero)
     return int(bool(rt.errors))
-

@@ -27,4 +27,3 @@ else:
     unicode = str
     # from .unicode import unicode
     __all__ = ['basestring', 'olddict', 'oldstr', 'long', 'unicode']
-

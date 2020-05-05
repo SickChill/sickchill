@@ -18,14 +18,18 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 
+# Third Party Imports
 from requests.compat import urlencode
-from six.moves.urllib.error import HTTPError
+from requests.exceptions import HTTPError
+# noinspection PyUnresolvedReferences
 from six.moves.urllib.request import Request, urlopen
 
+# First Party Imports
 import sickbeard
 from sickbeard import logger
 from sickchill.helper.encoding import ek
@@ -72,10 +76,18 @@ class Notifier(object):
         #
 
         # Calculated values
-        showPath = ep_obj.show.location
-        showName = ep_obj.show.name
-        rootShowAndSeason = ek(os.path.dirname, ep_obj.location)
-        absPath = ep_obj.location
+        # noinspection PyUnresolvedReferences
+        if isinstance(ep_obj, sickbeard.tv.TVEpisode):
+            showPath = ep_obj.show.location
+            showName = ep_obj.show.name
+            rootShowAndSeason = ek(os.path.dirname, ep_obj.location)
+            absPath = ep_obj.location
+        else:
+            # This is a TVShow
+            showPath = ep_obj.location
+            showName = ep_obj.name
+            rootShowAndSeason = ek(os.path.dirname, ep_obj.location)
+            absPath = ep_obj.location
 
         # Some show names have colons in them which are illegal in a path location, so strip them out.
         # (Are there other characters?)

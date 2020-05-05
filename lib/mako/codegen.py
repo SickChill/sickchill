@@ -1,5 +1,5 @@
 # mako/codegen.py
-# Copyright 2006-2019 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -7,6 +7,7 @@
 """provides functionality for rendering a parsetree constructing into module
 source code."""
 
+import json
 import re
 import time
 
@@ -176,7 +177,7 @@ class _GenerateRenderMethod(object):
         self.printer.writelines(
             '"""',
             "__M_BEGIN_METADATA",
-            compat.json.dumps(struct),
+            json.dumps(struct),
             "__M_END_METADATA\n" '"""',
         )
 
@@ -354,8 +355,7 @@ class _GenerateRenderMethod(object):
         """write module-level template code, i.e. that which
         is enclosed in <%! %> tags in the template."""
         for n in module_code:
-            self.printer.start_source(n.lineno)
-            self.printer.write_indented_block(n.text)
+            self.printer.write_indented_block(n.text, starting_lineno=n.lineno)
 
     def write_inherit(self, node):
         """write the module-level inheritance-determination callable."""
@@ -803,7 +803,7 @@ class _GenerateRenderMethod(object):
             if is_expression:
                 if self.compiler.pagetag:
                     args = self.compiler.pagetag.filter_args.args + args
-                if self.compiler.default_filters:
+                if self.compiler.default_filters and "n" not in args:
                     args = self.compiler.default_filters + args
         for e in args:
             # if filter given as a function, get just the identifier portion
@@ -896,8 +896,9 @@ class _GenerateRenderMethod(object):
 
     def visitCode(self, node):
         if not node.ismodule:
-            self.printer.start_source(node.lineno)
-            self.printer.write_indented_block(node.text)
+            self.printer.write_indented_block(
+                node.text, starting_lineno=node.lineno
+            )
 
             if not self.in_def and len(self.identifiers.locally_assigned) > 0:
                 # if we are the "template" def, fudge locally

@@ -16,13 +16,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=too-many-lines
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import gettext
 import os
+import platform
 import random
 import re
 import shutil
@@ -30,26 +31,29 @@ import socket
 import sys
 from threading import Lock
 
+# Third Party Imports
 import rarfile
 import requests
 from configobj import ConfigObj
 from tornado.locale import load_gettext_translations
 
-from sickbeard import (auto_postprocessor, dailysearcher, db, helpers, logger, metadata, naming, post_processing_queue, properFinder, providers,
-                       scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, showUpdater, subtitles, traktChecker, versionChecker)
-from sickbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
-from sickbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
-from sickbeard.databases import cache_db, failed_db, mainDB
-from sickbeard.indexers import indexer_api
-from sickbeard.indexers.indexer_exceptions import (indexer_attributenotfound, indexer_episodenotfound, indexer_error, indexer_exception, indexer_seasonnotfound,
-                                                   indexer_showincomplete, indexer_shownotfound, indexer_userabort)
-from sickbeard.numdict import NumDict
-from sickbeard.providers.newznab import NewznabProvider
-from sickbeard.providers.rsstorrent import TorrentRssProvider
+# First Party Imports
+import sickchill
+from sickchill import show_updater
 from sickchill.helper import setup_github
 from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import ex
 from sickchill.system.Shutdown import Shutdown
+
+# Local Folder Imports
+from . import (auto_postprocessor, clients, dailysearcher, db, helpers, image_cache, logger, metadata, naming, post_processing_queue, properFinder, providers,
+               scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker, versionChecker)
+from .common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
+from .config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
+from .databases import cache_db, failed_db, mainDB
+from .numdict import NumDict
+from .providers.newznab import NewznabProvider
+from .providers.rsstorrent import TorrentRssProvider
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 
@@ -64,9 +68,8 @@ dynamic_strings = (
     _('Talk-Show'), _('Science-Fiction')
 )
 
-
+# noinspection PyUnresolvedReferences
 requests.packages.urllib3.disable_warnings()
-indexerApi = indexer_api.indexerApi
 
 PID = None
 
@@ -80,6 +83,8 @@ CONFIG_VERSION = 8
 # Default encryption version (0 for None)
 ENCRYPTION_VERSION = 0
 ENCRYPTION_SECRET = None
+
+IMAGE_CACHE = None
 
 PROG_DIR = '.'
 MY_FULLNAME = None
@@ -96,6 +101,9 @@ CLIENT_WEB_URLS = {'torrent': '', 'newznab': ''}
 
 DAEMON = None
 NO_RESIZE = False
+
+TVDB_USER = None
+TVDB_USER_KEY = None
 
 # system events
 events = None
@@ -135,9 +143,7 @@ GIT_REMOTE_URL = ''
 CUR_COMMIT_BRANCH = ''
 GIT_ORG = 'SickChill'
 GIT_REPO = 'SickChill'
-GIT_AUTH_TYPE = 0
 GIT_USERNAME = None
-GIT_PASSWORD = None
 GIT_TOKEN = None
 GIT_PATH = None
 DEVELOPER = False
@@ -153,7 +159,6 @@ INIT_LOCK = Lock()
 MESSAGES_LOCK = Lock()
 started = {}
 
-ACTUAL_LOG_DIR = None
 LOG_DIR = None
 LOG_NR = 5
 LOG_SIZE = 10.0
@@ -169,6 +174,9 @@ WEB_HOST = None
 WEB_IPV6 = None
 WEB_COOKIE_SECRET = None
 WEB_USE_GZIP = True
+
+CF_AUTH_DOMAIN = ''
+CF_POLICY_AUD = ''
 
 DOWNLOAD_URL = None
 
@@ -195,7 +203,6 @@ INDEXER_DEFAULT_LANGUAGE = None
 EP_DEFAULT_DELETED_STATUS = None
 LAUNCH_BROWSER = False
 CACHE_DIR = None
-ACTUAL_CACHE_DIR = None
 ROOT_DIRS = None
 
 TRASH_REMOVE_SHOW = False
@@ -223,7 +230,7 @@ STATUS_DEFAULT = None
 STATUS_DEFAULT_AFTER = None
 SEASON_FOLDERS_DEFAULT = False
 SUBTITLES_DEFAULT = False
-INDEXER_DEFAULT = None
+INDEXER_DEFAULT = 1
 INDEXER_TIMEOUT = None
 SCENE_DEFAULT = False
 ANIME_DEFAULT = False
@@ -276,6 +283,7 @@ MIN_UPDATE_FREQUENCY = 1
 BACKLOG_DAYS = 7
 
 ADD_SHOWS_WO_DIR = False
+ADD_SHOWS_WITH_YEAR = False
 CREATE_MISSING_SHOW_DIRS = False
 RENAME_EPISODES = False
 AIRDATE_EPISODES = False
@@ -620,6 +628,8 @@ SUBSCENTER_USER = SUBSCENTER_PASS = None
 USE_FAILED_DOWNLOADS = False
 DELETE_FAILED = False
 
+BACKLOG_MISSING_ONLY = False
+
 EXTRA_SCRIPTS = []
 
 IGNORE_WORDS = "german,french,core2hd,dutch,swedish,reenc,MrLss"
@@ -630,6 +640,7 @@ TRACKERS_LIST += "udp://glotorrents.pw:6969/announce,udp://tracker.openbittorren
 TRACKERS_LIST += "udp://9.rarbg.to:2710/announce"
 
 REQUIRE_WORDS = ""
+PREFER_WORDS = ""
 IGNORED_SUBS_LIST = "dk,fin,heb,kor,nor,nordic,pl,swe"
 SYNC_FILES = "!sync,lftp-pget-status,bts,!qb,!qB"
 
@@ -669,16 +680,18 @@ UNPACK_DIR = ''
 UNRAR_TOOL = rarfile.UNRAR_TOOL
 ALT_UNRAR_TOOL = rarfile.ALT_TOOL
 
+ENDED_SHOWS_UPDATE_INTERVAL = 7
+
 
 def get_backlog_cycle_time():
     cycletime = DAILYSEARCH_FREQUENCY * 2 + 7
     return max([cycletime, 720])
 
 
-def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+def initialize(consoleLogging=True):
     with INIT_LOCK:
-        # pylint: disable=global-statement
-        global BRANCH, GIT_RESET, GIT_REMOTE, GIT_REMOTE_URL, CUR_COMMIT_HASH, CUR_COMMIT_BRANCH, ACTUAL_LOG_DIR, LOG_DIR, LOG_NR, LOG_SIZE, WEB_PORT, WEB_LOG,\
+
+        global BRANCH, GIT_RESET, GIT_REMOTE, GIT_REMOTE_URL, CUR_COMMIT_HASH, CUR_COMMIT_BRANCH, LOG_DIR, LOG_NR, LOG_SIZE, WEB_PORT, WEB_LOG,\
             ENCRYPTION_VERSION, ENCRYPTION_SECRET, WEB_ROOT, WEB_USERNAME, WEB_PASSWORD, WEB_HOST, WEB_IPV6, WEB_COOKIE_SECRET, WEB_USE_GZIP, API_KEY,\
             ENABLE_HTTPS, HTTPS_CERT, HTTPS_KEY, HANDLE_REVERSE_PROXY, USE_NZBS, USE_TORRENTS, NZB_METHOD, NZB_DIR, DOWNLOAD_PROPERS, RANDOMIZE_PROVIDERS, \
             CHECK_PROPERS_INTERVAL, ALLOW_HIGH_PRIORITY, SAB_FORCED, TORRENT_METHOD, NOTIFY_ON_LOGIN, SAB_USERNAME, SAB_PASSWORD, SAB_APIKEY, SAB_CATEGORY, \
@@ -709,7 +722,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             PUSHBULLET_NOTIFY_ONSNATCH, PUSHBULLET_NOTIFY_ONDOWNLOAD, PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD, PUSHBULLET_API, PUSHBULLET_DEVICE,\
             PUSHBULLET_CHANNEL, versionCheckScheduler, VERSION_NOTIFY, AUTO_UPDATE, NOTIFY_ON_UPDATE, PROCESS_AUTOMATICALLY, NO_DELETE, USE_ICACLS, UNPACK, \
             CPU_PRESET, UNPACK_DIR, UNRAR_TOOL, ALT_UNRAR_TOOL, KEEP_PROCESSED_DIR, PROCESS_METHOD, PROCESSOR_FOLLOW_SYMLINKS, DELRARCONTENTS, \
-            TV_DOWNLOAD_DIR, UPDATE_FREQUENCY, showQueueScheduler, searchQueueScheduler, postProcessorTaskScheduler, ROOT_DIRS, CACHE_DIR, ACTUAL_CACHE_DIR, \
+            TV_DOWNLOAD_DIR, UPDATE_FREQUENCY, showQueueScheduler, searchQueueScheduler, postProcessorTaskScheduler, ROOT_DIRS, CACHE_DIR, \
             TIMEZONE_DISPLAY, NAMING_PATTERN, NAMING_MULTI_EP, NAMING_ANIME_MULTI_EP, NAMING_FORCE_FOLDERS, NAMING_ABD_PATTERN, NAMING_CUSTOM_ABD, \
             NAMING_SPORTS_PATTERN, NAMING_CUSTOM_SPORTS, NAMING_ANIME_PATTERN, NAMING_CUSTOM_ANIME, NAMING_STRIP_YEAR, RENAME_EPISODES, AIRDATE_EPISODES, \
             FILE_TIMESTAMP_TIMEZONE, properFinderScheduler, PROVIDER_ORDER, autoPostProcessorScheduler, providerList, newznabProviderList, \
@@ -727,18 +740,19 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             NFO_RENAME, GUI_NAME, HOME_LAYOUT, HISTORY_LAYOUT, DISPLAY_SHOW_SPECIALS, COMING_EPS_LAYOUT, COMING_EPS_SORT, COMING_EPS_DISPLAY_PAUSED, \
             COMING_EPS_DISPLAY_SNATCHED, COMING_EPS_MISSED_RANGE, FUZZY_DATING, TRIM_ZERO, DATE_PRESET, TIME_PRESET, TIME_PRESET_W_SECONDS, THEME_NAME, \
             POSTER_SORTBY, POSTER_SORTDIR, HISTORY_LIMIT, CREATE_MISSING_SHOW_DIRS, ADD_SHOWS_WO_DIR, USE_FREE_SPACE_CHECK, METADATA_WDTV, METADATA_TIVO, \
-            METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, USE_SUBTITLES,\
+            METADATA_MEDE8ER, IGNORE_WORDS, TRACKERS_LIST, IGNORED_SUBS_LIST, REQUIRE_WORDS, PREFER_WORDS, CALENDAR_UNPROTECTED, CALENDAR_ICONS, NO_RESTART, USE_SUBTITLES,\
             SUBTITLES_INCLUDE_SPECIALS, SUBTITLES_LANGUAGES, SUBTITLES_DIR, SUBTITLES_SERVICES_LIST, SUBTITLES_SERVICES_ENABLED, SUBTITLES_HISTORY, \
             SUBTITLES_FINDER_FREQUENCY, SUBTITLES_MULTI, SUBTITLES_KEEP_ONLY_WANTED, EMBEDDED_SUBTITLES_ALL, SUBTITLES_EXTRA_SCRIPTS, SUBTITLES_PERFECT_MATCH,\
             subtitlesFinderScheduler, SUBTITLES_HEARING_IMPAIRED, ADDIC7ED_USER, ADDIC7ED_PASS, ITASA_USER, ITASA_PASS, LEGENDASTV_USER, LEGENDASTV_PASS, \
-            OPENSUBTITLES_USER, OPENSUBTITLES_PASS, SUBSCENTER_USER, SUBSCENTER_PASS, USE_FAILED_DOWNLOADS, DELETE_FAILED, ANON_REDIRECT, LOCALHOST_IP, \
+            OPENSUBTITLES_USER, OPENSUBTITLES_PASS, SUBSCENTER_USER, SUBSCENTER_PASS, USE_FAILED_DOWNLOADS, DELETE_FAILED, BACKLOG_MISSING_ONLY, ANON_REDIRECT, LOCALHOST_IP, \
             DEBUG, DBDEBUG, DEFAULT_PAGE, PROXY_SETTING, PROXY_INDEXERS, AUTOPOSTPROCESSOR_FREQUENCY, SHOWUPDATE_HOUR, ANIME_DEFAULT, NAMING_ANIME, \
             ANIMESUPPORT, USE_ANIDB, ANIDB_USERNAME, ANIDB_PASSWORD, ANIDB_USE_MYLIST, ANIME_SPLIT_HOME, ANIME_SPLIT_HOME_IN_TABS, SCENE_DEFAULT, \
-            DOWNLOAD_URL, BACKLOG_DAYS, GIT_AUTH_TYPE, GIT_USERNAME, GIT_PASSWORD, GIT_TOKEN, DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, \
+            DOWNLOAD_URL, BACKLOG_DAYS, GIT_USERNAME, GIT_TOKEN, DEVELOPER, DISPLAY_ALL_SEASONS, SSL_VERIFY, NEWS_LAST_READ, ADD_SHOWS_WITH_YEAR, \
             NEWS_LATEST, SOCKET_TIMEOUT, SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKCHILL_BACKGROUND, \
             SICKCHILL_BACKGROUND_PATH, FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, \
             SLACK_NOTIFY_DOWNLOAD, SLACK_NOTIFY_SUBTITLEDOWNLOAD, SLACK_WEBHOOK, SLACK_ICON_EMOJI, USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK,\
-            USE_MATRIX, MATRIX_NOTIFY_SNATCH, MATRIX_NOTIFY_DOWNLOAD, MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM
+            USE_MATRIX, MATRIX_NOTIFY_SNATCH, MATRIX_NOTIFY_DOWNLOAD, MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM, \
+            ENDED_SHOWS_UPDATE_INTERVAL, IMAGE_CACHE, CF_AUTH_DOMAIN, CF_POLICY_AUD, TVDB_USER, TVDB_USER_KEY
 
         if __INITIALIZED__:
             return False
@@ -773,9 +787,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         ENCRYPTION_SECRET = check_setting_str(CFG, 'General', 'encryption_secret', helpers.generateCookieSecret(), censor_log=True)
 
         # git login info
-        GIT_AUTH_TYPE = check_setting_int(CFG, 'General', 'git_auth_type', min_val=0, max_val=1)
         GIT_USERNAME = check_setting_str(CFG, 'General', 'git_username')
-        GIT_PASSWORD = check_setting_str(CFG, 'General', 'git_password', censor_log=True)
         GIT_TOKEN = check_setting_str(CFG, 'General', 'git_token_password', censor_log=True)  # encryption needed
         DEVELOPER = check_setting_bool(CFG, 'General', 'developer')
 
@@ -787,8 +799,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         if DEFAULT_PAGE not in ('home', 'schedule', 'history', 'news', 'IRC'):
             DEFAULT_PAGE = 'home'
 
-        ACTUAL_LOG_DIR = check_setting_str(CFG, 'General', 'log_dir', 'Logs')
-        LOG_DIR = ek(os.path.normpath, ek(os.path.join, DATA_DIR, ACTUAL_LOG_DIR))
+        LOG_DIR = ek(os.path.normpath, ek(os.path.join, DATA_DIR, 'Logs'))
         LOG_NR = check_setting_int(CFG, 'General', 'log_nr', 5, min_val=1)  # Default to 5 backup file (sickchill.log.x)
         LOG_SIZE = check_setting_float(CFG, 'General', 'log_size', 10.0, min_val=0.5)  # Default to max 10MB per logfile
 
@@ -826,21 +837,34 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         # current commit branch
         CUR_COMMIT_BRANCH = check_setting_str(CFG, 'General', 'cur_commit_branch')
 
-        ACTUAL_CACHE_DIR = check_setting_str(CFG, 'General', 'cache_dir', 'cache')
+        GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
+        GUI_LANG = check_setting_str(CFG, 'GUI', 'language')
 
-        # fix bad configs due to buggy code
-        if ACTUAL_CACHE_DIR == 'None':
-            ACTUAL_CACHE_DIR = 'cache'
-
-        # unless they specify, put the cache dir inside the data dir
-        if not ek(os.path.isabs, ACTUAL_CACHE_DIR):
-            CACHE_DIR = ek(os.path.join, DATA_DIR, ACTUAL_CACHE_DIR)
+        if GUI_LANG:
+            gettext.translation('messages', LOCALE_DIR, languages=[GUI_LANG], codeset='UTF-8').install(unicode=1, names=["ngettext"])
         else:
-            CACHE_DIR = ACTUAL_CACHE_DIR
+            gettext.install('messages', LOCALE_DIR, unicode=1, codeset='UTF-8', names=["ngettext"])
 
-        if not helpers.makeDir(CACHE_DIR):
-            logger.log("!!! Creating local cache dir failed, using system default", logger.ERROR)
-            CACHE_DIR = None
+        load_gettext_translations(LOCALE_DIR, 'messages')
+
+        CACHE_DIR = ek(os.path.normpath, ek(os.path.join, PROG_DIR, "gui", GUI_NAME, "cache"))
+        if platform.system() != 'Windows':  # Not sure if this will work on windows yet, but it works on linux
+            DATA_CACHE = ek(os.path.join, DATA_DIR, 'cache')
+            try:
+                if not ek(os.path.isdir, DATA_CACHE):
+                    if ek(os.path.isdir, CACHE_DIR) and not ek(os.path.islink, CACHE_DIR):
+                        helpers.moveFile(CACHE_DIR, DATA_CACHE)
+
+                if not ek(os.path.isdir, DATA_CACHE):
+                    helpers.makeDir(DATA_CACHE)
+
+                if ek(os.path.isdir, DATA_CACHE) and not ek(os.path.islink, CACHE_DIR):
+                    if ek(os.path.isdir, CACHE_DIR):
+                        ek(shutil.rmtree, CACHE_DIR)
+
+                    helpers.symlink(DATA_CACHE, CACHE_DIR)
+            except Exception as e:
+                print(e)
 
         # Check if we need to perform a restore of the cache folder
         try:
@@ -879,6 +903,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
                         if cleanupDir not in ['rss', 'sessions', 'indexers']:
                             logger.log("Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
 
+        IMAGE_CACHE = image_cache.ImageCache()
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
         SICKCHILL_BACKGROUND = check_setting_bool(CFG, 'GUI', 'sickchill_background')
         SICKCHILL_BACKGROUND_PATH = check_setting_str(CFG, 'GUI', 'sickchill_background_path')
@@ -886,16 +911,6 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         FANART_BACKGROUND_OPACITY = check_setting_float(CFG, 'GUI', 'fanart_background_opacity', 0.4, min_val=0.1, max_val=1.0)
         CUSTOM_CSS = check_setting_bool(CFG, 'GUI', 'custom_css')
         CUSTOM_CSS_PATH = check_setting_str(CFG, 'GUI', 'custom_css_path')
-
-        GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
-        GUI_LANG = check_setting_str(CFG, 'GUI', 'language')
-
-        if GUI_LANG:
-            gettext.translation('messages', LOCALE_DIR, languages=[GUI_LANG], codeset='UTF-8').install(unicode=1, names=["ngettext"])
-        else:
-            gettext.install('messages', LOCALE_DIR, unicode=1, codeset='UTF-8', names=["ngettext"])
-
-        load_gettext_translations(LOCALE_DIR, 'messages')
 
         SOCKET_TIMEOUT = check_setting_int(CFG, 'General', 'socket_timeout', 30, min_val=0)
         socket.setdefaulttimeout(SOCKET_TIMEOUT)
@@ -915,11 +930,13 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         if not WEB_COOKIE_SECRET:
             WEB_COOKIE_SECRET = helpers.generateCookieSecret()
 
+        CF_AUTH_DOMAIN = check_setting_str(CFG, 'Cloudflare', 'auth_domain', censor_log=True)
+        CF_POLICY_AUD = check_setting_str(CFG, 'Cloudflare', 'audience_policy', censor_log=True)
+
         WEB_USE_GZIP = check_setting_bool(CFG, 'General', 'web_use_gzip', True)
 
         SSL_VERIFY = check_setting_bool(CFG, 'General', 'ssl_verify', True)
 
-        INDEXER_DEFAULT_LANGUAGE = check_setting_str(CFG, 'General', 'indexerDefaultLang', 'en')
         EP_DEFAULT_DELETED_STATUS = check_setting_int(CFG, 'General', 'ep_default_deleted_status', ARCHIVED)
         if EP_DEFAULT_DELETED_STATUS not in (SKIPPED, ARCHIVED, IGNORED):
             EP_DEFAULT_DELETED_STATUS = ARCHIVED
@@ -933,12 +950,21 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         CPU_PRESET = check_setting_str(CFG, 'General', 'cpu_preset', 'NORMAL')
 
         ANON_REDIRECT = check_setting_str(CFG, 'General', 'anon_redirect', 'http://dereferer.org/?')
-        PROXY_SETTING = check_setting_str(CFG, 'General', 'proxy_setting')
-        PROXY_INDEXERS = check_setting_bool(CFG, 'General', 'proxy_indexers', True)
-
         # attempt to help prevent users from breaking links by using a bad url
         if not ANON_REDIRECT.endswith('?'):
             ANON_REDIRECT = ''
+
+        PROXY_SETTING = check_setting_str(CFG, 'General', 'proxy_setting')
+        PROXY_INDEXERS = check_setting_bool(CFG, 'General', 'proxy_indexers', True)
+
+        INDEXER_DEFAULT_LANGUAGE = check_setting_str(CFG, 'General', 'indexerDefaultLang', 'en')
+        INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', min_val=1, max_val=2, def_val=1)
+        INDEXER_TIMEOUT = check_setting_int(CFG, 'General', 'indexer_timeout', 20, min_val=0)
+
+        sickchill.indexer = sickchill.ShowIndexer()
+
+        TVDB_USER = check_setting_str(CFG, 'General', 'tvdb_user')
+        TVDB_USER_KEY = check_setting_str(CFG, 'General', 'tvdb_user_key', censor_log=True)
 
         TRASH_REMOVE_SHOW = check_setting_bool(CFG, 'General', 'trash_remove_show')
         TRASH_ROTATE_LOGS = check_setting_bool(CFG, 'General', 'trash_rotate_logs')
@@ -974,8 +1000,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         AUTO_UPDATE = check_setting_bool(CFG, 'General', 'auto_update')
         NOTIFY_ON_UPDATE = check_setting_bool(CFG, 'General', 'notify_on_update', True)
         SEASON_FOLDERS_DEFAULT = check_setting_bool(CFG, 'General', 'season_folders_default', True)
-        INDEXER_DEFAULT = check_setting_int(CFG, 'General', 'indexer_default', min_val=min(indexerApi().indexers), max_val=max(indexerApi().indexers))
-        INDEXER_TIMEOUT = check_setting_int(CFG, 'General', 'indexer_timeout', 20, min_val=0)
+
         ANIME_DEFAULT = check_setting_bool(CFG, 'General', 'anime_default')
         SCENE_DEFAULT = check_setting_bool(CFG, 'General', 'scene_default')
 
@@ -1003,9 +1028,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
             NZB_METHOD = 'blackhole'
 
         TORRENT_METHOD = check_setting_str(CFG, 'General', 'torrent_method', 'blackhole')
-        if TORRENT_METHOD not in (
-            'blackhole', 'utorrent', 'transmission', 'deluge', 'deluged', 'download_station', 'rtorrent', 'qbittorrent', 'mlnet', 'putio'
-        ):
+        if TORRENT_METHOD not in clients.getClientListDict(True):
             TORRENT_METHOD = 'blackhole'
 
         DOWNLOAD_PROPERS = check_setting_bool(CFG, 'General', 'download_propers', True)
@@ -1075,6 +1098,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         NFO_RENAME = check_setting_bool(CFG, 'General', 'nfo_rename', True)
         CREATE_MISSING_SHOW_DIRS = check_setting_bool(CFG, 'General', 'create_missing_show_dirs')
         ADD_SHOWS_WO_DIR = check_setting_bool(CFG, 'General', 'add_shows_wo_dir')
+        ADD_SHOWS_WITH_YEAR = check_setting_bool(CFG, 'General', 'add_shows_with_year')
         USE_FREE_SPACE_CHECK = check_setting_bool(CFG, 'General', 'use_free_space_check', True)
 
         NZBS = check_setting_bool(CFG, 'NZBs', 'nzbs')
@@ -1286,9 +1310,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         TRAKT_USE_RECOMMENDED = check_setting_bool(CFG, 'Trakt', 'trakt_use_recommended')
         TRAKT_SYNC = check_setting_bool(CFG, 'Trakt', 'trakt_sync')
         TRAKT_SYNC_REMOVE = check_setting_bool(CFG, 'Trakt', 'trakt_sync_remove')
-        TRAKT_DEFAULT_INDEXER = check_setting_int(
-            CFG, 'Trakt', 'trakt_default_indexer', 1, min_val=min(indexerApi().indexers), max_val=max(indexerApi().indexers)
-        )
+        TRAKT_DEFAULT_INDEXER = check_setting_int(CFG, 'Trakt', 'trakt_default_indexer', 1, min_val=1, max_val=2)
         TRAKT_TIMEOUT = check_setting_int(CFG, 'Trakt', 'trakt_timeout', 30, min_val=0)
         TRAKT_BLACKLIST_NAME = check_setting_str(CFG, 'Trakt', 'trakt_blacklist_name')
 
@@ -1374,11 +1396,14 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         USE_FAILED_DOWNLOADS = check_setting_bool(CFG, 'FailedDownloads', 'use_failed_downloads')
         DELETE_FAILED = check_setting_bool(CFG, 'FailedDownloads', 'delete_failed')
 
+        BACKLOG_MISSING_ONLY = check_setting_bool(CFG, 'General', 'backlog_missing_only')
+
         GIT_PATH = check_setting_str(CFG, 'General', 'git_path')
 
         IGNORE_WORDS = check_setting_str(CFG, 'General', 'ignore_words', IGNORE_WORDS)
         TRACKERS_LIST = check_setting_str(CFG, 'General', 'trackers_list', TRACKERS_LIST)
         REQUIRE_WORDS = check_setting_str(CFG, 'General', 'require_words', REQUIRE_WORDS)
+        PREFER_WORDS = check_setting_str(CFG, 'General', 'prefer_words', PREFER_WORDS)
         IGNORED_SUBS_LIST = check_setting_str(CFG, 'General', 'ignored_subs_list', IGNORED_SUBS_LIST)
 
         CALENDAR_UNPROTECTED = check_setting_bool(CFG, 'General', 'calendar_unprotected')
@@ -1425,6 +1450,7 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         POSTER_SORTBY = check_setting_str(CFG, 'GUI', 'poster_sortby', 'name')
         POSTER_SORTDIR = check_setting_int(CFG, 'GUI', 'poster_sortdir', 1, min_val=0, max_val=1)
         DISPLAY_ALL_SEASONS = check_setting_bool(CFG, 'General', 'display_all_seasons', True)
+        ENDED_SHOWS_UPDATE_INTERVAL = check_setting_int(CFG, 'General', 'ended_shows_update_interval', 7)
 
         if check_section(CFG, 'Shares'):
             WINDOWS_SHARES.update(CFG['Shares'])
@@ -1553,11 +1579,12 @@ def initialize(consoleLogging=True):  # pylint: disable=too-many-locals, too-man
         )
 
         showUpdateScheduler = scheduler.Scheduler(
-            showUpdater.ShowUpdater(),
+            show_updater.ShowUpdater(),
             run_delay=datetime.timedelta(seconds=20),
             cycleTime=datetime.timedelta(hours=1),
             start_time=datetime.time(hour=SHOWUPDATE_HOUR),
-            threadName="SHOWUPDATER"
+            threadName="SHOWUPDATER",
+            silent=False
         )
 
         # searchers
@@ -1750,8 +1777,8 @@ def saveAll():
     save_config()
 
 
-def save_config():  # pylint: disable=too-many-statements, too-many-branches
-    new_config = ConfigObj(CONFIG_FILE, encoding='UTF-8')
+def save_config():
+    new_config = ConfigObj(CONFIG_FILE, encoding='UTF-8', options={'indent_type': '  '})
 
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
     # dynamically save provider settings
@@ -1811,9 +1838,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
 
     new_config.update({
         'General': {
-            'git_auth_type': int(GIT_AUTH_TYPE),
             'git_username': GIT_USERNAME,
-            'git_password': helpers.encrypt(GIT_PASSWORD, ENCRYPTION_VERSION),
             'git_token_password': helpers.encrypt(GIT_TOKEN, ENCRYPTION_VERSION),
             'git_reset': int(GIT_RESET),
             'branch': BRANCH,
@@ -1824,7 +1849,6 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'config_version': CONFIG_VERSION,
             'encryption_version': int(ENCRYPTION_VERSION),
             'encryption_secret': ENCRYPTION_SECRET,
-            'log_dir': ACTUAL_LOG_DIR if ACTUAL_LOG_DIR else 'Logs',
             'log_nr': int(LOG_NR),
             'log_size': float(LOG_SIZE),
             'socket_timeout': SOCKET_TIMEOUT,
@@ -1842,6 +1866,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'localhost_ip': LOCALHOST_IP,
             'cpu_preset': CPU_PRESET,
             'anon_redirect': ANON_REDIRECT,
+            'tvdb_user': TVDB_USER,
+            'tvdb_user_key': TVDB_USER_KEY,
             'api_key': API_KEY,
             'debug': int(DEBUG),
             'dbdebug': int(DBDEBUG),
@@ -1911,8 +1937,8 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'metadata_mede8er': METADATA_MEDE8ER,
 
             'backlog_days': int(BACKLOG_DAYS),
+            'backlog_missing_only': int(BACKLOG_MISSING_ONLY),
 
-            'cache_dir': ACTUAL_CACHE_DIR if ACTUAL_CACHE_DIR else 'cache',
             'root_dirs': ROOT_DIRS if ROOT_DIRS else '',
             'tv_download_dir': TV_DOWNLOAD_DIR,
             'keep_processed_dir': int(KEEP_PROCESSED_DIR),
@@ -1936,6 +1962,7 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'file_timestamp_timezone': FILE_TIMESTAMP_TIMEZONE,
             'create_missing_show_dirs': int(CREATE_MISSING_SHOW_DIRS),
             'add_shows_wo_dir': int(ADD_SHOWS_WO_DIR),
+            'add_shows_with_year': int(ADD_SHOWS_WITH_YEAR),
             'use_free_space_check': int(USE_FREE_SPACE_CHECK),
 
             'extra_scripts': '|'.join(EXTRA_SCRIPTS),
@@ -1943,13 +1970,19 @@ def save_config():  # pylint: disable=too-many-statements, too-many-branches
             'ignore_words': IGNORE_WORDS,
             'trackers_list': TRACKERS_LIST,
             'require_words': REQUIRE_WORDS,
+            'prefer_words': PREFER_WORDS,
             'ignored_subs_list': IGNORED_SUBS_LIST,
             'calendar_unprotected': int(CALENDAR_UNPROTECTED),
             'calendar_icons': int(CALENDAR_ICONS),
             'no_restart': int(NO_RESTART),
             'developer': int(DEVELOPER),
             'display_all_seasons': int(DISPLAY_ALL_SEASONS),
+            'ended_shows_update_interval': int(ENDED_SHOWS_UPDATE_INTERVAL),
             'news_last_read': NEWS_LAST_READ,
+        },
+        'Cloudflare': {
+            'auth_domain': CF_AUTH_DOMAIN,
+            'audience_policy': CF_POLICY_AUD
         },
 
         'Shares': WINDOWS_SHARES,

@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-# pylint: disable=line-too-long
 
 """
 Test snatching
@@ -60,7 +59,6 @@ def _create_fake_xml(items):
     xml += '</channel></rss>'
     return xml
 
-# pylint: disable=invalid-name
 search_items = []
 
 
@@ -117,7 +115,7 @@ def generator(tvdb_id, show_name, cur_data, force_search):
         """
         Test to perform
         """
-        global search_items  # pylint: disable=global-statement
+        global search_items
         search_items = cur_data["i"]
         show = TVShow(1, tvdb_id)
         show.name = show_name
@@ -134,7 +132,7 @@ def generator(tvdb_id, show_name, cur_data, force_search):
         best_result = search.searchProviders(show, episode.episode, force_search)
         if not best_result:
             assert cur_data["b"] == best_result
-        # pylint: disable=no-member
+
         assert cur_data["b"] == best_result.name  # first is expected, second is chosen one
     return do_test
 

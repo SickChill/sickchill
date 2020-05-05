@@ -18,15 +18,18 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import re
 
-import twilio
-
+# First Party Imports
 import sickbeard
 from sickbeard import common, logger
 from sickchill.helper.exceptions import ex
+
+# import twilio
+
 
 
 class Notifier(object):
@@ -64,7 +67,7 @@ class Notifier(object):
             if not self.number.capabilities['sms']:
                 return False
 
-            # pylint: disable=undefined-variable
+
             return self._notifyTwilio(_('This is a test notification from SickChill'), force=True, allow_raise=True)
         except twilio.TwilioRestException:
             return False

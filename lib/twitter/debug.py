@@ -1,9 +1,8 @@
-import twitter
-from twitter import TwitterError
+from twitter import Api, TwitterError
 import requests
 
 
-class Api(twitter.Api):
+class Api(Api):
     def DebugEndpoint(self, verb=None, endpoint=None, data=None):
         """ Request a url and return raw data. For testing purposes only.
 
@@ -18,8 +17,8 @@ class Api(twitter.Api):
         Returns:
             data
         """
+
         url = "{0}{1}".format(self.base_url, endpoint)
-        print(url)
 
         if verb == 'POST':
             if 'media_ids' in data:
@@ -36,7 +35,7 @@ class Api(twitter.Api):
                     raw_data = requests.post(
                         url,
                         files=data,
-                        auth=self._Api__auth,
+                        auth=self.__auth,
                         timeout=self._timeout
                     )
                 except requests.RequestException as e:
@@ -47,7 +46,7 @@ class Api(twitter.Api):
                     raw_data = requests.post(
                         url,
                         data=data,
-                        auth=self._Api__auth,
+                        auth=self.__auth,
                         timeout=self._timeout
                     )
                 except requests.RequestException as e:
@@ -58,7 +57,7 @@ class Api(twitter.Api):
             try:
                 raw_data = requests.get(
                     url,
-                    auth=self._Api__auth,
+                    auth=self.__auth,
                     timeout=self._timeout)
 
             except requests.RequestException as e:

@@ -4,12 +4,12 @@
 Various utilities functions
 """
 
-
 import sys
-import inspect
 
+from inspect import isclass
 try:
     from inspect import getfullargspec as getargspec
+
     _fullargspec_supported = True
 except ImportError:
     _fullargspec_supported = False
@@ -55,7 +55,7 @@ def call(function, *args, **kwargs):
     :return: sale vakye as default function call
     :rtype: object
     """
-    func = constructor_args if inspect.isclass(function) else function_args
+    func = constructor_args if isclass(function) else function_args
     call_args, call_kwargs = func(function, *args, **kwargs)
     return function(*call_args, **call_kwargs)
 
@@ -145,6 +145,8 @@ if not _fullargspec_supported:
         else:
             call_args = args[:len(argspec.args) - (1 if constructor else 0)]
         return call_args, call_kwarg
+
+
     argspec_args = argspec_args_legacy
 
 
@@ -215,9 +217,12 @@ def filter_index(collection, predicate=None, index=None):
     return collection
 
 
-def set_defaults(defaults, kwargs):
+def set_defaults(defaults, kwargs, override=False):
     """
     Set defaults from defaults dict to kwargs dict
+
+    :param override:
+    :type override:
     :param defaults:
     :type defaults:
     :param kwargs:
@@ -225,12 +230,13 @@ def set_defaults(defaults, kwargs):
     :return:
     :rtype:
     """
+    if 'clear' in defaults.keys() and defaults.pop('clear'):
+        kwargs.clear()
     for key, value in defaults.items():
-        if key not in kwargs and value is not None:
+        if key in kwargs:
+            if isinstance(value, list) and isinstance(kwargs[key], list):
+                kwargs[key] = list(value) + kwargs[key]
+            elif isinstance(value, dict) and isinstance(kwargs[key], dict):
+                set_defaults(value, kwargs[key])
+        if key not in kwargs or override:
             kwargs[key] = value
-        elif isinstance(value, list) and isinstance(kwargs[key], list):
-            kwargs[key] = list(value) + kwargs[key]
-        elif isinstance(value, dict) and isinstance(kwargs[key], dict):
-            set_defaults(value, kwargs[key])
-        elif key in kwargs and value is None:
-            kwargs[key] = None

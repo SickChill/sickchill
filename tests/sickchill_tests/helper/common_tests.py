@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-# pylint: disable=line-too-long
 
 """
 Test sickchill.common
@@ -316,6 +315,7 @@ class CommonTests(unittest.TestCase):
         """
         Test sanitize filename
         """
+        # noinspection PyByteLiteral
         test_cases = {
             None: '',
             42: '',
@@ -402,6 +402,9 @@ class CommonTests(unittest.TestCase):
                 self.assertEqual(try_int(candidate, default_value), result)
 
     def test_convert_size(self):
+        """
+        Test convert_size
+        """
         # converts pretty file sizes to integers
         self.assertEqual(convert_size('1 B'), 1)
         self.assertEqual(convert_size('1 KB'), 1024)

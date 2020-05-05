@@ -1,12 +1,16 @@
 import json
 import warnings
 from calendar import timegm
-from collections import Iterable, Mapping
 from datetime import datetime, timedelta
+try:
+    # import required by mypy to perform type checking, not used for normal execution
+    from typing import Callable, Dict, List, Optional, Union # NOQA
+except ImportError:
+    pass
 
 from .api_jws import PyJWS
 from .algorithms import Algorithm, get_default_algorithms  # NOQA
-from .compat import string_types
+from .compat import Iterable, Mapping, string_types
 from .exceptions import (
     DecodeError, ExpiredSignatureError, ImmatureSignatureError,
     InvalidAudienceError, InvalidIssuedAtError,
@@ -20,6 +24,7 @@ class PyJWT(PyJWS):
 
     @staticmethod
     def _get_default_options():
+        # type: () -> Dict[str, bool]
         return {
             'verify_signature': True,
             'verify_exp': True,
@@ -32,8 +37,13 @@ class PyJWT(PyJWS):
             'require_nbf': False
         }
 
-    def encode(self, payload, key, algorithm='HS256', headers=None,
-               json_encoder=None):
+    def encode(self,
+               payload,  # type: Union[Dict, bytes]
+               key,  # type: str
+               algorithm='HS256',  # type: str
+               headers=None,  # type: Optional[Dict]
+               json_encoder=None  # type: Optional[Callable]
+               ):
         # Check that we get a mapping
         if not isinstance(payload, Mapping):
             raise TypeError('Expecting a mapping object, as JWT only supports '
@@ -43,7 +53,7 @@ class PyJWT(PyJWS):
         for time_claim in ['exp', 'iat', 'nbf']:
             # Convert datetime to a intDate value in known time-format claims
             if isinstance(payload.get(time_claim), datetime):
-                payload[time_claim] = timegm(payload[time_claim].utctimetuple())
+                payload[time_claim] = timegm(payload[time_claim].utctimetuple())  # type: ignore
 
         json_payload = json.dumps(
             payload,
@@ -55,7 +65,12 @@ class PyJWT(PyJWS):
             json_payload, key, algorithm, headers, json_encoder
         )
 
-    def decode(self, jwt, key='', verify=True, algorithms=None, options=None,
+    def decode(self,
+               jwt,  # type: str
+               key='',   # type: str
+               verify=True,  # type: bool
+               algorithms=None,  # type: List[str]
+               options=None,  # type: Dict
                **kwargs):
 
         if verify and not algorithms:
@@ -66,7 +81,7 @@ class PyJWT(PyJWS):
                 DeprecationWarning
             )
 
-        payload, signing_input, header, signature = self._load(jwt)
+        payload, _, _, _ = self._load(jwt)
 
         if options is None:
             options = {'verify_signature': verify}
@@ -167,6 +182,11 @@ class PyJWT(PyJWS):
             # Application specified an audience, but it could not be
             # verified since the token does not contain a claim.
             raise MissingRequiredClaimError('aud')
+
+        if audience is None and 'aud' in payload:
+            # Application did not specify an audience, but
+            # the token has the 'aud' claim
+            raise InvalidAudienceError('Invalid audience')
 
         audience_claims = payload['aud']
 

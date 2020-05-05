@@ -19,7 +19,12 @@ From Dan Crosta's README:
 """
 from __future__ import absolute_import
 
-from collections import Sequence, Iterator
+from future.utils import PY2
+
+if PY2:
+    from collections import Sequence, Iterator
+else:
+    from collections.abc import Sequence, Iterator
 from itertools import islice
 
 from future.backports.misc import count   # with step parameter on Py2.6
@@ -90,7 +95,10 @@ class newrange(Sequence):
     def index(self, value):
         """Return the 0-based position of integer `value` in
         the sequence this range represents."""
-        diff = value - self._start
+        try:
+            diff = value - self._start
+        except TypeError:
+            raise ValueError('%r is not in range' % value)
         quotient, remainder = divmod(diff, self._step)
         if remainder == 0 and 0 <= quotient < self._len:
             return abs(quotient)
@@ -151,6 +159,9 @@ class range_iterator(Iterator):
 
     def __iter__(self):
         return self
+
+    def __next__(self):
+        return next(self._stepper)
 
     def next(self):
         return next(self._stepper)

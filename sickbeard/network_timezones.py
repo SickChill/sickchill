@@ -18,16 +18,21 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import re
 
+# Third Party Imports
 import six
 from dateutil import tz
 
-from sickbeard import db, helpers, logger
+# First Party Imports
 from sickchill.helper.common import try_int
+
+# Local Folder Imports
+from . import db, helpers, logger
 
 # regex to parse time (12/24 hour format)
 time_regex = re.compile(r'(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})?)? ?(?P<meridiem>[PA]\.? ?M?)?\b', re.I)
@@ -123,7 +128,7 @@ def get_network_timezone(network):
     network_tz_name = network_dict.get(network)
     if network and not (network_tz_name or network in missing_network_timezones):
         missing_network_timezones.add(network)
-        logger.log('Missing time zone for network: {0}. Check valid network is set in indexer (theTVDB) before filing issue.'.format(orig_network),
+        logger.log(_('Missing time zone for network: {0}. Check valid network is set in indexer (theTVDB) before filing issue.').format(orig_network),
                    logger.ERROR)
 
     try:

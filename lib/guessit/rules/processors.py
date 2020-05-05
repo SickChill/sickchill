@@ -34,7 +34,9 @@ class EnlargeGroupMatches(CustomRule):
             for match in matches.ending(group.end - 1):
                 ending.append(match)
 
-        return starting, ending
+        if starting or ending:
+            return starting, ending
+        return False
 
     def then(self, matches, when_response, context):
         starting, ending = when_response

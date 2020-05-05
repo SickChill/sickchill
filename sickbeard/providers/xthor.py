@@ -18,8 +18,12 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
+import time
+
+# First Party Imports
 from sickbeard import logger, tvcache
 from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
@@ -31,8 +35,8 @@ class XThorProvider(TorrentProvider):
 
         TorrentProvider.__init__(self, 'XThor')
 
-        self.url = 'https://xthor.to'
-        self.urls = {'search': 'https://api.xthor.to'}
+        self.url = 'https://xthor.tk'
+        self.urls = {'search': 'https://api.xthor.tk'}
 
         self.freeleech = None
         self.api_key = None
@@ -68,6 +72,7 @@ class XThorProvider(TorrentProvider):
                     search_params.pop('search', '')
 
                 jdata = self.get_url(self.urls['search'], params=search_params, returns='json')
+                time.sleep(3)
                 if not jdata:
                     logger.log('No data returned from provider', logger.DEBUG)
                     continue

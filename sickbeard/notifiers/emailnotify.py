@@ -23,16 +23,16 @@
 #
 ##############################################################################
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import ast
-import re
 import smtplib
-# import traceback
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formatdate
 
+# First Party Imports
 import sickbeard
 from sickbeard import db, logger
 from sickchill.helper.encoding import ss
@@ -42,19 +42,22 @@ class Notifier(object):
     def __init__(self):
         self.last_err = None
 
-    def test_notify(self, host, port, smtp_from, use_tls, user, pwd, to):  # pylint: disable=too-many-arguments
+    def test_notify(self, host, port, smtp_from, use_tls, user, pwd, to):
         msg = MIMEText('This is a test message from SickChill.  If you\'re reading this, the test succeeded.')
         if sickbeard.EMAIL_SUBJECT:
             msg[b'Subject'] = '[TEST] ' + sickbeard.EMAIL_SUBJECT
         else:
             msg[b'Subject'] = 'SickChill: Test Message'
 
+        if pwd == 'hidden_value':
+            pwd == sickbeard.EMAIL_PASSWORD
+
         msg[b'From'] = smtp_from
         msg[b'To'] = to
         msg[b'Date'] = formatdate(localtime=True)
         return self._sendmail(host, port, smtp_from, use_tls, user, pwd, [to], msg, True)
 
-    def notify_snatch(self, ep_name, title='Snatched:'):  # pylint: disable=unused-argument
+    def notify_snatch(self, ep_name, title='Snatched:'):
         '''
         Send a notification that an episode was snatched
 
@@ -71,6 +74,10 @@ class Notifier(object):
             else:
                 try:
                     msg = MIMEMultipart('alternative')
+                    msg.attach(MIMEText(
+                        'SickChill Notification - Snatched\n'
+                        'Show: {0}\nEpisode Number: {1}\nEpisode: {2}\nQuality: {3}\n\n'
+                        'Powered by SickChill.'.format(show[0], show[1], show[2], show[3])))
                     msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
                         '<h3>SickChill Notification - Snatched</h3>'
@@ -99,7 +106,7 @@ class Notifier(object):
                 else:
                     logger.log('Snatch notification error: {0}'.format(self.last_err), logger.WARNING)
 
-    def notify_download(self, ep_name, title='Completed:'):  # pylint: disable=unused-argument
+    def notify_download(self, ep_name, title='Completed:'):
         '''
         Send a notification that an episode was downloaded
 
@@ -116,6 +123,10 @@ class Notifier(object):
             else:
                 try:
                     msg = MIMEMultipart('alternative')
+                    msg.attach(MIMEText(
+                        'SickChill Notification - Downloaded\n'
+                        'Show: {0}\nEpisode Number: {1}\nEpisode: {2}\nQuality: {3}\n\n'
+                        'Powered by SickChill.'.format(show[0], show[1], show[2], show[3])))
                     msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
                         '<h3>SickChill Notification - Downloaded</h3>'
@@ -144,7 +155,7 @@ class Notifier(object):
                 else:
                     logger.log('Download notification error: {0}'.format(self.last_err), logger.WARNING)
 
-    def notify_postprocess(self, ep_name, title='Postprocessed:'):  # pylint: disable=unused-argument
+    def notify_postprocess(self, ep_name, title='Postprocessed:'):
         '''
         Send a notification that an episode was postprocessed
 
@@ -161,6 +172,10 @@ class Notifier(object):
             else:
                 try:
                     msg = MIMEMultipart('alternative')
+                    msg.attach(MIMEText(
+                        'SickChill Notification - Postprocessed\n'
+                        'Show: {0}\nEpisode Number: {1}\nEpisode: {2}\nQuality: {3}\n\n'
+                        'Powered by SickChill.'.format(show[0], show[1], show[2], show[3])))
                     msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
                         '<h3>SickChill Notification - Postprocessed</h3>'
@@ -189,7 +204,7 @@ class Notifier(object):
                 else:
                     logger.log('Postprocess notification error: {0}'.format(self.last_err), logger.WARNING)
 
-    def notify_subtitle_download(self, ep_name, lang, title='Downloaded subtitle:'):  # pylint: disable=unused-argument
+    def notify_subtitle_download(self, ep_name, lang, title='Downloaded subtitle:'):
         '''
         Send a notification that an subtitle was downloaded
 
@@ -206,6 +221,11 @@ class Notifier(object):
             else:
                 try:
                     msg = MIMEMultipart('alternative')
+                    msg.attach(MIMEText(
+                        'SickChill Notification - Subtitle Downloaded\n'
+                        'Show: {0}\nEpisode Number: {1}\nEpisode: {2}\n'
+                        'Language: {3}\n\n'
+                        'Powered by SickChill.'.format(show[0], show[1], show[2], lang)))
                     msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
                         '<h3>SickChill Notification - Subtitle Downloaded</h3>'
@@ -246,6 +266,10 @@ class Notifier(object):
                 try:
                     msg = MIMEMultipart('alternative')
                     msg.attach(MIMEText(
+                        'SickChill Notification - Updated\n'
+                        'Commit: {}\n\n'
+                        'Powered by SickChill.'.format(new_version)))
+                    msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
                         '<h3>SickChill Notification - Updated</h3><br>'
                         '<p>Commit: <b>{}</b></p><br><br>'
@@ -283,6 +307,10 @@ class Notifier(object):
                 try:
                     msg = MIMEMultipart('alternative')
                     msg.attach(MIMEText(
+                        'SickChill Notification - Remote Login\n'
+                        'New login from IP: {0}\n\n'
+                        'Powered by SickChill.'.format(ipaddress)))
+                    msg.attach(MIMEText(
                         '<body style="font-family:Helvetica, Arial, sans-serif;">'
                         '<h3>SickChill Notification - Remote Login</h3><br>'
                         '<p>New login from IP: <a href="http://geomaplookup.net/?ip={0}">{0}</a>.<br><br>'
@@ -308,7 +336,7 @@ class Notifier(object):
                     logger.log('Login notification error: {0}'.format(self.last_err), logger.WARNING)
 
     @staticmethod
-    def _generate_recipients(show):  # pylint: disable=too-many-branches
+    def _generate_recipients(show):
         addrs = []
         main_db_con = db.DBConnection()
 
@@ -337,7 +365,7 @@ class Notifier(object):
         logger.log('Notification recipients: {0}'.format(addrs), logger.DEBUG)
         return addrs
 
-    def _sendmail(self, host, port, smtp_from, use_tls, user, pwd, to, msg, smtpDebug=False):  # pylint: disable=too-many-arguments
+    def _sendmail(self, host, port, smtp_from, use_tls, user, pwd, to, msg, smtpDebug=False):
         logger.log('HOST: {0}; PORT: {1}; FROM: {2}, TLS: {3}, USER: {4}, PWD: {5}, TO: {6}'.format(
             host, port, smtp_from, use_tls, user, pwd, to), logger.DEBUG)
         try:

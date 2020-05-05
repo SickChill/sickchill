@@ -61,7 +61,7 @@ def remove_params(raw_params, kwargs_default=_kwargs_default_name):
             return False
     else:
         return True
-    
+
 def needs_fixing(raw_params, kwargs_default=_kwargs_default_name):
     u"""
     Returns string with the name of the kwargs dict if the params after the first star need fixing
@@ -145,4 +145,3 @@ class FixKwargs(fixer_base.BaseFix):
                 arglist.append_child(Comma())
             arglist.append_child(DoubleStar(prefix=u" "))
             arglist.append_child(Name(new_kwargs))
-            

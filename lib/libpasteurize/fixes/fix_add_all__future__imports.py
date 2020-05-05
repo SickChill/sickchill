@@ -18,8 +18,7 @@ class FixAddAllFutureImports(fixer_base.BaseFix):
     run_order = 1
 
     def transform(self, node, results):
-        future_import(u"unicode_literals", node)
-        future_import(u"print_function", node)
-        future_import(u"division", node)
         future_import(u"absolute_import", node)
-
+        future_import(u"division", node)
+        future_import(u"print_function", node)
+        future_import(u"unicode_literals", node)

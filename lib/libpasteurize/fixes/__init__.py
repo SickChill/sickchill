@@ -52,4 +52,3 @@ fix_names = set([
                  'libpasteurize.fixes.fix_unpacking',  # yes, this is useful
                  # 'libpasteurize.fixes.fix_with'      # way out of date
                 ])
-

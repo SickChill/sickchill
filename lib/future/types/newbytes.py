@@ -5,14 +5,18 @@ Why do this? Without it, the Python 2 bytes object is a very, very
 different beast to the Python 3 bytes object.
 """
 
-from collections import Iterable
 from numbers import Integral
 import string
 import copy
 
-from future.utils import istext, isbytes, PY3, with_metaclass
+from future.utils import istext, isbytes, PY2, PY3, with_metaclass
 from future.types import no, issubset
 from future.types.newobject import newobject
+
+if PY2:
+    from collections import Iterable
+else:
+    from collections.abc import Iterable
 
 
 _builtin_bytes = bytes
@@ -100,6 +104,8 @@ class newbytes(with_metaclass(BaseNewBytes, _builtin_bytes)):
                 newargs.append(errors)
             value = args[0].encode(*newargs)
             ###
+        elif hasattr(args[0], '__bytes__'):
+            value = args[0].__bytes__()
         elif isinstance(args[0], Iterable):
             if len(args[0]) == 0:
                 # This could be an empty list or tuple. Return b'' as on Py3.
@@ -171,6 +177,29 @@ class newbytes(with_metaclass(BaseNewBytes, _builtin_bytes)):
     @no(unicode)
     def __rmul__(self, other):
         return newbytes(super(newbytes, self).__rmul__(other))
+
+    def __mod__(self, vals):
+        if isinstance(vals, newbytes):
+            vals = _builtin_bytes.__str__(vals)
+
+        elif isinstance(vals, tuple):
+            newvals = []
+            for v in vals:
+                if isinstance(v, newbytes):
+                    v = _builtin_bytes.__str__(v)
+                newvals.append(v)
+            vals = tuple(newvals)
+
+        elif (hasattr(vals.__class__, '__getitem__') and
+                hasattr(vals.__class__, 'iteritems')):
+            for k, v in vals.iteritems():
+                if isinstance(v, newbytes):
+                    vals[k] = _builtin_bytes.__str__(v)
+
+        return _builtin_bytes.__mod__(self, vals)
+
+    def __imod__(self, other):
+        return self.__mod__(other)
 
     def join(self, iterable_of_bytes):
         errmsg = 'sequence item {0}: expected bytes, {1} found'
@@ -348,24 +377,24 @@ class newbytes(with_metaclass(BaseNewBytes, _builtin_bytes)):
     unorderable_err = 'unorderable types: bytes() and {0}'
 
     def __lt__(self, other):
-        if not isbytes(other):
-            raise TypeError(self.unorderable_err.format(type(other)))
-        return super(newbytes, self).__lt__(other)
+        if isinstance(other, _builtin_bytes):
+            return super(newbytes, self).__lt__(other)
+        raise TypeError(self.unorderable_err.format(type(other)))
 
     def __le__(self, other):
-        if not isbytes(other):
-            raise TypeError(self.unorderable_err.format(type(other)))
-        return super(newbytes, self).__le__(other)
+        if isinstance(other, _builtin_bytes):
+            return super(newbytes, self).__le__(other)
+        raise TypeError(self.unorderable_err.format(type(other)))
 
     def __gt__(self, other):
-        if not isbytes(other):
-            raise TypeError(self.unorderable_err.format(type(other)))
-        return super(newbytes, self).__gt__(other)
+        if isinstance(other, _builtin_bytes):
+            return super(newbytes, self).__gt__(other)
+        raise TypeError(self.unorderable_err.format(type(other)))
 
     def __ge__(self, other):
-        if not isbytes(other):
-            raise TypeError(self.unorderable_err.format(type(other)))
-        return super(newbytes, self).__ge__(other)
+        if isinstance(other, _builtin_bytes):
+            return super(newbytes, self).__ge__(other)
+        raise TypeError(self.unorderable_err.format(type(other)))
 
     def __native__(self):
         # We can't just feed a newbytes object into str(), because
