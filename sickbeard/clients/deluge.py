@@ -102,9 +102,18 @@ class Client(GenericClient):
 
     def _add_torrent_uri(self, result):
 
-        post_data = json.dumps({"method": "core.add_torrent_magnet",
-                                "params": [result.url, {}],
-                                "id": 2})
+        if sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR:
+            options = {
+                'download_location': sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR
+            }
+
+            post_data = json.dumps({"method": "core.add_torrent_magnet",
+                            "params": [result.url, {}],
+                            "id": 2})
+        else:
+            post_data = json.dumps({"method": "core.add_torrent_magnet",
+                                    "params": [result.url, {}],
+                                    "id": 2})
 
         self._request(method='post', data=post_data)
 
@@ -114,9 +123,18 @@ class Client(GenericClient):
 
     def _add_torrent_file(self, result):
 
-        post_data = json.dumps({"method": "core.add_torrent_file",
-                                "params": [result.name + '.torrent', b64encode(result.content), {}],
-                                "id": 2})
+        if sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR:
+            options = {
+                'download_location': sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR
+            }
+            
+            post_data = json.dumps({"method": "core.add_torrent_file",
+                        "params": [result.name + '.torrent', b64encode(result.content), options],
+                        "id": 2})
+        else:
+            post_data = json.dumps({"method": "core.add_torrent_file",
+                        "params": [result.name + '.torrent', b64encode(result.content), {}],
+                        "id": 2})
 
         self._request(method='post', data=post_data)
 
@@ -191,7 +209,7 @@ class Client(GenericClient):
 
     def _set_torrent_path(self, result):
 
-        if sickbeard.TORRENT_PATH:
+        if sickbeard.TORRENT_DELUGE_COMPLETE_DIR:
             post_data = json.dumps({"method": "core.set_torrent_move_completed",
                                     "params": [result.hash, True],
                                     "id": 7})
@@ -199,7 +217,7 @@ class Client(GenericClient):
             self._request(method='post', data=post_data)
 
             post_data = json.dumps({"method": "core.set_torrent_move_completed_path",
-                                    "params": [result.hash, sickbeard.TORRENT_PATH],
+                                    "params": [result.hash, sickbeard.TORRENT_DELUGE_COMPLETE_DIR],
                                     "id": 8})
 
             self._request(method='post', data=post_data)

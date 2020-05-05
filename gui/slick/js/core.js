@@ -1863,6 +1863,8 @@ var SICKCHILL = {
                         $('#torrent_deluge_dirs_option').hide();
                     } else if (selectedProvider.toLowerCase() === 'deluge') {
                         client = 'Deluge';
+                        $('#torrent_path_option').hide();
+                        $('#torrent_deluge_dirs_option').show();
                         $('#torrent_verify_cert_option').show();
                         $('#torrent_verify_deluge').show();
                         $('#torrent_verify_rtorrent').hide();
@@ -1871,7 +1873,6 @@ var SICKCHILL = {
                         $('#torrent_username_option').hide();
                         $('#torrent_username').prop('value', '');
                         $('#host_desc_torrent').text(_('URL to your Deluge client (e.g. http://localhost:8112)'));
-                        $('#torrent_deluge_dirs_option').hide();
                     } else if (selectedProvider.toLowerCase() === 'deluged') {
                         client = 'Deluge';
                         $('#torrent_path_option').hide();
