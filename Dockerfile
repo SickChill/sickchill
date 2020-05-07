@@ -14,5 +14,6 @@ RUN apk add --update --no-cache \
 
 WORKDIR /app/sickchill
 VOLUME /data /downloads /tv
+COPY . /app/sickchill
 CMD /usr/local/bin/python SickBeard.py -q --nolaunch --datadir=/data --port 8081
 EXPOSE 8081
