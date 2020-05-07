@@ -516,7 +516,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="emby_host">${_('host running Emby (eg. 192.168.1.100:8096)')}</label>
+                                            <label for="emby_host">${_('host running Emby (eg. https://192.168.1.100:8920 or http://192.168.1.100:8096)')}</label>
                                         </div>
                                     </div>
                                 </div>
