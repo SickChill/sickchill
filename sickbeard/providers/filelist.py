@@ -49,7 +49,7 @@ class FileListProvider(TorrentProvider):
         self.minleech = None
 
         # URLs
-        self.url = "https://filelist.ro"
+        self.url = "https://filelist.io"
         self.urls = {
             "login": urljoin(self.url, "takelogin.php"),
             "search": urljoin(self.url, "browse.php"),
@@ -76,7 +76,7 @@ class FileListProvider(TorrentProvider):
             return False
 
         if re.search("Invalid Username/password", response) \
-                or re.search("<title>Login :: FileList.ro</title>", response) \
+                or re.search("<title> FileList :: Login </title>", response) \
                   or re.search("Login esuat!", response):
             logger.log("Invalid username or password. Check your settings", logger.WARNING)
             return False

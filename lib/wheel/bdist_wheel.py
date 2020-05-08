@@ -4,29 +4,28 @@ Create a wheel (.whl) distribution.
 A wheel is a built archive format.
 """
 
-import csv
-import hashlib
 import os
-import subprocess
-import warnings
 import shutil
-import json
+import stat
 import sys
 import re
+from collections import OrderedDict
 from email.generator import Generator
 from distutils.core import Command
 from distutils.sysconfig import get_python_version
 from distutils import log as logger
+from glob import iglob
 from shutil import rmtree
+from warnings import warn
+from zipfile import ZIP_DEFLATED, ZIP_STORED
 
 import pkg_resources
 
 from .pep425tags import get_abbr_impl, get_impl_ver, get_abi_tag, get_platform
-from .util import native, open_for_csv
-from .archive import archive_wheelfile
-from .pkginfo import read_pkg_info, write_pkg_info
-from .metadata import pkginfo_to_dict
-from . import pep425tags, metadata
+from .pkginfo import write_pkg_info
+from .metadata import pkginfo_to_metadata
+from .wheelfile import WheelFile
+from . import pep425tags
 from . import __version__ as wheel_version
 
 
@@ -44,15 +43,26 @@ def safer_version(version):
     return safe_version(version).replace('-', '_')
 
 
+def remove_readonly(func, path, excinfo):
+    print(str(excinfo[1]))
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
+
+
 class bdist_wheel(Command):
 
     description = 'create a wheel distribution'
+
+    supported_compressions = OrderedDict([
+        ('stored', ZIP_STORED),
+        ('deflated', ZIP_DEFLATED)
+    ])
 
     user_options = [('bdist-dir=', 'b',
                      "temporary directory for creating the distribution"),
                     ('plat-name=', 'p',
                      "platform name to embed in generated filenames "
-                     "(default: %s)" % get_platform()),
+                     "(default: %s)" % get_platform(None)),
                     ('keep-temp', 'k',
                      "keep the pseudo-installation tree around after " +
                      "creating the distribution archive"),
@@ -61,7 +71,7 @@ class bdist_wheel(Command):
                     ('skip-build', None,
                      "skip rebuilding everything (for testing/debugging)"),
                     ('relative', None,
-                     "build the archive using relative paths"
+                     "build the archive using relative paths "
                      "(default: false)"),
                     ('owner=', 'u',
                      "Owner name used when creating a tar file"
@@ -72,6 +82,10 @@ class bdist_wheel(Command):
                     ('universal', None,
                      "make a universal wheel"
                      " (default: false)"),
+                    ('compression=', None,
+                     "zipfile compression (one of: {})"
+                     " (default: 'deflated')"
+                     .format(', '.join(supported_compressions))),
                     ('python-tag=', None,
                      "Python implementation compatibility tag"
                      " (default: py%s)" % get_impl_ver()[0]),
@@ -94,7 +108,6 @@ class bdist_wheel(Command):
         self.format = 'zip'
         self.keep_temp = False
         self.dist_dir = None
-        self.distinfo_dir = None
         self.egginfo_dir = None
         self.root_is_pure = None
         self.skip_build = None
@@ -102,6 +115,7 @@ class bdist_wheel(Command):
         self.owner = None
         self.group = None
         self.universal = False
+        self.compression = 'deflated'
         self.python_tag = 'py' + get_impl_ver()[0]
         self.build_number = None
         self.py_limited_api = False
@@ -114,6 +128,11 @@ class bdist_wheel(Command):
 
         self.data_dir = self.wheel_dist_name + '.data'
         self.plat_name_supplied = self.plat_name is not None
+
+        try:
+            self.compression = self.supported_compressions[self.compression]
+        except KeyError:
+            raise ValueError('Unsupported compression: {}'.format(self.compression))
 
         need_options = ('dist_dir', 'plat_name', 'skip_build')
 
@@ -130,6 +149,7 @@ class bdist_wheel(Command):
         wheel = self.distribution.get_option_dict('wheel')
         if 'universal' in wheel:
             # please don't define this in your global configs
+            logger.warn('The [wheel] section is deprecated. Use [bdist_wheel] instead.')
             val = wheel['universal'][1].strip()
             if val.lower() in ('1', 'true', 'yes'):
                 self.universal = True
@@ -154,9 +174,15 @@ class bdist_wheel(Command):
         elif self.root_is_pure:
             plat_name = 'any'
         else:
-            plat_name = self.plat_name or get_platform()
+            # macosx contains system version in platform name so need special handle
+            if self.plat_name and not self.plat_name.startswith("macosx"):
+                plat_name = self.plat_name
+            else:
+                plat_name = get_platform(self.bdist_dir)
+
             if plat_name in ('linux-x86_64', 'linux_x86_64') and sys.maxsize == 2147483647:
                 plat_name = 'linux_i686'
+
         plat_name = plat_name.replace('-', '_').replace('.', '_')
 
         if self.root_is_pure:
@@ -177,6 +203,7 @@ class bdist_wheel(Command):
                 abi_tag = str(get_abi_tag()).lower()
             tag = (impl, abi_tag, plat_name)
             supported_tags = pep425tags.get_supported(
+                self.bdist_dir,
                 supplied_platform=plat_name if self.plat_name_supplied else None)
             # XXX switch to this alternate implementation for non-pure:
             if not self.py_limited_api:
@@ -184,21 +211,13 @@ class bdist_wheel(Command):
             assert tag in supported_tags, "would build wheel with unsupported tag {}".format(tag)
         return tag
 
-    def get_archive_basename(self):
-        """Return archive name without extension"""
-
-        impl_tag, abi_tag, plat_tag = self.get_tag()
-
-        archive_basename = "%s-%s-%s-%s" % (
-            self.wheel_dist_name,
-            impl_tag,
-            abi_tag,
-            plat_tag)
-        return archive_basename
-
     def run(self):
         build_scripts = self.reinitialize_command('build_scripts')
         build_scripts.executable = 'python'
+        build_scripts.force = True
+
+        build_ext = self.reinitialize_command('build_ext')
+        build_ext.inplace = False
 
         if not self.skip_build:
             self.run_command('build')
@@ -239,9 +258,8 @@ class bdist_wheel(Command):
 
         self.run_command('install')
 
-        archive_basename = self.get_archive_basename()
-
-        pseudoinstall_root = os.path.join(self.dist_dir, archive_basename)
+        impl_tag, abi_tag, plat_tag = self.get_tag()
+        archive_basename = "{}-{}-{}-{}".format(self.wheel_dist_name, impl_tag, abi_tag, plat_tag)
         if not self.relative:
             archive_root = self.bdist_dir
         else:
@@ -249,35 +267,31 @@ class bdist_wheel(Command):
                 self.bdist_dir,
                 self._ensure_relative(install.install_base))
 
-        self.set_undefined_options(
-            'install_egg_info', ('target', 'egginfo_dir'))
-        self.distinfo_dir = os.path.join(self.bdist_dir,
-                                         '%s.dist-info' % self.wheel_dist_name)
-        self.egg2dist(self.egginfo_dir,
-                      self.distinfo_dir)
+        self.set_undefined_options('install_egg_info', ('target', 'egginfo_dir'))
+        distinfo_dirname = '{}-{}.dist-info'.format(
+            safer_name(self.distribution.get_name()),
+            safer_version(self.distribution.get_version()))
+        distinfo_dir = os.path.join(self.bdist_dir, distinfo_dirname)
+        self.egg2dist(self.egginfo_dir, distinfo_dir)
 
-        self.write_wheelfile(self.distinfo_dir)
-
-        self.write_record(self.bdist_dir, self.distinfo_dir)
+        self.write_wheelfile(distinfo_dir)
 
         # Make the archive
         if not os.path.exists(self.dist_dir):
             os.makedirs(self.dist_dir)
-        wheel_name = archive_wheelfile(pseudoinstall_root, archive_root)
 
-        # Sign the archive
-        if 'WHEEL_TOOL' in os.environ:
-            subprocess.call([os.environ['WHEEL_TOOL'], 'sign', wheel_name])
+        wheel_path = os.path.join(self.dist_dir, archive_basename + '.whl')
+        with WheelFile(wheel_path, 'w', self.compression) as wf:
+            wf.write_files(archive_root)
 
         # Add to 'Distribution.dist_files' so that the "upload" command works
         getattr(self.distribution, 'dist_files', []).append(
-            ('bdist_wheel', get_python_version(), wheel_name))
+            ('bdist_wheel', get_python_version(), wheel_path))
 
         if not self.keep_temp:
-            if self.dry_run:
-                logger.info('removing %s', self.bdist_dir)
-            else:
-                rmtree(self.bdist_dir)
+            logger.info('removing %s', self.bdist_dir)
+            if not self.dry_run:
+                rmtree(self.bdist_dir, onerror=remove_readonly)
 
     def write_wheelfile(self, wheelfile_base, generator='bdist_wheel (' + wheel_version + ')'):
         from email.message import Message
@@ -307,64 +321,29 @@ class bdist_wheel(Command):
             path = drive + path[1:]
         return path
 
-    def _pkginfo_to_metadata(self, egg_info_path, pkginfo_path):
-        return metadata.pkginfo_to_metadata(egg_info_path, pkginfo_path)
-
-    def license_file(self):
-        """Return license filename from a license-file key in setup.cfg, or None."""
+    @property
+    def license_paths(self):
         metadata = self.distribution.get_option_dict('metadata')
-        if 'license_file' not in metadata:
-            return None
-        return metadata['license_file'][1]
+        files = set()
+        patterns = sorted({
+            option for option in metadata.get('license_files', ('', ''))[1].split()
+        })
 
-    def setupcfg_requirements(self):
-        """Generate requirements from setup.cfg as
-        ('Requires-Dist', 'requirement; qualifier') tuples. From a metadata
-        section in setup.cfg:
+        if 'license_file' in metadata:
+            warn('The "license_file" option is deprecated. Use "license_files" instead.',
+                 DeprecationWarning)
+            files.add(metadata['license_file'][1])
 
-        [metadata]
-        provides-extra = extra1
-            extra2
-        requires-dist = requirement; qualifier
-            another; qualifier2
-            unqualified
+        if 'license_file' not in metadata and 'license_files' not in metadata:
+            patterns = ('LICEN[CS]E*', 'COPYING*', 'NOTICE*', 'AUTHORS*')
 
-        Yields
+        for pattern in patterns:
+            for path in iglob(pattern):
+                if path not in files and os.path.isfile(path):
+                    logger.info('adding license file "%s" (matched pattern "%s")', path, pattern)
+                    files.add(path)
 
-        ('Provides-Extra', 'extra1'),
-        ('Provides-Extra', 'extra2'),
-        ('Requires-Dist', 'requirement; qualifier'),
-        ('Requires-Dist', 'another; qualifier2'),
-        ('Requires-Dist', 'unqualified')
-        """
-        metadata = self.distribution.get_option_dict('metadata')
-
-        # our .ini parser folds - to _ in key names:
-        for key, title in (('provides_extra', 'Provides-Extra'),
-                           ('requires_dist', 'Requires-Dist')):
-            if key not in metadata:
-                continue
-            field = metadata[key]
-            for line in field[1].splitlines():
-                line = line.strip()
-                if not line:
-                    continue
-                yield (title, line)
-
-    def add_requirements(self, metadata_path):
-        """Add additional requirements from setup.cfg to file metadata_path"""
-        additional = list(self.setupcfg_requirements())
-        if not additional:
-            return
-
-        pkg_info = read_pkg_info(metadata_path)
-        if 'Provides-Extra' in pkg_info or 'Requires-Dist' in pkg_info:
-            warnings.warn('setup.cfg requirements overwrite values from setup.py')
-            del pkg_info['Provides-Extra']
-            del pkg_info['Requires-Dist']
-        for k, v in additional:
-            pkg_info[k] = v
-        write_pkg_info(metadata_path, pkg_info)
+        return files
 
     def egg2dist(self, egginfo_path, distinfo_path):
         """Convert an .egg-info directory into a .dist-info directory"""
@@ -395,12 +374,12 @@ class bdist_wheel(Command):
         if os.path.isfile(egginfo_path):
             # .egg-info is a single file
             pkginfo_path = egginfo_path
-            pkg_info = self._pkginfo_to_metadata(egginfo_path, egginfo_path)
+            pkg_info = pkginfo_to_metadata(egginfo_path, egginfo_path)
             os.mkdir(distinfo_path)
         else:
             # .egg-info is a directory
             pkginfo_path = os.path.join(egginfo_path, 'PKG-INFO')
-            pkg_info = self._pkginfo_to_metadata(egginfo_path, pkginfo_path)
+            pkg_info = pkginfo_to_metadata(egginfo_path, pkginfo_path)
 
             # ignore common egg metadata that is useless to wheel
             shutil.copytree(egginfo_path, distinfo_path,
@@ -417,66 +396,8 @@ class bdist_wheel(Command):
 
         write_pkg_info(os.path.join(distinfo_path, 'METADATA'), pkg_info)
 
-        # XXX deprecated. Still useful for current distribute/setuptools.
-        metadata_path = os.path.join(distinfo_path, 'METADATA')
-        self.add_requirements(metadata_path)
-
-        # XXX intentionally a different path than the PEP.
-        metadata_json_path = os.path.join(distinfo_path, 'metadata.json')
-        pymeta = pkginfo_to_dict(metadata_path,
-                                 distribution=self.distribution)
-
-        if 'description' in pymeta:
-            description_filename = 'DESCRIPTION.rst'
-            description_text = pymeta.pop('description')
-            description_path = os.path.join(distinfo_path,
-                                            description_filename)
-            with open(description_path, "wb") as description_file:
-                description_file.write(description_text.encode('utf-8'))
-            pymeta['extensions']['python.details']['document_names']['description'] = \
-                description_filename
-
-        # XXX heuristically copy any LICENSE/LICENSE.txt?
-        license = self.license_file()
-        if license:
-            license_filename = 'LICENSE.txt'
-            shutil.copy(license, os.path.join(self.distinfo_dir, license_filename))
-            pymeta['extensions']['python.details']['document_names']['license'] = license_filename
-
-        with open(metadata_json_path, "w") as metadata_json:
-            json.dump(pymeta, metadata_json, sort_keys=True)
+        for license_path in self.license_paths:
+            filename = os.path.basename(license_path)
+            shutil.copy(license_path, os.path.join(distinfo_path, filename))
 
         adios(egginfo_path)
-
-    def write_record(self, bdist_dir, distinfo_dir):
-        from .util import urlsafe_b64encode
-
-        record_path = os.path.join(distinfo_dir, 'RECORD')
-        record_relpath = os.path.relpath(record_path, bdist_dir)
-
-        def walk():
-            for dir, dirs, files in os.walk(bdist_dir):
-                dirs.sort()
-                for f in sorted(files):
-                    yield os.path.join(dir, f)
-
-        def skip(path):
-            """Wheel hashes every possible file."""
-            return (path == record_relpath)
-
-        with open_for_csv(record_path, 'w+') as record_file:
-            writer = csv.writer(record_file)
-            for path in walk():
-                relpath = os.path.relpath(path, bdist_dir)
-                if skip(relpath):
-                    hash = ''
-                    size = ''
-                else:
-                    with open(path, 'rb') as f:
-                        data = f.read()
-                    digest = hashlib.sha256(data).digest()
-                    hash = 'sha256=' + native(urlsafe_b64encode(digest))
-                    size = len(data)
-                record_path = os.path.relpath(
-                    path, bdist_dir).replace(os.path.sep, '/')
-                writer.writerow((record_path, hash, size))

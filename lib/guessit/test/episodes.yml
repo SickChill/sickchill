@@ -4667,15 +4667,15 @@
   mimetype: video/mp4
   type: episode
 
-? About.Time.E01.1080p.VIKI.WEB-DL-BLUEBERRY.mkv
+? About.Time.E01.1080p.VIKI.WEB-DL-BLUEBERRY.mp4
 : title: About Time
   episode: 1
   screen_size: 1080p
   streaming_service: Viki
   source: Web 
   release_group: BLUEBERRY
-  container: mkv
-  mimetype: video/x-matroska
+  container: mp4
+  mimetype: video/mp4
   type: episode
 
 ? Eyes.Of.Dawn.1991.E01.480p.MBCVOD.AAC.x264-NOGPR.mp4

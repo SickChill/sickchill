@@ -5,13 +5,10 @@ bencode==1.0
 CacheControl==0.12.6
 cfscrape==2.1.1
 chardet==3.0.4
-cloudscraper==1.2.34
+cloudscraper==1.2.36
 configobj==5.0.6
 fake-useragent==0.1.11
 feedparser==5.2.1
-#hachoir_parser
-#hachoir_metadata
-#hachoir_core
 html5lib==1.0.1
 ipaddress==1.0.23
 Js2Py==0.70
@@ -28,7 +25,7 @@ python-dateutil==2.8.1
 python-twitter==3.5
 rarfile==3.1
 slugify==0.0.1
-subliminal==2.0.5
+subliminal==2.1.0
 tmdbsimple==2.2.0
 tornado==4.5.3
 tvdbsimple==1.0.6
@@ -49,3 +46,5 @@ httplib2 == 0.17.3
 PySocks
 win_inet_pton
 imdbpie
+imagesize==1.2.0
+send2trash

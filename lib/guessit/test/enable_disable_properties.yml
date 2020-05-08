@@ -286,9 +286,9 @@
 : options: --exclude website
   -website: wawa.co.uk
 
-? movie.mkv
+? movie.mp4
 : options: --exclude mimetype
-  -mimetype: video/x-matroska
+  -mimetype: video/mp4
 
 ? another movie.mkv
 : options: --exclude container

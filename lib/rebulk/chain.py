@@ -119,34 +119,39 @@ class Chain(Pattern, Builder):
         :type match:
         :param match_index:
         :type match_index:
-        :param yield_:
-        :type yield_:
+        :param child:
+        :type child:
         :return:
         :rtype:
         """
         # pylint: disable=too-many-locals
         ret = super(Chain, self)._process_match(match, match_index, child=child)
-        original_children = Matches(match.children)
-        original_end = match.end
-        while not ret and match.children:
-            last_pattern = match.children[-1].pattern
-            last_pattern_children = [child_ for child_ in match.children if child_.pattern == last_pattern]
-            last_pattern_groups_iter = itertools.groupby(last_pattern_children, lambda child_: child_.match_index)
-            last_pattern_groups = {}
-            for index, matches in last_pattern_groups_iter:
-                last_pattern_groups[index] = list(matches)
+        if ret:
+            return True
 
-            for index in reversed(list(last_pattern_groups)):
-                last_matches = list(last_pattern_groups[index])
-                for last_match in last_matches:
-                    match.children.remove(last_match)
-                match.end = match.children[-1].end if match.children else match.start
-                ret = super(Chain, self)._process_match(match, match_index, child=child)
-                if ret:
-                    return True
-        match.children = original_children
-        match.end = original_end
-        return ret
+        if match.children:
+            last_pattern = match.children[-1].pattern
+            last_pattern_groups = self._group_by_match_index(
+                [child_ for child_ in match.children if child_.pattern == last_pattern]
+            )
+
+            if last_pattern_groups:
+                original_children = Matches(match.children)
+                original_end = match.end
+
+                for index in reversed(list(last_pattern_groups)):
+                    last_matches = last_pattern_groups[index]
+                    for last_match in last_matches:
+                        match.children.remove(last_match)
+                    match.end = match.children[-1].end if match.children else match.start
+                    ret = super(Chain, self)._process_match(match, match_index, child=child)
+                    if ret:
+                        return True
+
+                match.children = original_children
+                match.end = original_end
+
+        return False
 
     def _build_chain_match(self, current_chain_matches, input_string):
         start = None

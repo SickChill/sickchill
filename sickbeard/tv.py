@@ -27,11 +27,13 @@ import shutil
 import stat
 import threading
 import traceback
+from sqlite3 import OperationalError
 
 # Third Party Imports
 import babelfish
 # import guessit
 from imdbpie import Imdb, ImdbFacade
+from imdbpie.exceptions import ImdbAPIError
 from unidecode import unidecode
 
 # First Party Imports
@@ -725,7 +727,7 @@ class TVShow(object):
         if len(sql_results) > 1:
             raise MultipleShowsInDatabaseException()
         elif not sql_results:
-            logger.log(str(self.indexerid) + ": Unable to find the show in the database")
+            # logger.log(str(self.indexerid) + ": Unable to find the show in the database")
             return
         else:
             self.indexer = int(sql_results[0][b"indexer"] or 0)
@@ -844,60 +846,64 @@ class TVShow(object):
             self.imdbid = ""
 
     def loadIMDbInfo(self):
-        # client = Imdb(session=helpers.make_indexer_session(), locale=sickbeard.GUI_LANG, exclude_episodes=True)
-        client = Imdb(session=helpers.make_indexer_session(), locale=sickbeard.GUI_LANG)
-        i = ImdbFacade(client=client)
+        try:
+            # client = Imdb(session=helpers.make_indexer_session(), locale=sickbeard.GUI_LANG, exclude_episodes=True)
+            client = Imdb(session=helpers.make_indexer_session(), locale=sickbeard.GUI_LANG)
+            client._cachedir = sickbeard.CACHE_DIR
+            i = ImdbFacade(client=client)
 
-        # Check that the imdbid we have is valid for searching
-        self.check_imdbid()
+            # Check that the imdbid we have is valid for searching
+            self.check_imdbid()
 
-        if self.name and not self.imdbid:
-            for attempt in (self.name, '{} ({})'.format(self.name, self.startyear), '"{}" ({})'.format(self.name, self.startyear)):
-                results = filter(lambda x: x.type == 'TV series' and x.title == attempt, i.search_for_title(attempt))
-                if self.startyear:
-                    results = filter(lambda x: x.year == self.startyear, results)
-                if len(results) == 1:
-                    self.imdbid = results[0].imdb_id
+            if self.name and not self.imdbid:
+                for attempt in (self.name, '{} ({})'.format(self.name, self.startyear), '"{}" ({})'.format(self.name, self.startyear)):
+                    results = filter(lambda x: x.type == 'TV series' and x.title == attempt, i.search_for_title(attempt))
+                    if self.startyear:
+                        results = filter(lambda x: x.year == self.startyear, results)
+                    if len(results) == 1:
+                        self.imdbid = results[0].imdb_id
 
-                if self.imdbid:
-                    break
+                    if self.imdbid:
+                        break
 
-        # Make sure the lib didn't give us back something bogus
-        self.check_imdbid()
+            # Make sure the lib didn't give us back something bogus
+            self.check_imdbid()
 
-        if not self.imdbid:
-            logger.log(str(self.indexerid) + ": Not loading show info from IMDb, because we don't know the imdbid", logger.DEBUG)
-            return
+            if not self.imdbid:
+                logger.log(str(self.indexerid) + ": Not loading show info from IMDb, because we don't know the imdbid", logger.DEBUG)
+                return
 
-        logger.log(str(self.indexerid) + ": Loading show info from IMDb", logger.DEBUG)
+            logger.log(str(self.indexerid) + ": Loading show info from IMDb", logger.DEBUG)
 
-        imdb_title = i.get_title(self.imdbid)
+            imdb_title = i.get_title(self.imdbid)
 
-        title_versions = client.get_title_versions(self.imdbid)
+            title_versions = client.get_title_versions(self.imdbid)
 
-        # indexer_id, imdb_id, title, year, akas, runtimes, genres, countries, country_codes, certificates, rating, votes, last_update
+            # indexer_id, imdb_id, title, year, akas, runtimes, genres, countries, country_codes, certificates, rating, votes, last_update
 
-        self.imdb_info = {
-            'indexer_id': self.indexerid,
-            'imdb_id': imdb_title.imdb_id or self.imdbid,
-            'title': imdb_title.title or self.name,
-            'year': imdb_title.year or self.startyear,
-            'akas': '|'.join(
-                set('{} ({})'.format(alternate['title'], babelfish.COUNTRIES.get(alternate['region'], _('World Wide')).title())
-                    for alternate in title_versions['alternateTitles']
-                    if 'region' in alternate and 'title' in alternate and alternate['title'] != imdb_title.title)
-            ),
-            'runtimes': imdb_title.runtime or self.runtime,
-            'genres': '|'.join(imdb_title.genres or []),
-            'countries': '|'.join(babelfish.COUNTRIES[x].title() for x in title_versions.get('origins', [])),
-            'country_codes': '|'.join(title_versions.get('origins', [])).lower(),
-            'certificates': imdb_title.certification or '',
-            'rating': str(imdb_title.rating or 0.0),
-            'votes': imdb_title.rating_count or 0,
-            'last_update': datetime.date.today().toordinal()
-        }
+            self.imdb_info = {
+                'indexer_id': self.indexerid,
+                'imdb_id': imdb_title.imdb_id or self.imdbid,
+                'title': imdb_title.title or self.name,
+                'year': imdb_title.year or self.startyear,
+                'akas': '|'.join(
+                    set('{} ({})'.format(alternate['title'], babelfish.COUNTRIES.get(alternate['region'], _('World Wide')).title())
+                        for alternate in title_versions['alternateTitles']
+                        if 'region' in alternate and 'title' in alternate and alternate['title'] != imdb_title.title)
+                ),
+                'runtimes': imdb_title.runtime or self.runtime,
+                'genres': '|'.join(imdb_title.genres or []),
+                'countries': '|'.join(babelfish.COUNTRIES[x].title() for x in title_versions.get('origins', [])),
+                'country_codes': '|'.join(title_versions.get('origins', [])).lower(),
+                'certificates': imdb_title.certification or '',
+                'rating': str(imdb_title.rating or 0.0),
+                'votes': imdb_title.rating_count or 0,
+                'last_update': datetime.date.today().toordinal()
+            }
 
-        logger.log(str(self.indexerid) + ": Obtained info from IMDb ->" + str(self.imdb_info), logger.DEBUG)
+            logger.log(str(self.indexerid) + ": Obtained info from IMDb ->" + str(self.imdb_info), logger.DEBUG)
+        except (ValueError, LookupError, OperationalError, ImdbAPIError) as e:
+            logger.log('Could not get IMDB info: {}'. format(e))
 
     def nextEpisode(self):
         curDate = datetime.date.today().toordinal()
@@ -1628,7 +1634,7 @@ class TVEpisode(object):
                         status=statusStrings[self.status], location=self.location), logger.DEBUG)
 
         if not ek(os.path.isfile, self.location):
-            if self.airdate >= datetime.date.today() or self.airdate == datetime.date.min:
+            if self.airdate >= datetime.date.today() or self.airdate <= datetime.date.min:
                 logger.log("{0}: Episode airs in the future or has no airdate, marking it {1}".format(self.show.indexerid, statusStrings[UNAIRED]), logger.DEBUG)
                 self.status = UNAIRED
             elif self.status in [UNAIRED, UNKNOWN]:

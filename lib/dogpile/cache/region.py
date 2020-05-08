@@ -853,7 +853,7 @@ class CacheRegion(object):
 
          .. versionadded:: 0.7.0
 
-        :param expiration_time: optional expiration time which will overide
+        :param expiration_time: optional expiration time which will override
          the expiration time already configured on this :class:`.CacheRegion`
          if not None.   To set no expiration, use the value -1.
 
@@ -991,7 +991,7 @@ class CacheRegion(object):
         :param creator: function which accepts a sequence of keys and
          returns a sequence of new values.
 
-        :param expiration_time: optional expiration time which will overide
+        :param expiration_time: optional expiration time which will override
          the expiration time already configured on this :class:`.CacheRegion`
          if not None.   To set no expiration, use the value -1.
 

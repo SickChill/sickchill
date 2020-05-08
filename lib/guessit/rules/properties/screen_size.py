@@ -24,8 +24,8 @@ def screen_size(config):
     :return: Created Rebulk object
     :rtype: Rebulk
     """
-    interlaced = frozenset({res for res in config['interlaced']})
-    progressive = frozenset({res for res in config['progressive']})
+    interlaced = frozenset(config['interlaced'])
+    progressive = frozenset(config['progressive'])
     frame_rates = [re.escape(rate) for rate in config['frame_rates']]
     min_ar = config['min_ar']
     max_ar = config['max_ar']

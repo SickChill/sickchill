@@ -56,7 +56,7 @@ def call(function, *args, **kwargs):
     :rtype: object
     """
     func = constructor_args if isclass(function) else function_args
-    call_args, call_kwargs = func(function, *args, **kwargs)
+    call_args, call_kwargs = func(function, *args, ignore_unused=True, **kwargs)  # @see #20
     return function(*call_args, **call_kwargs)
 
 

@@ -160,6 +160,15 @@ class MediaInfo(object):
         for xml_track in xml_dom.iterfind(xpath):
             self.tracks.append(Track(xml_track))
     @staticmethod
+    def _parse_filename(filename):
+        if hasattr(os, "PathLike") and isinstance(filename, os.PathLike):
+            return os.fspath(filename), False
+        elif pathlib is not None and isinstance(filename, pathlib.PurePath):
+            return str(filename), False
+        else:
+            url = urlparse.urlparse(filename)
+            return filename, bool(url.scheme)
+    @staticmethod
     def _get_library(library_file=None):
         os_is_nt = os.name in ("nt", "dos", "os2", "ce")
         if os_is_nt:
@@ -200,11 +209,13 @@ class MediaInfo(object):
                 lib.MediaInfo_Delete.restype  = None
                 lib.MediaInfo_Close.argtypes = [ctypes.c_void_p]
                 lib.MediaInfo_Close.restype = None
-                # Obtain the library version
-                lib_version_str = lib.MediaInfo_Option(None, "Info_Version", "")
+                # Without a handle, there might be problems when using concurrent threads
+                # https://github.com/sbraz/pymediainfo/issues/76#issuecomment-574759621
+                handle = lib.MediaInfo_New()
+                lib_version_str = lib.MediaInfo_Option(handle, "Info_Version", "")
                 lib_version_str = re.search(r"^MediaInfoLib - v(\S+)", lib_version_str).group(1)
                 lib_version = tuple(int(_) for _ in lib_version_str.split("."))
-                return (lib, lib_version_str, lib_version)
+                return (lib, handle, lib_version_str, lib_version)
             except OSError:
                 # If we've tried all possible filenames
                 if i == len(library_names):
@@ -217,20 +228,25 @@ class MediaInfo(object):
         :rtype: bool
         """
         try:
-            cls._get_library(library_file)
+            lib, handle = cls._get_library(library_file)[:2]
+            lib.MediaInfo_Close(handle)
+            lib.MediaInfo_Delete(handle)
             return True
         except:
             return False
     @classmethod
     def parse(cls, filename, library_file=None, cover_data=False,
             encoding_errors="strict", parse_speed=0.5, text=False,
-            full=True, legacy_stream_display=False, mediainfo_options=None):
+            full=True, legacy_stream_display=False, mediainfo_options=None,
+            output=None):
         """
         Analyze a media file using libmediainfo.
-        If libmediainfo is located in a non-standard location, the `library_file` parameter can be used:
 
-        >>> pymediainfo.MediaInfo.parse("tests/data/sample.mkv",
-        ...     library_file="/path/to/libmediainfo.dylib")
+        .. note::
+            Because of the way the underlying library works, this method should not
+            be called simultaneously from multiple threads *with different arguments*.
+            Doing so will cause inconsistencies or failures by changing
+            library options that are shared across threads.
 
         :param filename: path to the media file which will be analyzed.
             A URL can also be used if libmediainfo was compiled
@@ -243,15 +259,29 @@ class MediaInfo(object):
             this option takes values between 0 and 1.
             A higher value will yield more precise results in some cases
             but will also increase parsing time.
-        :param bool text: if ``True``, MediaInfo's text output will be returned instead
-            of a :class:`MediaInfo` object.
         :param bool full: display additional tags, including computer-readable values
             for sizes and durations.
         :param bool legacy_stream_display: display additional information about streams.
         :param dict mediainfo_options: additional options that will be passed to the `MediaInfo_Option` function,
-            for example: ``{"Language": "raw"}``
-        :type filename: str or pathlib.Path
-        :rtype: str if `text` is ``True``.
+            for example: ``{"Language": "raw"}``. Do not use this parameter when running the
+            method simultaneously from multiple threads, it will trigger a reset of all options
+            which will cause inconsistencies or failures.
+        :param str output: custom output format for MediaInfo, corresponds to the CLI's
+            ``--Output`` parameter. Setting this causes the method to
+            return a `str` instead of a :class:`MediaInfo` object.
+
+            Useful values include:
+                * the empty `str` ``""`` (corresponds to the default
+                  text output, obtained when running ``mediainfo`` with no
+                  additional parameters)
+
+                * ``"XML"``
+
+                * ``"JSON"``
+
+                * ``%``-delimited templates (see ``mediainfo --Info-Parameters``)
+        :type filename: str or pathlib.Path or os.PathLike
+        :rtype: str if `output` is set.
         :rtype: :class:`MediaInfo` otherwise.
         :raises FileNotFoundError: if passed a non-existent file
             (Python ≥ 3.3), does not work on Windows.
@@ -259,21 +289,28 @@ class MediaInfo(object):
             does not work on Windows.
         :raises RuntimeError: if parsing fails, this should not
             happen unless libmediainfo itself fails.
+
+        Examples:
+            >>> pymediainfo.MediaInfo.parse("tests/data/sample.mkv")
+                <pymediainfo.MediaInfo object at 0x7fa83a3db240>
+
+            >>> import json
+            >>> mi = pymediainfo.MediaInfo.parse("tests/data/sample.mkv",
+            ...     output="JSON")
+            >>> json.loads(mi)["media"]["track"][0]
+                {'@type': 'General', 'TextCount': '1', 'FileExtension': 'mkv',
+                    'FileSize': '5904',  … }
+
+
         """
-        lib, lib_version_str, lib_version = cls._get_library(library_file)
-        if pathlib is not None and isinstance(filename, pathlib.PurePath):
-            filename = str(filename)
-            url = False
-        else:
-            url = urlparse.urlparse(filename)
+        lib, handle, lib_version_str, lib_version = cls._get_library(library_file)
+        filename, is_url = cls._parse_filename(filename)
         # Try to open the file (if it's not a URL)
         # Doesn't work on Windows because paths are URLs
-        if not (url and url.scheme):
+        if not is_url:
             # Test whether the file is readable
             with open(filename, "rb"):
                 pass
-        # Create a MediaInfo handle
-        handle = lib.MediaInfo_New()
         # The XML option was renamed starting with version 17.10
         if lib_version >= (17, 10):
             xml_option = "OLDXML"
@@ -290,7 +327,13 @@ class MediaInfo(object):
         if (sys.version_info < (3,) and os.name == "posix"
                 and locale.getlocale() == (None, None)):
             locale.setlocale(locale.LC_CTYPE, locale.getdefaultlocale())
-        lib.MediaInfo_Option(handle, "Inform", "" if text else xml_option)
+        if text:
+            warnings.warn('The "text" option is obsolete and will be removed '
+                    'in the next major version. Use output="" instead.',
+                    DeprecationWarning
+            )
+            output = ""
+        lib.MediaInfo_Option(handle, "Inform", xml_option if output is None else output)
         lib.MediaInfo_Option(handle, "Complete", "1" if full else "")
         lib.MediaInfo_Option(handle, "ParseSpeed", str(parse_speed))
         lib.MediaInfo_Option(handle, "LegacyStreamDisplay", "1" if legacy_stream_display else "")
@@ -304,21 +347,25 @@ class MediaInfo(object):
             for option_name, option_value in mediainfo_options.items():
                 lib.MediaInfo_Option(handle, option_name, option_value)
         if lib.MediaInfo_Open(handle, filename) == 0:
+            lib.MediaInfo_Close(handle)
+            lib.MediaInfo_Delete(handle)
             raise RuntimeError("An eror occured while opening {}"
                     " with libmediainfo".format(filename))
-        output = lib.MediaInfo_Inform(handle, 0)
+        info = lib.MediaInfo_Inform(handle, 0)
         # Reset all options to their defaults so that they aren't
         # retained when the parse method is called several times
         # https://github.com/MediaArea/MediaInfoLib/issues/1128
-        if lib_version > (19, 7):
+        # Do not call it when it is not required because it breaks threads
+        # https://github.com/sbraz/pymediainfo/issues/76#issuecomment-575245093
+        if mediainfo_options is not None and lib_version >= (19, 9):
             lib.MediaInfo_Option(handle, "Reset", "")
         # Delete the handle
         lib.MediaInfo_Close(handle)
         lib.MediaInfo_Delete(handle)
-        if text:
-            return output
+        if output is None:
+            return cls(info, encoding_errors)
         else:
-            return cls(output, encoding_errors)
+            return info
     def to_data(self):
         """
         Returns a dict representation of the object's :py:class:`Tracks <Track>`.

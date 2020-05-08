@@ -107,7 +107,8 @@ class Notifier(object):
                 results[connection.host] = False
 
         for host in [x.strip() for x in (hosts or sickbeard.KODI_HOST or '').split(",") if x.strip()]:
-            if host not in results:
+            base_host = host.split(':')[0]
+            if base_host not in results and host not in results:
                 results[host] = False
 
         return results

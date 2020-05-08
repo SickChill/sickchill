@@ -1,4 +1,4 @@
-#!/home/dusted/Envs/scimdbpie/bin/python
+#!/usr/bin/python2
 # -*- coding: utf-8 -*-
 import re
 import sys

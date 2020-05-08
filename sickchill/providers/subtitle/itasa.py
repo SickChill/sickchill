@@ -15,8 +15,9 @@ from requests import Session
 from subliminal import __version__
 from subliminal.cache import EPISODE_EXPIRATION_TIME, region, SHOW_EXPIRATION_TIME
 from subliminal.exceptions import AuthenticationError, ConfigurationError, DownloadLimitExceeded
+from subliminal.matches import guess_matches, sanitize
 from subliminal.providers import Provider
-from subliminal.subtitle import fix_line_ending, guess_matches, sanitize, Subtitle
+from subliminal.subtitle import fix_line_ending, Subtitle
 from subliminal.video import Episode
 
 try:

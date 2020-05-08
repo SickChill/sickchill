@@ -124,9 +124,7 @@ class Lock(object):
         if self._has_value(createdtime):
             has_value = True
             if not self.mutex.acquire(False):
-                log.debug(
-                    "creation function in progress elsewhere, returning"
-                )
+                log.debug("creation function in progress elsewhere, returning")
                 return NOT_REGENERATED
         else:
             has_value = False
