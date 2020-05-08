@@ -30,7 +30,7 @@ tmdbsimple==2.2.0
 tornado==4.5.3
 tvdbsimple==1.0.6
 Unidecode==1.1.1
-validators==0.14.3
+validators==0.15.0
 enzyme
 python3-fanart # Works on python2
 gntp
