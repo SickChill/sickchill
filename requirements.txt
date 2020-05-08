@@ -47,3 +47,4 @@ PySocks
 win_inet_pton
 imdbpie
 imagesize==1.2.0
+send2trash
