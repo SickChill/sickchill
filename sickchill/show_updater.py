@@ -79,17 +79,18 @@ class ShowUpdater(object):
                     try:
                         cur_show.nextEpisode()
 
+                        skip_update = False
                         # Skip ended shows until interval is met
                         if cur_show.status == 'Ended' and sickbeard.ENDED_SHOWS_UPDATE_INTERVAL != 0:  # 0 is always
                             if sickbeard.ENDED_SHOWS_UPDATE_INTERVAL == -1:  # Never
-                                continue
+                                skip_update = True
                             if (datetime.datetime.today() - datetime.datetime.fromordinal(cur_show.last_update_indexer or 1)).days < \
                                 sickbeard.ENDED_SHOWS_UPDATE_INTERVAL:
-                                continue
+                                skip_update = True
 
                         # Just update all of the shows for now until they fix the updates api
                         # When last_update is not set from the cache or the show was in the tvdb updated list we update the show
-                        if cur_show.indexerid in updated_shows or not last_update:
+                        if not last_update or (cur_show.indexerid in updated_shows and not skip_update):
                             pi_list.append(sickbeard.showQueueScheduler.action.update_show(cur_show, True))
                         else:
                             pi_list.append(sickbeard.showQueueScheduler.action.refresh_show(cur_show, force))
