@@ -8,6 +8,8 @@ Provides backends for talking to `Redis <http://redis.io>`_.
 
 from __future__ import absolute_import
 
+import warnings
+
 from ..api import CacheBackend
 from ..api import NO_VALUE
 from ...util.compat import pickle
@@ -33,9 +35,11 @@ class RedisBackend(CacheBackend):
                 'port': 6379,
                 'db': 0,
                 'redis_expiration_time': 60*60*2,   # 2 hours
-                'distributed_lock': True
+                'distributed_lock': True,
+                'thread_local_lock': False
                 }
         )
+
 
     Arguments accepted in the arguments dictionary:
 
@@ -59,11 +63,9 @@ class RedisBackend(CacheBackend):
      cache expiration.  By default no expiration is set.
 
     :param distributed_lock: boolean, when True, will use a
-     redis-lock as the dogpile lock.
-     Use this when multiple
-     processes will be talking to the same redis instance.
-     When left at False, dogpile will coordinate on a regular
-     threading mutex.
+     redis-lock as the dogpile lock. Use this when multiple processes will be
+     talking to the same redis instance. When left at False, dogpile will
+     coordinate on a regular threading mutex.
 
     :param lock_timeout: integer, number of seconds after acquiring a lock that
      Redis should expire it.  This argument is only valid when
@@ -90,6 +92,12 @@ class RedisBackend(CacheBackend):
 
      .. versionadded:: 0.5.4
 
+    :param thread_local_lock: bool, whether a thread-local Redis lock object
+     should be used. This is the default, but is not compatible with
+     asynchronous runners, as they run in a different thread than the one
+     used to create the lock.
+
+     .. versionadded:: 0.9.1
 
     """
 
@@ -106,6 +114,13 @@ class RedisBackend(CacheBackend):
 
         self.lock_timeout = arguments.get("lock_timeout", None)
         self.lock_sleep = arguments.get("lock_sleep", 0.1)
+        self.thread_local_lock = arguments.get("thread_local_lock", True)
+
+        if self.distributed_lock and self.thread_local_lock:
+            warnings.warn(
+                "The Redis backend thread_local_lock parameter should be "
+                "set to False when distributed_lock is True"
+            )
 
         self.redis_expiration_time = arguments.pop("redis_expiration_time", 0)
         self.connection_pool = arguments.get("connection_pool", None)
@@ -142,7 +157,10 @@ class RedisBackend(CacheBackend):
     def get_mutex(self, key):
         if self.distributed_lock:
             return self.client.lock(
-                u("_lock{0}").format(key), self.lock_timeout, self.lock_sleep
+                u("_lock{0}").format(key),
+                timeout=self.lock_timeout,
+                sleep=self.lock_sleep,
+                thread_local=self.thread_local_lock,
             )
         else:
             return None

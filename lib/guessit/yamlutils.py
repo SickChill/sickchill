@@ -15,14 +15,14 @@ import yaml  # pylint:disable=wrong-import-order
 from .rules.common.quantity import BitRate, FrameRate, Size
 
 
-class OrderedDictYAMLLoader(yaml.Loader):
+class OrderedDictYAMLLoader(yaml.SafeLoader):
     """
     A YAML loader that loads mappings into ordered dictionaries.
     From https://gist.github.com/enaeseth/844388
     """
 
     def __init__(self, *args, **kwargs):
-        yaml.Loader.__init__(self, *args, **kwargs)
+        yaml.SafeLoader.__init__(self, *args, **kwargs)
 
         self.add_constructor(u'tag:yaml.org,2002:map', type(self).construct_yaml_map)
         self.add_constructor(u'tag:yaml.org,2002:omap', type(self).construct_yaml_map)

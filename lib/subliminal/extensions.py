@@ -29,9 +29,9 @@ class RegistrableExtensionManager(ExtensionManager):
 
         super(RegistrableExtensionManager, self).__init__(namespace, **kwargs)
 
-    def _find_entry_points(self, namespace):
+    def list_entry_points(self):
         # copy of default extensions
-        eps = list(super(RegistrableExtensionManager, self)._find_entry_points(namespace))
+        eps = list(super(RegistrableExtensionManager, self).list_entry_points())
 
         # internal extensions
         for iep in self.internal_extensions:
@@ -89,17 +89,25 @@ class RegistrableExtensionManager(ExtensionManager):
 #: Provider manager
 provider_manager = RegistrableExtensionManager('subliminal.providers', [
     'addic7ed = subliminal.providers.addic7ed:Addic7edProvider',
+    'argenteam = subliminal.providers.argenteam:ArgenteamProvider',
     'legendastv = subliminal.providers.legendastv:LegendasTVProvider',
     'opensubtitles = subliminal.providers.opensubtitles:OpenSubtitlesProvider',
+    'opensubtitlesvip = subliminal.providers.opensubtitles:OpenSubtitlesVipProvider',
     'podnapisi = subliminal.providers.podnapisi:PodnapisiProvider',
     'shooter = subliminal.providers.shooter:ShooterProvider',
-    'subscenter = subliminal.providers.subscenter:SubsCenterProvider',
     'thesubdb = subliminal.providers.thesubdb:TheSubDBProvider',
     'tvsubtitles = subliminal.providers.tvsubtitles:TVsubtitlesProvider'
 ])
 
+#: Disabled providers
+disabled_providers = ['opensubtitlesvip']
+
+#: Default enabled providers
+default_providers = [p for p in provider_manager.names() if p not in disabled_providers]
+
 #: Refiner manager
 refiner_manager = RegistrableExtensionManager('subliminal.refiners', [
+    'hash = subliminal.refiners.hash:refine',
     'metadata = subliminal.refiners.metadata:refine',
     'omdb = subliminal.refiners.omdb:refine',
     'tvdb = subliminal.refiners.tvdb:refine'

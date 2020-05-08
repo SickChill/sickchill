@@ -13,9 +13,10 @@ from requests import Session
 from subliminal import __short_version__
 from subliminal.cache import region, SHOW_EXPIRATION_TIME
 from subliminal.exceptions import ProviderError
+from subliminal.matches import guess_matches
 from subliminal.providers import ParserBeautifulSoup, Provider
 from subliminal.score import get_equivalent_release_groups
-from subliminal.subtitle import fix_line_ending, guess_matches, Subtitle
+from subliminal.subtitle import fix_line_ending, Subtitle
 from subliminal.utils import sanitize, sanitize_release_group
 from subliminal.video import Episode
 
