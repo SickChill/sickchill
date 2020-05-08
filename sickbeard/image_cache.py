@@ -25,9 +25,7 @@ import os.path
 from mimetypes import guess_type
 
 # Third Party Imports
-from hachoir_core.log import log
-from hachoir_metadata import extractMetadata
-from hachoir_parser import createParser
+import imagesize
 
 # First Party Imports
 import sickbeard
@@ -39,8 +37,6 @@ from sickchill.helper.exceptions import ShowDirectoryNotFoundException
 from . import helpers, logger
 from .metadata.generic import GenericMetadata
 from .metadata.helpers import getShowImage
-
-log.use_print = False
 
 
 class ImageCache(object):
@@ -176,6 +172,7 @@ class ImageCache(object):
         POSTER_THUMB: 'poster thumbnail',
         FANART: 'fanart'
     }
+
     def which_type(self, path):
         """
         Analyzes the image provided and attempts to determine whether it is a poster or banner.
@@ -188,17 +185,13 @@ class ImageCache(object):
             logger.log("Couldn't check the type of " + str(path) + " cause it doesn't exist", logger.WARNING)
             return None
 
-        # use hachoir to parse the image for us
-        img_parser = createParser(path)
-        img_metadata = extractMetadata(img_parser)
+        width, height = imagesize.get(path)
 
-        if not img_metadata:
+        if not (width and height):
             logger.log("Unable to get metadata from " + str(path) + ", not using your existing image", logger.DEBUG)
             return None
 
-        img_ratio = float(img_metadata.get('width')) / float(img_metadata.get('height'))
-
-        img_parser.stream._input.close()
+        img_ratio = float(width) / float(height)
 
         # most posters are around 0.68 width/height ratio (eg. 680/1000)
         if 0.55 < img_ratio < 0.8:

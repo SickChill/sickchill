@@ -9,9 +9,6 @@ cloudscraper==1.2.36
 configobj==5.0.6
 fake-useragent==0.1.11
 feedparser==5.2.1
-#hachoir_parser
-#hachoir_metadata
-#hachoir_core
 html5lib==1.0.1
 ipaddress==1.0.23
 Js2Py==0.70
@@ -49,3 +46,4 @@ httplib2 == 0.17.3
 PySocks
 win_inet_pton
 imdbpie
+imagesize==1.2.0
