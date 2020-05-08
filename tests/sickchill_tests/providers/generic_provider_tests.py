@@ -339,8 +339,7 @@ class GenericProviderTests(unittest.TestCase):
         """
         Test _verify_download
         """
-        self.assertTrue(GenericProvider('Test Provider')._verify_download())
-
+        self.assertTrue(GenericProvider('Test Provider')._verify_download('Random.torrent'))
 
     @patch('sickchill.providers.GenericProvider.download_file')
     @patch('sickchill.providers.GenericProvider.remove_file_failed')
