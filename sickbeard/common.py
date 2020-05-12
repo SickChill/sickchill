@@ -52,7 +52,7 @@ gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 # If some provider has an issue with functionality of SR, other than user agents, it's best to come talk to us rather than block.
 # It is no different than us going to a provider if we have questions or issues. Be a team player here.
 # This is disabled, was only added for testing, and has no config.ini or web ui setting. To enable, set SPOOF_USER_AGENT = True
-SPOOF_USER_AGENT = False
+SPOOF_USER_AGENT = True
 ua_pool = fake_useragent.FakeUserAgent(path=ek(path.join, ek(path.dirname, __file__), '../fake_useragent.ua.json'))
 
 if SPOOF_USER_AGENT:

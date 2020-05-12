@@ -1271,7 +1271,7 @@ def make_session(use_cfscrape=True):
     else:
         session = cloudscraper.create_scraper()
 
-    session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
+    # session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
 
     return CacheControl(sess=session, cache_etags=True)
 
