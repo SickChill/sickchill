@@ -138,7 +138,7 @@ class ConfigNotifications(Config):
         sickbeard.PLEX_SERVER_HTTPS = config.checkbox_to_value(plex_server_https)
 
         sickbeard.USE_EMBY = config.checkbox_to_value(use_emby)
-        sickbeard.EMBY_HOST = config.clean_host(emby_host)
+        sickbeard.EMBY_HOST = config.clean_url(emby_host)
         sickbeard.EMBY_APIKEY = filters.unhide(sickbeard.EMBY_APIKEY, emby_apikey)
 
         sickbeard.USE_GROWL = config.checkbox_to_value(use_growl)

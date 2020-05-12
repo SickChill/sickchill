@@ -448,9 +448,9 @@ class Home(WebRoot):
 
     @staticmethod
     def testEMBY(host=None, emby_apikey=None):
-        host = config.clean_host(host)
+        host = config.clean_url(host)
         emby_apikey = filters.unhide(sickbeard.EMBY_APIKEY, emby_apikey)
-        result = notifiers.emby_notifier.test_notify(unquote_plus(host), emby_apikey)
+        result = notifiers.emby_notifier.test_notify(host, emby_apikey)
         if result:
             return _("Test notice sent successfully to {emby_host}").format(emby_host=unquote_plus(host))
         else:

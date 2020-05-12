@@ -52,14 +52,13 @@ class Notifier(object):
         if not emby_apikey:
             emby_apikey = sickbeard.EMBY_APIKEY
 
-        if host.startswith('!'):
-            url = host.lstrip('!')
-        elif host.startswith('http'):
+        if host.startswith('http'):
             url = '{0}/emby/Notifications/Admin'.format(host)
         else:
             url = 'http://{0}/emby/Notifications/Admin'.format(host)
         values = {'Name': 'SickChill', 'Description': message, 'ImageUrl': sickbeard.LOGO_URL}
         data = json.dumps(values)
+
         try:
             req = urllib.request.Request(url, data)
             req.add_header('X-MediaBrowser-Token', emby_apikey)
