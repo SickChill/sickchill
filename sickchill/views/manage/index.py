@@ -556,7 +556,7 @@ class Manage(Home, WebRoot):
             # don't bother refreshing shows that were updated anyway
             if curShowID in toRefresh and curShowID not in toUpdate:
                 try:
-                    sickbeard.showQueueScheduler.action.refresh_show(show_obj)
+                    sickbeard.showQueueScheduler.action.refresh_show(show_obj, force=True)
                     refreshes.append(show_obj.name)
                 except CantRefreshShowException as e:
                     errors.append(_("Unable to refresh show {show_name}: {exception_format}").format(show_name=show_obj.name, exception_format=e))
