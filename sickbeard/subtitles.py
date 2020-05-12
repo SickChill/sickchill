@@ -363,6 +363,7 @@ def get_video(video_path, subtitles_path=None, subtitles=True, embedded_subtitle
 
         subliminal.refine(video, embedded_subtitles=embedded_subtitles)
     except Exception as error:
+        logger.log(traceback.format_exc())
         logger.log('Exception: {0}'.format(error), logger.DEBUG)
         return None
 
@@ -603,13 +604,13 @@ def refine_video(video, episode):
 
     # Set quality from metadata
     status, quality = Quality.splitCompositeStatus(episode.status)
-    if not video.format or episode.show.subtitles_sr_metadata:
+    if not video.source or episode.show.subtitles_sr_metadata:
         if quality & Quality.ANYHDTV:
-            video.format = Quality.combinedQualityStrings.get(Quality.ANYHDTV)
+            video.source = Quality.combinedQualityStrings.get(Quality.ANYHDTV)
         elif quality & Quality.ANYWEBDL:
-            video.format = Quality.combinedQualityStrings.get(Quality.ANYWEBDL)
+            video.source = Quality.combinedQualityStrings.get(Quality.ANYWEBDL)
         elif quality & Quality.ANYBLURAY:
-            video.format = Quality.combinedQualityStrings.get(Quality.ANYBLURAY)
+            video.source = Quality.combinedQualityStrings.get(Quality.ANYBLURAY)
 
     if not video.resolution or episode.show.subtitles_sr_metadata:
         if quality & (Quality.HDTV | Quality.HDWEBDL | Quality.HDBLURAY):

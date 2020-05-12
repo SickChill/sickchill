@@ -456,9 +456,9 @@ class Home(WebRoot):
         return notifiers.libnotify_notifier.diagnose()
 
     def testEMBY(self):
-        host = config.clean_host(self.get_query_argument('host'))
+        host = config.clean_url(self.get_query_argument('host'))
         emby_apikey = filters.unhide(sickbeard.EMBY_APIKEY, self.get_query_argument('emby_apikey'))
-        result = notifiers.emby_notifier.test_notify(unquote_plus(host), emby_apikey)
+        result = notifiers.emby_notifier.test_notify(host, emby_apikey)
         if result:
             return _("Test notice sent successfully to {emby_host}").format(emby_host=unquote_plus(host))
         else:
