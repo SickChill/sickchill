@@ -742,7 +742,7 @@ class QueueItemRemove(ShowQueueItem):
             # nmj_notifier kicks off its library update when the notify_download is issued (inside notifiers)
 
             # do the library update for Synology Indexer
-            notifiers.synoindex_notifier.addFolder(self.show.location)
+            notifiers.synoindex_notifier.addFolder(self.show._location)
 
             # do the library update for pyTivo
             notifiers.pytivo_notifier.update_library(self.show)
