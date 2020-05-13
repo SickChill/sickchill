@@ -128,10 +128,10 @@ class Client(GenericClient):
             options.update({'file_priorities': 7})
 
         if result.ratio:
-            options.update({'stop_at_ratio', True})
-            options.update({'stop_ratio', float(result.ratio)})
-            # options.update({'remove_at_ratio', True})
-            # options.update({'remove_ratio', float(result.ratio)})
+            options.update({'stop_at_ratio': True})
+            options.update({'stop_ratio': float(result.ratio)})
+            # options.update({'remove_at_ratio': True})
+            # options.update({'remove_ratio': float(result.ratio)})
 
         return options
 
