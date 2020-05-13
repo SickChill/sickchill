@@ -1883,7 +1883,7 @@ var SICKCHILL = {
                         $('#label_warning_deluge').show();
                         $('#label_anime_warning_deluge').show();
                         $('#torrent_username_option').show();
-                        $('#host_desc_torrent').text(_('IP or Hostname of your Deluge Daemon (e.g. scgi://localhost:58846)'));
+                        $('#host_desc_torrent').text(_('IP or Hostname of your Deluge Daemon (e.g. http://localhost:58846)'));
                     } else if (selectedProvider.toLowerCase() === 'download_station') {
                         client = 'Synology DS';
                         $('#torrent_label_option').hide();

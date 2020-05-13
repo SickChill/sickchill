@@ -101,19 +101,8 @@ class Client(GenericClient):
         return self.auth
 
     def _add_torrent_uri(self, result):
-
-        options = {}
-
-        if sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR:
-            options.update({'download_location': sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR})
-
-        if sickbeard.TORRENT_DELUGE_COMPLETE_DIR:
-            options.update({'move_completed': True,
-                            'move_completed_path': sickbeard.TORRENT_DELUGE_COMPLETE_DIR
-            })
-
         post_data = json.dumps({"method": "core.add_torrent_magnet",
-                                    "params": [result.url, options],
+                                    "params": [result.url, self.make_options(result)],
                                     "id": 2})
 
         self._request(method='post', data=post_data)
@@ -123,19 +112,8 @@ class Client(GenericClient):
         return self.response.json()['result']
 
     def _add_torrent_file(self, result):
-    
-        options = {}
-
-        if sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR:
-            options.update({'download_location': sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR})
-
-        if sickbeard.TORRENT_DELUGE_COMPLETE_DIR:
-            options.update({'move_completed': True,
-                            'move_completed_path': sickbeard.TORRENT_DELUGE_COMPLETE_DIR
-            })
-
         post_data = json.dumps({"method": "core.add_torrent_file",
-                        "params": [result.name + '.torrent', b64encode(result.content), options],
+                        "params": [result.name + '.torrent', b64encode(result.content), self.make_options(result)],
                         "id": 2})
 
         self._request(method='post', data=post_data)
@@ -186,38 +164,28 @@ class Client(GenericClient):
 
         return not self.response.json()['error']
 
-    def _set_torrent_ratio(self, result):
+    @staticmethod
+    def make_options(result):
+        options = {}
 
-        ratio = None
-        if result.ratio:
-            ratio = result.ratio
+        if sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR:
+            options.update({'download_location': sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR})
 
-        if ratio:
-            post_data = json.dumps({"method": "core.set_torrent_stop_at_ratio",
-                                    "params": [result.hash, True],
-                                    "id": 5})
-
-            self._request(method='post', data=post_data)
-
-            post_data = json.dumps({"method": "core.set_torrent_stop_ratio",
-                                    "params": [result.hash, float(ratio)],
-                                    "id": 6})
-
-            self._request(method='post', data=post_data)
-
-            return not self.response.json()['error']
-
-        return True
-
-    def _set_torrent_pause(self, result):
+        if sickbeard.TORRENT_DELUGE_COMPLETE_DIR:
+            options.update({'move_completed': True,
+                            'move_completed_path': sickbeard.TORRENT_DELUGE_COMPLETE_DIR
+            })
 
         if sickbeard.TORRENT_PAUSED:
-            post_data = json.dumps({"method": "core.pause_torrent",
-                                    "params": [[result.hash]],
-                                    "id": 9})
+            options.update({'add_paused': True})
 
-            self._request(method='post', data=post_data)
+        if result.priority == 1:
+            options.update({'file_priorities': 7})
 
-            return not self.response.json()['error']
+        if result.ratio:
+            options.update({'stop_at_ratio', True})
+            options.update({'stop_ratio', float(result.ratio)})
+            # options.update({'remove_at_ratio', True})
+            # options.update({'remove_ratio', float(result.ratio)})
 
-        return True
+        return options
