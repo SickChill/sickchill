@@ -1,6 +1,6 @@
-Metadata-Version: 2.0
+Metadata-Version: 2.1
 Name: markdown2
-Version: 2.3.8
+Version: 2.3.9
 Summary: A fast and complete Python implementation of Markdown
 Home-page: https://github.com/trentm/python-markdown2
 Author: Trent Mick
