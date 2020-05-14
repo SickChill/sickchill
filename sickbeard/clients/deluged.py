@@ -39,6 +39,9 @@ class Client(GenericClient):
         self.client = None
 
     def setup(self):
+        if self.host.startswith('scgi://'):
+            self.host = self.host[7:]
+
         if not self.host.startswith('http'):
             self.host = 'http://{}'.format(self.host)
 
