@@ -15,7 +15,7 @@ Js2Py==0.70
 jsonrpclib==0.1.7
 kodipydent==0.3.1
 Mako==1.1.2
-markdown2==2.3.8
+markdown2==2.3.9
 #oauthlib==3.1.0
 PyGithub==1.45
 #pyjsparser==2.7.1
@@ -48,3 +48,4 @@ win_inet_pton
 imdbpie
 imagesize==1.2.0
 send2trash
+deluge-client
