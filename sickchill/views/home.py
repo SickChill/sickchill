@@ -719,7 +719,7 @@ class Home(WebRoot):
         if sickbeard.BRANCH != branch:
             sickbeard.BRANCH = branch
             ui.notifications.message(_('Checking out branch') + ': ', branch)
-            return self.update(sickbeard.PID, branch)
+            return self.redirect('/update/?pid={}&branch={}'.format(sickbeard.PID, branch))
         else:
             ui.notifications.message(_('Already on branch') + ': ', branch)
             return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
