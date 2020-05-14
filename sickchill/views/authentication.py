@@ -30,7 +30,7 @@ from .index import BaseHandler
 
 
 class LoginHandler(BaseHandler):
-    def get(self, *args, **kwargs):
+    def get(self):
 
         if self.get_current_user():
             self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
@@ -52,6 +52,6 @@ class LoginHandler(BaseHandler):
 
 
 class LogoutHandler(BaseHandler):
-    def get(self, *args, **kwargs):
+    def get(self):
         self.clear_cookie("sickchill_user")
         self.redirect('/login/')
