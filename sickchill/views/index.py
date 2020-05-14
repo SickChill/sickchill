@@ -35,7 +35,6 @@ from requests.compat import urljoin
 from tornado.concurrent import run_on_executor
 from tornado.escape import utf8, xhtml_escape
 from tornado.gen import coroutine
-from tornado.ioloop import IOLoop
 from tornado.process import cpu_count
 from tornado.web import authenticated, HTTPError, RequestHandler
 
@@ -179,13 +178,12 @@ class BaseHandler(RequestHandler):
 class WebHandler(BaseHandler):
     def __init__(self, *args, **kwargs):
         super(WebHandler, self).__init__(*args, **kwargs)
-        self.io_loop = IOLoop.current()
 
         self.executor = ThreadPoolExecutor(cpu_count(), thread_name_prefix='WEBSERVER-' + self.__class__.__name__.upper())
 
     @authenticated
     @coroutine
-    def get(self, route):
+    def get(self, route, *args, **kwargs):
         try:
             # route -> method obj
             route = route.strip('/').replace('.', '_').replace('-', '_') or 'index'
@@ -341,16 +339,14 @@ class WebRoot(WebHandler):
         return self.redirect("/schedule/")
 
     def schedule(self):
-        layout = self.get_query_argument('layout')
+        layout = self.get_query_argument('layout', sickbeard.COMING_EPS_LAYOUT)
         next_week = datetime.date.today() + datetime.timedelta(days=7)
         next_week1 = datetime.datetime.combine(next_week, datetime.time(tzinfo=network_timezones.sb_timezone))
         results = ComingEpisodes.get_coming_episodes(ComingEpisodes.categories, sickbeard.COMING_EPS_SORT, False)
         today = datetime.datetime.now().replace(tzinfo=network_timezones.sb_timezone)
 
         # Allow local overriding of layout parameter
-        if layout and layout in ('poster', 'banner', 'list', 'calendar'):
-            layout = layout
-        else:
+        if layout not in ('poster', 'banner', 'list', 'calendar'):
             layout = sickbeard.COMING_EPS_LAYOUT
 
         t = PageTemplate(rh=self, filename='schedule.mako')

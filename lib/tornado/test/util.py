@@ -6,18 +6,12 @@ import platform
 import socket
 import sys
 import textwrap
+import warnings
 
 from tornado.testing import bind_unused_port
 
-# Encapsulate the choice of unittest or unittest2 here.
-# To be used as 'from tornado.test.util import unittest'.
-if sys.version_info < (2, 7):
-    # In py26, we must always use unittest2.
-    import unittest2 as unittest  # type: ignore
-else:
-    # Otherwise, use whichever version of unittest was imported in
-    # tornado.testing.
-    from tornado.testing import unittest
+# Delegate the choice of unittest or unittest2 to tornado.testing.
+from tornado.testing import unittest
 
 skipIfNonUnix = unittest.skipIf(os.name != 'posix' or sys.platform == 'cygwin',
                                 "non-unix platform")
@@ -104,24 +98,6 @@ def exec_test(caller_globals, caller_locals, s):
     return local_namespace
 
 
-def is_coverage_running():
-    """Return whether coverage is currently running.
-    """
-    if 'coverage' not in sys.modules:
-        return False
-    tracer = sys.gettrace()
-    if tracer is None:
-        return False
-    try:
-        mod = tracer.__module__
-    except AttributeError:
-        try:
-            mod = tracer.__class__.__module__
-        except AttributeError:
-            return False
-    return mod.startswith('coverage')
-
-
 def subTest(test, *args, **kwargs):
     """Compatibility shim for unittest.TestCase.subTest.
 
@@ -132,3 +108,11 @@ def subTest(test, *args, **kwargs):
     except AttributeError:
         subTest = contextlib.contextmanager(lambda *a, **kw: (yield))
     return subTest(*args, **kwargs)
+
+
+@contextlib.contextmanager
+def ignore_deprecation():
+    """Context manager to ignore deprecation warnings."""
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore', DeprecationWarning)
+        yield

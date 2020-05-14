@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #
 # Copyright 2009 Facebook
 #
@@ -30,10 +29,12 @@ import email.utils
 import numbers
 import re
 import time
+import unicodedata
+import warnings
 
 from tornado.escape import native_str, parse_qs_bytes, utf8
 from tornado.log import gen_log
-from tornado.util import ObjectDict, PY3
+from tornado.util import ObjectDict, PY3, unicode_type
 
 if PY3:
     import http.cookies as Cookie
@@ -61,7 +62,7 @@ except ImportError:
     SSLError = _SSLError  # type: ignore
 
 try:
-    import typing
+    import typing  # noqa: F401
 except ImportError:
     pass
 
@@ -184,11 +185,16 @@ class HTTPHeaders(collections.MutableMapping):
         """
         if line[0].isspace():
             # continuation of a multi-line header
+            if self._last_key is None:
+                raise HTTPInputError("first header line cannot start with whitespace")
             new_part = ' ' + line.lstrip()
             self._as_list[self._last_key][-1] += new_part
             self._dict[self._last_key] += new_part
         else:
-            name, value = line.split(":", 1)
+            try:
+                name, value = line.split(":", 1)
+            except ValueError:
+                raise HTTPInputError("no colon in header line")
             self.add(name, value.strip())
 
     @classmethod
@@ -198,6 +204,12 @@ class HTTPHeaders(collections.MutableMapping):
         >>> h = HTTPHeaders.parse("Content-Type: text/html\\r\\nContent-Length: 42\\r\\n")
         >>> sorted(h.items())
         [('Content-Length', '42'), ('Content-Type', 'text/html')]
+
+        .. versionchanged:: 5.1
+
+           Raises `HTTPInputError` on malformed headers instead of a
+           mix of `KeyError`, and `ValueError`.
+
         """
         h = cls()
         for line in _CRLF_RE.split(headers):
@@ -370,10 +382,15 @@ class HTTPServerRequest(object):
         """Returns True if this request supports HTTP/1.1 semantics.
 
         .. deprecated:: 4.0
-           Applications are less likely to need this information with the
-           introduction of `.HTTPConnection`.  If you still need it, access
-           the ``version`` attribute directly.
+
+           Applications are less likely to need this information with
+           the introduction of `.HTTPConnection`. If you still need
+           it, access the ``version`` attribute directly. This method
+           will be removed in Tornado 6.0.
+
         """
+        warnings.warn("supports_http_1_1() is deprecated, use request.version instead",
+                      DeprecationWarning)
         return self.version == "HTTP/1.1"
 
     @property
@@ -402,8 +419,10 @@ class HTTPServerRequest(object):
 
         .. deprecated:: 4.0
            Use ``request.connection`` and the `.HTTPConnection` methods
-           to write the response.
+           to write the response. This method will be removed in Tornado 6.0.
         """
+        warnings.warn("req.write deprecated, use req.connection.write and write_headers instead",
+                      DeprecationWarning)
         assert isinstance(chunk, bytes)
         assert self.version.startswith("HTTP/1."), \
             "deprecated interface only supported in HTTP/1.x"
@@ -414,8 +433,10 @@ class HTTPServerRequest(object):
 
         .. deprecated:: 4.0
            Use ``request.connection`` and the `.HTTPConnection` methods
-           to write the response.
+           to write the response. This method will be removed in Tornado 6.0.
         """
+        warnings.warn("req.finish deprecated, use req.connection.finish instead",
+                      DeprecationWarning)
         self.connection.finish()
         self._finish_time = time.time()
 
@@ -467,8 +488,7 @@ class HTTPServerRequest(object):
     def __repr__(self):
         attrs = ("protocol", "host", "method", "uri", "version", "remote_ip")
         args = ", ".join(["%s=%r" % (n, getattr(self, n)) for n in attrs])
-        return "%s(%s, headers=%s)" % (
-            self.__class__.__name__, args, dict(self.headers))
+        return "%s(%s)" % (self.__class__.__name__, args)
 
 
 class HTTPInputError(Exception):
@@ -572,6 +592,11 @@ class HTTPConnection(object):
         The ``version`` field of ``start_line`` is ignored.
 
         Returns a `.Future` if no callback is given.
+
+        .. deprecated:: 5.1
+
+           The ``callback`` argument is deprecated and will be removed
+           in Tornado 6.0.
         """
         raise NotImplementedError()
 
@@ -580,6 +605,11 @@ class HTTPConnection(object):
 
         The callback will be run when the write is complete.  If no callback
         is given, returns a Future.
+
+        .. deprecated:: 5.1
+
+           The ``callback`` argument is deprecated and will be removed
+           in Tornado 6.0.
         """
         raise NotImplementedError()
 
@@ -753,6 +783,11 @@ def parse_multipart_form_data(boundary, data, arguments, files):
     The ``boundary`` and ``data`` parameters are both byte strings.
     The dictionaries given in the arguments and files parameters
     will be updated with the contents of the body.
+
+    .. versionchanged:: 5.1
+
+       Now recognizes non-ASCII filenames in RFC 2231/5987
+       (``filename*=``) format.
     """
     # The standard allows for the boundary to be quoted in the header,
     # although it's rare (it happens at least for google app engine
@@ -829,6 +864,8 @@ def parse_request_start_line(line):
     try:
         method, path, version = line.split(" ")
     except ValueError:
+        # https://tools.ietf.org/html/rfc7230#section-3.1.1
+        # invalid request-line SHOULD respond with a 400 (Bad Request)
         raise HTTPInputError("Malformed HTTP request line")
     if not re.match(r"^HTTP/1\.[0-9]$", version):
         raise HTTPInputError(
@@ -859,7 +896,8 @@ def parse_response_start_line(line):
 # The original 2.7 version of this code did not correctly support some
 # combinations of semicolons and double quotes.
 # It has also been modified to support valueless parameters as seen in
-# websocket extension negotiations.
+# websocket extension negotiations, and to support non-ascii values in
+# RFC 2231/5987 format.
 
 
 def _parseparam(s):
@@ -876,25 +914,37 @@ def _parseparam(s):
 
 
 def _parse_header(line):
-    """Parse a Content-type like header.
+    r"""Parse a Content-type like header.
 
     Return the main content-type and a dictionary of options.
 
+    >>> d = "form-data; foo=\"b\\\\a\\\"r\"; file*=utf-8''T%C3%A4st"
+    >>> ct, d = _parse_header(d)
+    >>> ct
+    'form-data'
+    >>> d['file'] == r'T\u00e4st'.encode('ascii').decode('unicode_escape')
+    True
+    >>> d['foo']
+    'b\\a"r'
     """
     parts = _parseparam(';' + line)
     key = next(parts)
-    pdict = {}
+    # decode_params treats first argument special, but we already stripped key
+    params = [('Dummy', 'value')]
     for p in parts:
         i = p.find('=')
         if i >= 0:
             name = p[:i].strip().lower()
             value = p[i + 1:].strip()
-            if len(value) >= 2 and value[0] == value[-1] == '"':
-                value = value[1:-1]
-                value = value.replace('\\\\', '\\').replace('\\"', '"')
-            pdict[name] = value
-        else:
-            pdict[p] = None
+            params.append((name, native_str(value)))
+    params = email.utils.decode_params(params)
+    params.pop(0)  # get rid of the dummy again
+    pdict = {}
+    for name, value in params:
+        value = email.utils.collapse_rfc2231_value(value)
+        if len(value) >= 2 and value[0] == '"' and value[-1] == '"':
+            value = value[1:-1]
+        pdict[name] = value
     return key, pdict
 
 
@@ -918,6 +968,20 @@ def _encode_header(key, pdict):
     return '; '.join(out)
 
 
+def encode_username_password(username, password):
+    """Encodes a username/password pair in the format used by HTTP auth.
+
+    The return value is a byte string in the form ``username:password``.
+
+    .. versionadded:: 5.1
+    """
+    if isinstance(username, unicode_type):
+        username = unicodedata.normalize('NFC', username)
+    if isinstance(password, unicode_type):
+        password = unicodedata.normalize('NFC', password)
+    return utf8(username) + b":" + utf8(password)
+
+
 def doctests():
     import doctest
     return doctest.DocTestSuite()
@@ -938,6 +1002,16 @@ def split_host_and_port(netloc):
         host = netloc
         port = None
     return (host, port)
+
+
+def qs_to_qsl(qs):
+    """Generator converting a result of ``parse_qs`` back to name-value pairs.
+
+    .. versionadded:: 5.0
+    """
+    for k, vs in qs.items():
+        for v in vs:
+            yield (k, v)
 
 
 _OctalPatt = re.compile(r"\\[0-3][0-7][0-7]")
