@@ -30,15 +30,15 @@ from .index import BaseHandler
 
 
 class LoginHandler(BaseHandler):
-    def get(self):
-
+    def get(self, next_=None):
+        next_ = self.get_query_argument('next', next_)
         if self.get_current_user():
             self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
         else:
             t = PageTemplate(rh=self, filename="login.mako")
             self.finish(t.render(title=_("Login"), header=_("Login"), topmenu="login"))
 
-    def post(self):
+    def post(self, next_=None):
         notifiers.notify_login(self.request.remote_ip)
 
         if self.get_body_argument('username', None) == sickbeard.WEB_USERNAME and self.get_body_argument('password', None) == sickbeard.WEB_PASSWORD:
@@ -48,10 +48,12 @@ class LoginHandler(BaseHandler):
         else:
             logger.log('User attempted a failed login to the SickChill web interface from IP: ' + self.request.remote_ip, logger.WARNING)
 
-        self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
+        next_ = self.get_query_argument('next', next_)
+        self.redirect(next_)
+        # self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
 
 
 class LogoutHandler(BaseHandler):
-    def get(self):
+    def get(self, next_=None):
         self.clear_cookie("sickchill_user")
         self.redirect('/login/')
