@@ -53,7 +53,7 @@
                 % else:
                     <label>
                         <span>${_('Sort By')}:</span>
-                        <select name="sort" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="Sort">
+                        <select id="sort" class="form-control form-control-inline input-sm" title="Sort">
                             <option value="${srRoot}/setScheduleSort/?sort=date" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'date']} >${_('Date')}</option>
                             <option value="${srRoot}/setScheduleSort/?sort=network" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'network']} >${_('Network')}</option>
                             <option value="${srRoot}/setScheduleSort/?sort=show" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'show']} >${_('Show')}</option>
@@ -63,7 +63,7 @@
                 % endif
                 <label>
                     <span>${_('View Paused')}:</span>
-                    <select name="viewpaused" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="View paused">
+                    <select id="viewpaused" class="form-control form-control-inline input-sm" title="View paused">
                         <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[not bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>${_('Hidden')}</option>
                         <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>${_('Shown')}</option>
                     </select>
@@ -72,7 +72,7 @@
                 % if layout != 'calendar':
                 <label>
                     <span>${_('View Snatched')}:</span>
-                    <select name="viewsnatched" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="View snatched">
+                    <select id="viewsnatched" class="form-control form-control-inline input-sm" title="View snatched">
                         <option value="${srRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[not bool(sickbeard.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Hidden')}</option>
                         <option value="${srRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[bool(sickbeard.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Shown')}</option>
                     </select>
@@ -81,7 +81,7 @@
                 % endif
                 <label>
                     <span>${_('Layout')}:</span>
-                    <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="Layout">
+                    <select id="layout" class="form-control form-control-inline input-sm" title="Layout">
                         <option value="${srRoot}/setScheduleLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'poster']} >${_('Poster')}</option>
                         <option value="${srRoot}/setScheduleLayout/?layout=calendar" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'calendar']} >${_('Calendar')}</option>
                         <option value="${srRoot}/setScheduleLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'banner']} >${_('Banner')}</option>

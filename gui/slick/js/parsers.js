@@ -7,7 +7,8 @@ $.tablesorter.addParser({
         if (s.indexOf(_('Loading...')) === 0) {
             return s.replace(_('Loading...'), '000');
         }
-        return (metaToBool('sickbeard.SORT_ARTICLE') ? (s || '') : (s || '').replace(/^(The|A|An)\s/i, ''));
+
+        return (metaToBool('sickbeard.SORT_ARTICLE') ? (s || '') : (s || '').replace(/^(the|a|an)\s/i, ''));
     },
     type: 'text'
 });
@@ -69,24 +70,25 @@ $.tablesorter.addParser({
         }
 
         const nums = match[1].split(' / ');
-        if (nums[0].indexOf('+') !== -1) {
-            const numParts = nums[0].split('+');
-            nums[0] = numParts[0];
+        if (nums[0].includes('+')) {
+            const numberParts = nums[0].split('+');
+            nums[0] = numberParts[0];
         }
 
-        nums[0] = parseInt(nums[0], 10);
-        nums[1] = parseInt(nums[1], 10);
+        nums[0] = Number.parseInt(nums[0], 10);
+        nums[1] = Number.parseInt(nums[1], 10);
 
         if (nums[0] === 0) {
             return nums[1];
         }
-        let finalNum = parseInt((getMeta('max_download_count')) * nums[0] / nums[1], 10);
+
+        let finalNumber = Number.parseInt((getMeta('max_download_count')) * nums[0] / nums[1], 10);
         const pct = Math.round((nums[0] / nums[1]) * 100) / 1000;
-        if (finalNum > 0) {
-            finalNum += nums[0];
+        if (finalNumber > 0) {
+            finalNumber += nums[0];
         }
 
-        return finalNum + pct;
+        return finalNumber + pct;
     },
     type: 'numeric'
 });

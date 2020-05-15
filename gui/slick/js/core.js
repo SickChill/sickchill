@@ -33,7 +33,8 @@ function metaToBool(pyVar) {
         console.log(pyVar + ' is empty, did you forget to add this to main.mako?');
         return meta;
     }
-    meta = (isNaN(meta) ? meta.toLowerCase() : meta.toString());
+
+    meta = (Number.isNaN(meta) ? meta.toLowerCase() : meta.toString());
     return !(meta === 'false' || meta === 'none' || meta === '0');
 }
 
@@ -78,26 +79,28 @@ function shiftReturn(array) {
     if (array.length <= 1) {
         return [];
     }
+
     array.shift();
     return array;
 }
 
 var __ = _; // Moves `underscore` to __
 // Temporary (gets replaced)
-window._ = function(str) {
-    return str;
+window._ = function(string) {
+    return string;
 };
 
 var SICKCHILL = {
     common: {
         init: function() {
             (function() {
-                const imgDefer = document.getElementsByTagName('img');
-                for (let i = 0; i < imgDefer.length; i++) {
-                    if (imgDefer[i].getAttribute('data-src')) {
-                        imgDefer[i].setAttribute('src', imgDefer[i].getAttribute('data-src'));
+                const imgDefer = document.querySelectorAll('img');
+                for (const element of imgDefer) {
+                    if (element.getAttribute('data-src')) {
+                        element.setAttribute('src', element.getAttribute('data-src'));
                     }
                 }
+
                 if (metaToBool('sickbeard.SICKCHILL_BACKGROUND')) {
                     $.backstretch(srRoot + '/ui/sickchill_background');
                     $('.backstretch').css('opacity', getMeta('sickbeard.FANART_BACKGROUND_OPACITY')).fadeIn('500');
@@ -256,10 +259,11 @@ var SICKCHILL = {
             setFromPresets: function(preset) {
                 // @FIXME: Sometimes when switching too fast between presets,
                 // it stops updating the selection on #anyQualities
-                if (parseInt(preset, 10) === 0) {
+                if (Number.parseInt(preset, 10) === 0) {
                     $('#customQuality').show();
                     return;
                 }
+
                 $('#customQuality').hide();
 
                 $('#anyQualities').find('option').each(function() {
@@ -273,14 +277,14 @@ var SICKCHILL = {
                 });
             },
             init: function() {
-                const selfObj = this;
+                const selfObject = this;
                 const qualityPresets = $('#qualityPreset');
 
                 qualityPresets.on('change', function() {
-                    selfObj.setFromPresets(qualityPresets.find(':selected').val());
+                    selfObject.setFromPresets(qualityPresets.find(':selected').val());
                 });
 
-                selfObj.setFromPresets(qualityPresets.find(':selected').val());
+                selfObject.setFromPresets(qualityPresets.find(':selected').val());
             }
         },
         updateBlackWhiteList: function(showName) {
@@ -370,6 +374,7 @@ var SICKCHILL = {
                         notifyModal(data.error);
                         return;
                     }
+
                     $('#api_key').val(data);
                 });
             });
@@ -384,8 +389,9 @@ var SICKCHILL = {
                         } else {
                             let doUpgrade = true;
                             if (data.message === 'upgrade') {
-                                doUpgrade = confirm('Changing branch will upgrade your database.\nYou won\'t be able to downgrade afterward.\nDo you want to continue?');  // eslint-disable-line no-alert
+                                doUpgrade = confirm('Changing branch will upgrade your database.\nYou won\'t be able to downgrade afterward.\nDo you want to continue?'); // eslint-disable-line no-alert
                             }
+
                             if (doUpgrade) {
                                 window.location.href = url;
                             }
@@ -420,13 +426,14 @@ var SICKCHILL = {
             const branchCheckout = $('#branchCheckout');
             $.getJSON(srRoot + '/home/fetchRemoteBranches', function(branches) {
                 if (branches.length) {
-                    const baseOptionElem = $('<option></option>');
-                    let optionElem = null;
-                    for (let i = 0; i < branches.length; i++) {
-                        optionElem = baseOptionElem.clone().text(branches[i].name).attr('value', branches[i].name);
-                        optionElem.prop('selected', Boolean(branches[i].current));
-                        optionElem.appendTo(branchVersion);
+                    const baseOptionElement = $('<option></option>');
+                    let optionElement = null;
+                    for (const element of branches) {
+                        optionElement = baseOptionElement.clone().text(element.name).attr('value', element.name);
+                        optionElement.prop('selected', Boolean(element.current));
+                        optionElement.appendTo(branchVersion);
                     }
+
                     branchCheckout.prop('disabled', false);
                     branchVersionLabel.html(_('select branch to use (restart required)'));
                 } else {
@@ -471,6 +478,7 @@ var SICKCHILL = {
                     $('#growl_host').addClass('warning');
                     return;
                 }
+
                 $('#growl_host').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testGrowl-result').html(loading);
@@ -492,6 +500,7 @@ var SICKCHILL = {
                     $('#prowl_api').addClass('warning');
                     return;
                 }
+
                 $('#prowl_api').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testProwl-result').html(loading);
@@ -514,6 +523,7 @@ var SICKCHILL = {
                     $('#kodi_host').addClass('warning');
                     return;
                 }
+
                 $('#kodi_host').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testKODI-result').html(loading);
@@ -538,6 +548,7 @@ var SICKCHILL = {
                     $('#plex_client_host').addClass('warning');
                     return;
                 }
+
                 $('#plex_client_host').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testPHT-result').html(loading);
@@ -563,6 +574,7 @@ var SICKCHILL = {
                     $('#plex_server_host').addClass('warning');
                     return;
                 }
+
                 $('#plex_server_host').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testPMS-result').html(loading);
@@ -588,13 +600,16 @@ var SICKCHILL = {
                     } else {
                         $('#emby_host').addClass('warning');
                     }
+
                     if (emby.apikey) {
                         $('#emby_apikey').removeClass('warning');
                     } else {
                         $('#emby_apikey').addClass('warning');
                     }
+
                     return;
                 }
+
                 $('#emby_host,#emby_apikey').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testEMBY-result').html(loading);
@@ -615,6 +630,7 @@ var SICKCHILL = {
                     $('#boxcar2_accesstoken').addClass('warning');
                     return;
                 }
+
                 $('#boxcar2_accesstoken').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testBoxcar2-result').html(loading);
@@ -637,13 +653,16 @@ var SICKCHILL = {
                     } else {
                         $('#pushover_userkey').addClass('warning');
                     }
+
                     if (pushover.apikey) {
                         $('#pushover_apikey').removeClass('warning');
                     } else {
                         $('#pushover_apikey').addClass('warning');
                     }
+
                     return;
                 }
+
                 $('#pushover_userkey,#pushover_apikey').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testPushover-result').html(loading);
@@ -680,6 +699,7 @@ var SICKCHILL = {
                     $('#twitter_key').addClass('warning');
                     return;
                 }
+
                 $('#twitter_key').removeClass('warning');
                 $('#testTwitter-result').html(loading);
                 $.get(srRoot + '/home/twitterStep2', {
@@ -729,6 +749,7 @@ var SICKCHILL = {
                     notifyModal('Please fill in the Popcorn IP address');
                     return;
                 }
+
                 $('#testNMJ-result').html(loading);
                 nmj.host = $('#nmj_host').val();
 
@@ -737,6 +758,7 @@ var SICKCHILL = {
                         $('#nmj_database').removeAttr('readonly');
                         $('#nmj_mount').removeAttr('readonly');
                     }
+
                     const JSONData = $.parseJSON(data);
                     $('#testNMJ-result').html(JSONData.message);
                     $('#nmj_database').val(JSONData.database);
@@ -747,6 +769,7 @@ var SICKCHILL = {
                     } else {
                         $('#nmj_database').removeAttr('readonly');
                     }
+
                     if (JSONData.mount) {
                         $('#nmj_mount').attr('readonly', true);
                     } else {
@@ -765,6 +788,7 @@ var SICKCHILL = {
                     $('#nmj_host').addClass('warning');
                     return;
                 }
+
                 $('#nmj_host').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testNMJ-result').html(loading);
@@ -785,13 +809,14 @@ var SICKCHILL = {
                     notifyModal('Please fill in the Popcorn IP address', 'modal');
                     return;
                 }
+
                 $('#testNMJv2-result').html(loading);
                 nmjv2.host = $('#nmjv2_host').val();
                 nmjv2.dbloc = '';
                 const radios = document.getElementsByName('nmjv2_dbloc');
-                for (let i = 0; i < radios.length; i++) {
-                    if (radios[i].checked) {
-                        nmjv2.dbloc = radios[i].value;
+                for (const element of radios) {
+                    if (element.checked) {
+                        nmjv2.dbloc = element.value;
                         break;
                     }
                 }
@@ -805,6 +830,7 @@ var SICKCHILL = {
                     if (data === null) {
                         $('#nmjv2_database').removeAttr('readonly');
                     }
+
                     const JSONData = $.parseJSON(data);
                     $('#testNMJv2-result').html(JSONData.message);
                     $('#nmjv2_database').val(JSONData.database);
@@ -825,6 +851,7 @@ var SICKCHILL = {
                     $('#nmjv2_host').addClass('warning');
                     return;
                 }
+
                 $('#nmjv2_host').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testNMJv2-result').html(loading);
@@ -847,13 +874,16 @@ var SICKCHILL = {
                     } else {
                         $('#freemobile_id').addClass('warning');
                     }
+
                     if (freemobile.apikey) {
                         $('#freemobile_apikey').removeClass('warning');
                     } else {
                         $('#freemobile_apikey').addClass('warning');
                     }
+
                     return;
                 }
+
                 $('#freemobile_id,#freemobile_apikey').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testFreeMobile-result').html(loading);
@@ -877,13 +907,16 @@ var SICKCHILL = {
                     } else {
                         $('#telegram_id').addClass('warning');
                     }
+
                     if (telegram.apikey) {
                         $('#telegram_apikey').removeClass('warning');
                     } else {
                         $('#telegram_apikey').addClass('warning');
                     }
+
                     return;
                 }
+
                 $('#telegram_id,#telegram_apikey').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testTelegram-result').html(loading);
@@ -907,13 +940,16 @@ var SICKCHILL = {
                     } else {
                         $('#join_id').addClass('warning');
                     }
+
                     if (join.apikey) {
                         $('#join_apikey').removeClass('warning');
                     } else {
                         $('#join_apikey').addClass('warning');
                     }
+
                     return;
                 }
+
                 $('#join_id,#join_apikey').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testJoin-result').html(loading);
@@ -967,6 +1003,7 @@ var SICKCHILL = {
                     } else {
                         $('#trakt_username').addClass('warning');
                     }
+
                     return;
                 }
 
@@ -975,6 +1012,7 @@ var SICKCHILL = {
                     $('#trakt_blacklist_name').addClass('warning');
                     return;
                 }
+
                 $('#trakt_username').removeClass('warning');
                 $('#trakt_blacklist_name').removeClass('warning');
                 $(this).prop('disabled', true);
@@ -1002,11 +1040,13 @@ var SICKCHILL = {
                 if (host === null) {
                     err += '<li style="color: red;">You must specify an SMTP hostname!</li>';
                 }
+
                 if (port === null) {
                     err += '<li style="color: red;">You must specify an SMTP port!</li>';
-                } else if (port.match(/^\d+$/) === null || parseInt(port, 10) > 65535) {
+                } else if (port.match(/^\d+$/) === null || Number.parseInt(port, 10) > 65535) {
                     err += '<li style="color: red;">SMTP port must be between 0 and 65535!</li>';
                 }
+
                 if (err.length > 0) {
                     err = '<ol>' + err + '</ol>';
                     status.html(err);
@@ -1023,8 +1063,8 @@ var SICKCHILL = {
                             user: user,
                             pwd: pwd,
                             to: to
-                        }, function(msg) {
-                            $('#testEmail-result').html(msg);
+                        }, function(message) {
+                            $('#testEmail-result').html(message);
                         });
                     }
                 }
@@ -1038,6 +1078,7 @@ var SICKCHILL = {
                     $('#pushalot_authorizationtoken').addClass('warning');
                     return;
                 }
+
                 $('#pushalot_authorizationtoken').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testPushalot-result').html(loading);
@@ -1057,6 +1098,7 @@ var SICKCHILL = {
                     $('#pushbullet_api').addClass('warning');
                     return;
                 }
+
                 $('#pushbullet_api').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testPushbullet-result').html(loading);
@@ -1068,11 +1110,11 @@ var SICKCHILL = {
                 });
             });
 
-            function getPushbulletDevices(msg) {
+            function getPushbulletDevices(message) {
                 const pushbullet = {};
                 pushbullet.api = $('#pushbullet_api').val();
 
-                if (msg) {
+                if (message) {
                     $('#testPushbullet-result').html(loading);
                 }
 
@@ -1097,9 +1139,10 @@ var SICKCHILL = {
                             }
                         }
                     }
+
                     $('#pushbullet_device_list').prepend('<option value="" ' + (pushbullet.currentDevice === '' ? 'selected' : '') + '>All devices</option>');
-                    if (msg) {
-                        $('#testPushbullet-result').html(msg);
+                    if (message) {
+                        $('#testPushbullet-result').html(message);
                     }
                 });
 
@@ -1122,14 +1165,16 @@ var SICKCHILL = {
                                 $('#pushbullet_channel_list').append('<option value="' + pushbullet.channels[i].tag + '">' + pushbullet.channels[i].name + '</option>');
                             }
                         }
+
                         $('#pushbullet_channel_list').prepend('<option value="" ' + (pushbullet.currentChannel ? 'selected' : '') + '>No Channel</option>');
                         $('#pushbullet_channel_list').prop('disabled', false);
                     } else {
                         $('#pushbullet_channel_list').prepend('<option value>No Channels</option>');
                         $('#pushbullet_channel_list').prop('disabled', true);
                     }
-                    if (msg) {
-                        $('#testPushbullet-result').html(msg);
+
+                    if (message) {
+                        $('#testPushbullet-result').html(message);
                     }
 
                     $('#pushbullet_channel_list').on('change', function() {
@@ -1147,7 +1192,7 @@ var SICKCHILL = {
             getPushbulletDevices();
 
             $('#email_show').on('change', function() {
-                const key = parseInt($('#email_show').val(), 10);
+                const key = Number.parseInt($('#email_show').val(), 10);
                 $.getJSON(srRoot + '/home/loadShowNotifyLists', function(notifyData) {
                     if (notifyData._size > 0) {
                         $('#email_show_list').val(key >= 0 ? notifyData[key.toString()].list : '');
@@ -1155,7 +1200,7 @@ var SICKCHILL = {
                 });
             });
             $('#prowl_show').on('change', function() {
-                const key = parseInt($('#prowl_show').val(), 10);
+                const key = Number.parseInt($('#prowl_show').val(), 10);
                 $.getJSON(srRoot + '/home/loadShowNotifyLists', function(notifyData) {
                     if (notifyData._size > 0) {
                         $('#prowl_show_list').val(key >= 0 ? notifyData[key.toString()].prowl_notify_list : '');
@@ -1178,13 +1223,16 @@ var SICKCHILL = {
                             }
                         }
                     }
+
                     const sortedList = _list.sort(function(a, b) {
                         if (a.name < b.name) {
                             return -1;
                         }
+
                         if (a.name > b.name) {
                             return 1;
                         }
+
                         return 0;
                     });
                     let html = '<option value="-1">-- Select --</option>';
@@ -1195,6 +1243,7 @@ var SICKCHILL = {
                             }
                         }
                     }
+
                     $('#email_show').html(html);
                     $('#email_show_list').val('');
 
@@ -1202,6 +1251,7 @@ var SICKCHILL = {
                     $('#prowl_show_list').val('');
                 });
             }
+
             // Load the per show notify lists every time this page is loaded
             loadShowNotifyLists();
 
@@ -1331,6 +1381,7 @@ var SICKCHILL = {
                         $('#naming_pattern').qtip('toggle', false);
                         $('#naming_pattern').css('background-color', '#FFFFFF');
                     }
+
                     $('#naming_pattern').attr('title', info);
                 });
             }
@@ -1380,6 +1431,7 @@ var SICKCHILL = {
                         $('#naming_abd_pattern').qtip('toggle', false);
                         $('#naming_abd_pattern').css('background-color', '#FFFFFF');
                     }
+
                     $('#naming_abd_pattern').attr('title', info);
                 });
             }
@@ -1429,6 +1481,7 @@ var SICKCHILL = {
                         $('#naming_sports_pattern').qtip('toggle', false);
                         $('#naming_sports_pattern').css('background-color', '#FFFFFF');
                     }
+
                     $('#naming_sports_pattern').attr('title', info);
                 });
             }
@@ -1495,6 +1548,7 @@ var SICKCHILL = {
                         $('#naming_pattern').qtip('toggle', false);
                         $('#naming_pattern').css('background-color', '#FFFFFF');
                     }
+
                     $('#naming_pattern').attr('title', info);
                 });
             }
@@ -1509,6 +1563,7 @@ var SICKCHILL = {
                     $('#naming_custom').hide();
                     $('#naming_pattern').val($('#name_presets :selected').attr('id'));
                 }
+
                 fillExamples();
             }
 
@@ -1520,6 +1575,7 @@ var SICKCHILL = {
                     $('#naming_abd_custom').hide();
                     $('#naming_abd_pattern').val($('#name_abd_presets :selected').attr('id'));
                 }
+
                 fillAbdExamples();
             }
 
@@ -1531,6 +1587,7 @@ var SICKCHILL = {
                     $('#naming_sports_custom').hide();
                     $('#naming_sports_pattern').val($('#name_sports_presets :selected').attr('id'));
                 }
+
                 fillSportsExamples();
             }
 
@@ -1542,21 +1599,23 @@ var SICKCHILL = {
                     $('#naming_anime_custom').hide();
                     $('#naming_anime_pattern').val($('#name_anime_presets :selected').attr('id'));
                 }
+
                 fillAnimeExamples();
             }
 
-            if (parseInt($('#unpack').val(), 10) !== 1) {
+            if (Number.parseInt($('#unpack').val(), 10) !== 1) {
                 $('#content_unpack').hide();
             }
 
             $('#unpack').on('change', function() {
-                const value = parseInt(this.value, 10);
+                const value = Number.parseInt(this.value, 10);
 
                 // 'Treat as video' or 'Ignore'
                 if (value === 2 || value === 0) {
                     $('#content_unpack').fadeOut('fast', 'linear');
                     $('#unpack').qtip('toggle', false);
                 }
+
                 // 'Unpack'
                 if (value === 1) {
                     $('#content_unpack').fadeIn('fast', 'linear');
@@ -1647,6 +1706,7 @@ var SICKCHILL = {
                     }
                 });
             };
+
             // Initialize to show the div
             $(this).showHideMetadata();
             // -- end of metadata options div toggle code --
@@ -1659,7 +1719,7 @@ var SICKCHILL = {
                 let curMost = 0;
                 let curMostProvider = '';
 
-                $('.metadataDiv').each(function() {  // eslint-disable-line complexity
+                $('.metadataDiv').each(function() { // eslint-disable-line complexity
                     const generatorName = $(this).attr('id');
 
                     const configArray = [];
@@ -1686,9 +1746,10 @@ var SICKCHILL = {
                     configArray.push(seasonAllBanner ? '1' : '0');
 
                     let curNumber = 0;
-                    for (let i = 0; i < configArray.length; i++) {
-                        curNumber += parseInt(configArray[i], 10);
+                    for (const element of configArray) {
+                        curNumber += Number.parseInt(element, 10);
                     }
+
                     if (curNumber > curMost) {
                         curMost = curNumber;
                         curMostProvider = generatorName;
@@ -1933,6 +1994,7 @@ var SICKCHILL = {
                         $('#username_title.component-title').text(_('Put.io Parent Folder'));
                         $('#password_title.component-title').text(_('Put.io OAuth Token'));
                     }
+
                     $('#host_title').text(client + ' host:port');
                     $('#username_title').text(client + ' Username');
                     $('#password_title').text(client + ' Password');
@@ -1940,13 +2002,14 @@ var SICKCHILL = {
                     $('#rpcurl_title').text(client + ' RPC URL');
                     optionPanel = '#options_torrent_clients';
                 }
+
                 $(optionPanel).show();
             };
 
             $('#torrent_host').on('input', function() {
                 if ($('#torrent_method :selected').val().toLowerCase() === 'rtorrent' || $('#torrent_method :selected').val().toLowerCase() === 'rtorrent9') {
                     const hostname = $('#torrent_host').val();
-                    const isMatch = hostname.substr(0, 7) === 'scgi://';
+                    const isMatch = hostname.slice(0, 7) === 'scgi://';
 
                     if (isMatch) {
                         $('#torrent_username_option').hide();
@@ -2060,13 +2123,13 @@ var SICKCHILL = {
             };
 
             $.fn.refreshServiceList = function() {
-                const idArr = $('#service_order_list').sortable('toArray');
-                const finalArr = [];
-                $.each(idArr, function(key, val) {
-                    const checked = $('#enable_' + val).is(':checked') ? '1' : '0';
-                    finalArr.push(val + ':' + checked);
+                const idArray = $('#service_order_list').sortable('toArray');
+                const finalArray = [];
+                $.each(idArray, function(key, value) {
+                    const checked = $('#enable_' + value).is(':checked') ? '1' : '0';
+                    finalArray.push(value + ':' + checked);
                 });
-                $('#service_order').val(finalArr.join(' '));
+                $('#service_order').val(finalArray.join(' '));
             };
 
             $('#editAService').on('change', function() {
@@ -2117,7 +2180,7 @@ var SICKCHILL = {
                 $('.show-grid').isotope({
                     filter: function() {
                         const name = $(this).find('.show-title').html().trim().toLowerCase();
-                        return name.indexOf($('#filterShowName').val().toLowerCase()) > -1;
+                        return name.includes($('#filterShowName').val().toLowerCase());
                     }
                 });
             }, 500));
@@ -2163,11 +2226,13 @@ var SICKCHILL = {
 
             let posterSize;
             if (typeof (Storage) !== 'undefined') {
-                posterSize = parseInt(localStorage.getItem('posterSize'), 10);
+                posterSize = Number.parseInt(localStorage.getItem('posterSize'), 10);
             }
-            if (typeof (posterSize) !== 'number' || isNaN(posterSize)) {
+
+            if (typeof (posterSize) !== 'number' || Number.isNaN(posterSize)) {
                 posterSize = 188;
             }
+
             resizePosters(posterSize);
 
             $('#posterSizeSlider').slider({
@@ -2178,6 +2243,7 @@ var SICKCHILL = {
                     if (typeof (Storage) !== 'undefined') {
                         localStorage.setItem('posterSize', ui.value);
                     }
+
                     resizePosters(ui.value);
                     $('.show-grid').isotope('layout');
                 }
@@ -2190,11 +2256,12 @@ var SICKCHILL = {
             // This needs to be refined to work a little faster.
             $('.progressbar').each(function() {
                 const percentage = $(this).data('progress-percentage');
-                const classToAdd = percentage === 100 ? 100 : percentage > 80 ? 80 : percentage > 60 ? 60 : percentage > 40 ? 40 : 20;
+                const classToAdd = Math.max(20, percentage - (percentage % 20));
                 $(this).progressbar({value: percentage});
                 if ($(this).data('progress-text')) {
                     $(this).append('<div class="progressbarText" title="' + $(this).data('progress-tip') + '">' + $(this).data('progress-text') + '</div>');
                 }
+
                 $(this).find('.ui-progressbar-value').addClass('progress-' + classToAdd);
             });
 
@@ -2224,8 +2291,9 @@ var SICKCHILL = {
                         if (progress === undefined) {
                             result = Number.NEGATIVE_INFINITY;
                         } else {
-                            result = (progress.length && parseFloat(progress)) || Number.NEGATIVE_INFINITY;
+                            result = (progress.length && Number.parseFloat(progress)) || Number.NEGATIVE_INFINITY;
                         }
+
                         return result;
                     },
                     6: function(node) {
@@ -2277,7 +2345,7 @@ var SICKCHILL = {
                                 if (result) {
                                     // Compare using the matched operator
                                     const comp = doCompare[result[1]];
-                                    if (comp(pct, parseInt(result[2], 10))) {
+                                    if (comp(pct, Number.parseInt(result[2], 10))) {
                                         test = true;
                                     }
                                 }
@@ -2285,7 +2353,7 @@ var SICKCHILL = {
                                 result = filterInput.match(/(\d+)\s(-|to)\s+(\d+)/i);
                                 if (result) {
                                     if ((result[2] === '-') || (result[2] === 'to')) {
-                                        if ((pct >= parseInt(result[1], 10)) && (pct <= parseInt(result[3], 10))) {
+                                        if ((pct >= Number.parseInt(result[1], 10)) && (pct <= Number.parseInt(result[3], 10))) {
                                             test = true;
                                         }
                                     }
@@ -2294,18 +2362,19 @@ var SICKCHILL = {
                                 result = filterInput.match(/(=)?\s?(\d+)\s?(=)?/i);
                                 if (result) {
                                     if ((result[1] === '=') || (result[3] === '=')) {
-                                        if (parseInt(result[2], 10) === pct) {
+                                        if (Number.parseInt(result[2], 10) === pct) {
                                             test = true;
                                         }
                                     }
                                 }
 
-                                if (!isNaN(parseFloat(filterInput)) && isFinite(filterInput)) {
-                                    if (parseInt(filterInput, 10) === pct) {
+                                if (!Number.isNaN(Number.parseFloat(filterInput)) && Number.isFinite(filterInput)) {
+                                    if (Number.parseInt(filterInput, 10) === pct) {
                                         test = true;
                                     }
                                 }
                             }
+
                             return test;
                         }
                     },
@@ -2327,18 +2396,18 @@ var SICKCHILL = {
                         isFitWidth: true
                     },
                     getSortData: {
-                        name: function(itemElem) {
-                            const name = $(itemElem).attr('data-name') || '';
-                            return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^((?:The|A|An)\s)/i, '')).toLowerCase();
+                        name: function(itemElement) {
+                            const name = $(itemElement).attr('data-name') || '';
+                            return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase();
                         },
                         network: '[data-network]',
-                        date: function(itemElem) {
-                            const date = $(itemElem).attr('data-date');
-                            return (date.length && parseInt(date, 10)) || Number.POSITIVE_INFINITY;
+                        date: function(itemElement) {
+                            const date = $(itemElement).attr('data-date');
+                            return (date.length && Number.parseInt(date, 10)) || Number.POSITIVE_INFINITY;
                         },
-                        progress: function(itemElem) {
-                            const progress = $(itemElem).attr('data-progress-sort');
-                            return (progress.length && parseFloat(progress)) || Number.NEGATIVE_INFINITY;
+                        progress: function(itemElement) {
+                            const progress = $(itemElement).attr('data-progress-sort');
+                            return (progress.length && Number.parseFloat(progress)) || Number.NEGATIVE_INFINITY;
                         },
                         status: '[data-status]'
                     }
@@ -2352,6 +2421,7 @@ var SICKCHILL = {
                     if (poster.find('.show-details').css('display') !== 'none') {
                         return;
                     }
+
                     posterHoverTimer = setTimeout(function() {
                         posterHoverTimer = null;
                         $('#posterPopup').remove();
@@ -2388,12 +2458,15 @@ var SICKCHILL = {
                         if (newTop < scrollTop + margin) {
                             newTop = scrollTop + margin;
                         }
+
                         if (newLeft < scrollLeft + margin) {
                             newLeft = scrollLeft + margin;
                         }
+
                         if (newTop + height + margin > scrollBottom) {
                             newTop = scrollBottom - height - margin;
                         }
+
                         if (newLeft + width + margin > scrollRight) {
                             newLeft = scrollRight - width - margin;
                         }
@@ -2412,14 +2485,18 @@ var SICKCHILL = {
                 });
             });
 
+            $('#setlayout').on('change', function() {
+                window.location.href = $(this).find('option:selected').val();
+            });
+
             $('#postersort').on('change', function() {
                 $('.show-grid').isotope({sortBy: $(this).val() === 'date' ? ['status', 'date', 'name'] : $(this).val()});
-                $.post($(this).find('option[value=' + $(this).val() + ']').attr('data-sort'));
+                $.post($(this).find('option:selected').data('sort'));
             });
 
             $('#postersortdirection').on('change', function() {
                 $('.show-grid').isotope({sortAscending: ($(this).val() === 'true')});
-                $.post($(this).find('option[value=' + $(this).val() + ']').attr('data-sort'));
+                $.post($(this).find('option:selected').data('sort'));
             });
 
             $('#popover').popover({
@@ -2506,6 +2583,7 @@ var SICKCHILL = {
                 if ($(this).prop('enableClick') === '0') {
                     return false;
                 }
+
                 disableLink($(this));
 
                 const parent = $(this).parent();
@@ -2530,6 +2608,7 @@ var SICKCHILL = {
                     } else {
                         icon.prop('class', 'displayshow-icon-disable');
                     }
+
                     icon.prop('title', data.result);
                 });
                 return false;
@@ -2575,10 +2654,11 @@ var SICKCHILL = {
                 const id = $('#seasonJump option:selected').val();
                 if (id && id !== 'jump') {
                     const season = $('#seasonJump option:selected').data('season');
-                    $('html,body').animate({scrollTop: $('[name ="' + id.substring(1) + '"]').offset().top - 50}, 'slow');
+                    $('html,body').animate({scrollTop: $('[name ="' + id.slice(1) + '"]').offset().top - 50}, 'slow');
                     $('#collapseSeason-' + season).collapse('show');
                     location.hash = id;
                 }
+
                 $(this).val('jump');
             });
 
@@ -2593,21 +2673,21 @@ var SICKCHILL = {
             });
 
             $('#changeStatus').on('click', function() {
-                const epArr = [];
+                const epArray = [];
 
                 $('.epCheck').each(function() {
                     if (this.checked === true) {
-                        epArr.push($(this).attr('id'));
+                        epArray.push($(this).attr('id'));
                     }
                 });
 
-                if (epArr.length === 0) {
+                if (epArray.length === 0) {
                     return false;
                 }
 
                 const url = srRoot + '/home/setStatus';
-                const params = 'show=' + $('#showID').attr('value') + '&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val();
-                $.post(url, params, function() {
+                const parameters = 'show=' + $('#showID').attr('value') + '&eps=' + epArray.join('|') + '&status=' + $('#statusSelect').val();
+                $.post(url, parameters, function() {
                     location.reload(true);
                 });
             });
@@ -2668,11 +2748,12 @@ var SICKCHILL = {
 
             // Handle the show selection dropbox
             $('#pickShow').on('change', function() {
-                const val = $(this).val();
-                if (val === 0) {
+                const value = $(this).val();
+                if (value === 0) {
                     return;
                 }
-                window.location.href = srRoot + '/home/displayShow?show=' + val;
+
+                window.location.href = srRoot + '/home/displayShow?show=' + value;
             });
 
             // Show/hide different types of rows when the checkboxes are changed
@@ -2705,12 +2786,12 @@ var SICKCHILL = {
 
                 // Hide season headers with no episodes under them
                 $('div.seasonheader').each(function() {
-                    let numRows = 0;
+                    let numberRows = 0;
                     const seasonNo = $(this).attr('data-season-id');
                     $('tr.season-' + seasonNo + ' :visible').each(function() {
-                        numRows++;
+                        numberRows++;
                     });
-                    if (numRows === 0) {
+                    if (numberRows === 0) {
                         $(this).hide();
                         $('#' + seasonNo + '-cols').hide();
                     } else {
@@ -2727,6 +2808,7 @@ var SICKCHILL = {
                 if (sceneSeason === '') {
                     sceneSeason = null;
                 }
+
                 if (sceneEpisode === '') {
                     sceneEpisode = null;
                 }
@@ -2745,6 +2827,7 @@ var SICKCHILL = {
                     } else {
                         $('#sceneSeasonXEpisode_' + showId + '_' + forSeason + '_' + forEpisode).val(data.sceneSeason + 'x' + data.sceneEpisode);
                     }
+
                     if (!data.success) {
                         if (data.errorMessage) {
                             notifyModal(data.errorMessage);
@@ -2776,6 +2859,7 @@ var SICKCHILL = {
                     } else {
                         $('#sceneAbsolute_' + showId + '_' + forAbsolute).val(data.sceneAbsolute);
                     }
+
                     if (!data.success) {
                         if (data.errorMessage) {
                             notifyModal(data.errorMessage);
@@ -2786,18 +2870,19 @@ var SICKCHILL = {
                 });
             }
 
-            function setInputValidInvalid(valid, el) {
+            function setInputValidInvalid(valid, element) {
                 if (valid) {
-                    $(el).css({'background-color': '#90EE90', color: '#FFF', 'font-weight': 'bold'}); // Green
+                    $(element).css({'background-color': '#90EE90', color: '#FFF', 'font-weight': 'bold'}); // Green
                     return true;
                 }
-                $(el).css({'background-color': '#FF0000', color: '#FFF!important', 'font-weight': 'bold'}); // Red
+
+                $(element).css({'background-color': '#FF0000', color: '#FFF!important', 'font-weight': 'bold'}); // Red
                 return false;
             }
 
             $('.sceneSeasonXEpisode').on('change', function() {
                 // Strip non-numeric characters
-                $(this).val($(this).val().replace(/[^0-9xX]*/g, ''));
+                $(this).val($(this).val().replace(/[^\dxX]*/g, ''));
                 let forSeason = $(this).attr('data-for-season');
                 let forEpisode = $(this).attr('data-for-episode');
                 let m = $(this).val().match(/^(\d+)x(\d+)$/i);
@@ -2818,6 +2903,7 @@ var SICKCHILL = {
                 } else {
                     isValid = setInputValidInvalid(false, $(this));
                 }
+
                 // Only perform the request when there is a valid input
                 if (isValid) {
                     setEpisodeSceneNumbering(forSeason, forEpisode, sceneSeason, sceneEpisode);
@@ -2826,7 +2912,7 @@ var SICKCHILL = {
 
             $('.sceneAbsolute').on('change', function() {
                 // Strip non-numeric characters
-                $(this).val($(this).val().replace(/[^0-9xX]*/g, ''));
+                $(this).val($(this).val().replace(/[^\dxX]*/g, ''));
                 let forAbsolute = $(this).attr('data-for-absolute');
 
                 let m = $(this).val().match(/^(\d{1,3})$/i);
@@ -2834,6 +2920,7 @@ var SICKCHILL = {
                 if (m) {
                     sceneAbsolute = m[1];
                 }
+
                 setAbsoluteSceneNumbering(forAbsolute, sceneAbsolute);
             });
 
@@ -2846,8 +2933,8 @@ var SICKCHILL = {
                 });
             });
             $.fn.generateStars = function() {
-                return this.each(function(i, e) {
-                    $(e).html($('<span/>').width($(e).text() * 12));
+                return this.each(function(i, element) {
+                    $(element).html($('<span/>').width($(element).text() * 12));
                 });
             };
 
@@ -2859,22 +2946,22 @@ var SICKCHILL = {
                 content: '<div id="popover-target"></div>'
             })
             // Bootstrap popover event triggered when the popover opens
-            .on('shown.bs.popover', function() {
-                $('.displayShowTable').each(function(index, item) {
-                    $.tablesorter.columnSelector.attachTo(item, '#popover-target');
+                .on('shown.bs.popover', function() {
+                    $('.displayShowTable').each(function(index, item) {
+                        $.tablesorter.columnSelector.attachTo(item, '#popover-target');
+                    });
                 });
-            });
 
             // Moved and rewritten this from displayShow. This changes the button when clicked for collapsing/expanding the
             // Season to Show Episodes or Hide Episodes.
             $(function() {
                 $('.collapse.toggle').on('hide.bs.collapse', function() {
-                    const reg = /collapseSeason-([0-9]+)/g;
+                    const reg = /collapseSeason-(\d+)/g;
                     const result = reg.exec(this.id);
                     $('#showseason-' + result[1]).text(_('Show Episodes'));
                 });
                 $('.collapse.toggle').on('show.bs.collapse', function() {
-                    const reg = /collapseSeason-([0-9]+)/g;
+                    const reg = /collapseSeason-(\d+)/g;
                     const result = reg.exec(this.id);
                     $('#showseason-' + result[1]).text(_('Hide Episodes'));
                 });
@@ -2919,15 +3006,15 @@ var SICKCHILL = {
                 const season = $('#SceneSeason').find(':selected').data('season');
                 const sceneEx = $('#SceneName').val();
 
-                const group = $('#exceptions_list').find('[data-season="' + season + '"]').get()[0];
+                const group = $('.exceptions_list optgroup[data-season="' + season + '"]').get()[0];
                 const placeholder = $(group).find('option.empty');
 
-                const exceptions = $(group).find('option:not(.empty)').get().map(function(el) {
-                    return $(el).val();
-                });
+                const exceptions = new Set($(group).find('option:not(.empty)').get().map(function(element) {
+                    return $(element).val();
+                }));
 
                 // If we already have the exception or the field is empty return
-                if (exceptions.indexOf(sceneEx) > -1 || sceneEx.trim() === '') {
+                if (exceptions.has(sceneEx) || sceneEx.trim() === '') {
                     $('#SceneName').val('');
                     return;
                 }
@@ -2991,6 +3078,7 @@ var SICKCHILL = {
                             $('#shut_down_loading').hide();
                             $('#shut_down_success').show();
                         }
+
                         if (data !== undefined && data.msg !== 'nope' && data.msg !== currentPid) {
                             clearInterval(checkIsAlive);
                             $('#restart_loading').hide();
@@ -3042,10 +3130,12 @@ var SICKCHILL = {
                             row += '<img src="' + srRoot + '/images/subtitles/flags/' + subtitles[i] + '.png" width="16" height="11" alt="' + subtitles[i] + '" />&nbsp;';
                         }
                     }
+
                     row += '</td>';
                 } else {
                     row += '<td style="width: 8%;">None</td>';
                 }
+
                 row += '<td>' + name + '</td>';
                 row += '</tr>';
 
@@ -3126,21 +3216,21 @@ var SICKCHILL = {
             });
 
             $('.submitMassEdit').on('click', function() {
-                const editArr = [];
+                const editArray = [];
 
                 $('.editCheck').each(function() {
                     if (this.checked === true) {
-                        editArr.push($(this).attr('id').split('-')[1]);
+                        editArray.push($(this).attr('id').split('-')[1]);
                     }
                 });
 
-                if (editArr.length === 0) {
+                if (editArray.length === 0) {
                     return;
                 }
 
                 const submitForm = $(
                     '<form method=\'post\' action=\'' + srRoot + '/manage/massEdit\'>' +
-                        '<input type=\'hidden\' name=\'toEdit\' value=\'' + editArr.join('|') + '\'/>' +
+                        '<input type=\'hidden\' name=\'toEdit\' value=\'' + editArray.join('|') + '\'/>' +
                     '</form>'
                 );
                 submitForm.appendTo('body');
@@ -3149,41 +3239,41 @@ var SICKCHILL = {
             });
 
             $('.submitMassUpdate').on('click', function() {
-                const updateArr = [];
-                const refreshArr = [];
-                const renameArr = [];
-                const subtitleArr = [];
-                const deleteArr = [];
-                const removeArr = [];
-                const metadataArr = [];
+                const updateArray = [];
+                const refreshArray = [];
+                const renameArray = [];
+                const subtitleArray = [];
+                const deleteArray = [];
+                const removeArray = [];
+                const metadataArray = [];
 
                 $('.updateCheck').each(function() {
                     if (this.checked === true) {
-                        updateArr.push($(this).attr('id').split('-')[1]);
+                        updateArray.push($(this).attr('id').split('-')[1]);
                     }
                 });
 
                 $('.refreshCheck').each(function() {
                     if (this.checked === true) {
-                        refreshArr.push($(this).attr('id').split('-')[1]);
+                        refreshArray.push($(this).attr('id').split('-')[1]);
                     }
                 });
 
                 $('.renameCheck').each(function() {
                     if (this.checked === true) {
-                        renameArr.push($(this).attr('id').split('-')[1]);
+                        renameArray.push($(this).attr('id').split('-')[1]);
                     }
                 });
 
                 $('.subtitleCheck').each(function() {
                     if (this.checked === true) {
-                        subtitleArr.push($(this).attr('id').split('-')[1]);
+                        subtitleArray.push($(this).attr('id').split('-')[1]);
                     }
                 });
 
                 $('.removeCheck').each(function() {
                     if (this.checked === true) {
-                        removeArr.push($(this).attr('id').split('-')[1]);
+                        removeArray.push($(this).attr('id').split('-')[1]);
                     }
                 });
 
@@ -3206,26 +3296,29 @@ var SICKCHILL = {
                         confirm: function() {
                             $('.deleteCheck').each(function() {
                                 if (this.checked === true) {
-                                    deleteArr.push($(this).attr('id').split('-')[1]);
+                                    deleteArray.push($(this).attr('id').split('-')[1]);
                                 }
                             });
-                            if (updateArr.length + refreshArr.length + renameArr.length + subtitleArr.length + deleteArr.length + removeArr.length + metadataArr.length === 0) {
+                            if (updateArray.length + refreshArray.length + renameArray.length + subtitleArray.length + deleteArray.length + removeArray.length + metadataArray.length === 0) {
                                 return false;
                             }
+
                             const url = srRoot + '/manage/massUpdate';
-                            const params = 'toUpdate=' + updateArr.join('|') + '&toRefresh=' + refreshArr.join('|') + '&toRename=' + renameArr.join('|') + '&toSubtitle=' + subtitleArr.join('|') + '&toDelete=' + deleteArr.join('|') + '&toRemove=' + removeArr.join('|') + '&toMetadata=' + metadataArr.join('|');
-                            $.post(url, params, function() {
+                            const parameters = 'toUpdate=' + updateArray.join('|') + '&toRefresh=' + refreshArray.join('|') + '&toRename=' + renameArray.join('|') + '&toSubtitle=' + subtitleArray.join('|') + '&toDelete=' + deleteArray.join('|') + '&toRemove=' + removeArray.join('|') + '&toMetadata=' + metadataArray.join('|');
+                            $.post(url, parameters, function() {
                                 location.reload(true);
                             });
                         }
                     });
                 }
-                if (updateArr.length + refreshArr.length + renameArr.length + subtitleArr.length + deleteArr.length + removeArr.length + metadataArr.length === 0) {
+
+                if (updateArray.length + refreshArray.length + renameArray.length + subtitleArray.length + deleteArray.length + removeArray.length + metadataArray.length === 0) {
                     return false;
                 }
+
                 const url = srRoot + '/manage/massUpdate';
-                const params = 'toUpdate=' + updateArr.join('|') + '&toRefresh=' + refreshArr.join('|') + '&toRename=' + renameArr.join('|') + '&toSubtitle=' + subtitleArr.join('|') + '&toDelete=' + deleteArr.join('|') + '&toRemove=' + removeArr.join('|') + '&toMetadata=' + metadataArr.join('|');
-                $.post(url, params, function() {
+                const parameters = 'toUpdate=' + updateArray.join('|') + '&toRefresh=' + refreshArray.join('|') + '&toRename=' + renameArray.join('|') + '&toSubtitle=' + subtitleArray.join('|') + '&toDelete=' + deleteArray.join('|') + '&toRemove=' + removeArray.join('|') + '&toMetadata=' + metadataArray.join('|');
+                $.post(url, parameters, function() {
                     location.reload(true);
                 });
             });
@@ -3246,9 +3339,11 @@ var SICKCHILL = {
                         if (found === 2) {
                             return false;
                         }
+
                         if (found === 1 && !this.disabled) {
                             this.checked = lastCheck.checked;
                         }
+
                         if (this === check || this === lastCheck) {
                             found++;
                         }
@@ -3275,19 +3370,19 @@ var SICKCHILL = {
             });
 
             $('#submitMassRemove').on('click', function() {
-                const removeArr = [];
+                const removeArray = [];
 
                 $('.removeCheck').each(function() {
                     if (this.checked === true) {
-                        removeArr.push($(this).attr('id').split('-')[1]);
+                        removeArray.push($(this).attr('id').split('-')[1]);
                     }
                 });
 
-                if (removeArr.length === 0) {
+                if (removeArray.length === 0) {
                     return false;
                 }
 
-                $.post(srRoot + '/manage/failedDownloads', 'toRemove=' + removeArr.join('|'), function() {
+                $.post(srRoot + '/manage/failedDownloads', 'toRemove=' + removeArray.join('|'), function() {
                     location.reload(true);
                 });
             });
@@ -3308,9 +3403,11 @@ var SICKCHILL = {
                             if (found === 2) {
                                 return false;
                             }
+
                             if (found === 1) {
                                 this.checked = lastCheck.checked;
                             }
+
                             if (this === check || this === lastCheck) {
                                 found++;
                             }
@@ -3376,10 +3473,10 @@ var SICKCHILL = {
                     $(this).attr('data-clicked', 1);
                     $(this).prop('value', 'Collapse');
                 } else if (action.toLowerCase() === 'collapse') {
-                    $('table tr').filter('.show-' + curIndexerId).hide();
+                    $('.show-' + curIndexerId).hide();
                     $(this).prop('value', 'Expand');
                 } else if (action.toLowerCase() === 'expand') {
-                    $('table tr').filter('.show-' + curIndexerId).show();
+                    $('.show-' + curIndexerId).show();
                     $(this).prop('value', 'Collapse');
                 }
             });
@@ -3431,10 +3528,10 @@ var SICKCHILL = {
                     $(this).attr('data-clicked', 1);
                     $(this).prop('value', 'Collapse');
                 } else if (action === 'Collapse') {
-                    $('table tr').filter('.show-' + indexerId).hide();
+                    $('.show-' + indexerId).hide();
                     $(this).prop('value', 'Expand');
                 } else if (action === 'Expand') {
-                    $('table tr').filter('.show-' + indexerId).show();
+                    $('.show-' + indexerId).show();
                     $(this).prop('value', 'Collapse');
                 }
             });
@@ -3481,6 +3578,7 @@ var SICKCHILL = {
                             }
                         };
                     }
+
                     const compactExtract = {
                         0: function(node) { // Time
                             return $(node).find('time').attr('datetime');
@@ -3494,6 +3592,7 @@ var SICKCHILL = {
                         compactExtract[4] = function(node) { // Subtitles
                             return $(node).find('img').attr('title');
                         };
+
                         compactExtract[5] = function(node) { // Quality
                             return $(node).find('span').text().toLowerCase();
                         };
@@ -3514,6 +3613,7 @@ var SICKCHILL = {
                             5: {sorter: false, filter: false}
                         };
                     }
+
                     if (isMeta('sickbeard.USE_SUBTITLES', ['True'])) {
                         return {
                             0: {sorter: 'realISODate'},
@@ -3523,6 +3623,7 @@ var SICKCHILL = {
                             6: {sorter: false, filter: false}
                         };
                     }
+
                     return {
                         0: {sorter: 'realISODate'},
                         1: {sorter: 'loadingNames'},
@@ -3532,17 +3633,21 @@ var SICKCHILL = {
                 })()
             });
 
+            $('#setlayout').on('change', function() {
+                window.location.href = $(this).find('option:selected').val();
+            });
+
             $('#history_limit').on('change', function() {
                 window.location.href = srRoot + '/history/?limit=' + $(this).val();
             });
 
             $('a.removehistory').on('click', function() {
-                const removeArr = [];
+                const removeArray = [];
                 let removeCount = 0;
 
                 $('.removeCheck').each(function() {
                     if (this.checked === true) {
-                        removeArr.push(shiftReturn($(this).attr('id').split('-')));
+                        removeArray.push(shiftReturn($(this).attr('id').split('-')));
                         removeCount++;
                     }
                 });
@@ -3560,8 +3665,8 @@ var SICKCHILL = {
                     post: false,
                     confirm: function() {
                         const url = srRoot + '/history/removeHistory';
-                        const params = 'toRemove=' + removeArr.join('|');
-                        $.post(url, params, function() {
+                        const parameters = 'toRemove=' + removeArray.join('|');
+                        $.post(url, parameters, function() {
                             location.reload(true);
                         });
                     }
@@ -3610,6 +3715,7 @@ var SICKCHILL = {
                     $('#log_filter option[value="<NONE>"]').prop('selected', true);
                     $('#min_level option[value=5]').prop('selected', true);
                 }
+
                 $('#min_level').prop('disabled', true);
                 $('#log_filter').prop('disabled', true);
                 document.body.style.cursor = 'wait';
@@ -3632,8 +3738,10 @@ var SICKCHILL = {
                         $('pre').html($(data).find('pre').html());
                     });
                 }
+
                 setTimeout(updateLogData, 500);
             }
+
             updateLogData();
 
             $('#log_update_toggle').on('click', function() {
@@ -3716,6 +3824,10 @@ var SICKCHILL = {
                 // call this function to copy the column selection code into the popover
                 $.tablesorter.columnSelector.attachTo($('#showListTable'), '#popover-target');
             });
+
+            $('#sort, #viewpaused, #viewsnatched, #layout').on('change', function() {
+                window.location.href = $(this).find('option:selected').val();
+            });
         }
     },
     addShows: {
@@ -3753,6 +3865,7 @@ var SICKCHILL = {
                             sortCriteria = 'name';
                             break;
                     }
+
                     $('#container').isotope({
                         sortBy: sortCriteria
                     });
@@ -3768,9 +3881,9 @@ var SICKCHILL = {
                     sortBy: 'original-order',
                     layoutMode: 'fitRows',
                     getSortData: {
-                        name: function(itemElem) {
-                            const name = $(itemElem).attr('data-name') || '';
-                            return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^((?:The|A|An)\s)/i, '')).toLowerCase();
+                        name: function(itemElement) {
+                            const name = $(itemElement).attr('data-name') || '';
+                            return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase();
                         },
                         rating: '[data-rating] parseInt',
                         votes: '[data-votes] parseInt'
@@ -3871,9 +3984,9 @@ var SICKCHILL = {
                 if ($('#rootDirs option:selected').length) {
                     object.dir = $('#rootDirs option:selected').val();
 
-                    if (object.dir.indexOf('/') >= 0) {
+                    if (object.dir.includes('/')) {
                         object.sepChar = '/';
-                    } else if (object.dir.indexOf('\\') >= 0) {
+                    } else if (object.dir.includes('\\')) {
                         object.sepChar = '\\';
                     }
 
@@ -3897,6 +4010,7 @@ var SICKCHILL = {
                     $('#desc-show-name').text(object.showName);
                     $('#desc-directory-name').html(object.dir);
                 }
+
                 $('#desc-quality-name').text($('#qualityPreset option:selected').text());
 
                 // If show has been selected
@@ -3950,6 +4064,7 @@ var SICKCHILL = {
                             } else {
                                 string += '"' + show.url + '" target="_blank"';
                             }
+
                             string += '>' + show.title + '</a>';
 
                             return string;
@@ -3974,6 +4089,7 @@ var SICKCHILL = {
                 if (searchRequestXhr) {
                     searchRequestXhr.abort();
                 }
+
                 if (!$('#show-name').val()) {
                     return;
                 }
@@ -3991,31 +4107,31 @@ var SICKCHILL = {
                         lang: $('#indexerLangSelect').val(),
                         indexer: $('#providedIndexer').val()
                     },
-                    timeout: parseInt($('#indexer_timeout').val(), 10) * 1000,
+                    timeout: Number.parseInt($('#indexer_timeout').val(), 10) * 1000,
                     dataType: 'json',
                     error: function() {
                         $('#searchResults').empty().html(_('search timed out, try again or try another indexer'));
                         $('.next-steps').hide();
                     },
                     success: function(data) {
-                        let resultStr = '<legend class="legendStep">#2 Pick a Show</legend>';
+                        let resultString = '<legend class="legendStep">#2 Pick a Show</legend>';
                         if (data.results.length === 0) {
-                            resultStr += '<b>No results found, try a different search.</b>';
+                            resultString += '<b>No results found, try a different search.</b>';
                             $('.next-steps').hide();
                         } else {
                             let shows = [];
 
-                            $.each(data.results, function(index, obj) {
-                                let whichSeries = obj.join('|').replace(/"/g, '');
+                            $.each(data.results, function(index, object) {
+                                let whichSeries = object.join('|').replace(/"/g, '');
 
                                 let show = {
                                     obj: whichSeries,
-                                    indexer: obj[0],
-                                    id: obj[3],
-                                    title: obj[4],
-                                    debut: obj[5],
-                                    inShowList: obj[6],
-                                    url: anonURL + obj[2] + obj[3]
+                                    indexer: object[0],
+                                    id: object[3],
+                                    title: object[4],
+                                    debut: object[5],
+                                    inShowList: object[6],
+                                    url: anonURL + object[2] + object[3]
                                 };
 
                                 if (data.langid) {
@@ -4025,12 +4141,12 @@ var SICKCHILL = {
                                 shows.push(show);
                             });
 
-                            resultStr += buildTable(shows);
+                            resultString += buildTable(shows);
 
                             $('.next-steps').show();
                         }
 
-                        $('#searchResults').html(resultStr);
+                        $('#searchResults').html(resultString);
                         updateSampleText();
                         $('.new-show-table').tablesorter(
                             {
@@ -4125,6 +4241,7 @@ var SICKCHILL = {
                         if (url.length) {
                             url += '&';
                         }
+
                         url += 'rootDir=' + encodeURIComponent($(w).attr('id'));
                     }
                 });
@@ -4149,6 +4266,7 @@ var SICKCHILL = {
                 if (lastTxt === $('#rootDirText').val()) {
                     return false;
                 }
+
                 lastTxt = $('#rootDirText').val();
 
                 $('#rootDirStaticList').html('');
@@ -4227,16 +4345,18 @@ $.getJSON(srRoot + '/ui/locale.json', function(data) {
     } else {
         window.gt = new Gettext(data.messages);
     }
+
     // Shortcut for normal gettext
-    window._ = function(str) {
-        return gt.gettext(str);
-    };
-    // Shortcut for plural gettext
-    window._n = function(str, pluralStr, num) {
-        return gt.ngettext(str, pluralStr, num);
+    window._ = function(string) {
+        return gt.gettext(string);
     };
 
-    if (navigator.userAgent.indexOf('PhantomJS') === -1) {
+    // Shortcut for plural gettext
+    window._n = function(string, pluralString, number) {
+        return gt.ngettext(string, pluralString, number);
+    };
+
+    if (!navigator.userAgent.includes('PhantomJS')) {
         $(document).ready(UTIL.init);
     }
 });

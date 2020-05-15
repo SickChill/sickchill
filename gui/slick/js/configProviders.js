@@ -19,6 +19,7 @@ $(document).ready(function() {
             if (rootObject.name === searchFor) {
                 found = true;
             }
+
             console.log(rootObject.name + ' while searching for: ' + searchFor);
         });
         return found;
@@ -39,10 +40,10 @@ $(document).ready(function() {
             return;
         }
 
-        const params = {url: url, name: name, key: key};
+        const parameters = {url: url, name: name, key: key};
 
         $('.updating_categories').wrapInner('<span><img src="' + srRoot + '/images/loading16' + themeSpinner + '.gif"> Updating Categories ...</span>');
-        const jqxhr = $.getJSON(srRoot + '/config/providers/getNewznabCategories', params, function(data) {
+        const jqxhr = $.getJSON(srRoot + '/config/providers/getNewznabCategories', parameters, function(data) {
             $(this).updateNewznabCaps(data, selectedProvider);
             console.debug(data.tv_categories);
         });
@@ -205,6 +206,7 @@ $(document).ready(function() {
             if (data[0] && data[1] && data[2] && !ifExists(newznabProvidersCapabilities, data[0])) {
                 $(this).getCategories(isDefault, data);
             }
+
             $(this).updateNewznabCaps(null, data);
         }
     };
@@ -246,6 +248,7 @@ $(document).ready(function() {
                 provStrings.push(newznabProviders[id][1].join('|'));
             }
         }
+
         $('#newznab_string').val(provStrings.join('!!!'));
     };
 
@@ -289,42 +292,43 @@ $(document).ready(function() {
                 provStrings.push(torrentRssProviders[id].join('|'));
             }
         }
+
         $('#torrentrss_string').val(provStrings.join('!!!'));
     };
 
     $.fn.refreshProviderList = function() {
-        const idArr = $('#provider_order_list').sortable('toArray');
-        const finalArr = [];
-        $.each(idArr, function(key, val) {
-            const checked = $('#enable_' + val).is(':checked') ? '1' : '0';
-            finalArr.push(val + ':' + checked);
+        const idArray = $('#provider_order_list').sortable('toArray');
+        const finalArray = [];
+        $.each(idArray, function(key, value) {
+            const checked = $('#enable_' + value).is(':checked') ? '1' : '0';
+            finalArray.push(value + ':' + checked);
         });
 
-        $('#provider_order').val(finalArr.join(' '));
+        $('#provider_order').val(finalArray.join(' '));
         $(this).refreshEditAProvider();
     };
 
     $.fn.refreshEditAProvider = function() {
         $('#editAProvider').empty();
 
-        const idArr = $('#provider_order_list').sortable('toArray');
-        const finalArr = [];
-        $.each(idArr, function(key, val) {
-            if ($('#enable_' + val).prop('checked')) {
-                finalArr.push(val);
+        const idArray = $('#provider_order_list').sortable('toArray');
+        const finalArray = [];
+        $.each(idArray, function(key, value) {
+            if ($('#enable_' + value).prop('checked')) {
+                finalArray.push(value);
             }
         });
 
-        if (finalArr.length > 0) {
+        if (finalArray.length > 0) {
             $('<select>').prop('id', 'editAProvider').addClass('form-control input-sm').appendTo('#provider-list');
-            for (let id in finalArr) {
-                if (Object.prototype.hasOwnProperty.call(finalArr, id)) {
-                    const provider = finalArr[id];
+            for (let id in finalArray) {
+                if (Object.prototype.hasOwnProperty.call(finalArray, id)) {
+                    const provider = finalArray[id];
                     $('#editAProvider').append($('<option>').prop('value', provider).text($.trim($('#' + provider).text()).replace(/\s\*$/, '').replace(/\s\*\*$/, '')));
                 }
             }
         } else {
-            document.getElementsByClassName('component-desc')[0].innerHTML = 'No providers available to configure.';
+            document.querySelectorAll('.component-desc')[0].innerHTML = 'No providers available to configure.';
         }
 
         $(this).showHideProviders();
@@ -332,7 +336,7 @@ $(document).ready(function() {
 
     $(this).on('change', '.newznab_key', function() {
         let providerId = $(this).attr('id');
-        providerId = providerId.substring(0, providerId.length - '_hash'.length);
+        providerId = providerId.slice(0, Math.max(0, providerId.length - '_hash'.length));
 
         const url = $('#' + providerId + '_url').val();
         const cat = $('#' + providerId + '_cat').val();
@@ -439,14 +443,15 @@ $(document).ready(function() {
             return;
         }
 
-        const params = {name: name};
+        const parameters = {name: name};
 
         // Send to the form with ajax, get a return value
-        $.getJSON(srRoot + '/config/providers/canAddNewznabProvider', params, function(data) {
+        $.getJSON(srRoot + '/config/providers/canAddNewznabProvider', parameters, function(data) {
             if (data.error !== undefined) {
                 alert(data.error); // eslint-disable-line no-alert
                 return;
             }
+
             $(this).addProvider(data.success, name, url, key, cat, 0);
         });
     });
@@ -461,10 +466,10 @@ $(document).ready(function() {
         const url = $('#torrentrss_url').val();
         const cookies = $('#torrentrss_cookies').val();
         const titleTAG = $('#torrentrss_titleTAG').val();
-        const params = {name: name, url: url, cookies: cookies, titleTAG: titleTAG};
+        const parameters = {name: name, url: url, cookies: cookies, titleTAG: titleTAG};
 
         // Send to the form with ajax, get a return value
-        $.getJSON(srRoot + '/config/providers/canAddTorrentRssProvider', params, function(data) {
+        $.getJSON(srRoot + '/config/providers/canAddTorrentRssProvider', parameters, function(data) {
             if (data.error !== undefined) {
                 alert(data.error); // eslint-disable-line no-alert
                 return;

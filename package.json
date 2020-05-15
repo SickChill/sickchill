@@ -38,7 +38,8 @@
     "load-grunt-tasks": "^3.5.2",
     "lodash": "^4.17.15",
     "snyk": "^1.28.1",
-    "xo": "^0.18.2"
+    "webpack": "^4.43.0",
+    "xo": "0.30.0"
   },
   "ava": {
     "require": [
@@ -74,6 +75,7 @@
       "unicorn/explicit-length-check": "off",
       "unicorn/no-abusive-eslint-disable": "off",
       "prefer-arrow-callback": "off",
+      "unicorn/prefer-node-append": "off",
       "object-shorthand": [
         "error",
         "never"
@@ -101,7 +103,8 @@
       "core.min.js",
       "vendor.min.js",
       "lib/**/*",
-      "Gruntfile.js"
+      "Gruntfile.js",
+      "gui/slick/js/lib/*"
     ]
   }
 }

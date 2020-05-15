@@ -3,10 +3,28 @@
     let method;
     const noop = function() {};
     const methods = [
-        'assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error',
-        'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log',
-        'markTimeline', 'profile', 'profileEnd', 'table', 'time', 'timeEnd',
-        'timeStamp', 'trace', 'warn'
+        'assert',
+        'clear',
+        'count',
+        'debug',
+        'dir',
+        'dirxml',
+        'error',
+        'exception',
+        'group',
+        'groupCollapsed',
+        'groupEnd',
+        'info',
+        'log',
+        'markTimeline',
+        'profile',
+        'profileEnd',
+        'table',
+        'time',
+        'timeEnd',
+        'timeStamp',
+        'trace',
+        'warn'
     ];
     let length = methods.length;
     const console = (window.console = window.console || {}); // eslint-disable-line no-multi-assign
@@ -23,15 +41,15 @@
 
 $(document).ready(function() {
     function setDefault(which, force) {
-        console.log('setting default to ' + which);
-
-        if (which !== undefined && !which.length) {
+        if (which === undefined || !which.length) {
             return;
         }
 
         if ($('#whichDefaultRootDir').val() === which && force !== true) {
             return;
         }
+
+        console.log('setting default to ' + which);
 
         // Put an asterisk on the text
         if ($('#' + which).text().charAt(0) !== '*') {
@@ -41,7 +59,7 @@ $(document).ready(function() {
         // If there's an existing one then take the asterisk off
         if ($('#whichDefaultRootDir').val() && force !== true) {
             const oldDefault = $('#' + $('#whichDefaultRootDir').val());
-            oldDefault.text(oldDefault.text().substring(1));
+            oldDefault.text(oldDefault.text().slice(1));
         }
 
         $('#whichDefaultRootDir').val(which);
@@ -83,8 +101,9 @@ $(document).ready(function() {
         let logString = '';
         let dirString = '';
         if ($('#whichDefaultRootDir').val().length >= 4) {
-            dirString = $('#whichDefaultRootDir').val().substr(3);
+            dirString = $('#whichDefaultRootDir').val().slice(3);
         }
+
         $('#rootDirs option').each(function() {
             logString += $(this).val() + '=' + $(this).text() + '->' + $(this).attr('id') + '\n';
             if (dirString.length) {
@@ -98,6 +117,7 @@ $(document).ready(function() {
         $('#rootDirText').change();
         console.log('rootDirText: ' + $('#rootDirText').val());
     }
+
     function addRootDir(path) {
         if (!path.length) {
             return;
@@ -134,6 +154,7 @@ $(document).ready(function() {
             } else {
                 $('#rootDirs option:selected').text(path);
             }
+
             $('#rootDirs option:selected').val(path);
         }
 
@@ -156,7 +177,7 @@ $(document).ready(function() {
         if ($('#rootDirs option:selected').length) {
             const toDelete = $('#rootDirs option:selected');
             const newDefault = (toDelete.attr('id') === $('#whichDefaultRootDir').val());
-            const deletedNum = $('#rootDirs option:selected').attr('id').substr(3);
+            const deletedNumber = $('#rootDirs option:selected').attr('id').slice(3);
 
             toDelete.remove();
             syncOptionIDs();
@@ -172,12 +193,13 @@ $(document).ready(function() {
                     setDefault($('#rootDirs option').attr('id'));
                 }
             } else if ($('#whichDefaultRootDir').val().length) {
-                const oldDefaultNum = $('#whichDefaultRootDir').val().substr(3);
-                if (oldDefaultNum > deletedNum) {
-                    $('#whichDefaultRootDir').val('rd-' + (oldDefaultNum - 1));
+                const oldDefaultNumber = $('#whichDefaultRootDir').val().slice(3);
+                if (oldDefaultNumber > deletedNumber) {
+                    $('#whichDefaultRootDir').val('rd-' + (oldDefaultNumber - 1));
                 }
             }
         }
+
         refreshRootDirs();
         $.get(srRoot + '/config/general/saveRootDirs', {
             rootDirString: $('#rootDirText').val()
@@ -188,6 +210,7 @@ $(document).ready(function() {
         if ($('#rootDirs option:selected').length) {
             setDefault($('#rootDirs option:selected').attr('id'));
         }
+
         refreshRootDirs();
         $.get(srRoot + '/config/general/saveRootDirs', {
             rootDirString: $('#rootDirText').val()

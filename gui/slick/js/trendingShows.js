@@ -10,9 +10,9 @@ $(document).ready(function() {
             sortBy: 'original-order',
             layoutMode: 'fitRows',
             getSortData: {
-                name: function(itemElem) {
-                    const name = $(itemElem).attr('data-name') || '';
-                    return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^(The|A|An)\s/i, '')).toLowerCase();
+                name: function(itemElement) {
+                    const name = $(itemElement).attr('data-name') || '';
+                    return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^(the|a|an)\s/i, '')).toLowerCase();
                 },
                 rating: '[data-rating] parseInt',
                 votes: '[data-votes] parseInt'
@@ -43,6 +43,7 @@ $(document).ready(function() {
                 sortCriteria = 'name';
                 break;
         }
+
         $('#container').isotope({sortBy: sortCriteria});
     });
 

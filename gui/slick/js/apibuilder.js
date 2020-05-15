@@ -110,11 +110,11 @@ $(document).ready(function() {
         const command = $(this).typeahead('getActive');
 
         if (command) {
-            const commandObj = $('[href="#command-' + command.replace('.', '-') + '"]');
-            commandObj.click();
+            const commandObject = $('[href="#command-' + command.replace('.', '-') + '"]');
+            commandObject.click();
 
             setTimeout(function() {
-                commandObj.goTo();
+                commandObject.goTo();
             }, 250);
         }
     });

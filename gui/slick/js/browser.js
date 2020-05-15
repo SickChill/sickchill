@@ -35,7 +35,7 @@
             fileTypes: fileTypes.join(',')
         }, function(data) {
             fileBrowserDialog.empty();
-            const firstVal = data[0];
+            const firstValue = data[0];
             let i = 0;
             let list = null;
             let link = null;
@@ -43,21 +43,22 @@
                 return i++ !== 0;
             });
 
-            $('<input type="text" class="form-control input-sm">').val(firstVal.currentPath).on('keypress', function(e) {
-                if (e.which === 13) {
-                    browse(e.target.value, endpoint, includeFiles, fileTypes);
+            $('<input type="text" class="form-control input-sm">').val(firstValue.currentPath).on('keypress', function(event_) {
+                if (event_.which === 13) {
+                    browse(event_.target.value, endpoint, includeFiles, fileTypes);
                 }
             }).appendTo(fileBrowserDialog).fileBrowser({
                 showBrowseButton: false
-            }).on('autocompleteselect', function(e, ui) {
+            }).on('autocompleteselect', function(event_, ui) {
                 browse(ui.item.value, endpoint, includeFiles, fileTypes);
             });
 
             list = $('<ul>').appendTo(fileBrowserDialog);
             $.each(data, function(i, entry) {
-                if (entry.isFile && fileTypes && (!entry.isAllowed || fileTypes.indexOf('images') !== -1 && !entry.isImage)) { // eslint-disable-line no-mixed-operators
+                if (entry.isFile && fileTypes && (!entry.isAllowed || fileTypes.includes('images') && !entry.isImage)) { // eslint-disable-line no-mixed-operators
                     return true;
                 }
+
                 link = $('<a href="javascript:void(0)">').on('click', function() {
                     if (entry.isFile) {
                         currentBrowserPath = entry.path;
@@ -72,13 +73,14 @@
                     link.prepend('<span class="ui-icon ui-icon-document"></span>');
                 } else {
                     link.prepend('<span class="ui-icon ui-icon-folder-collapsed"></span>')
-                    .on('mouseenter', function() {
-                        $('span', this).addClass('ui-icon-folder-open');
-                    })
-                    .on('mouseleave', function() {
-                        $('span', this).removeClass('ui-icon-folder-open');
-                    });
+                        .on('mouseenter', function() {
+                            $('span', this).addClass('ui-icon-folder-open');
+                        })
+                        .on('mouseleave', function() {
+                            $('span', this).removeClass('ui-icon-folder-open');
+                        });
                 }
+
                 link.appendTo(list);
             });
             $('a', list).wrap('<li class="ui-state-default ui-corner-all">');
@@ -185,10 +187,12 @@
         // If the text field is empty and we're given a key then populate it with the last browsed value from localStorage
         try {
             ls = Boolean(localStorage.getItem);
-        } catch (e) {}
+        } catch (_) {}
+
         if (ls && options.key) {
             path = localStorage['fileBrowser-' + options.key];
         }
+
         if (options.key && options.field.val().length === 0 && path) {
             options.field.val(path);
         }
@@ -214,6 +218,7 @@
                 })
             );
         }
+
         return options.field;
     };
 })(jQuery);

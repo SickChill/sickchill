@@ -53,6 +53,7 @@ function updateImages(data) {
                 if (ep.quality !== 'N/A') {
                     link.prop('class', 'epRetry');
                 }
+
                 icon.prop('title', 'Search');
                 icon.prop('alt', 'Search');
 
@@ -63,6 +64,7 @@ function updateImages(data) {
                 htmlContent = ep.status.replace(rSearchTerm, '$1 <span class="quality ' + ep.quality + '">$2</span>');
                 parent.closest('tr').prop('class', ep.overview + ' season-' + ep.season + ' seasonstyle');
             }
+
             // Update the status column if it exists
             parent.siblings('.col-status').html(htmlContent);
             // And location
@@ -74,6 +76,7 @@ function updateImages(data) {
                 parent.siblings('.episode').html('<span title="' + ep.location + '" class="addQTip">' + ep.episode + '</span>');
             }
         }
+
         const elementCompleteEpisodes = $('a[id=forceUpdate-' + ep.show + 'x' + ep.season + 'x' + ep.episode + ']');
         const spanCompleteEpisodes = elementCompleteEpisodes.children('span');
         if (elementCompleteEpisodes) {
@@ -109,6 +112,7 @@ function updateImages(data) {
                         }).addClass('listing-snatched');
                     }
                 }
+
                 enableLink(elementCompleteEpisodes);
             }
         }
@@ -127,6 +131,7 @@ function checkManualSearches() {
             } else {
                 pollInterval = 15000;
             }
+
             updateImages(data);
         },
         error: function() {
@@ -166,7 +171,7 @@ $(document).ready(checkManualSearches);
         url = url + '&downCurQuality=' + (qualityDownload ? '1' : '0');
 
         $.getJSON(url, function(data) {
-            let imageName = null;  // eslint-disable-line no-unused-vars
+            let imageName = null; // eslint-disable-line no-unused-vars
             let imageResult = null; // eslint-disable-line no-unused-vars
             // If they failed then just put the red X
             if (data.result.toLowerCase() === 'failure') {
@@ -179,6 +184,7 @@ $(document).ready(checkManualSearches);
                 if (stupidOptions.colorRow) {
                     parent.parent().removeClass('skipped wanted qual good unaired').addClass('snatched');
                 }
+
                 // Applying the quality class
                 const rSearchTerm = /(\w+)\s\((.+?)\)/;
                 const htmlContent = data.result.replace(rSearchTerm, '$1 <span class="quality ' + data.quality + '">$2</span>');

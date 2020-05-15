@@ -25,17 +25,18 @@ $(document).ready(function() {
     });
 
     $('input[type=submit]').on('click', function() {
-        const epArr = [];
+        const epArray = [];
 
         $('.epCheck').each(function() {
             if (this.checked === true) {
-                epArr.push($(this).attr('id'));
+                epArray.push($(this).attr('id'));
             }
         });
 
-        if (epArr.length === 0) {
+        if (epArray.length === 0) {
             return false;
         }
-        $.redirect(srRoot + '/home/doRename', {show: $('#showID').attr('value'), eps: epArr.join('|')}, 'POST');
+
+        $.redirect(srRoot + '/home/doRename', {show: $('#showID').attr('value'), eps: epArray.join('|')}, 'POST');
     });
 });
