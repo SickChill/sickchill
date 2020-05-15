@@ -124,8 +124,8 @@ function checkManualSearches() {
     const showId = $('#showID').val();
     const url = showId !== undefined ? searchStatusUrl + '?show=' + showId : searchStatusUrl; // eslint-disable-line no-negated-condition
     $.ajax({
-        url: url,
-        success: function(data) {
+        url,
+        success(data) {
             if (data.episodes) {
                 pollInterval = 5000;
             } else {
@@ -134,12 +134,12 @@ function checkManualSearches() {
 
             updateImages(data);
         },
-        error: function() {
+        error() {
             pollInterval = 30000;
         },
         type: 'GET',
         dataType: 'json',
-        complete: function() {
+        complete() {
             setTimeout(checkManualSearches, pollInterval);
         },
         timeout: 15000 // Timeout every 15 secs

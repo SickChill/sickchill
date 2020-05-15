@@ -10,7 +10,7 @@ $(function() {
                     data: {
                         show: match[1]
                     },
-                    success: function(data) {
+                    success(data) {
                         this.set('content.text', data);
                     }
                 }

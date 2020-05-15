@@ -10,7 +10,7 @@ $(document).ready(function() {
             sortBy: 'original-order',
             layoutMode: 'fitRows',
             getSortData: {
-                name: function(itemElement) {
+                name(itemElement) {
                     const name = $(itemElement).attr('data-name') || '';
                     return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^(the|a|an)\s/i, '')).toLowerCase();
                 },

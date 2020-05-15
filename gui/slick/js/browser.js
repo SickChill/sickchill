@@ -30,8 +30,8 @@
         fileBrowserDialog.dialog('option', 'dialogClass', 'browserDialog busy');
 
         currentRequest = $.getJSON(endpoint, {
-            path: path,
-            includeFiles: includeFiles,
+            path,
+            includeFiles,
             fileTypes: fileTypes.join(',')
         }, function(data) {
             fileBrowserDialog.empty();
@@ -113,7 +113,7 @@
         fileBrowserDialog.dialog('option', 'buttons', [{
             text: 'Ok',
             class: 'btn',
-            click: function() {
+            click() {
                 // Store the browsed path to the associated text field
                 callback(options.includeFiles ? currentBrowserPath : $(this).find('.fileBrowserField').val(), options);
                 $(this).dialog('close');
@@ -121,7 +121,7 @@
         }, {
             text: 'Cancel',
             class: 'btn',
-            click: function() {
+            click() {
                 $(this).dialog('close');
             }
         }]);
@@ -147,14 +147,14 @@
             let query = '';
             options.field.autocomplete({
                 position: {my: 'top', at: 'bottom', collision: 'flipfit'},
-                source: function(request, response) {
+                source(request, response) {
                     // Keep track of user submitted search term
                     query = $.ui.autocomplete.escapeRegex(request.term, options.includeFiles);
                     $.ajax({
                         url: options.autocompleteURL,
                         data: request,
                         dataType: 'json',
-                        success: function(data) {
+                        success(data) {
                             // Implement a startsWith filter for the results
                             const matcher = new RegExp('^' + query, 'i');
                             const a = $.grep(data, function(item) {
@@ -164,7 +164,7 @@
                         }
                     });
                 },
-                open: function() {
+                open() {
                     $('.ui-autocomplete li.ui-menu-item a').removeClass('ui-corner-all');
                 }
             }).data('ui-autocomplete')._renderItem = function(ul, item) {
@@ -212,7 +212,7 @@
             options.field.after(
                 $('<input type="button" value="Browse&hellip;" class="btn btn-inline fileBrowser">').on('click', function() {
                     const initialDir = options.field.val() || (options.key && path) || '';
-                    const optionsWithInitialDir = $.extend({}, options, {initialDir: initialDir});
+                    const optionsWithInitialDir = $.extend({}, options, {initialDir});
                     $(this).nFileBrowser(callback, optionsWithInitialDir);
                     return false;
                 })
