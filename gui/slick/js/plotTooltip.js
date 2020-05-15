@@ -1,4 +1,4 @@
-$(function () {
+$(() => {
     $('.plotInfo').each(function () {
         const match = $(this).attr('id').match(/^plot_info_(\d+)_(\d+)_(\d+)$/);
         $(this).qtip({

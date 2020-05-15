@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(document).ready(() => {
     // Perform an API call
     $('[data-action="api-call"]').on('click', function () {
         const parameters = $('[data-command="' + $(this).data('command-name') + '"]');
@@ -8,7 +8,7 @@ $(document).ready(function () {
         let url = srRoot + $('#' + $(this).data('base-url')).text();
         const urlId = $(this).data('url');
 
-        $.each(parameters, function (index, item) {
+        $.each(parameters, (index, item) => {
             const name = $(item).attr('name');
             let value = $(item).val();
 
@@ -26,7 +26,7 @@ $(document).ready(function () {
         }
 
         const requestTime = new Date().getTime();
-        $.get(url, function (data, textStatus, jqXHR) {
+        $.get(url, (data, textStatus, jqXHR) => {
             const responseTime = new Date().getTime() - requestTime;
             const jsonp = $('#option-jsonp').is(':checked');
             const responseType = jqXHR.getResponseHeader('content-type') || '';
@@ -113,7 +113,7 @@ $(document).ready(function () {
             const commandObject = $('[href="#command-' + command.replace('.', '-') + '"]');
             commandObject.click();
 
-            setTimeout(function () {
+            setTimeout(() => {
                 commandObject.goTo();
             }, 250);
         }

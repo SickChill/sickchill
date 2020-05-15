@@ -61,7 +61,7 @@
       "unicorn/filename-case": "off",
       "unicorn/prefer-node-append": "off"
     },
-    "esnext": false,
+    "esnext": true,
     "envs": [
       "browser"
     ],

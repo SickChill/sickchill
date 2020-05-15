@@ -15,7 +15,7 @@ $(document).ready(function () {
     const ifExists = function (loopThroughArray, searchFor) {
         let found = false;
 
-        loopThroughArray.forEach(function (rootObject) {
+        loopThroughArray.forEach(rootObject => {
             if (rootObject.name === searchFor) {
                 found = true;
             }
@@ -47,7 +47,7 @@ $(document).ready(function () {
             $(this).updateNewznabCaps(data, selectedProvider);
             console.debug(data.tv_categories);
         });
-        jqxhr.always(function () {
+        jqxhr.always(() => {
             $('.updating_categories').empty();
         });
     };
@@ -77,7 +77,7 @@ $(document).ready(function () {
         $(this).populateNewznabSection();
 
         if ($('#provider_order_list > #' + id).length === 0) {
-            let providerOrderList = $('#provider_order_list');
+            const providerOrderList = $('#provider_order_list');
             providerOrderList.append('<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + srRoot + '/images/providers/newznab.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>');
             providerOrderList.sortable('refresh');
         }
@@ -92,7 +92,7 @@ $(document).ready(function () {
         $(this).populateTorrentRssSection();
 
         if ($('#provider_order_list > #' + id).length === 0) {
-            let providerOrderList = $('#provider_order_list');
+            const providerOrderList = $('#provider_order_list');
             providerOrderList.append('<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + srRoot + '/images/providers/torrentrss.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>');
             providerOrderList.sortable('refresh');
         }
@@ -180,7 +180,7 @@ $(document).ready(function () {
         // Update the category select box (on the right)
         const newCatOptions = [];
         if (rrcat) {
-            rrcat.forEach(function (cat) {
+            rrcat.forEach(cat => {
                 if (cat !== '') {
                     newCatOptions.push({text: cat, value: cat});
                 }
@@ -227,10 +227,10 @@ $(document).ready(function () {
         // update the capabilities select box (on the left).
         $('#newznab_cap').empty();
         if (selectedProvider[0]) {
-            newznabProvidersCapabilities.forEach(function (newzNabCap) {
+            newznabProvidersCapabilities.forEach(newzNabCap => {
                 if (newzNabCap.name && newzNabCap.name === selectedProvider[0] && Array.isArray(newzNabCap.categories)) {
                     const newCapOptions = [];
-                    newzNabCap.categories.forEach(function (categorySet) {
+                    newzNabCap.categories.forEach(categorySet => {
                         if (categorySet.id && categorySet.name) {
                             newCapOptions.push({value: categorySet.id, text: categorySet.name + '(' + categorySet.id + ')'});
                         }
@@ -243,7 +243,7 @@ $(document).ready(function () {
 
     $.fn.makeNewznabProviderString = function () {
         const provStrings = [];
-        for (let id in newznabProviders) {
+        for (const id in newznabProviders) {
             if (Object.prototype.hasOwnProperty.call(newznabProviders, id)) {
                 provStrings.push(newznabProviders[id][1].join('|'));
             }
@@ -287,7 +287,7 @@ $(document).ready(function () {
 
     $.fn.makeTorrentRssProviderString = function () {
         const provStrings = [];
-        for (let id in torrentRssProviders) {
+        for (const id in torrentRssProviders) {
             if (Object.prototype.hasOwnProperty.call(torrentRssProviders, id)) {
                 provStrings.push(torrentRssProviders[id].join('|'));
             }
@@ -299,7 +299,7 @@ $(document).ready(function () {
     $.fn.refreshProviderList = function () {
         const idArray = $('#provider_order_list').sortable('toArray');
         const finalArray = [];
-        $.each(idArray, function (key, value) {
+        $.each(idArray, (key, value) => {
             const checked = $('#enable_' + value).is(':checked') ? '1' : '0';
             finalArray.push(value + ':' + checked);
         });
@@ -313,7 +313,7 @@ $(document).ready(function () {
 
         const idArray = $('#provider_order_list').sortable('toArray');
         const finalArray = [];
-        $.each(idArray, function (key, value) {
+        $.each(idArray, (key, value) => {
             if ($('#enable_' + value).prop('checked')) {
                 finalArray.push(value);
             }
@@ -321,7 +321,7 @@ $(document).ready(function () {
 
         if (finalArray.length > 0) {
             $('<select>').prop('id', 'editAProvider').addClass('form-control input-sm').appendTo('#provider-list');
-            for (let id in finalArray) {
+            for (const id in finalArray) {
                 if (Object.prototype.hasOwnProperty.call(finalArray, id)) {
                     const provider = finalArray[id];
                     $('#editAProvider').append($('<option>').prop('value', provider).text($.trim($('#' + provider).text()).replace(/\s\*$/, '').replace(/\s\*\*$/, '')));
@@ -355,7 +355,7 @@ $(document).ready(function () {
         const url = $('#newznab_url').val();
         const key = $('#newznab_key').val();
 
-        const cat = $('#newznab_cat option').map(function (i, opt) {
+        const cat = $('#newznab_cat option').map((i, opt) => {
             return $(opt).text();
         }).toArray().join(',');
 
@@ -420,7 +420,7 @@ $(document).ready(function () {
         const url = $('#newznab_url').val();
         const key = $('#newznab_key').val();
 
-        const cat = $('#newznab_cat option').map(function (i, opt) {
+        const cat = $('#newznab_cat option').map((i, opt) => {
             return $(opt).text();
         }).toArray().join(',');
 
@@ -429,13 +429,13 @@ $(document).ready(function () {
         $(this).updateProvider(selectedProvider, url, key, cat);
     });
 
-    $('#newznab_add').on('click', function () {
+    $('#newznab_add').on('click', () => {
         const name = $.trim($('#newznab_name').val());
         const url = $.trim($('#newznab_url').val());
         const key = $.trim($('#newznab_key').val());
         // Var cat = $.trim($('#newznab_cat').val());
 
-        const cat = $.trim($('#newznab_cat option').map(function (i, opt) {
+        const cat = $.trim($('#newznab_cat option').map((i, opt) => {
             return $(opt).text();
         }).toArray().join(','));
 
@@ -461,7 +461,7 @@ $(document).ready(function () {
         $(this).deleteProvider(selectedProvider);
     });
 
-    $('#torrentrss_add').on('click', function () {
+    $('#torrentrss_add').on('click', () => {
         const name = $('#torrentrss_name').val();
         const url = $('#torrentrss_url').val();
         const cookies = $('#torrentrss_cookies').val();
@@ -519,7 +519,7 @@ $(document).ready(function () {
         this.empty();
         const self = this;
 
-        $.each(options, function (index, option) {
+        $.each(options, (index, option) => {
             const $option = $('<option></option>').attr('value', option.value).text(option.text);
             self.append($option);
         });

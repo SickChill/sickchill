@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(document).ready(() => {
     $('.seriesCheck').on('click', function () {
         const serCheck = this;
 
@@ -24,7 +24,7 @@ $(document).ready(function () {
         });
     });
 
-    $('input[type=submit]').on('click', function () {
+    $('input[type=submit]').on('click', () => {
         const epArray = [];
 
         $('.epCheck').each(function () {

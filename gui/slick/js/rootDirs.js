@@ -39,7 +39,7 @@
     }
 })();
 
-$(document).ready(function () {
+$(document).ready(() => {
     function setDefault(which, force) {
         if (which === undefined || which.length === 0) {
             return;
@@ -173,7 +173,7 @@ $(document).ready(function () {
         });
     });
 
-    $('#deleteRootDir').on('click', function () {
+    $('#deleteRootDir').on('click', () => {
         if ($('#rootDirs option:selected').length > 0) {
             const toDelete = $('#rootDirs option:selected');
             const newDefault = (toDelete.attr('id') === $('#whichDefaultRootDir').val());
@@ -206,7 +206,7 @@ $(document).ready(function () {
         });
     });
 
-    $('#defaultRootDir').on('click', function () {
+    $('#defaultRootDir').on('click', () => {
         if ($('#rootDirs option:selected').length > 0) {
             setDefault($('#rootDirs option:selected').attr('id'));
         }

@@ -19,7 +19,7 @@ function disableLink(link) {
 }
 
 function updateImages(data) {
-    $.each(data.episodes, function (name, ep) {
+    $.each(data.episodes, (name, ep) => {
         // Get td element for current ep
         const loadingClass = 'loading-spinner16';
         const queuedClass = 'displayshow-icon-clock';
@@ -107,7 +107,7 @@ function updateImages(data) {
 
                     if (actionElement.length > 0) {
                         // Remove any listing-* classes and add listing-snatched (keeping non listing-* classes)
-                        actionElement.attr('class', function (i, value) {
+                        actionElement.attr('class', (i, value) => {
                             return value.replace(/(^|\s)listing-\S+/g, '');
                         }).addClass('listing-snatched');
                     }
@@ -170,7 +170,7 @@ $(document).ready(checkManualSearches);
 
         url = url + '&downCurQuality=' + (qualityDownload ? '1' : '0');
 
-        $.getJSON(url, function (data) {
+        $.getJSON(url, data => {
             let imageName = null; // eslint-disable-line no-unused-vars
             let imageResult = null; // eslint-disable-line no-unused-vars
             // If they failed then just put the red X

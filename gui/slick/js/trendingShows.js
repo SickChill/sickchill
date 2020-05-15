@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(document).ready(() => {
     // Initialise combos for dirty page refreshes
     $('#showsort').val('original');
     $('#showsortdirection').val('asc');

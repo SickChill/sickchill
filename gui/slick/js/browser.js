@@ -33,33 +33,33 @@
             path,
             includeFiles,
             fileTypes: fileTypes.join(',')
-        }, function (data) {
+        }, data => {
             fileBrowserDialog.empty();
             const firstValue = data[0];
             let i = 0;
             let list = null;
             let link = null;
-            data = $.grep(data, function () {
+            data = $.grep(data, () => {
                 return i++ !== 0;
             });
 
-            $('<input type="text" class="form-control input-sm">').val(firstValue.currentPath).on('keypress', function (event_) {
+            $('<input type="text" class="form-control input-sm">').val(firstValue.currentPath).on('keypress', event_ => {
                 if (event_.which === 13) {
                     browse(event_.target.value, endpoint, includeFiles, fileTypes);
                 }
             }).appendTo(fileBrowserDialog).fileBrowser({
                 showBrowseButton: false
-            }).on('autocompleteselect', function (event_, ui) {
+            }).on('autocompleteselect', (event_, ui) => {
                 browse(ui.item.value, endpoint, includeFiles, fileTypes);
             });
 
             list = $('<ul>').appendTo(fileBrowserDialog);
-            $.each(data, function (i, entry) {
+            $.each(data, (i, entry) => {
                 if (entry.isFile && fileTypes && (!entry.isAllowed || fileTypes.includes('images') && !entry.isImage)) { // eslint-disable-line no-mixed-operators
                     return true;
                 }
 
-                link = $('<a href="javascript:void(0)">').on('click', function () {
+                link = $('<a href="javascript:void(0)">').on('click', () => {
                     if (entry.isFile) {
                         currentBrowserPath = entry.path;
                         $('.browserDialog .ui-button:contains("Ok")').click();
@@ -157,7 +157,7 @@
                         success(data) {
                             // Implement a startsWith filter for the results
                             const matcher = new RegExp('^' + query, 'i');
-                            const a = $.grep(data, function (item) {
+                            const a = $.grep(data, item => {
                                 return matcher.test(item);
                             });
                             response(a);
@@ -171,7 +171,7 @@
                 // Highlight the matched search term from the item -- note that this is global and will match anywhere
                 let resultItem = item.label;
                 const x = new RegExp('(?![^&;]+;)(?!<[^<>]*)(' + query + ')(?![^<>]*>)(?![^&;]+;)', 'gi');
-                resultItem = resultItem.replace(x, function (fullMatch) {
+                resultItem = resultItem.replace(x, fullMatch => {
                     return '<b>' + fullMatch + '</b>';
                 });
                 return $('<li></li>')

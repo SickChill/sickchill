@@ -27,15 +27,15 @@ function displayPNotify(type, title, message, id) {
 }
 
 function checkNotifications() {
-    $.getJSON(srRoot + '/ui/get_messages', function (data) {
-        $.each(data, function (name, data) {
+    $.getJSON(srRoot + '/ui/get_messages', data => {
+        $.each(data, (name, data) => {
             displayPNotify(data.type, data.title, data.message, data.hash);
         });
     });
     setTimeout(checkNotifications, 3000);
 }
 
-$(document).ready(function () {
+$(document).ready(() => {
     checkNotifications();
     if (test) {
         displayPNotify('notice', 'test', 'test<br><i class="test-class">hello <b>world</b></i><ul><li>item 1</li><li>item 2</li></ul>', 'notification-test');

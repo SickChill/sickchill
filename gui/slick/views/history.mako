@@ -35,7 +35,7 @@
                 </label>
                 <label>
                     <span> ${_('Layout')}:</span>
-                    <select name="layout" class="form-control form-control-inline input-sm">
+                    <select id="layout" class="form-control form-control-inline input-sm">
                         <option value="${srRoot}/setHistoryLayout/?layout=compact"  ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'compact']}>${_('Compact')}</option>
                         <option value="${srRoot}/setHistoryLayout/?layout=detailed" ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'detailed']}>${_('Detailed')}</option>
                     </select>
