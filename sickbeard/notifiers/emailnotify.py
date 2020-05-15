@@ -49,9 +49,6 @@ class Notifier(object):
         else:
             msg[b'Subject'] = 'SickChill: Test Message'
 
-        if pwd == 'hidden_value':
-            pwd == sickbeard.EMAIL_PASSWORD
-
         msg[b'From'] = smtp_from
         msg[b'To'] = to
         msg[b'Date'] = formatdate(localtime=True)

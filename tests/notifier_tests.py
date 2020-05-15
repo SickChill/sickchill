@@ -101,6 +101,7 @@ class NotifierTests(test.SickbeardTestDBCase):
         """
         pass
 
+    @unittest.skip('Cannot call directly without a request')
     def test_email(self):
         """
         Test email notifications
@@ -198,6 +199,7 @@ class NotifierTests(test.SickbeardTestDBCase):
         """
         pass
 
+    @unittest.skip('Cannot call directly without a request')
     def test_prowl(self):
         """
         Test prowl notifications
