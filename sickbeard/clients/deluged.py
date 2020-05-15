@@ -39,6 +39,9 @@ class Client(GenericClient):
         self.client = None
 
     def setup(self):
+        if self.host.startswith('scgi://'):
+            self.host = self.host[7:]
+
         if not self.host.startswith('http'):
             self.host = 'http://{}'.format(self.host)
 
@@ -103,7 +106,19 @@ class Client(GenericClient):
             return False
 
         if label:
-            return self.client.core.set_torrent_label(result.hash, label)
+            try:
+                labels = self.client.label.get_labels()
+                if label not in labels:
+                    logger.log(self.name + ': ' + label + " label does not exist in Deluge we must add it", logger.DEBUG)
+                    self.client.labels.add(label)
+                    logger.log(self.name + ': ' + label + " label added to Deluge", logger.DEBUG)
+
+                self.client.label.set_torrent(result.hash, label)
+            except:
+                logger.log(self.name + ': ' + "label plugin not detected", logger.DEBUG)
+                return False
+
+        logger.log(self.name + ': ' + label + " label added to torrent", logger.DEBUG)
         return True
 
     @staticmethod

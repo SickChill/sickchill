@@ -15,8 +15,8 @@ import sickbeard
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates, generateApiKey
 from sickchill.helper.encoding import ek
-from sickchill.views import CalendarHandler, KeyHandler, LoginHandler, LogoutHandler
-from sickchill.views.api.webapi import ApiHandler
+from sickchill.views import CalendarHandler, LoginHandler, LogoutHandler
+from sickchill.views.api import ApiHandler, KeyHandler
 
 # Local Folder Imports
 from .routes import Route
@@ -38,7 +38,6 @@ class SRWebServer(threading.Thread):
         self.daemon = True
         self.alive = True
         self.name = "WEBSERVER"
-        self.io_loop = IOLoop.current()
 
         self.options = options or {}
         self.options.setdefault('port', 8081)
@@ -174,12 +173,12 @@ class SRWebServer(threading.Thread):
             os._exit(1)
 
         try:
-            self.io_loop.start()
-            self.io_loop.close(True)
-        except (IOError, ValueError):
+            IOLoop.current().start()
+            IOLoop.current().close(True)
+        except (IOError, ValueError) as e:
             # Ignore errors like "ValueError: I/O operation on closed kqueue fd". These might be thrown during a reload.
             pass
 
     def shutdown(self):
         self.alive = False
-        self.io_loop.stop()
+        IOLoop.current().stop()

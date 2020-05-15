@@ -27,7 +27,7 @@ rarfile==3.1
 slugify==0.0.1
 subliminal==2.1.0
 tmdbsimple==2.2.0
-tornado==4.5.3
+tornado==5.1.1
 tvdbsimple==1.0.6
 Unidecode==1.1.1
 validators==0.15.0

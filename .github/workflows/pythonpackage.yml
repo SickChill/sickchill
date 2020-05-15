@@ -32,7 +32,7 @@ jobs:
     - name: Set up Node
       uses: actions/setup-node@v1
       with:
-        node-version: '12.x'
+        node-version: '14.x'
     - name: Determine npm cache directory
       id: npm-cache
       run: |
@@ -64,7 +64,7 @@ jobs:
           ${{ runner.os }}-pip-
     - name: Install dependencies
       run: |
-        npm install --quiet
+        yarn --silent
         pip install --upgrade pip tox babel crowdin-cli-py
     - name: Get tox workdir
       id: tox-workdir-path

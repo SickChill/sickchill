@@ -35,7 +35,7 @@ from .index import BaseHandler
 
 
 class CalendarHandler(BaseHandler):
-    def get(self, *args, **kwargs):
+    def get(self):
         if sickbeard.CALENDAR_UNPROTECTED:
             self.write(self.calendar())
         else:

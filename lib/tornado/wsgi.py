@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #
 # Copyright 2009 Facebook
 #
@@ -34,6 +33,7 @@ from __future__ import absolute_import, division, print_function
 import sys
 from io import BytesIO
 import tornado
+import warnings
 
 from tornado.concurrent import Future
 from tornado import escape
@@ -77,6 +77,7 @@ class WSGIApplication(web.Application):
     .. deprecated:: 4.0
 
        Use a regular `.Application` and wrap it in `WSGIAdapter` instead.
+       This class will be removed in Tornado 6.0.
     """
     def __call__(self, environ, start_response):
         return WSGIAdapter(self)(environ, start_response)
@@ -84,8 +85,10 @@ class WSGIApplication(web.Application):
 
 # WSGI has no facilities for flow control, so just return an already-done
 # Future when the interface requires it.
-_dummy_future = Future()
-_dummy_future.set_result(None)
+def _dummy_future():
+    f = Future()
+    f.set_result(None)
+    return f
 
 
 class _WSGIConnection(httputil.HTTPConnection):
@@ -117,7 +120,7 @@ class _WSGIConnection(httputil.HTTPConnection):
             self.write(chunk, callback)
         elif callback is not None:
             callback()
-        return _dummy_future
+        return _dummy_future()
 
     def write(self, chunk, callback=None):
         if self._expected_content_remaining is not None:
@@ -129,7 +132,7 @@ class _WSGIConnection(httputil.HTTPConnection):
         self._write_buffer.append(chunk)
         if callback is not None:
             callback()
-        return _dummy_future
+        return _dummy_future()
 
     def finish(self):
         if (self._expected_content_remaining is not None and
@@ -180,9 +183,25 @@ class WSGIAdapter(object):
     that it is not possible to use `.AsyncHTTPClient`, or the
     `tornado.auth` or `tornado.websocket` modules.
 
+    In multithreaded WSGI servers on Python 3, it may be necessary to
+    permit `asyncio` to create event loops on any thread. Run the
+    following at startup (typically import time for WSGI
+    applications)::
+
+        import asyncio
+        from tornado.platform.asyncio import AnyThreadEventLoopPolicy
+        asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
+
     .. versionadded:: 4.0
+
+    .. deprecated:: 5.1
+
+       This class is deprecated and will be removed in Tornado 6.0.
+       Use Tornado's `.HTTPServer` instead of a WSGI container.
     """
     def __init__(self, application):
+        warnings.warn("WSGIAdapter is deprecated, use Tornado's HTTPServer instead",
+                      DeprecationWarning)
         if isinstance(application, WSGIApplication):
             self.application = lambda request: web.Application.__call__(
                 application, request)

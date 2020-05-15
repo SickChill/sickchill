@@ -65,7 +65,7 @@ class EZTVProvider(TorrentProvider):
             logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
 
             if mode != "RSS":
-                if not self.show.imdbid:
+                if not (self.show and self.show.imdbid):
                     continue
 
                 search_params["imdb_id"] = self.show.imdbid.strip('tt')
