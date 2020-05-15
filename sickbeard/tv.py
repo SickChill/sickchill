@@ -1005,6 +1005,8 @@ class TVShow(object):
 
         # make sure the show dir is where we think it is unless dirs are created on the fly
         if not ek(os.path.isdir, self._location) and not sickbeard.CREATE_MISSING_SHOW_DIRS:
+            logger.log('Show dir does not exist, and `create missing show dirs` is disabled. Skipping refresh (statuses will not be updated): {}'.format(
+                self._location))
             return False
 
         # load from dir
@@ -1060,6 +1062,8 @@ class TVShow(object):
                         curEp.release_group = ''
 
                         sql_l.append(curEp.get_sql())
+                else:
+                    logger.log('Skipping updating removed file because `skip removed files` is enabled: {}'.format(curLoc))
 
         if sql_l:
             main_db_con = db.DBConnection()
