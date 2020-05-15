@@ -58,16 +58,8 @@
   "xo": {
     "space": 4,
     "rules": {
-      "space-before-function-paren": [
-        "error",
-        "never"
-      ],
       "unicorn/filename-case": "off",
-      "unicorn/prefer-node-append": "off",
-      "object-shorthand": [
-        "error",
-        "always"
-      ]
+      "unicorn/prefer-node-append": "off"
     },
     "esnext": false,
     "envs": [

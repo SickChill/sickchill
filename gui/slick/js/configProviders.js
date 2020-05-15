@@ -1,6 +1,6 @@
-$(document).ready(function() {
-    $.fn.showHideProviders = function() {
-        $('.providerDiv').each(function() {
+$(document).ready(function () {
+    $.fn.showHideProviders = function () {
+        $('.providerDiv').each(function () {
             const providerName = $(this).attr('id');
             const selectedProvider = $('#editAProvider :selected').val();
 
@@ -12,10 +12,10 @@ $(document).ready(function() {
         });
     };
 
-    const ifExists = function(loopThroughArray, searchFor) {
+    const ifExists = function (loopThroughArray, searchFor) {
         let found = false;
 
-        loopThroughArray.forEach(function(rootObject) {
+        loopThroughArray.forEach(function (rootObject) {
             if (rootObject.name === searchFor) {
                 found = true;
             }
@@ -31,7 +31,7 @@ $(document).ready(function() {
      * @param {Array} selectedProvider
      * @return no return data. Function updateNewznabCaps() is run at callback
      */
-    $.fn.getCategories = function(isDefault, selectedProvider) {
+    $.fn.getCategories = function (isDefault, selectedProvider) {
         const name = selectedProvider[0];
         const url = selectedProvider[1];
         const key = selectedProvider[2];
@@ -43,11 +43,11 @@ $(document).ready(function() {
         const parameters = {url, name, key};
 
         $('.updating_categories').wrapInner('<span><img src="' + srRoot + '/images/loading16' + themeSpinner + '.gif"> Updating Categories ...</span>');
-        const jqxhr = $.getJSON(srRoot + '/config/providers/getNewznabCategories', parameters, function(data) {
+        const jqxhr = $.getJSON(srRoot + '/config/providers/getNewznabCategories', parameters, function (data) {
             $(this).updateNewznabCaps(data, selectedProvider);
             console.debug(data.tv_categories);
         });
-        jqxhr.always(function() {
+        jqxhr.always(function () {
             $('.updating_categories').empty();
         });
     };
@@ -57,7 +57,7 @@ $(document).ready(function() {
 
     const newznabProvidersCapabilities = [];
 
-    $.fn.addProvider = function(id, name, url, key, cat, isDefault) { // eslint-disable-line max-params
+    $.fn.addProvider = function (id, name, url, key, cat, isDefault) { // eslint-disable-line max-params
         url = $.trim(url);
         if (!url) {
             return;
@@ -85,7 +85,7 @@ $(document).ready(function() {
         $(this).makeNewznabProviderString();
     };
 
-    $.fn.addTorrentRssProvider = function(id, name, url, cookies, titleTAG) { // eslint-disable-line max-params
+    $.fn.addTorrentRssProvider = function (id, name, url, cookies, titleTAG) { // eslint-disable-line max-params
         torrentRssProviders[id] = [name, url, cookies, titleTAG];
 
         $('#editATorrentRssProvider').addOption(id, name);
@@ -100,7 +100,7 @@ $(document).ready(function() {
         $(this).makeTorrentRssProviderString();
     };
 
-    $.fn.updateProvider = function(id, url, key, cat) {
+    $.fn.updateProvider = function (id, url, key, cat) {
         newznabProviders[id][1][1] = url;
         newznabProviders[id][1][2] = key;
         newznabProviders[id][1][3] = cat;
@@ -108,7 +108,7 @@ $(document).ready(function() {
         $(this).makeNewznabProviderString();
     };
 
-    $.fn.deleteProvider = function(id) {
+    $.fn.deleteProvider = function (id) {
         $('#editANewznabProvider').removeOption(id);
         delete newznabProviders[id];
         $(this).populateNewznabSection();
@@ -116,7 +116,7 @@ $(document).ready(function() {
         $(this).makeNewznabProviderString();
     };
 
-    $.fn.updateTorrentRssProvider = function(id, url, cookies, titleTAG) {
+    $.fn.updateTorrentRssProvider = function (id, url, cookies, titleTAG) {
         torrentRssProviders[id][1] = url;
         torrentRssProviders[id][2] = cookies;
         torrentRssProviders[id][3] = titleTAG;
@@ -124,7 +124,7 @@ $(document).ready(function() {
         $(this).makeTorrentRssProviderString();
     };
 
-    $.fn.deleteTorrentRssProvider = function(id) {
+    $.fn.deleteTorrentRssProvider = function (id) {
         $('#editATorrentRssProvider').removeOption(id);
         delete torrentRssProviders[id];
         $(this).populateTorrentRssSection();
@@ -132,7 +132,7 @@ $(document).ready(function() {
         $(this).makeTorrentRssProviderString();
     };
 
-    $.fn.populateNewznabSection = function() {
+    $.fn.populateNewznabSection = function () {
         const selectedProvider = $('#editANewznabProvider :selected').val();
         let data = '';
         let isDefault = '';
@@ -148,11 +148,11 @@ $(document).ready(function() {
             $('#newznab_cat_update').attr('disabled', 'disabled');
             $('#newznabcapdiv').hide();
 
-            $('#newznab_cat option').each(function() {
+            $('#newznab_cat option').each(function () {
                 $(this).remove();
             });
 
-            $('#newznab_cap option').each(function() {
+            $('#newznab_cap option').each(function () {
                 $(this).remove();
             });
         } else {
@@ -180,7 +180,7 @@ $(document).ready(function() {
         // Update the category select box (on the right)
         const newCatOptions = [];
         if (rrcat) {
-            rrcat.forEach(function(cat) {
+            rrcat.forEach(function (cat) {
                 if (cat !== '') {
                     newCatOptions.push({text: cat, value: cat});
                 }
@@ -218,7 +218,7 @@ $(document).ready(function() {
      * @param {Array} selectedProvider
      * @return no return data. The multiselect input $("#newznab_cap") is updated, as a result.
      */
-    $.fn.updateNewznabCaps = function(newzNabCaps, selectedProvider) {
+    $.fn.updateNewznabCaps = function (newzNabCaps, selectedProvider) {
         if (newzNabCaps && !ifExists(newznabProvidersCapabilities, selectedProvider[0])) {
             newznabProvidersCapabilities.push({name: selectedProvider[0], categories: newzNabCaps.tv_categories});
         }
@@ -227,10 +227,10 @@ $(document).ready(function() {
         // update the capabilities select box (on the left).
         $('#newznab_cap').empty();
         if (selectedProvider[0]) {
-            newznabProvidersCapabilities.forEach(function(newzNabCap) {
+            newznabProvidersCapabilities.forEach(function (newzNabCap) {
                 if (newzNabCap.name && newzNabCap.name === selectedProvider[0] && Array.isArray(newzNabCap.categories)) {
                     const newCapOptions = [];
-                    newzNabCap.categories.forEach(function(categorySet) {
+                    newzNabCap.categories.forEach(function (categorySet) {
                         if (categorySet.id && categorySet.name) {
                             newCapOptions.push({value: categorySet.id, text: categorySet.name + '(' + categorySet.id + ')'});
                         }
@@ -241,7 +241,7 @@ $(document).ready(function() {
         }
     };
 
-    $.fn.makeNewznabProviderString = function() {
+    $.fn.makeNewznabProviderString = function () {
         const provStrings = [];
         for (let id in newznabProviders) {
             if (Object.prototype.hasOwnProperty.call(newznabProviders, id)) {
@@ -252,7 +252,7 @@ $(document).ready(function() {
         $('#newznab_string').val(provStrings.join('!!!'));
     };
 
-    $.fn.populateTorrentRssSection = function() {
+    $.fn.populateTorrentRssSection = function () {
         const selectedProvider = $('#editATorrentRssProvider :selected').val();
         let data = '';
 
@@ -285,7 +285,7 @@ $(document).ready(function() {
         }
     };
 
-    $.fn.makeTorrentRssProviderString = function() {
+    $.fn.makeTorrentRssProviderString = function () {
         const provStrings = [];
         for (let id in torrentRssProviders) {
             if (Object.prototype.hasOwnProperty.call(torrentRssProviders, id)) {
@@ -296,10 +296,10 @@ $(document).ready(function() {
         $('#torrentrss_string').val(provStrings.join('!!!'));
     };
 
-    $.fn.refreshProviderList = function() {
+    $.fn.refreshProviderList = function () {
         const idArray = $('#provider_order_list').sortable('toArray');
         const finalArray = [];
-        $.each(idArray, function(key, value) {
+        $.each(idArray, function (key, value) {
             const checked = $('#enable_' + value).is(':checked') ? '1' : '0';
             finalArray.push(value + ':' + checked);
         });
@@ -308,12 +308,12 @@ $(document).ready(function() {
         $(this).refreshEditAProvider();
     };
 
-    $.fn.refreshEditAProvider = function() {
+    $.fn.refreshEditAProvider = function () {
         $('#editAProvider').empty();
 
         const idArray = $('#provider_order_list').sortable('toArray');
         const finalArray = [];
-        $.each(idArray, function(key, value) {
+        $.each(idArray, function (key, value) {
             if ($('#enable_' + value).prop('checked')) {
                 finalArray.push(value);
             }
@@ -334,7 +334,7 @@ $(document).ready(function() {
         $(this).showHideProviders();
     };
 
-    $(this).on('change', '.newznab_key', function() {
+    $(this).on('change', '.newznab_key', function () {
         let providerId = $(this).attr('id');
         providerId = providerId.slice(0, Math.max(0, providerId.length - '_hash'.length));
 
@@ -345,7 +345,7 @@ $(document).ready(function() {
         $(this).updateProvider(providerId, url, key, cat);
     });
 
-    $('#newznab_key,#newznab_url').on('change', function() {
+    $('#newznab_key,#newznab_url').on('change', function () {
         const selectedProvider = $('#editANewznabProvider :selected').val();
 
         if (selectedProvider === 'addNewznab') {
@@ -355,14 +355,14 @@ $(document).ready(function() {
         const url = $('#newznab_url').val();
         const key = $('#newznab_key').val();
 
-        const cat = $('#newznab_cat option').map(function(i, opt) {
+        const cat = $('#newznab_cat option').map(function (i, opt) {
             return $(opt).text();
         }).toArray().join(',');
 
         $(this).updateProvider(selectedProvider, url, key, cat);
     });
 
-    $('#torrentrss_url,#torrentrss_cookies,#torrentrss_titleTAG').on('change', function() {
+    $('#torrentrss_url,#torrentrss_cookies,#torrentrss_titleTAG').on('change', function () {
         const selectedProvider = $('#editATorrentRssProvider :selected').val();
 
         if (selectedProvider === 'addTorrentRss') {
@@ -376,27 +376,27 @@ $(document).ready(function() {
         $(this).updateTorrentRssProvider(selectedProvider, url, cookies, titleTAG);
     });
 
-    $('body').on('change', '#editAProvider', function() {
+    $('body').on('change', '#editAProvider', function () {
         $(this).showHideProviders();
     });
 
-    $('#editANewznabProvider').on('change', function() {
+    $('#editANewznabProvider').on('change', function () {
         $(this).populateNewznabSection();
     });
 
-    $('#editATorrentRssProvider').on('change', function() {
+    $('#editATorrentRssProvider').on('change', function () {
         $(this).populateTorrentRssSection();
     });
 
-    $('.provider_enabler').on('change', function() {
+    $('.provider_enabler').on('change', function () {
         $(this).refreshProviderList();
     });
 
-    $('#newznab_cat_update').on('click', function() {
+    $('#newznab_cat_update').on('click', function () {
         console.debug('Clicked Button');
 
         // Maybe check if there is anything selected?
-        $('#newznab_cat option').each(function() {
+        $('#newznab_cat option').each(function () {
             $(this).remove();
         });
 
@@ -404,7 +404,7 @@ $(document).ready(function() {
 
         // When the update botton is clicked, loop through the capabilities list
         // and copy the selected category id's to the category list on the right.
-        $('#newznab_cap option:selected').each(function() {
+        $('#newznab_cap option:selected').each(function () {
             const selectedCat = $(this).val();
             console.debug(selectedCat);
             newOptions.push({text: selectedCat, value: selectedCat});
@@ -420,7 +420,7 @@ $(document).ready(function() {
         const url = $('#newznab_url').val();
         const key = $('#newznab_key').val();
 
-        const cat = $('#newznab_cat option').map(function(i, opt) {
+        const cat = $('#newznab_cat option').map(function (i, opt) {
             return $(opt).text();
         }).toArray().join(',');
 
@@ -429,13 +429,13 @@ $(document).ready(function() {
         $(this).updateProvider(selectedProvider, url, key, cat);
     });
 
-    $('#newznab_add').on('click', function() {
+    $('#newznab_add').on('click', function () {
         const name = $.trim($('#newznab_name').val());
         const url = $.trim($('#newznab_url').val());
         const key = $.trim($('#newznab_key').val());
         // Var cat = $.trim($('#newznab_cat').val());
 
-        const cat = $.trim($('#newznab_cat option').map(function(i, opt) {
+        const cat = $.trim($('#newznab_cat option').map(function (i, opt) {
             return $(opt).text();
         }).toArray().join(','));
 
@@ -446,7 +446,7 @@ $(document).ready(function() {
         const parameters = {name};
 
         // Send to the form with ajax, get a return value
-        $.getJSON(srRoot + '/config/providers/canAddNewznabProvider', parameters, function(data) {
+        $.getJSON(srRoot + '/config/providers/canAddNewznabProvider', parameters, function (data) {
             if (data.error !== undefined) {
                 alert(data.error); // eslint-disable-line no-alert
                 return;
@@ -456,12 +456,12 @@ $(document).ready(function() {
         });
     });
 
-    $('.newznab_delete').on('click', function() {
+    $('.newznab_delete').on('click', function () {
         const selectedProvider = $('#editANewznabProvider :selected').val();
         $(this).deleteProvider(selectedProvider);
     });
 
-    $('#torrentrss_add').on('click', function() {
+    $('#torrentrss_add').on('click', function () {
         const name = $('#torrentrss_name').val();
         const url = $('#torrentrss_url').val();
         const cookies = $('#torrentrss_cookies').val();
@@ -469,7 +469,7 @@ $(document).ready(function() {
         const parameters = {name, url, cookies, titleTAG};
 
         // Send to the form with ajax, get a return value
-        $.getJSON(srRoot + '/config/providers/canAddTorrentRssProvider', parameters, function(data) {
+        $.getJSON(srRoot + '/config/providers/canAddTorrentRssProvider', parameters, function (data) {
             if (data.error !== undefined) {
                 alert(data.error); // eslint-disable-line no-alert
                 return;
@@ -480,18 +480,18 @@ $(document).ready(function() {
         });
     });
 
-    $('.torrentrss_delete').on('click', function() {
+    $('.torrentrss_delete').on('click', function () {
         $(this).deleteTorrentRssProvider($('#editATorrentRssProvider :selected').val());
         $(this).refreshEditAProvider();
     });
 
-    $(this).on('change', '[class=\'providerDiv_tip\'] input', function() {
+    $(this).on('change', '[class=\'providerDiv_tip\'] input', function () {
         $('div .providerDiv [name=' + $(this).attr('name') + ']').replaceWith($(this).clone());
         $('div .providerDiv [newznab_name=' + $(this).attr('id') + ']').replaceWith($(this).clone());
     });
 
-    $(this).on('change', '[class=\'providerDiv_tip\'] select', function() {
-        $(this).find('option').each(function() {
+    $(this).on('change', '[class=\'providerDiv_tip\'] select', function () {
+        $(this).find('option').each(function () {
             if ($(this).is(':selected')) {
                 $(this).prop('defaultSelected', true);
             } else {
@@ -501,7 +501,7 @@ $(document).ready(function() {
         $('div .providerDiv [name=' + $(this).attr('name') + ']').empty().replaceWith($(this).clone());
     });
 
-    $.fn.makeTorrentOptionString = function(providerId) {
+    $.fn.makeTorrentOptionString = function (providerId) {
         const seedRatio = $('.providerDiv_tip #' + providerId + '_seed_ratio').prop('value');
         const seedTime = $('.providerDiv_tip #' + providerId + '_seed_time').prop('value');
         const processMet = $('.providerDiv_tip #' + providerId + '_process_method').prop('value');
@@ -510,16 +510,16 @@ $(document).ready(function() {
         optionString.val([seedRatio, seedTime, processMet].join('|'));
     };
 
-    $(this).on('change', '.seed_option', function() {
+    $(this).on('change', '.seed_option', function () {
         const providerId = $(this).attr('id').split('_')[0];
         $(this).makeTorrentOptionString(providerId);
     });
 
-    $.fn.replaceOptions = function(options) {
+    $.fn.replaceOptions = function (options) {
         this.empty();
         const self = this;
 
-        $.each(options, function(index, option) {
+        $.each(options, function (index, option) {
             const $option = $('<option></option>').attr('value', option.value).text(option.text);
             self.append($option);
         });

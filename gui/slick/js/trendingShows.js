@@ -1,10 +1,10 @@
-$(document).ready(function() {
+$(document).ready(function () {
     // Initialise combos for dirty page refreshes
     $('#showsort').val('original');
     $('#showsortdirection').val('asc');
 
     const $container = [$('#container')];
-    $.each($container, function() {
+    $.each($container, function () {
         this.isotope({
             itemSelector: '.trakt_show',
             sortBy: 'original-order',
@@ -20,7 +20,7 @@ $(document).ready(function() {
         });
     });
 
-    $('#showsort').on('change', function() {
+    $('#showsort').on('change', function () {
         let sortCriteria;
         switch (this.value) {
             case 'original':
@@ -47,7 +47,7 @@ $(document).ready(function() {
         $('#container').isotope({sortBy: sortCriteria});
     });
 
-    $('#showsortdirection').on('change', function() {
+    $('#showsortdirection').on('change', function () {
         $('#container').isotope({
             sortAscending: (this.value === 'asc')
         });

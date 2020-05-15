@@ -1,7 +1,7 @@
 // Avoid `console` errors in browsers that lack a console.
-(function() {
+(function () {
     let method;
-    const noop = function() {};
+    const noop = function () {};
     const methods = [
         'assert',
         'clear',
@@ -39,7 +39,7 @@
     }
 })();
 
-$(document).ready(function() {
+$(document).ready(function () {
     function setDefault(which, force) {
         if (which === undefined || which.length === 0) {
             return;
@@ -68,7 +68,7 @@ $(document).ready(function() {
     function syncOptionIDs() {
         // Re-sync option ids
         let i = 0;
-        $('#rootDirs option').each(function() {
+        $('#rootDirs option').each(function () {
             $(this).attr('id', 'rd-' + (i++));
         });
     }
@@ -104,7 +104,7 @@ $(document).ready(function() {
             dirString = $('#whichDefaultRootDir').val().slice(3);
         }
 
-        $('#rootDirs option').each(function() {
+        $('#rootDirs option').each(function () {
             logString += $(this).val() + '=' + $(this).text() + '->' + $(this).attr('id') + '\n';
             if (dirString.length > 0) {
                 dirString += '|' + $(this).val();
@@ -164,16 +164,16 @@ $(document).ready(function() {
         });
     }
 
-    $('#addRootDir').on('click', function() {
+    $('#addRootDir').on('click', function () {
         $(this).nFileBrowser(addRootDir);
     });
-    $('#editRootDir').on('click', function() {
+    $('#editRootDir').on('click', function () {
         $(this).nFileBrowser(editRootDir, {
             initialDir: $('#rootDirs option:selected').val()
         });
     });
 
-    $('#deleteRootDir').on('click', function() {
+    $('#deleteRootDir').on('click', function () {
         if ($('#rootDirs option:selected').length > 0) {
             const toDelete = $('#rootDirs option:selected');
             const newDefault = (toDelete.attr('id') === $('#whichDefaultRootDir').val());
@@ -206,7 +206,7 @@ $(document).ready(function() {
         });
     });
 
-    $('#defaultRootDir').on('click', function() {
+    $('#defaultRootDir').on('click', function () {
         if ($('#rootDirs option:selected').length > 0) {
             setDefault($('#rootDirs option:selected').attr('id'));
         }

@@ -19,7 +19,7 @@ function disableLink(link) {
 }
 
 function updateImages(data) {
-    $.each(data.episodes, function(name, ep) {
+    $.each(data.episodes, function (name, ep) {
         // Get td element for current ep
         const loadingClass = 'loading-spinner16';
         const queuedClass = 'displayshow-icon-clock';
@@ -107,7 +107,7 @@ function updateImages(data) {
 
                     if (actionElement.length > 0) {
                         // Remove any listing-* classes and add listing-snatched (keeping non listing-* classes)
-                        actionElement.attr('class', function(i, value) {
+                        actionElement.attr('class', function (i, value) {
                             return value.replace(/(^|\s)listing-\S+/g, '');
                         }).addClass('listing-snatched');
                     }
@@ -148,7 +148,7 @@ function checkManualSearches() {
 
 $(document).ready(checkManualSearches);
 
-(function() {
+(function () {
     let stupidOptions;
     function manualSearch() {
         const parent = selectedEpisode.parent();
@@ -170,7 +170,7 @@ $(document).ready(checkManualSearches);
 
         url = url + '&downCurQuality=' + (qualityDownload ? '1' : '0');
 
-        $.getJSON(url, function(data) {
+        $.getJSON(url, function (data) {
             let imageName = null; // eslint-disable-line no-unused-vars
             let imageResult = null; // eslint-disable-line no-unused-vars
             // If they failed then just put the red X
@@ -215,10 +215,10 @@ $(document).ready(checkManualSearches);
         }
     };
 
-    $.fn.ajaxEpSearch = function(options) {
+    $.fn.ajaxEpSearch = function (options) {
         stupidOptions = $.extend({}, $.ajaxEpSearch.defaults, options);
 
-        $('.epSearch, .epRetry').on('click', function(event) {
+        $('.epSearch, .epRetry').on('click', function (event) {
             event.preventDefault();
 
             // Check if we have disabled the click
@@ -237,12 +237,12 @@ $(document).ready(checkManualSearches);
             }
         });
 
-        $('#manualSearchModalFailed .btn').on('click', function() {
+        $('#manualSearchModalFailed .btn').on('click', function () {
             failedDownload = ($(this).text().toLowerCase() === 'yes');
             $('#manualSearchModalQuality').modal('show');
         });
 
-        $('#manualSearchModalQuality .btn').on('click', function() {
+        $('#manualSearchModalQuality .btn').on('click', function () {
             qualityDownload = ($(this).text().toLowerCase() === 'yes');
             manualSearch();
         });
