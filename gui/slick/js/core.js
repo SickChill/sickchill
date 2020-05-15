@@ -36,7 +36,6 @@ function metaToBool(pyVar) {
 
     meta = (Number.isNaN(meta) ? meta.toLowerCase() : meta.toString());
     meta = meta.toLowerCase();
-    // console.log(pyVar + ': ' + meta);
 
     return !(meta === 'false' || meta === 'none' || meta === '0');
 }
