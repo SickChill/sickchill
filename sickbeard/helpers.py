@@ -1048,6 +1048,7 @@ def get_show(name, tryIndexers=False):
             sickbeard.name_cache.addNameToCache(name, showObj.indexerid)
     except Exception as error:
         logger.log(_("Error when attempting to find show: {0} in SickChill. Error: {1} ").format(name, error), logger.DEBUG)
+        logger.log(traceback.format_exc(), logger.DEBUG)
 
     return showObj
 

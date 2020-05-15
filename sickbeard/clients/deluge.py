@@ -23,6 +23,9 @@ from __future__ import absolute_import, print_function, unicode_literals
 import json
 from base64 import b64encode
 
+# Third Party Imports
+from requests.compat import urljoin
+
 # First Party Imports
 import sickbeard
 from sickbeard import logger
@@ -34,10 +37,12 @@ from .__deluge_base import DelugeBase
 
 class Client(GenericClient, DelugeBase):
     def __init__(self, host=None, username=None, password=None):
+        if not host.startswith('http'):
+            host = 'http://' + host
 
         super(Client, self).__init__('Deluge', host, username, password)
 
-        self.url = self.host + 'json'
+        self.url = urljoin(self.host, 'json')
         self.session.headers.update({'Content-Type': 'application/json'})
 
     def _get_auth(self):
@@ -48,7 +53,8 @@ class Client(GenericClient, DelugeBase):
 
         try:
             self.response = self.session.post(self.url, data=post_data.encode('utf-8'), verify=sickbeard.TORRENT_VERIFY_CERT)
-        except Exception:
+        except Exception as e:
+            logger.log(e.message)
             return None
 
         self.auth = self.response.json()["result"]

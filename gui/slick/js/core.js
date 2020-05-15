@@ -1872,7 +1872,7 @@ const SICKCHILL = {
                 }
             };
 
-            $.torrentMethodHandler = function () {
+            $.torrentMethodHandler = () => {
                 $('#options_torrent_clients').hide();
                 $('#options_torrent_blackhole').hide();
 
