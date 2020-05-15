@@ -105,7 +105,7 @@ function updateImages(data) {
                         // Else - Calendar view is ignored
                     }
 
-                    if (actionElement.length) {
+                    if (actionElement.length > 0) {
                         // Remove any listing-* classes and add listing-snatched (keeping non listing-* classes)
                         actionElement.attr('class', function(i, value) {
                             return value.replace(/(^|\s)listing-\S+/g, '');
@@ -230,7 +230,7 @@ $(document).ready(checkManualSearches);
 
             if ($(this).hasClass('epRetry')) {
                 $('#manualSearchModalFailed').modal('show');
-            } else if ($(this).parent().parent().children('.col-status').children('.quality').length) {
+            } else if ($(this).parent().parent().children('.col-status').children('.quality').length > 0) {
                 $('#manualSearchModalQuality').modal('show');
             } else {
                 manualSearch();

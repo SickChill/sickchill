@@ -228,7 +228,7 @@ $(document).ready(function() {
         $('#newznab_cap').empty();
         if (selectedProvider[0]) {
             newznabProvidersCapabilities.forEach(function(newzNabCap) {
-                if (newzNabCap.name && newzNabCap.name === selectedProvider[0] && newzNabCap.categories instanceof Array) {
+                if (newzNabCap.name && newzNabCap.name === selectedProvider[0] && Array.isArray(newzNabCap.categories)) {
                     const newCapOptions = [];
                     newzNabCap.categories.forEach(function(categorySet) {
                         if (categorySet.id && categorySet.name) {
@@ -536,7 +536,7 @@ $(document).ready(function() {
 
     $('#provider_order_list').disableSelection();
 
-    if ($('#editANewznabProvider').length) {
+    if ($('#editANewznabProvider').length > 0) {
         $(this).populateNewznabSection();
     }
 });

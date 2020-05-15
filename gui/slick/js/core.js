@@ -425,7 +425,7 @@ var SICKCHILL = {
             const branchVersionLabel = $('#branchVersionLabel');
             const branchCheckout = $('#branchCheckout');
             $.getJSON(srRoot + '/home/fetchRemoteBranches', function(branches) {
-                if (branches.length) {
+                if (branches.length > 0) {
                     const baseOptionElement = $('<option></option>');
                     let optionElement = null;
                     for (const element of branches) {
@@ -2986,7 +2986,7 @@ var SICKCHILL = {
                         return encodeURIComponent(exception);
                     }).join('|');
 
-                    if (exceptions.length < 1) {
+                    if (exceptions.length === 0) {
                         return null;
                     }
 
@@ -3387,7 +3387,7 @@ var SICKCHILL = {
                 });
             });
 
-            if ($('.removeCheck').length) {
+            if ($('.removeCheck').length > 0) {
                 $('.removeCheck').each(function(name) {
                     let lastCheck = null;
                     $(name).on('click', function(event) {
@@ -3972,16 +3972,17 @@ var SICKCHILL = {
                 };
 
                 // If they've picked a radio button then use that
-                if ($('input:radio[name=whichSeries]:checked').length) {
+                if ($('input:radio[name=whichSeries]:checked').length > 0) {
                     object.showName = $('input:radio[name=whichSeries]:checked').val().split('|')[4];
-                } else if ($('input:hidden[name=whichSeries]').length && $('input:hidden[name=whichSeries]').val().length) { // If we provided a show in the hidden field, use that
+                } else if ($('input:hidden[name=whichSeries]').length > 0 && $('input:hidden[name=whichSeries]').val().length > 0) {
+                    // If we provided a show in the hidden field, use that
                     object.showName = $('#providedName').val();
                 }
 
                 SICKCHILL.common.updateBlackWhiteList(object.showName);
 
                 // If we have a root dir selected, figure out the path
-                if ($('#rootDirs option:selected').length) {
+                if ($('#rootDirs option:selected').length > 0) {
                     object.dir = $('#rootDirs option:selected').val();
 
                     if (object.dir.includes('/')) {
@@ -3997,7 +3998,7 @@ var SICKCHILL = {
                 }
 
                 // If we have a show name then sanitize and use it for the dir name
-                if (object.showName.length) {
+                if (object.showName.length > 0) {
                     $.post(srRoot + '/addShows/sanitizeFileName', {name: object.showName}, function(data) {
                         $('#desc-show-name').text(object.showName);
                         if (object.dir === $('#fullShowPath').val()) {
@@ -4238,7 +4239,7 @@ var SICKCHILL = {
                 let url = '';
                 $('.dir_check').each(function(i, w) {
                     if ($(w).is(':checked')) {
-                        if (url.length) {
+                        if (url.length > 0) {
                             url += '&';
                         }
 

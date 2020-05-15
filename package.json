@@ -62,18 +62,7 @@
         "error",
         "never"
       ],
-      "unicorn/no-new-buffer": "off",
       "unicorn/filename-case": "off",
-      "unicorn/custom-error-definition": "off",
-      "unicorn/no-array-instanceof": "off",
-      "unicorn/catch-error-name": "off",
-      "unicorn/no-process-exit": "off",
-      "unicorn/throw-new-error": "off",
-      "unicorn/number-literal-case": "off",
-      "unicorn/prefer-starts-ends-with": "off",
-      "unicorn/prefer-type-error": "off",
-      "unicorn/explicit-length-check": "off",
-      "unicorn/no-abusive-eslint-disable": "off",
       "prefer-arrow-callback": "off",
       "unicorn/prefer-node-append": "off",
       "object-shorthand": [
