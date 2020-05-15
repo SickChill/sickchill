@@ -1,6 +1,6 @@
-$(document).ready(function() {
+$(document).ready(() => {
     // Perform an API call
-    $('[data-action="api-call"]').on('click', function() {
+    $('[data-action="api-call"]').on('click', function () {
         const parameters = $('[data-command="' + $(this).data('command-name') + '"]');
         const profile = $('#option-profile').is(':checked');
         const targetId = $(this).data('target');
@@ -8,7 +8,7 @@ $(document).ready(function() {
         let url = srRoot + $('#' + $(this).data('base-url')).text();
         const urlId = $(this).data('url');
 
-        $.each(parameters, function(index, item) {
+        $.each(parameters, (index, item) => {
             const name = $(item).attr('name');
             let value = $(item).val();
 
@@ -26,7 +26,7 @@ $(document).ready(function() {
         }
 
         const requestTime = new Date().getTime();
-        $.get(url, function(data, textStatus, jqXHR) {
+        $.get(url, (data, textStatus, jqXHR) => {
             const responseTime = new Date().getTime() - requestTime;
             const jsonp = $('#option-jsonp').is(':checked');
             const responseType = jqXHR.getResponseHeader('content-type') || '';
@@ -52,12 +52,12 @@ $(document).ready(function() {
     });
 
     // Remove the result of an API call
-    $('[data-action="clear-result"]').on('click', function() {
+    $('[data-action="clear-result"]').on('click', function () {
         $($(this).data('target')).html('').parents('.result-wrapper').addClass('hidden');
     });
 
     // Update the list of episodes
-    $('[data-action="update-episodes"').on('change', function() {
+    $('[data-action="update-episodes"').on('change', function () {
         const command = $(this).data('command');
         const select = $('[data-command="' + command + '"][name="episode"]');
         const season = $(this).val();
@@ -77,7 +77,7 @@ $(document).ready(function() {
     });
 
     // Update the list of seasons
-    $('[data-action="update-seasons"').on('change', function() {
+    $('[data-action="update-seasons"').on('change', function () {
         const command = $(this).data('command');
         const select = $('[data-command="' + command + '"][name="season"]');
         const show = $(this).val();
@@ -96,7 +96,7 @@ $(document).ready(function() {
     });
 
     // Enable command search
-    $.fn.goTo = function() {
+    $.fn.goTo = function () {
         $('html, body').animate({
             scrollTop: $(this).offset().top - $('nav').outerHeight(true) + 'px'
         }, 'fast');
@@ -106,15 +106,15 @@ $(document).ready(function() {
     $('#command-search').typeahead({
         source: commands // eslint-disable-line no-undef
     });
-    $('#command-search').on('change', function() {
+    $('#command-search').on('change', function () {
         const command = $(this).typeahead('getActive');
 
         if (command) {
-            const commandObj = $('[href="#command-' + command.replace('.', '-') + '"]');
-            commandObj.click();
+            const commandObject = $('[href="#command-' + command.replace('.', '-') + '"]');
+            commandObject.click();
 
-            setTimeout(function() {
-                commandObj.goTo();
+            setTimeout(() => {
+                commandObject.goTo();
             }, 250);
         }
     });

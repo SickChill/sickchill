@@ -1,7 +1,7 @@
-$(function() {
+$(() => {
     $('.imdbstars').qtip({
         content: {
-            text: function() {
+            text() {
                 // Retrieve content from custom attribute of the $('.selector') elements.
                 return $(this).attr('qtip-content');
             }

@@ -1,5 +1,5 @@
-$(function() {
-    $('.title a').each(function() {
+$(() => {
+    $('.title a').each(function () {
         const match = $(this).parent().attr('id').match(/^scene_exception_(\d+)$/);
         $(this).qtip({
             content: {
@@ -10,7 +10,7 @@ $(function() {
                     data: {
                         show: match[1]
                     },
-                    success: function(data) {
+                    success(data) {
                         this.set('content.text', data);
                     }
                 }

@@ -1,12 +1,30 @@
 // Avoid `console` errors in browsers that lack a console.
-(function() {
+(function () {
     let method;
-    const noop = function() {};
+    const noop = function () {};
     const methods = [
-        'assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error',
-        'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log',
-        'markTimeline', 'profile', 'profileEnd', 'table', 'time', 'timeEnd',
-        'timeStamp', 'trace', 'warn'
+        'assert',
+        'clear',
+        'count',
+        'debug',
+        'dir',
+        'dirxml',
+        'error',
+        'exception',
+        'group',
+        'groupCollapsed',
+        'groupEnd',
+        'info',
+        'log',
+        'markTimeline',
+        'profile',
+        'profileEnd',
+        'table',
+        'time',
+        'timeEnd',
+        'timeStamp',
+        'trace',
+        'warn'
     ];
     let length = methods.length;
     const console = (window.console = window.console || {}); // eslint-disable-line no-multi-assign
@@ -21,17 +39,17 @@
     }
 })();
 
-$(document).ready(function() {
+$(document).ready(() => {
     function setDefault(which, force) {
-        console.log('setting default to ' + which);
-
-        if (which !== undefined && !which.length) {
+        if (which === undefined || which.length === 0) {
             return;
         }
 
         if ($('#whichDefaultRootDir').val() === which && force !== true) {
             return;
         }
+
+        console.log('setting default to ' + which);
 
         // Put an asterisk on the text
         if ($('#' + which).text().charAt(0) !== '*') {
@@ -41,7 +59,7 @@ $(document).ready(function() {
         // If there's an existing one then take the asterisk off
         if ($('#whichDefaultRootDir').val() && force !== true) {
             const oldDefault = $('#' + $('#whichDefaultRootDir').val());
-            oldDefault.text(oldDefault.text().substring(1));
+            oldDefault.text(oldDefault.text().slice(1));
         }
 
         $('#whichDefaultRootDir').val(which);
@@ -50,13 +68,13 @@ $(document).ready(function() {
     function syncOptionIDs() {
         // Re-sync option ids
         let i = 0;
-        $('#rootDirs option').each(function() {
+        $('#rootDirs option').each(function () {
             $(this).attr('id', 'rd-' + (i++));
         });
     }
 
     function refreshRootDirs() {
-        if (!$('#rootDirs').length) {
+        if ($('#rootDirs').length === 0) {
             return;
         }
 
@@ -66,12 +84,12 @@ $(document).ready(function() {
         syncOptionIDs();
 
         // If nothing's selected then select the default
-        if (!$('#rootDirs option:selected').length && $('#whichDefaultRootDir').val().length) {
+        if ($('#rootDirs option:selected').length === 0 && $('#whichDefaultRootDir').val().length > 0) {
             $('#' + $('#whichDefaultRootDir').val()).prop('selected', true);
         }
 
         // If something's selected then we have some behavior to figure out
-        if ($('#rootDirs option:selected').length) {
+        if ($('#rootDirs option:selected').length > 0) {
             doDisable = '';
         }
 
@@ -83,11 +101,12 @@ $(document).ready(function() {
         let logString = '';
         let dirString = '';
         if ($('#whichDefaultRootDir').val().length >= 4) {
-            dirString = $('#whichDefaultRootDir').val().substr(3);
+            dirString = $('#whichDefaultRootDir').val().slice(3);
         }
-        $('#rootDirs option').each(function() {
+
+        $('#rootDirs option').each(function () {
             logString += $(this).val() + '=' + $(this).text() + '->' + $(this).attr('id') + '\n';
-            if (dirString.length) {
+            if (dirString.length > 0) {
                 dirString += '|' + $(this).val();
             }
         });
@@ -98,14 +117,15 @@ $(document).ready(function() {
         $('#rootDirText').change();
         console.log('rootDirText: ' + $('#rootDirText').val());
     }
+
     function addRootDir(path) {
-        if (!path.length) {
+        if (path.length === 0) {
             return;
         }
 
         // Check if it's the first one
         let isDefault = false;
-        if (!$('#whichDefaultRootDir').val().length) {
+        if ($('#whichDefaultRootDir').val().length === 0) {
             isDefault = true;
         }
 
@@ -122,18 +142,19 @@ $(document).ready(function() {
     }
 
     function editRootDir(path) {
-        if (!path.length) {
+        if (path.length === 0) {
             return;
         }
 
         // As long as something is selected
-        if ($('#rootDirs option:selected').length) {
+        if ($('#rootDirs option:selected').length > 0) {
             // Update the selected one with the provided path
             if ($('#rootDirs option:selected').attr('id') === $('#whichDefaultRootDir').val()) {
                 $('#rootDirs option:selected').text('*' + path);
             } else {
                 $('#rootDirs option:selected').text(path);
             }
+
             $('#rootDirs option:selected').val(path);
         }
 
@@ -143,20 +164,20 @@ $(document).ready(function() {
         });
     }
 
-    $('#addRootDir').on('click', function() {
+    $('#addRootDir').on('click', function () {
         $(this).nFileBrowser(addRootDir);
     });
-    $('#editRootDir').on('click', function() {
+    $('#editRootDir').on('click', function () {
         $(this).nFileBrowser(editRootDir, {
             initialDir: $('#rootDirs option:selected').val()
         });
     });
 
-    $('#deleteRootDir').on('click', function() {
-        if ($('#rootDirs option:selected').length) {
+    $('#deleteRootDir').on('click', () => {
+        if ($('#rootDirs option:selected').length > 0) {
             const toDelete = $('#rootDirs option:selected');
             const newDefault = (toDelete.attr('id') === $('#whichDefaultRootDir').val());
-            const deletedNum = $('#rootDirs option:selected').attr('id').substr(3);
+            const deletedNumber = $('#rootDirs option:selected').attr('id').slice(3);
 
             toDelete.remove();
             syncOptionIDs();
@@ -168,26 +189,28 @@ $(document).ready(function() {
                 $('#whichDefaultRootDir').val('');
 
                 // If we're deleting the default and there are options left then pick a new default
-                if ($('#rootDirs option').length) {
+                if ($('#rootDirs option').length > 0) {
                     setDefault($('#rootDirs option').attr('id'));
                 }
-            } else if ($('#whichDefaultRootDir').val().length) {
-                const oldDefaultNum = $('#whichDefaultRootDir').val().substr(3);
-                if (oldDefaultNum > deletedNum) {
-                    $('#whichDefaultRootDir').val('rd-' + (oldDefaultNum - 1));
+            } else if ($('#whichDefaultRootDir').val().length > 0) {
+                const oldDefaultNumber = $('#whichDefaultRootDir').val().slice(3);
+                if (oldDefaultNumber > deletedNumber) {
+                    $('#whichDefaultRootDir').val('rd-' + (oldDefaultNumber - 1));
                 }
             }
         }
+
         refreshRootDirs();
         $.get(srRoot + '/config/general/saveRootDirs', {
             rootDirString: $('#rootDirText').val()
         });
     });
 
-    $('#defaultRootDir').on('click', function() {
-        if ($('#rootDirs option:selected').length) {
+    $('#defaultRootDir').on('click', () => {
+        if ($('#rootDirs option:selected').length > 0) {
             setDefault($('#rootDirs option:selected').attr('id'));
         }
+
         refreshRootDirs();
         $.get(srRoot + '/config/general/saveRootDirs', {
             rootDirString: $('#rootDirText').val()

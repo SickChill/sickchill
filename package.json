@@ -38,7 +38,8 @@
     "load-grunt-tasks": "^3.5.2",
     "lodash": "^4.17.15",
     "snyk": "^1.28.1",
-    "xo": "^0.18.2"
+    "webpack": "^4.43.0",
+    "xo": "0.30.0"
   },
   "ava": {
     "require": [
@@ -57,29 +58,10 @@
   "xo": {
     "space": 4,
     "rules": {
-      "space-before-function-paren": [
-        "error",
-        "never"
-      ],
-      "unicorn/no-new-buffer": "off",
       "unicorn/filename-case": "off",
-      "unicorn/custom-error-definition": "off",
-      "unicorn/no-array-instanceof": "off",
-      "unicorn/catch-error-name": "off",
-      "unicorn/no-process-exit": "off",
-      "unicorn/throw-new-error": "off",
-      "unicorn/number-literal-case": "off",
-      "unicorn/prefer-starts-ends-with": "off",
-      "unicorn/prefer-type-error": "off",
-      "unicorn/explicit-length-check": "off",
-      "unicorn/no-abusive-eslint-disable": "off",
-      "prefer-arrow-callback": "off",
-      "object-shorthand": [
-        "error",
-        "never"
-      ]
+      "unicorn/prefer-node-append": "off"
     },
-    "esnext": false,
+    "esnext": true,
     "envs": [
       "browser"
     ],
@@ -101,7 +83,8 @@
       "core.min.js",
       "vendor.min.js",
       "lib/**/*",
-      "Gruntfile.js"
+      "Gruntfile.js",
+      "gui/slick/js/lib/*"
     ]
   }
 }

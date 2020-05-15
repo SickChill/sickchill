@@ -1,18 +1,18 @@
-$(document).ready(function() {
+$(document).ready(() => {
     // Initialise combos for dirty page refreshes
     $('#showsort').val('original');
     $('#showsortdirection').val('asc');
 
     const $container = [$('#container')];
-    $.each($container, function() {
+    $.each($container, function () {
         this.isotope({
             itemSelector: '.trakt_show',
             sortBy: 'original-order',
             layoutMode: 'fitRows',
             getSortData: {
-                name: function(itemElem) {
-                    const name = $(itemElem).attr('data-name') || '';
-                    return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^(The|A|An)\s/i, '')).toLowerCase();
+                name(itemElement) {
+                    const name = $(itemElement).attr('data-name') || '';
+                    return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^(the|a|an)\s/i, '')).toLowerCase();
                 },
                 rating: '[data-rating] parseInt',
                 votes: '[data-votes] parseInt'
@@ -20,7 +20,7 @@ $(document).ready(function() {
         });
     });
 
-    $('#showsort').on('change', function() {
+    $('#showsort').on('change', function () {
         let sortCriteria;
         switch (this.value) {
             case 'original':
@@ -43,10 +43,11 @@ $(document).ready(function() {
                 sortCriteria = 'name';
                 break;
         }
+
         $('#container').isotope({sortBy: sortCriteria});
     });
 
-    $('#showsortdirection').on('change', function() {
+    $('#showsortdirection').on('change', function () {
         $('#container').isotope({
             sortAscending: (this.value === 'asc')
         });

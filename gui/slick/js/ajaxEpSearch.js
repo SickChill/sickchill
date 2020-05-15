@@ -19,7 +19,7 @@ function disableLink(link) {
 }
 
 function updateImages(data) {
-    $.each(data.episodes, function(name, ep) {
+    $.each(data.episodes, (name, ep) => {
         // Get td element for current ep
         const loadingClass = 'loading-spinner16';
         const queuedClass = 'displayshow-icon-clock';
@@ -53,6 +53,7 @@ function updateImages(data) {
                 if (ep.quality !== 'N/A') {
                     link.prop('class', 'epRetry');
                 }
+
                 icon.prop('title', 'Search');
                 icon.prop('alt', 'Search');
 
@@ -63,6 +64,7 @@ function updateImages(data) {
                 htmlContent = ep.status.replace(rSearchTerm, '$1 <span class="quality ' + ep.quality + '">$2</span>');
                 parent.closest('tr').prop('class', ep.overview + ' season-' + ep.season + ' seasonstyle');
             }
+
             // Update the status column if it exists
             parent.siblings('.col-status').html(htmlContent);
             // And location
@@ -74,6 +76,7 @@ function updateImages(data) {
                 parent.siblings('.episode').html('<span title="' + ep.location + '" class="addQTip">' + ep.episode + '</span>');
             }
         }
+
         const elementCompleteEpisodes = $('a[id=forceUpdate-' + ep.show + 'x' + ep.season + 'x' + ep.episode + ']');
         const spanCompleteEpisodes = elementCompleteEpisodes.children('span');
         if (elementCompleteEpisodes) {
@@ -102,13 +105,14 @@ function updateImages(data) {
                         // Else - Calendar view is ignored
                     }
 
-                    if (actionElement.length) {
+                    if (actionElement.length > 0) {
                         // Remove any listing-* classes and add listing-snatched (keeping non listing-* classes)
-                        actionElement.attr('class', function(i, value) {
+                        actionElement.attr('class', (i, value) => {
                             return value.replace(/(^|\s)listing-\S+/g, '');
                         }).addClass('listing-snatched');
                     }
                 }
+
                 enableLink(elementCompleteEpisodes);
             }
         }
@@ -120,21 +124,22 @@ function checkManualSearches() {
     const showId = $('#showID').val();
     const url = showId !== undefined ? searchStatusUrl + '?show=' + showId : searchStatusUrl; // eslint-disable-line no-negated-condition
     $.ajax({
-        url: url,
-        success: function(data) {
+        url,
+        success(data) {
             if (data.episodes) {
                 pollInterval = 5000;
             } else {
                 pollInterval = 15000;
             }
+
             updateImages(data);
         },
-        error: function() {
+        error() {
             pollInterval = 30000;
         },
         type: 'GET',
         dataType: 'json',
-        complete: function() {
+        complete() {
             setTimeout(checkManualSearches, pollInterval);
         },
         timeout: 15000 // Timeout every 15 secs
@@ -143,7 +148,7 @@ function checkManualSearches() {
 
 $(document).ready(checkManualSearches);
 
-(function() {
+(function () {
     let stupidOptions;
     function manualSearch() {
         const parent = selectedEpisode.parent();
@@ -165,8 +170,8 @@ $(document).ready(checkManualSearches);
 
         url = url + '&downCurQuality=' + (qualityDownload ? '1' : '0');
 
-        $.getJSON(url, function(data) {
-            let imageName = null;  // eslint-disable-line no-unused-vars
+        $.getJSON(url, data => {
+            let imageName = null; // eslint-disable-line no-unused-vars
             let imageResult = null; // eslint-disable-line no-unused-vars
             // If they failed then just put the red X
             if (data.result.toLowerCase() === 'failure') {
@@ -179,6 +184,7 @@ $(document).ready(checkManualSearches);
                 if (stupidOptions.colorRow) {
                     parent.parent().removeClass('skipped wanted qual good unaired').addClass('snatched');
                 }
+
                 // Applying the quality class
                 const rSearchTerm = /(\w+)\s\((.+?)\)/;
                 const htmlContent = data.result.replace(rSearchTerm, '$1 <span class="quality ' + data.quality + '">$2</span>');
@@ -209,10 +215,10 @@ $(document).ready(checkManualSearches);
         }
     };
 
-    $.fn.ajaxEpSearch = function(options) {
+    $.fn.ajaxEpSearch = function (options) {
         stupidOptions = $.extend({}, $.ajaxEpSearch.defaults, options);
 
-        $('.epSearch, .epRetry').on('click', function(event) {
+        $('.epSearch, .epRetry').on('click', function (event) {
             event.preventDefault();
 
             // Check if we have disabled the click
@@ -224,19 +230,19 @@ $(document).ready(checkManualSearches);
 
             if ($(this).hasClass('epRetry')) {
                 $('#manualSearchModalFailed').modal('show');
-            } else if ($(this).parent().parent().children('.col-status').children('.quality').length) {
+            } else if ($(this).parent().parent().children('.col-status').children('.quality').length > 0) {
                 $('#manualSearchModalQuality').modal('show');
             } else {
                 manualSearch();
             }
         });
 
-        $('#manualSearchModalFailed .btn').on('click', function() {
+        $('#manualSearchModalFailed .btn').on('click', function () {
             failedDownload = ($(this).text().toLowerCase() === 'yes');
             $('#manualSearchModalQuality').modal('show');
         });
 
-        $('#manualSearchModalQuality .btn').on('click', function() {
+        $('#manualSearchModalQuality .btn').on('click', function () {
             qualityDownload = ($(this).text().toLowerCase() === 'yes');
             manualSearch();
         });

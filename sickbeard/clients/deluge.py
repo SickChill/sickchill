@@ -27,9 +27,10 @@ from base64 import b64encode
 import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
+from .__deluge_base import DelugeBase
 
 
-class Client(GenericClient):
+class Client(GenericClient, DelugeBase):
     def __init__(self, host=None, username=None, password=None):
 
         super(Client, self).__init__('Deluge', host, username, password)
@@ -163,29 +164,3 @@ class Client(GenericClient):
                 return False
 
         return not self.response.json()['error']
-
-    @staticmethod
-    def make_options(result):
-        options = {}
-
-        if sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR:
-            options.update({'download_location': sickbeard.TORRENT_DELUGE_DOWNLOAD_DIR})
-
-        if sickbeard.TORRENT_DELUGE_COMPLETE_DIR:
-            options.update({'move_completed': True,
-                            'move_completed_path': sickbeard.TORRENT_DELUGE_COMPLETE_DIR
-            })
-
-        if sickbeard.TORRENT_PAUSED:
-            options.update({'add_paused': True})
-
-        if result.priority == 1:
-            options.update({'file_priorities': 7})
-
-        if result.ratio:
-            options.update({'stop_at_ratio': True})
-            options.update({'stop_ratio': float(result.ratio)})
-            # options.update({'remove_at_ratio': True})
-            # options.update({'remove_ratio': float(result.ratio)})
-
-        return options

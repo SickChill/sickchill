@@ -17,25 +17,25 @@ function displayPNotify(type, title, message, id) {
         desktop: {
             tag: id
         },
-        type: type,
-        title: title,
-        text: message.replace(/<br[\s/]*(?:\s[^>]*)?>/ig, '\n')
-            .replace(/<[/]?b(?:\s[^>]*)?>/ig, '*')
-            .replace(/<i(?:\s[^>]*)?>/ig, '[').replace(/<[/]i>/ig, ']')
-            .replace(/<(?:[/]?ul|\/li)(?:\s[^>]*)?>/ig, '').replace(/<li(?:\s[^>]*)?>/ig, '\n* ')
+        type,
+        title,
+        text: message.replace(/<br[\s/]*(?:\s[^>]*)?>/gi, '\n')
+            .replace(/<\/?b(?:\s[^>]*)?>/gi, '*')
+            .replace(/<i(?:\s[^>]*)?>/gi, '[').replace(/<\/i>/gi, ']')
+            .replace(/<(?:\/?ul|\/li)(?:\s[^>]*)?>/gi, '').replace(/<li(?:\s[^>]*)?>/gi, '\n* ')
     });
 }
 
 function checkNotifications() {
-    $.getJSON(srRoot + '/ui/get_messages', function(data) {
-        $.each(data, function(name, data) {
+    $.getJSON(srRoot + '/ui/get_messages', data => {
+        $.each(data, (name, data) => {
             displayPNotify(data.type, data.title, data.message, data.hash);
         });
     });
     setTimeout(checkNotifications, 3000);
 }
 
-$(document).ready(function() {
+$(document).ready(() => {
     checkNotifications();
     if (test) {
         displayPNotify('notice', 'test', 'test<br><i class="test-class">hello <b>world</b></i><ul><li>item 1</li><li>item 2</li></ul>', 'notification-test');
