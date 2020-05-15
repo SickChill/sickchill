@@ -433,7 +433,7 @@ class GitUpdateManager(UpdateManager):
         return None
 
     @staticmethod
-    def _run_git(git_path, args, log_errors=True):
+    def _run_git(git_path, args, log_errors=False):
 
         output = err = exit_status = None
 
