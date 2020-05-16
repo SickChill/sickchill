@@ -57,40 +57,29 @@ class Client(GenericClient):
         return self.auth
 
     def _add_torrent_uri(self, result):
-
-        arguments = {
-            'filename': result.url,
-            'paused': int(sickbeard.TORRENT_PAUSED)
-        }
-
-        if sickbeard.TORRENT_PATH:
-            arguments['download-dir'] = sickbeard.TORRENT_PATH
-
-        post_data = json.dumps({'arguments': arguments,
-                                'method': 'torrent-add'})
-
-        self._request(method='post', data=post_data)
-
+        self._request(method='post', data=self.__make_post(result, method='uri'))
         return self.response.json()['result'] == "success"
 
     def _add_torrent_file(self, result):
+        self._request(method='post', data=self.__make_post(result, method='file'))
+        return self.response.json()['result'] == "success"
 
+    @staticmethod
+    def __make_post(result, method='file'):
         arguments = {
-            'metainfo': b64encode(result.content),
-            'paused': 1 if sickbeard.TORRENT_PAUSED else 0
+            'paused': int(sickbeard.TORRENT_PAUSED)
         }
+        if method == 'file':
+            arguments.update({'metainfo': b64encode(result.content)})
+        else:
+            arguments.update({'filename': result.url})
 
         if sickbeard.TORRENT_PATH:
             arguments['download-dir'] = sickbeard.TORRENT_PATH
 
-        post_data = json.dumps({'arguments': arguments,
-                                'method': 'torrent-add'})
-
-        self._request(method='post', data=post_data)
-
-        return self.response.json()['result'] == "success"
-
-    def _set_torrent_ratio(self, result):
+        if sickbeard.TORRENT_PATH_INCOMPLETE:
+            arguments['incomplete-dir'] = sickbeard.TORRENT_PATH_INCOMPLETE
+            arguments['incomplete-enabled'] = 1
 
         ratio = None
         if result.ratio:
@@ -105,37 +94,11 @@ class Client(GenericClient):
                 ratio = float(ratio)
                 mode = 1  # Stop seeding at seedRatioLimit
 
-        arguments = {'ids': [result.hash],
-                     'seedRatioLimit': ratio,
-                     'seedRatioMode': mode}
-
-        post_data = json.dumps({'arguments': arguments,
-                                'method': 'torrent-set'})
-
-        self._request(method='post', data=post_data)
-
-        return self.response.json()['result'] == "success"
-
-    def _set_torrent_seed_time(self, result):
+        arguments.update({'seedRatioLimit': ratio, 'seedRatioMode': mode})
 
         if sickbeard.TORRENT_SEED_TIME and sickbeard.TORRENT_SEED_TIME != -1:
             time = int(60 * float(sickbeard.TORRENT_SEED_TIME))
-            arguments = {'ids': [result.hash],
-                         'seedIdleLimit': time,
-                         'seedIdleMode': 1}
-
-            post_data = json.dumps({'arguments': arguments,
-                                    'method': 'torrent-set'})
-
-            self._request(method='post', data=post_data)
-
-            return self.response.json()['result'] == "success"
-        else:
-            return True
-
-    def _set_torrent_priority(self, result):
-
-        arguments = {'ids': [result.hash]}
+            arguments.update({'seedIdleLimit': time, 'seedIdleMode': 1})
 
         if result.priority == -1:
             arguments['priority-low'] = []
@@ -149,9 +112,7 @@ class Client(GenericClient):
         else:
             arguments['priority-normal'] = []
 
-        post_data = json.dumps({'arguments': arguments,
-                                'method': 'torrent-set'})
-
-        self._request(method='post', data=post_data)
-
-        return self.response.json()['result'] == "success"
+        return json.dumps({
+            'arguments': arguments,
+            'method': 'torrent-add'
+        })
