@@ -42,12 +42,6 @@ class Client(GenericClient, DelugeBase):
         self.client = None
 
     def setup(self):
-        if self.host.startswith('scgi://'):
-            self.host = self.host[7:]
-
-        if not self.host.startswith('http'):
-            self.host = 'http://{}'.format(self.host)
-
         parsed_url = urlparse(self.host)
         if self.client and all(
             [
@@ -75,7 +69,6 @@ class Client(GenericClient, DelugeBase):
         return self.auth
 
     def _add_torrent_uri(self, result):
-        self._get_auth()
         remote_torrent = self.client.core.add_torrent_magnet(result.url, self.make_options(result))
         if not remote_torrent:
             return None
@@ -85,7 +78,6 @@ class Client(GenericClient, DelugeBase):
         return remote_torrent
 
     def _add_torrent_file(self, result):
-        self._get_auth()
         if not result.content:
             result.content = {}
             return None
@@ -99,7 +91,6 @@ class Client(GenericClient, DelugeBase):
         return remote_torrent
 
     def _set_torrent_label(self, result):
-        self._get_auth()
         # No option for this built into the rpc, because it is a plugin
         label = sickbeard.TORRENT_LABEL.lower()
         if result.show.is_anime:

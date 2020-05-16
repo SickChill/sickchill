@@ -42,7 +42,7 @@ class Client(GenericClient):
         try:
             self.response = self.session.post(self.url, data=post_data.encode('utf-8'), timeout=120,
                                               verify=sickbeard.TORRENT_VERIFY_CERT)
-            self.auth=self.response.headers['X-Transmission-Session-Id']
+            self.auth = self.response.headers['X-Transmission-Session-Id']
         except Exception:
             return None
 

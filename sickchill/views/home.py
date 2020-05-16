@@ -244,14 +244,14 @@ class Home(WebRoot):
         return message
 
     def testDSM(self):
-        host = config.clean_host(self.get_body_argument('host'))
+        host = config.clean_url(self.get_body_argument('host'))
         username = self.get_body_argument('username')
         password = filters.unhide(sickbeard.SYNOLOGY_DSM_PASSWORD, self.get_body_argument('password'))
         return self.__torrent_test(host, username, password, 'download_station')
 
     def testTorrent(self):
         torrent_method = self.get_body_argument('torrent_method')
-        host = config.clean_host(self.get_body_argument('host'))
+        host = config.clean_url(self.get_body_argument('host'))
         username = self.get_body_argument('username')
         password = filters.unhide(sickbeard.TORRENT_PASSWORD, self.get_body_argument('password'))
         return self.__torrent_test(host, username, password, torrent_method)

@@ -37,9 +37,6 @@ from .__deluge_base import DelugeBase
 
 class Client(GenericClient, DelugeBase):
     def __init__(self, host=None, username=None, password=None):
-        if host and not host.startswith('http'):
-            host = 'http://' + host
-
         super(Client, self).__init__('Deluge', host, username, password)
 
         self.url = urljoin(self.host, 'json')
