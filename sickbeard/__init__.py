@@ -46,8 +46,8 @@ from sickchill.helper.exceptions import ex
 from sickchill.system.Shutdown import Shutdown
 
 # Local Folder Imports
-from . import (auto_postprocessor, clients, dailysearcher, db, helpers, image_cache, logger, metadata, naming, post_processing_queue, properFinder, providers,
-               scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker, versionChecker)
+from . import (auto_postprocessor, clients, dailysearcher, db, helpers, image_cache, logger, metadata, naming, notifications_queue, post_processing_queue,
+               properFinder, providers, scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker, versionChecker)
 from .common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
 from .config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
 from .databases import cache_db, failed_db, mainDB
@@ -123,6 +123,7 @@ autoPostProcessorScheduler = None
 postProcessorTaskScheduler = None
 subtitlesFinderScheduler = None
 traktCheckerScheduler = None
+notificationsTaskScheduler = None
 
 showList = []
 
@@ -751,7 +752,7 @@ def initialize(consoleLogging=True):
             SICKCHILL_BACKGROUND_PATH, FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, \
             SLACK_NOTIFY_DOWNLOAD, SLACK_NOTIFY_SUBTITLEDOWNLOAD, SLACK_WEBHOOK, SLACK_ICON_EMOJI, USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK,\
             USE_MATRIX, MATRIX_NOTIFY_SNATCH, MATRIX_NOTIFY_DOWNLOAD, MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM, \
-            ENDED_SHOWS_UPDATE_INTERVAL, IMAGE_CACHE, CF_AUTH_DOMAIN, CF_POLICY_AUD, TVDB_USER, TVDB_USER_KEY
+            ENDED_SHOWS_UPDATE_INTERVAL, IMAGE_CACHE, CF_AUTH_DOMAIN, CF_POLICY_AUD, TVDB_USER, TVDB_USER_KEY, notificationsTaskScheduler
 
         if __INITIALIZED__:
             return False
@@ -1666,6 +1667,14 @@ def initialize(consoleLogging=True):
             silent=not USE_SUBTITLES
         )
 
+        # notifications
+        notificationsTaskScheduler = scheduler.Scheduler(
+            notifications_queue.NotificationsQueue(),
+            run_delay=datetime.timedelta(seconds=5),
+            cycleTime=datetime.timedelta(seconds=5),
+            threadName="NOTIFICATIONS",
+        )
+
         __INITIALIZED__['0'] = True
         return True
 
@@ -1719,6 +1728,8 @@ def start():
             traktCheckerScheduler.enable = USE_TRAKT
             traktCheckerScheduler.start()
 
+            notificationsTaskScheduler.enable = True
+            notificationsTaskScheduler.start()
             started['0'] = True
 
 
@@ -1739,6 +1750,7 @@ def halt():
                 traktCheckerScheduler,
                 properFinderScheduler,
                 subtitlesFinderScheduler,
+                notificationsTaskScheduler,
                 events
             ]
 
