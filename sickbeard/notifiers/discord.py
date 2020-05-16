@@ -19,17 +19,9 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
-# Stdlib Imports
-import json
-
-# Third Party Imports
-import requests
-import six
-
 # First Party Imports
 import sickbeard
-from sickbeard import common, logger
-from sickchill.helper.exceptions import ex
+from sickbeard import common
 
 
 class Notifier(object):
@@ -61,30 +53,12 @@ class Notifier(object):
     def test_notify(self):
         return self._notify_discord("This is a test notification from SickChill", force=True)
 
-    def _send_discord(self, message=None):
-        discord_webhook = sickbeard.DISCORD_WEBHOOK
-        discord_name = sickbeard.DISCORD_NAME
-        avatar_icon = sickbeard.DISCORD_AVATAR_URL
-        discord_tts = bool(sickbeard.DISCORD_TTS)
-
-        logger.log("Sending discord message: " + message, logger.INFO)
-        logger.log("Sending discord message  to url: " + discord_webhook, logger.INFO)
-
-        if isinstance(message, six.text_type):
-            message = message.encode('utf-8')
-
-        headers = {b"Content-Type": b"application/json"}
-        try:
-            r = requests.post(discord_webhook, data=json.dumps(dict(content=message, username=discord_name, avatar_url=avatar_icon, tts=discord_tts)), headers=headers)
-            r.raise_for_status()
-        except Exception as e:
-            logger.log("Error Sending Discord message: " + ex(e), logger.ERROR)
-            return False
-
-        return True
+    @staticmethod
+    def _send_discord(message=None, force=False):
+        return sickbeard.notificationsTaskScheduler.action.add_item(message, notifier='discord', force_next=force)
 
     def _notify_discord(self, message='', force=False):
         if not sickbeard.USE_DISCORD and not force:
             return False
 
-        return self._send_discord(message)
+        return self._send_discord(message, force=force)

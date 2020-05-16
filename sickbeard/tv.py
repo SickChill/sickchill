@@ -1035,13 +1035,13 @@ class TVShow(object):
 
             # if the path doesn't exist or if it's not in our show dir
             if not ek(os.path.isfile, curLoc) or not ek(os.path.normpath, curLoc).startswith(
-                    ek(os.path.normpath, self.location)):
+                    ek(os.path.normpath, self._location)):
 
                 # check if downloaded files still exist, update our data if this has changed
                 if not sickbeard.SKIP_REMOVED_FILES:
                     with curEp.lock:
                         # if it used to have a file associated with it and it doesn't anymore then set it to sickbeard.EP_DEFAULT_DELETED_STATUS
-                        if curEp.location and curEp.status in Quality.DOWNLOADED:
+                        if curEp.status in Quality.DOWNLOADED:
 
                             if sickbeard.EP_DEFAULT_DELETED_STATUS == ARCHIVED:
                                 oldStatus_, oldQuality = Quality.splitCompositeStatus(curEp.status)
