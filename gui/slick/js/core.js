@@ -1929,6 +1929,7 @@ const SICKCHILL = {
                         $('#torrent_seed_time_label').text(_('Stop seeding when inactive for'));
                         $('#torrent_seed_time_option').show();
                         $('#torrent_high_bandwidth_option').show();
+                        $('#torrent_path_incomplete_option').show();
                         $('#torrent_label_option').hide();
                         $('#torrent_rpcurl_option').show();
                         $('#host_desc_torrent').text(_('URL to your Transmission client (e.g. http://localhost:9091)'));
