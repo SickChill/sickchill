@@ -8,7 +8,7 @@ $.tablesorter.addParser({
             return s.replace(_('Loading...'), '000');
         }
 
-        return (metaToBool('sickbeard.SORT_ARTICLE') ? (s || '') : (s || '').replace(/^(the|a|an)\s/i, ''));
+        return latinize(metaToBool('sickbeard.SORT_ARTICLE') ? (s || '') : (s || '').replace(/^(the|a|an)\s/i, '').normalize('NFC'));
     },
     type: 'text'
 });

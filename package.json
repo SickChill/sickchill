@@ -77,7 +77,8 @@
       "anonURL",
       "Gettext",
       "gt",
-      "_n"
+      "_n",
+      "latinize"
     ],
     "ignores": [
       "core.min.js",

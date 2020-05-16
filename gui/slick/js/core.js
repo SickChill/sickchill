@@ -2274,6 +2274,9 @@ const SICKCHILL = {
                     1(node) {
                         return $(node).find('time').attr('datetime');
                     },
+                    2(node) {
+                        return latinize($(node).text().normalize('NFC'));
+                    },
                     3(node) {
                         return ($(node).find('span').prop('title') || 'zunknown').toLowerCase();
                     },
@@ -2393,7 +2396,7 @@ const SICKCHILL = {
                     getSortData: {
                         name(itemElement) {
                             const name = $(itemElement).attr('data-name') || '';
-                            return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase();
+                            return latinize((metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase().normalize('NFC'));
                         },
                         network: '[data-network]',
                         date(itemElement) {
@@ -3773,6 +3776,9 @@ const SICKCHILL = {
                         },
                         1(node) {
                             return $(node).find('time').attr('datetime');
+                        },
+                        2(node) {
+                            return latinize($(node).text().normalize('NFC'));
                         },
                         7(node) {
                             return $(node).find('span').text().toLowerCase();

@@ -63,6 +63,7 @@ from requests.utils import urlparse
 # noinspection PyUnresolvedReferences
 from six.moves import urllib
 from tornado._locale_data import LOCALE_NAMES
+from unidecode import unidecode
 
 # First Party Imports
 import sickbeard
@@ -74,7 +75,8 @@ from sickchill.show.Show import Show
 
 # Local Folder Imports
 from . import classes, db, logger
-from .common import USER_AGENT
+
+# from .common import USER_AGENT
 
 # Add some missing languages
 LOCALE_NAMES.update({
@@ -1771,7 +1773,7 @@ def remove_site_message(key=None, tag=None):
 def sortable_name(name):
     if not sickbeard.SORT_ARTICLE:
         name = re.sub(r'(?:The|A|An)\s', '', name, flags=re.I)
-    return name.lower()
+    return unidecode(name.lower())
 
 
 def manage_torrents_url(reset=False):
