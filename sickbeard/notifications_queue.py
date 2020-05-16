@@ -75,25 +75,30 @@ class NotificationsQueue(generic_queue.GenericQueue):
         self.min_priority = 0
         return True
 
-    def queue_length(self):
-        return len(self.queue + [self.currentItem])
+    def __len__(self):
+        size = len(self.queue)
+        if self.currentItem:
+            size += 1
+        return size
 
     def add_item(self, message, notifier='discord', force_next=False):
         added = False
+        item = None
         with self.lock:
             if self.queue and not force_next:
                 for index in range(0, len(self.queue)):
                     if isinstance(self.queue[index], DiscordTask):
-                        self.queue[index].append(message)
-                        added = True
-                        break
+                        if len(self.queue[index]) < 24:
+                            self.queue[index].append(message)
+                            added = True
+                            break
             if not added:
                 item = DiscordTask(message)
                 if force_next:
                     item.run()
-                    added = True
-                else:
-                    added = super(NotificationsQueue, self).add_item(item)
+                    return item.last_result
+        if not added:
+            added = super(NotificationsQueue, self).add_item(item)
         return added
 
 
@@ -148,7 +153,7 @@ class DiscordTask(generic_queue.QueueItem):
                 {'name': 'Notification', 'value': message}
             ]
 
-    def length(self):
+    def __len__(self):
         return len(self.embed['fields'])
 
     def _send_discord(self):

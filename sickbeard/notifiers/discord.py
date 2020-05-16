@@ -22,7 +22,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 # First Party Imports
 import sickbeard
 from sickbeard import common
-from sickbeard.notifications_queue import DiscordTask
 
 
 class Notifier(object):
