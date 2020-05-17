@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-05-17 12:01\n"
+"PO-Revision-Date: 2020-05-17 12:10\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -312,43 +312,43 @@ msgstr "Controleer dict to upsert; mogen geen waardes 'None' bevatten!"
 
 #: sickbeard/helpers.py:97
 msgid "Patching socket to IPv4 only"
-msgstr ""
+msgstr "Aansluiting veranderen naar alleen IPv4"
 
 #: sickbeard/helpers.py:254
 msgid "Invalid filename. Filename must be a string. {0}"
-msgstr ""
+msgstr "Bestandsnaam ongeldig. Bestandsnaam moet een string zijn. {0}"
 
 #: sickbeard/helpers.py:408
 msgid "Failed to create hardlink of {0} at {1}. Error: {2}. Copying instead"
-msgstr ""
+msgstr "Hardlink maken van {0} op {1} mislukt. Fout: {2}. In plaats daarvan kopiëren"
 
 #: sickbeard/helpers.py:445
 msgid "Failed to create symlink of {0} at {1}. Error: {2}. Copying instead"
-msgstr ""
+msgstr "Simlink maken van {0} op {1} mislukt. Fout: {2}. In plaats daarvan kopiëren"
 
 #: sickbeard/helpers.py:456
 msgid "Checking if the path {0} already exists"
-msgstr ""
+msgstr "Controleren of het pad {0} al bestaat"
 
 #: sickbeard/helpers.py:462 sickbeard/helpers.py:482
 msgid "Folder {0} didn't exist, creating it"
-msgstr ""
+msgstr "Map {0} bestond niet, deze wordt aangemaakt"
 
 #: sickbeard/helpers.py:465 sickbeard/helpers.py:489
 msgid "Failed creating {0} : {1}"
-msgstr ""
+msgstr "Aanmaken {0} mislukt: {1}"
 
 #: sickbeard/helpers.py:530
 msgid "Renaming file from {0} to {1}"
-msgstr ""
+msgstr "Bestand hernoemen van {0} naar {1}"
 
 #: sickbeard/helpers.py:533
 msgid "Failed renaming {0} to {1} : {2}"
-msgstr ""
+msgstr "Hernoemen van {0} naar {1} mislukt: {2}"
 
 #: sickbeard/helpers.py:553
 msgid "Trying to clean any empty folders under "
-msgstr ""
+msgstr "Proberen om legen mappen te wissen onder "
 
 #: sickbeard/helpers.py:563
 msgid "Deleting empty folder: "
@@ -356,59 +356,59 @@ msgstr ""
 
 #: sickbeard/helpers.py:569
 msgid "Unable to delete {0}. Error: {1}"
-msgstr ""
+msgstr "Niet mogelijk om {0} te verwijderen. Fout: {1}"
 
 #: sickbeard/helpers.py:605
 msgid "No parent path provided in {location} unable to get permissions from it"
-msgstr ""
+msgstr "Geen bovenliggend pad in {location} kan er geen machtigingen van krijgen"
 
 #: sickbeard/helpers.py:628
 msgid "Not running as root or owner of {location}, not trying to set permissions"
-msgstr ""
+msgstr "Niet uitgevoerd als root of eigenaar van {location}, niet proberen machtigingen in te stellen"
 
 #: sickbeard/helpers.py:634
 msgid "Failed to set permission for {0} to {1:o}, parent directory has {2:o}"
-msgstr ""
+msgstr "Kan machtiging voor {0} niet instellen voor {1:o}, hoofdmap heeft {2:o}"
 
 #: sickbeard/helpers.py:666
 msgid "Not running as root or owner of {}, not trying to set the set-group-ID"
-msgstr ""
+msgstr "Niet uitgevoerd als root of eigenaar van {}, niet proberen de set-group-ID in te stellen"
 
 #: sickbeard/helpers.py:671
 msgid "Respecting the set-group-ID bit on the parent directory for {0}"
-msgstr ""
+msgstr "Respecteer de set-group-ID bit in de bovenliggende map voor {0}"
 
 #: sickbeard/helpers.py:716
 msgid "Found absolute number {absolute} for show {show} {ep}"
-msgstr ""
+msgstr "Absolute nummer {absolute} gevonden voor toon {show} {ep}"
 
 #: sickbeard/helpers.py:720
 msgid "No entries for absolute number for show {show} {ep}"
-msgstr ""
+msgstr "Geen invoer voor een absoluut nummer voor serie {show} {ep}"
 
 #: sickbeard/helpers.py:802
 msgid "pyopenssl module missing, please install for https access"
-msgstr ""
+msgstr "pyopenssl module ontbreekt, installeer a.u.b. voor https toegang"
 
 #: sickbeard/helpers.py:826
 msgid "Error creating SSL key and certificate"
-msgstr ""
+msgstr "Fout bij maken SSL-sleutel en certificaat"
 
 #: sickbeard/helpers.py:847
 msgid "Not creating backup, {0} doesn't exist"
-msgstr ""
+msgstr "Back-up wordt niet gemaakt, {0} bestaat niet"
 
 #: sickbeard/helpers.py:851
 msgid "Trying to back up {0} to {1}"
-msgstr ""
+msgstr "Proberen om een back-up te maken van {0} naar {1}"
 
 #: sickbeard/helpers.py:853
 msgid "Backup done"
-msgstr ""
+msgstr "Back-up voltooid"
 
 #: sickbeard/helpers.py:856
 msgid "Error while trying to back up {0} to {1} : {2}"
-msgstr ""
+msgstr "Fout tijdens het proberen een back-up te maken van {0} naar {1} : {2}"
 
 #: sickbeard/helpers.py:859
 msgid "Trying again."
