@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-23 20:20\n"
+"PO-Revision-Date: 2020-05-17 12:01\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -172,7 +172,7 @@ msgstr "Nieuwe login van IP: {0}. http://geomaplookup.net/?IP={0}"
 
 #: sickbeard/common.py:92
 msgid "Finished Post Processing"
-msgstr ""
+msgstr "Nabewerking afgerond"
 
 #: sickbeard/common.py:117
 msgid "Repeat"
@@ -256,11 +256,11 @@ msgstr "Ondertiteld"
 
 #: sickbeard/config.py:194
 msgid "Disabling UNPACK setting because no unrar is found and accessible."
-msgstr ""
+msgstr "UNPACK instelling uitgeschakeld omdat unrar niet gevonden of toegankelijk is."
 
 #: sickbeard/dailysearcher.py:51
 msgid "Searching for new released episodes ..."
-msgstr ""
+msgstr "Zoeken naar nieuw uitgebrachte afleveringen ..."
 
 #: sickbeard/db.py:91
 msgid "Please check your database owner/permissions: {db_filename}"
