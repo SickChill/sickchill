@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-05-17 12:10\n"
+"PO-Revision-Date: 2020-05-17 12:20\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -412,91 +412,91 @@ msgstr "Fout tijdens het proberen een back-up te maken van {0} naar {1} : {2}"
 
 #: sickbeard/helpers.py:859
 msgid "Trying again."
-msgstr ""
+msgstr "Probeer het opnieuw."
 
 #: sickbeard/helpers.py:862
 msgid "Unable to back up {0} to {1} please do it manually."
-msgstr ""
+msgstr "Kan geen back-up van {0} naar {1} maken, doe het handmatig."
 
 #: sickbeard/helpers.py:883 sickbeard/helpers.py:898
 msgid "Not restoring, {0} doesn't exist"
-msgstr ""
+msgstr "Niet herstellen, {0} bestaat niet"
 
 #: sickbeard/helpers.py:887
 msgid "Trying to backup {0} to {1}.r{2} before restoring backup"
-msgstr ""
+msgstr "Probeert een backup te maken van {0} naar {1}.r{2} voor het herstellen van de back-up"
 
 #: sickbeard/helpers.py:892
 msgid "Error while trying to backup DB file {0} before proceeding with restore: {1}"
-msgstr ""
+msgstr "Fout bij het opslaan van het DB bestand {0} voordat u verdergaat met herstel: {1}"
 
 #: sickbeard/helpers.py:902
 msgid "Trying to restore file {0} to {1}"
-msgstr ""
+msgstr "Proberen bestand {0} te herstellen naar {1}"
 
 #: sickbeard/helpers.py:904
 msgid "Restore done"
-msgstr ""
+msgstr "Herstellen voltooid"
 
 #: sickbeard/helpers.py:907
 msgid "Error while trying to restore file {0}. Error: {1}"
-msgstr ""
+msgstr "Fout tijdens het herstellen van bestand {0}. Fout: {1}"
 
 #: sickbeard/helpers.py:910
 msgid "Trying again. Attempt #: {0}"
-msgstr ""
+msgstr "Probeer het opnieuw. Poging #: {0}"
 
 #: sickbeard/helpers.py:913
 msgid "Unable to restore file {0} to {1}"
-msgstr ""
+msgstr "Kan bestand {0} niet herstellen naar {1}"
 
 #: sickbeard/helpers.py:1050
 msgid "Error when attempting to find show: {0} in SickChill. Error: {1} "
-msgstr ""
+msgstr "Fout bij het vinden van serie: {0} in SickChill. Fout: {1} "
 
 #: sickbeard/helpers.py:1107
 msgid "Usage of anidb disabled. Skiping"
-msgstr ""
+msgstr "Gebruik van anidb uitgeschakeld. Overslaan"
 
 #: sickbeard/helpers.py:1111
 msgid "anidb username and/or password are not set. Aborting anidb lookup."
-msgstr ""
+msgstr "anidb gebruikersnaam en/of wachtwoord zijn niet ingesteld. Het opzoeken van anidb is afgebroken."
 
 #: sickbeard/helpers.py:1116
 msgid "anidb: {0} "
-msgstr ""
+msgstr "anidb: {0} "
 
 #: sickbeard/helpers.py:1121 sickbeard/helpers.py:1130
 msgid "anidb exception msg: {0} "
-msgstr ""
+msgstr "anidb uitzondering msg: {0} "
 
 #: sickbeard/helpers.py:1151 sickbeard/helpers.py:1204
 msgid "Zip creation error: {0} "
-msgstr ""
+msgstr "Zip aanmaak fout: {0} "
 
 #: sickbeard/helpers.py:1183
 msgid "Zip extraction error: {0} "
-msgstr ""
+msgstr "Zip extractie fout: {0} "
 
 #: sickbeard/helpers.py:1233
 msgid "Zip extraction error: {0}"
-msgstr ""
+msgstr "Zip extractie fout: {0}"
 
 #: sickbeard/helpers.py:1273
 msgid "Using global proxy: {}"
-msgstr ""
+msgstr "Gebruik algemene proxy: {}"
 
 #: sickbeard/helpers.py:1354
 msgid "Requested a json response but response was not json, check the url: {0}"
-msgstr ""
+msgstr "Een json antwoord opgevraagd, maar antwoord was niet json, controleer de url: {0}"
 
 #: sickbeard/helpers.py:1393
 msgid "Problem downloading file, setting permissions or writing file to {0} - ERROR: {1}"
-msgstr ""
+msgstr "Probleem bij het downloaden van bestand, rechten instellen of schrijven van bestand naar {0} - FOUT: {1}"
 
 #: sickbeard/helpers.py:1407
 msgid "Request failed: {0} ({1})"
-msgstr ""
+msgstr "Verzoek mislukt: {0} ({1})"
 
 #: sickbeard/helpers.py:1412
 msgid "SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to 1.0.1e+"
