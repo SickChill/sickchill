@@ -1,5 +1,5 @@
 backports-abc==0.5
-beautifulsoup4==4.9.0
+beautifulsoup4==4.9.1
 beekeeper==0.9.2
 bencode==1.0
 CacheControl==0.12.6
