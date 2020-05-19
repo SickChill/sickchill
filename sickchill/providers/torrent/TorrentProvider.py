@@ -23,7 +23,7 @@ from datetime import datetime
 
 # Third Party Imports
 from feedparser import FeedParserDict
-from rtorrent9.lib.torrentparser import NewTorrentParser
+from rtorrent9.lib.torrentparser import TorrentParser
 
 # First Party Imports
 import sickbeard
@@ -131,8 +131,8 @@ class TorrentProvider(GenericProvider):
 
     def _verify_download(self, file_name):
         try:
-            NewTorrentParser(file_name)
-            return True
+            tp = TorrentParser(file_name)
+            return tp.info_hash is not None
         except AssertionError as e:
             logger.log('Failed to validate torrent file: {0}'.format(ex(e)), logger.DEBUG)
 
