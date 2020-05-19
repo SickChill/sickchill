@@ -131,7 +131,7 @@ class TorrentProvider(GenericProvider):
 
     def _verify_download(self, file_name):
         try:
-            NewTorrentParser(file_name)
+            NewTorrentParser(file_name.encode('utf-8'))
             return True
         except AssertionError as e:
             logger.log('Failed to validate torrent file: {0}'.format(ex(e)), logger.DEBUG)
