@@ -5,7 +5,7 @@ import sickbeard
 import time
 from sickbeard import logger
 
-from exceptions import traktException, traktAuthException, traktServerBusy
+from .exceptions import traktException, traktAuthException, traktServerBusy
 
 
 class TraktAPI:

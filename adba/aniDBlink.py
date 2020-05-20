@@ -117,7 +117,7 @@ class AniDBLink(threading.Thread):
                     self.session = resp.attrs['sesskey']
                 if resp.rescode in ('209',):
                     print("sorry encryption is not supported")
-                    raise
+                    raise Exception
                     #self.crypt=aes(md5(resp.req.apipassword+resp.attrs['salt']).digest())
                 if resp.rescode in ('203', '403', '500', '501', '503', '506'):
                     self.session = None

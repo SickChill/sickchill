@@ -21,7 +21,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
-from urllib2 import URLError
+from six.moves.urllib.error import URLError
 
 # Third Party Imports
 from beekeeper.exceptions import RequestTimeout
