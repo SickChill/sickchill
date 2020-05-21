@@ -42,7 +42,7 @@ win-inet-pton == 1.0.1 ; os.name == 'nt' and python_version < '3.0'
 pynma == 1.0
 putio.py == 8.6.2
 profilehooks
-httplib2 == 0.18.0
+httplib2 == 0.18.1
 PySocks
 win_inet_pton
 imdbpie
