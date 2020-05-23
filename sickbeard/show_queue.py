@@ -699,7 +699,8 @@ class QueueItemUpdate(ShowQueueItem):
 
         logger.log('Finished update of {0}'.format(self.show.name), logger.DEBUG)
 
-        sickbeard.showQueueScheduler.action.refresh_show(self.show, self.force)
+        # sickbeard.showQueueScheduler.action.refresh_show(self.show, self.force)
+        QueueItemRefresh(self.show, self.force).run()
         super(QueueItemUpdate, self).finish()
         self.finish()
 
