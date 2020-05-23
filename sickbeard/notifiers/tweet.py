@@ -20,9 +20,8 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
-import six
-
 # Third Party Imports
+import six
 import twitter
 from requests.exceptions import RequestException
 from requests_oauthlib import OAuth1Session

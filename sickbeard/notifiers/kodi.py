@@ -20,13 +20,11 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
-# Stdlib Imports
-from six.moves.urllib.error import URLError
-
 # Third Party Imports
 from beekeeper.exceptions import RequestTimeout
 from kodipydent import Kodi
 from requests.compat import unquote_plus
+from six.moves.urllib.error import URLError
 
 # First Party Imports
 import sickbeard
