@@ -61,7 +61,7 @@ def email(value, whitelist=None):
 
     if not user_regex.match(user_part):
         return False
-        
+
     if len(user_part.encode("utf-8")) > 64:
         return False
 

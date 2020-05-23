@@ -3,7 +3,7 @@ import sys
 
 import pytest
 
-from .client import DelugeRPCClient, RemoteException
+from .client import DelugeRPCClient, LocalDelugeRPCClient, RemoteException
 
 
 if sys.version_info > (3,):
@@ -73,3 +73,13 @@ def test_attr_caller(client):
 def test_call_method_context_manager():
     with client_factory() as client:
         assert isinstance(client.call('core.get_free_space'), (int, long))
+
+
+def test_local_client_connect():
+    with LocalDelugeRPCClient() as local_client:
+        assert local_client.connected
+
+
+def test_local_client_method():
+    with LocalDelugeRPCClient() as local_client:
+            assert isinstance(local_client.call('core.get_free_space'), (int, long))

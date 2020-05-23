@@ -10,6 +10,8 @@ import tempfile
 from bs4 import (
     BeautifulSoup,
     BeautifulStoneSoup,
+    GuessedAtParserWarning,
+    MarkupResemblesLocatorWarning,
 )
 from bs4.builder import (
     TreeBuilder,
@@ -224,25 +226,32 @@ class TestConstructor(SoupTest):
 
 class TestWarnings(SoupTest):
 
-    def _no_parser_specified(self, s, is_there=True):
-        v = s.startswith(BeautifulSoup.NO_PARSER_SPECIFIED_WARNING[:80])
-        self.assertTrue(v)
+    def _assert_warning(self, warnings, cls):
+        for w in warnings:
+            if isinstance(w.message, cls):
+                return w
+        raise Exception("%s warning not found in %r" % cls, warnings)
+    
+    def _assert_no_parser_specified(self, w):
+        warning = self._assert_warning(w, GuessedAtParserWarning)
+        message = str(warning.message)
+        self.assertTrue(
+            message.startswith(BeautifulSoup.NO_PARSER_SPECIFIED_WARNING[:60])
+        )
 
     def test_warning_if_no_parser_specified(self):
         with warnings.catch_warnings(record=True) as w:
-            soup = self.soup("<a><b></b></a>")
-        msg = str(w[0].message)
-        self._assert_no_parser_specified(msg)
+            soup = BeautifulSoup("<a><b></b></a>")
+        self._assert_no_parser_specified(w)
 
     def test_warning_if_parser_specified_too_vague(self):
         with warnings.catch_warnings(record=True) as w:
-            soup = self.soup("<a><b></b></a>", "html")
-        msg = str(w[0].message)
-        self._assert_no_parser_specified(msg)
+            soup = BeautifulSoup("<a><b></b></a>", "html")
+        self._assert_no_parser_specified(w)
 
     def test_no_warning_if_explicit_parser_specified(self):
         with warnings.catch_warnings(record=True) as w:
-            soup = self.soup("<a><b></b></a>", "html.parser")
+            soup = BeautifulSoup("<a><b></b></a>", "html.parser")
         self.assertEqual([], w)
 
     def test_parseOnlyThese_renamed_to_parse_only(self):
@@ -266,41 +275,43 @@ class TestWarnings(SoupTest):
         self.assertRaises(
             TypeError, self.soup, "<a>", no_such_argument=True)
 
-class TestWarnings(SoupTest):
-
     def test_disk_file_warning(self):
         filehandle = tempfile.NamedTemporaryFile()
         filename = filehandle.name
         try:
             with warnings.catch_warnings(record=True) as w:
                 soup = self.soup(filename)
-            msg = str(w[0].message)
-            self.assertTrue("looks like a filename" in msg)
+            warning = self._assert_warning(w, MarkupResemblesLocatorWarning)
+            self.assertTrue("looks like a filename" in str(warning.message))
         finally:
             filehandle.close()
 
         # The file no longer exists, so Beautiful Soup will no longer issue the warning.
         with warnings.catch_warnings(record=True) as w:
             soup = self.soup(filename)
-        self.assertEqual(0, len(w))
+        self.assertEqual([], w)
 
     def test_url_warning_with_bytes_url(self):
         with warnings.catch_warnings(record=True) as warning_list:
             soup = self.soup(b"http://www.crummybytes.com/")
-        # Be aware this isn't the only warning that can be raised during
-        # execution..
-        self.assertTrue(any("looks like a URL" in str(w.message) 
-            for w in warning_list))
+        warning = self._assert_warning(
+            warning_list, MarkupResemblesLocatorWarning
+        )
+        self.assertTrue("looks like a URL" in str(warning.message))
 
     def test_url_warning_with_unicode_url(self):
         with warnings.catch_warnings(record=True) as warning_list:
             # note - this url must differ from the bytes one otherwise
             # python's warnings system swallows the second warning
             soup = self.soup(u"http://www.crummyunicode.com/")
-        self.assertTrue(any("looks like a URL" in str(w.message) 
-            for w in warning_list))
+        warning = self._assert_warning(
+            warning_list, MarkupResemblesLocatorWarning
+        )
+        self.assertTrue("looks like a URL" in str(warning.message))
 
     def test_url_warning_with_bytes_and_space(self):
+        # Here the markup contains something besides a URL, so no warning
+        # is issued.
         with warnings.catch_warnings(record=True) as warning_list:
             soup = self.soup(b"http://www.crummybytes.com/ is great")
         self.assertFalse(any("looks like a URL" in str(w.message) 

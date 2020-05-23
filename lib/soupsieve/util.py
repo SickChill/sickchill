@@ -4,9 +4,7 @@ from functools import wraps
 import warnings
 import sys
 import struct
-import os
 import re
-MODULE = os.path.dirname(__file__)
 
 PY3 = sys.version_info >= (3, 0)
 PY35 = sys.version_info >= (3, 5)

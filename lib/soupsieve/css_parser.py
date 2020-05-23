@@ -117,9 +117,11 @@ PAT_ID = r'\#{ident}'.format(ident=IDENTIFIER)
 # Classes (`.class`)
 PAT_CLASS = r'\.{ident}'.format(ident=IDENTIFIER)
 # Prefix:Tag (`prefix|tag`)
-PAT_TAG = r'(?:(?:{ident}|\*)?\|)?(?:{ident}|\*)'.format(ident=IDENTIFIER)
+PAT_TAG = r'(?P<tag_ns>(?:{ident}|\*)?\|)?(?P<tag_name>{ident}|\*)'.format(ident=IDENTIFIER)
 # Attributes (`[attr]`, `[attr=value]`, etc.)
-PAT_ATTR = r'\[{ws}*(?P<ns_attr>(?:(?:{ident}|\*)?\|)?{ident}){attr}'.format(ws=WSC, ident=IDENTIFIER, attr=ATTR)
+PAT_ATTR = r'''
+\[{ws}*(?P<attr_ns>(?:{ident}|\*)?\|)?(?P<attr_name>{ident}){attr}
+'''.format(ws=WSC, ident=IDENTIFIER, attr=ATTR)
 # Pseudo class (`:pseudo-class`, `:pseudo-class(`)
 PAT_PSEUDO_CLASS = r'(?P<name>:{ident})(?P<open>\({ws}*)?'.format(ws=WSC, ident=IDENTIFIER)
 # Pseudo class special patterns. Matches `:pseudo-class(` for special case pseudo classes.
@@ -300,12 +302,7 @@ class SelectorPattern(object):
 
         return self.name
 
-    def enabled(self, flags):
-        """Enabled."""
-
-        return True
-
-    def match(self, selector, index):
+    def match(self, selector, index, flags):
         """Match the selector."""
 
         return self.re_pattern.match(selector, index)
@@ -320,7 +317,7 @@ class SpecialPseudoPattern(SelectorPattern):
         self.patterns = {}
         for p in patterns:
             name = p[0]
-            pattern = SelectorPattern(name, p[2])
+            pattern = p[3](name, p[2])
             for pseudo in p[1]:
                 self.patterns[pseudo] = pattern
 
@@ -332,12 +329,7 @@ class SpecialPseudoPattern(SelectorPattern):
 
         return self.matched_name.get_name()
 
-    def enabled(self, flags):
-        """Enabled."""
-
-        return True
-
-    def match(self, selector, index):
+    def match(self, selector, index, flags):
         """Match the selector."""
 
         pseudo = None
@@ -346,7 +338,7 @@ class SpecialPseudoPattern(SelectorPattern):
             name = util.lower(css_unescape(m.group('name')))
             pattern = self.patterns.get(name)
             if pattern:
-                pseudo = pattern.match(selector, index)
+                pseudo = pattern.match(selector, index, flags)
                 if pseudo:
                     self.matched_name = pattern
 
@@ -429,11 +421,11 @@ class CSSParser(object):
         SelectorPattern("pseudo_close", PAT_PSEUDO_CLOSE),
         SpecialPseudoPattern(
             (
-                ("pseudo_contains", (':contains',), PAT_PSEUDO_CONTAINS),
-                ("pseudo_nth_child", (':nth-child', ':nth-last-child'), PAT_PSEUDO_NTH_CHILD),
-                ("pseudo_nth_type", (':nth-of-type', ':nth-last-of-type'), PAT_PSEUDO_NTH_TYPE),
-                ("pseudo_lang", (':lang',), PAT_PSEUDO_LANG),
-                ("pseudo_dir", (':dir',), PAT_PSEUDO_DIR)
+                ("pseudo_contains", (':contains',), PAT_PSEUDO_CONTAINS, SelectorPattern),
+                ("pseudo_nth_child", (':nth-child', ':nth-last-child'), PAT_PSEUDO_NTH_CHILD, SelectorPattern),
+                ("pseudo_nth_type", (':nth-of-type', ':nth-last-of-type'), PAT_PSEUDO_NTH_TYPE, SelectorPattern),
+                ("pseudo_lang", (':lang',), PAT_PSEUDO_LANG, SelectorPattern),
+                ("pseudo_dir", (':dir',), PAT_PSEUDO_DIR, SelectorPattern)
             )
         ),
         SelectorPattern("pseudo_class_custom", PAT_PSEUDO_CLASS_CUSTOM),
@@ -461,15 +453,11 @@ class CSSParser(object):
         inverse = False
         op = m.group('cmp')
         case = util.lower(m.group('case')) if m.group('case') else None
-        parts = [css_unescape(a) for a in m.group('ns_attr').split('|')]
-        ns = ''
+        ns = css_unescape(m.group('attr_ns')[:-1]) if m.group('attr_ns') else ''
+        attr = css_unescape(m.group('attr_name'))
         is_type = False
         pattern2 = None
-        if len(parts) > 1:
-            ns = parts[0]
-            attr = parts[1]
-        else:
-            attr = parts[0]
+
         if case:
             flags = re.I if case == 'i' else 0
         elif util.lower(attr) == 'type':
@@ -532,13 +520,8 @@ class CSSParser(object):
     def parse_tag_pattern(self, sel, m, has_selector):
         """Parse tag pattern from regex match."""
 
-        parts = [css_unescape(x) for x in m.group(0).split('|')]
-        if len(parts) > 1:
-            prefix = parts[0]
-            tag = parts[1]
-        else:
-            tag = parts[0]
-            prefix = None
+        prefix = css_unescape(m.group('tag_ns')[:-1]) if m.group('tag_ns') else None
+        tag = css_unescape(m.group('tag_name'))
         sel.tag = ct.SelectorTag(tag, prefix)
         has_selector = True
         return has_selector
@@ -1027,9 +1010,7 @@ class CSSParser(object):
         while index <= end:
             m = None
             for v in self.css_tokens:
-                if not v.enabled(self.flags):  # pragma: no cover
-                    continue
-                m = v.match(pattern, index)
+                m = v.match(pattern, index, self.flags)
                 if m:
                     name = v.get_name()
                     if self.debug:  # pragma: no cover

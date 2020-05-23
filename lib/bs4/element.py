@@ -43,6 +43,35 @@ def _alias(attr):
     return alias
 
 
+# These encodings are recognized by Python (so PageElement.encode
+# could theoretically support them) but XML and HTML don't recognize
+# them (so they should not show up in an XML or HTML document as that
+# document's encoding).
+#
+# If an XML document is encoded in one of these encodings, no encoding
+# will be mentioned in the XML declaration. If an HTML document is
+# encoded in one of these encodings, and the HTML document has a
+# <meta> tag that mentions an encoding, the encoding will be given as
+# the empty string.
+#
+# Source:
+# https://docs.python.org/3/library/codecs.html#python-specific-encodings
+PYTHON_SPECIFIC_ENCODINGS = set([
+    u"idna",
+    u"mbcs",
+    u"oem",
+    u"palmos",
+    u"punycode",
+    u"raw_unicode_escape",
+    u"undefined",
+    u"unicode_escape",
+    u"raw-unicode-escape",
+    u"unicode-escape",
+    u"string-escape",
+    u"string_escape",
+])
+    
+
 class NamespacedAttribute(unicode):
     """A namespaced string (e.g. 'xml:lang') that remembers the namespace
     ('xml') and the name ('lang') that were used to create it.
@@ -85,6 +114,8 @@ class CharsetMetaAttributeValue(AttributeValueWithCharsetSubstitution):
         """When an HTML document is being encoded to a given encoding, the
         value of a meta tag's 'charset' is the name of the encoding.
         """
+        if encoding in PYTHON_SPECIFIC_ENCODINGS:
+            return ''
         return encoding
 
 
@@ -110,6 +141,8 @@ class ContentMetaAttributeValue(AttributeValueWithCharsetSubstitution):
         return obj
 
     def encode(self, encoding):
+        if encoding in PYTHON_SPECIFIC_ENCODINGS:
+            return ''
         def rewrite(match):
             return match.group(1) + encoding
         return self.CHARSET_RE.sub(rewrite, self.original_value)
@@ -1399,7 +1432,7 @@ class Tag(PageElement):
 
     def __getattr__(self, tag):
         """Calling tag.subtag is the same as calling tag.find(name="subtag")"""
-        #print "Getattr %s.%s" % (self.__class__, tag)
+        #print("Getattr %s.%s" % (self.__class__, tag))
         if len(tag) > 3 and tag.endswith('Tag'):
             # BS3: soup.aTag -> "soup.find("a")
             tag_name = tag[:-3]
@@ -1724,7 +1757,7 @@ class Tag(PageElement):
         if l:
             r = l[0]
         return r
-    findChild = find
+    findChild = find #BS2
 
     def find_all(self, name=None, attrs={}, recursive=True, text=None,
                  limit=None, **kwargs):
@@ -2002,7 +2035,7 @@ class SoupStrainer(object):
 
         :param markup: A PageElement or a list of them.
         """
-        # print 'looking for %s in %s' % (self, markup)
+        # print('looking for %s in %s' % (self, markup))
         found = None
         # If given a list of items, scan it for a text element that
         # matches.
@@ -2028,7 +2061,7 @@ class SoupStrainer(object):
         return found
 
     def _matches(self, markup, match_against, already_tried=None):
-        # print u"Matching %s against %s" % (markup, match_against)
+        # print(u"Matching %s against %s" % (markup, match_against))
         result = False
         if isinstance(markup, list) or isinstance(markup, tuple):
             # This should only happen when searching a multi-valued attribute

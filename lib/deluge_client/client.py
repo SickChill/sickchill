@@ -4,9 +4,15 @@ import ssl
 import struct
 import warnings
 import zlib
-
+import io
+import os
+import platform
+from functools import wraps
+from threading import local as thread_local
 from .rencode import dumps, loads
 
+
+DEFAULT_LINUX_CONFIG_DIR_PATH = '~/.config/deluge'
 RPC_RESPONSE = 1
 RPC_ERROR = 2
 RPC_EVENT = 3
@@ -265,11 +271,12 @@ class DelugeRPCClient(object):
     def __enter__(self):
         """Connect to client while using with statement."""
         self.connect()
+        return self
 
     def __exit__(self, type, value, traceback):
         """Disconnect from client at end of with statement."""
         self.disconnect()
-        return self
+
 
 class RPCCaller(object):
     def __init__(self, caller, method=''):
@@ -281,3 +288,64 @@ class RPCCaller(object):
 
     def __call__(self, *args, **kwargs):
         return self.caller(self.method, *args, **kwargs)
+
+
+class LocalDelugeRPCClient(DelugeRPCClient):
+    """Client with auto discovery for the default local credentials"""
+    def __init__(
+        self,
+        host='127.0.0.1',
+        port=58846,
+        username='',
+        password='',
+        decode_utf8=True,
+        automatic_reconnect=True
+    ):
+        if (
+            host in ('localhost', '127.0.0.1', '::1') and
+            not username and not password
+        ):
+            username, password = self._get_local_auth()
+
+        super(LocalDelugeRPCClient, self).__init__(
+            host, port, username, password, decode_utf8, automatic_reconnect
+        )
+
+    def _cache_thread_local(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            if not hasattr(wrapper.cache, 'result'):
+                wrapper.cache.result = func(*args, **kwargs)
+            return wrapper.cache.result
+
+        wrapper.cache = thread_local()
+        return wrapper
+
+    @_cache_thread_local
+    def _get_local_auth(self):
+        auth_path = local_username = local_password = ''
+        os_family = platform.system()
+
+        if 'Windows' in os_family or 'CYGWIN' in os_family:
+            app_data_path = os.environ.get('APPDATA')
+            auth_path = os.path.join(app_data_path, 'deluge', 'auth')
+        elif 'Linux' in os_family:
+            config_path = os.path.expanduser(DEFAULT_LINUX_CONFIG_DIR_PATH)
+            auth_path = os.path.join(config_path, 'auth')
+
+        if os.path.exists(auth_path):
+            with io.open(auth_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if not line or line.startswith('#'):
+                        continue
+
+                    auth_data = line.split(':')
+                    if len(auth_data) < 2:
+                        continue
+
+                    username, password = auth_data[:2]
+                    if username == 'localclient':
+                        local_username, local_password = username, password
+                        break
+
+        return local_username, local_password

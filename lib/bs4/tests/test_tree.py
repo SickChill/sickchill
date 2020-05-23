@@ -37,6 +37,7 @@ from bs4.testing import (
     SoupTest,
     skipIf,
 )
+from soupsieve import SelectorSyntaxError
 
 XML_BUILDER_PRESENT = (builder_registry.lookup("xml") is not None)
 LXML_PRESENT = (builder_registry.lookup("lxml") is not None)
@@ -2018,7 +2019,7 @@ class TestSoupSelector(TreeTest):
         self.assertEqual(len(self.soup.select('del')), 0)
 
     def test_invalid_tag(self):
-        self.assertRaises(SyntaxError, self.soup.select, 'tag%t')
+        self.assertRaises(SelectorSyntaxError, self.soup.select, 'tag%t')
 
     def test_select_dashed_tag_ids(self):
         self.assertSelects('custom-dashed-tag', ['dash1', 'dash2'])
@@ -2209,7 +2210,7 @@ class TestSoupSelector(TreeTest):
             NotImplementedError, self.soup.select, "a:no-such-pseudoclass")
 
         self.assertRaises(
-            SyntaxError, self.soup.select, "a:nth-of-type(a)")
+            SelectorSyntaxError, self.soup.select, "a:nth-of-type(a)")
 
     def test_nth_of_type(self):
         # Try to select first paragraph
@@ -2265,7 +2266,7 @@ class TestSoupSelector(TreeTest):
         self.assertEqual([], self.soup.select('#inner ~ h2'))
 
     def test_dangling_combinator(self):
-        self.assertRaises(SyntaxError, self.soup.select, 'h1 >')
+        self.assertRaises(SelectorSyntaxError, self.soup.select, 'h1 >')
 
     def test_sibling_combinator_wont_select_same_tag_twice(self):
         self.assertSelects('p[lang] ~ p', ['lang-en-gb', 'lang-en-us', 'lang-fr'])
@@ -2296,8 +2297,8 @@ class TestSoupSelector(TreeTest):
         self.assertSelects('div x,y,  z', ['xid', 'yid', 'zida', 'zidb', 'zidab', 'zidac'])
 
     def test_invalid_multiple_select(self):
-        self.assertRaises(SyntaxError, self.soup.select, ',x, y')
-        self.assertRaises(SyntaxError, self.soup.select, 'x,,y')
+        self.assertRaises(SelectorSyntaxError, self.soup.select, ',x, y')
+        self.assertRaises(SelectorSyntaxError, self.soup.select, 'x,,y')
 
     def test_multiple_select_attrs(self):
         self.assertSelects('p[lang=en], p[lang=en-gb]', ['lang-en', 'lang-en-gb'])

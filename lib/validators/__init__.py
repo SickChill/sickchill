@@ -1,4 +1,14 @@
 from .between import between
+from .card import (
+    amex,
+    card_number,
+    diners,
+    discover,
+    jcb,
+    mastercard,
+    unionpay,
+    visa
+)
 from .domain import domain
 from .email import email
 from .extremes import Max, Min
@@ -17,6 +27,8 @@ from .uuid import uuid
 __all__ = ('between', 'domain', 'email', 'Max', 'Min', 'md5', 'sha1', 'sha224',
            'sha256', 'sha512', 'fi_business_id', 'fi_ssn', 'iban', 'ipv4',
            'ipv4_cidr', 'ipv6', 'ipv6_cidr', 'length', 'mac_address', 'slug',
-           'truthy', 'url', 'ValidationFailure', 'validator', 'uuid')
+           'truthy', 'url', 'ValidationFailure', 'validator', 'uuid',
+           'card_number', 'visa', 'mastercard', 'amex', 'unionpay', 'diners',
+           'jcb', 'discover')
 
-__version__ = '0.14.3'
+__version__ = '0.15.0'

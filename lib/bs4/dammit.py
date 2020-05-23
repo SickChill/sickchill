@@ -506,16 +506,16 @@ class UnicodeDammit:
             markup = smart_quotes_compiled.sub(self._sub_ms_char, markup)
 
         try:
-            #print "Trying to convert document to %s (errors=%s)" % (
-            #    proposed, errors)
+            #print("Trying to convert document to %s (errors=%s)" % (
+            #    proposed, errors))
             u = self._to_unicode(markup, proposed, errors)
             self.markup = u
             self.original_encoding = proposed
         except Exception as e:
-            #print "That didn't work!"
-            #print e
+            #print("That didn't work!")
+            #print(e)
             return None
-        #print "Correct encoding: %s" % proposed
+        #print("Correct encoding: %s" % proposed)
         return self.markup
 
     def _to_unicode(self, data, encoding, errors="strict"):

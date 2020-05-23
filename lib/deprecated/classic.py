@@ -161,9 +161,11 @@ class ClassicAdapter(wrapt.AdapterFactory):
 
             def wrapped_cls(cls, *args, **kwargs):
                 msg = self.get_deprecated_msg(wrapped, None)
-                with warnings.catch_warnings():
-                    if self.action:
+                if self.action:
+                    with warnings.catch_warnings():
                         warnings.simplefilter(self.action, self.category)
+                        warnings.warn(msg, category=self.category, stacklevel=_class_stacklevel)
+                else:
                     warnings.warn(msg, category=self.category, stacklevel=_class_stacklevel)
                 if old_new1 is object.__new__:
                     return old_new1(cls)
@@ -274,9 +276,11 @@ def deprecated(*args, **kwargs):
             @wrapt.decorator(adapter=adapter)
             def wrapper_function(wrapped_, instance_, args_, kwargs_):
                 msg = adapter.get_deprecated_msg(wrapped_, instance_)
-                with warnings.catch_warnings():
-                    if action:
+                if action:
+                    with warnings.catch_warnings():
                         warnings.simplefilter(action, category)
+                        warnings.warn(msg, category=category, stacklevel=_routine_stacklevel)
+                else:
                     warnings.warn(msg, category=category, stacklevel=_routine_stacklevel)
                 return wrapped_(*args_, **kwargs_)
 

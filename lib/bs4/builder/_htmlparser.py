@@ -57,8 +57,26 @@ class BeautifulSoupHTMLParser(HTMLParser):
     listens for HTMLParser events and translates them into calls
     to Beautiful Soup's tree construction API.
     """
+
+    # Strategies for handling duplicate attributes
+    IGNORE = 'ignore'
+    REPLACE = 'replace'
     
     def __init__(self, *args, **kwargs):
+        """Constructor.
+
+        :param on_duplicate_attribute: A strategy for what to do if a
+            tag includes the same attribute more than once. Accepted
+            values are: REPLACE (replace earlier values with later
+            ones, the default), IGNORE (keep the earliest value
+            encountered), or a callable. A callable must take three
+            arguments: the dictionary of attributes already processed,
+            the name of the duplicate attribute, and the most recent value
+            encountered.           
+        """
+        self.on_duplicate_attribute = kwargs.pop(
+            'on_duplicate_attribute', self.REPLACE
+        )
         HTMLParser.__init__(self, *args, **kwargs)
 
         # Keep a list of empty-element tags that were encountered
@@ -114,9 +132,21 @@ class BeautifulSoupHTMLParser(HTMLParser):
             # for consistency with the other tree builders.
             if value is None:
                 value = ''
-            attr_dict[key] = value
+            if key in attr_dict:
+                # A single attribute shows up multiple times in this
+                # tag. How to handle it depends on the
+                # on_duplicate_attribute setting.
+                on_dupe = self.on_duplicate_attribute
+                if on_dupe == self.IGNORE:
+                    pass
+                elif on_dupe in (None, self.REPLACE):
+                    attr_dict[key] = value
+                else:
+                    on_dupe(attr_dict, key, value)
+            else:
+                attr_dict[key] = value
             attrvalue = '""'
-        #print "START", name
+        #print("START", name)
         sourceline, sourcepos = self.getpos()
         tag = self.soup.handle_starttag(
             name, None, None, attr_dict, sourceline=sourceline,
@@ -146,12 +176,12 @@ class BeautifulSoupHTMLParser(HTMLParser):
            be the closing portion of an empty-element tag,
            e.g. '<tag></tag>'.
         """
-        #print "END", name
+        #print("END", name)
         if check_already_closed and name in self.already_closed_empty_element:
             # This is a redundant end tag for an empty-element tag.
             # We've already called handle_endtag() for it, so just
             # check it off the list.
-            # print "ALREADY CLOSED", name
+            # print("ALREADY CLOSED", name)
             self.already_closed_empty_element.remove(name)
         else:
             self.soup.handle_endtag(name)
@@ -273,7 +303,7 @@ class HTMLParserTreeBuilder(HTMLTreeBuilder):
     # The html.parser knows which line number and position in the
     # original file is the source of an element.
     TRACKS_LINE_NUMBERS = True
-    
+
     def __init__(self, parser_args=None, parser_kwargs=None, **kwargs):
         """Constructor.
 
@@ -285,15 +315,23 @@ class HTMLParserTreeBuilder(HTMLTreeBuilder):
             invoked.
         :param kwargs: Keyword arguments for the superclass constructor.
         """
+        # Some keyword arguments will be pulled out of kwargs and placed
+        # into parser_kwargs.
+        extra_parser_kwargs = dict()
+        for arg in ('on_duplicate_attribute',):
+            if arg in kwargs:
+                value = kwargs.pop(arg)
+                extra_parser_kwargs[arg] = value
         super(HTMLParserTreeBuilder, self).__init__(**kwargs)
         parser_args = parser_args or []
         parser_kwargs = parser_kwargs or {}
+        parser_kwargs.update(extra_parser_kwargs)
         if CONSTRUCTOR_TAKES_STRICT and not CONSTRUCTOR_STRICT_IS_DEPRECATED:
             parser_kwargs['strict'] = False
         if CONSTRUCTOR_TAKES_CONVERT_CHARREFS:
             parser_kwargs['convert_charrefs'] = False
         self.parser_args = (parser_args, parser_kwargs)
-
+        
     def prepare_markup(self, markup, user_specified_encoding=None,
                        document_declared_encoding=None, exclude_encodings=None):
 

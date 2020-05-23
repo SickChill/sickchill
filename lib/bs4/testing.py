@@ -15,6 +15,7 @@ from bs4.element import (
     Comment,
     ContentMetaAttributeValue,
     Doctype,
+    PYTHON_SPECIFIC_ENCODINGS,
     SoupStrainer,
     Script,
     Stylesheet,
@@ -821,6 +822,29 @@ Hello, world!
         # encoding.
         self.assertEqual('utf8', charset.encode("utf8"))
 
+    def test_python_specific_encodings_not_used_in_charset(self):
+        # You can encode an HTML document using a Python-specific
+        # encoding, but that encoding won't be mentioned _inside_ the
+        # resulting document. Instead, the document will appear to
+        # have no encoding.
+        for markup in [
+            b'<meta charset="utf8"></head>'
+            b'<meta id="encoding" charset="utf-8" />'
+        ]:
+            soup = self.soup(markup)
+            for encoding in PYTHON_SPECIFIC_ENCODINGS:
+                if encoding in (
+                    u'idna', u'mbcs', u'oem', u'undefined',
+                    u'string_escape', u'string-escape'
+                ):
+                    # For one reason or another, these will raise an
+                    # exception if we actually try to use them, so don't
+                    # bother.
+                    continue
+                encoded = soup.encode(encoding)
+                assert b'meta charset=""' in encoded
+                assert encoding.encode("ascii") not in encoded
+        
     def test_tag_with_no_attributes_can_have_attributes_added(self):
         data = self.soup("<a>text</a>")
         data.a['foo'] = 'bar'
@@ -853,6 +877,25 @@ class XMLTreeBuilderSmokeTest(object):
         markup = b"""<?xml version="1.0" encoding="utf8"?>\n<foo/>"""
         soup = self.soup(markup)
         self.assertEqual(markup, soup.encode("utf8"))
+
+    def test_python_specific_encodings_not_used_in_xml_declaration(self):
+        # You can encode an XML document using a Python-specific
+        # encoding, but that encoding won't be mentioned _inside_ the
+        # resulting document.
+        markup = b"""<?xml version="1.0"?>\n<foo/>"""
+        soup = self.soup(markup)
+        for encoding in PYTHON_SPECIFIC_ENCODINGS:
+            if encoding in (
+                u'idna', u'mbcs', u'oem', u'undefined',
+                u'string_escape', u'string-escape'
+            ):
+                # For one reason or another, these will raise an
+                # exception if we actually try to use them, so don't
+                # bother.
+                continue
+            encoded = soup.encode(encoding)
+            assert b'<?xml version="1.0"?>' in encoded
+            assert encoding.encode("ascii") not in encoded
 
     def test_processing_instruction(self):
         markup = b"""<?xml version="1.0" encoding="utf8"?>\n<?PITarget PIContent?>"""

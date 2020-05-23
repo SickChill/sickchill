@@ -51,7 +51,43 @@ class HTMLParserTreeBuilderSmokeTest(SoupTest, HTMLTreeBuilderSmokeTest):
         self.assertEqual("sourceline", soup.p.sourceline.name)
         self.assertEqual("sourcepos", soup.p.sourcepos.name)
 
+    def test_on_duplicate_attribute(self):
+        # The html.parser tree builder has a variety of ways of
+        # handling a tag that contains the same attribute multiple times.
+
+        markup = '<a class="cls" href="url1" href="url2" href="url3" id="id">'
+
+        # If you don't provide any particular value for
+        # on_duplicate_attribute, later values replace earlier values.
+        soup = self.soup(markup)
+        self.assertEquals("url3", soup.a['href'])
+        self.assertEquals(["cls"], soup.a['class'])
+        self.assertEquals("id", soup.a['id'])
         
+        # You can also get this behavior explicitly.
+        def assert_attribute(on_duplicate_attribute, expected):
+            soup = self.soup(
+                markup, on_duplicate_attribute=on_duplicate_attribute
+            )
+            self.assertEquals(expected, soup.a['href'])
+
+            # Verify that non-duplicate attributes are treated normally.
+            self.assertEquals(["cls"], soup.a['class'])
+            self.assertEquals("id", soup.a['id'])
+        assert_attribute(None, "url3")
+        assert_attribute(BeautifulSoupHTMLParser.REPLACE, "url3")
+
+        # You can ignore subsequent values in favor of the first.
+        assert_attribute(BeautifulSoupHTMLParser.IGNORE, "url1")
+
+        # And you can pass in a callable that does whatever you want.
+        def accumulate(attrs, key, value):
+            if not isinstance(attrs[key], list):
+                attrs[key] = [attrs[key]]
+            attrs[key].append(value)
+        assert_attribute(accumulate, ["url1", "url2", "url3"])            
+
+
 class TestHTMLParserSubclass(SoupTest):
     def test_error(self):
         """Verify that our HTMLParser subclass implements error() in a way
