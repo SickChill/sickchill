@@ -1777,6 +1777,7 @@ class TVEpisode(object):
 
         for cur_provider in sickbeard.metadata_provider_dict.values():
             result = cur_provider.create_episode_metadata(self) or result
+            result = cur_provider.update_episode_metadata(self) or result
 
         return result
 

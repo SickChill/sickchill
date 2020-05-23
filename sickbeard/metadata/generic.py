@@ -256,13 +256,6 @@ class GenericMetadata(object):
             return self.write_show_file(show_obj)
         return False
 
-    def create_episode_metadata(self, ep_obj):
-        if self.episode_metadata and ep_obj and not self._has_episode_metadata(ep_obj):
-            logger.log("Metadata provider " + self.name + " creating episode metadata for " + ep_obj.pretty_name(),
-                       logger.DEBUG)
-            return self.write_ep_file(ep_obj)
-        return False
-
     def update_show_indexer_metadata(self, show_obj):
         if self.show_metadata and show_obj and self._has_show_metadata(show_obj):
             logger.log(
@@ -297,6 +290,62 @@ class GenericMetadata(object):
                 logger.log(
                     "Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e),
                     logger.ERROR)
+
+    def create_episode_metadata(self, ep_obj):
+        if self.episode_metadata and ep_obj and not self._has_episode_metadata(ep_obj):
+            logger.log("Metadata provider " + self.name + " creating episode metadata for " + ep_obj.pretty_name(),
+                       logger.DEBUG)
+            return self.write_ep_file(ep_obj)
+        return False
+
+    def update_episode_metadata(self, ep_obj):
+        if self.episode_metadata and ep_obj and self._has_episode_metadata(ep_obj):
+            logger.log("Metadata provider " + self.name + " updating episode indexer info metadata file for " + ep_obj.pretty_name(), logger.DEBUG)
+            nfo_file_path = self.get_episode_file_path(ep_obj)
+            assert isinstance(nfo_file_path, six.text_type)
+
+            attribute_map = {
+                'title': 'name',
+                'aired': 'airdate',
+                'season': 'season',
+                'episode': 'episode',
+                'showtitle': 'show.name',
+                'runtime': 'show.runtime',
+                'plot': 'description'
+            }
+            try:
+                with io.open(nfo_file_path, 'rb') as xmlFileObj:
+                    episodeXML = etree.ElementTree(file=xmlFileObj)
+
+                changed = False
+                for attribute in attribute_map:
+                    try:
+                        if not hasattr(ep_obj, attribute_map[attribute]):
+                            continue
+
+                        node = episodeXML.find(attribute)
+                        if node is None or node.text == str(getattr(ep_obj, attribute_map[attribute])):
+                            continue
+
+                        node.text = str(getattr(ep_obj, attribute_map[attribute]))
+                        changed = True
+                    except AttributeError:
+                        pass
+
+                if not changed:
+                    return True
+
+                root = episodeXML.getroot()
+
+                # Make it purdy
+                helpers.indentXML(root)
+
+                episodeXML.write(nfo_file_path, encoding='UTF-8')
+                helpers.chmodAsParent(nfo_file_path)
+
+                return True
+            except IOError as e:
+                logger.log("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e), logger.ERROR)
 
     def create_fanart(self, show_obj):
         if self.fanart and show_obj and not self._has_fanart(show_obj):
