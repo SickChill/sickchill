@@ -583,7 +583,9 @@ def refine_video(video, episode):
         'series_imdb_id': 'show.imdbid',
         'size': 'file_size',
         'title': 'name',
-        'year': 'show.startyear'
+        'year': 'show.startyear',
+        'series_tvdb_id': 'show.indexerid',
+        'tvdb_id': 'indexerid'
     }
 
     def get_attr_value(obj, name):
@@ -597,10 +599,13 @@ def refine_video(video, episode):
         return value
 
     for name in metadata_mapping:
-        if not getattr(video, name) and get_attr_value(episode, metadata_mapping[name]):
-            setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
-        elif episode.show.subtitles_sr_metadata and get_attr_value(episode, metadata_mapping[name]):
-            setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
+        try:
+            if not getattr(video, name) and get_attr_value(episode, metadata_mapping[name]):
+                setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
+            elif episode.show.subtitles_sr_metadata and get_attr_value(episode, metadata_mapping[name]):
+                setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
+        except AttributeError:
+            logger.log('Unable to set {}.{} from episode.{} attribute'.format(type(video), name, metadata_mapping[name]), logger.DEBUG)
 
     # Set quality from metadata
     status, quality = Quality.splitCompositeStatus(episode.status)
