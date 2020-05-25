@@ -52,10 +52,7 @@ class Notifier(object):
         if not emby_apikey:
             emby_apikey = sickbeard.EMBY_APIKEY
 
-        if host.startswith('http'):
-            url = '{0}/emby/Notifications/Admin'.format(host)
-        else:
-            url = 'http://{0}/emby/Notifications/Admin'.format(host)
+        url = '{0}/emby/Notifications/Admin'.format(host)
         values = {'Name': 'SickChill', 'Description': message, 'ImageUrl': sickbeard.LOGO_URL}
         data = json.dumps(values)
 
@@ -92,7 +89,6 @@ class Notifier(object):
         """
 
         if sickbeard.USE_EMBY:
-
             if not sickbeard.EMBY_HOST:
                 logger.log('EMBY: No host specified, check your settings', logger.DEBUG)
                 return False
@@ -110,7 +106,8 @@ class Notifier(object):
             else:
                 query = ''
 
-            url = 'http://{0}/emby/Library/Series/Updated{1}'.format(sickbeard.EMBY_HOST, query)
+            url = '{0}/emby/Library/Series/Updated{1}'.format(sickbeard.EMBY_HOST, query)
+
             values = {}
             data = urllib.parse.urlencode(values)
             try:
