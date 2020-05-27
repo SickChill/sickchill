@@ -1,5 +1,5 @@
 # coding=utf-8
-# Author: seedboy
+# Author: miigotu <miigotu@gmail.com>
 #
 # URL: https://sickchill.github.io
 #
@@ -22,6 +22,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import re
+import traceback
 
 # Third Party Imports
 import validators
@@ -75,16 +76,24 @@ class IPTorrentsProvider(TorrentProvider):
                         'password': self.password,
                         'login': 'submit'}
 
-        login_url = self.urls['login']
         if self.custom_url:
             if not validators.url(self.custom_url):
                 logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
                 return False
 
-            login_url = urljoin(self.custom_url, self.urls['login'].split(self.url)[1])
+        # Get the index, redirects to login
+        data = self.get_url(self.custom_url or self.url, returns='text')
+        if not data:
+            logger.log("Unable to connect to provider", logger.WARNING)
+            return False
 
-        self.get_url(login_url, returns='text')
-        response = self.get_url(login_url, post_data=login_params, returns='text')
+        with BS4Parser(data, 'html5lib') as html:
+            action = html.find('form', {'action': re.compile(r'.*login.*')}).get('action')
+            if not action:
+                logger.log('Could not find the login form. Try adding cookies instead', logger.WARNING)
+                return False
+
+        response = self.get_url(urljoin(self.custom_url or self.url, action), post_data=login_params, returns='text')
         if not response:
             logger.log("Unable to connect to provider", logger.WARNING)
             return False
@@ -150,7 +159,7 @@ class IPTorrentsProvider(TorrentProvider):
                         torrents = torrent_table('tr') if torrent_table else []
 
                         # Continue only if one Release is found
-                        if len(torrents) < 2:
+                        if not torrents or len(torrents) < 2:
                             logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
@@ -183,6 +192,7 @@ class IPTorrentsProvider(TorrentProvider):
 
                 except Exception as e:
                     logger.log("Failed parsing provider. Error: {0!r}".format(ex(e)), logger.ERROR)
+                    logger.log(traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

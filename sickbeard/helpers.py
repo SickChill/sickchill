@@ -53,6 +53,7 @@ import bencode
 import certifi
 import cfscrape
 import cloudscraper
+from cloudscraper.exceptions import CloudflareException
 import rarfile
 import requests
 import six
@@ -1463,6 +1464,8 @@ def handle_requests_exception(requests_exception):
     except requests.exceptions.StreamConsumedError as error:
         logger.log(default.format(error, type(error.__class__.__name__)))
     except requests.exceptions.URLRequired as error:
+        logger.log(default.format(error, type(error.__class__.__name__)))
+    except CloudflareException as error:
         logger.log(default.format(error, type(error.__class__.__name__)))
     except (TypeError, ValueError) as error:
         level = get_level(error)
