@@ -53,12 +53,12 @@ import bencode
 import certifi
 import cfscrape
 import cloudscraper
-from cloudscraper.exceptions import CloudflareException
 import rarfile
 import requests
 import six
 import urllib3
 from cachecontrol import CacheControl
+from cloudscraper.exceptions import CloudflareException
 from requests.compat import urljoin
 from requests.utils import urlparse
 # noinspection PyUnresolvedReferences
