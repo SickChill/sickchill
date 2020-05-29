@@ -26,6 +26,7 @@ import re
 import shutil
 import stat
 import threading
+import time
 import traceback
 from sqlite3 import OperationalError
 
@@ -35,6 +36,7 @@ import babelfish
 from imdbpie import Imdb, ImdbFacade
 from imdbpie.exceptions import ImdbAPIError
 from unidecode import unidecode
+from urllib3.exceptions import MaxRetryError, NewConnectionError
 
 # First Party Imports
 import sickbeard
@@ -902,7 +904,7 @@ class TVShow(object):
             }
 
             logger.log(str(self.indexerid) + ": Obtained info from IMDb ->" + str(self.imdb_info), logger.DEBUG)
-        except (ValueError, LookupError, OperationalError, ImdbAPIError) as e:
+        except (ValueError, LookupError, OperationalError, ImdbAPIError, NewConnectionError, MaxRetryError) as e:
             logger.log('Could not get IMDB info: {}'. format(e))
 
     def nextEpisode(self):
@@ -2470,8 +2472,6 @@ class TVEpisode(object):
             filemtime = datetime.datetime.fromtimestamp(ek(os.path.getmtime, self.location)).replace(tzinfo=network_timezones.sb_timezone)
 
             if filemtime != airdatetime:
-                import time
-
                 airdatetime = airdatetime.timetuple()
                 logger.log("{0}: About to modify date of '{1}' to show air date {2}".format
                            (self.show.indexerid, self.location, time.strftime("%b %d,%Y (%H:%M)", airdatetime)), logger.DEBUG)
