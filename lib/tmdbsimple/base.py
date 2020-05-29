@@ -7,7 +7,7 @@ This module implements the base class of tmdbsimple.
 
 Created by Celia Oakley on 2013-10-31.
 
-:copyright: (c) 2013-2018 by Celia Oakley
+:copyright: (c) 2013-2020 by Celia Oakley
 :license: GPLv3, see LICENSE for more details
 """
 
@@ -64,6 +64,10 @@ class TMDB(object):
         api_dict = {'api_key': API_KEY}
         if params:
             params.update(api_dict)
+            for key, value in params.items():
+                if isinstance(params[key], bool):
+                    params[key] = 'true' if value is True else 'false'
+
         else:
             params = api_dict
         return params

@@ -12,14 +12,14 @@ http://www.themoviedb.org/documentation/api and documentation page
 https://developers.themoviedb.org/3/getting-started
 https://www.themoviedb.org/documentation/api/status-codes
 
-:copyright: (c) 2013-2018 by Celia Oakley.
+:copyright: (c) 2013-2020 by Celia Oakley.
 :license: GPLv3, see LICENSE for more details
 """
 
 __title__ = 'tmdbsimple'
-__version__ = '2.2.0'
+__version__ = '2.2.6'
 __author__ = 'Celia Oakley'
-__copyright__ = 'Copyright (c) 2013-2018 Celia Oakley'
+__copyright__ = 'Copyright (c) 2013-2020 Celia Oakley'
 __license__ = 'GPLv3'
 
 import os
@@ -34,7 +34,7 @@ from .genres import Genres
 from .movies import Movies, Collections, Companies, Keywords, Reviews
 from .people import People, Credits, Jobs
 from .search import Search
-from .tv import TV, TV_Seasons, TV_Episodes, Networks
+from .tv import TV, TV_Seasons, TV_Episodes, TV_Changes, Networks
 
 
 API_KEY = os.environ.get('TMDB_API_KEY', None)

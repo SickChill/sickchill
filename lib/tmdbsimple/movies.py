@@ -8,7 +8,7 @@ Reviews functionality of tmdbsimple.
 
 Created by Celia Oakley on 2013-10-31.
 
-:copyright: (c) 2013-2018 by Celia Oakley
+:copyright: (c) 2013-2020 by Celia Oakley
 :license: GPLv3, see LICENSE for more details
 """
 
@@ -59,7 +59,7 @@ class Movies(TMDB):
             append_to_response: (optional) Comma separated, any movie method.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('info')
 
@@ -76,7 +76,7 @@ class Movies(TMDB):
             append_to_response: (optional) Comma separated, any movie method.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('alternative_titles')
 
@@ -92,7 +92,7 @@ class Movies(TMDB):
             append_to_response: (optional) Comma separated, any movie method.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('credits')
 
@@ -109,7 +109,7 @@ class Movies(TMDB):
             append_to_response: (optional) Comma separated, any movie method.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('external_ids')
 
@@ -128,7 +128,7 @@ class Movies(TMDB):
                                     ISO 69-1.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('images')
 
@@ -141,7 +141,7 @@ class Movies(TMDB):
         Get the plot keywords for a specific movie id.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('keywords')
 
@@ -158,7 +158,7 @@ class Movies(TMDB):
             page: (optional) Minimum value of 1.  Expected value is an integer.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('recommendations')
 
@@ -174,7 +174,7 @@ class Movies(TMDB):
             append_to_response: (optional) Comma separated, any movie method.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('release_dates')
 
@@ -191,7 +191,7 @@ class Movies(TMDB):
             append_to_response: (optional) Comma separated, any movie method.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('releases')
 
@@ -208,7 +208,7 @@ class Movies(TMDB):
             append_to_response: (optional) Comma separated, any movie method.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('videos')
 
@@ -224,7 +224,7 @@ class Movies(TMDB):
             append_to_response: (optional) Comma separated, any movie method.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('translations')
 
@@ -242,7 +242,7 @@ class Movies(TMDB):
             append_to_response: (optional) Comma separated, any movie method.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('similar_movies')
 
@@ -260,7 +260,7 @@ class Movies(TMDB):
             append_to_response: (optional) Comma separated, any movie method.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('reviews')
 
@@ -278,7 +278,7 @@ class Movies(TMDB):
             append_to_response: (optional) Comma separated, any movie method.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('lists')
 
@@ -300,7 +300,7 @@ class Movies(TMDB):
             end_date: (optional) Expected format is 'YYYY-MM-DD'.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('changes')
 
@@ -313,7 +313,7 @@ class Movies(TMDB):
         Get the latest movie id.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_path('latest')
 
@@ -331,7 +331,7 @@ class Movies(TMDB):
             language: (optional) ISO 639-1 code.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_path('upcoming')
 
@@ -349,7 +349,7 @@ class Movies(TMDB):
             language: (optional) ISO 639-1 code.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_path('now_playing')
 
@@ -367,7 +367,7 @@ class Movies(TMDB):
             language: (optional) ISO 639-1 code.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_path('popular')
 
@@ -386,7 +386,7 @@ class Movies(TMDB):
             language: (optional) ISO 639-1 code.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_path('top_rated')
 
@@ -404,7 +404,7 @@ class Movies(TMDB):
             session_id: see Authentication.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('account_states')
 
@@ -423,7 +423,7 @@ class Movies(TMDB):
             value: Rating value.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('rating')
 
@@ -466,7 +466,7 @@ class Collections(TMDB):
             append_to_response: (optional) Comma separated, any movie method.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('info')
 
@@ -485,7 +485,7 @@ class Collections(TMDB):
             ISO 69-1.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('images')
 
@@ -518,7 +518,7 @@ class Companies(TMDB):
             append_to_response: (optional) Comma separated, any movie method.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('info')
 
@@ -536,7 +536,7 @@ class Companies(TMDB):
             append_to_response: (optional) Comma separated, any movie method.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('movies')
 
@@ -565,7 +565,7 @@ class Keywords(TMDB):
         Get the basic information for a specific keyword id.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('info')
 
@@ -582,7 +582,7 @@ class Keywords(TMDB):
             language: (optional) ISO 639-1 code.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('movies')
 
@@ -610,7 +610,7 @@ class Reviews(TMDB):
         Get the full details of a review by ID.
 
         Returns:
-            A dict respresentation of the JSON returned from the API.
+            A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('info')
 
