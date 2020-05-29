@@ -28,15 +28,12 @@ class DelugeBase(object):
     def make_options(result):
         options = {}
 
-        if sickbeard.TORRENT_PATH and sickbeard.TORRENT_PATH_INCOMPLETE:
+        if sickbeard.TORRENT_PATH or sickbeard.TORRENT_PATH_INCOMPLETE:
             options.update({
-                'download_location': sickbeard.TORRENT_PATH_INCOMPLETE,
-                'move_completed': True,
+                'download_location': sickbeard.TORRENT_PATH_INCOMPLETE or sickbeard.TORRENT_PATH,
+                'move_completed': bool(sickbeard.TORRENT_PATH_INCOMPLETE),
                 'move_completed_path': sickbeard.TORRENT_PATH
             })
-
-        elif sickbeard.TORRENT_PATH:
-            options.update({'download_location': sickbeard.TORRENT_PATH})
 
         if sickbeard.TORRENT_PAUSED:
             options.update({'add_paused': True})
