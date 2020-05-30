@@ -344,7 +344,7 @@ class GenericMetadata(object):
                 helpers.chmodAsParent(nfo_file_path)
 
                 return True
-            except IOError as e:
+            except (IOError, etree.ParseError) as e:
                 logger.log("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e), logger.ERROR)
 
     def create_fanart(self, show_obj):
