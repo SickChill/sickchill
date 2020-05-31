@@ -1,34 +1,39 @@
 # coding=utf-8
 
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 
-import sickbeard
+# Third Party Imports
 from requests.compat import urlencode
-from sickbeard import logger
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import ex
-from six.moves.urllib.error import HTTPError
+from requests.exceptions import HTTPError
+# noinspection PyUnresolvedReferences
 from six.moves.urllib.request import Request, urlopen
+
+# First Party Imports
+import sickbeard
+from sickbeard import logger
+from sickchill.helper.encoding import ek
+from sickchill.helper.exceptions import ex
 
 
 class Notifier(object):
@@ -71,10 +76,18 @@ class Notifier(object):
         #
 
         # Calculated values
-        showPath = ep_obj.show.location
-        showName = ep_obj.show.name
-        rootShowAndSeason = ek(os.path.dirname, ep_obj.location)
-        absPath = ep_obj.location
+        # noinspection PyUnresolvedReferences
+        if isinstance(ep_obj, sickbeard.tv.TVEpisode):
+            showPath = ep_obj.show.location
+            showName = ep_obj.show.name
+            rootShowAndSeason = ek(os.path.dirname, ep_obj.location)
+            absPath = ep_obj.location
+        else:
+            # This is a TVShow
+            showPath = ep_obj.location
+            showName = ep_obj.name
+            rootShowAndSeason = ek(os.path.dirname, ep_obj.location)
+            absPath = ep_obj.location
 
         # Some show names have colons in them which are illegal in a path location, so strip them out.
         # (Are there other characters?)

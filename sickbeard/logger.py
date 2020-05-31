@@ -1,29 +1,30 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sickchill.github.io
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 """
-Custom Logger for SickRage
+Custom Logger for SickChill
 """
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import io
 import locale
 import logging
@@ -36,17 +37,20 @@ import threading
 import traceback
 from logging import NullHandler
 
-import sickbeard
+# Third Party Imports
 import six
-from github import InputFileContent, RateLimitExceededException, TwoFactorException
-from sickbeard import classes
-from sickrage.helper.common import dateTimeFormat
-from sickrage.helper.encoding import ek, ss
-from sickrage.helper.exceptions import ex
-# noinspection PyUnresolvedReferences
-from six.moves.urllib.parse import quote
+from github import InputFileContent
+from github.GithubException import RateLimitExceededException, TwoFactorException
+from requests.compat import quote
 
-# pylint: disable=line-too-long
+# First Party Imports
+import sickbeard
+from sickchill.helper.common import dateTimeFormat
+from sickchill.helper.encoding import ek, ss
+from sickchill.helper.exceptions import ex
+
+# Local Folder Imports
+from . import classes
 
 # log levels
 ERROR = logging.ERROR
@@ -63,7 +67,7 @@ LOGGING_LEVELS = {
     'DB': DB,
 }
 
-censored_items = {}  # pylint: disable=invalid-name
+censored_items = {}
 
 
 class CensoredFormatter(logging.Formatter, object):
@@ -100,22 +104,26 @@ class CensoredFormatter(logging.Formatter, object):
         censored.sort(key=len, reverse=True)
 
         for item in censored:
-            msg = msg.replace(item, len(item) * '*')
+            try:
+                # passwords that include ++ for example will error. Cannot escape or it wont match at all.
+                msg = re.sub(r'\b({item})\b'.format(item=item), '*' * 8, msg)
+            except re.error:
+                msg = msg.replace(item, '*' * 8)
 
         # Needed because Newznab apikey isn't stored as key=value in a section.
-        msg = re.sub(r'([&?]r|[&?]apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)', r'\1=**********\2', msg, re.I)
+        msg = re.sub(r'([&?]r|[&?]apikey|[&?]jackett_apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)', r'\1=**********\2', msg, re.I)
         return msg
 
 
-class Logger(object):  # pylint: disable=too-many-instance-attributes
+class Logger(object):
     """
     Logger to create log entries
     """
     def __init__(self):
-        self.logger = logging.getLogger('sickrage')
+        self.logger = logging.getLogger('sickchill')
 
         self.loggers = [
-            logging.getLogger('sickrage'),
+            logging.getLogger('sickchill'),
             logging.getLogger('tornado.general'),
             logging.getLogger('tornado.application'),
             # logging.getLogger('subliminal'),
@@ -141,7 +149,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         :param debug_logging: True if debug logging is enabled
         :param database_logging: True if logging database access
         """
-        self.log_file = self.log_file or ek(os.path.join, sickbeard.LOG_DIR, 'sickrage.log')
+        self.log_file = self.log_file or ek(os.path.join, sickbeard.LOG_DIR, 'sickchill.log')
 
         global log_file
         log_file = self.log_file
@@ -215,6 +223,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         :param kwargs: to pass to logger
         """
         cur_thread = threading.currentThread().getName()
+        cur_thread = cur_thread.rstrip('_1234567890')
 
         cur_hash = ''
         if level == ERROR and sickbeard.CUR_COMMIT_HASH and len(sickbeard.CUR_COMMIT_HASH) > 6:
@@ -222,21 +231,24 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                 sickbeard.CUR_COMMIT_HASH[:7]
             )
 
-        message = '{thread} :: {hash}{message}'.format(
-            thread=cur_thread, hash=cur_hash, message=msg)
-
         # Change the SSL error to a warning with a link to information about how to fix it.
         # Check for 'error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:590)'
-
         ssl_errors = [
             r'error \[Errno \d+\] _ssl.c:\d+: error:\d+\s*:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert internal error',
             r'error \[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE\] sslv3 alert handshake failure \(_ssl\.c:\d+\)',
         ]
         for ssl_error in ssl_errors:
-            check = re.sub(ssl_error, 'See: http://git.io/vuU5V', message)
-            if check != message:
-                message = check
+            check = re.sub(ssl_error, 'See: http://git.io/vuU5V', msg)
+            if check != msg:
+                msg = check
                 level = WARNING
+
+        if _('Missing time zone for network') in msg:
+            message = '{thread} :: {message}'.format(
+                thread=cur_thread, message=msg)
+        else:
+            message = '{thread} :: {hash}{message}'.format(
+                thread=cur_thread, hash=cur_hash, message=msg)
 
         if level == ERROR:
             classes.ErrorViewer.add(classes.UIError(message))
@@ -260,29 +272,26 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         else:
             sys.exit(1)
 
-    def submit_errors(self):  # pylint: disable=too-many-branches,too-many-locals
+    def submit_errors(self):
 
         submitter_result = ''
         issue_id = None
 
-        gh_credentials = (sickbeard.GIT_AUTH_TYPE == 0 and sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD) \
-            or (sickbeard.GIT_AUTH_TYPE == 1 and sickbeard.GIT_TOKEN)
-
-        if not all((gh_credentials, sickbeard.DEBUG, sickbeard.gh, classes.ErrorViewer.errors)):
-            submitter_result = 'Please set your GitHub token or username and password in the config and enable debug. Unable to submit issue ticket to GitHub!'
+        if not all((sickbeard.GIT_TOKEN, sickbeard.DEBUG, sickbeard.gh, classes.ErrorViewer.errors)):
+            submitter_result = 'Please set your GitHub token in the config and enable debug. Unable to submit issue ticket to GitHub!'
             return submitter_result, issue_id
 
         try:
-            from sickbeard.versionChecker import CheckVersion
+            from .versionChecker import CheckVersion
             checkversion = CheckVersion()
             checkversion.check_for_new_version()
             commits_behind = checkversion.updater.get_num_commits_behind()
-        except Exception:  # pylint: disable=broad-except
-            submitter_result = 'Could not check if your SickRage is updated, unable to submit issue ticket to GitHub!'
+        except Exception:
+            submitter_result = 'Could not check if your SickChill is updated, unable to submit issue ticket to GitHub!'
             return submitter_result, issue_id
 
         if commits_behind is None or commits_behind > 0:
-            submitter_result = 'Please update SickRage, unable to submit issue ticket to GitHub with an outdated version!'
+            submitter_result = 'Please update SickChill, unable to submit issue ticket to GitHub with an outdated version!'
             return submitter_result, issue_id
 
         if self.submitter_running:
@@ -317,27 +326,27 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                     if len(title_error) > 1000:
                         title_error = title_error[0:1000]
 
-                except Exception as err_msg:  # pylint: disable=broad-except
+                except Exception as err_msg:
                     self.log('Unable to get error title : {0}'.format(ex(err_msg)), ERROR)
                     title_error = 'UNKNOWN'
 
                 gist = None
-                regex = r'^({0})\s+([A-Z]+)\s+[A-Za-z0-9\-\[\] :]+::\s(?:\[[\w]{7}\]).*$'.format(re.escape(cur_error.time))
+                regex = r'^(?P<time>{time})\s+(?P<level>[A-Z]+)\s+[A-Za-z0-9\-\[\] :]+::.*$'.format(time=re.escape(cur_error.time))
                 for i, data in enumerate(__log_data):
                     match = re.match(regex, data)
                     if match:
-                        level = match.group(1)
+                        level = match.group('level')
                         if LOGGING_LEVELS[level] == ERROR:
                             paste_data = ''.join(__log_data[i:i + 50])
                             if paste_data:
-                                gist = sickbeard.gh.get_user().create_gist(False, {'sickrage.log': InputFileContent(paste_data)})
+                                gist = sickbeard.gh.get_user().create_gist(False, {'sickchill.log': InputFileContent(paste_data)})
                             break
                     else:
                         gist = 'No ERROR found'
 
                 try:
                     locale_name = locale.getdefaultlocale()[1]
-                except Exception:  # pylint: disable=broad-except
+                except Exception:
                     locale_name = 'unknown'
 
                 if gist and gist != 'No ERROR found':
@@ -351,14 +360,14 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
                     'Operating System: **{0}**'.format(platform.platform()),
                     'Locale: {0}'.format(locale_name),
                     'Branch: **{0}**'.format(sickbeard.BRANCH),
-                    'Commit: SickRage/SickRage@{0}'.format(sickbeard.CUR_COMMIT_HASH),
+                    'Commit: SickChill/SickChill@{0}'.format(sickbeard.CUR_COMMIT_HASH),
                     log_link,
                     '### ERROR',
                     '```',
                     cur_error.message,
                     '```',
                     '---',
-                    '_STAFF NOTIFIED_: @SickRage/owners @SickRage/moderators',
+                    '_STAFF NOTIFIED_: @SickChill/owners @SickChill/moderators',
                 ]
 
                 message = '\n'.join(msg)
@@ -415,7 +424,7 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
             submitter_result = ('Your Github account requires Two-Factor Authentication, '
                                 'please change your auth method in the config')
             issue_id = None
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             self.log(traceback.format_exc(), ERROR)
             submitter_result = 'Exception generated in issue submitter, please check the log'
             issue_id = None
@@ -425,7 +434,6 @@ class Logger(object):  # pylint: disable=too-many-instance-attributes
         return submitter_result, issue_id
 
 
-# pylint: disable=too-few-public-methods
 class Wrapper(object):
     instance = Logger()
 
@@ -439,7 +447,7 @@ class Wrapper(object):
             return getattr(self.instance, name)
 
 
-_globals = sys.modules[__name__] = Wrapper(sys.modules[__name__])  # pylint: disable=invalid-name
+_globals = sys.modules[__name__] = Wrapper(sys.modules[__name__])
 
 
 def init_logging(*args, **kwargs):

@@ -206,6 +206,17 @@ home_newShow.mako
     border: 1px solid #111111;
 }
 
+.new-show-table {
+    color: #FFFFFF !important;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+.new-show-table tr.in-list,
+.new-show-table tr.in-list a {
+    color: #ACACAC !important;
+}
+
 /* =======================================================================
 home_addExistingShow.mako
 ========================================================================== */

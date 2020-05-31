@@ -2,29 +2,26 @@
 
 # Author: Mhynlo<mhynlo@mhynlo.io>
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
-from __future__ import unicode_literals
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-import json
+from __future__ import absolute_import, print_function, unicode_literals
 
-import requests
+# First Party Imports
 import sickbeard
-import six
-from sickbeard import common, logger
-from sickrage.helper.exceptions import ex
+from sickbeard import common
 
 
 class Notifier(object):
@@ -54,32 +51,14 @@ class Notifier(object):
             self._notify_discord(title + " - " + update_text.format(ipaddress))
 
     def test_notify(self):
-        return self._notify_discord("This is a test notification from SickRage", force=True)
+        return self._notify_discord("This is a test notification from SickChill", force=True)
 
-    def _send_discord(self, message=None):
-        discord_webhook = sickbeard.DISCORD_WEBHOOK
-        discord_name = sickbeard.DISCORD_NAME
-        avatar_icon = sickbeard.DISCORD_AVATAR_URL
-        discord_tts = bool(sickbeard.DISCORD_TTS)
-
-        logger.log("Sending discord message: " + message, logger.INFO)
-        logger.log("Sending discord message  to url: " + discord_webhook, logger.INFO)
-
-        if isinstance(message, six.text_type):
-            message = message.encode('utf-8')
-
-        headers = {b"Content-Type": b"application/json"}
-        try:
-            r = requests.post(discord_webhook, data=json.dumps(dict(content=message, username=discord_name, avatar_url=avatar_icon, tts=discord_tts)), headers=headers)
-            r.raise_for_status()
-        except Exception as e:
-            logger.log("Error Sending Discord message: " + ex(e), logger.ERROR)
-            return False
-
-        return True
+    @staticmethod
+    def _send_discord(message=None, force=False):
+        return sickbeard.notificationsTaskScheduler.action.add_item(message, notifier='discord', force_next=force)
 
     def _notify_discord(self, message='', force=False):
         if not sickbeard.USE_DISCORD and not force:
             return False
 
-        return self._send_discord(message)
+        return self._send_discord(message, force=force)

@@ -1,31 +1,29 @@
 # coding=utf-8
 
 # Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# First Party Imports
 import sickbeard
-
-from sickbeard.notifiers import kodi, plex, emby, nmj, nmjv2, synoindex, \
-    synologynotifier, pytivo, growl, prowl, libnotify, pushover, boxcar2, \
-    nma, pushalot, pushbullet, freemobile, telegram, tweet, trakt, emailnotify, \
-    slack, discord, join, twilio_notify
+from sickbeard.notifiers import (boxcar2, discord, emailnotify, emby, freemobile, growl, join, kodi, libnotify, matrix, nmj, nmjv2, plex, prowl, pushalot,
+                                 pushbullet, pushover, pytivo, slack, synoindex, synologynotifier, telegram, trakt, tweet, twilio_notify)
 
 # home theater / nas
 kodi_notifier = kodi.Notifier()
@@ -43,7 +41,6 @@ prowl_notifier = prowl.Notifier()
 libnotify_notifier = libnotify.Notifier()
 pushover_notifier = pushover.Notifier()
 boxcar2_notifier = boxcar2.Notifier()
-nma_notifier = nma.Notifier()
 pushalot_notifier = pushalot.Notifier()
 pushbullet_notifier = pushbullet.Notifier()
 freemobile_notifier = freemobile.Notifier()
@@ -55,6 +52,7 @@ twilio_notifier = twilio_notify.Notifier()
 trakt_notifier = trakt.Notifier()
 email_notifier = emailnotify.Notifier()
 slack_notifier = slack.Notifier()
+matrix_notifier = matrix.Notifier()
 discord_notifier = discord.Notifier()
 
 notifiers = [
@@ -72,7 +70,6 @@ notifiers = [
     prowl_notifier,
     pushover_notifier,
     boxcar2_notifier,
-    nma_notifier,
     pushalot_notifier,
     pushbullet_notifier,
     twitter_notifier,
@@ -80,6 +77,7 @@ notifiers = [
     trakt_notifier,
     email_notifier,
     slack_notifier,
+    matrix_notifier,
     discord_notifier,
     join_notifier,
 ]
@@ -88,6 +86,11 @@ notifiers = [
 def notify_download(ep_name):
     for n in notifiers:
         n.notify_download(ep_name)
+
+
+def notify_postprocess(ep_name):
+    for n in notifiers:
+        n.notify_postprocess(ep_name)
 
 
 def notify_subtitle_download(ep_name, lang):

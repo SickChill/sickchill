@@ -1,32 +1,36 @@
 # coding=utf-8
 # Author: miigotu
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 import time
 import traceback
 
+# First Party Imports
 import sickbeard
-from sickbeard import common, config, generic_queue, logger, processTV
-from sickbeard.processTV import log_helper, process_dir
-from sickrage.helper.encoding import ek
+from sickchill.helper.encoding import ek
+
+# Local Folder Imports
+from . import common, config, generic_queue, logger
+from .processTV import log_helper, process_dir
 
 MANUAL_POST_PROCESS = 120
 AUTO_POST_PROCESS = 100
@@ -128,7 +132,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
         item = self.find_in_queue(directory, mode)
 
         if not delete:
-            delete = (False, (not sickbeard.NO_DELETE, True)[method == u"move"])[mode == u"auto"]
+            delete = (False, (not sickbeard.NO_DELETE, True)[method == "move"])[mode == "auto"]
 
         if item:
             if self.currentItem == item:

@@ -1,8 +1,10 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
-    import sickbeard
     import re
+    import sickbeard
+    from sickbeard.filters import hide
     from sickbeard.helpers import anon_url
+    import sickchill
 %>
 
 <%block name="tabs">
@@ -159,7 +161,10 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="password" name="kodi_password" id="kodi_password" value="${sickbeard.KODI_PASSWORD}" class="form-control input-sm input250" autocomplete="no" autocapitalize="off" />
+                                            <input
+                                                type="password" name="kodi_password" id="kodi_password" value="${sickbeard.KODI_PASSWORD|hide}"
+                                                class="form-control input-sm input250" autocomplete="no" autocapitalize="off"
+                                            />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -264,7 +269,11 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="password" name="plex_server_password" id="plex_server_password" value="${'*' * len(sickbeard.PLEX_SERVER_PASSWORD)}" class="form-control input-sm input250" autocomplete="no" autocapitalize="off" />
+                                            <input
+                                                type="password" name="plex_server_password" id="plex_server_password"
+                                                value="${sickbeard.PLEX_SERVER_PASSWORD|hide}" class="form-control input-sm input250"
+                                                autocomplete="no" autocapitalize="off"
+                                            />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -431,7 +440,11 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="password" name="plex_client_password" id="plex_client_password" value="${'*' * len(sickbeard.PLEX_CLIENT_PASSWORD)}" class="form-control input-sm input250" autocomplete="no" autocapitalize="off" />
+                                            <input
+                                                type="password" name="plex_client_password" id="plex_client_password"
+                                                value="${sickbeard.PLEX_CLIENT_PASSWORD|hide}" class="form-control input-sm input250"
+                                                autocomplete="no" autocapitalize="off"
+                                            />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -503,7 +516,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="emby_host">${_('host running Emby (eg. 192.168.1.100:8096)')}</label>
+                                            <label for="emby_host">${_('host running Emby (eg. https://192.168.1.100:8920 or http://192.168.1.100:8096)')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -821,7 +834,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label><b>${_('note')}:</b>&nbsp;${_('requires SickRage to be running on your Synology NAS.')}</label>
+                                        <label><b>${_('note')}:</b>&nbsp;${_('requires SickChill to be running on your Synology NAS.')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -866,7 +879,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label><b>${_('note')}:</b>&nbsp;${_('requires SickRage to be running on your Synology NAS.')}</label>
+                                        <label><b>${_('note')}:</b>&nbsp;${_('requires SickChill to be running on your Synology NAS.')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -1092,12 +1105,15 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="password" name="growl_password" id="growl_password" value="${sickbeard.GROWL_PASSWORD}" class="form-control input-sm input250" autocomplete="no" autocapitalize="off" />
+                                            <input
+                                                type="password" name="growl_password" id="growl_password" value="${sickbeard.GROWL_PASSWORD|hide}"
+                                                class="form-control input-sm input250" autocomplete="no" autocapitalize="off"
+                                            />
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="growl_password">${_('may leave blank if SickRage is on the same host.')}</label>
+                                            <label for="growl_password">${_('may leave blank if SickChill is on the same host.')}</label>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -1265,7 +1281,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="prowl_priority">${_('priority of Prowl messages from SickRage.')}</label>
+                                            <label for="prowl_priority">${_('priority of Prowl messages from SickChill.')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1361,7 +1377,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-pushover" title="${_('Pushover')}"></span>
-                        <h3><a href="${anon_url('https://pushover.net/apps/clone/sickrage')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Pushover</a></h3>
+                        <h3><a href="${anon_url('https://pushover.net/apps/clone/sickchill')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Pushover</a></h3>
                         <p>${_('Pushover makes it easy to send real-time notifications to your Android and iOS devices.')}</p>
                     </div>
                 </div>
@@ -1441,7 +1457,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="pushover_apikey"><a href="${anon_url('https://pushover.net/apps/clone/sickrage')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>${_('click here')}</b></a>${_(' to create a Pushover API key')}</label>
+                                            <label for="pushover_apikey"><a href="${anon_url('https://pushover.net/apps/clone/sickchill')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>${_('click here')}</b></a>${_(' to create a Pushover API key')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1632,122 +1648,6 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <input  class="btn" type="button" value="Test Boxcar" id="testBoxcar2" />
-                                    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </fieldset>
-                </div>
-            </div>
-
-            <div class="config-group-divider"></div>
-
-            <!-- /nma component-group //-->
-            <div class="row">
-                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                    <div class="component-group-desc">
-                        <span class="icon-notifiers-nma" alt="" title="${_('NMA')}"></span>
-                        <h3><a href="${anon_url('http://www.notifymyandroid.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">${_('Notify My Android')}</a></h3>
-                        <p>${_('Notify My Android is a Prowl-like Android App and API that offers an easy way to send notifications from your application directly to your Android device.')}</p>
-                    </div>
-                </div>
-                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
-
-                    <fieldset class="component-group-list">
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Enable')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_nma" id="use_nma" ${('', 'checked="checked"')[bool(sickbeard.USE_NMA)]}/>
-                                <label for="use_nma">${_('send NMA notifications?')}</label>
-                            </div>
-                        </div>
-
-                        <div id="content_use_nma">
-
-                            <div class="field-pair row">
-                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Notify on snatch')}</label>
-                                </div>
-                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="nma_notify_onsnatch" id="nma_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.NMA_NOTIFY_ONSNATCH)]}/>
-                                    <label for="nma_notify_onsnatch">${_('send a notification when a download starts?')}</label>
-                                </div>
-                            </div>
-
-                            <div class="field-pair row">
-                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Notify on download')}</label>
-                                </div>
-                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="nma_notify_ondownload" id="nma_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.NMA_NOTIFY_ONDOWNLOAD)]}/>
-                                    <label for="nma_notify_ondownload">${_('send a notification when a download finishes?')}</label>
-                                </div>
-                            </div>
-
-                            <div class="field-pair row">
-                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Notify on subtitle download')}</label>
-                                </div>
-                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="nma_notify_onsubtitledownload" id="nma_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.NMA_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="nma_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
-                                </div>
-                            </div>
-
-                            <div class="field-pair row">
-                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('NMA API key')}</label>
-                                </div>
-                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <input type="text" name="nma_api" id="nma_api" value="${sickbeard.NMA_API}" class="form-control input-sm input350" autocapitalize="off" />
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label for="nma_api">${_('(multiple keys must be separated by commas, up to a maximum of 5)')}</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="field-pair row">
-                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('NMA priority')}</label>
-                                </div>
-                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <select id="nma_priority" name="nma_priority" class="form-control input-sm input350">
-                                                <option value="-2" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '-2']}>${_('Very Low')}</option>
-                                                <option value="-1" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '-1']}>${_('Moderate')}</option>
-                                                <option value="0" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '0']}>${_('Normal')}</option>
-                                                <option value="1" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '1']}>${_('High')}</option>
-                                                <option value="2" ${('', 'selected="selected"')[sickbeard.NMA_PRIORITY == '2']}>${_('Emergency')}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label for="nma_priority">${_('priority of NMA messages from SickRage.')}</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="testNotification" id="testNMA-result">${_('Click below to test.')}</div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <input  class="btn" type="button" value="Test NMA" id="testNMA" />
                                     <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
                                 </div>
                             </div>
@@ -2346,7 +2246,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" class="enabler" name="use_twilio" id="use_twilio" ${('', 'checked="checked"')[bool(sickbeard.USE_TWILIO)]}/>
-                                        <label for="use_twilio">${_('should SickRage text your mobile device?')}</label>
+                                        <label for="use_twilio">${_('should SickChill text your mobile device?')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -2498,7 +2398,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" class="enabler" name="use_twitter" id="use_twitter" ${('', 'checked="checked"')[bool(sickbeard.USE_TWITTER)]}/>
-                                        <label for="use_twitter">${_('should SickRage post tweets on Twitter?')}</label>
+                                        <label for="use_twitter">${_('should SickChill post tweets on Twitter?')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -2678,12 +2578,12 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="trakt_pin">${_('PIN code to authorize SickRage to access Trakt on your behalf.')}</label>
+                                            <label for="trakt_pin">${_('PIN code to authorize SickChill to access Trakt on your behalf.')}</label>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="button" class="btn hide" value="Authorize SickRage" id="authTrakt" />
+                                            <input type="button" class="btn hide" value="Authorize SickChill" id="authTrakt" />
                                         </div>
                                     </div>
                                 </div>
@@ -2714,8 +2614,8 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <select id="trakt_default_indexer" name="trakt_default_indexer" class="form-control input-sm input250" title="trakt_default_indexer">
-                                        % for indexer in sickbeard.indexerApi().indexers:
-                                            <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.TRAKT_DEFAULT_INDEXER == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
+                                        % for indexer, instance in sickchill.indexer:
+                                            <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.TRAKT_DEFAULT_INDEXER == indexer]}>${instance.name}</option>
                                         % endfor
                                     </select>
                                 </div>
@@ -2727,7 +2627,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" class="enabler" name="trakt_sync" id="trakt_sync" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_SYNC)]}/>
-                                    <label for="trakt_sync">${_('sync your SickRage show library with your trakt show library.')}</label>
+                                    <label for="trakt_sync">${_('sync your SickChill show library with your trakt show library.')}</label>
                                 </div>
                             </div>
 
@@ -2739,7 +2639,7 @@
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <input type="checkbox" name="trakt_sync_remove" id="trakt_sync_remove" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_SYNC_REMOVE)]}/>
-                                        <label for="trakt_sync_remove">${_('remove an episode from your Trakt Collection if it is not in your SickRage Library.')}</label>
+                                        <label for="trakt_sync_remove">${_('remove an episode from your Trakt Collection if it is not in your SickChill Library.')}</label>
                                     </div>
                                 </div>
 
@@ -2753,7 +2653,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="checkbox" class="enabler" name="trakt_sync_watchlist" id="trakt_sync_watchlist" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_SYNC_WATCHLIST)]}/>
-                                            <label for="trakt_sync_watchlist">${_('sync your SickRage show watchlist with your trakt show watchlist (either Show and Episode).')}</label>
+                                            <label for="trakt_sync_watchlist">${_('sync your SickChill show watchlist with your trakt show watchlist (either Show and Episode).')}</label>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2813,8 +2713,8 @@
                                         <label class="component-title">${_('Remove watched show')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" name="trakt_remove_show_from_sickrage" id="trakt_remove_show_from_sickrage" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_REMOVE_SHOW_FROM_SICKRAGE)]}/>
-                                        <label for="trakt_remove_show_from_sickrage">${_('remove the show from sickrage if it\'s ended and completely watched')}</label>
+                                        <input type="checkbox" name="trakt_remove_show_from_sickchill" id="trakt_remove_show_from_sickchill" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_REMOVE_SHOW_FROM_SICKCHILL)]}/>
+                                        <label for="trakt_remove_show_from_sickchill">${_('remove the show from sickchill if it\'s ended and completely watched')}</label>
                                     </div>
                                 </div>
 
@@ -2907,6 +2807,16 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="email_notify_ondownload" id="email_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_NOTIFY_ONDOWNLOAD)]}/>
                                     <label for="email_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on postprocess')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="email_notify_onpostprocess" id="email_notify_onpostprocess" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_NOTIFY_ONPOSTPROCESS)]}/>
+                                    <label for="email_notify_onpostprocess">${_('send a notification when a postprocessing finishes?')}</label>
                                 </div>
                             </div>
 
@@ -3009,7 +2919,10 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="password" name="email_password" id="email_password" value="${sickbeard.EMAIL_PASSWORD}" class="form-control input-sm input250" autocomplete="no" autocapitalize="off" />
+                                            <input
+                                                type="password" name="email_password" id="email_password" value="${sickbeard.EMAIL_PASSWORD|hide}"
+                                                class="form-control input-sm input250" autocomplete="no" autocapitalize="off"
+                                            />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -3052,7 +2965,7 @@
                                         <div class="col-md-12">
                                             <label for="email_subject">
                                                 ${_('use a custom subject for some privacy protection?')}<br>
-                                                ${_('(leave blank for the default SickRage subject)')}
+                                                ${_('(leave blank for the default SickChill subject)')}
                                             </label>
                                         </div>
                                     </div>
@@ -3133,7 +3046,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" class="enabler" name="use_slack" id="use_slack" ${('', 'checked="checked"')[bool(sickbeard.USE_SLACK)]}/>
-                                        <label for="use_slack">${_('should SickRage post messages on Slack?')}</label>
+                                        <label for="use_slack">${_('should SickChill post messages on Slack?')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -3163,10 +3076,29 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on subtitle download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="slack_notify_subtitledownload" id="clack_notify_subtitledownload" ${('', 'checked="checked"')[bool(sickbeard.SLACK_NOTIFY_SUBTITLEDOWNLOAD)]}/>
+                                    <label for="slack_notify_subtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label for="slack_webhook" class="component-title">${_('Slack Incoming Webhook')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="text" name="slack_webhook" id="slack_webhook" value="${sickbeard.SLACK_WEBHOOK}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="slack_icon_emoji" class="component-title">${_('Slack Icon Emoji')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="slack_icon_emoji" id="slack_icon_emoji" value="${sickbeard.SLACK_ICON_EMOJI}" class="form-control input-sm input350" autocapitalize="off" />
                                 </div>
                             </div>
 
@@ -3190,6 +3122,127 @@
 
             <div class="config-group-divider"></div>
 
+            <!-- /matrix component-group //-->
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <div class="component-group-desc">
+                        <span class="icon-notifiers-matrix" title="${_('Matrix')}"></span>
+                        <h3><a href="${anon_url('http://www.matrix.org/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Matrix</a></h3>
+                        <p>${_('Matrix is an open fabric for communication that anyone can participate in.')}</p>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+                    <fieldset class="component-group-list">
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" class="enabler" name="use_matrix" id="use_matrix" ${('', 'checked="checked"')[bool(sickbeard.USE_MATRIX)]}/>
+                                        <label for="use_matrix">${_('should SickChill post messages on Matrix?')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="content_use_matrix">
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on snatch')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="matrix_notify_snatch" id="matrix_notify_snatch" ${('', 'checked="checked"')[bool(sickbeard.MATRIX_NOTIFY_SNATCH)]}/>
+                                    <label for="matrix_notify_snatch">${_('send a notification when a download starts?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="matrix_notify_download" id="matrix_notify_download" ${('', 'checked="checked"')[bool(sickbeard.MATRIX_NOTIFY_DOWNLOAD)]}/>
+                                    <label for="matrix_notify_download">${_('send a notification when a download finishes?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on subtitle download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="matrix_notify_subtitledownload" id="matrix_notify_subtitledownload" ${('', 'checked="checked"')[bool(sickbeard.MATRIX_NOTIFY_SUBTITLEDOWNLOAD)]}/>
+                                    <label for="matrix_notify_subtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('matrix User Auth Token')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="matrix_api_token" id="matrix_api_token" value="${sickbeard.MATRIX_API_TOKEN}" class="form-control input-sm input350" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('matrix server address')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="matrix_server" id="matrix_server" value="${sickbeard.MATRIX_SERVER}" class="form-control input-sm input350" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('matrix server room')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="matrix_room" id="matrix_room" value="${sickbeard.MATRIX_ROOM}" class="form-control input-sm input350" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="testNotification" id="testMatrix-result">${_('Click below to test.')}</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input  class="btn" type="button" value="Test Matrix" id="testMatrix" />
+                                    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="config-group-divider"></div>
+
+
             <!-- /Discord component-group //-->
             <div class="row">
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
@@ -3210,7 +3263,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" class="enabler" name="use_discord" id="use_discord" ${('', 'checked="checked"')[bool(sickbeard.USE_DISCORD)]}/>
-                                        <label for="use_discord">${_('Should SickRage post messages on Discord?')}</label>
+                                        <label for="use_discord">${_('Should SickChill post messages on Discord?')}</label>
                                     </div>
                                 </div>
                             </div>

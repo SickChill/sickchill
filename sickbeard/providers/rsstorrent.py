@@ -1,41 +1,45 @@
 # coding=utf-8
 # # Author: Mr_Orange
 #
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import io
 import os
 import re
 
-import bencode
-import sickbeard
+# Third Party Imports
+from bencode.BTL import BTFailure
 from requests.utils import add_dict_to_cookiejar
+
+# First Party Imports
+import sickbeard
 from sickbeard import helpers, logger, tvcache
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import ex
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from sickchill.helper.encoding import ek
+from sickchill.helper.exceptions import ex
+from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class TorrentRssProvider(TorrentProvider):
 
-    def __init__(self, name, url, cookies='',  # pylint: disable=too-many-arguments
+    def __init__(self, name, url, cookies='',
                  titleTAG='title', search_mode='eponly', search_fallback=False,
                  enable_daily=False, enable_backlog=False):
 
@@ -54,7 +58,7 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
         self.cookies = cookies
         self.titleTAG = titleTAG
 
-    def configStr(self):  # pylint: disable=too-many-arguments
+    def configStr(self):
         return '{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}'.format(
             self.name or '',
             self.url or '',
@@ -144,7 +148,7 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         return new_provider
 
-    def validateRSS(self):  # pylint: disable=too-many-return-statements
+    def validateRSS(self):
 
         try:
             if self.cookies:
@@ -153,7 +157,7 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                     return False, 'Cookie is not correctly formatted: {0}'.format(self.cookies)
                 add_dict_to_cookiejar(self.session.cookies, dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
 
-            # pylint: disable=protected-access
+
             # Access to a protected member of a client class
             data = self.cache._get_rss_data()['entries']
             if not data:
@@ -172,8 +176,8 @@ class TorrentRssProvider(TorrentProvider):  # pylint: disable=too-many-instance-
             else:
                 torrent_file = self.get_url(url, returns='content')
                 try:
-                    bencode.bdecode(torrent_file)
-                except (bencode.BTL.BTFailure, Exception) as error:
+                    helpers.bdecode(torrent_file, True)
+                except (BTFailure, Exception) as error:
                     self.dumpHTML(torrent_file)
                     return False, 'Torrent link is not a valid torrent file: {0}'.format(error)
 

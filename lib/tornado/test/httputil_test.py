@@ -1,10 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-
 from __future__ import absolute_import, division, print_function
-from tornado.httputil import url_concat, parse_multipart_form_data, HTTPHeaders, format_timestamp, HTTPServerRequest, parse_request_start_line, parse_cookie
+
+from tornado.httputil import (
+    url_concat, parse_multipart_form_data, HTTPHeaders, format_timestamp,
+    HTTPServerRequest, parse_request_start_line, parse_cookie, qs_to_qsl,
+    HTTPInputError,
+)
 from tornado.escape import utf8, native_str
+from tornado.util import PY3
 from tornado.log import gen_log
 from tornado.testing import ExpectLog
 from tornado.test.util import unittest
@@ -14,6 +17,11 @@ import datetime
 import logging
 import pickle
 import time
+
+if PY3:
+    import urllib.parse as urllib_parse
+else:
+    import urlparse as urllib_parse
 
 
 class TestUrlConcat(unittest.TestCase):
@@ -102,6 +110,17 @@ class TestUrlConcat(unittest.TestCase):
         self.assertEqual(url, "https://localhost/path?y=y")
 
 
+class QsParseTest(unittest.TestCase):
+
+    def test_parsing(self):
+        qsstring = "a=1&b=2&a=3"
+        qs = urllib_parse.parse_qs(qsstring)
+        qsl = list(qs_to_qsl(qs))
+        self.assertIn(('a', '1'), qsl)
+        self.assertIn(('a', '3'), qsl)
+        self.assertIn(('b', '2'), qsl)
+
+
 class MultipartFormDataTest(unittest.TestCase):
     def test_file_upload(self):
         data = b"""\
@@ -156,6 +175,20 @@ Foo
             file = files["files"][0]
             self.assertEqual(file["filename"], filename)
             self.assertEqual(file["body"], b"Foo")
+
+    def test_non_ascii_filename(self):
+        data = b"""\
+--1234
+Content-Disposition: form-data; name="files"; filename="ab.txt"; filename*=UTF-8''%C3%A1b.txt
+
+Foo
+--1234--""".replace(b"\n", b"\r\n")
+        args = {}
+        files = {}
+        parse_multipart_form_data(b"1234", data, args, files)
+        file = files["files"][0]
+        self.assertEqual(file["filename"], u"áb.txt")
+        self.assertEqual(file["body"], b"Foo")
 
     def test_boundary_starts_and_ends_with_quotes(self):
         data = b'''\
@@ -264,6 +297,13 @@ Foo: even
                          [("Asdf", "qwer zxcv"),
                           ("Foo", "bar baz"),
                           ("Foo", "even more lines")])
+
+    def test_malformed_continuation(self):
+        # If the first line starts with whitespace, it's a
+        # continuation line with nothing to continue, so reject it
+        # (with a proper error).
+        data = " Foo: bar"
+        self.assertRaises(HTTPInputError, HTTPHeaders.parse, data)
 
     def test_unicode_newlines(self):
         # Ensure that only \r\n is recognized as a header separator, and not
@@ -402,6 +442,10 @@ class HTTPServerRequestTest(unittest.TestCase):
         requets = HTTPServerRequest(uri='/')
         self.assertIsInstance(requets.body, bytes)
 
+    def test_repr_does_not_contain_headers(self):
+        request = HTTPServerRequest(uri='/', headers={'Canary': 'Coal Mine'})
+        self.assertTrue('Canary' not in repr(request))
+
 
 class ParseRequestStartLineTest(unittest.TestCase):
     METHOD = "GET"
@@ -423,7 +467,8 @@ class ParseCookieTest(unittest.TestCase):
         """
         Test cases copied from Python's Lib/test/test_http_cookies.py
         """
-        self.assertEqual(parse_cookie('chips=ahoy; vienna=finger'), {'chips': 'ahoy', 'vienna': 'finger'})
+        self.assertEqual(parse_cookie('chips=ahoy; vienna=finger'),
+                         {'chips': 'ahoy', 'vienna': 'finger'})
         # Here parse_cookie() differs from Python's cookie parsing in that it
         # treats all semicolons as delimiters, even within quotes.
         self.assertEqual(
@@ -435,11 +480,13 @@ class ParseCookieTest(unittest.TestCase):
         # Cookies with ':' character in their name.
         self.assertEqual(parse_cookie('key:term=value:term'), {'key:term': 'value:term'})
         # Cookies with '[' and ']'.
-        self.assertEqual(parse_cookie('a=b; c=[; d=r; f=h'), {'a': 'b', 'c': '[', 'd': 'r', 'f': 'h'})
+        self.assertEqual(parse_cookie('a=b; c=[; d=r; f=h'),
+                         {'a': 'b', 'c': '[', 'd': 'r', 'f': 'h'})
 
     def test_cookie_edgecases(self):
         # Cookies that RFC6265 allows.
-        self.assertEqual(parse_cookie('a=b; Domain=example.com'), {'a': 'b', 'Domain': 'example.com'})
+        self.assertEqual(parse_cookie('a=b; Domain=example.com'),
+                         {'a': 'b', 'Domain': 'example.com'})
         # parse_cookie() has historically kept only the last cookie with the
         # same name.
         self.assertEqual(parse_cookie('a=b; h=i; a=c'), {'a': 'c', 'h': 'i'})
@@ -451,15 +498,18 @@ class ParseCookieTest(unittest.TestCase):
         """
         # Chunks without an equals sign appear as unnamed values per
         # https://bugzilla.mozilla.org/show_bug.cgi?id=169091
-        self.assertIn('django_language', parse_cookie('abc=def; unnamed; django_language=en').keys())
+        self.assertIn('django_language',
+                      parse_cookie('abc=def; unnamed; django_language=en').keys())
         # Even a double quote may be an unamed value.
         self.assertEqual(parse_cookie('a=b; "; c=d'), {'a': 'b', '': '"', 'c': 'd'})
         # Spaces in names and values, and an equals sign in values.
         self.assertEqual(parse_cookie('a b c=d e = f; gh=i'), {'a b c': 'd e = f', 'gh': 'i'})
         # More characters the spec forbids.
-        self.assertEqual(parse_cookie('a   b,c<>@:/[]?{}=d  "  =e,f g'), {'a   b,c<>@:/[]?{}': 'd  "  =e,f g'})
+        self.assertEqual(parse_cookie('a   b,c<>@:/[]?{}=d  "  =e,f g'),
+                         {'a   b,c<>@:/[]?{}': 'd  "  =e,f g'})
         # Unicode characters. The spec only allows ASCII.
-        self.assertEqual(parse_cookie('saint=André Bessette'), {'saint': native_str('André Bessette')})
+        self.assertEqual(parse_cookie('saint=André Bessette'),
+                         {'saint': native_str('André Bessette')})
         # Browsers don't send extra whitespace or semicolons in Cookie headers,
         # but parse_cookie() should parse whitespace the same way
         # document.cookie parses whitespace.

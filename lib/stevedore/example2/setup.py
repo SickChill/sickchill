@@ -9,7 +9,7 @@ setup(
     author='Doug Hellmann',
     author_email='doug@doughellmann.com',
 
-    url='http://git.openstack.org/cgit/openstack/stevedore',
+    url='http://opendev.org/openstack/stevedore',
 
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: OSI Approved :: Apache Software License',
@@ -17,7 +17,7 @@ setup(
                  'Programming Language :: Python :: 2',
                  'Programming Language :: Python :: 2.7',
                  'Programming Language :: Python :: 3',
-                 'Programming Language :: Python :: 3.4',
+                 'Programming Language :: Python :: 3.5',
                  'Intended Audience :: Developers',
                  'Environment :: Console',
                  ],

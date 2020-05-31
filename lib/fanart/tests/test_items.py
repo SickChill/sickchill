@@ -14,7 +14,7 @@ class LeafItemTestCase(TestCase):
 
     @httprettified
     def test_content(self):
-        with open(os.path.join(LOCALDIR, 'response/50x50.png')) as fp:
+        with open(os.path.join(LOCALDIR, 'response/50x50.png'), 'rb') as fp:
             body = fp.read()
         HTTPretty.register_uri(
             HTTPretty.GET,

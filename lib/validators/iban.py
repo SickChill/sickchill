@@ -3,7 +3,7 @@ import re
 from .utils import validator
 
 regex = (
-    r'^[A-Z]{2}[0-9]{2}[A-Z0-9]{13,30}$'
+    r'^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$'
 )
 pattern = re.compile(regex)
 

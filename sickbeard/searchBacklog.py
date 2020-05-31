@@ -1,30 +1,36 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import threading
 
-import sickbeard
+# Third Party Imports
 import six
-from sickbeard import common, db, logger, scheduler, search_queue, ui
+
+# First Party Imports
+import sickbeard
+
+# Local Folder Imports
+from . import common, db, logger, scheduler, search_queue, ui
 
 
 class BacklogSearchScheduler(scheduler.Scheduler):
@@ -83,7 +89,7 @@ class BacklogSearcher(object):
         self._get_lastBacklog()
 
         curDate = datetime.date.today().toordinal()
-        fromDate = datetime.date.fromordinal(1)
+        fromDate = datetime.date.min
 
         if not (which_shows or curDate - self._lastBacklog >= self.cycleTime):
             logger.log("Running limited backlog on missed episodes " + str(sickbeard.BACKLOG_DAYS) + " day(s) and older only")
@@ -108,7 +114,7 @@ class BacklogSearcher(object):
 
         # don't consider this an actual backlog search if we only did recent eps
         # or if we only did certain shows
-        if fromDate == datetime.date.fromordinal(1) and not which_shows:
+        if fromDate == datetime.date.min and not which_shows:
             self._set_lastBacklog(curDate)
 
         self.amActive = False
@@ -155,6 +161,9 @@ class BacklogSearcher(object):
             cur_status, cur_quality = common.Quality.splitCompositeStatus(int(sql_result[b"status"] or -1))
 
             if cur_status not in {common.WANTED, common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER}:
+                continue
+
+            if cur_status == common.DOWNLOADED and sickbeard.BACKLOG_MISSING_ONLY:
                 continue
 
             if cur_status != common.WANTED:

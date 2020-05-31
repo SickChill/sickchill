@@ -1,39 +1,43 @@
 # coding=utf-8
 # Author: Daniel Heimans
 #
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import math
 import socket
 import time
 from datetime import datetime
 
+# Third Party Imports
 import jsonrpclib
-import sickbeard
 import six
+
+# First Party Imports
+import sickbeard
 from sickbeard import classes, logger, scene_exceptions, tvcache
 from sickbeard.common import cpu_presets
 from sickbeard.helpers import sanitizeSceneName
-from sickrage.helper.common import episode_num
-from sickrage.helper.exceptions import AuthException, ex
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from sickchill.helper.common import episode_num
+from sickchill.helper.exceptions import AuthException, ex
+from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class BTNProvider(TorrentProvider):
@@ -167,11 +171,21 @@ class BTNProvider(TorrentProvider):
     def _get_title_and_url(self, parsed_json):
 
         # The BTN API gives a lot of information in response,
-        # however SickRage is built mostly around Scene or
+        # however SickChill is built mostly around Scene or
         # release names, which is why we are using them here.
 
         if 'ReleaseName' in parsed_json and parsed_json['ReleaseName']:
             title = parsed_json['ReleaseName']
+            append = ''
+            if 'Resolution' in parsed_json and parsed_json['Resolution'].lower() not in title.lower():
+                append += parsed_json['Resolution']
+            if 'Source' in parsed_json and parsed_json['Source'].lower() not in title.lower():
+                append += parsed_json['Source']
+            if 'Codec' in parsed_json and parsed_json['Codec'].lower() not in title.lower():
+                append += parsed_json['Codec']
+
+            if append:
+                title += ' [' + append + ']'
 
         else:
             # If we don't have a release name we need to get creative
@@ -198,7 +212,7 @@ class BTNProvider(TorrentProvider):
 
         return title, url
 
-    def _get_season_search_strings(self, ep_obj):
+    def get_season_search_strings(self, ep_obj):
         search_params = []
         current_params = {'category': 'Season'}
 
@@ -206,9 +220,8 @@ class BTNProvider(TorrentProvider):
         if ep_obj.show.air_by_date or ep_obj.show.sports:
             # Search for the year of the air by date show
             current_params['name'] = str(ep_obj.airdate).split('-')[0]
-        elif ep_obj.show.is_anime:
-            current_params['name'] = "{0:d}".format(ep_obj.scene_absolute_number)
         else:
+            # BTN uses the same format for both Anime and TV
             current_params['name'] = 'Season ' + str(ep_obj.scene_season)
 
         # search
@@ -225,7 +238,7 @@ class BTNProvider(TorrentProvider):
 
         return search_params
 
-    def _get_episode_search_strings(self, ep_obj, add_string=''):
+    def get_episode_search_strings(self, ep_obj, add_string=''):
 
         if not ep_obj:
             return [{}]
@@ -240,9 +253,8 @@ class BTNProvider(TorrentProvider):
             # BTN uses dots in dates, we just search for the date since that
             # combined with the series identifier should result in just one episode
             search_params['name'] = date_str.replace('-', '.')
-        elif ep_obj.show.anime:
-            search_params['name'] = "{0:d}".format(int(ep_obj.scene_absolute_number))
         else:
+            # BTN uses the same format for both Anime and TV
             # Do a general name search for the episode, formatted like SXXEYY
             search_params['name'] = "{ep}".format(ep=episode_num(ep_obj.scene_season, ep_obj.scene_episode))
 
@@ -280,7 +292,8 @@ class BTNProvider(TorrentProvider):
 
                     if result_date and (not search_date or result_date > search_date):
                         title, url = self._get_title_and_url(item)
-                        results.append(classes.Proper(title, url, result_date, self.show))
+                        if title and url:
+                            results.append(classes.Proper(title, url, result_date, self.show))
 
         return results
 

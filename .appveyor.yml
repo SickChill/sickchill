@@ -14,6 +14,8 @@ environment:
       PYTHON_VERSION: "2.7.x" # currently 2.7.13
       PYTHON_ARCH: "64"
 
+  nodejs_version: "14"
+
 cache:
   # - c:\python27\lib\site-packages
   - "%APPDATA%\\npm"
@@ -55,23 +57,19 @@ install:
   - "python --version"
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
 
-  # Upgrade to the latest version of pip to avoid it displaying warnings
-  # about it being out of date.
-  - "pip install --disable-pip-version-check --user --upgrade pip"
-  - "pip install --upgrade tox"
+  - python -m pip install --disable-pip-version-check -U pip
+  - pip install --disable-pip-version-check "zipp<0.6.0" "tox"
 
   # Install node/npm
-  - ps: Install-Product node $env:7
+  - ps: Install-Product node $env:nodejs_version
   - set PATH=%APPDATA%\npm;%PATH%
-  - npm -g install npm
-  - npm -g install bower
-  - npm -g install grunt-cli
-  - npm install
-  - bower install
+  - npm -g install xo webpack grunt-cli bower
+  - yarn --silent
 
 test_script:
-  - grunt ci
-  - tox -v --recreate
+  - xo
+  - ps: if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) } # Stop if the previous test failed
+  - tox -v --recreate -e "py27-windows"
 
 before_test:
   - echo Starting Tests
@@ -80,4 +78,4 @@ after_test:
   - echo Finished Tests
 
 on_failure:
-  - type .\\tests\\Logs\\sickrage.log
+  - type .\\tests\\Logs\\sickchill.log

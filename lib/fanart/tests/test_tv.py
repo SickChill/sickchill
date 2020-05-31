@@ -15,10 +15,16 @@ class TvItemTestCase(unittest.TestCase):
             body = fp.read()
         HTTPretty.register_uri(
             HTTPretty.GET,
-            'http://api.fanart.tv/webservice/series/e3c7f0d0beeaf45b3a0dd3b9dd8a3338/239761/JSON/all/1/2',
+            'http://webservice.fanart.tv/v3/tv/239761?api_key={}'.format(
+                os.environ['FANART_APIKEY']),
             body=body
         )
         wilfred = TvShow.get(id=239761)
+
+        # If we update `response/tv_239761.json`, then we also must update
+        # `json/wilfred.json`, and to do so, we can use the following command:
+        # print(wilfred.json(indent=4))
+
         self.assertEqual(wilfred.tvdbid, '239761')
         with open(os.path.join(LOCALDIR, 'json/wilfred.json')) as fp:
             self.assertEqual(json.loads(wilfred.json()), json.load(fp))
@@ -29,7 +35,8 @@ class TvItemTestCase(unittest.TestCase):
             body = fp.read()
         HTTPretty.register_uri(
             HTTPretty.GET,
-            'http://api.fanart.tv/webservice/series/e3c7f0d0beeaf45b3a0dd3b9dd8a3338/79349/JSON/all/1/2',
+            'http://webservice.fanart.tv/v3/tv/79349?api_key={}'.format(
+                os.environ['FANART_APIKEY']),
             body=body
         )
         dexter = TvShow.get(id=79349)
@@ -40,7 +47,8 @@ class TvItemTestCase(unittest.TestCase):
     def test_get_null(self):
         HTTPretty.register_uri(
             HTTPretty.GET,
-            'http://api.fanart.tv/webservice/series/e3c7f0d0beeaf45b3a0dd3b9dd8a3338/79349/JSON/all/1/2',
+            'http://webservice.fanart.tv/v3/tv/79349?api_key={}'.format(
+                os.environ['FANART_APIKEY']),
             body='null'
         )
         self.assertRaises(ResponseFanartError, TvShow.get, id=79349)

@@ -791,6 +791,10 @@ div.buttontext p {
     background-position: -76px 0;
 }
 
+add-list-icon-addtvdb {
+    background-position: 0px 0;
+}
+
 .add-list-icon-addexistingshow {
     background-position: -113px 0;
 }
@@ -813,6 +817,14 @@ home_newShow.mako
     font-size: 14px;
     background-color: #EFEFEF;
     border: 1px solid #DFDEDE;
+}
+
+#searchResults {
+    height: 100%;
+}
+
+#searchResults .legendStep {
+    margin-bottom: 5px;
 }
 
 #searchResults input[type="radio"] {
@@ -1225,6 +1237,11 @@ td.col-name {
     text-align: left;
 }
 
+th.col-network,
+td.col-network {
+    width: 95px;
+}
+
 th.col-subtitles,
 td.col-subtitles {
     width: 150px;
@@ -1379,6 +1396,10 @@ td.col-search {
 
 .displayshow-icon-fanart {
     background-position: -439px 0;
+}
+
+.displayshow-icon-trakt {
+    background-position: -456px 0;
 }
 
 /* =======================================================================
@@ -1764,7 +1785,7 @@ select .selected {
     vertical-align: text-top;
 }
 
-.icon16-config-sickrage {
+.icon16-config-sickchill {
     background-position: 0 0;
 }
 
@@ -1862,7 +1883,7 @@ select .selected {
     background-position: -106px 0;
 }
 
-.add-client-icon-qbittorrent {
+.add-client-icon-qbittorrent, .add-client-icon-new-qbittorrent {
     background-position: -138px 0;
 }
 
@@ -2019,6 +2040,12 @@ div.metadataDiv .disabled {
     background-size: 32px;
 }
 
+.icon-notifiers-matrix {
+    background: url("../images/Matrix_Web.png");
+    background-size: 32px;
+    background-color: white;
+}
+
 .icon-notifiers-discord {
     background: url("../images/32px_discord_notifier.png");
     background-size: 32px;
@@ -2074,10 +2101,6 @@ div.metadataDiv .disabled {
 
 .icon-notifiers-boxcar2 {
     background-position: -414px 0;
-}
-
-.icon-notifiers-nma {
-    background-position: -450px 0;
 }
 
 .icon-notifiers-pushalot {
@@ -2365,6 +2388,20 @@ pre {
 
 .navbar-brand {
     padding: 0;
+}
+
+.floating-badge {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    padding: 0px 4px;
+    background-color: #777777;
+    border: 2px solid #959595;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
 }
 
 /* navbar styling */
@@ -3670,4 +3707,17 @@ input.tablesorter-filter.disabled {
 
 #episodeDir {
     width: 100%;
+}
+
+[class^="displayshow-play-icon-"], [class*=" displayshow-play-icon-"] {
+    background: url("../images/16px_sprite_colored_display-show-players.png");
+    height: 16px;
+    width: 16px;
+    display: inline-block;
+    position: unset;
+    top: 3px;
+}
+
+.displayshow-play-icon-kodi {
+    background-position: 0 0;
 }

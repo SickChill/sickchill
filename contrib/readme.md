@@ -1,6 +1,6 @@
-SickRage Contrib
+SickChill Contrib
 =====
-Stuff contributed to SickRage, or included of users leisure
+Stuff contributed to SickChill, or included of users leisure
 
 ## What will you find in here?
  - Scripts

@@ -7,7 +7,6 @@ from babelfish import Language, language_converters
 from requests import Session
 
 from . import Provider
-from .. import __short_version__
 from ..subtitle import Subtitle, fix_line_ending
 
 logger = logging.getLogger(__name__)
@@ -28,6 +27,10 @@ class ShooterSubtitle(Subtitle):
     def id(self):
         return self.download_link
 
+    @property
+    def info(self):
+        return self.hash
+
     def get_matches(self, video):
         matches = set()
 
@@ -42,10 +45,14 @@ class ShooterProvider(Provider):
     """Shooter Provider."""
     languages = {Language(l) for l in ['eng', 'zho']}
     server_url = 'https://www.shooter.cn/api/subapi.php'
+    subtitle_class = ShooterSubtitle
+
+    def __init__(self):
+        self.session = None
 
     def initialize(self):
         self.session = Session()
-        self.session.headers['User-Agent'] = 'Subliminal/%s' % __short_version__
+        self.session.headers['User-Agent'] = self.user_agent
 
     def terminate(self):
         self.session.close()
@@ -64,7 +71,7 @@ class ShooterProvider(Provider):
 
         # parse the subtitles
         results = json.loads(r.text)
-        subtitles = [ShooterSubtitle(language, hash, t['Link']) for s in results for t in s['Files']]
+        subtitles = [self.subtitle_class(language, hash, t['Link']) for s in results for t in s['Files']]
 
         return subtitles
 

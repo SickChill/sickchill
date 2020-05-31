@@ -4,17 +4,6 @@
     from sickbeard import common
 %>
 
-<%block name="scripts">
-    <%
-        if quality_value is not None:
-            initial_quality = int(quality_value)
-        else:
-            initial_quality = common.SD
-
-        anyQualities, bestQualities = common.Quality.splitQuality(initial_quality)
-    %>
-</%block>
-
 <%block name="tabs">
     <li><a href="#main">${_('Main')}</a></li>
 </%block>
@@ -164,7 +153,7 @@
                             <option value="enable" ${('', 'selected="selected"')[paused_value == 1]}>${_('Yes')}</option>
                             <option value="disable" ${('', 'selected="selected"')[paused_value == 0]}>${_('No')}</option>
                         </select>
-                        <label for="edit_paused">${_('Pause these shows (SickRage will not download episodes).')}</label>
+                        <label for="edit_paused">${_('Pause these shows (SickChill will not download episodes).')}</label>
                     </div>
                 </div>
 

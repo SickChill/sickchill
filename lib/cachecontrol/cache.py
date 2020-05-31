@@ -8,13 +8,13 @@ from threading import Lock
 class BaseCache(object):
 
     def get(self, key):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def set(self, key, value):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def delete(self, key):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def close(self):
         pass
@@ -27,7 +27,7 @@ class DictCache(BaseCache):
         self.data = init_dict or {}
 
     def get(self, key):
-        return self.data.get(key)
+        return self.data.get(key, None)
 
     def set(self, key, value):
         with self.lock:

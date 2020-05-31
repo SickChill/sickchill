@@ -1,20 +1,20 @@
 # coding=UTF-8
-# URL: https://github.com/SickRage/SickRage
+# URL: https://github.com/SickChill/SickChill
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
 
@@ -23,7 +23,6 @@
 # classes in order to test those classes.  Therefore we will be pylint disable protected-access
 ###
 
-# pylint: disable=line-too-long
 
 """
 Test notifiers
@@ -39,14 +38,15 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from sickbeard import db
 from sickbeard.tv import TVEpisode, TVShow
-from sickbeard.webserve import Home
+from sickchill.views.home import Home
 from sickbeard.notifiers.emailnotify import Notifier as EmailNotifier
 from sickbeard.notifiers.prowl import Notifier as ProwlNotifier
-from sickrage.helper.encoding import ss
+from sickchill.helper.encoding import ss
 import tests.test_lib as test
 
 
-class NotifierTests(test.SickbeardTestDBCase):  # pylint: disable=too-many-public-methods
+# noinspection PyProtectedMember
+class NotifierTests(test.SickbeardTestDBCase):
     """
     Test notifiers
     """
@@ -101,6 +101,7 @@ class NotifierTests(test.SickbeardTestDBCase):  # pylint: disable=too-many-publi
         """
         pass
 
+    @unittest.skip('Cannot call directly without a request')
     def test_email(self):
         """
         Test email notifications
@@ -125,9 +126,9 @@ class NotifierTests(test.SickbeardTestDBCase):  # pylint: disable=too-many-publi
         shows = self.legacy_shows + self.shows
         for show in shows:
             for episode in show.episodes:
-                ep_name = ss(episode._format_pattern('%SN - %Sx%0E - %EN - ') + episode.quality)  # pylint: disable=protected-access
-                show_name = email_notifier._parseEp(ep_name)  # pylint: disable=protected-access
-                recipients = email_notifier._generate_recipients(show_name)  # pylint: disable=protected-access
+                ep_name = ss(episode._format_pattern('%SN - %Sx%0E - %EN - ') + episode.quality)
+                show_name = email_notifier._parseEp(ep_name)
+                recipients = email_notifier._generate_recipients(show_name)
                 self._debug_spew("- Email Notifications for " + show.name + " (episode: " + episode.name + ") will be sent to:")
                 for email in recipients:
                     self._debug_spew("-- " + email.strip())
@@ -198,6 +199,7 @@ class NotifierTests(test.SickbeardTestDBCase):  # pylint: disable=too-many-publi
         """
         pass
 
+    @unittest.skip('Cannot call directly without a request')
     def test_prowl(self):
         """
         Test prowl notifications
@@ -215,9 +217,9 @@ class NotifierTests(test.SickbeardTestDBCase):  # pylint: disable=too-many-publi
         # Now, iterate through all shows using the Prowl API generation routines that are used in the notifier proper
         for show in self.shows:
             for episode in show.episodes:
-                ep_name = ss(episode._format_pattern('%SN - %Sx%0E - %EN - ') + episode.quality)  # pylint: disable=protected-access
-                show_name = prowl_notifier._parse_episode(ep_name)  # pylint: disable=protected-access
-                recipients = prowl_notifier._generate_recipients(show_name)  # pylint: disable=protected-access
+                ep_name = ss(episode._format_pattern('%SN - %Sx%0E - %EN - ') + episode.quality)
+                show_name = prowl_notifier._parse_episode(ep_name)
+                recipients = prowl_notifier._generate_recipients(show_name)
                 self._debug_spew("- Prowl Notifications for " + show.name + " (episode: " + episode.name + ") will be sent to:")
                 for api in recipients:
                     self._debug_spew("-- " + api.strip())

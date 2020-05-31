@@ -1,35 +1,39 @@
 # coding=utf-8
 #
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import re
 
+# Third Party Imports
 from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
+
+# First Party Imports
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.helper.common import convert_size, try_int
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from sickchill.helper.common import convert_size, try_int
+from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class FileListProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -45,7 +49,7 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
         self.minleech = None
 
         # URLs
-        self.url = "http://filelist.ro"
+        self.url = "https://filelist.io"
         self.urls = {
             "login": urljoin(self.url, "takelogin.php"),
             "search": urljoin(self.url, "browse.php"),
@@ -72,14 +76,14 @@ class FileListProvider(TorrentProvider):  # pylint: disable=too-many-instance-at
             return False
 
         if re.search("Invalid Username/password", response) \
-                or re.search("<title>Login :: FileList.ro</title>", response) \
+                or re.search("<title> FileList :: Login </title>", response) \
                   or re.search("Login esuat!", response):
             logger.log("Invalid username or password. Check your settings", logger.WARNING)
             return False
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         if not self.login():
             return results

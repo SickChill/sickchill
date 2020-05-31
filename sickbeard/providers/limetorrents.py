@@ -1,45 +1,49 @@
 # coding=utf-8
 # Author: Gonçalo M. (aka duramato/supergonkas) <supergonkas@gmail.com>
 #
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import re
 import traceback
 
-import sickbeard
+# Third Party Imports
 from bs4 import BeautifulSoup
+
+# First Party Imports
+import sickbeard
 from sickbeard import logger, tvcache
-from sickrage.helper.common import convert_size, try_int
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from sickchill.helper.common import convert_size, try_int
+from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class LimeTorrentsProvider(TorrentProvider):
 
     def __init__(self):
 
         TorrentProvider.__init__(self, "LimeTorrents")
 
         self.urls = {
-            'index': 'https://www.limetorrents.cc/',
-            'search': 'https://www.limetorrents.cc/searchrss/tv/',
-            'rss': 'https://www.limetorrents.cc/rss/tv/'
+            'index': 'https://www.limetorrents.info/',
+            'search': 'https://www.limetorrents.info/searchrss/',
+            'rss': 'https://www.limetorrents.info/rss/tv/'
         }
 
         self.url = self.urls['index']
@@ -52,7 +56,7 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
 
         self.cache = tvcache.TVCache(self, search_params={'RSS': ['rss']})
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-branches,too-many-locals
+    def search(self, search_strings, age=0, ep_obj=None):
         results = []
         for mode in search_strings:
             items = []
@@ -64,7 +68,7 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                                (search_string.decode("utf-8")), logger.DEBUG)
 
                 try:
-                    search_url = (self.urls['rss'], self.urls['search'] + search_string)[mode != 'RSS']
+                    search_url = (self.urls['rss'], self.urls['search'] + search_string + '/')[mode != 'RSS']
 
                     data = self.get_url(search_url, returns='text')
                     if not data:
@@ -85,24 +89,19 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                     for item in entries:
                         try:
                             title = item.title.text
-                            # Use the itorrents link limetorrents provides,
-                            # unless it is not itorrents or we are not using blackhole
-                            # because we want to use magnets if connecting direct to client
-                            # so that proxies work.
                             download_url = item.enclosure['url']
-                            if sickbeard.TORRENT_METHOD != "blackhole" or 'itorrents' not in download_url:
-                                download_url = item.enclosure['url']
-                                # http://itorrents.org/torrent/C7203982B6F000393B1CE3A013504E5F87A46A7F.torrent?title=The-Night-of-the-Generals-(1967)[BRRip-1080p-x264-by-alE13-DTS-AC3][Lektor-i-Napisy-PL-Eng][Eng]
-                                # Keep the hash a separate string for when its needed for failed
-                                torrent_hash = re.match(r"(.*)([A-F0-9]{40})(.*)", download_url, re.I).group(2)
+                            torrent_hash = re.match(r"(.*)([A-F0-9]{40})(.*)", download_url, re.I).group(2)
+
+                            if sickbeard.TORRENT_METHOD != "blackhole" and 'magnet:?' not in download_url:
                                 download_url = "magnet:?xt=urn:btih:" + torrent_hash + "&dn=" + title + self._custom_trackers
 
                             if not (title and download_url):
                                 continue
+
                             # seeders and leechers are presented diferently when doing a search and when looking for newly added
                             if mode == 'RSS':
                                 # <![CDATA[
-                                # Category: <a href="http://www.limetorrents.cc/browse-torrents/TV-shows/">TV shows</a><br /> Seeds: 1<br />Leechers: 0<br />Size: 7.71 GB<br /><br /><a href="http://www.limetorrents.cc/Owen-Hart-of-Gold-Djon91-torrent-7180661.html">More @ limetorrents.cc</a><br />
+                                # Category: <a href="http://www.limetorrents.info/browse-torrents/TV-shows/">TV shows</a><br /> Seeds: 1<br />Leechers: 0<br />Size: 7.71 GB<br /><br /><a href="http://www.limetorrents.info/Owen-Hart-of-Gold-Djon91-torrent-7180661.html">More @ limetorrents.info</a><br />
                                 # ]]>
                                 description = item.find('description')
                                 seeders = try_int(description('br')[0].next_sibling.strip().lstrip('Seeds: '))
@@ -127,7 +126,7 @@ class LimeTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instanc
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
 
-                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
+                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': torrent_hash}
                         if mode != 'RSS':
                             logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
 

@@ -1,24 +1,23 @@
 # coding=UTF-8
 # Author: Dennis Lutter <lad1337@gmail.com>
 
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-# pylint: disable=line-too-long
 
 """
 Create a test database for testing.
@@ -46,6 +45,8 @@ import shutil
 import sys
 import unittest
 
+import sickchill
+
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -55,8 +56,8 @@ from sickbeard.databases import cache_db, failed_db, mainDB
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.tv import TVEpisode, TVShow
 import sickbeard
+from sickchill.show.indexers import ShowIndexer
 
-# pylint: disable=import-error
 
 
 # =================
@@ -115,19 +116,19 @@ sickbeard.NAMING_MULTI_EP = 1
 sickbeard.TV_DOWNLOAD_DIR = PROCESSING_DIR
 
 sickbeard.PROVIDER_ORDER = ["sick_beard_index"]
-sickbeard.newznabProviderList = NewznabProvider.providers_list("'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0|eponly|0|0|0!!!NZBs.org|https://nzbs.org/||5030,5040,5060,5070,5090|0|eponly|0|0|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0|eponly|0|0|0'")
+sickbeard.newznabProviderList = NewznabProvider.providers_list("'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0|eponly|0|0|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0|eponly|0|0|0'")
 sickbeard.providerList = providers.makeProviderList()
 
 sickbeard.PROG_DIR = os.path.abspath(os.path.join(TEST_DIR, '..'))
 sickbeard.DATA_DIR = TEST_DIR
 sickbeard.CONFIG_FILE = os.path.join(sickbeard.DATA_DIR, "config.ini")
-sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE, encoding='UTF-8')
+sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE, encoding='UTF-8', options={'indent_type': '  '})
 sickbeard.GUI_NAME = 'slick'
 
 sickbeard.BRANCH = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'branch')
 sickbeard.CUR_COMMIT_HASH = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'cur_commit_hash')
 sickbeard.GIT_USERNAME = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'git_username')
-sickbeard.GIT_PASSWORD = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'git_password', censor_log=True)
+sickbeard.GIT_TOKEN = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'git_token_password', censor_log=True)
 
 sickbeard.LOG_DIR = os.path.join(TEST_DIR, 'Logs')
 sickbeard.logger.log_file = os.path.join(sickbeard.LOG_DIR, 'test_sickbeard.log')
@@ -136,8 +137,9 @@ create_test_log_folder()
 sickbeard.CACHE_DIR = os.path.join(TEST_DIR, 'cache')
 create_test_cache_folder()
 
-# pylint: disable=no-member
 sickbeard.logger.init_logging(False, True)
+
+sickchill.indexer = ShowIndexer()
 
 
 # =================
@@ -252,31 +254,31 @@ class TestCacheDBConnection(TestDBConnection, object):
     Test connecting to the cache database.
     """
     def __init__(self, provider_name):
-        # pylint: disable=non-parent-init-called
+
         db.DBConnection.__init__(self, os.path.join(TEST_DIR, TEST_CACHE_DB_NAME), row_type='dict')
 
         # Create the table if it's not already there
         try:
-            if not self.hasTable(provider_name):
+            if not self.has_table(provider_name):
                 sql = "CREATE TABLE [" + provider_name + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT, release_group TEXT)"
                 self.connection.execute(sql)
                 self.connection.commit()
-        # pylint: disable=broad-except
+
         # Catching too general exception
         except Exception as error:
             if str(error) != "table [" + provider_name + "] already exists":
                 raise
 
             # add version column to table if missing
-            if not self.hasColumn(provider_name, 'version'):
-                self.addColumn(provider_name, 'version', "NUMERIC", "-1")
+            if not self.has_column(provider_name, 'version'):
+                self.add_column(provider_name, 'version', "NUMERIC", "-1")
 
         # Create the table if it's not already there
         try:
             sql = "CREATE TABLE lastUpdate (provider TEXT, time NUMERIC);"
             self.connection.execute(sql)
             self.connection.commit()
-        # pylint: disable=broad-except
+
         # Catching too general exception
         except Exception as error:
             if str(error) != "table lastUpdate already exists":
@@ -296,16 +298,16 @@ def setup_test_db():
     """
     # Upgrade the db to the latest version.
     # upgrading the db
-    db.upgradeDatabase(db.DBConnection(), mainDB.InitialSchema)
+    db.upgrade_database(db.DBConnection(), mainDB.InitialSchema)
 
     # fix up any db problems
-    db.sanityCheckDatabase(db.DBConnection(), mainDB.MainSanityCheck)
+    db.sanity_check_database(db.DBConnection(), mainDB.MainSanityCheck)
 
     # and for cache.db too
-    db.upgradeDatabase(db.DBConnection('cache.db'), cache_db.InitialSchema)
+    db.upgrade_database(db.DBConnection('cache.db'), cache_db.InitialSchema)
 
     # and for failed.db too
-    db.upgradeDatabase(db.DBConnection('failed.db'), failed_db.InitialSchema)
+    db.upgrade_database(db.DBConnection('failed.db'), failed_db.InitialSchema)
 
 
 def teardown_test_db():
@@ -338,7 +340,7 @@ def setup_test_episode_file():
         with open(FILE_PATH, 'wb') as ep_file:
             ep_file.write("foo bar")
             ep_file.flush()
-    # pylint: disable=broad-except
+
     # Catching too general exception
     except Exception:
         print("Unable to set up test episode")
@@ -351,7 +353,7 @@ def setup_test_processing_dir():
 
     for season in range(1, NUM_SEASONS):
         for episode in range(11, EPISODES_PER_SEASON):
-            path = os.path.join(PROCESSING_DIR, '{show_name}.S0{season}E{episode}.HDTV.x264.[SickRage].mkv'.format(
+            path = os.path.join(PROCESSING_DIR, '{show_name}.S0{season}E{episode}.HDTV.x264.[SickChill].mkv'.format(
                 show_name=SHOW_NAME, season=season, episode=episode))
             with open(path, 'wb') as ep_file:
                 ep_file.write("foo bar")

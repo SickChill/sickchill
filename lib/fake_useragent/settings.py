@@ -1,15 +1,23 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
 import os
 import tempfile
 
-__version__ = '0.1.2'
+__version__ = '0.1.11'
 
-DB = os.path.join(tempfile.gettempdir(), 'fake_useragent_{version}.json'.format(  # noqa
+DB = os.path.join(
+    tempfile.gettempdir(),
+    'fake_useragent_{version}.json'.format(
+        version=__version__,
+    ),
+)
+
+CACHE_SERVER = 'https://fake-useragent.herokuapp.com/browsers/{version}'.format(
     version=__version__,
-))
+)
 
-BROWSERS_STATS_PAGE = 'http://www.w3schools.com/browsers/browsers_stats.asp'
+BROWSERS_STATS_PAGE = 'https://www.w3schools.com/browsers/default.asp'
 
 BROWSER_BASE_PAGE = 'http://useragentstring.com/pages/useragentstring.php?name={browser}'  # noqa
 
@@ -24,17 +32,19 @@ SHORTCUTS = {
     'internet explorer': 'internetexplorer',
     'ie': 'internetexplorer',
     'msie': 'internetexplorer',
+    'edge': 'internetexplorer',
     'google': 'chrome',
     'googlechrome': 'chrome',
     'ff': 'firefox',
 }
 
 OVERRIDES = {
-    'IE': 'Internet Explorer',
+    'Edge/IE': 'Internet Explorer',
+    'IE/Edge': 'Internet Explorer',
 }
 
-HTTP_TIMEOUT = 10
+HTTP_TIMEOUT = 5
 
-HTTP_RETRIES = 5
+HTTP_RETRIES = 2
 
-HTTP_DELAY = 5
+HTTP_DELAY = 0.1

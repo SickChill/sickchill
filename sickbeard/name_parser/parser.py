@@ -1,24 +1,25 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 import os.path
 import re
@@ -26,14 +27,16 @@ import time
 from collections import OrderedDict
 from threading import Lock
 
+# Third Party Imports
 import dateutil
-import sickbeard
 import six
+
+# First Party Imports
+import sickchill
 from sickbeard import common, db, helpers, logger, scene_exceptions, scene_numbering
 from sickbeard.name_parser import regexes
-from sickrage.helper.common import remove_extension
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import ex
+from sickchill.helper.common import remove_extension
+from sickchill.helper.encoding import ek
 
 
 class NameParser(object):
@@ -41,7 +44,7 @@ class NameParser(object):
     NORMAL_REGEX = 1
     ANIME_REGEX = 2
 
-    def __init__(self, file_name=True, showObj=None, tryIndexers=False,  # pylint: disable=too-many-arguments
+    def __init__(self, file_name=True, showObj=None, tryIndexers=False,
                  naming_pattern=False, parse_method=None):
 
         self.file_name = file_name
@@ -63,13 +66,7 @@ class NameParser(object):
         characters, along with any trailing hyphens.
 
         Is basically equivalent to replacing all _ and . with a
-        space, but handles decimal numbers in string, for example:
-
-        >>> cleanRegexedSeriesName("an.example.1.0.test")
-        'an example 1.0 test'
-        >>> cleanRegexedSeriesName("an_example_1.0_test")
-        'an example 1.0 test'
-
+        space, but handles decimal numbers in string.
         Stolen from dbr's tvnamer
         """
 
@@ -103,7 +100,7 @@ class NameParser(object):
                 else:
                     self.compiled_regexes.append((cur_pattern_num, cur_pattern_name, cur_regex))
 
-    def _parse_string(self, name, skip_scene_detection=False):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def _parse_string(self, name, skip_scene_detection=False):
         if not name:
             return
 
@@ -166,8 +163,18 @@ class NameParser(object):
             if 'air_date' in named_groups:
                 air_date = match.group('air_date')
                 try:
-                    assert re.sub(r'[^\d]*', '', air_date) != '112263'
-                    result.air_date = dateutil.parser.parse(air_date, fuzzy_with_tokens=True)[0].date()
+                    # Workaround for shows that get interpreted as 'air_date' incorrectly.
+                    # Shows so far are 11.22.63 and 9-1-1
+                    excluded_shows = ['112263', '911']
+                    assert re.sub(r'[^\d]*', '', air_date) not in excluded_shows
+
+                    check = dateutil.parser.parse(air_date, fuzzy_with_tokens=True)[0].date()
+                    # Make sure a 20th century date isn't returned as a 21st century date
+                    # 1 Year into the future (No releases should be coming out a year ahead of time, that's just insane)
+                    if check > check.today() and (check - check.today()).days // 365 > 1:
+                            check = check.replace(year=check.year-100)
+
+                    result.air_date = check
                     result.score += 1
                 except Exception:
                     continue
@@ -243,21 +250,12 @@ class NameParser(object):
 
                 if season_number is None or not episode_numbers:
                     try:
-                        lINDEXER_API_PARMS = sickbeard.indexerApi(bestResult.show.indexer).api_params.copy()
-
-                        lINDEXER_API_PARMS['language'] = bestResult.show.lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-                        t = sickbeard.indexerApi(bestResult.show.indexer).indexer(**lINDEXER_API_PARMS)
-
-                        epObj = t[bestResult.show.indexerid].airedOn(bestResult.air_date)[0]
-
-                        season_number = int(epObj["seasonnumber"])
-                        episode_numbers = [int(epObj["episodenumber"])]
-                    except sickbeard.indexer_episodenotfound:
-                        logger.log("Unable to find episode with date " + six.text_type(bestResult.air_date) + " for show " + bestResult.show.name + ", skipping", logger.WARNING)
-                        episode_numbers = []
-                    except sickbeard.indexer_error as e:
-                        logger.log("Unable to contact " + sickbeard.indexerApi(bestResult.show.indexer).name + ": " + ex(e), logger.WARNING)
+                        epObj = sickchill.indexer.episode(bestResult.show, firstAired=bestResult.air_date)
+                        season_number = epObj["airedSeason"]
+                        episode_numbers = [epObj["airedEpisode"]]
+                    except Exception:
+                        logger.log("Unable to find episode with date {} for show {}, skipping".format(
+                            bestResult.air_date, bestResult.show.name), logger.WARNING)
                         episode_numbers = []
 
                 for epNo in episode_numbers:
@@ -313,7 +311,7 @@ class NameParser(object):
             if len(new_season_numbers) > 1:
                 raise InvalidNameException(("Scene numbering results episodes from "
                                             "seasons %s, (i.e. more than one) and "
-                                            "sickrage does not support this.  "
+                                            "sickchill does not support this.  "
                                             "Sorry.").format(six.text_type(new_season_numbers)))
 
             # I guess it's possible that we'd have duplicate episodes too, so lets
@@ -482,8 +480,8 @@ class NameParser(object):
         return final_result
 
 
-class ParseResult(object):  # pylint: disable=too-many-instance-attributes
-    def __init__(self, original_name, series_name=None, season_number=None,  # pylint: disable=too-many-arguments
+class ParseResult(object):
+    def __init__(self, original_name, series_name=None, season_number=None,
                  episode_numbers=None, extra_info=None, release_group=None,
                  air_date=None, ab_episode_numbers=None, show=None,
                  score=None, quality=None, version=None):

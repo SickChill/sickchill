@@ -1,3 +1,15 @@
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may
+#  not use this file except in compliance with the License. You may obtain
+#  a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+
 from stevedore import named
 from stevedore.tests import utils
 
@@ -56,3 +68,26 @@ class TestNamed(utils.TestCase):
         )
         actual = em.names()
         self.assertEqual(actual, ['t2', 't1'])
+
+    def test_load_fail_ignored_when_sorted(self):
+        em = named.NamedExtensionManager(
+            'stevedore.test.extension',
+            names=['e1', 't2', 'e2', 't1'],
+            name_order=True,
+            invoke_on_load=True,
+            invoke_args=('a',),
+            invoke_kwds={'b': 'B'},
+        )
+        actual = em.names()
+        self.assertEqual(['t2', 't1'], actual)
+
+        em = named.NamedExtensionManager(
+            'stevedore.test.extension',
+            names=['e1', 't1'],
+            name_order=False,
+            invoke_on_load=True,
+            invoke_args=('a',),
+            invoke_kwds={'b': 'B'},
+        )
+        actual = em.names()
+        self.assertEqual(['t1'], actual)

@@ -1,30 +1,30 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io/
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sickchill.github.io/
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 """
 Common interface for Quality and Status
 """
 
-# pylint: disable=line-too-long
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import gettext
 import operator
 import platform
@@ -32,27 +32,34 @@ import re
 import uuid
 from os import path
 
-from fake_useragent import settings as UA_SETTINGS, UserAgent
-from sickbeard.numdict import NumDict
-from sickrage.helper import video_screen_size
-from sickrage.helper.encoding import ek
-from sickrage.recompiled import tags
-from sickrage.tagger.episode import EpisodeTags
+# Third Party Imports
+import fake_useragent
 # noinspection PyUnresolvedReferences
 from six.moves import reduce
+
+# First Party Imports
+import sickbeard
+from sickchill.helper import video_screen_size
+from sickchill.helper.encoding import ek
+from sickchill.recompiled import tags
+from sickchill.tagger.episode import EpisodeTags
+
+# Local Folder Imports
+from .numdict import NumDict
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 
 # If some provider has an issue with functionality of SR, other than user agents, it's best to come talk to us rather than block.
 # It is no different than us going to a provider if we have questions or issues. Be a team player here.
 # This is disabled, was only added for testing, and has no config.ini or web ui setting. To enable, set SPOOF_USER_AGENT = True
-SPOOF_USER_AGENT = False
-INSTANCE_ID = str(uuid.uuid1())
-USER_AGENT = ('Sick-Rage.CE.1/(' + platform.system() + '; ' + platform.release() + '; ' + INSTANCE_ID + ')')
-UA_SETTINGS.DB = ek(path.abspath, ek(path.join, ek(path.dirname, __file__), '../lib/fake_useragent/ua.json'))
-UA_POOL = UserAgent()
+SPOOF_USER_AGENT = True
+ua_pool = fake_useragent.FakeUserAgent(path=ek(path.join, ek(path.dirname, __file__), '../fake_useragent.ua.json'))
+
 if SPOOF_USER_AGENT:
-    USER_AGENT = UA_POOL.random
+    USER_AGENT = ua_pool.random
+else:
+    INSTANCE_ID = str(uuid.uuid1())
+    USER_AGENT = ('SickChill.CE.1/(' + platform.system() + '; ' + platform.release() + '; ' + INSTANCE_ID + ')')
 
 cpu_presets = {
     'HIGH': 5,
@@ -72,16 +79,18 @@ NOTIFY_GIT_UPDATE = 4
 NOTIFY_GIT_UPDATE_TEXT = 5
 NOTIFY_LOGIN = 6
 NOTIFY_LOGIN_TEXT = 7
+NOTIFY_POSTPROCESS = 8
 
 notifyStrings = NumDict({
-    # pylint: disable=undefined-variable
+
     NOTIFY_SNATCH: _("Started Download"),
-    NOTIFY_DOWNLOAD: _("Download Finished"),
+    NOTIFY_DOWNLOAD: _("Finished Download"),
     NOTIFY_SUBTITLE_DOWNLOAD: _("Subtitle Download Finished"),
-    NOTIFY_GIT_UPDATE: _("SickRage Updated"),
-    NOTIFY_GIT_UPDATE_TEXT: _("SickRage Updated To Commit#: "),
-    NOTIFY_LOGIN: _("SickRage new login"),
-    NOTIFY_LOGIN_TEXT: _("New login from IP: {0}. http://geomaplookup.net/?ip={0}")
+    NOTIFY_GIT_UPDATE: _("SickChill Updated"),
+    NOTIFY_GIT_UPDATE_TEXT: _("SickChill Updated To Commit#: "),
+    NOTIFY_LOGIN: _("SickChill new login"),
+    NOTIFY_LOGIN_TEXT: _("New login from IP: {0}. http://geomaplookup.net/?ip={0}"),
+    NOTIFY_POSTPROCESS: _("Finished Post Processing")
 })
 
 # Episode statuses
@@ -269,7 +278,7 @@ class Quality(object):
     @staticmethod
     def nameQuality(name, anime=False):
         """
-        Return The quality from an episode File renamed by SickRage
+        Return The quality from an episode File renamed by SickChill
         If no quality is achieved it will try scene_quality regex
 
         :param name: to parse
@@ -292,7 +301,7 @@ class Quality(object):
             return Quality.UNKNOWN
 
     @staticmethod
-    def scene_quality(name, anime=False):  # pylint: disable=too-many-branches, too-many-statements
+    def scene_quality(name, anime=False):
         """
         Return The quality from the scene episode File
 
@@ -327,42 +336,43 @@ class Quality(object):
             # SD TV
             elif sd_options:
                 result = Quality.SDTV
-
-            return Quality.UNKNOWN if result is None else result
-
+        elif ep.hevc and not sickbeard.QUALITY_ALLOW_HEVC:
+            result = Quality.NONE
+        elif ep.mpeg:
+            result = Quality.RAWHDTV
         # Is it UHD?
-        if ep.vres in [2160, 4320] and ep.scan == 'p':
+        elif ep.vres in {2160, 4320} and ep.scan == 'p':
             # BluRay
             full_res = (ep.vres == 4320)
-            if ep.avc and ep.bluray:
-                result = Quality.UHD_4K_BLURAY if not full_res else Quality.UHD_8K_BLURAY
+            if ep.bluray:
+                result = (Quality.UHD_4K_BLURAY, Quality.UHD_8K_BLURAY)[full_res]
             # WEB-DL
-            elif (ep.avc and ep.itunes) or ep.web:
-                result = Quality.UHD_4K_WEBDL if not full_res else Quality.UHD_8K_WEBDL
+            elif ep.itunes or ep.amazon or ep.netflix or ep.web:
+                result = (Quality.UHD_4K_WEBDL, Quality.UHD_8K_WEBDL)[full_res]
             # HDTV
-            elif ep.avc and ep.tv == 'hd':
-                result = Quality.UHD_4K_TV if not full_res else Quality.UHD_8K_TV
-
-        # Is it HD?
-        elif ep.vres in [1080, 720]:
+            elif ep.tv == 'hd':
+                result = (Quality.UHD_4K_TV, Quality.UHD_8K_TV)[full_res]
+        elif ep.vres in {1080, 720}:
             if ep.scan == 'p':
                 # BluRay
                 full_res = (ep.vres == 1080)
-                if ep.avc and (ep.bluray or ep.hddvd):
-                    result = Quality.FULLHDBLURAY if full_res else Quality.HDBLURAY
+                if ep.bluray or ep.hddvd:
+                    result = (Quality.HDBLURAY, Quality.FULLHDBLURAY)[full_res]
                 # WEB-DL
-                elif (ep.avc and ep.itunes) or ep.web:
-                    result = Quality.FULLHDWEBDL if full_res else Quality.HDWEBDL
+                elif ep.itunes or ep.amazon or ep.netflix or ep.web:
+                    result = (Quality.HDWEBDL, Quality.FULLHDWEBDL)[full_res]
                 # HDTV
-                elif ep.avc and ep.tv == 'hd':
-                    result = Quality.FULLHDTV if full_res else Quality.HDTV #1080 HDTV h264
+                elif ep.tv == 'hd' or ep.hevc:
+                    result = (Quality.HDTV, Quality.FULLHDTV)[full_res]  # 1080 HDTV h264
                 # MPEG2 encoded
-                elif all([ep.vres == 1080, ep.tv == 'hd', ep.mpeg]):
+                elif all([full_res, ep.tv == 'hd', ep.mpeg]):
                     result = Quality.RAWHDTV
-                elif all([ep.vres == 720, ep.tv == 'hd', ep.mpeg]):
+                elif all([not full_res, ep.tv == 'hd', ep.mpeg]):
                     result = Quality.RAWHDTV
             elif (ep.res == '1080i') and ep.tv == 'hd' and (ep.mpeg or (ep.raw and ep.avc_non_free)):
                 result = Quality.RAWHDTV
+        elif not ep.vres and ep.netflix or ep.amazon or ep.itunes:
+            result = Quality.HDWEBDL
         elif ep.hrws:
             result = Quality.HDTV
 
@@ -379,12 +389,15 @@ class Quality(object):
             result = Quality.SDDVD
         elif ep.tv:
             # SD TV/HD TV
-            result = Quality.SDTV
+            result = (Quality.SDTV, Quality.HDTV)[ep.tv == 'hd']
+        elif ep.raw or ep.mpeg:
+            # RawHD
+            result = Quality.RAWHDTV
 
         return Quality.UNKNOWN if result is None else result
 
     @staticmethod
-    def qualityFromFileMeta(filename):  # pylint: disable=too-many-branches
+    def qualityFromFileMeta(filename):
         """
         Get quality file file metadata
 
@@ -443,7 +456,7 @@ class Quality(object):
         return status, Quality.NONE
 
     @staticmethod
-    def sceneQualityFromName(name, quality):  # pylint: disable=too-many-branches
+    def sceneQualityFromName(name, quality):
         """
         Get scene naming parameters from filename and quality
 
@@ -596,7 +609,7 @@ class StatusStrings(NumDict):
 
 # Assign strings to statuses
 statusStrings = StatusStrings({
-    # pylint: disable=undefined-variable
+
     UNKNOWN: _("Unknown"),
     UNAIRED: _("Unaired"),
     SNATCHED: _("Snatched"),
@@ -612,7 +625,7 @@ statusStrings = StatusStrings({
 })
 
 
-class Overview(object):  # pylint: disable=too-few-public-methods
+class Overview(object):
     UNAIRED = UNAIRED  # 1
     SNATCHED = SNATCHED  # 2
     WANTED = WANTED  # 3

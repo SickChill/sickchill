@@ -1,65 +1,65 @@
 #!/bin/sh
 #
 ### BEGIN INIT INFO
-# Provides:          sickrage
+# Provides:          sickchill
 # Required-Start:    $local_fs $network $remote_fs
 # Required-Stop:     $local_fs $network $remote_fs
 # Should-Start:      $NetworkManager
 # Should-Stop:       $NetworkManager
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: starts instance of SickRage
-# Description:       starts instance of SickRage using start-stop-daemon
+# Short-Description: starts instance of SickChill
+# Description:       starts instance of SickChill using start-stop-daemon
 ### END INIT INFO
 
-# Source SickRage configuration
-if [ -f /etc/default/sickrage ]; then
-    . /etc/default/sickrage
+# Source SickChill configuration
+if [ -f /etc/default/sickchill ]; then
+    . /etc/default/sickchill
 else
-    echo "/etc/default/sickrage not found using default settings.";
+    echo "/etc/default/sickchill not found using default settings.";
 fi
 
 # Source init functions
 . /lib/lsb/init-functions
 
 # Script name
-NAME=sickrage
+NAME=sickchill
 
 # App name
-DESC=SickRage
+DESC=SickChill
 
 ## Don't edit this file
-## Edit user configuation in /etc/default/sickrage to change
+## Edit user configuation in /etc/default/sickchill to change
 ##
-## SR_USER=         #$RUN_AS, username to run sickrage under, the default is sickrage
-## SR_HOME=         #$APP_PATH, the location of SickBeard.py, the default is /opt/sickrage
-## SR_DATA=         #$DATA_DIR, the location of sickbeard.db, cache, logs, the default is /opt/sickrage
-## SR_PIDFILE=      #$PID_FILE, the location of sickrage.pid, the default is /var/run/sickrage/sickrage.pid
+## SR_USER=         #$RUN_AS, username to run sickchill under, the default is sickchill
+## SR_HOME=         #$APP_PATH, the location of SickBeard.py, the default is /opt/sickchill
+## SR_DATA=         #$DATA_DIR, the location of sickbeard.db, cache, logs, the default is /opt/sickchill
+## SR_PIDFILE=      #$PID_FILE, the location of sickchill.pid, the default is /var/run/sickchill/sickchill.pid
 ## PYTHON_BIN=      #$DAEMON, the location of the python binary, the default is /usr/bin/python2.7
-## SR_OPTS=         #$EXTRA_DAEMON_OPTS, extra cli option for sickrage, i.e. " --config=/home/sickrage/config.ini"
+## SR_OPTS=         #$EXTRA_DAEMON_OPTS, extra cli option for sickchill, i.e. " --config=/home/sickchill/config.ini"
 ## SSD_OPTS=        #$EXTRA_SSD_OPTS, extra start-stop-daemon option like " --group=users"
 ##
 ## EXAMPLE if want to run as different user
-## add SR_USER=username to /etc/default/sickrage
-## otherwise default sickrage is used
+## add SR_USER=username to /etc/default/sickchill
+## otherwise default sickchill is used
 
 ## The defaults
 # Run as username
-RUN_AS=${SR_USER-sickrage}
+RUN_AS=${SR_USER-sickchill}
 
 # Path to app SR_HOME=path_to_app_SickBeard.py
-APP_PATH=${SR_HOME-/opt/sickrage}
+APP_PATH=${SR_HOME-/opt/sickchill}
 
 # Data directory where sickbeard.db, cache and logs are stored
-DATA_DIR=${SR_DATA-/opt/sickrage}
+DATA_DIR=${SR_DATA-/opt/sickchill}
 
 # Path to store PID file
-PID_FILE=${SR_PIDFILE-/var/run/sickrage/sickrage.pid}
+PID_FILE=${SR_PIDFILE-/var/run/sickchill/sickchill.pid}
 
 # path to python bin
 DAEMON=${PYTHON_BIN-/usr/bin/python2.7}
 
-# Extra daemon option like: SR_OPTS=" --config=/home/sickrage/config.ini"
+# Extra daemon option like: SR_OPTS=" --config=/home/sickchill/config.ini"
 EXTRA_DAEMON_OPTS=${SR_OPTS-}
 
 # Extra start-stop-daemon option like START_OPTS=" --group=users"
@@ -75,7 +75,7 @@ test -x $DAEMON || exit 0
 
 set -e
 
-# Create PID directory if not exist and ensure the SickRage user can write to it
+# Create PID directory if not exist and ensure the SickChill user can write to it
 if [ ! -d $PID_PATH ]; then
     mkdir -p $PID_PATH
     chown $RUN_AS $PID_PATH
@@ -94,28 +94,28 @@ if [ -e $PID_FILE ]; then
     fi
 fi
 
-start_sickrage() {
+start_sickchill() {
     echo "Starting $DESC"
     start-stop-daemon -d $APP_PATH -c $RUN_AS $EXTRA_SSD_OPTS --start --pidfile $PID_FILE --exec $DAEMON -- $DAEMON_OPTS
 }
 
-stop_sickrage() {
+stop_sickchill() {
     echo "Stopping $DESC"
     start-stop-daemon --stop --pidfile $PID_FILE --retry 15
 }
 
 case "$1" in
     start)
-        start_sickrage
+        start_sickchill
         ;;
     stop)
-        stop_sickrage
+        stop_sickchill
         ;;
 
     restart|force-reload)
-        stop_sickrage
+        stop_sickchill
         sleep 2
-        start_sickrage
+        start_sickchill
         ;;
     status)
         status_of_proc -p "$PID_FILE" "$DAEMON" "$DESC"

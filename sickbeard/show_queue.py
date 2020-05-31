@@ -1,42 +1,49 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 import traceback
 from collections import namedtuple
 
-import sickbeard
+# Third Party Imports
+import dateutil
 import six
-from imdb import _exceptions as imdb_exceptions
-from libtrakt import TraktAPI
-from sickbeard import generic_queue, logger, name_cache, notifiers, ui
-from sickbeard.blackandwhitelist import BlackAndWhiteList
-from sickbeard.common import WANTED
-from sickbeard.helpers import chmodAsParent, get_showname_from_indexer, makeDir, sortable_name
-from sickbeard.tv import TVShow
-from sickrage.helper.common import sanitize_filename
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import (CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, EpisodeDeletedException,
-                                        MultipleShowObjectsException, ShowDirectoryNotFoundException)
-from sickrage.show.Show import Show
+from trakt import TraktAPI
+
+# First Party Imports
+import sickbeard
+import sickchill
+from sickchill.helper.common import sanitize_filename
+from sickchill.helper.encoding import ek
+from sickchill.helper.exceptions import (CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, EpisodeDeletedException,
+                                         MultipleShowObjectsException, ShowDirectoryNotFoundException)
+from sickchill.show.Show import Show
+
+# Local Folder Imports
+from . import generic_queue, logger, name_cache, notifiers, scene_numbering, ui
+from .blackandwhitelist import BlackAndWhiteList
+from .common import WANTED
+from .helpers import chmodAsParent, makeDir, sortable_name
+from .tv import TVShow
 
 
 class ShowQueue(generic_queue.GenericQueue):
@@ -119,7 +126,7 @@ class ShowQueue(generic_queue.GenericQueue):
         if self.is_being_refreshed(show) and not force:
             raise CantRefreshShowException('This show is already being refreshed, not refreshing again.')
 
-        if (self.is_being_updated(show) or self.is_in_update_queue(show)) and not force:
+        if self.is_being_updated(show) or self.is_in_update_queue(show):
             logger.log(
                 'A refresh was attempted but there is already an update queued or in progress. Updates do a refresh at the end so I\'m skipping this request.',
                 logger.DEBUG)
@@ -135,18 +142,20 @@ class ShowQueue(generic_queue.GenericQueue):
         self.add_item(queue_item_obj)
         return queue_item_obj
 
+    # noinspection PyUnusedLocal
     def rename_show_episodes(self, show, force=False):
         queue_item_obj = QueueItemRename(show)
         self.add_item(queue_item_obj)
         return queue_item_obj
 
+    # noinspection PyUnusedLocal
     def download_subtitles(self, show, force=False):
         queue_item_obj = QueueItemSubtitle(show)
         self.add_item(queue_item_obj)
         return queue_item_obj
 
-    def add_show(self,  # pylint: disable=too-many-arguments, too-many-locals
-                indexer, indexer_id, showDir, default_status=None, quality=None, season_folders=None,
+    # noinspection PyPep8Naming
+    def add_show(self, indexer, indexer_id, showDir, default_status=None, quality=None, season_folders=None,
                  lang=None, subtitles=None, subtitles_sr_metadata=None, anime=None, scene=None, paused=None,
                  blacklist=None, whitelist=None, default_status_after=None, root_dir=None):
 
@@ -157,8 +166,8 @@ class ShowQueue(generic_queue.GenericQueue):
             default_status_after = sickbeard.STATUS_DEFAULT_AFTER
 
         queue_item_obj = QueueItemAdd(indexer, indexer_id, showDir, default_status, quality, season_folders, lang,
-                                    subtitles, subtitles_sr_metadata, anime, scene, paused, blacklist, whitelist,
-                                    default_status_after, root_dir)
+                                      subtitles, subtitles_sr_metadata, anime, scene, paused, blacklist, whitelist,
+                                      default_status_after, root_dir)
 
         self.add_item(queue_item_obj)
         return queue_item_obj
@@ -183,7 +192,7 @@ class ShowQueue(generic_queue.GenericQueue):
         return queue_item_obj
 
 
-class ShowQueueActions(object):  # pylint: disable=too-few-public-methods
+class ShowQueueActions(object):
 
     def __init__(self):
         pass
@@ -197,13 +206,13 @@ class ShowQueueActions(object):  # pylint: disable=too-few-public-methods
     REMOVE = 7
 
     names = {
-        REFRESH: 'Refresh',
-        ADD: 'Add',
-        UPDATE: 'Update',
-        FORCEUPDATE: 'Force Update',
-        RENAME: 'Rename',
-        SUBTITLE: 'Subtitle',
-        REMOVE: 'Remove Show'
+        REFRESH: _('Refresh'),
+        ADD: _('Add'),
+        UPDATE: _('Update'),
+        FORCEUPDATE: _('Force Update'),
+        RENAME: _('Rename'),
+        SUBTITLE: _('Subtitle'),
+        REMOVE: _('Remove Show')
     }
 
 
@@ -232,12 +241,13 @@ class ShowQueueItem(generic_queue.QueueItem):
         return self.show.name if self.show else 'UNSET'
 
     @property
-    def is_loading(self):  # pylint: disable=no-self-use
+    def is_loading(self):
         return False
 
 
-class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attributes
-    def __init__(self,  # pylint: disable=too-many-arguments, too-many-locals
+class QueueItemAdd(ShowQueueItem):
+    # noinspection PyPep8Naming
+    def __init__(self,
                  indexer, indexer_id, showDir, default_status, quality, season_folders,
                  lang, subtitles, subtitles_sr_metadata, anime, scene, paused, blacklist, whitelist,
                  default_status_after, root_dir):
@@ -276,8 +286,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
         Returns the show name if there is a show object created, if not returns
         the dir that the show is being added to.
         """
-        return self.show.name if self.show else self.showDir.rsplit(os.sep)[-1]
-
+        return self.show.name if self.show else self.showDir.rsplit(os.sep)[-1] if self.showDir else _("Loading")
 
     @property
     def is_loading(self):
@@ -289,12 +298,16 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
 
     @property
     def info(self):
-        info = namedtuple('LoadingShowInfo', 'id name sort_name network quality')
+        info = namedtuple('LoadingShowInfo', 'id name sort_name network network_image_url show_image_url quality')
         if self.show:
-            return info(id=self.show.indexerid, name=self.show.name, sort_name=self.show.sort_name, network=self.show.network, quality=self.show.quality)
-        return info(id=self.show_name, name=self.show_name, sort_name=sortable_name(self.show_name), network=_('Loading'), quality=0)
+            return info(id=self.show.indexerid, name=self.show.name, sort_name=self.show.sort_name, network=self.show.network,
+                        network_image_url=self.show.network_image_url, show_image_url=self.show.show_image_url, quality=self.show.quality)
+        # noinspection PyUnresolvedReferences
+        return info(id=0, name=self.show_name, sort_name=sortable_name(self.show_name), network=_('Loading'),
+                    network_image_url='images/network/nonetwork.png', show_image_url=lambda x: 'images/{}.png'.format(('poster', 'banner')['banner' in x]),
+                    quality=0)
 
-    def run(self):  # pylint: disable=too-many-branches, too-many-statements, too-many-return-statements
+    def run(self):
 
         super(QueueItemAdd, self).run()
 
@@ -306,68 +319,70 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                 self._finish_early()
                 return
 
-        logger.log('Starting to add show {0}'.format('by ShowDir: {0}'.format(self.showDir) if self.showDir else 'by Indexer Id: {0}'.format(self.indexer_id)))
+        logger.log(_('Starting to add show {0}').format(_('by ShowDir: {0}').format(self.showDir) if self.showDir else _('by Indexer Id: {0}').format(
+            self.indexer_id)))
         # make sure the Indexer IDs are valid
         try:
+            s = sickchill.indexer.series_by_id(indexerid=self.indexer_id, indexer=self.indexer, language=self.lang)
+            if not s:
+                error_string = _('Could not find show with id:{0} on {1}, skipping').format(
+                    self.indexer_id, sickchill.indexer.name(self.indexer))
 
-            lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
-            lINDEXER_API_PARMS['language'] = self.lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-            logger.log('{0}: {1!r}'.format(sickbeard.indexerApi(self.indexer).name, lINDEXER_API_PARMS))
-
-            t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
-            s = t[self.indexer_id]
-
-            # Let's try to create the show Dir if it's not provided. This way we force the show dir to build build using the
-            # Indexers provided series name
-            if self.root_dir and not self.showDir:
-                show_name = get_showname_from_indexer(self.indexer, self.indexer_id, self.lang)
-                if not show_name:
-                    logger.log('Unable to get a show {0}, can\'t add the show'.format(self.showDir))
-                    self._finish_early()
-                    return
-
-                self.showDir = ek(os.path.join, self.root_dir, sanitize_filename(show_name))
-
-                dir_exists = makeDir(self.showDir)
-                if not dir_exists:
-                    logger.log('Unable to create the folder {0}, can\'t add the show'.format(self.showDir))
-                    self._finish_early()
-                    return
-
-                chmodAsParent(self.showDir)
-
-            # this usually only happens if they have an NFO in their show dir which gave us a Indexer ID that has no proper english version of the show
-            if getattr(s, 'seriesname', None) is None:
-                error_string = 'Show in {0} has no name on {1}, probably searched with the wrong language. Delete .nfo and add manually in the correct language.'.format(
-                    self.showDir, sickbeard.indexerApi(self.indexer).name)
-
-                logger.log(error_string, logger.WARNING)
-                ui.notifications.error('Unable to add show', error_string)
+                logger.log(error_string)
+                ui.notifications.error(_('Unable to add show'), error_string)
 
                 self._finish_early()
                 return
 
-            # if the show has no episodes/seasons
-            if not s:
-                error_string = 'Show {0} is on {1} but contains no season/episode data.'.format(
-                    s[b'seriesname'], sickbeard.indexerApi(self.indexer).name)
+            # Let's try to create the show Dir if it's not provided. This way we force the show dir to build build using the
+            # Indexers provided series name
+            if self.root_dir and not self.showDir:
+                if not s.seriesName:
+                    logger.log(_('Unable to get a show {0}, can\'t add the show').format(self.showDir))
+                    self._finish_early()
+                    return
 
-                logger.log(error_string)
-                ui.notifications.error('Unable to add show', error_string)
+                show_dir = s.seriesName
+                if sickbeard.ADD_SHOWS_WITH_YEAR and s.firstAired:
+                    try:
+                        year = '({0})'.format(dateutil.parser.parse(s.firstAired).year)
+                        if year not in show_dir:
+                            show_dir = '{0} {1}'.format(s.seriesName, year)
+                    except (TypeError, ValueError):
+                        logger.log(_('Could not append the show year folder for the show: {0}').format(show_dir))
+
+                self.showDir = ek(os.path.join, self.root_dir, sanitize_filename(show_dir))
+
+                if sickbeard.ADD_SHOWS_WO_DIR:
+                    logger.log(_("Skipping initial creation of {0} due to config.ini setting").format(self.showDir))
+                else:
+                    dir_exists = makeDir(self.showDir)
+                    if not dir_exists:
+                        logger.log(_('Unable to create the folder {0}, can\'t add the show').format(self.showDir))
+                        self._finish_early()
+                        return
+
+                    chmodAsParent(self.showDir)
+
+            # this usually only happens if they have an NFO in their show dir which gave us a Indexer ID that has no proper english version of the show
+            if getattr(s, 'seriesName', None) is None:
+                # noinspection PyPep8
+                error_string = _('Show in {0} has no name on {1}, probably searched with the wrong language. Delete .nfo and add manually in the correct language.').format(
+                    self.showDir, sickchill.indexer.name(self.indexer))
+
+                logger.log(error_string, logger.WARNING)
+                ui.notifications.error(_('Unable to add show'), error_string)
 
                 self._finish_early()
                 return
         except Exception as error:
             error_string = 'Unable to look up the show in {0} on {1} using ID {2}, not using the NFO. Delete .nfo and try adding manually again.'.format(
-                self.showDir, sickbeard.indexerApi(self.indexer).name, self.indexer_id)
+                self.showDir, sickchill.indexer.name(self.indexer), self.indexer_id)
 
             logger.log('{0}: {1}'.format(error_string, error), logger.ERROR)
-            ui.notifications.error(
-                'Unable to add show', error_string)
+            ui.notifications.error(_('Unable to add show'), error_string)
 
             if sickbeard.USE_TRAKT:
-                trakt_id = sickbeard.indexerApi(self.indexer).config[b'trakt_id']
                 trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
                 title = self.showDir.split('/')[-1]
@@ -375,15 +390,10 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                     'shows': [
                         {
                             'title': title,
-                            'ids': {}
+                            'ids': {sickchill.indexer.slug(self.indexer): self.indexer_id}
                         }
                     ]
                 }
-                if trakt_id == 'tvdb_id':
-                    data[b'shows'][0][b'ids'][b'tvdb'] = self.indexer_id
-                else:
-                    data[b'shows'][0][b'ids'][b'tvrage'] = self.indexer_id
-
                 trakt_api.traktRequest('sync/watchlist/remove', data, method='POST')
 
             self._finish_early()
@@ -395,7 +405,8 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
             except MultipleShowObjectsException as error:
                 # If we have the show in our list, but the location is wrong, lets fix it and refresh!
                 existing_show = Show.find(sickbeard.showList, self.indexer_id)
-                if existing_show and not ek(os.path.isdir, existing_show._location):  # pylint: disable=protected-access
+                # noinspection PyProtectedMember
+                if existing_show and not ek(os.path.isdir, existing_show._location):
                     newShow = existing_show
                 else:
                     raise error
@@ -415,7 +426,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
             self.show.paused = self.paused if self.paused is not None else False
 
             # set up default new/missing episode status
-            logger.log('Setting all episodes to the specified default status: {0}' .format(self.show.default_ep_status))
+            logger.log(_('Setting all episodes to the specified default status: {0}') .format(self.show.default_ep_status))
             self.show.default_ep_status = self.default_status
 
             if self.show.anime:
@@ -425,7 +436,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                 if self.whitelist:
                     self.show.release_groups.set_white_keywords(self.whitelist)
 
-            # # be smartish about this
+            # # be smart-ish about this
             # if self.show.genre and 'talk show' in self.show.genre.lower():
             #     self.show.air_by_date = 1
             # if self.show.genre and 'documentary' in self.show.genre.lower():
@@ -433,37 +444,29 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
             # if self.show.classification and 'sports' in self.show.classification.lower():
             #     self.show.sports = 1
 
-        except sickbeard.indexer_exception as error:
+        except Exception as error:
             error_string = 'Unable to add {0} due to an error with {1}'.format(
-                self.show.name if self.show else 'show', sickbeard.indexerApi(self.indexer).name)
+                self.show.name if self.show else 'show', sickchill.indexer.name(self.indexer))
 
             logger.log('{0}: {1}'.format(error_string, error), logger.ERROR)
-            ui.notifications.error('Unable to add show', error_string)
+
+            logger.log('Error trying to add show: {0}'.format(error), logger.ERROR)
+            logger.log(traceback.format_exc(), logger.DEBUG)
+
+            ui.notifications.error(_('Unable to add show'), error_string)
 
             self._finish_early()
             return
 
         except MultipleShowObjectsException:
-            error_string = 'The show in {0} is already in your show list, skipping'.format(self.showDir)
+            error_string = _('The show in {0} is already in your show list, skipping').format(self.showDir)
             logger.log(error_string, logger.WARNING)
-            ui.notifications.error('Show skipped', error_string)
+            ui.notifications.error(_('Show skipped'), error_string)
 
             self._finish_early()
             return
 
-        except Exception as error:
-            logger.log('Error trying to add show: {0}'.format(error), logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
-            self._finish_early()
-            raise
-
-        logger.log('Retrieving show info from IMDb', logger.DEBUG)
-        try:
-            self.show.loadIMDbInfo()
-        except imdb_exceptions.IMDbError as error:
-            logger.log(' Something wrong on IMDb api: {0}'.format(error), logger.WARNING)
-        except Exception as error:
-            logger.log('Error loading IMDb info: {0}'.format(error), logger.ERROR)
+        self.show.loadIMDbInfo()
 
         try:
             self.show.saveToDB()
@@ -480,9 +483,7 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
         try:
             self.show.loadEpisodesFromIndexer()
         except Exception as error:
-            logger.log(
-                'Error with {0}, not creating episode list: {1}'.format
-                (sickbeard.indexerApi(self.show.indexer).name, error), logger.ERROR)
+            logger.log('Error with {0}, not creating episode list: {1}'.format(self.show.idxr.name, error), logger.ERROR)
             logger.log(traceback.format_exc(), logger.DEBUG)
 
         # update internal name cache
@@ -518,11 +519,10 @@ class QueueItemAdd(ShowQueueItem):  # pylint: disable=too-many-instance-attribut
                 notifiers.trakt_notifier.update_watchlist(show_obj=self.show)
 
         # Load XEM data to DB for show
-        sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=True)
+        scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=True)
 
-        # check if show has XEM mapping so we can determin if searches should go by scene numbering or indexer numbering.
-        if not self.scene and sickbeard.scene_numbering.get_xem_numbering_for_show(self.show.indexerid,
-                                                                                   self.show.indexer):
+        # check if show has XEM mapping so we can determine if searches should go by scene numbering or indexer numbering.
+        if not self.scene and scene_numbering.get_xem_numbering_for_show(self.show.indexerid, self.show.indexer):
             self.show.scene = 1
 
         # After initial add, set to default_status_after.
@@ -562,7 +562,7 @@ class QueueItemRefresh(ShowQueueItem):
         self.show.populateCache()
 
         # Load XEM data to DB for show
-        sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
+        scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
         super(QueueItemRefresh, self).finish()
         self.finish()
@@ -634,36 +634,22 @@ class QueueItemUpdate(ShowQueueItem):
         self.force = force
         self.priority = generic_queue.QueuePriorities.HIGH
 
-    def run(self):  # pylint: disable=too-many-branches, too-many-statements
+    def run(self):
 
         super(QueueItemUpdate, self).run()
 
         logger.log('Beginning update of {0}'.format(self.show.name), logger.DEBUG)
 
-        logger.log('Retrieving show info from {0}'.format(sickbeard.indexerApi(self.show.indexer).name), logger.DEBUG)
+        logger.log('Retrieving show info from {0}'.format(self.show.idxr.name), logger.DEBUG)
         try:
-            self.show.loadFromIndexer(cache=not self.force)
-        except sickbeard.indexer_error as error:
-            logger.log('Unable to contact {0}, aborting: {1}'.format
-                       (sickbeard.indexerApi(self.show.indexer).name, error), logger.WARNING)
-            super(QueueItemUpdate, self).finish()
-            self.finish()
-            return
-        except sickbeard.indexer_attributenotfound as error:
-            logger.log('Data retrieved from {0} was incomplete, aborting: {1}'.format
-                       (sickbeard.indexerApi(self.show.indexer).name, error), logger.ERROR)
+            self.show.loadFromIndexer()
+        except Exception as error:
+            logger.log('Unable to contact {0}, aborting: {1}'.format(self.show.idxr.name, error), logger.WARNING)
             super(QueueItemUpdate, self).finish()
             self.finish()
             return
 
-        logger.log('Retrieving show info from IMDb', logger.DEBUG)
-        try:
-            self.show.loadIMDbInfo()
-        except imdb_exceptions.IMDbError as error:
-            logger.log('Something wrong on IMDb api: {0}'.format(error), logger.WARNING)
-        except Exception as error:
-            logger.log('Error loading IMDb info: {0}'.format(error), logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
+        self.show.loadIMDbInfo()
 
         # have to save show before reading episodes from db
         try:
@@ -673,23 +659,18 @@ class QueueItemUpdate(ShowQueueItem):
             logger.log(traceback.format_exc(), logger.DEBUG)
 
         # get episode list from DB
-        logger.log('Loading all episodes from the database', logger.DEBUG)
         DBEpList = self.show.loadEpisodesFromDB()
 
         # get episode list from TVDB
-        logger.log('Loading all episodes from {0}'.format(sickbeard.indexerApi(self.show.indexer).name), logger.DEBUG)
+        logger.log('Loading all episodes from {0}'.format(self.show.idxr.name), logger.DEBUG)
         try:
-            IndexerEpList = self.show.loadEpisodesFromIndexer(cache=not self.force)
-        except sickbeard.indexer_exception as error:
+            IndexerEpList = self.show.loadEpisodesFromIndexer()
+        except Exception as error:
             logger.log('Unable to get info from {0}, the show info will not be refreshed: {1}'.format
-                       (sickbeard.indexerApi(self.show.indexer).name, error), logger.ERROR)
+                       (self.show.idxr.name, error), logger.ERROR)
             IndexerEpList = None
 
-        if not IndexerEpList:
-            logger.log('No data returned from {0}, unable to update this show.'.format
-                       (sickbeard.indexerApi(self.show.indexer).name), logger.ERROR)
-        else:
-            # for each ep we found on the Indexer delete it from the DB list
+        if IndexerEpList:
             for curSeason in IndexerEpList:
                 for curEpisode in IndexerEpList[curSeason]:
                     curEp = self.show.getEpisode(curSeason, curEpisode)
@@ -718,7 +699,8 @@ class QueueItemUpdate(ShowQueueItem):
 
         logger.log('Finished update of {0}'.format(self.show.name), logger.DEBUG)
 
-        sickbeard.showQueueScheduler.action.refresh_show(self.show, self.force)
+        # sickbeard.showQueueScheduler.action.refresh_show(self.show, self.force)
+        QueueItemRefresh(self.show, self.force).run()
         super(QueueItemUpdate, self).finish()
         self.finish()
 
@@ -740,7 +722,33 @@ class QueueItemRemove(ShowQueueItem):
             try:
                 sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(self.show)
             except Exception as error:
-                logger.log('Unable to delete show from Trakt: {0}. Error: {1}'.format(self.show.name, error), logger.WARNING)
+                logger.log(_('Unable to delete show from Trakt: {0}. Error: {1}').format(self.show.name, error), logger.WARNING)
+
+        # If any notification fails, don't stop removal
+        try:
+            # TODO: ep_obj is undefined here, so all of these will fail.
+            # send notifications
+            # notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
+
+            # do the library update for KODI
+            notifiers.kodi_notifier.update_library(self.show.name)
+
+            # do the library update for Plex
+            notifiers.plex_notifier.update_library(self.show)
+
+            # do the library update for EMBY
+            notifiers.emby_notifier.update_library(self.show)
+
+            # do the library update for NMJ
+            # nmj_notifier kicks off its library update when the notify_download is issued (inside notifiers)
+
+            # do the library update for Synology Indexer
+            notifiers.synoindex_notifier.addFolder(self.show._location)
+
+            # do the library update for pyTivo
+            notifiers.pytivo_notifier.update_library(self.show)
+        except Exception:
+            logger.log(_("Some notifications could not be sent. Continuing removal of {}...").format(self.show.name))
 
         super(QueueItemRemove, self).finish()
         self.finish()

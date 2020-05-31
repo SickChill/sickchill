@@ -1,25 +1,26 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sickchill.github.io
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import operator
 import re
@@ -27,20 +28,23 @@ import threading
 import time
 import traceback
 
+# First Party Imports
 import sickbeard
-from sickbeard import db, helpers, logger
-from sickbeard.common import cpu_presets, DOWNLOADED, Quality, SNATCHED, SNATCHED_PROPER
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickbeard.search import pickBestResult, snatchEpisode
-from sickrage.helper.exceptions import AuthException, ex
-from sickrage.show.History import History
+from sickchill.helper.exceptions import AuthException, ex
+from sickchill.show.History import History
+
+# Local Folder Imports
+from . import db, helpers, logger
+from .common import cpu_presets, DOWNLOADED, Quality, SNATCHED, SNATCHED_PROPER
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from .search import pickBestResult, snatchEpisode
 
 
-class ProperFinder(object):  # pylint: disable=too-few-public-methods
+class ProperFinder(object):
     def __init__(self):
         self.amActive = False
 
-    def run(self, force=False):  # pylint: disable=unused-argument
+    def run(self, force=False):
         """
         Start looking for new propers
 
@@ -69,7 +73,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
 
         self.amActive = False
 
-    def _getProperList(self):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def _getProperList(self):
         """
         Walk providers for propers
         """
@@ -79,7 +83,7 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
 
         # for each provider get a list of the
         origThreadName = threading.currentThread().name
-        providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active()]
+        providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active]
         for curProvider in providers:
             threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
 
@@ -124,15 +128,15 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
             if not parse_result.series_name:
                 continue
 
-            if not parse_result.episode_numbers:
-                logger.log(
-                    "Ignoring " + curProper.name + " because it's for a full season rather than specific episode",
-                    logger.DEBUG)
+            if parse_result.show.paused:
+                logger.log("Ignoring " + curProper.name + " because " + parse_result.show.name + " is paused", logger.DEBUG)
                 continue
 
-            logger.log(
-                "Successful match! Result " + parse_result.original_name + " matched to show " + parse_result.show.name,
-                logger.DEBUG)
+            if not parse_result.episode_numbers:
+                logger.log("Ignoring " + curProper.name + " because it's for a full season rather than specific episode", logger.DEBUG)
+                continue
+
+            logger.log("Successful match! Result " + parse_result.original_name + " matched to show " + parse_result.show.name, logger.DEBUG)
 
             # set the indexerid in the db to the show's indexerid
             curProper.indexerid = parse_result.show.indexerid
@@ -208,7 +212,6 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
         """
 
         for curProper in properList:
-
             historyLimit = datetime.datetime.today() - datetime.timedelta(days=30)
 
             # make sure the episode has been downloaded before
@@ -292,6 +295,6 @@ class ProperFinder(object):  # pylint: disable=too-few-public-methods
         try:
             last_proper_search = datetime.date.fromordinal(int(sql_results[0][b"last_proper_search"]))
         except Exception:
-            return datetime.date.fromordinal(1)
+            return datetime.date.min
 
         return last_proper_search

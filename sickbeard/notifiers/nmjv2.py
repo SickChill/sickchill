@@ -2,31 +2,36 @@
 
 # Author: Jasper Lanting
 # Based on nmj.py by Nico Berlee: http://nico.berlee.nl/
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import time
 from xml.dom.minidom import parseString
 
+# Third Party Imports
+# noinspection PyUnresolvedReferences
+from six.moves import urllib
+
+# First Party Imports
 import sickbeard
 from sickbeard import logger
-from six.moves import urllib
 
 try:
     import xml.etree.cElementTree as etree
@@ -35,21 +40,21 @@ except ImportError:
 
 
 class Notifier(object):
-    def notify_snatch(self, ep_name):  # pylint: disable=unused-argument
+    def notify_snatch(self, ep_name):
         return False
         # Not implemented: Start the scanner when snatched does not make any sense
 
-    def notify_download(self, ep_name):  # pylint: disable=unused-argument
+    def notify_download(self, ep_name):
         self._notifyNMJ()
 
-    def notify_subtitle_download(self, ep_name, lang):  # pylint: disable=unused-argument
+    def notify_subtitle_download(self, ep_name, lang):
         self._notifyNMJ()
 
-    def notify_git_update(self, new_version):  # pylint: disable=unused-argument
+    def notify_git_update(self, new_version):
         return False
         # Not implemented, no reason to start scanner.
 
-    def notify_login(self, ipaddress=""):  # pylint: disable=unused-argument
+    def notify_login(self, ipaddress=""):
         return False
 
     def test_notify(self, host):

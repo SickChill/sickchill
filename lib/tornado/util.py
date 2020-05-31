@@ -84,6 +84,16 @@ except ImportError:
     is_finalizing = _get_emulated_is_finalizing()
 
 
+class TimeoutError(Exception):
+    """Exception raised by `.with_timeout` and `.IOLoop.run_sync`.
+
+    .. versionchanged:: 5.0:
+       Unified ``tornado.gen.TimeoutError`` and
+       ``tornado.ioloop.TimeoutError`` as ``tornado.util.TimeoutError``.
+       Both former names remain as aliases.
+    """
+
+
 class ObjectDict(_ObjectDictBase):
     """Makes a dictionary behave like an object, with attribute-style access.
     """
@@ -272,6 +282,12 @@ class Configurable(object):
     Configurable subclasses must define the class methods
     `configurable_base` and `configurable_default`, and use the instance
     method `initialize` instead of ``__init__``.
+
+    .. versionchanged:: 5.0
+
+       It is now possible for configuration to be specified at
+       multiple levels of a class hierarchy.
+
     """
     __impl_class = None  # type: type
     __impl_kwargs = None  # type: Dict[str, Any]
@@ -286,6 +302,9 @@ class Configurable(object):
         else:
             impl = cls
         init_kwargs.update(kwargs)
+        if impl.configurable_base() is not base:
+            # The impl class is itself configurable, so recurse.
+            return impl(*args, **init_kwargs)
         instance = super(Configurable, cls).__new__(impl)
         # initialize vs __init__ chosen for compatibility with AsyncHTTPClient
         # singleton magic.  If we get rid of that we can switch to __init__
@@ -343,7 +362,10 @@ class Configurable(object):
         # type: () -> type
         """Returns the currently configured class."""
         base = cls.configurable_base()
-        if cls.__impl_class is None:
+        # Manually mangle the private name to see whether this base
+        # has been configured (and not another base higher in the
+        # hierarchy).
+        if base.__dict__.get('_Configurable__impl_class') is None:
             base.__impl_class = cls.configurable_default()
         return base.__impl_class
 

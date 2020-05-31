@@ -66,8 +66,8 @@ def bdecode(x):
         r, l = decode_func[x[0]](x, 0)
     except (IndexError, KeyError, ValueError):
         raise BTFailure("not a valid bencoded string")
-    # if l != len(x):
-    #     raise BTFailure("invalid bencoded value (data after valid prefix)")
+    if l != len(x):
+        raise BTFailure("invalid bencoded value (data after valid prefix)")
     return r
 
 from types import StringType, IntType, LongType, DictType, ListType, TupleType
@@ -91,7 +91,7 @@ def encode_bool(x, r):
         encode_int(1, r)
     else:
         encode_int(0, r)
-
+        
 def encode_string(x, r):
     r.extend((str(len(x)), ':', x))
 

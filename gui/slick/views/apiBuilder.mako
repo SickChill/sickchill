@@ -1,4 +1,7 @@
 <%!
+    import json
+    from requests.compat import urljoin
+
     import sickbeard
 %>
 <!DOCTYPE html>
@@ -17,16 +20,16 @@
         <!-- iOS -->
         <meta name="apple-mobile-web-app-status-bar-style" content="${themeColors[sickbeard.THEME_NAME]}">
 
-        <title>SickRage - ${title}</title>
+        <title>SickChill - ${title}</title>
 
         <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-            <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+            <script src="${static_url('js/html5shiv.min.js')}"></script>
+            <script src="${static_url('js/respond.min.js')}"></script>
         <![endif]-->
 
         <meta name="msapplication-TileColor" content="#FFFFFF">
-        <meta name="msapplication-TileImage" content="${srRoot}/images/ico/favicon-144.png">
-        <meta name="msapplication-config" content="${srRoot}/css/browserconfig.xml">
+        <meta name="msapplication-TileImage" content="${static_url('images/ico/favicon-144.png')}">
+        <meta name="msapplication-config" content="${static_url('css/browserconfig.xml')}">
 
         <meta data-var="srRoot" data-content="${srRoot}">
         <meta data-var="themeSpinner" data-content="${('', '-dark')[sickbeard.THEME_NAME == 'dark']}">
@@ -50,31 +53,31 @@
         <meta data-var="sickbeard.FANART_BACKGROUND_OPACITY" data-content="${sickbeard.FANART_BACKGROUND_OPACITY}">
         <%block name="metas" />
 
-        <link rel="shortcut icon" href="${srRoot}/images/ico/favicon.ico">
-        <link rel="icon" sizes="16x16 32x32 64x64" href="${srRoot}/images/ico/favicon.ico">
-        <link rel="icon" type="image/png" sizes="196x196" href="${srRoot}/images/ico/favicon-196.png">
-        <link rel="icon" type="image/png" sizes="160x160" href="${srRoot}/images/ico/favicon-160.png">
-        <link rel="icon" type="image/png" sizes="96x96" href="${srRoot}/images/ico/favicon-96.png">
-        <link rel="icon" type="image/png" sizes="64x64" href="${srRoot}/images/ico/favicon-64.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="${srRoot}/images/ico/favicon-32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="${srRoot}/images/ico/favicon-16.png">
-        <link rel="apple-touch-icon" sizes="152x152" href="${srRoot}/images/ico/favicon-152.png">
-        <link rel="apple-touch-icon" sizes="144x144" href="${srRoot}/images/ico/favicon-144.png">
-        <link rel="apple-touch-icon" sizes="120x120" href="${srRoot}/images/ico/favicon-120.png">
-        <link rel="apple-touch-icon" sizes="114x114" href="${srRoot}/images/ico/favicon-114.png">
-        <link rel="apple-touch-icon" sizes="76x76" href="${srRoot}/images/ico/favicon-76.png">
-        <link rel="apple-touch-icon" sizes="72x72" href="${srRoot}/images/ico/favicon-72.png">
-        <link rel="apple-touch-icon" href="${srRoot}/images/ico/favicon-57.png">
+        <link rel="shortcut icon" href="${static_url('images/ico/favicon.ico')}">
+        <link rel="icon" sizes="16x16 32x32 64x64" href="${static_url('images/ico/favicon.ico')}">
+        <link rel="icon" type="image/png" sizes="196x196" href="${static_url('images/ico/favicon-196.png')}">
+        <link rel="icon" type="image/png" sizes="160x160" href="${static_url('images/ico/favicon-160.png')}">
+        <link rel="icon" type="image/png" sizes="96x96" href="${static_url('images/ico/favicon-96.png')}">
+        <link rel="icon" type="image/png" sizes="64x64" href="${static_url('images/ico/favicon-64.png')}">
+        <link rel="icon" type="image/png" sizes="32x32" href="${static_url('images/ico/favicon-32.png')}">
+        <link rel="icon" type="image/png" sizes="16x16" href="${static_url('images/ico/favicon-16.png')}">
+        <link rel="apple-touch-icon" sizes="152x152" href="${static_url('images/ico/favicon-152.png')}">
+        <link rel="apple-touch-icon" sizes="144x144" href="${static_url('images/ico/favicon-144.png')}">
+        <link rel="apple-touch-icon" sizes="120x120" href="${static_url('images/ico/favicon-120.png')}">
+        <link rel="apple-touch-icon" sizes="114x114" href="${static_url('images/ico/favicon-114.png')}">
+        <link rel="apple-touch-icon" sizes="76x76" href="${static_url('images/ico/favicon-76.png')}">
+        <link rel="apple-touch-icon" sizes="72x72" href="${static_url('images/ico/favicon-72.png')}">
+        <link rel="apple-touch-icon" href="${static_url('images/ico/favicon-57.png')}">
 
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/vender.min.css?${sbPID}"/>
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/browser.css?${sbPID}" />
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/jquery-ui-1.10.4.custom.min.css?${sbPID}" />
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/lib/jquery.qtip-2.2.1.min.css?${sbPID}"/>
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/style.css?${sbPID}"/>
-        <link rel="stylesheet" type="text/css" href="${srRoot}/css/print.css?${sbPID}" />
+        <link rel="stylesheet" type="text/css" href="${static_url('css/vendor.min.css')}"/>
+        <link rel="stylesheet" type="text/css" href="${static_url('css/browser.css')}" />
+        <link rel="stylesheet" type="text/css" href="${static_url('css/lib/jquery-ui-1.10.4.custom.min.css')}" />
+        <link rel="stylesheet" type="text/css" href="${static_url('css/lib/jquery.qtip-2.2.1.min.css')}"/>
+        <link rel="stylesheet" type="text/css" href="${static_url('css/style.css')}"/>
+        <link rel="stylesheet" type="text/css" href="${static_url('css/print.css')}" />
 
         %if sickbeard.THEME_NAME != "light":
-            <link rel="stylesheet" type="text/css" href="${srRoot}/css/${sickbeard.THEME_NAME}.css?${sbPID}" />
+            <link rel="stylesheet" type="text/css" href="${static_url(urljoin('css/', '.'.join((sickbeard.THEME_NAME, 'css'))))}" />
         %endif
         <%block name="css" />
     </head>
@@ -89,8 +92,8 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="${srRoot}/apibuilder/" title="SickRage">
-                        <img alt="SickRage" src="${srRoot}/images/sickrage.png" style="height: 50px;padding: 3px;" class="img-responsive pull-left" />
+                    <a class="navbar-brand" href="${static_url("apibuilder/", include_version=False)}" title="SickChill">
+                        <img alt="SickChill" src="${static_url('images/sickchill.png')}" style="height: 50px;padding: 3px;" class="img-responsive pull-left" />
                         <p class="navbar-text hidden-xs">${title}</p>
                     </a>
                 </div>
@@ -106,7 +109,7 @@
                     </div>
 
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="${srRoot}/home/">${_('Back to SickRage')}</a></li>
+                        <li><a href="${static_url("home/", include_version=False)}">${_('Back to SickChill')}</a></li>
                     </ul>
 
                     <form class="navbar-form navbar-right">
@@ -123,7 +126,7 @@
                 % for command in sorted(commands):
                     <%
                         command_id = command.replace('.', '-')
-                        help = commands[command]((), {'help': 1}).run()
+                        command_help = commands[command]((), {'help': 1}).run()
                     %>
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -136,10 +139,10 @@
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <blockquote>${help['message']}</blockquote>
+                                        <blockquote>${command_help['message']}</blockquote>
                                     </div>
                                 </div>
-                                % if help['data']['optionalParameters'] or help['data']['requiredParameters']:
+                                % if command_help['data']['optionalParameters'] or command_help['data']['requiredParameters']:
                                     <div class="row">
                                         <div class="col-md-12">
                                             <h4>${_('Parameters')}</h4>
@@ -156,8 +159,8 @@
                                                             <th>${_('Allowed values')}</th>
                                                         </tr>
                                                     </thead>
-                                                    ${display_parameters_doc(help['data']['requiredParameters'], True)}
-                                                    ${display_parameters_doc(help['data']['optionalParameters'], False)}
+                                                    ${display_parameters_doc(command_help['data'], True)}
+                                                    ${display_parameters_doc(command_help['data'], False)}
                                                 </table>
                                             </div>
                                         </div>
@@ -169,21 +172,21 @@
                                         <span>URL:&nbsp;<kbd id="command-${command_id}-base-url">/api/${apikey}/?cmd=${command}</kbd></span>
                                     </div>
                                 </div>
-                                % if help['data']['requiredParameters']:
+                                % if command_help['data']['requiredParameters']:
                                     <br/>
                                     <div class="row">
                                         <div class="col-md-12">
                                             <label>Required parameters</label>
-                                            ${display_parameters_playground(help['data']['requiredParameters'], True, command_id)}
+                                            ${display_parameters_playground(command_help['data'], True, command_id)}
                                         </div>
                                     </div>
                                 % endif
-                                % if help['data']['optionalParameters']:
+                                % if command_help['data']['optionalParameters']:
                                     <br/>
                                     <div class="row">
                                         <div class="col-md-12">
                                             <label>Optional parameters</label>
-                                            ${display_parameters_playground(help['data']['optionalParameters'], False, command_id)}
+                                            ${display_parameters_playground(command_help['data'], False, command_id)}
                                         </div>
                                     </div>
                                 % endif
@@ -219,19 +222,27 @@
         </div>
 
         <script type="text/javascript">
-            var episodes = ${episodes};
-            // var commands = ${sorted(commands)};  // Dont know why this is breaking the apibuilder
+            //noinspection JSUnusedLocalSymbols
+            var episodes = ${ json.dumps(episodes) };
+            //noinspection JSUnusedLocalSymbols
+            var commands = ${ json.dumps(sorted(commands)) };
         </script>
-        <script type="text/javascript" src="${srRoot}/js/vender.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/core.min.js?${sbPID}"></script>
-        <script type="text/javascript" src="${srRoot}/js/apibuilder.js?${sbPID}"></script>
+        <script type="text/javascript" src="${static_url('js/vendor.min.js')}"></script>
+        <script type="text/javascript" src="${static_url('js/core.min.js')}"></script>
+        <script type="text/javascript" src="${static_url('js/apibuilder.js')}"></script>
     </body>
 </html>
 
 <%def name="display_parameters_doc(parameters, required)">
     <tbody>
-        % for parameter in parameters:
-            <% parameter_help = parameters[parameter] %>
+        <%
+            if required:
+                parameter_list = parameters['requiredParameters']
+            else:
+                parameter_list = parameters['optionalParameters']
+        %>
+        % for parameter in parameter_list:
+            <% parameter_help = parameter_list[parameter] %>
             <tr>
                 <td>
                     % if required:
@@ -258,9 +269,17 @@
 
 <%def name="display_parameters_playground(parameters, required, command)">
     <div class="form-inline">
-        % for parameter in parameters:
+        <%
+            if required:
+                # noinspection PyUnusedLocal
+                parameter_list = parameters['requiredParameters']
+            else:
+                # noinspection PyUnusedLocal
+                parameter_list = parameters['optionalParameters']
+        %>
+        % for parameter in parameter_list:
             <%
-                parameter_help = parameters[parameter]
+                parameter_help = parameter_list[parameter]
                 allowed_values = parameter_help.get('allowedValues', '')
                 type = parameter_help.get('type', '')
             %>

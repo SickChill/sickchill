@@ -1,38 +1,43 @@
 # coding=utf-8
-# Author: seedboy
+# Author: miigotu <miigotu@gmail.com>
 #
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import re
+import traceback
 
+# Third Party Imports
 import validators
 from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
+
+# First Party Imports
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
-from sickrage.helper.common import convert_size, try_int
-from sickrage.helper.exceptions import ex
-from sickrage.providers.torrent.TorrentProvider import TorrentProvider
+from sickchill.helper.common import convert_size, try_int
+from sickchill.helper.exceptions import ex
+from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-attributes
+class IPTorrentsProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -71,16 +76,24 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         'password': self.password,
                         'login': 'submit'}
 
-        login_url = self.urls['login']
         if self.custom_url:
             if not validators.url(self.custom_url):
                 logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
                 return False
 
-            login_url = urljoin(self.custom_url, self.urls['login'].split(self.url)[1])
+        # Get the index, redirects to login
+        data = self.get_url(self.custom_url or self.url, returns='text')
+        if not data:
+            logger.log("Unable to connect to provider", logger.WARNING)
+            return False
 
-        self.get_url(login_url, returns='text')
-        response = self.get_url(login_url, post_data=login_params, returns='text')
+        with BS4Parser(data, 'html5lib') as html:
+            action = html.find('form', {'action': re.compile(r'.*login.*')}).get('action')
+            if not action:
+                logger.log('Could not find the login form. Try adding cookies instead', logger.WARNING)
+                return False
+
+        response = self.get_url(urljoin(self.custom_url or self.url, action), post_data=login_params, returns='text')
         if not response:
             logger.log("Unable to connect to provider", logger.WARNING)
             return False
@@ -102,7 +115,7 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def search(self, search_params, age=0, ep_obj=None):
         results = []
         if not self.login():
             return results
@@ -146,7 +159,7 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
                         torrents = torrent_table('tr') if torrent_table else []
 
                         # Continue only if one Release is found
-                        if len(torrents) < 2:
+                        if not torrents or len(torrents) < 2:
                             logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
                             continue
 
@@ -179,6 +192,7 @@ class IPTorrentsProvider(TorrentProvider):  # pylint: disable=too-many-instance-
 
                 except Exception as e:
                     logger.log("Failed parsing provider. Error: {0!r}".format(ex(e)), logger.ERROR)
+                    logger.log(traceback.format_exc(), logger.ERROR)
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

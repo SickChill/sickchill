@@ -27,7 +27,6 @@
 
 from .charsetprober import CharSetProber
 from .enums import ProbingState
-from .compat import wrap_ord
 
 # This prober doesn't actually recognize a language or a charset.
 # It is a helper prober for the use of the Hebrew model probers
@@ -177,8 +176,8 @@ class HebrewProber(CharSetProber):
         self._visual_prober = visualProber
 
     def is_final(self, c):
-        return wrap_ord(c) in [self.FINAL_KAF, self.FINAL_MEM, self.FINAL_NUN,
-                               self.FINAL_PE, self.FINAL_TSADI]
+        return c in [self.FINAL_KAF, self.FINAL_MEM, self.FINAL_NUN,
+                     self.FINAL_PE, self.FINAL_TSADI]
 
     def is_non_final(self, c):
         # The normal Tsadi is not a good Non-Final letter due to words like
@@ -191,8 +190,8 @@ class HebrewProber(CharSetProber):
         # for example legally end with a Non-Final Pe or Kaf. However, the
         # benefit of these letters as Non-Final letters outweighs the damage
         # since these words are quite rare.
-        return wrap_ord(c) in [self.NORMAL_KAF, self.NORMAL_MEM,
-                               self.NORMAL_NUN, self.NORMAL_PE]
+        return c in [self.NORMAL_KAF, self.NORMAL_MEM,
+                     self.NORMAL_NUN, self.NORMAL_PE]
 
     def feed(self, byte_str):
         # Final letter analysis for logical-visual decision.
@@ -221,9 +220,9 @@ class HebrewProber(CharSetProber):
         # We automatically filter out all 7-bit characters (replace them with
         # spaces) so the word boundary detection works properly. [MAP]
 
-        if self.state == ProbingState.not_me:
+        if self.state == ProbingState.NOT_ME:
             # Both model probers say it's not them. No reason to continue.
-            return ProbingState.not_me
+            return ProbingState.NOT_ME
 
         byte_str = self.filter_high_byte_only(byte_str)
 
@@ -250,8 +249,8 @@ class HebrewProber(CharSetProber):
             self._prev = cur
 
         # Forever detecting, till the end or until both model probers return
-        # ProbingState.not_me (handled above)
-        return ProbingState.detecting
+        # ProbingState.NOT_ME (handled above)
+        return ProbingState.DETECTING
 
     @property
     def charset_name(self):
@@ -281,9 +280,13 @@ class HebrewProber(CharSetProber):
         return self.LOGICAL_HEBREW_NAME
 
     @property
+    def language(self):
+        return 'Hebrew'
+
+    @property
     def state(self):
         # Remain active as long as any of the model probers are active.
-        if (self._logical_prober.state == ProbingState.not_me) and \
-           (self._visual_prober.state == ProbingState.not_me):
-            return ProbingState.not_me
-        return ProbingState.detecting
+        if (self._logical_prober.state == ProbingState.NOT_ME) and \
+           (self._visual_prober.state == ProbingState.NOT_ME):
+            return ProbingState.NOT_ME
+        return ProbingState.DETECTING

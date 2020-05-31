@@ -1,32 +1,32 @@
 #!/bin/sh
 #
 ### BEGIN INIT INFO
-# Provides:          sickrage
+# Provides:          sickchill
 # Required-Start:    $all
 # Required-Stop:     $all
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: starts SickRage
-# Description:       starts SickRage
+# Short-Description: starts SickChill
+# Description:       starts SickChill
 ### END INIT INFO
 
 # Source function library.
 . /etc/init.d/functions
 
-# Source SickRage configuration
-if [ -f /etc/sysconfig/sickrage ]; then
-        . /etc/sysconfig/sickrage
+# Source SickChill configuration
+if [ -f /etc/sysconfig/sickchill ]; then
+        . /etc/sysconfig/sickchill
 fi
 
-prog=sickrage
+prog=sickchill
 lockfile=/var/lock/subsys/$prog
 
-## Edit user configuation in /etc/sysconfig/sickrage to change
+## Edit user configuation in /etc/sysconfig/sickchill to change
 ## the defaults
-username=${SR_USER-sickrage}
-homedir=${SR_HOME-/opt/sickrage}
-datadir=${SR_DATA-/opt/sickrage}
-pidfile=${SR_PIDFILE-/var/run/sickrage/sickrage.pid}
+username=${SR_USER-sickchill}
+homedir=${SR_HOME-/opt/sickchill}
+datadir=${SR_DATA-/opt/sickchill}
+pidfile=${SR_PIDFILE-/var/run/sickchill/sickchill.pid}
 nice=${SR_NICE-}
 python_bin=${PYTHON_BIN-/usr/bin/python2.7}
 ##
@@ -34,7 +34,7 @@ python_bin=${PYTHON_BIN-/usr/bin/python2.7}
 pidpath=`dirname ${pidfile}`
 options=" --daemon --nolaunch --pidfile=${pidfile} --datadir=${datadir}"
 
-# create PID directory if not exist and ensure the SickRage user can write to it
+# create PID directory if not exist and ensure the SickChill user can write to it
 if [ ! -d $pidpath ]; then
         mkdir -p $pidpath
         chown $username $pidpath

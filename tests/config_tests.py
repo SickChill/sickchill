@@ -21,9 +21,8 @@ Methods
     change_https_cert
     change_https_key
     change_unrar_tool
-    change_sickrage_background
+    change_sickchill_background
     change_custom_css
-    change_log_dir
     change_nzb_dir
     change_torrent_dir
     change_tv_download_dir
@@ -51,10 +50,11 @@ Methods
     check_setting_bool
 """
 
-# pylint: disable=line-too-long
+from __future__ import absolute_import, unicode_literals
 
 import logging
 import os.path
+import platform
 import sys
 import unittest
 import mock
@@ -68,6 +68,7 @@ from configobj import ConfigObj
 from rarfile import RarExecError
 import sickbeard
 
+
 class ConfigTestBasic(unittest.TestCase):
     """
     Test basic methods in sickbeard.config
@@ -77,7 +78,7 @@ class ConfigTestBasic(unittest.TestCase):
         """
         Test check_section
         """
-        CFG = ConfigObj('config.ini', encoding='UTF-8')
+        CFG = ConfigObj('config.ini', encoding='UTF-8', options={'indent_type': '  '})
         self.assertFalse(config.check_section(CFG, 'General'))
         self.assertTrue(config.check_section(CFG, 'General'))
 
@@ -159,7 +160,7 @@ class ConfigTestBasic(unittest.TestCase):
         Test check_setting_int
         """
         # setup
-        CFG = ConfigObj('config.ini', encoding='UTF-8')
+        CFG = ConfigObj('config.ini', encoding='UTF-8', options={'indent_type': '  '})
         config.check_section(CFG, 'General')
         CFG['General']['indexer_timeout'] = 60
         CFG['General']['use_icacls'] = 'True'
@@ -197,7 +198,7 @@ class ConfigTestBasic(unittest.TestCase):
         Test check_setting_float
         """
         # setup
-        CFG = ConfigObj('config.ini', encoding='UTF-8')
+        CFG = ConfigObj('config.ini', encoding='UTF-8', options={'indent_type': '  '})
         config.check_section(CFG, 'General')
         CFG['General']['fanart_background_opacity'] = 0.5
         CFG['General']['log_size'] = None
@@ -228,7 +229,7 @@ class ConfigTestBasic(unittest.TestCase):
         Test check_setting_str
         """
         # setup
-        CFG = ConfigObj('config.ini', encoding='UTF-8')
+        CFG = ConfigObj('config.ini', encoding='UTF-8', options={'indent_type': '  '})
         config.check_section(CFG, 'General')
         CFG['General']['process_method'] = "copy"
         CFG['General']['git_password'] = "SFa342FHb_"
@@ -249,7 +250,7 @@ class ConfigTestBasic(unittest.TestCase):
         Test check_setting_bool
         """
         # setup
-        CFG = ConfigObj('config.ini', encoding='UTF-8')
+        CFG = ConfigObj('config.ini', encoding='UTF-8', options={'indent_type': '  '})
         config.check_section(CFG, 'General')
         CFG['General']['debug'] = True
         CFG['General']['season_folders_default'] = False
@@ -294,47 +295,49 @@ class ConfigTestChanges(unittest.TestCase):
         self.assertFalse(config.change_https_key('/:/server.key')) # INVALID
         sickbeard.HTTPS_KEY = ''
 
-    @mock.patch('platform.system', mock.MagicMock(return_value="Windows"))
-    @mock.patch('sickbeard.helpers.download_file', mock.MagicMock(return_value=True))
-    @mock.patch('sickbeard.helpers.extractZip', mock.MagicMock(return_value=True))
-    def test_change_unrar_tool(self):
+    # def test_change_unrar_tool(self):
+    #     """
+    #     Test change_unrar_tool
+    #     """
+    #     sickbeard.PROG_DIR = ''
+    #     custom_check_mock = mock.patch('rarfile.custom_check', mock.MagicMock())
+    #
+    #     if platform.system() != 'Windows':
+    #         custom_check_mock.new.side_effect = [RarExecError(), RarExecError(), RarExecError(), RarExecError(), True]
+    #         with custom_check_mock:
+    #             self.assertTrue(config.change_unrar_tool('UNKNOWN', 'UNKNOWN'))
+    #
+    #         # Test when none are installed, even defaults, that we return false
+    #         custom_check_mock.new.side_effect = RarExecError()
+    #         with custom_check_mock:
+    #             self.assertFalse(config.change_unrar_tool('unrar', 'bsdtar'))
+    #
+    #     else:
+    #         # Test removing bad unrar
+    #         custom_check_mock.new.side_effect = [True, True]
+    #         with custom_check_mock, \
+    #              mock.patch('os.path.exists', mock.MagicMock(return_value=True)), \
+    #              mock.patch('os.path.getsize', mock.MagicMock(return_value=447440)), \
+    #              mock.patch('os.remove'):
+    #             self.assertTrue(config.change_unrar_tool('unrar', 'bsdtar'))
+    #
+    #         my_environ = mock.patch.dict(os.environ,
+    #                                      {'ProgramFiles': 'C:\\Program Files (x86)\\',
+    #                                       'ProgramFiles(x86)': 'C:\\Program Files (x86)\\',
+    #                                       'ProgramW6432': 'C:\\Program Files\\'}, clear=True)
+    #         with custom_check_mock, my_environ, mock.patch('rarfile.ORIG_UNRAR_TOOL', 'UNKNOWN'), mock.patch('rarfile.UNRAR_TOOL', 'UNKNOWN'), \
+    #              mock.patch('rarfile.ALT_TOOL', 'UNKNOWN'), mock.patch('sickbeard.UNRAR_TOOL', 'UNKNOWN'), mock.patch('sickbeard.ALT_UNRAR_TOOL', 'UNKNOWN'):
+    #             # Test that on windows it downloads unrar for them.
+    #             self.assertTrue(config.change_unrar_tool('NOPE', 'NOWAY'))
+
+    def test_change_sickchill_background(self):
         """
-        Test change_unrar_tool
+        Test change_sickchill_background
         """
-        custom_check_mock = mock.patch('rarfile.custom_check', mock.MagicMock())
-        custom_check_mock.new.side_effect = [RarExecError(), True]
-
-        with custom_check_mock,\
-              mock.patch('os.path.exists', mock.MagicMock(return_value=True)),\
-              mock.patch('os.path.getsize', mock.MagicMock(return_value=447440)),\
-              mock.patch('os.remove'):
-            self.assertTrue(config.change_unrar_tool('unrar', 'bsdtar'))
-
-        my_environ = mock.patch.dict(os.environ,
-                                     {'ProgramFiles': 'C:\\Program Files (x86)\\'}, clear=True)
-        with my_environ:
-            self.assertFalse(config.change_unrar_tool('unrar', 'bsdtar'))
-
-        sickbeard.PROG_DIR = 'C:\\SickRage'
-        my_environ = mock.patch.dict(os.environ,
-                                     {'ProgramFiles': 'C:\\Program Files (x86)\\',
-                                      'ProgramFiles(x86)': 'C:\\Program Files (x86)\\',
-                                      'ProgramW6432': 'C:\\Program Files\\'}, clear=True)
-        custom_check_mock.new.side_effect = [RarExecError(), RarExecError(), True, True, True, True]
-        isfile_mock = mock.patch('os.path.isfile', mock.MagicMock())
-        isfile_mock.new.side_effect = [True, False, True]
-
-        with custom_check_mock, isfile_mock, my_environ:
-            self.assertTrue(config.change_unrar_tool('unrar', 'bsdtar'))
-
-    def test_change_sickrage_background(self):
-        """
-        Test change_sickrage_background
-        """
-        sickbeard.SICKRAGE_BACKGROUND_PATH = ''  # Initialize
-        self.assertTrue(config.change_sickrage_background(__file__))
-        self.assertFalse(config.change_sickrage_background('not_real.jpg'))
-        self.assertTrue(config.change_sickrage_background(''))
+        sickbeard.SICKCHILL_BACKGROUND_PATH = ''  # Initialize
+        self.assertTrue(config.change_sickchill_background(__file__))
+        self.assertFalse(config.change_sickchill_background('not_real.jpg'))
+        self.assertTrue(config.change_sickchill_background(''))
 
     def test_change_custom_css(self):
         """
@@ -343,25 +346,13 @@ class ConfigTestChanges(unittest.TestCase):
         sickbeard.CUSTOM_CSS_PATH = ''  # Initialize
         self.assertFalse(config.change_custom_css(__file__)) # not a css file
         self.assertFalse(config.change_custom_css('not_real.jpg')) # doesn't exist
-        self.assertFalse(config.change_custom_css('sickrage_tests')) # isn't a file
+        self.assertFalse(config.change_custom_css('sickchill_tests')) # isn't a file
         css_file = os.path.join(os.path.dirname(__file__), 'custom.css')
         with open(css_file, 'w') as f:
             f.write('table.main {\n    width: 100%;\n}')
         self.assertTrue(config.change_custom_css(css_file)) # real
         os.remove(css_file)
         self.assertTrue(config.change_custom_css('')) # empty
-
-    def test_change_log_dir(self):
-        """
-        Test change_log_dir
-        """
-        sickbeard.DATA_DIR = os.path.dirname(__file__)
-        sickbeard.ACTUAL_LOG_DIR = ''
-        sickbeard.LOG_DIR = os.path.join(sickbeard.DATA_DIR, sickbeard.ACTUAL_LOG_DIR)
-        sickbeard.WEB_LOG = False
-
-        self.assertFalse(config.change_log_dir('/:/Logs', True))
-        self.assertTrue(config.change_log_dir('Logs', True))
 
     def test_change_nzb_dir(self):
         """
@@ -388,7 +379,9 @@ class ConfigTestChanges(unittest.TestCase):
         sickbeard.TV_DOWNLOAD_DIR = ''
         self.assertTrue(config.change_tv_download_dir('cache'))
         self.assertFalse(config.change_tv_download_dir('/:/Downloads/Completed')) # INVALID
+
         self.assertTrue(config.change_tv_download_dir(''))
+        self.assertEqual(sickbeard.TV_DOWNLOAD_DIR, '')
 
     def test_change_unpack_dir(self):
         """
@@ -564,7 +557,7 @@ class ConfigTestMigrator(unittest.TestCase):
         """
         # TODO: Assert the 'too-advanced-config-version' error
 
-        CFG = ConfigObj('config.ini', encoding='UTF-8')
+        CFG = ConfigObj('config.ini', encoding='UTF-8', options={'indent_type': '  '})
         config.check_section(CFG, 'General')
         CFG['General']['config_version'] = 0
         sickbeard.CONFIG_VERSION = 11

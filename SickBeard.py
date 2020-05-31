@@ -4,22 +4,22 @@
 # URL: http://code.google.com/p/sickbeard/
 #
 # Rewrite Author: miigotu <miigotu@gmail.com>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, unicode_literals
 
@@ -27,8 +27,8 @@ import codecs
 import datetime
 import io
 import locale
-import platform
 import os
+import platform
 import shutil
 import signal
 import subprocess
@@ -40,15 +40,13 @@ import traceback
 codecs.register(lambda name: codecs.lookup('utf-8') if name == 'cp65001' else None)
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), 'lib')))
 
-if (2, 7, 99) < sys.version_info < (2, 7):
-    print('Sorry, requires Python 2.7')
+if (2, 7, 99) < sys.version_info or sys.version_info < (2, 7, 1):
+    print('Sorry, requires Python at least 2.7 but less than 3')
     sys.exit(1)
 
-# https://mail.python.org/pipermail/python-dev/2014-September/136300.html
-if sys.version_info >= (2, 7, 9):
+if sys.version_info > (2, 7, 9):
     import ssl
-    ssl._create_default_https_context = ssl._create_unverified_context  # pylint: disable=protected-access
-
+    ssl._create_default_https_context = ssl._create_unverified_context  # TODO: Not sure we need this anymore
 
 # Fix mimetypes on misconfigured systems
 import mimetypes
@@ -69,13 +67,13 @@ if os.path.isdir(OLD_TORNADO):
 import sickbeard
 from sickbeard import db, logger, network_timezones, failed_history, name_cache
 from sickbeard.tv import TVShow
-from sickbeard.webserveInit import SRWebServer
+from sickchill.views.server_settings import SRWebServer
 from sickbeard.event_queue import Events
 from sickbeard.versionChecker import SourceUpdateManager, GitUpdateManager
-from configobj import ConfigObj  # pylint: disable=import-error
+from configobj import ConfigObj
 
-from sickrage.helper.encoding import ek
-from sickrage.helper.argument_parser import SickRageArgumentParser
+from sickchill.helper.encoding import ek
+from sickchill.helper.argument_parser import SickChillArgumentParser
 
 # noinspection PyUnresolvedReferences
 from six.moves import reload_module
@@ -88,10 +86,10 @@ signal.signal(signal.SIGINT, sickbeard.sig_handler)
 signal.signal(signal.SIGTERM, sickbeard.sig_handler)
 
 
-class SickRage(object):
-    # pylint: disable=too-many-instance-attributes
+class SickChill(object):
+
     """
-    Main SickRage module
+    Main SickChill module
     """
 
     def __init__(self):
@@ -124,7 +122,7 @@ class SickRage(object):
             cache_folder = ek(os.path.join, sickbeard.CACHE_DIR, 'mako')
             if os.path.isdir(cache_folder):
                 shutil.rmtree(cache_folder)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             logger.log('Unable to remove the cache/mako directory!', logger.WARNING)
 
     @staticmethod
@@ -134,13 +132,13 @@ class SickRage(object):
         """
         help_msg = __doc__
         help_msg = help_msg.replace('SickBeard.py', sickbeard.MY_FULLNAME)
-        help_msg = help_msg.replace('SickRage directory', sickbeard.PROG_DIR)
+        help_msg = help_msg.replace('SickChill directory', sickbeard.PROG_DIR)
 
         return help_msg
 
-    def start(self):  # pylint: disable=too-many-branches,too-many-statements
+    def start(self):
         """
-        Start SickRage
+        Start SickChill
         """
         # do some preliminary stuff
         sickbeard.MY_FULLNAME = ek(os.path.normpath, ek(os.path.abspath, __file__))
@@ -156,7 +154,7 @@ class SickRage(object):
         except (locale.Error, IOError):
             sickbeard.SYS_ENCODING = 'UTF-8'
 
-        # pylint: disable=no-member
+
         if not sickbeard.SYS_ENCODING or sickbeard.SYS_ENCODING.lower() in ('ansi_x3.4-1968', 'us-ascii', 'ascii', 'charmap') or \
                 (sys.platform.startswith('win') and sys.getwindowsversion()[0] >= 6 and str(getattr(sys.stdout, 'device', sys.stdout).encoding).lower() in ('cp65001', 'charmap')):
             sickbeard.SYS_ENCODING = 'UTF-8'
@@ -167,15 +165,15 @@ class SickRage(object):
 
         try:
             # On non-unicode builds this will raise an AttributeError, if encoding type is not valid it throws a LookupError
-            sys.setdefaultencoding(sickbeard.SYS_ENCODING)  # pylint: disable=no-member
+            sys.setdefaultencoding(sickbeard.SYS_ENCODING)
         except (AttributeError, LookupError):
-            sys.exit('Sorry, you MUST add the SickRage folder to the PYTHONPATH environment variable\n'
+            sys.exit('Sorry, you MUST add the SickChill folder to the PYTHONPATH environment variable\n'
                      'or find another way to force Python to use {} for string encoding.'.format(sickbeard.SYS_ENCODING))
 
         # Rename the main thread
         threading.currentThread().name = 'MAIN'
 
-        args = SickRageArgumentParser(sickbeard.PROG_DIR).parse_args()
+        args = SickChillArgumentParser(sickbeard.PROG_DIR).parse_args()
 
         if args.force_update:
             result = self.force_update()
@@ -194,7 +192,7 @@ class SickRage(object):
         self.create_pid = bool(args.pidfile)
         self.pid_file = args.pidfile
         if self.pid_file and ek(os.path.exists, self.pid_file):
-            # If the pid file already exists, SickRage may still be running, so exit
+            # If the pid file already exists, SickChill may still be running, so exit
             raise SystemExit('PID file: {0} already exists. Exiting.'.format(self.pid_file))
 
         sickbeard.DATA_DIR = ek(os.path.abspath, args.datadir) if args.datadir else sickbeard.DATA_DIR
@@ -244,7 +242,7 @@ class SickRage(object):
         if self.console_logging and not ek(os.path.isfile, sickbeard.CONFIG_FILE):
             sys.stdout.write('Unable to find {0}, all settings will be default!\n'.format(sickbeard.CONFIG_FILE))
 
-        sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE, encoding='UTF-8')
+        sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE, encoding='UTF-8', options={'indent_type': '  '})
 
         # Initialize the config and our threads
         sickbeard.initialize(consoleLogging=self.console_logging)
@@ -258,7 +256,7 @@ class SickRage(object):
         # Build from the DB to start with
         self.load_shows_from_db()
 
-        logger.log('Starting SickRage [{branch}] using \'{config}\''.format
+        logger.log('Starting SickChill [{branch}] using \'{config}\''.format
                    (branch=sickbeard.BRANCH, config=sickbeard.CONFIG_FILE))
 
         self.clear_cache()
@@ -328,7 +326,7 @@ class SickRage(object):
         """
         Fork off as a daemon
         """
-        # pylint: disable=protected-access
+
         # An object is accessed for a non-existent member.
         # Access to a protected member of a client class
         # Make a non-session-leader child process
@@ -343,7 +341,7 @@ class SickRage(object):
 
         os.setsid()  # @UndefinedVariable - only available in UNIX
 
-        # https://github.com/SickRage/SickRage/issues/2969
+        # https://github.com/SickChill/SickChill/issues/2969
         # http://www.microhowto.info/howto/cause_a_process_to_become_a_daemon_in_c.html#idp23920
         # https://www.safaribooksonline.com/library/view/python-cookbook/0596001673/ch06s08.html
         # Previous code simply set the umask to whatever it was because it was ANDing instead of OR-ing
@@ -366,7 +364,7 @@ class SickRage(object):
             logger.log('Writing PID: {pid} to {filename}'.format(pid=pid, filename=self.pid_file))
 
             try:
-                with io.open(self.pid_file, 'w') as f_pid:
+                with os.fdopen(os.open(self.pid_file, os.O_CREAT | os.O_WRONLY, 0o644), 'w') as f_pid:
                     f_pid.write('{0}\n'.format(pid))
             except EnvironmentError as error:
                 logger.log_error_and_exit('Unable to write PID file: {filename} Error {error_num}: {error_message}'.format
@@ -418,7 +416,7 @@ class SickRage(object):
                 cur_show = TVShow(sql_show[b'indexer'], sql_show[b'indexer_id'])
                 cur_show.nextEpisode()
                 sickbeard.showList.append(cur_show)
-            except Exception as error:  # pylint: disable=broad-except
+            except Exception as error:
                 logger.log('There was an error creating the show in {0}: Error {1}'.format
                            (sql_show[b'location'], error), logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)
@@ -443,12 +441,12 @@ class SickRage(object):
                     shutil.move(dst_file, bak_file)
                 shutil.move(src_file, dst_file)
             return True
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             return False
 
     def shutdown(self, event):
         """
-        Shut down SickRage
+        Shut down SickChill
 
         :param event: Type of shutdown event, used to see if restart required
         """
@@ -463,7 +461,7 @@ class SickRage(object):
 
                 try:
                     self.web_server.join(10)
-                except Exception:  # pylint: disable=broad-except
+                except Exception:
                     pass
 
             self.clear_cache()  # Clean cache
@@ -480,26 +478,26 @@ class SickRage(object):
                 if install_type in ('git', 'source'):
                     popen_list = [sys.executable, sickbeard.MY_FULLNAME]
                 elif install_type == 'win':
-                    logger.log('You are using a binary Windows build of SickRage. '
+                    logger.log('You are using a binary Windows build of SickChill. '
                                'Please switch to using git.', logger.ERROR)
 
                 if popen_list and not sickbeard.NO_RESTART:
                     popen_list += sickbeard.MY_ARGS
                     if '--nolaunch' not in popen_list:
                         popen_list += ['--nolaunch']
-                    logger.log('Restarting SickRage with {options}'.format(options=popen_list))
+                    logger.log('Restarting SickChill with {options}'.format(options=popen_list))
                     # shutdown the logger to make sure it's released the logfile BEFORE it restarts SR.
                     logger.shutdown()
                     subprocess.Popen(popen_list, cwd=os.getcwd())
 
         # Make sure the logger has stopped, just in case
         logger.shutdown()
-        os._exit(0)  # pylint: disable=protected-access
+        os._exit(0)
 
     @staticmethod
     def force_update():
         """
-        Forces SickRage to update to the latest version and exit.
+        Forces SickChill to update to the latest version and exit.
 
         :return: True if successful, False otherwise
         """
@@ -514,9 +512,9 @@ class SickRage(object):
                     return True
 
             updater = GitUpdateManager()
-            if not run_git(updater, 'config remote.origin.url https://github.com/SickRage/SickRage.git'):
+            if not run_git(updater, 'config remote.origin.url https://github.com/SickChill/SickChill.git'):
                 return False
-            if not run_git(updater, 'fetch origin'):
+            if not run_git(updater, 'fetch origin --prune'):
                 return False
             if not run_git(updater, 'checkout master'):
                 return False
@@ -526,23 +524,23 @@ class SickRage(object):
             return True
 
         if ek(os.path.isdir, ek(os.path.join, sickbeard.PROG_DIR, '.git')):  # update with git
-            print('Forcing SickRage to update using git...')
+            print('Forcing SickChill to update using git...')
             result = update_with_git()
             if result:
-                print('Successfully updated to latest commit. You may now run SickRage normally.')
+                print('Successfully updated to latest commit. You may now run SickChill normally.')
                 return True
             else:
                 print('Error while trying to force an update using git.')
 
-        print('Forcing SickRage to update using source...')
+        print('Forcing SickChill to update using source...')
         if not SourceUpdateManager().update():
             print('Failed to force an update.')
             return False
 
-        print('Successfully updated to latest commit. You may now run SickRage normally.')
+        print('Successfully updated to latest commit. You may now run SickChill normally.')
         return True
 
 
 if __name__ == '__main__':
-    # start SickRage
-    SickRage().start()
+    # start SickChill
+    SickChill().start()

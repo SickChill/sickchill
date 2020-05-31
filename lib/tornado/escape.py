@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #
 # Copyright 2009 Facebook
 #
@@ -274,7 +273,9 @@ def recursive_unicode(obj):
 # This regex should avoid those problems.
 # Use to_unicode instead of tornado.util.u - we don't want backslashes getting
 # processed as escapes.
-_URL_RE = re.compile(to_unicode(r"""\b((?:([\w-]+):(/{1,3})|www[.])(?:(?:(?:[^\s&()]|&amp;|&quot;)*(?:[^!"#$%&'()*+,.:;<=>?@\[\]^`{|}~\s]))|(?:\((?:[^\s&()]|&amp;|&quot;)*\)))+)"""))
+_URL_RE = re.compile(to_unicode(
+    r"""\b((?:([\w-]+):(/{1,3})|www[.])(?:(?:(?:[^\s&()]|&amp;|&quot;)*(?:[^!"#$%&'()*+,.:;<=>?@\[\]^`{|}~\s]))|(?:\((?:[^\s&()]|&amp;|&quot;)*\)))+)"""  # noqa: E501
+))
 
 
 def linkify(text, shorten=False, extra_params="",
@@ -289,24 +290,24 @@ def linkify(text, shorten=False, extra_params="",
     * ``shorten``: Long urls will be shortened for display.
 
     * ``extra_params``: Extra text to include in the link tag, or a callable
-        taking the link as an argument and returning the extra text
-        e.g. ``linkify(text, extra_params='rel="nofollow" class="external"')``,
-        or::
+      taking the link as an argument and returning the extra text
+      e.g. ``linkify(text, extra_params='rel="nofollow" class="external"')``,
+      or::
 
-            def extra_params_cb(url):
-                if url.startswith("http://example.com"):
-                    return 'class="internal"'
-                else:
-                    return 'class="external" rel="nofollow"'
-            linkify(text, extra_params=extra_params_cb)
+          def extra_params_cb(url):
+              if url.startswith("http://example.com"):
+                  return 'class="internal"'
+              else:
+                  return 'class="external" rel="nofollow"'
+          linkify(text, extra_params=extra_params_cb)
 
     * ``require_protocol``: Only linkify urls which include a protocol. If
-        this is False, urls such as www.facebook.com will also be linkified.
+      this is False, urls such as www.facebook.com will also be linkified.
 
     * ``permitted_protocols``: List (or set) of protocols which should be
-        linkified, e.g. ``linkify(text, permitted_protocols=["http", "ftp",
-        "mailto"])``. It is very unsafe to include protocols such as
-        ``javascript``.
+      linkified, e.g. ``linkify(text, permitted_protocols=["http", "ftp",
+      "mailto"])``. It is very unsafe to include protocols such as
+      ``javascript``.
     """
     if extra_params and not callable(extra_params):
         extra_params = " " + extra_params.strip()

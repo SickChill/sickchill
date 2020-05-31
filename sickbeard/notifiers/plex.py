@@ -1,32 +1,36 @@
 # coding=utf-8
 
 # Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import re
 
-import sickbeard
+# Third Party Imports
 import six
+
+# First Party Imports
+import sickbeard
 from sickbeard import common, logger
 from sickbeard.helpers import getURL, make_session
-from sickrage.helper.exceptions import ex
+from sickchill.helper.exceptions import ex
 
 try:
     import xml.etree.cElementTree as etree
@@ -39,15 +43,15 @@ except ImportError:
 class Notifier(object):
     def __init__(self):
         self.headers = {
-            'X-Plex-Device-Name': 'SickRage',
-            'X-Plex-Product': 'SickRage Notifier',
+            'X-Plex-Device-Name': 'SickChill',
+            'X-Plex-Product': 'SickChill Notifier',
             'X-Plex-Client-Identifier': sickbeard.common.USER_AGENT,
             'X-Plex-Version': '2016.02.10'
         }
         self.session = make_session()
 
     @staticmethod
-    def _notify_pht(message, title='SickRage', host=None, username=None, password=None, force=False):  # pylint: disable=too-many-arguments
+    def _notify_pht(message, title='SickChill', host=None, username=None, password=None, force=False):
         """Internal wrapper for the notify_snatch and notify_download functions
 
         Args:
@@ -72,7 +76,7 @@ class Notifier(object):
         username = username or sickbeard.PLEX_CLIENT_USERNAME
         password = password or sickbeard.PLEX_CLIENT_PASSWORD
 
-        return sickbeard.notifiers.kodi_notifier._notify_kodi(message, title=title, host=host, username=username, password=password, force=force, dest_app="PLEX")  # pylint: disable=protected-access
+        return sickbeard.notifiers.kodi_notifier._notify_kodi(message, title=title, host=host, username=username, password=password, force=force, dest_app="PLEX")
 
 ##############################################################################
 # Public functions
@@ -105,14 +109,14 @@ class Notifier(object):
                 self._notify_pht(update_text.format(ipaddress), title)
 
     def test_notify_pht(self, host, username, password):
-        return self._notify_pht('This is a test notification from SickRage',
+        return self._notify_pht('This is a test notification from SickChill',
                                 'Test Notification', host, username, password, force=True)
 
     def test_notify_pms(self, host, username, password, plex_server_token):
         return self.update_library(host=host, username=username, password=password,
                                    plex_server_token=plex_server_token, force=True)
 
-    def update_library(self, ep_obj=None, host=None,  # pylint: disable=too-many-arguments, too-many-locals, too-many-statements, too-many-branches
+    def update_library(self, ep_obj=None, host=None,
                        username=None, password=None,
                        plex_server_token=None, force=False):
 

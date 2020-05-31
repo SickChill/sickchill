@@ -1,36 +1,41 @@
 # coding=utf-8
 
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import ast
 import socket
 import time
 
-import sickbeard
+# Third Party Imports
 from requests.compat import urlencode
-from sickbeard import common, db, logger
-from sickrage.helper.encoding import ss
+# noinspection PyUnresolvedReferences
 from six.moves.http_client import HTTPException, HTTPSConnection
+
+# First Party Imports
+import sickbeard
+from sickbeard import common, db, logger
+from sickchill.helper.encoding import ss
 
 try:
     # this only exists in 2.6
@@ -45,7 +50,7 @@ except ImportError:
 
 class Notifier(object):
     def test_notify(self, prowl_api, prowl_priority):
-        return self._send_prowl(prowl_api, prowl_priority, event="Test", message="Testing Prowl settings from SickRage", force=True)
+        return self._send_prowl(prowl_api, prowl_priority, event="Test", message="Testing Prowl settings from SickChill", force=True)
 
     def notify_snatch(self, ep_name):
         ep_name = ss(ep_name)

@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 "Makes working with XML feel like you are working with JSON"
 
-from xml.parsers import expat
+try:
+    import defusedexpat as expat
+except ImportError:
+    from xml.parsers import expat
 from xml.sax.saxutils import XMLGenerator
 from xml.sax.xmlreader import AttributesImpl
 try:  # pragma no cover
@@ -29,7 +32,7 @@ except NameError:  # pragma no cover
     _unicode = str
 
 __author__ = 'Martin Blech'
-__version__ = '0.9.2'
+__version__ = '0.10.1'
 __license__ = 'MIT'
 
 
@@ -50,10 +53,11 @@ class _DictSAXHandler(object):
                  dict_constructor=OrderedDict,
                  strip_whitespace=True,
                  namespace_separator=':',
-                 namespaces=None):
+                 namespaces=None,
+                 force_list=None):
         self.path = []
         self.stack = []
-        self.data = None
+        self.data = []
         self.item = None
         self.item_depth = item_depth
         self.xml_attribs = xml_attribs
@@ -67,6 +71,7 @@ class _DictSAXHandler(object):
         self.strip_whitespace = strip_whitespace
         self.namespace_separator = namespace_separator
         self.namespaces = namespaces
+        self.force_list = force_list
 
     def _build_name(self, full_name):
         if not self.namespaces:
@@ -93,27 +98,38 @@ class _DictSAXHandler(object):
         if len(self.path) > self.item_depth:
             self.stack.append((self.item, self.data))
             if self.xml_attribs:
-                attrs = self.dict_constructor(
-                    (self.attr_prefix+self._build_name(key), value)
-                    for (key, value) in attrs.items())
+                attr_entries = []
+                for key, value in attrs.items():
+                    key = self.attr_prefix+self._build_name(key)
+                    if self.postprocessor:
+                        entry = self.postprocessor(self.path, key, value)
+                    else:
+                        entry = (key, value)
+                    if entry:
+                        attr_entries.append(entry)
+                attrs = self.dict_constructor(attr_entries)
             else:
                 attrs = None
             self.item = attrs or None
-            self.data = None
+            self.data = []
 
     def endElement(self, full_name):
         name = self._build_name(full_name)
         if len(self.path) == self.item_depth:
             item = self.item
             if item is None:
-                item = self.data
+                item = (None if not self.data
+                        else self.cdata_separator.join(self.data))
+
             should_continue = self.item_callback(self.path, item)
             if not should_continue:
                 raise ParsingInterrupted()
         if len(self.stack):
-            item, data = self.item, self.data
+            data = (None if not self.data
+                    else self.cdata_separator.join(self.data))
+            item = self.item
             self.item, self.data = self.stack.pop()
-            if self.strip_whitespace and data is not None:
+            if self.strip_whitespace and data:
                 data = data.strip() or None
             if data and self.force_cdata and item is None:
                 item = self.dict_constructor()
@@ -124,14 +140,15 @@ class _DictSAXHandler(object):
             else:
                 self.item = self.push_data(self.item, name, data)
         else:
-            self.item = self.data = None
+            self.item = None
+            self.data = []
         self.path.pop()
 
     def characters(self, data):
         if not self.data:
-            self.data = data
+            self.data = [data]
         else:
-            self.data += self.cdata_separator + data
+            self.data.append(data)
 
     def push_data(self, item, key, data):
         if self.postprocessor is not None:
@@ -148,8 +165,19 @@ class _DictSAXHandler(object):
             else:
                 item[key] = [value, data]
         except KeyError:
-            item[key] = data
+            if self._should_force_list(key, data):
+                item[key] = [data]
+            else:
+                item[key] = data
         return item
+
+    def _should_force_list(self, key, value):
+        if not self.force_list:
+            return False
+        try:
+            return key in self.force_list
+        except TypeError:
+            return self.force_list(self.path[:-1], key, value)
 
 
 def parse(xml_input, encoding=None, expat=expat, process_namespaces=False,
@@ -220,6 +248,41 @@ def parse(xml_input, encoding=None, expat=expat, process_namespaces=False,
         >>> xmltodict.parse('<a>hello</a>', expat=defusedexpat.pyexpat)
         OrderedDict([(u'a', u'hello')])
 
+    You can use the force_list argument to force lists to be created even
+    when there is only a single child of a given level of hierarchy. The
+    force_list argument is a tuple of keys. If the key for a given level
+    of hierarchy is in the force_list argument, that level of hierarchy
+    will have a list as a child (even if there is only one sub-element).
+    The index_keys operation takes precendence over this. This is applied
+    after any user-supplied postprocessor has already run.
+
+        For example, given this input:
+        <servers>
+          <server>
+            <name>host1</name>
+            <os>Linux</os>
+            <interfaces>
+              <interface>
+                <name>em0</name>
+                <ip_address>10.0.0.1</ip_address>
+              </interface>
+            </interfaces>
+          </server>
+        </servers>
+
+        If called with force_list=('interface',), it will produce
+        this dictionary:
+        {'servers':
+          {'server':
+            {'name': 'host1',
+             'os': 'Linux'},
+             'interfaces':
+              {'interface':
+                [ {'name': 'em0', 'ip_address': '10.0.0.1' } ] } } }
+
+        `force_list` can also be a callable that receives `path`, `key` and
+        `value`. This is helpful in cases where the logic that decides whether
+        a list should be forced is more complex.
     """
     handler = _DictSAXHandler(namespace_separator=namespace_separator,
                               **kwargs)
@@ -284,6 +347,8 @@ def _emit(key, value, content_handler,
                 cdata = iv
                 continue
             if ik.startswith(attr_prefix):
+                if not isinstance(iv, _unicode):
+                    iv = _unicode(iv)
                 attrs[ik[len(attr_prefix):]] = iv
                 continue
             children.append((ik, iv))
@@ -346,16 +411,23 @@ def unparse(input_dict, output=None, encoding='utf-8', full_document=True,
 if __name__ == '__main__':  # pragma: no cover
     import sys
     import marshal
+    try:
+        stdin = sys.stdin.buffer
+        stdout = sys.stdout.buffer
+    except AttributeError:
+        stdin = sys.stdin
+        stdout = sys.stdout
 
     (item_depth,) = sys.argv[1:]
     item_depth = int(item_depth)
 
+
     def handle_item(path, item):
-        marshal.dump((path, item), sys.stdout)
+        marshal.dump((path, item), stdout)
         return True
 
     try:
-        root = parse(sys.stdin,
+        root = parse(stdin,
                      item_depth=item_depth,
                      item_callback=handle_item,
                      dict_constructor=dict)

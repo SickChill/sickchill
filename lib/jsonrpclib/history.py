@@ -2,13 +2,13 @@ class History(object):
     """
     This holds all the response and request objects for a
     session. A server using this should call "clear" after
-    each request cycle in order to keep it from clogging 
+    each request cycle in order to keep it from clogging
     memory.
     """
     requests = []
     responses = []
     _instance = None
-    
+
     @classmethod
     def instance(cls):
         if not cls._instance:
@@ -17,7 +17,7 @@ class History(object):
 
     def add_response(self, response_obj):
         self.responses.append(response_obj)
-    
+
     def add_request(self, request_obj):
         self.requests.append(request_obj)
 

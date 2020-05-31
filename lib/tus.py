@@ -3,6 +3,12 @@ import os
 import base64
 import logging
 import argparse
+import sys
+
+try:
+    from urllib.parse import urlparse, urlunparse
+except ImportError:
+    from urlparse import urlparse, urlunparse  # type: ignore
 
 import requests
 
@@ -16,7 +22,19 @@ logger.addHandler(logging.NullHandler())
 
 
 class TusError(Exception):
-    pass
+    def __init__(self, message, response=None):
+        super(TusError, self).__init__(message)
+        self.response = response
+
+    def __str__(self):
+        if self.response is not None:
+            text = self.response.text
+            return "TusError('%s', response=(%s, '%s'))" % (
+                    self.message,
+                    self.response.status_code,
+                    text.strip())
+        else:
+            return "TusError('%s')" % self.message
 
 
 def _init():
@@ -132,6 +150,9 @@ def upload(file_obj,
 
 
 def _get_file_size(f):
+    if not _is_seekable(f):
+        return
+
     pos = f.tell()
     f.seek(0, os.SEEK_END)
     size = f.tell()
@@ -139,31 +160,56 @@ def _get_file_size(f):
     return size
 
 
+def _is_seekable(f):
+    if sys.version_info.major == 2:
+        return hasattr(f, 'seek')
+    else:
+        return f.seekable()
+
+
+def _absolute_file_location(tus_endpoint, file_endpoint):
+    parsed_file_endpoint = urlparse(file_endpoint)
+    if parsed_file_endpoint.netloc:
+        return file_endpoint
+
+    parsed_tus_endpoint = urlparse(tus_endpoint)
+    return urlunparse((
+        parsed_tus_endpoint.scheme,
+        parsed_tus_endpoint.netloc,
+    ) + parsed_file_endpoint[2:])
+
+
 def create(tus_endpoint, file_name, file_size, headers=None, metadata=None):
     logger.info("Creating file endpoint")
 
-    h = {
-        "Tus-Resumable": TUS_VERSION,
-        "Upload-Length": str(file_size),
-    }
+    h = {"Tus-Resumable": TUS_VERSION}
+
+    if file_size is None:
+        h['Upload-Defer-Length'] = '1'
+    else:
+        h['Upload-Length'] = str(file_size)
 
     if headers:
         h.update(headers)
 
-    if metadata:
-        pairs = [
-            k + ' ' + base64.b64encode(v.encode('utf-8')).decode()
-            for k, v in metadata.items()
-        ]
-        h["Upload-Metadata"] = ','.join(pairs)
+    if metadata is None:
+        metadata = {}
+
+    metadata['filename'] = file_name
+
+    pairs = [
+        k + ' ' + base64.b64encode(v.encode('utf-8')).decode()
+        for k, v in metadata.items()
+    ]
+    h["Upload-Metadata"] = ','.join(pairs)
 
     response = requests.post(tus_endpoint, headers=h)
     if response.status_code != 201:
-        raise TusError("Create failed: %s" % response)
+        raise TusError("Create failed", response=response)
 
     location = response.headers["Location"]
     logger.info("Created: %s", location)
-    return location
+    return _absolute_file_location(tus_endpoint, location)
 
 
 def resume(file_obj,
@@ -175,14 +221,29 @@ def resume(file_obj,
     if offset is None:
         offset = _get_offset(file_endpoint, headers=headers)
 
-    total_sent = 0
-    file_size = _get_file_size(file_obj)
-    while offset < file_size:
+    if offset != 0:
+        if not _is_seekable(file_obj):
+            raise Exception("file is not seekable")
+
         file_obj.seek(offset)
-        data = file_obj.read(chunk_size)
-        offset = _upload_chunk(data, offset, file_endpoint, headers=headers)
+
+    total_sent = 0
+    data = file_obj.read(chunk_size)
+    while data:
+        _upload_chunk(data, offset, file_endpoint, headers=headers)
         total_sent += len(data)
         logger.info("Total bytes sent: %i", total_sent)
+        offset += len(data)
+        data = file_obj.read(chunk_size)
+
+    if not _is_seekable(file_obj):
+        if headers is None:
+            headers = {}
+        else:
+            headers = dict(headers)
+
+        headers['Upload-Length'] = str(offset)
+        _upload_chunk('', offset, file_endpoint, headers=headers)
 
 
 def _get_offset(file_endpoint, headers=None):
@@ -215,6 +276,4 @@ def _upload_chunk(data, offset, file_endpoint, headers=None):
 
     response = requests.patch(file_endpoint, headers=h, data=data)
     if response.status_code != 204:
-        raise TusError("Upload chunk failed: %s" % response)
-
-    return int(response.headers["Upload-Offset"])
+        raise TusError("Upload chunk failed", response=response)

@@ -1,7 +1,7 @@
-# Copyright 2013 Hardcoded Software (http://www.hardcoded.net)
+# Copyright 2017 Virgil Dupras
 
-# This software is licensed under the "BSD" License as described in the "LICENSE" file, 
-# which should be included with this package. The terms are also available at 
+# This software is licensed under the "BSD" License as described in the "LICENSE" file,
+# which should be included with this package. The terms are also available at
 # http://www.hardcoded.net/licenses/bsd_license
 
 # This is a reimplementation of plat_other.py with reference to the
@@ -16,6 +16,7 @@
 
 from __future__ import unicode_literals
 
+import errno
 import sys
 import os
 import os.path as op
@@ -27,28 +28,47 @@ except ImportError:
     # Python 2
     from urllib import quote
 
-FILES_DIR = 'files'
-INFO_DIR = 'info'
-INFO_SUFFIX = '.trashinfo'
+from .compat import text_type, environb
+from .exceptions import TrashPermissionError
+
+try:
+    fsencode = os.fsencode   # Python 3
+    fsdecode = os.fsdecode
+except AttributeError:
+    def fsencode(u):         # Python 2
+        return u.encode(sys.getfilesystemencoding())
+    def fsdecode(b):
+        return b.decode(sys.getfilesystemencoding())
+    # The Python 3 versions are a bit smarter, handling surrogate escapes,
+    # but these should work in most cases.
+
+FILES_DIR = b'files'
+INFO_DIR = b'info'
+INFO_SUFFIX = b'.trashinfo'
 
 # Default of ~/.local/share [3]
-XDG_DATA_HOME = op.expanduser(os.environ.get('XDG_DATA_HOME', '~/.local/share'))
-HOMETRASH = op.join(XDG_DATA_HOME, 'Trash')
+XDG_DATA_HOME = op.expanduser(environb.get(b'XDG_DATA_HOME', b'~/.local/share'))
+HOMETRASH_B = op.join(XDG_DATA_HOME, b'Trash')
+HOMETRASH = fsdecode(HOMETRASH_B)
 
 uid = os.getuid()
-TOPDIR_TRASH = '.Trash'
-TOPDIR_FALLBACK = '.Trash-' + str(uid)
+TOPDIR_TRASH = b'.Trash'
+TOPDIR_FALLBACK = b'.Trash-' + text_type(uid).encode('ascii')
 
 def is_parent(parent, path):
     path = op.realpath(path) # In case it's a symlink
+    if isinstance(path, text_type):
+        path = fsencode(path)
     parent = op.realpath(parent)
+    if isinstance(parent, text_type):
+        parent = fsencode(parent)
     return path.startswith(parent)
 
 def format_date(date):
     return date.strftime("%Y-%m-%dT%H:%M:%S")
 
 def info_for(src, topdir):
-    # ...it MUST not include a ".."" directory, and for files not "under" that
+    # ...it MUST not include a ".." directory, and for files not "under" that
     # directory, absolute pathnames must be used. [2]
     if topdir is None or not is_parent(topdir, src):
         src = op.abspath(src)
@@ -75,11 +95,11 @@ def trash_move(src, dst, topdir=None):
     destname = filename
     while op.exists(op.join(filespath, destname)) or op.exists(op.join(infopath, destname + INFO_SUFFIX)):
         counter += 1
-        destname = '%s %s%s' % (base_name, counter, ext)
-    
+        destname = base_name + b' ' + text_type(counter).encode('ascii') + ext
+
     check_create(filespath)
     check_create(infopath)
-    
+
     os.rename(src, op.join(filespath, destname))
     f = open(op.join(infopath, destname + INFO_SUFFIX), 'w')
     f.write(info_for(src, topdir))
@@ -99,14 +119,14 @@ def find_ext_volume_global_trash(volume_root):
     trash_dir = op.join(volume_root, TOPDIR_TRASH)
     if not op.exists(trash_dir):
         return None
-    
+
     mode = os.lstat(trash_dir).st_mode
     # vol/.Trash must be a directory, cannot be a symlink, and must have the
     # sticky bit set.
     if not op.isdir(trash_dir) or op.islink(trash_dir) or not (mode & stat.S_ISVTX):
         return None
 
-    trash_dir = op.join(trash_dir, str(uid))
+    trash_dir = op.join(trash_dir, text_type(uid).encode('ascii'))
     try:
         check_create(trash_dir)
     except OSError:
@@ -116,9 +136,13 @@ def find_ext_volume_global_trash(volume_root):
 def find_ext_volume_fallback_trash(volume_root):
     # from [2] Trash directories (1) create a .Trash-$uid dir.
     trash_dir = op.join(volume_root, TOPDIR_FALLBACK)
-    # Try to make the directory, if we can't the OSError exception will escape
-    # be thrown out of send2trash.
-    check_create(trash_dir)
+    # Try to make the directory, if we lack permission, raise TrashPermissionError
+    try:
+        check_create(trash_dir)
+    except OSError as e:
+        if e.errno == errno.EACCES:
+            raise TrashPermissionError(e.filename)
+        raise
     return trash_dir
 
 def find_ext_volume_trash(volume_root):
@@ -132,31 +156,37 @@ def get_dev(path):
     return os.lstat(path).st_dev
 
 def send2trash(path):
-    if not isinstance(path, str):
-    #    path = str(path, sys.getfilesystemencoding())  # removed invalid arg passed to str function, shouldn't be used anyway
-        path = str(path)
+    if isinstance(path, text_type):
+        path_b = fsencode(path)
+    elif isinstance(path, bytes):
+        path_b = path
+    elif hasattr(path, '__fspath__'):
+        # Python 3.6 PathLike protocol
+        return send2trash(path.__fspath__())
+    else:
+        raise TypeError('str, bytes or PathLike expected, not %r' % type(path))
 
-    if not op.exists(path):
+    if not op.exists(path_b):
         raise OSError("File not found: %s" % path)
     # ...should check whether the user has the necessary permissions to delete
     # it, before starting the trashing operation itself. [2]
-    if not os.access(path, os.W_OK):
+    if not os.access(path_b, os.W_OK):
         raise OSError("Permission denied: %s" % path)
     # if the file to be trashed is on the same device as HOMETRASH we
     # want to move it there.
-    path_dev = get_dev(path)
-    
+    path_dev = get_dev(path_b)
+
     # If XDG_DATA_HOME or HOMETRASH do not yet exist we need to stat the
     # home directory, and these paths will be created further on if needed.
-    trash_dev = get_dev(op.expanduser('~'))
+    trash_dev = get_dev(op.expanduser(b'~'))
 
     if path_dev == trash_dev:
         topdir = XDG_DATA_HOME
-        dest_trash = HOMETRASH
+        dest_trash = HOMETRASH_B
     else:
-        topdir = find_mount_point(path)
+        topdir = find_mount_point(path_b)
         trash_dev = get_dev(topdir)
         if trash_dev != path_dev:
             raise OSError("Couldn't find mount point for %s" % path)
         dest_trash = find_ext_volume_trash(topdir)
-    trash_move(path, dest_trash, topdir)
+    trash_move(path_b, dest_trash, topdir)

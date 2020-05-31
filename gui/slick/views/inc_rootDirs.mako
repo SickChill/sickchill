@@ -30,7 +30,7 @@
             <input class="btn" type="button" id="addRootDir" value="${_('New')}" />
             <input class="btn" type="button" id="editRootDir" value="${_('Edit')}" />
             <input class="btn" type="button" id="deleteRootDir" value="${_('Delete')}" />
-            <input class="btn" type="button" id="defaultRootDir" value="${_('Set as Default')} *" />
+            <input class="btn" type="button" id="defaultRootDir" value="${_('Set as default')} *" />
         </div>
         <input type="text" style="display: none" id="rootDirText" autocapitalize="off" />
     </div>

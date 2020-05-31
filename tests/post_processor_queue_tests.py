@@ -1,25 +1,26 @@
 # coding=UTF-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 """
 Test the post processor queue
 """
+from __future__ import absolute_import
 
 import datetime
 import os.path
@@ -62,6 +63,7 @@ class PostProcessorQueueTests(test.SickbeardTestPostProcessorCase):
         super(PostProcessorQueueTests, self).tearDown()
 
     def test_post_processor_queue_spam(self):
+        sickbeard.TV_DOWNLOAD_DIR = os.path.abspath('.')
         for i in range(100):
             result = self.queue.action.add_item(sickbeard.TV_DOWNLOAD_DIR, method='move', mode=('manual', 'auto')[i % 2])
             self.assertIsNotNone(result)

@@ -1,0 +1,157 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: [!!python/unicode 'gzip,deflate']
+      Connection: [keep-alive]
+      User-Agent: [!!python/unicode 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8;
+          rv:24.0) Gecko/20100101 Firefox/24.0']
+    method: GET
+    uri: https://torrentz2.eu/feed?f=
+  response:
+    body: {string: !!python/unicode "<!DOCTYPE HTML>\n<html lang=\"en-US\">\n<head>\n
+        \ <meta charset=\"UTF-8\" />\n  <meta http-equiv=\"Content-Type\" content=\"text/html;
+        charset=UTF-8\" />\n  <meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge,chrome=1\"
+        />\n  <meta name=\"robots\" content=\"noindex, nofollow\" />\n  <meta name=\"viewport\"
+        content=\"width=device-width, initial-scale=1, maximum-scale=1\" />\n  <title>Just
+        a moment...</title>\n  <style type=\"text/css\">\n    html, body {width: 100%;
+        height: 100%; margin: 0; padding: 0;}\n    body {background-color: #ffffff;
+        font-family: Helvetica, Arial, sans-serif; font-size: 100%;}\n    h1 {font-size:
+        1.5em; color: #404040; text-align: center;}\n    p {font-size: 1em; color:
+        #404040; text-align: center; margin: 10px 0 0 0;}\n    #spinner {margin: 0
+        auto 30px auto; display: block;}\n    .attribution {margin-top: 20px;}\n    @-webkit-keyframes
+        bubbles { 33%: { -webkit-transform: translateY(10px); transform: translateY(10px);
+        } 66% { -webkit-transform: translateY(-10px); transform: translateY(-10px);
+        } 100% { -webkit-transform: translateY(0); transform: translateY(0); } }\n
+        \   @keyframes bubbles { 33%: { -webkit-transform: translateY(10px); transform:
+        translateY(10px); } 66% { -webkit-transform: translateY(-10px); transform:
+        translateY(-10px); } 100% { -webkit-transform: translateY(0); transform: translateY(0);
+        } }\n    .bubbles { background-color: #404040; width:15px; height: 15px; margin:2px;
+        border-radius:100%; -webkit-animation:bubbles 0.6s 0.07s infinite ease-in-out;
+        animation:bubbles 0.6s 0.07s infinite ease-in-out; -webkit-animation-fill-mode:both;
+        animation-fill-mode:both; display:inline-block; }\n  </style>\n\n    <script
+        type=\"text/javascript\">\n  //<![CDATA[\n  (function(){\n    var a = function()
+        {try{return !!window.addEventListener} catch(e) {return !1} },\n    b = function(b,
+        c) {a() ? document.addEventListener(\"DOMContentLoaded\", b, c) : document.attachEvent(\"onreadystatechange\",
+        b)};\n    b(function(){\n      var a = document.getElementById('cf-content');a.style.display
+        = 'block';\n      setTimeout(function(){\n        var s,t,o,p,b,r,e,a,k,i,n,g,f,
+        MacGaDZ={\"Kd\":+((!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+[])+(+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![])+(+[])+(!+[]+!![]+!![]+!![])+(!+[]+!![])+(!+[]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]))/+((!+[]+!![]+!![]+!![]+[])+(+!![])+(+!![])+(!+[]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![])+(+[])+(!+[]+!![]+!![]+!![])+(!+[]+!![]+!![])+(!+[]+!![]))};\n
+        \       t = document.createElement('div');\n        t.innerHTML=\"<a href='/'>x</a>\";\n
+        \       t = t.firstChild.href;r = t.match(/https?:\\/\\//)[0];\n        t
+        = t.substr(r.length); t = t.substr(0,t.length-1);\n        a = document.getElementById('jschl-answer');\n
+        \       f = document.getElementById('challenge-form');\n        ;MacGaDZ.Kd-=+((!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+[])+(!+[]+!![]+!![]+!![])+(+!![])+(+[])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(+!![]))/+((!+[]+!![]+!![]+!![]+!![]+[])+(!+[]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![])+(!+[]+!![]+!![]));a.value
+        = +MacGaDZ.Kd.toFixed(10) + t.length; '; 121'\n        f.action += location.hash;\n
+        \       f.submit();\n      }, 4000);\n    }, false);\n  })();\n  //]]>\n</script>\n\n\n</head>\n<body>\n
+        \ <table width=\"100%\" height=\"100%\" cellpadding=\"20\">\n    <tr>\n      <td
+        align=\"center\" valign=\"middle\">\n          <div class=\"cf-browser-verification
+        cf-im-under-attack\">\n  <noscript><h1 data-translate=\"turn_on_js\" style=\"color:#bd2426;\">Please
+        turn JavaScript on and reload the page.</h1></noscript>\n  <div id=\"cf-content\"
+        style=\"display:none\">\n    \n    <div>\n      <div class=\"bubbles\"></div>\n
+        \     <div class=\"bubbles\"></div>\n      <div class=\"bubbles\"></div>\n
+        \   </div>\n    <h1><span data-translate=\"checking_browser\">Checking your
+        browser before accessing</span> torrentz2.eu.</h1>\n    \n    <p data-translate=\"process_is_automatic\">This
+        process is automatic. Your browser will redirect to your requested content
+        shortly.</p>\n    <p data-translate=\"allow_5_secs\">Please allow up to 5
+        seconds&hellip;</p>\n  </div>\n   <a href=\"https://directoryblacklist.com/aslope.php?to=7\"
+        style=\"position: absolute; top: -250px; left: -250px;\"></a>\n  <form id=\"challenge-form\"
+        action=\"/cdn-cgi/l/chk_jschl\" method=\"get\">\n    <input type=\"hidden\"
+        name=\"jschl_vc\" value=\"23dcb3d635d6c237f840012fc869bb8e\"/>\n    <input
+        type=\"hidden\" name=\"pass\" value=\"1540613813.636-j/tCiLasai\"/>\n    <input
+        type=\"hidden\" id=\"jschl-answer\" name=\"jschl_answer\"/>\n  </form>\n</div>\n\n
+        \         \n          <div class=\"attribution\">\n            <a href=\"https://www.cloudflare.com/5xx-error-landing?utm_source=iuam\"
+        target=\"_blank\" style=\"font-size: 12px;\">DDoS protection by Cloudflare</a>\n
+        \           <br>\n            Ray ID: 470259763e955f45\n          </div>\n
+        \     </td>\n     \n    </tr>\n  </table>\n</body>\n</html>\n"}
+    headers:
+      cache-control: [no-cache]
+      cf-ray: [470259763e955f45-LAS]
+      connection: [close]
+      content-type: [text/html; charset=UTF-8]
+      date: ['Sat, 27 Oct 2018 04:16:49 GMT']
+      expect-ct: ['max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"']
+      server: [cloudflare]
+      set-cookie: ['__cfduid=df2759d07e6587405b4a63d7130c72acc1540613809; expires=Sun,
+          27-Oct-19 04:16:49 GMT; path=/; domain=.torrentz2.eu; HttpOnly']
+      transfer-encoding: [chunked]
+      vary: [Accept-Encoding]
+      x-frame-options: [SAMEORIGIN]
+    status: {code: 503, message: Service Temporarily Unavailable}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: [!!python/unicode 'gzip,deflate']
+      Connection: [keep-alive]
+      Cookie: [__cfduid=df2759d07e6587405b4a63d7130c72acc1540613809]
+      User-Agent: [!!python/unicode 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8;
+          rv:24.0) Gecko/20100101 Firefox/24.0']
+    method: GET
+    uri: https://torrentz2.eu/feed?f=Game+of+Thrones+S05E08
+  response:
+    body: {string: !!python/unicode "<!DOCTYPE HTML>\n<html lang=\"en-US\">\n<head>\n
+        \ <meta charset=\"UTF-8\" />\n  <meta http-equiv=\"Content-Type\" content=\"text/html;
+        charset=UTF-8\" />\n  <meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge,chrome=1\"
+        />\n  <meta name=\"robots\" content=\"noindex, nofollow\" />\n  <meta name=\"viewport\"
+        content=\"width=device-width, initial-scale=1, maximum-scale=1\" />\n  <title>Just
+        a moment...</title>\n  <style type=\"text/css\">\n    html, body {width: 100%;
+        height: 100%; margin: 0; padding: 0;}\n    body {background-color: #ffffff;
+        font-family: Helvetica, Arial, sans-serif; font-size: 100%;}\n    h1 {font-size:
+        1.5em; color: #404040; text-align: center;}\n    p {font-size: 1em; color:
+        #404040; text-align: center; margin: 10px 0 0 0;}\n    #spinner {margin: 0
+        auto 30px auto; display: block;}\n    .attribution {margin-top: 20px;}\n    @-webkit-keyframes
+        bubbles { 33%: { -webkit-transform: translateY(10px); transform: translateY(10px);
+        } 66% { -webkit-transform: translateY(-10px); transform: translateY(-10px);
+        } 100% { -webkit-transform: translateY(0); transform: translateY(0); } }\n
+        \   @keyframes bubbles { 33%: { -webkit-transform: translateY(10px); transform:
+        translateY(10px); } 66% { -webkit-transform: translateY(-10px); transform:
+        translateY(-10px); } 100% { -webkit-transform: translateY(0); transform: translateY(0);
+        } }\n    .bubbles { background-color: #404040; width:15px; height: 15px; margin:2px;
+        border-radius:100%; -webkit-animation:bubbles 0.6s 0.07s infinite ease-in-out;
+        animation:bubbles 0.6s 0.07s infinite ease-in-out; -webkit-animation-fill-mode:both;
+        animation-fill-mode:both; display:inline-block; }\n  </style>\n\n    <script
+        type=\"text/javascript\">\n  //<![CDATA[\n  (function(){\n    var a = function()
+        {try{return !!window.addEventListener} catch(e) {return !1} },\n    b = function(b,
+        c) {a() ? document.addEventListener(\"DOMContentLoaded\", b, c) : document.attachEvent(\"onreadystatechange\",
+        b)};\n    b(function(){\n      var a = document.getElementById('cf-content');a.style.display
+        = 'block';\n      setTimeout(function(){\n        var s,t,o,p,b,r,e,a,k,i,n,g,f,
+        qvMOVaX={\"Rzhs\":+((!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+[])+(!+[]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(+[])+(!+[]+!![]+!![]+!![])+(+!![])+(!+[]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]))/+((!+[]+!![]+!![]+!![]+!![]+[])+(+!![])+(!+[]+!![])+(!+[]+!![]+!![])+(+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]))};\n
+        \       t = document.createElement('div');\n        t.innerHTML=\"<a href='/'>x</a>\";\n
+        \       t = t.firstChild.href;r = t.match(/https?:\\/\\//)[0];\n        t
+        = t.substr(r.length); t = t.substr(0,t.length-1);\n        a = document.getElementById('jschl-answer');\n
+        \       f = document.getElementById('challenge-form');\n        ;qvMOVaX.Rzhs-=+((!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+[])+(!+[]+!![])+(+[])+(!+[]+!![]+!![]+!![])+(+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![])+(!+[]+!![]+!![]))/+((!+[]+!![]+!![]+!![]+!![]+[])+(!+[]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![])+(!+[]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]));qvMOVaX.Rzhs*=+((!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+[])+(+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![])+(+[])+(!+[]+!![]+!![]+!![])+(!+[]+!![])+(!+[]+!![]+!![]+!![])+(!+[]+!![]+!![]))/+((!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+[])+(+!![])+(+!![])+(+!![])+(!+[]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(+[])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![]));qvMOVaX.Rzhs+=+((!+[]+!![]+!![]+!![]+!![]+!![]+!![]+[])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![])+(+[])+(+[])+(!+[]+!![]+!![])+(!+[]+!![]+!![]+!![])+(!+[]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]))/+((!+[]+!![]+!![]+!![]+[])+(+[])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]));qvMOVaX.Rzhs-=+((!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+[])+(!+[]+!![])+(+[])+(!+[]+!![]+!![]+!![])+(+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![])+(!+[]+!![]+!![]))/+((!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+[])+(!+[]+!![]+!![])+(+[])+(!+[]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![])+(+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]));qvMOVaX.Rzhs+=+((!+[]+!![]+!![]+!![]+!![]+!![]+!![]+[])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![])+(+[])+(+[])+(!+[]+!![]+!![])+(!+[]+!![]+!![]+!![])+(!+[]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]))/+((!+[]+!![]+!![]+!![]+!![]+!![]+!![]+[])+(!+[]+!![]+!![]+!![]+!![]+!![])+(+[])+(+!![])+(!+[]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![])+(+!![]));qvMOVaX.Rzhs-=+((!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+[])+(!+[]+!![]+!![]+!![])+(+!![])+(+[])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(+!![]))/+((!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+[])+(!+[]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![])+(!+[]+!![])+(!+[]+!![])+(+[]));qvMOVaX.Rzhs-=+((!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+[])+(!+[]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![])+(+[])+(!+[]+!![]+!![]))/+((!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+[])+(!+[]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![])+(+!![])+(!+[]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![]+!![]+!![]+!![]+!![])+(!+[]+!![]+!![])+(+[]));a.value
+        = +qvMOVaX.Rzhs.toFixed(10) + t.length; '; 121'\n        f.action += location.hash;\n
+        \       f.submit();\n      }, 4000);\n    }, false);\n  })();\n  //]]>\n</script>\n\n\n</head>\n<body>\n
+        \ <table width=\"100%\" height=\"100%\" cellpadding=\"20\">\n    <tr>\n      <td
+        align=\"center\" valign=\"middle\">\n          <div class=\"cf-browser-verification
+        cf-im-under-attack\">\n  <noscript><h1 data-translate=\"turn_on_js\" style=\"color:#bd2426;\">Please
+        turn JavaScript on and reload the page.</h1></noscript>\n  <div id=\"cf-content\"
+        style=\"display:none\">\n    \n    <div>\n      <div class=\"bubbles\"></div>\n
+        \     <div class=\"bubbles\"></div>\n      <div class=\"bubbles\"></div>\n
+        \   </div>\n    <h1><span data-translate=\"checking_browser\">Checking your
+        browser before accessing</span> torrentz2.eu.</h1>\n    \n    <p data-translate=\"process_is_automatic\">This
+        process is automatic. Your browser will redirect to your requested content
+        shortly.</p>\n    <p data-translate=\"allow_5_secs\">Please allow up to 5
+        seconds&hellip;</p>\n  </div>\n   \n  <form id=\"challenge-form\" action=\"/cdn-cgi/l/chk_jschl\"
+        method=\"get\">\n    <input type=\"hidden\" name=\"jschl_vc\" value=\"17054a3a551fef1a2b6e23953b0ff367\"/>\n
+        \   <input type=\"hidden\" name=\"pass\" value=\"1540613822.019-PrG2Zs7lhI\"/>\n
+        \   <input type=\"hidden\" id=\"jschl-answer\" name=\"jschl_answer\"/>\n  </form>\n</div>\n\n
+        \         <div style=\"position: absolute; top: -250px; left: -250px;\"><a
+        href=\"https://directoryblacklist.com/aslope.php?to=7\">table</a></div>\n
+        \         <div class=\"attribution\">\n            <a href=\"https://www.cloudflare.com/5xx-error-landing?utm_source=iuam\"
+        target=\"_blank\" style=\"font-size: 12px;\">DDoS protection by Cloudflare</a>\n
+        \           <br>\n            Ray ID: 470259aa98725f81\n          </div>\n
+        \     </td>\n     \n    </tr>\n  </table>\n</body>\n</html>\n"}
+    headers:
+      cache-control: [no-cache]
+      cf-ray: [470259aa98725f81-LAS]
+      connection: [close]
+      content-type: [text/html; charset=UTF-8]
+      date: ['Sat, 27 Oct 2018 04:16:58 GMT']
+      expect-ct: ['max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"']
+      server: [cloudflare]
+      transfer-encoding: [chunked]
+      vary: [Accept-Encoding]
+      x-frame-options: [SAMEORIGIN]
+    status: {code: 503, message: Service Temporarily Unavailable}
+version: 1

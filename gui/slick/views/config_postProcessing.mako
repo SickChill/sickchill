@@ -6,8 +6,9 @@
     import platform
     import sickbeard
     from sickbeard.common import MULTI_EP_STRINGS
+    from sickbeard import unpackStrings
     from sickbeard import naming
-    from sickrage.helper.encoding import ek
+    from sickchill.helper.encoding import ek
 %>
 
 <%block name="tabs">
@@ -25,7 +26,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <h3>${_('Post-Processing')}</h3>
-                        <p>${_('Settings that dictate how SickRage should process completed downloads.')}</p>
+                        <p>${_('Settings that dictate how SickChill should process completed downloads.')}</p>
                     </div>
                 </div>
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
@@ -67,7 +68,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <span><b>${_('note')}:</b>&nbsp;${_('please use seperate downloading and completed folders in your download client if possible.')}</span>
+                                        <span><b>${_('note')}:</b>&nbsp;${_('please use separate downloading and completed folders in your download client if possible.')}</span>
                                     </div>
                                 </div>
                             </div>
@@ -141,7 +142,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <span class="component-desc">${_('comma seperated list of extensions or filename globs SickRage ignores when Post Processing')}</span>
+                                        <span class="component-desc">${_('comma separated list of extensions or filename globs SickChill ignores when Post Processing')}</span>
                                     </div>
                                 </div>
                             </div>
@@ -205,7 +206,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="text" name="allowed_extensions" id="allowed_extensions" value="${sickbeard.ALLOWED_EXTENSIONS}" class="form-control input-sm input350" autocapitalize="off" />
-                                        <label for="allowed_extensions">${_('comma separated list of associated file extensions SickRage should keep while post processing.')}</label>
+                                        <label for="allowed_extensions">${_('comma separated list of associated file extensions SickChill should keep while post processing.')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -234,7 +235,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" name="airdate_episodes" id="airdate_episodes" ${('', 'checked="checked"')[bool(sickbeard.AIRDATE_EPISODES)]}/>
-                                        <label for="airdate_episodes">${_('set last modified filedate to the date that the episode aired?')}</label>
+                                        <label for="airdate_episodes">${_('set last modified file date to the date that the episode aired?')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -281,15 +282,11 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <select name="unpack" id="unpack" class="form-control input-sm input350" title="unpack">
-                                                <option value="0" ${('', 'selected="selected"')[int(sickbeard.UNPACK) == 0]}>
-                                                    ${_('Ignore (do not process contents)')}
+                                              % for value, description in six.iteritems(unpackStrings):
+                                                <option value="${value}" ${('', 'selected="selected"')[int(sickbeard.UNPACK) == value]}>
+                                                    ${description}
                                                 </option>
-                                                <option value="1" ${('', 'selected="selected"')[int(sickbeard.UNPACK) == 1]}>
-                                                    ${_('Unpack (process contents)')}
-                                                </option>
-                                                <option value="2" ${('', 'selected="selected"')[int(sickbeard.UNPACK) == 2]}>
-                                                    ${_('Treat as video (process archive as-is)')}
-                                                </option>
+                                              % endfor
                                             </select>
                                         </div>
                                     </div>
@@ -461,7 +458,7 @@
                                     <div class="col-md-12">
                                         <label>
                                             ${_('see')}
-                                            <a href="https://github.com/SickRage/SickRage/wiki/Post-Processing#extra-scripts">
+                                            <a href="https://github.com/SickChill/SickChill/wiki/Post-Processing#extra-scripts">
                                                 <span style="color:red;">Wiki</span>
                                             </a>${_('for script arguments description and usage.')}
                                         </label>
@@ -481,7 +478,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <h3>${_('Episode Naming')}</h3>
-                        <p>${_('How SickRage will name and sort your episodes.')}</p>
+                        <p>${_('How SickChill will name and sort your episodes.')}</p>
                     </div>
                 </div>
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
@@ -677,7 +674,7 @@
                                                 <td>${_('Show.Name')}.S02E03.HDTV.XviD-RLSGROUP</td>
                                             </tr>
                                             <tr>
-                                                <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="'${_('SickRage\' is used in place of RLSGROUP if it could not be properly detected')}"></i> <b>${_('Release Group')}:</b></td>
+                                                <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="'${_('SickChill\' is used in place of RLSGROUP if it could not be properly detected')}"></i> <b>${_('Release Group')}:</b></td>
                                                 <td>%RG</td>
                                                 <td>RLSGROUP</td>
                                             </tr>
@@ -902,7 +899,7 @@
                                                     <td>${_('Show.Name')}.2010.03.09.HDTV.XviD-RLSGROUP</td>
                                                 </tr>
                                                 <tr class="even">
-                                                    <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="'${_('SickRage\' is used in place of RLSGROUP if it could not be properly detected')}"></i> <b>${_('Release Group')}:</b></td>
+                                                    <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="'${_('SickChill\' is used in place of RLSGROUP if it could not be properly detected')}"></i> <b>${_('Release Group')}:</b></td>
                                                     <td>%RG</td>
                                                     <td>RLSGROUP</td>
                                                 </tr>
@@ -1087,7 +1084,7 @@
                                                     <td>${_('Show.Name')}.9th.Mar.2011.HDTV.XviD-RLSGROUP</td>
                                                 </tr>
                                                 <tr class="even">
-                                                    <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="'${_('SickRage\' is used in place of RLSGROUP if it could not be properly detected')}"></i> <b>${_('Release Group')}:</b></td>
+                                                    <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="'${_('SickChill\' is used in place of RLSGROUP if it could not be properly detected')}"></i> <b>${_('Release Group')}:</b></td>
                                                     <td>%RG</td>
                                                     <td>RLSGROUP</td>
                                                 </tr>
@@ -1268,7 +1265,7 @@
                                                     <td>${_('Show.Name')}.S02E03.HDTV.XviD-RLSGROUP</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="'${_('SickRage\' is used in place of RLSGROUP if it could not be properly detected')}"></i> <b>${_('Release Group')}:</b></td>
+                                                    <td class="align-right"><i class="glyphicon glyphicon-info-sign" title="'${_('SickChill\' is used in place of RLSGROUP if it could not be properly detected')}"></i> <b>${_('Release Group')}:</b></td>
                                                     <td>%RG</td>
                                                     <td>RLSGROUP</td>
                                                 </tr>

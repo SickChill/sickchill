@@ -1,30 +1,34 @@
 # coding=utf-8
 
 # Author: Dieter Blomme <dieterblomme@gmail.com>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Third Party Imports
+from trakt import TraktAPI
+from trakt.exceptions import traktAuthException, traktException, traktServerBusy
+
+# First Party Imports
 import sickbeard
-from libtrakt import TraktAPI
-from libtrakt.exceptions import traktAuthException, traktException, traktServerBusy
+import sickchill
 from sickbeard import logger
-from sickrage.helper.exceptions import ex
+from sickchill.helper.exceptions import ex
 
 
 class Notifier(object):
@@ -47,14 +51,14 @@ class Notifier(object):
     def notify_login(self, ipaddress=""):
         pass
 
-    def update_library(self, ep_obj):
+    @staticmethod
+    def update_library(ep_obj):
         """
         Sends a request to trakt indicating that the given episode is part of our library.
 
         ep_obj: The TVEpisode object to add to trakt
         """
 
-        trakt_id = sickbeard.indexerApi(ep_obj.show.indexer).config['trakt_id']
         trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
 
         if sickbeard.USE_TRAKT:
@@ -65,15 +69,10 @@ class Notifier(object):
                         {
                             'title': ep_obj.show.name,
                             'year': ep_obj.show.startyear,
-                            'ids': {},
+                            'ids': {ep_obj.idxr.slug: ep_obj.show.indexerid},
                         }
                     ]
                 }
-
-                if trakt_id == 'tvdb_id':
-                    data['shows'][0]['ids']['tvdb'] = ep_obj.show.indexerid
-                else:
-                    data['shows'][0]['ids']['tvrage'] = ep_obj.show.indexerid
 
                 if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.TRAKT_REMOVE_SERIESLIST:
                         trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
@@ -93,7 +92,8 @@ class Notifier(object):
             except (traktException, traktAuthException, traktServerBusy) as e:
                 logger.log("Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
 
-    def update_watchlist(self, show_obj=None, s=None, e=None, data_show=None, data_episode=None, update="add"):
+    @staticmethod
+    def update_watchlist(show_obj=None, s=None, e=None, data_show=None, data_episode=None, update="add"):
 
         """
         Sends a request to trakt indicating that the given episode is part of our library.
@@ -114,21 +114,15 @@ class Notifier(object):
             try:
                 # URL parameters
                 if show_obj is not None:
-                    trakt_id = sickbeard.indexerApi(show_obj.indexer).config['trakt_id']
                     data = {
                         'shows': [
                             {
                                 'title': show_obj.name,
                                 'year': show_obj.startyear,
-                                'ids': {},
+                                'ids': {show_obj.idxr.slug: show_obj.indexerid},
                             }
                         ]
                     }
-
-                    if trakt_id == 'tvdb_id':
-                        data['shows'][0]['ids']['tvdb'] = show_obj.indexerid
-                    else:
-                        data['shows'][0]['ids']['tvrage'] = show_obj.indexerid
                 elif data_show is not None:
                     data.update(data_show)
                 else:
@@ -174,23 +168,21 @@ class Notifier(object):
 
         return True
 
-    def trakt_show_data_generate(self, data):
+    @staticmethod
+    def trakt_show_data_generate(data):
 
         showList = []
+        # TODO: is indexer and indexerid swapped here or in traktChecker:591? !Important
         for indexer, indexerid, title, year in data:
-            trakt_id = sickbeard.indexerApi(indexer).config['trakt_id']
-            show = {'title': title, 'year': year, 'ids': {}}
-            if trakt_id == 'tvdb_id':
-                show['ids']['tvdb'] = indexerid
-            else:
-                show['ids']['tvrage'] = indexerid
+            show = {'title': title, 'year': year, 'ids': {sickchill.indexer.slug(indexer): indexerid}}
             showList.append(show)
 
         post_data = {'shows': showList}
 
         return post_data
 
-    def trakt_episode_data_generate(self, data):
+    @staticmethod
+    def trakt_episode_data_generate(data):
 
         # Find how many unique season we have
         uniqueSeasons = []
@@ -211,7 +203,8 @@ class Notifier(object):
 
         return post_data
 
-    def test_notify(self, username, blacklist_name=None):
+    @staticmethod
+    def test_notify(username, blacklist_name=None):
         """
         Sends a test notification to trakt with the given authentication info and returns a boolean
         representing success.

@@ -1,38 +1,42 @@
 # coding=utf-8
 
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import re
 import time
 from base64 import b16encode, b32decode
 from hashlib import sha1
 
+# Third Party Imports
 import bencode
-import sickbeard
 import six
 from requests.compat import urlencode
 from requests.models import HTTPError
+
+# First Party Imports
+import sickbeard
 from sickbeard import helpers, logger
 
 
-class GenericClient(object):  # pylint: disable=too-many-instance-attributes
+class GenericClient(object):
     def __init__(self, name, host=None, username=None, password=None):
         """
         Initializes the client
@@ -43,9 +47,9 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
         """
 
         self.name = name
-        self.username = sickbeard.TORRENT_USERNAME if not username else username
-        self.password = sickbeard.TORRENT_PASSWORD if not password else password
-        self.host = sickbeard.TORRENT_HOST if not host else host
+        self.username = username or sickbeard.TORRENT_USERNAME
+        self.password = password or sickbeard.TORRENT_PASSWORD
+        self.host = host or sickbeard.TORRENT_HOST
 
         self.url = None
         self.response = None
@@ -54,7 +58,7 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
         self.session = helpers.make_session()
         self.session.auth = (self.username, self.password)
 
-    def _request(self, method='get', params=None, data=None, files=None, cookies=None):  # pylint: disable=too-many-arguments, too-many-return-statements
+    def _request(self, method='get', params=None, data=None, files=None, cookies=None):
         """
         Makes the actual request for the client, for everything except auth
         """
@@ -212,16 +216,18 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
                 raise Exception('Torrent without content')
 
             try:
-                torrent_bdecode = bencode.bdecode(result.content)
+                torrent_bdecode = helpers.bdecode(result.content, True)
             except (bencode.BTL.BTFailure, Exception) as error:
                 logger.log('Unable to bdecode torrent', logger.ERROR)
-                logger.log('Error is: {0}'.format(error), logger.DEBUG)
-                # logger.log('Torrent bencoded data: {0!r}'.format(result.content), logger.DEBUG)
+                logger.log('Error is: {0}'.format(error), logger.INFO)
+                logger.log('Torrent bencoded data: {0!r}'.format(result.content), logger.INFO)
                 raise
+
             try:
                 info = torrent_bdecode[b'info']
             except Exception:
                 logger.log('Unable to find info field in torrent', logger.ERROR)
+                logger.log('Torrent bencoded data: {0!r}'.format(result.content), logger.INFO)
                 raise
 
             try:
@@ -229,8 +235,8 @@ class GenericClient(object):  # pylint: disable=too-many-instance-attributes
                 logger.log('Result Hash is {0}'.format(result.hash), logger.DEBUG)
             except (bencode.BTL.BTFailure, Exception) as error:
                 logger.log('Unable to bencode torrent info', logger.ERROR)
-                logger.log('Error is: {0}'.format(error), logger.DEBUG)
-                # logger.log('Torrent bencoded data: {0!r}'.format(result.content), logger.DEBUG)
+                logger.log('Error is: {0}'.format(error), logger.INFO)
+                logger.log('Torrent bencoded data: {0!r}'.format(result.content), logger.INFO)
                 raise
 
         return result

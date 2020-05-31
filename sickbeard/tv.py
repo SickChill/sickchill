@@ -1,50 +1,60 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
-# pylint: disable=too-many-lines
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import os.path
 import re
 import shutil
 import stat
 import threading
+import time
 import traceback
+from sqlite3 import OperationalError
 
-import sickbeard
-import six
-from imdb import imdb
-from sickbeard import db, helpers, image_cache, logger, network_timezones, notifiers, postProcessor, subtitles
-from sickbeard.blackandwhitelist import BlackAndWhiteList
-from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
-                              NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN, WANTED)
-from sickbeard.indexers.indexer_config import INDEXER_TVRAGE
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickrage.helper import glob
-from sickrage.helper.common import dateTimeFormat, episode_num, remove_extension, replace_extension, sanitize_filename, try_int
-from sickrage.helper.encoding import ek
-from sickrage.helper.exceptions import (EpisodeDeletedException, EpisodeNotFoundException, ex, MultipleEpisodesInDatabaseException,
-                                        MultipleShowObjectsException, MultipleShowsInDatabaseException, NoNFOException, ShowDirectoryNotFoundException,
-                                        ShowNotFoundException)
-from sickrage.show.Show import Show
+# Third Party Imports
+import babelfish
+# import guessit
+from imdbpie import Imdb, ImdbFacade
+from imdbpie.exceptions import ImdbAPIError
 from unidecode import unidecode
+from urllib3.exceptions import MaxRetryError, NewConnectionError
+
+# First Party Imports
+import sickbeard
+import sickchill
+from sickchill.helper import glob
+from sickchill.helper.common import dateTimeFormat, episode_num, remove_extension, replace_extension, sanitize_filename, try_int
+from sickchill.helper.encoding import ek
+from sickchill.helper.exceptions import (EpisodeDeletedException, EpisodeNotFoundException, ex, MultipleEpisodesInDatabaseException,
+                                         MultipleShowObjectsException, MultipleShowsInDatabaseException, NoNFOException, ShowDirectoryNotFoundException,
+                                         ShowNotFoundException)
+from sickchill.show.Show import Show
+
+# Local Folder Imports
+from . import db, helpers, logger, network_timezones, notifiers, postProcessor, subtitles
+from .blackandwhitelist import BlackAndWhiteList
+from .common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
+                     NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN, WANTED)
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 try:
     import xml.etree.cElementTree as etree
@@ -54,7 +64,11 @@ except ImportError:
 try:
     from send2trash import send2trash
 except ImportError:
-    pass
+    def send2trash(path):
+        if ek(os.path.isfile, path):
+            ek(os.remove, path)
+        elif ek(os.path.isdir, path):
+            ek(shutil.rmtree, path)
 
 
 def dirty_setter(attr_name):
@@ -66,14 +80,14 @@ def dirty_setter(attr_name):
     return wrapper
 
 
-class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-public-methods
+class TVShow(object):
     def __init__(self, indexer, indexerid, lang=""):
         self._indexerid = int(indexerid)
         self._indexer = int(indexer)
         self._name = ""
         self._imdbid = ""
         self._network = ""
-        self._genre = ""
+        self._genre = []
         self._classification = ""
         self._runtime = 0
         self._imdb_info = {}
@@ -94,6 +108,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         self._scene = 0
         self._rls_ignore_words = ""
         self._rls_require_words = ""
+        self._rls_prefer_words = ""
         self._default_ep_status = SKIPPED
         self.dirty = True
 
@@ -118,7 +133,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
     genre = property(lambda self: self._genre, dirty_setter("_genre"))
     classification = property(lambda self: self._classification, dirty_setter("_classification"))
     runtime = property(lambda self: self._runtime, dirty_setter("_runtime"))
-    imdb_info = property(lambda self: self._imdb_info, dirty_setter("_imdb_info"))
+    # imdb_info = property(lambda self: self._imdb_info, dirty_setter("_imdb_info"))
     quality = property(lambda self: self._quality, dirty_setter("_quality"))
     season_folders = property(lambda self: self._season_folders, dirty_setter("_season_folders"))
     status = property(lambda self: self._status, dirty_setter("_status"))
@@ -135,6 +150,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
     scene = property(lambda self: self._scene, dirty_setter("_scene"))
     rls_ignore_words = property(lambda self: self._rls_ignore_words, dirty_setter("_rls_ignore_words"))
     rls_require_words = property(lambda self: self._rls_require_words, dirty_setter("_rls_require_words"))
+    rls_prefer_words = property(lambda self: self._rls_prefer_words, dirty_setter("_rls_prefer_words"))
     default_ep_status = property(lambda self: self._default_ep_status, dirty_setter("_default_ep_status"))
     subtitles_sr_metadata = property(lambda self: self._subtitles_sr_metadata, dirty_setter("_subtitles_sr_metadata"))
 
@@ -158,6 +174,21 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
     def sort_name(self):
         return helpers.sortable_name(self.name)
 
+    @property
+    def idxr(self):
+        return sickchill.indexer[self.indexer]
+
+    @property
+    def indexer_name(self):
+        return self.idxr.name
+
+    @property
+    def network_image_url(self):
+        return 'images/network/{0}.png'.format(unidecode(self.network or 'nonetwork').lower())
+
+    def show_image_url(self, which):
+        return sickbeard.IMAGE_CACHE.image_url(self.indexerid, which)
+
     def _getLocation(self):
         # no dir check needed if missing show dirs are created during post-processing
         if sickbeard.CREATE_MISSING_SHOW_DIRS or ek(os.path.isdir, self._location):
@@ -174,6 +205,14 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             raise NoNFOException("Invalid folder for the show!")
 
     location = property(_getLocation, _setLocation)
+
+    def _get_imdb_info(self):
+        return self._imdb_info
+
+    def _set_imdb_info(self, imdb_info):
+        dirty_setter("_imdb_info")(self, imdb_info)
+
+    imdb_info = property(_get_imdb_info, _set_imdb_info)
 
     # delete references to anything that's not in the internal lists
     def flushEpisodes(self):
@@ -227,10 +266,13 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         return ep_list
 
-    def getEpisode(self, season=None, episode=None, ep_file=None, noCreate=False, absolute_number=None):  # pylint: disable=too-many-arguments
+    def getEpisode(self, season=None, episode=None, ep_file=None, noCreate=False, absolute_number=None):
         season = try_int(season, None)
         episode = try_int(episode, None)
         absolute_number = try_int(absolute_number, None)
+
+        if season in self.episodes and episode in self.episodes[season] and self.episodes[season][episode]:
+            return self.episodes[season][episode]
 
         # if we get an anime get the real season and episode
         if self.is_anime and absolute_number and not season and not episode:
@@ -258,7 +300,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         if season not in self.episodes:
             self.episodes[season] = {}
 
-        if episode not in self.episodes[season] or self.episodes[season][episode] is None:
+        if not self.episodes[season].get(episode):
             if noCreate:
                 return None
 
@@ -270,7 +312,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             else:
                 ep = TVEpisode(self, season, episode)
 
-            if ep is not None:
+            if ep:
                 self.episodes[season][episode] = ep
 
         return self.episodes[season][episode]
@@ -285,7 +327,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         graceperiod = datetime.timedelta(days=30)
 
-        last_airdate = datetime.date.fromordinal(1)
+        last_airdate = datetime.date.min
 
         # get latest aired episode to compare against today - graceperiod and today + graceperiod
         main_db_con = db.DBConnection()
@@ -370,10 +412,6 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             logger.log(str(self.indexerid) + ": Show dir doesn't exist, skipping NFO generation")
             return
 
-        self.updateShowNFO()
-
-    def updateShowNFO(self):
-
         result = False
 
         if not ek(os.path.isdir, self._location):
@@ -445,9 +483,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             main_db_con = db.DBConnection()
             main_db_con.mass_action(sql_l)
 
-    def loadEpisodesFromDB(self):  # pylint: disable=too-many-locals
+    def loadEpisodesFromDB(self):
 
-        logger.log("Loading all episodes from the DB", logger.DEBUG)
+        logger.log("Loading all episodes from the database", logger.DEBUG)
         scannedEps = {}
 
         try:
@@ -458,21 +496,6 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             logger.log("Could not load episodes from the DB. Error: {0}".format(error), logger.ERROR)
             return scannedEps
 
-        lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
-
-        lINDEXER_API_PARMS['language'] = self.lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-        logger.log("Using language: " + str(self.lang), logger.DEBUG)
-
-        if self.dvdorder:
-            lINDEXER_API_PARMS['dvdorder'] = True
-
-        # logger.log("lINDEXER_API_PARMS: " + str(lINDEXER_API_PARMS), logger.DEBUG)
-        # Spamming log
-        t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
-
-        cachedShow = t[self.indexerid]
-        cachedSeasons = {}
-
         curShowid = None
         curShowName = None
 
@@ -482,17 +505,6 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             curEpisode = int(curResult[b"episode"])
             curShowid = int(curResult[b'showid'])
             curShowName = str(curResult[b'show_name'])
-
-            logger.log("{0}: Loading {1} episodes from DB".format(curShowid, curShowName), logger.DEBUG)
-            deleteEp = False
-
-            if curSeason not in cachedSeasons:
-                try:
-                    cachedSeasons[curSeason] = cachedShow[curSeason]
-                except sickbeard.indexer_seasonnotfound as error:
-                    logger.log("{0}: {1} (unaired/deleted) in the indexer {2} for {3}. Removing existing records from database".format
-                               (curShowid, error.message, sickbeard.indexerApi(self.indexer).name, curShowName), logger.DEBUG)
-                    deleteEp = True
 
             if curSeason not in scannedEps:
                 logger.log("{id}: Not curSeason in scannedEps".format(id=curShowid), logger.DEBUG)
@@ -507,12 +519,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                 if not curEp:
                     raise EpisodeNotFoundException
 
-                # if we found out that the ep is no longer on TVDB then delete it from our database too
-                if deleteEp:
-                    curEp.deleteEpisode()
-
                 curEp.loadFromDB(curSeason, curEpisode)
-                curEp.loadFromIndexer(tvapi=t, cachedSeason=cachedSeasons[curSeason])
                 scannedEps[curSeason][curEpisode] = True
             except EpisodeDeletedException:
                 logger.log("{id}: Tried loading {show} {ep} from the DB that should have been deleted, skipping it".format
@@ -526,63 +533,35 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         return scannedEps
 
-    def loadEpisodesFromIndexer(self, cache=True):
-
-        lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
-
-        if not cache:
-            lINDEXER_API_PARMS['cache'] = False
-
-        lINDEXER_API_PARMS['language'] = self.lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-        if self.dvdorder:
-            lINDEXER_API_PARMS['dvdorder'] = True
-
-        try:
-            t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
-            showObj = t[self.indexerid]
-        except sickbeard.indexer_error:
-            logger.log("" + sickbeard.indexerApi(self.indexer).name +
-                       " timed out, unable to update episodes from " +
-                       sickbeard.indexerApi(self.indexer).name, logger.WARNING)
-            return None
-
-        logger.log(
-            str(self.indexerid) + ": Loading all episodes from " + sickbeard.indexerApi(self.indexer).name + "..", logger.DEBUG)
+    def loadEpisodesFromIndexer(self):
+        logger.log(_("{show_id}: Loading all episodes from {indexer_name}...").format(show_id=self.indexerid, indexer_name=self.indexer_name), logger.DEBUG)
 
         scannedEps = {}
 
         sql_l = []
-        for season in showObj:
-            scannedEps[season] = {}
-            for episode in showObj[season]:
-                # need some examples of wtf episode 0 means to decide if we want it or not
-                if episode == 0:
-                    continue
+        for series_episode in self.idxr.episodes(self):
+            if series_episode['airedSeason'] not in scannedEps:
+                scannedEps[series_episode['airedSeason']] = {}
+
+            season_episode = series_episode['airedSeason'], series_episode['airedEpisodeNumber']
+            try:
+                show_episode = self.getEpisode(*season_episode)
+                if not show_episode:
+                    raise EpisodeNotFoundException
+            except EpisodeNotFoundException:
+                logger.log("{id}: {indexer} object for {ep} is incomplete, skipping this episode".format
+                           (id=self.indexerid, indexer=self.indexer_name, ep=episode_num(*season_episode)))
+                continue
+            else:
                 try:
-                    ep = self.getEpisode(season, episode)
-                    if not ep:
-                        raise EpisodeNotFoundException
-                except EpisodeNotFoundException:
-                    logger.log("{id}: {indexer} object for {ep} is incomplete, skipping this episode".format
-                               (id=self.indexerid, indexer=sickbeard.indexerApi(self.indexer).name, ep=episode_num(season, episode)))
+                    with show_episode.lock:
+                        show_episode.loadFromIndexer(*season_episode)
+                        sql_l.append(show_episode.get_sql())
+                except EpisodeDeletedException:
+                    logger.log("The episode was deleted, skipping the rest of the load")
                     continue
-                else:
-                    try:
-                        ep.loadFromIndexer(tvapi=t)
-                    except EpisodeDeletedException:
-                        logger.log("The episode was deleted, skipping the rest of the load")
-                        continue
 
-                with ep.lock:
-                    # logger.log("{id}: Loading info from {indexer} for episode {ep}".format
-                    #            (id=self.indexerid, indexer=sickbeard.indexerApi(self.indexer).name,
-                    #             ep=episode_num(season, episode)), logger.DEBUG)
-                    ep.loadFromIndexer(season, episode, tvapi=t)
-
-                    sql_l.append(ep.get_sql())
-
-                scannedEps[season][episode] = True
+            scannedEps[series_episode['airedSeason']][series_episode['airedEpisodeNumber']] = True
 
         if sql_l:
             main_db_con = db.DBConnection()
@@ -615,7 +594,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         return fanart_result or poster_result or banner_result or season_posters_result or season_banners_result or season_all_poster_result or season_all_banner_result
 
     # make a TVEpisode object from a media file
-    def makeEpFromFile(self, filepath):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def makeEpFromFile(self, filepath):
 
         if not ek(os.path.isfile, filepath):
             logger.log("{0}: That isn't even a real file dude... {1}".format
@@ -740,7 +719,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         return rootEp
 
-    def loadFromDB(self):  # pylint: disable=too-many-branches, too-many-statements
+    def loadFromDB(self):
 
         # logger.log(str(self.indexerid) + ": Loading show info from database", logger.DEBUG)
 
@@ -750,7 +729,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         if len(sql_results) > 1:
             raise MultipleShowsInDatabaseException()
         elif not sql_results:
-            logger.log(str(self.indexerid) + ": Unable to find the show in the database")
+            # logger.log(str(self.indexerid) + ": Unable to find the show in the database")
             return
         else:
             self.indexer = int(sql_results[0][b"indexer"] or 0)
@@ -761,6 +740,11 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                 self.network = sql_results[0][b"network"]
             if not self.genre:
                 self.genre = sql_results[0][b"genre"]
+
+            if not isinstance(self.genre, list):
+                if self.genre:
+                    self.genre = [x.strip() for x in self.genre.split('|') if x.strip()]
+
             if not self.classification:
                 self.classification = sql_results[0][b"classification"]
 
@@ -797,6 +781,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
             self.rls_ignore_words = sql_results[0][b"rls_ignore_words"]
             self.rls_require_words = sql_results[0][b"rls_require_words"]
+            self.rls_prefer_words = sql_results[0][b"rls_prefer_words"]
 
             self.default_ep_status = int(sql_results[0][b"default_ep_status"] or SKIPPED)
 
@@ -813,146 +798,114 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         sql_results = main_db_con.select("SELECT * FROM imdb_info WHERE indexer_id = ?", [self.indexerid])
 
         if not sql_results:
-            logger.log(str(self.indexerid) + ": Unable to find IMDb show info in the database")
-            return
-        else:
-            self.imdb_info = dict(zip(sql_results[0].keys(), sql_results[0]))
+            self.loadIMDbInfo()
+            sql_results = main_db_con.select("SELECT * FROM imdb_info WHERE indexer_id = ?", [self.indexerid])
+            if not sql_results:
+                logger.log(str(self.indexerid) + ": Unable to find IMDb show info in the database")
+                return
 
+        self._imdb_info = dict(zip(sql_results[0].keys(), sql_results[0]))
         self.dirty = False
         return True
 
-    def loadFromIndexer(self, cache=True, tvapi=None):
+    def loadFromIndexer(self):
+        logger.log(str(self.indexerid) + ": Loading show info from " + self.indexer_name, logger.DEBUG)
 
-        if self.indexer == INDEXER_TVRAGE:
-            return
+        myShow = sickchill.indexer.series(self)
+        if not myShow or not getattr(myShow, 'seriesName'):
+            raise AttributeError("Found {0}, but attribute 'seriesName' was empty.".format(self.indexerid))
 
-        logger.log(str(self.indexerid) + ": Loading show info from " + sickbeard.indexerApi(self.indexer).name, logger.DEBUG)
+        self.name = myShow.seriesName.strip()
+        self.classification = getattr(myShow, 'classification', 'Scripted')
+        self.genre = getattr(myShow, 'genre', [])
+        self.network = getattr(myShow, 'network', '')
+        self.runtime = getattr(myShow, 'runtime', '')
 
-        # There's gotta be a better way of doing this but we don't wanna
-        # change the cache value elsewhere
-        if tvapi:
-            t = tvapi
-        else:
-            lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
+        self.imdbid = getattr(myShow, 'imdbId', '')
 
-            if not cache:
-                lINDEXER_API_PARMS['cache'] = False
-
-            lINDEXER_API_PARMS['language'] = self.lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-            if self.dvdorder:
-                lINDEXER_API_PARMS['dvdorder'] = True
-
-            t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
-
-        myEp = t[self.indexerid]
-
-        try:
-            self.name = myEp[b'seriesname'].strip()
-        except AttributeError:
-            raise sickbeard.indexer_attributenotfound(
-                "Found {0}, but attribute 'seriesname' was empty.".format(self.indexerid))
-
-        self.classification = getattr(myEp, 'classification', 'Scripted')
-        self.genre = getattr(myEp, 'genre', '')
-        self.network = getattr(myEp, 'network', '')
-        self.runtime = getattr(myEp, 'runtime', '')
-
-        self.imdbid = getattr(myEp, 'imdb_id', '')
-
-        if getattr(myEp, 'airs_dayofweek', None) is not None and getattr(myEp, 'airs_time', None) is not None:
-            self.airs = myEp[b"airs_dayofweek"] + " " + myEp[b"airs_time"]
+        if hasattr(myShow, 'airsDayOfWeek') and hasattr(myShow, 'airsTime'):
+            if myShow.airsTime and myShow.airsDayOfWeek:
+                self.airs = myShow.airsDayOfWeek + " " + myShow.airsTime
+                self.airs = self.airs.strip()
+            else:
+                self.airs = self.airs.strip() or ''
 
         if self.airs is None:
             self.airs = ''
 
-        if getattr(myEp, 'firstaired', None) is not None:
-            self.startyear = int(str(myEp[b"firstaired"]).split('-')[0])
+        if hasattr(myShow, 'firstAired') and myShow.firstAired:
+            self.startyear = int(myShow.firstAired.split('-')[0])
 
-        self.status = getattr(myEp, 'status', 'Unknown')
+        self.status = getattr(myShow, 'status', 'Unknown')
 
-    def loadIMDbInfo(self):  # pylint: disable=too-many-branches
+    def check_imdbid(self):
+        if not self.imdbid.startswith('tt'):
+            self.imdbid = 'tt' + self.imdbid
 
-        imdb_info = {
-            'imdb_id': self.imdbid,
-            'title': '',
-            'year': '',
-            'akas': [],
-            'runtimes': '',
-            'genres': [],
-            'countries': '',
-            'country_codes': [],
-            'certificates': [],
-            'rating': '',
-            'votes': '',
-            'last_update': ''
-        }
+        try:
+            int(re.sub(r"[^0-9]", "", self.imdbid).lstrip('t'))
+        except (ValueError, TypeError):
+            self.imdbid = ""
 
-        if sickbeard.PROXY_SETTING and sickbeard.PROXY_INDEXERS:
-            i = imdb.IMDb(proxy=sickbeard.PROXY_SETTING)
-        else:
-            i = imdb.IMDb()
+    def loadIMDbInfo(self):
+        try:
+            # client = Imdb(session=helpers.make_indexer_session(), locale=sickbeard.GUI_LANG, exclude_episodes=True)
+            client = Imdb(session=helpers.make_indexer_session(), locale=sickbeard.GUI_LANG)
+            client._cachedir = sickbeard.CACHE_DIR
+            i = ImdbFacade(client=client)
 
-        if not self.imdbid:
-            self.imdbid = i.title2imdbID(self.name, kind='tv series')
+            # Check that the imdbid we have is valid for searching
+            self.check_imdbid()
 
-        if not self.imdbid:
-            logger.log(str(self.indexerid) + ": Not loading show info from IMDb, because we don't know the imdbid", logger.DEBUG)
-            return
+            if self.name and not self.imdbid:
+                for attempt in (self.name, '{} ({})'.format(self.name, self.startyear), '"{}" ({})'.format(self.name, self.startyear)):
+                    results = filter(lambda x: x.type == 'TV series' and x.title == attempt, i.search_for_title(attempt))
+                    if self.startyear:
+                        results = filter(lambda x: x.year == self.startyear, results)
+                    if len(results) == 1:
+                        self.imdbid = results[0].imdb_id
 
-        logger.log(str(self.indexerid) + ": Loading show info from IMDb", logger.DEBUG)
+                    if self.imdbid:
+                        break
 
-        imdbTv = i.get_movie(str(re.sub(r"[^0-9]", "", self.imdbid)))
+            # Make sure the lib didn't give us back something bogus
+            self.check_imdbid()
 
-        for key in [x for x in imdb_info.keys() if x.replace('_', ' ') in imdbTv.keys()]:
-            # Store only the first value for string type
-            if isinstance(imdb_info[key], six.string_types) and isinstance(imdbTv.get(key.replace('_', ' ')), list):
-                imdb_info[key] = imdbTv.get(key.replace('_', ' '))[0]
-            else:
-                imdb_info[key] = imdbTv.get(key.replace('_', ' '))
+            if not self.imdbid:
+                logger.log(str(self.indexerid) + ": Not loading show info from IMDb, because we don't know the imdbid", logger.DEBUG)
+                return
 
-        # Filter only the value
-        if imdb_info[b'runtimes']:
-            imdb_info[b'runtimes'] = re.search(r'\d+', imdb_info[b'runtimes']).group(0)
-        else:
-            imdb_info[b'runtimes'] = self.runtime
+            logger.log(str(self.indexerid) + ": Loading show info from IMDb", logger.DEBUG)
 
-        if imdb_info[b'akas']:
-            imdb_info[b'akas'] = '|'.join(imdb_info[b'akas'])
-        else:
-            imdb_info[b'akas'] = ''
+            imdb_title = i.get_title(self.imdbid)
 
-        # Join all genres in a string
-        if imdb_info[b'genres']:
-            imdb_info[b'genres'] = '|'.join(imdb_info[b'genres'])
-        else:
-            imdb_info[b'genres'] = ''
+            title_versions = client.get_title_versions(self.imdbid)
 
-        # Get only the production country certificate if any
-        if imdb_info[b'certificates'] and imdb_info[b'countries']:
-            dct = {}
-            try:
-                for item in imdb_info[b'certificates']:
-                    dct[item.split(':')[0]] = item.split(':')[1]
+            # indexer_id, imdb_id, title, year, akas, runtimes, genres, countries, country_codes, certificates, rating, votes, last_update
 
-                imdb_info[b'certificates'] = dct[imdb_info[b'countries']]
-            except Exception:
-                imdb_info[b'certificates'] = ''
+            self.imdb_info = {
+                'indexer_id': self.indexerid,
+                'imdb_id': imdb_title.imdb_id or self.imdbid,
+                'title': imdb_title.title or self.name,
+                'year': imdb_title.year or self.startyear,
+                'akas': '|'.join(
+                    set('{} ({})'.format(alternate['title'], babelfish.COUNTRIES.get(alternate['region'], _('World Wide')).title())
+                        for alternate in title_versions['alternateTitles']
+                        if 'region' in alternate and 'title' in alternate and alternate['title'] != imdb_title.title)
+                ),
+                'runtimes': imdb_title.runtime or self.runtime,
+                'genres': '|'.join(imdb_title.genres or []),
+                'countries': '|'.join(babelfish.COUNTRIES[x].title() for x in title_versions.get('origins', [])),
+                'country_codes': '|'.join(title_versions.get('origins', [])).lower(),
+                'certificates': imdb_title.certification or '',
+                'rating': str(imdb_title.rating or 0.0),
+                'votes': imdb_title.rating_count or 0,
+                'last_update': datetime.date.today().toordinal()
+            }
 
-        else:
-            imdb_info[b'certificates'] = ''
-
-        if imdb_info[b'country_codes']:
-            imdb_info[b'country_codes'] = '|'.join(imdb_info[b'country_codes'])
-        else:
-            imdb_info[b'country_codes'] = ''
-
-        imdb_info[b'last_update'] = datetime.date.today().toordinal()
-
-        # Rename dict keys without spaces for DB upsert
-        self.imdb_info = dict(
-            (k.replace(' ', '_'), k(v) if hasattr(v, 'keys') else v) for k, v in six.iteritems(imdb_info))
-        logger.log(str(self.indexerid) + ": Obtained info from IMDb ->" + str(self.imdb_info), logger.DEBUG)
+            logger.log(str(self.indexerid) + ": Obtained info from IMDb ->" + str(self.imdb_info), logger.DEBUG)
+        except (ValueError, LookupError, OperationalError, ImdbAPIError, NewConnectionError, MaxRetryError) as e:
+            logger.log('Could not get IMDB info: {}'. format(e))
 
     def nextEpisode(self):
         curDate = datetime.date.today().toordinal()
@@ -967,6 +920,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         return self.nextaired
 
     def deleteShow(self, full=False):
+        main_db_con = db.DBConnection()
+
+        episodes_locations = main_db_con.select("SELECT location FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
 
         sql_l = [["DELETE FROM tv_episodes WHERE showid = ?", [self.indexerid]],
                  ["DELETE FROM tv_shows WHERE indexer_id = ?", [self.indexerid]],
@@ -974,7 +930,6 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                  ["DELETE FROM xem_refresh WHERE indexer_id = ?", [self.indexerid]],
                  ["DELETE FROM scene_numbering WHERE indexer_id = ?", [self.indexerid]]]
 
-        main_db_con = db.DBConnection()
         main_db_con.mass_action(sql_l)
 
         action = ('delete', 'trash')[sickbeard.TRASH_REMOVE_SHOW]
@@ -1009,13 +964,31 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                     except Exception as error:
                         logger.log('Unable to change permissions of {0}: {1}'.format(self._location, error), logger.WARNING)
 
-                if sickbeard.TRASH_REMOVE_SHOW:
-                    send2trash(self.location)
-                else:
-                    ek(shutil.rmtree, self.location)
+                shows_in_folder = main_db_con.select("SELECT location from tv_shows WHERE location LIKE ? AND indexer_id != ?",
+                                                     ["{}%".format(self.location), self.indexerid])
 
-                logger.log('{0} show folder {1}'.format
-                           (('Deleted', 'Trashed')[sickbeard.TRASH_REMOVE_SHOW], self._location))
+                num_shows_in_folder = len(shows_in_folder)
+                if num_shows_in_folder:
+                    logger.log('Cannot delete the show folder from disk, because this location is the root dir for {num} other shows!'.format(num=num_shows_in_folder))
+                    logger.log('Deleting individual episodes. There may be some related files or folders left behind afterwards.')
+                    for ep_file in episodes_locations:
+                        for show_file in ek(glob.glob, helpers.replace_extension(glob.escape(ep_file[b'location']), '*')):
+                            logger.log('Attempt to {0} related file {1}'.format(action, show_file))
+                            try:
+                                if sickbeard.TRASH_REMOVE_SHOW:
+                                    send2trash(show_file)
+                                else:
+                                    ek(os.remove, show_file)
+                            except OSError as error:
+                                logger.log('Unable to {0} {1}: {2}'.format(action, show_file, error), logger.WARNING)
+                else:
+                    if sickbeard.TRASH_REMOVE_SHOW:
+                        send2trash(self.location)
+                    else:
+                        ek(shutil.rmtree, self.location)
+
+                    logger.log('{0} show folder {1}'.format
+                               (('Deleted', 'Trashed')[sickbeard.TRASH_REMOVE_SHOW], self._location))
 
             except ShowDirectoryNotFoundException:
                 logger.log("Show folder does not exist, no need to {0} {1}".format(action, self._location), logger.WARNING)
@@ -1027,15 +1000,15 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             notifiers.trakt_notifier.update_watchlist(self, update="remove")
 
     def populateCache(self):
-        cache_inst = image_cache.ImageCache()
-
         logger.log("Checking & filling cache for show " + self.name, logger.DEBUG)
-        cache_inst.fill_cache(self)
+        sickbeard.IMAGE_CACHE.fill_cache(self)
 
     def refreshDir(self):
 
         # make sure the show dir is where we think it is unless dirs are created on the fly
         if not ek(os.path.isdir, self._location) and not sickbeard.CREATE_MISSING_SHOW_DIRS:
+            logger.log('Show dir does not exist, and `create missing show dirs` is disabled. Skipping refresh (statuses will not be updated): {}'.format(
+                self._location))
             return False
 
         # load from dir
@@ -1064,13 +1037,13 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
             # if the path doesn't exist or if it's not in our show dir
             if not ek(os.path.isfile, curLoc) or not ek(os.path.normpath, curLoc).startswith(
-                    ek(os.path.normpath, self.location)):
+                    ek(os.path.normpath, self._location)):
 
                 # check if downloaded files still exist, update our data if this has changed
                 if not sickbeard.SKIP_REMOVED_FILES:
                     with curEp.lock:
                         # if it used to have a file associated with it and it doesn't anymore then set it to sickbeard.EP_DEFAULT_DELETED_STATUS
-                        if curEp.location and curEp.status in Quality.DOWNLOADED:
+                        if curEp.status in Quality.DOWNLOADED:
 
                             if sickbeard.EP_DEFAULT_DELETED_STATUS == ARCHIVED:
                                 oldStatus_, oldQuality = Quality.splitCompositeStatus(curEp.status)
@@ -1091,6 +1064,8 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                         curEp.release_group = ''
 
                         sql_l.append(curEp.get_sql())
+                else:
+                    logger.log('Skipping updating removed file because `skip removed files` is enabled: {}'.format(curLoc))
 
         if sql_l:
             main_db_con = db.DBConnection()
@@ -1129,7 +1104,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                         "show_name": self.name,
                         "location": self._location,
                         "network": self.network,
-                        "genre": self.genre,
+                        "genre": '|'.join(self.genre) if isinstance(self.genre, list) else self.genre,
                         "classification": self.classification,
                         "runtime": self.runtime,
                         "quality": self.quality,
@@ -1149,6 +1124,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                         "last_update_indexer": self.last_update_indexer,
                         "rls_ignore_words": self.rls_ignore_words,
                         "rls_require_words": self.rls_require_words,
+                        "rls_prefer_words": self.rls_prefer_words,
                         "default_ep_status": self.default_ep_status,
                         "sub_use_sr_metadata": self.subtitles_sr_metadata}
 
@@ -1157,12 +1133,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
 
         helpers.update_anime_support()
 
-        if self.imdbid:
-            controlValueDict = {"indexer_id": self.indexerid}
-            newValueDict = self.imdb_info
-
+        if self.imdbid and self.imdb_info:
             main_db_con = db.DBConnection()
-            main_db_con.upsert("imdb_info", newValueDict, controlValueDict)
+            main_db_con.upsert("imdb_info", self.imdb_info, controlValueDict)
 
     def __str__(self):
         toReturn = ""
@@ -1177,7 +1150,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         toReturn += "status: " + self.status + "\n"
         toReturn += "startyear: " + str(self.startyear) + "\n"
         if self.genre:
-            toReturn += "genre: " + self.genre + "\n"
+            toReturn += "genre: " + '|'.join(self.genre) + "\n"
         toReturn += "classification: " + self.classification + "\n"
         toReturn += "runtime: " + str(self.runtime) + "\n"
         toReturn += "quality: " + str(self.quality) + "\n"
@@ -1190,7 +1163,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
     def qualitiesToString(qualities=None):
         return ', '.join([Quality.qualityStrings[quality] for quality in qualities or [] if quality and quality in Quality.qualityStrings]) or 'None'
 
-    def wantEpisode(self, season, episode, quality, manualSearch=False, downCurQuality=False):  # pylint: disable=too-many-return-statements, too-many-arguments
+    def wantEpisode(self, season, episode, quality, manualSearch=False, downCurQuality=False):
 
         # if the quality isn't one we want under any circumstances then just say no
         allowed_qualities, preferred_qualities = Quality.splitQuality(self.quality)
@@ -1262,7 +1235,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
                        logger.DEBUG)
         return False
 
-    def getOverview(self, epStatus):  # pylint: disable=too-many-return-statements, too-many-branches
+    def getOverview(self, epStatus, backlog=False):
         """
         Get the Overview status from the Episode status
 
@@ -1292,9 +1265,9 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
             allowed_qualities, preferred_qualities = Quality.splitQuality(self.quality)
             ep_status, cur_quality = Quality.splitCompositeStatus(ep_status)
 
-            if cur_quality not in allowed_qualities + preferred_qualities:
+            if cur_quality not in allowed_qualities + preferred_qualities and not backlog:
                 return Overview.QUAL
-            elif preferred_qualities and cur_quality not in preferred_qualities:
+            elif preferred_qualities and cur_quality not in preferred_qualities and not backlog:
                 return Overview.QUAL
             else:
                 return Overview.GOOD
@@ -1311,7 +1284,7 @@ class TVShow(object):  # pylint: disable=too-many-instance-attributes, too-many-
         self.__dict__.update(d)
 
 
-class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-many-public-methods
+class TVEpisode(object):
     def __init__(self, show, season, episode, ep_file=""):
         self._name = ""
         self._season = season
@@ -1321,7 +1294,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         self._subtitles = list()
         self._subtitles_searchcount = 0
         self._subtitles_lastsearch = str(datetime.datetime.min)
-        self._airdate = datetime.date.fromordinal(1)
+        self._airdate = datetime.date.min
         self._hasnfo = False
         self._hastbn = False
         self._status = UNKNOWN
@@ -1389,6 +1362,14 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
     location = property(lambda self: self._location, _set_location)
 
+    @property
+    def idxr(self):
+        return self.show.idxr
+
+    @property
+    def indexer_name(self):
+        return self.show.indexer_name
+
     def refreshSubtitles(self):
         """Look for subtitles files and refresh the subtitles property"""
         self.subtitles, save_subtitles = subtitles.refresh_subtitles(self)
@@ -1423,7 +1404,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                        (id=self.show.indexerid, subtitles=subtitle_list, show=self.show.name,
                         ep=episode_num(self.season, self.episode)), logger.DEBUG)
 
-            notifiers.notify_subtitle_download(self.prettyName(), subtitle_list)
+            notifiers.notify_subtitle_download(self.pretty_name(), subtitle_list)
         else:
             logger.log("{id}: No subtitles downloaded for {show} {ep}".format
                        (id=self.show.indexerid, show=self.show.name,
@@ -1443,13 +1424,13 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         if ek(os.path.isfile, self.location):
             for cur_provider in sickbeard.metadata_provider_dict.values():
                 if cur_provider.episode_metadata:
-                    new_result = cur_provider._has_episode_metadata(self)  # pylint: disable=protected-access
+                    new_result = cur_provider._has_episode_metadata(self)
                 else:
                     new_result = False
                 cur_nfo = new_result or cur_nfo
 
                 if cur_provider.episode_thumbnails:
-                    new_result = cur_provider._has_episode_thumb(self)  # pylint: disable=protected-access
+                    new_result = cur_provider._has_episode_thumb(self)
                 else:
                     new_result = False
                 cur_tbn = new_result or cur_tbn
@@ -1484,7 +1465,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                     if not result:
                         raise EpisodeNotFoundException("Couldn't find episode {ep}".format(ep=episode_num(season, episode)))
 
-    def loadFromDB(self, season, episode):  # pylint: disable=too-many-branches
+    def loadFromDB(self, season, episode):
         # logger.log("{id}: Loading episode details for {name} {ep} from DB".format
         #            (id=self.show.indexerid, name=self.show.name,
         #             ep=episode_num(season, episode)), logger.DEBUG)
@@ -1506,13 +1487,13 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
             self.season = season
             self.episode = episode
-            self.absolute_number = sql_results[0][b"absolute_number"]
+            self.absolute_number = try_int(sql_results[0][b"absolute_number"], 0)
             self.description = sql_results[0][b"description"]
             if not self.description:
                 self.description = ""
             if sql_results[0][b"subtitles"] and sql_results[0][b"subtitles"]:
                 self.subtitles = sql_results[0][b"subtitles"].split(",")
-            self.subtitles_searchcount = sql_results[0][b"subtitles_searchcount"]
+            self.subtitles_searchcount = int(sql_results[0][b"subtitles_searchcount"])
             self.subtitles_lastsearch = sql_results[0][b"subtitles_lastsearch"]
             self.airdate = datetime.date.fromordinal(int(sql_results[0][b"airdate"]))
             # logger.log("1 Status changes from " + str(self.status) + " to " + str(sql_results[0][b"status"]), logger.DEBUG)
@@ -1565,75 +1546,39 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             self.dirty = False
             return True
 
-    def loadFromIndexer(self, season=None, episode=None, cache=True, tvapi=None, cachedSeason=None):  # pylint: disable=too-many-arguments, too-many-branches, too-many-statements
+    def loadFromIndexer(self, season=None, episode=None):
 
-        if season is None:
-            season = self.season
-        if episode is None:
-            episode = self.episode
-
-        # logger.log("{id}: Loading episode details for {show} {ep} from {indexer}".format
-        #            (id=self.show.indexerid, show=self.show.name, ep=episode_num(season, episode),
-        #             indexer=sickbeard.indexerApi(self.show.indexer).name), logger.DEBUG)
-
-        indexer_lang = self.show.lang
-
-        try:
-            if cachedSeason:
-                myEp = cachedSeason[episode]
-            else:
-                if tvapi:
-                    t = tvapi
-                else:
-                    lINDEXER_API_PARMS = sickbeard.indexerApi(self.indexer).api_params.copy()
-
-                    if not cache:
-                        lINDEXER_API_PARMS['cache'] = False
-
-                    lINDEXER_API_PARMS['language'] = indexer_lang or sickbeard.INDEXER_DEFAULT_LANGUAGE
-
-                    if self.show.dvdorder:
-                        lINDEXER_API_PARMS['dvdorder'] = True
-
-                    t = sickbeard.indexerApi(self.indexer).indexer(**lINDEXER_API_PARMS)
-                myEp = t[self.show.indexerid][season][episode]
-
-        except (sickbeard.indexer_error, IOError) as error:
-            logger.log("" + sickbeard.indexerApi(self.indexer).name + " threw up an error: " + ex(error), logger.DEBUG)
-            # if the episode is already valid just log it, if not throw it up
+        myEp = self.idxr.episode(self.show, season or self.season, episode or self.episode)
+        if not myEp:
             if self.name:
-                logger.log("" + sickbeard.indexerApi(self.indexer).name +
-                           " timed out but we have enough info from other sources, allowing the error", logger.DEBUG)
+                logger.log("{} timed out but we have enough info from other sources, allowing the error".format(self.indexer_name), logger.DEBUG)
                 return
             else:
-                logger.log("" + sickbeard.indexerApi(self.indexer).name + " timed out, unable to create the episode",
-                           logger.ERROR)
+                logger.log("{} timed out, unable to create the episode".format(self.indexer_name), logger.ERROR)
                 return False
-        except (sickbeard.indexer_episodenotfound, sickbeard.indexer_seasonnotfound):
-            logger.log("Unable to find the episode on " + sickbeard.indexerApi(
-                self.indexer).name + "... has it been removed? Should I delete from db?", logger.DEBUG)
-            # if I'm no longer on the Indexers but I once was then delete myself from the DB
-            if self.indexerid != -1:
-                self.deleteEpisode()
-            return
 
-        if getattr(myEp, 'episodename', None) is None:
-            logger.log("This episode {show} - {ep} has no name on {indexer}. Setting to an empty string".format
-                       (show=self.show.name, ep=episode_num(season, episode), indexer=sickbeard.indexerApi(self.indexer).name))
-            setattr(myEp, 'episodename', '')
+        if not myEp.get('episodeName'):
+            if self.name:
+                logger.log("This episode {show} - {ep} has no name on {indexer}. Keeping the name: {title}".format
+                           (show=self.show.name, ep=episode_num(season, episode), indexer=self.indexer_name, title=self.name))
+            else:
+                logger.log("This episode {show} - {ep} has no name on {indexer}. Setting to an empty string".format
+                           (show=self.show.name, ep=episode_num(season, episode), indexer=self.indexer_name))
+        else:
+            self.name = myEp.get('episodeName')
 
-        if getattr(myEp, 'absolute_number', None) is None:
+        if not myEp.get('absoluteNumber'):
             logger.log("{id}: This episode {show} - {ep} has no absolute number on {indexer}".format
                        (id=self.show.indexerid, show=self.show.name, ep=episode_num(season, episode),
-                        indexer=sickbeard.indexerApi(self.indexer).name), logger.DEBUG)
+                        indexer=self.indexer_name), logger.DEBUG)
         else:
             logger.log("{id}: The absolute number for {ep} is: {absolute} ".format
-                       (id=self.show.indexerid, ep=episode_num(season, episode), absolute=myEp[b"absolute_number"]), logger.DEBUG)
-            self.absolute_number = int(myEp[b"absolute_number"])
+                       (id=self.show.indexerid, ep=episode_num(season or self.season, episode or self.episode),
+                        absolute=myEp["absoluteNumber"]), logger.DEBUG)
+            self.absolute_number = try_int(myEp["absoluteNumber"], 0)
 
-        self.name = getattr(myEp, 'episodename', "")
-        self.season = season
-        self.episode = episode
+        self.season = (season, self.season)[season is None]
+        self.episode = (episode, self.episode)[season is None]
 
         sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
@@ -1649,36 +1594,44 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             self.season, self.episode
         )
 
-        self.description = getattr(myEp, 'overview', "")
+        if myEp.get('overview'):
+            self.description = myEp.get('overview')
 
-        firstaired = getattr(myEp, 'firstaired', None)
-        if not firstaired or firstaired == "0000-00-00":
-            firstaired = str(datetime.date.fromordinal(1))
-        rawAirdate = [int(x) for x in firstaired.split("-")]
+        first_aired = myEp.get('firstAired')
+        if not first_aired or first_aired == "0000-00-00":
+            if self.status in (WANTED, UNAIRED, UNKNOWN):
+                # Allow changing the airdate of wanted/unaired/unknown in cases of postponed episodes
+                first_aired = str(datetime.date.min)
+            else:
+                first_aired = str(self.airdate)
+
+        rawAirdate = [int(x) for x in first_aired.split("-")]
 
         try:
             self.airdate = datetime.date(rawAirdate[0], rawAirdate[1], rawAirdate[2])
-        except (ValueError, IndexError):
+        except (ValueError, IndexError, TypeError):
+            # Changed this to error because it should NEVER happen now
             logger.log("Malformed air date of {aired} retrieved from {indexer} for ({show} - {ep})".format
-                       (aired=firstaired, indexer=sickbeard.indexerApi(self.indexer).name, show=self.show.name,
-                        ep=episode_num(season, episode)), logger.WARNING)
+                       (aired=first_aired, indexer=self.indexer_name, show=self.show.name,
+                        ep=episode_num(season, episode)), logger.ERROR)
             # if I'm incomplete on the indexer but I once was complete then just delete myself from the DB for now
             if self.indexerid != -1:
                 self.deleteEpisode()
             return False
 
-        # early conversion to int so that episode doesn't get marked dirty
-        self.indexerid = getattr(myEp, 'id', None)
-        if self.indexerid is None:
+        if myEp.get('id'):
+            self.indexerid = myEp.get('id')
+
+        if not self.indexerid:
             logger.log("Failed to retrieve ID from {indexer}".format
-                       (indexer=sickbeard.indexerApi(self.indexer).name), logger.ERROR)
+                       (indexer=self.indexer_name), logger.ERROR)
             if self.indexerid != -1:
                 self.deleteEpisode()
             return False
 
         # don't update show status if show dir is missing, unless it's missing on purpose
-        if not ek(os.path.isdir, self.show._location) and not sickbeard.CREATE_MISSING_SHOW_DIRS and not sickbeard.ADD_SHOWS_WO_DIR:  # pylint: disable=protected-access
-            logger.log("The show dir {0} is missing, not bothering to change the episode statuses since it'd probably be invalid".format(self.show._location))  # pylint: disable=protected-access
+        if not ek(os.path.isdir, self.show._location) and not sickbeard.CREATE_MISSING_SHOW_DIRS and not sickbeard.ADD_SHOWS_WO_DIR:
+            logger.log("The show dir {0} is missing, not bothering to change the episode statuses since it'd probably be invalid".format(self.show._location))
             return
 
         if self.location:
@@ -1687,7 +1640,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                         status=statusStrings[self.status], location=self.location), logger.DEBUG)
 
         if not ek(os.path.isfile, self.location):
-            if self.airdate >= datetime.date.today() or self.airdate == datetime.date.fromordinal(1):
+            if self.airdate >= datetime.date.today() or self.airdate <= datetime.date.min:
                 logger.log("{0}: Episode airs in the future or has no airdate, marking it {1}".format(self.show.indexerid, statusStrings[UNAIRED]), logger.DEBUG)
                 self.status = UNAIRED
             elif self.status in [UNAIRED, UNKNOWN]:
@@ -1711,9 +1664,9 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             logger.log("6 Status changes from " + str(self.status) + " to " + str(UNKNOWN), logger.DEBUG)
             self.status = UNKNOWN
 
-    def loadFromNFO(self, location):  # pylint: disable=too-many-branches
+    def loadFromNFO(self, location):
 
-        if not ek(os.path.isdir, self.show._location):  # pylint: disable=protected-access
+        if not ek(os.path.isdir, self.show._location):
             logger.log(
                 str(self.show.indexerid) + ": The show dir is missing, not bothering to try loading the episode NFO")
             return
@@ -1783,8 +1736,6 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                     if epDetails.findtext('aired'):
                         rawAirdate = [int(x) for x in epDetails.findtext('aired').split("-")]
                         self.airdate = datetime.date(rawAirdate[0], rawAirdate[1], rawAirdate[2])
-                    else:
-                        self.airdate = datetime.date.fromordinal(1)
 
                     self.hasnfo = True
             else:
@@ -1812,7 +1763,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
     def createMetaFiles(self):
 
-        if not ek(os.path.isdir, self.show._location):  # pylint: disable=protected-access
+        if not ek(os.path.isdir, self.show._location):
             logger.log(str(self.show.indexerid) + ": The show dir is missing, not bothering to try to create metadata")
             return
 
@@ -1828,6 +1779,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         for cur_provider in sickbeard.metadata_provider_dict.values():
             result = cur_provider.create_episode_metadata(self) or result
+            result = cur_provider.update_episode_metadata(self) or result
 
         return result
 
@@ -1853,10 +1805,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         # delete myself from the DB
         logger.log("Deleting myself from the database", logger.DEBUG)
         main_db_con = db.DBConnection()
-        sql = "DELETE FROM tv_episodes WHERE showid=" + str(self.show.indexerid) + " AND season=" + str(
-            self.season) + " AND episode=" + str(self.episode)
-        main_db_con.action(sql)
-
+        main_db_con.action("DELETE FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?", [self.show.indexerid, self.season, self.episode])
         raise EpisodeDeletedException()
 
     def get_sql(self, forceSave=False):
@@ -1891,8 +1840,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                         "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
                         [self.indexerid, self.indexer, self.name, self.description, ",".join(self.subtitles),
                          self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
-                         self.hastbn,
-                         self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
+                         self.hastbn, self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
                          self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
                 else:
                     # Don't update the subtitle language when the srt file doesn't contain the alpha2 code, keep value from subliminal
@@ -1903,8 +1851,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                         "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
                         [self.indexerid, self.indexer, self.name, self.description,
                          self.subtitles_searchcount, self.subtitles_lastsearch, self.airdate.toordinal(), self.hasnfo,
-                         self.hastbn,
-                         self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
+                         self.hastbn, self.status, self.location, self.file_size, self.release_name, self.is_proper, self.show.indexerid,
                          self.season, self.episode, self.absolute_number, self.version, self.release_group, epID]]
             else:
                 # use a custom insert method to get the data into the DB.
@@ -1989,7 +1936,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             return strings
         return self._format_pattern(pattern)
 
-    def prettyName(self):
+    def pretty_name(self):
         """
         Returns the name of this episode in a "pretty" human-readable format. Used for logging
         and notifications and such.
@@ -2044,7 +1991,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         return goodName
 
-    def _replace_map(self):  # pylint: disable=too-many-branches
+    def _replace_map(self):
         """
         Generates a replacement map for this episode which maps all possible custom naming patterns to the correct
         value for this episode.
@@ -2073,6 +2020,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                 return ''
 
             try:
+                # guess_result = guessit.guessit(name, dict(single_value=True))
                 parse_result = NameParser(name, showObj=show, naming_pattern=True).parse(name)
             except (InvalidNameException, InvalidShowException) as error:
                 logger.log("Unable to get parse release_group: {0}".format(error), logger.DEBUG)
@@ -2080,6 +2028,8 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
             if not parse_result.release_group:
                 return ''
+
+            # return guess_result.get('release_group', '').strip('.- []{}')
             return parse_result.release_group.strip('.- []{}')
 
         epStatus_, epQual = Quality.splitCompositeStatus(self.status)  # @UnusedVariable
@@ -2091,7 +2041,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         # try to get the release group
         rel_grp = {
-            "SickRage": 'SickRage'
+            "SickChill": 'SickChill'
         }
         if hasattr(self, 'location'):  # from the location name
             rel_grp[b'location'] = release_group(self.show, self.location)
@@ -2114,7 +2064,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         elif 'location' in rel_grp:
             relgrp = 'location'
         else:
-            relgrp = 'SickRage'
+            relgrp = 'SickChill'
 
         # try to get the release encoder to comply with scene naming standards
         encoder = Quality.sceneQualityFromName(self.release_name.replace(rel_grp[relgrp], ""), epQual)
@@ -2178,7 +2128,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         return result_name
 
-    def _format_pattern(self, pattern=None, multi=None, anime_type=None):  # pylint: disable=too-many-branches, too-many-statements, too-many-locals
+    def _format_pattern(self, pattern=None, multi=None, anime_type=None):
         """
         Manipulates an episode naming pattern and then fills the template in
         """
@@ -2200,7 +2150,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
         result_name = pattern
 
         # if there's no release group in the db, let the user know we replaced it
-        if replace_map[b'%RG'] and replace_map[b'%RG'] != 'SickRage':
+        if replace_map[b'%RG'] and replace_map[b'%RG'] != 'SickChill':
             if not hasattr(self, '_release_group'):
                 logger.log("Episode has no release group, replacing it with '" + replace_map[b'%RG'] + "'", logger.DEBUG)
                 self._release_group = replace_map[b'%RG']  # if release_group is not in the db, put it there
@@ -2302,7 +2252,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
                 if multi == NAMING_LIMITED_EXTEND_E_PREFIXED:
                     ep_string += 'E'
 
-                ep_string += other_ep._format_string(ep_format.upper(), other_ep._replace_map())  # pylint: disable=protected-access
+                ep_string += other_ep._format_string(ep_format.upper(), other_ep._replace_map())
 
             if anime_type != 3:
                 if self.absolute_number == 0:
@@ -2409,7 +2359,7 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
 
         return sanitize_filename(self._format_pattern(name_groups[-1], multi, anime_type))
 
-    def rename(self):  # pylint: disable=too-many-locals, too-many-branches
+    def rename(self):
         """
         Renames an episode file and all related files to the location and filename as specified
         in the naming settings.
@@ -2522,8 +2472,6 @@ class TVEpisode(object):  # pylint: disable=too-many-instance-attributes, too-ma
             filemtime = datetime.datetime.fromtimestamp(ek(os.path.getmtime, self.location)).replace(tzinfo=network_timezones.sb_timezone)
 
             if filemtime != airdatetime:
-                import time
-
                 airdatetime = airdatetime.timetuple()
                 logger.log("{0}: About to modify date of '{1}' to show air date {2}".format
                            (self.show.indexerid, self.location, time.strftime("%b %d,%Y (%H:%M)", airdatetime)), logger.DEBUG)

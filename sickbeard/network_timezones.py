@@ -1,32 +1,38 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sickchill.github.io
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import re
 
+# Third Party Imports
 import six
 from dateutil import tz
-from sickbeard import db, helpers, logger
-from sickrage.helper.common import try_int
+
+# First Party Imports
+from sickchill.helper.common import try_int
+
+# Local Folder Imports
+from . import db, helpers, logger
 
 # regex to parse time (12/24 hour format)
 time_regex = re.compile(r'(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})?)? ?(?P<meridiem>[PA]\.? ?M?)?\b', re.I)
@@ -44,7 +50,7 @@ missing_network_timezones = set()
 def update_network_dict():
     """Update timezone information from SR repositories"""
 
-    url = 'http://sickrage.github.io/sb_network_timezones/network_timezones.txt'
+    url = 'http://sickchill.github.io/sb_network_timezones/network_timezones.txt'
     data = helpers.getURL(url, session=helpers.make_session(), returns='text')
     if not data:
         logger.log('Updating network timezones failed, this can happen from time to time. URL: {0}'.format(url), logger.WARNING)
@@ -55,6 +61,8 @@ def update_network_dict():
     try:
         for line in data.splitlines():
             (key, val) = line.strip().rsplit(':', 1)
+            if not val:  # n Lets set a default
+                val = 'US/Eastern'
             if key and val:
                 d[key.lower()] = val
     except (IOError, OSError):
@@ -120,7 +128,7 @@ def get_network_timezone(network):
     network_tz_name = network_dict.get(network)
     if network and not (network_tz_name or network in missing_network_timezones):
         missing_network_timezones.add(network)
-        logger.log('Missing time zone for network: {0}. Check valid network is set in indexer (theTVDB) before filing issue.'.format(orig_network),
+        logger.log(_('Missing time zone for network: {0}. Check valid network is set in indexer (theTVDB) before filing issue.').format(orig_network),
                    logger.ERROR)
 
     try:

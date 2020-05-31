@@ -1,47 +1,51 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # Rewrite: Dustyn Gibson (miigotu) <miigotu@gmail.com>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import os
 import re
 import time
 
-import sickbeard
+# Third Party Imports
 import validators
 from requests.compat import urljoin
+
+# First Party Imports
+import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
-from sickrage.helper.common import convert_size, try_int
-from sickrage.helper.encoding import ek, ss
-from sickrage.providers.nzb.NZBProvider import NZBProvider
+from sickchill.helper.common import convert_size, try_int
+from sickchill.helper.encoding import ek, ss
+from sickchill.providers.nzb.NZBProvider import NZBProvider
 
 
-class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attributes, too-many-arguments
+class NewznabProvider(NZBProvider):
     """
     Generic provider for built in and custom providers who expose a newznab
     compatible api.
     Tested with: newznab, nzedb, spotweb, torznab
     """
-    # pylint: disable=too-many-arguments
+
 
     def __init__(self, name, url, key='0', catIDs='5030,5040', search_mode='eponly',
                  search_fallback=False, enable_daily=True, enable_backlog=False):
@@ -103,9 +107,8 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 continue
 
             if default.name not in providers_dict:
-                default.default = True
-                providers_list.append(default)
-            else:
+                providers_dict[default.name] = default
+
                 providers_dict[default.name].default = True
                 providers_dict[default.name].name = default.name
                 providers_dict[default.name].url = default.url
@@ -116,6 +119,9 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 providers_dict[default.name].enable_backlog = default.enable_backlog
                 providers_dict[default.name].catIDs = ','.join([x for x in providers_dict[default.name].catIDs.split(',')
                                                                 if 5000 <= try_int(x) <= 5999]) or default.catIDs
+
+                if sickbeard.QUALITY_ALLOW_HEVC and '5090' not in providers_dict[default.name].catIDs:
+                    providers_dict[default.name].catIDs += ',5090'
 
         return [x for x in providers_list if x]
 
@@ -173,6 +179,11 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
             return False, return_categories, error_string
 
         with BS4Parser(data, 'html5lib') as html:
+            try:
+                self.torznab = html.find('server').get('title') == 'Jackett'
+            except AttributeError:
+                self.torznab = False
+
             if not html.find('categories'):
                 error_string = 'Error parsing caps xml for [{0}]'.format(self.name)
                 logger.log(error_string, logger.DEBUG)
@@ -197,7 +208,6 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
         return 'NZB.Cat|https://nzb.cat/||5030,5040,5010|0|eponly|1|1|1!!!' + \
             'NZBFinder.ws|https://nzbfinder.ws/||5030,5040,5010,5045|0|eponly|1|1|1!!!' + \
             'NZBGeek|https://api.nzbgeek.info/||5030,5040|0|eponly|0|0|0!!!' + \
-            'NZBs.org|https://nzbs.org/||5030,5040|0|eponly|0|0|0!!!' + \
             'Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040|0|eponly|0|0|0!!!' + \
             'DOGnzb|https://api.dognzb.cr/||5030,5040,5060,5070|0|eponly|0|1|1'
 
@@ -264,7 +274,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
 
         return new_provider
 
-    def search(self, search_strings, age=0, ep_obj=None):  # pylint: disable=too-many-arguments, too-many-locals, too-many-branches, too-many-statements
+    def search(self, search_strings, age=0, ep_obj=None):
         """
         Searches indexer using the params in search_strings, either for latest releases, or a string/id search
         Returns: list of results in dict form
@@ -281,7 +291,6 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 return results
 
         for mode in search_strings:
-            torznab = False
             search_params = {
                 't': ('search', 'tvsearch')[bool(self.use_tv_search)],
                 'limit': 100,
@@ -302,12 +311,18 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                         date_str = str(ep_obj.airdate)
                         search_params['season'] = date_str.partition('-')[0]
                         search_params['ep'] = date_str.partition('-')[2].replace('-', '/')
+                    elif ep_obj.show.is_anime:
+                        search_params['ep'] = ep_obj.absolute_number
                     else:
                         search_params['season'] = ep_obj.scene_season
                         search_params['ep'] = ep_obj.scene_episode
 
                 if mode == 'Season':
                     search_params.pop('ep', '')
+
+            if self.torznab:
+                search_params.pop('ep', '')
+                search_params.pop('season', '')
 
             items = []
             logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
@@ -328,23 +343,23 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                     if not self._check_auth_from_data(html):
                         break
 
-                    try:
-                        torznab = 'xmlns:torznab' in html.rss.attrs
-                    except AttributeError:
-                        torznab = False
+                    # try:
+                    #     self.torznab = 'xmlns:torznab' in html.rss.attrs
+                    # except AttributeError:
+                    #     self.torznab = False
 
                     for item in html('item'):
                         try:
                             title = item.title.get_text(strip=True)
                             download_url = None
                             if item.link:
-                                if validators.url(item.link.get_text(strip=True), require_tld=False):
+                                if validators.url(item.link.get_text(strip=True)):
                                     download_url = item.link.get_text(strip=True)
-                                elif validators.url(item.link.next.strip(), require_tld=False):
+                                elif validators.url(item.link.next.strip()):
                                     download_url = item.link.next.strip()
 
                             if (not download_url, item.enclosure and
-                                    validators.url(item.enclosure.get('url', '').strip(), require_tld=False)):
+                                    validators.url(item.enclosure.get('url', '').strip())):
                                 download_url = item.enclosure.get('url', '').strip()
 
                             if not (title and download_url):
@@ -356,12 +371,12 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                                 item_size = size_regex.group() if size_regex else -1
                             else:
                                 item_size = item.size.get_text(strip=True) if item.size else -1
-                                for attr in item('newznab:attr') + item('torznab:attr'):
+                                for attr in item.find_all(['newznab:attr','torznab:attr']):
                                     item_size = attr['value'] if attr['name'] == 'size' else item_size
                                     seeders = try_int(attr['value']) if attr['name'] == 'seeders' else seeders
                                     leechers = try_int(attr['value']) if attr['name'] == 'peers' else leechers
 
-                            if not item_size or (torznab and (seeders is None or leechers is None)):
+                            if not item_size or (self.torznab and (seeders is None or leechers is None)):
                                 continue
 
                             size = convert_size(item_size) or -1
@@ -376,7 +391,7 @@ class NewznabProvider(NZBProvider):  # pylint: disable=too-many-instance-attribu
                 if 'tvdbid' in search_params:
                     break
 
-            if torznab:
+            if self.torznab:
                 results.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
             results += items
 

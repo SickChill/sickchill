@@ -33,19 +33,19 @@ def easter(year, method=EASTER_WESTERN):
 
     These methods are represented by the constants:
 
-    EASTER_JULIAN   = 1
-    EASTER_ORTHODOX = 2
-    EASTER_WESTERN  = 3
+    * ``EASTER_JULIAN   = 1``
+    * ``EASTER_ORTHODOX = 2``
+    * ``EASTER_WESTERN  = 3``
 
     The default method is method 3.
 
     More about the algorithm may be found at:
 
-    http://users.chariot.net.au/~gmarts/eastalg.htm
+    `GM Arts: Easter Algorithms <http://www.gmarts.org/index.php?go=415>`_
 
     and
 
-    http://www.tondering.dk/claus/calendar.html
+    `The Calendar FAQ: Easter <https://www.tondering.dk/claus/cal/easter.php>`_
 
     """
 

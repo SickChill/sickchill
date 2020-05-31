@@ -17,7 +17,7 @@ class LeafItem(Immutable):
 
     @classmethod
     def from_dict(cls, resource):
-        return cls(**dict([(str(k), v) for k, v in resource.iteritems()]))
+        return cls(**dict([(str(k), v) for k, v in resource.items()]))
 
     @classmethod
     def extract(cls, resource):
@@ -53,7 +53,9 @@ class ResourceItem(Immutable):
     def json(self, **kw):
         return json.dumps(
             self,
-            default=lambda o: dict([(k, v) for k, v in o.__dict__.items() if not k.startswith('_')]),
+            default=lambda o: dict(
+                [(k, v) for k, v in o.__dict__.items()
+                 if not k.startswith('_')]),
             **kw
         )
 
@@ -65,4 +67,4 @@ class CollectableItem(Immutable):
 
     @classmethod
     def collection_from_dict(cls, map):
-        return [cls.from_dict(k, v) for k, v in map.iteritems()]
+        return [cls.from_dict(k, v) for k, v in map.items()]

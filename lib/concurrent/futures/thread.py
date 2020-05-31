@@ -5,6 +5,7 @@
 
 import atexit
 from concurrent.futures import _base
+import itertools
 import Queue as queue
 import threading
 import weakref
@@ -74,6 +75,12 @@ def _worker(executor_reference, work_queue):
                 work_item.run()
                 # Delete references to object. See issue16284
                 del work_item
+
+                # attempt to increment idle count
+                executor = executor_reference()
+                if executor is not None:
+                    executor._idle_semaphore.release()
+                del executor
                 continue
             executor = executor_reference()
             # Exit if:
@@ -90,12 +97,17 @@ def _worker(executor_reference, work_queue):
 
 
 class ThreadPoolExecutor(_base.Executor):
-    def __init__(self, max_workers=None):
+
+    # Used to assign unique thread names when thread_name_prefix is not supplied.
+    _counter = itertools.count().next
+
+    def __init__(self, max_workers=None, thread_name_prefix=''):
         """Initializes a new ThreadPoolExecutor instance.
 
         Args:
             max_workers: The maximum number of threads that can be used to
                 execute the given calls.
+            thread_name_prefix: An optional name prefix to give our threads.
         """
         if max_workers is None:
             # Use this number because ThreadPoolExecutor is often
@@ -106,9 +118,12 @@ class ThreadPoolExecutor(_base.Executor):
 
         self._max_workers = max_workers
         self._work_queue = queue.Queue()
+        self._idle_semaphore = threading.Semaphore(0)
         self._threads = set()
         self._shutdown = False
         self._shutdown_lock = threading.Lock()
+        self._thread_name_prefix = (thread_name_prefix or
+                                    ("ThreadPoolExecutor-%d" % self._counter()))
 
     def submit(self, fn, *args, **kwargs):
         with self._shutdown_lock:
@@ -124,14 +139,20 @@ class ThreadPoolExecutor(_base.Executor):
     submit.__doc__ = _base.Executor.submit.__doc__
 
     def _adjust_thread_count(self):
+        # if idle threads are available, don't spin new threads
+        if self._idle_semaphore.acquire(False):
+            return
+
         # When the executor gets lost, the weakref callback will wake up
         # the worker threads.
         def weakref_cb(_, q=self._work_queue):
             q.put(None)
-        # TODO(bquinlan): Should avoid creating new threads if there are more
-        # idle threads than items in the work queue.
-        if len(self._threads) < self._max_workers:
-            t = threading.Thread(target=_worker,
+
+        num_threads = len(self._threads)
+        if num_threads < self._max_workers:
+            thread_name = '%s_%d' % (self._thread_name_prefix or self,
+                                     num_threads)
+            t = threading.Thread(name=thread_name, target=_worker,
                                  args=(weakref.ref(self, weakref_cb),
                                        self._work_queue))
             t.daemon = True

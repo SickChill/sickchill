@@ -1,11 +1,15 @@
 __author__ = 'Andrea De Marco <24erre@gmail.com>'
-__version__ = '1.4.0'
+__maintainer__ = 'Pol Canelles <canellestudi@gmail.com>'
+__version__ = '2.0.0'
 __classifiers__ = [
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
     'License :: OSI Approved :: Apache Software License',
     'Operating System :: OS Independent',
-    'Programming Language :: Python',
+    'Programming Language :: Python :: 3.4',
+    'Programming Language :: Python :: 3.5',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
     'Topic :: Internet :: WWW/HTTP',
     'Topic :: Software Development :: Libraries',
 ]
@@ -29,7 +33,7 @@ __license__ = """
 __docformat__ = 'restructuredtext en'
 
 __doc__ = """
-:abstract: Python interface to fanart.tv API
+:abstract: Python interface to fanart.tv API (v3)
 :version: %s
 :author: %s
 :contact: http://z4r.github.com/
@@ -39,9 +43,11 @@ __doc__ = """
 
 
 def values(obj):
-    return [v for k, v in obj.__dict__.iteritems() if not k.startswith('_')]
+    return [v for k, v in obj.__dict__.items() if not k.startswith('_')]
 
-BASEURL = 'http://webservice.fanart.tv/v3/%s/%s?api_key=%s'
+
+BASEURL = 'http://webservice.fanart.tv/v3'
+
 
 class FORMAT(object):
     JSON = 'JSON'
@@ -59,18 +65,18 @@ class TYPE(object):
     ALL = 'all'
 
     class TV(object):
+        ART = 'clearart'
         LOGO = 'clearlogo'
         CHARACTER = 'characterart'
+        THUMB = 'tvthumb'
+        SEASONTHUMB = 'seasonthumb'
+        SEASONBANNER = 'seasonbanner'
+        SEASONPOSTER = 'seasonposter'
         BACKGROUND = 'showbackground'
         HDLOGO = 'hdtvlogo'
         HDART = 'hdclearart'
-        ART = 'clearart'
-        THUMB = 'tvthumb'
         POSTER = 'tvposter'
         BANNER = 'tvbanner'
-        SEASONTHUMB = 'seasonthumb'
-        SEASONPOSTER = 'seasonposter'
-        SEASONBANNER = 'seasonbanner'
 
     class MUSIC(object):
         DISC = 'cdart'
@@ -100,6 +106,7 @@ class SORT(object):
 class LIMIT(object):
     ONE = 1
     ALL = 2
+
 
 FORMAT_LIST = values(FORMAT)
 WS_LIST = values(WS)

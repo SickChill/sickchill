@@ -1,22 +1,22 @@
 #!/usr/bin/env python2.7
 # coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: http://github.com/SickRage/SickRage
+# URL: http://github.com/SickChill/SickChill
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 """
 Test sickbeard.helpers
@@ -47,7 +47,6 @@ Public Methods:
     get_absolute_number_from_season_and_episode
     get_all_episodes_from_absolute_number
     sanitizeSceneName
-    arithmeticEval
     create_https_certificates
     backupVersionedFile
     restoreVersionedFile
@@ -61,13 +60,11 @@ Public Methods:
     is_hidden_folder
     real_path
     is_subdirectory
-    validateShow
     set_up_anidb_connection
     makeZip
     extractZip
     backup_config_zip
     restore_config_zip
-    mapIndexersToShow
     touchFile
     getURL
     download_file
@@ -79,6 +76,9 @@ Public Methods:
     pretty_time_delta
     is_file_locked
     disk_usage
+    sortable_name
+    manage_torrents_url
+    bdecode
 Private Methods:
     _check_against_names
     _setUpSession
@@ -95,8 +95,10 @@ from shutil import rmtree
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+import sickbeard
+from bencode.BTL import BTFailure
 from sickbeard import helpers
-from sickrage.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
+from sickchill.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
 
 import six
 
@@ -296,15 +298,15 @@ class HelpersDirectoryTests(unittest.TestCase):
         """
         Test real_path
         """
-        self.assertEqual(helpers.real_path('/usr/SickRage/../root/real/path/'), helpers.real_path('/usr/root/real/path/'))
+        self.assertEqual(helpers.real_path('/usr/SickChill/../root/real/path/'), helpers.real_path('/usr/root/real/path/'))
 
     def test_is_subdirectory(self):
         """
         Test is_subdirectory
         """
-        self.assertTrue(helpers.is_subdirectory(subdir_path='/usr/SickRage/Downloads/Unpack', topdir_path='/usr/SickRage/Downloads'))
-        self.assertTrue(helpers.is_subdirectory(subdir_path='/usr/SickRage/Downloads/testfile.tst', topdir_path='/usr/SickRage/Downloads/'))
-        self.assertFalse(helpers.is_subdirectory(subdir_path='/usr/SickRage/Unpack', topdir_path='/usr/SickRage/Downloads'))
+        self.assertTrue(helpers.is_subdirectory(subdir_path='/usr/SickChill/Downloads/Unpack', topdir_path='/usr/SickChill/Downloads'))
+        self.assertTrue(helpers.is_subdirectory(subdir_path='/usr/SickChill/Downloads/testfile.tst', topdir_path='/usr/SickChill/Downloads/'))
+        self.assertFalse(helpers.is_subdirectory(subdir_path='/usr/SickChill/Unpack', topdir_path='/usr/SickChill/Downloads'))
 
 class HelpersFileTests(unittest.TestCase):
     """
@@ -613,20 +615,6 @@ class HelpersShowTests(unittest.TestCase):
         pass
 
     @unittest.skip('Not yet implemented')
-    def test_validate_show(self):
-        """
-        Test validateShow
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
-    def test_map_indexers_to_show(self):
-        """
-        Test mapIndexersToShow
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
     def test_get_abs_no_from_s_and_e(self):
         """
         Test get_absolute_number_from_season_and_episode
@@ -735,13 +723,6 @@ class HelpersMiscTests(unittest.TestCase):
         pass
 
     @unittest.skip('Not yet implemented')
-    def test_arithmetic_eval(self):
-        """
-        Test arithmeticEval
-        """
-        pass
-
-    @unittest.skip('Not yet implemented')
     def test_full_sanitize_scene_name(self):
         """
         Test full_sanitizeSceneName
@@ -761,6 +742,40 @@ class HelpersMiscTests(unittest.TestCase):
         Test pretty_time_delta
         """
         pass
+
+    def test_sortable_name(self):
+        """
+        Test that sortable_name returns the correct show name
+        """
+        cases = [
+            # raw_name, SORT_ARTICLE, expected
+            ('The Big Bang Theory', False, 'big bang theory'),
+            ('A Big World', False, 'big world'),
+            ('An Unexpected Journey', False, 'unexpected journey'),
+            ('The Big Bang Theory', True, 'the big bang theory'),
+            ('A Big World', True, 'a big world'),
+            ('An Unexpected Journey', True, 'an unexpected journey'),
+        ]
+        for raw_name, option, expected in cases:
+            sickbeard.SORT_ARTICLE = option
+            self.assertEqual(helpers.sortable_name(raw_name), expected)
+
+    @unittest.skip('Not yet implemented')
+    def test_manage_torrents_url(self):
+        """
+        Test manage_torrents_url
+        """
+        pass
+
+    def test_bdecode(self):
+        """
+        Test the custom bdecode function
+        """
+        bencoded_data = b'd5:hello5:world7:numbersli1ei2eeeEXTRA_DATA_HERE'
+        self.assertEqual(helpers.bdecode(bencoded_data, True), {'hello': b'world', 'numbers': [1, 2]})
+        self.assertRaisesRegexp(BTFailure, 'data after valid prefix', helpers.bdecode, bencoded_data, False)
+        self.assertRaisesRegexp(BTFailure, 'not a valid bencoded string', helpers.bdecode, b'Heythere', False)
+
 
 if __name__ == '__main__':
     print("==================")

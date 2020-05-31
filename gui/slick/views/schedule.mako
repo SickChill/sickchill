@@ -8,12 +8,13 @@
     from sickbeard.helpers import anon_url
     from sickbeard import sbdatetime
     from sickbeard.common import Quality
+    from sickchill import indexer as show_indexer
 
     SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list
 %>
 <%block name="scripts">
-    <script type="text/javascript" src="${srRoot}/js/ajaxEpSearch.js?${sbPID}"></script>
-    <script type="text/javascript" src="${srRoot}/js/plotTooltip.js?${sbPID}"></script>
+    <script type="text/javascript" src="${static_url('js/ajaxEpSearch.js')}"></script>
+    <script type="text/javascript" src="${static_url('js/plotTooltip.js')}"></script>
 </%block>
 
 <%block name="content">
@@ -52,7 +53,7 @@
                 % else:
                     <label>
                         <span>${_('Sort By')}:</span>
-                        <select name="sort" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="Sort">
+                        <select id="sort" class="form-control form-control-inline input-sm" title="Sort">
                             <option value="${srRoot}/setScheduleSort/?sort=date" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'date']} >${_('Date')}</option>
                             <option value="${srRoot}/setScheduleSort/?sort=network" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'network']} >${_('Network')}</option>
                             <option value="${srRoot}/setScheduleSort/?sort=show" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'show']} >${_('Show')}</option>
@@ -62,7 +63,7 @@
                 % endif
                 <label>
                     <span>${_('View Paused')}:</span>
-                    <select name="viewpaused" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="View paused">
+                    <select id="viewpaused" class="form-control form-control-inline input-sm" title="View paused">
                         <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[not bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>${_('Hidden')}</option>
                         <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>${_('Shown')}</option>
                     </select>
@@ -71,7 +72,7 @@
                 % if layout != 'calendar':
                 <label>
                     <span>${_('View Snatched')}:</span>
-                    <select name="viewsnatched" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="View snatched">
+                    <select id="viewsnatched" class="form-control form-control-inline input-sm" title="View snatched">
                         <option value="${srRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[not bool(sickbeard.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Hidden')}</option>
                         <option value="${srRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[bool(sickbeard.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Shown')}</option>
                     </select>
@@ -80,7 +81,7 @@
                 % endif
                 <label>
                     <span>${_('Layout')}:</span>
-                    <select name="layout" class="form-control form-control-inline input-sm" onchange="location = this.options[this.selectedIndex].value;" title="Layout">
+                    <select id="layout" class="form-control form-control-inline input-sm" title="Layout">
                         <option value="${srRoot}/setScheduleLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'poster']} >${_('Poster')}</option>
                         <option value="${srRoot}/setScheduleLayout/?layout=calendar" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'calendar']} >${_('Calendar')}</option>
                         <option value="${srRoot}/setScheduleLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'banner']} >${_('Banner')}</option>
@@ -99,7 +100,6 @@
                 <!-- start list view //-->
                 <% show_div = 'listing-default' %>
 
-                <input type="hidden" id="srRoot" value="${srRoot}"/>
                 <div class="horizontal-scroll">
                     <table id="showListTable" class="sickbeardTable tablesorter seasonstyle" cellspacing="1" border="0" cellpadding="0">
                         <thead>
@@ -107,6 +107,7 @@
                                 <th>${_('Airdate')} (${('local', 'network')[sickbeard.TIMEZONE_DISPLAY == 'network']})</th>
                                 <th>${_('Ends')}</th>
                                 <th>${_('Show')}</th>
+                                <th>${_('Banner')}</th>
                                 <th>${_('Next Ep')}</th>
                                 <th>${_('Next Ep Name')}</th>
                                 <th>${_('Network')}</th>
@@ -167,15 +168,23 @@
                                             <span class="pause">[paused]</span>
                                         % endif
                                     </td>
+                                    <td class="banner">
+                                        <a href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">
+                                            <img alt="" class="bannerThumb"
+                                                 src="${static_url("images/banner.png")}"
+                                                 data-src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result[b'showid'], 'banner_thumb'))}"
+                                            />
+                                        </a>
+                                    </td>
                                     <td nowrap="nowrap" align="center">
                                         ${'S%02iE%02i' % (int(cur_result[b'season']), int(cur_result[b'episode']))}
                                     </td>
                                     <td>
                                         % if cur_result[b'description']:
-                                            <img alt="" src="${srRoot}/images/info32.png" height="16" width="16" class="plotInfo"
+                                            <img alt="" src="${static_url('images/info32.png')}" height="16" width="16" class="plotInfo"
                                                  id="plot_info_${'%s_%s_%s' % (cur_result[b'showid'], cur_result[b'season'], cur_result[b'episode'])}"/>
                                         % else:
-                                            <img alt="" src="${srRoot}/images/info32.png" width="16" height="16" class="plotInfoNone"/>
+                                            <img alt="" src="${static_url('images/info32.png')}" width="16" height="16" class="plotInfoNone"/>
                                         % endif
                                         ${cur_result[b'name']}
                                     </td>
@@ -195,12 +204,17 @@
                                                title="http://www.imdb.com/title/${cur_result[b'imdb_id']}">
                                                 <span class="displayshow-icon-imdb"></span>
                                             </a>
+                                            <a href="${anon_url('https://trakt.tv/shows/', cur_result[b'imdb_id'])}" rel="noreferrer"
+                                               onclick="window.open(this.href, '_blank'); return false;"
+                                               title="https://trakt.tv/shows/${cur_result[b'imdb_id']}">
+                                                <span class="displayshow-icon-trakt" />
+                                            </a>
                                         % endif
-                                        <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result[b'showid'])}"
+                                        <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result[b'showid'])}"
                                            rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
-                                           title="${sickbeard.indexerApi(cur_indexer).config['show_url']}${cur_result[b'showid']}">
-                                            <img alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16"
-                                                 src="${srRoot}/images/indexers/${sickbeard.indexerApi(cur_indexer).config['icon']}"/>
+                                           title="${show_indexer.show_url(cur_indexer)}${cur_result[b'showid']}">
+                                            <img alt="${show_indexer.name(cur_indexer)}" height="16" width="16"
+                                                 src="${static_url(show_indexer.icon(cur_indexer))}"/>
                                         </a>
                                     </td>
                                     <td align="center">
@@ -216,7 +230,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th rowspan="1" colspan="10" align="center">&nbsp</th>
+                                <th rowspan="1" colspan="11" align="center">&nbsp</th>
                             </tr>
                         </tfoot>
                     </table>
@@ -229,7 +243,6 @@
                     <% dates = [today.date() + datetime.timedelta(days = i) for i in range(7)] %>
                     <% tbl_day = 0 %>
                     <div class="calendarWrapper">
-                        <input type="hidden" id="srRoot" value="${srRoot}"/>
                         % for day in dates:
                         <% tbl_day += 1 %>
                             <table class="sickbeardTable tablesorter calendarTable ${'cal-%s' % (('even', 'odd')[bool(tbl_day % 2)])}"
@@ -268,7 +281,9 @@
                                                 <td class="calendarShow">
                                                     <div class="poster">
                                                         <a title="${cur_result[b'show_name']}" href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">
-                                                            <img alt="" src="${srRoot}/showPoster/?show=${cur_result[b'showid']}&amp;which=poster_thumb"/>
+                                                            <img alt=""
+                                                                 src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result[b'showid'], 'poster_thumb'))}"
+                                                            />
                                                         </a>
                                                     </div>
                                                     <div class="text">
@@ -415,7 +430,8 @@
                                     <th ${('class="nobg"', 'rowspan="3"')[layout == 'poster']} valign="top">
                                         <a href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">
                                             <img alt="" class="${('posterThumb', 'bannerThumb')[layout == 'banner']}"
-                                                 src="${srRoot}/showPoster/?show=${cur_result[b'showid']}&amp;which=${(layout, 'poster_thumb')[layout == 'poster']}"/>
+                                                 src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result[b'showid'], (layout, 'poster_thumb')[layout == 'poster']))}"
+                                            />
                                         </a>
                                     </th>
                                 </tr>
@@ -434,12 +450,16 @@
                                                    onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result[b'imdb_id']}">
                                                     <span class="displayshow-icon-imdb"></span>
                                                 </a>
+                                                <a href="${anon_url('https://trakt.tv/shows/', cur_result[b'imdb_id'])}" rel="noreferrer"
+                                                   onclick="window.open(this.href, '_blank'); return false;" title="https://trakt.tv/shows/${cur_result[b'imdb_id']}">
+                                                    <span class="displayshow-icon-trakt" />
+                                                </a>
                                             % endif
-                                            <a href="${anon_url(sickbeard.indexerApi(cur_indexer).config['show_url'], cur_result[b'showid'])}"
+                                            <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result[b'showid'])}"
                                                rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
-                                               title="${sickbeard.indexerApi(cur_indexer).config['show_url']}"><img
-                                                    alt="${sickbeard.indexerApi(cur_indexer).name}" height="16" width="16"
-                                                    src="${srRoot}/images/indexers/${sickbeard.indexerApi(cur_indexer).config['icon']}"/>
+                                               title="${show_indexer.show_url(cur_indexer)}"><img
+                                                    alt="${show_indexer.name(cur_indexer)}" height="16" width="16"
+                                                    src="${static_url(show_indexer.icon(cur_indexer))}"/>
                                             </a>
                                             <span>
                                                 <a href="${srRoot}/home/searchEpisode?show=${cur_result[b'showid']}&amp;season=${cur_result[b'season']}&amp;episode=${cur_result[b'episode']}"
@@ -476,12 +496,12 @@
                                         <div>
                                             % if cur_result[b'description']:
                                                 <span class="title" style="vertical-align:middle;">${_('Plot')}:</span>
-                                                <img class="ep_summaryTrigger" src="${srRoot}/images/plus.png" height="16" width="16" alt=""
+                                                <img class="ep_summaryTrigger" src="${static_url('images/plus.png')}" height="16" width="16" alt=""
                                                      title="Toggle Summary"/>
                                                 <div class="ep_summary">${cur_result[b'description']}</div>
                                             % else:
                                                 <span class="title ep_summaryTriggerNone" style="vertical-align:middle;">${_('Plot')}:</span>
-                                                <img class="ep_summaryTriggerNone" src="${srRoot}/images/plus.png" height="16" width="16"
+                                                <img class="ep_summaryTriggerNone" src="${static_url('images/plus.png')}" height="16" width="16"
                                                      alt=""/>
                                             % endif
                                         </div>

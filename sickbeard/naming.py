@@ -1,35 +1,40 @@
 # coding=utf-8
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
-# Git: https://github.com/SickRage/SickRage.git
+# URL: https://sickchill.github.io
+# Git: https://github.com/SickChill/SickChill.git
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 import datetime
 import os
 
+# First Party Imports
 import sickbeard
-from sickbeard import common, logger, tv
-from sickbeard.common import DOWNLOADED, Quality
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickrage.helper.encoding import ek
+from sickchill.helper.encoding import ek
+
+# Local Folder Imports
+from . import common, logger, tv
+from .common import DOWNLOADED, Quality
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 name_presets = (
+    '%SN - %Sx%0E',
     '%SN - %Sx%0E - %EN',
     '%S.N.S%0SE%0E.%E.N',
     '%Sx%0E - %EN',
@@ -87,8 +92,8 @@ class TVShow(object):
         return self.scene > 0
 
 
-class TVEpisode(tv.TVEpisode):  # pylint: disable=too-many-instance-attributes
-    def __init__(self, season, episode, absolute_number, name):  # pylint: disable=super-init-not-called
+class TVEpisode(tv.TVEpisode):
+    def __init__(self, season, episode, absolute_number, name):
         self.relatedEps = []
         self._name = name
         self._season = season
@@ -177,7 +182,7 @@ def check_valid_sports_naming(pattern=None):
     return valid
 
 
-def validate_name(pattern, multi=None, anime_type=None,  # pylint: disable=too-many-arguments, too-many-return-statements
+def validate_name(pattern, multi=None, anime_type=None,
                   file_only=False, abd=False, sports=False):
     """
     See if we understand a name
@@ -234,7 +239,7 @@ def generate_sample_ep(multi=None, abd=False, sports=False, anime_type=None):
     # make a fake episode object
     ep = TVEpisode(2, 3, 3, "Ep Name")
 
-    # pylint: disable=protected-access
+
     ep._status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)
     ep._airdate = datetime.date(2011, 3, 9)
 

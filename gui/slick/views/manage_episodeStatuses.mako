@@ -5,9 +5,6 @@
 %>
 
 <%block name="scripts">
-    % if whichStatus or (whichStatus and ep_counts):
-        <script type="text/javascript" src="${srRoot}/js/manageEpisodeStatuses.js?${sbPID}"></script>
-    % endif
 </%block>
 
 <%block name="content">
@@ -88,7 +85,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <button type="button" class="btn btn-xs selectAllShows">${_('Select all')}</button>
-                    <button type="button" class="btn btn-xs unselectAllShows">${_('Clear all')}</button>
+                    <button type="button" class="btn btn-xs deselectAllShows">${_('Clear all')}</button>
                 </div>
             </div>
             <br/>

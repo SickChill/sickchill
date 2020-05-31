@@ -55,13 +55,13 @@
                                 <% continue %>
                             % endif
 
-                        % if 'rating' in cur_result and cur_result[b'rating']:
-                            <% cur_rating = cur_result[b'rating'] %>
-                            <% cur_votes = cur_result[b'votes'] %>
-                        % else:
-                            <% cur_rating = '0' %>
-                            <% cur_votes = '0' %>
-                        % endif
+                            % if 'rating' in cur_result and cur_result[b'rating']:
+                                <% cur_rating = cur_result[b'rating'] %>
+                                <% cur_votes = cur_result[b'votes'] %>
+                            % else:
+                                <% cur_rating = '0' %>
+                                <% cur_votes = '0' %>
+                            % endif
 
                             <div class="trakt_show" data-name="${cur_result[b'name']}" data-rating="${cur_rating}"
                                  data-votes="${cur_votes.replace(',', '')}">

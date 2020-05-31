@@ -6,6 +6,8 @@
 
 import sys
 
+from .exceptions import TrashPermissionError
+
 if sys.platform == 'darwin':
     from .plat_osx import send2trash
 elif sys.platform == 'win32':

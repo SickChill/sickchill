@@ -1,27 +1,32 @@
 # coding=utf-8
 
 # Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickrage.github.io
+# URL: https://sickchill.github.io
 #
-# This file is part of SickRage.
+# This file is part of SickChill.
 #
-# SickRage is free software: you can redistribute it and/or modify
+# SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickRage is distributed in the hope that it will be useful,
+# SickChill is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickRage. If not, see <http://www.gnu.org/licenses/>.
+# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import, print_function, unicode_literals
+
+# Stdlib Imports
 import sys
-from sickbeard.metadata import kodi, kodi_12plus, mediabrowser, ps3, wdtv, tivo, mede8er, generic, helpers
 
-__all__ = ['generic', 'helpers', 'kodi', 'kodi_12plus', 'mediabrowser', 'ps3', 'wdtv', 'tivo', 'mede8er']
+# First Party Imports
+from sickbeard.metadata import generic, helpers, kodi, kodi_12plus, mede8er, mediabrowser, ps3, tivo, wdtv
+
+__all__ = ['generic', 'helpers', 'kodi', 'kodi_12plus', 'mede8er', 'mediabrowser', 'ps3', 'tivo', 'wdtv']
 
 
 def available_generators():

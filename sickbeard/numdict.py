@@ -4,11 +4,10 @@
 class NumDict - A dict with numeric keys
 """
 
-from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
 from collections import MutableMapping
-
-import six
 
 
 class NumDict(MutableMapping):

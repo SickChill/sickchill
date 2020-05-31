@@ -2,13 +2,16 @@
 <%!
     import os
     import datetime
+
     import sickbeard
     from sickbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
+    from sickbeard.filters import hide
     from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
     from sickbeard.helpers import anon_url, LOCALE_NAMES
+    import sickchill
 
     def lang_name(code):
-        return LOCALE_NAMES.get(code, {}).get("name", u"Unknown")
+        return LOCALE_NAMES.get(code, {}).get("name", "Unknown")
 %>
 
 <%block name="tabs">
@@ -41,7 +44,8 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm input350 bfh-languages" data-language=${sickbeard.INDEXER_DEFAULT_LANGUAGE} data-available="${','.join(sickbeard.indexerApi().config['valid_languages'])}"></select>
+                                        <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm input350
+                                        bfh-languages" data-language="${sickbeard.INDEXER_DEFAULT_LANGUAGE}" data-available="${','.join(sickchill.indexer.languages())}"></select>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -58,7 +62,7 @@
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" name="launch_browser" id="launch_browser" ${('', 'checked="checked"')[bool(sickbeard.LAUNCH_BROWSER)]}/>
-                                <label for="launch_browser">${_('open the SickRage home page on startup')}</label>
+                                <label for="launch_browser">${_('open the SickChill home page on startup')}</label>
                             </div>
                         </div>
 
@@ -80,7 +84,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="default_page">${_('when launching SickRage interface')}</label>
+                                        <label for="default_page">${_('when launching SickChill interface')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -104,7 +108,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label><b>${_('note')}:</b>&nbsp;${_('minutes are randomized each time SickRage is started')}</label>
+                                        <label><b>${_('note')}:</b>&nbsp;${_('minutes are randomized each time SickChill is started')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -132,15 +136,6 @@
                                         <span>${_('selected actions use trash (recycle bin) instead of the default permanent delete')}</span>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Log file folder location')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="text" name="log_dir" id="log_dir" value="${sickbeard.ACTUAL_LOG_DIR}" class="form-control input-sm input250" autocapitalize="off"  title="log_dir"/>
                             </div>
                         </div>
 
@@ -189,8 +184,8 @@
                                     <div class="col-md-12">
                                         <select id="indexer_default" name="indexer_default" class="form-control input-sm input150">
                                             <option value="0" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == 0]}>${_('All Indexers')}</option>
-                                            % for indexer in sickbeard.indexerApi().indexers:
-                                                <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${sickbeard.indexerApi().indexers[indexer]}</option>
+                                            % for indexer, instance in sickchill.indexer:
+                                                <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.INDEXER_DEFAULT == indexer]}>${instance.name}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -306,7 +301,7 @@
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" name="notify_on_update" id="notify_on_update" ${('', 'checked="checked"')[bool(sickbeard.NOTIFY_ON_UPDATE)]}/>
-                                <label for="notify_on_update">${_('send a message to all enabled notifiers when SickRage has been updated')}</label>
+                                <label for="notify_on_update">${_('send a message to all enabled notifiers when SickChill has been updated')}</label>
                             </div>
                         </div>
 
@@ -383,12 +378,12 @@
                                 <label class="component-title">${_('Use a background image')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="sickrage_background" id="sickrage_background"
-                                    ${('', 'checked="checked"')[bool(sickbeard.SICKRAGE_BACKGROUND)]} />
-                                <label for="sickrage_background">${_('use a custom image as background for SickRage')}</label>
+                                <input type="checkbox" class="enabler" name="sickchill_background" id="sickchill_background"
+                                    ${('', 'checked="checked"')[bool(sickbeard.SICKCHILL_BACKGROUND)]} />
+                                <label for="sickchill_background">${_('use a custom image as background for SickChill')}</label>
                             </div>
                         </div>
-                        <div id="content_sickrage_background">
+                        <div id="content_sickchill_background">
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Background Path')}</label>
@@ -396,13 +391,13 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="sickrage_background_path" id="sickrage_background_path"
-                                                   value="${sickbeard.SICKRAGE_BACKGROUND_PATH}" class="form-control input-sm input350" autocapitalize="off" />
+                                            <input type="text" name="sickchill_background_path" id="sickchill_background_path"
+                                                   value="${sickbeard.SICKCHILL_BACKGROUND_PATH}" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="sickrage_background_path" class="component-desc">${_('Path to the background image')}</label>
+                                            <label for="sickchill_background_path" class="component-desc">${_('Path to the background image')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -445,7 +440,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" class="enabler" name="custom_css" id="custom_css"
                                     ${('', 'checked="checked"')[bool(sickbeard.CUSTOM_CSS)]} />
-                                <label for="custom_css">${_('use a custom .css file to style SickRage (for advanced users)')}</label>
+                                <label for="custom_css">${_('use a custom .css file to style SickChill (for advanced users)')}</label>
                             </div>
                         </div>
                         <div id="content_custom_css">
@@ -476,6 +471,27 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" name="display_all_seasons" id="display_all_seasons" ${('', 'checked="checked"')[bool(sickbeard.DISPLAY_ALL_SEASONS)]}>
                                 <label for="display_all_seasons">${_('on the show summary page')}</label>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Days to wait before updating ended shows')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input class="form-control input-sm input75" type="number" name="ended_shows_update_interval" id="ended_shows_update_interval" min="-1" max="365"
+                                               value="${sickbeard.ENDED_SHOWS_UPDATE_INTERVAL}">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="ended_shows_update_interval">
+                                            ${_('Ended shows will only be updated after this many days have passed, if there is an update for the show')}
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -635,7 +651,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <h3>${_('Web Interface')}</h3>
-                        <p>${_('it is recommended that you enable a username and password to secure SickRage from being tampered with remotely.')}</p>
+                        <p>${_('it is recommended that you enable a username and password to secure SickChill from being tampered with remotely.')}</p>
                         <p><b>${_('these options require a manual restart to take effect.')}</b></p>
                     </div>
                 </div>
@@ -655,12 +671,12 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="api_key">${_('used to give 3rd party programs limited access to SickRage')}</label>
+                                        <label for="api_key">${_('used to give 3rd party programs limited access to SickChill')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label>${_('you can try all the features of the API')} <a href="${srRoot}/apibuilder/">${_('here')}</a></label>
+                                        <label>${_('you can try all the features of the API')} <a href="${static_url("apibuilder/", include_version=False)}">${_('here')}</a></label>
                                     </div>
                                 </div>
                             </div>
@@ -701,7 +717,9 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="password" name="web_password" id="web_password" value="${sickbeard.WEB_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off"/>
+                                        <input
+                                            type="password" name="web_password" id="web_password" value="${sickbeard.WEB_PASSWORD|hide}"
+                                            class="form-control input-sm input300" autocomplete="no" autocapitalize="off"/>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -724,7 +742,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="web_port">${_('web port to browse and access SickRage (default:8081)')}</label>
+                                        <label for="web_port">${_('web port to browse and access SickChill (default:8081)')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -1080,136 +1098,6 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Branch version')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <select id="branchVersion" class="form-control form-control-inline input-sm pull-left" title="Branch Version">
-                                            <% gh_branch = sickbeard.versionCheckScheduler.action.list_remote_branches() %>
-                                            <% gh_credentials = (sickbeard.GIT_AUTH_TYPE == 0 and sickbeard.GIT_USERNAME and sickbeard.GIT_PASSWORD) \
-                                                                  or (sickbeard.GIT_AUTH_TYPE == 1 and sickbeard.GIT_TOKEN) %>
-                                            % if gh_branch:
-                                                % for cur_branch in gh_branch:
-                                                    % if gh_credentials and sickbeard.DEVELOPER == 1:
-                                                        <option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>
-                                                    % elif gh_credentials and cur_branch in ['master', 'develop']:
-                                                        <option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>
-                                                    % elif cur_branch == 'master':
-                                                        <option value="${cur_branch}" ${('', 'selected="selected"')[sickbeard.BRANCH == cur_branch]}>${cur_branch}</option>
-                                                    % endif
-                                                % endfor
-                                            % endif
-                                        </select>
-                                        % if not gh_branch:
-                                            <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch" disabled>
-                                        % else:
-                                            <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch">
-                                        % endif
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        % if not gh_branch:
-                                            <div class="clear-left" style="color:#FF0000"><label>${_('error: No branches found.')}</label></div>
-                                        % else:
-                                            <div class="clear-left"><label>${_('select branch to use (restart required)')}</label></div>
-                                        % endif
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Authorization Type')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input type="radio" name="git_auth_type" id="git_auth_type_basic" value="0" ${('', 'checked="checked"')[sickbeard.GIT_AUTH_TYPE == 0]}/>
-                                        <label for="git_auth_type_basic">${_('Username and password')}</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input type="radio" name="git_auth_type" id="git_auth_type_token" value="1" ${('', 'checked="checked"')[sickbeard.GIT_AUTH_TYPE == 1]}/>
-                                        <label for="git_auth_type_token">${_('Personal access token')}</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label><b>${_('note')}:</b>&nbsp;${_('You must use a personal access token if you\'re using "two-factor authentication" on GitHub.')}</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div name="content_github_auth_type">
-                            <div class="field-pair row">
-                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('GitHub username')}</label>
-                                </div>
-                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <input type="text" name="git_username" id="git_username" value="${sickbeard.GIT_USERNAME}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label for="git_username">${_('*** (REQUIRED FOR SUBMITTING ISSUES) ***')}</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="field-pair row">
-                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('GitHub password')}</label>
-                                </div>
-                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <input type="password" name="git_password" id="git_password" value="${sickbeard.GIT_PASSWORD}" class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label for="git_password">${_('*** (REQUIRED FOR SUBMITTING ISSUES) ***')}</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div name="content_github_auth_type">
-                            <div class="field-pair row">
-                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('GitHub personal access token')}</label>
-                                </div>
-                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <input type="text" name="git_token" id="git_token" value="${sickbeard.GIT_TOKEN}" class="form-control input-sm input350" autocapitalize="off" autocomplete="no" />
-                                            % if not sickbeard.GIT_TOKEN:
-                                                <input class="btn btn-inline" type="button" id="create_access_token" value="${_('Generate Token')}">
-                                            % else:
-                                                <input class="btn btn-inline" type="button" id="manage_tokens" value="${_('Manage Tokens')}">
-                                            % endif
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label for="git_token">${_('*** (REQUIRED FOR SUBMITTING ISSUES) ***')}</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('GitHub remote for branch')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
@@ -1226,6 +1114,76 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <label for="git_remote"><b>${_('default')}:</b>&nbsp;${_('origin')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Branch version')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <select id="branchVersion" class="form-control form-control-inline input-sm pull-left" title="Branch Version"></select>
+                                        <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch" disabled>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <% loading_spinner = static_url('images/loading16' + ('', '-dark')[sickbeard.THEME_NAME == 'dark'] + '.gif') %>
+                                        <div class="clear-left"><label id="branchVersionLabel"><img src="${loading_spinner}" height="16" width="16" /> Loading...</label></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('GitHub username')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="text" name="git_username" id="git_username" value="${sickbeard.GIT_USERNAME}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="git_username">${_('Only used for web IRC chat')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('GitHub personal access token')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input
+                                            type="password" name="git_token" id="git_token" value="${sickbeard.GIT_TOKEN|hide}"
+                                            class="form-control input-sm input350" autocapitalize="off" autocomplete="no"
+                                        />
+                                        % if not sickbeard.GIT_TOKEN:
+                                            <input class="btn btn-inline" type="button" id="create_access_token" value="${_('Generate Token')}">
+                                        % else:
+                                            <input class="btn btn-inline" type="button" id="manage_tokens" value="${_('Manage Tokens')}">
+                                        % endif
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="git_token">${_('*** (REQUIRED FOR SUBMITTING ISSUES) ***')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="git_token">
+                                            ${_('Provide repo:status, public_repo, write:discussion, read:discussion, user, gist, and notifications')}
+                                        </label>
                                     </div>
                                 </div>
                             </div>

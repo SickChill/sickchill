@@ -10,14 +10,16 @@ class RequestTestCase(TestCase):
 
     @httprettified
     def test_response_error(self):
-        request = Request('apikey', 'objid', 'series')
+        request = Request('apikey', 'objid', 'tv')
         HTTPretty.register_uri(
             HTTPretty.GET,
-            'http://api.fanart.tv/webservice/series/apikey/objid/JSON/all/1/2',
+            'http://webservice.fanart.tv/v3/tv/objid?api_key=apikey',
             body='Please specify a valid API key',
         )
         try:
             request.response()
         except ResponseFanartError as e:
-            self.assertEqual(repr(e), "ResponseFanartError('No JSON object could be decoded',)")
-            self.assertEqual(str(e), 'No JSON object could be decoded')
+            self.assertEqual(repr(e), "ResponseFanartError('Expecting value: "
+                                      "line 1 column 1 (char 0)',)")
+            self.assertEqual(str(e), "Expecting value: "
+                                     "line 1 column 1 (char 0)")
