@@ -31,6 +31,7 @@ class Account(TMDB):
         'favorite': '/{id}/favorite',
         'rated_movies': '/{id}/rated/movies',
         'rated_tv': '/{id}/rated/tv',
+        'rated_tv_episodes': '/{id}/rated/tv/episodes',
         'watchlist_movies': '/{id}/watchlist/movies',
         'watchlist_tv': '/{id}/watchlist/tv',
         'watchlist': '/{id}/watchlist',
@@ -170,6 +171,25 @@ class Account(TMDB):
             A dict respresentation of the JSON returned from the API.
         """
         path = self._get_id_path('rated_tv')
+        kwargs.update({'session_id': self.session_id})
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
+    def rated_tv_episodes(self, **kwargs):
+        """
+        Get a list of all the TV episodes you have rated.
+
+        Args:
+            page: (optional) Minimum 1, maximum 1000.
+            sort_by: (optional) 'created_at.asc' | 'created_at.desc'
+            language: (optional) ISO 639-1 code.
+
+        Returns:
+            A dict respresentation of the JSON returned from the API.
+        """
+        path = self._get_id_path('rated_tv_episodes')
         kwargs.update({'session_id': self.session_id})
 
         response = self._GET(path, kwargs)

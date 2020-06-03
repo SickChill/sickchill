@@ -352,7 +352,7 @@ class TV_Seasons(TMDB):
 
     See: https://developers.themoviedb.org/3/tv-seasons
     """
-    BASE_PATH = 'tv/{series_id}/season/{season_number}'
+    BASE_PATH = 'tv/{tv_id}/season/{season_number}'
     URLS = {
         'info': '',
         'credits': '/credits',
@@ -361,9 +361,9 @@ class TV_Seasons(TMDB):
         'videos': '/videos',
     }
 
-    def __init__(self, series_id, season_number):
+    def __init__(self, tv_id, season_number):
         super(TV_Seasons, self).__init__()
-        self.series_id = series_id
+        self.tv_id = tv_id
         self.season_number = season_number
 
     def info(self, **kwargs):
@@ -378,7 +378,7 @@ class TV_Seasons(TMDB):
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
-        path = self._get_series_id_season_number_path('info')
+        path = self._get_tv_id_season_number_path('info')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
@@ -391,7 +391,7 @@ class TV_Seasons(TMDB):
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
-        path = self._get_series_id_season_number_path('credits')
+        path = self._get_tv_id_season_number_path('credits')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
@@ -408,7 +408,7 @@ class TV_Seasons(TMDB):
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
-        path = self._get_series_id_season_number_path('external_ids')
+        path = self._get_tv_id_season_number_path('external_ids')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
@@ -427,7 +427,7 @@ class TV_Seasons(TMDB):
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
-        path = self._get_series_id_season_number_path('images')
+        path = self._get_tv_id_season_number_path('images')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
@@ -444,7 +444,7 @@ class TV_Seasons(TMDB):
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
-        path = self._get_series_id_season_number_path('videos')
+        path = self._get_tv_id_season_number_path('videos')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
@@ -457,7 +457,7 @@ class TV_Episodes(TMDB):
 
     See: https://developers.themoviedb.org/3/tv-episodes
     """
-    BASE_PATH = 'tv/{series_id}/season/{season_number}/episode/{episode_number}'
+    BASE_PATH = 'tv/{tv_id}/season/{season_number}/episode/{episode_number}'
     URLS = {
         'info': '',
         'credits': '/credits',
@@ -467,9 +467,9 @@ class TV_Episodes(TMDB):
         'videos': '/videos',
     }
 
-    def __init__(self, series_id, season_number, episode_number):
+    def __init__(self, tv_id, season_number, episode_number):
         super(TV_Episodes, self).__init__()
-        self.series_id = series_id
+        self.tv_id = tv_id
         self.season_number = season_number
         self.episode_number = episode_number
 
@@ -486,7 +486,7 @@ class TV_Episodes(TMDB):
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
-        path = self._get_series_id_season_number_episode_number_path('info')
+        path = self._get_tv_id_season_number_episode_number_path('info')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
@@ -499,7 +499,7 @@ class TV_Episodes(TMDB):
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
-        path = self._get_series_id_season_number_episode_number_path('credits')
+        path = self._get_tv_id_season_number_episode_number_path('credits')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
@@ -516,7 +516,7 @@ class TV_Episodes(TMDB):
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
-        path = self._get_series_id_season_number_episode_number_path(
+        path = self._get_tv_id_season_number_episode_number_path(
             'external_ids')
 
         response = self._GET(path, kwargs)
@@ -532,7 +532,7 @@ class TV_Episodes(TMDB):
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
-        path = self._get_series_id_season_number_episode_number_path('images')
+        path = self._get_tv_id_season_number_episode_number_path('images')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
@@ -551,7 +551,7 @@ class TV_Episodes(TMDB):
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
-        path = self._get_series_id_season_number_episode_number_path('rating')
+        path = self._get_tv_id_season_number_episode_number_path('rating')
 
         payload = {
             'value': kwargs.pop('value', None),
@@ -572,7 +572,7 @@ class TV_Episodes(TMDB):
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
-        path = self._get_series_id_season_number_episode_number_path('videos')
+        path = self._get_tv_id_season_number_episode_number_path('videos')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)

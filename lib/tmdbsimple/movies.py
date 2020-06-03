@@ -446,6 +446,7 @@ class Collections(TMDB):
     URLS = {
         'info': '/{id}',
         'images': '/{id}/images',
+        'translations': '/{id}/translations',
     }
 
     def __init__(self, id):
@@ -476,7 +477,7 @@ class Collections(TMDB):
 
     def images(self, **kwargs):
         """
-        Get all of the images for a particular collection by collection id.
+        Get the images for a collection by id.
 
         Args:
             language: (optional) ISO 639-1 code.
@@ -488,6 +489,23 @@ class Collections(TMDB):
             A dict representation of the JSON returned from the API.
         """
         path = self._get_id_path('images')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
+    def translations(self, **kwargs):
+        """
+        Get a list of the translations for a collection by id.
+
+        Args:
+            language: (optional) ISO 639-1 code.
+            append_to_response: (optional) Comma separated, any movie method.
+
+        Returns:
+            A dict representation of the JSON returned from the API.
+        """
+        path = self._get_id_path('translations')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)

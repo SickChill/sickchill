@@ -25,7 +25,11 @@ class Configuration(TMDB):
     BASE_PATH = 'configuration'
     URLS = {
         'info': '',
+        'countries': '/countries',
+        'jobs': '/jobs',
         'languages': '/languages',
+        'primary_translations': '/primary_translations',
+        'timezones': '/timezones',
     }
 
     def info(self, **kwargs):
@@ -36,6 +40,32 @@ class Configuration(TMDB):
             A dict respresentation of the JSON returned from the API.
         """
         path = self._get_path('info')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
+    def countries(self, **kwargs):
+        """
+        Get the list of countries (ISO 3166-1 tags) used throughout TMDb.
+
+        Returns:
+            A dict respresentation of the JSON returned from the API.
+        """
+        path = self._get_path('countries')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
+    def jobs(self, **kwargs):
+        """
+        Get a list of the jobs and departments we use on TMDb.
+
+        Returns:
+            A dict respresentation of the JSON returned from the API.
+        """
+        path = self._get_path('jobs')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
@@ -54,6 +84,32 @@ class Configuration(TMDB):
         self._set_attrs_to_values(response)
         return response
 
+    def primary_translations(self, **kwargs):
+        """
+        Get a list of the officially supported translations on TMDb.
+
+        Returns:
+            A dict respresentation of the JSON returned from the API.
+        """
+        path = self._get_path('primary_translations')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
+    def timezones(self, **kwargs):
+        """
+        Get the list of timezones used throughout TMDb.
+
+        Returns:
+            A dict respresentation of the JSON returned from the API.
+        """
+        path = self._get_path('timezones')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
 
 class Certifications(TMDB):
     """
@@ -64,8 +120,10 @@ class Certifications(TMDB):
     BASE_PATH = 'certification'
     URLS = {
         'movie_list': '/movie/list',
+        'tv_list': '/tv/list',
     }
 
+    # here for backward compatability, when only movie_list existed
     def list(self, **kwargs):
         """
         Get the list of supported certifications for movies.
@@ -74,6 +132,32 @@ class Certifications(TMDB):
             A dict respresentation of the JSON returned from the API.
         """
         path = self._get_path('movie_list')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
+    def movie_list(self, **kwargs):
+        """
+        Get an up to date list of the officially supported movie certifications on TMDb.
+
+        Returns:
+            A dict respresentation of the JSON returned from the API.
+        """
+        path = self._get_path('movie_list')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
+    def tv_list(self, **kwargs):
+        """
+        Get an up to date list of the officially supported TV show certifications on TMDb.
+
+        Returns:
+            A dict respresentation of the JSON returned from the API.
+        """
+        path = self._get_path('tv_list')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)

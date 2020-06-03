@@ -19,7 +19,7 @@ __contributors__ = [
     "Alex Yu",
 ]
 __license__ = "MIT"
-__version__ = '0.17.3'
+__version__ = "0.18.1"
 
 import base64
 import calendar
@@ -1985,6 +1985,9 @@ class Http(object):
                 headers["user-agent"] = "Python-httplib2/%s (gzip)" % __version__
 
             uri = iri2uri(uri)
+            # Prevent CWE-75 space injection to manipulate request via part of uri.
+            # Prevent CWE-93 CRLF injection to modify headers via part of uri.
+            uri = uri.replace(" ", "%20").replace("\r", "%0D").replace("\n", "%0A")
 
             (scheme, authority, request_uri, defrag_uri) = urlnorm(uri)
 
