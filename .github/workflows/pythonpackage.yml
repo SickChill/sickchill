@@ -94,7 +94,7 @@ jobs:
     - name: Set up Docker Buildx
       if: success()
       id: buildx
-      uses: crazy-max/ghaction-docker-buildx@v1
+      uses: crazy-max/ghaction-docker-buildx@v2
       with:
         version: latest
     - name: Available platforms
