@@ -32,6 +32,11 @@ class DelugeBase(object):
             options.update({
                 'download_location': sickbeard.TORRENT_PATH_INCOMPLETE or sickbeard.TORRENT_PATH,
                 'move_completed': bool(sickbeard.TORRENT_PATH_INCOMPLETE),
+            })
+
+        if sickbeard.TORRENT_PATH and sickbeard.TORRENT_PATH_INCOMPLETE:
+            options.update({
+                'move_completed': True,
                 'move_completed_path': sickbeard.TORRENT_PATH
             })
 
