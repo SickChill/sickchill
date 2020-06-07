@@ -520,6 +520,8 @@ class Companies(TMDB):
     BASE_PATH = 'company'
     URLS = {
         'info': '/{id}',
+        'alternative_names': '/{id}/alternative_names',
+        'images': '/{id}/images',
         'movies': '/{id}/movies',
     }
 
@@ -544,6 +546,37 @@ class Companies(TMDB):
         self._set_attrs_to_values(response)
         return response
 
+    def alternative_names(self, **kwargs):
+        """
+        Get the alternative names of a company.
+
+        Args:
+
+        Returns:
+            A dict representation of the JSON returned from the API.
+        """
+        path = self._get_id_path('alternative_names')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
+    def images(self, **kwargs):
+        """
+        Get a companies logos by id.
+
+        Args:
+
+        Returns:
+            A dict representation of the JSON returned from the API.
+        """
+        path = self._get_id_path('images')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
+    # here for backward compatability, when /movies existed
     def movies(self, **kwargs):
         """
         Get the list of movies associated with a particular company.
@@ -561,6 +594,7 @@ class Companies(TMDB):
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
         return response
+
 
 class Keywords(TMDB):
     """

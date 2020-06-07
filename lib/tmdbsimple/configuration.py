@@ -123,7 +123,7 @@ class Certifications(TMDB):
         'tv_list': '/tv/list',
     }
 
-    # here for backward compatability, when only movie_list existed
+    # here for backward compatability, when only /movie/list existed
     def list(self, **kwargs):
         """
         Get the list of supported certifications for movies.
