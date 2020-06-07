@@ -1,10 +1,10 @@
-tmdbsimple-2.2.10.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
-tmdbsimple-2.2.10.dist-info/LICENSE,sha256=4cCtcomD2KVzNeUs8QZPGv_R1FQXPYzr0-2LSnK0hwQ,35121
-tmdbsimple-2.2.10.dist-info/METADATA,sha256=rM3Z0j31fqKHPQfxxigX2uOmrId7bUy90LdR2dvxgHs,6223
-tmdbsimple-2.2.10.dist-info/RECORD,,
-tmdbsimple-2.2.10.dist-info/WHEEL,sha256=kGT74LWyRUZrL4VgLh6_g12IeVl_9u9ZVhadrgXZUEY,110
-tmdbsimple-2.2.10.dist-info/top_level.txt,sha256=lh1e8hjj3ghHZypVpI6357o4oVWoAzxwKR0AMOP4SoI,11
-tmdbsimple/__init__.py,sha256=3en48lU9c-RPj34-VbM-riUdr22vQTPEYg_241ca7zE,1341
+tmdbsimple-2.2.11.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+tmdbsimple-2.2.11.dist-info/LICENSE,sha256=4cCtcomD2KVzNeUs8QZPGv_R1FQXPYzr0-2LSnK0hwQ,35121
+tmdbsimple-2.2.11.dist-info/METADATA,sha256=Qlw9g3kwagYDSbG8-InFgO6x90q3-pQOWWsPnhtN6W4,6223
+tmdbsimple-2.2.11.dist-info/RECORD,,
+tmdbsimple-2.2.11.dist-info/WHEEL,sha256=kGT74LWyRUZrL4VgLh6_g12IeVl_9u9ZVhadrgXZUEY,110
+tmdbsimple-2.2.11.dist-info/top_level.txt,sha256=lh1e8hjj3ghHZypVpI6357o4oVWoAzxwKR0AMOP4SoI,11
+tmdbsimple/__init__.py,sha256=Ds164LrrIwsMW3wDt8Bze1-DsCXJlXZQi6udQUUdWtc,1341
 tmdbsimple/__init__.pyc,,
 tmdbsimple/account.py,sha256=8NvasLis5swrfrPbOGp_LCpRpvubXmeJlSiAZvnvACA,15782
 tmdbsimple/account.pyc,,
@@ -12,7 +12,7 @@ tmdbsimple/base.py,sha256=-kbHKfEiAfCZFSNXmQQU_GqJ7CaK9uplsFUl8k1DSHU,3359
 tmdbsimple/base.pyc,,
 tmdbsimple/changes.py,sha256=vKOTHh1jS7h-SjGlco-oHn4-IweZoAKusly2GlRrpAM,2201
 tmdbsimple/changes.pyc,,
-tmdbsimple/configuration.py,sha256=DVbo3gPCB8Zv3XFba-wNSaT6zl0ajKCCnznOk4k0ltQ,4993
+tmdbsimple/configuration.py,sha256=QheOk-bpYGsEYWJf2n3fspntXpaTQf8XoSAF-eHNqvM,4994
 tmdbsimple/configuration.pyc,,
 tmdbsimple/discover.py,sha256=kRQlYeaiC9Vb832p2DxK_8dZbiiaZ1mdp49QgYGnttA,7255
 tmdbsimple/discover.pyc,,
@@ -20,7 +20,7 @@ tmdbsimple/find.py,sha256=BTWqSB_4Cs4rvX8azlK4mZYt9IMGNH-W06zt_H-PEbA,1424
 tmdbsimple/find.pyc,,
 tmdbsimple/genres.py,sha256=hCW9CIHScHgCuEbPXWkTRn8OfLzvbBtSjzbeOeI2WJ0,2349
 tmdbsimple/genres.pyc,,
-tmdbsimple/movies.py,sha256=ep5Z7oJ_ovmLq1_5hAj7AUABrOuUIkp8jkWEZhxcGHU,18702
+tmdbsimple/movies.py,sha256=GCzLQUAsZRLOcz90mgPIWfF9AsXvq7lwQsE3Q4M3G38,19588
 tmdbsimple/movies.pyc,,
 tmdbsimple/people.py,sha256=xXoyEejMQ_zyi7Y29YLgw6IZk2NWxuU-7yJ2whsQWOU,7241
 tmdbsimple/people.pyc,,

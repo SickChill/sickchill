@@ -1,12 +1,12 @@
 Metadata-Version: 2.1
 Name: tmdbsimple
-Version: 2.2.10
+Version: 2.2.11
 Summary: A Python wrapper for The Movie Database API v3
 Home-page: https://github.com/celiao/tmdbsimple
 Author: Celia Oakley
 Author-email: celia.oakley@alumni.stanford.edu
 License: UNKNOWN
-Download-URL: https://github.com/celiao/tmdbsimple/tarball/2.2.10
+Download-URL: https://github.com/celiao/tmdbsimple/tarball/2.2.11
 Keywords: movie,the movie database,movie database,tmdb,wrapper,database,themoviedb,moviedb,api
 Platform: UNKNOWN
 Classifier: Development Status :: 5 - Production/Stable
