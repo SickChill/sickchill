@@ -1392,6 +1392,7 @@ class CMDPostProcess(ApiCall):
     def __init__(self, args, kwargs):
         super(CMDPostProcess, self).__init__(args, kwargs)
         self.path, args = self.check_params(args, kwargs, "path", None, False, "string", [])
+        self.release_name, args = self.check_params(args, kwargs, "release_name", None, False, "string", [])
         self.force_replace, args = self.check_params(args, kwargs, "force_replace", False, False, "bool", [])
         self.force_next, args = self.check_params(args, kwargs, "force_next", False, False, "bool", [])
         self.return_data, args = self.check_params(args, kwargs, "return_data", False, False, "bool", [])
@@ -1414,7 +1415,7 @@ class CMDPostProcess(ApiCall):
             self.type = 'manual'
 
         data = sickbeard.postProcessorTaskScheduler.action.add_item(
-            self.path, method=self.process_method, force=self.force_replace,
+            self.path, self.release_name, method=self.process_method, force=self.force_replace,
             is_priority=self.is_priority, failed=self.failed, delete=self.delete,
             mode=self.type, force_next=self.force_next
         )
