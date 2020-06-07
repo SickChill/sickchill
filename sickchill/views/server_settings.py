@@ -57,7 +57,7 @@ class SRWebServer(threading.Thread):
             # 'password': sickbeard.WEB_PASSWORD or '',
         })
 
-        self.options.setdefault('port', 8081)
+        self.options.setdefault('port', sickbeard.WEB_PORT or 8081)
 
         assert isinstance(self.options['port'], int)
         assert 'data_root' in self.options
