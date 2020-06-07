@@ -106,11 +106,8 @@ class SickChill(object):
         self.forced_port = None
         self.no_launch = False
 
-        self.web_host = '0.0.0.0'
         self.start_port = sickbeard.WEB_PORT
-        self.web_options = {}
 
-        self.log_dir = None
         self.console_logging = True
 
     @staticmethod
@@ -261,41 +258,18 @@ class SickChill(object):
 
         self.clear_cache()
 
+        web_options = {}
         if self.forced_port:
             logger.log('Forcing web server to port {port}'.format(port=self.forced_port))
             self.start_port = self.forced_port
+            web_options.update({
+                'port': int(self.start_port),
+            })
         else:
             self.start_port = sickbeard.WEB_PORT
 
-        if sickbeard.WEB_LOG:
-            self.log_dir = sickbeard.LOG_DIR
-        else:
-            self.log_dir = None
-
-        # sickbeard.WEB_HOST is available as a configuration value in various
-        # places but is not configurable. It is supported here for historic reasons.
-        if sickbeard.WEB_HOST and sickbeard.WEB_HOST != '0.0.0.0':
-            self.web_host = sickbeard.WEB_HOST
-        else:
-            self.web_host = '' if sickbeard.WEB_IPV6 else '0.0.0.0'
-
-        # web server options
-        self.web_options = {
-            'port': int(self.start_port),
-            'host': self.web_host,
-            'data_root': ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME),
-            'web_root': sickbeard.WEB_ROOT,
-            'log_dir': self.log_dir,
-            'username': sickbeard.WEB_USERNAME,
-            'password': sickbeard.WEB_PASSWORD,
-            'enable_https': sickbeard.ENABLE_HTTPS,
-            'handle_reverse_proxy': sickbeard.HANDLE_REVERSE_PROXY,
-            'https_cert': ek(os.path.join, sickbeard.PROG_DIR, sickbeard.HTTPS_CERT),
-            'https_key': ek(os.path.join, sickbeard.PROG_DIR, sickbeard.HTTPS_KEY),
-        }
-
         # start web server
-        self.web_server = SRWebServer(self.web_options)
+        self.web_server = SRWebServer(web_options)
         self.web_server.start()
 
         # Fire up all our threads

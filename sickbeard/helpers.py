@@ -802,6 +802,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         from OpenSSL import crypto
         from certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA
     except Exception:
+        logger.log(traceback.format_exc())
         logger.log(_("pyopenssl module missing, please install for https access"), logger.WARNING)
         return False
 
@@ -821,14 +822,16 @@ def create_https_certificates(ssl_cert, ssl_key):
     # Save the key and certificate to disk
     # noinspection PyBroadException
     try:
-
         # Module has no member
         io.open(ssl_key, 'wb').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
         io.open(ssl_cert, 'wb').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
-    except Exception:
-        logger.log(_("Error creating SSL key and certificate"), logger.ERROR)
+    except Exception as error:
+        logger.log(traceback.format_exc())
+        logger.log(_("Error creating SSL key and certificate {error}").format(error.message), logger.WARNING)
         return False
 
+    logger.log(_('Created https key: {ssl_key}').format(ssl_key=ssl_key))
+    logger.log(_('Created https cert: {ssl_cert}').format(ssl_cert=ssl_cert))
     return True
 
 

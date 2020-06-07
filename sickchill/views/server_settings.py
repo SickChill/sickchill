@@ -39,13 +39,25 @@ class SRWebServer(threading.Thread):
         self.alive = True
         self.name = "WEBSERVER"
 
-        self.options = options or {}
+        self.options = options
+
+        if sickbeard.WEB_HOST and sickbeard.WEB_HOST != '0.0.0.0':
+            web_host = sickbeard.WEB_HOST
+        else:
+            web_host = ('0.0.0.0', '')[sickbeard.WEB_IPV6]
+
+        self.options.update({
+            'data_root': ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME),
+            'web_root': sickbeard.WEB_ROOT,
+            'host': web_host,
+            'enable_https': sickbeard.ENABLE_HTTPS,
+            'handle_reverse_proxy': sickbeard.HANDLE_REVERSE_PROXY,
+            'log_dir': (None, sickbeard.LOG_DIR)[sickbeard.WEB_LOG],
+            # 'username': sickbeard.WEB_USERNAME or '',
+            # 'password': sickbeard.WEB_PASSWORD or '',
+        })
+
         self.options.setdefault('port', 8081)
-        self.options.setdefault('host', '0.0.0.0')
-        self.options.setdefault('log_dir', None)
-        self.options.setdefault('username', '')
-        self.options.setdefault('password', '')
-        self.options.setdefault('web_root', '/')
 
         assert isinstance(self.options['port'], int)
         assert 'data_root' in self.options
@@ -61,7 +73,7 @@ class SRWebServer(threading.Thread):
 
         # web root
         if self.options['web_root']:
-            sickbeard.WEB_ROOT = self.options['web_root'] = ('/' + self.options['web_root'].lstrip('/').strip('/'))
+            sickbeard.WEB_ROOT = self.options['web_root'] = '/' + self.options['web_root'].strip('/')
 
         # api root
         if not sickbeard.API_KEY:
@@ -70,22 +82,29 @@ class SRWebServer(threading.Thread):
 
         # tornado setup
         self.enable_https = self.options['enable_https']
-        self.https_cert = self.options['https_cert']
-        self.https_key = self.options['https_key']
+
+        self.https_cert = None
+        if sickbeard.HTTPS_CERT:
+            self.https_cert = ek(os.path.realpath, sickbeard.HTTPS_CERT)
+            if not ek(os.path.exists, self.https_cert) and not ek(os.path.isabs, self.https_cert):
+                self.https_cert = ek(os.path.realpath, ek(os.path.join, sickbeard.PROG_DIR, sickbeard.HTTPS_CERT))
+
+        self.https_key = None
+        if sickbeard.HTTPS_KEY:
+            self.https_key = ek(os.path.realpath, sickbeard.HTTPS_KEY)
+            if not ek(os.path.exists, self.https_key) and not ek(os.path.isabs, self.https_key):
+                self.https_key = ek(os.path.realpath, ek(os.path.join, sickbeard.PROG_DIR, sickbeard.HTTPS_KEY))
 
         if self.enable_https:
             # If either the HTTPS certificate or key do not exist, make some self-signed ones.
-            if not (self.https_cert and ek(os.path.exists, self.https_cert)) or not (
-                    self.https_key and ek(os.path.exists, self.https_key)):
+            if not (self.https_cert and ek(os.path.exists, self.https_cert) and self.https_key and ek(os.path.exists, self.https_key)):
                 if not create_https_certificates(self.https_cert, self.https_key):
                     logger.log("Unable to create CERT/KEY files, disabling HTTPS")
-                    sickbeard.ENABLE_HTTPS = False
-                    self.enable_https = False
+                    sickbeard.ENABLE_HTTPS = self.enable_https = False
 
             if not (ek(os.path.exists, self.https_cert) and ek(os.path.exists, self.https_key)):
                 logger.log("Disabled HTTPS because of missing CERT and KEY files", logger.WARNING)
-                sickbeard.ENABLE_HTTPS = False
-                self.enable_https = False
+                sickbeard.ENABLE_HTTPS = self.enable_https = False
 
         # Load the app
         self.app = Application(

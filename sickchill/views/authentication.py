@@ -21,8 +21,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # First Party Imports
 import sickbeard
-from sickbeard import logger, notifiers
-from sickchill.helper import try_int
+from sickbeard import config, logger, notifiers
 
 # Local Folder Imports
 from .common import PageTemplate
@@ -33,7 +32,7 @@ class LoginHandler(BaseHandler):
     def get(self, next_=None):
         next_ = self.get_query_argument('next', next_)
         if self.get_current_user():
-            self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
+            self.redirect(next_ or '/' + sickbeard.DEFAULT_PAGE + '/')
         else:
             t = PageTemplate(rh=self, filename="login.mako")
             self.finish(t.render(title=_("Login"), header=_("Login"), topmenu="login"))
@@ -42,15 +41,14 @@ class LoginHandler(BaseHandler):
         notifiers.notify_login(self.request.remote_ip)
 
         if self.get_body_argument('username', None) == sickbeard.WEB_USERNAME and self.get_body_argument('password', None) == sickbeard.WEB_PASSWORD:
-            remember_me = (None, 30)[try_int(self.get_body_argument('remember_me'), 0) > 0]
-            self.set_secure_cookie('sickchill_user', sickbeard.API_KEY, expires_days=remember_me)
+            remember_me = config.checkbox_to_value(self.get_body_argument('remember_me', 0))
+            self.set_secure_cookie('sickchill_user', sickbeard.API_KEY, expires_days=(None, 30)[remember_me])
             logger.log('User logged into the SickChill web interface', logger.INFO)
         else:
             logger.log('User attempted a failed login to the SickChill web interface from IP: ' + self.request.remote_ip, logger.WARNING)
 
         next_ = self.get_query_argument('next', next_)
-        self.redirect(next_)
-        # self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
+        self.redirect(next_ or '/' + sickbeard.DEFAULT_PAGE + '/')
 
 
 class LogoutHandler(BaseHandler):

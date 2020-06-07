@@ -687,7 +687,7 @@
                                 <label class="component-title">${_('HTTP logs')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="web_log" id="web_log" ${('', 'checked="checked"')[bool(sickbeard.WEB_LOG)]}/>
+                                <input type="checkbox" name="web_log" id="web_log" ${('', 'checked="checked"')[sickbeard.WEB_LOG]}/>
                                 <label>${_('enable logs from the internal Tornado web server')}</label>
                             </div>
                         </div>
@@ -763,7 +763,7 @@
                                 <label class="component-title">${_('Listen on IPv6')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="web_ipv6" id="web_ipv6" ${('', 'checked="checked"')[bool(sickbeard.WEB_IPV6)]}/>
+                                <input type="checkbox" name="web_ipv6" id="web_ipv6" ${('', 'checked="checked"')[sickbeard.WEB_IPV6]}/>
                                 <label for="web_ipv6">${_('attempt binding to any available IPv6 address')}</label>
                             </div>
                         </div>
