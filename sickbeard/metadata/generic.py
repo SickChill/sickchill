@@ -344,8 +344,10 @@ class GenericMetadata(object):
                 helpers.chmodAsParent(nfo_file_path)
 
                 return True
-            except (IOError, etree.ParseError) as e:
-                logger.log("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e), logger.ERROR)
+            except IOError as error:
+                logger.log("Unable to write file to {} - are you sure the folder is writable? {}".format(nfo_file_path, ex(error)), logger.WARNING)
+            except etree.ParseError as error:
+                logger.log("Error parsing existing nfo file at {} - {}".format(nfo_file_path, ex(error)), logger.WARNING)
 
     def create_fanart(self, show_obj):
         if self.fanart and show_obj and not self._has_fanart(show_obj):
