@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-05-17 12:20\n"
+"PO-Revision-Date: 2020-06-08 13:30\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -352,7 +352,7 @@ msgstr "Proberen om legen mappen te wissen onder "
 
 #: sickbeard/helpers.py:563
 msgid "Deleting empty folder: "
-msgstr ""
+msgstr "Lege map wordt verwijderd: "
 
 #: sickbeard/helpers.py:569
 msgid "Unable to delete {0}. Error: {1}"
@@ -500,19 +500,19 @@ msgstr "Verzoek mislukt: {0} ({1})"
 
 #: sickbeard/helpers.py:1412
 msgid "SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to 1.0.1e+"
-msgstr ""
+msgstr "SSL fout bij het aanvragen van URL: '{0}' U heeft {1}, probeer OpenSSL te upgraden naar 1.0.1e+"
 
 #: sickbeard/helpers.py:1414
 msgid "SSL Error requesting url: '{0}' Try disabling Cert Verification on the advanced tab of /config/general"
-msgstr ""
+msgstr "SSL fout bij het aanvragen van URL: '{0}' Probeer certificaat verificatie uit te schakelen op het geavanceerde tabblad van /config/general"
 
 #: sickbeard/helpers.py:1454
 msgid "url is {0}"
-msgstr ""
+msgstr "De URL is {0}"
 
 #: sickbeard/helpers.py:1481
 msgid "Unable to get size for file {0} because the link to the file is not valid"
-msgstr ""
+msgstr "Niet in staat om grootte voor bestand {0} op te halen, omdat de link naar het bestand ongeldig is"
 
 #: sickbeard/helpers.py:1487
 msgid "Unable to get size for file {0} Error: {1}"
@@ -544,7 +544,7 @@ msgstr ""
 
 #: sickbeard/helpers.py:1575 sickbeard/helpers.py:1608
 msgid "Error: {error}"
-msgstr ""
+msgstr "Fout: {error}"
 
 #: sickbeard/helpers.py:1593
 msgid "Not enough free space: Needed: {0} bytes ( {1} ), found: {2} bytes ( {3} )"
