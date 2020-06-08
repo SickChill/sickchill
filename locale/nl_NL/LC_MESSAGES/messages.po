@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-06-08 13:30\n"
+"PO-Revision-Date: 2020-06-08 13:40\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -516,11 +516,11 @@ msgstr "Niet in staat om grootte voor bestand {0} op te halen, omdat de link naa
 
 #: sickbeard/helpers.py:1487
 msgid "Unable to get size for file {0} Error: {1}"
-msgstr ""
+msgstr "Kan grootte voor bestand niet ophalen {0} Fout: {1}"
 
 #: sickbeard/helpers.py:1494
 msgid "Generating New API key"
-msgstr ""
+msgstr "Nieuwe API-sleutel genereren"
 
 #: sickbeard/helpers.py:1551
 msgid "Trying to determine free space on the destination drive"
@@ -548,11 +548,11 @@ msgstr "Fout: {error}"
 
 #: sickbeard/helpers.py:1593
 msgid "Not enough free space: Needed: {0} bytes ( {1} ), found: {2} bytes ( {3} )"
-msgstr ""
+msgstr "Onvoldoende vrije ruimte: Benodigd: {0} bytes ( {1} ), Gevonden: {2} bytes ( {3})"
 
 #: sickbeard/helpers.py:1607
 msgid "Unable to determine free space"
-msgstr ""
+msgstr "Kan geen vrije ruimte bepalen"
 
 #: sickbeard/logger.py:246
 msgid "Missing time zone for network"
@@ -675,7 +675,7 @@ msgstr "aflevering"
 
 #: sickbeard/show_queue.py:210
 msgid "Refresh"
-msgstr ""
+msgstr "Vernieuwen"
 
 #: gui/slick/views/config_providers.mako:860
 #: gui/slick/views/config_providers.mako:957 gui/slick/views/editShow.mako:371
