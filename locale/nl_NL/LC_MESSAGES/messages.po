@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-06-08 13:40\n"
+"PO-Revision-Date: 2020-06-08 14:10\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -524,15 +524,15 @@ msgstr "Nieuwe API-sleutel genereren"
 
 #: sickbeard/helpers.py:1551
 msgid "Trying to determine free space on the destination drive"
-msgstr ""
+msgstr "Proberen vrije ruimte te bepalen op de bestemming schijf"
 
 #: sickbeard/helpers.py:1554
 msgid "A path to a file is required for the source. {0} is not a file."
-msgstr ""
+msgstr "Een pad naar een bestand is vereist voor de bron. {0} is geen bestand."
 
 #: sickbeard/helpers.py:1558
 msgid "A path is required for the destination. Check that the root dir and show locations are correct for {0} (I got '{1}')"
-msgstr ""
+msgstr "Een pad is vereist voor de bestemming. Controleer of de hoofdmap en serie locaties correct zijn voor {0} (ik kreeg '{1}')"
 
 #: sickbeard/helpers.py:1568
 msgid "Process method is 'move' and src and destination are on the same device, skipping free space check"
@@ -658,15 +658,15 @@ msgstr "Algemeen"
 
 #: sickbeard/network_timezones.py:131
 msgid "Missing time zone for network: {0}. Check valid network is set in indexer (theTVDB) before filing issue."
-msgstr ""
+msgstr "Er ontbreekt een tijdzone voor het netwerk: {0}. Controleer of een geldig netwerk is ingesteld in de indexer (theTVDB) voordat er een probleem wordt ingediend."
 
 #: sickbeard/search.py:483 sickbeard/search.py:764
 msgid "Performing {episode_or_season} search for {show}"
-msgstr ""
+msgstr "Bezig met zoeken naar {episode_or_season} van {show}"
 
 #: sickbeard/search.py:484 sickbeard/search.py:765
 msgid "season pack"
-msgstr ""
+msgstr "seizoen pakket"
 
 #: gui/slick/views/apiBuilder.mako:317 sickbeard/search.py:484
 #: sickbeard/search.py:765
@@ -689,7 +689,7 @@ msgstr "Update"
 
 #: sickbeard/show_queue.py:213
 msgid "Force Update"
-msgstr ""
+msgstr "Geforceerd bijwerken"
 
 #: gui/slick/views/manage.mako:52 sickbeard/show_queue.py:214
 msgid "Rename"
@@ -711,11 +711,11 @@ msgstr "Bezig met laden"
 
 #: sickbeard/show_queue.py:323
 msgid "Starting to add show {0}"
-msgstr ""
+msgstr "Begonnen met toevoegen van serie {0}"
 
 #: sickbeard/show_queue.py:323
 msgid "by ShowDir: {0}"
-msgstr ""
+msgstr "door ShowDir: {0}"
 
 #: sickbeard/show_queue.py:323
 msgid "by Indexer Id: {0}"
