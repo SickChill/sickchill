@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 12:09\n"
+"PO-Revision-Date: 2020-06-08 14:20\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: English\n"
 "MIME-Version: 1.0\n"
@@ -156,15 +156,15 @@ msgstr "Subtitle Download Finished"
 
 #: sickbeard/common.py:88
 msgid "SickChill Updated"
-msgstr ""
+msgstr "SickRage Updated"
 
 #: sickbeard/common.py:89
 msgid "SickChill Updated To Commit#: "
-msgstr ""
+msgstr "SickRage Updated To Commit#: "
 
 #: sickbeard/common.py:90
 msgid "SickChill new login"
-msgstr ""
+msgstr "SickRage new login"
 
 #: sickbeard/common.py:91
 msgid "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
@@ -172,7 +172,7 @@ msgstr "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
 
 #: sickbeard/common.py:92
 msgid "Finished Post Processing"
-msgstr ""
+msgstr "Config - Post Processing"
 
 #: sickbeard/common.py:117
 msgid "Repeat"
@@ -256,39 +256,39 @@ msgstr "Subtitled"
 
 #: sickbeard/config.py:194
 msgid "Disabling UNPACK setting because no unrar is found and accessible."
-msgstr ""
+msgstr "Disabling UNPACK setting because no unrar is found and accessible."
 
 #: sickbeard/dailysearcher.py:51
 msgid "Searching for new released episodes ..."
-msgstr ""
+msgstr "Searching for new released episodes ..."
 
 #: sickbeard/db.py:91
 msgid "Please check your database owner/permissions: {db_filename}"
-msgstr ""
+msgstr "Please check your database owner/permissions: {db_filename}"
 
 #: sickbeard/db.py:101
 msgid "{exception_severity} error executing query with {method} in database {db_location}: "
-msgstr ""
+msgstr "{exception_severity} error executing query with {method} in database {db_location}: "
 
 #: sickbeard/db.py:108
 msgid "If this happened in cache.db, you can safely stop SickChill, and delete the cache.db file without losing any data"
-msgstr ""
+msgstr "If this happened in cache.db, you can safely stop SickChill, and delete the cache.db file without losing any data"
 
 #: sickbeard/db.py:111
 msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables:s}"
-msgstr ""
+msgstr "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables:s}"
 
 #: sickbeard/db.py:119
 msgid "unable to open database file"
-msgstr ""
+msgstr "unable to open database file"
 
 #: sickbeard/db.py:119
 msgid "database is locked"
-msgstr ""
+msgstr "database is locked"
 
 #: sickbeard/db.py:213
 msgid "You passed a non-iterable to mass_action: {0!r}"
-msgstr ""
+msgstr "You passed a non-iterable to mass_action: {0!r}"
 
 #: sickbeard/db.py:229
 msgid "{filename}: {query}"
