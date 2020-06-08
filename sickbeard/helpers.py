@@ -243,6 +243,10 @@ def is_media_file(filename):
         if re.search(r'^RARBG\.(\w+\.)?(mp4|avi|txt)$', filename, re.I):
             return False
 
+        # ignore Kodi tvshow trailers
+        if filename == 'tvshow-trailer.mp4':
+            return False
+
         # ignore MAC OS's retarded "resource fork" files
         if filename.startswith('._'):
             return False
