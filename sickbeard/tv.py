@@ -928,9 +928,32 @@ class TVShow(object):
                  ["DELETE FROM tv_shows WHERE indexer_id = ?", [self.indexerid]],
                  ["DELETE FROM imdb_info WHERE indexer_id = ?", [self.indexerid]],
                  ["DELETE FROM xem_refresh WHERE indexer_id = ?", [self.indexerid]],
-                 ["DELETE FROM scene_numbering WHERE indexer_id = ?", [self.indexerid]]]
+                 ["DELETE FROM scene_numbering WHERE indexer_id = ?", [self.indexerid]],
+                 ["DELETE FROM history WHERE showid = ?", [self.indexerid]],
+                 ["DELETE FROM indexer_mapping WHERE indexer_id = ?", [self.indexerid]],
+                 ["DELETE FROM blacklist WHERE show_id = ?", [self.indexerid]],
+                 ["DELETE FROM whitelist WHERE show_id = ?", [self.indexerid]]]
 
         main_db_con.mass_action(sql_l)
+
+        cache_db_con = db.DBConnection('cache.db')
+        sql_l = [
+            ["DELETE FROM scene_exceptions WHERE indexer_id = ?", [self.indexerid]],
+            ["DELETE FROM scene_names WHERE indexer_id = ?", [self.indexerid]]
+        ]
+
+        cache_db_con.mass_action(sql_l)
+
+        for provider in sickbeard.providers.__all__:
+            if cache_db_con.has_table(provider) and cache_db_con.has_column(provider, 'indexerid'):
+                cache_db_con.action("delete from {} WHERE indexerid = ?".format(provider), [self.indexerid])
+
+        failed_db_con = db.DBConnection('failed.db')
+        sql_l = [
+            ["DELETE FROM history WHERE showid = ?", [self.indexerid]],
+        ]
+
+        failed_db_con.mass_action(sql_l)
 
         action = ('delete', 'trash')[sickbeard.TRASH_REMOVE_SHOW]
 
