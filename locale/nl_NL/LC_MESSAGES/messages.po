@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-06-08 14:10\n"
+"PO-Revision-Date: 2020-06-08 14:20\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -172,7 +172,7 @@ msgstr "Nieuwe login van IP: {0}. http://geomaplookup.net/?IP={0}"
 
 #: sickbeard/common.py:92
 msgid "Finished Post Processing"
-msgstr "Nabewerking afgerond"
+msgstr "Verwerking afgerond"
 
 #: sickbeard/common.py:117
 msgid "Repeat"
@@ -460,7 +460,7 @@ msgstr "Gebruik van anidb uitgeschakeld. Overslaan"
 
 #: sickbeard/helpers.py:1111
 msgid "anidb username and/or password are not set. Aborting anidb lookup."
-msgstr "anidb gebruikersnaam en/of wachtwoord zijn niet ingesteld. Het opzoeken van anidb is afgebroken."
+msgstr "anidb gebruikersnaam en/of wachtwoord zijn niet ingesteld. Het zoeken op anidb is afgebroken."
 
 #: sickbeard/helpers.py:1116
 msgid "anidb: {0} "
@@ -3671,7 +3671,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3129
 msgid "Matrix"
-msgstr ""
+msgstr "Matrix"
 
 #: gui/slick/views/config_notifications.mako:3131
 msgid "Matrix is an open fabric for communication that anyone can participate in."
@@ -3687,7 +3687,7 @@ msgstr ""
 
 #: gui/slick/views/config_notifications.mako:3198
 msgid "matrix server address"
-msgstr ""
+msgstr "adres van matrix server"
 
 #: gui/slick/views/config_notifications.mako:3212
 msgid "matrix server room"
