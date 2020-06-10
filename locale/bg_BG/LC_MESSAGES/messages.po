@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 12:09\n"
+"PO-Revision-Date: 2020-06-10 09:40\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Bulgarian\n"
 "MIME-Version: 1.0\n"
@@ -464,7 +464,7 @@ msgstr ""
 
 #: sickbeard/helpers.py:1116
 msgid "anidb: {0} "
-msgstr ""
+msgstr "anidb: {0} "
 
 #: sickbeard/helpers.py:1121 sickbeard/helpers.py:1130
 msgid "anidb exception msg: {0} "
