@@ -498,6 +498,13 @@ SLACK_NOTIFY_SUBTITLEDOWNLOAD = None
 SLACK_WEBHOOK = None
 SLACK_ICON_EMOJI = None
 
+USE_ROCKETCHAT = False
+ROCKETCHAT_NOTIFY_SNATCH = None
+ROCKETCHAT_NOTIFY_DOWNLOAD = None
+ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD = None
+ROCKETCHAT_WEBHOOK = None
+ROCKETCHAT_ICON_EMOJI = None
+
 USE_MATRIX = False
 MATRIX_NOTIFY_SNATCH = None
 MATRIX_NOTIFY_DOWNLOAD = None
@@ -751,6 +758,7 @@ def initialize(consoleLogging=True):
             NEWS_LATEST, SOCKET_TIMEOUT, SYNOLOGY_DSM_HOST, SYNOLOGY_DSM_USERNAME, SYNOLOGY_DSM_PASSWORD, SYNOLOGY_DSM_PATH, GUI_LANG, SICKCHILL_BACKGROUND, \
             SICKCHILL_BACKGROUND_PATH, FANART_BACKGROUND, FANART_BACKGROUND_OPACITY, CUSTOM_CSS, CUSTOM_CSS_PATH, USE_SLACK, SLACK_NOTIFY_SNATCH, \
             SLACK_NOTIFY_DOWNLOAD, SLACK_NOTIFY_SUBTITLEDOWNLOAD, SLACK_WEBHOOK, SLACK_ICON_EMOJI, USE_DISCORD, DISCORD_NOTIFY_SNATCH, DISCORD_NOTIFY_DOWNLOAD, DISCORD_WEBHOOK,\
+            USE_ROCKETCHAT, ROCKETCHAT_NOTIFY_SNATCH, ROCKETCHAT_NOTIFY_DOWNLOAD, ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD, ROCKETCHAT_WEBHOOK, ROCKETCHAT_ICON_EMOJI, \
             USE_MATRIX, MATRIX_NOTIFY_SNATCH, MATRIX_NOTIFY_DOWNLOAD, MATRIX_NOTIFY_SUBTITLEDOWNLOAD, MATRIX_API_TOKEN, MATRIX_SERVER, MATRIX_ROOM, \
             ENDED_SHOWS_UPDATE_INTERVAL, IMAGE_CACHE, CF_AUTH_DOMAIN, CF_POLICY_AUD, TVDB_USER, TVDB_USER_KEY, notificationsTaskScheduler
 
@@ -780,6 +788,7 @@ def initialize(consoleLogging=True):
         check_section(CFG, 'Subtitles')
         check_section(CFG, 'pyTivo')
         check_section(CFG, 'Slack')
+        check_section(CFG, 'RocketChat')
         check_section(CFG, 'Discord')
 
         # Need to be before any passwords
@@ -1291,6 +1300,13 @@ def initialize(consoleLogging=True):
         SLACK_NOTIFY_SUBTITLEDOWNLOAD = check_setting_bool(CFG, 'Slack', 'slack_notify_subtitledownload')
         SLACK_WEBHOOK = check_setting_str(CFG, 'Slack', 'slack_webhook')
         SLACK_ICON_EMOJI = check_setting_str(CFG, 'Slack', 'slack_icon_emoji')
+
+        USE_ROCKETCHAT = check_setting_bool(CFG, 'RocketChat', 'use_rocketchat')
+        ROCKETCHAT_NOTIFY_SNATCH = check_setting_bool(CFG, 'RocketChat', 'rocketchat_notify_snatch')
+        ROCKETCHAT_NOTIFY_DOWNLOAD = check_setting_bool(CFG, 'RocketChat', 'rocketchat_notify_download')
+        ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD = check_setting_bool(CFG, 'RocketChat', 'rocketchat_notify_subtitledownload')
+        ROCKETCHAT_WEBHOOK = check_setting_str(CFG, 'RocketChat', 'rocketchat_webhook')
+        ROCKETCHAT_ICON_EMOJI = check_setting_str(CFG, 'RocketChat', 'rocketchat_icon_emoji')
 
         USE_MATRIX = check_setting_bool(CFG, 'Matrix', 'use_matrix')
         MATRIX_NOTIFY_SNATCH = check_setting_bool(CFG, 'Matrix', 'matrix_notify_snatch')
@@ -2234,6 +2250,15 @@ def save_config():
             'slack_notify_subtitledownload': int(SLACK_NOTIFY_SUBTITLEDOWNLOAD),
             'slack_webhook': SLACK_WEBHOOK,
             'slack_icon_emoji': SLACK_ICON_EMOJI
+        },
+
+        'RocketChat': {
+            'use_rocketchat': int(USE_ROCKETCHAT),
+            'rocketchat_notify_snatch': int(ROCKETCHAT_NOTIFY_SNATCH),
+            'rocketchat_notify_download': int(ROCKETCHAT_NOTIFY_DOWNLOAD),
+            'rocketchat_notify_subtitledownload': int(ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD),
+            'rocketchat_webhook': ROCKETCHAT_WEBHOOK,
+            'rocketchat_icon_emoji': ROCKETCHAT_ICON_EMOJI
         },
 
         'Matrix': {

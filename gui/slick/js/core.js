@@ -738,6 +738,12 @@ const SICKCHILL = {
                 });
             });
 
+            $('#testRocketChat').on('click', function() {
+                $.post(srRoot + '/home/testRocketChat', function(data) {
+                    $('#testRocketChat-result').html(data);
+                });
+            });
+
             $('#testDiscord').on('click', () => {
                 $.get(srRoot + '/home/testDiscord', data => {
                     $('#testDiscord-result').html(data);
