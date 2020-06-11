@@ -732,15 +732,15 @@ const SICKCHILL = {
                 });
             });
 
-            $('#testMatrix').on('click', () => {
-                $.post(srRoot + '/home/testMatrix', data => {
-                    $('#testMatrix-result').html(data);
-                });
-            });
-
             $('#testRocketChat').on('click', function() {
                 $.post(srRoot + '/home/testRocketChat', function(data) {
                     $('#testRocketChat-result').html(data);
+                });
+            });
+            
+            $('#testMatrix').on('click', () => {
+                $.post(srRoot + '/home/testMatrix', data => {
+                    $('#testMatrix-result').html(data);
                 });
             });
 

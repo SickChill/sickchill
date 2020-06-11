@@ -63,7 +63,7 @@ class Notifier(object):
         return self._notify_rocketchat("This is a test notification from SickChill", force=True)
 
     def _send_rocketchat(self, message=None):
-        rocketchat_webhook = sickbeard.ROCKETCHAT_WEBHOOK.replace(self.ROCKETCHAT_WEBHOOK_URL, '')
+        rocketchat_webhook = sickbeard.ROCKETCHAT_WEBHOOK
         rocketchat_icon_emoji = sickbeard.ROCKETCHAT_ICON_EMOJI
 
         logger.log("Sending rocketchat message: " + message, logger.INFO)
@@ -74,8 +74,7 @@ class Notifier(object):
 
         headers = {b"Content-Type": b"application/json"}
         try:
-            r = requests.post(rocketchat_webhook, data=json.dumps(dict(text=message, attachments=(dict(icon_emoji=rocketchat_icon_emoji, author_icon=self.ROCKETCHAT_ICON_URL))), headers=headers)
-
+            r = requests.post(rocketchat_webhook, data=json.dumps(dict(text=message, attachments=(dict(icon_emoji=rocketchat_icon_emoji, author_icon=self.ROCKETCHAT_ICON_URL)))), headers=headers)
             r.raise_for_status()
         except Exception as e:
             logger.log("Error Sending RocketChat message: " + ex(e), logger.ERROR)
