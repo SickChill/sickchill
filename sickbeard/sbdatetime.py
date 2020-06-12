@@ -205,6 +205,9 @@ class sbdatetime(datetime.datetime):
                     strd = self.strftime(d_preset)
                 else:
                     strd = self.strftime(sickbeard.DATE_PRESET)
+        except ValueError:
+            strd = 'UNK'
+
         finally:
 
             try:
@@ -276,6 +279,8 @@ class sbdatetime(datetime.datetime):
                     strd += ', ' + self.strftime(sickbeard.TIME_PRESET_W_SECONDS)
                 else:
                     strd += ', ' + self.strftime(sickbeard.TIME_PRESET)
+        except ValueError:
+            strd = 'UNK'
         finally:
             try:
                 if sbdatetime.has_locale:
