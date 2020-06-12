@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2020-04-18 20:43+0000\n"
-"PO-Revision-Date: 2020-04-22 12:09\n"
+"PO-Revision-Date: 2020-06-08 14:20\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -404,7 +404,7 @@ msgstr ""
 
 #: sickbeard/helpers.py:853
 msgid "Backup done"
-msgstr ""
+msgstr "Backup fertig"
 
 #: sickbeard/helpers.py:856
 msgid "Error while trying to back up {0} to {1} : {2}"
@@ -412,7 +412,7 @@ msgstr ""
 
 #: sickbeard/helpers.py:859
 msgid "Trying again."
-msgstr ""
+msgstr "Erneut versuchen."
 
 #: sickbeard/helpers.py:862
 msgid "Unable to back up {0} to {1} please do it manually."
@@ -436,7 +436,7 @@ msgstr ""
 
 #: sickbeard/helpers.py:904
 msgid "Restore done"
-msgstr ""
+msgstr "Wiederherstellung fertig"
 
 #: sickbeard/helpers.py:907
 msgid "Error while trying to restore file {0}. Error: {1}"
@@ -464,7 +464,7 @@ msgstr ""
 
 #: sickbeard/helpers.py:1116
 msgid "anidb: {0} "
-msgstr ""
+msgstr "anidb: {0} "
 
 #: sickbeard/helpers.py:1121 sickbeard/helpers.py:1130
 msgid "anidb exception msg: {0} "
