@@ -377,6 +377,14 @@ class Home(WebRoot):
             return _("Slack message failed")
 
     @staticmethod
+    def testRocketChat():
+        result = notifiers.rocketchat_notifier.test_notify()
+        if result:
+            return _("Rocket.Chat message successful")
+        else:
+            return _("Rocket.Chat message failed")
+
+    @staticmethod
     def testMatrix():
         result = notifiers.matrix_notifier.test_notify()
         if result:

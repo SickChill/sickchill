@@ -23,7 +23,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 # First Party Imports
 import sickbeard
 from sickbeard.notifiers import (boxcar2, discord, emailnotify, emby, freemobile, growl, join, kodi, libnotify, matrix, nmj, nmjv2, plex, prowl, pushalot,
-                                 pushbullet, pushover, pytivo, slack, synoindex, synologynotifier, telegram, trakt, tweet, twilio_notify)
+                                 pushbullet, pushover, pytivo, rocketchat, slack, synoindex, synologynotifier, telegram, trakt, tweet, twilio_notify)
 
 # home theater / nas
 kodi_notifier = kodi.Notifier()
@@ -52,6 +52,7 @@ twilio_notifier = twilio_notify.Notifier()
 trakt_notifier = trakt.Notifier()
 email_notifier = emailnotify.Notifier()
 slack_notifier = slack.Notifier()
+rocketchat_notifier = rocketchat.Notifier()
 matrix_notifier = matrix.Notifier()
 discord_notifier = discord.Notifier()
 
@@ -77,6 +78,7 @@ notifiers = [
     trakt_notifier,
     email_notifier,
     slack_notifier,
+    rocketchat_notifier,
     matrix_notifier,
     discord_notifier,
     join_notifier,

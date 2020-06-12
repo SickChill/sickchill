@@ -101,7 +101,7 @@ class ConfigNotifications(Config):
             use_email=None, email_notify_onsnatch=None, email_notify_ondownload=None, email_notify_onpostprocess=None,
             email_notify_onsubtitledownload=None, email_host=None, email_port=25, email_from=None,
             email_tls=None, email_user=None, email_password=None, email_list=None, email_subject=None, email_show_list=None,
-            email_show=None, use_slack=False, slack_notify_snatch=None, slack_notify_download=None, slack_notify_subtitledownload=None, slack_webhook=None, slack_icon_emoji=None,
+            email_show=None, use_slack=False, slack_notify_snatch=None, slack_notify_download=None, slack_notify_subtitledownload=None, slack_webhook=None, slack_icon_emoji=None, use_rocketchat=False, rocketchat_notify_snatch=None, rocketchat_notify_download=None, rocketchat_notify_subtitledownload=None, rocketchat_webhook=None, rocketchat_icon_emoji=None,
             use_matrix=False, matrix_notify_snatch=None, matrix_notify_download=None, matrix_notify_subtitledownload=None,
             matrix_api_token=None, matrix_server=None, matrix_room=None,
             use_discord=False, discord_notify_snatch=None, discord_notify_download=None, discord_webhook=None, discord_name=None,
@@ -199,6 +199,13 @@ class ConfigNotifications(Config):
         sickbeard.SLACK_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(slack_notify_subtitledownload)
         sickbeard.SLACK_WEBHOOK = slack_webhook
         sickbeard.SLACK_ICON_EMOJI = slack_icon_emoji
+
+        sickbeard.USE_ROCKETCHAT = config.checkbox_to_value(use_rocketchat)
+        sickbeard.ROCKETCHAT_NOTIFY_SNATCH = config.checkbox_to_value(rocketchat_notify_snatch)
+        sickbeard.ROCKETCHAT_NOTIFY_DOWNLOAD = config.checkbox_to_value(rocketchat_notify_download)
+        sickbeard.ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(rocketchat_notify_subtitledownload)
+        sickbeard.ROCKETCHAT_WEBHOOK = rocketchat_webhook
+        sickbeard.ROCKETCHAT_ICON_EMOJI = rocketchat_icon_emoji
 
         sickbeard.USE_MATRIX = config.checkbox_to_value(use_matrix)
         sickbeard.MATRIX_NOTIFY_SNATCH = config.checkbox_to_value(matrix_notify_snatch)
