@@ -213,8 +213,13 @@ class CheckVersion(object):
             cur_hash = str(self.updater.get_newest_commit_hash())
             assert len(cur_hash) == 40, "Commit hash wrong length: {0} hash: {1}".format(len(cur_hash), cur_hash)
 
-            check_url = "http://raw.githubusercontent.com/{0}/{1}/{2}/sickbeard/databases/mainDB.py".format(sickbeard.GIT_ORG, sickbeard.GIT_REPO, cur_hash)
-            response = helpers.getURL(check_url, session=self.session, returns='text')
+            response = None
+            check_url = "https://raw.githubusercontent.com/{0}/{1}/{2}/sickbeard/databases/mainDB.py"
+            for attempt in (cur_hash, "master"):
+                response = helpers.getURL(check_url.format(sickbeard.GIT_ORG, sickbeard.GIT_REPO, attempt), session=self.session, returns='text')
+                if response:
+                    break
+
             assert response, "Empty response from {0}".format(check_url)
 
             match = re.search(r"MAX_DB_VERSION\s=\s(?P<version>\d{2,3})", response)
