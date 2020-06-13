@@ -29,6 +29,7 @@ import datetime
 import hashlib
 import io
 import ipaddress
+import ifaddr
 import operator
 import os
 import platform
@@ -1743,6 +1744,27 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
 
 def is_ip_private(ip):
     return ipaddress.ip_address(ip.decode()).is_private
+
+
+def is_ip_local(ip):
+    for adapter in ifaddr.get_adapters():
+        for aip in adapter.ips:
+            #print("   %s/%s" % (aip.ip, aip.network_prefix))
+            network = None
+            if isinstance(aip.ip, tuple):
+                network = ipaddress.IPv6Network("%s/%s" % (aip.ip[0],
+                                                           aip.network_prefix),
+                                                strict=False)
+                if ipaddress.ip_address(addr) in network:
+                    return True
+
+            else:
+                network = ipaddress.IPv4Network("%s/%s" % (aip.ip,
+                                                           aip.network_prefix),
+                                                strict=False)
+                if ipaddress.ip_address(addr) in network:
+                    return True
+    return False
 
 
 def recursive_listdir(path):
