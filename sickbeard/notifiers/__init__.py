@@ -115,7 +115,7 @@ def notify_git_update(new_version=""):
 
 
 def notify_login(ipaddress):
-    if sickbeard.NOTIFY_ON_LOGIN and not sickbeard.helpers.is_ip_private(ipaddress):
+    if sickbeard.NOTIFY_ON_LOGIN and not sickbeard.helpers.is_ip_local(ipaddress):
         for n in notifiers:
             if hasattr(n, 'notify_login'):
                 n.notify_login(ipaddress)
