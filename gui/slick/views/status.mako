@@ -54,73 +54,14 @@
                     </thead>
                     <tbody>
                         % for schedulerName, scheduler in six.iteritems(schedulerList):
-                            <% service = getattr(sickbeard, scheduler) %>
-                            <tr>
-                                <td>${schedulerName}</td>
-                                % if service.isAlive():
-                                    <td style="background-color:green">${service.isAlive()}</td>
-                                % else:
-                                    <td style="background-color:red">${service.isAlive()}</td>
-                                % endif
-                                % if scheduler == 'backlogSearchScheduler':
-                                    <% searchQueue = getattr(sickbeard, 'searchQueueScheduler') %>
-                                    <% BLSpaused = searchQueue.action.is_backlog_paused() %>
-                                    <% del searchQueue %>
-                                    % if BLSpaused:
-                                        <td>${_('Paused')}</td>
-                                    % else:
-                                        <td>${service.enable}</td>
-                                    % endif
-                                % else:
-                                    <td>${service.enable}</td>
-                                % endif
-                                % if scheduler == 'backlogSearchScheduler':
-                                    <% searchQueue = getattr(sickbeard, 'searchQueueScheduler') %>
-                                    <% BLSinProgress = searchQueue.action.is_backlog_in_progress() %>
-                                    <% del searchQueue %>
-                                    % if BLSinProgress:
-                                        <td>${_('True')}</td>
-                                    % else:
-                                        % try:
-                                        <% amActive = service.action.amActive %>
-                                            <td>${amActive}</td>
-                                        % except Exception:
-                                            <td>${_('N/A')}</td>
-                                        % endtry
-                                    % endif
-                                % else:
-                                    % try:
-                                    <% amActive = service.action.amActive %>
-                                        <td>${amActive}</td>
-                                    % except Exception:
-                                        <td>${_('N/A')}</td>
-                                    % endtry
-                                % endif
-                                % if service.start_time:
-                                    <td align="right">${service.start_time}</td>
-                                % else:
-                                    <td align="right"></td>
-                                % endif
-                                <% cycleTime = (service.cycleTime.microseconds + (service.cycleTime.seconds + service.cycleTime.days * 24 * 3600) * 10**6) / 10**6 %>
-                                <td align="right"
-                                    data-seconds="${cycleTime}">${helpers.pretty_time_delta(cycleTime)}</td>
-                                % if service.enable:
-                                    <% timeLeft = (service.timeLeft().microseconds + (service.timeLeft().seconds + service.timeLeft().days * 24 * 3600) * 10**6) / 10**6 %>
-                                    <td align="right"
-                                        data-seconds="${timeLeft}">${helpers.pretty_time_delta(timeLeft)}</td>
-                                % else:
-                                    <td></td>
-                                % endif
-                                <td>${service.lastRun.strftime(dateTimeFormat)}</td>
-                                <td>${service.silent}</td>
-                            </tr>
-                        <% del service %>
+                            ${scheduler_row(schedulerName, scheduler)}
                         % endfor
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+    % if len(sickbeard.showQueueScheduler.action):
     <br/>
     <div class="row">
         <div class="col-md-12">
@@ -139,74 +80,51 @@
                     </thead>
                     <tbody>
                         % if sickbeard.showQueueScheduler.action.currentItem is not None:
-                            <tr>
-                            % try:
-                                <% showindexerid = sickbeard.showQueueScheduler.action.currentItem.show.indexerid %>
-                                <td>${showindexerid}</td>
-                            % except Exception:
-                                <td></td>
-                            % endtry
-                            % try:
-                                <% showname = sickbeard.showQueueScheduler.action.currentItem.show.name %>
-                                <td>${showname}</td>
-                            % except Exception:
-                                % if sickbeard.showQueueScheduler.action.currentItem.action_id == ShowQueueActions.ADD:
-                                    <td>${sickbeard.showQueueScheduler.action.currentItem.showDir}</td>
-                                % else:
-                                    <td></td>
-                                % endif
-                            % endtry
-                                <td>${sickbeard.showQueueScheduler.action.currentItem.inProgress}</td>
-                                % if sickbeard.showQueueScheduler.action.currentItem.priority == 10:
-                                    <td>${_('LOW')}</td>
-                                % elif sickbeard.showQueueScheduler.action.currentItem.priority == 20:
-                                    <td>${_('NORMAL')}</td>
-                                % elif sickbeard.showQueueScheduler.action.currentItem.priority == 30:
-                                    <td>${_('HIGH')}</td>
-                                % else:
-                                    <td>sickbeard.showQueueScheduler.action.currentItem.priority</td>
-                                % endif
-                                <td>${sickbeard.showQueueScheduler.action.currentItem.added.strftime(dateTimeFormat)}</td>
-                                <td>${ShowQueueActions.names[sickbeard.showQueueScheduler.action.currentItem.action_id]}</td>
-                            </tr>
+                            ${show_queue_row(sickbeard.showQueueScheduler.action.currentItem)}
                         % endif
                         % for item in sickbeard.showQueueScheduler.action.queue:
-                            <tr>
-                            % try:
-                                <% showindexerid = item.show.indexerid %>
-                                <td>${showindexerid}</td>
-                            % except Exception:
-                                <td></td>
-                            % endtry
-                            % try:
-                                <% showname = item.show.name %>
-                                <td>${showname}</td>
-                            % except Exception:
-                                % if item.action_id == ShowQueueActions.ADD:
-                                    <td>${item.showDir}</td>
-                                % else:
-                                    <td></td>
-                                % endif
-                            % endtry
-                                <td>${item.inProgress}</td>
-                                % if item.priority == 10:
-                                    <td>${_('LOW')}</td>
-                                % elif item.priority == 20:
-                                    <td>${_('NORMAL')}</td>
-                                % elif item.priority == 30:
-                                    <td>${_('HIGH')}</td>
-                                % else:
-                                    <td>${item.priority}</td>
-                                % endif
-                                <td>${item.added.strftime(dateTimeFormat)}</td>
-                                <td>${ShowQueueActions.names[item.action_id]}</td>
-                            </tr>
+                            ${show_queue_row(item)}
                         % endfor
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+    % endif
+    % if len(sickbeard.postProcessorTaskScheduler.action):
+    <br/>
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="header">${_('Post Processing Queue')}</h2>
+            <div class="horizontal-scroll">
+                <table id="queueStatusTable" class="tablesorter" width="100%">
+                    <thead>
+                        <tr>
+                            <th>${_('Added')}</th>
+                            <th>${_('Mode')}</th>
+                            <th>${_('Path')}</th>
+                            <th>${_('Release Name')}</th>
+                            <th>${_('Method')}</th>
+                            <th>${_('Priority')}</th>
+                            <th>${_('Delete')}</th>
+                            <th>${_('Mark Failures')}</th>
+                            <th>${_('Force')}</th>
+                            <th>${_('In Progress')}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        % if sickbeard.postProcessorTaskScheduler.action.currentItem is not None:
+                            ${post_processor_task_row(sickbeard.postProcessorTaskScheduler.action.currentItem)}
+                        % endif
+                        % for item in sickbeard.postProcessorTaskScheduler.action.queue:
+                            ${post_processor_task_row(item)}
+                        % endfor
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    % endif
     <br/>
     <div class="row">
         <div class="col-md-12">
@@ -249,3 +167,117 @@
         </div>
     </div>
 </%block>
+
+<%def name="scheduler_row(schedulerName, scheduler)">
+    <% service = getattr(sickbeard, scheduler) %>
+
+    <tr>
+        <td>${schedulerName}</td>
+        % if service.isAlive():
+            <td style="background-color:green">${service.isAlive()}</td>
+        % else:
+            <td style="background-color:red">${service.isAlive()}</td>
+        % endif
+        % if scheduler == 'backlogSearchScheduler':
+            <% searchQueue = getattr(sickbeard, 'searchQueueScheduler') %>
+            <% BLSpaused = searchQueue.action.is_backlog_paused() %>
+            <% BLSinProgress = searchQueue.action.is_backlog_in_progress() %>
+
+            <% del searchQueue %>
+            % if BLSpaused:
+                <td>${_('Paused')}</td>
+            % else:
+                <td>${service.enable}</td>
+            % endif
+            % if BLSinProgress:
+                <td>${_('True')}</td>
+            % else:
+                % try:
+                    <td>${service.action.amActive}</td>
+                % except Exception:
+                    <td>${_('N/A')}</td>
+                % endtry
+            % endif
+        % else:
+            <td>${service.enable}</td>
+             % try:
+                <td>${service.action.amActive}</td>
+            % except Exception:
+                <td>${_('N/A')}</td>
+            % endtry
+        % endif
+        % if service.start_time:
+            <td align="right">${service.start_time}</td>
+        % else:
+            <td align="right"></td>
+        % endif
+        <% cycleTime = (service.cycleTime.microseconds + (service.cycleTime.seconds + service.cycleTime.days * 24 * 3600) * 10**6) / 10**6 %>
+        <td align="right"
+            data-seconds="${cycleTime}">${helpers.pretty_time_delta(cycleTime)}</td>
+        % if service.enable:
+            <% timeLeft = (service.timeLeft().microseconds + (service.timeLeft().seconds + service.timeLeft().days * 24 * 3600) * 10**6) / 10**6 %>
+            <td align="right"
+                data-seconds="${timeLeft}">${helpers.pretty_time_delta(timeLeft)}</td>
+        % else:
+            <td></td>
+        % endif
+        <td>${service.lastRun.strftime(dateTimeFormat)}</td>
+        <td>${service.silent}</td>
+    </tr>
+
+    <% del service %>
+</%def>
+
+<%def name="show_queue_row(item)">
+    <tr>
+        % try:
+            <td>${item.show.indexerid}</td>
+        % except Exception:
+            <td></td>
+        % endtry
+        % try:
+            <td>${item.show.name}</td>
+        % except Exception:
+            % if item.action_id == ShowQueueActions.ADD:
+                <td>${item.showDir}</td>
+            % else:
+                <td></td>
+            % endif
+        % endtry
+        <td>${item.inProgress}</td>
+        % if item.priority == 10:
+            <td>${_('LOW')}</td>
+        % elif item.priority == 20:
+            <td>${_('NORMAL')}</td>
+        % elif item.priority == 30:
+            <td>${_('HIGH')}</td>
+        % else:
+            <td>${item.priority}</td>
+        % endif
+        <td>${item.added.strftime(dateTimeFormat)}</td>
+        <td>${ShowQueueActions.names[item.action_id]}</td>
+    </tr>
+</%def>
+
+<%def name="post_processor_task_row(item)">
+    <tr>
+        <td>${item.added.strftime(dateTimeFormat)}</td>
+        <td>${item.mode}</td>
+        <td>${item.directory}</td>
+        <td>${item.filename}</td>
+        <td>${item.method}</td>
+        % if item.priority == 10:
+            <td>${_('LOW')}</td>
+        % elif item.priority == 20:
+            <td>${_('NORMAL')}</td>
+        % elif item.priority == 30:
+            <td>${_('HIGH')}</td>
+        % else:
+            <td>item.priority</td>
+        % endif
+        <td>${item.delete}</td>
+        <td>${item.failed}</td>
+        <td>${item.force}</td>
+        <td>${item.inProgress}</td>
+    </tr>
+</%def>
