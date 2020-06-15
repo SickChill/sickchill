@@ -1423,7 +1423,7 @@ class CMDPostProcess(ApiCall):
         if not self.return_data:
             data = ""
 
-        return _responds(RESULT_SUCCESS, data=data, msg="Started post-process for {0}".format(self.path))
+        return _responds(RESULT_SUCCESS, data=data, msg="Started post-process for {0}".format(self.release_name or self.path))
 
 
 # noinspection PyAbstractClass
