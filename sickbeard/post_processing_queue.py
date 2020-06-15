@@ -51,15 +51,16 @@ class ProcessingQueue(generic_queue.GenericQueue):
         generic_queue.GenericQueue.__init__(self)
         self.queue_name = "POSTPROCESSOR"
 
-    def find_in_queue(self, directory, mode):
+    def find_in_queue(self, directory, filename, mode):
         """
         Finds any item in the queue with the given directory and mode pair
         :param directory: directory to be processed by the task
+        :param filename: filename/nzbname/release_name to be processed by the task
         :param mode: processing type, auto/manual
         :return: instance of PostProcessorTask or None
         """
         for cur_item in self.queue + [self.currentItem]:
-            if isinstance(cur_item, PostProcessorTask) and cur_item.directory == directory and cur_item.mode == mode:
+            if isinstance(cur_item, PostProcessorTask) and cur_item.matches(directory, filename, mode):
                 return cur_item
         return None
 
@@ -115,7 +116,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
         :param force_next: wait until the current item in the queue is finished, acquire the lock and process this task now, so we can return the result
         :return: string indicating success or failure
         """
-        replacements = dict(mode=mode.title(), directory=directory)
+        replacements = dict(mode=mode.title(), directory=filename or directory)
         if not directory:
             return log_helper("{mode} post-processing attempted but directory is not set: {directory}".format(
                 **replacements), logger.WARNING)
@@ -129,7 +130,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
                 "{mode} post-processing attempted but directory is relative (and probably not what you really want to process): {directory}".format(
                     **replacements), logger.WARNING)
 
-        item = self.find_in_queue(directory, mode)
+        item = self.find_in_queue(directory, filename, mode)
 
         if not delete:
             delete = (False, (not sickbeard.NO_DELETE, True)[method == "move"])[mode == "auto"]
@@ -208,6 +209,13 @@ class PostProcessorTask(generic_queue.QueueItem):
         self.failed = config.checkbox_to_value(failed)
         self.mode = mode
 
+    @property
+    def info(self):
+        return self.directory, self.filename, self.mode
+
+    def matches(self, directoy, filename, mode):
+        return self.info == (directoy, filename, mode)
+
     def run(self):
         """
         Runs the task
@@ -217,7 +225,7 @@ class PostProcessorTask(generic_queue.QueueItem):
 
         # noinspection PyBroadException
         try:
-            logger.log("Beginning {mode} post processing task: {directory}".format(mode=self.mode, directory=self.directory))
+            logger.log("Beginning {mode} post processing task: {directory}".format(mode=self.mode, directory=self.filename or self.directory))
             self.last_result = process_dir(
                 process_path=self.directory,
                 release_name=self.filename,
@@ -228,7 +236,7 @@ class PostProcessorTask(generic_queue.QueueItem):
                 failed=self.failed,
                 mode=self.mode
             )
-            logger.log("{mode} post processing task for {directory} completed".format(mode=self.mode.title(), directory=self.directory))
+            logger.log("{mode} post processing task for {directory} completed".format(mode=self.mode.title(), directory=self.filename or self.directory))
 
             # give the CPU a break
             time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
