@@ -42,8 +42,10 @@ class ManageSearches(Manage):
                         backlogRunning=sickbeard.searchQueueScheduler.action.is_backlog_in_progress(),
                         dailySearchStatus=sickbeard.dailySearchScheduler.action.amActive,
                         findPropersStatus=sickbeard.properFinderScheduler.action.amActive,
-                        queueLength=sickbeard.searchQueueScheduler.action.queue_length(),
                         subtitlesFinderStatus=sickbeard.subtitlesFinderScheduler.action.amActive,
+                        autoPostProcessorStatus=sickbeard.autoPostProcessorScheduler.action.amActive,
+                        queueLength=sickbeard.searchQueueScheduler.action.queue_length(),
+                        processing_queue=sickbeard.postProcessorTaskScheduler.action.queue_length(),
                         title=_('Manage Searches'), header=_('Manage Searches'), topmenu='manage',
                         controller="manage", action="manageSearches")
 
@@ -81,6 +83,15 @@ class ManageSearches(Manage):
         if result:
             logger.log("Subtitle search forced")
             ui.notifications.message(_('Subtitle search started'))
+
+        return self.redirect("/manage/manageSearches/")
+
+    def forceAutoPostProcess(self):
+        # force it to run the next time it looks
+        result = sickbeard.autoPostProcessorScheduler.forceRun()
+        if result:
+            logger.log("Auto Post Processor forced")
+            ui.notifications.message(_('Auto Post Processor started'))
 
         return self.redirect("/manage/manageSearches/")
 

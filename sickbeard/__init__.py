@@ -46,8 +46,8 @@ from sickchill.helper.exceptions import ex
 from sickchill.system.Shutdown import Shutdown
 
 # Local Folder Imports
-from . import (auto_postprocessor, clients, dailysearcher, db, helpers, image_cache, logger, metadata, naming, notifications_queue, post_processing_queue,
-               properFinder, providers, scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker, versionChecker)
+from . import (clients, dailysearcher, db, helpers, image_cache, logger, metadata, naming, notifications_queue, post_processing_queue, properFinder, providers,
+               scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker, versionChecker)
 from .common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
 from .config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
 from .databases import cache_db, failed_db, mainDB
@@ -1660,7 +1660,7 @@ def initialize(consoleLogging=True):
         )
 
         autoPostProcessorScheduler = scheduler.Scheduler(
-            auto_postprocessor.PostProcessor(),
+            post_processing_queue.PostProcessor(),
             run_delay=datetime.timedelta(minutes=5),
             cycleTime=datetime.timedelta(minutes=AUTOPOSTPROCESSOR_FREQUENCY),
             threadName="POSTPROCESSOR",

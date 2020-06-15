@@ -46,6 +46,16 @@
     <br>
     <div class="row">
         <div class="col-md-12">
+            <h3>${_('Auto Post Processor')}:</h3>
+            <a class="btn ${('disabled', '')[sickbeard.PROCESS_AUTOMATICALLY]}" href="${srRoot}/manage/manageSearches/forceAutoPostProcess">
+                <i class="icon-exclamation-sign"></i> ${_('Force')}
+            </a>
+            ${(_('Not in progress'), _('In Progress'))[autoPostProcessorStatus] if sickbeard.PROCESS_AUTOMATICALLY else _('Auto Post Processor disabled')}
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-12">
             <h3>${_('Search Queue')}:</h3>
             <table>
                 <tr>
@@ -63,6 +73,22 @@
                 <tr>
                     <td>${_('Failed')}:</td>
                     <td><i>${queueLength['failed']} ${_('pending items')}</i></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-12">
+            <h3>${_('Post Processing Queue')}:</h3>
+            <table>
+                <tr>
+                    <td>${_('Auto')}:</td>
+                    <td><i>${processing_queue['auto']} ${_('pending items')}</i></td>
+                </tr>
+                <tr>
+                    <td>${_('Manual')}:</td>
+                    <td><i>${processing_queue['manual']} ${_('pending items')}</i></td>
                 </tr>
             </table>
         </div>

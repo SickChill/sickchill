@@ -21,6 +21,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import os
+import threading
 import time
 import traceback
 
@@ -37,6 +38,26 @@ AUTO_POST_PROCESS = 100
 
 # TODO: Add html to the server status page showing processing tasks in the queue
 # TODO: Add html to the management section to pause/unpause the processing queue
+
+
+class PostProcessor(object):
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.amActive = False
+
+    def run(self, force=False):
+        """
+        Runs the postprocessor
+
+        :param force: Forces postprocessing run
+        :return: Returns when done without a return state/code
+        """
+        self.amActive = True
+        sickbeard.postProcessorTaskScheduler.action.add_item(sickbeard.TV_DOWNLOAD_DIR, force=force)
+        self.amActive = False
+
+    def __del__(self):
+        pass
 
 
 class ProcessingQueue(generic_queue.GenericQueue):
@@ -116,18 +137,18 @@ class ProcessingQueue(generic_queue.GenericQueue):
         :param force_next: wait until the current item in the queue is finished, acquire the lock and process this task now, so we can return the result
         :return: string indicating success or failure
         """
-        replacements = dict(mode=mode.title(), directory=filename or directory)
+        replacements = dict(mode=mode.title(), info=filename or directory)
         if not directory:
-            return log_helper("{mode} post-processing attempted but directory is not set: {directory}".format(
+            return log_helper("{mode} post-processing attempted but directory is not set: {info}".format(
                 **replacements), logger.WARNING)
 
         # if not ek(os.path.isdir, directory):
-        #     return log_helper(u"{mode} post-processing attempted but directory doesn't exist: {directory}".format(
+        #     return log_helper(u"{mode} post-processing attempted but directory doesn't exist: {info}".format(
         #         **replacements), logger.WARNING)
 
         if not ek(os.path.isabs, directory):
             return log_helper(
-                "{mode} post-processing attempted but directory is relative (and probably not what you really want to process): {directory}".format(
+                "{mode} post-processing attempted but directory is relative (and probably not what you really want to process): {info}".format(
                     **replacements), logger.WARNING)
 
         item = self.find_in_queue(directory, filename, mode)
@@ -138,10 +159,10 @@ class ProcessingQueue(generic_queue.GenericQueue):
         if item:
             if self.currentItem == item:
                 return log_helper(
-                    "{directory} is already being processed right now, please wait until it completes before trying again".format(**replacements))
+                    "{info} is already being processed right now, please wait until it completes before trying again".format(**replacements))
 
             item.set_params(directory, filename, method, force, is_priority, delete, failed, mode)
-            message = log_helper("A task for {directory} was already in the processing queue, updating the settings for that task".format(**replacements))
+            message = log_helper("A task for {info} was already in the processing queue, updating the settings for that task".format(**replacements))
             return message + "<br\><span class='hidden'>Processing succeeded</span>"
         else:
             item = PostProcessorTask(directory, filename, method, force, is_priority, delete, failed, mode)
@@ -152,7 +173,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
                 return message
             else:
                 super(ProcessingQueue, self).add_item(item)
-                message = log_helper("{mode} post processing task for {directory} was added to the queue".format(**replacements))
+                message = log_helper("{mode} post processing task for {info} was added to the queue".format(**replacements))
                 return message + "<br\><span class='hidden'>Processing succeeded</span>"
 
 
@@ -213,8 +234,8 @@ class PostProcessorTask(generic_queue.QueueItem):
     def info(self):
         return self.directory, self.filename, self.mode
 
-    def matches(self, directoy, filename, mode):
-        return self.info == (directoy, filename, mode)
+    def matches(self, directory, filename, mode):
+        return self.info == (directory, filename, mode)
 
     def run(self):
         """
@@ -225,7 +246,7 @@ class PostProcessorTask(generic_queue.QueueItem):
 
         # noinspection PyBroadException
         try:
-            logger.log("Beginning {mode} post processing task: {directory}".format(mode=self.mode, directory=self.filename or self.directory))
+            logger.log("Beginning {mode} post processing task: {info}".format(mode=self.mode, info=self.filename or self.directory))
             self.last_result = process_dir(
                 process_path=self.directory,
                 release_name=self.filename,
@@ -236,7 +257,7 @@ class PostProcessorTask(generic_queue.QueueItem):
                 failed=self.failed,
                 mode=self.mode
             )
-            logger.log("{mode} post processing task for {directory} completed".format(mode=self.mode.title(), directory=self.filename or self.directory))
+            logger.log("{mode} post processing task for {info} completed".format(mode=self.mode.title(), info=self.filename or self.directory))
 
             # give the CPU a break
             time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])

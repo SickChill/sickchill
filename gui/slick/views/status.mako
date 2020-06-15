@@ -1,5 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
+    import collections
     import six
     import sickbeard
     from sickbeard import helpers
@@ -8,7 +9,7 @@
 %>
 <%block name="content">
     <%
-        schedulerList = {
+        schedulerList = collections.OrderedDict(sorted(six.iteritems({
         _('Daily Search'): 'dailySearchScheduler',
         _('Backlog'): 'backlogSearchScheduler',
         _('Show Update'): 'showUpdateScheduler',
@@ -16,10 +17,11 @@
         _('Show Queue'): 'showQueueScheduler',
         _('Search Queue'): 'searchQueueScheduler',
         _('Proper Finder'): 'properFinderScheduler',
-        _('Post Process'): 'autoPostProcessorScheduler',
+        _('Post Process - Auto'): 'autoPostProcessorScheduler',
+        _('Post Process'): 'postProcessorTaskScheduler',
         _('Subtitles Finder'): 'subtitlesFinderScheduler',
         _('Trakt Checker'): 'traktCheckerScheduler',
-    }
+    })))
     %>
     <div class="row">
         <div class="col-md-12">
@@ -52,7 +54,7 @@
                     </thead>
                     <tbody>
                         % for schedulerName, scheduler in six.iteritems(schedulerList):
-                        <% service = getattr(sickbeard, scheduler) %>
+                            <% service = getattr(sickbeard, scheduler) %>
                             <tr>
                                 <td>${schedulerName}</td>
                                 % if service.isAlive():
@@ -79,20 +81,20 @@
                                     % if BLSinProgress:
                                         <td>${_('True')}</td>
                                     % else:
+                                        % try:
+                                        <% amActive = service.action.amActive %>
+                                            <td>${amActive}</td>
+                                        % except Exception:
+                                            <td>${_('N/A')}</td>
+                                        % endtry
+                                    % endif
+                                % else:
                                     % try:
                                     <% amActive = service.action.amActive %>
                                         <td>${amActive}</td>
                                     % except Exception:
                                         <td>${_('N/A')}</td>
                                     % endtry
-                                    % endif
-                                % else:
-                                % try:
-                                <% amActive = service.action.amActive %>
-                                    <td>${amActive}</td>
-                                % except Exception:
-                                    <td>${_('N/A')}</td>
-                                % endtry
                                 % endif
                                 % if service.start_time:
                                     <td align="right">${service.start_time}</td>
@@ -103,7 +105,7 @@
                                 <td align="right"
                                     data-seconds="${cycleTime}">${helpers.pretty_time_delta(cycleTime)}</td>
                                 % if service.enable:
-                                <% timeLeft = (service.timeLeft().microseconds + (service.timeLeft().seconds + service.timeLeft().days * 24 * 3600) * 10**6) / 10**6 %>
+                                    <% timeLeft = (service.timeLeft().microseconds + (service.timeLeft().seconds + service.timeLeft().days * 24 * 3600) * 10**6) / 10**6 %>
                                     <td align="right"
                                         data-seconds="${timeLeft}">${helpers.pretty_time_delta(timeLeft)}</td>
                                 % else:
