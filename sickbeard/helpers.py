@@ -1744,6 +1744,9 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
 
 def is_ip_local(ip):
     request_ip = ipaddress.ip_address(ip.decode())
+    if request_ip.is_private:
+        return True
+
     for adapter in ifaddr.get_adapters():
         for aip in adapter.ips:
             if isinstance(aip.ip, tuple):
