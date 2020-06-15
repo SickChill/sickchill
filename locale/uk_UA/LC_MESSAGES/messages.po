@@ -194,15 +194,15 @@ msgstr ""
 msgid "Extend (Limited, E-prefixed)"
 msgstr ""
 
-#: gui/slick/views/history.mako:131 gui/slick/views/inc_home_showList.mako:79
-#: gui/slick/views/inc_home_showList.mako:291 sickbeard/common.py:226
+#: gui/slick/views/history.mako:131 gui/slick/views/inc_home_show_list.mako:79
+#: gui/slick/views/inc_home_show_list.mako:291 sickbeard/common.py:226
 #: sickbeard/common.py:615
 msgid "Downloaded"
 msgstr "Завантажене"
 
 #: gui/slick/views/displayShow.mako:323 gui/slick/views/history.mako:130
-#: gui/slick/views/inc_home_showList.mako:83
-#: gui/slick/views/inc_home_showList.mako:295 gui/slick/views/layouts/main.mako:344
+#: gui/slick/views/inc_home_show_list.mako:83
+#: gui/slick/views/inc_home_show_list.mako:295 gui/slick/views/layouts/main.mako:344
 #: gui/slick/views/schedule.mako:29 gui/slick/views/schedule.mako:321
 #: sickbeard/common.py:227 sickbeard/common.py:614
 msgid "Snatched"
@@ -230,8 +230,8 @@ msgstr "Архівовано"
 msgid "Unknown"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:93
-#: gui/slick/views/inc_home_showList.mako:305 sickbeard/common.py:613
+#: gui/slick/views/inc_home_show_list.mako:93
+#: gui/slick/views/inc_home_show_list.mako:305 sickbeard/common.py:613
 msgid "Unaired"
 msgstr ""
 
@@ -679,7 +679,7 @@ msgstr ""
 
 #: gui/slick/views/config_providers.mako:860
 #: gui/slick/views/config_providers.mako:957 gui/slick/views/editShow.mako:371
-#: gui/slick/views/inc_home_showList.mako:193 sickbeard/show_queue.py:211
+#: gui/slick/views/inc_home_show_list.mako:193 sickbeard/show_queue.py:211
 msgid "Add"
 msgstr ""
 
@@ -704,7 +704,7 @@ msgid "Remove Show"
 msgstr ""
 
 #: gui/slick/js/ajaxEpSearch.js:156 gui/slick/js/ajaxEpSearch.js:157
-#: gui/slick/views/inc_home_showList.mako:29 sickbeard/show_queue.py:290
+#: gui/slick/views/inc_home_show_list.mako:29 sickbeard/show_queue.py:290
 #: sickbeard/show_queue.py:307
 msgid "Loading"
 msgstr ""
@@ -1102,9 +1102,9 @@ msgstr ""
 
 #: gui/slick/js/parsers.js:7 gui/slick/js/parsers.js:8
 #: gui/slick/js/plotTooltip.js:6 gui/slick/js/sceneExceptionsTooltip.js:6
-#: gui/slick/views/inc_home_showList.mako:224
-#: gui/slick/views/inc_home_showList.mako:230
-#: gui/slick/views/inc_home_showList.mako:247
+#: gui/slick/views/inc_home_show_list.mako:224
+#: gui/slick/views/inc_home_show_list.mako:230
+#: gui/slick/views/inc_home_show_list.mako:247
 msgid "Loading..."
 msgstr ""
 
@@ -1256,7 +1256,7 @@ msgstr ""
 #: gui/slick/views/config_postProcessing.mako:1042
 #: gui/slick/views/config_postProcessing.mako:1248
 #: gui/slick/views/displayShow.mako:171 gui/slick/views/history.mako:64
-#: gui/slick/views/history.mako:135 gui/slick/views/inc_home_showList.mako:184
+#: gui/slick/views/history.mako:135 gui/slick/views/inc_home_show_list.mako:184
 #: gui/slick/views/manage.mako:41 gui/slick/views/schedule.mako:115
 #: gui/slick/views/schedule.mako:489
 msgid "Quality"
@@ -2004,7 +2004,7 @@ msgid "Local"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:602 gui/slick/views/inc_home_menu.mako:48
-#: gui/slick/views/inc_home_showList.mako:183 gui/slick/views/manage.mako:40
+#: gui/slick/views/inc_home_show_list.mako:183 gui/slick/views/manage.mako:40
 #: gui/slick/views/schedule.mako:58 gui/slick/views/schedule.mako:113
 msgid "Network"
 msgstr ""
@@ -5440,7 +5440,7 @@ msgid "Ignored Words"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:255 gui/slick/views/displayShow.mako:441
-#: gui/slick/views/inc_home_showList.mako:186
+#: gui/slick/views/inc_home_show_list.mako:186
 #: gui/slick/views/manage_failedDownloads.mako:40
 msgid "Size"
 msgstr ""
@@ -5481,7 +5481,7 @@ msgstr ""
 
 #: gui/slick/views/displayShow.mako:294 gui/slick/views/editShow.mako:182
 #: gui/slick/views/home.mako:35 gui/slick/views/inc_addShowOptions.mako:79
-#: gui/slick/views/inc_home_showList.mako:193 gui/slick/views/layouts/main.mako:214
+#: gui/slick/views/inc_home_show_list.mako:193 gui/slick/views/layouts/main.mako:214
 #: gui/slick/views/manage.mako:44 gui/slick/views/manage_massEdit.mako:191
 #: sickchill/views/config/anime.py:49 sickchill/views/config/index.py:50
 msgid "Anime"
@@ -5558,7 +5558,7 @@ msgid "Play"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:446 gui/slick/views/inc_home_menu.mako:50
-#: gui/slick/views/inc_home_showList.mako:188 gui/slick/views/manage.mako:49
+#: gui/slick/views/inc_home_show_list.mako:188 gui/slick/views/manage.mako:49
 #: sickchill/views/home.py:634
 msgid "Status"
 msgstr ""
@@ -5742,8 +5742,8 @@ msgid "Scene Exception"
 msgstr ""
 
 #: gui/slick/views/editShow.mako:368 gui/slick/views/editShow.mako:383
-#: gui/slick/views/inc_home_showList.mako:182
-#: gui/slick/views/inc_home_showList.mako:193 gui/slick/views/schedule.mako:59
+#: gui/slick/views/inc_home_show_list.mako:182
+#: gui/slick/views/inc_home_show_list.mako:193 gui/slick/views/schedule.mako:59
 #: gui/slick/views/schedule.mako:109
 msgid "Show"
 msgstr ""
@@ -6027,46 +6027,46 @@ msgstr ""
 msgid "Poster Size"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:11
+#: gui/slick/views/inc_home_show_list.mako:11
 msgid "Continuing"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:12
+#: gui/slick/views/inc_home_show_list.mako:12
 msgid "Ended"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:86
-#: gui/slick/views/inc_home_showList.mako:298
+#: gui/slick/views/inc_home_show_list.mako:86
+#: gui/slick/views/inc_home_show_list.mako:298
 msgid "Total"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:129
+#: gui/slick/views/inc_home_show_list.mako:129
 msgid "Invalid date"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:161
-#: gui/slick/views/inc_home_showList.mako:374
+#: gui/slick/views/inc_home_show_list.mako:161
+#: gui/slick/views/inc_home_show_list.mako:374
 msgid "No Network"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:180 gui/slick/views/schedule.mako:111
+#: gui/slick/views/inc_home_show_list.mako:180 gui/slick/views/schedule.mako:111
 msgid "Next Ep"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:181
+#: gui/slick/views/inc_home_show_list.mako:181
 msgid "Prev Ep"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:185
+#: gui/slick/views/inc_home_show_list.mako:185
 msgid "Downloads"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:187 gui/slick/views/layouts/main.mako:335
+#: gui/slick/views/inc_home_show_list.mako:187 gui/slick/views/layouts/main.mako:335
 #: gui/slick/views/status.mako:45
 msgid "Active"
 msgstr ""
 
-#: gui/slick/views/inc_home_showList.mako:208
+#: gui/slick/views/inc_home_show_list.mako:208
 msgid "loading"
 msgstr ""
 

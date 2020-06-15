@@ -39,7 +39,7 @@
                                          % endif
                                          <div class="row">
                                              <div class="col-md-12">
-                                                 <%include file="/inc_home_showList.mako" args="curListType=curListType, myShowList=curShowlist[1]"/>
+                                                 <%include file="/inc_home_show_list.mako" args="curListType=curListType, myShowList=curShowlist[1]"/>
                                              </div>
                                          </div>
                                      </div>
@@ -61,7 +61,7 @@
                 % for curShowlist in sortedShowLists:
                     <div class="row">
                         <div class="col-md-12">
-                            <%include file="/inc_home_showList.mako" args="curListType=curShowlist[0], myShowList=curShowlist[1]"/>
+                            <%include file="/inc_home_show_list.mako" args="curListType=curShowlist[0], myShowList=curShowlist[1]"/>
                         </div>
                     </div>
                 % endfor
