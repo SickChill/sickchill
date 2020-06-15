@@ -365,6 +365,8 @@ class GitUpdateManager(UpdateManager):
 
         self.branch = sickbeard.BRANCH = self._find_installed_branch()
 
+        self.check_detached_head()
+
         self._cur_commit_hash = None
         self._newest_commit_hash = None
         self._num_commits_behind = 0
@@ -512,6 +514,15 @@ class GitUpdateManager(UpdateManager):
                 sickbeard.BRANCH = branch
                 return branch
         return ""
+
+    def check_detached_head(self):
+        # stdout, stderr_, exit_status = self._run_git(self._git_path, 'branch --show-current')
+        # if exit_status == 0 and not stdout:
+        if helpers.is_docker() and not self.branch:
+            logger.log('We found you in a detached state that prevents updates. Fixing')
+            stdout_, stderr_, exit_status = self._run_git(self._git_path, 'checkout -f master')
+            if exit_status == 0:
+                self.branch = sickbeard.BRANCH = 'master'
 
     def _check_github_for_update(self):
         """

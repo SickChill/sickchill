@@ -1843,3 +1843,11 @@ def bdecode(x, allow_extra_data=False):
     if not allow_extra_data and l != len(x):
         raise bencode.BTL.BTFailure("invalid bencoded value (data after valid prefix)")
     return r
+
+
+def is_docker():
+    path = '/proc/self/cgroup'
+    return (
+        os.path.exists('/.dockerenv') or
+        os.path.isfile(path) and any('docker' in line for line in open(path))
+    )
