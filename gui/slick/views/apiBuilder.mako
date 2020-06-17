@@ -82,7 +82,7 @@
         <%block name="css" />
     </head>
     <body>
-        <nav class="navbar navbar-default navbar-fixed-top hidden-print" role="navigation">
+        <nav class="navbar navbar-default navbar-fixed-top hidden-print">
             <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"

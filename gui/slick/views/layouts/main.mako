@@ -18,9 +18,8 @@
 <!DOCTYPE html>
 <html lang="${sickbeard.GUI_LANG}">
     <head>
-        <meta charset="utf-8">
         <meta name="robots" content="noindex, nofollow">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
@@ -112,7 +111,7 @@
         % endif
     </head>
     <body data-controller="${controller}" data-action="${action}">
-        <nav class="navbar navbar-default navbar-fixed-top hidden-print" role="navigation">
+        <nav class="navbar navbar-default navbar-fixed-top hidden-print">
             <div class="container-fluid">
                 <%
                     numCombined = numErrors + numWarnings + sickbeard.NEWS_UNREAD
@@ -199,7 +198,10 @@
                             </li>
 
                             <li id="NAVconfig" class="navbar-split dropdown${('', ' active')[topmenu == 'config']}">
-                                <a href="${static_url("config/", include_version=False) }" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">Config</span><img src="${ static_url('images/menu/system18.png')}" class="navbaricon hidden-xs" />
+                                <a href="${static_url("config/", include_version=False) }" class="dropdown-toggle" aria-haspopup="true"
+                                   data-toggle="dropdown" data-hover="dropdown">
+                                    <span class="visible-xs-inline">Config</span>
+                                    <img src="${ static_url('images/menu/system18.png')}" alt="Config" class="navbaricon hidden-xs" />
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
@@ -228,7 +230,9 @@
                                     toolsBadge = ''
                             %>
                             <li id="NAVsystem" class="navbar-split dropdown${('', ' active')[topmenu == 'system']}">
-                                <a href="${static_url("home/status/", include_version=False) }" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span class="visible-xs-inline">${_('Tools')}</span><img src="${ static_url('images/menu/system18-2.png')}" class="navbaricon hidden-xs" />${toolsBadge}
+                                <a href="${static_url("home/status/", include_version=False) }" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown">
+                                    <span class="visible-xs-inline">${_('Tools')}</span>
+                                    <img src="${ static_url('images/menu/system18-2.png')}" alt="Tools" class="navbaricon hidden-xs" />${toolsBadge}
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
@@ -296,7 +300,7 @@
                 % endif
                 <div class="clearfix"></div>
                 % if srLogin:
-                    <div id="site-messages"/>
+                    <div id="site-messages"></div>
                 % endif
             </div>
             <div class="row">

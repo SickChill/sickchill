@@ -205,7 +205,7 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
             do_refresh = True
 
     if do_refresh:
-        loc = 'http://sickchill.github.io/scene_exceptions/scene_exceptions.json'
+        loc = 'https://sickchill.github.io/scene_exceptions/scene_exceptions.json'
         logger.log("Checking for scene exception updates from {0}".format(loc))
 
         session = helpers.make_session()

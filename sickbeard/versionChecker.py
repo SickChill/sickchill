@@ -587,7 +587,7 @@ class GitUpdateManager(UpdateManager):
 
         elif self._num_commits_behind > 0:
 
-            base_url = 'http://github.com/' + sickbeard.GIT_ORG + '/' + sickbeard.GIT_REPO
+            base_url = 'https://github.com/' + sickbeard.GIT_ORG + '/' + sickbeard.GIT_REPO
             if self._newest_commit_hash:
                 url = base_url + '/compare/' + self._cur_commit_hash + '...' + self._newest_commit_hash
             else:
@@ -802,7 +802,7 @@ class SourceUpdateManager(UpdateManager):
                             '&mdash; <a href="{update_url}">Update Now</a>').format(update_url=self.get_update_url())
 
         elif self._num_commits_behind > 0:
-            base_url = 'http://github.com/' + sickbeard.GIT_ORG + '/' + sickbeard.GIT_REPO
+            base_url = 'https://github.com/' + sickbeard.GIT_ORG + '/' + sickbeard.GIT_REPO
             if self._newest_commit_hash:
                 url = base_url + '/compare/' + self._cur_commit_hash + '...' + self._newest_commit_hash
             else:
@@ -824,7 +824,7 @@ class SourceUpdateManager(UpdateManager):
         Downloads the latest source tarball from github and installs it over the existing version.
         """
 
-        tar_download_url = 'http://github.com/' + sickbeard.GIT_ORG + '/' + sickbeard.GIT_REPO + '/tarball/' + self.branch
+        tar_download_url = 'https://github.com/' + sickbeard.GIT_ORG + '/' + sickbeard.GIT_REPO + '/tarball/' + self.branch
 
         try:
             # prepare the update dir

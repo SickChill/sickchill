@@ -165,7 +165,7 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
             unrar_zip = ek(os.path.join, sickbeard.PROG_DIR, 'unrar_win.zip')  # file download
 
             if (helpers.download_file(
-                "http://sickchill.github.io/unrar/unrar_win.zip", filename=unrar_zip, session=helpers.make_session()
+                "https://sickchill.github.io/unrar/unrar_win.zip", filename=unrar_zip, session=helpers.make_session()
             ) and helpers.extractZip(archive=unrar_zip, targetDir=unrar_store)):
                 try:
                     ek(os.remove, unrar_zip)

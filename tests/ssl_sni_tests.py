@@ -1,6 +1,6 @@
 # coding=UTF-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: http://github.come/SickChill/SickChill
+# URL: https://github.com/SickChill/SickChill
 #
 # This file is part of SickChill.
 #

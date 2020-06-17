@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 # coding=utf-8
 # Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: http://github.com/SickChill/SickChill
+# URL: https://github.com/SickChill/SickChill
 #
 # This file is part of SickChill.
 #
