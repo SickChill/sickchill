@@ -98,14 +98,6 @@ jobs:
       with:
         buildx-version: latest
         qemu-version: latest
-    - name: Cache Docker layers
-      uses: actions/cache@v2
-      id: cache
-      with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-
     - name: Available platforms
       if: success()
       run: echo ${{ steps.buildx.outputs.platforms }}
@@ -119,6 +111,14 @@ jobs:
         echo ::set-output name=github_image::docker.pkg.github.com/${GITHUB_REPOSITORY,,}/sickchill
         VERSION_TAG=${GITHUB_REF#refs/*/}
         echo ::set-output name=version::${VERSION_TAG%/merge}
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+      id: cache
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ steps.prepare.outputs.version }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
     - name: Docker Login and set build command
       if: success()
       id: login
