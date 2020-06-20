@@ -98,6 +98,14 @@ jobs:
       with:
         buildx-version: latest
         qemu-version: latest
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+      id: cache
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
     - name: Available platforms
       if: success()
       run: echo ${{ steps.buildx.outputs.platforms }}
@@ -108,27 +116,27 @@ jobs:
         echo ::set-output name=docker_platforms::linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/386,linux/ppc64le,linux/s390x
         echo ::set-output name=docker_username::miigotu
         echo ::set-output name=docker_image::docker.io/${GITHUB_REPOSITORY,,}
+        echo ::set-output name=github_image::docker.pkg.github.com/${GITHUB_REPOSITORY,,}/SickChill
         VERSION_TAG=${GITHUB_REF#refs/*/}
         echo ::set-output name=version::${VERSION_TAG%/merge}
-        echo ::set-output name=docker_cache::docker.io/miigotu/sickchill-cache
     - name: Docker Login and set build command
       if: success()
       id: login
       env:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       run: |
         echo "${DOCKER_PASSWORD}" | docker login --username "${{ steps.prepare.outputs.docker_username }}" --password-stdin docker.io
+        echo "${GITHUB_PASSWORD}" | docker login --username "${{ steps.prepare.outputs.docker_username }}" --password-stdin docker.pkg.github.com
         echo  "Available target: ${{ steps.buildx.outputs.platforms }}"
         echo ::set-output name=buildx::$(echo docker buildx build --output type=image,name=${{ steps.prepare.outputs.docker_image }},push=true \
-          --platform ${{ steps.prepare.outputs.docker_platforms }} \
-          --cache-to "type=registry,ref=${{ steps.prepare.outputs.docker_cache }}:${{ steps.prepare.outputs.version }}" \
-          --cache-from "type=registry,ref=${{ steps.prepare.outputs.docker_cache }}:${{ steps.prepare.outputs.version }},mode=max" \
+          --platform ${{ steps.prepare.outputs.docker_platforms }} --cache-from "type=local,src=/tmp/.buildx-cache" --cache-to "type=local,dest=/tmp/.buildx-cache" \
           --tag "${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}")
 
     - name: Run Buildx (master)
       if: success() && contains(steps.prepare.outputs.version, 'master')
       run: |
-          ${{ steps.login.outputs.buildx }} --tag "${{ steps.prepare.outputs.docker_image }}:latest" --file Dockerfile .
+          ${{ steps.login.outputs.buildx }} --tag "${{ steps.prepare.outputs.docker_image }}:latest" --tag "${{ steps.prepare.outputs.github_image }}:latest" --file Dockerfile .
     - name: Run Buildx (non-master)
       if: success() && !contains(steps.prepare.outputs.version, 'master')
       run: |
