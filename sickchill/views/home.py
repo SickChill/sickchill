@@ -185,17 +185,17 @@ class Home(WebRoot):
         return show_stat, max_download_count
 
     def is_alive(self):
-        callback, jq_obj = self.get_body_argument('callback', self.get_query_argument('callback', '')), self.get_body_argument('_')
-        self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
-        self.set_header(b'Content-Type', 'text/javascript')
-        self.set_header(b'Access-Control-Allow-Origin', '*')
-        self.set_header(b'Access-Control-Allow-Headers', 'x-requested-with')
+            callback = self.get_query_arguments('callback')[0]
+            self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+            self.set_header(b'Content-Type', 'text/javascript')
+            self.set_header(b'Access-Control-Allow-Origin', '*')
+            self.set_header(b'Access-Control-Allow-Headers', 'x-requested-with')
 
-        if sickbeard.started:
-            return callback + '(' + json.dumps(
-                {"msg": str(sickbeard.PID)}) + ');'
-        else:
-            return callback + '(' + json.dumps({"msg": "nope"}) + ');'
+            if sickbeard.started:
+                return callback + '(' + json.dumps(
+                    {"msg": str(sickbeard.PID)}) + ');'
+            else:
+                return callback + '(' + json.dumps({"msg": "nope"}) + ');'
 
     @staticmethod
     def haveKODI():
