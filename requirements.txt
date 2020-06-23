@@ -9,7 +9,7 @@ cloudscraper==1.2.40
 configobj==5.0.6
 fake-useragent==0.1.11
 feedparser==5.2.1
-html5lib==1.0.1
+html5lib==1.1
 ipaddress==1.0.23
 Js2Py==0.70
 jsonrpclib==0.1.7
