@@ -43,7 +43,7 @@ class Account(TMDB):
 
     def info(self, **kwargs):
         """
-        Get the basic information for an account.
+        Get your account details.
 
         Call this method first, before calling other Account methods.
 
@@ -60,7 +60,7 @@ class Account(TMDB):
         
     def lists(self, **kwargs):
         """
-        Get the lists that you have created and marked as a favorite.
+        Get all of the lists created by an account. Will include private lists if you are the owner.
 
         Args:
             page: (optional) Minimum 1, maximum 1000.
@@ -78,7 +78,7 @@ class Account(TMDB):
 
     def favorite_movies(self, **kwargs):
         """
-        Get the list of favorite movies for an account.
+        Get the list of your favorite movies.
 
         Args:
             page: (optional) Minimum 1, maximum 1000.
@@ -97,7 +97,7 @@ class Account(TMDB):
 
     def favorite_tv(self, **kwargs):
         """
-        Get the list of favorite TV series for an account.
+        Get the list of your favorite TV shows.
 
         Args:
             page: (optional) Minimum 1, maximum 1000.
@@ -116,7 +116,7 @@ class Account(TMDB):
 
     def favorite(self, **kwargs):
         """
-        Add or remove a movie to an accounts favorite list.
+        This method allows you to mark a movie or TV show as a favorite item.
 
         Args:
             media_type: 'movie' | 'tv'
@@ -141,7 +141,7 @@ class Account(TMDB):
 
     def rated_movies(self, **kwargs):
         """
-        Get the list of rated movies (and associated rating) for an account.
+        Get a list of all the movies you have rated.
 
         Args:
             page: (optional) Minimum 1, maximum 1000.
@@ -160,7 +160,7 @@ class Account(TMDB):
 
     def rated_tv(self, **kwargs):
         """
-        Get the list of rated TV shows (and associated rating) for an account.
+        Get a list of all the TV shows you have rated.
 
         Args:
             page: (optional) Minimum 1, maximum 1000.
@@ -198,7 +198,7 @@ class Account(TMDB):
 
     def watchlist_movies(self, **kwargs):
         """
-        Get the list of movies on an account watchlist.
+        Get a list of all the movies you have added to your watchlist.
 
         Args:
             page: (optional) Minimum 1, maximum 1000.
@@ -217,7 +217,7 @@ class Account(TMDB):
 
     def watchlist_tv(self, **kwargs):
         """
-        Get the list of TV series on an account watchlist.
+        Get a list of all the TV shows you have added to your watchlist.
 
         Args:
             page: (optional) Minimum 1, maximum 1000.
@@ -236,7 +236,7 @@ class Account(TMDB):
 
     def watchlist(self, **kwargs):
         """
-        Add or remove a movie to an accounts watch list.
+        Add a movie or TV show to your watchlist.
 
         Args:
             media_type: 'movie' | 'tv'
@@ -268,24 +268,44 @@ class Authentication(TMDB):
     """
     BASE_PATH = 'authentication'
     URLS = {
-        'token_new': '/token/new',
-        'token_validate_with_login': '/token/validate_with_login',
-        'session_new': '/session/new', 
         'guest_session_new': '/guest_session/new', 
+        'token_new': '/token/new',
+        'session_new': '/session/new', 
+        'token_validate_with_login': '/token/validate_with_login',
     }
+
+    def guest_session_new(self, **kwargs):
+        """
+        Generate a guest session id.
+        This method will let you create a new guest session. Guest sessions
+        are a type of session that will let a user rate movies and TV shows
+        but not require them to have a TMDb user account. More
+        information about user authentication can be found here
+        (https://developers.themoviedb.org/3/authentication/how-do-i-generate-a-session-id).
+
+        Please note, you should only generate a single guest session per
+        user (or device) as you will be able to attach the ratings to a
+        TMDb user account in the future. There is also IP limits in place
+        so you should always make sure it's the end user doing the guest
+        session actions.
+
+        If a guest session is not used for the first time within 24 hours,
+        it will be automatically deleted.
+
+        Returns:
+            A dict respresentation of the JSON returned from the API.
+        """
+        path = self._get_path('guest_session_new')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
 
     def token_new(self, **kwargs):
         """
-        Generate a valid request token for user based authentication.
-
-        A request token is required to ask the user for permission to
-        access their account.
-
-        After obtaining the request_token, either:
-        (1) Direct your user to:
-                https://www.themoviedb.org/authenticate/REQUEST_TOKEN
-        or:
-        (2) Call token_validate_with_login() below.
+        Create a temporary request token that can be used to validate a TMDb
+        user login. More details about how this works can be found here
+        (https://developers.themoviedb.org/3/authentication/how-do-i-generate-a-session-id).
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -296,30 +316,12 @@ class Authentication(TMDB):
         self._set_attrs_to_values(response)
         return response
 
-    def token_validate_with_login(self, **kwargs):
-        """
-        Authenticate a user with a TMDb username and password.  The user
-        must have a verified email address and be registered on TMDb.
-
-        Args:
-            request_token: The token you generated for the user to approve.
-            username: The user's username on TMDb.
-            password: The user's password on TMDb.
-
-        Returns:
-            A dict respresentation of the JSON returned from the API.
-        """
-        path = self._get_path('token_validate_with_login')
-
-        response = self._GET(path, kwargs)
-        self._set_attrs_to_values(response)
-        return response
-
     def session_new(self, **kwargs):
         """
-        Generate a session id for user based authentication.
-
-        A session id is required in order to use any of the write methods.
+        You can use this method to create a fully valid session ID once a user
+        has validated the request token. More information about how this works
+        can be found here
+        (https://developers.themoviedb.org/3/authentication/how-do-i-generate-a-session-id).
 
         Args:
             request_token: The token you generated for the user to approve.
@@ -335,18 +337,35 @@ class Authentication(TMDB):
         self._set_attrs_to_values(response)
         return response
 
-    def guest_session_new(self, **kwargs):
+    def token_validate_with_login(self, **kwargs):
         """
-        Generate a guest session id.
+        This method allows an application to validate a request token by entering
+        a username and password.
+
+        Not all applications have access to a web view so this can be used as a
+        substitute.
+
+        Please note, the preferred method of validating a request token is to
+        have a user authenticate the request via the TMDb website. You can read
+        about that method here
+        (https://developers.themoviedb.org/3/authentication/how-do-i-generate-a-session-id).
+
+        If you decide to use this method please use HTTPS.
+
+        Args:
+            username: The user's username on TMDb.
+            password: The user's password on TMDb.
+            request_token: The token you generated for the user to approve.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
-        path = self._get_path('guest_session_new')
+        path = self._get_path('token_validate_with_login')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
         return response
+
 
 class GuestSessions(TMDB):
     """

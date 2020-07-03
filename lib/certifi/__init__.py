@@ -1,3 +1,3 @@
 from .core import contents, where
 
-__version__ = "2020.04.05.2"
+__version__ = "2020.06.20"

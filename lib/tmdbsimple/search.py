@@ -21,14 +21,66 @@ class Search(TMDB):
     """
     BASE_PATH = 'search'
     URLS = {
-        'movie': '/movie',
-        'collection': '/collection',
-        'tv': '/tv',
-        'person': '/person',
         'company': '/company',
+        'collection': '/collection',
         'keyword': '/keyword',
-        'multi': '/multi'
+        'movie': '/movie',
+        'multi': '/multi',
+        'person': '/person',
+        'tv': '/tv',
     }
+
+    def company(self, **kwargs):
+        """
+        Search for companies by name.
+
+        Args:
+            query: CGI escpaed string.
+            page: (optional) Minimum value of 1. Expected value is an integer.
+
+        Returns:
+            A dict respresentation of the JSON returned from the API.
+        """
+        path = self._get_path('company')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
+    def collection(self, **kwargs):
+        """
+        Search for collections by name.
+
+        Args:
+            query: CGI escpaed string.
+            page: (optional) Minimum value of 1. Expected value is an integer.
+            language: (optional) ISO 639-1 code.
+
+        Returns:
+            A dict respresentation of the JSON returned from the API.
+        """
+        path = self._get_path('collection')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
+    def keyword(self, **kwargs):
+        """
+        Search for keywords by name.
+
+        Args:
+            query: CGI escpaed string.
+            page: (optional) Minimum value of 1. Expected value is an integer.
+
+        Returns:
+            A dict respresentation of the JSON returned from the API.
+        """
+        path = self._get_path('keyword')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
 
     def movie(self, **kwargs):
         """
@@ -60,45 +112,21 @@ class Search(TMDB):
         self._set_attrs_to_values(response)
         return response
 
-    def collection(self, **kwargs):
+    def multi(self, **kwargs):
         """
-        Search for collections by name.
+        Search the movie, tv show and person collections with a single query.
 
         Args:
             query: CGI escpaed string.
             page: (optional) Minimum value of 1. Expected value is an integer.
             language: (optional) ISO 639-1 code.
+            include_adult: (optional) Toggle the inclusion of adult titles.
+                           Expected value is True or False.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
-        path = self._get_path('collection')
-
-        response = self._GET(path, kwargs)
-        self._set_attrs_to_values(response)
-        return response
-
-    def tv(self, **kwargs):
-        """
-        Search for TV shows by title.
-
-        Args:
-            query: CGI escpaed string.
-            page: (optional) Minimum value of 1. Expected value is an integer.
-            language: (optional) ISO 639-1 code.
-            first_air_date_year: (optional) Filter the results to only match 
-                                 shows that have a air date with with value.
-            search_type: (optional) By default, the search type is 'phrase'. 
-                         This is almost guaranteed the option you will want. 
-                         It's a great all purpose search type and by far the 
-                         most tuned for every day querying. For those wanting 
-                         more of an "autocomplete" type search, set this 
-                         option to 'ngram'.
-
-        Returns:
-            A dict respresentation of the JSON returned from the API.
-        """
-        path = self._get_path('tv')
+        path = self._get_path('multi')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
@@ -129,55 +157,27 @@ class Search(TMDB):
         self._set_attrs_to_values(response)
         return response
 
-    def company(self, **kwargs):
+    def tv(self, **kwargs):
         """
-        Search for companies by name.
-
-        Args:
-            query: CGI escpaed string.
-            page: (optional) Minimum value of 1. Expected value is an integer.
-
-        Returns:
-            A dict respresentation of the JSON returned from the API.
-        """
-        path = self._get_path('company')
-
-        response = self._GET(path, kwargs)
-        self._set_attrs_to_values(response)
-        return response
-
-    def keyword(self, **kwargs):
-        """
-        Search for keywords by name.
-
-        Args:
-            query: CGI escpaed string.
-            page: (optional) Minimum value of 1. Expected value is an integer.
-
-        Returns:
-            A dict respresentation of the JSON returned from the API.
-        """
-        path = self._get_path('keyword')
-
-        response = self._GET(path, kwargs)
-        self._set_attrs_to_values(response)
-        return response
-
-    def multi(self, **kwargs):
-        """
-        Search the movie, tv show and person collections with a single query.
+        Search for TV shows by title.
 
         Args:
             query: CGI escpaed string.
             page: (optional) Minimum value of 1. Expected value is an integer.
             language: (optional) ISO 639-1 code.
-            include_adult: (optional) Toggle the inclusion of adult titles.
-                           Expected value is True or False.
+            first_air_date_year: (optional) Filter the results to only match 
+                                 shows that have a air date with with value.
+            search_type: (optional) By default, the search type is 'phrase'. 
+                         This is almost guaranteed the option you will want. 
+                         It's a great all purpose search type and by far the 
+                         most tuned for every day querying. For those wanting 
+                         more of an "autocomplete" type search, set this 
+                         option to 'ngram'.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
-        path = self._get_path('multi')
+        path = self._get_path('tv')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
