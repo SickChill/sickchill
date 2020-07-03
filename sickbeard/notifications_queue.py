@@ -115,7 +115,6 @@ class DiscordTask(generic_queue.QueueItem):
                 # 'url':
                 'icon_url': sickbeard.DISCORD_AVATAR_URL
             },
-            'title': 'SickChill',
             'fields': []
         }
 
