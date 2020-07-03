@@ -30,7 +30,7 @@ intip=$(ip r g 8.8.8.8 | awk 'NR==1{print $7};')
 apt-get -qq install whiptail -y
 
 # Check to see what SickChill Dependencies are missing
-packages=$(dpkg -l unrar-free git-core openssl libssl-dev python2.7 2>1 | grep "no packages" | \
+packages=$(dpkg -l unrar git-core openssl libssl-dev python2.7 2>1 | grep "no packages" | \
            awk '{ print $6 }' | tr '\n' ' ')
 if [[ ${packages} ]]; then
 # Show Whiptail and install required files
@@ -44,10 +44,10 @@ if [[ ${packages} ]]; then
 fi
 # Check to see if all prior packages were installed successfully. if not exit 1 and display whiptail issues
 
-if [[ $(dpkg -l unrar-free git-core openssl libssl-dev python2.7 2>&1 | grep "no packages" | \
+if [[ $(dpkg -l unrar git-core openssl libssl-dev python2.7 2>&1 | grep "no packages" | \
         awk '{print $6 }') ]]; then
     whiptail --title "Package Installation Failed" --msgbox "               These Packages have failed:
-               $(dpkg -l unrar-free git-core openssl libssl-dev python2.7 2>&1 | grep "no packages" | awk '{print $6 }')
+               $(dpkg -l unrar git-core openssl libssl-dev python2.7 2>&1 | grep "no packages" | awk '{print $6 }')
 Please resolve these issues and restart the install script" 15 66
 exit 1
 fi
