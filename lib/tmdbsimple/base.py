@@ -44,6 +44,10 @@ class TMDB(object):
     def _get_credit_id_path(self, key):
         return self._get_path(key).format(credit_id=self.credit_id)
 
+    def _get_media_type_time_window_path(self, key):
+        return self._get_path(key).format(media_type=self.media_type,
+            time_window=self.time_window)
+
     def _get_tv_id_season_number_path(self, key):
         return self._get_path(key).format(tv_id=self.tv_id,
             season_number=self.season_number)

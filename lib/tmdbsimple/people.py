@@ -23,14 +23,16 @@ class People(TMDB):
     BASE_PATH = 'person'
     URLS = {
         'info': '/{id}',
+        'changes': '/{id}/changes',
         'movie_credits': '/{id}/movie_credits',
         'tv_credits': '/{id}/tv_credits',
         'combined_credits': '/{id}/combined_credits',
         'external_ids': '/{id}/external_ids',
         'images': '/{id}/images',
-        'changes': '/{id}/changes',
-        'popular': '/popular',
+        'tagged_images': '/{id}/tagged_images',
+        'translations': '/{id}/translations',
         'latest': '/latest',
+        'popular': '/popular',
     }
 
     def __init__(self, id=0):
@@ -48,6 +50,28 @@ class People(TMDB):
             A dict respresentation of the JSON returned from the API.
         """
         path = self._get_id_path('info')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
+    def changes(self, **kwargs):
+        """
+        Get the changes for a specific person id.
+
+        Changes are grouped by key, and ordered by date in descending order. 
+        By default, only the last 24 hours of changes are returned. The maximum 
+        number of days that can be returned in a single request is 14. The 
+        language is present on fields that are translatable.
+
+        Args:
+            start_date: (optional) Expected format is 'YYYY-MM-DD'.
+            end_date: (optional) Expected format is 'YYYY-MM-DD'.
+
+        Returns:
+            A dict respresentation of the JSON returned from the API.
+        """
+        path = self._get_id_path('changes')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
@@ -134,23 +158,40 @@ class People(TMDB):
         self._set_attrs_to_values(response)
         return response
 
-    def changes(self, **kwargs):
+    def tagged_images(self, **kwargs):
         """
-        Get the changes for a specific person id.
-
-        Changes are grouped by key, and ordered by date in descending order. 
-        By default, only the last 24 hours of changes are returned. The maximum 
-        number of days that can be returned in a single request is 14. The 
-        language is present on fields that are translatable.
-
-        Args:
-            start_date: (optional) Expected format is 'YYYY-MM-DD'.
-            end_date: (optional) Expected format is 'YYYY-MM-DD'.
+        Get the images that this person has been tagged in.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
-        path = self._get_id_path('changes')
+        path = self._get_id_path('tagged_images')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
+    def translations(self, **kwargs):
+        """
+        Get a list of translations that have been created for a person.
+
+        Returns:
+            A dict respresentation of the JSON returned from the API.
+        """
+        path = self._get_id_path('translations')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
+    def latest(self, **kwargs):
+        """
+        Get the latest person id.
+
+        Returns:
+            A dict respresentation of the JSON returned from the API.
+        """
+        path = self._get_path('latest')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
@@ -173,19 +214,6 @@ class People(TMDB):
         self._set_attrs_to_values(response)
         return response
 
-    def latest(self, **kwargs):
-        """
-        Get the latest person id.
-
-        Returns:
-            A dict respresentation of the JSON returned from the API.
-        """
-        path = self._get_path('latest')
-
-        response = self._GET(path, kwargs)
-        self._set_attrs_to_values(response)
-        return response
-
 class Credits(TMDB):
     """
     Credits functionality.
@@ -203,16 +231,7 @@ class Credits(TMDB):
 
     def info(self, **kwargs):
         """
-        Get the detailed information about a particular credit record. This is 
-        currently only supported with the new credit model found in TV. These 
-        ids can be found from any TV credit response as well as the tv_credits 
-        and combined_credits methods for people.
-
-        The episodes object returns a list of episodes and are generally going 
-        to be guest stars. The season array will return a list of season 
-        numbers.  Season credits are credits that were marked with the 
-        "add to every season" option in the editing interface and are 
-        assumed to be "season regulars".
+        Get a movie or TV credit details by id.
 
         Args:
             language: (optional) ISO 639-1 code.

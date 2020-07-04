@@ -24,7 +24,7 @@ class Genres(TMDB):
     URLS = {
         'movie_list': '/movie/list',
         'tv_list': '/tv/list',
-        'movies': '/{id}/movies',
+        'movies': '/{id}/movies', # backward compatability
     }
 
     def __init__(self, id=0):
@@ -33,7 +33,7 @@ class Genres(TMDB):
 
     def movie_list(self, **kwargs):
         """
-        Get the list of Movie genres.
+        Get the list of official genres for movies.
 
         Args:
             language: (optional) ISO 639-1 code.
@@ -49,7 +49,7 @@ class Genres(TMDB):
 
     def tv_list(self, **kwargs):
         """
-        Get the list of TV genres.
+        Get the list of official genres for TV shows.
 
         Args:
             language: (optional) ISO 639-1 code.
@@ -63,6 +63,7 @@ class Genres(TMDB):
         self._set_attrs_to_values(response)
         return response
 
+    # backward compatability
     def movies(self, **kwargs):
         """
         Get the list of movies for a particular genre by id. By default, only

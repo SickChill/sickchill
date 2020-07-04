@@ -92,3 +92,7 @@ venv
 
 /genchanges.sh
 /Downloads
+
+**/*.so
+lib/bin
+lib/.libs_cffi_backend

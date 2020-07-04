@@ -22,13 +22,18 @@ class Changes(TMDB):
     BASE_PATH = ''
     URLS = {
         'movie': 'movie/changes',
-        'person': 'person/changes',
         'tv': 'tv/changes',
+        'person': 'person/changes',
     }
 
     def movie(self, **kwargs):
         """
-        Get a list of movie ids that have been edited.
+        Get a list of all of the movie ids that have been changed
+        in the past 24 hours.
+
+        You can query it for up to 14 days worth of changed IDs at
+        a time with the start_date and end_date query parameters.
+        100 items are returned per page.
 
         Args:
             page: (optional) Minimum 1, maximum 1000.
@@ -44,27 +49,14 @@ class Changes(TMDB):
         self._set_attrs_to_values(response)
         return response
 
-    def person(self, **kwargs):
-        """
-        Get a list of people ids that have been edited.
-
-        Args:
-            page: (optional) Minimum 1, maximum 1000.
-            start_date: (optional) Expected format is 'YYYY-MM-DD'.
-            end_date: (optional) Expected format is 'YYYY-MM-DD'.
-
-        Returns:
-            A dict respresentation of the JSON returned from the API.
-        """
-        path = self._get_path('person')
-
-        response = self._GET(path, kwargs)
-        self._set_attrs_to_values(response)
-        return response
-
     def tv(self, **kwargs):
         """
-        Get a list of TV show ids that have been edited.
+        Get a list of all of the TV show ids that have been changed
+        in the past 24 hours.
+
+        You can query it for up to 14 days worth of changed IDs at
+        a time with the start_date and end_date query parameters.
+        100 items are returned per page.
 
         Args:
             page: (optional) Minimum 1, maximum 1000.
@@ -75,6 +67,29 @@ class Changes(TMDB):
             A dict respresentation of the JSON returned from the API.
         """
         path = self._get_path('tv')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
+    def person(self, **kwargs):
+        """
+        Get a list of all of the person ids that have been changed
+        in the past 24 hours.
+
+        You can query it for up to 14 days worth of changed IDs at
+        a time with the start_date and end_date query parameters.
+        100 items are returned per page.
+
+        Args:
+            page: (optional) Minimum 1, maximum 1000.
+            start_date: (optional) Expected format is 'YYYY-MM-DD'.
+            end_date: (optional) Expected format is 'YYYY-MM-DD'.
+
+        Returns:
+            A dict respresentation of the JSON returned from the API.
+        """
+        path = self._get_path('person')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)

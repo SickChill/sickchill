@@ -38,7 +38,7 @@ jobs:
       run: |
         echo "::set-output name=dir::$(npm config get cache)"
     - name: Restore npm cache
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ${{ steps.npm-cache.outputs.dir }}
         key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
@@ -48,7 +48,7 @@ jobs:
       id: yarn-cache-dir-path
       run: echo "::set-output name=dir::$(yarn cache dir)"
     - name: Restore yarn cache
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       id: yarn-cache
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -56,7 +56,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-yarn-
     - name: Restore pip cache
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -70,7 +70,7 @@ jobs:
       id: tox-workdir-path
       run: echo "::set-output name=dir::$(tox --showconfig | grep '^toxworkdir = .*$' | tail -c+14)"
     - name: Restore tox workdir
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ${{ steps.tox-workdir-path.outputs.dir }}
         key: ${{ runner.os }}-tox-${{ hashFiles('**/tox.ini') }}
@@ -98,14 +98,6 @@ jobs:
       with:
         buildx-version: latest
         qemu-version: latest
-    - name: Cache Docker layers
-      uses: actions/cache@v2
-      id: cache
-      with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-
     - name: Available platforms
       if: success()
       run: echo ${{ steps.buildx.outputs.platforms }}
@@ -116,9 +108,17 @@ jobs:
         echo ::set-output name=docker_platforms::linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/386,linux/ppc64le,linux/s390x
         echo ::set-output name=docker_username::miigotu
         echo ::set-output name=docker_image::docker.io/${GITHUB_REPOSITORY,,}
-        echo ::set-output name=github_image::docker.pkg.github.com/${GITHUB_REPOSITORY,,}/SickChill
+        echo ::set-output name=github_image::docker.pkg.github.com/${GITHUB_REPOSITORY,,}/sickchill
         VERSION_TAG=${GITHUB_REF#refs/*/}
         echo ::set-output name=version::${VERSION_TAG%/merge}
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+      id: cache
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
     - name: Docker Login and set build command
       if: success()
       id: login
@@ -132,7 +132,6 @@ jobs:
         echo ::set-output name=buildx::$(echo docker buildx build --output type=image,name=${{ steps.prepare.outputs.docker_image }},push=true \
           --platform ${{ steps.prepare.outputs.docker_platforms }} --cache-from "type=local,src=/tmp/.buildx-cache" --cache-to "type=local,dest=/tmp/.buildx-cache" \
           --tag "${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}")
-
     - name: Run Buildx (master)
       if: success() && contains(steps.prepare.outputs.version, 'master')
       run: |
@@ -140,4 +139,5 @@ jobs:
     - name: Run Buildx (non-master)
       if: success() && !contains(steps.prepare.outputs.version, 'master')
       run: |
-        ${{ steps.login.outputs.buildx }} --file Dockerfile .
+        ${{ steps.login.outputs.buildx }} --tag "${{ steps.prepare.outputs.github_image }}:latest" \
+        --output type=image,name=${{ steps.prepare.outputs.github_image }},push=true --file Dockerfile .

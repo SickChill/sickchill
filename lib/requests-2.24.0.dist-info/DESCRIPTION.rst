@@ -1,41 +1,3 @@
-Metadata-Version: 2.1
-Name: requests
-Version: 2.23.0
-Summary: Python HTTP for Humans.
-Home-page: https://requests.readthedocs.io
-Author: Kenneth Reitz
-Author-email: me@kennethreitz.org
-License: Apache 2.0
-Project-URL: Source, https://github.com/psf/requests
-Project-URL: Documentation, https://requests.readthedocs.io
-Platform: UNKNOWN
-Classifier: Development Status :: 5 - Production/Stable
-Classifier: Intended Audience :: Developers
-Classifier: Natural Language :: English
-Classifier: License :: OSI Approved :: Apache Software License
-Classifier: Programming Language :: Python
-Classifier: Programming Language :: Python :: 2
-Classifier: Programming Language :: Python :: 2.7
-Classifier: Programming Language :: Python :: 3
-Classifier: Programming Language :: Python :: 3.5
-Classifier: Programming Language :: Python :: 3.6
-Classifier: Programming Language :: Python :: 3.7
-Classifier: Programming Language :: Python :: 3.8
-Classifier: Programming Language :: Python :: Implementation :: CPython
-Classifier: Programming Language :: Python :: Implementation :: PyPy
-Requires-Python: >=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*
-Description-Content-Type: text/markdown
-Requires-Dist: chardet (<4,>=3.0.2)
-Requires-Dist: idna (<3,>=2.5)
-Requires-Dist: urllib3 (!=1.25.0,!=1.25.1,<1.26,>=1.21.1)
-Requires-Dist: certifi (>=2017.4.17)
-Provides-Extra: security
-Requires-Dist: pyOpenSSL (>=0.14) ; extra == 'security'
-Requires-Dist: cryptography (>=1.3.4) ; extra == 'security'
-Provides-Extra: socks
-Requires-Dist: PySocks (!=1.5.7,>=1.5.6) ; extra == 'socks'
-Requires-Dist: win-inet-pton ; (sys_platform == "win32" and python_version == "2.7") and extra == 'socks'
-
 
 <span align="center">
 
@@ -51,10 +13,13 @@ Requires-Dist: win-inet-pton ; (sys_platform == "win32" and python_version == "2
     <code> 'A simple, yet elegant HTTP library.'</code>
     </div>
 
-    <p align="center">
-This software has been designed for you, with much joy,
-by <a href="https://kennethreitz.org/">Kenneth Reitz</a> & is protected by The <a href="https://www.python.org/psf/">Python Software Foundation</a>.
-   </p>
+    <p>
+        This software has been designed for you, with much joy,
+        by <a href="https://kennethreitz.org/">Kenneth Reitz</a> &
+        is protected by The <a href="https://www.python.org/psf/">Python Software Foundation</a>.
+
+    </p>
+
 </pre>
 
 </span>
@@ -65,7 +30,7 @@ by <a href="https://kennethreitz.org/">Kenneth Reitz</a> & is protected by The <
 
 <p>&nbsp;</p>
 
-```pycon
+```python
 >>> import requests
 >>> r = requests.get('https://api.github.com/user', auth=('user', 'pass'))
 >>> r.status_code
@@ -75,9 +40,9 @@ by <a href="https://kennethreitz.org/">Kenneth Reitz</a> & is protected by The <
 >>> r.encoding
 'utf-8'
 >>> r.text
-u'{"type":"User"...'
+'{"type":"User"...'
 >>> r.json()
-{u'disk_usage': 368627, u'private_gists': 484, ...}
+{'disk_usage': 368627, 'private_gists': 484, ...}
 ```
 
 
@@ -89,7 +54,7 @@ u'{"type":"User"...'
 Requests allows you to send HTTP/1.1 requests extremely easily. There’s no need to manually add query strings to your URLs, or to form-encode your `PUT` & `POST` data — but nowadays, just use the `json` method!
 
 
-Requests is **the most downloaded Python package today**, pulling in around `14M downloads / week`— according to GitHub, Requests is currently [depended upon](https://github.com/psf/requests/network/dependents?package_id=UGFja2FnZS01NzA4OTExNg%3D%3D) by `367_296` repositories. You may certainly put your trust in this code.
+Requests is one of the most downloaded Python package today, pulling in around `14M downloads / week`— according to GitHub, Requests is currently [depended upon](https://github.com/psf/requests/network/dependents?package_id=UGFja2FnZS01NzA4OTExNg%3D%3D) by `500,000+` repositories. You may certainly put your trust in this code.
 
 
 <p>&nbsp;</p>
@@ -114,11 +79,14 @@ Requests is ready for the demands of building robust and reliable HTTP–speak a
          + Automatic honoring of `.netrc`       + Chunked HTTP Requests
 
                             &, of course, rock–solid stability!
+
 </pre>
+
 </div>
 
 <p align="center">
         ✨ 🍰 ✨&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 </p>
 
 <p>&nbsp;</p>
@@ -126,7 +94,7 @@ Requests is ready for the demands of building robust and reliable HTTP–speak a
 Requests Module Installation
 ----------------------------
 
-The recommended way to intall the `requests` module is to simply use [`pipenv`](https://pipenv.kennethreitz.org) (or `pip`, of
+The recommended way to install the `requests` module is to simply use [`pipenv`](https://pipenv.kennethreitz.org) (or `pip`, of
 course):
 
 ```console
@@ -140,10 +108,11 @@ Requests officially supports Python 2.7 & 3.5+.
 
 -------------------------------------
 
-## P.S. — Documentation is Available at [`//requests.readthedocs.io`](https://requests.readthedocs.io/en/latest/).
+## P.S. — Documentation is available at [`requests.readthedocs.io`](https://requests.readthedocs.io/en/latest/).
 
 <p align="center">
         <a href="https://requests.readthedocs.io/"><img src="https://raw.githubusercontent.com/psf/requests/master/ext/ss.png" align="center" /></a>
+
 </p>
 
 
@@ -154,12 +123,14 @@ Requests officially supports Python 2.7 & 3.5+.
 
 <p align="center">
         <a href="https://kennethreitz.org/"><img src="https://raw.githubusercontent.com/psf/requests/master/ext/kr.png" align="center" /></a>
+
 </p>
 
 <p>&nbsp;</p>
 
 <p align="center">
         <a href="https://www.python.org/psf/"><img src="https://raw.githubusercontent.com/psf/requests/master/ext/psf.png" align="center" /></a>
+
 </p>
 
 
