@@ -25,6 +25,7 @@ jobs:
       with:
         fetch-depth: 1
         persist-credentials: false
+        ref: ${{ github.head_ref }}
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
@@ -91,6 +92,7 @@ jobs:
       with:
         fetch-depth: 1
         persist-credentials: false
+        ref: ${{ github.head_ref }}
     - name: Set up Docker Buildx
       if: success()
       id: buildx
@@ -138,3 +140,11 @@ jobs:
       if: success() && !contains(steps.prepare.outputs.version, 'master')
       run: |
         ${{ steps.login.outputs.buildx }} --file Dockerfile .
+    - name: Push to GitHub Packages
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: docker.pkg.github.com
+        repository: SickChill/SickChill//SickChill
+        tag_with_ref: true
