@@ -141,6 +141,7 @@ jobs:
       run: |
         ${{ steps.login.outputs.buildx }} --file Dockerfile .
     - name: Push to GitHub Packages
+      if: success() && contains(steps.prepare.outputs.version, 'master')
       uses: docker/build-push-action@v1
       with:
         username: ${{ github.actor }}
