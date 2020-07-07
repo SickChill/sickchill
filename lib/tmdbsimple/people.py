@@ -3,7 +3,7 @@
 """
 tmdbsimple.people
 ~~~~~~~~~~~~~~~~~
-This module implements the People, Credits, and Jobs functionality 
+This module implements the People, Credits, and Jobs functionality
 of tmdbsimple.
 
 Created by Celia Oakley on 2013-10-31.
@@ -13,6 +13,7 @@ Created by Celia Oakley on 2013-10-31.
 """
 
 from .base import TMDB
+
 
 class People(TMDB):
     """
@@ -41,7 +42,10 @@ class People(TMDB):
 
     def info(self, **kwargs):
         """
-        Get the general person information for a specific id.
+        Get the primary person details by id.
+
+        Supports append_to_response. Read more about this at
+        https://developers.themoviedb.org/3/getting-started/append-to-response.
 
         Args:
             append_to_response: (optional) Comma separated, any person method.
@@ -57,12 +61,10 @@ class People(TMDB):
 
     def changes(self, **kwargs):
         """
-        Get the changes for a specific person id.
+        Get the changes for a person. By default only the last 24 hours are returned.
 
-        Changes are grouped by key, and ordered by date in descending order. 
-        By default, only the last 24 hours of changes are returned. The maximum 
-        number of days that can be returned in a single request is 14. The 
-        language is present on fields that are translatable.
+        You can query up to 14 days in a single query by using the start_date
+        and end_date query parameters.
 
         Args:
             start_date: (optional) Expected format is 'YYYY-MM-DD'.
@@ -79,7 +81,7 @@ class People(TMDB):
 
     def movie_credits(self, **kwargs):
         """
-        Get the movie credits for a specific person id.
+        Get the movie credits for a person.
 
         Args:
             language: (optional) ISO 639-1 code.
@@ -96,7 +98,10 @@ class People(TMDB):
 
     def tv_credits(self, **kwargs):
         """
-        Get the TV credits for a specific person id.
+        Get the TV show credits for a person.
+
+        You can query for some extra details about the credit with the credit
+        method.
 
         Args:
             language: (optional) ISO 639-1 code.
@@ -113,11 +118,7 @@ class People(TMDB):
 
     def combined_credits(self, **kwargs):
         """
-        Get the combined (movie and TV) credits for a specific person id.
-
-        To get the expanded details for each TV record, call the /credit method 
-        with the provided credit_id. This will provide details about which 
-        episode and/or season the credit is for.
+        Get the movie and TV credits together in a single response.
 
         Args:
             language: (optional) ISO 639-1 code.
@@ -134,7 +135,16 @@ class People(TMDB):
 
     def external_ids(self, **kwargs):
         """
-        Get the external ids for a specific person id.
+        Get the external ids for a person. We currently support the following external sources.
+
+        External Sources
+            - IMDB ID
+            - Facebook
+            - Freebase MID
+            - Freebase ID
+            - Instagram
+            - TVRage ID
+            - Twitter
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -147,7 +157,7 @@ class People(TMDB):
 
     def images(self, **kwargs):
         """
-        Get the images for a specific person id.
+        Get the images for a person.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -186,7 +196,8 @@ class People(TMDB):
 
     def latest(self, **kwargs):
         """
-        Get the latest person id.
+        Get the most newly created person. This is a live response and will
+        continuously change.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -199,8 +210,7 @@ class People(TMDB):
 
     def popular(self, **kwargs):
         """
-        Get the list of popular people on The Movie Database. This list 
-        refreshes every day.
+        Get the list of popular people on TMDb. This list updates daily.
 
         Args:
             page: (optional) Minimum 1, maximum 1000.
@@ -213,6 +223,7 @@ class People(TMDB):
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
         return response
+
 
 class Credits(TMDB):
     """
@@ -245,6 +256,7 @@ class Credits(TMDB):
         self._set_attrs_to_values(response)
         return response
 
+
 class Jobs(TMDB):
     """
     Jobs functionality.
@@ -268,4 +280,3 @@ class Jobs(TMDB):
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
         return response
-        

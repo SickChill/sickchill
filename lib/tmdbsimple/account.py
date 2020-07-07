@@ -3,7 +3,7 @@
 """
 tmdbsimple.account
 ~~~~~~~~~~~~~~~~~~
-This module implements the Account, Authentication, and Lists functionality 
+This module implements the Account, Authentication, and Lists functionality
 of tmdbsimple.
 
 Created by Celia Oakley on 2013-10-31.
@@ -25,7 +25,7 @@ class Account(TMDB):
     BASE_PATH = 'account'
     URLS = {
         'info': '',
-        'lists': '/{id}/lists', 
+        'lists': '/{id}/lists',
         'favorite_movies': '/{id}/favorite/movies',
         'favorite_tv': '/{id}/favorite/tv',
         'favorite': '/{id}/favorite',
@@ -57,7 +57,7 @@ class Account(TMDB):
         self.id = response['id']
         self._set_attrs_to_values(response)
         return response
-        
+
     def lists(self, **kwargs):
         """
         Get all of the lists created by an account. Will include private lists if you are the owner.
@@ -130,8 +130,8 @@ class Account(TMDB):
         kwargs.update({'session_id': self.session_id})
 
         payload = {
-            'media_type': kwargs.pop('media_type', None), 
-            'media_id': kwargs.pop('media_id', None), 
+            'media_type': kwargs.pop('media_type', None),
+            'media_id': kwargs.pop('media_id', None),
             'favorite': kwargs.pop('favorite', None),
         }
 
@@ -250,14 +250,15 @@ class Account(TMDB):
         kwargs.update({'session_id': self.session_id})
 
         payload = {
-            'media_type': kwargs.pop('media_type', None), 
-            'media_id': kwargs.pop('media_id', None), 
+            'media_type': kwargs.pop('media_type', None),
+            'media_id': kwargs.pop('media_id', None),
             'watchlist': kwargs.pop('watchlist', None),
         }
 
         response = self._POST(path, kwargs, payload)
         self._set_attrs_to_values(response)
         return response
+
 
 class Authentication(TMDB):
     """
@@ -268,15 +269,14 @@ class Authentication(TMDB):
     """
     BASE_PATH = 'authentication'
     URLS = {
-        'guest_session_new': '/guest_session/new', 
+        'guest_session_new': '/guest_session/new',
         'token_new': '/token/new',
-        'session_new': '/session/new', 
+        'session_new': '/session/new',
         'token_validate_with_login': '/token/validate_with_login',
     }
 
     def guest_session_new(self, **kwargs):
         """
-        Generate a guest session id.
         This method will let you create a new guest session. Guest sessions
         are a type of session that will let a user rate movies and TV shows
         but not require them to have a TMDb user account. More
@@ -375,7 +375,9 @@ class GuestSessions(TMDB):
     """
     BASE_PATH = 'guest_session'
     URLS = {
-        'rated_movies': '/{guest_session_id}/rated_movies',
+        'rated_movies': '/{guest_session_id}/rated/movies',
+        'rated_tv': '/{guest_session_id}/rated/tv',
+        'rated_tv_episodes': '/{guest_session_id}/rated/tv/episodes',
     }
 
     def __init__(self, guest_session_id=0):
@@ -384,7 +386,7 @@ class GuestSessions(TMDB):
 
     def rated_movies(self, **kwargs):
         """
-        Get a list of rated moview for a specific guest session id.
+        Get the rated movies for a guest session.
 
         Args:
             page: (optional) Minimum 1, maximum 1000.
@@ -399,7 +401,43 @@ class GuestSessions(TMDB):
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
         return response
-    
+
+    def rated_tv(self, **kwargs):
+        """
+        Get the rated TV shows for a guest session.
+
+        Args:
+            page: (optional) Minimum 1, maximum 1000.
+            sort_by: (optional) 'created_at.asc' | 'created_at.desc'
+            language: (optional) ISO 639-1 code.
+
+        Returns:
+            A dict respresentation of the JSON returned from the API.
+        """
+        path = self._get_guest_session_id_path('rated_tv')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
+    def rated_tv_episodes(self, **kwargs):
+        """
+        Get the rated TV episodes for a guest session.
+
+        Args:
+            page: (optional) Minimum 1, maximum 1000.
+            sort_by: (optional) 'created_at.asc' | 'created_at.desc'
+            language: (optional) ISO 639-1 code.
+
+        Returns:
+            A dict respresentation of the JSON returned from the API.
+        """
+        path = self._get_guest_session_id_path('rated_tv_episodes')
+
+        response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
 
 class Lists(TMDB):
     """
@@ -410,7 +448,7 @@ class Lists(TMDB):
     BASE_PATH = 'list'
     URLS = {
         'info': '/{id}',
-        'item_status': '/{id}/item_status', 
+        'item_status': '/{id}/item_status',
         'create_list': '',
         'add_item': '/{id}/add_item',
         'remove_item': '/{id}/remove_item',
@@ -424,7 +462,7 @@ class Lists(TMDB):
 
     def info(self, **kwargs):
         """
-        Get a list by id.
+        Get the details of a list.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -437,7 +475,8 @@ class Lists(TMDB):
 
     def item_status(self, **kwargs):
         """
-        Check to see if a movie id is already added to a list.
+        You can use this method to check if a movie has already been added to
+        the list.
 
         Args:
             movie_id: The id of the movie.
@@ -453,9 +492,7 @@ class Lists(TMDB):
 
     def create_list(self, **kwargs):
         """
-        Create a new list.
-
-        A valid session id is required.
+        Create a list.
 
         Args:
             name: Name of the list.
@@ -469,7 +506,7 @@ class Lists(TMDB):
         kwargs.update({'session_id': self.session_id})
 
         payload = {
-            'name': kwargs.pop('name', None), 
+            'name': kwargs.pop('name', None),
             'description': kwargs.pop('description', None),
         }
         if 'language' in kwargs:
@@ -481,9 +518,7 @@ class Lists(TMDB):
 
     def add_item(self, **kwargs):
         """
-        Add new movies to a list that the user created.
-
-        A valid session id is required.
+        Add a movie to a list.
 
         Args:
             media_id: A movie id.
@@ -495,18 +530,16 @@ class Lists(TMDB):
         kwargs.update({'session_id': self.session_id})
 
         payload = {
-            'media_id': kwargs.pop('media_id', None), 
+            'media_id': kwargs.pop('media_id', None),
         }
 
         response = self._POST(path, kwargs, payload)
         self._set_attrs_to_values(response)
         return response
-        
+
     def remove_item(self, **kwargs):
         """
-        Delete movies from a list that the user created.
-
-        A valid session id is required.
+        Remove a movie from a list.
 
         Args:
             media_id: A movie id.
@@ -518,7 +551,7 @@ class Lists(TMDB):
         kwargs.update({'session_id': self.session_id})
 
         payload = {
-            'media_id': kwargs.pop('media_id', None), 
+            'media_id': kwargs.pop('media_id', None),
         }
 
         response = self._POST(path, kwargs, payload)
@@ -527,10 +560,7 @@ class Lists(TMDB):
 
     def clear_list(self, **kwargs):
         """
-        Clears all of the items within a list. This is an irreversible action
-        and should be treated with caution.
-
-        A valid session id is required.
+        Clear all of the items from a list.
 
         Args:
             confirm: True (do it) | False (don't do it)

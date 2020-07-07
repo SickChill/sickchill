@@ -13,6 +13,7 @@ Created by Celia Oakley on 2013-10-31.
 
 from .base import TMDB
 
+
 class Changes(TMDB):
     """
     Changes functionality.

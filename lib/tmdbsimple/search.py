@@ -13,6 +13,7 @@ Created by Celia Oakley on 2013-10-31.
 
 from .base import TMDB
 
+
 class Search(TMDB):
     """
     Search functionality
@@ -32,7 +33,7 @@ class Search(TMDB):
 
     def company(self, **kwargs):
         """
-        Search for companies by name.
+        Search for companies.
 
         Args:
             query: CGI escpaed string.
@@ -49,7 +50,7 @@ class Search(TMDB):
 
     def collection(self, **kwargs):
         """
-        Search for collections by name.
+        Search for collections.
 
         Args:
             query: CGI escpaed string.
@@ -67,7 +68,7 @@ class Search(TMDB):
 
     def keyword(self, **kwargs):
         """
-        Search for keywords by name.
+        Search for keywords.
 
         Args:
             query: CGI escpaed string.
@@ -84,23 +85,23 @@ class Search(TMDB):
 
     def movie(self, **kwargs):
         """
-        Search for movies by title.
+        Search for movies.
 
         Args:
             query: CGI escpaed string.
             page: (optional) Minimum value of 1. Expected value is an integer.
             language: (optional) ISO 639-1 code.
-            include_adult: (optional) Toggle the inclusion of adult titles. 
+            include_adult: (optional) Toggle the inclusion of adult titles.
                            Expected value is True or False.
-            year: (optional) Filter the results release dates to matches that 
+            year: (optional) Filter the results release dates to matches that
                   include this value.
-            primary_release_year: (optional) Filter the results so that only 
+            primary_release_year: (optional) Filter the results so that only
                                   the primary release dates have this value.
-            search_type: (optional) By default, the search type is 'phrase'. 
-                         This is almost guaranteed the option you will want. 
-                         It's a great all purpose search type and by far the 
-                         most tuned for every day querying. For those wanting 
-                         more of an "autocomplete" type search, set this 
+            search_type: (optional) By default, the search type is 'phrase'.
+                         This is almost guaranteed the option you will want.
+                         It's a great all purpose search type and by far the
+                         most tuned for every day querying. For those wanting
+                         more of an "autocomplete" type search, set this
                          option to 'ngram'.
 
         Returns:
@@ -114,7 +115,8 @@ class Search(TMDB):
 
     def multi(self, **kwargs):
         """
-        Search the movie, tv show and person collections with a single query.
+        Search multiple models in a single request. Multi search currently
+        supports searching for movies, tv shows and people in a single request.
 
         Args:
             query: CGI escpaed string.
@@ -134,18 +136,18 @@ class Search(TMDB):
 
     def person(self, **kwargs):
         """
-        Search for people by name.
+        Search for people.
 
         Args:
             query: CGI escpaed string.
             page: (optional) Minimum value of 1. Expected value is an integer.
-            include_adult: (optional) Toggle the inclusion of adult titles. 
+            include_adult: (optional) Toggle the inclusion of adult titles.
                            Expected value is True or False.
-            search_type: (optional) By default, the search type is 'phrase'. 
-                         This is almost guaranteed the option you will want. 
-                         It's a great all purpose search type and by far the 
-                         most tuned for every day querying. For those wanting 
-                         more of an "autocomplete" type search, set this 
+            search_type: (optional) By default, the search type is 'phrase'.
+                         This is almost guaranteed the option you will want.
+                         It's a great all purpose search type and by far the
+                         most tuned for every day querying. For those wanting
+                         more of an "autocomplete" type search, set this
                          option to 'ngram'.
 
         Returns:
@@ -159,19 +161,19 @@ class Search(TMDB):
 
     def tv(self, **kwargs):
         """
-        Search for TV shows by title.
+        Search for a TV show.
 
         Args:
             query: CGI escpaed string.
             page: (optional) Minimum value of 1. Expected value is an integer.
             language: (optional) ISO 639-1 code.
-            first_air_date_year: (optional) Filter the results to only match 
+            first_air_date_year: (optional) Filter the results to only match
                                  shows that have a air date with with value.
-            search_type: (optional) By default, the search type is 'phrase'. 
-                         This is almost guaranteed the option you will want. 
-                         It's a great all purpose search type and by far the 
-                         most tuned for every day querying. For those wanting 
-                         more of an "autocomplete" type search, set this 
+            search_type: (optional) By default, the search type is 'phrase'.
+                         This is almost guaranteed the option you will want.
+                         It's a great all purpose search type and by far the
+                         most tuned for every day querying. For those wanting
+                         more of an "autocomplete" type search, set this
                          option to 'ngram'.
 
         Returns:

@@ -40,21 +40,21 @@ class TMDB(object):
     def _get_guest_session_id_path(self, key):
         return self._get_path(key).format(
             guest_session_id=self.guest_session_id)
-    
+
     def _get_credit_id_path(self, key):
         return self._get_path(key).format(credit_id=self.credit_id)
 
     def _get_media_type_time_window_path(self, key):
-        return self._get_path(key).format(media_type=self.media_type,
-            time_window=self.time_window)
+        return self._get_path(key).format(
+            media_type=self.media_type, time_window=self.time_window)
 
     def _get_tv_id_season_number_path(self, key):
-        return self._get_path(key).format(tv_id=self.tv_id,
-            season_number=self.season_number)
+        return self._get_path(key).format(
+            tv_id=self.tv_id, season_number=self.season_number)
 
     def _get_tv_id_season_number_episode_number_path(self, key):
-        return self._get_path(key).format(tv_id=self.tv_id,
-            season_number=self.season_number,
+        return self._get_path(key).format(
+            tv_id=self.tv_id, season_number=self.season_number,
             episode_number=self.episode_number)
 
     def _get_complete_url(self, path):
@@ -81,7 +81,7 @@ class TMDB(object):
         params = self._get_params(params)
 
         response = requests.request(
-            method, url, params=params, 
+            method, url, params=params,
             data=json.dumps(payload) if payload else payload,
             headers=self.headers)
 
@@ -112,4 +112,3 @@ class TMDB(object):
             for key in response.keys():
                 if not hasattr(self, key) or not callable(getattr(self, key)):
                     setattr(self, key, response[key])
-

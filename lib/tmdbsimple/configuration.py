@@ -4,7 +4,7 @@
 tmdbsimple.configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-This module implements the Configuration, Certifications, and Timezones 
+This module implements the Configuration, Certifications, and Timezones
 functionality of tmdbsimple.
 
 Created by Celia Oakley on 2013-10-31.
@@ -205,4 +205,3 @@ class Timezones(TMDB):
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)
         return response
-

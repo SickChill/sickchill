@@ -24,7 +24,7 @@ class Genres(TMDB):
     URLS = {
         'movie_list': '/movie/list',
         'tv_list': '/tv/list',
-        'movies': '/{id}/movies', # backward compatability
+        'movies': '/{id}/movies',    # backward compatability
     }
 
     def __init__(self, id=0):
@@ -72,8 +72,8 @@ class Genres(TMDB):
         Args:
             page: (optional) Minimum 1, maximum 1000.
             language: (optional) ISO 639-1 code.
-            include_all_movies: (optional) Toggle the inclusion of all movies 
-                                and not just those with 10 or more ratings. 
+            include_all_movies: (optional) Toggle the inclusion of all movies
+                                and not just those with 10 or more ratings.
                                 Expected value is: True or False.
             include_adult: (optional) Toggle the inclusion of adult titles.
                            Expected value is: True or False.
