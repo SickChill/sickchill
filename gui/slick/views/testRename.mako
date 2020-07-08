@@ -79,7 +79,7 @@
                             % for current_episode in sorted(show.episodes[current_season].keys(), reverse=True):
                                 <%
                                     ep_obj = show.episodes[current_season][current_episode]
-                                    if not ep_obj._location:
+                                    if not (ep_obj and ep_obj._location):
                                         continue
 
                                     odd = not odd

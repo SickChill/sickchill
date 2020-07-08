@@ -200,6 +200,7 @@ class DBConnection(object):
         return self.get_db_major_version(), self.get_db_minor_version()
 
     def mass_action(self, query_list=None, log_transaction=False, fetchall=False):
+        # type: (list, bool, bool) -> sqlite3.Row
         """
         Execute multiple queries
 
@@ -360,6 +361,7 @@ class DBConnection(object):
             def make_string(my_dict, separator):
                 return separator.join([x + " = ?" for x in my_dict.keys()])
 
+            # language=TEXT
             query = "UPDATE [{table}] SET {pairs} WHERE {control}".format(
                 table=table_name, pairs=make_string(value_dict, ", "), control=make_string(key_dict, " AND ")
             )
@@ -373,6 +375,7 @@ class DBConnection(object):
             replacements = ", ".join(["?"] * count)
             values = value_dict.values() + key_dict.values()
 
+            # language=TEXT
             query = "INSERT INTO '{table}' ({columns}) VALUES ({replacements})".format(table=table_name, columns=columns, replacements=replacements)
 
             self.action(query, values)
@@ -434,7 +437,10 @@ class DBConnection(object):
         :param col_type: Column type to add
         :param default: Default value for column
         """
+
+        # language=TEXT
         self.action("ALTER TABLE [{0}] ADD {1} {2}".format(table, column, col_type))
+        # language=TEXT
         self.action("UPDATE [{0}] SET {1} = ?".format(table, column), (default,))
 
 
