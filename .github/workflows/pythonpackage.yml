@@ -147,5 +147,5 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: docker.pkg.github.com
-        repository: SickChill/SickChill/sickchill
+        repository: sickchill/sickchill/sickchill
         tag_with_ref: true
