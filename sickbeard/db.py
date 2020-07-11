@@ -482,7 +482,7 @@ def restore_database(version):
     """
     logger.info("Restoring database before trying upgrade again")
     if not sickbeard.helpers.restoreVersionedFile(db_full_path(suffix="v" + str(version)), version):
-        logger.info_error_and_exit("Database restore failed, abort upgrading database")
+        logger.log_error_and_exit("Database restore failed, abort upgrading database")
         return False
     else:
         return True

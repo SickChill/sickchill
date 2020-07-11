@@ -1302,8 +1302,8 @@ class CMDLogs(ApiCall):
         min_level = logger.LOGGING_LEVELS[str(self.min_level).upper()]
 
         data = []
-        if os.path.isfile(logger.info_file):
-            with io.open(logger.info_file, 'r', encoding='utf-8') as f:
+        if os.path.isfile(logger.log_file):
+            with io.open(logger.log_file, 'r', encoding='utf-8') as f:
                 data = f.readlines()
 
         regex = r"^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"

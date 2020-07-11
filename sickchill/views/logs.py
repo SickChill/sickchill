@@ -94,7 +94,7 @@ class ErrorLogs(WebRoot):
         log_filter = self.get_body_argument('log_filter', "<NONE>")
         log_search = self.get_body_argument('log_search', '')
         max_lines = try_int(self.get_body_argument('max_lines', 500), 500)
-        data = sickbeard.logger.info_data(min_level, log_filter, log_search, max_lines)
+        data = sickbeard.logger.log_data(min_level, log_filter, log_search, max_lines)
 
         t = PageTemplate(rh=self, filename="viewlogs.mako")
         return t.render(

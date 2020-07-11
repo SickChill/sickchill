@@ -518,7 +518,7 @@ def log_data(min_level, log_filter, log_search, max_lines):
 
 
 debug = Wrapper.instance.logger.debug
-warn = Wrapper.instance.logger.warning
+warning = Wrapper.instance.logger.warning
 info = Wrapper.instance.logger.info
 error = Wrapper.instance.logger.error
 critical = Wrapper.instance.logger.critical

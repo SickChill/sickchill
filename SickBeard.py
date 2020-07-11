@@ -340,7 +340,7 @@ class SickChill(object):
                 with os.fdopen(os.open(self.pid_file, os.O_CREAT | os.O_WRONLY, 0o644), 'w') as f_pid:
                     f_pid.write('{0}\n'.format(pid))
             except EnvironmentError as error:
-                logger.info_error_and_exit('Unable to write PID file: {filename} Error {error_num}: {error_message}'.format
+                logger.log_error_and_exit('Unable to write PID file: {filename} Error {error_num}: {error_message}'.format
                                           (filename=self.pid_file, error_num=error.errno, error_message=error.strerror))
 
         # Redirect all output

@@ -302,7 +302,7 @@ class MainSanityCheck(db.DBSanityCheck):
 def backupDatabase(version):
     logger.info("Backing up database before upgrade")
     if not helpers.backupVersionedFile(db.db_full_path(), version):
-        logger.info_error_and_exit("Database backup failed, abort upgrading database")
+        logger.log_error_and_exit("Database backup failed, abort upgrading database")
     else:
         logger.info("Proceeding with upgrade")
 
@@ -345,13 +345,13 @@ class InitialSchema(db.SchemaUpgrade):
             cur_db_version = self.get_db_version()
 
             if cur_db_version < MIN_DB_VERSION:
-                logger.info_error_and_exit(
+                logger.log_error_and_exit(
                     "Your database version ({cur_db_version}) is too old to migrate from what this version of SickChill supports ({min_db_version}).\n"
                     "Upgrade using a previous version (tag) build 496 to build 501 of SickChill first or remove database file to begin fresh.".format
                     (cur_db_version=str(cur_db_version), min_db_version=str(MIN_DB_VERSION)))
 
             if cur_db_version > MAX_DB_VERSION:
-                logger.info_error_and_exit(
+                logger.log_error_and_exit(
                     "Your database version ({cur_db_version}) has been incremented past what this version of SickChill supports ({max_db_version}).\n"
                     "If you have used other forks of SickChill, your database may be unusable due to their modifications.".format
                     (cur_db_version=str(cur_db_version), max_db_version=str(MAX_DB_VERSION)))

@@ -927,7 +927,7 @@ class ConfigMigrator(object):
         """
 
         if self.config_version > self.expected_config_version:
-            logger.info_error_and_exit(
+            logger.log_error_and_exit(
                 """Your config version ({0:d}) has been incremented past what this version of SickChill supports ({1:d}).
                 If you have used other forks or a newer version of SickChill, your config file may be unusable due to their modifications.""".format(
                     self.config_version, self.expected_config_version
@@ -946,7 +946,7 @@ class ConfigMigrator(object):
 
             logger.info("Backing up config before upgrade")
             if not helpers.backupVersionedFile(sickbeard.CONFIG_FILE, self.config_version):
-                logger.info_error_and_exit("Config backup failed, abort upgrading config")
+                logger.log_error_and_exit("Config backup failed, abort upgrading config")
             else:
                 logger.info("Proceeding with upgrade")
 

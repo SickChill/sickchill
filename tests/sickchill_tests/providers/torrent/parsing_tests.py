@@ -233,6 +233,9 @@ if __name__ == '__main__':
         print(msg)
 
     sickbeard.logger.info = override_log
+    sickbeard.logger.debug = override_log
+    sickbeard.logger.error = override_log
+    sickbeard.logger.warning = override_log
 
     suite = unittest.TestSuite()
     members = inspect.getmembers(sys.modules[__name__], inspect.isclass)
