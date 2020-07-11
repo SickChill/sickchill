@@ -45,7 +45,7 @@ import uuid
 import xml.etree.ElementTree as ElementTree
 import zipfile
 from contextlib import closing
-from itertools import cycle, izip
+from itertools import cycle
 
 # Third Party Imports
 import adba
@@ -76,6 +76,7 @@ from sickchill.show.Show import Show
 
 # Local Folder Imports
 from . import classes, db, logger
+from six.moves import zip
 
 # from .common import USER_AGENT
 
@@ -86,7 +87,7 @@ LOCALE_NAMES.update({
 })
 
 # Access to a protected member of a client class
-urllib._urlopener = classes.SickBeardURLopener()
+six.moves.urllib.request._urlopener = classes.SickBeardURLopener()
 orig_getaddrinfo = socket.getaddrinfo
 
 
@@ -983,17 +984,17 @@ def encrypt(data, encryption_version=0, _decrypt=False):
 
     if encryption_version == 1:
         if _decrypt:
-            return ''.join(chr(ord(x) ^ ord(y)) for (x, y) in izip(base64.decodestring(data), cycle(unique_key1)))
+            return ''.join(chr(ord(x) ^ ord(y)) for (x, y) in zip(base64.decodestring(data), cycle(unique_key1)))
         else:
             return base64.encodestring(
-                ''.join(chr(ord(x) ^ ord(y)) for (x, y) in izip(data, cycle(unique_key1)))).strip()
+                ''.join(chr(ord(x) ^ ord(y)) for (x, y) in zip(data, cycle(unique_key1)))).strip()
     # Version 2: Simple XOR encryption (this is not very secure, but works)
     elif encryption_version == 2:
         if _decrypt:
-            return ''.join(chr(ord(x) ^ ord(y)) for (x, y) in izip(base64.decodestring(data), cycle(sickbeard.ENCRYPTION_SECRET)))
+            return ''.join(chr(ord(x) ^ ord(y)) for (x, y) in zip(base64.decodestring(data), cycle(sickbeard.ENCRYPTION_SECRET)))
         else:
             return base64.encodestring(
-                ''.join(chr(ord(x) ^ ord(y)) for (x, y) in izip(data, cycle(sickbeard.ENCRYPTION_SECRET)))).strip()
+                ''.join(chr(ord(x) ^ ord(y)) for (x, y) in zip(data, cycle(sickbeard.ENCRYPTION_SECRET)))).strip()
     # Version 0: Plain text
     else:
         return data

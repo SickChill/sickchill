@@ -114,7 +114,7 @@ class ProperFinder(object):
             threading.currentThread().name = origThreadName
 
         # take the list of unique propers and get it sorted by
-        sortedPropers = sorted(propers.values(), key=operator.attrgetter('date'), reverse=True)
+        sortedPropers = sorted(list(propers.values()), key=operator.attrgetter('date'), reverse=True)
         finalPropers = []
 
         for curProper in sortedPropers:

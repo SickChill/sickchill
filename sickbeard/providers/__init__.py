@@ -31,6 +31,7 @@ from sickbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, 
                                  immortalseed, iptorrents, kat, limetorrents, magnetdl, morethantv, ncore, nebulance, newpct, norbits, nyaa, omgwtfnzbs,
                                  pretome, rarbg, scc, scenetime, shazbat, skytorrents, speedcd, thepiratebay, tntvillage, tokyotoshokan, torrent9, torrentbytes,
                                  torrentday, torrentleech, torrentproject, torrentz, tvchaosuk, xthor, yggtorrent)
+from six.moves import zip
 
 __all__ = [
     'abnormal', 'alpharatio', 'archetorrent', 'binsearch', 'bitcannon', 'bjshare', 'btn', 'cpasbien', 'danishbits', 'demonoid',
@@ -48,7 +49,7 @@ broken_providers = [
 
 def sortedProviderList(randomize=False):
     initialList = sickbeard.providerList + sickbeard.newznabProviderList + sickbeard.torrentRssProviderList
-    providerDict = dict(zip([x.get_id() for x in initialList], initialList))
+    providerDict = dict(list(zip([x.get_id() for x in initialList], initialList)))
 
     newList = []
 

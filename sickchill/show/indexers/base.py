@@ -23,11 +23,10 @@ import abc
 
 # First Party Imports
 import sickbeard
+import six
 
 
-class Indexer(object):
-    __metaclass__ = abc.ABCMeta
-
+class Indexer(six.with_metaclass(abc.ABCMeta, object)):
     @abc.abstractmethod
     def __init__(self):
         self.name = 'Generic'

@@ -171,7 +171,7 @@ class WizdomProvider(Provider):
             logger.debug('Found subtitle %r', subtitle)
             subtitles[subtitle_id] = subtitle
 
-        return subtitles.values()
+        return list(subtitles.values())
 
     def list_subtitles(self, video, languages):
         season = episode = None

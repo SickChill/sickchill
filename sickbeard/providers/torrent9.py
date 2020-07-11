@@ -153,7 +153,7 @@ class Torrent9Provider(TorrentProvider):
                                 logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                             items.append(item)
-                        except StandardError:
+                        except Exception:
                             continue
 
             # For each search mode sort all the items by seeders if available

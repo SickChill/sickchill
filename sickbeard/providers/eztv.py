@@ -106,7 +106,7 @@ class EZTVProvider(TorrentProvider):
                                    (title, seeders, leechers))
 
                     items.append(item)
-                except StandardError:
+                except Exception:
                     continue
 
             # For each search mode sort all the items by seeders if available

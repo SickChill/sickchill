@@ -98,7 +98,7 @@ class HD4FreeProvider(TorrentProvider):
                     if jdata['0']['total_results'] == 0:
                         logger.debug("Provider has no results for this search")
                         continue
-                except StandardError:
+                except Exception:
                     continue
 
                 for i in jdata:
@@ -124,7 +124,7 @@ class HD4FreeProvider(TorrentProvider):
                             logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                         items.append(item)
-                    except StandardError:
+                    except Exception:
                         continue
 
             # For each search mode sort all the items by seeders if available

@@ -54,6 +54,7 @@ from .blackandwhitelist import BlackAndWhiteList
 from .common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
                      NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN, WANTED)
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from six.moves import zip
 
 try:
     import xml.etree.cElementTree as etree
@@ -803,7 +804,7 @@ class TVShow(object):
                 logger.info(str(self.indexerid) + ": Unable to find IMDb show info in the database")
                 return
 
-        self._imdb_info = dict(zip(sql_results[0].keys(), sql_results[0]))
+        self._imdb_info = dict(list(zip(list(sql_results[0]), sql_results[0])))
         self.dirty = False
         return True
 
@@ -858,9 +859,9 @@ class TVShow(object):
 
             if self.name and not self.imdbid:
                 for attempt in (self.name, '{} ({})'.format(self.name, self.startyear), '"{}" ({})'.format(self.name, self.startyear)):
-                    results = filter(lambda x: x.type == 'TV series' and x.title == attempt, i.search_for_title(attempt))
+                    results = [x for x in i.search_for_title(attempt) if x.type == 'TV series' and x.title == attempt]
                     if self.startyear:
-                        results = filter(lambda x: x.year == self.startyear, results)
+                        results = [x for x in results if x.year == self.startyear]
                     if len(results) == 1:
                         self.imdbid = results[0].imdb_id
 

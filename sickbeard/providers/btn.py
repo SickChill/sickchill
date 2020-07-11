@@ -38,6 +38,7 @@ from sickbeard.helpers import sanitizeSceneName
 from sickchill.helper.common import episode_num
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+from six.moves import range
 
 
 class BTNProvider(TorrentProvider):

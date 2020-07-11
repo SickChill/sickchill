@@ -171,7 +171,7 @@ class TVChaosUKProvider(TorrentProvider):
 
                             item = {'title': title + '.hdtv.x264', 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
                             items.append(item)
-                        except StandardError:
+                        except Exception:
                             continue
 
             # For each search mode sort all the items by seeders if available

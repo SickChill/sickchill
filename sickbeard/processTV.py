@@ -37,6 +37,7 @@ from sickchill.helper.exceptions import EpisodePostProcessingFailedException, Fa
 # Local Folder Imports
 from . import common, db, failedProcessor, helpers, logger, postProcessor
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from six.moves import filter
 
 
 class ProcessResult(object):
@@ -195,7 +196,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             if not validate_dir(current_directory, release_name, failed, result):
                 continue
 
-            video_files = filter(helpers.is_media_file, file_names)
+            video_files = list(filter(helpers.is_media_file, file_names))
             if video_files:
                 process_media(current_directory, video_files, release_name, process_method, force, is_priority, result)
             else:
@@ -206,7 +207,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
                 continue
 
             # noinspection PyTypeChecker
-            unwanted_files = filter(lambda x: x in video_files + rar_files, file_names)
+            unwanted_files = [x for x in file_names if x in video_files + rar_files]
             if unwanted_files:
                 result.output += log_helper("Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
 
@@ -304,16 +305,16 @@ def validate_dir(process_path, release_name, failed, result):
             return False
 
     for current_directory, directory_names, file_names in os.walk(process_path, topdown=False, followlinks=sickbeard.PROCESSOR_FOLLOW_SYMLINKS):
-        sync_files = filter(is_sync_file, file_names)
+        sync_files = list(filter(is_sync_file, file_names))
         if sync_files and sickbeard.POSTPONE_IF_SYNC_FILES:
             result.output += log_helper("Found temporary sync files: {0} in path: {1}".format(sync_files, os.path.join(process_path, sync_files[0])))
             result.output += log_helper("Skipping post processing for folder: {0}".format(process_path))
             result.missed_files.append("{0} : Sync files found".format(os.path.join(process_path, sync_files[0])))
             continue
 
-        found_files = filter(helpers.is_media_file, file_names)
+        found_files = list(filter(helpers.is_media_file, file_names))
         if sickbeard.UNPACK == sickbeard.UNPACK_PROCESS_CONTENTS:
-            found_files += filter(helpers.is_rar_file, file_names)
+            found_files += list(filter(helpers.is_rar_file, file_names))
 
         if current_directory != sickbeard.TV_DOWNLOAD_DIR and found_files:
             found_files.append(os.path.basename(current_directory))
@@ -369,7 +370,7 @@ def unrar(path, rar_files, force, result):
                 # rar_handle.testrar()
 
                 # If there are no video files in the rar, don't extract it
-                rar_media_files = filter(helpers.is_media_file, rar_handle.namelist())
+                rar_media_files = list(filter(helpers.is_media_file, rar_handle.namelist()))
                 if not rar_media_files:
                     continue
 

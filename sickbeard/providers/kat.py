@@ -103,7 +103,7 @@ class KatProvider(TorrentProvider):
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
-                data = self.get_url(search_url, params=OrderedDict(sorted(search_params.items(), key=lambda x: x[0])), returns="text")
+                data = self.get_url(search_url, params=OrderedDict(sorted(list(search_params.items()), key=lambda x: x[0])), returns="text")
                 if not data:
                     logger.info("{url} did not return any data, it may be disabled. Trying to get a new domain".format(url=self.url))
                     self.disabled_mirrors.append(self.url)

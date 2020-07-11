@@ -35,6 +35,7 @@ from sickchill.views.routes import Route
 
 # Local Folder Imports
 from . import Config
+from six.moves import zip
 
 try:
     import json
@@ -62,7 +63,7 @@ class ConfigProviders(Config):
         if not name:
             return json.dumps({'error': 'No Provider Name specified'})
 
-        providerDict = dict(zip((x.get_id() for x in sickbeard.newznabProviderList), sickbeard.newznabProviderList))
+        providerDict = dict(list(zip((x.get_id() for x in sickbeard.newznabProviderList), sickbeard.newznabProviderList)))
 
         cur_id = GenericProvider.make_id(name)
 
@@ -100,7 +101,7 @@ class ConfigProviders(Config):
     @staticmethod
     def deleteNewznabProvider(nnid):
 
-        providerDict = dict(zip((x.get_id() for x in sickbeard.newznabProviderList), sickbeard.newznabProviderList))
+        providerDict = dict(list(zip((x.get_id() for x in sickbeard.newznabProviderList), sickbeard.newznabProviderList)))
 
         if nnid not in providerDict or providerDict[nnid].default:
             return '0'
@@ -135,7 +136,7 @@ class ConfigProviders(Config):
     def deleteTorrentRssProvider(provider_id):
 
         providerDict = dict(
-            zip((x.get_id() for x in sickbeard.torrentRssProviderList), sickbeard.torrentRssProviderList))
+            list(zip((x.get_id() for x in sickbeard.torrentRssProviderList), sickbeard.torrentRssProviderList)))
 
         if provider_id not in providerDict:
             return '0'
@@ -150,7 +151,7 @@ class ConfigProviders(Config):
 
     def saveProviders(self, newznab_string='', torrentrss_string='', provider_order=None, **kwargs):
         newznabProviderDict = dict(
-            zip((x.get_id() for x in sickbeard.newznabProviderList), sickbeard.newznabProviderList))
+            list(zip((x.get_id() for x in sickbeard.newznabProviderList), sickbeard.newznabProviderList)))
 
         finished_names = []
 
@@ -198,7 +199,7 @@ class ConfigProviders(Config):
         #     logger.debug('No torrentrss_string passed to saveProviders')
 
         torrentRssProviderDict = dict(
-            zip((x.get_id() for x in sickbeard.torrentRssProviderList), sickbeard.torrentRssProviderList))
+            list(zip((x.get_id() for x in sickbeard.torrentRssProviderList), sickbeard.torrentRssProviderList)))
 
         finished_names = []
 

@@ -665,7 +665,7 @@ class CMDHelp(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDHelp, self).__init__(args, kwargs)
-        self.subject, args = self.check_params(args, kwargs, "subject", "help", False, "string", function_mapper.keys())
+        self.subject, args = self.check_params(args, kwargs, "subject", "help", False, "string", list(function_mapper))
 
     def run(self):
         """ Get help about a given command """
@@ -691,7 +691,7 @@ class CMDComingEpisodes(ApiCall):
 
     def __init__(self, args, kwargs):
         super(CMDComingEpisodes, self).__init__(args, kwargs)
-        self.sort, args = self.check_params(args, kwargs, "sort", "date", False, "string", ComingEpisodes.sorts.keys())
+        self.sort, args = self.check_params(args, kwargs, "sort", "date", False, "string", list(ComingEpisodes.sorts))
         self.type, args = self.check_params(args, kwargs, "type", '|'.join(ComingEpisodes.categories), False, "list",
                                             ComingEpisodes.categories)
         self.paused, args = self.check_params(args, kwargs, "paused", bool(sickbeard.COMING_EPS_DISPLAY_PAUSED), False,
@@ -1725,7 +1725,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
         self.valid_languages = sickchill.indexer.lang_dict()
         self.name, args = self.check_params(args, kwargs, "name", None, False, "string", [])
         self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string",
-                                            self.valid_languages.keys())
+                                            list(self.valid_languages))
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, False, "int", [])
         self.only_new, args = self.check_params(args, kwargs, "only_new", True, False, "bool", [])
 
@@ -2123,7 +2123,7 @@ class CMDShowAddNew(ApiCall):
         self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
                                               ["wanted", "skipped", "ignored"])
         self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string",
-                                            self.valid_languages.keys())
+                                            list(self.valid_languages))
         self.subtitles, args = self.check_params(args, kwargs, "subtitles", bool(sickbeard.USE_SUBTITLES),
                                                  False, "bool", [])
         self.anime, args = self.check_params(args, kwargs, "anime", bool(sickbeard.ANIME_DEFAULT), False,

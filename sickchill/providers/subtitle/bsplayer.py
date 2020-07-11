@@ -22,6 +22,7 @@ from six.moves.xmlrpc_client import ServerProxy
 from subliminal import __short_version__
 from subliminal.providers import Provider, TimeoutSafeTransport
 from subliminal.subtitle import fix_line_ending, Subtitle
+from six.moves import range
 
 logger = logging.getLogger(__name__)
 
@@ -162,7 +163,7 @@ class BSPlayerProvider(Provider):
                 '<languageId>{language_ids}</languageId>'
                 '<imdbId>*</imdbId>'
             ).format(token=self.token, movie_hash=hash,
-                     movie_size=size, language_ids=','.join(map(lambda l: l.alpha3, languages)))
+                     movie_size=size, language_ids=','.join([l.alpha3 for l in languages]))
         )
         res = root.find('.//return/result')
         if res.find('status').text != 'OK':

@@ -28,6 +28,7 @@ from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+from six.moves import zip
 
 
 class TokyoToshokanProvider(TorrentProvider):
@@ -96,7 +97,7 @@ class TokyoToshokanProvider(TorrentProvider):
                             sl = re.match(r'S:(?P<seeders>\d+)L:(?P<leechers>\d+)C:(?:\d+)ID:(?:\d+)', stats.replace(' ', ''))
                             seeders = try_int(sl.group('seeders')) if sl else 0
                             leechers = try_int(sl.group('leechers')) if sl else 0
-                        except StandardError:
+                        except Exception:
                             continue
 
                         if not all([title, download_url]):

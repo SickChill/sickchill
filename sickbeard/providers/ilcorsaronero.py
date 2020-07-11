@@ -33,6 +33,8 @@ from sickbeard.common import Quality
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+from six.moves import map
+from six.moves import range
 
 
 class ilCorsaroNeroProvider(TorrentProvider):

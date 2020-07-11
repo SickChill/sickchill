@@ -381,7 +381,7 @@ def searchForNeededEpisodes():
         # complex thing a provider cache update entails, for example,
         # reading rss feeds
         logger.info("No episodes needed.")
-        return foundResults.values()
+        return list(foundResults.values())
 
     origThreadName = threading.currentThread().name
 
@@ -430,7 +430,7 @@ def searchForNeededEpisodes():
             "No NZB/Torrent providers found or enabled in the sickchill config for daily searches. Please check your settings.",
             logger.INFO)
 
-    return foundResults.values()
+    return list(foundResults.values())
 
 
 def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):

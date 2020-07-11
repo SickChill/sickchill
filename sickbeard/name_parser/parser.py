@@ -36,6 +36,7 @@ import sickchill
 from sickbeard import common, db, helpers, logger, scene_exceptions, scene_numbering
 from sickbeard.name_parser import regexes
 from sickchill.helper.common import remove_extension
+from six.moves import range
 class NameParser(object):
     ALL_REGEX = 0
     NORMAL_REGEX = 1
@@ -114,7 +115,7 @@ class NameParser(object):
             result.which_regex = [cur_regex_name]
             result.score = 0 - cur_regex_num
 
-            named_groups = match.groupdict().keys()
+            named_groups = list(match.groupdict())
 
             if 'series_name' in named_groups:
                 result.series_name = match.group('series_name')
@@ -138,7 +139,7 @@ class NameParser(object):
             if 'ep_num' in named_groups:
                 ep_num = self._convert_number(match.group('ep_num'))
                 if 'extra_ep_num' in named_groups and match.group('extra_ep_num'):
-                    tmp_episodes = range(ep_num, self._convert_number(match.group('extra_ep_num')) + 1)
+                    tmp_episodes = list(range(ep_num, self._convert_number(match.group('extra_ep_num')) + 1))
                     if len(tmp_episodes) > 4:
                         continue
                 else:
@@ -150,8 +151,8 @@ class NameParser(object):
             if 'ep_ab_num' in named_groups:
                 ep_ab_num = self._convert_number(match.group('ep_ab_num'))
                 if 'extra_ab_ep_num' in named_groups and match.group('extra_ab_ep_num'):
-                    result.ab_episode_numbers = range(ep_ab_num,
-                                                      self._convert_number(match.group('extra_ab_ep_num')) + 1)
+                    result.ab_episode_numbers = list(range(ep_ab_num,
+                                                      self._convert_number(match.group('extra_ab_ep_num')) + 1))
                     result.score += 1
                 else:
                     result.ab_episode_numbers = [ep_ab_num]
@@ -591,7 +592,7 @@ class NameParserCache(object):
         with self.lock:
             self.data.update({key: value})
             while len(self.data) > self.max_size:
-                self.data.pop(list(self.data.keys())[0], None)
+                self.data.pop(list(self.data)[0], None)
 
 name_parser_cache = NameParserCache()
 

@@ -23,6 +23,7 @@
 
 from __future__ import print_function, unicode_literals
 
+from __future__ import absolute_import
 import codecs
 import datetime
 import io

@@ -99,7 +99,7 @@ class NyaaProvider(TorrentProvider):
                                        (title, seeders, leechers))
 
                         items.append(result)
-                    except StandardError:
+                    except Exception:
                         continue
 
             # For each search mode sort all the items by seeders

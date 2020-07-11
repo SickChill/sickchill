@@ -36,6 +36,7 @@ from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.nzb.NZBProvider import NZBProvider
+from six.moves import zip
 
 
 class NewznabProvider(NZBProvider):
@@ -99,7 +100,7 @@ class NewznabProvider(NZBProvider):
                 seen_values.add(value)
 
         providers_list = providers_set
-        providers_dict = dict(zip([x.name for x in providers_list], providers_list))
+        providers_dict = dict(list(zip([x.name for x in providers_list], providers_list)))
 
         for default in default_list:
             if not default:
@@ -382,7 +383,7 @@ class NewznabProvider(NZBProvider):
 
                             result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
                             items.append(result)
-                        except StandardError:
+                        except Exception:
                             continue
 
                 # Since we aren't using the search string,

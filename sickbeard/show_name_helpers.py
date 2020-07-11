@@ -33,6 +33,7 @@ import sickbeard
 from . import common, logger
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from .scene_exceptions import get_scene_exceptions
+from six.moves import zip
 
 resultFilters = {
     "sub(bed|ed|pack|s)",
@@ -144,7 +145,7 @@ def allPossibleShowNames(show, season=-1):
     if not show.is_anime:
         newShowNames = []
         country_list = common.countryList
-        country_list.update(dict(zip(common.countryList.values(), common.countryList.keys())))
+        country_list.update(dict(list(zip(list(common.countryList.values()), list(common.countryList)))))
         for curName in set(showNames):
             if not curName:
                 continue

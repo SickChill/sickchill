@@ -115,7 +115,7 @@ class TorrentzProvider(TorrentProvider):
 
                             result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': t_hash}
                             items.append(result)
-                except StandardError:
+                except Exception:
                     logger.exception("Failed parsing provider. Traceback: {0!r}".format(traceback.format_exc()))
 
             # For each search mode sort all the items by seeders if available

@@ -884,7 +884,7 @@ class GenericMetadata(object):
                 resp = request.response()
                 results = resp[types[img_type]]
                 if season:
-                    results = filter(lambda x: try_int(x['season'], default_value=None) == season, results)
+                    results = [x for x in results if try_int(x['season'], default_value=None) == season]
 
                 url = results[0]['url']
                 if thumb:

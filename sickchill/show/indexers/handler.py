@@ -109,7 +109,7 @@ class ShowIndexer(object):
 
     def search_indexers_for_series_id(self, name=None, indexerid=None, language=None, indexer=None):
         if not indexer:
-            indexer = self.indexers.keys()
+            indexer = list(self.indexers)
 
         if isinstance(indexer, (int, six.string_types)):
             indexer = [indexer]

@@ -52,6 +52,7 @@ from .databases import cache_db, failed_db, mainDB
 from .numdict import NumDict
 from .providers.newznab import NewznabProvider
 from .providers.rsstorrent import TorrentRssProvider
+import six
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 

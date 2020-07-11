@@ -172,7 +172,7 @@ class ComingEpisodes(object):
     def _get_sort(sort):
         sort = sort.lower() if sort else ''
 
-        if sort not in ComingEpisodes.sorts.keys():
+        if sort not in list(ComingEpisodes.sorts):
             return 'date'
 
         return sort

@@ -354,7 +354,7 @@ class DBConnection(object):
         changesBefore = self.connection.total_changes
 
         # noinspection PyUnresolvedReferences
-        assert None not in key_dict.values(), _("Control dict to upsert cannot have values of None!")
+        assert None not in list(key_dict.values()), _("Control dict to upsert cannot have values of None!")
         if key_dict:
             def make_string(my_dict, separator):
                 return separator.join([x + " = ?" for x in my_dict.keys()])
@@ -364,14 +364,14 @@ class DBConnection(object):
                 table=table_name, pairs=make_string(value_dict, ", "), control=make_string(key_dict, " AND ")
             )
 
-            self.action(query, value_dict.values() + key_dict.values())
+            self.action(query, list(value_dict.values()) + list(key_dict.values()))
 
         if self.connection.total_changes == changesBefore:
-            keys = value_dict.keys() + key_dict.keys()
+            keys = list(value_dict) + list(key_dict)
             count = len(keys)
             columns = ", ".join(keys)
             replacements = ", ".join(["?"] * count)
-            values = value_dict.values() + key_dict.values()
+            values = list(value_dict.values()) + list(key_dict.values())
 
             # language=TEXT
             query = "INSERT INTO '{table}' ({columns}) VALUES ({replacements})".format(table=table_name, columns=columns, replacements=replacements)

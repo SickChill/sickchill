@@ -48,6 +48,7 @@ import sickbeard
 from sickchill.helper.common import dateTimeFormat
 # Local Folder Imports
 from . import classes
+from six.moves import range
 
 # log levels
 ERROR = logging.ERROR

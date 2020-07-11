@@ -150,7 +150,7 @@ class TorrentLeechProvider(TorrentProvider):
                                        (title, seeders, leechers))
 
                         items.append(item)
-                    except StandardError:
+                    except Exception:
                         continue
 
 

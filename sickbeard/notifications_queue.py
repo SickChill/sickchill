@@ -33,6 +33,7 @@ from requests.exceptions import HTTPError
 import sickbeard
 # Local Folder Imports
 from . import common, generic_queue, logger
+from six.moves import range
 
 DISCORD = 600
 

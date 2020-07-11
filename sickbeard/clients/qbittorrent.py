@@ -30,6 +30,7 @@ from requests.compat import urljoin
 # First Party Imports
 import sickbeard
 from sickbeard.clients.generic import GenericClient
+from six.moves import range
 
 
 class Client(GenericClient):

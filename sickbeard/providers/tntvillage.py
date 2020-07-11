@@ -32,6 +32,7 @@ from sickbeard.name_parser.parser import InvalidNameException, InvalidShowExcept
 from sickchill.helper.common import convert_size, try_int
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+from six.moves import range
 
 category_excluded = {'Sport': 22,
                      'Teatro': 23,

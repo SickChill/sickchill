@@ -34,6 +34,7 @@ from sickbeard.clients.generic import GenericClient
 
 # Local Folder Imports
 from .__deluge_base import DelugeBase
+from six.moves import range
 
 
 class Client(GenericClient, DelugeBase):

@@ -452,7 +452,7 @@ class Manage(Home, WebRoot):
                        subtitles=None, air_by_date=None, anyQualities=None, bestQualities=None, toEdit=None, *args,
                        **kwargs):
         dir_map = {}
-        for cur_arg in filter(lambda x: x.startswith('orig_root_dir_'), kwargs):
+        for cur_arg in [x for x in kwargs if x.startswith('orig_root_dir_')]:
             dir_map[kwargs[cur_arg]] = six.text_type(kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')], 'utf-8')
 
         showIDs = toEdit.split("|")

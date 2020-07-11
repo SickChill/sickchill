@@ -54,6 +54,7 @@ from sickchill.system.Shutdown import Shutdown
 from .common import PageTemplate
 from .index import WebRoot
 from .routes import Route
+from six.moves import zip
 
 try:
     import json

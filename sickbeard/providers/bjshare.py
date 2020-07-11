@@ -111,7 +111,7 @@ class BJShareProvider(TorrentProvider):
             'searchsubmit': 1
         }
 
-        if 'RSS' in search_strings.keys():
+        if 'RSS' in list(search_strings):
             search_params['filter_cat[14]'] = 1  # anime
             search_params['filter_cat[2]'] = 1  # tv shows
         elif anime:

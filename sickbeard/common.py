@@ -45,6 +45,8 @@ from sickchill.tagger.episode import EpisodeTags
 
 # Local Folder Imports
 from .numdict import NumDict
+import six
+from functools import reduce
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 
