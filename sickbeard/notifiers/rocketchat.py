@@ -28,9 +28,6 @@ import six
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
-from sickchill.helper.exceptions import ex
-
-
 class Notifier(object):
 
     ROCKETCHAT_ICON_URL = 'https://github.com/SickChill/SickChill/raw/master/gui/slick/images/sickchill-sc.png'
@@ -77,7 +74,7 @@ class Notifier(object):
             r = requests.post(rocketchat_webhook, data=json.dumps(dict(text=message, attachments=(dict(icon_emoji=rocketchat_icon_emoji, author_icon=self.ROCKETCHAT_ICON_URL)))), headers=headers)
             r.raise_for_status()
         except Exception as e:
-            logger.log("Error Sending RocketChat message: " + ex(e), logger.ERROR)
+            logger.log("Error Sending RocketChat message: " + str(e), logger.ERROR)
             return False
 
         return True

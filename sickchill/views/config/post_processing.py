@@ -29,7 +29,6 @@ import sickbeard
 from sickbeard import config, logger, naming, ui
 from sickbeard.common import NAMING_LIMITED_EXTEND_E_PREFIXED
 from sickchill.helper import try_int
-from sickchill.helper.encoding import ek
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
@@ -74,7 +73,7 @@ class ConfigPostProcessing(Config):
         results = []
 
         if not config.change_tv_download_dir(tv_download_dir):
-            results += ["Unable to create directory " + ek(os.path.normpath, tv_download_dir) + ", dir not changed."]
+            results += ["Unable to create directory " + os.path.normpath(tv_download_dir) + ", dir not changed."]
 
         config.change_postprocessor_frequency(autopostprocessor_frequency)
         config.change_process_automatically(process_automatically)
@@ -91,7 +90,7 @@ class ConfigPostProcessing(Config):
             sickbeard.UNPACK = unpack
 
         if not config.change_unpack_dir(unpack_dir):
-            results += ["Unable to change unpack directory to " + ek(os.path.normpath, unpack_dir) + ", check the logs."]
+            results += ["Unable to change unpack directory to " + os.path.normpath(unpack_dir) + ", check the logs."]
 
         sickbeard.NO_DELETE = config.checkbox_to_value(no_delete)
         sickbeard.KEEP_PROCESSED_DIR = config.checkbox_to_value(keep_processed_dir)
@@ -164,14 +163,14 @@ class ConfigPostProcessing(Config):
                 logger.log(x, logger.WARNING)
             ui.notifications.error(_('Error(s) Saving Configuration'), '<br>\n'.join(results))
         else:
-            ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message(_('Configuration Saved'), os.path.join(sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/postProcessing/")
 
     @staticmethod
     def testNaming(pattern=None, multi=None, abd=False, sports=False, anime_type=None):
         result = naming.test_name(pattern, try_int(multi, None), abd, sports, try_int(anime_type, None))
-        result = ek(os.path.join, result[b'dir'], result[b'name'])
+        result = os.path.join(result[b'dir'], result[b'name'])
 
         return result
 

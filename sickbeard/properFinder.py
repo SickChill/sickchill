@@ -30,7 +30,7 @@ import traceback
 
 # First Party Imports
 import sickbeard
-from sickchill.helper.exceptions import AuthException, ex
+from sickchill.helper.exceptions import AuthException
 from sickchill.show.History import History
 
 # Local Folder Imports
@@ -92,10 +92,10 @@ class ProperFinder(object):
             try:
                 curPropers = curProvider.find_propers(search_date)
             except AuthException as e:
-                logger.log("Authentication error: " + ex(e), logger.WARNING)
+                logger.log("Authentication error: " + str(e), logger.WARNING)
                 continue
             except Exception as e:
-                logger.log("Exception while searching propers in " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
+                logger.log("Exception while searching propers in " + curProvider.name + ", skipping: " + str(e), logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)
                 continue
 

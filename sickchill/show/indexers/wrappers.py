@@ -27,9 +27,6 @@ from urllib3.exceptions import HTTPError, HTTPWarning
 
 # First Party Imports
 from sickbeard import logger
-from sickchill.helper.exceptions import ex
-
-
 class ExceptionDecorator(object):
 
     def __init__(self, default_return=list(), catch=(HTTPError, HTTPWarning, RequestException, RequestsWarning), image_api=False):
@@ -49,10 +46,10 @@ class ExceptionDecorator(object):
                         kwargs['lang'] = 'en'
                         return wrapper(*args, **kwargs)
 
-                logger.log("Could not find item on the indexer: (Indexer probably doesn't have this item) [{error}]".format(error=ex(e)), logger.DEBUG)
+                logger.log("Could not find item on the indexer: (Indexer probably doesn't have this item) [{error}]".format(error=str(e)), logger.DEBUG)
                 result = self.default_return
             except RHTTPError as e:
-                logger.log("Could not find item on the indexer: (Indexer probably doesn't have this item) [{error}]".format(error=ex(e)), logger.DEBUG)
+                logger.log("Could not find item on the indexer: (Indexer probably doesn't have this item) [{error}]".format(error=str(e)), logger.DEBUG)
                 result = self.default_return
 
             return result

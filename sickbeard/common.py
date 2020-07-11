@@ -40,7 +40,6 @@ from six.moves import reduce
 # First Party Imports
 import sickbeard
 from sickchill.helper import video_screen_size
-from sickchill.helper.encoding import ek
 from sickchill.recompiled import tags
 from sickchill.tagger.episode import EpisodeTags
 
@@ -53,7 +52,7 @@ gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 # It is no different than us going to a provider if we have questions or issues. Be a team player here.
 # This is disabled, was only added for testing, and has no config.ini or web ui setting. To enable, set SPOOF_USER_AGENT = True
 SPOOF_USER_AGENT = True
-ua_pool = fake_useragent.FakeUserAgent(path=ek(path.join, ek(path.dirname, __file__), '../fake_useragent.ua.json'))
+ua_pool = fake_useragent.FakeUserAgent(path=path.join(path.dirname(__file__), '../fake_useragent.ua.json'))
 
 if SPOOF_USER_AGENT:
     USER_AGENT = ua_pool.random
@@ -313,7 +312,7 @@ class Quality(object):
         if not name:
             return Quality.UNKNOWN
 
-        name = ek(path.basename, name)
+        name = path.basename(name)
 
         result = None
         ep = EpisodeTags(name)
@@ -409,7 +408,7 @@ class Quality(object):
         if not height:
             return Quality.UNKNOWN
 
-        base_filename = ek(path.basename, filename)
+        base_filename = path.basename(filename)
         bluray = re.search(r"blue?-?ray|hddvd|b[rd](rip|mux)", base_filename, re.I) is not None
         webdl = re.search(r"web.?dl|web(rip|mux|hd)", base_filename, re.I) is not None
 

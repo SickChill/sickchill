@@ -29,7 +29,6 @@ import sickbeard
 from sickbeard import config, filters, ui
 from sickbeard.providers import newznab, rsstorrent
 from sickchill.helper import try_int
-from sickchill.helper.encoding import ek
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
@@ -346,6 +345,6 @@ class ConfigProviders(Config):
         # Add a site_message if no providers are enabled for daily and/or backlog
         sickbeard.providers.check_enabled_providers()
 
-        ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
+        ui.notifications.message(_('Configuration Saved'), os.path.join(sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/providers/")

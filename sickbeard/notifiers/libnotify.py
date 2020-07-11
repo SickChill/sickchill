@@ -28,8 +28,6 @@ import warnings
 # First Party Imports
 import sickbeard
 from sickbeard import common
-from sickchill.helper.encoding import ek
-
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     try:
@@ -114,7 +112,7 @@ class Notifier(object):
 
     def _notify(self, title, message, force=False):
         if self.notify_initialized and sickbeard.USE_LIBNOTIFY | force:
-            icon = ek(os.path.join, sickbeard.PROG_DIR, 'gui', 'slick', 'images', 'ico', 'favicon-120.png')
+            icon = os.path.join(sickbeard.PROG_DIR, 'gui', 'slick', 'images', 'ico', 'favicon-120.png')
             # noinspection PyBroadException
             try:
                 n = Notify.Notification.new(title, message, icon)

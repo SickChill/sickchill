@@ -30,9 +30,6 @@ import sickchill
 from sickbeard import helpers, logger
 from sickbeard.metadata import mediabrowser
 from sickchill.helper.common import dateFormat, replace_extension
-from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex
-
 try:
     import xml.etree.cElementTree as etree
 except ImportError:
@@ -330,12 +327,12 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             return False
 
         nfo_file_path = self.get_show_file_path(show_obj)
-        nfo_file_dir = ek(os.path.dirname, nfo_file_path)
+        nfo_file_dir = os.path.dirname(nfo_file_path)
 
         try:
-            if not ek(os.path.isdir, nfo_file_dir):
+            if not os.path.isdir(nfo_file_dir):
                 logger.log("Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
-                ek(os.makedirs, nfo_file_dir)
+                os.makedirs(nfo_file_dir)
                 helpers.chmodAsParent(nfo_file_dir)
 
             logger.log("Writing show nfo file to " + nfo_file_path, logger.DEBUG)
@@ -346,7 +343,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError as e:
-            logger.log("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e),
+            logger.log("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e),
                        logger.ERROR)
             return False
 
@@ -375,12 +372,12 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             return False
 
         nfo_file_path = self.get_episode_file_path(ep_obj)
-        nfo_file_dir = ek(os.path.dirname, nfo_file_path)
+        nfo_file_dir = os.path.dirname(nfo_file_path)
 
         try:
-            if not ek(os.path.isdir, nfo_file_dir):
+            if not os.path.isdir(nfo_file_dir):
                 logger.log("Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
-                ek(os.makedirs, nfo_file_dir)
+                os.makedirs(nfo_file_dir)
                 helpers.chmodAsParent(nfo_file_dir)
 
             logger.log("Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
@@ -391,7 +388,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError as e:
-            logger.log("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e),
+            logger.log("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e),
                        logger.ERROR)
             return False
 

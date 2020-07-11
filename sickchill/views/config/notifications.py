@@ -28,7 +28,6 @@ from tornado.web import addslash
 import sickbeard
 from sickbeard import config, filters, logger, ui
 from sickchill.helper import try_int
-from sickchill.helper.encoding import ek
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
@@ -322,6 +321,6 @@ class ConfigNotifications(Config):
             ui.notifications.error(_('Error(s) Saving Configuration'),
                                    '<br>\n'.join(results))
         else:
-            ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message(_('Configuration Saved'), os.path.join(sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/notifications/")

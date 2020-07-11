@@ -8,7 +8,6 @@
     from sickbeard.common import MULTI_EP_STRINGS
     from sickbeard import unpackStrings
     from sickbeard import naming
-    from sickchill.helper.encoding import ek
 %>
 
 <%block name="tabs">
@@ -496,7 +495,7 @@
                                     % if cur_preset == sickbeard.NAMING_PATTERN:
                                         <% is_custom = False %>
                                     % endif
-                                        <option id="${cur_preset}" ${('', 'selected="selected"')[sickbeard.NAMING_PATTERN == cur_preset]}>${ek(os.path.join, tmp['dir'], tmp['name'])}</option>
+                                        <option id="${cur_preset}" ${('', 'selected="selected"')[sickbeard.NAMING_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                     % endfor
                                     <option id="${sickbeard.NAMING_PATTERN}" ${('', 'selected="selected"')[bool(is_custom)]}>Custom...</option>
                                 </select>

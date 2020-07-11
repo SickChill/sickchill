@@ -30,8 +30,6 @@ import sickchill
 from sickbeard import helpers, logger
 from sickbeard.metadata import generic
 from sickchill.helper.common import dateFormat, replace_extension
-from sickchill.helper.encoding import ek
-
 try:
     import xml.etree.cElementTree as etree
 except ImportError:
@@ -130,7 +128,7 @@ class WDTVMetadata(generic.GenericMetadata):
 
         ep_obj: a TVEpisode instance for which to create the thumbnail
         """
-        if ek(os.path.isfile, ep_obj.location):
+        if os.path.isfile(ep_obj.location):
             tbn_filename = replace_extension(ep_obj.location, 'metathumb')
         else:
             return None
@@ -145,8 +143,8 @@ class WDTVMetadata(generic.GenericMetadata):
         If no season folder exists, None is returned
         """
 
-        dir_list = [x for x in ek(os.listdir, show_obj.location) if
-                    ek(os.path.isdir, ek(os.path.join, show_obj.location, x))]
+        dir_list = [x for x in os.listdir(show_obj.location) if
+                    os.path.isdir(os.path.join(show_obj.location, x))]
 
         season_dir_regex = r'^Season\s+(\d+)$'
 
@@ -173,7 +171,7 @@ class WDTVMetadata(generic.GenericMetadata):
 
         logger.log("Using " + str(season_dir) + "/folder.jpg as season dir for season " + str(season), logger.DEBUG)
 
-        return ek(os.path.join, show_obj.location, season_dir, 'folder.jpg')
+        return os.path.join(show_obj.location, season_dir, 'folder.jpg')
 
     def _ep_data(self, ep_obj):
         """

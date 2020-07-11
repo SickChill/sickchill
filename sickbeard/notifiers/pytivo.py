@@ -32,10 +32,6 @@ from six.moves.urllib.request import Request, urlopen
 # First Party Imports
 import sickbeard
 from sickbeard import logger
-from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex
-
-
 class Notifier(object):
     def notify_snatch(self, ep_name):
         pass
@@ -80,13 +76,13 @@ class Notifier(object):
         if isinstance(ep_obj, sickbeard.tv.TVEpisode):
             showPath = ep_obj.show.location
             showName = ep_obj.show.name
-            rootShowAndSeason = ek(os.path.dirname, ep_obj.location)
+            rootShowAndSeason = os.path.dirname(ep_obj.location)
             absPath = ep_obj.location
         else:
             # This is a TVShow
             showPath = ep_obj.location
             showName = ep_obj.name
-            rootShowAndSeason = ek(os.path.dirname, ep_obj.location)
+            rootShowAndSeason = os.path.dirname(ep_obj.location)
             absPath = ep_obj.location
 
         # Some show names have colons in them which are illegal in a path location, so strip them out.
@@ -117,7 +113,7 @@ class Notifier(object):
                 logger.log("pyTivo notification: Error, the server couldn't fulfill the request - " + e.code, logger.ERROR)
             return False
         except Exception as e:
-            logger.log("PYTIVO: Unknown exception: " + ex(e), logger.ERROR)
+            logger.log("PYTIVO: Unknown exception: " + str(e), logger.ERROR)
             return False
         else:
             logger.log("pyTivo notification: Successfully requested transfer of file")

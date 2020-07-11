@@ -32,8 +32,6 @@ from trakt.exceptions import traktException
 import sickbeard
 import sickchill
 from sickchill.helper.common import episode_num, sanitize_filename
-from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex
 from sickchill.show.Show import Show
 
 # Local Folder Imports
@@ -198,7 +196,7 @@ class TraktChecker(object):
                         self.trakt_api.traktRequest("sync/collection/remove", data, method='POST')
                         self._getShowCollection()
                     except traktException as e:
-                        logger.log("Could not connect to Trakt service. Error: {0}".format(ex(e)), logger.WARNING)
+                        logger.log("Could not connect to Trakt service. Error: {0}".format(str(e)), logger.WARNING)
 
             logger.log("COLLECTION::REMOVE::FINISH - Look for Episodes to Remove From Trakt Collection", logger.DEBUG)
 
@@ -228,7 +226,7 @@ class TraktChecker(object):
                         self.trakt_api.traktRequest("sync/collection", data, method='POST')
                         self._getShowCollection()
                     except traktException as e:
-                        logger.log("Could not connect to Trakt service. Error: {0}".format(ex(e)), logger.WARNING)
+                        logger.log("Could not connect to Trakt service. Error: {0}".format(str(e)), logger.WARNING)
 
             logger.log("COLLECTION::ADD::FINISH - Look for Episodes to Add to Trakt Collection", logger.DEBUG)
 
@@ -273,7 +271,7 @@ class TraktChecker(object):
                         self.trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
                         self._getEpisodeWatchlist()
                     except traktException as e:
-                        logger.log("Could not connect to Trakt service. Error: {0}".format(ex(e)), logger.WARNING)
+                        logger.log("Could not connect to Trakt service. Error: {0}".format(str(e)), logger.WARNING)
 
                 logger.log("WATCHLIST::REMOVE::FINISH - Look for Episodes to Remove from Trakt Watchlist", logger.DEBUG)
 
@@ -303,7 +301,7 @@ class TraktChecker(object):
                         self.trakt_api.traktRequest("sync/watchlist", data, method='POST')
                         self._getEpisodeWatchlist()
                     except traktException as e:
-                        logger.log("Could not connect to Trakt service. Error {0}".format(ex(e)), logger.WARNING)
+                        logger.log("Could not connect to Trakt service. Error {0}".format(str(e)), logger.WARNING)
 
             logger.log("WATCHLIST::ADD::FINISH - Look for Episodes to Add to Trakt Watchlist", logger.DEBUG)
 
@@ -328,7 +326,7 @@ class TraktChecker(object):
                         self.trakt_api.traktRequest("sync/watchlist", data, method='POST')
                         self._getShowWatchlist()
                     except traktException as e:
-                        logger.log("Could not connect to Trakt service. Error: {0}".format(ex(e)), logger.WARNING)
+                        logger.log("Could not connect to Trakt service. Error: {0}".format(str(e)), logger.WARNING)
 
             logger.log("SHOW_WATCHLIST::ADD::FINISH - Look for Shows to Add to Trakt Watchlist", logger.DEBUG)
 
@@ -446,7 +444,7 @@ class TraktChecker(object):
                 location = None
 
             if location:
-                showPath = ek(os.path.join, location, sanitize_filename(name))
+                showPath = os.path.join(location, sanitize_filename(name))
                 dir_exists = helpers.makeDir(showPath)
 
                 if not dir_exists:

@@ -29,9 +29,6 @@ import posixpath
 # First Party Imports
 import sickbeard
 from sickbeard import helpers
-from sickchill.helper.encoding import ek
-
-
 class RecommendedShow(object):
     """
     Base class for show recommendations
@@ -74,14 +71,14 @@ class RecommendedShow(object):
         if not self.cache_subfolder:
             return
 
-        self.image_src = ek(posixpath.join, 'images', self.cache_subfolder, ek(os.path.basename, image_url))
+        self.image_src = posixpath.join('images', self.cache_subfolder, os.path.basename(image_url))
 
-        path = ek(os.path.abspath, ek(os.path.join, sickbeard.CACHE_DIR, 'images', self.cache_subfolder))
+        path = os.path.abspath(os.path.join(sickbeard.CACHE_DIR, 'images', self.cache_subfolder))
 
-        if not ek(os.path.exists, path):
-            ek(os.makedirs, path)
+        if not os.path.exists(path):
+            os.makedirs(path)
 
-        full_path = ek(os.path.join, path, ek(os.path.basename, image_url))
+        full_path = os.path.join(path, os.path.basename(image_url))
 
-        if not ek(os.path.isfile, full_path):
+        if not os.path.isfile(full_path):
             helpers.download_file(image_url, full_path, session=self.session)

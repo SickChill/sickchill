@@ -26,8 +26,6 @@ from tornado.escape import xhtml_unescape
 
 # First Party Imports
 from sickbeard.browser import foldersAtPath
-from sickchill.helper.encoding import ek
-
 # Local Folder Imports
 from .index import WebRoot
 from .routes import Route
@@ -55,7 +53,7 @@ class WebFileBrowser(WebRoot):
 
         self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header(b'Content-Type', 'application/json')
-        paths = [entry['path'] for entry in foldersAtPath(ek(os.path.dirname, xhtml_unescape(term)), includeFiles=bool(int(includeFiles)),
+        paths = [entry['path'] for entry in foldersAtPath(os.path.dirname(xhtml_unescape(term)), includeFiles=bool(int(includeFiles)),
                                                           fileTypes=fileTypes.split(','))
                  if 'path' in entry]
 

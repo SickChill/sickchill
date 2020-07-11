@@ -22,42 +22,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 import six
 
 # First Party Imports
-from sickchill.helper.encoding import ss
-
-
-def ex(e):
-    """
-    :param e: The exception to convert into a six.text_type string
-    :return: A six.text_type string from the exception text if it exists
-    """
-
-    message = ''
-
-    if not e or not e.args:
-        return message
-
-    for arg in e.args:
-        if arg is not None:
-            if isinstance(arg, six.string_types):
-                fixed_arg = ss(arg)
-            else:
-                try:
-                    fixed_arg = 'error {0}'.format(ss(str(arg)))
-                except Exception:
-                    fixed_arg = None
-
-            if fixed_arg:
-                if not message:
-                    message = fixed_arg
-                else:
-                    try:
-                        message = '{0} : {1}'.format(message, fixed_arg)
-                    except UnicodeError:
-                        message = '{0} : {1}'.format(
-                            six.text_type(message, errors='replace'),
-                            six.text_type(fixed_arg, errors='replace'))
-
-    return message
 
 
 class SickChillException(Exception):

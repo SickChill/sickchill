@@ -35,7 +35,6 @@ from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
 from sickchill.helper.common import convert_size, try_int
-from sickchill.helper.encoding import ek, ss
 from sickchill.providers.nzb.NZBProvider import NZBProvider
 
 
@@ -237,7 +236,7 @@ class NewznabProvider(NZBProvider):
         except (AttributeError, TypeError):
             return self._check_auth()
 
-        logger.log(ss(err_desc))
+        logger.log(err_desc)
 
         return False
 

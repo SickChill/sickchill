@@ -27,7 +27,6 @@ from tornado.web import addslash
 # First Party Imports
 import sickbeard
 from sickbeard import config, filters, subtitles as subtitle_module, ui
-from sickchill.helper.encoding import ek
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
@@ -100,6 +99,6 @@ class ConfigSubtitles(Config):
         # Reset provider pool so next time we use the newest settings
         subtitle_module.SubtitleProviderPool().reset()
 
-        ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
+        ui.notifications.message(_('Configuration Saved'), os.path.join(sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/subtitles/")

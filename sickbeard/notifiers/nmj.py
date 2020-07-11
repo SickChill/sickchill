@@ -31,8 +31,6 @@ from six.moves import urllib
 # First Party Imports
 import sickbeard
 from sickbeard import logger
-from sickchill.helper.exceptions import ex
-
 try:
     import xml.etree.cElementTree as etree
 except ImportError:
@@ -137,7 +135,7 @@ class Notifier(object):
                     logger.log("NMJ: Problem with Popcorn Hour on host {0}: {1}".format(host, e.code), logger.WARNING)
                 return False
             except Exception as e:
-                logger.log("NMJ: Unknown exception: " + ex(e), logger.ERROR)
+                logger.log("NMJ: Unknown exception: " + str(e), logger.ERROR)
                 return False
 
         # build up the request URL and parameters
@@ -164,7 +162,7 @@ class Notifier(object):
                 logger.log("NMJ: Problem with Popcorn Hour on host {0}: {1}".format(host, e.code), logger.WARNING)
             return False
         except Exception as e:
-            logger.log("NMJ: Unknown exception: " + ex(e), logger.ERROR)
+            logger.log("NMJ: Unknown exception: " + str(e), logger.ERROR)
             return False
 
         # try to parse the resulting XML

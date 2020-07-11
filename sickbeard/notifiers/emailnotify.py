@@ -35,9 +35,6 @@ from email.utils import formatdate
 # First Party Imports
 import sickbeard
 from sickbeard import db, logger
-from sickchill.helper.encoding import ss
-
-
 class Notifier(object):
     def __init__(self):
         self.last_err = None
@@ -61,8 +58,6 @@ class Notifier(object):
         ep_name: The name of the episode that was snatched
         title: The title of the notification (optional)
         '''
-        ep_name = ss(ep_name)
-
         if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONSNATCH:
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
@@ -110,8 +105,6 @@ class Notifier(object):
         ep_name: The name of the episode that was downloaded
         title: The title of the notification (optional)
         '''
-        ep_name = ss(ep_name)
-
         if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONDOWNLOAD:
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
@@ -159,8 +152,6 @@ class Notifier(object):
         ep_name: The name of the episode that was postprocessed
         title: The title of the notification (optional)
         '''
-        ep_name = ss(ep_name)
-
         if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONPOSTPROCESS:
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
@@ -208,8 +199,6 @@ class Notifier(object):
         ep_name: The name of the episode that was downloaded
         lang: Subtitle language wanted
         '''
-        ep_name = ss(ep_name)
-
         if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD:
             show = self._parseEp(ep_name)
             to = self._generate_recipients(show)
@@ -396,8 +385,6 @@ class Notifier(object):
 
     @staticmethod
     def _parseEp(ep_name):
-        ep_name = ss(ep_name)
-
         sep = ' - '
         titles = ep_name.split(sep)
         logger.log('TITLES: {0}'.format(titles), logger.DEBUG)

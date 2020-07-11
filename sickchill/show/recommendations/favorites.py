@@ -8,7 +8,6 @@ import os
 import sickbeard
 import sickchill
 from sickbeard import helpers
-from sickbeard.helpers import ek
 from sickchill.show.Show import Show
 
 
@@ -35,14 +34,14 @@ class IndexerFavorites(object):
         Store cache of image in cache dir
         :param indexerid: Source indexer id
         """
-        path = ek(os.path.abspath, ek(os.path.join, sickbeard.CACHE_DIR, 'images', 'favorites'))
+        path = os.path.abspath(os.path.join(sickbeard.CACHE_DIR, 'images', 'favorites'))
 
-        if not ek(os.path.exists, path):
-            ek(os.makedirs, path)
+        if not os.path.exists(path):
+            os.makedirs(path)
 
-        full_path = ek(os.path.join, path, str(indexerid))
+        full_path = os.path.join(path, str(indexerid))
 
-        if not ek(os.path.isfile, full_path):
+        if not os.path.isfile(full_path):
             helpers.download_file(sickchill.indexer.series_poster_url_by_id(indexerid), full_path, session=self.session)
 
     @staticmethod

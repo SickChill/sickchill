@@ -33,9 +33,6 @@ import traceback
 # First Party Imports
 import sickbeard
 from sickchill.helper import glob
-from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex
-
 # Local Folder Imports
 from . import db, helpers, logger, notifiers, ui
 
@@ -91,9 +88,9 @@ class CheckVersion(object):
         logger.log("Config backup in progress...")
         ui.notifications.message(_('Backup'), _('Config backup in progress...'))
         try:
-            backupDir = ek(os.path.join, sickbeard.DATA_DIR, 'backup')
-            if not ek(os.path.isdir, backupDir):
-                ek(os.mkdir, backupDir)
+            backupDir = os.path.join(sickbeard.DATA_DIR, 'backup')
+            if not os.path.isdir(backupDir):
+                os.mkdir(backupDir)
 
             if self._keeplatestbackup(backupDir) and self._backup(backupDir):
                 logger.log("Config backup successful, updating...")
@@ -104,7 +101,7 @@ class CheckVersion(object):
                 ui.notifications.message(_('Backup'), _('Config backup failed, aborting update'))
                 return False
         except Exception as e:
-            logger.log('Update: Config backup failed. Error: {0}'.format(ex(e)), logger.ERROR)
+            logger.log('Update: Config backup failed. Error: {0}'.format(str(e)), logger.ERROR)
             ui.notifications.message(_('Backup'), _('Config backup failed, aborting update'))
             return False
 
@@ -114,20 +111,20 @@ class CheckVersion(object):
             return False
 
         # noinspection PyUnresolvedReferences
-        files = glob.glob(ek(os.path.join, glob.escape(backupDir), '*.zip'))
+        files = glob.glob(os.path.join(glob.escape(backupDir), '*.zip'))
         if not files:
             return True
 
         now = time.time()
-        newest = files[0], now - ek(os.path.getctime, files[0])
+        newest = files[0], now - os.path.getctime(files[0])
         for f in files[1:]:
-            age = now - ek(os.path.getctime, f)
+            age = now - os.path.getctime(f)
             if age < newest[1]:
                 newest = f, age
         files.remove(newest[0])
 
         for f in files:
-            ek(os.remove, f)
+            os.remove(f)
 
         return True
 
@@ -136,19 +133,19 @@ class CheckVersion(object):
         if not backupDir:
             return False
         source = [
-            ek(os.path.join, sickbeard.DATA_DIR, 'sickbeard.db'),
+            os.path.join(sickbeard.DATA_DIR, 'sickbeard.db'),
             sickbeard.CONFIG_FILE,
-            ek(os.path.join, sickbeard.DATA_DIR, 'failed.db'),
-            ek(os.path.join, sickbeard.DATA_DIR, 'cache.db')
+            os.path.join(sickbeard.DATA_DIR, 'failed.db'),
+            os.path.join(sickbeard.DATA_DIR, 'cache.db')
         ]
         target = ek(os.path.join, backupDir, 'sickchill-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
 
-        for (path, dirs, files) in ek(os.walk, sickbeard.CACHE_DIR, topdown=True):
+        for (path, dirs, files) in os.walk(sickbeard.CACHE_DIR, topdown=True):
             for dirname in dirs:
                 if path == sickbeard.CACHE_DIR and dirname not in ['images']:
                     dirs.remove(dirname)
             for filename in files:
-                source.append(ek(os.path.join, path, filename))
+                source.append(os.path.join(path, filename))
 
         return helpers.backup_config_zip(source, target, sickbeard.DATA_DIR)
 
@@ -249,7 +246,7 @@ class CheckVersion(object):
         # check if we're a windows build
         if sickbeard.BRANCH.startswith('build '):
             install_type = 'win'
-        elif ek(os.path.isdir, ek(os.path.join, sickbeard.PROG_DIR, '.git')):
+        elif os.path.isdir(os.path.join(sickbeard.PROG_DIR, '.git')):
             install_type = 'git'
         else:
             install_type = 'source'
@@ -351,12 +348,12 @@ class UpdateManager(object):
     @staticmethod
     def remove_pyc(path):
         path_parts = [sickbeard.PROG_DIR, path, '*.pyc']
-        for f in glob.iglob(ek(os.path.join, *path_parts)):
-            ek(os.remove, f)
+        for f in glob.iglob(os.path.join(*path_parts)):
+            os.remove(f)
 
         path_parts.insert(-1, '**')
-        for f in glob.iglob(ek(os.path.join, *path_parts)):
-            ek(os.remove, f)
+        for f in glob.iglob(os.path.join(*path_parts)):
+            os.remove(f)
 
 
 class GitUpdateManager(UpdateManager):
@@ -828,25 +825,25 @@ class SourceUpdateManager(UpdateManager):
 
         try:
             # prepare the update dir
-            sr_update_dir = ek(os.path.join, sickbeard.PROG_DIR, 'sr-update')
+            sr_update_dir = os.path.join(sickbeard.PROG_DIR, 'sr-update')
 
-            if ek(os.path.isdir, sr_update_dir):
+            if os.path.isdir(sr_update_dir):
                 logger.log("Clearing out update folder " + sr_update_dir + " before extracting")
                 shutil.rmtree(sr_update_dir)
 
             logger.log("Creating update folder " + sr_update_dir + " before extracting")
-            ek(os.makedirs, sr_update_dir)
+            os.makedirs(sr_update_dir)
 
             # retrieve file
             logger.log("Downloading update from {url}".format(url=tar_download_url))
-            tar_download_path = ek(os.path.join, sr_update_dir, 'sr-update.tar')
+            tar_download_path = os.path.join(sr_update_dir, 'sr-update.tar')
             helpers.download_file(tar_download_url, tar_download_path, session=self.session)
 
-            if not ek(os.path.isfile, tar_download_path):
+            if not os.path.isfile(tar_download_path):
                 logger.log("Unable to retrieve new version from " + tar_download_url + ", can't update", logger.WARNING)
                 return False
 
-            if not ek(tarfile.is_tarfile, tar_download_path):
+            if not tarfile.is_tarfile(tar_download_path):
                 logger.log("Retrieved version from " + tar_download_url + " is corrupt, can't update", logger.ERROR)
                 return False
 
@@ -858,34 +855,34 @@ class SourceUpdateManager(UpdateManager):
 
             # delete .tar.gz
             logger.log("Deleting file " + tar_download_path)
-            ek(os.remove, tar_download_path)
+            os.remove(tar_download_path)
 
             # find update dir name
-            update_dir_contents = [x for x in ek(os.listdir, sr_update_dir) if
-                                   ek(os.path.isdir, ek(os.path.join, sr_update_dir, x))]
+            update_dir_contents = [x for x in os.listdir(sr_update_dir) if
+                                   os.path.isdir(os.path.join(sr_update_dir, x))]
 
             if len(update_dir_contents) != 1:
                 logger.log("Invalid update data, update failed: " + str(update_dir_contents), logger.ERROR)
                 return False
 
             # walk temp folder and move files to main folder
-            content_dir = ek(os.path.join, sr_update_dir, update_dir_contents[0])
+            content_dir = os.path.join(sr_update_dir, update_dir_contents[0])
             logger.log("Moving files from " + content_dir + " to " + sickbeard.PROG_DIR)
-            for dirname, stderr_, filenames in ek(os.walk, content_dir):  # @UnusedVariable
+            for dirname, stderr_, filenames in os.walk(content_dir):  # @UnusedVariable
                 dirname = dirname[len(content_dir) + 1:]
                 for curfile in filenames:
-                    old_path = ek(os.path.join, content_dir, dirname, curfile)
-                    new_path = ek(os.path.join, sickbeard.PROG_DIR, dirname, curfile)
+                    old_path = os.path.join(content_dir, dirname, curfile)
+                    new_path = os.path.join(sickbeard.PROG_DIR, dirname, curfile)
 
-                    if ek(os.path.isfile, new_path):
-                        ek(os.remove, new_path)
-                    ek(os.renames, old_path, new_path)
+                    if os.path.isfile(new_path):
+                        os.remove(new_path)
+                    os.renames(old_path, new_path)
 
             sickbeard.CUR_COMMIT_HASH = self._newest_commit_hash
             sickbeard.CUR_COMMIT_BRANCH = self.branch
 
         except Exception as e:
-            logger.log("Error while trying to update: " + ex(e), logger.ERROR)
+            logger.log("Error while trying to update: " + str(e), logger.ERROR)
             logger.log("Traceback: " + traceback.format_exc(), logger.DEBUG)
             return False
 
@@ -896,21 +893,21 @@ class SourceUpdateManager(UpdateManager):
         return True
 
     def clean_libs(self):
-        lib_path = ek(os.path.join, sickbeard.PROG_DIR, 'lib')
+        lib_path = os.path.join(sickbeard.PROG_DIR, 'lib')
 
         def removeEmptyFolders(path):
-            if not ek(os.path.isdir, path):
+            if not os.path.isdir(path):
                 return
 
-            files = ek(os.listdir, path)
+            files = os.listdir(path)
             for f in files:
-                full_path = ek(os.path.join, path, f)
-                if ek(os.path.isdir, full_path):
+                full_path = os.path.join(path, f)
+                if os.path.isdir(full_path):
                     removeEmptyFolders(full_path)
 
-            files = ek(os.listdir, path)
+            files = os.listdir(path)
             if len(files) == 0 and path != lib_path:
-                ek(os.rmdir, path)
+                os.rmdir(path)
 
         self.remove_pyc('lib')
         removeEmptyFolders(lib_path)

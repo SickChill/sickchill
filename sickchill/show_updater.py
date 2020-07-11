@@ -31,9 +31,7 @@ import time
 import sickbeard
 import sickchill
 from sickbeard import db, logger, network_timezones, ui
-from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex
-
-
+from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException
 class ShowUpdater(object):
     def __init__(self):
         self.lock = threading.Lock()
@@ -95,7 +93,7 @@ class ShowUpdater(object):
                         else:
                             pi_list.append(sickbeard.showQueueScheduler.action.refresh_show(cur_show, force))
                     except (CantUpdateShowException, CantRefreshShowException) as error:
-                        logger.log(_('Automatic update failed: {0}').format(ex(error)))
+                        logger.log(_('Automatic update failed: {0}').format(str(error)))
 
                 ui.ProgressIndicators.setIndicator('dailyUpdate', ui.QueueProgressIndicator('Daily Update', pi_list))
 
@@ -104,7 +102,7 @@ class ShowUpdater(object):
                 else:
                     cache_db_con.action('INSERT INTO lastUpdate (time, provider) VALUES (?, ?)', [str(update_timestamp), provider.name])
         except Exception as error:
-            logger.log(ex(error), logger.ERROR)
+            logger.log(str(error), logger.ERROR)
 
         self.amActive = False
 

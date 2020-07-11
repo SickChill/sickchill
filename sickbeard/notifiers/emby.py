@@ -27,8 +27,6 @@ from six.moves import urllib
 # First Party Imports
 import sickbeard
 from sickbeard import logger
-from sickchill.helper.exceptions import ex
-
 try:
     import json
 except ImportError:
@@ -69,7 +67,7 @@ class Notifier(object):
             return True
 
         except (urllib.error.URLError, IOError) as e:
-            logger.log('EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + ex(e), logger.WARNING)
+            logger.log('EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + str(e), logger.WARNING)
             return False
 
 
@@ -122,5 +120,5 @@ class Notifier(object):
                 return True
 
             except (urllib.error.URLError, IOError) as e:
-                logger.log('EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + ex(e), logger.WARNING)
+                logger.log('EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + str(e), logger.WARNING)
                 return False

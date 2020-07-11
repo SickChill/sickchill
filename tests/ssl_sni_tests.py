@@ -31,8 +31,7 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard import ex
-import certifi
+from sickbeard import certifi
 import requests
 import sickbeard.providers as providers
 
@@ -60,7 +59,7 @@ def generator(_provider):
             if 'certificate verify failed' in str(error):
                 print('Cannot verify certificate for {0}'.format(_provider.name))
             else:
-                print('SSLError on {0}: {1}'.format(_provider.name, ex(error.message)))
+                print('SSLError on {0}: {1}'.format(_provider.name, str(error.message)))
                 raise
         except requests.exceptions.Timeout:
             print('Provider timed out')

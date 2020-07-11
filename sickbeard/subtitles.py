@@ -39,7 +39,6 @@ from subliminal import Episode, provider_manager, ProviderPool
 # First Party Imports
 import sickbeard
 from sickchill.helper.common import dateTimeFormat, episode_num
-from sickchill.helper.exceptions import ex
 from sickchill.show.Show import Show
 
 # Local Folder Imports
@@ -278,7 +277,7 @@ def download_subtitles(episode, force_lang=None):
         subliminal.save_subtitles(video, found_subtitles, directory=subtitles_path,
                                   single=not sickbeard.SUBTITLES_MULTI, encoding='utf8')
     except IOError as error:
-        if 'No space left on device' in ex(error):
+        if 'No space left on device' in str(error):
             logger.log('Not enough space on the drive to save subtitles', logger.WARNING)
         else:
             logger.log(traceback.format_exc(), logger.WARNING)
@@ -523,7 +522,7 @@ class SubtitlesFinder(object):
                 except Exception as error:
                     logger.log('Unable to find subtitles for {0} {1}. Error: {2}'.format
                                (ep_to_sub[b'show_name'], episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode']) or
-                                episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute'), ex(error)), logger.ERROR)
+                                episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute'), str(error)), logger.ERROR)
                     continue
 
                 if new_subtitles:
@@ -534,7 +533,7 @@ class SubtitlesFinder(object):
             except Exception as error:
                 logger.log('Error while searching subtitles for {0} {1}. Error: {2}'.format
                            (ep_to_sub[b'show_name'], episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode']) or
-                            episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute'), ex(error)), logger.ERROR)
+                            episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute'), str(error)), logger.ERROR)
                 continue
 
         logger.log('Finished checking for missed subtitles', logger.INFO)
@@ -563,7 +562,7 @@ def run_subs_extra_scripts(episode, subtitle, video, single=False):
             logger.log('Script result: {0}'.format(stdout), logger.DEBUG)
 
         except Exception as error:
-            logger.log('Unable to run subs_extra_script: {0}'.format(ex(error)))
+            logger.log('Unable to run subs_extra_script: {0}'.format(str(error)))
 
 
 def refine_video(video, episode):

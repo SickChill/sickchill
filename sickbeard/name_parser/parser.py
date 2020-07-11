@@ -36,9 +36,6 @@ import sickchill
 from sickbeard import common, db, helpers, logger, scene_exceptions, scene_numbering
 from sickbeard.name_parser import regexes
 from sickchill.helper.common import remove_extension
-from sickchill.helper.encoding import ek
-
-
 class NameParser(object):
     ALL_REGEX = 0
     NORMAL_REGEX = 1
@@ -414,7 +411,7 @@ class NameParser(object):
             return cached
 
         # break it into parts if there are any (dirname, file name, extension)
-        dir_name, file_name = ek(os.path.split, name)
+        dir_name, file_name = os.path.split(name)
 
         if self.file_name:
             base_file_name = remove_extension(file_name)
@@ -428,7 +425,7 @@ class NameParser(object):
         file_name_result = self._parse_string(base_file_name, skip_scene_detection)
 
         # use only the direct parent dir
-        dir_name = ek(os.path.basename, dir_name)
+        dir_name = os.path.basename(dir_name)
 
         # parse the dirname for extra info if needed
         dir_name_result = self._parse_string(dir_name, skip_scene_detection)

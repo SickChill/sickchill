@@ -27,7 +27,6 @@ from tornado.web import addslash
 # First Party Imports
 import sickbeard
 from sickbeard import config, filters, ui
-from sickchill.helper.encoding import ek
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
@@ -60,6 +59,6 @@ class ConfigAnime(Config):
         sickbeard.ANIME_SPLIT_HOME_IN_TABS = config.checkbox_to_value(split_home_in_tabs)
 
         sickbeard.save_config()
-        ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
+        ui.notifications.message(_('Configuration Saved'), os.path.join(sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/anime/")

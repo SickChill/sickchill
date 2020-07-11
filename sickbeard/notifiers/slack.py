@@ -28,9 +28,6 @@ import six
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
-from sickchill.helper.exceptions import ex
-
-
 class Notifier(object):
 
     SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/'
@@ -78,7 +75,7 @@ class Notifier(object):
             r = requests.post(slack_webhook, data=json.dumps(dict(text=message, username="SickChillBot", icon_emoji=slack_icon_emoji, icon_url=self.SLACK_ICON_URL)), headers=headers)
             r.raise_for_status()
         except Exception as e:
-            logger.log("Error Sending Slack message: " + ex(e), logger.ERROR)
+            logger.log("Error Sending Slack message: " + str(e), logger.ERROR)
             return False
 
         return True

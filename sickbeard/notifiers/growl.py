@@ -29,9 +29,6 @@ import gntp.core
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
-from sickchill.helper.exceptions import ex
-
-
 class Notifier(object):
 
     def test_notify(self, host, password):
@@ -153,7 +150,7 @@ class Notifier(object):
                     else:
                         return False
             except Exception as e:
-                logger.log("GROWL: Unable to send growl to " + opts['host'] + ":" + str(opts['port']) + " - " + ex(e), logger.WARNING)
+                logger.log("GROWL: Unable to send growl to " + opts['host'] + ":" + str(opts['port']) + " - " + str(e), logger.WARNING)
                 return False
 
     def _sendRegistration(self, host=None, password=None, name='SickChill Notification'):
@@ -196,5 +193,5 @@ class Notifier(object):
         try:
             return self._send(opts['host'], opts['port'], register.encode(), opts['debug'])
         except Exception as e:
-            logger.log("GROWL: Unable to send growl to " + opts['host'] + ":" + str(opts['port']) + " - " + ex(e), logger.WARNING)
+            logger.log("GROWL: Unable to send growl to " + opts['host'] + ":" + str(opts['port']) + " - " + str(e), logger.WARNING)
             return False

@@ -31,7 +31,6 @@ import sickbeard
 from sickbeard import db, logger, subtitles as subtitle_module, ui
 from sickbeard.common import Overview, Quality, SNATCHED
 from sickchill.helper import episode_num, try_int
-from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException
 from sickchill.show.Show import Show
 from sickchill.views.common import PageTemplate
@@ -454,7 +453,7 @@ class Manage(Home, WebRoot):
                        **kwargs):
         dir_map = {}
         for cur_arg in filter(lambda x: x.startswith('orig_root_dir_'), kwargs):
-            dir_map[kwargs[cur_arg]] = ek(six.text_type, kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')], 'utf-8')
+            dir_map[kwargs[cur_arg]] = six.text_type(kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')], 'utf-8')
 
         showIDs = toEdit.split("|")
         errors = []
@@ -467,7 +466,7 @@ class Manage(Home, WebRoot):
             cur_root_dir = self.__gooey_path(show_obj._location, 'dirname')
             cur_show_dir = self.__gooey_path(show_obj._location, 'basename')
             if cur_root_dir and dir_map.get(cur_root_dir) and cur_root_dir != dir_map.get(cur_root_dir):
-                new_show_dir = ek(os.path.join, dir_map[cur_root_dir], cur_show_dir)
+                new_show_dir = os.path.join(dir_map[cur_root_dir], cur_show_dir)
                 logger.log("For show " + show_obj.name + " changing dir from " + show_obj._location + " to " + new_show_dir)
             else:
                 new_show_dir = show_obj._location

@@ -27,8 +27,6 @@ import time
 import traceback
 
 # First Party Imports
-from sickchill.helper.exceptions import ex
-
 # Local Folder Imports
 from . import logger
 
@@ -119,5 +117,5 @@ class Scheduler(threading.Thread):
             # exiting thread
             self.stop.clear()
         except Exception as e:
-            logger.log("Exception generated in thread " + self.name + ": " + ex(e), logger.ERROR)
+            logger.log("Exception generated in thread " + self.name + ": " + str(e), logger.ERROR)
             logger.log(repr(traceback.format_exc()), logger.DEBUG)

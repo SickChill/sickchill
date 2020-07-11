@@ -33,8 +33,6 @@ from tornado.escape import linkify
 # First Party Imports
 import sickbeard
 from sickbeard import classes, helpers
-from sickchill.helper.encoding import ek
-
 try:
     import json
 except ImportError:
@@ -46,8 +44,8 @@ mako_lookup = {}
 
 def get_lookup():
     mako_lookup['mako'] = mako_lookup.get('mako') or TemplateLookup(
-        directories=[ek(os.path.join, sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/views/")],
-        module_directory=ek(os.path.join, sickbeard.CACHE_DIR, 'mako'),
+        directories=[os.path.join(sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/views/")],
+        module_directory=os.path.join(sickbeard.CACHE_DIR, 'mako'),
         strict_undefined=sickbeard.BRANCH and sickbeard.BRANCH != 'master',
         #  format_exceptions=True,
         filesystem_checks=True

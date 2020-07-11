@@ -30,7 +30,6 @@ import sickbeard
 from sickbeard import config, filters, helpers, logger, ui
 from sickbeard.common import Quality, WANTED
 from sickchill.helper import setup_github, try_int
-from sickchill.helper.encoding import ek
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
@@ -196,11 +195,11 @@ class ConfigGeneral(Config):
 
         if not config.change_https_cert(https_cert):
             results += [
-                _("Unable to create directory {directory}, https cert directory not changed.").format(directory=ek(os.path.normpath, https_cert))]
+                _("Unable to create directory {directory}, https cert directory not changed.").format(directory=os.path.normpath(https_cert))]
 
         if not config.change_https_key(https_key):
             results += [
-                _("Unable to create directory {directory}, https key directory not changed.").format(directory=ek(os.path.normpath, https_key))]
+                _("Unable to create directory {directory}, https key directory not changed.").format(directory=os.path.normpath(https_key))]
 
         sickbeard.HANDLE_REVERSE_PROXY = config.checkbox_to_value(handle_reverse_proxy)
 
@@ -224,6 +223,6 @@ class ConfigGeneral(Config):
             ui.notifications.error(_('Error(s) Saving Configuration'),
                                    '<br>\n'.join(results))
         else:
-            ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message(_('Configuration Saved'), os.path.join(sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/general/")

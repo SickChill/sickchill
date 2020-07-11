@@ -27,7 +27,7 @@ from rtorrent9 import RTorrent
 
 # First Party Imports
 import sickbeard
-from sickbeard import ex, logger
+from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
 
 
@@ -73,7 +73,7 @@ class Client(GenericClient):
 
         except Exception as error:
             logger.log('Error while sending torrent: {error}'.format
-                       (error=ex(error)), logger.WARNING)
+                       (error=str(error)), logger.WARNING)
             return False
 
     def _add_torrent_file(self, result):
@@ -93,7 +93,7 @@ class Client(GenericClient):
 
         except Exception as error:
             logger.log('Error while sending torrent: {error}'.format
-                       (error=ex(error)), logger.WARNING)
+                       (error=str(error)), logger.WARNING)
             return False
 
     def _set_torrent_ratio(self, name):

@@ -14,10 +14,7 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard import ex
-
-
-import six
+from sickbeard import six
 
 
 class ExceptionsHelperTestCase(unittest.TestCase):
@@ -29,7 +26,7 @@ class ExceptionsHelperTestCase(unittest.TestCase):
         """
         Test none returns empty
         """
-        self.assertEqual(ex(None), '')
+        self.assertEqual(str(None), '')
 
     def test_empty_args_returns_empty(self):
         """

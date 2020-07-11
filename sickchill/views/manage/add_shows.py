@@ -40,8 +40,6 @@ from sickbeard.blackandwhitelist import short_group_names
 from sickbeard.common import Quality
 from sickbeard.traktTrending import trakt_trending
 from sickchill.helper import sanitize_filename, try_int
-from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex
 from sickchill.show.recommendations.favorites import favorites
 from sickchill.show.recommendations.imdb import imdb_popular
 from sickchill.show.Show import Show
@@ -146,15 +144,15 @@ class AddShows(Home):
         for root_dir in root_dirs:
             # noinspection PyBroadException
             try:
-                file_list = ek(os.listdir, root_dir)
+                file_list = os.listdir(root_dir)
             except Exception:
                 continue
 
             for cur_file in file_list:
                 # noinspection PyBroadException
                 try:
-                    cur_path = ek(os.path.normpath, ek(os.path.join, root_dir, cur_file))
-                    if not ek(os.path.isdir, cur_path):
+                    cur_path = os.path.normpath(os.path.join(root_dir, cur_file))
+                    if not os.path.isdir(cur_path):
                         continue
                     # ignore Synology folders
                     if cur_file.lower() in ['#recycle', '@eadir']:
@@ -165,7 +163,7 @@ class AddShows(Home):
                 cur_dir = {
                     'dir': cur_path,
                     'existing_info': (None, None, None),
-                    'display_dir': '<b>' + ek(os.path.dirname, cur_path) + os.sep + '</b>' + ek(
+                    'display_dir': '<b>' + os.path.dirname(cur_path) + os.sep + '</b>' + ek(
                         os.path.basename,
                         cur_path),
                 }
@@ -217,7 +215,7 @@ class AddShows(Home):
 
         elif not show_name:
             default_show_name = re.sub(r' \(\d{4}\)', '',
-                                       ek(os.path.basename, ek(os.path.normpath, show_dir)).replace('.', ' '))
+                                       os.path.basename(os.path.normpath(show_dir)).replace('.', ' '))
         else:
             default_show_name = show_name
 
@@ -313,7 +311,7 @@ class AddShows(Home):
         try:
             trending_shows, black_list = trakt_trending.fetch_trending_shows(traktList, page_url)
         except Exception as e:
-            logger.log("Could not get trending shows: {0}".format(ex(e)), logger.WARNING)
+            logger.log("Could not get trending shows: {0}".format(str(e)), logger.WARNING)
 
         return t.render(black_list=black_list, trending_shows=trending_shows)
 
@@ -335,7 +333,7 @@ class AddShows(Home):
         try:
             popular_shows = imdb_popular.fetch_popular_shows()
         except Exception as e:
-            logger.log("Could not get popular shows: {0}".format(ex(e)), logger.WARNING)
+            logger.log("Could not get popular shows: {0}".format(str(e)), logger.WARNING)
             popular_shows = None
 
         return t.render(title=_("Popular Shows"), header=_("Popular Shows"),
@@ -361,7 +359,7 @@ class AddShows(Home):
             favorite_shows = favorites.fetch_indexer_favorites()
         except Exception as e:
             logger.log(traceback.format_exc(), logger.ERROR)
-            logger.log(_("Could not get favorite shows: {0}").format(ex(e)), logger.WARNING)
+            logger.log(_("Could not get favorite shows: {0}").format(str(e)), logger.WARNING)
             favorite_shows = None
 
         return t.render(title=_("Favorite Shows"), header=_("Favorite Shows"),
@@ -549,11 +547,11 @@ class AddShows(Home):
 
             indexer = int(providedIndexer)
             indexer_id = int(whichSeries)
-            show_name = ek(os.path.basename, ek(os.path.normpath, xhtml_unescape(fullShowPath)))
+            show_name = os.path.basename(os.path.normpath(xhtml_unescape(fullShowPath)))
 
         # use the whole path if it's given, or else append the show name to the root dir to get the full show path
         if fullShowPath:
-            show_dir = ek(os.path.normpath, xhtml_unescape(fullShowPath))
+            show_dir = os.path.normpath(xhtml_unescape(fullShowPath))
             extra_check_dir = show_dir
         else:
             folder_name = show_name
@@ -566,11 +564,11 @@ class AddShows(Home):
                 except (TypeError, ValueError):
                     logger.log(_('Could not append the show year folder for the show: {0}').format(folder_name))
 
-            show_dir = ek(os.path.join, rootDir, sanitize_filename(xhtml_unescape(folder_name)))
-            extra_check_dir = ek(os.path.join, rootDir, sanitize_filename(xhtml_unescape(show_name)))
+            show_dir = os.path.join(rootDir, sanitize_filename(xhtml_unescape(folder_name)))
+            extra_check_dir = os.path.join(rootDir, sanitize_filename(xhtml_unescape(show_name)))
 
         # blanket policy - if the dir exists you should have used "add existing show" numbnuts
-        if (ek(os.path.isdir, show_dir) or ek(os.path.isdir, extra_check_dir)) and not fullShowPath:
+        if (os.path.isdir(show_dir) or os.path.isdir(extra_check_dir)) and not fullShowPath:
             ui.notifications.error(_("Unable to add show"), _("Folder {show_dir} exists already").format(show_dir=show_dir))
             return self.redirect('/addShows/existingShows/')
 

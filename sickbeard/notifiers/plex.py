@@ -30,8 +30,6 @@ import six
 import sickbeard
 from sickbeard import common, logger
 from sickbeard.helpers import getURL, make_session
-from sickchill.helper.exceptions import ex
-
 try:
     import xml.etree.cElementTree as etree
 except ImportError:
@@ -161,7 +159,7 @@ class Notifier(object):
                 media_container = etree.fromstring(xml_response)
             except IOError as error:
                 logger.log('PLEX: Error while trying to contact Plex Media Server: {0}'.format
-                           (ex(error)), logger.WARNING)
+                           (str(error)), logger.WARNING)
                 hosts_failed.add(cur_host)
                 continue
             except Exception as error:
@@ -169,7 +167,7 @@ class Notifier(object):
                     logger.log('PLEX: Please set TOKEN in Plex settings: ', logger.WARNING)
                 else:
                     logger.log('PLEX: Error while trying to contact Plex Media Server: {0}'.format
-                               (ex(error)), logger.WARNING)
+                               (str(error)), logger.WARNING)
                 hosts_failed.add(cur_host)
                 continue
 
@@ -213,7 +211,7 @@ class Notifier(object):
                 getURL(url, headers=self.headers, session=self.session, returns='text', verify=False, allow_proxy=False)
             except Exception as error:
                 logger.log('PLEX: Error updating library section for Plex Media Server: {0}'.format
-                           (ex(error)), logger.WARNING)
+                           (str(error)), logger.WARNING)
                 hosts_failed.add(cur_host)
 
         return (', '.join(set(hosts_failed)), None)[not len(hosts_failed)]

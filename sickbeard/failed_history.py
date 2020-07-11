@@ -29,8 +29,7 @@ import re
 from six.moves import urllib
 
 # First Party Imports
-from sickchill.helper.encoding import ss
-from sickchill.helper.exceptions import EpisodeNotFoundException, ex
+from sickchill.helper.exceptions import EpisodeNotFoundException
 from sickchill.show.History import History
 
 # Local Folder Imports
@@ -46,7 +45,6 @@ def prepareFailedName(release):
         fixed = fixed.rpartition(".")[0]
 
     fixed = re.sub(r"[\.\-\+\ ]", "_", fixed)
-    fixed = ss(fixed)
 
     return fixed
 
@@ -146,7 +144,7 @@ def revertEpisode(epObj):
                 epObj.saveToDB()
 
     except EpisodeNotFoundException as e:
-        logger.log("Unable to create episode, please set its status manually: " + ex(e),
+        logger.log("Unable to create episode, please set its status manually: " + str(e),
                    logger.WARNING)
 
 
@@ -166,7 +164,7 @@ def markFailed(epObj):
             epObj.saveToDB()
 
     except EpisodeNotFoundException as e:
-        logger.log("Unable to get episode, please set its status manually: " + ex(e), logger.WARNING)
+        logger.log("Unable to get episode, please set its status manually: " + str(e), logger.WARNING)
 
     return log_str
 

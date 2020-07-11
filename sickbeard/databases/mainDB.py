@@ -33,8 +33,6 @@ import sickbeard
 from sickbeard import common, db, helpers, logger, subtitles
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper.common import dateTimeFormat, episode_num
-from sickchill.helper.encoding import ek
-
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
 MAX_DB_VERSION = 44
 
@@ -66,7 +64,7 @@ class MainSanityCheck(db.DBSanityCheck):
 
         for archivedEp in sql_results:
             fixedStatus = common.Quality.compositeStatus(common.ARCHIVED, common.Quality.UNKNOWN)
-            existing = archivedEp[b'location'] and ek(os.path.exists, archivedEp[b'location'])
+            existing = archivedEp[b'location'] and os.path.exists(archivedEp[b'location'])
             if existing:
                 quality = common.Quality.nameQuality(archivedEp[b'location'])
                 fixedStatus = common.Quality.compositeStatus(common.ARCHIVED, quality)
@@ -381,8 +379,8 @@ class AddSizeAndSceneNameFields(InitialSchema):
                 continue
 
             # if there is no size yet then populate it for us
-            if (not cur_ep[b"file_size"] or not int(cur_ep[b"file_size"])) and ek(os.path.isfile, cur_ep[b"location"]):
-                cur_size = ek(os.path.getsize, cur_ep[b"location"])
+            if (not cur_ep[b"file_size"] or not int(cur_ep[b"file_size"])) and os.path.isfile(cur_ep[b"location"]):
+                cur_size = os.path.getsize(cur_ep[b"location"])
                 self.connection.action("UPDATE tv_episodes SET file_size = ? WHERE episode_id = ?",
                                        [cur_size, int(cur_ep[b"episode_id"])])
 
@@ -403,7 +401,7 @@ class AddSizeAndSceneNameFields(InitialSchema):
                 continue
 
             nzb_name = cur_result[b"resource"]
-            file_name = ek(os.path.basename, download_results[0][b"resource"])
+            file_name = os.path.basename(download_results[0][b"resource"])
 
             # take the extension off the filename, it's not needed
             if '.' in file_name:
@@ -447,8 +445,8 @@ class AddSizeAndSceneNameFields(InitialSchema):
         logger.log("Adding release name to all episodes with obvious scene filenames")
         for cur_result in empty_results:
 
-            ep_file_name = ek(os.path.basename, cur_result[b"location"])
-            ep_file_name = ek(os.path.splitext, ep_file_name)[0]
+            ep_file_name = os.path.basename(cur_result[b"location"])
+            ep_file_name = os.path.splitext(ep_file_name)[0]
 
             # only want to find real scene names here so anything with a space in it is out
             if ' ' in ep_file_name:

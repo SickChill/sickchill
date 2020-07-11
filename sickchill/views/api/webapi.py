@@ -43,8 +43,7 @@ from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Q
 from sickbeard.postProcessor import PROCESS_METHODS
 from sickbeard.versionChecker import CheckVersion
 from sickchill.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
-from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import CantUpdateShowException, ex, ShowDirectoryNotFoundException
+from sickchill.helper.exceptions import CantUpdateShowException, ShowDirectoryNotFoundException
 from sickchill.helper.quality import get_quality_string
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.show.History import History
@@ -125,9 +124,9 @@ class ApiHandler(RequestHandler):
         try:
             out_dict = _call_dispatcher(args, kwargs)
         except Exception as e:  # real internal error oohhh nooo :(
-            logger.log("API :: " + ex(e), logger.ERROR)
+            logger.log("API :: " + str(e), logger.ERROR)
             error_data = {
-                "error_msg": ex(e),
+                "error_msg": str(e),
                 "args": args,
                 "kwargs": kwargs
             }
@@ -158,7 +157,7 @@ class ApiHandler(RequestHandler):
                 out = callback + '(' + out + ');'  # wrap with JSONP call if requested
         except Exception as e:  # if we fail to generate the output fake an error
             logger.log("API :: " + traceback.format_exc(), logger.DEBUG)
-            out = '{{"result": "{0}", "message": "error while composing output: {1}"}}'.format(result_type_map[RESULT_ERROR], ex(e))
+            out = '{{"result": "{0}", "message": "error while composing output: {1}"}}'.format(result_type_map[RESULT_ERROR], str(e))
         return out
 
     def call_dispatcher(self, args, kwargs):  # pylint:disable=too-many-branches
@@ -203,7 +202,7 @@ class ApiHandler(RequestHandler):
                         else:
                             cur_out_dict = _responds(RESULT_ERROR, "No such cmd: '" + cmd + "'")
                     except ApiError as error:  # Api errors that we raised, they are harmless
-                        cur_out_dict = _responds(RESULT_ERROR, msg=ex(error))
+                        cur_out_dict = _responds(RESULT_ERROR, msg=str(error))
                 else:  # if someone chained one of the forbidden commands they will get an error for this one cmd
                     cur_out_dict = _responds(RESULT_ERROR, msg="The cmd '" + cmd + "' is not supported while chaining")
 
@@ -623,7 +622,7 @@ def _get_root_dirs():
         valid = 1
         # noinspection PyBroadException
         try:
-            ek(os.listdir, root_dir)
+            os.listdir(root_dir)
         except Exception:
             valid = 0
         default = 0
@@ -1175,8 +1174,8 @@ class CMDHistory(ApiCall):
             del row[b"action"]
 
             _rename_element(row, "show_id", "indexerid")
-            row[b"resource_path"] = ek(os.path.dirname, row[b"resource"])
-            row[b"resource"] = ek(os.path.basename, row[b"resource"])
+            row[b"resource_path"] = os.path.dirname(row[b"resource"])
+            row[b"resource"] = os.path.basename(row[b"resource"])
 
             # Add tvdbid for backward compatibility
             row[b'tvdbid'] = row[b'indexerid']
@@ -1303,7 +1302,7 @@ class CMDLogs(ApiCall):
         min_level = logger.LOGGING_LEVELS[str(self.min_level).upper()]
 
         data = []
-        if ek(os.path.isfile, logger.log_file):
+        if os.path.isfile(logger.log_file):
             with io.open(logger.log_file, 'r', encoding='utf-8') as f:
                 data = f.readlines()
 
@@ -1467,7 +1466,7 @@ class CMDSickBeardAddRootDir(ApiCall):
         index = 0
 
         # disallow adding/setting an invalid dir
-        if not ek(os.path.isdir, self.location):
+        if not os.path.isdir(self.location):
             return _responds(RESULT_FAILURE, msg="Location is invalid")
 
         root_dirs = []
@@ -2041,7 +2040,7 @@ class CMDShowAddExisting(ApiCall):
         if show_obj:
             return _responds(RESULT_FAILURE, msg="An existing indexerid already exists in the database")
 
-        if not ek(os.path.isdir, self.location):
+        if not os.path.isdir(self.location):
             return _responds(RESULT_FAILURE, msg='Not a valid location')
 
         indexer_name = None
@@ -2149,7 +2148,7 @@ class CMDShowAddNew(ApiCall):
             else:
                 return _responds(RESULT_FAILURE, msg="Root directory is not set, please provide a location")
 
-        if not ek(os.path.isdir, self.location):
+        if not os.path.isdir(self.location):
             return _responds(RESULT_FAILURE, msg="'" + self.location + "' is not a valid location")
 
         # use default quality as a fail-safe
@@ -2219,7 +2218,7 @@ class CMDShowAddNew(ApiCall):
         indexer = indexer_result[b'data']['results'][0]['indexer']
 
         # moved the logic check to the end in an attempt to eliminate empty directory being created from previous errors
-        show_path = ek(os.path.join, self.location, sanitize_filename(indexer_name))
+        show_path = os.path.join(self.location, sanitize_filename(indexer_name))
 
         # don't create show dir if config says not to
         if sickbeard.ADD_SHOWS_WO_DIR:
@@ -2426,7 +2425,7 @@ class CMDShowGetNetworkLogo(ApiCall):
         show = Show.find(sickbeard.showList, self.tvdbid or self.indexerid)
         return {
             'outputType': 'image',
-            'image': ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images/network', show.network_logo_name),
+            'image': os.path.join(sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images/network', show.network_logo_name)
         }
 
 

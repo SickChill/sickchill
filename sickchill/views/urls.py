@@ -26,8 +26,6 @@ from tornado.web import RedirectHandler, StaticFileHandler, url
 
 # First Party Imports
 import sickbeard
-from sickbeard.common import ek
-
 # Local Folder Imports
 from . import CalendarHandler, LoginHandler, LogoutHandler
 from .api import ApiHandler, KeyHandler
@@ -40,22 +38,22 @@ class Urls(object):
 
         self.urls = [
                         url(r'{0}/favicon.ico'.format(self.options['web_root']), StaticFileHandler,
-                            {"path": ek(os.path.join, self.options['data_root'], 'images/ico/favicon.ico')}, name='favicon'),
+                            {"path": os.path.join(self.options['data_root'], 'images/ico/favicon.ico')}, name='favicon'),
 
                         url(r'{0}/images/(.*)'.format(self.options['web_root']), StaticFileHandler,
-                            {"path": ek(os.path.join, self.options['data_root'], 'images')}, name='images'),
+                            {"path": os.path.join(self.options['data_root'], 'images')}, name='images'),
 
                         url(r'{0}/cache/images/(.*)'.format(self.options['web_root']), StaticFileHandler,
-                            {"path": ek(os.path.join, sickbeard.CACHE_DIR, 'images')}, name='image_cache'),
+                            {"path": os.path.join(sickbeard.CACHE_DIR, 'images')}, name='image_cache'),
 
                         url(r'{0}/css/(.*)'.format(self.options['web_root']), StaticFileHandler,
-                            {"path": ek(os.path.join, self.options['data_root'], 'css')}, name='css'),
+                            {"path": os.path.join(self.options['data_root'], 'css')}, name='css'),
 
                         url(r'{0}/js/(.*)'.format(self.options['web_root']), StaticFileHandler,
-                            {"path": ek(os.path.join, self.options['data_root'], 'js')}, name='js'),
+                            {"path": os.path.join(self.options['data_root'], 'js')}, name='js'),
 
                         url(r'{0}/fonts/(.*)'.format(self.options['web_root']), StaticFileHandler,
-                            {"path": ek(os.path.join, self.options['data_root'], 'fonts')}, name='fonts'),
+                            {"path": os.path.join(self.options['data_root'], 'fonts')}, name='fonts'),
 
                         # TODO: WTF is this?
                         # url(r'{0}/videos/(.*)'.format(self.options['web_root']), StaticFileHandler,

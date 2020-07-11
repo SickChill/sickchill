@@ -25,9 +25,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 import re
 
 # First Party Imports
-from sickchill.helper.encoding import ek, ss
-from sickchill.helper.exceptions import ex
-
 # Local Folder Imports
 from . import classes, helpers, logger
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
@@ -115,7 +112,7 @@ def create_nzb_string(file_elements, xmlns):
     for cur_file in file_elements:
         root_element.append(strip_xmlns(cur_file, xmlns))
 
-    return ETree.tostring(ss(root_element))
+    return ETree.tostring(root_element)
 
 
 def save_nzb(nzb_name, nzb_string):
@@ -130,7 +127,7 @@ def save_nzb(nzb_name, nzb_string):
             nzb_fh.write(nzb_string)
 
     except EnvironmentError as error:
-        logger.log("Unable to save NZB: " + ex(error), logger.ERROR)
+        logger.log("Unable to save NZB: " + str(error), logger.ERROR)
 
 
 def strip_xmlns(element, xmlns):

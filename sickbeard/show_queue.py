@@ -33,7 +33,6 @@ from trakt import TraktAPI
 import sickbeard
 import sickchill
 from sickchill.helper.common import sanitize_filename
-from sickchill.helper.encoding import ek
 from sickchill.helper.exceptions import (CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, EpisodeDeletedException,
                                          MultipleShowObjectsException, ShowDirectoryNotFoundException)
 from sickchill.show.Show import Show
@@ -351,7 +350,7 @@ class QueueItemAdd(ShowQueueItem):
                     except (TypeError, ValueError):
                         logger.log(_('Could not append the show year folder for the show: {0}').format(show_dir))
 
-                self.showDir = ek(os.path.join, self.root_dir, sanitize_filename(show_dir))
+                self.showDir = os.path.join(self.root_dir, sanitize_filename(show_dir))
 
                 if sickbeard.ADD_SHOWS_WO_DIR:
                     logger.log(_("Skipping initial creation of {0} due to config.ini setting").format(self.showDir))
@@ -406,7 +405,7 @@ class QueueItemAdd(ShowQueueItem):
                 # If we have the show in our list, but the location is wrong, lets fix it and refresh!
                 existing_show = Show.find(sickbeard.showList, self.indexer_id)
                 # noinspection PyProtectedMember
-                if existing_show and not ek(os.path.isdir, existing_show._location):
+                if existing_show and not os.path.isdir(existing_show._location):
                     newShow = existing_show
                 else:
                     raise error

@@ -29,8 +29,6 @@ import six
 
 # First Party Imports
 import sickbeard
-from sickchill.helper.encoding import ek
-
 # Local Folder Imports
 from . import common, logger
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
@@ -184,20 +182,20 @@ def determineReleaseName(dir_name=None, nzb_name=None):
     for search in file_types:
 
         reg_expr = re.compile(fnmatch.translate(search), re.I)
-        files = [file_name for file_name in ek(os.listdir, dir_name) if
-                 ek(os.path.isfile, ek(os.path.join, dir_name, file_name))]
+        files = [file_name for file_name in os.listdir(dir_name) if
+                 os.path.isfile(os.path.join(dir_name, file_name))]
 
         results = [f for f in files if reg_expr.search(f)]
 
         if len(results) == 1:
-            found_file = ek(os.path.basename, results[0])
+            found_file = os.path.basename(results[0])
             found_file = found_file.rpartition('.')[0]
             if filter_bad_releases(found_file):
                 logger.log("Release name (" + found_file + ") found from file (" + results[0] + ")")
                 return found_file.rpartition('.')[0]
 
     # If that fails, we try the folder
-    folder = ek(os.path.basename, dir_name)
+    folder = os.path.basename(dir_name)
     if filter_bad_releases(folder):
         # NOTE: Multiple failed downloads will change the folder name.
         # (e.g., appending #s)

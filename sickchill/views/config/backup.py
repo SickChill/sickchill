@@ -28,7 +28,6 @@ from tornado.web import addslash
 # First Party Imports
 import sickbeard
 from sickbeard import helpers
-from sickchill.helper.encoding import ek
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
@@ -55,17 +54,17 @@ class ConfigBackupRestore(Config):
         finalResult = ''
 
         if backupDir:
-            source = [ek(os.path.join, sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE,
-                      ek(os.path.join, sickbeard.DATA_DIR, 'failed.db'),
-                      ek(os.path.join, sickbeard.DATA_DIR, 'cache.db')]
+            source = [os.path.join(sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE,
+                      os.path.join(sickbeard.DATA_DIR, 'failed.db'),
+                      os.path.join(sickbeard.DATA_DIR, 'cache.db')]
             target = ek(os.path.join, backupDir, 'sickchill-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
 
-            for (path, dirs, files) in ek(os.walk, sickbeard.CACHE_DIR, topdown=True):
+            for (path, dirs, files) in os.walk(sickbeard.CACHE_DIR, topdown=True):
                 for dirname in dirs:
                     if path == sickbeard.CACHE_DIR and dirname not in ['images']:
                         dirs.remove(dirname)
                 for filename in files:
-                    source.append(ek(os.path.join, path, filename))
+                    source.append(os.path.join(path, filename))
 
             if helpers.backup_config_zip(source, target, sickbeard.DATA_DIR):
                 finalResult += "Successful backup to " + target
@@ -85,7 +84,7 @@ class ConfigBackupRestore(Config):
 
         if backupFile:
             source = backupFile
-            target_dir = ek(os.path.join, sickbeard.DATA_DIR, 'restore')
+            target_dir = os.path.join(sickbeard.DATA_DIR, 'restore')
 
             if helpers.restore_config_zip(source, target_dir):
                 finalResult += "Successfully extracted restore files to " + target_dir

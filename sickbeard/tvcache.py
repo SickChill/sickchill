@@ -29,7 +29,7 @@ import six
 
 # First Party Imports
 import sickbeard
-from sickchill.helper.exceptions import AuthException, ex
+from sickchill.helper.exceptions import AuthException
 from sickchill.show.Show import Show
 
 # Local Folder Imports
@@ -134,7 +134,7 @@ class TVCache(object):
                     cache_db_con.mass_action(cl)
 
         except AuthException as e:
-            logger.log("Authentication error: " + ex(e), logger.WARNING)
+            logger.log("Authentication error: " + str(e), logger.WARNING)
         except Exception as e:
             logger.log("Error while searching " + self.provider.name + ", skipping: " + repr(e), logger.DEBUG)
 

@@ -28,7 +28,6 @@ from tornado.web import addslash
 import sickbeard
 from sickbeard import config, filters, helpers, logger, ui
 from sickchill.helper import try_int
-from sickchill.helper.encoding import ek
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
@@ -65,10 +64,10 @@ class ConfigSearch(Config):
         results = []
 
         if not config.change_nzb_dir(nzb_dir):
-            results += ["Unable to create directory " + ek(os.path.normpath, nzb_dir) + ", dir not changed."]
+            results += ["Unable to create directory " + os.path.normpath(nzb_dir) + ", dir not changed."]
 
         if not config.change_torrent_dir(torrent_dir):
-            results += ["Unable to create directory " + ek(os.path.normpath, torrent_dir) + ", dir not changed."]
+            results += ["Unable to create directory " + os.path.normpath(torrent_dir) + ", dir not changed."]
 
         config.change_daily_search_frequency(dailysearch_frequency)
 
@@ -174,6 +173,6 @@ class ConfigSearch(Config):
             ui.notifications.error(_('Error(s) Saving Configuration'),
                                    '<br>\n'.join(results))
         else:
-            ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message(_('Configuration Saved'), os.path.join(sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/search/")

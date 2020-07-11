@@ -41,9 +41,6 @@ from sickbeard.name_parser.parser import InvalidNameException, InvalidShowExcept
 from sickbeard.show_name_helpers import allPossibleShowNames
 from sickbeard.tvcache import TVCache
 from sickchill.helper.common import sanitize_filename
-from sickchill.helper.encoding import ek
-
-
 class GenericProvider(object):
     NZB = 'nzb'
     NZBDATA = 'nzbdata'
@@ -572,7 +569,7 @@ class GenericProvider(object):
                 'https://torrage.info/torrent.php?h={torrent_hash}'.format(torrent_hash=torrent_hash)
             )]
 
-        filename = ek(join, self._get_storage_dir(), sanitize_filename(result.name) + '.' + self.provider_type)
+        filename = join(self._get_storage_dir(), sanitize_filename(result.name) + '.' + self.provider_type)
 
         return urls, filename
 

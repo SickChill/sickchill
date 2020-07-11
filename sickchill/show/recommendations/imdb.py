@@ -15,9 +15,6 @@ from requests.compat import urljoin
 # First Party Imports
 import sickbeard
 from sickbeard import helpers
-from sickchill.helper.encoding import ek
-
-
 class imdbPopular(object):
     def __init__(self):
         """Gets a list of most popular TV series from imdb"""
@@ -53,7 +50,7 @@ class imdbPopular(object):
                 image = image_div.find("img")
                 show['image_url_large'] = self.change_size(image['loadlate'], 3)
                 show['imdb_tt'] = image['data-tconst']
-                show['image_path'] = ek(posixpath.join, 'images', 'imdb_popular', ek(os.path.basename, show['image_url_large']))
+                show['image_path'] = posixpath.join('images', 'imdb_popular', os.path.basename(show['image_url_large']))
                 self.cache_image(show['image_url_large'])
 
             content = row.find("div", {"class": "lister-item-content"})
@@ -88,7 +85,7 @@ class imdbPopular(object):
 
         if match:
             matches = match.groups()
-            ek(os.path.basename, image_url)
+            os.path.basename(image_url)
             matches = list(matches)
             matches[2] = int(matches[2]) * factor
             matches[4] = int(matches[4]) * factor
@@ -106,14 +103,14 @@ class imdbPopular(object):
         Store cache of image in cache dir
         :param image_url: Source URL
         """
-        path = ek(os.path.abspath, ek(os.path.join, sickbeard.CACHE_DIR, 'images', 'imdb_popular'))
+        path = os.path.abspath(os.path.join(sickbeard.CACHE_DIR, 'images', 'imdb_popular'))
 
-        if not ek(os.path.exists, path):
-            ek(os.makedirs, path)
+        if not os.path.exists(path):
+            os.makedirs(path)
 
-        full_path = ek(os.path.join, path, ek(os.path.basename, image_url))
+        full_path = os.path.join(path, os.path.basename(image_url))
 
-        if not ek(os.path.isfile, full_path):
+        if not os.path.isfile(full_path):
             helpers.download_file(image_url, full_path, session=self.session)
 
 imdb_popular = imdbPopular()

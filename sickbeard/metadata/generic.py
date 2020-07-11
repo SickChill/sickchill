@@ -38,9 +38,6 @@ from sickbeard import helpers, logger
 from sickbeard.metadata import helpers as metadata_helpers
 from sickbeard.show_name_helpers import allPossibleShowNames
 from sickchill.helper.common import replace_extension, try_int
-from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex
-
 try:
     import xml.etree.cElementTree as etree
 except ImportError:
@@ -123,7 +120,7 @@ class GenericMetadata(object):
     def _check_exists(location):
         if location:
             assert isinstance(location, six.text_type)
-            result = ek(os.path.isfile, location)
+            result = os.path.isfile(location)
             logger.log("Checking if " + location + " exists: " + str(result), logger.DEBUG)
             return result
         return False
@@ -159,19 +156,19 @@ class GenericMetadata(object):
         return self._check_exists(self.get_season_all_banner_path(show_obj))
 
     def get_show_file_path(self, show_obj):
-        return ek(os.path.join, show_obj.location, self._show_metadata_filename)
+        return os.path.join(show_obj.location, self._show_metadata_filename)
 
     def get_episode_file_path(self, ep_obj):
         return replace_extension(ep_obj.location, self._ep_nfo_extension)
 
     def get_fanart_path(self, show_obj):
-        return ek(os.path.join, show_obj.location, self.fanart_name)
+        return os.path.join(show_obj.location, self.fanart_name)
 
     def get_poster_path(self, show_obj):
-        return ek(os.path.join, show_obj.location, self.poster_name)
+        return os.path.join(show_obj.location, self.poster_name)
 
     def get_banner_path(self, show_obj):
-        return ek(os.path.join, show_obj.location, self.banner_name)
+        return os.path.join(show_obj.location, self.banner_name)
 
     @staticmethod
     def get_episode_thumb_path(ep_obj):
@@ -180,7 +177,7 @@ class GenericMetadata(object):
         ep_obj: a TVEpisode instance for which to create the thumbnail
         """
         assert isinstance(ep_obj.location, six.text_type)
-        if ek(os.path.isfile, ep_obj.location):
+        if os.path.isfile(ep_obj.location):
 
             tbn_filename = ep_obj.location.rpartition(".")
 
@@ -230,10 +227,10 @@ class GenericMetadata(object):
         return ek(os.path.join, show_obj.location, season_banner_filename + '-banner.jpg')
 
     def get_season_all_poster_path(self, show_obj):
-        return ek(os.path.join, show_obj.location, self.season_all_poster_name)
+        return os.path.join(show_obj.location, self.season_all_poster_name)
 
     def get_season_all_banner_path(self, show_obj):
-        return ek(os.path.join, show_obj.location, self.season_all_banner_name)
+        return os.path.join(show_obj.location, self.season_all_banner_name)
 
 
     def _show_data(self, show_obj):
@@ -288,7 +285,7 @@ class GenericMetadata(object):
                 return True
             except IOError as e:
                 logger.log(
-                    "Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e),
+                    "Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e),
                     logger.ERROR)
 
     def create_episode_metadata(self, ep_obj):
@@ -345,9 +342,9 @@ class GenericMetadata(object):
 
                 return True
             except IOError as error:
-                logger.log("Unable to write file to {} - are you sure the folder is writable? {}".format(nfo_file_path, ex(error)), logger.WARNING)
+                logger.log("Unable to write file to {} - are you sure the folder is writable? {}".format(nfo_file_path, str(error)), logger.WARNING)
             except etree.ParseError as error:
-                logger.log("Error parsing existing nfo file at {} - {}".format(nfo_file_path, ex(error)), logger.WARNING)
+                logger.log("Error parsing existing nfo file at {} - {}".format(nfo_file_path, str(error)), logger.WARNING)
 
     def create_fanart(self, show_obj):
         if self.fanart and show_obj and not self._has_fanart(show_obj):
@@ -432,12 +429,12 @@ class GenericMetadata(object):
         nfo_file_path = self.get_show_file_path(show_obj)
         assert isinstance(nfo_file_path, six.text_type)
 
-        nfo_file_dir = ek(os.path.dirname, nfo_file_path)
+        nfo_file_dir = os.path.dirname(nfo_file_path)
 
         try:
-            if not ek(os.path.isdir, nfo_file_dir):
+            if not os.path.isdir(nfo_file_dir):
                 logger.log("Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
-                ek(os.makedirs, nfo_file_dir)
+                os.makedirs(nfo_file_dir)
                 helpers.chmodAsParent(nfo_file_dir)
 
             logger.log("Writing show nfo file to " + nfo_file_path, logger.DEBUG)
@@ -447,7 +444,7 @@ class GenericMetadata(object):
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError as e:
-            logger.log("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e),
+            logger.log("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e),
                        logger.ERROR)
             return False
 
@@ -482,12 +479,12 @@ class GenericMetadata(object):
 
         nfo_file_path = self.get_episode_file_path(ep_obj)
         assert isinstance(nfo_file_path, six.text_type)
-        nfo_file_dir = ek(os.path.dirname, nfo_file_path)
+        nfo_file_dir = os.path.dirname(nfo_file_path)
 
         try:
-            if not ek(os.path.isdir, nfo_file_dir):
+            if not os.path.isdir(nfo_file_dir):
                 logger.log("Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
-                ek(os.makedirs, nfo_file_dir)
+                os.makedirs(nfo_file_dir)
                 helpers.chmodAsParent(nfo_file_dir)
 
             logger.log("Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
@@ -496,7 +493,7 @@ class GenericMetadata(object):
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError as e:
-            logger.log("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e),
+            logger.log("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e),
                        logger.ERROR)
             return False
 
@@ -724,20 +721,20 @@ class GenericMetadata(object):
         assert isinstance(image_path, six.text_type)
 
         # don't bother overwriting it
-        if ek(os.path.isfile, image_path):
+        if os.path.isfile(image_path):
             logger.log("Image already exists, not downloading", logger.DEBUG)
             return False
 
-        image_dir = ek(os.path.dirname, image_path)
+        image_dir = os.path.dirname(image_path)
 
         if not image_data:
             logger.log("Unable to retrieve image to save in {0}, skipping".format(image_path), logger.DEBUG)
             return False
 
         try:
-            if not ek(os.path.isdir, image_dir):
+            if not os.path.isdir(image_dir):
                 logger.log("Metadata dir didn't exist, creating it at " + image_dir, logger.DEBUG)
-                ek(os.makedirs, image_dir)
+                os.makedirs(image_dir)
                 helpers.chmodAsParent(image_dir)
 
             outFile = io.open(image_path, 'wb')
@@ -746,7 +743,7 @@ class GenericMetadata(object):
             helpers.chmodAsParent(image_path)
         except IOError as e:
             logger.log(
-                "Unable to write image to " + image_path + " - are you sure the show folder is writable? " + ex(e),
+                "Unable to write image to " + image_path + " - are you sure the show folder is writable? " + str(e),
                 logger.ERROR)
             return False
 
@@ -761,9 +758,9 @@ class GenericMetadata(object):
 
         assert isinstance(folder, six.text_type)
 
-        metadata_path = ek(os.path.join, folder, self._show_metadata_filename)
+        metadata_path = os.path.join(folder, self._show_metadata_filename)
 
-        if not ek(os.path.isdir, folder) or not ek(os.path.isfile, metadata_path):
+        if not os.path.isdir(folder) or not os.path.isfile(metadata_path):
             logger.log(_("Can't load the metadata file from {0}, it doesn't exist").format(metadata_path), logger.DEBUG)
             return empty_return
 
@@ -826,7 +823,7 @@ class GenericMetadata(object):
                     return indexer_id, show_xml.findtext('title'), sickchill.indexer.TVDB
 
         except Exception as e:
-            logger.log(_("There was an error parsing your existing metadata file: '{0}' error: {1}").format(metadata_path, ex(e)), logger.WARNING)
+            logger.log(_("There was an error parsing your existing metadata file: '{0}' error: {1}").format(metadata_path, str(e)), logger.WARNING)
             return empty_return
 
         return indexer_id, name, indexer

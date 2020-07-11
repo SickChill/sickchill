@@ -45,8 +45,7 @@ from sickbeard.scene_numbering import (get_scene_absolute_numbering, get_scene_a
 from sickbeard.versionChecker import CheckVersion
 from sickchill.helper import try_int
 from sickchill.helper.common import pretty_file_size
-from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex, NoNFOException, ShowDirectoryNotFoundException
+from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
@@ -1122,15 +1121,15 @@ class Home(WebRoot):
                 show_obj.rls_prefer_words = rls_prefer_words.strip()
 
             if not isinstance(location, six.text_type):
-                location = ek(six.text_type, location, 'utf-8')
+                location = six.text_type(location, 'utf-8')
 
-            location = ek(os.path.normpath, xhtml_unescape(location))
+            location = os.path.normpath(xhtml_unescape(location))
             # noinspection PyProtectedMember
-            old_location = ek(os.path.normpath, show_obj._location)
+            old_location = os.path.normpath(show_obj._location)
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if old_location != location:
                 logger.log(old_location + " != " + location, logger.DEBUG)
-                if not (ek(os.path.isdir, location) or sickbeard.CREATE_MISSING_SHOW_DIRS or sickbeard.ADD_SHOWS_WO_DIR):
+                if not (os.path.isdir(location) or sickbeard.CREATE_MISSING_SHOW_DIRS or sickbeard.ADD_SHOWS_WO_DIR):
                     errors.append(_("New location <tt>{location}</tt> does not exist").format(location=location))
                 else:
                     # change it
@@ -1248,7 +1247,7 @@ class Home(WebRoot):
         try:
             sickbeard.showQueueScheduler.action.update_show(show_obj, bool(force))
         except CantUpdateShowException as e:
-            ui.notifications.error(_("Unable to update this show."), ex(e))
+            ui.notifications.error(_("Unable to update this show."), str(e))
 
         # just give it some time
         time.sleep(cpu_presets[sickbeard.CPU_PRESET])
@@ -1387,7 +1386,7 @@ class Home(WebRoot):
                         continue
 
                     if int(status) in Quality.DOWNLOADED and ep_obj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + \
-                        Quality.DOWNLOADED + [IGNORED] and not ek(os.path.isfile, ep_obj.location):
+                        Quality.DOWNLOADED + [IGNORED] and not os.path.isfile(ep_obj.location):
                         logger.log("Refusing to change status of " + cur_ep + " to DOWNLOADED because it's not SNATCHED/DOWNLOADED", logger.WARNING)
                         continue
 

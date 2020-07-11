@@ -15,8 +15,7 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../l
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import sickbeard
-from sickbeard import ek, ex
-from sickchill.helper.common import sanitize_filename
+from sickbeard import ekfrom sickchill.helper.common import sanitize_filename
 
 
 import six
@@ -47,10 +46,10 @@ class EncodingTests(unittest.TestCase):
 
         for test in strings:
             try:
-                show_dir = ek(os.path.join, root_dir, sanitize_filename(test))
+                show_dir = os.path.join(root_dir, sanitize_filename(test))
                 self.assertTrue(isinstance(show_dir, six.text_type))
             except Exception as error:
-                ex(error)
+                str(error)
 
 if __name__ == "__main__":
     print("==================")

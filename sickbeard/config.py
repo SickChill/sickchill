@@ -36,8 +36,6 @@ from tornado.escape import xhtml_unescape
 # First Party Imports
 import sickbeard
 from sickchill.helper.common import try_int
-from sickchill.helper.encoding import ek
-
 # Local Folder Imports
 from . import db, helpers, logger, naming
 
@@ -78,9 +76,9 @@ def change_https_cert(https_cert):
         sickbeard.HTTPS_CERT = ''
         return True
 
-    if ek(os.path.normpath, sickbeard.HTTPS_CERT) != ek(os.path.normpath, https_cert):
-        if helpers.makeDir(ek(os.path.dirname, ek(os.path.abspath, https_cert))):
-            sickbeard.HTTPS_CERT = ek(os.path.normpath, https_cert)
+    if os.path.normpath(sickbeard.HTTPS_CERT) != os.path.normpath(https_cert):
+        if helpers.makeDir(os.path.dirname(os.path.abspath(https_cert))):
+            sickbeard.HTTPS_CERT = os.path.normpath(https_cert)
             logger.log("Changed https cert path to " + https_cert)
         else:
             return False
@@ -99,9 +97,9 @@ def change_https_key(https_key):
         sickbeard.HTTPS_KEY = ''
         return True
 
-    if ek(os.path.normpath, sickbeard.HTTPS_KEY) != ek(os.path.normpath, https_key):
-        if helpers.makeDir(ek(os.path.dirname, ek(os.path.abspath, https_key))):
-            sickbeard.HTTPS_KEY = ek(os.path.normpath, https_key)
+    if os.path.normpath(sickbeard.HTTPS_KEY) != os.path.normpath(https_key):
+        if helpers.makeDir(os.path.dirname(os.path.abspath(https_key))):
+            sickbeard.HTTPS_KEY = os.path.normpath(https_key)
             logger.log("Changed https key path to " + https_key)
         else:
             return False
@@ -148,7 +146,7 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
         check_locations.add(os.path.join(sickbeard.PROG_DIR, 'unrar\\unrar.exe'))
 
         for check in check_locations:
-            if ek(os.path.isfile, check):
+            if os.path.isfile(check):
                 # Can use it?
                 try:
                     rarfile.custom_check(check)
@@ -161,14 +159,14 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
         # Download
         if not found:
             logger.log('Trying to download unrar.exe and set the path')
-            unrar_store = ek(os.path.join, sickbeard.PROG_DIR, 'unrar')  # ./unrar (folder)
-            unrar_zip = ek(os.path.join, sickbeard.PROG_DIR, 'unrar_win.zip')  # file download
+            unrar_store = os.path.join(sickbeard.PROG_DIR, 'unrar')  # ./unrar (folder)
+            unrar_zip = os.path.join(sickbeard.PROG_DIR, 'unrar_win.zip')  # file download
 
             if (helpers.download_file(
                 "https://sickchill.github.io/unrar/unrar_win.zip", filename=unrar_zip, session=helpers.make_session()
             ) and helpers.extractZip(archive=unrar_zip, targetDir=unrar_store)):
                 try:
-                    ek(os.remove, unrar_zip)
+                    os.remove(unrar_zip)
                 except OSError as e:
                     logger.log("Unable to delete downloaded file {0}: {1}. You may delete it manually".format(unrar_zip, e.strerror))
 
@@ -207,8 +205,8 @@ def change_sickchill_background(background):
         sickbeard.SICKCHILL_BACKGROUND_PATH = ''
         return True
 
-    background = ek(os.path.normpath, background)
-    if not ek(os.path.exists, background):
+    background = os.path.normpath(background)
+    if not os.path.exists(background):
         logger.log("Background image does not exist: {0}".format(background))
         return False
 
@@ -228,8 +226,8 @@ def change_custom_css(new_css):
         sickbeard.CUSTOM_CSS_PATH = ''
         return True
 
-    new_css = ek(os.path.normpath, new_css)
-    if not ek(os.path.isfile, new_css):
+    new_css = os.path.normpath(new_css)
+    if not os.path.isfile(new_css):
         logger.log("Custom css file does not exist: {0}".format(new_css))
         return False
     if not new_css.endswith('css'):
@@ -251,9 +249,9 @@ def change_nzb_dir(nzb_dir):
         sickbeard.NZB_DIR = ''
         return True
 
-    if ek(os.path.normpath, sickbeard.NZB_DIR) != ek(os.path.normpath, nzb_dir):
+    if os.path.normpath(sickbeard.NZB_DIR) != os.path.normpath(nzb_dir):
         if helpers.makeDir(nzb_dir):
-            sickbeard.NZB_DIR = ek(os.path.normpath, nzb_dir)
+            sickbeard.NZB_DIR = os.path.normpath(nzb_dir)
             logger.log("Changed NZB folder to " + nzb_dir)
         else:
             return False
@@ -272,9 +270,9 @@ def change_torrent_dir(torrent_dir):
         sickbeard.TORRENT_DIR = ''
         return True
 
-    if ek(os.path.normpath, sickbeard.TORRENT_DIR) != ek(os.path.normpath, torrent_dir):
+    if os.path.normpath(sickbeard.TORRENT_DIR) != os.path.normpath(torrent_dir):
         if helpers.makeDir(torrent_dir):
-            sickbeard.TORRENT_DIR = ek(os.path.normpath, torrent_dir)
+            sickbeard.TORRENT_DIR = os.path.normpath(torrent_dir)
             logger.log("Changed torrent folder to " + torrent_dir)
         else:
             return False
@@ -293,9 +291,9 @@ def change_tv_download_dir(tv_download_dir):
         sickbeard.TV_DOWNLOAD_DIR = ''
         return True
 
-    if ek(os.path.normpath, sickbeard.TV_DOWNLOAD_DIR) != ek(os.path.normpath, tv_download_dir):
+    if os.path.normpath(sickbeard.TV_DOWNLOAD_DIR) != os.path.normpath(tv_download_dir):
         if helpers.makeDir(tv_download_dir):
-            sickbeard.TV_DOWNLOAD_DIR = ek(os.path.normpath, tv_download_dir)
+            sickbeard.TV_DOWNLOAD_DIR = os.path.normpath(tv_download_dir)
             logger.log("Changed TV download folder to " + tv_download_dir)
         else:
             return False
@@ -314,7 +312,7 @@ def change_unpack_dir(unpack_dir):
         sickbeard.UNPACK_DIR = ''
         return True
 
-    if ek(os.path.normpath, sickbeard.UNPACK_DIR) != ek(os.path.normpath, unpack_dir):
+    if os.path.normpath(sickbeard.UNPACK_DIR) != os.path.normpath(unpack_dir):
         if bool(sickbeard.ROOT_DIRS) and \
                 any(map(lambda rd: helpers.is_subdirectory(unpack_dir, rd), sickbeard.ROOT_DIRS.split('|')[1:])):
             # don't change if it's in any of the TV root directories
@@ -322,10 +320,10 @@ def change_unpack_dir(unpack_dir):
             return False
 
         if helpers.makeDir(unpack_dir):
-            sickbeard.UNPACK_DIR = ek(os.path.normpath, unpack_dir)
+            sickbeard.UNPACK_DIR = os.path.normpath(unpack_dir)
             logger.log("Changed unpack directory to " + unpack_dir)
         else:
-            logger.log("Unable to create unpack directory " + ek(os.path.normpath, unpack_dir) + ", dir not changed.")
+            logger.log("Unable to create unpack directory " + os.path.normpath(unpack_dir) + ", dir not changed.")
             return False
 
     return True

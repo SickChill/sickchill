@@ -14,7 +14,6 @@ from tornado.web import Application, RedirectHandler, StaticFileHandler, url
 import sickbeard
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates, generateApiKey
-from sickchill.helper.encoding import ek
 from sickchill.views import CalendarHandler, LoginHandler, LogoutHandler
 from sickchill.views.api import ApiHandler, KeyHandler
 
@@ -47,7 +46,7 @@ class SRWebServer(threading.Thread):
             web_host = ('0.0.0.0', '')[sickbeard.WEB_IPV6]
 
         self.options.update({
-            'data_root': ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME),
+            'data_root': os.path.join(sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME),
             'web_root': sickbeard.WEB_ROOT,
             'host': web_host,
             'enable_https': sickbeard.ENABLE_HTTPS,
@@ -85,24 +84,24 @@ class SRWebServer(threading.Thread):
 
         self.https_cert = None
         if sickbeard.HTTPS_CERT:
-            self.https_cert = ek(os.path.realpath, sickbeard.HTTPS_CERT)
-            if not ek(os.path.exists, self.https_cert) and not ek(os.path.isabs, self.https_cert):
-                self.https_cert = ek(os.path.realpath, ek(os.path.join, sickbeard.PROG_DIR, sickbeard.HTTPS_CERT))
+            self.https_cert = os.path.realpath(sickbeard.HTTPS_CERT)
+            if not os.path.exists(self.https_cert) and not os.path.isabs(self.https_cert):
+                self.https_cert = os.path.realpath(os.path.join(sickbeard.PROG_DIR, sickbeard.HTTPS_CERT))
 
         self.https_key = None
         if sickbeard.HTTPS_KEY:
-            self.https_key = ek(os.path.realpath, sickbeard.HTTPS_KEY)
-            if not ek(os.path.exists, self.https_key) and not ek(os.path.isabs, self.https_key):
-                self.https_key = ek(os.path.realpath, ek(os.path.join, sickbeard.PROG_DIR, sickbeard.HTTPS_KEY))
+            self.https_key = os.path.realpath(sickbeard.HTTPS_KEY)
+            if not os.path.exists(self.https_key) and not os.path.isabs(self.https_key):
+                self.https_key = os.path.realpath(os.path.join(sickbeard.PROG_DIR, sickbeard.HTTPS_KEY))
 
         if self.enable_https:
             # If either the HTTPS certificate or key do not exist, make some self-signed ones.
-            if not (self.https_cert and ek(os.path.exists, self.https_cert) and self.https_key and ek(os.path.exists, self.https_key)):
+            if not (self.https_cert and os.path.exists(self.https_cert) and self.https_key and os.path.exists(self.https_key)):
                 if not create_https_certificates(self.https_cert, self.https_key):
                     logger.log("Unable to create CERT/KEY files, disabling HTTPS")
                     sickbeard.ENABLE_HTTPS = self.enable_https = False
 
-            if not (ek(os.path.exists, self.https_cert) and ek(os.path.exists, self.https_key)):
+            if not (os.path.exists(self.https_cert) and os.path.exists(self.https_key)):
                 logger.log("Disabled HTTPS because of missing CERT and KEY files", logger.WARNING)
                 sickbeard.ENABLE_HTTPS = self.enable_https = False
 
@@ -123,22 +122,22 @@ class SRWebServer(threading.Thread):
         # Static File Handlers
         self.app.add_handlers(".*$", [
             url(r'{0}/favicon.ico'.format(self.options['web_root']), StaticFileHandler,
-                {"path": ek(os.path.join, self.options['data_root'], 'images/ico/favicon.ico')}, name='favicon'),
+                {"path": os.path.join(self.options['data_root'], 'images/ico/favicon.ico')}, name='favicon'),
 
             url(r'{0}/images/(.*)'.format(self.options['web_root']), StaticFileHandler,
-                {"path": ek(os.path.join, self.options['data_root'], 'images')}, name='images'),
+                {"path": os.path.join(self.options['data_root'], 'images')}, name='images'),
 
             url(r'{0}/cache/images/(.*)'.format(self.options['web_root']), StaticFileHandler,
-                {"path": ek(os.path.join, sickbeard.CACHE_DIR, 'images')}, name='image_cache'),
+                {"path": os.path.join(sickbeard.CACHE_DIR, 'images')}, name='image_cache'),
 
             url(r'{0}/css/(.*)'.format(self.options['web_root']), StaticFileHandler,
-                {"path": ek(os.path.join, self.options['data_root'], 'css')}, name='css'),
+                {"path": os.path.join(self.options['data_root'], 'css')}, name='css'),
 
             url(r'{0}/js/(.*)'.format(self.options['web_root']), StaticFileHandler,
-                {"path": ek(os.path.join, self.options['data_root'], 'js')}, name='js'),
+                {"path": os.path.join(self.options['data_root'], 'js')}, name='js'),
 
             url(r'{0}/fonts/(.*)'.format(self.options['web_root']), StaticFileHandler,
-                {"path": ek(os.path.join, self.options['data_root'], 'fonts')}, name='fonts')
+                {"path": os.path.join(self.options['data_root'], 'fonts')}, name='fonts')
 
             # TODO: WTF is this?
             # url(r'{0}/videos/(.*)'.format(self.options['web_root']), StaticFileHandler,

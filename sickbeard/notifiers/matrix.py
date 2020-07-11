@@ -29,10 +29,6 @@ import six
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
-from sickchill.helper.encoding import ss
-from sickchill.helper.exceptions import ex
-
-
 class Notifier(object):
 
     def notify_snatch(self, ep_name):
@@ -102,7 +98,7 @@ class Notifier(object):
             r.raise_for_status()
 
         except Exception as e:
-            logger.log("Error Sending Matrix message: " + ex(e), logger.ERROR)
+            logger.log("Error Sending Matrix message: " + str(e), logger.ERROR)
             return False
 
         return True
@@ -115,8 +111,6 @@ class Notifier(object):
 
     @staticmethod
     def _parseEp(ep_name):
-        ep_name = ss(ep_name)
-
         sep = ' - '
         titles = ep_name.split(sep)
         logger.log('TITLES: {0}'.format(titles), logger.DEBUG)

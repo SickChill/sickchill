@@ -72,7 +72,6 @@ import sickbeard
 import sickchill
 from sickchill.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS
 from sickchill.helper.common import replace_extension
-from sickchill.helper.encoding import ek
 from sickchill.show.Show import Show
 
 # Local Folder Imports
@@ -235,7 +234,7 @@ def is_media_file(filename):
     try:
         assert isinstance(filename, six.string_types), type(filename)
         is_rar = is_rar_file(filename)
-        filename = ek(os.path.basename, filename)
+        filename = os.path.basename(filename)
 
         if re.search(r'(^|[\W_])(?<!shomin.)(sample\d*)[\W_]', filename, re.I):
             return False
@@ -273,8 +272,8 @@ def is_rar_file(filename):
     archive_regex = r'(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)'
     ret = re.search(archive_regex, filename) is not None
     try:
-        if ret and ek(os.path.exists, filename) and ek(os.path.isfile, filename):
-            ret = ek(rarfile.is_rarfile, filename)
+        if ret and os.path.exists(filename) and os.path.isfile(filename):
+            ret = rarfile.is_rarfile(filename)
     except (IOError, OSError):
         pass
 
@@ -290,7 +289,7 @@ def remove_file_failed(failed_file):
 
     # noinspection PyBroadException
     try:
-        ek(os.remove, failed_file)
+        os.remove(failed_file)
     except Exception:
         pass
 
@@ -303,9 +302,9 @@ def makeDir(path):
     :return: True if success, False if failure
     """
 
-    if not ek(os.path.isdir, path):
+    if not os.path.isdir(path):
         try:
-            ek(os.makedirs, path)
+            os.makedirs(path)
             # do the library update for synoindex
             sickbeard.notifiers.synoindex_notifier.addFolder(path)
         except OSError:
@@ -321,15 +320,15 @@ def list_media_files(path):
     :return: list of files
     """
 
-    if not dir or not ek(os.path.isdir, path):
+    if not dir or not os.path.isdir(path):
         return []
 
     files = []
-    for entry in ek(os.listdir, path):
-        full_entry = ek(os.path.join, path, entry)
+    for entry in os.listdir(path):
+        full_entry = os.path.join(path, entry)
 
         # if it's a folder do it recursively
-        if ek(os.path.isdir, full_entry) and not entry.startswith('.') and not entry == 'Extras':
+        if os.path.isdir(full_entry) and not entry.startswith('.') and not entry == 'Extras':
             files += list_media_files(full_entry)
 
         elif is_media_file(entry):
@@ -353,7 +352,7 @@ def copyFile(srcFile, destFile):
         SpecialFileError = Error
 
     try:
-        ek(shutil.copyfile, srcFile, destFile)
+        shutil.copyfile(srcFile, destFile)
     except (SpecialFileError, Error) as error:
         # noinspection PyProtectedMember
         if not shutil._samefile(srcFile, destFile):
@@ -364,7 +363,7 @@ def copyFile(srcFile, destFile):
         return
 
     try:
-        ek(shutil.copymode, srcFile, destFile)
+        shutil.copymode(srcFile, destFile)
     except OSError:
         pass
 
@@ -378,11 +377,11 @@ def moveFile(srcFile, destFile):
     """
 
     try:
-        ek(shutil.move, srcFile, destFile)
+        shutil.move(srcFile, destFile)
         fixSetGroupID(destFile)
     except OSError:
         copyFile(srcFile, destFile)
-        ek(os.unlink, srcFile)
+        os.unlink(srcFile)
 
 
 def link(src, dst):
@@ -398,7 +397,7 @@ def link(src, dst):
         if ctypes.windll.kernel32.CreateHardLinkW(ctypes.c_wchar_p(six.text_type(dst)), ctypes.c_wchar_p(six.text_type(src)), None) == 0:
             raise ctypes.WinError()
     else:
-        ek(os.link, src, dst)
+        os.link(src, dst)
 
 
 def hardlinkFile(srcFile, destFile):
@@ -410,7 +409,7 @@ def hardlinkFile(srcFile, destFile):
     """
 
     try:
-        ek(link, srcFile, destFile)
+        link(srcFile, destFile)
         fixSetGroupID(destFile)
     except Exception as error:
         logger.log(_("Failed to create hardlink of {0} at {1}. Error: {2}. Copying instead").format
@@ -430,11 +429,11 @@ def symlink(src, dst):
         if ctypes.windll.kernel32.CreateSymbolicLinkW(
                 ctypes.c_wchar_p(six.text_type(dst)),
                 ctypes.c_wchar_p(six.text_type(src)),
-                1 if ek(os.path.isdir, src) else 0
+                1 if os.path.isdir(src) else 0
         ) in [0, 1280]:
             raise ctypes.WinError()
     else:
-        ek(os.symlink, src, dst)
+        os.symlink(src, dst)
 
 
 def moveAndSymlinkFile(srcFile, destFile):
@@ -463,12 +462,12 @@ def make_dirs(path):
 
     logger.log(_("Checking if the path {0} already exists").format(path), logger.DEBUG)
 
-    if not ek(os.path.isdir, path):
+    if not os.path.isdir(path):
         # Windows, create all missing folders
         if platform.system() == 'Windows':
             try:
                 logger.log(_("Folder {0} didn't exist, creating it").format(path), logger.DEBUG)
-                ek(os.makedirs, path)
+                os.makedirs(path)
             except (OSError, IOError) as error:
                 logger.log(_("Failed creating {0} : {1}").format(path, error), logger.ERROR)
                 return False
@@ -483,14 +482,14 @@ def make_dirs(path):
                 sofar += cur_folder + os.path.sep
 
                 # if it exists then just keep walking down the line
-                if ek(os.path.isdir, sofar):
+                if os.path.isdir(sofar):
                     continue
 
                 try:
                     logger.log(_("Folder {0} didn't exist, creating it").format(sofar), logger.DEBUG)
-                    ek(os.mkdir, sofar)
+                    os.mkdir(sofar)
                     # use normpath to remove end separator, otherwise checks permissions against itself
-                    chmodAsParent(ek(os.path.normpath, sofar))
+                    chmodAsParent(os.path.normpath(sofar))
                     # do the library update for synoindex
                     sickbeard.notifiers.synoindex_notifier.addFolder(sofar)
                 except (OSError, IOError) as error:
@@ -510,11 +509,11 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
     :param old_path_length: The length of media file path (old name) WITHOUT THE EXTENSION
     """
 
-    # new_dest_dir, new_dest_name = ek(os.path.split, new_path)  # @UnusedVariable
+    # new_dest_dir, new_dest_name = os.path.split(new_path)  # @UnusedVariable
 
     if old_path_length == 0 or old_path_length > len(cur_path):
         # approach from the right
-        cur_file_name, cur_file_ext = ek(os.path.splitext, cur_path)  # @UnusedVariable
+        cur_file_name, cur_file_ext = os.path.splitext(cur_path)  # @UnusedVariable
     else:
         # approach from the left
         cur_file_ext = cur_path[old_path_length:]
@@ -522,7 +521,7 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
 
     if cur_file_ext[1:] in SUBTITLE_EXTENSIONS:
         # Extract subtitle language from filename
-        sublang = ek(os.path.splitext, cur_file_name)[1][1:]
+        sublang = os.path.splitext(cur_file_name)[1][1:]
 
         # Check if the language extracted from filename is a valid language
         if sublang in sickbeard.subtitles.subtitle_code_filter():
@@ -531,18 +530,18 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
     # put the extension on the incoming file
     new_path += cur_file_ext
 
-    make_dirs(ek(os.path.dirname, new_path))
+    make_dirs(os.path.dirname(new_path))
 
     # move the file
     try:
         logger.log(_("Renaming file from {0} to {1}").format(cur_path, new_path))
-        ek(shutil.move, cur_path, new_path)
+        shutil.move(cur_path, new_path)
     except (OSError, IOError) as error:
         logger.log(_("Failed renaming {0} to {1} : {2}").format(cur_path, new_path, error), logger.ERROR)
         return False
 
     # clean up any old folders that are empty
-    delete_empty_folders(ek(os.path.dirname, cur_path))
+    delete_empty_folders(os.path.dirname(cur_path))
 
     return True
 
@@ -561,8 +560,8 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
     logger.log(_("Trying to clean any empty folders under ") + check_empty_dir)
 
     # as long as the folder exists and doesn't contain any files, delete it
-    while ek(os.path.isdir, check_empty_dir) and check_empty_dir != keep_dir:
-        check_files = ek(os.listdir, check_empty_dir)
+    while os.path.isdir(check_empty_dir) and check_empty_dir != keep_dir:
+        check_files = os.listdir(check_empty_dir)
 
         if not check_files or (len(check_files) <= len(ignore_items) and all(
                 check_file in ignore_items for check_file in check_files)):
@@ -570,13 +569,13 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
             try:
                 logger.log(_("Deleting empty folder: ") + check_empty_dir)
                 # need shutil.rmtree when ignore_items is really implemented
-                ek(os.rmdir, check_empty_dir)
+                os.rmdir(check_empty_dir)
                 # do the library update for synoindex
                 sickbeard.notifiers.synoindex_notifier.deleteFolder(check_empty_dir)
             except OSError as error:
                 logger.log(_("Unable to delete {0}. Error: {1}").format(check_empty_dir, error), logger.WARNING)
                 break
-            check_empty_dir = ek(os.path.dirname, check_empty_dir)
+            check_empty_dir = os.path.dirname(check_empty_dir)
         else:
             break
 
@@ -607,21 +606,21 @@ def chmodAsParent(childPath):
     if platform.system() == 'Windows':
         return
 
-    parentPath = ek(os.path.dirname, childPath)
+    parentPath = os.path.dirname(childPath)
 
     if not parentPath:
         logger.log(_("No parent path provided in {location} unable to get permissions from it").format(location=childPath), logger.DEBUG)
         return
 
-    childPath = ek(os.path.join, parentPath, ek(os.path.basename, childPath))
+    childPath = os.path.join(parentPath, os.path.basename(childPath))
 
-    parentPathStat = ek(os.stat, parentPath)
+    parentPathStat = os.stat(parentPath)
     parentMode = stat.S_IMODE(parentPathStat[stat.ST_MODE])
 
-    childPathStat = ek(os.stat, childPath.encode(sickbeard.SYS_ENCODING))
+    childPathStat = os.stat(childPath.encode(sickbeard.SYS_ENCODING))
     childPath_mode = stat.S_IMODE(childPathStat[stat.ST_MODE])
 
-    if ek(os.path.isfile, childPath):
+    if os.path.isfile(childPath):
         childMode = fileBitFilter(parentMode)
     else:
         childMode = parentMode
@@ -637,7 +636,7 @@ def chmodAsParent(childPath):
         return
 
     try:
-        ek(os.chmod, childPath, childMode)
+        os.chmod(childPath, childMode)
     except OSError:
         logger.log(_("Failed to set permission for {0} to {1:o}, parent directory has {2:o}").format(childPath, childMode, parentMode), logger.DEBUG)
 
@@ -653,15 +652,15 @@ def fixSetGroupID(childPath):
     if platform.system() == 'Windows':
         return
 
-    parentPath = ek(os.path.dirname, childPath)
-    parentStat = ek(os.stat, parentPath)
+    parentPath = os.path.dirname(childPath)
+    parentStat = os.stat(parentPath)
     parentMode = stat.S_IMODE(parentStat[stat.ST_MODE])
 
-    childPath = ek(os.path.join, parentPath, ek(os.path.basename, childPath))
+    childPath = os.path.join(parentPath, os.path.basename(childPath))
 
     if parentMode & stat.S_ISGID:
         parentGID = parentStat[stat.ST_GID]
-        childStat = ek(os.stat, childPath.encode(sickbeard.SYS_ENCODING))
+        childStat = os.stat(childPath.encode(sickbeard.SYS_ENCODING))
         childGID = childStat[stat.ST_GID]
 
         if childGID == parentGID:
@@ -675,7 +674,7 @@ def fixSetGroupID(childPath):
             return
 
         try:
-            ek(os.chown, childPath, -1, parentGID)  # @UndefinedVariable - only available on UNIX
+            os.chown(childPath, -1, parentGID)  # @UndefinedVariable - only available on UNIX
             logger.log(_("Respecting the set-group-ID bit on the parent directory for {0}").format(childPath), logger.DEBUG)
         except OSError:
             logger.log(
@@ -853,8 +852,8 @@ def backupVersionedFile(old_file, version):
 
     new_file = old_file + '.' + 'v' + str(version)
 
-    while not ek(os.path.isfile, new_file):
-        if not ek(os.path.isfile, old_file):
+    while not os.path.isfile(new_file):
+        if not os.path.isfile(old_file):
             logger.log(_("Not creating backup, {0} doesn't exist").format(old_file), logger.DEBUG)
             break
 
@@ -887,10 +886,10 @@ def restoreVersionedFile(backup_file, version):
 
     numTries = 0
 
-    new_file, ext_ = ek(os.path.splitext, backup_file)
+    new_file, ext_ = os.path.splitext(backup_file)
     restore_file = new_file + '.' + 'v' + str(version)
 
-    if not ek(os.path.isfile, new_file):
+    if not os.path.isfile(new_file):
         logger.log(_("Not restoring, {0} doesn't exist").format(new_file), logger.DEBUG)
         return False
 
@@ -904,8 +903,8 @@ def restoreVersionedFile(backup_file, version):
                    (restore_file, error), logger.WARNING)
         return False
 
-    while not ek(os.path.isfile, new_file):
-        if not ek(os.path.isfile, restore_file):
+    while not os.path.isfile(new_file):
+        if not os.path.isfile(restore_file):
             logger.log(_("Not restoring, {0} doesn't exist").format(restore_file), logger.DEBUG)
             break
 
@@ -1071,7 +1070,7 @@ def is_hidden_folder(folder):
     :param folder: Full path of folder to check
     """
     def is_hidden(filepath):
-        name = ek(os.path.basename, ek(os.path.abspath, filepath))
+        name = os.path.basename(os.path.abspath(filepath))
         return name == '@eaDir' or name.startswith('.') or has_hidden_attribute(filepath)
 
     def has_hidden_attribute(filepath):
@@ -1083,7 +1082,7 @@ def is_hidden_folder(folder):
             result = False
         return result
 
-    if ek(os.path.isdir, folder) and is_hidden(folder):
+    if os.path.isdir(folder) and is_hidden(folder):
         return True
 
     return False
@@ -1093,7 +1092,7 @@ def real_path(path):
     """
     Returns: the canonicalized absolute pathname. The resulting path will have no symbolic link, '/./' or '/../' components.
     """
-    return ek(os.path.normpath, ek(os.path.normcase, ek(os.path.realpath, path)))
+    return os.path.normpath(os.path.normcase(os.path.realpath(path)))
 
 
 def is_subdirectory(subdir_path, topdir_path):
@@ -1173,19 +1172,19 @@ def extractZip(archive, targetDir):
     """
 
     try:
-        if not ek(os.path.exists, targetDir):
-            ek(os.mkdir, targetDir)
+        if not os.path.exists(targetDir):
+            os.mkdir(targetDir)
 
         zip_file = zipfile.ZipFile(archive, 'r', allowZip64=True)
         for member in zip_file.namelist():
-            filename = ek(os.path.basename, member)
+            filename = os.path.basename(member)
             # skip directories
             if not filename:
                 continue
 
             # copy file (taken from zipfile's extract)
             source = zip_file.open(member)
-            target = open(ek(os.path.join, targetDir, filename), "wb")
+            target = open(os.path.join(targetDir, filename), "wb")
             shutil.copyfileobj(source, target)
             source.close()
             target.close()
@@ -1209,7 +1208,7 @@ def backup_config_zip(fileList, archive, arcname=None):
     try:
         a = zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, allowZip64=True)
         for f in fileList:
-            a.write(f, ek(os.path.relpath, f, arcname))
+            a.write(f, os.path.relpath(f, arcname))
         a.close()
         return True
     except Exception as error:
@@ -1227,14 +1226,14 @@ def restore_config_zip(archive, targetDir):
     """
 
     try:
-        if not ek(os.path.exists, targetDir):
-            ek(os.mkdir, targetDir)
+        if not os.path.exists(targetDir):
+            os.mkdir(targetDir)
         else:
             def path_leaf(path):
-                head, tail = ek(os.path.split, path)
-                return tail or ek(os.path.basename, head)
+                head, tail = os.path.split(path)
+                return tail or os.path.basename(head)
             bakFilename = '{0}-{1}'.format(path_leaf(targetDir), datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
-            shutil.move(targetDir, ek(os.path.join, ek(os.path.dirname, targetDir), bakFilename))
+            shutil.move(targetDir, os.path.join(os.path.dirname(targetDir), bakFilename))
 
         zip_file = zipfile.ZipFile(archive, 'r', allowZip64=True)
         for member in zip_file.namelist():
@@ -1256,8 +1255,8 @@ def touchFile(fname, atime=None):
     :return: True on success, False on failure
     """
 
-    if atime and fname and ek(os.path.isfile, fname):
-        ek(os.utime, fname, (atime, atime))
+    if atime and fname and os.path.isfile(fname):
+        os.utime(fname, (atime, atime))
         return True
 
     return False
@@ -1498,19 +1497,19 @@ def get_size(start_path='.'):
     :return: total filesize
     """
 
-    if not ek(os.path.isdir, start_path):
+    if not os.path.isdir(start_path):
         return -1
 
     total_size = 0
-    for dirpath, dirnames_, filenames in ek(os.walk, start_path):
+    for dirpath, dirnames_, filenames in os.walk(start_path):
         for f in filenames:
-            fp = ek(os.path.join, dirpath, f)
-            if ek(os.path.islink, fp) and not ek(os.path.isfile, fp):
+            fp = os.path.join(dirpath, f)
+            if os.path.islink(fp) and not os.path.isfile(fp):
                 logger.log(_("Unable to get size for file {0} because the link to the file is not valid").format(fp),
                            logger.DEBUG if sickbeard.IGNORE_BROKEN_SYMLINKS else logger.WARNING)
                 continue
             try:
-                total_size += ek(os.path.getsize, fp)
+                total_size += os.path.getsize(fp)
             except OSError as error:
                 logger.log(_("Unable to get size for file {0} Error: {1}").format(fp, error), logger.ERROR)
                 logger.log(traceback.format_exc(), logger.DEBUG)
@@ -1555,7 +1554,7 @@ def disk_usage(path):
             except Exception:
                 pass
 
-        st = ek(os.statvfs, path)
+        st = os.statvfs(path)
         return st.f_bavail * st.f_frsize
 
     else:
@@ -1578,20 +1577,20 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
 
     logger.log(_("Trying to determine free space on the destination drive"), logger.DEBUG)
 
-    if not ek(os.path.isfile, src):
+    if not os.path.isfile(src):
         logger.log(_("A path to a file is required for the source. {0} is not a file.").format(src), logger.WARNING)
         return True
 
-    if not (ek(os.path.isdir, dest) or (sickbeard.CREATE_MISSING_SHOW_DIRS and ek(os.path.isdir, ek(os.path.dirname, dest)))):
+    if not (os.path.isdir(dest) or (sickbeard.CREATE_MISSING_SHOW_DIRS and os.path.isdir(os.path.dirname(dest)))):
         logger.log(_("A path is required for the destination. Check that the root dir and show locations are correct for {0} (I got '{1}')").format(
             oldfile[0].name, dest), logger.WARNING)
         return False
 
-    dest = (ek(os.path.dirname, dest), dest)[ek(os.path.isdir, dest)]
+    dest = (os.path.dirname(dest), dest)[os.path.isdir(dest)]
 
     # shortcut: if we are moving the file and the destination == src dir,
     # then by definition there is enough space
-    if method == "move" and ek(os.stat, src).st_dev == ek(os.stat, dest).st_dev:  # pylint:
+    if method == "move" and os.stat(src).st_dev == os.stat(dest).st_dev:  # pylint:
         # disable=no-member
         logger.log(_("Process method is 'move' and src and destination are on the same device, skipping free space check"), logger.INFO)
         return True
@@ -1608,12 +1607,12 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
     if 'link' in method and disk_free > 1024**2:
         return True
 
-    needed_space = ek(os.path.getsize, src)
+    needed_space = os.path.getsize(src)
 
     if oldfile:
         for f in oldfile:
-            if ek(os.path.isfile, f.location):
-                disk_free += ek(os.path.getsize, f.location)
+            if os.path.isfile(f.location):
+                disk_free += os.path.getsize(f.location)
 
     if disk_free > needed_space:
         return True
@@ -1628,7 +1627,7 @@ def disk_usage_hr(diskPath=None):
     returns the free space in human readable bytes for a given path or False if no path given
     :param diskPath: the filesystem path being checked
     """
-    if diskPath and ek(os.path.exists, diskPath):
+    if diskPath and os.path.exists(diskPath):
         try:
             free = disk_usage(diskPath)
         except Exception as error:
@@ -1675,24 +1674,24 @@ def is_file_locked(checkfile, write_check=False):
     :param write_check: when true will check if the file is locked for writing (prevents move operations)
     """
 
-    checkfile = ek(os.path.abspath, checkfile)
+    checkfile = os.path.abspath(checkfile)
 
-    if not ek(os.path.exists, checkfile):
+    if not os.path.exists(checkfile):
         return True
     try:
-        f = ek(io.open, checkfile, 'rb')
+        f = io.open(checkfile, 'rb')
         f.close()
     except IOError:
         return True
 
     if write_check:
         lockFile = checkfile + ".lckchk"
-        if ek(os.path.exists, lockFile):
-            ek(os.remove, lockFile)
+        if os.path.exists(lockFile):
+            os.remove(lockFile)
         try:
-            ek(os.rename, checkfile, lockFile)
+            os.rename(checkfile, lockFile)
             time.sleep(1)
-            ek(os.rename, lockFile, checkfile)
+            os.rename(lockFile, checkfile)
         except (OSError, IOError):
             return True
 
@@ -1760,9 +1759,9 @@ def is_ip_local(ip):
 
 
 def recursive_listdir(path):
-    for directory_path, directory_names, file_names in ek(os.walk, path, topdown=False):
+    for directory_path, directory_names, file_names in os.walk(path, topdown=False):
         for filename in file_names:
-            yield ek(os.path.join, directory_path, filename)
+            yield os.path.join(directory_path, filename)
 
 
 MESSAGE_COUNTER = 0

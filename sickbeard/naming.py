@@ -26,8 +26,6 @@ import os
 
 # First Party Imports
 import sickbeard
-from sickchill.helper.encoding import ek
-
 # Local Folder Imports
 from . import common, logger, tv
 from .common import DOWNLOADED, Quality
@@ -200,7 +198,7 @@ def validate_name(pattern, multi=None, anime_type=None,
     new_name = ep.formatted_filename(pattern, multi, anime_type) + '.ext'
     new_path = ep.formatted_dir(pattern, multi, anime_type)
     if not file_only:
-        new_name = ek(os.path.join, new_path, new_name)
+        new_name = os.path.join(new_path, new_name)
 
     if not new_name:
         logger.log("Unable to create a name out of " + pattern, logger.DEBUG)

@@ -29,17 +29,14 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard import logger, ex
-
-
-def exception_generator():
+from sickbeard import loggerdef exception_generator():
     """
     Dummy function to raise a fake exception and log it
     """
     try:
         raise Exception('FAKE EXCEPTION')
     except Exception as error:
-        logger.log("FAKE ERROR: " + ex(error), logger.ERROR)
+        logger.log("FAKE ERROR: " + str(error), logger.ERROR)
         logger.submit_errors()
         raise
 

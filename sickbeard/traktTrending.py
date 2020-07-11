@@ -13,8 +13,7 @@ from trakt.trakt import TraktAPI
 # First Party Imports
 import sickbeard
 import sickchill
-from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex, MultipleShowObjectsException
+from sickchill.helper.exceptions import MultipleShowObjectsException
 
 # Local Folder Imports
 from . import helpers, logger
@@ -80,7 +79,7 @@ class traktTrending(object):
                 black_list = False
 
         except traktException as e:
-            logger.log("Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
+            logger.log("Could not connect to Trakt service: {0}".format(str(e)), logger.WARNING)
 
         for trending_show in trending_shows:
             # get indexer id
@@ -88,11 +87,11 @@ class traktTrending(object):
             trending_show['indexer_id'] = indexer_id
             # set image path to show (needed to show it on the screen from the cache)
             image_name = self.get_image_name(indexer_id)
-            image_path_relative = ek(posixpath.join, 'images', 'trakt_trending', image_name)
+            image_path_relative = posixpath.join('images', 'trakt_trending', image_name)
             trending_show['image_path'] = image_path_relative
             # clear indexer_id if we already have the image in the cache so we don't retrieve it again
             image_path = self.get_image_path(image_name)
-            if ek(os.path.isfile, image_path):
+            if os.path.isfile(image_path):
                 trending_show['indexer_id'] = ''
 
         return trending_shows, black_list
@@ -103,16 +102,16 @@ class traktTrending(object):
 
     @staticmethod
     def get_image_path(image_name):
-        path = ek(os.path.abspath, ek(os.path.join, sickbeard.CACHE_DIR, 'images', 'trakt_trending'))
+        path = os.path.abspath(os.path.join(sickbeard.CACHE_DIR, 'images', 'trakt_trending'))
 
-        if not ek(os.path.exists, path):
-            ek(os.makedirs, path)
+        if not os.path.exists(path):
+            os.makedirs(path)
 
-        return ek(os.path.join, path, image_name)
+        return os.path.join(path, image_name)
 
     def cache_image(self, image_url, image_path):
         # Only cache if the file does not exist yet
-        if not ek(os.path.isfile, image_path):
+        if not os.path.isfile(image_path):
             helpers.download_file(image_url, image_path, session=self.session)
 
 trakt_trending = traktTrending()

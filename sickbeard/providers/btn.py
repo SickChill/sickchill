@@ -36,7 +36,7 @@ from sickbeard import classes, logger, scene_exceptions, tvcache
 from sickbeard.common import cpu_presets
 from sickbeard.helpers import sanitizeSceneName
 from sickchill.helper.common import episode_num
-from sickchill.helper.exceptions import AuthException, ex
+from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -150,7 +150,7 @@ class BTNProvider(TorrentProvider):
                 logger.log("You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account", logger.WARNING)
             else:
                 logger.log("JSON-RPC protocol error while accessing provider. Error: {0} ".format(repr(error)), logger.ERROR)
-            parsed_json = {'api-error': ex(error)}
+            parsed_json = {'api-error': str(error)}
             return parsed_json
 
         except socket.timeout:

@@ -31,8 +31,6 @@ from requests.exceptions import HTTPError
 
 # First Party Imports
 import sickbeard
-from sickbeard.logger import ex
-
 # Local Folder Imports
 from . import common, generic_queue, logger
 
@@ -181,7 +179,7 @@ class DiscordTask(generic_queue.QueueItem):
                               headers=headers)
             r.raise_for_status()
         except Exception as error:
-            logger.log("Error Sending Discord message: " + ex(error), logger.ERROR)
+            logger.log("Error Sending Discord message: " + str(error), logger.ERROR)
 
             return False
 

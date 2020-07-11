@@ -41,8 +41,6 @@ from tornado.locale import load_gettext_translations
 import sickchill
 from sickchill import show_updater
 from sickchill.helper import setup_github
-from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex
 from sickchill.system.Shutdown import Shutdown
 
 # Local Folder Imports
@@ -808,7 +806,7 @@ def initialize(consoleLogging=True):
         if DEFAULT_PAGE not in ('home', 'schedule', 'history', 'news', 'IRC'):
             DEFAULT_PAGE = 'home'
 
-        LOG_DIR = ek(os.path.normpath, ek(os.path.join, DATA_DIR, 'Logs'))
+        LOG_DIR = os.path.normpath(os.path.join(DATA_DIR, 'Logs'))
         LOG_NR = check_setting_int(CFG, 'General', 'log_nr', 5, min_val=1)  # Default to 5 backup file (sickchill.log.x)
         LOG_SIZE = check_setting_float(CFG, 'General', 'log_size', 10.0, min_val=0.5)  # Default to max 10MB per logfile
 
@@ -856,20 +854,20 @@ def initialize(consoleLogging=True):
 
         load_gettext_translations(LOCALE_DIR, 'messages')
 
-        CACHE_DIR = ek(os.path.normpath, ek(os.path.join, PROG_DIR, "gui", GUI_NAME, "cache"))
+        CACHE_DIR = os.path.normpath(os.path.join(PROG_DIR, "gui", GUI_NAME, "cache"))
         if platform.system() != 'Windows':  # Not sure if this will work on windows yet, but it works on linux
-            DATA_CACHE = ek(os.path.join, DATA_DIR, 'cache')
+            DATA_CACHE = os.path.join(DATA_DIR, 'cache')
             try:
-                if not ek(os.path.isdir, DATA_CACHE):
-                    if ek(os.path.isdir, CACHE_DIR) and not ek(os.path.islink, CACHE_DIR):
+                if not os.path.isdir(DATA_CACHE):
+                    if os.path.isdir(CACHE_DIR) and not os.path.islink(CACHE_DIR):
                         helpers.moveFile(CACHE_DIR, DATA_CACHE)
 
-                if not ek(os.path.isdir, DATA_CACHE):
+                if not os.path.isdir(DATA_CACHE):
                     helpers.makeDir(DATA_CACHE)
 
-                if ek(os.path.isdir, DATA_CACHE) and not ek(os.path.islink, CACHE_DIR):
-                    if ek(os.path.isdir, CACHE_DIR):
-                        ek(shutil.rmtree, CACHE_DIR)
+                if os.path.isdir(DATA_CACHE) and not os.path.islink(CACHE_DIR):
+                    if os.path.isdir(CACHE_DIR):
+                        shutil.rmtree(CACHE_DIR)
 
                     helpers.symlink(DATA_CACHE, CACHE_DIR)
             except Exception as e:
@@ -877,40 +875,40 @@ def initialize(consoleLogging=True):
 
         # Check if we need to perform a restore of the cache folder
         try:
-            restoreDir = ek(os.path.join, DATA_DIR, 'restore')
-            if ek(os.path.exists, restoreDir) and ek(os.path.exists, ek(os.path.join, restoreDir, 'cache')):
+            restoreDir = os.path.join(DATA_DIR, 'restore')
+            if os.path.exists(restoreDir) and os.path.exists(os.path.join(restoreDir, 'cache')):
                 def restoreCache(srcDir, dstDir):
                     def path_leaf(path):
-                        head, tail = ek(os.path.split, path)
-                        return tail or ek(os.path.basename, head)
+                        head, tail = os.path.split(path)
+                        return tail or os.path.basename(head)
 
                     try:
-                        if ek(os.path.isdir, dstDir):
+                        if os.path.isdir(dstDir):
                             # noinspection PyTypeChecker
                             bakFilename = '{0}-{1}'.format(path_leaf(dstDir), datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d_%H%M%S'))
-                            shutil.move(dstDir, ek(os.path.join, ek(os.path.dirname, dstDir), bakFilename))
+                            shutil.move(dstDir, os.path.join(os.path.dirname(dstDir), bakFilename))
 
                         shutil.move(srcDir, dstDir)
                         logger.log("Restore: restoring cache successful", logger.INFO)
                     except Exception as er:
                         logger.log("Restore: restoring cache failed: {0}".format(er), logger.ERROR)
 
-                restoreCache(ek(os.path.join, restoreDir, 'cache'), CACHE_DIR)
+                restoreCache(os.path.join(restoreDir, 'cache'), CACHE_DIR)
         except Exception as e:
-            logger.log("Restore: restoring cache failed: {0}".format(ex(e)), logger.ERROR)
+            logger.log("Restore: restoring cache failed: {0}".format(str(e)), logger.ERROR)
         finally:
-            if ek(os.path.exists, ek(os.path.join, DATA_DIR, 'restore')):
+            if os.path.exists(os.path.join(DATA_DIR, 'restore')):
                 try:
-                    shutil.rmtree(ek(os.path.join, DATA_DIR, 'restore'))
+                    shutil.rmtree(os.path.join(DATA_DIR, 'restore'))
                 except Exception as e:
-                    logger.log("Restore: Unable to remove the restore directory: {0}".format(ex(e)), logger.ERROR)
+                    logger.log("Restore: Unable to remove the restore directory: {0}".format(str(e)), logger.ERROR)
 
                 for cleanupDir in ['mako', 'sessions', 'indexers', 'rss']:
                     try:
-                        shutil.rmtree(ek(os.path.join, CACHE_DIR, cleanupDir))
+                        shutil.rmtree(os.path.join(CACHE_DIR, cleanupDir))
                     except Exception as e:
                         if cleanupDir not in ['rss', 'sessions', 'indexers']:
-                            logger.log("Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, ex(e)), logger.WARNING)
+                            logger.log("Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, str(e)), logger.WARNING)
 
         IMAGE_CACHE = image_cache.ImageCache()
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
@@ -1548,7 +1546,7 @@ def initialize(consoleLogging=True):
 
         providers.check_enabled_providers()
 
-        if not ek(os.path.isfile, CONFIG_FILE):
+        if not os.path.isfile(CONFIG_FILE):
             logger.log("Unable to find '" + CONFIG_FILE + "', all settings will be default!", logger.DEBUG)
             save_config()
 

@@ -27,10 +27,6 @@ import subprocess
 # First Party Imports
 import sickbeard
 from sickbeard import logger
-from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex
-
-
 class Notifier(object):
     def notify_snatch(self, ep_name):
         pass
@@ -55,17 +51,17 @@ class Notifier(object):
 
     def moveObject(self, old_path, new_path):
         if sickbeard.USE_SYNOINDEX:
-            synoindex_cmd = ['/usr/syno/bin/synoindex', '-N', ek(os.path.abspath, new_path),
-                             ek(os.path.abspath, old_path)]
+            synoindex_cmd = ['/usr/syno/bin/synoindex', '-N', os.path.abspath(new_path),
+                             os.path.abspath(old_path)]
             logger.log("Executing command " + str(synoindex_cmd), logger.DEBUG)
-            logger.log("Absolute path to command: " + ek(os.path.abspath, synoindex_cmd[0]), logger.DEBUG)
+            logger.log("Absolute path to command: " + os.path.abspath(synoindex_cmd[0]), logger.DEBUG)
             try:
                 p = subprocess.Popen(synoindex_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                      cwd=sickbeard.PROG_DIR)
                 out, err = p.communicate()  # @UnusedVariable
                 logger.log("Script result: " + str(out), logger.DEBUG)
             except OSError as e:
-                logger.log("Unable to run synoindex: " + ex(e), logger.ERROR)
+                logger.log("Unable to run synoindex: " + str(e), logger.ERROR)
 
     def deleteFolder(self, cur_path):
         self.makeObject('-D', cur_path)
@@ -81,13 +77,13 @@ class Notifier(object):
 
     def makeObject(self, cmd_arg, cur_path):
         if sickbeard.USE_SYNOINDEX:
-            synoindex_cmd = ['/usr/syno/bin/synoindex', cmd_arg, ek(os.path.abspath, cur_path)]
+            synoindex_cmd = ['/usr/syno/bin/synoindex', cmd_arg, os.path.abspath(cur_path)]
             logger.log("Executing command " + str(synoindex_cmd), logger.DEBUG)
-            logger.log("Absolute path to command: " + ek(os.path.abspath, synoindex_cmd[0]), logger.DEBUG)
+            logger.log("Absolute path to command: " + os.path.abspath(synoindex_cmd[0]), logger.DEBUG)
             try:
                 p = subprocess.Popen(synoindex_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                      cwd=sickbeard.PROG_DIR)
                 out, err = p.communicate()  # @UnusedVariable
                 logger.log("Script result: " + str(out), logger.DEBUG)
             except OSError as e:
-                logger.log("Unable to run synoindex: " + ex(e), logger.ERROR)
+                logger.log("Unable to run synoindex: " + str(e), logger.ERROR)

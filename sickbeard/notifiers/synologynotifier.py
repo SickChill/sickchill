@@ -26,10 +26,6 @@ import subprocess
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
-from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex
-
-
 class Notifier(object):
     def notify_snatch(self, ep_name):
         if sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH:
@@ -58,11 +54,11 @@ class Notifier(object):
     def _send_synologyNotifier(self, message, title):
         synodsmnotify_cmd = ["/usr/syno/bin/synodsmnotify", "@administrators", title, message]
         logger.log("Executing command " + str(synodsmnotify_cmd))
-        logger.log("Absolute path to command: " + ek(os.path.abspath, synodsmnotify_cmd[0]), logger.DEBUG)
+        logger.log("Absolute path to command: " + os.path.abspath(synodsmnotify_cmd[0]), logger.DEBUG)
         try:
             p = subprocess.Popen(synodsmnotify_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                  cwd=sickbeard.PROG_DIR)
             out, err = p.communicate()  # @UnusedVariable
             logger.log("Script result: " + str(out), logger.DEBUG)
         except OSError as e:
-            logger.log("Unable to run synodsmnotify: " + ex(e))
+            logger.log("Unable to run synodsmnotify: " + str(e))

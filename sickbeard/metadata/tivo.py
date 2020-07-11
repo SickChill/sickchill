@@ -30,10 +30,6 @@ import os
 import sickchill
 from sickbeard import helpers, logger
 from sickbeard.metadata import generic
-from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex
-
-
 class TIVOMetadata(generic.GenericMetadata):
     """
     Metadata generation class for TIVO
@@ -140,10 +136,10 @@ class TIVOMetadata(generic.GenericMetadata):
 
         ep_obj: a TVEpisode object to get the path for
         """
-        if ek(os.path.isfile, ep_obj.location):
-            metadata_file_name = ek(os.path.basename, ep_obj.location) + "." + self._ep_nfo_extension
-            metadata_dir_name = ek(os.path.join, ek(os.path.dirname, ep_obj.location), '.meta')
-            metadata_file_path = ek(os.path.join, metadata_dir_name, metadata_file_name)
+        if os.path.isfile(ep_obj.location):
+            metadata_file_name = os.path.basename(ep_obj.location) + "." + self._ep_nfo_extension
+            metadata_dir_name = os.path.join(os.path.dirname(ep_obj.location), '.meta')
+            metadata_file_path = os.path.join(metadata_dir_name, metadata_file_name)
         else:
             logger.log("Episode location doesn't exist: " + str(ep_obj.location), logger.DEBUG)
             return ''
@@ -288,12 +284,12 @@ class TIVOMetadata(generic.GenericMetadata):
             return False
 
         nfo_file_path = self.get_episode_file_path(ep_obj)
-        nfo_file_dir = ek(os.path.dirname, nfo_file_path)
+        nfo_file_dir = os.path.dirname(nfo_file_path)
 
         try:
-            if not ek(os.path.isdir, nfo_file_dir):
+            if not os.path.isdir(nfo_file_dir):
                 logger.log("Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
-                ek(os.makedirs, nfo_file_dir)
+                os.makedirs(nfo_file_dir)
                 helpers.chmodAsParent(nfo_file_dir)
 
             logger.log("Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
@@ -305,7 +301,7 @@ class TIVOMetadata(generic.GenericMetadata):
             helpers.chmodAsParent(nfo_file_path)
 
         except EnvironmentError as e:
-            logger.log("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + ex(e),
+            logger.log("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e),
                        logger.ERROR)
             return False
 

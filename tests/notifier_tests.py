@@ -41,7 +41,6 @@ from sickbeard.tv import TVEpisode, TVShow
 from sickchill.views.home import Home
 from sickbeard.notifiers.emailnotify import Notifier as EmailNotifier
 from sickbeard.notifiers.prowl import Notifier as ProwlNotifier
-from sickchill.helper.encoding import ss
 import tests.test_lib as test
 
 
@@ -126,7 +125,7 @@ class NotifierTests(test.SickbeardTestDBCase):
         shows = self.legacy_shows + self.shows
         for show in shows:
             for episode in show.episodes:
-                ep_name = ss(episode._format_pattern('%SN - %Sx%0E - %EN - ') + episode.quality)
+                ep_name = episode._format_pattern('%SN - %Sx%0E - %EN - ') + episode.quality
                 show_name = email_notifier._parseEp(ep_name)
                 recipients = email_notifier._generate_recipients(show_name)
                 self._debug_spew("- Email Notifications for " + show.name + " (episode: " + episode.name + ") will be sent to:")
@@ -217,7 +216,7 @@ class NotifierTests(test.SickbeardTestDBCase):
         # Now, iterate through all shows using the Prowl API generation routines that are used in the notifier proper
         for show in self.shows:
             for episode in show.episodes:
-                ep_name = ss(episode._format_pattern('%SN - %Sx%0E - %EN - ') + episode.quality)
+                ep_name = episode._format_pattern('%SN - %Sx%0E - %EN - ') + episode.quality
                 show_name = prowl_notifier._parse_episode(ep_name)
                 recipients = prowl_notifier._generate_recipients(show_name)
                 self._debug_spew("- Prowl Notifications for " + show.name + " (episode: " + episode.name + ") will be sent to:")

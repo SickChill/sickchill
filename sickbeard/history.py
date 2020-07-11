@@ -24,7 +24,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 import datetime
 
 # First Party Imports
-from sickchill.helper.encoding import ss
 from sickchill.show.History import History
 
 # Local Folder Imports
@@ -46,7 +45,6 @@ def _logHistoryItem(action, showid, season, episode, quality, resource, provider
     :param version: tracked version of file (defaults to -1)
     """
     logDate = datetime.datetime.today().strftime(History.date_format)
-    resource = ss(resource)
 
     main_db_con = db.DBConnection()
     main_db_con.action(

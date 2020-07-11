@@ -30,8 +30,7 @@ import traceback
 # First Party Imports
 import sickbeard
 from sickchill.helper.common import try_int
-from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import AuthException, ex
+from sickchill.helper.exceptions import AuthException
 from sickchill.providers.GenericProvider import GenericProvider
 
 # Local Folder Imports
@@ -68,13 +67,13 @@ def _downloadResult(result):
 
         # save the data to disk
         try:
-            with ek(open, file_name, 'w') as fileOut:
+            with open(file_name, 'w') as fileOut:
                 fileOut.write(result.extraInfo[0])
 
             helpers.chmodAsParent(file_name)
 
         except EnvironmentError as e:
-            logger.log("Error trying to save NZB to black hole: " + ex(e), logger.ERROR)
+            logger.log("Error trying to save NZB to black hole: " + str(e), logger.ERROR)
             newResult = False
     else:
         logger.log("Invalid provider type - this is a coding error, report it please", logger.ERROR)
@@ -396,10 +395,10 @@ def searchForNeededEpisodes():
         try:
             curFoundResults = curProvider.search_rss(episodes)
         except AuthException as e:
-            logger.log("Authentication error: " + ex(e), logger.WARNING)
+            logger.log("Authentication error: " + str(e), logger.WARNING)
             continue
         except Exception as e:
-            logger.log("Error while searching " + curProvider.name + ", skipping: " + ex(e), logger.ERROR)
+            logger.log("Error while searching " + curProvider.name + ", skipping: " + str(e), logger.ERROR)
             logger.log(traceback.format_exc(), logger.DEBUG)
             continue
 

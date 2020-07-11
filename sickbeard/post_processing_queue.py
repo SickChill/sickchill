@@ -27,8 +27,6 @@ import traceback
 
 # First Party Imports
 import sickbeard
-from sickchill.helper.encoding import ek
-
 # Local Folder Imports
 from . import common, config, generic_queue, logger
 from .processTV import log_helper, process_dir
@@ -142,11 +140,11 @@ class ProcessingQueue(generic_queue.GenericQueue):
             return log_helper("{mode} post-processing attempted but directory is not set: {info}".format(
                 **replacements), logger.WARNING)
 
-        # if not ek(os.path.isdir, directory):
+        # if not os.path.isdir(directory):
         #     return log_helper(u"{mode} post-processing attempted but directory doesn't exist: {info}".format(
         #         **replacements), logger.WARNING)
 
-        if not ek(os.path.isabs, directory):
+        if not os.path.isabs(directory):
             return log_helper(
                 "{mode} post-processing attempted but directory is relative (and probably not what you really want to process): {info}".format(
                     **replacements), logger.WARNING)

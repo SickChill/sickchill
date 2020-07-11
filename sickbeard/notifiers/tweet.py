@@ -29,9 +29,6 @@ from requests_oauthlib import OAuth1Session
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
-from sickchill.helper.exceptions import ex
-
-
 class Notifier(object):
     consumer_key = b'vHHtcB6WzpWDG6KYlBMr8g'
     consumer_hash = b'zMqq5CB3f8cWKiRO2KzWPTlBanYmV0VYxSXZ0Pxds0E'  # (consumer_secret)
@@ -132,7 +129,7 @@ class Notifier(object):
         try:
             api.PostUpdate(message.encode('utf8')[:139])
         except Exception as e:
-            logger.log("Error Sending Tweet: {}".format(ex(e)), logger.ERROR)
+            logger.log("Error Sending Tweet: {}".format(str(e)), logger.ERROR)
             return False
 
         return True
@@ -155,7 +152,7 @@ class Notifier(object):
         try:
             api.PostDirectMessage(message.encode('utf8')[:139], screen_name=dmdest)
         except Exception as e:
-            logger.log("Error Sending Tweet (DM): {}".format(ex(e)), logger.ERROR)
+            logger.log("Error Sending Tweet (DM): {}".format(str(e)), logger.ERROR)
             return False
 
         return True

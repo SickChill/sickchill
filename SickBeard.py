@@ -72,7 +72,6 @@ from sickbeard.event_queue import Events
 from sickbeard.versionChecker import SourceUpdateManager, GitUpdateManager
 from configobj import ConfigObj
 
-from sickchill.helper.encoding import ek
 from sickchill.helper.argument_parser import SickChillArgumentParser
 
 # noinspection PyUnresolvedReferences
@@ -116,7 +115,7 @@ class SickChill(object):
         Remove the Mako cache directory
         """
         try:
-            cache_folder = ek(os.path.join, sickbeard.CACHE_DIR, 'mako')
+            cache_folder = os.path.join(sickbeard.CACHE_DIR, 'mako')
             if os.path.isdir(cache_folder):
                 shutil.rmtree(cache_folder)
         except Exception:
@@ -138,10 +137,10 @@ class SickChill(object):
         Start SickChill
         """
         # do some preliminary stuff
-        sickbeard.MY_FULLNAME = ek(os.path.normpath, ek(os.path.abspath, __file__))
-        sickbeard.MY_NAME = ek(os.path.basename, sickbeard.MY_FULLNAME)
-        sickbeard.PROG_DIR = ek(os.path.dirname, sickbeard.MY_FULLNAME)
-        sickbeard.LOCALE_DIR = ek(os.path.join, sickbeard.PROG_DIR, 'locale')
+        sickbeard.MY_FULLNAME = os.path.normpath(os.path.abspath(__file__))
+        sickbeard.MY_NAME = os.path.basename(sickbeard.MY_FULLNAME)
+        sickbeard.PROG_DIR = os.path.dirname(sickbeard.MY_FULLNAME)
+        sickbeard.LOCALE_DIR = os.path.join(sickbeard.PROG_DIR, 'locale')
         sickbeard.DATA_DIR = sickbeard.PROG_DIR
         sickbeard.MY_ARGS = sys.argv[1:]
 
@@ -188,20 +187,20 @@ class SickChill(object):
 
         self.create_pid = bool(args.pidfile)
         self.pid_file = args.pidfile
-        if self.pid_file and ek(os.path.exists, self.pid_file):
+        if self.pid_file and os.path.exists(self.pid_file):
             # If the pid file already exists, SickChill may still be running, so exit
             raise SystemExit('PID file: {0} already exists. Exiting.'.format(self.pid_file))
 
-        sickbeard.DATA_DIR = ek(os.path.abspath, args.datadir) if args.datadir else sickbeard.DATA_DIR
-        sickbeard.CONFIG_FILE = ek(os.path.abspath, args.config) if args.config else ek(os.path.join, sickbeard.DATA_DIR, 'config.ini')
+        sickbeard.DATA_DIR = os.path.abspath(args.datadir) if args.datadir else sickbeard.DATA_DIR
+        sickbeard.CONFIG_FILE = os.path.abspath(args.config) if args.config else os.path.join(sickbeard.DATA_DIR, 'config.ini')
 
         # The pid file is only useful in daemon mode, make sure we can write the file properly
         if self.create_pid:
             if self.run_as_daemon:
-                pid_dir = ek(os.path.dirname, self.pid_file)
-                if not ek(os.access, pid_dir, os.F_OK):
+                pid_dir = os.path.dirname(self.pid_file)
+                if not os.access(pid_dir, os.F_OK):
                     sys.exit('PID dir: {0} doesn\'t exist. Exiting.'.format(pid_dir))
-                if not ek(os.access, pid_dir, os.W_OK):
+                if not os.access(pid_dir, os.W_OK):
                     raise SystemExit('PID dir: {0} must be writable (write permissions). Exiting.'.format(pid_dir))
             else:
                 if self.console_logging:
@@ -209,34 +208,34 @@ class SickChill(object):
                 self.create_pid = False
 
         # Make sure that we can create the data dir
-        if not ek(os.access, sickbeard.DATA_DIR, os.F_OK):
+        if not os.access(sickbeard.DATA_DIR, os.F_OK):
             try:
-                ek(os.makedirs, sickbeard.DATA_DIR, 0o744)
+                os.makedirs(sickbeard.DATA_DIR, 0o744)
             except os.error:
                 raise SystemExit('Unable to create data directory: {0}'.format(sickbeard.DATA_DIR))
 
         # Make sure we can write to the data dir
-        if not ek(os.access, sickbeard.DATA_DIR, os.W_OK):
+        if not os.access(sickbeard.DATA_DIR, os.W_OK):
             raise SystemExit('Data directory must be writeable: {0}'.format(sickbeard.DATA_DIR))
 
         # Make sure we can write to the config file
-        if not ek(os.access, sickbeard.CONFIG_FILE, os.W_OK):
-            if ek(os.path.isfile, sickbeard.CONFIG_FILE):
+        if not os.access(sickbeard.CONFIG_FILE, os.W_OK):
+            if os.path.isfile(sickbeard.CONFIG_FILE):
                 raise SystemExit('Config file must be writeable: {0}'.format(sickbeard.CONFIG_FILE))
-            elif not ek(os.access, ek(os.path.dirname, sickbeard.CONFIG_FILE), os.W_OK):
-                raise SystemExit('Config file root dir must be writeable: {0}'.format(ek(os.path.dirname, sickbeard.CONFIG_FILE)))
+            elif not os.access(os.path.dirname(sickbeard.CONFIG_FILE), os.W_OK):
+                raise SystemExit('Config file root dir must be writeable: {0}'.format(os.path.dirname(sickbeard.CONFIG_FILE)))
 
-        ek(os.chdir, sickbeard.DATA_DIR)
+        os.chdir(sickbeard.DATA_DIR)
 
         # Check if we need to perform a restore first
-        restore_dir = ek(os.path.join, sickbeard.DATA_DIR, 'restore')
-        if ek(os.path.exists, restore_dir):
+        restore_dir = os.path.join(sickbeard.DATA_DIR, 'restore')
+        if os.path.exists(restore_dir):
             success = self.restore_db(restore_dir, sickbeard.DATA_DIR)
             if self.console_logging:
                 sys.stdout.write('Restore: restoring DB and config.ini {0}!\n'.format(('FAILED', 'SUCCESSFUL')[success]))
 
         # Load the config and publish it to the sickbeard package
-        if self.console_logging and not ek(os.path.isfile, sickbeard.CONFIG_FILE):
+        if self.console_logging and not os.path.isfile(sickbeard.CONFIG_FILE):
             sys.stdout.write('Unable to find {0}, all settings will be default!\n'.format(sickbeard.CONFIG_FILE))
 
         sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE, encoding='UTF-8', options={'indent_type': '  '})
@@ -367,8 +366,8 @@ class SickChill(object):
         :return:
         """
         try:
-            if ek(os.path.exists, pid_file):
-                ek(os.remove, pid_file)
+            if os.path.exists(pid_file):
+                os.remove(pid_file)
         except EnvironmentError:
             return False
 
@@ -408,10 +407,10 @@ class SickChill(object):
             files_list = ['sickbeard.db', 'config.ini', 'failed.db', 'cache.db']
 
             for filename in files_list:
-                src_file = ek(os.path.join, src_dir, filename)
-                dst_file = ek(os.path.join, dst_dir, filename)
+                src_file = os.path.join(src_dir, filename)
+                dst_file = os.path.join(dst_dir, filename)
                 bak_file = ek(os.path.join, dst_dir, '{0}.bak-{1}'.format(filename, datetime.datetime.now().strftime('%Y%m%d_%H%M%S')))
-                if ek(os.path.isfile, dst_file):
+                if os.path.isfile(dst_file):
                     shutil.move(dst_file, bak_file)
                 shutil.move(src_file, dst_file)
             return True
@@ -497,7 +496,7 @@ class SickChill(object):
 
             return True
 
-        if ek(os.path.isdir, ek(os.path.join, sickbeard.PROG_DIR, '.git')):  # update with git
+        if os.path.isdir(os.path.join(sickbeard.PROG_DIR, '.git')):  # update with git
             print('Forcing SickChill to update using git...')
             result = update_with_git()
             if result:

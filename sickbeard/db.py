@@ -34,9 +34,6 @@ import six
 
 # First Party Imports
 import sickbeard
-from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import ex
-
 # Local Folder Imports
 from . import logger
 
@@ -54,7 +51,7 @@ def db_full_path(filename="sickbeard.db", suffix=None):
     """
     if suffix:
         filename = "{0}.{1}".format(filename, suffix)
-    return ek(os.path.join, sickbeard.DATA_DIR, filename)
+    return os.path.join(sickbeard.DATA_DIR, filename)
 
 
 class DBConnection(object):
@@ -100,7 +97,7 @@ class DBConnection(object):
             logger.log(
                 _("{exception_severity} error executing query with {method} in database {db_location}: ").format(
                     db_location=self.full_path, method=called_method, exception_severity=prefix
-                ) + ex(exception), severity
+                ) + str(exception), severity
             )
 
             # Lets print out all of the arguments so we can debug this better
@@ -498,7 +495,7 @@ def _process_upgrade(connection, upgrade_class):
         try:
             instance.execute()
         except Exception as e:
-            logger.log("Error in " + str(upgrade_class.__name__) + ": " + ex(e), logger.ERROR)
+            logger.log("Error in " + str(upgrade_class.__name__) + ": " + str(e), logger.ERROR)
             raise
 
         logger.log(upgrade_class.__name__ + " upgrade completed", logger.DEBUG)

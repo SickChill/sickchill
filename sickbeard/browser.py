@@ -30,8 +30,6 @@ import six
 
 # First Party Imports
 import sickbeard
-from sickchill.helper.encoding import ek
-
 # Local Folder Imports
 from . import logger
 
@@ -60,12 +58,12 @@ def getFileList(path, includeFiles, fileTypes):
     hide_list += ['.git']
 
     file_list, dir_list = [], []
-    for filename in ek(os.listdir, path):
+    for filename in os.listdir(path):
         if filename.lower() in hide_list:
             continue
 
-        full_filename = ek(os.path.join, path, filename)
-        is_file = ek(os.path.isfile, full_filename)
+        full_filename = os.path.join(path, filename)
+        is_file = os.path.isfile(full_filename)
 
         if not includeFiles and is_file:
             continue
@@ -114,11 +112,11 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=None)
     """
 
     # walk up the tree until we find a valid directory path
-    while path and not ek(os.path.isdir, path) and path != '/':
-        if path == ek(os.path.dirname, path):
+    while path and not os.path.isdir(path) and path != '/':
+        if path == os.path.dirname(path):
             path = ''
         else:
-            path = ek(os.path.dirname, path)
+            path = os.path.dirname(path)
 
     if path == '':
         if os.name != 'nt':
@@ -135,8 +133,8 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=None)
             return entries
 
     # fix up the path and find the parent
-    path = ek(os.path.abspath, ek(os.path.normpath, path))
-    parent_path = ek(os.path.dirname, path)
+    path = os.path.abspath(os.path.normpath(path))
+    parent_path = os.path.dirname(path)
 
     # if we're at the root then the next step is the meta-node showing our drive letters
     if path == parent_path and os.name == 'nt':

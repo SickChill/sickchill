@@ -33,7 +33,6 @@ import traceback
 # First Party Imports
 import sickbeard
 import sickchill
-from sickchill.helper.exceptions import ex
 from sickchill.show.Show import Show
 
 # Local Folder Imports
@@ -549,7 +548,7 @@ def xem_refresh(indexer_id, indexer, force=False):
 
         except Exception as e:
             logger.log("Exception while refreshing XEM data for show {} on {}: {}".format(
-                indexer_id, sickchill.indexer.name(indexer), ex(e)), logger.WARNING)
+                indexer_id, sickchill.indexer.name(indexer), str(e)), logger.WARNING)
             logger.log(traceback.format_exc(), logger.DEBUG)
 
 

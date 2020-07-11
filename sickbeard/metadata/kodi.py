@@ -26,9 +26,6 @@ import os
 # First Party Imports
 from sickbeard.metadata import generic, kodi_12plus
 from sickchill.helper.common import replace_extension
-from sickchill.helper.encoding import ek
-
-
 class KODIMetadata(kodi_12plus.KODI_12PlusMetadata):
     """
     Metadata generation class for KODI (legacy).
@@ -102,7 +99,7 @@ class KODIMetadata(kodi_12plus.KODI_12PlusMetadata):
 
         ep_obj: a TVEpisode instance for which to create the thumbnail
         """
-        if ek(os.path.isfile, ep_obj.location):
+        if os.path.isfile(ep_obj.location):
             tbn_filename = replace_extension(ep_obj.location, 'tbn')
         else:
             return None

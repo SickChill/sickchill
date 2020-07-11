@@ -28,9 +28,6 @@ from trakt.exceptions import traktAuthException, traktException, traktServerBusy
 import sickbeard
 import sickchill
 from sickbeard import logger
-from sickchill.helper.exceptions import ex
-
-
 class Notifier(object):
     """
     A "notifier" for trakt.tv which keeps track of what has and hasn't been added to your library.
@@ -90,7 +87,7 @@ class Notifier(object):
                 trakt_api.traktRequest("sync/collection", data, method='POST')
 
             except (traktException, traktAuthException, traktServerBusy) as e:
-                logger.log("Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
+                logger.log("Could not connect to Trakt service: {0}".format(str(e)), logger.WARNING)
 
     @staticmethod
     def update_watchlist(show_obj=None, s=None, e=None, data_show=None, data_episode=None, update="add"):
@@ -163,7 +160,7 @@ class Notifier(object):
                 trakt_api.traktRequest(trakt_url, data, method='POST')
 
             except (traktException, traktAuthException, traktServerBusy) as e:
-                logger.log("Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
+                logger.log("Could not connect to Trakt service: {0}".format(str(e)), logger.WARNING)
                 return False
 
         return True
@@ -229,5 +226,5 @@ class Notifier(object):
             else:
                 return "Test notice sent successfully to Trakt"
         except (traktException, traktAuthException, traktServerBusy) as e:
-            logger.log("Could not connect to Trakt service: {0}".format(ex(e)), logger.WARNING)
-            return "Test notice failed to Trakt: {0}".format(ex(e))
+            logger.log("Could not connect to Trakt service: {0}".format(str(e)), logger.WARNING)
+            return "Test notice failed to Trakt: {0}".format(str(e))

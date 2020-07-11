@@ -10,7 +10,6 @@
     from sickbeard.common import Quality, statusStrings
 
     from sickchill.show.History import History
-    from sickchill.helper.encoding import ek
     from sickchill.providers.GenericProvider import GenericProvider
 %>
 <%block name="content">
@@ -82,7 +81,7 @@
                                         % if curStatus == SUBTITLED:
                                             <img width="16" height="11" style="vertical-align:middle;" src="${static_url('images/subtitles/flags/' + hItem[b'resource'] + '.png') }" onError="this.onerror=null;this.src='${ static_url('images/flags/unknown.png')}';">
                                         % endif
-                                        <span style="cursor: help; vertical-align:middle;" title="${ek(os.path.basename, hItem[b'resource'])}">${statusStrings[curStatus]}</span>
+                                        <span style="cursor: help; vertical-align:middle;" title="${os.path.basename(hItem[b'resource'])}">${statusStrings[curStatus]}</span>
                                     </td>
                                     <td align="center">
                                         % if curStatus in [DOWNLOADED, ARCHIVED]:

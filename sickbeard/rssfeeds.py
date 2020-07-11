@@ -5,8 +5,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 from feedparser import parse
 
 # First Party Imports
-from sickchill.helper.exceptions import ex
-
 # Local Folder Imports
 from . import logger
 
@@ -29,6 +27,6 @@ def getFeed(url, params=None, request_hook=None):
             logger.log('RSS error loading data: ' + url, logger.DEBUG)
 
     except Exception as e:
-        logger.log('RSS error: ' + ex(e), logger.DEBUG)
+        logger.log('RSS error: ' + str(e), logger.DEBUG)
 
     return {'entries': []}
