@@ -68,7 +68,7 @@ class IPTorrentsProvider(TorrentProvider):
         if self.cookies:
             success, status = self.add_cookies_from_ui()
             if not success:
-                logger.log(status, logger.INFO)
+                logger.info(status)
                 return False
 
         login_params = {'username': self.username,
@@ -77,39 +77,39 @@ class IPTorrentsProvider(TorrentProvider):
 
         if self.custom_url:
             if not validators.url(self.custom_url):
-                logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+                logger.warn("Invalid custom url: {0}".format(self.custom_url))
                 return False
 
         # Get the index, redirects to login
         data = self.get_url(self.custom_url or self.url, returns='text')
         if not data:
-            logger.log("Unable to connect to provider", logger.WARNING)
+            logger.warn("Unable to connect to provider")
             return False
 
         with BS4Parser(data, 'html5lib') as html:
             action = html.find('form', {'action': re.compile(r'.*login.*')}).get('action')
             if not action:
-                logger.log('Could not find the login form. Try adding cookies instead', logger.WARNING)
+                logger.warn('Could not find the login form. Try adding cookies instead')
                 return False
 
         response = self.get_url(urljoin(self.custom_url or self.url, action), post_data=login_params, returns='text')
         if not response:
-            logger.log("Unable to connect to provider", logger.WARNING)
+            logger.warn("Unable to connect to provider")
             return False
 
         # Invalid username and password combination
         if re.search('Invalid username and password combination', response):
-            logger.log("Invalid username or password. Check your settings", logger.WARNING)
+            logger.warn("Invalid username or password. Check your settings")
             return False
 
         # You tried too often, please try again after 2 hours!
         if re.search('You tried too often', response):
-            logger.log("You tried too often, please try again after 2 hours! Disable IPTorrents for at least 2 hours", logger.WARNING)
+            logger.warn("You tried too often, please try again after 2 hours! Disable IPTorrents for at least 2 hours")
             return False
 
         # Captcha!
         if re.search('Captcha verification failed.', response):
-            logger.log("Stupid captcha", logger.WARNING)
+            logger.warn("Stupid captcha")
             return False
 
         return True
@@ -123,11 +123,11 @@ class IPTorrentsProvider(TorrentProvider):
 
         for mode in search_params:
             items = []
-            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.debug("Search Mode: {0}".format(mode))
             for search_string in search_params[mode]:
                 if mode != 'RSS':
-                    logger.log("Search string: {0}".format
-                               (search_string.decode("utf-8")), logger.DEBUG)
+                    logger.debug("Search string: {0}".format
+                               (search_string.decode("utf-8")))
 
                 # URL with 50 tv-show results, or max 150 if adjusted in IPTorrents profile
                 search_url = self.urls['search'] % (self.categories, freeleech, search_string)
@@ -135,7 +135,7 @@ class IPTorrentsProvider(TorrentProvider):
 
                 if self.custom_url:
                     if not validators.url(self.custom_url):
-                        logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+                        logger.warn("Invalid custom url: {0}".format(self.custom_url))
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
@@ -147,11 +147,11 @@ class IPTorrentsProvider(TorrentProvider):
                     data = re.sub(r'(?im)<button.+?</button>', '', data, 0)
                     with BS4Parser(data, 'html5lib') as html:
                         if not html:
-                            logger.log("No data returned from provider", logger.DEBUG)
+                            logger.debug("No data returned from provider")
                             continue
 
                         if html.find(text='No Torrents Found!'):
-                            logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
+                            logger.debug("Data returned from provider does not contain any torrents")
                             continue
 
                         torrent_table = html.find('table', id='torrents')
@@ -159,7 +159,7 @@ class IPTorrentsProvider(TorrentProvider):
 
                         # Continue only if one Release is found
                         if not torrents or len(torrents) < 2:
-                            logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
+                            logger.debug("Data returned from provider does not contain any torrents")
                             continue
 
                         for result in torrents[1:]:
@@ -179,19 +179,19 @@ class IPTorrentsProvider(TorrentProvider):
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                               (title, seeders, leechers), logger.DEBUG)
+                                    logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                               (title, seeders, leechers))
                                 continue
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
-                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                             items.append(item)
 
                 except Exception as e:
-                    logger.log("Failed parsing provider. Error: {0!r}".format(str(e)), logger.ERROR)
-                    logger.log(traceback.format_exc(), logger.ERROR)
+                    logger.exception("Failed parsing provider. Error: {0!r}".format(str(e)))
+                    logger.exception(traceback.format_exc())
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

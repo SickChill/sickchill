@@ -93,14 +93,14 @@ class AddShows(Home):
 
         # Query Indexers for each search term and build the list of results
         for i, j in sickchill.indexer if not int(indexer) else [(int(indexer), None)]:
-            logger.log("Searching for Show with searchterm(s): {0} on Indexer: {1}".format(
-                searchTerms, 'theTVDB'), logger.DEBUG)
+            logger.debug("Searching for Show with searchterm(s): {0} on Indexer: {1}".format(
+                searchTerms, 'theTVDB'))
             for searchTerm in searchTerms:
                 # noinspection PyBroadException
                 try:
                     indexerResults = sickchill.indexer[i].search(searchTerm, language=lang)
                 except Exception:
-                    # logger.log(traceback.format_exc(), logger.ERROR)
+                    # logger.exception(traceback.format_exc())
                     continue
 
                 # add search results
@@ -311,7 +311,7 @@ class AddShows(Home):
         try:
             trending_shows, black_list = trakt_trending.fetch_trending_shows(traktList, page_url)
         except Exception as e:
-            logger.log("Could not get trending shows: {0}".format(str(e)), logger.WARNING)
+            logger.warn("Could not get trending shows: {0}".format(str(e)))
 
         return t.render(black_list=black_list, trending_shows=trending_shows)
 
@@ -333,7 +333,7 @@ class AddShows(Home):
         try:
             popular_shows = imdb_popular.fetch_popular_shows()
         except Exception as e:
-            logger.log("Could not get popular shows: {0}".format(str(e)), logger.WARNING)
+            logger.warn("Could not get popular shows: {0}".format(str(e)))
             popular_shows = None
 
         return t.render(title=_("Popular Shows"), header=_("Popular Shows"),
@@ -358,8 +358,8 @@ class AddShows(Home):
         try:
             favorite_shows = favorites.fetch_indexer_favorites()
         except Exception as e:
-            logger.log(traceback.format_exc(), logger.ERROR)
-            logger.log(_("Could not get favorite shows: {0}").format(str(e)), logger.WARNING)
+            logger.exception(traceback.format_exc())
+            logger.warn(_("Could not get favorite shows: {0}").format(str(e)))
             favorite_shows = None
 
         return t.render(title=_("Favorite Shows"), header=_("Favorite Shows"),
@@ -405,7 +405,7 @@ class AddShows(Home):
         if indexer != "TVDB":
             indexer_id = helpers.tvdbid_from_remote_id(indexer_id, indexer.upper())
             if not indexer_id:
-                logger.log("Unable to to find tvdb ID to add {0}".format(show_name))
+                logger.info("Unable to to find tvdb ID to add {0}".format(show_name))
                 ui.notifications.error(
                     "Unable to add {0}".format(show_name),
                     "Could not add {0}.  We were unable to locate the tvdb id at this time.".format(show_name)
@@ -466,7 +466,7 @@ class AddShows(Home):
                 location = None
 
         if not location:
-            logger.log("There was an error creating the show, no root directory setting found")
+            logger.info("There was an error creating the show, no root directory setting found")
             return _("No root directories setup, please go back and add one.")
 
         show_name = sickchill.indexer[1].get_series_by_id(indexer_id, indexer_lang).seriesName
@@ -531,7 +531,7 @@ class AddShows(Home):
         series_pieces = whichSeries.split('|')
         if (whichSeries and rootDir) or (whichSeries and fullShowPath and len(series_pieces) > 1):
             if len(series_pieces) < 6:
-                logger.log("Unable to add show due to show selection. Not enough arguments: {0}".format((repr(series_pieces))),
+                logger.info("Unable to add show due to show selection. Not enough arguments: {0}".format((repr(series_pieces))),
                            logger.ERROR)
                 ui.notifications.error(_("Unknown error. Unable to add show due to problem with show selection."))
                 return self.redirect('/addShows/existingShows/')
@@ -562,7 +562,7 @@ class AddShows(Home):
                     if year not in folder_name:
                         folder_name = '{0} {1}'.format(s.seriesName, year)
                 except (TypeError, ValueError):
-                    logger.log(_('Could not append the show year folder for the show: {0}').format(folder_name))
+                    logger.info(_('Could not append the show year folder for the show: {0}').format(folder_name))
 
             show_dir = os.path.join(rootDir, sanitize_filename(xhtml_unescape(folder_name)))
             extra_check_dir = os.path.join(rootDir, sanitize_filename(xhtml_unescape(show_name)))
@@ -574,11 +574,11 @@ class AddShows(Home):
 
         # don't create show dir if config says not to
         if sickbeard.ADD_SHOWS_WO_DIR:
-            logger.log("Skipping initial creation of " + show_dir + " due to config.ini setting")
+            logger.info("Skipping initial creation of " + show_dir + " due to config.ini setting")
         else:
             dir_exists = helpers.makeDir(show_dir)
             if not dir_exists:
-                logger.log("Unable to create the folder " + show_dir + ", can't add the show", logger.ERROR)
+                logger.exception("Unable to create the folder " + show_dir + ", can't add the show")
                 ui.notifications.error(_("Unable to add show"),
                                        _("Unable to create the folder {show_dir}, can't add the show").format(show_dir=show_dir))
                 # Don't redirect to default page because user wants to see the new show

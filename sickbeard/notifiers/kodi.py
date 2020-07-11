@@ -51,7 +51,7 @@ class Notifier(object):
                     self._connections.append(kodi)
             except (URLError, RequestTimeout, KeyError, IndexError):
                 pass
-                # logger.log('Unable to connect to Kodi host as {0}, make sure the username and password is correct and that the http control is enabled'.format(host))
+                # logger.info('Unable to connect to Kodi host as {0}, make sure the username and password is correct and that the http control is enabled'.format(host))
 
     @property
     def connections(self):
@@ -94,13 +94,13 @@ class Notifier(object):
         self.setup(hosts=hosts, username=username, password=password)
         results = dict()
         for connection in self.connections:
-            logger.log("Sending {0} notification to '{1}' - {2}".format(dest_app, connection.host, message), logger.DEBUG)
+            logger.debug("Sending {0} notification to '{1}' - {2}".format(dest_app, connection.host, message))
             response = connection.GUI.ShowNotification(title=title.encode("utf-8"), message=message.encode("utf-8"), image=sickbeard.LOGO_URL)
             if response and response.get('result'):
                 results[connection.host] = self.success(response)
             else:
                 if sickbeard.KODI_ALWAYS_ON or force:
-                    logger.log("Failed to send notification to {0} for '{1}', check configuration and try again.".format(dest_app, connection.host),
+                    logger.info("Failed to send notification to {0} for '{1}', check configuration and try again.".format(dest_app, connection.host),
                                logger.WARNING)
                 results[connection.host] = False
 
@@ -116,19 +116,19 @@ class Notifier(object):
             return False
 
         if not sickbeard.KODI_HOST:
-            logger.log("No KODI hosts specified, check your settings", logger.DEBUG)
+            logger.debug("No KODI hosts specified, check your settings")
             return False
 
         result = 0
         for connection in self.connections:
             try:
-                logger.log("Updating KODI library on host: " + connection.host, logger.DEBUG)
+                logger.debug("Updating KODI library on host: " + connection.host)
 
                 if show_name:
                     tvshowid = -1
                     path = ''
 
-                    logger.log("Updating library in KODI for show " + show_name, logger.DEBUG)
+                    logger.debug("Updating library in KODI for show " + show_name)
 
                     # let's try letting kodi filter the shows
                     response = connection.VideoLibrary.GetTVShows(filter={"field": "title", "operator": "is", "value": show_name}, properties=["file"])
@@ -140,7 +140,7 @@ class Notifier(object):
                         if response and "result" in response and "tvshows" in response["result"]:
                             shows = response["result"]["tvshows"]
                         else:
-                            logger.log("KODI: No tvshows in KODI TV show list", logger.DEBUG)
+                            logger.debug("KODI: No tvshows in KODI TV show list")
                             continue
 
                     check = (show_name, unquote_plus(show_name))
@@ -154,19 +154,19 @@ class Notifier(object):
 
                     # we didn't find the show (exact match), thus revert to just doing a full update if enabled
                     if tvshowid == -1:
-                        logger.log('Exact show name not matched in KODI TV show list', logger.DEBUG)
+                        logger.debug('Exact show name not matched in KODI TV show list')
 
                     if not path:
-                        logger.log("No valid path found for " + show_name + " with ID: " + str(tvshowid) + " on " + connection.host, logger.WARNING)
+                        logger.warn("No valid path found for " + show_name + " with ID: " + str(tvshowid) + " on " + connection.host)
 
                     if path and tvshowid != -1:
-                        logger.log("KODI Updating " + show_name + " with ID: " + str(tvshowid) + " at " + path + " on " + connection.host, logger.DEBUG)
+                        logger.debug("KODI Updating " + show_name + " with ID: " + str(tvshowid) + " at " + path + " on " + connection.host)
                         response = connection.VideoLibrary.Scan(directory=path)
                         if not self.success(response):
-                            logger.log("Update of show directory failed on " + show_name + " on " + connection.host + " at " + path, logger.WARNING)
+                            logger.warn("Update of show directory failed on " + show_name + " on " + connection.host + " at " + path)
                         else:
                             if sickbeard.KODI_UPDATE_ONLYFIRST:
-                                logger.log("Successfully updated '" + connection.host + "', stopped sending update library commands.", logger.DEBUG)
+                                logger.debug("Successfully updated '" + connection.host + "', stopped sending update library commands.")
                                 return True
 
                             result += 1
@@ -175,13 +175,13 @@ class Notifier(object):
                 if show_name and not sickbeard.KODI_UPDATE_FULL:
                     continue
 
-                logger.log("Doing Full Library KODI update on host: " + connection.host, logger.DEBUG)
+                logger.debug("Doing Full Library KODI update on host: " + connection.host)
                 response = connection.VideoLibrary.Scan()
                 if not response:
-                    logger.log("KODI Full Library update failed on: " + connection.host, logger.WARNING)
+                    logger.warn("KODI Full Library update failed on: " + connection.host)
                 elif self.success(response):
                     if sickbeard.KODI_UPDATE_ONLYFIRST:
-                        logger.log("Successfully updated '" + connection.host + "', stopped sending update library commands.", logger.DEBUG)
+                        logger.debug("Successfully updated '" + connection.host + "', stopped sending update library commands.")
                         return True
 
                     result += 1
@@ -206,10 +206,10 @@ class Notifier(object):
         try:
             connection = self.connections[int(connection_index)]
         except IndexError:
-            logger.log('Incorrect KODI host passed to play an episode, aborting play', logger.WARNING)
+            logger.warn('Incorrect KODI host passed to play an episode, aborting play')
             return False
 
-        logger.log("Trying to play episode on Kodi for host: " + connection.host, logger.DEBUG)
+        logger.debug("Trying to play episode on Kodi for host: " + connection.host)
 
         response = connection.VideoLibrary.GetTVShows(filter={"field": "title", "operator": "is", "value": episode.show.name})
 
@@ -226,7 +226,7 @@ class Notifier(object):
         del shows
 
         if tvshowid is None:
-            logger.log('Could not play the item, could not find the show on Kodi')
+            logger.info('Could not play the item, could not find the show on Kodi')
             return
 
         response = connection.VideoLibrary.GetEpisodes(
@@ -240,12 +240,12 @@ class Notifier(object):
             episodes = response["result"]["episodes"]
 
             if len(episodes) > 1:
-                logger.log('Could not play the item, too many files were returned as options and we could not choose')
+                logger.info('Could not play the item, too many files were returned as options and we could not choose')
 
             if episodes:
                 connection.Player.Open(item={'file': episodes[0]['file']})
             else:
-                logger.log('Could not find the episode on Kodi to play')
+                logger.info('Could not find the episode on Kodi to play')
 
     def notify_snatch(self, ep_name):
         if sickbeard.KODI_NOTIFY_ONSNATCH:

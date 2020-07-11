@@ -62,7 +62,7 @@ class HDTorrentsProvider_IT(TorrentProvider):
     def _check_auth(self):
 
         if not self.username or not self.password:
-            logger.log("Invalid username or password. Check your settings", logger.WARNING)
+            logger.warn("Invalid username or password. Check your settings")
 
         return True
 
@@ -76,11 +76,11 @@ class HDTorrentsProvider_IT(TorrentProvider):
 
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
-            logger.log("Unable to connect to provider", logger.WARNING)
+            logger.warn("Unable to connect to provider")
             return False
 
         if re.search('Lei non e registrato in sistema.', response):
-            logger.log("Invalid username or password. Check your settings", logger.WARNING)
+            logger.warn("Invalid username or password. Check your settings")
             return False
 
         return True
@@ -92,26 +92,26 @@ class HDTorrentsProvider_IT(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {}".format(mode), logger.DEBUG)
+            logger.debug("Search Mode: {}".format(mode))
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     search_url = self.urls['search'] % quote_plus(search_string)
-                    logger.log("Search string: {}".format(search_string), logger.DEBUG)
+                    logger.debug("Search string: {}".format(search_string))
                 else:
                     search_url = self.urls['rss']
 
                 if self.freeleech:
                     search_url = search_url.replace('active=1', 'active=5')
 
-                logger.log("Search URL: {}".format(search_url), logger.DEBUG)
+                logger.debug("Search URL: {}".format(search_url))
 
                 data = self.get_url(search_url)
                 if not data or 'Error' in data:
-                    logger.log("No data returned from provider", logger.DEBUG)
+                    logger.debug("No data returned from provider")
                     continue
 
                 if data.find('Non abbiamo trovato nulla') != -1:
-                    logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
+                    logger.debug("Data returned from provider does not contain any torrents")
                     continue
 
                 # Search result page contains some invalid html that prevents html parser from returning all data.
@@ -120,7 +120,7 @@ class HDTorrentsProvider_IT(TorrentProvider):
                 try:
                     index = data.lower().index('<tbody id="highlighted"')
                 except ValueError:
-                    logger.log("Could not find table of torrents highlighted", logger.DEBUG)
+                    logger.debug("Could not find table of torrents highlighted")
                     continue
 
                 # data = urllib.unquote(data[index:].encode('utf-8')).decode('utf-8').replace('\t', '')
@@ -128,7 +128,7 @@ class HDTorrentsProvider_IT(TorrentProvider):
 
                 with BS4Parser(data, 'html5lib') as html:
                     if not html:
-                        logger.log("No html data parsed from provider", logger.DEBUG)
+                        logger.debug("No html data parsed from provider")
                         continue
 
                     torrent_rows = []
@@ -137,7 +137,7 @@ class HDTorrentsProvider_IT(TorrentProvider):
                         torrent_rows = torrent_table.find_all('tr')
 
                     if not torrent_rows:
-                        logger.log("Could not find results in returned data", logger.DEBUG)
+                        logger.debug("Could not find results in returned data")
                         continue
 
                     # Cat., Active, Filename, Dl, Wl, Added, Size, Uploader, S, L, C
@@ -173,13 +173,13 @@ class HDTorrentsProvider_IT(TorrentProvider):
                         # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log(
-                                    "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                logger.debug(
+                                    "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers))
                             continue
 
                         item = title, download_url, size, seeders, leechers
                         if mode != 'RSS':
-                            logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                         items.append(item)
 

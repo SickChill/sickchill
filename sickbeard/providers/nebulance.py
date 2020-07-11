@@ -83,11 +83,11 @@ class NebulanceProvider(TorrentProvider):
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
-            logger.log("Unable to connect to provider", logger.WARNING)
+            logger.warn("Unable to connect to provider")
             return False
 
         if re.search('Username Incorrect', response) or re.search('Password Incorrect', response):
-            logger.log("Invalid username or password. Check your settings", logger.WARNING)
+            logger.warn("Invalid username or password. Check your settings")
             return False
 
         return True
@@ -102,8 +102,8 @@ class NebulanceProvider(TorrentProvider):
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log("Search string: {0}".format
-                               (search_string.decode("utf-8")), logger.DEBUG)
+                    logger.debug("Search string: {0}".format
+                               (search_string.decode("utf-8")))
 
                 search_params = {
                     'searchtext': search_string,
@@ -117,14 +117,14 @@ class NebulanceProvider(TorrentProvider):
 
                 data = self.get_url(self.urls['search'], params=search_params, returns='text')
                 if not data:
-                    logger.log("No data returned from provider", logger.DEBUG)
+                    logger.debug("No data returned from provider")
                     continue
 
                 try:
                     with BS4Parser(data, 'html5lib') as html:
                         torrent_table = html.find('table', {'id': 'torrent_table'})
                         if not torrent_table:
-                            logger.log("Data returned from {0} does not contain any torrents".format(self.name), logger.DEBUG)
+                            logger.debug("Data returned from {0} does not contain any torrents".format(self.name))
                             continue
 
                         labels = [x.get_text(strip=True) or x.a.img.get('alt') for x in torrent_table.find('tr', class_='colhead').find_all('td')]
@@ -132,7 +132,7 @@ class NebulanceProvider(TorrentProvider):
 
                         # Continue only if one Release is found
                         if not torrent_rows:
-                            logger.log("Data returned from {0} does not contain any torrents".format(self.name), logger.DEBUG)
+                            logger.debug("Data returned from {0} does not contain any torrents".format(self.name))
                             continue
 
                         for torrent_row in torrent_rows:
@@ -170,7 +170,7 @@ class NebulanceProvider(TorrentProvider):
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log("Discarding torrent because it doesn't meet the"
+                                    logger.info("Discarding torrent because it doesn't meet the"
                                                " minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers), logger.DEBUG)
                                 continue
@@ -179,12 +179,12 @@ class NebulanceProvider(TorrentProvider):
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
-                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format
-                                           (title, seeders, leechers), logger.DEBUG)
+                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format
+                                           (title, seeders, leechers))
 
                             items.append(item)
                 except Exception:
-                    logger.log("Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.ERROR)
+                    logger.exception("Failed parsing provider. Traceback: {0}".format(traceback.format_exc()))
 
             # For each search mode sort all the items by seeders
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

@@ -64,8 +64,8 @@ class Notifier(object):
         slack_webhook = self.SLACK_WEBHOOK_URL + sickbeard.SLACK_WEBHOOK.replace(self.SLACK_WEBHOOK_URL, '')
         slack_icon_emoji = sickbeard.SLACK_ICON_EMOJI
 
-        logger.log("Sending slack message: " + message, logger.INFO)
-        logger.log("Sending slack message  to url: " + slack_webhook, logger.INFO)
+        logger.info("Sending slack message: " + message)
+        logger.info("Sending slack message  to url: " + slack_webhook)
 
         if isinstance(message, six.text_type):
             message = message.encode('utf-8')
@@ -75,7 +75,7 @@ class Notifier(object):
             r = requests.post(slack_webhook, data=json.dumps(dict(text=message, username="SickChillBot", icon_emoji=slack_icon_emoji, icon_url=self.SLACK_ICON_URL)), headers=headers)
             r.raise_for_status()
         except Exception as e:
-            logger.log("Error Sending Slack message: " + str(e), logger.ERROR)
+            logger.exception("Error Sending Slack message: " + str(e))
             return False
 
         return True

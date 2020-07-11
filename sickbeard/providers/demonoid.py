@@ -72,21 +72,21 @@ class DemonoidProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.debug("Search Mode: {0}".format(mode))
             if mode == "RSS":
-                logger.log("Demonoid RSS search is not working through this provider yet, only string searches will work. Continuing")
+                logger.info("Demonoid RSS search is not working through this provider yet, only string searches will work. Continuing")
                 continue
 
             for search_string in search_strings[mode]:
                 search_params["query"] = search_string
-                logger.log("Search string: {0}".format
-                           (search_string.decode("utf-8")), logger.DEBUG)
+                logger.debug("Search string: {0}".format
+                           (search_string.decode("utf-8")))
 
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
                 data = self.get_url(self.urls['search'], params=search_params)
                 if not data:
-                    logger.log("No data returned from provider", logger.DEBUG)
+                    logger.debug("No data returned from provider")
                     continue
 
                 with BS4Parser(data, "html5lib") as html:
@@ -97,7 +97,7 @@ class DemonoidProvider(TorrentProvider):
 
                             if not (title and details_url):
                                 if mode != "RSS":
-                                    logger.log("Discarding torrent because We could not parse the title and details", logger.DEBUG)
+                                    logger.debug("Discarding torrent because We could not parse the title and details")
                                 continue
 
                             info = result.parent.parent.find_next_siblings("td")
@@ -108,25 +108,25 @@ class DemonoidProvider(TorrentProvider):
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
-                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                               (title, seeders, leechers), logger.DEBUG)
+                                    logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                               (title, seeders, leechers))
                                 continue
 
                             download_url, magnet, torrent_hash = self.get_details(details_url)
                             if not all([download_url, magnet, torrent_hash]):
-                                logger.log("Failed to get all required information from the details page. url:{}, magnet:{}, hash:{}".format(
+                                logger.info("Failed to get all required information from the details page. url:{}, magnet:{}, hash:{}".format(
                                     bool(download_url), bool(magnet), bool(torrent_hash))
                                 )
                                 continue
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': torrent_hash}
                             if mode != "RSS":
-                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                             items.append(item)
 
                         except (AttributeError, TypeError, KeyError, ValueError, Exception) as e:
-                            logger.log(traceback.format_exc(e))
+                            logger.info(traceback.format_exc(e))
                             continue
 
                             # For each search mode sort all the items by seeders if available
@@ -140,7 +140,7 @@ class DemonoidProvider(TorrentProvider):
         download = magnet = torrent_hash = None
         details_data = self.get_url(urljoin(self.url, url))
         if not details_data:
-            logger.log("No data returned from details page for result", logger.DEBUG)
+            logger.debug("No data returned from details page for result")
             return download, magnet, torrent_hash
 
         with BS4Parser(details_data, "html5lib") as html:

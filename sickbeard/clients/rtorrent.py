@@ -93,8 +93,8 @@ class Client(GenericClient):
             return True
 
         except Exception as error:
-            logger.log('Error while sending torrent: {error}'.format
-                       (error=str(error)), logger.WARNING)
+            logger.warning('Error while sending torrent: {error}'.format
+                       (error=str(error)))
             return False
 
     def _add_torrent_file(self, result):
@@ -137,8 +137,8 @@ class Client(GenericClient):
             return True
 
         except Exception as error:
-            logger.log('Error while sending torrent: {error}'.format
-                       (error=str(error)), logger.WARNING)
+            logger.warning('Error while sending torrent: {error}'.format
+                       (error=str(error)))
             return False
 
     def _set_torrent_ratio(self, name):

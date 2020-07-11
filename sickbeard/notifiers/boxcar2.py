@@ -58,10 +58,10 @@ class Notifier(object):
 
         response = sickbeard.helpers.getURL(self.url, post_data=post_data, session=self.session, timeout=60, returns='json')
         if not response:
-            logger.log('Boxcar2 notification failed.', logger.ERROR)
+            logger.exception('Boxcar2 notification failed.')
             return False
 
-        logger.log('Boxcar2 notification successful.', logger.DEBUG)
+        logger.debug('Boxcar2 notification successful.')
         return True
 
     def notify_snatch(self, ep_name, title=common.notifyStrings[common.NOTIFY_SNATCH]):
@@ -96,11 +96,11 @@ class Notifier(object):
         '''
 
         if not sickbeard.USE_BOXCAR2:
-            logger.log('Notification for Boxcar2 not enabled, skipping this notification', logger.DEBUG)
+            logger.debug('Notification for Boxcar2 not enabled, skipping this notification')
             return False
 
         accesstoken = accesstoken or sickbeard.BOXCAR2_ACCESSTOKEN
 
-        logger.log('Sending notification for {0}'.format(message), logger.DEBUG)
+        logger.debug('Sending notification for {0}'.format(message))
 
         return self._sendBoxcar2(message, title, accesstoken)

@@ -53,12 +53,12 @@ class Notifier(object):
 
     def _send_synologyNotifier(self, message, title):
         synodsmnotify_cmd = ["/usr/syno/bin/synodsmnotify", "@administrators", title, message]
-        logger.log("Executing command " + str(synodsmnotify_cmd))
-        logger.log("Absolute path to command: " + os.path.abspath(synodsmnotify_cmd[0]), logger.DEBUG)
+        logger.info("Executing command " + str(synodsmnotify_cmd))
+        logger.debug("Absolute path to command: " + os.path.abspath(synodsmnotify_cmd[0]))
         try:
             p = subprocess.Popen(synodsmnotify_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                  cwd=sickbeard.PROG_DIR)
             out, err = p.communicate()  # @UnusedVariable
-            logger.log("Script result: " + str(out), logger.DEBUG)
+            logger.debug("Script result: " + str(out))
         except OSError as e:
-            logger.log("Unable to run synodsmnotify: " + str(e))
+            logger.info("Unable to run synodsmnotify: " + str(e))

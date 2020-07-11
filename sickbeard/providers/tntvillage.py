@@ -133,11 +133,11 @@ class TNTVillageProvider(TorrentProvider):
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
-            logger.log("Unable to connect to provider", logger.WARNING)
+            logger.warn("Unable to connect to provider")
             return False
 
         if re.search('Sono stati riscontrati i seguenti errori', response) or re.search('<title>Connettiti</title>', response):
-            logger.log("Invalid username or password. Check your settings", logger.WARNING)
+            logger.warn("Invalid username or password. Check your settings")
             return False
 
         return True
@@ -182,11 +182,11 @@ class TNTVillageProvider(TorrentProvider):
                 try:
                     file_quality = file_quality + " " + img_type['src'].replace("style_images/mkportal-636/", "").replace(".gif", "").replace(".png", "")
                 except Exception:
-                    logger.log("Failed parsing quality. Traceback: {0}".format(traceback.format_exc()), logger.ERROR)
+                    logger.exception("Failed parsing quality. Traceback: {0}".format(traceback.format_exc()))
 
         else:
             file_quality = (torrent_rows('td'))[1].get_text()
-            logger.log("Episode quality: {0}".format(file_quality), logger.DEBUG)
+            logger.debug("Episode quality: {0}".format(file_quality))
 
         def checkName(options, func):
             return func([re.search(option, file_quality, re.I) for option in options])
@@ -235,12 +235,12 @@ class TNTVillageProvider(TorrentProvider):
                 continue
 
             if re.search("[ -_.|]ita[ -_.|]", name.lower().split(sub)[0], re.I):
-                logger.log("Found Italian release:  " + name, logger.DEBUG)
+                logger.debug("Found Italian release:  " + name)
                 italian = True
                 break
 
         if not subFound and re.search("ita", name, re.I):
-            logger.log("Found Italian release:  " + name, logger.DEBUG)
+            logger.debug("Found Italian release:  " + name)
             italian = True
 
         return italian
@@ -254,7 +254,7 @@ class TNTVillageProvider(TorrentProvider):
 
         english = False
         if re.search("eng", name, re.I):
-            logger.log("Found English release:  " + name, logger.DEBUG)
+            logger.debug("Found English release:  " + name)
             english = True
 
         return english
@@ -265,7 +265,7 @@ class TNTVillageProvider(TorrentProvider):
         try:
             parse_result = NameParser(tryIndexers=True).parse(name)
         except (InvalidNameException, InvalidShowException) as error:
-            logger.log("{0}".format(error), logger.DEBUG)
+            logger.debug("{0}".format(error))
             return False
 
         main_db_con = db.DBConnection()
@@ -283,7 +283,7 @@ class TNTVillageProvider(TorrentProvider):
 
         for mode in search_params:
             items = []
-            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.debug("Search Mode: {0}".format(mode))
             for search_string in search_params[mode]:
 
                 if mode == 'RSS':
@@ -308,12 +308,12 @@ class TNTVillageProvider(TorrentProvider):
                         search_url = self.urls['search_page'].format(z, self.categories)
 
                     if mode != 'RSS':
-                        logger.log("Search string: {0}".format
-                                   (search_string.decode("utf-8")), logger.DEBUG)
+                        logger.debug("Search string: {0}".format
+                                   (search_string.decode("utf-8")))
 
                     data = self.get_url(search_url, returns='text')
                     if not data:
-                        logger.log("No data returned from provider", logger.DEBUG)
+                        logger.debug("No data returned from provider")
                         continue
 
                     try:
@@ -323,7 +323,7 @@ class TNTVillageProvider(TorrentProvider):
 
                             # Continue only if one Release is found
                             if len(torrent_rows) < 3:
-                                logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
+                                logger.debug("Data returned from provider does not contain any torrents")
                                 last_page = 1
                                 continue
 
@@ -356,11 +356,11 @@ class TNTVillageProvider(TorrentProvider):
                                     title += filename_qt
 
                                 if not self._is_italian(result) and not self.subtitle:
-                                    logger.log("Torrent is subtitled, skipping: {0} ".format(title), logger.DEBUG)
+                                    logger.debug("Torrent is subtitled, skipping: {0} ".format(title))
                                     continue
 
                                 if self.engrelease and not self._is_english(result):
-                                    logger.log("Torrent isnt english audio/subtitled , skipping: {0} ".format(title), logger.DEBUG)
+                                    logger.debug("Torrent isnt english audio/subtitled , skipping: {0} ".format(title))
                                     continue
 
                                 search_show = re.split(r'([Ss][\d{1,2}]+)', search_string)[0]
@@ -382,18 +382,18 @@ class TNTVillageProvider(TorrentProvider):
                                 # Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
                                     if mode != 'RSS':
-                                        logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                                   (title, seeders, leechers), logger.DEBUG)
+                                        logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                                   (title, seeders, leechers))
                                     continue
 
                                 item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                                 if mode != 'RSS':
-                                    logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                                    logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                                 items.append(item)
 
                     except Exception:
-                        logger.log("Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.ERROR)
+                        logger.exception("Failed parsing provider. Traceback: {0}".format(traceback.format_exc()))
 
                 # For each search mode sort all the items by seeders if available if available
                 items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

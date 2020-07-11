@@ -40,7 +40,7 @@ def getShowImage(url, imgNum=None):
     else:
         tempURL = url
 
-    logger.log("Fetching image from " + tempURL, logger.DEBUG)
+    logger.debug("Fetching image from " + tempURL)
 
     try:
         image_data = helpers.getURL(tempURL, session=meta_session, returns='content', allow_proxy=sickbeard.PROXY_INDEXERS)
@@ -48,7 +48,7 @@ def getShowImage(url, imgNum=None):
         image_data = None
 
     if image_data is None:
-        logger.log("There was an error trying to retrieve the image, aborting", logger.WARNING)
+        logger.warn("There was an error trying to retrieve the image, aborting")
         return
 
     return image_data

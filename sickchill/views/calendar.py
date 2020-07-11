@@ -53,7 +53,7 @@ class CalendarHandler(BaseHandler):
         """ Provides a subscribeable URL for iCal subscriptions
         """
 
-        logger.log("Receiving iCal request from {0}".format(self.request.remote_ip))
+        logger.info("Receiving iCal request from {0}".format(self.request.remote_ip))
 
         # Create a iCal string
         ical = 'BEGIN:VCALENDAR\r\n'

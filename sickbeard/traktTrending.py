@@ -39,7 +39,7 @@ class traktTrending(object):
                 if sickbeard.TRAKT_BLACKLIST_NAME:
                     not_liked_show = trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items") or []
                 else:
-                    logger.log("Trakt blacklist name is empty", logger.DEBUG)
+                    logger.debug("Trakt blacklist name is empty")
 
             if trakt_list not in ["recommended", "newshow", "newseason"]:
                 limit_show = "?limit=" + str(100 + len(not_liked_show)) + "&"
@@ -79,7 +79,7 @@ class traktTrending(object):
                 black_list = False
 
         except traktException as e:
-            logger.log("Could not connect to Trakt service: {0}".format(str(e)), logger.WARNING)
+            logger.warn("Could not connect to Trakt service: {0}".format(str(e)))
 
         for trending_show in trending_shows:
             # get indexer id

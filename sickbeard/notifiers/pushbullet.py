@@ -35,7 +35,7 @@ class Notifier(object):
         self.url = 'https://api.pushbullet.com/v2/'
 
     def test_notify(self, pushbullet_api):
-        logger.log('Sending a test Pushbullet notification.', logger.DEBUG)
+        logger.debug('Sending a test Pushbullet notification.')
         return self._sendPushbullet(
             pushbullet_api,
             event='Test',
@@ -44,13 +44,13 @@ class Notifier(object):
         )
 
     def get_devices(self, pushbullet_api):
-        logger.log('Testing Pushbullet authentication and retrieving the device list.', logger.DEBUG)
+        logger.debug('Testing Pushbullet authentication and retrieving the device list.')
         headers = {'Access-Token': pushbullet_api}
         return helpers.getURL(urljoin(self.url, 'devices'), session=self.session, headers=headers, returns='text') or {}
 
     def get_channels(self, pushbullet_api):
         """Fetches the list of channels a given access key has permissions to push to"""
-        logger.log('Testing Pushbullet authentication and retrieving the device list.', logger.DEBUG)
+        logger.debug('Testing Pushbullet authentication and retrieving the device list.')
         headers = {'Access-Token': pushbullet_api}
         return helpers.getURL(urljoin(self.url, 'channels'), session=self.session, headers=headers, returns='text') or {}
 
@@ -103,10 +103,10 @@ class Notifier(object):
         pushbullet_device = pushbullet_device or sickbeard.PUSHBULLET_DEVICE
         pushbullet_channel = pushbullet_channel or sickbeard.PUSHBULLET_CHANNEL
 
-        logger.log('Pushbullet event: {0!r}'.format(event), logger.DEBUG)
-        logger.log('Pushbullet message: {0!r}'.format(message), logger.DEBUG)
-        logger.log('Pushbullet api: {0!r}'.format(pushbullet_api), logger.DEBUG)
-        logger.log('Pushbullet devices: {0!r}'.format(pushbullet_device), logger.DEBUG)
+        logger.debug('Pushbullet event: {0!r}'.format(event))
+        logger.debug('Pushbullet message: {0!r}'.format(message))
+        logger.debug('Pushbullet api: {0!r}'.format(pushbullet_api))
+        logger.debug('Pushbullet devices: {0!r}'.format(pushbullet_device))
 
         post_data = {
             'title': event,
@@ -127,8 +127,8 @@ class Notifier(object):
 
         failed = response.pop('error', {})
         if failed:
-            logger.log('Pushbullet notification failed: {0}'.format(failed.pop('message')), logger.WARNING)
+            logger.warn('Pushbullet notification failed: {0}'.format(failed.pop('message')))
         else:
-            logger.log('Pushbullet notification sent.', logger.DEBUG)
+            logger.debug('Pushbullet notification sent.')
 
         return False if failed else True

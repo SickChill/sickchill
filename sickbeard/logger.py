@@ -67,21 +67,21 @@ LOGGING_LEVELS = {
 censored_items = {}
 
 
-class CensoredFormatter(logging.Formatter, object):
+class DispatchFormatter(logging.Formatter, object):
     """
     Censor information such as API keys, user names, and passwords from the Log
     """
     def __init__(self, fmt=None, datefmt=None, encoding='utf-8'):
-        super(CensoredFormatter, self).__init__(fmt, datefmt)
+        super(DispatchFormatter, self).__init__(fmt, datefmt)
         self.encoding = encoding
 
     def format(self, record):
         """
-        Strips censored items from string
+        Strips censored items from string and formats the log line
 
-        :param record: to censor
+        :param record: to format
         """
-        msg = super(CensoredFormatter, self).format(record)
+        msg = super(DispatchFormatter, self).format(record)
 
         if not isinstance(msg, six.text_type):
             msg = msg.decode(self.encoding, 'replace')  # Convert to unicode
@@ -109,6 +109,25 @@ class CensoredFormatter(logging.Formatter, object):
 
         # Needed because Newznab apikey isn't stored as key=value in a section.
         msg = re.sub(r'([&?]r|[&?]apikey|[&?]jackett_apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)', r'\1=**********\2', msg, re.I)
+
+        cur_hash = ''
+        if record.levelno == ERROR and sickbeard.CUR_COMMIT_HASH and len(sickbeard.CUR_COMMIT_HASH) > 6:
+            cur_hash = '[{0}] '.format(sickbeard.CUR_COMMIT_HASH[:7])
+
+        cur_thread = threading.currentThread().getName().rstrip('_1234567890')
+
+        if _('Missing time zone for network') in msg:
+            message = '{thread} :: {message}'.format(
+                thread=cur_thread, message=msg)
+        else:
+            message = '{thread} :: {hash}{message}'.format(
+                thread=cur_thread, hash=cur_hash, message=msg)
+
+        if record.levelno == ERROR:
+            classes.ErrorViewer.add(classes.UIError(message))
+        elif record.levelno == WARNING:
+            classes.WarningViewer.add(classes.UIError(message))
+
         return msg
 
 
@@ -176,7 +195,7 @@ class Logger(object):
         # console log handler
         if self.console_logging:
             console = logging.StreamHandler()
-            console.setFormatter(CensoredFormatter('%(asctime)s %(levelname)s::%(message)s', '%H:%M:%S'))
+            console.setFormatter(DispatchFormatter('%(asctime)s %(levelname)s::%(message)s', '%H:%M:%S'))
             console.setLevel(log_level)
 
             for logger in self.loggers:
@@ -187,7 +206,7 @@ class Logger(object):
             rfh = logging.handlers.RotatingFileHandler(
                 self.log_file, maxBytes=int(sickbeard.LOG_SIZE * 1048576), backupCount=sickbeard.LOG_NR, encoding='utf-8'
             )
-            rfh.setFormatter(CensoredFormatter('%(asctime)s %(levelname)-8s %(message)s', dateTimeFormat))
+            rfh.setFormatter(DispatchFormatter('%(asctime)s %(levelname)-8s %(message)s', dateTimeFormat))
             rfh.setLevel(log_level)
 
             for logger in self.loggers:
@@ -209,57 +228,6 @@ class Logger(object):
         Shut down the logger
         """
         logging.shutdown()
-
-    def log(self, msg, level=INFO, *args, **kwargs):
-        """
-        Create log entry
-
-        :param msg: to log
-        :param level: of log, e.g. DEBUG, INFO, etc.
-        :param args: to pass to logger
-        :param kwargs: to pass to logger
-        """
-        cur_thread = threading.currentThread().getName()
-        cur_thread = cur_thread.rstrip('_1234567890')
-
-        cur_hash = ''
-        if level == ERROR and sickbeard.CUR_COMMIT_HASH and len(sickbeard.CUR_COMMIT_HASH) > 6:
-            cur_hash = '[{0}] '.format(
-                sickbeard.CUR_COMMIT_HASH[:7]
-            )
-
-        # Change the SSL error to a warning with a link to information about how to fix it.
-        # Check for 'error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:590)'
-        ssl_errors = [
-            r'error \[Errno \d+\] _ssl.c:\d+: error:\d+\s*:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert internal error',
-            r'error \[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE\] sslv3 alert handshake failure \(_ssl\.c:\d+\)',
-        ]
-        for ssl_error in ssl_errors:
-            check = re.sub(ssl_error, 'See: http://git.io/vuU5V', msg)
-            if check != msg:
-                msg = check
-                level = WARNING
-
-        if _('Missing time zone for network') in msg:
-            message = '{thread} :: {message}'.format(
-                thread=cur_thread, message=msg)
-        else:
-            message = '{thread} :: {hash}{message}'.format(
-                thread=cur_thread, hash=cur_hash, message=msg)
-
-        if level == ERROR:
-            classes.ErrorViewer.add(classes.UIError(message))
-        elif level == WARNING:
-            classes.WarningViewer.add(classes.UIError(message))
-
-        try:
-            if level == ERROR:
-                self.logger.exception(message, *args, **kwargs)
-            else:
-                self.logger.log(level, message, *args, **kwargs)
-        except Exception:
-            if msg and msg.strip():  # Otherwise creates empty messages in log...
-                print(msg.strip())
 
     def log_error_and_exit(self, error_msg, *args, **kwargs):
         self.log(error_msg, ERROR, *args, **kwargs)
@@ -451,14 +419,6 @@ def init_logging(*args, **kwargs):
     return Wrapper.instance.init_logging(*args, **kwargs)
 
 
-def log(*args, **kwargs):
-    return Wrapper.instance.log(*args, **kwargs)
-
-
-def log_error_and_exit(*args, **kwargs):
-    return Wrapper.instance.log_error_and_exit(*args, **kwargs)
-
-
 def set_level(*args, **kwargs):
     return Wrapper.instance.set_level(*args, **kwargs)
 
@@ -555,3 +515,13 @@ def log_data(min_level, log_filter, log_search, max_lines):
             break
 
     return final_data
+
+
+debug = Wrapper.instance.logger.debug
+warn = Wrapper.instance.logger.warning
+info = Wrapper.instance.logger.info
+error = Wrapper.instance.logger.error
+critical = Wrapper.instance.logger.critical
+log = Wrapper.instance.logger.log
+
+set_level = Wrapper.instance.set_level

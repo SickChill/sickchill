@@ -114,13 +114,13 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
 
         myShow = sickchill.indexer.series(show_obj)
         if not myShow:
-            logger.log("Unable to find show with id {} on {}, skipping it".format(
+            logger.info("Unable to find show with id {} on {}, skipping it".format(
                 show_obj.indexerid, show_obj.idxr.name))
             return False
 
         # check for title and id
         if not (getattr(myShow, 'seriesName', None) and getattr(myShow, 'id', None)):
-            logger.log("Incomplete info for show with id {} on {}, skipping it".format(
+            logger.info("Incomplete info for show with id {} on {}, skipping it".format(
                 show_obj.indexerid, show_obj.idxr.name))
             return False
 
@@ -220,8 +220,8 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
 
         myShow = ep_obj.idxr.series_from_episode(ep_obj)
         if not myShow:
-            logger.log("Unable to find {} on {} while creating meta files, skipping".format(
-                ep_obj.show.indexerid, ep_obj.idxr.name), logger.INFO)
+            logger.info("Unable to find {} on {} while creating meta files, skipping".format(
+                ep_obj.show.indexerid, ep_obj.idxr.name))
             return
 
         if len(eps_to_write) > 1:
@@ -234,7 +234,7 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
 
             myEp = curEpToWrite.idxr.episode(curEpToWrite)
             if not myEp:
-                logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
+                logger.info("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
                            "has it been removed? Should I delete from db?".format(
                     curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.idxr.name))
 
@@ -244,14 +244,14 @@ class KODI_12PlusMetadata(generic.GenericMetadata):
                 myEp["firstAired"] = str(ep_obj.airdate)
 
             if not myEp.get('episodeName'):
-                logger.log("Not generating nfo because the ep has no title", logger.DEBUG)
+                logger.debug("Not generating nfo because the ep has no title")
                 return None
 
             if not myEp.get('firstAired'):
-                logger.log("Not generating nfo because the ep has no airdate", logger.DEBUG)
+                logger.debug("Not generating nfo because the ep has no airdate")
                 return None
 
-            logger.log("Creating metadata for episode " + str(ep_obj.season) + "x" + str(ep_obj.episode), logger.DEBUG)
+            logger.debug("Creating metadata for episode " + str(ep_obj.season) + "x" + str(ep_obj.episode))
 
             if len(eps_to_write) > 1:
                 episode = etree.SubElement(rootNode, "episodedetails")

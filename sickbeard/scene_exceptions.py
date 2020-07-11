@@ -182,8 +182,8 @@ def get_scene_exception_by_name_multiple(show_name):
                 cur_exception_name.lower(),
                 sickbeard.helpers.sanitizeSceneName(cur_exception_name).lower().replace('.', ' ')):
 
-            logger.log("Scene exception lookup got indexer id {0}, using that".format
-                       (cur_indexer_id), logger.DEBUG)
+            logger.debug("Scene exception lookup got indexer id {0}, using that".format
+                       (cur_indexer_id))
 
             out.append((cur_indexer_id, int(cur_exception[b"season"])))
 
@@ -206,7 +206,7 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
 
     if do_refresh:
         loc = 'https://sickchill.github.io/scene_exceptions/scene_exceptions.json'
-        logger.log("Checking for scene exception updates from {0}".format(loc))
+        logger.info("Checking for scene exception updates from {0}".format(loc))
 
         session = helpers.make_session()
         proxy = sickbeard.PROXY_SETTING
@@ -223,7 +223,7 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
 
         if not jdata:
             # When jdata is None, trouble connecting to github, or reading file failed
-            logger.log("Check scene exceptions update failed. Unable to update from {0}".format(loc), logger.DEBUG)
+            logger.debug("Check scene exceptions update failed. Unable to update from {0}".format(loc))
         else:
             for indexer, instance in sickchill.indexer:
                 try:
@@ -274,7 +274,7 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
                          [cur_indexer_id, cur_exception, curSeason]])
     if queries:
         cache_db_con.mass_action(queries)
-        logger.log("Updated scene exceptions", logger.DEBUG)
+        logger.debug("Updated scene exceptions")
 
     # cleanup
     exception_dict.clear()
@@ -289,7 +289,7 @@ def update_scene_exceptions(indexer_id, scene_exceptions):
     cache_db_con = db.DBConnection('cache.db')
     cache_db_con.action('DELETE FROM scene_exceptions WHERE indexer_id=? and custom=1', [indexer_id])
 
-    logger.log("Updating scene exceptions", logger.INFO)
+    logger.info("Updating scene exceptions")
 
     for season in scene_exceptions:
         for cur_exception in scene_exceptions[season]:
@@ -301,7 +301,7 @@ def update_scene_exceptions(indexer_id, scene_exceptions):
 
 def _anidb_exceptions_fetcher():
     if shouldRefresh('anidb'):
-        logger.log("Checking for scene exception updates for AniDB")
+        logger.info("Checking for scene exception updates for AniDB")
         for show in sickbeard.showList:
             if show.is_anime and show.indexer == 1:
                 try:
@@ -321,14 +321,14 @@ xem_session = helpers.make_session()
 def _xem_exceptions_fetcher():
     if shouldRefresh('xem'):
         for indexer, instance in sickchill.indexer:
-            logger.log("Checking for XEM scene exception updates for {0}".format(instance.name))
+            logger.info("Checking for XEM scene exception updates for {0}".format(instance.name))
 
             url = "http://thexem.de/map/allNames?origin={0}&seasonNumbers=1".format(instance.slug)
 
             parsed_json = helpers.getURL(url, session=xem_session, timeout=90, returns='json')
             if not parsed_json:
-                logger.log("Check scene exceptions update failed for {0}, Unable to get URL: {1}".format
-                           ('theTVDB', url), logger.DEBUG)
+                logger.debug("Check scene exceptions update failed for {0}, Unable to get URL: {1}".format
+                           ('theTVDB', url))
                 continue
 
             if parsed_json['result'] == 'failure':
@@ -339,8 +339,8 @@ def _xem_exceptions_fetcher():
                     try:
                         xem_exception_dict[int(indexerid)] = names
                     except Exception as error:
-                        logger.log("XEM: Rejected entry: indexerid:{0}; names:{1}".format(indexerid, names), logger.WARNING)
-                        logger.log("XEM: Rejected entry error message:{0}".format(error), logger.DEBUG)
+                        logger.warn("XEM: Rejected entry: indexerid:{0}; names:{1}".format(indexerid, names))
+                        logger.debug("XEM: Rejected entry error message:{0}".format(error))
 
         setLastRefresh('xem')
 

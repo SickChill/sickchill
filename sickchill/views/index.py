@@ -193,7 +193,7 @@ class WebHandler(BaseHandler):
             self.finish(results)
 
         except AttributeError:
-            logger.log('Failed doing webui request "{0}": {1}'.format(route, traceback.format_exc()), logger.DEBUG)
+            logger.debug('Failed doing webui request "{0}": {1}'.format(route, traceback.format_exc()))
             raise HTTPError(404)
 
     @run_on_executor
@@ -217,7 +217,7 @@ class WebHandler(BaseHandler):
         except OSError as e:
             return Template("Looks like we do not have enough disk space to render the page! {error}").render_unicode(data=e.message)
         except Exception:
-            logger.log('Failed doing webui callback: {0}'.format((traceback.format_exc())), logger.ERROR)
+            logger.exception('Failed doing webui callback: {0}'.format((traceback.format_exc())))
             raise
 
     # post uses get method

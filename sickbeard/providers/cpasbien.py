@@ -49,15 +49,15 @@ class CpasbienProvider(TorrentProvider):
         results = []
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.debug("Search Mode: {0}".format(mode))
             for search_string in search_strings[mode]:
 
                 if mode == 'Season':
                     search_string = re.sub(r'(.*)S0?', r'\1Saison ', search_string)
 
                 if mode != 'RSS':
-                    logger.log("Search string: {0}".format
-                               (search_string.decode("utf-8")), logger.DEBUG)
+                    logger.debug("Search string: {0}".format
+                               (search_string.decode("utf-8")))
 
                     search_url = self.url + '/recherche/' + search_string.replace('.', '-').replace(' ', '-') + '.html,trie-seeds-d'
                 else:
@@ -82,8 +82,8 @@ class CpasbienProvider(TorrentProvider):
                             leechers = try_int(result.find(class_="down").get_text(strip=True))
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                               (title, seeders, leechers), logger.DEBUG)
+                                    logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                               (title, seeders, leechers))
                                 continue
 
                             torrent_size = result.find(class_="poid").get_text(strip=True)
@@ -93,7 +93,7 @@ class CpasbienProvider(TorrentProvider):
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
-                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                             items.append(item)
                         except StandardError:

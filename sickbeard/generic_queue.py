@@ -57,12 +57,12 @@ class GenericQueue(object):
 
     def pause(self):
         """Pauses this queue"""
-        logger.log("Pausing queue")
+        logger.info("Pausing queue")
         self.min_priority = 999999999999
 
     def unpause(self):
         """Unpauses this queue"""
-        logger.log("Unpausing queue")
+        logger.info("Unpausing queue")
         self.min_priority = 0
 
     def add_item(self, item):

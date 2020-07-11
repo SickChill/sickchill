@@ -63,8 +63,8 @@ class Notifier(object):
         rocketchat_webhook = sickbeard.ROCKETCHAT_WEBHOOK
         rocketchat_icon_emoji = sickbeard.ROCKETCHAT_ICON_EMOJI
 
-        logger.log("Sending rocketchat message: " + message, logger.INFO)
-        logger.log("Sending rocketchat message to url: " + rocketchat_webhook, logger.INFO)
+        logger.info("Sending rocketchat message: " + message)
+        logger.info("Sending rocketchat message to url: " + rocketchat_webhook)
 
         if isinstance(message, six.text_type):
             message = message.encode('utf-8')
@@ -74,7 +74,7 @@ class Notifier(object):
             r = requests.post(rocketchat_webhook, data=json.dumps(dict(text=message, attachments=(dict(icon_emoji=rocketchat_icon_emoji, author_icon=self.ROCKETCHAT_ICON_URL)))), headers=headers)
             r.raise_for_status()
         except Exception as e:
-            logger.log("Error Sending RocketChat message: " + str(e), logger.ERROR)
+            logger.exception("Error Sending RocketChat message: " + str(e))
             return False
 
         return True

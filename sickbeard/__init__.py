@@ -889,26 +889,26 @@ def initialize(consoleLogging=True):
                             shutil.move(dstDir, os.path.join(os.path.dirname(dstDir), bakFilename))
 
                         shutil.move(srcDir, dstDir)
-                        logger.log("Restore: restoring cache successful", logger.INFO)
+                        logger.info("Restore: restoring cache successful")
                     except Exception as er:
-                        logger.log("Restore: restoring cache failed: {0}".format(er), logger.ERROR)
+                        logger.exception("Restore: restoring cache failed: {0}".format(er))
 
                 restoreCache(os.path.join(restoreDir, 'cache'), CACHE_DIR)
         except Exception as e:
-            logger.log("Restore: restoring cache failed: {0}".format(str(e)), logger.ERROR)
+            logger.exception("Restore: restoring cache failed: {0}".format(str(e)))
         finally:
             if os.path.exists(os.path.join(DATA_DIR, 'restore')):
                 try:
                     shutil.rmtree(os.path.join(DATA_DIR, 'restore'))
                 except Exception as e:
-                    logger.log("Restore: Unable to remove the restore directory: {0}".format(str(e)), logger.ERROR)
+                    logger.exception("Restore: Unable to remove the restore directory: {0}".format(str(e)))
 
                 for cleanupDir in ['mako', 'sessions', 'indexers', 'rss']:
                     try:
                         shutil.rmtree(os.path.join(CACHE_DIR, cleanupDir))
                     except Exception as e:
                         if cleanupDir not in ['rss', 'sessions', 'indexers']:
-                            logger.log("Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, str(e)), logger.WARNING)
+                            logger.warn("Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, str(e)))
 
         IMAGE_CACHE = image_cache.ImageCache()
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
@@ -1547,7 +1547,7 @@ def initialize(consoleLogging=True):
         providers.check_enabled_providers()
 
         if not os.path.isfile(CONFIG_FILE):
-            logger.log("Unable to find '" + CONFIG_FILE + "', all settings will be default!", logger.DEBUG)
+            logger.debug("Unable to find '" + CONFIG_FILE + "', all settings will be default!")
             save_config()
 
         # initialize the main SB database
@@ -1750,7 +1750,7 @@ def start():
 def halt():
     with INIT_LOCK:
         if __INITIALIZED__:
-            logger.log("Aborting all threads")
+            logger.info("Aborting all threads")
 
             threads = [
                 dailySearchScheduler,
@@ -1773,7 +1773,7 @@ def halt():
                 t.stop.set()
 
             for t in threads:
-                logger.log("Waiting for the {0} thread to exit".format(t.name))
+                logger.info("Waiting for the {0} thread to exit".format(t.name))
                 try:
                     t.join(10)
                 except Exception:
@@ -1781,7 +1781,7 @@ def halt():
 
             if ADBA_CONNECTION:
                 ADBA_CONNECTION.logout()
-                logger.log("Waiting for the ANIDB CONNECTION thread to exit")
+                logger.info("Waiting for the ANIDB CONNECTION thread to exit")
                 try:
                     ADBA_CONNECTION.join(10)
                 except Exception:
@@ -1795,18 +1795,18 @@ def sig_handler(signum=None, frame=None):
     # noinspection PyUnusedLocal
     frame_ = frame
     if not isinstance(signum, type(None)):
-        logger.log("Signal {0:d} caught, saving and exiting...".format(int(signum)))
+        logger.info("Signal {0:d} caught, saving and exiting...".format(int(signum)))
         Shutdown.stop(PID)
 
 
 def saveAll():
     # write all shows
-    logger.log("Saving all shows to the database")
+    logger.info("Saving all shows to the database")
     for show in showList:
         show.saveToDB()
 
     # save config
-    logger.log("Saving config file to disk")
+    logger.info("Saving config file to disk")
     save_config()
 
 
@@ -2443,7 +2443,7 @@ def launchBrowser(protocol='http', startPort=None, web_root='/'):
         # noinspection PyUnresolvedReferences
         import webbrowser
     except ImportError:
-        logger.log("Unable to load the webbrowser module, cannot launch the browser.", logger.WARNING)
+        logger.warn("Unable to load the webbrowser module, cannot launch the browser.")
         return
 
     if not startPort:
@@ -2457,4 +2457,4 @@ def launchBrowser(protocol='http', startPort=None, web_root='/'):
         try:
             webbrowser.open(browserURL, 1, 1)
         except Exception:
-            logger.log("Unable to launch a browser", logger.ERROR)
+            logger.exception("Unable to launch a browser")

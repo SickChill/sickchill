@@ -134,9 +134,9 @@ class TVCache(object):
                     cache_db_con.mass_action(cl)
 
         except AuthException as e:
-            logger.log("Authentication error: " + str(e), logger.WARNING)
+            logger.warn("Authentication error: " + str(e))
         except Exception as e:
-            logger.log("Error while searching " + self.provider.name + ", skipping: " + repr(e), logger.DEBUG)
+            logger.debug("Error while searching " + self.provider.name + ", skipping: " + repr(e))
 
     def get_rss_feed(self, url, params=None):
         if self.provider.login():
@@ -160,11 +160,11 @@ class TVCache(object):
             title = self._translate_title(title)
             url = self._translate_link_url(url)
 
-            # logger.log(u"Attempting to add item to cache: " + title, logger.DEBUG)
+            # logger.debug(u"Attempting to add item to cache: " + title)
             return self._add_cache_entry(title, url)
 
         else:
-            logger.log(
+            logger.info(
                 "The data returned from the " + self.provider.name + " feed is incomplete, this result is unusable",
                 logger.DEBUG)
 
@@ -233,7 +233,7 @@ class TVCache(object):
     def should_update(self):
         # if we've updated recently then skip the update
         if datetime.datetime.today() - self.last_update < datetime.timedelta(minutes=self.min_time):
-            logger.log("Last update was too soon, using old cache: " + str(self.last_update) + ". Updated less then " + str(self.min_time) + " minutes ago", logger.DEBUG)
+            logger.debug("Last update was too soon, using old cache: " + str(self.last_update) + ". Updated less then " + str(self.min_time) + " minutes ago")
             return False
 
         return True
@@ -258,7 +258,7 @@ class TVCache(object):
             try:
                 parse_result = NameParser(showObj=show_obj).parse(name)
             except (InvalidNameException, InvalidShowException) as error:
-                logger.log("{0}".format(error), logger.DEBUG)
+                logger.debug("{0}".format(error))
                 return None
 
             if not parse_result or not parse_result.series_name:
@@ -286,7 +286,7 @@ class TVCache(object):
             # get version
             version = parse_result.version
 
-            logger.log("Added RSS item: [" + name + "] to cache: [" + self.provider_id + "]", logger.DEBUG)
+            logger.debug("Added RSS item: [" + name + "] to cache: [" + self.provider_id + "]")
 
             return [
                 "INSERT OR IGNORE INTO [" + self.provider_id + "] (name, season, episodes, indexerid, url, time, quality, release_group, version) VALUES (?,?,?,?,?,?,?,?,?)",
@@ -340,7 +340,7 @@ class TVCache(object):
 
             # skip if provider is anime only and show is not anime
             if self.provider.anime_only and not show_obj.is_anime:
-                logger.log("" + str(show_obj.name) + " is not an anime, skiping", logger.DEBUG)
+                logger.debug("" + str(show_obj.name) + " is not an anime, skiping")
                 continue
 
             # get season and ep data (ignoring multi-eps for now)
@@ -360,7 +360,7 @@ class TVCache(object):
 
             # if the show says we want that episode then add it to the list
             if not show_obj.wantEpisode(cur_season, cur_ep, cur_quality, manualSearch, downCurQuality):
-                logger.log("Ignoring " + cur_result[b"name"], logger.DEBUG)
+                logger.debug("Ignoring " + cur_result[b"name"])
                 continue
 
             ep_obj = show_obj.getEpisode(cur_season, cur_ep)
@@ -369,7 +369,7 @@ class TVCache(object):
             title = cur_result[b"name"]
             url = cur_result[b"url"]
 
-            logger.log("Found result " + title + " at " + url)
+            logger.info("Found result " + title + " at " + url)
 
             result = self.provider.get_result([ep_obj])
             result.show = show_obj

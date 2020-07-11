@@ -490,7 +490,7 @@ def xem_refresh(indexer_id, indexer, force=False):
         refresh = True
 
     if refresh or force:
-        logger.log(
+        logger.info(
             'Looking up XEM scene mapping for show {0} on {1}'.format(indexer_id, sickchill.indexer.name(indexer)),
             logger.DEBUG)
 
@@ -514,7 +514,7 @@ def xem_refresh(indexer_id, indexer, force=False):
 
             parsed_json = sickbeard.helpers.getURL(url, session=xem_session, returns='json')
             if not parsed_json or 'result' not in parsed_json or 'success' not in parsed_json['result']:
-                logger.log('No XEM data for show "{0} on {1}"'.format(indexer_id, sickchill.indexer.name(indexer)), logger.INFO)
+                logger.info('No XEM data for show "{0} on {1}"'.format(indexer_id, sickchill.indexer.name(indexer)))
                 return
 
             cl = []
@@ -547,9 +547,9 @@ def xem_refresh(indexer_id, indexer, force=False):
                 main_db_con.mass_action(cl)
 
         except Exception as e:
-            logger.log("Exception while refreshing XEM data for show {} on {}: {}".format(
-                indexer_id, sickchill.indexer.name(indexer), str(e)), logger.WARNING)
-            logger.log(traceback.format_exc(), logger.DEBUG)
+            logger.warning("Exception while refreshing XEM data for show {} on {}: {}".format(
+                indexer_id, sickchill.indexer.name(indexer), str(e)))
+            logger.debug(traceback.format_exc())
 
 
 def fix_xem_numbering(indexer_id, indexer):
@@ -579,7 +579,7 @@ def fix_xem_numbering(indexer_id, indexer):
     update_scene_episode = False
     update_scene_absolute_number = False
 
-    logger.log(
+    logger.info(
         'Fixing any XEM scene mapping issues for show {0} on {1}'.format(indexer_id, sickchill.indexer.name(indexer)),
         logger.DEBUG)
 

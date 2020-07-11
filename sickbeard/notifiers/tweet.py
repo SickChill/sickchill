@@ -75,27 +75,27 @@ class Notifier(object):
 
         :return: True if succeeded, False otherwise
         """
-        logger.log('Requesting temp token from Twitter', logger.DEBUG)
+        logger.debug('Requesting temp token from Twitter')
         oauth_session = OAuth1Session(client_key=self.consumer_key, client_secret=self.consumer_hash)
 
         try:
             request_token = oauth_session.fetch_request_token(self.REQUEST_TOKEN_URL)
         except RequestException as err:
-            logger.log('Invalid response from Twitter requesting temp token: {}'.format(err), logger.ERROR)
+            logger.exception('Invalid response from Twitter requesting temp token: {}'.format(err))
         else:
             sickbeard.TWITTER_USERNAME = request_token['oauth_token']
             sickbeard.TWITTER_PASSWORD = request_token['oauth_token_secret']
             return oauth_session.authorization_url(self.AUTHORIZATION_URL)
 
     def _get_credentials(self, key):
-        logger.log('Type of key is {}'.format(type(key)))
+        logger.info('Type of key is {}'.format(type(key)))
         """
         Step 2 of authorization - poll server for access token.
 
         :param key: Authorization key received from twitter
         :return: True if succeeded, False otherwise
         """
-        logger.log('Generating and signing request for an access token using key ' + key, logger.DEBUG)
+        logger.debug('Generating and signing request for an access token using key ' + key)
         oauth_session = OAuth1Session(client_key=self.consumer_key,
                                       client_secret=self.consumer_hash,
                                       resource_owner_key=sickbeard.TWITTER_USERNAME,
@@ -104,11 +104,11 @@ class Notifier(object):
         try:
             access_token = oauth_session.fetch_access_token(self.ACCESS_TOKEN_URL, verifier=six.text_type(key))
         except Exception as err:
-            logger.log('The request for a token with did not succeed: {}'.format(err), logger.ERROR)
+            logger.exception('The request for a token with did not succeed: {}'.format(err))
             return False
 
-        logger.log('Your Twitter Access Token key: {0}'.format(access_token['oauth_token']), logger.DEBUG)
-        logger.log('Access Token secret: {0}'.format(access_token['oauth_token_secret']), logger.DEBUG)
+        logger.debug('Your Twitter Access Token key: {0}'.format(access_token['oauth_token']))
+        logger.debug('Access Token secret: {0}'.format(access_token['oauth_token_secret']))
         sickbeard.TWITTER_USERNAME = access_token['oauth_token']
         sickbeard.TWITTER_PASSWORD = access_token['oauth_token_secret']
         return True
@@ -125,11 +125,11 @@ class Notifier(object):
                           access_token_key=sickbeard.TWITTER_USERNAME,
                           access_token_secret=sickbeard.TWITTER_PASSWORD)
 
-        logger.log("Sending tweet: {}".format(message), logger.DEBUG)
+        logger.debug("Sending tweet: {}".format(message))
         try:
             api.PostUpdate(message.encode('utf8')[:139])
         except Exception as e:
-            logger.log("Error Sending Tweet: {}".format(str(e)), logger.ERROR)
+            logger.exception("Error Sending Tweet: {}".format(str(e)))
             return False
 
         return True
@@ -148,11 +148,11 @@ class Notifier(object):
                           access_token_key=sickbeard.TWITTER_USERNAME,
                           access_token_secret=sickbeard.TWITTER_PASSWORD)
 
-        logger.log("Sending DM @{0}: {1}".format(dmdest, message), logger.DEBUG)
+        logger.debug("Sending DM @{0}: {1}".format(dmdest, message))
         try:
             api.PostDirectMessage(message.encode('utf8')[:139], screen_name=dmdest)
         except Exception as e:
-            logger.log("Error Sending Tweet (DM): {}".format(str(e)), logger.ERROR)
+            logger.exception("Error Sending Tweet (DM): {}".format(str(e)))
             return False
 
         return True

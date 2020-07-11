@@ -45,7 +45,7 @@ class ShowUpdater(object):
 
         self.amActive = True
         try:
-            logger.log('ShowUpdater for tvdb Api V3 starting')
+            logger.info('ShowUpdater for tvdb Api V3 starting')
 
             cache_db_con = db.DBConnection('cache.db')
             for index, provider in sickchill.indexer:
@@ -56,7 +56,7 @@ class ShowUpdater(object):
                 updated_shows = []
 
                 if last_update:
-                    logger.log('Last update: {}'.format(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_update))))
+                    logger.info('Last update: {}'.format(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_update))))
 
                     current_check = update_timestamp
                     while current_check >= last_update:
@@ -66,11 +66,11 @@ class ShowUpdater(object):
                             TvdbData.series()
                             updated_shows.extend([d['id'] for d in TvdbData.series])
                         except Exception as error:
-                            logger.log(str(error))
+                            logger.info(str(error))
 
                         current_check -= self.seven_days - 1
                 else:
-                    logger.log(_('No last update time from the cache, so we do a full update for all shows'))
+                    logger.info(_('No last update time from the cache, so we do a full update for all shows'))
 
                 pi_list = []
                 for cur_show in sickbeard.showList:
@@ -93,7 +93,7 @@ class ShowUpdater(object):
                         else:
                             pi_list.append(sickbeard.showQueueScheduler.action.refresh_show(cur_show, force))
                     except (CantUpdateShowException, CantRefreshShowException) as error:
-                        logger.log(_('Automatic update failed: {0}').format(str(error)))
+                        logger.info(_('Automatic update failed: {0}').format(str(error)))
 
                 ui.ProgressIndicators.setIndicator('dailyUpdate', ui.QueueProgressIndicator('Daily Update', pi_list))
 
@@ -102,13 +102,13 @@ class ShowUpdater(object):
                 else:
                     cache_db_con.action('INSERT INTO lastUpdate (time, provider) VALUES (?, ?)', [str(update_timestamp), provider.name])
         except Exception as error:
-            logger.log(str(error), logger.ERROR)
+            logger.exception(str(error))
 
         self.amActive = False
 
     @staticmethod
     def request_hook(response, **kwargs):
-        logger.log('{0} URL: {1} [Status: {2}]'.format
+        logger.info('{0} URL: {1} [Status: {2}]'.format
                    (response.request.method, response.request.url, response.status_code))
 
     def __del__(self):

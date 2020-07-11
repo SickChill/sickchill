@@ -113,7 +113,7 @@ class ImageCache(object):
         Returns true if a cached poster exists for the given Indexer ID
         """
         poster_path = self.poster_path(indexer_id)
-        logger.log("Checking if file " + str(poster_path) + " exists", logger.DEBUG)
+        logger.debug("Checking if file " + str(poster_path) + " exists")
         return os.path.isfile(poster_path)
 
     def has_banner(self, indexer_id):
@@ -121,7 +121,7 @@ class ImageCache(object):
         Returns true if a cached banner exists for the given Indexer ID
         """
         banner_path = self.banner_path(indexer_id)
-        logger.log("Checking if file " + str(banner_path) + " exists", logger.DEBUG)
+        logger.debug("Checking if file " + str(banner_path) + " exists")
         return os.path.isfile(banner_path)
 
     def has_fanart(self, indexer_id):
@@ -129,7 +129,7 @@ class ImageCache(object):
         Returns true if a cached fanart exists for the given Indexer ID
         """
         fanart_path = self.fanart_path(indexer_id)
-        logger.log("Checking if file " + str(fanart_path) + " exists", logger.DEBUG)
+        logger.debug("Checking if file " + str(fanart_path) + " exists")
         return os.path.isfile(fanart_path)
 
     def has_poster_thumb(self, indexer_id):
@@ -137,7 +137,7 @@ class ImageCache(object):
         Returns true if a cached poster thumbnail exists for the given Indexer ID
         """
         poster_thumb_path = self.poster_thumb_path(indexer_id)
-        logger.log("Checking if file " + str(poster_thumb_path) + " exists", logger.DEBUG)
+        logger.debug("Checking if file " + str(poster_thumb_path) + " exists")
         return os.path.isfile(poster_thumb_path)
 
     def has_banner_thumb(self, indexer_id):
@@ -145,7 +145,7 @@ class ImageCache(object):
         Returns true if a cached banner exists for the given Indexer ID
         """
         banner_thumb_path = self.banner_thumb_path(indexer_id)
-        logger.log("Checking if file " + str(banner_thumb_path) + " exists", logger.DEBUG)
+        logger.debug("Checking if file " + str(banner_thumb_path) + " exists")
         return os.path.isfile(banner_thumb_path)
 
     def image_url(self, indexer_id, which):
@@ -154,7 +154,7 @@ class ImageCache(object):
             try:
                 return 'cache' + path.split(sickbeard.CACHE_DIR)[1].replace('\\', '/')
             except (AttributeError, ValueError, IndexError):
-                logger.log('Error with cache path, path={}, cache={}, split={}'.format(
+                logger.info('Error with cache path, path={}, cache={}, split={}'.format(
                     path, sickbeard.CACHE_DIR, str(path.split(sickbeard.CACHE_DIR))))
         return ('images/poster.png', 'images/banner.png')['banner' in which]
 
@@ -181,13 +181,13 @@ class ImageCache(object):
         """
 
         if not os.path.isfile(path):
-            logger.log("Couldn't check the type of " + str(path) + " cause it doesn't exist", logger.WARNING)
+            logger.warn("Couldn't check the type of " + str(path) + " cause it doesn't exist")
             return None
 
         width, height = imagesize.get(path)
 
         if not (width and height):
-            logger.log("Unable to get metadata from " + str(path) + ", not using your existing image", logger.DEBUG)
+            logger.debug("Unable to get metadata from " + str(path) + ", not using your existing image")
             return None
 
         img_ratio = float(width) / float(height)
@@ -204,7 +204,7 @@ class ImageCache(object):
         elif 1.7 < img_ratio < 1.8:
             return self.FANART
         else:
-            logger.log("Image has size ratio of " + str(img_ratio) + ", unknown type", logger.WARNING)
+            logger.warn("Image has size ratio of " + str(img_ratio) + ", unknown type")
             return None
 
     @staticmethod
@@ -248,19 +248,19 @@ class ImageCache(object):
         elif img_type == self.FANART:
             dest_path = self.fanart_path(indexer_id)
         else:
-            logger.log("Invalid cache image type: " + str(img_type), logger.ERROR)
+            logger.exception("Invalid cache image type: " + str(img_type))
             return False
 
         # make sure the cache folder exists before we try copying to it
         if not os.path.isdir(self._cache_dir()):
-            logger.log("Image cache dir didn't exist, creating it at " + str(self._cache_dir()))
+            logger.info("Image cache dir didn't exist, creating it at " + str(self._cache_dir()))
             os.makedirs(self._cache_dir())
 
         if not os.path.isdir(self._thumbnails_dir()):
-            logger.log("Thumbnails cache dir didn't exist, creating it at " + str(self._thumbnails_dir()))
+            logger.info("Thumbnails cache dir didn't exist, creating it at " + str(self._thumbnails_dir()))
             os.makedirs(self._thumbnails_dir())
 
-        logger.log("Copying from " + image_path + " to " + dest_path)
+        logger.info("Copying from " + image_path + " to " + dest_path)
         helpers.copyFile(image_path, dest_path)
 
         return True
@@ -303,7 +303,7 @@ class ImageCache(object):
                 img_url = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, 'fanart')
             dest_path = self.fanart_path(show_obj.indexerid)
         else:
-            logger.log("Invalid cache image type: " + str(img_type), logger.ERROR)
+            logger.exception("Invalid cache image type: " + str(img_type))
             return False
 
         # retrieve the image from indexer using the generic metadata class
@@ -321,7 +321,7 @@ class ImageCache(object):
         :param show_obj: TVShow object to cache images for
         """
 
-        logger.log("Checking if we need any cache images for show " + str(show_obj.indexerid), logger.DEBUG)
+        logger.debug("Checking if we need any cache images for show " + str(show_obj.indexerid))
 
         # check if the images are already cached or not
         need_images = {self.POSTER: not self.has_poster(show_obj.indexerid),
@@ -331,14 +331,14 @@ class ImageCache(object):
                        self.FANART: not self.has_fanart(show_obj.indexerid)}
 
         if not any(need_images.values()):
-            logger.log("No new cache images needed, not retrieving new ones", logger.DEBUG)
+            logger.debug("No new cache images needed, not retrieving new ones")
             return
 
         # check the show dir for poster or banner images and use them
         if need_images[self.POSTER] or need_images[self.BANNER] or need_images[self.FANART]:
             try:
                 for cur_provider in sickbeard.metadata_provider_dict.values():
-                    logger.log("[{}] Checking if we can use images from {} metadata".format(show_obj.indexerid, cur_provider.name),
+                    logger.info("[{}] Checking if we can use images from {} metadata".format(show_obj.indexerid, cur_provider.name),
                                logger.DEBUG)
 
                     for method in (cur_provider.get_poster_path, cur_provider.get_banner_path, cur_provider.get_fanart_path):
@@ -348,27 +348,27 @@ class ImageCache(object):
                             cur_file_type = self.which_type(cur_file_name)
 
                             if cur_file_type is None:
-                                logger.log("Unable to retrieve image type, not using the image from " + str(cur_file_name),
+                                logger.info("Unable to retrieve image type, not using the image from " + str(cur_file_name),
                                            logger.WARNING)
                                 continue
 
-                            logger.log("[{}] Checking if {} ({}) needs cached: {}".format(
-                                show_obj.indexerid, cur_file_name, self.image_str[cur_file_type], need_images[cur_file_type]), logger.DEBUG)
+                            logger.debug("[{}] Checking if {} ({}) needs cached: {}".format(
+                                show_obj.indexerid, cur_file_name, self.image_str[cur_file_type], need_images[cur_file_type]))
 
                             if cur_file_type in need_images and need_images[cur_file_type]:
-                                logger.log("[{}] Found a {} in the show dir that doesn't exist in the cache, caching it".format(
-                                        show_obj.indexerid, self.image_str[cur_file_type]), logger.DEBUG)
+                                logger.debug("[{}] Found a {} in the show dir that doesn't exist in the cache, caching it".format(
+                                        show_obj.indexerid, self.image_str[cur_file_type]))
                                 self._cache_image_from_file(cur_file_name, cur_file_type, show_obj.indexerid)
                                 need_images[cur_file_type] = False
 
             except ShowDirectoryNotFoundException:
-                logger.log("[{}] Unable to search for images in show dir because it doesn't exist".format(show_obj.indexerid), logger.DEBUG)
+                logger.debug("[{}] Unable to search for images in show dir because it doesn't exist".format(show_obj.indexerid))
 
         # download from indexer for missing ones
         for cur_image_type in need_images.keys():
-            logger.log("[{}] Seeing if we still need a {}: {}".format(show_obj.indexerid, self.image_str[cur_image_type], need_images[cur_image_type]),
+            logger.info("[{}] Seeing if we still need a {}: {}".format(show_obj.indexerid, self.image_str[cur_image_type], need_images[cur_image_type]),
                        logger.DEBUG)
             if cur_image_type in need_images and need_images[cur_image_type]:
                 self._cache_image_from_indexer(show_obj, cur_image_type)
 
-        logger.log("Done cache check")
+        logger.info("Done cache check")

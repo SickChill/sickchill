@@ -53,7 +53,7 @@ class ManageSearches(Manage):
         # force it to run the next time it looks
         result = sickbeard.backlogSearchScheduler.forceRun()
         if result:
-            logger.log("Backlog search forced")
+            logger.info("Backlog search forced")
             ui.notifications.message(_('Backlog search started'))
 
         return self.redirect("/manage/manageSearches/")
@@ -63,7 +63,7 @@ class ManageSearches(Manage):
         # force it to run the next time it looks
         result = sickbeard.dailySearchScheduler.forceRun()
         if result:
-            logger.log("Daily search forced")
+            logger.info("Daily search forced")
             ui.notifications.message(_('Daily search started'))
 
         return self.redirect("/manage/manageSearches/")
@@ -72,7 +72,7 @@ class ManageSearches(Manage):
         # force it to run the next time it looks
         result = sickbeard.properFinderScheduler.forceRun()
         if result:
-            logger.log("Find propers search forced")
+            logger.info("Find propers search forced")
             ui.notifications.message(_('Find propers search started'))
 
         return self.redirect("/manage/manageSearches/")
@@ -81,7 +81,7 @@ class ManageSearches(Manage):
         # force it to run the next time it looks
         result = sickbeard.subtitlesFinderScheduler.forceRun()
         if result:
-            logger.log("Subtitle search forced")
+            logger.info("Subtitle search forced")
             ui.notifications.message(_('Subtitle search started'))
 
         return self.redirect("/manage/manageSearches/")
@@ -90,7 +90,7 @@ class ManageSearches(Manage):
         # force it to run the next time it looks
         result = sickbeard.autoPostProcessorScheduler.forceRun()
         if result:
-            logger.log("Auto Post Processor forced")
+            logger.info("Auto Post Processor forced")
             ui.notifications.message(_('Auto Post Processor started'))
 
         return self.redirect("/manage/manageSearches/")

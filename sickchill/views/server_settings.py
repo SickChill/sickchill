@@ -98,11 +98,11 @@ class SRWebServer(threading.Thread):
             # If either the HTTPS certificate or key do not exist, make some self-signed ones.
             if not (self.https_cert and os.path.exists(self.https_cert) and self.https_key and os.path.exists(self.https_key)):
                 if not create_https_certificates(self.https_cert, self.https_key):
-                    logger.log("Unable to create CERT/KEY files, disabling HTTPS")
+                    logger.info("Unable to create CERT/KEY files, disabling HTTPS")
                     sickbeard.ENABLE_HTTPS = self.enable_https = False
 
             if not (os.path.exists(self.https_cert) and os.path.exists(self.https_key)):
-                logger.log("Disabled HTTPS because of missing CERT and KEY files", logger.WARNING)
+                logger.warn("Disabled HTTPS because of missing CERT and KEY files")
                 sickbeard.ENABLE_HTTPS = self.enable_https = False
 
         # Load the app
@@ -167,7 +167,7 @@ class SRWebServer(threading.Thread):
             protocol = "http"
             ssl_options = None
 
-        logger.log("Starting SickChill on " + protocol + "://" + str(self.options['host']) + ":" + str(
+        logger.info("Starting SickChill on " + protocol + "://" + str(self.options['host']) + ":" + str(
             self.options['port']) + "/")
 
         try:
@@ -178,14 +178,14 @@ class SRWebServer(threading.Thread):
             if ex.errno == errno.EADDRINUSE:  # Address/port combination already in use
                 if sickbeard.LAUNCH_BROWSER and not self.daemon:
                     sickbeard.launchBrowser('https' if sickbeard.ENABLE_HTTPS else 'http', self.options['port'], sickbeard.WEB_ROOT)
-                    logger.log("Launching browser and exiting")
+                    logger.info("Launching browser and exiting")
                 err_msg = "already in use!"
 
-            logger.log("Could not start webserver on port {0}: {1}".format(self.options['port'], err_msg or ex))
+            logger.info("Could not start webserver on port {0}: {1}".format(self.options['port'], err_msg or ex))
             # noinspection PyProtectedMember
             os._exit(1)
         except Exception as ex:
-            logger.log("Could not start webserver on port {0}: {1}".format(self.options['port'], ex))
+            logger.info("Could not start webserver on port {0}: {1}".format(self.options['port'], ex))
 
             # noinspection PyProtectedMember
             os._exit(1)

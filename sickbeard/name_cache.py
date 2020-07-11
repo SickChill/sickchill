@@ -94,11 +94,11 @@ def buildNameCache(show=None):
         sickbeard.scene_exceptions.retrieve_exceptions()
 
     if not show:
-        # logger.log(u"Building internal name cache for all shows", logger.INFO)
+        # logger.info(u"Building internal name cache for all shows")
         for show in sickbeard.showList:
             buildNameCache(show)
     else:
-        # logger.log(u"Building internal name cache for " + show.name, logger.DEBUG)
+        # logger.debug(u"Building internal name cache for " + show.name)
         clearCache(show.indexerid)
         for curSeason in [-1] + sickbeard.scene_exceptions.get_scene_seasons(show.indexerid):
             for name in set(sickbeard.scene_exceptions.get_scene_exceptions(show.indexerid, season=curSeason) + [show.name]):
@@ -107,4 +107,4 @@ def buildNameCache(show=None):
                     continue
 
                 nameCache[name] = int(show.indexerid)
-        # logger.log(u"Internal name cache for " + show.name + " set to: [ " + u', '.join([key for key, value in six.iteritems(nameCache) if value == show.indexerid]) + " ]", logger.DEBUG)
+        # logger.debug(u"Internal name cache for " + show.name + " set to: [ " + u', '.join([key for key, value in six.iteritems(nameCache) if value == show.indexerid]) + " ]")

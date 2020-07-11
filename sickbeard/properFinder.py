@@ -50,7 +50,7 @@ class ProperFinder(object):
 
         :param force: Start even if already running (currently not used, defaults to False)
         """
-        logger.log("Beginning the search for new propers")
+        logger.info("Beginning the search for new propers")
 
         self.amActive = True
 
@@ -69,7 +69,7 @@ class ProperFinder(object):
             run_at = ", next check in approx. " + (
                 "{0:d}h, {1:d}m".format(hours, minutes) if hours > 0 else "{0:d}m, {1:d}s".format(minutes, seconds))
 
-        logger.log("Completed the search for new propers{0}".format(run_at))
+        logger.info("Completed the search for new propers{0}".format(run_at))
 
         self.amActive = False
 
@@ -87,27 +87,27 @@ class ProperFinder(object):
         for curProvider in providers:
             threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
 
-            logger.log("Searching for any new PROPER releases from " + curProvider.name)
+            logger.info("Searching for any new PROPER releases from " + curProvider.name)
 
             try:
                 curPropers = curProvider.find_propers(search_date)
             except AuthException as e:
-                logger.log("Authentication error: " + str(e), logger.WARNING)
+                logger.warn("Authentication error: " + str(e))
                 continue
             except Exception as e:
-                logger.log("Exception while searching propers in " + curProvider.name + ", skipping: " + str(e), logger.ERROR)
-                logger.log(traceback.format_exc(), logger.DEBUG)
+                logger.exception("Exception while searching propers in " + curProvider.name + ", skipping: " + str(e))
+                logger.debug(traceback.format_exc())
                 continue
 
             # if they haven't been added by a different provider than add the proper to the list
             for x in curPropers:
                 if not re.search(r'\b(proper|repack|real)\b', x.name, re.I):
-                    logger.log('find_propers returned a non-proper, we have caught and skipped it.', logger.DEBUG)
+                    logger.debug('find_propers returned a non-proper, we have caught and skipped it.')
                     continue
 
                 name = self._genericName(x.name)
                 if name not in propers:
-                    logger.log("Found new proper: " + x.name, logger.DEBUG)
+                    logger.debug("Found new proper: " + x.name)
                     x.provider = curProvider
                     propers[name] = x
 
@@ -122,21 +122,21 @@ class ProperFinder(object):
             try:
                 parse_result = NameParser(False).parse(curProper.name)
             except (InvalidNameException, InvalidShowException) as error:
-                logger.log("{0}".format(error), logger.DEBUG)
+                logger.debug("{0}".format(error))
                 continue
 
             if not parse_result.series_name:
                 continue
 
             if parse_result.show.paused:
-                logger.log("Ignoring " + curProper.name + " because " + parse_result.show.name + " is paused", logger.DEBUG)
+                logger.debug("Ignoring " + curProper.name + " because " + parse_result.show.name + " is paused")
                 continue
 
             if not parse_result.episode_numbers:
-                logger.log("Ignoring " + curProper.name + " because it's for a full season rather than specific episode", logger.DEBUG)
+                logger.debug("Ignoring " + curProper.name + " because it's for a full season rather than specific episode")
                 continue
 
-            logger.log("Successful match! Result " + parse_result.original_name + " matched to show " + parse_result.show.name, logger.DEBUG)
+            logger.debug("Successful match! Result " + parse_result.original_name + " matched to show " + parse_result.show.name)
 
             # set the indexerid in the db to the show's indexerid
             curProper.indexerid = parse_result.show.indexerid
@@ -156,12 +156,12 @@ class ProperFinder(object):
             # filter release
             bestResult = pickBestResult(curProper, parse_result.show)
             if not bestResult:
-                logger.log("Proper " + curProper.name + " were rejected by our release filters.", logger.DEBUG)
+                logger.debug("Proper " + curProper.name + " were rejected by our release filters.")
                 continue
 
             # only get anime proper if it has release group and version
             if bestResult.show.is_anime and not bestResult.release_group and bestResult.version == -1:
-                logger.log("Proper " + bestResult.name + " doesn't have a release group and version, ignoring it",
+                logger.info("Proper " + bestResult.name + " doesn't have a release group and version, ignoring it",
                            logger.DEBUG)
                 continue
 
@@ -188,18 +188,18 @@ class ProperFinder(object):
                 oldRelease_group = (sql_results[0][b"release_group"])
 
                 if -1 < oldVersion < bestResult.version:
-                    logger.log("Found new anime v" + str(bestResult.version) + " to replace existing v" + str(oldVersion))
+                    logger.info("Found new anime v" + str(bestResult.version) + " to replace existing v" + str(oldVersion))
                 else:
                     continue
 
                 if oldRelease_group != bestResult.release_group:
-                    logger.log(
+                    logger.info(
                         "Skipping proper from release group: " + bestResult.release_group + ", does not match existing release group: " + oldRelease_group)
                     continue
 
             # if the show is in our list and there hasn't been a proper already added for that particular episode then add it to our list of propers
             if bestResult.indexerid != -1 and (bestResult.indexerid, bestResult.season, bestResult.episode) not in {(p.indexerid, p.season, p.episode) for p in finalPropers}:
-                logger.log("Found a proper that we need: " + str(bestResult.name))
+                logger.info("Found a proper that we need: " + str(bestResult.name))
                 finalPropers.append(bestResult)
 
         return finalPropers
@@ -225,7 +225,7 @@ class ProperFinder(object):
 
             # if we didn't download this episode in the first place we don't know what quality to use for the proper so we can't do it
             if not historyResults:
-                logger.log(
+                logger.info(
                     "Unable to find an original history entry for proper " + curProper.name + " so I'm not downloading it.")
                 continue
 
@@ -240,7 +240,7 @@ class ProperFinder(object):
                         isSame = True
                         break
                 if isSame:
-                    logger.log("This proper is already in history, skipping it", logger.DEBUG)
+                    logger.debug("This proper is already in history, skipping it")
                     continue
 
                 # get the episode object
@@ -272,7 +272,7 @@ class ProperFinder(object):
         :param when: When was the last proper search
         """
 
-        logger.log("Setting the last Proper search in the DB to " + str(when), logger.DEBUG)
+        logger.debug("Setting the last Proper search in the DB to " + str(when))
 
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT last_proper_search FROM info")

@@ -85,7 +85,7 @@ class DBConnection(object):
 
         except OperationalError:
             # noinspection PyUnresolvedReferences
-            logger.log(_("Please check your database owner/permissions: {db_filename}").format(db_filename=self.full_path), logger.WARNING)
+            logger.warn(_("Please check your database owner/permissions: {db_filename}").format(db_filename=self.full_path))
         except Exception as e:
             self._error_log_helper(e, logger.ERROR, locals(), None, 'DBConnection.__init__')
             raise
@@ -94,7 +94,7 @@ class DBConnection(object):
         if attempts in (0, self.MAX_ATTEMPTS):  # Only log the first try and the final failure
             prefix = ("Database", "Fatal")[severity == logger.ERROR]
             # noinspection PyUnresolvedReferences
-            logger.log(
+            logger.info(
                 _("{exception_severity} error executing query with {method} in database {db_location}: ").format(
                     db_location=self.full_path, method=called_method, exception_severity=prefix
                 ) + str(exception), severity
@@ -102,9 +102,9 @@ class DBConnection(object):
 
             # Lets print out all of the arguments so we can debug this better
             # noinspection PyUnresolvedReferences
-            logger.log(_("If this happened in cache.db, you can safely stop SickChill, and delete the cache.db file without losing any data"))
+            logger.info(_("If this happened in cache.db, you can safely stop SickChill, and delete the cache.db file without losing any data"))
             # noinspection PyUnresolvedReferences
-            logger.log(
+            logger.info(
                 _("Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables:s}").format(
                     local_variables=local_variables
                 )
@@ -224,15 +224,15 @@ class DBConnection(object):
                     for qu in query_list:
                         if len(qu) == 1:
                             # noinspection PyUnresolvedReferences
-                            logger.log(_("{filename}: {query}").format(filename=self.filename, query=qu[0]), log_level)
+                            logger.log(log_level, _("{filename}: {query}").format(filename=self.filename, query=qu[0]))
                             sql_results.append(self._execute(qu[0], fetchall=fetchall))
                         elif len(qu) > 1:
                             # noinspection PyUnresolvedReferences
-                            logger.log(_("{filename}: {query} with args {args:s}").format(filename=self.filename, query=qu[0], args=qu[1]), log_level)
+                            logger.log(log_level, _("{filename}: {query} with args {args:s}").format(filename=self.filename, query=qu[0], args=qu[1]))
                             sql_results.append(self._execute(qu[0], qu[1], fetchall=fetchall))
                     self.connection.commit()
                     # noinspection PyUnresolvedReferences
-                    logger.log(_("Transaction with {count:d} of queries executed successfully").format(count=len(query_list)), log_level)
+                    logger.info(log_level, _("Transaction with {count:d} of queries executed successfully").format(count=len(query_list)))
 
                     # finished
                     break
@@ -278,10 +278,11 @@ class DBConnection(object):
             self._set_row_factory()
             while attempt < self.MAX_ATTEMPTS:
                 try:
-                    if args is None:
-                        logger.log(self.filename + ": " + query, logger.DB)
-                    else:
-                        logger.log("{filename}: {query} with args {args:s}".format(filename=self.filename, query=query, args=args), logger.DB)
+                    if sickbeard.DBDEBUG:
+                        if args is None:
+                            logger.debug(self.filename + ": " + query)
+                        else:
+                            logger.debug("{filename}: {query} with args {args:s}".format(filename=self.filename, query=query, args=args))
 
                     sql_results = self._execute(query, args, fetchall=fetchall, fetchone=fetchone)
                     self.connection.commit()
@@ -464,7 +465,7 @@ def upgrade_database(connection, schema):
     :param connection: Existing DB Connection to use
     :param schema: New schema to upgrade to
     """
-    logger.log("Checking database structure..." + connection.filename, logger.DEBUG)
+    logger.debug("Checking database structure..." + connection.filename)
     _process_upgrade(connection, schema)
 
 
@@ -479,9 +480,9 @@ def restore_database(version):
     :param version: Version to restore to
     :return: True if restore succeeds, False if it fails
     """
-    logger.log("Restoring database before trying upgrade again")
+    logger.info("Restoring database before trying upgrade again")
     if not sickbeard.helpers.restoreVersionedFile(db_full_path(suffix="v" + str(version)), version):
-        logger.log_error_and_exit("Database restore failed, abort upgrading database")
+        logger.info_error_and_exit("Database restore failed, abort upgrading database")
         return False
     else:
         return True
@@ -489,18 +490,18 @@ def restore_database(version):
 
 def _process_upgrade(connection, upgrade_class):
     instance = upgrade_class(connection)
-    # logger.log("Checking " + pretty_name(upgrade_class.__name__) + " database upgrade", logger.DEBUG)
+    # logger.debug("Checking " + pretty_name(upgrade_class.__name__) + " database upgrade")
     if not instance.test():
-        logger.log("Database upgrade required: " + pretty_name(upgrade_class.__name__), logger.DEBUG)
+        logger.debug("Database upgrade required: " + pretty_name(upgrade_class.__name__))
         try:
             instance.execute()
         except Exception as e:
-            logger.log("Error in " + str(upgrade_class.__name__) + ": " + str(e), logger.ERROR)
+            logger.exception("Error in " + str(upgrade_class.__name__) + ": " + str(e))
             raise
 
-        logger.log(upgrade_class.__name__ + " upgrade completed", logger.DEBUG)
+        logger.debug(upgrade_class.__name__ + " upgrade completed")
     # else:
-    #     logger.log(upgrade_class.__name__ + " upgrade not required", logger.DEBUG)
+    #     logger.debug(upgrade_class.__name__ + " upgrade not required")
 
     for upgradeSubClass in upgrade_class.__subclasses__():
         _process_upgrade(connection, upgradeSubClass)

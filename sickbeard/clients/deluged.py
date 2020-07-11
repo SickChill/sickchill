@@ -96,23 +96,23 @@ class Client(GenericClient, DelugeBase):
         if result.show.is_anime:
             label = sickbeard.TORRENT_LABEL_ANIME.lower()
         if ' ' in label:
-            logger.log(self.name + ': Invalid label. Label must not contain a space', logger.ERROR)
+            logger.exception(self.name + ': Invalid label. Label must not contain a space')
             return False
 
         if label:
             try:
                 labels = self.client.label.get_labels()
                 if label not in labels:
-                    logger.log(self.name + ': ' + label + " label does not exist in Deluge we must add it", logger.DEBUG)
+                    logger.debug(self.name + ': ' + label + " label does not exist in Deluge we must add it")
                     self.client.labels.add(label)
-                    logger.log(self.name + ': ' + label + " label added to Deluge", logger.DEBUG)
+                    logger.debug(self.name + ': ' + label + " label added to Deluge")
 
                 self.client.label.set_torrent(result.hash, label)
             except:
-                logger.log(self.name + ': ' + "label plugin not detected", logger.DEBUG)
+                logger.debug(self.name + ': ' + "label plugin not detected")
                 return False
 
-        logger.log(self.name + ': ' + label + " label added to torrent", logger.DEBUG)
+        logger.debug(self.name + ': ' + label + " label added to torrent")
         return True
 
     def testAuthentication(self):

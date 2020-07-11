@@ -59,7 +59,7 @@ class Notifier(object):
         id = sickbeard.JOIN_ID if id is None else id
         apikey = sickbeard.JOIN_APIKEY if apikey is None else apikey
 
-        logger.log('Join in use with device ID: {0}'.format(id), logger.DEBUG)
+        logger.debug('Join in use with device ID: {0}'.format(id))
 
         message = '{0} : {1}'.format(title.encode(), msg.encode())
         params = {
@@ -71,17 +71,17 @@ class Notifier(object):
         }
         payload = urllib.parse.urlencode(params)
         join_api = 'https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush?' + payload
-        logger.log('Join url in use : {0}'.format(join_api), logger.DEBUG)
+        logger.debug('Join url in use : {0}'.format(join_api))
         success = False
         try:
             urllib.request.urlopen(join_api)
             message = 'Join message sent successfully.'
-            logger.log('Join message returned : {0}'.format(message), logger.DEBUG)
+            logger.debug('Join message returned : {0}'.format(message))
             success = True
         except Exception as e:
             message = 'Error while sending Join message: {0} '.format(e)
         finally:
-            logger.log(message, logger.INFO)
+            logger.info(message)
             return success, message
 
     def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
@@ -151,9 +151,9 @@ class Notifier(object):
         """
 
         if not (force or sickbeard.USE_JOIN):
-            logger.log('Notification for Join not enabled, skipping this notification', logger.DEBUG)
+            logger.debug('Notification for Join not enabled, skipping this notification')
             return False, 'Disabled'
 
-        logger.log('Sending a Join message for {0}'.format(message), logger.DEBUG)
+        logger.debug('Sending a Join message for {0}'.format(message))
 
         return self._send_join_msg(title, message, id, apikey)

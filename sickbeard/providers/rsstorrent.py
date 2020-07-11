@@ -135,7 +135,7 @@ class TorrentRssProvider(TorrentProvider):
                 name = values[0]
                 url = values[1]
         except ValueError:
-            logger.log('Skipping RSS Torrent provider string: {0}, incorrect format'.format(config), logger.ERROR)
+            logger.exception('Skipping RSS Torrent provider string: {0}, incorrect format'.format(config))
             return None
 
         new_provider = TorrentRssProvider(
@@ -194,10 +194,10 @@ class TorrentRssProvider(TorrentProvider):
             fileOut.close()
             helpers.chmodAsParent(dumpName)
         except IOError as error:
-            logger.log('Unable to save the file: {0}'.format(str(error)), logger.ERROR)
+            logger.exception('Unable to save the file: {0}'.format(str(error)))
             return False
 
-        logger.log('Saved custom_torrent html dump {0} '.format(dumpName), logger.INFO)
+        logger.info('Saved custom_torrent html dump {0} '.format(dumpName))
         return True
 
 

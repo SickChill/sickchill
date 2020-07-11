@@ -110,7 +110,7 @@ class ApiHandler(RequestHandler):
         }
 
         access_msg = "API :: " + self.request.remote_ip + " - gave correct API KEY. ACCESS GRANTED"
-        logger.log(access_msg, logger.DEBUG)
+        logger.debug(access_msg)
 
         # set the original call_dispatcher as the local _call_dispatcher
         _call_dispatcher = self.call_dispatcher
@@ -124,7 +124,7 @@ class ApiHandler(RequestHandler):
         try:
             out_dict = _call_dispatcher(args, kwargs)
         except Exception as e:  # real internal error oohhh nooo :(
-            logger.log("API :: " + str(e), logger.ERROR)
+            logger.exception("API :: " + str(e))
             error_data = {
                 "error_msg": str(e),
                 "args": args,
@@ -156,7 +156,7 @@ class ApiHandler(RequestHandler):
             if callback:
                 out = callback + '(' + out + ');'  # wrap with JSONP call if requested
         except Exception as e:  # if we fail to generate the output fake an error
-            logger.log("API :: " + traceback.format_exc(), logger.DEBUG)
+            logger.debug("API :: " + traceback.format_exc())
             out = '{{"result": "{0}", "message": "error while composing output: {1}"}}'.format(result_type_map[RESULT_ERROR], str(e))
         return out
 
@@ -166,8 +166,8 @@ class ApiHandler(RequestHandler):
             or calls the TVDBShorthandWrapper when the first args element is a number
             or returns an error that there is no such cmd
         """
-        logger.log("API :: all args: '" + str(args) + "'", logger.DEBUG)
-        logger.log("API :: all kwargs: '" + str(kwargs) + "'", logger.DEBUG)
+        logger.debug("API :: all args: '" + str(args) + "'")
+        logger.debug("API :: all kwargs: '" + str(kwargs) + "'")
 
         commands = None
         if args:
@@ -186,7 +186,7 @@ class ApiHandler(RequestHandler):
                 else:
                     cmd_index = None
 
-                logger.log("API :: " + cmd + ": cur_kwargs " + str(cur_kwargs), logger.DEBUG)
+                logger.debug("API :: " + cmd + ": cur_kwargs " + str(cur_kwargs))
                 if not (cmd in ('show.getbanner', 'show.getfanart', 'show.getnetworklogo', 'show.getposter') and
                             multi_commands):  # skip these cmd while chaining
                     try:
@@ -407,7 +407,7 @@ class ApiCall(ApiHandler):
         elif arg_type == "ignore":
             pass
         else:
-            logger.log('API :: Invalid param type: "{0}" can not be checked. Ignoring it.'.format(str(arg_type)), logger.ERROR)
+            logger.exception('API :: Invalid param type: "{0}" can not be checked. Ignoring it.'.format(str(arg_type)))
 
         if error:
             # this is a real ApiError !!
@@ -1035,7 +1035,7 @@ class CMDEpisodeSetStatus(ApiCall):
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(show_obj, segment)
                 sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)  # @UndefinedVariable
 
-                logger.log("API :: Starting backlog for " + show_obj.name + " season " + str(
+                logger.info("API :: Starting backlog for " + show_obj.name + " season " + str(
                     season) + " because some episodes were set to WANTED")
 
             extra_msg = " Backlog started"
@@ -1302,8 +1302,8 @@ class CMDLogs(ApiCall):
         min_level = logger.LOGGING_LEVELS[str(self.min_level).upper()]
 
         data = []
-        if os.path.isfile(logger.log_file):
-            with io.open(logger.log_file, 'r', encoding='utf-8') as f:
+        if os.path.isfile(logger.info_file):
+            with io.open(logger.info_file, 'r', encoding='utf-8') as f:
                 data = f.readlines()
 
         regex = r"^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
@@ -1758,12 +1758,12 @@ class CMDSickBeardSearchIndexers(ApiCall):
         elif self.indexerid:
             indexer, result = sickchill.indexer.search_indexers_for_series_id(indexerid=self.indexerid, language=self.lang)
             if not indexer:
-                logger.log("API :: Unable to find show with id " + str(self.indexerid), logger.WARNING)
+                logger.warn("API :: Unable to find show with id " + str(self.indexerid))
                 return _responds(RESULT_SUCCESS, {"results": [], "langid": lang_id})
 
             if not result.seriesName:
-                logger.log(
-                    "API :: Found show with indexerid: " + str(self.indexerid) + ", however it contained no show name", logger.DEBUG)
+                logger.debug(
+                    "API :: Found show with indexerid: " + str(self.indexerid) + ", however it contained no show name")
                 return _responds(RESULT_FAILURE, msg="Show contains no name, invalid result")
 
             results = [{
@@ -2222,11 +2222,11 @@ class CMDShowAddNew(ApiCall):
 
         # don't create show dir if config says not to
         if sickbeard.ADD_SHOWS_WO_DIR:
-            logger.log("Skipping initial creation of " + show_path + " due to config.ini setting")
+            logger.info("Skipping initial creation of " + show_path + " due to config.ini setting")
         else:
             dir_exists = helpers.makeDir(show_path)
             if not dir_exists:
-                logger.log("API :: Unable to create the folder " + show_path + ", can't add the show", logger.ERROR)
+                logger.exception("API :: Unable to create the folder " + show_path + ", can't add the show")
                 return _responds(RESULT_FAILURE, {"path": show_path},
                                  "Unable to create the folder " + show_path + ", can't add the show")
             else:
@@ -2797,7 +2797,7 @@ class CMDShowUpdate(ApiCall):
             sickbeard.showQueueScheduler.action.update_show(show_obj, True)  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg=str(show_obj.name) + " has queued to be updated")
         except CantUpdateShowException as e:
-            logger.log("API::Unable to update show: {0}".format(e), logger.DEBUG)
+            logger.debug("API::Unable to update show: {0}".format(e))
             return _responds(RESULT_FAILURE, msg="Unable to update " + str(show_obj.name))
 
 

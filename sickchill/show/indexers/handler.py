@@ -130,7 +130,7 @@ class ShowIndexer(object):
             for i in indexer:
                 search = (name, indexerid)[bool(indexerid)]
                 # noinspection PyUnresolvedReferences
-                logger.log("Trying to find {} on {}".format(search, self.name(i)), logger.DEBUG)
+                logger.debug("Trying to find {} on {}".format(search, self.name(i)))
                 if indexerid:
                     result = self.indexers[i].get_series_by_id(indexerid, language)
                 else:
@@ -141,7 +141,7 @@ class ShowIndexer(object):
                     garbage = result.seriesName, result.id
                 except AttributeError:
                     # noinspection PyUnresolvedReferences
-                    logger.log("Failed to find {} on {}".format(search, self.name(i)), logger.DEBUG)
+                    logger.debug("Failed to find {} on {}".format(search, self.name(i)))
                     continue
 
                 ShowObj = Show.find(sickbeard.showList, result.id)

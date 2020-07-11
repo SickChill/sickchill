@@ -382,30 +382,30 @@ def setup_github():
             sickbeard.gh.get_organization(sickbeard.GIT_ORG)
     except BadCredentialsException as error:
         sickbeard.gh = None
-        sickbeard.logger.log(_('Unable to setup GitHub properly with your github token. Please check your credentials. Error: {0}').format(error),
+        sickbeard.logger.info(_('Unable to setup GitHub properly with your github token. Please check your credentials. Error: {0}').format(error),
                              sickbeard.logger.WARNING)
     except TwoFactorException as error:
         sickbeard.gh = None
-        sickbeard.logger.log(_('Unable to setup GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {0}').format(
+        sickbeard.logger.info(_('Unable to setup GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {0}').format(
             error), sickbeard.logger.WARNING)
     except RateLimitExceededException as error:
         sickbeard.gh = None
         if sickbeard.GIT_TOKEN:
-            sickbeard.logger.log(
+            sickbeard.logger.info(
                 _('Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests. Error: {0}').format(error), sickbeard.logger.WARNING)
         else:
-            sickbeard.logger.log(
+            sickbeard.logger.info(
                 _('Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests - Try adding an access token. Error: {0}').format(error), sickbeard.logger.WARNING)
     except UnknownObjectException as error:
         sickbeard.gh = None
-        sickbeard.logger.log(_('Unable to setup GitHub properly, it seems to be down or your organization/repo is set wrong. Error: {0}').format(error),
+        sickbeard.logger.info(_('Unable to setup GitHub properly, it seems to be down or your organization/repo is set wrong. Error: {0}').format(error),
                              sickbeard.logger.WARNING)
     except BadUserAgentException as error:
         sickbeard.gh = None
-        sickbeard.logger.log(_('Unable to setup GitHub properly, GitHub doesn\'t like the user-agent. Error: {0}').format(error), sickbeard.logger.WARNING)
+        sickbeard.logger.info(_('Unable to setup GitHub properly, GitHub doesn\'t like the user-agent. Error: {0}').format(error), sickbeard.logger.WARNING)
     except BadAttributeException as error:
         sickbeard.gh = None
-        sickbeard.logger.log(_('Unable to setup GitHub properly, There might be an error with the library. Error: {0}').format(error), sickbeard.logger.ERROR)
+        sickbeard.logger.info(_('Unable to setup GitHub properly, There might be an error with the library. Error: {0}').format(error), sickbeard.logger.ERROR)
     except (GithubException, Exception) as error:
             sickbeard.gh = None
-            sickbeard.logger.log(_('Unable to setup GitHub properly. GitHub will not be available. Error: {0}').format(error), sickbeard.logger.ERROR)
+            sickbeard.logger.info(_('Unable to setup GitHub properly. GitHub will not be available. Error: {0}').format(error), sickbeard.logger.ERROR)

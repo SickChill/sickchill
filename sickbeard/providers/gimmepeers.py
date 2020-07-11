@@ -64,7 +64,7 @@ class GimmePeersProvider(TorrentProvider):
 
     def _check_auth(self):
         if not self.username or not self.password:
-            logger.log("Invalid username or password. Check your settings", logger.WARNING)
+            logger.warn("Invalid username or password. Check your settings")
 
         return True
 
@@ -80,11 +80,11 @@ class GimmePeersProvider(TorrentProvider):
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
-            logger.log("Unable to connect to provider", logger.WARNING)
+            logger.warn("Unable to connect to provider")
             return False
 
         if re.search('Username or password incorrect!', response):
-            logger.log("Invalid username or password. Check your settings", logger.WARNING)
+            logger.warn("Invalid username or password. Check your settings")
             return False
 
         return True
@@ -96,11 +96,11 @@ class GimmePeersProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.debug("Search Mode: {0}".format(mode))
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log("Search string: {0}".format
-                               (search_string.decode("utf-8")), logger.DEBUG)
+                    logger.debug("Search string: {0}".format
+                               (search_string.decode("utf-8")))
 
                 self.search_params['search'] = search_string
 
@@ -111,7 +111,7 @@ class GimmePeersProvider(TorrentProvider):
                 # Checks if cookie has timed-out causing search to redirect to login page.
                 # If text matches on loginpage we login and generate a new cookie and load the search data again.
                 if re.search('Still need help logging in?', data):
-                    logger.log("Login has timed out. Need to generate new cookie for GimmePeers and search again.", logger.DEBUG)
+                    logger.debug("Login has timed out. Need to generate new cookie for GimmePeers and search again.")
                     self.session.cookies.clear()
                     self.login()
 
@@ -126,7 +126,7 @@ class GimmePeersProvider(TorrentProvider):
 
                         # Continue only if one Release is found
                         if len(torrent_rows) < 2:
-                            logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
+                            logger.debug("Data returned from provider does not contain any torrents")
                             continue
 
                         for result in torrent_rows[1:]:
@@ -150,8 +150,8 @@ class GimmePeersProvider(TorrentProvider):
                                 # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                               (title, seeders, leechers), logger.DEBUG)
+                                    logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                               (title, seeders, leechers))
                                 continue
 
                             if seeders >= 32768 or leechers >= 32768:
@@ -159,12 +159,12 @@ class GimmePeersProvider(TorrentProvider):
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
-                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                             items.append(item)
 
                 except Exception:
-                    logger.log("Failed parsing provider. Traceback: {0}".format(traceback.format_exc()), logger.WARNING)
+                    logger.warn("Failed parsing provider. Traceback: {0}".format(traceback.format_exc()))
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

@@ -160,7 +160,7 @@ class ConfigPostProcessing(Config):
 
         if results:
             for x in results:
-                logger.log(x, logger.WARNING)
+                logger.warn(x)
             ui.notifications.error(_('Error(s) Saving Configuration'), '<br>\n'.join(results))
         else:
             ui.notifications.message(_('Configuration Saved'), os.path.join(sickbeard.CONFIG_FILE))
@@ -210,5 +210,5 @@ class ConfigPostProcessing(Config):
         """
         check = config.change_unrar_tool(sickbeard.UNRAR_TOOL, sickbeard.ALT_UNRAR_TOOL)
         if not check:
-            logger.log('Looks like unrar is not installed, check failed', logger.WARNING)
+            logger.warn('Looks like unrar is not installed, check failed')
         return ('not supported', 'supported')[check]

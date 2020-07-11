@@ -156,7 +156,7 @@ class ConfigProviders(Config):
 
         # add all the newznab info we got into our list
         # if not newznab_string:
-        #     logger.log('No newznab_string passed to saveProviders', logger.DEBUG)
+        #     logger.debug('No newznab_string passed to saveProviders')
 
         for curNewznabProviderStr in newznab_string.split('!!!'):
             if not curNewznabProviderStr:
@@ -195,7 +195,7 @@ class ConfigProviders(Config):
                     del newznabProviderDict[curProvider.get_id()]
 
         # if not torrentrss_string:
-        #     logger.log('No torrentrss_string passed to saveProviders', logger.DEBUG)
+        #     logger.debug('No torrentrss_string passed to saveProviders')
 
         torrentRssProviderDict = dict(
             zip((x.get_id() for x in sickbeard.torrentRssProviderList), sickbeard.torrentRssProviderList))

@@ -47,7 +47,7 @@ class OmgwtfnzbsProvider(NZBProvider):
     def _check_auth(self):
 
         if not self.username or not self.api_key:
-            logger.log('Invalid api key. Check your settings', logger.WARNING)
+            logger.warn('Invalid api key. Check your settings')
             return False
 
         return True
@@ -64,9 +64,9 @@ class OmgwtfnzbsProvider(NZBProvider):
         if 'notice' in parsed_data:
             description_text = parsed_data.get('notice')
             if 'information is incorrect' in description_text:
-                logger.log('Invalid api key. Check your settings', logger.WARNING)
+                logger.warn('Invalid api key. Check your settings')
             elif '0 results matched your terms' not in description_text:
-                logger.log('Unknown error: {0}'.format(description_text), logger.DEBUG)
+                logger.debug('Unknown error: {0}'.format(description_text))
             return False
 
         return True
@@ -92,16 +92,16 @@ class OmgwtfnzbsProvider(NZBProvider):
 
         for mode in search_strings:
             items = []
-            logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
+            logger.debug('Search Mode: {0}'.format(mode))
             for search_string in search_strings[mode]:
                 search_params['search'] = search_string
                 if mode != 'RSS':
-                    logger.log('Search string: {0}'.format
-                               (search_string.decode('utf-8')), logger.DEBUG)
+                    logger.debug('Search string: {0}'.format
+                               (search_string.decode('utf-8')))
 
                 data = self.get_url(self.urls['api'], params=search_params, returns='json')
                 if not data:
-                    logger.log('No data returned from provider', logger.DEBUG)
+                    logger.debug('No data returned from provider')
                     continue
 
                 if not self._check_auth_from_data(data, is_XML=False):
@@ -111,7 +111,7 @@ class OmgwtfnzbsProvider(NZBProvider):
                     if not self._get_title_and_url(item):
                         continue
 
-                    logger.log('Found result: {0}'.format(item.get('release')), logger.DEBUG)
+                    logger.debug('Found result: {0}'.format(item.get('release')))
                     items.append(item)
 
             results += items

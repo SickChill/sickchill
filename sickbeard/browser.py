@@ -145,7 +145,7 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=None)
     try:
         file_list = getFileList(path, includeFiles, fileTypes)
     except OSError as e:
-        logger.log('Unable to open {0}: {1} / {2}'.format(path, repr(e), str(e)), logger.WARNING)
+        logger.warn('Unable to open {0}: {1} / {2}'.format(path, repr(e), str(e)))
         file_list = getFileList(parent_path, includeFiles, fileTypes)
 
     entries = [{'currentPath': path}]

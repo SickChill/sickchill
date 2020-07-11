@@ -174,7 +174,7 @@ class NewznabProvider(NZBProvider):
         data = self.get_url(urljoin(self.url, 'api'), params=url_params, returns='text')
         if not data:
             error_string = 'Error getting caps xml for [{0}]'.format(self.name)
-            logger.log(error_string, logger.WARNING)
+            logger.warn(error_string)
             return False, return_categories, error_string
 
         with BS4Parser(data, 'html5lib') as html:
@@ -185,7 +185,7 @@ class NewznabProvider(NZBProvider):
 
             if not html.find('categories'):
                 error_string = 'Error parsing caps xml for [{0}]'.format(self.name)
-                logger.log(error_string, logger.DEBUG)
+                logger.debug(error_string)
                 return False, return_categories, error_string
 
             self.caps = html.find('searching')
@@ -216,7 +216,7 @@ class NewznabProvider(NZBProvider):
         Returns: True/False
         """
         if self.needs_auth and not self.key:
-            logger.log('Invalid api key. Check your settings', logger.WARNING)
+            logger.warn('Invalid api key. Check your settings')
             return False
 
         return True
@@ -236,7 +236,7 @@ class NewznabProvider(NZBProvider):
         except (AttributeError, TypeError):
             return self._check_auth()
 
-        logger.log(err_desc)
+        logger.info(err_desc)
 
         return False
 
@@ -262,7 +262,7 @@ class NewznabProvider(NZBProvider):
                 category_ids = values[3]
                 enabled = values[4]
         except ValueError:
-            logger.log('Skipping Newznab provider string: \'{0}\', incorrect format'.format(config), logger.ERROR)
+            logger.exception('Skipping Newznab provider string: \'{0}\', incorrect format'.format(config))
             return None
 
         new_provider = NewznabProvider(
@@ -324,11 +324,11 @@ class NewznabProvider(NZBProvider):
                 search_params.pop('season', '')
 
             items = []
-            logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
+            logger.debug('Search Mode: {0}'.format(mode))
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log('Search string: {0}'.format
-                               (search_string.decode('utf-8')), logger.DEBUG)
+                    logger.debug('Search string: {0}'.format
+                               (search_string.decode('utf-8')))
 
                     if 'tvdbid' not in search_params:
                         search_params['q'] = search_string

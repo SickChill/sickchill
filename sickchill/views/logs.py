@@ -94,7 +94,7 @@ class ErrorLogs(WebRoot):
         log_filter = self.get_body_argument('log_filter', "<NONE>")
         log_search = self.get_body_argument('log_search', '')
         max_lines = try_int(self.get_body_argument('max_lines', 500), 500)
-        data = sickbeard.logger.log_data(min_level, log_filter, log_search, max_lines)
+        data = sickbeard.logger.info_data(min_level, log_filter, log_search, max_lines)
 
         t = PageTemplate(rh=self, filename="viewlogs.mako")
         return t.render(
@@ -105,7 +105,7 @@ class ErrorLogs(WebRoot):
 
     def submit_errors(self):
         submitter_result, issue_id = logger.submit_errors()
-        logger.log(submitter_result, (logger.INFO, logger.WARNING)[not issue_id])
+        logger.warn(submitter_result, (logger.INFO)[not issue_id])
         submitter_notification = ui.notifications.error if not issue_id else ui.notifications.message
         submitter_notification(submitter_result)
 

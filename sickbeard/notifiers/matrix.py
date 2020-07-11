@@ -79,8 +79,8 @@ class Notifier(object):
     def _send_matrix(self, message=None):
         url = 'https://{0}/_matrix/client/r0/rooms/{1}/send/m.room.message/{2}?access_token={3}'.format(sickbeard.MATRIX_SERVER, sickbeard.MATRIX_ROOM, time.time(), sickbeard.MATRIX_API_TOKEN)
 
-        logger.log("Sending matrix message: " + message.encode('ascii', 'xmlcharrefreplace'), logger.INFO)
-        logger.log("Sending matrix message to url: " + url, logger.INFO)
+        logger.info("Sending matrix message: " + message.encode('ascii', 'xmlcharrefreplace'))
+        logger.info("Sending matrix message to url: " + url)
 
         if isinstance(message, six.text_type):
             message = message.encode('utf-8')
@@ -98,7 +98,7 @@ class Notifier(object):
             r.raise_for_status()
 
         except Exception as e:
-            logger.log("Error Sending Matrix message: " + str(e), logger.ERROR)
+            logger.exception("Error Sending Matrix message: " + str(e))
             return False
 
         return True
@@ -113,5 +113,5 @@ class Notifier(object):
     def _parseEp(ep_name):
         sep = ' - '
         titles = ep_name.split(sep)
-        logger.log('TITLES: {0}'.format(titles), logger.DEBUG)
+        logger.debug('TITLES: {0}'.format(titles))
         return titles

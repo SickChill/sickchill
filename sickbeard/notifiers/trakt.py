@@ -87,7 +87,7 @@ class Notifier(object):
                 trakt_api.traktRequest("sync/collection", data, method='POST')
 
             except (traktException, traktAuthException, traktServerBusy) as e:
-                logger.log("Could not connect to Trakt service: {0}".format(str(e)), logger.WARNING)
+                logger.warn("Could not connect to Trakt service: {0}".format(str(e)))
 
     @staticmethod
     def update_watchlist(show_obj=None, s=None, e=None, data_show=None, data_episode=None, update="add"):
@@ -123,7 +123,7 @@ class Notifier(object):
                 elif data_show is not None:
                     data.update(data_show)
                 else:
-                    logger.log("there's a coding problem contact developer. It's needed to be provided at lest one of the two: data_show or show_obj", logger.WARNING)
+                    logger.warn("there's a coding problem contact developer. It's needed to be provided at lest one of the two: data_show or show_obj")
                     return False
 
                 if data_episode is not None:
@@ -160,7 +160,7 @@ class Notifier(object):
                 trakt_api.traktRequest(trakt_url, data, method='POST')
 
             except (traktException, traktAuthException, traktServerBusy) as e:
-                logger.log("Could not connect to Trakt service: {0}".format(str(e)), logger.WARNING)
+                logger.warn("Could not connect to Trakt service: {0}".format(str(e)))
                 return False
 
         return True
@@ -226,5 +226,5 @@ class Notifier(object):
             else:
                 return "Test notice sent successfully to Trakt"
         except (traktException, traktAuthException, traktServerBusy) as e:
-            logger.log("Could not connect to Trakt service: {0}".format(str(e)), logger.WARNING)
+            logger.warn("Could not connect to Trakt service: {0}".format(str(e)))
             return "Test notice failed to Trakt: {0}".format(str(e))

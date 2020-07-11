@@ -45,7 +45,7 @@ def sendNZB(nzb, proper=False):
     :param proper: True if this is a Proper download, False if not. Defaults to False
     '''
     if sickbeard.NZBGET_HOST is None:
-        logger.log('No NZBget host found in configuration. Please configure it.', logger.WARNING)
+        logger.warn('No NZBget host found in configuration. Please configure it.')
         return False
 
     addToTop = False
@@ -63,21 +63,21 @@ def sendNZB(nzb, proper=False):
     nzbGetRPC = xmlrpc_client.ServerProxy(url)
     try:
         if nzbGetRPC.writelog('INFO', 'SickChill connected to drop off {0} any moment now.'.format(nzb.name + '.nzb')):
-            logger.log('Successful connected to NZBget', logger.DEBUG)
+            logger.debug('Successful connected to NZBget')
         else:
-            logger.log('Successful connected to NZBget, but unable to send a message', logger.WARNING)
+            logger.warn('Successful connected to NZBget, but unable to send a message')
 
     except http_client.socket.error:
-        logger.log(
+        logger.info(
             'Please check your NZBget host and port (if it is running). NZBget is not responding to this combination',
             logger.WARNING)
         return False
 
     except xmlrpc_client.ProtocolError as e:
         if e.errmsg == 'Unauthorized':
-            logger.log('NZBget username or password is incorrect.', logger.WARNING)
+            logger.warn('NZBget username or password is incorrect.')
         else:
-            logger.log('Protocol Error: ' + e.errmsg, logger.ERROR)
+            logger.exception('Protocol Error: ' + e.errmsg)
         return False
 
     dupekey = ''
@@ -108,8 +108,8 @@ def sendNZB(nzb, proper=False):
         data = nzb.extraInfo[0]
         nzbcontent64 = standard_b64encode(data)
 
-    logger.log('Sending NZB to NZBget')
-    logger.log('URL: ' + url, logger.DEBUG)
+    logger.info('Sending NZB to NZBget')
+    logger.debug('URL: ' + url)
 
     try:
         # Find out if nzbget supports priority (Version 9.0+), old versions beginning with a 0.x will use the old command
@@ -153,11 +153,11 @@ def sendNZB(nzb, proper=False):
                                                     nzb.url)
 
         if nzbget_result:
-            logger.log('NZB sent to NZBget successfully', logger.DEBUG)
+            logger.debug('NZB sent to NZBget successfully')
             return True
         else:
-            logger.log('NZBget could not add {0} to the queue'.format(nzb.name + '.nzb'), logger.WARNING)
+            logger.warn('NZBget could not add {0} to the queue'.format(nzb.name + '.nzb'))
             return False
     except Exception:
-        logger.log('Connect Error to NZBget: could not add {0} to the queue'.format(nzb.name + '.nzb'), logger.WARNING)
+        logger.warn('Connect Error to NZBget: could not add {0} to the queue'.format(nzb.name + '.nzb'))
         return False

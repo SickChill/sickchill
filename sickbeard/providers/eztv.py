@@ -62,21 +62,21 @@ class EZTVProvider(TorrentProvider):
         # Just doing the first page of results, because there is no search filter
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.debug("Search Mode: {0}".format(mode))
 
             if mode != "RSS":
                 if not (self.show and self.show.imdbid):
                     continue
 
                 search_params["imdb_id"] = self.show.imdbid.strip('tt')
-                logger.log("Search string: {}".format(self.show.imdbid), logger.DEBUG)
+                logger.debug("Search string: {}".format(self.show.imdbid))
             else:
                 search_params.pop('imdb_id')
 
             data = self.get_url(self.api, params=search_params, returns="json")
 
             if not (data and isinstance(data, dict) and 'torrents' in data):
-                logger.log("URL did not return data", logger.DEBUG)
+                logger.debug("URL did not return data")
                 continue
 
             for result in data['torrents']:
@@ -94,16 +94,16 @@ class EZTVProvider(TorrentProvider):
                     # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != "RSS":
-                            logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                       (title, seeders, leechers), logger.DEBUG)
+                            logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                       (title, seeders, leechers))
                         continue
 
                     torrent_size = try_int(result['size_bytes'])
 
                     item = {'title': title, 'link': link, 'size': torrent_size, 'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
                     if mode != "RSS":
-                        logger.log("Found result: {0} with {1} seeders and {2} leechers".format
-                                   (title, seeders, leechers), logger.DEBUG)
+                        logger.debug("Found result: {0} with {1} seeders and {2} leechers".format
+                                   (title, seeders, leechers))
 
                     items.append(item)
                 except StandardError:

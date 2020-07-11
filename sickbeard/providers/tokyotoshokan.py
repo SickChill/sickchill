@@ -57,11 +57,11 @@ class TokyoToshokanProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.debug("Search Mode: {0}".format(mode))
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log("Search string: {0}".format
-                               (search_string.decode("utf-8")), logger.DEBUG)
+                    logger.debug("Search string: {0}".format
+                               (search_string.decode("utf-8")))
 
                 search_params = {
                     "terms": search_string,
@@ -78,7 +78,7 @@ class TokyoToshokanProvider(TorrentProvider):
 
                     # Continue only if one Release is found
                     if len(torrent_rows) < 2:
-                        logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
+                        logger.debug("Data returned from provider does not contain any torrents")
                         continue
 
                     a = 1 if len(torrent_rows[0]('td')) < 2 else 0
@@ -105,13 +105,13 @@ class TokyoToshokanProvider(TorrentProvider):
                         # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                           (title, seeders, leechers), logger.DEBUG)
+                                logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                           (title, seeders, leechers))
                             continue
 
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         if mode != 'RSS':
-                            logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                         items.append(item)
 

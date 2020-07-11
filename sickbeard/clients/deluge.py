@@ -51,7 +51,7 @@ class Client(GenericClient, DelugeBase):
         try:
             self.response = self.session.post(self.url, data=post_data.encode('utf-8'), verify=sickbeard.TORRENT_VERIFY_CERT)
         except Exception as e:
-            logger.log(e.message)
+            logger.info(e.message)
             return None
 
         self.auth = self.response.json()["result"]
@@ -78,7 +78,7 @@ class Client(GenericClient, DelugeBase):
 
             hosts = self.response.json()['result']
             if not hosts:
-                logger.log(self.name + ': WebUI does not contain daemons', logger.ERROR)
+                logger.exception(self.name + ': WebUI does not contain daemons')
                 return None
 
             post_data = json.dumps({"method": "web.connect",
@@ -101,7 +101,7 @@ class Client(GenericClient, DelugeBase):
 
             connected = self.response.json()['result']
             if not connected:
-                logger.log(self.name + ': WebUI could not connect to daemon', logger.ERROR)
+                logger.exception(self.name + ': WebUI could not connect to daemon')
                 return None
 
         return self.auth
@@ -134,7 +134,7 @@ class Client(GenericClient, DelugeBase):
         if result.show.is_anime:
             label = sickbeard.TORRENT_LABEL_ANIME.lower()
         if ' ' in label:
-            logger.log(self.name + ': Invalid label. Label must not contain a space', logger.ERROR)
+            logger.exception(self.name + ': Invalid label. Label must not contain a space')
             return False
 
         if label:
@@ -148,14 +148,14 @@ class Client(GenericClient, DelugeBase):
 
             if labels is not None:
                 if label not in labels:
-                    logger.log(self.name + ': ' + label + " label does not exist in Deluge we must add it",
+                    logger.info(self.name + ': ' + label + " label does not exist in Deluge we must add it",
                                logger.DEBUG)
                     post_data = json.dumps({"method": 'label.add',
                                             "params": [label],
                                             "id": 4})
 
                     self._request(method='post', data=post_data)
-                    logger.log(self.name + ': ' + label + " label added to Deluge", logger.DEBUG)
+                    logger.debug(self.name + ': ' + label + " label added to Deluge")
 
                 # add label to torrent
                 post_data = json.dumps({"method": 'label.set_torrent',
@@ -163,9 +163,9 @@ class Client(GenericClient, DelugeBase):
                                         "id": 5})
 
                 self._request(method='post', data=post_data)
-                logger.log(self.name + ': ' + label + " label added to torrent", logger.DEBUG)
+                logger.debug(self.name + ': ' + label + " label added to torrent")
             else:
-                logger.log(self.name + ': ' + "label plugin not detected", logger.DEBUG)
+                logger.debug(self.name + ': ' + "label plugin not detected")
                 return False
 
         return not self.response.json()['error']

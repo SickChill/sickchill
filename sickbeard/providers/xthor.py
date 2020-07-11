@@ -47,7 +47,7 @@ class XThorProvider(TorrentProvider):
         if self.api_key:
             return True
 
-        logger.log('Your authentication credentials for {0} are missing, check your config.'.format(self.name), logger.WARNING)
+        logger.warn('Your authentication credentials for {0} are missing, check your config.'.format(self.name))
         return False
 
     def search(self, search_strings, age=0, ep_obj=None):
@@ -63,10 +63,10 @@ class XThorProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
+            logger.debug('Search Mode: {0}'.format(mode))
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log('Search string: ' + search_string.strip(), logger.DEBUG)
+                    logger.debug('Search string: ' + search_string.strip())
                     search_params['search'] = search_string
                 else:
                     search_params.pop('search', '')
@@ -74,24 +74,24 @@ class XThorProvider(TorrentProvider):
                 jdata = self.get_url(self.urls['search'], params=search_params, returns='json')
                 time.sleep(3)
                 if not jdata:
-                    logger.log('No data returned from provider', logger.DEBUG)
+                    logger.debug('No data returned from provider')
                     continue
 
                 error_code = jdata.pop('error', {})
                 if error_code.get('code'):
                     if error_code.get('code') != 2:
-                        logger.log('{0}'.format(error_code.get('descr', 'Error code 2 - no description available')), logger.WARNING)
+                        logger.warn('{0}'.format(error_code.get('descr', 'Error code 2 - no description available')))
                         return results
                     continue
 
                 account_ok = jdata.pop('user', {}).get('can_leech')
                 if not account_ok:
-                    logger.log('Sorry, your account is not allowed to download, check your ratio', logger.WARNING)
+                    logger.warn('Sorry, your account is not allowed to download, check your ratio')
                     return results
 
                 torrents = jdata.pop('torrents', None)
                 if not torrents:
-                    logger.log('Provider has no results for this search', logger.DEBUG)
+                    logger.debug('Provider has no results for this search')
                     continue
 
                 for torrent in torrents:
@@ -104,15 +104,15 @@ class XThorProvider(TorrentProvider):
                         seeders = torrent.get('seeders')
                         leechers = torrent.get('leechers')
                         if not seeders and mode != 'RSS':
-                            logger.log('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
-                                       (title, seeders, leechers), logger.DEBUG)
+                            logger.debug('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
+                                       (title, seeders, leechers))
                             continue
 
                         size = torrent.get('size') or -1
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
 
                         if mode != 'RSS':
-                            logger.log('Found result: {0} with {1} seeders and {2} leechers'.format(title, seeders, leechers), logger.DEBUG)
+                            logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format(title, seeders, leechers))
 
                         items.append(item)
                     except StandardError:

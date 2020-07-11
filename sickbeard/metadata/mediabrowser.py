@@ -123,7 +123,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             metadata_dir_name = os.path.join(os.path.dirname(ep_obj.location), 'metadata')
             xml_file_path = os.path.join(metadata_dir_name, xml_file_name)
         else:
-            logger.log("Episode location doesn't exist: " + str(ep_obj.location), logger.DEBUG)
+            logger.debug("Episode location doesn't exist: " + str(ep_obj.location))
             return ''
 
         return xml_file_path
@@ -180,10 +180,10 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 break
 
         if not season_dir:
-            logger.log("Unable to find a season dir for season " + str(season), logger.DEBUG)
+            logger.debug("Unable to find a season dir for season " + str(season))
             return None
 
-        logger.log("Using " + str(season_dir) + "/folder.jpg as season dir for season " + str(season), logger.DEBUG)
+        logger.debug("Using " + str(season_dir) + "/folder.jpg as season dir for season " + str(season))
 
         return os.path.join(show_obj.location, season_dir, 'folder.jpg')
 
@@ -221,10 +221,10 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 break
 
         if not season_dir:
-            logger.log("Unable to find a season dir for season " + str(season), logger.DEBUG)
+            logger.debug("Unable to find a season dir for season " + str(season))
             return None
 
-        logger.log("Using " + str(season_dir) + "/banner.jpg as season dir for season " + str(season), logger.DEBUG)
+        logger.debug("Using " + str(season_dir) + "/banner.jpg as season dir for season " + str(season))
 
         return os.path.join(show_obj.location, season_dir, 'banner.jpg')
 
@@ -240,12 +240,12 @@ class MediaBrowserMetadata(generic.GenericMetadata):
 
         myShow = sickchill.indexer.series(show_obj)
         if not myShow:
-            logger.log("Unable to find show with id {} on {}, skipping it".format(show_obj.indexerid, show_obj.indexer_name), logger.ERROR)
+            logger.exception("Unable to find show with id {} on {}, skipping it".format(show_obj.indexerid, show_obj.indexer_name))
             return False
 
         # check for title and id
         if not (getattr(myShow, 'seriesName', None) and getattr(myShow, 'id', None)):
-            logger.log("Incomplete info for show with id {} on {}, skipping it".format(show_obj.indexerid, show_obj.indexer_name))
+            logger.info("Incomplete info for show with id {} on {}, skipping it".format(show_obj.indexerid, show_obj.indexer_name))
             return False
 
         data = getattr(myShow, 'id', None)
@@ -374,7 +374,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
 
         myShow = ep_obj.idxr.series_from_episode(ep_obj)
         if not myShow:
-            logger.log("Unable to connect to {} while creating meta files - skipping".format(ep_obj.idxr.name))
+            logger.info("Unable to connect to {} while creating meta files - skipping".format(ep_obj.idxr.name))
             return False
 
         rootNode = etree.Element("Item")

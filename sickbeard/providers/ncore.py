@@ -61,11 +61,11 @@ class NcoreProvider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.log("Unable to connect to provider", logger.WARNING)
+            logger.warn("Unable to connect to provider")
             return False
 
         if re.search('images/warning.png', response):
-            logger.log("Invalid username or password. Check your settings", logger.WARNING)
+            logger.warn("Invalid username or password. Check your settings")
             return False
 
         return True
@@ -77,11 +77,11 @@ class NcoreProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.debug("Search Mode: {0}".format(mode))
 
             for search_string in search_strings[mode]:
                 if mode != "RSS":
-                    logger.log("Search string: {0}".format(search_string.decode("utf-8")), logger.DEBUG)
+                    logger.debug("Search string: {0}".format(search_string.decode("utf-8")))
 
                 url = self.urls['search'] % (search_string)
                 data = self.get_url(url, returns="text")
@@ -92,16 +92,16 @@ class NcoreProvider(TorrentProvider):
                   continue
 
                 if not isinstance(parsed_json, dict):
-                    logger.log("No data returned from provider", logger.DEBUG)
+                    logger.debug("No data returned from provider")
                     continue
 
                 torrent_results = parsed_json['total_results']
 
                 if not torrent_results:
-                    logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
+                    logger.debug("Data returned from provider does not contain any torrents")
                     continue
 
-                logger.log('Number of torrents found on nCore = ' + str(torrent_results), logger.INFO)
+                logger.info('Number of torrents found on nCore = ' + str(torrent_results))
 
                 for item in parsed_json['results']:
                     try:
@@ -115,14 +115,14 @@ class NcoreProvider(TorrentProvider):
 
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != "RSS":
-                                logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers), logger.DEBUG)
+                                logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers))
                             continue
 
                         torrent_size = item.pop("size", -1)
                         size = convert_size(torrent_size) or -1
 
                         if mode != "RSS":
-                            logger.log("Found result: {0} with {1} seeders and {2} leechers with a file size {3}".format(title, seeders, leechers, size), logger.DEBUG)
+                            logger.debug("Found result: {0} with {1} seeders and {2} leechers with a file size {3}".format(title, seeders, leechers, size))
 
                         result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         items.append(result)

@@ -66,7 +66,7 @@ def sendNZB(nzb):  # pylint:disable=too-many-return-statements, too-many-branche
     if nzb.priority:
         params['priority'] = 2 if sickbeard.SAB_FORCED else 1
 
-    logger.log('Sending NZB to SABnzbd')
+    logger.info('Sending NZB to SABnzbd')
     url = urljoin(sickbeard.SAB_HOST, 'api')
 
     if nzb.resultType == 'nzb':
@@ -79,10 +79,10 @@ def sendNZB(nzb):  # pylint:disable=too-many-return-statements, too-many-branche
         jdata = helpers.getURL(url, params=params, file=multiPartParams, session=session, returns='json', verify=False)
 
     if not jdata:
-        logger.log('Error connecting to sab, no data returned')
+        logger.info('Error connecting to sab, no data returned')
         return False
 
-    logger.log('Result text from SAB: {0}'.format(jdata), logger.DEBUG)
+    logger.debug('Result text from SAB: {0}'.format(jdata))
 
     result, error_ = _checkSabResponse(jdata)
     return result
@@ -96,7 +96,7 @@ def _checkSabResponse(jdata):
     :return: a list of (Boolean, string) which is True if SAB is not reporting an error
     '''
     if 'error' in jdata:
-        logger.log(jdata['error'], logger.ERROR)
+        logger.exception(jdata['error'])
         return False, jdata['error']
     else:
         return True, jdata

@@ -71,23 +71,23 @@ class TorrentzProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.debug("Search Mode: {0}".format(mode))
             for search_string in search_strings[mode]:
 
                 # Feed verified does not exist on this clone
                 # search_url = self.urls['verified'] if self.confirmed else self.urls['feed']
                 search_url = self.urls['feed']
                 if mode != 'RSS':
-                    logger.log("Search string: {0}".format
-                               (search_string.decode("utf-8")), logger.DEBUG)
+                    logger.debug("Search string: {0}".format
+                               (search_string.decode("utf-8")))
 
                 data = self.get_url(search_url, params={'f': search_string}, returns='text')
                 if not data:
-                    logger.log("No data returned from provider", logger.DEBUG)
+                    logger.debug("No data returned from provider")
                     continue
 
                 if not data.startswith("<?xml"):
-                    logger.log("Expected xml but got something else, is your mirror failing?", logger.INFO)
+                    logger.info("Expected xml but got something else, is your mirror failing?")
                     continue
 
                 try:
@@ -109,14 +109,14 @@ class TorrentzProvider(TorrentProvider):
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                               (title, seeders, leechers), logger.DEBUG)
+                                    logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                               (title, seeders, leechers))
                                 continue
 
                             result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': t_hash}
                             items.append(result)
                 except StandardError:
-                    logger.log("Failed parsing provider. Traceback: {0!r}".format(traceback.format_exc()), logger.ERROR)
+                    logger.exception("Failed parsing provider. Traceback: {0!r}".format(traceback.format_exc()))
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

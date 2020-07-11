@@ -107,7 +107,7 @@ class Scheduler(threading.Thread):
                     if should_run:
                         self.lastRun = current_time
                         if not self.silent:
-                            logger.log("Starting new thread: " + self.name, logger.DEBUG)
+                            logger.debug("Starting new thread: " + self.name)
                         self.action.run(self.force)
 
                     if self.force:
@@ -117,5 +117,5 @@ class Scheduler(threading.Thread):
             # exiting thread
             self.stop.clear()
         except Exception as e:
-            logger.log("Exception generated in thread " + self.name + ": " + str(e), logger.ERROR)
-            logger.log(repr(traceback.format_exc()), logger.DEBUG)
+            logger.exception("Exception generated in thread " + self.name + ": " + str(e))
+            logger.debug(repr(traceback.format_exc()))

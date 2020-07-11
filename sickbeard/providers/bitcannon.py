@@ -49,7 +49,7 @@ class BitCannonProvider(TorrentProvider):
         url = "http://localhost:3000/"
         if self.custom_url:
             if not validators.url(self.custom_url):
-                logger.log("Invalid custom url set, please check your settings", logger.WARNING)
+                logger.warn("Invalid custom url set, please check your settings")
                 return results
             url = self.custom_url
 
@@ -63,17 +63,17 @@ class BitCannonProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.debug("Search Mode: {0}".format(mode))
             for search_string in search_strings[mode]:
                 search_params["q"] = search_string
                 if mode != "RSS":
-                    logger.log("Search string: {0}".format
-                               (search_string.decode('utf-8')), logger.DEBUG)
+                    logger.debug("Search string: {0}".format
+                               (search_string.decode('utf-8')))
 
                 search_url = urljoin(url, "api/search")
                 parsed_json = self.get_url(search_url, params=search_params, returns="json")
                 if not parsed_json:
-                    logger.log("No data returned from provider", logger.DEBUG)
+                    logger.debug("No data returned from provider")
                     continue
 
                 if not self._check_auth_from_data(parsed_json):
@@ -97,7 +97,7 @@ class BitCannonProvider(TorrentProvider):
 
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != "RSS":
-                                logger.log("Discarding torrent because it doesn't meet the "
+                                logger.info("Discarding torrent because it doesn't meet the "
                                            "minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
@@ -105,8 +105,8 @@ class BitCannonProvider(TorrentProvider):
                         size = convert_size(result.pop("size", -1)) or -1
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         if mode != "RSS":
-                            logger.log("Found result: {0} with {1} seeders and {2} leechers".format
-                                       (title, seeders, leechers), logger.DEBUG)
+                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format
+                                       (title, seeders, leechers))
 
                         items.append(item)
                     except (AttributeError, TypeError, KeyError, ValueError):
@@ -124,7 +124,7 @@ class BitCannonProvider(TorrentProvider):
                     data.pop("status", 200) != 401,
                     data.pop("message", "") != "Invalid API key"]):
 
-            logger.log("Invalid api key. Check your settings", logger.WARNING)
+            logger.warn("Invalid api key. Check your settings")
             return False
 
         return True

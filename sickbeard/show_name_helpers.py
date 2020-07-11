@@ -84,12 +84,12 @@ def filter_bad_releases(name, parse=True, show=None):
         if parse:
             NameParser().parse(name)
     except InvalidNameException as error:
-        logger.log("{0}".format(error), logger.DEBUG)
+        logger.debug("{0}".format(error))
         return False
     except InvalidShowException:
         pass
     # except InvalidShowException as error:
-    #    logger.log(u"{0}".format(error), logger.DEBUG)
+    #    logger.debug(u"{0}".format(error))
     #    return False
 
     def clean_set(words):
@@ -105,7 +105,7 @@ def filter_bad_releases(name, parse=True, show=None):
 
     word = containsAtLeastOneWord(name, ignore_words)
     if word:
-        logger.log("Release: " + name + " contains " + word + ", ignoring it", logger.INFO)
+        logger.info("Release: " + name + " contains " + word + ", ignoring it")
         return False
 
     # if any of the good strings aren't in the name then say no
@@ -117,8 +117,8 @@ def filter_bad_releases(name, parse=True, show=None):
         require_words = require_words.difference(clean_set(sickbeard.IGNORE_WORDS))
 
     if require_words and not containsAtLeastOneWord(name, require_words):
-        logger.log("Release: " + name + " doesn't contain any of " + ', '.join(set(require_words)) +
-                   ", ignoring it", logger.INFO)
+        logger.info("Release: " + name + " doesn't contain any of " + ', '.join(set(require_words)) +
+                   ", ignoring it")
         return False
 
     return True
@@ -170,7 +170,7 @@ def determineReleaseName(dir_name=None, nzb_name=None):
     """Determine a release name from an nzb and/or folder name"""
 
     if nzb_name is not None:
-        logger.log("Using nzb_name for release name.")
+        logger.info("Using nzb_name for release name.")
         return nzb_name.rpartition('.')[0]
 
     if dir_name is None:
@@ -191,7 +191,7 @@ def determineReleaseName(dir_name=None, nzb_name=None):
             found_file = os.path.basename(results[0])
             found_file = found_file.rpartition('.')[0]
             if filter_bad_releases(found_file):
-                logger.log("Release name (" + found_file + ") found from file (" + results[0] + ")")
+                logger.info("Release name (" + found_file + ") found from file (" + results[0] + ")")
                 return found_file.rpartition('.')[0]
 
     # If that fails, we try the folder
@@ -200,7 +200,7 @@ def determineReleaseName(dir_name=None, nzb_name=None):
         # NOTE: Multiple failed downloads will change the folder name.
         # (e.g., appending #s)
         # Should we handle that?
-        logger.log("Folder name (" + folder + ") appears to be a valid release name. Using it.", logger.DEBUG)
+        logger.debug("Folder name (" + folder + ") appears to be a valid release name. Using it.")
         return folder
 
     return None

@@ -119,7 +119,7 @@ class SickChill(object):
             if os.path.isdir(cache_folder):
                 shutil.rmtree(cache_folder)
         except Exception:
-            logger.log('Unable to remove the cache/mako directory!', logger.WARNING)
+            logger.warn('Unable to remove the cache/mako directory!')
 
     @staticmethod
     def help_message():
@@ -252,14 +252,14 @@ class SickChill(object):
         # Build from the DB to start with
         self.load_shows_from_db()
 
-        logger.log('Starting SickChill [{branch}] using \'{config}\''.format
+        logger.info('Starting SickChill [{branch}] using \'{config}\''.format
                    (branch=sickbeard.BRANCH, config=sickbeard.CONFIG_FILE))
 
         self.clear_cache()
 
         web_options = {}
         if self.forced_port:
-            logger.log('Forcing web server to port {port}'.format(port=self.forced_port))
+            logger.info('Forcing web server to port {port}'.format(port=self.forced_port))
             self.start_port = self.forced_port
             web_options.update({
                 'port': int(self.start_port),
@@ -334,13 +334,13 @@ class SickChill(object):
         # Write pid
         if self.create_pid:
             pid = os.getpid()
-            logger.log('Writing PID: {pid} to {filename}'.format(pid=pid, filename=self.pid_file))
+            logger.info('Writing PID: {pid} to {filename}'.format(pid=pid, filename=self.pid_file))
 
             try:
                 with os.fdopen(os.open(self.pid_file, os.O_CREAT | os.O_WRONLY, 0o644), 'w') as f_pid:
                     f_pid.write('{0}\n'.format(pid))
             except EnvironmentError as error:
-                logger.log_error_and_exit('Unable to write PID file: {filename} Error {error_num}: {error_message}'.format
+                logger.info_error_and_exit('Unable to write PID file: {filename} Error {error_num}: {error_message}'.format
                                           (filename=self.pid_file, error_num=error.errno, error_message=error.strerror))
 
         # Redirect all output
@@ -378,7 +378,7 @@ class SickChill(object):
         """
         Populates the showList with shows from the database
         """
-        logger.log('Loading initial show list', logger.DEBUG)
+        logger.debug('Loading initial show list')
 
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select('SELECT indexer, indexer_id, location FROM tv_shows;')
@@ -390,9 +390,9 @@ class SickChill(object):
                 cur_show.nextEpisode()
                 sickbeard.showList.append(cur_show)
             except Exception as error:
-                logger.log('There was an error creating the show in {0}: Error {1}'.format
-                           (sql_show[b'location'], error), logger.ERROR)
-                logger.log(traceback.format_exc(), logger.DEBUG)
+                logger.exception('There was an error creating the show in {0}: Error {1}'.format
+                           (sql_show[b'location'], error))
+                logger.debug(traceback.format_exc())
 
     @staticmethod
     def restore_db(src_dir, dst_dir):
@@ -429,7 +429,7 @@ class SickChill(object):
 
             # shutdown web server
             if self.web_server:
-                logger.log('Shutting down Tornado')
+                logger.info('Shutting down Tornado')
                 self.web_server.shutdown()
 
                 try:
@@ -451,14 +451,14 @@ class SickChill(object):
                 if install_type in ('git', 'source'):
                     popen_list = [sys.executable, sickbeard.MY_FULLNAME]
                 elif install_type == 'win':
-                    logger.log('You are using a binary Windows build of SickChill. '
-                               'Please switch to using git.', logger.ERROR)
+                    logger.exception('You are using a binary Windows build of SickChill. '
+                               'Please switch to using git.')
 
                 if popen_list and not sickbeard.NO_RESTART:
                     popen_list += sickbeard.MY_ARGS
                     if '--nolaunch' not in popen_list:
                         popen_list += ['--nolaunch']
-                    logger.log('Restarting SickChill with {options}'.format(options=popen_list))
+                    logger.info('Restarting SickChill with {options}'.format(options=popen_list))
                     # shutdown the logger to make sure it's released the logfile BEFORE it restarts SR.
                     logger.shutdown()
                     subprocess.Popen(popen_list, cwd=os.getcwd())

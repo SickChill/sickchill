@@ -244,7 +244,7 @@ class PostProcessorTask(generic_queue.QueueItem):
 
         # noinspection PyBroadException
         try:
-            logger.log("Beginning {mode} post processing task: {info}".format(mode=self.mode, info=self.filename or self.directory))
+            logger.info("Beginning {mode} post processing task: {info}".format(mode=self.mode, info=self.filename or self.directory))
             self.last_result = process_dir(
                 process_path=self.directory,
                 release_name=self.filename,
@@ -255,12 +255,12 @@ class PostProcessorTask(generic_queue.QueueItem):
                 failed=self.failed,
                 mode=self.mode
             )
-            logger.log("{mode} post processing task for {info} completed".format(mode=self.mode.title(), info=self.filename or self.directory))
+            logger.info("{mode} post processing task for {info} completed".format(mode=self.mode.title(), info=self.filename or self.directory))
 
             # give the CPU a break
             time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
         except Exception:
-            logger.log(traceback.format_exc(), logger.DEBUG)
+            logger.debug(traceback.format_exc())
 
         super(PostProcessorTask, self).finish()
         self.finish()

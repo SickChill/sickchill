@@ -53,7 +53,7 @@ class Notifier(object):
         if apiKey is None:
             apiKey = sickbeard.FREEMOBILE_APIKEY
 
-        logger.log("Free Mobile in use with API KEY: " + apiKey, logger.DEBUG)
+        logger.debug("Free Mobile in use with API KEY: " + apiKey)
 
         # build up the URL and parameters
         msg = msg.strip()
@@ -68,27 +68,27 @@ class Notifier(object):
             if hasattr(e, 'code'):
                 if e.code == 400:
                     message = "Missing parameter(s)."
-                    logger.log(message, logger.ERROR)
+                    logger.exception(message)
                     return False, message
                 if e.code == 402:
                     message = "Too much SMS sent in a short time."
-                    logger.log(message, logger.ERROR)
+                    logger.exception(message)
                     return False, message
                 if e.code == 403:
                     message = "API service isn't enabled in your account or ID / API key is incorrect."
-                    logger.log(message, logger.ERROR)
+                    logger.exception(message)
                     return False, message
                 if e.code == 500:
                     message = "Server error. Please retry in few moment."
-                    logger.log(message, logger.ERROR)
+                    logger.exception(message)
                     return False, message
         except Exception as e:
             message = "Error while sending SMS: {0}".format(e)
-            logger.log(message, logger.ERROR)
+            logger.exception(message)
             return False, message
 
         message = "Free Mobile SMS successful."
-        logger.log(message, logger.INFO)
+        logger.info(message)
         return True, message
 
     def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
@@ -127,9 +127,9 @@ class Notifier(object):
         """
 
         if not sickbeard.USE_FREEMOBILE and not force:
-            logger.log("Notification for Free Mobile not enabled, skipping this notification", logger.DEBUG)
+            logger.debug("Notification for Free Mobile not enabled, skipping this notification")
             return False, "Disabled"
 
-        logger.log("Sending a SMS for " + message, logger.DEBUG)
+        logger.debug("Sending a SMS for " + message)
 
         return self._sendFreeMobileSMS(title, message, cust_id, apiKey)

@@ -126,16 +126,16 @@ class ShowQueue(generic_queue.GenericQueue):
             raise CantRefreshShowException('This show is already being refreshed, not refreshing again.')
 
         if self.is_being_updated(show) or self.is_in_update_queue(show):
-            logger.log(
+            logger.info(
                 'A refresh was attempted but there is already an update queued or in progress. Updates do a refresh at the end so I\'m skipping this request.',
                 logger.DEBUG)
             return
 
         if show.paused and not force:
-            logger.log('Skipping show [{0}] because it is paused.'.format(show.name), logger.DEBUG)
+            logger.debug('Skipping show [{0}] because it is paused.'.format(show.name))
             return
 
-        logger.log('Queueing show refresh for {0}'.format(show.name), logger.DEBUG)
+        logger.debug('Queueing show refresh for {0}'.format(show.name))
 
         queue_item_obj = QueueItemRefresh(show, force=force)
         self.add_item(queue_item_obj)
@@ -314,11 +314,11 @@ class QueueItemAdd(ShowQueueItem):
             try:
                 assert isinstance(self.showDir, six.text_type)
             except AssertionError:
-                logger.log(traceback.format_exc(), logger.WARNING)
+                logger.warn(traceback.format_exc())
                 self._finish_early()
                 return
 
-        logger.log(_('Starting to add show {0}').format(_('by ShowDir: {0}').format(self.showDir) if self.showDir else _('by Indexer Id: {0}').format(
+        logger.info(_('Starting to add show {0}').format(_('by ShowDir: {0}').format(self.showDir) if self.showDir else _('by Indexer Id: {0}').format(
             self.indexer_id)))
         # make sure the Indexer IDs are valid
         try:
@@ -327,7 +327,7 @@ class QueueItemAdd(ShowQueueItem):
                 error_string = _('Could not find show with id:{0} on {1}, skipping').format(
                     self.indexer_id, sickchill.indexer.name(self.indexer))
 
-                logger.log(error_string)
+                logger.info(error_string)
                 ui.notifications.error(_('Unable to add show'), error_string)
 
                 self._finish_early()
@@ -337,7 +337,7 @@ class QueueItemAdd(ShowQueueItem):
             # Indexers provided series name
             if self.root_dir and not self.showDir:
                 if not s.seriesName:
-                    logger.log(_('Unable to get a show {0}, can\'t add the show').format(self.showDir))
+                    logger.info(_('Unable to get a show {0}, can\'t add the show').format(self.showDir))
                     self._finish_early()
                     return
 
@@ -348,16 +348,16 @@ class QueueItemAdd(ShowQueueItem):
                         if year not in show_dir:
                             show_dir = '{0} {1}'.format(s.seriesName, year)
                     except (TypeError, ValueError):
-                        logger.log(_('Could not append the show year folder for the show: {0}').format(show_dir))
+                        logger.info(_('Could not append the show year folder for the show: {0}').format(show_dir))
 
                 self.showDir = os.path.join(self.root_dir, sanitize_filename(show_dir))
 
                 if sickbeard.ADD_SHOWS_WO_DIR:
-                    logger.log(_("Skipping initial creation of {0} due to config.ini setting").format(self.showDir))
+                    logger.info(_("Skipping initial creation of {0} due to config.ini setting").format(self.showDir))
                 else:
                     dir_exists = makeDir(self.showDir)
                     if not dir_exists:
-                        logger.log(_('Unable to create the folder {0}, can\'t add the show').format(self.showDir))
+                        logger.info(_('Unable to create the folder {0}, can\'t add the show').format(self.showDir))
                         self._finish_early()
                         return
 
@@ -369,7 +369,7 @@ class QueueItemAdd(ShowQueueItem):
                 error_string = _('Show in {0} has no name on {1}, probably searched with the wrong language. Delete .nfo and add manually in the correct language.').format(
                     self.showDir, sickchill.indexer.name(self.indexer))
 
-                logger.log(error_string, logger.WARNING)
+                logger.warn(error_string)
                 ui.notifications.error(_('Unable to add show'), error_string)
 
                 self._finish_early()
@@ -378,7 +378,7 @@ class QueueItemAdd(ShowQueueItem):
             error_string = 'Unable to look up the show in {0} on {1} using ID {2}, not using the NFO. Delete .nfo and try adding manually again.'.format(
                 self.showDir, sickchill.indexer.name(self.indexer), self.indexer_id)
 
-            logger.log('{0}: {1}'.format(error_string, error), logger.ERROR)
+            logger.exception('{0}: {1}'.format(error_string, error))
             ui.notifications.error(_('Unable to add show'), error_string)
 
             if sickbeard.USE_TRAKT:
@@ -425,7 +425,7 @@ class QueueItemAdd(ShowQueueItem):
             self.show.paused = self.paused if self.paused is not None else False
 
             # set up default new/missing episode status
-            logger.log(_('Setting all episodes to the specified default status: {0}') .format(self.show.default_ep_status))
+            logger.info(_('Setting all episodes to the specified default status: {0}') .format(self.show.default_ep_status))
             self.show.default_ep_status = self.default_status
 
             if self.show.anime:
@@ -447,10 +447,10 @@ class QueueItemAdd(ShowQueueItem):
             error_string = 'Unable to add {0} due to an error with {1}'.format(
                 self.show.name if self.show else 'show', sickchill.indexer.name(self.indexer))
 
-            logger.log('{0}: {1}'.format(error_string, error), logger.ERROR)
+            logger.exception('{0}: {1}'.format(error_string, error))
 
-            logger.log('Error trying to add show: {0}'.format(error), logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
+            logger.exception('Error trying to add show: {0}'.format(error))
+            logger.debug(traceback.format_exc())
 
             ui.notifications.error(_('Unable to add show'), error_string)
 
@@ -459,7 +459,7 @@ class QueueItemAdd(ShowQueueItem):
 
         except MultipleShowObjectsException:
             error_string = _('The show in {0} is already in your show list, skipping').format(self.showDir)
-            logger.log(error_string, logger.WARNING)
+            logger.warn(error_string)
             ui.notifications.error(_('Show skipped'), error_string)
 
             self._finish_early()
@@ -470,8 +470,8 @@ class QueueItemAdd(ShowQueueItem):
         try:
             self.show.saveToDB()
         except Exception as error:
-            logger.log('Error saving the show to the database: {0}'.format(error), logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
+            logger.exception('Error saving the show to the database: {0}'.format(error))
+            logger.debug(traceback.format_exc())
             self._finish_early()
             raise
 
@@ -482,8 +482,8 @@ class QueueItemAdd(ShowQueueItem):
         try:
             self.show.loadEpisodesFromIndexer()
         except Exception as error:
-            logger.log('Error with {0}, not creating episode list: {1}'.format(self.show.idxr.name, error), logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
+            logger.exception('Error with {0}, not creating episode list: {1}'.format(self.show.idxr.name, error))
+            logger.debug(traceback.format_exc())
 
         # update internal name cache
         name_cache.buildNameCache(self.show)
@@ -491,13 +491,13 @@ class QueueItemAdd(ShowQueueItem):
         try:
             self.show.loadEpisodesFromDir()
         except Exception as error:
-            logger.log('Error searching dir for episodes: {0}'.format(error), logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
+            logger.exception('Error searching dir for episodes: {0}'.format(error))
+            logger.debug(traceback.format_exc())
 
         # if they set default ep status to WANTED then run the backlog to search for episodes
         # FIXME: This needs to be a backlog queue item!!!
         if self.show.default_ep_status == WANTED:
-            logger.log('Launching backlog for this show since its episodes are WANTED')
+            logger.info('Launching backlog for this show since its episodes are WANTED')
             sickbeard.backlogSearchScheduler.action.searchBacklog([self.show])
 
         self.show.writeMetadata()
@@ -514,7 +514,7 @@ class QueueItemAdd(ShowQueueItem):
                 sickbeard.traktCheckerScheduler.action.addShowToTraktLibrary(self.show)
 
             if sickbeard.TRAKT_SYNC_WATCHLIST:
-                logger.log('update watchlist')
+                logger.info('update watchlist')
                 notifiers.trakt_notifier.update_watchlist(show_obj=self.show)
 
         # Load XEM data to DB for show
@@ -552,7 +552,7 @@ class QueueItemRefresh(ShowQueueItem):
 
         super(QueueItemRefresh, self).run()
 
-        logger.log('Performing refresh on {0}'.format(self.show.name))
+        logger.info('Performing refresh on {0}'.format(self.show.name))
 
         self.show.refreshDir()
         self.show.writeMetadata()
@@ -575,12 +575,12 @@ class QueueItemRename(ShowQueueItem):
 
         super(QueueItemRename, self).run()
 
-        logger.log('Performing rename on {0}'.format(self.show.name))
+        logger.info('Performing rename on {0}'.format(self.show.name))
 
         try:
             self.show.location
         except ShowDirectoryNotFoundException:
-            logger.log('Can\'t perform rename on {0} when the show dir is missing.'.format(self.show.name), logger.WARNING)
+            logger.warn('Can\'t perform rename on {0} when the show dir is missing.'.format(self.show.name))
             super(QueueItemRename, self).finish()
             self.finish()
             return
@@ -618,7 +618,7 @@ class QueueItemSubtitle(ShowQueueItem):
     def run(self):
         super(QueueItemSubtitle, self).run()
 
-        logger.log('Downloading subtitles for {0} '.format(self.show.name))
+        logger.info('Downloading subtitles for {0} '.format(self.show.name))
 
         self.show.download_subtitles()
 
@@ -637,13 +637,13 @@ class QueueItemUpdate(ShowQueueItem):
 
         super(QueueItemUpdate, self).run()
 
-        logger.log('Beginning update of {0}'.format(self.show.name), logger.DEBUG)
+        logger.debug('Beginning update of {0}'.format(self.show.name))
 
-        logger.log('Retrieving show info from {0}'.format(self.show.idxr.name), logger.DEBUG)
+        logger.debug('Retrieving show info from {0}'.format(self.show.idxr.name))
         try:
             self.show.loadFromIndexer()
         except Exception as error:
-            logger.log('Unable to contact {0}, aborting: {1}'.format(self.show.idxr.name, error), logger.WARNING)
+            logger.warn('Unable to contact {0}, aborting: {1}'.format(self.show.idxr.name, error))
             super(QueueItemUpdate, self).finish()
             self.finish()
             return
@@ -654,19 +654,19 @@ class QueueItemUpdate(ShowQueueItem):
         try:
             self.show.saveToDB()
         except Exception as error:
-            logger.log('Error saving show info to the database: {0}'.format(error), logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
+            logger.exception('Error saving show info to the database: {0}'.format(error))
+            logger.debug(traceback.format_exc())
 
         # get episode list from DB
         DBEpList = self.show.loadEpisodesFromDB()
 
         # get episode list from TVDB
-        logger.log('Loading all episodes from {0}'.format(self.show.idxr.name), logger.DEBUG)
+        logger.debug('Loading all episodes from {0}'.format(self.show.idxr.name))
         try:
             IndexerEpList = self.show.loadEpisodesFromIndexer()
         except Exception as error:
-            logger.log('Unable to get info from {0}, the show info will not be refreshed: {1}'.format
-                       (self.show.idxr.name, error), logger.ERROR)
+            logger.exception('Unable to get info from {0}, the show info will not be refreshed: {1}'.format
+                       (self.show.idxr.name, error))
             IndexerEpList = None
 
         if IndexerEpList:
@@ -681,8 +681,8 @@ class QueueItemUpdate(ShowQueueItem):
             # remaining episodes in the DB list are not on the indexer, just delete them from the DB
             for curSeason in DBEpList:
                 for curEpisode in DBEpList[curSeason]:
-                    logger.log('Permanently deleting episode {0:02d}E{1:02d} from the database'.format
-                               (curSeason, curEpisode), logger.INFO)
+                    logger.info('Permanently deleting episode {0:02d}E{1:02d} from the database'.format
+                               (curSeason, curEpisode))
                     curEp = self.show.getEpisode(curSeason, curEpisode)
                     try:
                         curEp.deleteEpisode()
@@ -693,10 +693,10 @@ class QueueItemUpdate(ShowQueueItem):
         try:
             self.show.saveToDB()
         except Exception as error:
-            logger.log('Error saving show info to the database: {0}'.format(error), logger.ERROR)
-            logger.log(traceback.format_exc(), logger.DEBUG)
+            logger.exception('Error saving show info to the database: {0}'.format(error))
+            logger.debug(traceback.format_exc())
 
-        logger.log('Finished update of {0}'.format(self.show.name), logger.DEBUG)
+        logger.debug('Finished update of {0}'.format(self.show.name))
 
         # sickbeard.showQueueScheduler.action.refresh_show(self.show, self.force)
         QueueItemRefresh(self.show, self.force).run()
@@ -714,14 +714,14 @@ class QueueItemRemove(ShowQueueItem):
 
     def run(self):
         super(QueueItemRemove, self).run()
-        logger.log('Removing {0}'.format(self.show.name))
+        logger.info('Removing {0}'.format(self.show.name))
         self.show.deleteShow(full=self.full)
 
         if sickbeard.USE_TRAKT:
             try:
                 sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(self.show)
             except Exception as error:
-                logger.log(_('Unable to delete show from Trakt: {0}. Error: {1}').format(self.show.name, error), logger.WARNING)
+                logger.warn(_('Unable to delete show from Trakt: {0}. Error: {1}').format(self.show.name, error))
 
         # If any notification fails, don't stop removal
         try:
@@ -747,7 +747,7 @@ class QueueItemRemove(ShowQueueItem):
             # do the library update for pyTivo
             notifiers.pytivo_notifier.update_library(self.show)
         except Exception:
-            logger.log(_("Some notifications could not be sent. Continuing removal of {}...").format(self.show.name))
+            logger.info(_("Some notifications could not be sent. Continuing removal of {}...").format(self.show.name))
 
         super(QueueItemRemove, self).finish()
         self.finish()

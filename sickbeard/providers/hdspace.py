@@ -66,7 +66,7 @@ class HDSpaceProvider(TorrentProvider):
     def _check_auth(self):
 
         if not self.username or not self.password:
-            logger.log("Invalid username or password. Check your settings", logger.WARNING)
+            logger.warn("Invalid username or password. Check your settings")
 
         return True
 
@@ -82,11 +82,11 @@ class HDSpaceProvider(TorrentProvider):
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
-            logger.log("Unable to connect to provider", logger.WARNING)
+            logger.warn("Unable to connect to provider")
             return False
 
         if re.search('Password Incorrect', response):
-            logger.log("Invalid username or password. Check your settings", logger.WARNING)
+            logger.warn("Invalid username or password. Check your settings")
             return False
 
         return True
@@ -98,7 +98,7 @@ class HDSpaceProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.debug("Search Mode: {0}".format(mode))
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     search_url = self.urls['search'] % (quote_plus(search_string.replace('.', ' ')),)
@@ -106,12 +106,12 @@ class HDSpaceProvider(TorrentProvider):
                     search_url = self.urls['search'] % ''
 
                 if mode != 'RSS':
-                    logger.log("Search string: {0}".format
-                               (search_string.decode("utf-8")), logger.DEBUG)
+                    logger.debug("Search string: {0}".format
+                               (search_string.decode("utf-8")))
 
                 data = self.get_url(search_url, returns='text')
                 if not data or 'please try later' in data:
-                    logger.log("No data returned from provider", logger.DEBUG)
+                    logger.debug("No data returned from provider")
                     continue
 
                 # Search result page contains some invalid html that prevents html parser from returning all data.
@@ -121,15 +121,15 @@ class HDSpaceProvider(TorrentProvider):
                     data = data.split('<div id="information"></div>')[1]
                     index = data.index('<table')
                 except ValueError:
-                    logger.log("Could not find main torrent table", logger.ERROR)
+                    logger.exception("Could not find main torrent table")
                     continue
                 except IndexError:
-                    logger.log("Could not parse data from provider", logger.DEBUG)
+                    logger.debug("Could not parse data from provider")
                     continue
 
                 html = BeautifulSoup(data[index:], 'html5lib')
                 if not html:
-                    logger.log("No html data parsed from provider", logger.DEBUG)
+                    logger.debug("No html data parsed from provider")
                     continue
 
                 torrents = html('tr')
@@ -157,13 +157,13 @@ class HDSpaceProvider(TorrentProvider):
                         # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                           (title, seeders, leechers), logger.DEBUG)
+                                logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                           (title, seeders, leechers))
                             continue
 
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         if mode != 'RSS':
-                            logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                         items.append(item)
 

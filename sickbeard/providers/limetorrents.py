@@ -60,30 +60,30 @@ class LimeTorrentsProvider(TorrentProvider):
         results = []
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.debug("Search Mode: {0}".format(mode))
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log("Search string: {0}".format
-                               (search_string.decode("utf-8")), logger.DEBUG)
+                    logger.debug("Search string: {0}".format
+                               (search_string.decode("utf-8")))
 
                 try:
                     search_url = (self.urls['rss'], self.urls['search'] + search_string + '/')[mode != 'RSS']
 
                     data = self.get_url(search_url, returns='text')
                     if not data:
-                        logger.log("No data returned from provider", logger.DEBUG)
+                        logger.debug("No data returned from provider")
                         continue
 
                     if not data.startswith('<?xml'):
-                        logger.log('Expected xml but got something else, is your mirror failing?', logger.INFO)
+                        logger.info('Expected xml but got something else, is your mirror failing?')
                         continue
 
                     data = BeautifulSoup(data, 'html5lib')
 
                     entries = data('item')
                     if not entries:
-                        logger.log('Returned xml contained no results', logger.INFO)
+                        logger.info('Returned xml contained no results')
                         continue
 
                     for item in entries:
@@ -122,18 +122,18 @@ class LimeTorrentsProvider(TorrentProvider):
                             # Filter unseeded torrent
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                           (title, seeders, leechers), logger.DEBUG)
+                                logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                           (title, seeders, leechers))
                             continue
 
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': torrent_hash}
                         if mode != 'RSS':
-                            logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                         items.append(item)
 
                 except (AttributeError, TypeError, KeyError, ValueError):
-                    logger.log("Failed parsing provider. Traceback: {0!r}".format(traceback.format_exc()), logger.ERROR)
+                    logger.exception("Failed parsing provider. Traceback: {0!r}".format(traceback.format_exc()))
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

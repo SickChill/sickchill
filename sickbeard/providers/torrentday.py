@@ -78,34 +78,34 @@ class TorrentDayProvider(TorrentProvider):
         if self.cookies:
             success, status = self.add_cookies_from_ui()
             if not success:
-                logger.log(status, logger.INFO)
+                logger.info(status)
                 return False
 
             login_params = {'username': self.username, 'password': self.password, 'submit.x': 0, 'submit.y': 0}
             login_url = self.urls['login']
             if self.custom_url:
                 if not validators.url(self.custom_url):
-                    logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+                    logger.warn("Invalid custom url: {0}".format(self.custom_url))
                     return False
 
                 login_url = urljoin(self.custom_url, self.urls['login'].split(self.url)[1])
 
             response = self.get_url(login_url, post_data=login_params, returns='response')
             if not response or response.status_code != 200:
-                logger.log('Unable to connect to provider', logger.WARNING)
+                logger.warn('Unable to connect to provider')
                 return False
 
             if re.search('You tried too often', response.text):
-                logger.log('Too many login access attempts', logger.WARNING)
+                logger.warn('Too many login access attempts')
                 return False
 
             if dict_from_cookiejar(self.session.cookies).get('uid') in response.text:
                 return True
             else:
-                logger.log('Failed to login, check your cookies', logger.WARNING)
+                logger.warn('Failed to login, check your cookies')
                 return False
         else:
-            logger.log('You need to set your cookies to use torrentday')
+            logger.info('You need to set your cookies to use torrentday')
             return False
 
     def search(self, search_params, age=0, ep_obj=None):
@@ -115,7 +115,7 @@ class TorrentDayProvider(TorrentProvider):
         download_url = self.urls['download']
         if self.custom_url:
             if not validators.url(self.custom_url):
-                logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+                logger.warn("Invalid custom url: {0}".format(self.custom_url))
                 return results
 
             search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
@@ -126,12 +126,12 @@ class TorrentDayProvider(TorrentProvider):
 
         for mode in search_params:
             items = []
-            logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
+            logger.debug('Search Mode: {0}'.format(mode))
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
-                    logger.log('Search string: {0}'.format
-                               (search_string.decode('utf-8')), logger.DEBUG)
+                    logger.debug('Search string: {0}'.format
+                               (search_string.decode('utf-8')))
 
                 get_params = {}
                 get_params.update(self.categories[mode])
@@ -144,7 +144,7 @@ class TorrentDayProvider(TorrentProvider):
                     # Make sure it is iterable #4304
                     iter(torrents)
                 except (TypeError, AssertionError):
-                    logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
+                    logger.debug('Data returned from provider does not contain any torrents')
                     continue
 
                 for torrent in torrents:
@@ -161,7 +161,7 @@ class TorrentDayProvider(TorrentProvider):
                     # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != 'RSS':
-                            logger.log('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format(title, seeders, leechers), logger.DEBUG)
+                            logger.debug('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format(title, seeders, leechers))
                         continue
 
                     torrent_size = torrent['size']
@@ -170,8 +170,8 @@ class TorrentDayProvider(TorrentProvider):
                     item = {'title': title, 'link': torrent_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
 
                     if mode != 'RSS':
-                        logger.log('Found result: {0} with {1} seeders and {2} leechers'.format
-                                   (title, seeders, leechers), logger.DEBUG)
+                        logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format
+                                   (title, seeders, leechers))
 
                     items.append(item)
 

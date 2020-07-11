@@ -51,7 +51,7 @@ class NZBProvider(GenericProvider):
             size = -1
 
         if not size:
-            logger.log('The size was not found in the provider response', logger.DEBUG)
+            logger.debug('The size was not found in the provider response')
 
         return try_int(size, -1)
 

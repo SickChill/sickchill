@@ -53,15 +53,15 @@ class Notifier(object):
         if sickbeard.USE_SYNOINDEX:
             synoindex_cmd = ['/usr/syno/bin/synoindex', '-N', os.path.abspath(new_path),
                              os.path.abspath(old_path)]
-            logger.log("Executing command " + str(synoindex_cmd), logger.DEBUG)
-            logger.log("Absolute path to command: " + os.path.abspath(synoindex_cmd[0]), logger.DEBUG)
+            logger.debug("Executing command " + str(synoindex_cmd))
+            logger.debug("Absolute path to command: " + os.path.abspath(synoindex_cmd[0]))
             try:
                 p = subprocess.Popen(synoindex_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                      cwd=sickbeard.PROG_DIR)
                 out, err = p.communicate()  # @UnusedVariable
-                logger.log("Script result: " + str(out), logger.DEBUG)
+                logger.debug("Script result: " + str(out))
             except OSError as e:
-                logger.log("Unable to run synoindex: " + str(e), logger.ERROR)
+                logger.exception("Unable to run synoindex: " + str(e))
 
     def deleteFolder(self, cur_path):
         self.makeObject('-D', cur_path)
@@ -78,12 +78,12 @@ class Notifier(object):
     def makeObject(self, cmd_arg, cur_path):
         if sickbeard.USE_SYNOINDEX:
             synoindex_cmd = ['/usr/syno/bin/synoindex', cmd_arg, os.path.abspath(cur_path)]
-            logger.log("Executing command " + str(synoindex_cmd), logger.DEBUG)
-            logger.log("Absolute path to command: " + os.path.abspath(synoindex_cmd[0]), logger.DEBUG)
+            logger.debug("Executing command " + str(synoindex_cmd))
+            logger.debug("Absolute path to command: " + os.path.abspath(synoindex_cmd[0]))
             try:
                 p = subprocess.Popen(synoindex_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                      cwd=sickbeard.PROG_DIR)
                 out, err = p.communicate()  # @UnusedVariable
-                logger.log("Script result: " + str(out), logger.DEBUG)
+                logger.debug("Script result: " + str(out))
             except OSError as e:
-                logger.log("Unable to run synoindex: " + str(e), logger.ERROR)
+                logger.exception("Unable to run synoindex: " + str(e))

@@ -115,7 +115,7 @@ class ilCorsaroNeroProvider(TorrentProvider):
         """
 
         file_quality = (torrent_rows('td'))[1].find('a')['href'].replace('_', ' ')
-        logger.log('Episode quality: {0}'.format(file_quality), logger.DEBUG)
+        logger.debug('Episode quality: {0}'.format(file_quality))
 
         def checkName(options, func):
             return func([re.search(option, file_quality, re.I) for option in options])
@@ -159,12 +159,12 @@ class ilCorsaroNeroProvider(TorrentProvider):
                 continue
 
             if re.search('ita', name.split(sub)[0], re.I):
-                logger.log('Found Italian release: ' + name, logger.DEBUG)
+                logger.debug('Found Italian release: ' + name)
                 italian = True
                 break
 
         if not subFound and re.search('ita', name, re.I):
-            logger.log('Found Italian release: ' + name, logger.DEBUG)
+            logger.debug('Found Italian release: ' + name)
             italian = True
 
         return italian
@@ -177,7 +177,7 @@ class ilCorsaroNeroProvider(TorrentProvider):
 
         english = False
         if re.search('eng', name, re.I):
-            logger.log('Found English release: ' + name, logger.DEBUG)
+            logger.debug('Found English release: ' + name)
             english = True
 
         return english
@@ -188,7 +188,7 @@ class ilCorsaroNeroProvider(TorrentProvider):
         try:
             parse_result = NameParser(tryIndexers=True).parse(name)
         except (InvalidNameException, InvalidShowException) as error:
-            logger.log('{0}'.format(error), logger.DEBUG)
+            logger.debug('{0}'.format(error))
             return False
 
         main_db_con = db.DBConnection()
@@ -209,25 +209,25 @@ class ilCorsaroNeroProvider(TorrentProvider):
 
         for mode in search_params:
             items = []
-            logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
+            logger.debug('Search Mode: {0}'.format(mode))
             for search_string in search_params[mode]:
                 if search_string == '':
                     continue
 
                 search_string = six.text_type(search_string).replace('.', ' ')
-                logger.log('Search string: {0}'.format(search_string.decode('utf-8')), logger.DEBUG)
+                logger.debug('Search string: {0}'.format(search_string.decode('utf-8')))
 
                 last_page = False
                 for page in range(0, self.max_pages):
                     if last_page:
                         break
 
-                    logger.log('Processing page {0} of results'.format(page), logger.DEBUG)
+                    logger.debug('Processing page {0} of results'.format(page))
                     search_url = self.urls['search'].format(search_string, page)
 
                     data = self.get_url(search_url, returns='text')
                     if not data:
-                        logger.log('No data returned from provider', logger.DEBUG)
+                        logger.debug('No data returned from provider')
                         continue
 
                     try:
@@ -235,14 +235,14 @@ class ilCorsaroNeroProvider(TorrentProvider):
                             table_header = html.find('tr', class_='bordo')
                             torrent_table = table_header.find_parent('table') if table_header else None
                             if not torrent_table:
-                                logger.log('Could not find table of torrents', logger.ERROR)
+                                logger.exception('Could not find table of torrents')
                                 continue
 
                             torrent_rows = torrent_table('tr')
 
                             # Continue only if one Release is found
                             if len(torrent_rows) < 6 or len(torrent_rows[2]('td')) == 1:
-                                logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
+                                logger.debug('Data returned from provider does not contain any torrents')
                                 last_page = True
                                 continue
 
@@ -278,11 +278,11 @@ class ilCorsaroNeroProvider(TorrentProvider):
                                     title += filename_qt
 
                                 if not self._is_italian(title) and not self.subtitle:
-                                    logger.log('Torrent is subtitled, skipping: {0}'.format(title), logger.DEBUG)
+                                    logger.debug('Torrent is subtitled, skipping: {0}'.format(title))
                                     continue
 
                                 if self.engrelease and not self._is_english(title):
-                                    logger.log('Torrent isn\'t english audio/subtitled, skipping: {0}'.format(title),
+                                    logger.info('Torrent isn\'t english audio/subtitled, skipping: {0}'.format(title),
                                                logger.DEBUG)
                                     continue
 
@@ -305,7 +305,7 @@ class ilCorsaroNeroProvider(TorrentProvider):
 
                                 # Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
-                                    logger.log('Discarding torrent because it doesn\'t meet the minimum'
+                                    logger.info('Discarding torrent because it doesn\'t meet the minimum'
                                                ' seeders or leechers: {0} (S:{1} L:{2})'.format(
                                         title, seeders, leechers), logger.DEBUG)
                                     continue
@@ -313,13 +313,13 @@ class ilCorsaroNeroProvider(TorrentProvider):
                                 item = {'title': title, 'link': download_url, 'size': size,
                                         'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
                                 if mode != 'RSS':
-                                    logger.log('Found result: {0} with {1} seeders and {2} leechers'.format(
-                                        title, seeders, leechers), logger.DEBUG)
+                                    logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format(
+                                        title, seeders, leechers))
 
                                 items.append(item)
 
                     except Exception as error:
-                        logger.log('Failed parsing provider. Error: {0}'.format(error), logger.ERROR)
+                        logger.exception('Failed parsing provider. Error: {0}'.format(error))
 
                 # For each search mode sort all the items by seeders if available
                 items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

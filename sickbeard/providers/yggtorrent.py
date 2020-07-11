@@ -71,9 +71,9 @@ class YggTorrentProvider(TorrentProvider):
 
         if not validators.url(new_url):
             if custom:
-                logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+                logger.warn("Invalid custom url: {0}".format(self.custom_url))
             else:
-                logger.log('Url changing has failed!', logger.DEBUG)
+                logger.debug('Url changing has failed!')
 
             return False
 
@@ -95,7 +95,7 @@ class YggTorrentProvider(TorrentProvider):
         response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
         if response and self.url not in response.url:
             new_url = response.url.split('user/login')[0]
-            logger.log('Changing base url from {} to {}'.format(self.url, new_url), logger.DEBUG)
+            logger.debug('Changing base url from {} to {}'.format(self.url, new_url))
             if not self.update_urls(new_url):
                 return False
 
@@ -103,17 +103,17 @@ class YggTorrentProvider(TorrentProvider):
 
         # The login is now an AJAX call (401 : Bad credentials, 200 : Logged in, other : server failure)
         if not response or response.status_code != 200:
-            logger.log('Unable to connect to provider', logger.WARNING)
+            logger.warn('Unable to connect to provider')
             return False
         else:
             # It seems we are logged, let's verify that !
             response = self.get_url(self.url, returns='response')
 
             if response.status_code != 200:
-                logger.log('Unable to connect to provider', logger.WARNING)
+                logger.warn('Unable to connect to provider')
                 return False
             if 'logout' not in response.text:
-                logger.log('Invalid username or password. Check your settings', logger.WARNING)
+                logger.warn('Invalid username or password. Check your settings')
                 return False
 
         return True
@@ -125,13 +125,13 @@ class YggTorrentProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
+            logger.debug('Search Mode: {0}'.format(mode))
 
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log('Search string: {0}'.format
-                               (search_string.decode('utf-8')), logger.DEBUG)
+                    logger.debug('Search string: {0}'.format
+                               (search_string.decode('utf-8')))
                 # search string needs to be normalized, single quotes are apparently not allowed on the site
                 # ç should also be replaced, people tend to use c instead
                 replace_chars = {
@@ -142,8 +142,8 @@ class YggTorrentProvider(TorrentProvider):
                 for k, v in six.iteritems(replace_chars):
                     search_string = search_string.replace(k, v)
 
-                logger.log('Sanitized string: {0}'.format
-                               (search_string.decode('utf-8')), logger.DEBUG)
+                logger.debug('Sanitized string: {0}'.format
+                               (search_string.decode('utf-8')))
 
                 try:
                     search_params = {
@@ -158,7 +158,7 @@ class YggTorrentProvider(TorrentProvider):
                         continue
 
                     if 'logout' not in data:
-                        logger.log('Refreshing cookies', logger.DEBUG)
+                        logger.debug('Refreshing cookies')
                         self.login()
 
                     with BS4Parser(data, 'html5lib') as html:
@@ -167,7 +167,7 @@ class YggTorrentProvider(TorrentProvider):
 
                         # Continue only if at least one Release is found
                         if len(torrent_rows) < 2:
-                            logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
+                            logger.debug('Data returned from provider does not contain any torrents')
                             continue
 
                         # Skip column headers
@@ -192,19 +192,19 @@ class YggTorrentProvider(TorrentProvider):
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
-                                               (title, seeders, leechers), logger.DEBUG)
+                                    logger.debug('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
+                                               (title, seeders, leechers))
                                 continue
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
-                                logger.log('Found result: {0} with {1} seeders and {2} leechers'.format
-                                           (title, seeders, leechers), logger.DEBUG)
+                                logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format
+                                           (title, seeders, leechers))
 
                             items.append(item)
 
                 except (AttributeError, TypeError, KeyError, ValueError):
-                    logger.log('Failed parsing provider {}.'.format(self.name), logger.ERROR)
+                    logger.exception('Failed parsing provider {}.'.format(self.name))
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

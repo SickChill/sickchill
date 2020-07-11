@@ -63,11 +63,11 @@ class Notifier(object):
             result = response.read()
             response.close()
 
-            logger.log('EMBY: HTTP response: ' + result.replace('\n', ''), logger.DEBUG)
+            logger.debug('EMBY: HTTP response: ' + result.replace('\n', ''))
             return True
 
         except (urllib.error.URLError, IOError) as e:
-            logger.log('EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + str(e), logger.WARNING)
+            logger.warn('EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + str(e))
             return False
 
 
@@ -88,17 +88,17 @@ class Notifier(object):
 
         if sickbeard.USE_EMBY:
             if not sickbeard.EMBY_HOST:
-                logger.log('EMBY: No host specified, check your settings', logger.DEBUG)
+                logger.debug('EMBY: No host specified, check your settings')
                 return False
 
             if show:
                 if show.indexer == 1:
                     provider = 'tvdb'
                 elif show.indexer == 2:
-                    logger.log('EMBY: TVRage Provider no longer valid', logger.WARNING)
+                    logger.warn('EMBY: TVRage Provider no longer valid')
                     return False
                 else:
-                    logger.log('EMBY: Provider unknown', logger.WARNING)
+                    logger.warn('EMBY: Provider unknown')
                     return False
                 query = '?{0}id={1}'.format(provider, show.indexerid)
             else:
@@ -116,9 +116,9 @@ class Notifier(object):
                 result = response.read()
                 response.close()
 
-                logger.log('EMBY: HTTP response: ' + result.replace('\n', ''), logger.DEBUG)
+                logger.debug('EMBY: HTTP response: ' + result.replace('\n', ''))
                 return True
 
             except (urllib.error.URLError, IOError) as e:
-                logger.log('EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + str(e), logger.WARNING)
+                logger.warn('EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + str(e))
                 return False

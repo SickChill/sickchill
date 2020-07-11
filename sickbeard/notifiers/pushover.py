@@ -67,7 +67,7 @@ class Notifier(object):
         if priority is None:
             priority = sickbeard.PUSHOVER_PRIORITY
 
-        logger.log("Pushover API KEY in use: " + apiKey, logger.DEBUG)
+        logger.debug("Pushover API KEY in use: " + apiKey)
 
         # build up the URL and parameters
         msg = msg.strip()
@@ -109,14 +109,14 @@ class Notifier(object):
         except urllib.error.HTTPError as e:
             # if we get an error back that doesn't have an error code then who knows what's really happening
             if not hasattr(e, 'code'):
-                logger.log("Pushover notification failed." + str(e), logger.ERROR)
+                logger.exception("Pushover notification failed." + str(e))
                 return False
             else:
-                logger.log("Pushover notification failed. Error code: " + str(e.code), logger.ERROR)
+                logger.exception("Pushover notification failed. Error code: " + str(e.code))
 
             # HTTP status 404 if the provided email address isn't a Pushover user.
             if e.code == 404:
-                logger.log("Username is wrong/not a pushover email. Pushover will send an email to it", logger.WARNING)
+                logger.warn("Username is wrong/not a pushover email. Pushover will send an email to it")
                 return False
 
             # For HTTP status code 401's, it is because you are passing in either an invalid token, or the user has not added your service.
@@ -125,23 +125,23 @@ class Notifier(object):
                 # HTTP status 401 if the user doesn't have the service added
                 subscribeNote = self._sendPushover(msg, title, sound=sound, userKey=userKey, apiKey=apiKey)
                 if subscribeNote:
-                    logger.log("Subscription sent", logger.DEBUG)
+                    logger.debug("Subscription sent")
                     return True
                 else:
-                    logger.log("Subscription could not be sent", logger.ERROR)
+                    logger.exception("Subscription could not be sent")
                     return False
 
             # If you receive an HTTP status code of 400, it is because you failed to send the proper parameters
             elif e.code == 400:
-                logger.log("Wrong data sent to pushover", logger.ERROR)
+                logger.exception("Wrong data sent to pushover")
                 return False
 
             # If you receive a HTTP status code of 429, it is because the message limit has been reached (free limit is 7,500)
             elif e.code == 429:
-                logger.log("Pushover API message limit reached - try a different API key", logger.ERROR)
+                logger.exception("Pushover API message limit reached - try a different API key")
                 return False
 
-        logger.log("Pushover notification successful.", logger.INFO)
+        logger.info("Pushover notification successful.")
         return True
 
     def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
@@ -181,9 +181,9 @@ class Notifier(object):
         """
 
         if not sickbeard.USE_PUSHOVER and not force:
-            logger.log("Notification for Pushover not enabled, skipping this notification", logger.DEBUG)
+            logger.debug("Notification for Pushover not enabled, skipping this notification")
             return False
 
-        logger.log("Sending notification for " + message, logger.DEBUG)
+        logger.debug("Sending notification for " + message)
 
         return self._sendPushover(message, title, sound=sound, userKey=userKey, apiKey=apiKey)

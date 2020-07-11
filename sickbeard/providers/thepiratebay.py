@@ -121,14 +121,14 @@ class ThePirateBayProvider(TorrentProvider):
         }
 
         if not (self.tracker_cache.get_trackers() or self._custom_trackers):
-            logger.log("Cannot use tpb provider without python 2.7.9+ unless you set some custom trackers in config/search on the torrents tab. Re-enable "
+            logger.info("Cannot use tpb provider without python 2.7.9+ unless you set some custom trackers in config/search on the torrents tab. Re-enable "
                        "this provider after fixing this issue.")
             self.enabled = False
             return results
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.debug("Search Mode: {0}".format(mode))
 
             all_search_strings = search_strings[mode]
             if mode != "RSS" and self.show and self.show.imdbid:
@@ -142,21 +142,21 @@ class ThePirateBayProvider(TorrentProvider):
                 for search_url in search_urls:
                     if mode != "RSS":
                         search_params["q"] = search_string
-                        logger.log("Search string: {}".format(search_string.decode("utf-8")), logger.DEBUG)
+                        logger.debug("Search string: {}".format(search_string.decode("utf-8")))
 
                         data = self.get_url(search_url, params=search_params, returns="json")
                     else:
                         data = self.get_url(search_url, returns="json")
 
                     if not (data and isinstance(data, list)):
-                        logger.log("URL did not return data", logger.DEBUG)
+                        logger.debug("URL did not return data")
                         continue
 
                     for result in data:
                         try:
                             title = result['name']
                             if title == "No results returned":
-                                logger.log(title, logger.DEBUG)
+                                logger.debug(title)
                                 continue
 
                             info_hash = result['info_hash']
@@ -169,14 +169,14 @@ class ThePirateBayProvider(TorrentProvider):
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
-                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                               (title, seeders, leechers), logger.DEBUG)
+                                    logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                               (title, seeders, leechers))
                                 continue
 
                             # Accept Torrent only from Good People for every Episode Search
                             if self.confirmed and not result['status'] in ('trusted', 'vip'):
                                 if mode != "RSS":
-                                    logger.log("Found result: {0} but that doesn't seem like a trusted result so I'm ignoring it".format(title), logger.DEBUG)
+                                    logger.debug("Found result: {0} but that doesn't seem like a trusted result so I'm ignoring it".format(title))
                                 continue
 
                             torrent_size = try_int(result['size'])
@@ -184,8 +184,8 @@ class ThePirateBayProvider(TorrentProvider):
                             item = {'title': title, 'link': self.make_magnet(title, info_hash), 'size': torrent_size, 'seeders': seeders, 'leechers': leechers,
                                     'hash': info_hash}
                             if mode != "RSS":
-                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format
-                                           (title, seeders, leechers), logger.DEBUG)
+                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format
+                                           (title, seeders, leechers))
 
                             items.append(item)
                         except StandardError:

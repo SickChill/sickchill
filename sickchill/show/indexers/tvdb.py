@@ -238,7 +238,7 @@ class TVDB(Indexer):
         try:
             user_object.info()
         except Exception:
-            logger.log(traceback.format_exc(), logger.ERROR)
+            logger.exception(traceback.format_exc())
             return False
 
         sickbeard.TVDB_USER = user

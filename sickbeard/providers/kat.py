@@ -80,7 +80,7 @@ class KatProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.debug("Search Mode: {0}".format(mode))
             for search_string in search_strings[mode]:
 
                 # search_params["q"] = (search_string, None)[mode == "RSS"]
@@ -90,8 +90,8 @@ class KatProvider(TorrentProvider):
                     if anime:
                         continue
 
-                    logger.log("Search string: {0}".format
-                               (search_string.decode("utf-8")), logger.DEBUG)
+                    logger.debug("Search string: {0}".format
+                               (search_string.decode("utf-8")))
 
                     search_url = self.urls["search"].format(q=search_string)
                 else:
@@ -99,18 +99,18 @@ class KatProvider(TorrentProvider):
 
                 if self.custom_url:
                     if not validators.url(self.custom_url):
-                        logger.log("Invalid custom url: {0}".format(self.custom_url), logger.WARNING)
+                        logger.warn("Invalid custom url: {0}".format(self.custom_url))
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
                 data = self.get_url(search_url, params=OrderedDict(sorted(search_params.items(), key=lambda x: x[0])), returns="text")
                 if not data:
-                    logger.log("{url} did not return any data, it may be disabled. Trying to get a new domain".format(url=self.url))
+                    logger.info("{url} did not return any data, it may be disabled. Trying to get a new domain".format(url=self.url))
                     self.disabled_mirrors.append(self.url)
                     self.find_domain()
                     if self.url in self.disabled_mirrors:
-                        logger.log("Could not find a better mirror to try.")
-                        logger.log("The search did not return data, if the results are on the site maybe try a custom url, or a different one", logger.INFO)
+                        logger.info("Could not find a better mirror to try.")
+                        logger.info("The search did not return data, if the results are on the site maybe try a custom url, or a different one")
                         return results
 
                     # This will recurse a few times until all of the mirrors are exhausted if none of them work.
@@ -118,7 +118,7 @@ class KatProvider(TorrentProvider):
 
                 with BS4Parser(data, "html5lib") as html:
                     labels = [cell.get_text() for cell in html.find(class_="firstr")("th")]
-                    logger.log("Found {} results".format(len(html("tr", **self.rows_selector))))
+                    logger.info("Found {} results".format(len(html("tr", **self.rows_selector))))
                     for result in html("tr", **self.rows_selector):
                         try:
                             download_url = urllib.parse.unquote_plus(result.find(title="Torrent magnet link")["href"].split("url=")[1]) + self._custom_trackers
@@ -130,7 +130,7 @@ class KatProvider(TorrentProvider):
 
                             if not (title and download_url):
                                 if mode != "RSS":
-                                    logger.log("Discarding torrent because We could not parse the title and url", logger.DEBUG)
+                                    logger.debug("Discarding torrent because We could not parse the title and url")
                                 continue
 
                             seeders = try_int(result.find(class_="green").get_text(strip=True))
@@ -139,13 +139,13 @@ class KatProvider(TorrentProvider):
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
-                                    logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                               (title, seeders, leechers), logger.DEBUG)
+                                    logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                               (title, seeders, leechers))
                                 continue
 
                             if self.confirmed and not result.find(class_="ka-green"):
                                 if mode != "RSS":
-                                    logger.log("Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it", logger.DEBUG)
+                                    logger.debug("Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it")
                                 continue
 
                             torrent_size = result("td")[labels.index("size")].get_text(strip=True)
@@ -153,12 +153,12 @@ class KatProvider(TorrentProvider):
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': torrent_hash}
                             if mode != "RSS":
-                                logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                             items.append(item)
 
                         except (AttributeError, TypeError, KeyError, ValueError, Exception) as e:
-                            logger.log(traceback.format_exc(e))
+                            logger.info(traceback.format_exc(e))
                             continue
 
             # For each search mode sort all the items by seeders if available
@@ -182,10 +182,10 @@ class KatProvider(TorrentProvider):
 
         if self.mirrors:
             self.url = self.mirrors[0]
-            logger.log("Setting mirror to use to {url}".format(url=self.url))
+            logger.info("Setting mirror to use to {url}".format(url=self.url))
         else:
-            logger.log("Unable to get a working mirror for kickasstorrents, you might need to enable another provider and disable KAT until KAT starts working "
-                       "again.", logger.WARNING)
+            logger.warning("Unable to get a working mirror for kickasstorrents, you might need to enable another provider and disable KAT until KAT starts working "
+                       "again.")
 
         self.urls = {"search": urljoin(self.url, "/usearch/{q}/"), "rss": urljoin(self.url, "/tv/")}
 

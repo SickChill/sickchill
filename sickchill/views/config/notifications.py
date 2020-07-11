@@ -317,7 +317,7 @@ class ConfigNotifications(Config):
 
         if len(results) > 0:
             for x in results:
-                logger.log(x, logger.ERROR)
+                logger.exception(x)
             ui.notifications.error(_('Error(s) Saving Configuration'),
                                    '<br>\n'.join(results))
         else:

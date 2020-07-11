@@ -97,7 +97,7 @@ def getaddrinfo_wrapper(host, port, family=socket.AF_INET, socktype=0, proto=0, 
 
 
 if socket.getaddrinfo.__module__ in ('socket', '_socket'):
-    logger.log(_("Patching socket to IPv4 only"), logger.DEBUG)
+    logger.debug(_("Patching socket to IPv4 only"))
     socket.getaddrinfo = getaddrinfo_wrapper
 
 # Patches urllib3 default ciphers to match those of cfscrape
@@ -258,7 +258,7 @@ def is_media_file(filename):
 
         return filname_parts[-1].lower() in MEDIA_EXTENSIONS or (sickbeard.UNPACK == sickbeard.UNPACK_PROCESS_INTACT and is_rar)
     except (TypeError, AssertionError) as error:  # Not a string
-        logger.log(_('Invalid filename. Filename must be a string. {0}').format(error), logger.DEBUG)
+        logger.debug(_('Invalid filename. Filename must be a string. {0}').format(error))
         return False
 
 
@@ -356,10 +356,10 @@ def copyFile(srcFile, destFile):
     except (SpecialFileError, Error) as error:
         # noinspection PyProtectedMember
         if not shutil._samefile(srcFile, destFile):
-            logger.log('{0}'.format(error), logger.WARNING)
+            logger.warn('{0}'.format(error))
             return
     except Exception as error:
-        logger.log('{0}'.format(error), logger.ERROR)
+        logger.exception('{0}'.format(error))
         return
 
     try:
@@ -412,8 +412,8 @@ def hardlinkFile(srcFile, destFile):
         link(srcFile, destFile)
         fixSetGroupID(destFile)
     except Exception as error:
-        logger.log(_("Failed to create hardlink of {0} at {1}. Error: {2}. Copying instead").format
-                   (srcFile, destFile, error), logger.WARNING)
+        logger.warning(_("Failed to create hardlink of {0} at {1}. Error: {2}. Copying instead").format
+                   (srcFile, destFile, error))
         copyFile(srcFile, destFile)
 
 
@@ -449,8 +449,8 @@ def moveAndSymlinkFile(srcFile, destFile):
         moveFile(srcFile, destFile)
         symlink(destFile, srcFile)
     except Exception as error:
-        logger.log(_("Failed to create symlink of {0} at {1}. Error: {2}. Copying instead").format
-                   (srcFile, destFile, error), logger.WARNING)
+        logger.warning(_("Failed to create symlink of {0} at {1}. Error: {2}. Copying instead").format
+                   (srcFile, destFile, error))
         copyFile(srcFile, destFile)
 
 
@@ -460,16 +460,16 @@ def make_dirs(path):
     parents
     """
 
-    logger.log(_("Checking if the path {0} already exists").format(path), logger.DEBUG)
+    logger.debug(_("Checking if the path {0} already exists").format(path))
 
     if not os.path.isdir(path):
         # Windows, create all missing folders
         if platform.system() == 'Windows':
             try:
-                logger.log(_("Folder {0} didn't exist, creating it").format(path), logger.DEBUG)
+                logger.debug(_("Folder {0} didn't exist, creating it").format(path))
                 os.makedirs(path)
             except (OSError, IOError) as error:
-                logger.log(_("Failed creating {0} : {1}").format(path, error), logger.ERROR)
+                logger.exception(_("Failed creating {0} : {1}").format(path, error))
                 return False
 
         # not Windows, create all missing folders and set permissions
@@ -486,14 +486,14 @@ def make_dirs(path):
                     continue
 
                 try:
-                    logger.log(_("Folder {0} didn't exist, creating it").format(sofar), logger.DEBUG)
+                    logger.debug(_("Folder {0} didn't exist, creating it").format(sofar))
                     os.mkdir(sofar)
                     # use normpath to remove end separator, otherwise checks permissions against itself
                     chmodAsParent(os.path.normpath(sofar))
                     # do the library update for synoindex
                     sickbeard.notifiers.synoindex_notifier.addFolder(sofar)
                 except (OSError, IOError) as error:
-                    logger.log(_("Failed creating {0} : {1}").format(sofar, error), logger.ERROR)
+                    logger.exception(_("Failed creating {0} : {1}").format(sofar, error))
                     return False
 
     return True
@@ -534,10 +534,10 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
 
     # move the file
     try:
-        logger.log(_("Renaming file from {0} to {1}").format(cur_path, new_path))
+        logger.info(_("Renaming file from {0} to {1}").format(cur_path, new_path))
         shutil.move(cur_path, new_path)
     except (OSError, IOError) as error:
-        logger.log(_("Failed renaming {0} to {1} : {2}").format(cur_path, new_path, error), logger.ERROR)
+        logger.exception(_("Failed renaming {0} to {1} : {2}").format(cur_path, new_path, error))
         return False
 
     # clean up any old folders that are empty
@@ -557,7 +557,7 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
     # treat check_empty_dir as empty when it only contains these items
     ignore_items = []
 
-    logger.log(_("Trying to clean any empty folders under ") + check_empty_dir)
+    logger.info(_("Trying to clean any empty folders under ") + check_empty_dir)
 
     # as long as the folder exists and doesn't contain any files, delete it
     while os.path.isdir(check_empty_dir) and check_empty_dir != keep_dir:
@@ -567,13 +567,13 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
                 check_file in ignore_items for check_file in check_files)):
             # directory is empty or contains only ignore_items
             try:
-                logger.log(_("Deleting empty folder: ") + check_empty_dir)
+                logger.info(_("Deleting empty folder: ") + check_empty_dir)
                 # need shutil.rmtree when ignore_items is really implemented
                 os.rmdir(check_empty_dir)
                 # do the library update for synoindex
                 sickbeard.notifiers.synoindex_notifier.deleteFolder(check_empty_dir)
             except OSError as error:
-                logger.log(_("Unable to delete {0}. Error: {1}").format(check_empty_dir, error), logger.WARNING)
+                logger.warn(_("Unable to delete {0}. Error: {1}").format(check_empty_dir, error))
                 break
             check_empty_dir = os.path.dirname(check_empty_dir)
         else:
@@ -609,7 +609,7 @@ def chmodAsParent(childPath):
     parentPath = os.path.dirname(childPath)
 
     if not parentPath:
-        logger.log(_("No parent path provided in {location} unable to get permissions from it").format(location=childPath), logger.DEBUG)
+        logger.debug(_("No parent path provided in {location} unable to get permissions from it").format(location=childPath))
         return
 
     childPath = os.path.join(parentPath, os.path.basename(childPath))
@@ -632,13 +632,13 @@ def chmodAsParent(childPath):
     user_id = os.geteuid()  # @UndefinedVariable - only available on UNIX
 
     if user_id not in (childPath_owner, 0):
-        logger.log(_("Not running as root or owner of {location}, not trying to set permissions").format(location=childPath), logger.DEBUG)
+        logger.debug(_("Not running as root or owner of {location}, not trying to set permissions").format(location=childPath))
         return
 
     try:
         os.chmod(childPath, childMode)
     except OSError:
-        logger.log(_("Failed to set permission for {0} to {1:o}, parent directory has {2:o}").format(childPath, childMode, parentMode), logger.DEBUG)
+        logger.debug(_("Failed to set permission for {0} to {1:o}, parent directory has {2:o}").format(childPath, childMode, parentMode))
 
 
 def fixSetGroupID(childPath):
@@ -670,14 +670,14 @@ def fixSetGroupID(childPath):
         user_id = os.geteuid()  # @UndefinedVariable - only available on UNIX
 
         if user_id not in (childPath_owner, 0):
-            logger.log(_("Not running as root or owner of {}, not trying to set the set-group-ID").format(childPath), logger.DEBUG)
+            logger.debug(_("Not running as root or owner of {}, not trying to set the set-group-ID").format(childPath))
             return
 
         try:
             os.chown(childPath, -1, parentGID)  # @UndefinedVariable - only available on UNIX
-            logger.log(_("Respecting the set-group-ID bit on the parent directory for {0}").format(childPath), logger.DEBUG)
+            logger.debug(_("Respecting the set-group-ID bit on the parent directory for {0}").format(childPath))
         except OSError:
-            logger.log(
+            logger.info(
                 "Failed to respect the set-group-ID bit on the parent directory for {0} (setting group ID {1})".format(
                     childPath, parentGID), logger.ERROR)
 
@@ -720,12 +720,12 @@ def get_absolute_number_from_season_and_episode(show, season, episode):
 
         if len(sql_results) == 1:
             absolute_number = int(sql_results[0][b"absolute_number"])
-            logger.log(_("Found absolute number {absolute} for show {show} {ep}").format
+            logger.info(_("Found absolute number {absolute} for show {show} {ep}").format
                        (absolute=absolute_number, show=show.name,
                         ep=episode_num(season, episode)), logger.DEBUG)
         else:
-            logger.log(_("No entries for absolute number for show {show} {ep}").format
-                       (show=show.name, ep=episode_num(season, episode)), logger.DEBUG)
+            logger.debug(_("No entries for absolute number for show {show} {ep}").format
+                       (show=show.name, ep=episode_num(season, episode)))
 
     return absolute_number
 
@@ -806,8 +806,8 @@ def create_https_certificates(ssl_cert, ssl_key):
         from OpenSSL import crypto
         from certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA
     except Exception:
-        logger.log(traceback.format_exc())
-        logger.log(_("pyopenssl module missing, please install for https access"), logger.WARNING)
+        logger.info(traceback.format_exc())
+        logger.warn(_("pyopenssl module missing, please install for https access"))
         return False
 
     import time
@@ -830,12 +830,12 @@ def create_https_certificates(ssl_cert, ssl_key):
         io.open(ssl_key, 'wb').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
         io.open(ssl_cert, 'wb').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except Exception as error:
-        logger.log(traceback.format_exc())
-        logger.log(_("Error creating SSL key and certificate {error}").format(error.message), logger.WARNING)
+        logger.info(traceback.format_exc())
+        logger.warn(_("Error creating SSL key and certificate {error}").format(error.message))
         return False
 
-    logger.log(_('Created https key: {ssl_key}').format(ssl_key=ssl_key))
-    logger.log(_('Created https cert: {ssl_cert}').format(ssl_cert=ssl_cert))
+    logger.info(_('Created https key: {ssl_key}').format(ssl_key=ssl_key))
+    logger.info(_('Created https cert: {ssl_cert}').format(ssl_cert=ssl_cert))
     return True
 
 
@@ -854,22 +854,22 @@ def backupVersionedFile(old_file, version):
 
     while not os.path.isfile(new_file):
         if not os.path.isfile(old_file):
-            logger.log(_("Not creating backup, {0} doesn't exist").format(old_file), logger.DEBUG)
+            logger.debug(_("Not creating backup, {0} doesn't exist").format(old_file))
             break
 
         try:
-            logger.log(_("Trying to back up {0} to {1}").format(old_file, new_file), logger.DEBUG)
+            logger.debug(_("Trying to back up {0} to {1}").format(old_file, new_file))
             shutil.copy(old_file, new_file)
-            logger.log(_("Backup done"), logger.DEBUG)
+            logger.debug(_("Backup done"))
             break
         except Exception as error:
-            logger.log(_("Error while trying to back up {0} to {1} : {2}").format(old_file, new_file, error), logger.WARNING)
+            logger.warn(_("Error while trying to back up {0} to {1} : {2}").format(old_file, new_file, error))
             numTries += 1
             time.sleep(1)
-            logger.log(_("Trying again."), logger.DEBUG)
+            logger.debug(_("Trying again."))
 
         if numTries >= 10:
-            logger.log(_("Unable to back up {0} to {1} please do it manually.").format(old_file, new_file), logger.ERROR)
+            logger.exception(_("Unable to back up {0} to {1} please do it manually.").format(old_file, new_file))
             return False
 
     return True
@@ -890,37 +890,37 @@ def restoreVersionedFile(backup_file, version):
     restore_file = new_file + '.' + 'v' + str(version)
 
     if not os.path.isfile(new_file):
-        logger.log(_("Not restoring, {0} doesn't exist").format(new_file), logger.DEBUG)
+        logger.debug(_("Not restoring, {0} doesn't exist").format(new_file))
         return False
 
     try:
-        logger.log(_("Trying to backup {0} to {1}.r{2} before restoring backup").format
-                   (new_file, new_file, version), logger.DEBUG)
+        logger.debug(_("Trying to backup {0} to {1}.r{2} before restoring backup").format
+                   (new_file, new_file, version))
 
         shutil.move(new_file, new_file + '.' + 'r' + str(version))
     except Exception as error:
-        logger.log(_("Error while trying to backup DB file {0} before proceeding with restore: {1}").format
-                   (restore_file, error), logger.WARNING)
+        logger.warning(_("Error while trying to backup DB file {0} before proceeding with restore: {1}").format
+                   (restore_file, error))
         return False
 
     while not os.path.isfile(new_file):
         if not os.path.isfile(restore_file):
-            logger.log(_("Not restoring, {0} doesn't exist").format(restore_file), logger.DEBUG)
+            logger.debug(_("Not restoring, {0} doesn't exist").format(restore_file))
             break
 
         try:
-            logger.log(_("Trying to restore file {0} to {1}").format(restore_file, new_file), logger.DEBUG)
+            logger.debug(_("Trying to restore file {0} to {1}").format(restore_file, new_file))
             shutil.copy(restore_file, new_file)
-            logger.log(_("Restore done"), logger.DEBUG)
+            logger.debug(_("Restore done"))
             break
         except Exception as error:
-            logger.log(_("Error while trying to restore file {0}. Error: {1}").format(restore_file, error), logger.WARNING)
+            logger.warn(_("Error while trying to restore file {0}. Error: {1}").format(restore_file, error))
             numTries += 1
             time.sleep(1)
-            logger.log(_("Trying again. Attempt #: {0}").format(numTries), logger.DEBUG)
+            logger.debug(_("Trying again. Attempt #: {0}").format(numTries))
 
         if numTries >= 10:
-            logger.log(_("Unable to restore file {0} to {1}").format(restore_file, new_file), logger.WARNING)
+            logger.warn(_("Unable to restore file {0} to {1}").format(restore_file, new_file))
             return False
 
     return True
@@ -1057,8 +1057,8 @@ def get_show(name, tryIndexers=False):
         if showObj and not fromCache:
             sickbeard.name_cache.addNameToCache(name, showObj.indexerid)
     except Exception as error:
-        logger.log(_("Error when attempting to find show: {0} in SickChill. Error: {1} ").format(name, error), logger.DEBUG)
-        logger.log(traceback.format_exc(), logger.DEBUG)
+        logger.debug(_("Error when attempting to find show: {0} in SickChill. Error: {1} ").format(name, error))
+        logger.debug(traceback.format_exc())
 
     return showObj
 
@@ -1115,21 +1115,21 @@ def set_up_anidb_connection():
     """Connect to anidb"""
 
     if not sickbeard.USE_ANIDB:
-        logger.log(_("Usage of anidb disabled. Skiping"), logger.DEBUG)
+        logger.debug(_("Usage of anidb disabled. Skiping"))
         return False
 
     if not sickbeard.ANIDB_USERNAME and not sickbeard.ANIDB_PASSWORD:
-        logger.log(_("anidb username and/or password are not set. Aborting anidb lookup."), logger.DEBUG)
+        logger.debug(_("anidb username and/or password are not set. Aborting anidb lookup."))
         return False
 
     if not sickbeard.ADBA_CONNECTION:
         def anidb_logger(msg):
-            return logger.log(_("anidb: {0} ").format(msg), logger.DEBUG)
+            return logger.debug(_("anidb: {0} ").format(msg))
 
         try:
             sickbeard.ADBA_CONNECTION = adba.Connection(keepAlive=True, log=anidb_logger)
         except Exception as error:
-            logger.log(_("anidb exception msg: {0} ").format(error), logger.WARNING)
+            logger.warn(_("anidb exception msg: {0} ").format(error))
             return False
 
     try:
@@ -1138,7 +1138,7 @@ def set_up_anidb_connection():
         else:
             return True
     except Exception as error:
-        logger.log(_("anidb exception msg: {0} ").format(error), logger.WARNING)
+        logger.warn(_("anidb exception msg: {0} ").format(error))
         return False
 
     return sickbeard.ADBA_CONNECTION.authed()
@@ -1159,7 +1159,7 @@ def makeZip(fileList, archive):
         a.close()
         return True
     except Exception as error:
-        logger.log(_("Zip creation error: {0} ").format(error), logger.ERROR)
+        logger.exception(_("Zip creation error: {0} ").format(error))
         return False
 
 
@@ -1191,7 +1191,7 @@ def extractZip(archive, targetDir):
         zip_file.close()
         return True
     except Exception as error:
-        logger.log(_("Zip extraction error: {0} ").format(error), logger.ERROR)
+        logger.exception(_("Zip extraction error: {0} ").format(error))
         return False
 
 
@@ -1212,7 +1212,7 @@ def backup_config_zip(fileList, archive, arcname=None):
         a.close()
         return True
     except Exception as error:
-        logger.log(_("Zip creation error: {0} ").format(error), logger.WARNING)
+        logger.warn(_("Zip creation error: {0} ").format(error))
         return False
 
 
@@ -1241,7 +1241,7 @@ def restore_config_zip(archive, targetDir):
         zip_file.close()
         return True
     except Exception as error:
-        logger.log(_("Zip extraction error: {0}").format(error), logger.ERROR)
+        logger.exception(_("Zip extraction error: {0}").format(error))
         shutil.rmtree(targetDir)
         return False
 
@@ -1266,7 +1266,7 @@ def make_indexer_session(use_cfscrape=True):
     session = make_session(use_cfscrape)
     session.verify = (False, certifi.where())[sickbeard.SSL_VERIFY]
     if sickbeard.PROXY_SETTING and sickbeard.PROXY_INDEXERS:
-        logger.log(_("Using global proxy: {}").format(sickbeard.PROXY_SETTING), logger.DEBUG)
+        logger.debug(_("Using global proxy: {}").format(sickbeard.PROXY_SETTING))
         parsed_url = urlparse(sickbeard.PROXY_SETTING)
         address = sickbeard.PROXY_SETTING if parsed_url.scheme else 'http://' + sickbeard.PROXY_SETTING
         session.proxies = {
@@ -1295,7 +1295,7 @@ def request_defaults(kwargs):
 
     # request session proxies
     if allow_proxy and sickbeard.PROXY_SETTING:
-        logger.log(_("Using global proxy: {}").format(sickbeard.PROXY_SETTING), logger.DEBUG)
+        logger.debug(_("Using global proxy: {}").format(sickbeard.PROXY_SETTING))
         parsed_url = urlparse(sickbeard.PROXY_SETTING)
         address = sickbeard.PROXY_SETTING if parsed_url.scheme else 'http://' + sickbeard.PROXY_SETTING
         proxies = {
@@ -1376,7 +1376,7 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
     try:
         return resp if response_type == 'response' or response_type is None else resp.json() if response_type == 'json' else getattr(resp, response_type, resp)
     except ValueError:
-        logger.log(_('Requested a json response but response was not json, check the url: {0}').format(url), logger.DEBUG)
+        logger.debug(_('Requested a json response but response was not json, check the url: {0}').format(url))
         return None
 
 
@@ -1415,7 +1415,7 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
 
                 chmodAsParent(filename)
             except Exception as error:
-                logger.log(_("Problem downloading file, setting permissions or writing file to {0} - ERROR: {1}").format(filename, error), logger.WARNING)
+                logger.warn(_("Problem downloading file, setting permissions or writing file to {0} - ERROR: {1}").format(filename, error))
 
     except Exception as error:
         # noinspection PyTypeChecker
@@ -1434,59 +1434,59 @@ def handle_requests_exception(requests_exception):
         raise requests_exception
     except requests.exceptions.SSLError as error:
         if ssl.OPENSSL_VERSION_INFO < (1, 0, 1, 5):
-            logger.log(_("SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to 1.0.1e+").format(error.request.url, ssl.OPENSSL_VERSION))
+            logger.info(_("SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to 1.0.1e+").format(error.request.url, ssl.OPENSSL_VERSION))
         if sickbeard.SSL_VERIFY:
-            logger.log(_("SSL Error requesting url: '{0}' Try disabling Cert Verification on the advanced tab of /config/general").format(error.request.url))
-        logger.log(default.format(error, type(error.__class__.__name__)), logger.DEBUG)
-        logger.log(traceback.format_exc(), logger.DEBUG)
+            logger.info(_("SSL Error requesting url: '{0}' Try disabling Cert Verification on the advanced tab of /config/general").format(error.request.url))
+        logger.debug(default.format(error, type(error.__class__.__name__)))
+        logger.debug(traceback.format_exc())
 
     except requests.exceptions.HTTPError as error:
         if not (hasattr(error, 'response') and error.response and
                 hasattr(error.response, 'status_code') and error.response.status_code == 404 and
                 hasattr(error.response, 'headers') and error.response.headers.get('X-Content-Type-Options') == 'nosniff'):
-            logger.log(default.format(error, type(error.__class__.__name__)))
+            logger.info(default.format(error, type(error.__class__.__name__)))
     except requests.exceptions.TooManyRedirects as error:
-        logger.log(default.format(error, type(error.__class__.__name__)))
+        logger.info(default.format(error, type(error.__class__.__name__)))
     except requests.exceptions.ConnectTimeout as error:
-        logger.log(default.format(error, type(error.__class__.__name__)))
+        logger.info(default.format(error, type(error.__class__.__name__)))
     except requests.exceptions.ReadTimeout as error:
-        logger.log(default.format(error, type(error.__class__.__name__)))
+        logger.info(default.format(error, type(error.__class__.__name__)))
     except requests.exceptions.ProxyError as error:
-        logger.log(default.format(error, type(error.__class__.__name__)))
+        logger.info(default.format(error, type(error.__class__.__name__)))
     except requests.exceptions.ConnectionError as error:
-        logger.log(default.format(error, type(error.__class__.__name__)))
+        logger.info(default.format(error, type(error.__class__.__name__)))
     except requests.exceptions.ContentDecodingError as error:
-        logger.log(default.format(error, type(error.__class__.__name__)))
-        logger.log(traceback.format_exc(), logger.DEBUG)
+        logger.info(default.format(error, type(error.__class__.__name__)))
+        logger.debug(traceback.format_exc())
     except requests.exceptions.ChunkedEncodingError as error:
-        logger.log(default.format(error, type(error.__class__.__name__)))
+        logger.info(default.format(error, type(error.__class__.__name__)))
     except requests.exceptions.InvalidURL as error:
-        logger.log(default.format(error, type(error.__class__.__name__)))
+        logger.info(default.format(error, type(error.__class__.__name__)))
     except requests.exceptions.InvalidSchema as error:
-        logger.log(default.format(error, type(error.__class__.__name__)))
+        logger.info(default.format(error, type(error.__class__.__name__)))
     except requests.exceptions.MissingSchema as error:
-        logger.log(default.format(error, type(error.__class__.__name__)))
+        logger.info(default.format(error, type(error.__class__.__name__)))
     except requests.exceptions.RetryError as error:
-        logger.log(default.format(error, type(error.__class__.__name__)))
+        logger.info(default.format(error, type(error.__class__.__name__)))
     except requests.exceptions.StreamConsumedError as error:
-        logger.log(default.format(error, type(error.__class__.__name__)))
+        logger.info(default.format(error, type(error.__class__.__name__)))
     except requests.exceptions.URLRequired as error:
-        logger.log(default.format(error, type(error.__class__.__name__)))
+        logger.info(default.format(error, type(error.__class__.__name__)))
     except CloudflareException as error:
-        logger.log(default.format(error, type(error.__class__.__name__)))
+        logger.info(default.format(error, type(error.__class__.__name__)))
     except (TypeError, ValueError) as error:
         level = get_level(error)
-        logger.log(default.format(error, type(error.__class__.__name__)), level)
+        logger.info(default.format(error, type(error.__class__.__name__)), level)
         if requests_exception.request:
-            logger.log(_('url is {0}').format(repr(requests_exception.request.url)))
-            logger.log('headers are {0}'.format(repr(requests_exception.request.headers)))
-            logger.log('params are {0}'.format(repr(requests_exception.request.params)))
-            logger.log('post_data is {0}'.format(repr(requests_exception.request.data)))
+            logger.info(_('url is {0}').format(repr(requests_exception.request.url)))
+            logger.info('headers are {0}'.format(repr(requests_exception.request.headers)))
+            logger.info('params are {0}'.format(repr(requests_exception.request.params)))
+            logger.info('post_data is {0}'.format(repr(requests_exception.request.data)))
         if level == logger.WARNING:
-            logger.log(traceback.format_exc(), logger.DEBUG)
+            logger.debug(traceback.format_exc())
     except Exception as error:
-        logger.log(default.format(error, type(error.__class__.__name__)), get_level(error))
-        logger.log(traceback.format_exc(), logger.DEBUG)
+        logger.info(default.format(error, type(error.__class__.__name__)), get_level(error))
+        logger.debug(traceback.format_exc())
 
 
 def get_size(start_path='.'):
@@ -1505,20 +1505,20 @@ def get_size(start_path='.'):
         for f in filenames:
             fp = os.path.join(dirpath, f)
             if os.path.islink(fp) and not os.path.isfile(fp):
-                logger.log(_("Unable to get size for file {0} because the link to the file is not valid").format(fp),
+                logger.info(_("Unable to get size for file {0} because the link to the file is not valid").format(fp),
                            logger.DEBUG if sickbeard.IGNORE_BROKEN_SYMLINKS else logger.WARNING)
                 continue
             try:
                 total_size += os.path.getsize(fp)
             except OSError as error:
-                logger.log(_("Unable to get size for file {0} Error: {1}").format(fp, error), logger.ERROR)
-                logger.log(traceback.format_exc(), logger.DEBUG)
+                logger.exception(_("Unable to get size for file {0} Error: {1}").format(fp, error))
+                logger.debug(traceback.format_exc())
     return total_size
 
 
 def generateApiKey():
     """ Return a new randomized API_KEY"""
-    logger.log(_("Generating New API key"))
+    logger.info(_("Generating New API key"))
     secure_hash = hashlib.sha512(str(time.time()))
     secure_hash.update(str(random.SystemRandom().getrandbits(4096)))
     return secure_hash.hexdigest()[:32]
@@ -1575,15 +1575,15 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
     if not isinstance(oldfile, list):
         oldfile = [oldfile] if oldfile else []
 
-    logger.log(_("Trying to determine free space on the destination drive"), logger.DEBUG)
+    logger.debug(_("Trying to determine free space on the destination drive"))
 
     if not os.path.isfile(src):
-        logger.log(_("A path to a file is required for the source. {0} is not a file.").format(src), logger.WARNING)
+        logger.warn(_("A path to a file is required for the source. {0} is not a file.").format(src))
         return True
 
     if not (os.path.isdir(dest) or (sickbeard.CREATE_MISSING_SHOW_DIRS and os.path.isdir(os.path.dirname(dest)))):
-        logger.log(_("A path is required for the destination. Check that the root dir and show locations are correct for {0} (I got '{1}')").format(
-            oldfile[0].name, dest), logger.WARNING)
+        logger.warning(_("A path is required for the destination. Check that the root dir and show locations are correct for {0} (I got '{1}')").format(
+            oldfile[0].name, dest))
         return False
 
     dest = (os.path.dirname(dest), dest)[os.path.isdir(dest)]
@@ -1592,15 +1592,15 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
     # then by definition there is enough space
     if method == "move" and os.stat(src).st_dev == os.stat(dest).st_dev:  # pylint:
         # disable=no-member
-        logger.log(_("Process method is 'move' and src and destination are on the same device, skipping free space check"), logger.INFO)
+        logger.info(_("Process method is 'move' and src and destination are on the same device, skipping free space check"))
         return True
 
     try:
         disk_free = disk_usage(dest)
     except Exception as error:
-        logger.log(_("Unable to determine free space, so I will assume there is enough."), logger.WARNING)
-        logger.log(_("Error: {error}").format(error=error), logger.DEBUG)
-        logger.log(traceback.format_exc(), logger.DEBUG)
+        logger.warn(_("Unable to determine free space, so I will assume there is enough."))
+        logger.debug(_("Error: {error}").format(error=error))
+        logger.debug(traceback.format_exc())
         return True
 
     # Lets also do this for symlink and hardlink
@@ -1617,8 +1617,8 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
     if disk_free > needed_space:
         return True
     else:
-        logger.log(_("Not enough free space: Needed: {0} bytes ( {1} ), found: {2} bytes ( {3} )").format
-                   (needed_space, pretty_file_size(needed_space), disk_free, pretty_file_size(disk_free)), logger.WARNING)
+        logger.warning(_("Not enough free space: Needed: {0} bytes ( {1} ), found: {2} bytes ( {3} )").format
+                   (needed_space, pretty_file_size(needed_space), disk_free, pretty_file_size(disk_free)))
         return False
 
 
@@ -1631,9 +1631,9 @@ def disk_usage_hr(diskPath=None):
         try:
             free = disk_usage(diskPath)
         except Exception as error:
-            logger.log(_("Unable to determine free space"), logger.WARNING)
-            logger.log(_("Error: {error}").format(error=error), logger.DEBUG)
-            logger.log(traceback.format_exc(), logger.DEBUG)
+            logger.warn(_("Unable to determine free space"))
+            logger.debug(_("Error: {error}").format(error=error))
+            logger.debug(traceback.format_exc())
         else:
             return pretty_file_size(free)
 

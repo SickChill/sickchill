@@ -103,7 +103,7 @@ class Client(GenericClient):
         try:
             jdata = self.response.json()
         except (ValueError, AttributeError):
-            logger.log('Could not convert response to json, check the host:port: {0!r}'.format(self.response))
+            logger.info('Could not convert response to json, check the host:port: {0!r}'.format(self.response))
             return False
 
         if not jdata.get('success'):
@@ -129,7 +129,7 @@ class Client(GenericClient):
             error_code = jdata.get('error', {}).get('code')
             api_method = (data or {}).get('method', 'login')
             log_string = self.error_map.get(api_method)[error_code]
-            logger.log('{0}'.format(log_string))
+            logger.info('{0}'.format(log_string))
 
         return jdata.get('success')
 
@@ -196,10 +196,10 @@ class Client(GenericClient):
         Sends an NZB to DownloadStation
         params: :result: an object subclassing sickbeard.classes.SearchResult
         """
-        logger.log('Calling {0} Client'.format(self.name), logger.DEBUG)
+        logger.debug('Calling {0} Client'.format(self.name))
 
         if not (self.auth or self._get_auth()):
-            logger.log('{0}: Authentication Failed'.format(self.name), logger.WARNING)
+            logger.warn('{0}: Authentication Failed'.format(self.name))
             return False
 
         if result.resultType == 'nzb':

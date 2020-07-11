@@ -59,7 +59,7 @@ class BTNProvider(TorrentProvider):
 
     def _check_auth(self):
         if not self.api_key:
-            logger.log("Invalid api key. Check your settings", logger.WARNING)
+            logger.warn("Invalid api key. Check your settings")
 
         return True
 
@@ -69,7 +69,7 @@ class BTNProvider(TorrentProvider):
             return self._check_auth()
 
         if 'api-error' in parsed_json:
-            logger.log("Incorrect authentication credentials: {0}".format(parsed_json['api-error']), logger.DEBUG)
+            logger.debug("Incorrect authentication credentials: {0}".format(parsed_json['api-error']))
             raise AuthException(
                 "Your authentication credentials for " + self.name + " are incorrect, check your config.")
 
@@ -89,12 +89,12 @@ class BTNProvider(TorrentProvider):
 
         if search_params:
             params.update(search_params)
-            logger.log("Search string: {0}".format
-                       (search_params), logger.DEBUG)
+            logger.debug("Search string: {0}".format
+                       (search_params))
 
         parsed_json = self._api_call(apikey, params)
         if not parsed_json:
-            logger.log("No data returned from provider", logger.DEBUG)
+            logger.debug("No data returned from provider")
             return results
 
         if self._check_auth_from_data(parsed_json):
@@ -128,7 +128,7 @@ class BTNProvider(TorrentProvider):
                 (title, url) = self._get_title_and_url(torrent_info)
 
                 if title and url:
-                    logger.log("Found result: {0} ".format(title), logger.DEBUG)
+                    logger.debug("Found result: {0} ".format(title))
                     results.append(torrent_info)
 
         # FIXME SORT RESULTS
@@ -145,26 +145,26 @@ class BTNProvider(TorrentProvider):
 
         except jsonrpclib.jsonrpc.ProtocolError as error:
             if error.message == (-32001, 'Invalid API Key'):
-                logger.log("The API key you provided was rejected because it is invalid. Check your provider configuration.", logger.WARNING)
+                logger.warn("The API key you provided was rejected because it is invalid. Check your provider configuration.")
             elif error.message == (-32002, 'Call Limit Exceeded'):
-                logger.log("You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account", logger.WARNING)
+                logger.warn("You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account")
             else:
-                logger.log("JSON-RPC protocol error while accessing provider. Error: {0} ".format(repr(error)), logger.ERROR)
+                logger.exception("JSON-RPC protocol error while accessing provider. Error: {0} ".format(repr(error)))
             parsed_json = {'api-error': str(error)}
             return parsed_json
 
         except socket.timeout:
-            logger.log("Timeout while accessing provider", logger.WARNING)
+            logger.warn("Timeout while accessing provider")
 
         except socket.error as error:
             # Note that sometimes timeouts are thrown as socket errors
-            logger.log("Socket error while accessing provider. Error: {0} ".format(error[1]), logger.WARNING)
+            logger.warn("Socket error while accessing provider. Error: {0} ".format(error[1]))
 
         except Exception as error:
             errorstring = str(error)
             if errorstring.startswith('<') and errorstring.endswith('>'):
                 errorstring = errorstring[1:-1]
-            logger.log("Unknown error while accessing provider. Error: {0} ".format(errorstring), logger.WARNING)
+            logger.warn("Unknown error while accessing provider. Error: {0} ".format(errorstring))
 
         return parsed_json
 
@@ -310,7 +310,7 @@ class BTNCache(tvcache.TVCache):
 
         # Set maximum to 24 hours (24 * 60 * 60 = 86400 seconds) of "RSS" data search, older things will need to be done through backlog
         if seconds_since_last_update > 86400:
-            logger.log(
+            logger.info(
                 "The last known successful update was more than 24 hours ago, only trying to fetch the last 24 hours!",
                 logger.DEBUG)
             seconds_since_last_update = 86400

@@ -83,20 +83,20 @@ class DanishbitsProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.debug("Search Mode: {0}".format(mode))
 
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log("Search string: {0}".format
-                               (search_string.decode("utf-8")), logger.DEBUG)
+                    logger.debug("Search string: {0}".format
+                               (search_string.decode("utf-8")))
 
                     search_params['latest'] = 'false'
                     search_params['search'] = search_string
 
                 data = self.get_url(self.urls['search'], params=search_params, returns='text')
                 if not data:
-                    logger.log("No data returned from provider", logger.DEBUG)
+                    logger.debug("No data returned from provider")
                     continue
 
                 result = json.loads(data)
@@ -107,7 +107,7 @@ class DanishbitsProvider(TorrentProvider):
                         seeders  = torrent['seeders']
                         leechers  = torrent['leechers']
                         if seeders < self.minseed or leechers < self.minleech:
-                            logger.log("Discarded {0} because with {1}/{2} seeders/leechers does not meet the requirement of {3}/{4} seeders/leechers".format(title, seeders, leechers, self.minseed, self.minleech))
+                            logger.info("Discarded {0} because with {1}/{2} seeders/leechers does not meet the requirement of {3}/{4} seeders/leechers".format(title, seeders, leechers, self.minseed, self.minleech))
                             continue
 
                         freeleech = torrent['freeleech']
@@ -118,12 +118,12 @@ class DanishbitsProvider(TorrentProvider):
                         size = convert_size(size, units=units) or -1
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders,
                                 'leechers': leechers, 'hash': ''}
-                        logger.log("Found result: {0} with {1} seeders and {2} leechers".format
-                                                    (title, seeders, leechers), logger.DEBUG)
+                        logger.debug("Found result: {0} with {1} seeders and {2} leechers".format
+                                                    (title, seeders, leechers))
                         items.append(item)
 
                 if 'error' in result:
-                    logger.log(result['error'], logger.WARNING)
+                    logger.warn(result['error'])
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

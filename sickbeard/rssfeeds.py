@@ -22,11 +22,11 @@ def getFeed(url, params=None, request_hook=None):
             elif 'error' in feed.feed:
                 err_code = feed.feed['error']['code']
                 err_desc = feed.feed['error']['description']
-                logger.log('RSS ERROR:[{0}] CODE:[{1}]'.format(err_desc, err_code), logger.DEBUG)
+                logger.debug('RSS ERROR:[{0}] CODE:[{1}]'.format(err_desc, err_code))
         else:
-            logger.log('RSS error loading data: ' + url, logger.DEBUG)
+            logger.debug('RSS error loading data: ' + url)
 
     except Exception as e:
-        logger.log('RSS error: ' + str(e), logger.DEBUG)
+        logger.debug('RSS error: ' + str(e))
 
     return {'entries': []}

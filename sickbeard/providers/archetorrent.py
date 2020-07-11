@@ -79,13 +79,13 @@ class ArcheTorrentProvider(TorrentProvider):
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
-            logger.log('Unable to connect to provider', logger.WARNING)
+            logger.warn('Unable to connect to provider')
             return False
 
         search = self.get_url(self.urls['search'])
 
         if not search or not re.search('torrents.php', search):
-            logger.log('Invalid username or password. Check your settings', logger.WARNING)
+            logger.warn('Invalid username or password. Check your settings')
             return False
 
         return True
@@ -119,13 +119,13 @@ class ArcheTorrentProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
+            logger.debug('Search Mode: {0}'.format(mode))
 
             for search_string in search_strings[mode]:
-                logger.log('Search String: {0} for mode {1}'.format(search_strings[mode], mode), logger.DEBUG)
+                logger.debug('Search String: {0} for mode {1}'.format(search_strings[mode], mode))
                 if mode != 'RSS':
-                    logger.log('Search string: {0}'.format
-                               (search_string.decode('utf-8')), logger.DEBUG)
+                    logger.debug('Search string: {0}'.format
+                               (search_string.decode('utf-8')))
 
                 search_params['search'] = re.sub(r'[()]', '', search_string)
                 data = self.get_url(self.urls['search'], params=search_params, returns='text')
@@ -138,7 +138,7 @@ class ArcheTorrentProvider(TorrentProvider):
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
-                        logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
+                        logger.debug('Data returned from provider does not contain any torrents')
                         continue
 
                     # Catégorie, Release, Date, DL, Size, C, S, L
@@ -163,8 +163,8 @@ class ArcheTorrentProvider(TorrentProvider):
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.log('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
-                                               (title, seeders, leechers), logger.DEBUG)
+                                    logger.debug('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
+                                               (title, seeders, leechers))
                                 continue
 
                             size_index = labels.index('Size') if 'Size' in labels else labels.index('Taille')
@@ -173,8 +173,8 @@ class ArcheTorrentProvider(TorrentProvider):
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
-                                logger.log('Found result: {0} with {1} seeders and {2} leechers'.format
-                                           (title, seeders, leechers), logger.DEBUG)
+                                logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format
+                                           (title, seeders, leechers))
 
                             items.append(item)
                         except StandardError:

@@ -67,7 +67,7 @@ class NorbitsProvider(TorrentProvider):
         """ Check that we are authenticated. """
 
         if 'status' in parsed_json and 'message' in parsed_json and parsed_json.get('status') == 3:
-            logger.log('Invalid username or password. Check your settings', logger.WARNING)
+            logger.warn('Invalid username or password. Check your settings')
 
         return True
 
@@ -78,12 +78,12 @@ class NorbitsProvider(TorrentProvider):
 
         for mode in search_params:
             items = []
-            logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
+            logger.debug('Search Mode: {0}'.format(mode))
 
             for search_string in search_params[mode]:
                 if mode != 'RSS':
-                    logger.log('Search string: {0}'.format
-                               (search_string.decode('utf-8')), logger.DEBUG)
+                    logger.debug('Search string: {0}'.format
+                               (search_string.decode('utf-8')))
 
                 post_data = {
                     'username': self.username,
@@ -103,8 +103,8 @@ class NorbitsProvider(TorrentProvider):
                 if self._check_auth_from_data(parsed_json):
                     json_items = parsed_json.get('data', '')
                     if not json_items:
-                        logger.log('Resulting JSON from provider is not correct, '
-                                   'not parsing it', logger.ERROR)
+                        logger.exception('Resulting JSON from provider is not correct, '
+                                   'not parsing it')
 
                     for item in json_items.get('torrents', []):
                         title = item.pop('name', '')
@@ -119,7 +119,7 @@ class NorbitsProvider(TorrentProvider):
                         leechers = try_int(item.pop('leechers', 0))
 
                         if seeders < self.minseed or leechers < self.minleech:
-                            logger.log('Discarding torrent because it does not meet '
+                            logger.info('Discarding torrent because it does not meet '
                                        'the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
                                        (title, seeders, leechers), logger.DEBUG)
                             continue
@@ -129,8 +129,8 @@ class NorbitsProvider(TorrentProvider):
 
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
                         if mode != 'RSS':
-                            logger.log('Found result: {0} with {1} seeders and {2} leechers'.format(
-                                title, seeders, leechers), logger.DEBUG)
+                            logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format(
+                                title, seeders, leechers))
 
                         items.append(item)
             # For each search mode sort all the items by seeders if available

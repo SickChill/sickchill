@@ -82,7 +82,7 @@ class Notifier(object):
         if not (sickbeard.USE_TWILIO or force or self.number_regex.match(sickbeard.TWILIO_TO_NUMBER)):
             return False
 
-        logger.log('Sending Twilio SMS: ' + message, logger.DEBUG)
+        logger.debug('Sending Twilio SMS: ' + message)
 
         try:
             self.client.messages.create(
@@ -91,7 +91,7 @@ class Notifier(object):
                 from_=self.number.phone_number,
             )
         except twilio.TwilioRestException as e:
-            logger.log('Twilio notification failed:' + str(e), logger.ERROR)
+            logger.exception('Twilio notification failed:' + str(e))
 
             if allow_raise:
                 raise e

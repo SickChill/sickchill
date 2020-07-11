@@ -68,21 +68,21 @@ def delete_folder(folder, check_empty=True):
     if check_empty:
         check_files = os.listdir(folder)
         if check_files:
-            logger.log("Not deleting folder {0} found the following files: {1}".format(folder, check_files), logger.INFO)
+            logger.info("Not deleting folder {0} found the following files: {1}".format(folder, check_files))
             return False
 
         try:
-            logger.log("Deleting folder (if it's empty): {0}".format(folder))
+            logger.info("Deleting folder (if it's empty): {0}".format(folder))
             os.rmdir(folder)
         except (OSError, IOError) as e:
-            logger.log("Warning: unable to delete folder: {0}: {1}".format(folder, str(e)), logger.WARNING)
+            logger.warn("Warning: unable to delete folder: {0}: {1}".format(folder, str(e)))
             return False
     else:
         try:
-            logger.log("Deleting folder: " + folder)
+            logger.info("Deleting folder: " + folder)
             shutil.rmtree(folder)
         except (OSError, IOError) as e:
-            logger.log("Warning: unable to delete folder: {0}: {1}".format(folder, str(e)), logger.WARNING)
+            logger.warn("Warning: unable to delete folder: {0}: {1}".format(folder, str(e)))
             return False
 
     return True
@@ -126,7 +126,7 @@ def delete_files(process_path, unwanted_files, result, force=False):
 
 
 def log_helper(message, level=logger.INFO):
-    logger.log(message, level)
+    logger.info(message, level)
     return message + "\n"
 
 
@@ -251,7 +251,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
         return result.output
     except Exception as error:
-        logger.log(traceback.format_exc(), logger.DEBUG)
+        logger.debug(traceback.format_exc())
         return result.output
 
 
@@ -322,7 +322,7 @@ def validate_dir(process_path, release_name, failed, result):
             try:
                 NameParser().parse(found_file, cache_result=False)
             except (InvalidNameException, InvalidShowException) as error:
-                logger.log('Could not properly parse a show and episode from [{}]: {}'.format(found_file, str(error)), logger.DEBUG)
+                logger.debug('Could not properly parse a show and episode from [{}]: {}'.format(found_file, str(error)))
             else:
                 return True
 
@@ -556,7 +556,7 @@ def subtitles_enabled(video):
     try:
         parse_result = NameParser().parse(video, cache_result=True)
     except (InvalidNameException, InvalidShowException):
-        logger.log('Not enough information to parse filename into a valid show. Consider add scene exceptions or improve naming for: {0}'.format(video), logger.WARNING)
+        logger.warn('Not enough information to parse filename into a valid show. Consider add scene exceptions or improve naming for: {0}'.format(video))
         return False
 
     if parse_result.show.indexerid:
@@ -564,5 +564,5 @@ def subtitles_enabled(video):
         sql_results = main_db_con.select("SELECT subtitles FROM tv_shows WHERE indexer_id = ? LIMIT 1", [parse_result.show.indexerid])
         return bool(sql_results[0][b"subtitles"]) if sql_results else False
     else:
-        logger.log('Empty indexer ID for: {0}'.format(video), logger.WARNING)
+        logger.warn('Empty indexer ID for: {0}'.format(video))
         return False

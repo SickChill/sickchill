@@ -48,7 +48,7 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
             return
 
         self.amActive = True
-        logger.log(_("Searching for new released episodes ..."))
+        logger.info(_("Searching for new released episodes ..."))
 
         if not network_timezones.network_dict:
             network_timezones.update_network_dict()
@@ -77,7 +77,7 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
                     continue
 
             except MultipleShowObjectsException:
-                logger.log("ERROR: expected to find a single show matching " + str(sqlEp[b'showid']))
+                logger.info("ERROR: expected to find a single show matching " + str(sqlEp[b'showid']))
                 continue
 
             if show.airs and show.network:
@@ -93,10 +93,10 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
             ep = show.getEpisode(sqlEp[b"season"], sqlEp[b"episode"])
             with ep.lock:
                 if ep.season == 0:
-                    logger.log("New episode " + ep.pretty_name() + " airs today, setting status to SKIPPED because is a special season")
+                    logger.info("New episode " + ep.pretty_name() + " airs today, setting status to SKIPPED because is a special season")
                     ep.status = common.SKIPPED
                 else:
-                    logger.log("New episode {0} airs today, setting to default episode status for this show: {1}".format(ep.pretty_name(), common.statusStrings[ep.show.default_ep_status]))
+                    logger.info("New episode {0} airs today, setting to default episode status for this show: {1}".format(ep.pretty_name(), common.statusStrings[ep.show.default_ep_status]))
                     ep.status = ep.show.default_ep_status
 
                 sql_l.append(ep.get_sql())
@@ -105,7 +105,7 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
             main_db_con = db.DBConnection()
             main_db_con.mass_action(sql_l)
         else:
-            logger.log("No new released episodes found ...")
+            logger.info("No new released episodes found ...")
 
         # queue episode for daily search
         dailysearch_queue_item = sickbeard.search_queue.DailySearchQueueItem()

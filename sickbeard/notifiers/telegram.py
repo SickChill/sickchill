@@ -62,7 +62,7 @@ class Notifier(object):
         id = sickbeard.TELEGRAM_ID if id is None else id
         api_key = sickbeard.TELEGRAM_APIKEY if api_key is None else api_key
 
-        logger.log('Telegram in use with API KEY: {0}'.format(api_key), logger.DEBUG)
+        logger.debug('Telegram in use with API KEY: {0}'.format(api_key))
 
         message = '{0} : {1}'.format(title.encode(), msg.encode())
         payload = urllib.parse.urlencode({'chat_id': id, 'text': message})
@@ -91,7 +91,7 @@ class Notifier(object):
         except Exception as e:
             message = 'Error while sending Telegram message: {0} '.format(e)
         finally:
-            logger.log(message, logger.INFO)
+            logger.info(message)
             return success, message
 
     def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
@@ -161,9 +161,9 @@ class Notifier(object):
         """
 
         if not (force or sickbeard.USE_TELEGRAM):
-            logger.log('Notification for Telegram not enabled, skipping this notification', logger.DEBUG)
+            logger.debug('Notification for Telegram not enabled, skipping this notification')
             return False, 'Disabled'
 
-        logger.log('Sending a Telegram message for {0}'.format(message), logger.DEBUG)
+        logger.debug('Sending a Telegram message for {0}'.format(message))
 
         return self._send_telegram_msg(title, message, id, api_key)

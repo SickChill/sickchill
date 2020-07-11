@@ -93,7 +93,7 @@ class NameParser(object):
                 try:
                     cur_regex = re.compile(cur_pattern, re.VERBOSE | re.I)
                 except re.error as errormsg:
-                    logger.log("WARNING: Invalid episode_pattern using {0} regexs, {1}. {2}".format(dbg_str, errormsg, cur_pattern))
+                    logger.info("WARNING: Invalid episode_pattern using {0} regexs, {1}. {2}".format(dbg_str, errormsg, cur_pattern))
                 else:
                     self.compiled_regexes.append((cur_pattern_num, cur_pattern_name, cur_regex))
 
@@ -251,8 +251,8 @@ class NameParser(object):
                         season_number = epObj["airedSeason"]
                         episode_numbers = [epObj["airedEpisode"]]
                     except Exception:
-                        logger.log("Unable to find episode with date {} for show {}, skipping".format(
-                            bestResult.air_date, bestResult.show.name), logger.WARNING)
+                        logger.warning("Unable to find episode with date {} for show {}, skipping".format(
+                            bestResult.air_date, bestResult.show.name))
                         episode_numbers = []
 
                 for epNo in episode_numbers:
@@ -328,8 +328,8 @@ class NameParser(object):
                 bestResult.season_number = new_season_numbers[0]
 
             if bestResult.show.is_scene and not skip_scene_detection:
-                logger.log(
-                    "Converted parsed result " + bestResult.original_name + " into " + six.text_type(bestResult), logger.DEBUG)
+                logger.debug(
+                    "Converted parsed result " + bestResult.original_name + " into " + six.text_type(bestResult))
 
         # CPU sleep
         time.sleep(0.02)
@@ -473,7 +473,7 @@ class NameParser(object):
         if cache_result:
             name_parser_cache.add(name, final_result)
 
-        logger.log("Parsed " + name + " into " + six.text_type(final_result), logger.DEBUG)
+        logger.debug("Parsed " + name + " into " + six.text_type(final_result))
         return final_result
 
 
@@ -584,7 +584,7 @@ class NameParserCache(object):
         with self.lock:
             value = self.data.get(key)
             if value:
-                logger.log("Using cached parse result for: {name}".format(name=key), logger.DEBUG)
+                logger.debug("Using cached parse result for: {name}".format(name=key))
             return value
 
     def add(self, key, value):

@@ -36,7 +36,7 @@ from sickbeard import loggerdef exception_generator():
     try:
         raise Exception('FAKE EXCEPTION')
     except Exception as error:
-        logger.log("FAKE ERROR: " + str(error), logger.ERROR)
+        logger.exception("FAKE ERROR: " + str(error))
         logger.submit_errors()
         raise
 

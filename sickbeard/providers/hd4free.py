@@ -50,7 +50,7 @@ class HD4FreeProvider(TorrentProvider):
         if self.username and self.api_key:
             return True
 
-        logger.log('Your authentication credentials for {0} are missing, check your config.'.format(self.name), logger.WARNING)
+        logger.warn('Your authentication credentials for {0} are missing, check your config.'.format(self.name))
         return False
 
     def search(self, search_strings, age=0, ep_obj=None):
@@ -66,7 +66,7 @@ class HD4FreeProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.debug("Search Mode: {0}".format(mode))
             for search_string in search_strings[mode]:
                 if self.freeleech:
                     search_params['fl'] = 'true'
@@ -74,7 +74,7 @@ class HD4FreeProvider(TorrentProvider):
                     search_params.pop('fl', '')
 
                 if mode != 'RSS':
-                    logger.log("Search string: " + search_string.strip(), logger.DEBUG)
+                    logger.debug("Search string: " + search_string.strip())
                     search_params['search'] = search_string
                 else:
                     search_params.pop('search', '')
@@ -82,21 +82,21 @@ class HD4FreeProvider(TorrentProvider):
                 try:
                     jdata = self.get_url(self.urls['search'], params=search_params, returns='json')
                 except ValueError:
-                    logger.log("No data returned from provider", logger.DEBUG)
+                    logger.debug("No data returned from provider")
                     continue
 
                 if not jdata:
-                    logger.log("No data returned from provider", logger.DEBUG)
+                    logger.debug("No data returned from provider")
                     continue
 
                 error = jdata.get('error')
                 if error:
-                    logger.log("{}".format(error), logger.DEBUG)
+                    logger.debug("{}".format(error))
                     return results
 
                 try:
                     if jdata['0']['total_results'] == 0:
-                        logger.log("Provider has no results for this search", logger.DEBUG)
+                        logger.debug("Provider has no results for this search")
                         continue
                 except StandardError:
                     continue
@@ -112,8 +112,8 @@ class HD4FreeProvider(TorrentProvider):
                         leechers = jdata[i]["leechers"]
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                           (title, seeders, leechers), logger.DEBUG)
+                                logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                           (title, seeders, leechers))
                             continue
 
                         torrent_size = str(jdata[i]["size"]) + ' MB'
@@ -121,7 +121,7 @@ class HD4FreeProvider(TorrentProvider):
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
 
                         if mode != 'RSS':
-                            logger.log("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers), logger.DEBUG)
+                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                         items.append(item)
                     except StandardError:

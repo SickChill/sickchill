@@ -66,19 +66,19 @@ class TorrentProjectProvider(TorrentProvider):
 
         for mode in search_strings:  # Mode = RSS, Season, Episode
             items = []
-            logger.log("Search Mode: {0}".format(mode), logger.DEBUG)
+            logger.debug("Search Mode: {0}".format(mode))
 
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.log("Search string: {0}".format
-                               (search_string.decode("utf-8")), logger.DEBUG)
+                    logger.debug("Search string: {0}".format
+                               (search_string.decode("utf-8")))
 
                 search_params['s'] = search_string
 
                 if self.custom_url:
                     if not validators.url(self.custom_url):
-                        logger.log("Invalid custom url set, please check your settings", logger.WARNING)
+                        logger.warn("Invalid custom url set, please check your settings")
                         return results
                     search_url = self.custom_url
                 else:
@@ -86,7 +86,7 @@ class TorrentProjectProvider(TorrentProvider):
 
                 torrents = self.get_url(search_url, params=search_params, returns='json')
                 if not (torrents and "total_found" in torrents and int(torrents["total_found"]) > 0):
-                    logger.log("Data returned from provider does not contain any torrents", logger.DEBUG)
+                    logger.debug("Data returned from provider does not contain any torrents")
                     continue
 
                 del torrents["total_found"]
@@ -98,7 +98,7 @@ class TorrentProjectProvider(TorrentProvider):
                     leechers = try_int(torrents[i]["leechs"], 0)
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != 'RSS':
-                            logger.log("Torrent doesn't meet minimum seeds & leechers not selecting : {0}".format(title), logger.DEBUG)
+                            logger.debug("Torrent doesn't meet minimum seeds & leechers not selecting : {0}".format(title))
                         continue
 
                     t_hash = torrents[i]["torrent_hash"]
@@ -114,8 +114,8 @@ class TorrentProjectProvider(TorrentProvider):
                     item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': t_hash}
 
                     if mode != 'RSS':
-                        logger.log("Found result: {0} with {1} seeders and {2} leechers".format
-                                   (title, seeders, leechers), logger.DEBUG)
+                        logger.debug("Found result: {0} with {1} seeders and {2} leechers".format
+                                   (title, seeders, leechers))
 
                     items.append(item)
 

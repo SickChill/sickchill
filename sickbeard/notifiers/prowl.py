@@ -55,7 +55,7 @@ class Notifier(object):
             show = self._parse_episode(ep_name)
             recipients = self._generate_recipients(show)
             if not recipients:
-                logger.log('Skipping prowl notify because there are no configured recipients', logger.DEBUG)
+                logger.debug('Skipping prowl notify because there are no configured recipients')
             else:
                 for api in recipients:
                     self._send_prowl(prowl_api=api, prowl_priority=None, event=common.notifyStrings[common.NOTIFY_SNATCH],
@@ -66,7 +66,7 @@ class Notifier(object):
             show = self._parse_episode(ep_name)
             recipients = self._generate_recipients(show)
             if not recipients:
-                logger.log('Skipping prowl notify because there are no configured recipients', logger.DEBUG)
+                logger.debug('Skipping prowl notify because there are no configured recipients')
             else:
                 for api in recipients:
                     self._send_prowl(prowl_api=api, prowl_priority=None, event=common.notifyStrings[common.NOTIFY_DOWNLOAD],
@@ -77,7 +77,7 @@ class Notifier(object):
             show = self._parse_episode(ep_name)
             recipients = self._generate_recipients(show)
             if not recipients:
-                logger.log('Skipping prowl notify because there are no configured recipients', logger.DEBUG)
+                logger.debug('Skipping prowl notify because there are no configured recipients')
             else:
                 for api in recipients:
                     self._send_prowl(prowl_api=api, prowl_priority=None, event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD],
@@ -137,7 +137,7 @@ class Notifier(object):
 
         title = sickbeard.PROWL_MESSAGE_TITLE
 
-        logger.log("PROWL: Sending notice with details: title=\"{0}\" event=\"{1}\", message=\"{2}\", priority={3}, api={4}".format(title, event, message, prowl_priority, prowl_api), logger.DEBUG)
+        logger.debug("PROWL: Sending notice with details: title=\"{0}\" event=\"{1}\", message=\"{2}\", priority={3}, api={4}".format(title, event, message, prowl_priority, prowl_api))
 
         http_handler = HTTPSConnection("api.prowlapp.com")
 
@@ -153,19 +153,19 @@ class Notifier(object):
                                  headers={'Content-type': "application/x-www-form-urlencoded"},
                                  body=urlencode(data))
         except (SSLError, HTTPException, socket.error):
-            logger.log("Prowl notification failed.", logger.ERROR)
+            logger.exception("Prowl notification failed.")
             return False
         response = http_handler.getresponse()
         request_status = response.status
 
         if request_status == 200:
-            logger.log("Prowl notifications sent.", logger.INFO)
+            logger.info("Prowl notifications sent.")
             return True
         elif request_status == 401:
-            logger.log("Prowl auth failed: {0}".format(response.reason), logger.ERROR)
+            logger.exception("Prowl auth failed: {0}".format(response.reason))
             return False
         else:
-            logger.log("Prowl notification failed.", logger.ERROR)
+            logger.exception("Prowl notification failed.")
             return False
 
     @staticmethod
@@ -173,5 +173,5 @@ class Notifier(object):
         sep = " - "
         titles = ep_name.split(sep)
         titles.sort(key=len, reverse=True)
-        logger.log("TITLES: {0}".format(titles), logger.DEBUG)
+        logger.debug("TITLES: {0}".format(titles))
         return titles

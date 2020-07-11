@@ -69,13 +69,13 @@ class BacklogSearcher(object):
             return None
 
     def am_running(self):
-        logger.log("amWaiting: " + str(self.amWaiting) + ", amActive: " + str(self.amActive), logger.DEBUG)
+        logger.debug("amWaiting: " + str(self.amWaiting) + ", amActive: " + str(self.amActive))
         return (not self.amWaiting) and self.amActive
 
     def searchBacklog(self, which_shows=None):
 
         if self.amActive:
-            logger.log("Backlog is still running, not starting it again", logger.DEBUG)
+            logger.debug("Backlog is still running, not starting it again")
             return
 
         self.amActive = True
@@ -92,7 +92,7 @@ class BacklogSearcher(object):
         fromDate = datetime.date.min
 
         if not (which_shows or curDate - self._lastBacklog >= self.cycleTime):
-            logger.log("Running limited backlog on missed episodes " + str(sickbeard.BACKLOG_DAYS) + " day(s) and older only")
+            logger.info("Running limited backlog on missed episodes " + str(sickbeard.BACKLOG_DAYS) + " day(s) and older only")
             fromDate = datetime.date.today() - datetime.timedelta(days=sickbeard.BACKLOG_DAYS)
 
         # go through non air-by-date shows and see if they need any episodes
@@ -110,7 +110,7 @@ class BacklogSearcher(object):
                 sickbeard.searchQueueScheduler.action.add_item(backlog_queue_item)  # @UndefinedVariable
 
             if not segments:
-                logger.log("Nothing needs to be downloaded for {0}, skipping".format(curShow.name), logger.DEBUG)
+                logger.debug("Nothing needs to be downloaded for {0}, skipping".format(curShow.name))
 
         # don't consider this an actual backlog search if we only did recent eps
         # or if we only did certain shows
@@ -122,7 +122,7 @@ class BacklogSearcher(object):
 
     def _get_lastBacklog(self):
 
-        logger.log("Retrieving the last check time from the DB", logger.DEBUG)
+        logger.debug("Retrieving the last check time from the DB")
 
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT last_backlog FROM info")
@@ -143,12 +143,12 @@ class BacklogSearcher(object):
     def _get_segments(show, fromDate):
         wanted = {}
         if show.paused:
-            logger.log("Skipping backlog for {0} because the show is paused".format(show.name), logger.DEBUG)
+            logger.debug("Skipping backlog for {0} because the show is paused".format(show.name))
             return wanted
 
         allowed_qualities, preferred_qualities = common.Quality.splitQuality(show.quality)
 
-        logger.log("Seeing if we need anything from {0}".format(show.name), logger.DEBUG)
+        logger.debug("Seeing if we need anything from {0}".format(show.name))
 
         con = db.DBConnection()
         sql_results = con.select(
@@ -185,7 +185,7 @@ class BacklogSearcher(object):
     @staticmethod
     def _set_lastBacklog(when):
 
-        logger.log("Setting the last backlog in the DB to " + str(when), logger.DEBUG)
+        logger.debug("Setting the last backlog in the DB to " + str(when))
 
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT last_backlog FROM info")

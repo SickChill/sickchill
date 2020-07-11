@@ -166,10 +166,10 @@ class WDTVMetadata(generic.GenericMetadata):
                 break
 
         if not season_dir:
-            logger.log("Unable to find a season dir for season " + str(season), logger.DEBUG)
+            logger.debug("Unable to find a season dir for season " + str(season))
             return None
 
-        logger.log("Using " + str(season_dir) + "/folder.jpg as season dir for season " + str(season), logger.DEBUG)
+        logger.debug("Using " + str(season_dir) + "/folder.jpg as season dir for season " + str(season))
 
         return os.path.join(show_obj.location, season_dir, 'folder.jpg')
 
@@ -191,7 +191,7 @@ class WDTVMetadata(generic.GenericMetadata):
         for curEpToWrite in eps_to_write:
             myEp = curEpToWrite.idxr.episode(curEpToWrite)
             if not myEp:
-                logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
+                logger.info("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
                            "has it been removed? Should I delete from db?".format(
                     curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.idxr.name))
                 return None

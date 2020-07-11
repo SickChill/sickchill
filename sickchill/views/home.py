@@ -332,7 +332,7 @@ class Home(WebRoot):
         key = self.get_query_argument('key')
         # noinspection PyProtectedMember
         result = notifiers.twitter_notifier._get_credentials(key)
-        logger.log("result: " + str(result))
+        logger.info("result: " + str(result))
         if result:
             return _("Key verification successful")
         else:
@@ -735,16 +735,16 @@ class Home(WebRoot):
         db_status = checkversion.getDBcompare()
 
         if db_status == 'upgrade':
-            logger.log("Checkout branch has a new DB version - Upgrade", logger.DEBUG)
+            logger.debug("Checkout branch has a new DB version - Upgrade")
             return json.dumps({"status": "success", 'message': 'upgrade'})
         elif db_status == 'equal':
-            logger.log("Checkout branch has the same DB version - Equal", logger.DEBUG)
+            logger.debug("Checkout branch has the same DB version - Equal")
             return json.dumps({"status": "success", 'message': 'equal'})
         elif db_status == 'downgrade':
-            logger.log("Checkout branch has an old DB version - Downgrade", logger.DEBUG)
+            logger.debug("Checkout branch has an old DB version - Downgrade")
             return json.dumps({"status": "success", 'message': 'downgrade'})
         else:
-            logger.log("Checkout branch couldn't compare DB version.", logger.ERROR)
+            logger.exception("Checkout branch couldn't compare DB version.")
             return json.dumps({"status": "error", 'message': 'General exception'})
 
     def displayShow(self):
@@ -1005,7 +1005,7 @@ class Home(WebRoot):
                         groups = anime.get_groups()
                     except Exception as e:
                         ui.notifications.error(_('Unable to retreive Fansub Groups from AniDB.'))
-                        logger.log('Unable to retreive Fansub Groups from AniDB. Error is {0}'.format(e), logger.DEBUG)
+                        logger.debug('Unable to retreive Fansub Groups from AniDB. Error is {0}'.format(e))
 
             with show_obj.lock:
                 show = show_obj
@@ -1128,7 +1128,7 @@ class Home(WebRoot):
             old_location = os.path.normpath(show_obj._location)
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if old_location != location:
-                logger.log(old_location + " != " + location, logger.DEBUG)
+                logger.debug(old_location + " != " + location)
                 if not (os.path.isdir(location) or sickbeard.CREATE_MISSING_SHOW_DIRS or sickbeard.ADD_SHOWS_WO_DIR):
                     errors.append(_("New location <tt>{location}</tt> does not exist").format(location=location))
                 else:
@@ -1357,14 +1357,14 @@ class Home(WebRoot):
             for cur_ep in eps.split('|'):
 
                 if not cur_ep:
-                    logger.log("cur_ep was empty when trying to setStatus", logger.DEBUG)
+                    logger.debug("cur_ep was empty when trying to setStatus")
 
-                logger.log("Attempting to set status on episode " + cur_ep + " to " + status, logger.DEBUG)
+                logger.debug("Attempting to set status on episode " + cur_ep + " to " + status)
 
                 epInfo = cur_ep.split('x')
 
                 if not all(epInfo):
-                    logger.log("Something went wrong when trying to setStatus, epInfo[0]: {0}, epInfo[1]: {1}".format(epInfo[0], epInfo[1]), logger.DEBUG)
+                    logger.debug("Something went wrong when trying to setStatus, epInfo[0]: {0}, epInfo[1]: {1}".format(epInfo[0], epInfo[1]))
                     continue
 
                 ep_obj = show_obj.getEpisode(epInfo[0], epInfo[1])
@@ -1382,21 +1382,21 @@ class Home(WebRoot):
                 with ep_obj.lock:
                     # don't let them mess up UNAIRED episodes
                     if ep_obj.status == UNAIRED:
-                        logger.log("Refusing to change status of " + cur_ep + " because it is UNAIRED", logger.WARNING)
+                        logger.warn("Refusing to change status of " + cur_ep + " because it is UNAIRED")
                         continue
 
                     if int(status) in Quality.DOWNLOADED and ep_obj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + \
                         Quality.DOWNLOADED + [IGNORED] and not os.path.isfile(ep_obj.location):
-                        logger.log("Refusing to change status of " + cur_ep + " to DOWNLOADED because it's not SNATCHED/DOWNLOADED", logger.WARNING)
+                        logger.warn("Refusing to change status of " + cur_ep + " to DOWNLOADED because it's not SNATCHED/DOWNLOADED")
                         continue
 
                     if int(status) == FAILED and ep_obj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + \
                         Quality.DOWNLOADED + Quality.ARCHIVED:
-                        logger.log("Refusing to change status of " + cur_ep + " to FAILED because it's not SNATCHED/DOWNLOADED", logger.WARNING)
+                        logger.warn("Refusing to change status of " + cur_ep + " to FAILED because it's not SNATCHED/DOWNLOADED")
                         continue
 
                     if ep_obj.status in Quality.DOWNLOADED + Quality.ARCHIVED and int(status) == WANTED:
-                        logger.log(
+                        logger.info(
                             "Removing release_name for episode as you want to set a downloaded episode back to wanted, so obviously you want it replaced")
                         ep_obj.release_name = ""
 
@@ -1413,14 +1413,14 @@ class Home(WebRoot):
                 if data['seasons']:
                     upd = ""
                     if int(status) in [WANTED, FAILED]:
-                        logger.log(
-                            "Add episodes, showid: indexerid " + str(show_obj.indexerid) + ", Title " + str(show_obj.name) + " to Watchlist", logger.DEBUG
+                        logger.debug(
+                            "Add episodes, showid: indexerid " + str(show_obj.indexerid) + ", Title " + str(show_obj.name) + " to Watchlist"
                         )
                         upd = "add"
                     elif int(status) in [IGNORED, SKIPPED] + Quality.DOWNLOADED + Quality.ARCHIVED:
                         # noinspection PyPep8
-                        logger.log(
-                            "Remove episodes, showid: indexerid " + str(show_obj.indexerid) + ", Title " + str(show_obj.name) + " from Watchlist", logger.DEBUG
+                        logger.debug(
+                            "Remove episodes, showid: indexerid " + str(show_obj.indexerid) + ", Title " + str(show_obj.name) + " from Watchlist"
                         )
                         upd = "remove"
 
@@ -1440,7 +1440,7 @@ class Home(WebRoot):
                 sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
 
                 msg += "<li>" + _("Season") + " " + str(season) + "</li>"
-                logger.log("Sending backlog for " + show_obj.name + " season " + str(
+                logger.info("Sending backlog for " + show_obj.name + " season " + str(
                     season) + " because some eps were set to wanted")
 
             msg += "</ul>"
@@ -1448,7 +1448,7 @@ class Home(WebRoot):
             if segments:
                 ui.notifications.message(_("Backlog started"), msg)
         elif int(status) == WANTED and show_obj.paused:
-            logger.log("Some episodes were set to wanted, but " + show_obj.name + " is paused. Not adding to Backlog until show is unpaused")
+            logger.info("Some episodes were set to wanted, but " + show_obj.name + " is paused. Not adding to Backlog until show is unpaused")
 
         if int(status) == FAILED:
             msg = _("Retrying Search was automatically started for the following season of <b>{show_name}</b>").format(show_name=show_obj.name)
@@ -1459,7 +1459,7 @@ class Home(WebRoot):
                 sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)
 
                 msg += "<li>" + _("Season") + " " + str(season) + "</li>"
-                logger.log("Retrying Search for " + show_obj.name + " season " + str(
+                logger.info("Retrying Search for " + show_obj.name + " season " + str(
                     season) + " because some eps were set to failed")
 
             msg += "</ul>"
@@ -1522,7 +1522,7 @@ class Home(WebRoot):
                 "SELECT location FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ? AND 5=5",
                 [show, epInfo[0], epInfo[1]])
             if not ep_result:
-                logger.log("Unable to find an episode for " + cur_ep + ", skipping", logger.WARNING)
+                logger.warn("Unable to find an episode for " + cur_ep + ", skipping")
                 continue
             related_eps_result = main_db_con.select(
                 "SELECT season, episode FROM tv_episodes WHERE location = ? AND episode != ?",
@@ -1590,7 +1590,7 @@ class Home(WebRoot):
             show_obj = Show.find(sickbeard.showList, int(search_thread.show.indexerid))
 
             if not show_obj:
-                logger.log('No Show Object found for show with indexerID: ' + str(search_thread.show.indexerid), logger.WARNING)
+                logger.warn('No Show Object found for show with indexerID: ' + str(search_thread.show.indexerid))
                 return results
 
             # noinspection PyProtectedMember
@@ -1776,7 +1776,7 @@ class Home(WebRoot):
             result[b'success'] = False
             result[b'errorMessage'] = error_msg
         elif show_obj.is_anime:
-            logger.log("setAbsoluteSceneNumbering for {0} from {1} to {2}".format(show, forAbsolute, sceneAbsolute), logger.DEBUG)
+            logger.debug("setAbsoluteSceneNumbering for {0} from {1} to {2}".format(show, forAbsolute, sceneAbsolute))
 
             show = int(show)
             indexer = int(indexer)
@@ -1786,7 +1786,7 @@ class Home(WebRoot):
 
             set_scene_numbering(show, indexer, absolute_number=forAbsolute, sceneAbsolute=sceneAbsolute)
         else:
-            logger.log("setEpisodeSceneNumbering for {0} from {1}x{2} to {3}x{4}".format(show, forSeason, forEpisode, sceneSeason, sceneEpisode), logger.DEBUG)
+            logger.debug("setEpisodeSceneNumbering for {0} from {1}x{2} to {3}x{4}".format(show, forSeason, forEpisode, sceneSeason, sceneEpisode))
 
             show = int(show)
             indexer = int(indexer)
@@ -1835,14 +1835,14 @@ class Home(WebRoot):
 
     @staticmethod
     def fetch_releasegroups(show_name):
-        logger.log('ReleaseGroups: {0}'.format(show_name), logger.INFO)
+        logger.info('ReleaseGroups: {0}'.format(show_name))
         if helpers.set_up_anidb_connection():
             try:
                 anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=show_name)
                 groups = anime.get_groups()
-                logger.log('ReleaseGroups: {0}'.format(groups), logger.INFO)
+                logger.info('ReleaseGroups: {0}'.format(groups))
                 return json.dumps({'result': 'success', 'groups': groups})
             except AttributeError as error:
-                logger.log('Unable to get ReleaseGroups: {0}'.format(error), logger.DEBUG)
+                logger.debug('Unable to get ReleaseGroups: {0}'.format(error))
 
         return json.dumps({'result': 'failure'})

@@ -111,7 +111,7 @@ class PostProcessor(object):
         :param message: The string to log (six.text_type)
         :param level: The log level to use (optional)
         """
-        logger.log(message, level)
+        logger.info(message, level)
         self.log += message + '\n'
 
     def _checkForExistingFile(self, existing_file):
@@ -351,7 +351,7 @@ class PostProcessor(object):
                 subs_new_path = os.path.join(new_path, sickbeard.SUBTITLES_DIR)
                 dir_exists = helpers.makeDir(subs_new_path)
                 if not dir_exists:
-                    logger.log("Unable to create subtitles folder " + subs_new_path, logger.ERROR)
+                    logger.exception("Unable to create subtitles folder " + subs_new_path)
                 else:
                     helpers.chmodAsParent(subs_new_path)
                 new_file_path = os.path.join(subs_new_path, new_file_name)
@@ -552,13 +552,13 @@ class PostProcessor(object):
                 self.release_name = helpers.remove_non_release_groups(remove_extension(os.path.basename(parse_result.original_name)))
 
         else:
-            logger.log("Parse result not sufficient (all following have to be set). will not save release name",
+            logger.info("Parse result not sufficient (all following have to be set). will not save release name",
                        logger.DEBUG)
-            logger.log("Parse result(series_name): " + str(parse_result.series_name), logger.DEBUG)
-            logger.log("Parse result(season_number): " + str(parse_result.season_number), logger.DEBUG)
-            logger.log("Parse result(episode_numbers): " + str(parse_result.episode_numbers), logger.DEBUG)
-            logger.log(" or Parse result(air_date): " + str(parse_result.air_date), logger.DEBUG)
-            logger.log("Parse result(release_group): " + str(parse_result.release_group), logger.DEBUG)
+            logger.debug("Parse result(series_name): " + str(parse_result.series_name))
+            logger.debug("Parse result(season_number): " + str(parse_result.season_number))
+            logger.debug("Parse result(episode_numbers): " + str(parse_result.episode_numbers))
+            logger.debug(" or Parse result(air_date): " + str(parse_result.air_date))
+            logger.debug("Parse result(release_group): " + str(parse_result.release_group))
 
     def _analyze_name(self, name):
         """
@@ -575,7 +575,7 @@ class PostProcessor(object):
         if not name:
             return to_return
 
-        logger.log("Analyzing name " + name, logger.DEBUG)
+        logger.debug("Analyzing name " + name)
 
         name = helpers.remove_non_release_groups(remove_extension(name))
 
@@ -583,7 +583,7 @@ class PostProcessor(object):
         try:
             parse_result = NameParser(True, tryIndexers=True).parse(name)
         except (InvalidNameException, InvalidShowException) as error:
-            logger.log("{0}".format(error), logger.DEBUG)
+            logger.debug("{0}".format(error))
             return to_return
 
         # show object
@@ -668,7 +668,7 @@ class PostProcessor(object):
             try:
                 cur_show, cur_season, cur_episodes, cur_quality, cur_version = cur_attempt()
             except (InvalidNameException, InvalidShowException) as error:
-                logger.log("{0}".format(error), logger.DEBUG)
+                logger.debug("{0}".format(error))
                 continue
 
             if not cur_show:
@@ -812,8 +812,8 @@ class PostProcessor(object):
 
             # if we find a good one then use it
             if ep_quality != common.Quality.UNKNOWN:
-                logger.log(cur_name + " looks like it has quality " + common.Quality.qualityStrings[
-                    ep_quality] + ", using that", logger.DEBUG)
+                logger.debug(cur_name + " looks like it has quality " + common.Quality.qualityStrings[
+                    ep_quality] + ", using that")
                 return ep_quality
 
         # Try getting quality from the episode (snatched) status
@@ -831,8 +831,8 @@ class PostProcessor(object):
             "Guessing quality for name " + self.file_name + ", got " + common.Quality.qualityStrings[ep_quality],
             logger.DEBUG)
         if ep_quality != common.Quality.UNKNOWN:
-            logger.log(self.file_name + " looks like it has quality " + common.Quality.qualityStrings[
-                ep_quality] + ", using that", logger.DEBUG)
+            logger.debug(self.file_name + " looks like it has quality " + common.Quality.qualityStrings[
+                ep_quality] + ", using that")
             return ep_quality
 
         return ep_quality
@@ -989,7 +989,7 @@ class PostProcessor(object):
         else:
             new_ep_quality = self._get_quality(ep_obj)
 
-        logger.log("Quality of the episode we're processing: {0}".format(common.Quality.qualityStrings[new_ep_quality]), logger.DEBUG)
+        logger.debug("Quality of the episode we're processing: {0}".format(common.Quality.qualityStrings[new_ep_quality]))
 
         # see if this is a priority download (is it snatched, in history, PROPER, or BEST)
         priority_download = self._is_priority(ep_obj, new_ep_quality)
@@ -1182,7 +1182,7 @@ class PostProcessor(object):
                 self._symlink(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
                                      sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
             else:
-                logger.log("Unknown process method: " + str(self.process_method), logger.ERROR)
+                logger.exception("Unknown process method: " + str(self.process_method))
                 raise EpisodePostProcessingFailedException("Unable to move the files to their new home")
         except (OSError, IOError):
             raise EpisodePostProcessingFailedException("Unable to move the files to their new home")
@@ -1211,7 +1211,7 @@ class PostProcessor(object):
         try:
             ep_obj.createMetaFiles()
         except Exception:
-            logger.log("Could not create/update meta files. Continuing with postProcessing...")
+            logger.info("Could not create/update meta files. Continuing with postProcessing...")
 
         # log it to history
         history.logDownload(ep_obj, self.file_path, new_ep_quality, self.release_group, new_ep_version)
@@ -1242,7 +1242,7 @@ class PostProcessor(object):
             # do the library update for Trakt
             notifiers.trakt_notifier.update_library(ep_obj)
         except Exception:
-            logger.log("Some notifications could not be sent. Continuing with postProcessing...")
+            logger.info("Some notifications could not be sent. Continuing with postProcessing...")
 
         self._run_extra_scripts(ep_obj)
 
@@ -1251,6 +1251,6 @@ class PostProcessor(object):
             # send notifications
             notifiers.email_notifier.notify_postprocess(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
         except Exception:
-            logger.log("Some notifications could not be sent. Finishing postProcessing...")
+            logger.info("Some notifications could not be sent. Finishing postProcessing...")
 
         return True

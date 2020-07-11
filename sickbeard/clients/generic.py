@@ -77,10 +77,10 @@ class GenericClient(object):
             log_string += ' and data: {0}{1}'.format(
                 str(data)[0:99], '...' if len(str(data)) > 100 else '')
 
-        logger.log(log_string, logger.DEBUG)
+        logger.debug(log_string)
 
         if not self.auth:
-            logger.log('{0}: Authentication Failed'.format(self.name), logger.WARNING)
+            logger.warn('{0}: Authentication Failed'.format(self.name))
             return False
 
         # Dict, loop through and change all key,value pairs to bytes
@@ -132,8 +132,8 @@ class GenericClient(object):
             helpers.handle_requests_exception(error)
             return False
 
-        logger.log('{0}: Response to the {1} request is {2}'.format
-                   (self.name, method.upper(), self.response.text), logger.DEBUG)
+        logger.debug('{0}: Response to the {1} request is {2}'.format
+                   (self.name, method.upper(), self.response.text))
 
         return True
 
@@ -212,31 +212,31 @@ class GenericClient(object):
                 result.hash = b16encode(b32decode(result.hash)).lower()
         else:
             if not result.content:
-                logger.log('Torrent without content', logger.ERROR)
+                logger.exception('Torrent without content')
                 raise Exception('Torrent without content')
 
             try:
                 torrent_bdecode = helpers.bdecode(result.content, True)
             except (bencode.BTL.BTFailure, Exception) as error:
-                logger.log('Unable to bdecode torrent', logger.ERROR)
-                logger.log('Error is: {0}'.format(error), logger.INFO)
-                logger.log('Torrent bencoded data: {0!r}'.format(result.content), logger.INFO)
+                logger.exception('Unable to bdecode torrent')
+                logger.info('Error is: {0}'.format(error))
+                logger.info('Torrent bencoded data: {0!r}'.format(result.content))
                 raise
 
             try:
                 info = torrent_bdecode[b'info']
             except Exception:
-                logger.log('Unable to find info field in torrent', logger.ERROR)
-                logger.log('Torrent bencoded data: {0!r}'.format(result.content), logger.INFO)
+                logger.exception('Unable to find info field in torrent')
+                logger.info('Torrent bencoded data: {0!r}'.format(result.content))
                 raise
 
             try:
                 result.hash = sha1(bencode.bencode(info)).hexdigest()
-                logger.log('Result Hash is {0}'.format(result.hash), logger.DEBUG)
+                logger.debug('Result Hash is {0}'.format(result.hash))
             except (bencode.BTL.BTFailure, Exception) as error:
-                logger.log('Unable to bencode torrent info', logger.ERROR)
-                logger.log('Error is: {0}'.format(error), logger.INFO)
-                logger.log('Torrent bencoded data: {0!r}'.format(result.content), logger.INFO)
+                logger.exception('Unable to bencode torrent info')
+                logger.info('Error is: {0}'.format(error))
+                logger.info('Torrent bencoded data: {0!r}'.format(result.content))
                 raise
 
         return result
@@ -249,10 +249,10 @@ class GenericClient(object):
 
         r_code = False
 
-        logger.log('Calling {0} Client'.format(self.name), logger.DEBUG)
+        logger.debug('Calling {0} Client'.format(self.name))
 
         if not (self.auth or self._get_auth()):
-            logger.log('{0}: Authentication Failed'.format(self.name), logger.WARNING)
+            logger.warn('{0}: Authentication Failed'.format(self.name))
             return r_code
 
         try:
@@ -268,30 +268,30 @@ class GenericClient(object):
                 r_code = self._add_torrent_file(result)
 
             if not r_code:
-                logger.log('{0}: Unable to send Torrent'.format(self.name), logger.WARNING)
+                logger.warn('{0}: Unable to send Torrent'.format(self.name))
                 return False
 
             if not self._set_torrent_pause(result):
-                logger.log('{0}: Unable to set the pause for Torrent'.format(self.name), logger.ERROR)
+                logger.exception('{0}: Unable to set the pause for Torrent'.format(self.name))
 
             if not self._set_torrent_label(result):
-                logger.log('{0}: Unable to set the label for Torrent'.format(self.name), logger.ERROR)
+                logger.exception('{0}: Unable to set the label for Torrent'.format(self.name))
 
             if not self._set_torrent_ratio(result):
-                logger.log('{0}: Unable to set the ratio for Torrent'.format(self.name), logger.ERROR)
+                logger.exception('{0}: Unable to set the ratio for Torrent'.format(self.name))
 
             if not self._set_torrent_seed_time(result):
-                logger.log('{0}: Unable to set the seed time for Torrent'.format(self.name), logger.ERROR)
+                logger.exception('{0}: Unable to set the seed time for Torrent'.format(self.name))
 
             if not self._set_torrent_path(result):
-                logger.log('{0}: Unable to set the path for Torrent'.format(self.name), logger.ERROR)
+                logger.exception('{0}: Unable to set the path for Torrent'.format(self.name))
 
             if result.priority != 0 and not self._set_torrent_priority(result):
-                logger.log('{0}: Unable to set priority for Torrent'.format(self.name), logger.ERROR)
+                logger.exception('{0}: Unable to set priority for Torrent'.format(self.name))
 
         except Exception as error:
-            logger.log('{0}: Failed Sending Torrent'.format(self.name), logger.ERROR)
-            logger.log('{0}: Exception raised when sending torrent: {1}. Error {2}'.format(self.name, result, error), logger.DEBUG)
+            logger.exception('{0}: Failed Sending Torrent'.format(self.name))
+            logger.debug('{0}: Exception raised when sending torrent: {1}. Error {2}'.format(self.name, result, error))
             return r_code
 
         return r_code

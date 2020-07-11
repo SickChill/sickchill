@@ -87,9 +87,9 @@ class Notifier(object):
 
         pushalot_authorizationtoken = pushalot_authorizationtoken or sickbeard.PUSHALOT_AUTHORIZATIONTOKEN
 
-        logger.log('Pushalot event: {0}'.format(event), logger.DEBUG)
-        logger.log('Pushalot message: {0}'.format(message), logger.DEBUG)
-        logger.log('Pushalot api: {0}'.format(pushalot_authorizationtoken), logger.DEBUG)
+        logger.debug('Pushalot event: {0}'.format(event))
+        logger.debug('Pushalot message: {0}'.format(message))
+        logger.debug('Pushalot api: {0}'.format(pushalot_authorizationtoken))
 
         post_data = {
             'AuthorizationToken': pushalot_authorizationtoken,
@@ -109,9 +109,9 @@ class Notifier(object):
 
         success = jdata.pop('Success', False)
         if success:
-            logger.log('Pushalot notifications sent.', logger.DEBUG)
+            logger.debug('Pushalot notifications sent.')
         else:
-            logger.log('Pushalot notification failed: {0} {1}'.format(
+            logger.info('Pushalot notification failed: {0} {1}'.format(
                 jdata.get('Status', ''),
                 jdata.get('Description', 'Unknown')
             ), logger.ERROR)

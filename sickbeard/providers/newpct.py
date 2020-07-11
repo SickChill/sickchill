@@ -70,7 +70,7 @@ class newpctProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
+            logger.debug('Search Mode: {0}'.format(mode))
 
             if self.onlyspasearch:
                 search_params['idioma_'] = 1
@@ -79,15 +79,15 @@ class newpctProvider(TorrentProvider):
 
             # Only search if user conditions are true
             if self.onlyspasearch and lang_info != 'es' and mode != 'RSS':
-                logger.log('Show info is not spanish, skipping provider search', logger.DEBUG)
+                logger.debug('Show info is not spanish, skipping provider search')
                 continue
 
             search_params['bus_de_'] = 'All' if mode != 'RSS' else 'semana'
 
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log('Search string: {0}'.format
-                               (search_string.decode('utf-8')), logger.DEBUG)
+                    logger.debug('Search string: {0}'.format
+                               (search_string.decode('utf-8')))
 
                 search_params['q'] = search_string
 
@@ -101,7 +101,7 @@ class newpctProvider(TorrentProvider):
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 3:  # Headers + 1 Torrent + Pagination
-                        logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
+                        logger.debug('Data returned from provider does not contain any torrents')
                         continue
 
                     # 'Fecha', 'Título', 'Tamaño', ''
@@ -126,7 +126,7 @@ class newpctProvider(TorrentProvider):
                             size = convert_size(torrent_size) or -1
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
-                                logger.log('Found result: {0}'.format(title), logger.DEBUG)
+                                logger.debug('Found result: {0}'.format(title))
 
                             items.append(item)
                         except (AttributeError, TypeError):
@@ -171,18 +171,18 @@ class newpctProvider(TorrentProvider):
             if url_torrent.startswith('http'):
                 self.headers.update({'Referer': '/'.join(url_torrent.split('/')[:3]) + '/'})
 
-            logger.log('Downloading a result from {0}'.format(url))
+            logger.info('Downloading a result from {0}'.format(url))
 
             if helpers.download_file(url_torrent, filename, session=self.session, headers=self.headers):
                 if self._verify_download(filename):
-                    logger.log('Saved result to {0}'.format(filename), logger.INFO)
+                    logger.info('Saved result to {0}'.format(filename))
                     return True
                 else:
-                    logger.log('Could not download {0}'.format(url), logger.WARNING)
+                    logger.warn('Could not download {0}'.format(url))
                     helpers.remove_file_failed(filename)
 
         if urls:
-            logger.log('Failed to download any results', logger.WARNING)
+            logger.warn('Failed to download any results')
 
         return False
 

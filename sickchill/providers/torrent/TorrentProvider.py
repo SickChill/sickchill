@@ -117,7 +117,7 @@ class TorrentProvider(GenericProvider):
             title = ''
 
         if title.endswith('DIAMOND'):
-            logger.log('Skipping DIAMOND release for mass fake releases.')
+            logger.info('Skipping DIAMOND release for mass fake releases.')
             download_url = title = 'FAKERELEASE'
 
         if download_url:
@@ -133,9 +133,9 @@ class TorrentProvider(GenericProvider):
             tp = TorrentParser(file_name)
             return tp.info_hash is not None
         except AssertionError as e:
-            logger.log('Failed to validate torrent file: {0}'.format(str(e)), logger.DEBUG)
+            logger.debug('Failed to validate torrent file: {0}'.format(str(e)))
 
-        logger.log('Result is not a valid torrent file', logger.DEBUG)
+        logger.debug('Result is not a valid torrent file')
         return False
 
     def seed_ratio(self):

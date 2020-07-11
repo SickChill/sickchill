@@ -51,10 +51,10 @@ class NyaaProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
+            logger.debug('Search Mode: {0}'.format(mode))
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log('Search string: {0}'.format(search_string.decode('utf-8')), logger.DEBUG)
+                    logger.debug('Search string: {0}'.format(search_string.decode('utf-8')))
 
                 search_params = {
                     'page': 'rss',
@@ -69,7 +69,7 @@ class NyaaProvider(TorrentProvider):
                 results = []
                 data = self.cache.get_rss_feed(self.url, params=search_params)['entries']
                 if not data:
-                    logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
+                    logger.debug('Data returned from provider does not contain any torrents')
                     continue
 
                 for curItem in data:
@@ -86,7 +86,7 @@ class NyaaProvider(TorrentProvider):
 
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
-                                logger.log('Discarding torrent because it doesn\'t meet the'
+                                logger.info('Discarding torrent because it doesn\'t meet the'
                                            ' minimum seeders or leechers: {0} (S:{1} L:{2})'.format
                                            (title, seeders, leechers), logger.DEBUG)
                             continue
@@ -95,8 +95,8 @@ class NyaaProvider(TorrentProvider):
                         result = {'title': title, 'link': download_url, 'size': size,
                                   'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
                         if mode != 'RSS':
-                            logger.log('Found result: {0} with {1} seeders and {2} leechers'.format
-                                       (title, seeders, leechers), logger.DEBUG)
+                            logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format
+                                       (title, seeders, leechers))
 
                         items.append(result)
                     except StandardError:

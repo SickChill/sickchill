@@ -130,14 +130,14 @@ class DiscordTask(generic_queue.QueueItem):
 
         # noinspection PyBroadException
         try:
-            logger.log("Task for {} started".format(self.action_id), logger.DEBUG)
+            logger.debug("Task for {} started".format(self.action_id))
             self.last_result = self._send_discord()
-            logger.log("Task for {} completed".format(self.action_id), logger.DEBUG)
+            logger.debug("Task for {} completed".format(self.action_id))
 
             # give the CPU a break
             time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
         except Exception:
-            logger.log(traceback.format_exc(), logger.DEBUG)
+            logger.debug(traceback.format_exc())
 
         super(DiscordTask, self).finish()
         self.finish()
@@ -159,8 +159,8 @@ class DiscordTask(generic_queue.QueueItem):
         avatar_icon = sickbeard.DISCORD_AVATAR_URL
         discord_tts = bool(sickbeard.DISCORD_TTS)
 
-        logger.log("Sending discord message: " + ', '.join(f['value'] for f in self.embed['fields']), logger.INFO)
-        logger.log("Sending discord message to url: " + discord_webhook, logger.INFO)
+        logger.info("Sending discord message: " + ', '.join(f['value'] for f in self.embed['fields']))
+        logger.info("Sending discord message to url: " + discord_webhook)
 
         headers = {b"Content-Type": b"application/json"}
         try:
@@ -172,14 +172,14 @@ class DiscordTask(generic_queue.QueueItem):
             if error.response.status_code != 429 or int(error.response.headers.get('X-RateLimit-Remaining')) != 0:
                 raise error
 
-            logger.log('Discord rate limiting, retrying after {} seconds'.format(error.response.headers.get('X-RateLimit-Reset-After')))
+            logger.info('Discord rate limiting, retrying after {} seconds'.format(error.response.headers.get('X-RateLimit-Reset-After')))
             time.sleep(int(error.response.headers.get('X-RateLimit-Reset-After')) + 1)
             r = requests.post(discord_webhook,
                               data=json.dumps(dict(embeds=[self.embed], username=discord_name, avatar_url=avatar_icon, tts=discord_tts)),
                               headers=headers)
             r.raise_for_status()
         except Exception as error:
-            logger.log("Error Sending Discord message: " + str(error), logger.ERROR)
+            logger.exception("Error Sending Discord message: " + str(error))
 
             return False
 

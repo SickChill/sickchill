@@ -121,7 +121,7 @@ class BJShareProvider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.log('Search Mode: {0}'.format(mode), logger.DEBUG)
+            logger.debug('Search Mode: {0}'.format(mode))
 
             # if looking for season, look for more pages
             if mode == 'Season':
@@ -129,7 +129,7 @@ class BJShareProvider(TorrentProvider):
 
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.log('Search string: {0}'.format(search_string.decode('utf-8')), logger.DEBUG)
+                    logger.debug('Search string: {0}'.format(search_string.decode('utf-8')))
 
                 # Remove season / episode from search (not supported by tracker)
                 search_str = re.sub(r'\d+$' if anime else r'[S|E]\d\d', '', search_string).strip()
@@ -139,12 +139,12 @@ class BJShareProvider(TorrentProvider):
 
                 while has_next_page and next_page <= self.max_back_pages:
                     search_params['page'] = next_page
-                    logger.log('Page Search: {0}'.format(next_page), logger.DEBUG)
+                    logger.debug('Page Search: {0}'.format(next_page))
                     next_page += 1
 
                     response = self.session.get(self.urls['search'], params=search_params)
                     if not response:
-                        logger.log('No data returned from provider', logger.DEBUG)
+                        logger.debug('No data returned from provider')
                         continue
 
                     result = self._parse(response.content, mode)
@@ -181,11 +181,11 @@ class BJShareProvider(TorrentProvider):
 
             # ignore next page in RSS mode
             has_next_page = mode != 'RSS' and html.find('a', class_='pager_next') is not None
-            logger.log('More Pages? {0}'.format(has_next_page), logger.DEBUG)
+            logger.debug('More Pages? {0}'.format(has_next_page))
 
             # Continue only if at least one Release is found
             if len(torrent_rows) < 2:
-                logger.log('Data returned from provider does not contain any torrents', logger.DEBUG)
+                logger.debug('Data returned from provider does not contain any torrents')
                 return {'has_next_page': has_next_page, 'items': []}
 
             # '', '', 'Name /Year', 'Files', 'Time', 'Size', 'Snatches', 'Seeders', 'Leechers'
@@ -233,7 +233,7 @@ class BJShareProvider(TorrentProvider):
                     # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != "RSS":
-                            logger.log("Discarding torrent because it doesn't meet the"
+                            logger.info("Discarding torrent because it doesn't meet the"
                                        " minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                        (title, seeders, leechers), logger.DEBUG)
                         continue
@@ -268,11 +268,11 @@ class BJShareProvider(TorrentProvider):
                     })
 
                     if mode != 'RSS':
-                        logger.log('Found result: {0} with {1} seeders and {2} leechers'.format
-                                   (torrent_name, seeders, leechers), logger.DEBUG)
+                        logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format
+                                   (torrent_name, seeders, leechers))
 
                 except (AttributeError, TypeError, KeyError, ValueError, IndexError):
-                    logger.log('Failed parsing provider.', logger.ERROR)
+                    logger.exception('Failed parsing provider.')
 
         return {'has_next_page': has_next_page, 'items': items}
 
@@ -298,11 +298,11 @@ class BJShareProvider(TorrentProvider):
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
-            logger.log("Unable to connect to provider", logger.WARNING)
+            logger.warn("Unable to connect to provider")
             return False
 
         if re.search('<title>Login :: BJ-Share</title>', response):
-            logger.log("Invalid username or password. Check your settings", logger.WARNING)
+            logger.warn("Invalid username or password. Check your settings")
             return False
 
         return True

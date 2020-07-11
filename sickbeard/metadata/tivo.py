@@ -141,7 +141,7 @@ class TIVOMetadata(generic.GenericMetadata):
             metadata_dir_name = os.path.join(os.path.dirname(ep_obj.location), '.meta')
             metadata_file_path = os.path.join(metadata_dir_name, metadata_file_name)
         else:
-            logger.log("Episode location doesn't exist: " + str(ep_obj.location), logger.DEBUG)
+            logger.debug("Episode location doesn't exist: " + str(ep_obj.location))
             return ''
         return metadata_file_path
 
@@ -163,13 +163,13 @@ class TIVOMetadata(generic.GenericMetadata):
 
         myShow = ep_obj.idxr.series_from_episode(ep_obj)
         if not myShow:
-            logger.log("Unable to connect to {} while creating meta files for {}, skipping".format(ep_obj.indexer_name, ep_obj.name), logger.DEBUG)
+            logger.debug("Unable to connect to {} while creating meta files for {}, skipping".format(ep_obj.indexer_name, ep_obj.name))
             return False
 
         for curEpToWrite in eps_to_write:
             myEp = curEpToWrite.idxr.episode(curEpToWrite)
             if not myEp:
-                logger.log("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}...has it been removed? Should I delete from db?".format(
+                logger.info("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}...has it been removed? Should I delete from db?".format(
                     curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.indexer_name))
                 return False
 
@@ -288,11 +288,11 @@ class TIVOMetadata(generic.GenericMetadata):
 
         try:
             if not os.path.isdir(nfo_file_dir):
-                logger.log("Metadata dir didn't exist, creating it at " + nfo_file_dir, logger.DEBUG)
+                logger.debug("Metadata dir didn't exist, creating it at " + nfo_file_dir)
                 os.makedirs(nfo_file_dir)
                 helpers.chmodAsParent(nfo_file_dir)
 
-            logger.log("Writing episode nfo file to " + nfo_file_path, logger.DEBUG)
+            logger.debug("Writing episode nfo file to " + nfo_file_path)
 
             with io.open(nfo_file_path, 'wb') as nfo_file:
                 # Calling encode directly, b/c often descriptions have wonky characters.
@@ -301,7 +301,7 @@ class TIVOMetadata(generic.GenericMetadata):
             helpers.chmodAsParent(nfo_file_path)
 
         except EnvironmentError as e:
-            logger.log("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e),
+            logger.info("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e),
                        logger.ERROR)
             return False
 
