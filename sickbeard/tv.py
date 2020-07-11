@@ -2143,7 +2143,7 @@ class TVEpisode(object):
         result_name = pattern
 
         # do the replacements
-        for cur_replacement in sorted(replace_map.keys(), reverse=True):
+        for cur_replacement in sorted(replace_map, reverse=True):
             result_name = result_name.replace(cur_replacement, sanitize_filename(replace_map[cur_replacement]))
             result_name = result_name.replace(cur_replacement.lower(),
                                               sanitize_filename(replace_map[cur_replacement].lower()))

@@ -57,7 +57,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-        % for current_season in sorted(show.episodes.keys(), reverse=True):
+        % for current_season in sorted(show.episodes, reverse=True):
             <div class="row">
                 <div class="col-md-12">
                     <h2>${('Season '+ str(current_season), 'Specials')[int(current_season) == 0]}</h2>
@@ -76,7 +76,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            % for current_episode in sorted(show.episodes[current_season].keys(), reverse=True):
+                            % for current_episode in sorted(show.episodes[current_season], reverse=True):
                                 <%
                                     ep_obj = show.episodes[current_season][current_episode]
                                     if not (ep_obj and ep_obj._location):

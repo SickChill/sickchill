@@ -1436,7 +1436,7 @@ class CMDSickBeard(ApiCall):
         """ dGet miscellaneous information about SickChill """
         data = {
             "sr_version": sickbeard.BRANCH, "api_version": self.version,
-            "api_commands": sorted(function_mapper.keys())
+            "api_commands": sorted(function_mapper)
             }
         return _responds(RESULT_SUCCESS, data)
 

@@ -448,7 +448,7 @@ class Quality(object):
         if status == UNKNOWN:
             return UNKNOWN, Quality.UNKNOWN
 
-        for q in sorted(Quality.qualityStrings.keys(), reverse=True):
+        for q in sorted(Quality.qualityStrings, reverse=True):
             if status > q * 100:
                 return status - q * 100, q
 

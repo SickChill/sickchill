@@ -173,7 +173,7 @@ class BaseParser(type):
                 results = self.provider.search(self.search_strings('Episode'))
             for result in results:
                 self.assertIsInstance(result, dict)
-                self.assertEqual(sorted(result.keys()), ['hash', 'leechers', 'link', 'seeders', 'size', 'title'])
+                self.assertEqual(sorted(result), ['hash', 'leechers', 'link', 'seeders', 'size', 'title'])
 
                 self.assertIsInstance(result[b'title'], six.text_type)
                 self.assertIsInstance(result[b'link'], six.text_type)
