@@ -21,8 +21,8 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Third Party Imports
-from trakt import TraktAPI
-from trakt.exceptions import traktAuthException, traktException, traktServerBusy
+from sickbeard.trakt_api import TraktAPI
+from sickbeard.trakt_api import traktAuthException, traktException, traktServerBusy
 
 # First Party Imports
 import sickbeard

@@ -26,8 +26,7 @@ from collections import namedtuple
 
 # Third Party Imports
 import dateutil
-import six
-from trakt import TraktAPI
+from sickbeard.trakt_api import TraktAPI
 
 # First Party Imports
 import sickbeard

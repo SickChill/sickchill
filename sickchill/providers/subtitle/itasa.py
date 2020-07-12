@@ -26,7 +26,7 @@ except ImportError:  # pragma: no cover
     try:
         import xml.etree.cElementTree as etree
     except ImportError:
-        import xml.etree.ElementTree as et!ree
+        import xml.etree.ElementTree as etree
 
 logger = logging.getLogger(__name__)
 

@@ -33,7 +33,7 @@ from requests.compat import unquote_plus
 # noinspection PyUnresolvedReferences
 from six.moves import urllib, zip
 from tornado.escape import xhtml_unescape
-from trakt import TraktAPI
+from sickbeard.trakt_api import TraktAPI
 
 # First Party Imports
 import sickbeard

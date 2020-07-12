@@ -30,7 +30,7 @@ import six
 from requests.compat import unquote_plus
 from tornado.escape import xhtml_unescape
 from tornado.web import HTTPError
-from trakt import TraktAPI
+from sickbeard.trakt_api import TraktAPI
 
 # First Party Imports
 import sickbeard

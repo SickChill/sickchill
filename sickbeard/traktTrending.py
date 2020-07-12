@@ -7,12 +7,11 @@ import os
 import posixpath
 
 # Third Party Imports
-from trakt.exceptions import traktException
-from trakt.trakt import TraktAPI
+from sickbeard.trakt_api import traktException
+from sickbeard.trakt_api import TraktAPI
 
 # First Party Imports
 import sickbeard
-import sickchill
 from sickchill.helper.exceptions import MultipleShowObjectsException
 
 # Local Folder Imports
