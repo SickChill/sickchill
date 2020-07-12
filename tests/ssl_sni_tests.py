@@ -31,7 +31,7 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard import certifi
+import certifi
 import requests
 import sickbeard.providers as providers
 

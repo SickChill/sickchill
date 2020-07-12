@@ -676,7 +676,7 @@ def fixSetGroupID(childPath):
             os.chown(childPath, -1, parentGID)  # @UndefinedVariable - only available on UNIX
             logger.debug(_("Respecting the set-group-ID bit on the parent directory for {0}").format(childPath))
         except OSError:
-            logger.error("Failed to respect the set-group-ID bit on the parent directory for {0} (setting group ID {1})".format(childPath, parentGID)))
+            logger.error("Failed to respect the set-group-ID bit on the parent directory for {0} (setting group ID {1})".format(childPath, parentGID))
 
 
 def is_anime_in_show_list():

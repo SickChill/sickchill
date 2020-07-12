@@ -233,7 +233,7 @@ class DBConnection(object):
                             sql_results.append(self._execute(qu[0], qu[1], fetchall=fetchall))
                     self.connection.commit()
                     # noinspection PyUnresolvedReferences
-                    logger.info(log_level, _("Transaction with {count:d} of queries executed successfully").format(count=len(query_list)))
+                    logger.log(log_level, _("Transaction with {count:d} of queries executed successfully").format(count=len(query_list)))
 
                     # finished
                     break

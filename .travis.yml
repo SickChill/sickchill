@@ -22,7 +22,7 @@ install:
   - pip install --upgrade babel mako crowdin-cli-py
 
 script:
-  - xo && tox -v --recreate -e "py27-{flake8,linux}"
+  - xo && tox -v --recreate -e "python-{flake8,linux}"
 
 cache:
   directories:

@@ -406,24 +406,6 @@ class Wrapper(object):
 
 _globals = sys.modules[__name__] = Wrapper(sys.modules[__name__])
 
-
-def init_logging(*args, **kwargs):
-    return Wrapper.instance.init_logging(*args, **kwargs)
-
-
-def set_level(*args, **kwargs):
-    return Wrapper.instance.set_level(*args, **kwargs)
-
-
-def shutdown():
-    return Wrapper.instance.shutdown()
-
-
-def submit_errors(*args, **kwargs):
-    return Wrapper.instance.submit_errors(*args, **kwargs)
-
-log_file = None
-
 LOG_FILTERS = {
     '<NONE>': _('&lt;No Filter&gt;'),
     'DAILYSEARCHER': _('Daily Searcher'),
@@ -509,13 +491,18 @@ def log_data(min_level, log_filter, log_search, max_lines):
     return final_data
 
 
+log_error_and_exit = Wrapper.instance.log_error_and_exit
+log_file = Wrapper.instance.log_file
+
+log = Wrapper.instance.logger.log
 debug = Wrapper.instance.logger.debug
-warning = Wrapper.instance.logger.warning
 info = Wrapper.instance.logger.info
+warning = Wrapper.instance.logger.warning
 error = Wrapper.instance.logger.error
 exception = logging.exception
 critical = Wrapper.instance.logger.critical
 
-log = Wrapper.instance.logger.log
-
+submit_errors = Wrapper.instance.submit_errors
+init_logging = Wrapper.instance.init_logging
 set_level = Wrapper.instance.set_level
+shutdown = Wrapper.instance.shutdown
