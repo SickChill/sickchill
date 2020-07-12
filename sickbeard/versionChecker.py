@@ -172,10 +172,10 @@ class CheckVersion(object):
                 if result in message:
                     logger.info(message[result]['text'], message[result]['type'])  # unpack the result message into a log entry
                 else:
-                    logger.warn("We can't proceed with the update. Unable to check remote DB version. Error: {0}".format(result))
+                    logger.warning("We can't proceed with the update. Unable to check remote DB version. Error: {0}".format(result))
                 return result in ['equal']  # add future True results to the list
             except Exception as error:
-                logger.warn("We can't proceed with the update. Unable to compare DB version. Error: {0}".format(repr(error)))
+                logger.warning("We can't proceed with the update. Unable to compare DB version. Error: {0}".format(repr(error)))
                 return False
 
         def postprocessor_safe():
@@ -297,7 +297,7 @@ class CheckVersion(object):
         try:
             news = helpers.getURL(sickbeard.NEWS_URL, session=self.session, returns='text')
         except Exception:
-            logger.warn('check_for_new_news: Could not load news from repo.')
+            logger.warning('check_for_new_news: Could not load news from repo.')
             news = ''
 
         if not news:
@@ -443,7 +443,7 @@ class GitUpdateManager(UpdateManager):
         output = err = exit_status = None
 
         if not git_path:
-            logger.warn("No git specified, can't use git commands")
+            logger.warning("No git specified, can't use git commands")
             exit_status = 1
             return output, err, exit_status
 
@@ -468,13 +468,13 @@ class GitUpdateManager(UpdateManager):
 
         elif exit_status == 1:
             if 'stash' in output:
-                logger.warn("Please enable 'git reset' in settings or stash your changes in local files")
+                logger.warning("Please enable 'git reset' in settings or stash your changes in local files")
             elif log_errors:
                 logger.exception("{0} returned : {1}".format(cmd, str(output)))
 
         elif log_errors:
             if exit_status in (127, 128) or 'fatal:' in output:
-                logger.warn("{0} returned : ({1}) {2}".format(cmd, exit_status, str(output or err)))
+                logger.warning("{0} returned : ({1}) {2}".format(cmd, exit_status, str(output or err)))
             else:
                 logger.exception("{0} returned code {1}, treating as error : {2}"
                            .format(cmd, exit_status, str(output or err)))
@@ -537,7 +537,7 @@ class GitUpdateManager(UpdateManager):
         # get all new info from github
         output, errors_, exit_status = self._run_git(self._git_path, 'fetch {0} --prune'.format(sickbeard.GIT_REMOTE))
         if exit_status != 0:
-            logger.warn("Unable to contact github, can't check for update")
+            logger.warning("Unable to contact github, can't check for update")
             return
 
         # Try both formats, but continue on fail because older git versions do not have this option
@@ -580,7 +580,7 @@ class GitUpdateManager(UpdateManager):
         if self._num_commits_ahead:
             newest_tag = 'local_branch_ahead'
             newest_text = 'Local branch is ahead of {branch}. Automatic update not possible.'.format(branch=self.branch)
-            logger.warn(newest_text)
+            logger.warning(newest_text)
 
         elif self._num_commits_behind > 0:
 
@@ -615,7 +615,7 @@ class GitUpdateManager(UpdateManager):
             try:
                 self._check_github_for_update()
             except Exception as e:
-                logger.warn("Unable to contact github, can't check for update: " + repr(e))
+                logger.warning("Unable to contact github, can't check for update: " + repr(e))
                 return False
 
             if self._num_commits_behind > 0:
@@ -736,7 +736,7 @@ class SourceUpdateManager(UpdateManager):
         try:
             self._check_github_for_update()
         except Exception as e:
-            logger.warn("Unable to contact github, can't check for update: " + repr(e))
+            logger.warning("Unable to contact github, can't check for update: " + repr(e))
             return False
 
         if self.branch != self._find_installed_branch():
@@ -840,7 +840,7 @@ class SourceUpdateManager(UpdateManager):
             helpers.download_file(tar_download_url, tar_download_path, session=self.session)
 
             if not os.path.isfile(tar_download_path):
-                logger.warn("Unable to retrieve new version from " + tar_download_url + ", can't update")
+                logger.warning("Unable to retrieve new version from " + tar_download_url + ", can't update")
                 return False
 
             if not tarfile.is_tarfile(tar_download_path):

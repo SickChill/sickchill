@@ -86,7 +86,7 @@ class DBConnection(object):
 
         except OperationalError:
             # noinspection PyUnresolvedReferences
-            logger.warn(_("Please check your database owner/permissions: {db_filename}").format(db_filename=self.full_path))
+            logger.warning(_("Please check your database owner/permissions: {db_filename}").format(db_filename=self.full_path))
         except Exception as e:
             self._error_log_helper(e, logger.ERROR, locals(), None, 'DBConnection.__init__')
             raise

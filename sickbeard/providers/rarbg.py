@@ -66,7 +66,7 @@ class RarbgProvider(TorrentProvider):
 
         response = self.get_url(self.urls["api"], params=login_params, returns="json")
         if not response:
-            logger.warn("Unable to connect to provider")
+            logger.warning("Unable to connect to provider")
             return False
 
         self.token = response.get("token")

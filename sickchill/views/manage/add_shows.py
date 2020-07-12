@@ -311,7 +311,7 @@ class AddShows(Home):
         try:
             trending_shows, black_list = trakt_trending.fetch_trending_shows(traktList, page_url)
         except Exception as e:
-            logger.warn("Could not get trending shows: {0}".format(str(e)))
+            logger.warning("Could not get trending shows: {0}".format(str(e)))
 
         return t.render(black_list=black_list, trending_shows=trending_shows)
 
@@ -333,7 +333,7 @@ class AddShows(Home):
         try:
             popular_shows = imdb_popular.fetch_popular_shows()
         except Exception as e:
-            logger.warn("Could not get popular shows: {0}".format(str(e)))
+            logger.warning("Could not get popular shows: {0}".format(str(e)))
             popular_shows = None
 
         return t.render(title=_("Popular Shows"), header=_("Popular Shows"),
@@ -359,7 +359,7 @@ class AddShows(Home):
             favorite_shows = favorites.fetch_indexer_favorites()
         except Exception as e:
             logger.exception(traceback.format_exc())
-            logger.warn(_("Could not get favorite shows: {0}").format(str(e)))
+            logger.warning(_("Could not get favorite shows: {0}").format(str(e)))
             favorite_shows = None
 
         return t.render(title=_("Favorite Shows"), header=_("Favorite Shows"),
@@ -531,8 +531,7 @@ class AddShows(Home):
         series_pieces = whichSeries.split('|')
         if (whichSeries and rootDir) or (whichSeries and fullShowPath and len(series_pieces) > 1):
             if len(series_pieces) < 6:
-                logger.info("Unable to add show due to show selection. Not enough arguments: {0}".format((repr(series_pieces))),
-                           logger.ERROR)
+                logger.error("Unable to add show due to show selection. Not enough arguments: {0}".format((repr(series_pieces))))
                 ui.notifications.error(_("Unknown error. Unable to add show due to problem with show selection."))
                 return self.redirect('/addShows/existingShows/')
 

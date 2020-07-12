@@ -48,7 +48,7 @@ def getShowImage(url, imgNum=None):
         image_data = None
 
     if image_data is None:
-        logger.warn("There was an error trying to retrieve the image, aborting")
+        logger.warning("There was an error trying to retrieve the image, aborting")
         return
 
     return image_data

@@ -181,7 +181,7 @@ class ImageCache(object):
         """
 
         if not os.path.isfile(path):
-            logger.warn("Couldn't check the type of " + str(path) + " cause it doesn't exist")
+            logger.warning("Couldn't check the type of " + str(path) + " cause it doesn't exist")
             return None
 
         width, height = imagesize.get(path)
@@ -204,7 +204,7 @@ class ImageCache(object):
         elif 1.7 < img_ratio < 1.8:
             return self.FANART
         else:
-            logger.warn("Image has size ratio of " + str(img_ratio) + ", unknown type")
+            logger.warning("Image has size ratio of " + str(img_ratio) + ", unknown type")
             return None
 
     @staticmethod
@@ -338,8 +338,7 @@ class ImageCache(object):
         if need_images[self.POSTER] or need_images[self.BANNER] or need_images[self.FANART]:
             try:
                 for cur_provider in sickbeard.metadata_provider_dict.values():
-                    logger.info("[{}] Checking if we can use images from {} metadata".format(show_obj.indexerid, cur_provider.name),
-                               logger.DEBUG)
+                    logger.debug("[{}] Checking if we can use images from {} metadata".format(show_obj.indexerid, cur_provider.name))
 
                     for method in (cur_provider.get_poster_path, cur_provider.get_banner_path, cur_provider.get_fanart_path):
                         current_path = method(show_obj)
@@ -348,8 +347,7 @@ class ImageCache(object):
                             cur_file_type = self.which_type(cur_file_name)
 
                             if cur_file_type is None:
-                                logger.info("Unable to retrieve image type, not using the image from " + str(cur_file_name),
-                                           logger.WARNING)
+                                logger.warning("Unable to retrieve image type, not using the image from " + str(cur_file_name))
                                 continue
 
                             logger.debug("[{}] Checking if {} ({}) needs cached: {}".format(
@@ -366,8 +364,7 @@ class ImageCache(object):
 
         # download from indexer for missing ones
         for cur_image_type in need_images.keys():
-            logger.info("[{}] Seeing if we still need a {}: {}".format(show_obj.indexerid, self.image_str[cur_image_type], need_images[cur_image_type]),
-                       logger.DEBUG)
+            logger.debug("[{}] Seeing if we still need a {}: {}".format(show_obj.indexerid, self.image_str[cur_image_type], need_images[cur_image_type]))
             if cur_image_type in need_images and need_images[cur_image_type]:
                 self._cache_image_from_indexer(show_obj, cur_image_type)
 

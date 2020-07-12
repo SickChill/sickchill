@@ -141,7 +141,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
                 client = clients.getClientInstance(sickbeard.TORRENT_METHOD)()
                 dlResult = client.sendTORRENT(result)
             else:
-                logger.warn("Torrent file content is empty")
+                logger.warning("Torrent file content is empty")
                 dlResult = False
     else:
         logger.exception("Unknown result type, unable to download it ({0!r})".format(result.resultType))
@@ -304,8 +304,7 @@ def isFirstBestMatch(result):
     :return: True if the result is the best quality match else False
     """
 
-    logger.info("Checking if we should stop searching for a better quality for for episode " + result.name,
-               logger.DEBUG)
+    logger.debug("Checking if we should stop searching for a better quality for for episode " + result.name)
 
     show_obj = result.episodes[0].show
 
@@ -395,7 +394,7 @@ def searchForNeededEpisodes():
         try:
             curFoundResults = curProvider.search_rss(episodes)
         except AuthException as e:
-            logger.warn("Authentication error: " + str(e))
+            logger.warning("Authentication error: " + str(e))
             continue
         except Exception as e:
             logger.exception("Error while searching " + curProvider.name + ", skipping: " + str(e))
@@ -426,9 +425,7 @@ def searchForNeededEpisodes():
     threading.currentThread().name = origThreadName
 
     if not didSearch:
-        logger.info(
-            "No NZB/Torrent providers found or enabled in the sickchill config for daily searches. Please check your settings.",
-            logger.INFO)
+        logger.info("No NZB/Torrent providers found or enabled in the sickchill config for daily searches. Please check your settings.")
 
     return list(foundResults.values())
 
@@ -485,7 +482,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
             try:
                 searchResults = curProvider.find_search_results(show, episodes, search_mode, manualSearch, downCurQuality)
             except AuthException as error:
-                logger.warn("Authentication error: {0!r}".format(error))
+                logger.warning("Authentication error: {0!r}".format(error))
                 break
             except Exception as error:
                 logger.exception("Exception while searching {0}. Error: {1!r}".format(curProvider.name, error))
@@ -527,8 +524,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
             for cur_result in foundResults[curProvider.name][cur_episode]:
                 if cur_result.quality != Quality.UNKNOWN and cur_result.quality > highest_quality_overall:
                     highest_quality_overall = cur_result.quality
-        logger.info("The highest quality of any match is " + Quality.qualityStrings[highest_quality_overall],
-                   logger.DEBUG)
+        logger.debug("The highest quality of any match is " + Quality.qualityStrings[highest_quality_overall])
 
         # see if every episode is wanted
         if bestSeasonResult:
@@ -773,7 +769,7 @@ def searchProvidersList(show, episodes, search_mode='eponly'):
 
                     searchResults = curProvider.search(search_params[0], ep_obj=episode)
                 except AuthException as error:
-                    logger.warn("Authentication error: {0!r}".format(error))
+                    logger.warning("Authentication error: {0!r}".format(error))
                     continue
                 except Exception as error:
                     logger.exception("Exception while searching {0}. Error: {1!r}".format(curProvider.name, error))

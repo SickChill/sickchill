@@ -45,7 +45,7 @@ class LoginHandler(BaseHandler):
             self.set_secure_cookie('sickchill_user', sickbeard.API_KEY, expires_days=(None, 30)[remember_me])
             logger.info('User logged into the SickChill web interface')
         else:
-            logger.warn('User attempted a failed login to the SickChill web interface from IP: ' + self.request.remote_ip)
+            logger.warning('User attempted a failed login to the SickChill web interface from IP: ' + self.request.remote_ip)
 
         next_ = self.get_query_argument('next', next_)
         self.redirect(next_ or '/' + sickbeard.DEFAULT_PAGE + '/')

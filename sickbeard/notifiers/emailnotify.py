@@ -98,7 +98,7 @@ class Notifier(object):
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
                     logger.debug('Snatch notification sent to [{0}] for "{1}"'.format(to, ep_name))
                 else:
-                    logger.warn('Snatch notification error: {0}'.format(self.last_err))
+                    logger.warning('Snatch notification error: {0}'.format(self.last_err))
 
     def notify_download(self, ep_name, title='Completed:'):
         '''
@@ -145,7 +145,7 @@ class Notifier(object):
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
                     logger.debug('Download notification sent to [{0}] for "{1}"'.format(to, ep_name))
                 else:
-                    logger.warn('Download notification error: {0}'.format(self.last_err))
+                    logger.warning('Download notification error: {0}'.format(self.last_err))
 
     def notify_postprocess(self, ep_name, title='Postprocessed:'):
         '''
@@ -192,7 +192,7 @@ class Notifier(object):
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
                     logger.debug('Postprocess notification sent to [{0}] for "{1}"'.format(to, ep_name))
                 else:
-                    logger.warn('Postprocess notification error: {0}'.format(self.last_err))
+                    logger.warning('Postprocess notification error: {0}'.format(self.last_err))
 
     def notify_subtitle_download(self, ep_name, lang, title='Downloaded subtitle:'):
         '''
@@ -239,7 +239,7 @@ class Notifier(object):
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
                     logger.debug('Download notification sent to [{0}] for "{1}"'.format(to, ep_name))
                 else:
-                    logger.warn('Download notification error: {0}'.format(self.last_err))
+                    logger.warning('Download notification error: {0}'.format(self.last_err))
 
     def notify_git_update(self, new_version='??'):
         '''
@@ -280,7 +280,7 @@ class Notifier(object):
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
                     logger.debug('Update notification sent to [{0}]'.format(to))
                 else:
-                    logger.warn('Update notification error: {0}'.format(self.last_err))
+                    logger.warning('Update notification error: {0}'.format(self.last_err))
 
     def notify_login(self, ipaddress=''):
         '''
@@ -321,7 +321,7 @@ class Notifier(object):
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
                     logger.debug('Login notification sent to [{0}]'.format(to))
                 else:
-                    logger.warn('Login notification error: {0}'.format(self.last_err))
+                    logger.warning('Login notification error: {0}'.format(self.last_err))
 
     @staticmethod
     def _generate_recipients(show):
@@ -359,7 +359,7 @@ class Notifier(object):
         try:
             srv = smtplib.SMTP(host, int(port))
         except Exception as e:
-            logger.warn('Exception generated while sending e-mail: ' + str(e))
+            logger.warning('Exception generated while sending e-mail: ' + str(e))
             # logger.debug(traceback.format_exc())
             self.last_err = '{0}'.format(e)
             return False

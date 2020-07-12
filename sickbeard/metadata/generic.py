@@ -287,8 +287,7 @@ class GenericMetadata(object):
 
     def create_episode_metadata(self, ep_obj):
         if self.episode_metadata and ep_obj and not self._has_episode_metadata(ep_obj):
-            logger.info("Metadata provider " + self.name + " creating episode metadata for " + ep_obj.pretty_name(),
-                       logger.DEBUG)
+            logger.debug("Metadata provider " + self.name + " creating episode metadata for " + ep_obj.pretty_name())
             return self.write_ep_file(ep_obj)
         return False
 
@@ -338,9 +337,9 @@ class GenericMetadata(object):
 
                 return True
             except IOError as error:
-                logger.warn("Unable to write file to {} - are you sure the folder is writable? {}".format(nfo_file_path, str(error)))
+                logger.warning("Unable to write file to {} - are you sure the folder is writable? {}".format(nfo_file_path, str(error)))
             except etree.ParseError as error:
-                logger.warn("Error parsing existing nfo file at {} - {}".format(nfo_file_path, str(error)))
+                logger.warning("Error parsing existing nfo file at {} - {}".format(nfo_file_path, str(error)))
 
     def create_fanart(self, show_obj):
         if self.fanart and show_obj and not self._has_fanart(show_obj):
@@ -362,8 +361,7 @@ class GenericMetadata(object):
 
     def create_episode_thumb(self, ep_obj):
         if self.episode_thumbnails and ep_obj and not self._has_episode_thumb(ep_obj):
-            logger.info("Metadata provider " + self.name + " creating episode thumbnail for " + ep_obj.pretty_name(),
-                       logger.DEBUG)
+            logger.debug("Metadata provider " + self.name + " creating episode thumbnail for " + ep_obj.pretty_name())
             return self.save_thumbnail(ep_obj)
         return False
 
@@ -372,8 +370,7 @@ class GenericMetadata(object):
             result = []
             for season in show_obj.episodes:
                 if not self._has_season_poster(show_obj, season):
-                    logger.info("Metadata provider " + self.name + " creating season posters for " + show_obj.name,
-                               logger.DEBUG)
+                    logger.debug("Metadata provider " + self.name + " creating season posters for " + show_obj.name)
                     result.extend([self.save_season_poster(show_obj, season)])
             return all(result)
         return False
@@ -390,15 +387,13 @@ class GenericMetadata(object):
 
     def create_season_all_poster(self, show_obj):
         if self.season_all_poster and show_obj and not self._has_season_all_poster(show_obj):
-            logger.info("Metadata provider " + self.name + " creating season all poster for " + show_obj.name,
-                       logger.DEBUG)
+            logger.debug("Metadata provider " + self.name + " creating season all poster for " + show_obj.name)
             return self.save_season_all_poster(show_obj)
         return False
 
     def create_season_all_banner(self, show_obj):
         if self.season_all_banner and show_obj and not self._has_season_all_banner(show_obj):
-            logger.info("Metadata provider " + self.name + " creating season all banner for " + show_obj.name,
-                       logger.DEBUG)
+            logger.debug("Metadata provider " + self.name + " creating season all banner for " + show_obj.name)
             return self.save_season_all_banner(show_obj)
         return False
 
@@ -438,8 +433,7 @@ class GenericMetadata(object):
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError as e:
-            logger.info("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e),
-                       logger.ERROR)
+            logger.error("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e))
             return False
 
         return True
@@ -486,8 +480,7 @@ class GenericMetadata(object):
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError as e:
-            logger.info("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e),
-                       logger.ERROR)
+            logger.error("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e))
             return False
 
         return True
@@ -625,8 +618,7 @@ class GenericMetadata(object):
 
         season_poster_file_path = self.get_season_poster_path(show_obj, season)
         if not season_poster_file_path:
-            logger.info("Path for season {} came back blank, skipping this season".format(season),
-                       logger.DEBUG)
+            logger.debug("Path for season {} came back blank, skipping this season".format(season))
             return False
 
         image_data = metadata_helpers.getShowImage(season_poster_url)
@@ -805,14 +797,14 @@ class GenericMetadata(object):
                 epg_url = epg_url_text.lower()
                 if str(indexer_id) in epg_url and 'tvrage' in epg_url:
                     if sickchill.indexer.TVRAGE not in sickchill.indexer:
-                        logger.warn(_("Invalid Indexer ID ({0}), not using metadata file because it has TVRage info").format(indexer_id))
+                        logger.warning(_("Invalid Indexer ID ({0}), not using metadata file because it has TVRage info").format(indexer_id))
                         return empty_return
                     return indexer_id, show_xml.findtext('title'), sickchill.indexer.TVRAGE
                 if str(indexer_id) in epg_url and 'tvdb' in epg_url:
                     return indexer_id, show_xml.findtext('title'), sickchill.indexer.TVDB
 
         except Exception as e:
-            logger.warn(_("There was an error parsing your existing metadata file: '{0}' error: {1}").format(metadata_path, str(e)))
+            logger.warning(_("There was an error parsing your existing metadata file: '{0}' error: {1}").format(metadata_path, str(e)))
             return empty_return
 
         return indexer_id, name, indexer

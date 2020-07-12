@@ -76,14 +76,14 @@ def delete_folder(folder, check_empty=True):
             logger.info("Deleting folder (if it's empty): {0}".format(folder))
             os.rmdir(folder)
         except (OSError, IOError) as e:
-            logger.warn("Warning: unable to delete folder: {0}: {1}".format(folder, str(e)))
+            logger.warning("Warning: unable to delete folder: {0}: {1}".format(folder, str(e)))
             return False
     else:
         try:
             logger.info("Deleting folder: " + folder)
             shutil.rmtree(folder)
         except (OSError, IOError) as e:
-            logger.warn("Warning: unable to delete folder: {0}: {1}".format(folder, str(e)))
+            logger.warning("Warning: unable to delete folder: {0}: {1}".format(folder, str(e)))
             return False
 
     return True
@@ -127,7 +127,7 @@ def delete_files(process_path, unwanted_files, result, force=False):
 
 
 def log_helper(message, level=logger.INFO):
-    logger.info(message, level)
+    logger.log(level, message)
     return message + "\n"
 
 
@@ -557,7 +557,7 @@ def subtitles_enabled(video):
     try:
         parse_result = NameParser().parse(video, cache_result=True)
     except (InvalidNameException, InvalidShowException):
-        logger.warn('Not enough information to parse filename into a valid show. Consider add scene exceptions or improve naming for: {0}'.format(video))
+        logger.warning('Not enough information to parse filename into a valid show. Consider add scene exceptions or improve naming for: {0}'.format(video))
         return False
 
     if parse_result.show.indexerid:
@@ -565,5 +565,5 @@ def subtitles_enabled(video):
         sql_results = main_db_con.select("SELECT subtitles FROM tv_shows WHERE indexer_id = ? LIMIT 1", [parse_result.show.indexerid])
         return bool(sql_results[0][b"subtitles"]) if sql_results else False
     else:
-        logger.warn('Empty indexer ID for: {0}'.format(video))
+        logger.warning('Empty indexer ID for: {0}'.format(video))
         return False

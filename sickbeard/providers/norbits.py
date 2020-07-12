@@ -67,7 +67,7 @@ class NorbitsProvider(TorrentProvider):
         """ Check that we are authenticated. """
 
         if 'status' in parsed_json and 'message' in parsed_json and parsed_json.get('status') == 3:
-            logger.warn('Invalid username or password. Check your settings')
+            logger.warning('Invalid username or password. Check your settings')
 
         return True
 

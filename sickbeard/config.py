@@ -118,7 +118,7 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
             os.remove(bad_unrar)
             logger.info('Removed a bad copy of unrar')
         except OSError as e:
-            logger.warn("Unable to delete bad unrar.exe file {0}: {1}. You should delete it manually".format(bad_unrar, e.strerror))
+            logger.warning("Unable to delete bad unrar.exe file {0}: {1}. You should delete it manually".format(bad_unrar, e.strerror))
 
     for tool in (unrar_tool, alt_unrar_tool, rarfile.UNRAR_TOOL, rarfile.ALT_TOOL):
         try:
@@ -1098,8 +1098,7 @@ class ConfigMigrator(object):
                 try:
                     name, url, key, enabled = cur_provider_data.split("|")
                 except ValueError:
-                    logger.info("Skipping Newznab provider string: '" + cur_provider_data + "', incorrect format",
-                               logger.ERROR)
+                    logger.error("Skipping Newznab provider string: '" + cur_provider_data + "', incorrect format")
                     continue
 
                 if name == 'Sick Beard Index':
@@ -1176,8 +1175,7 @@ class ConfigMigrator(object):
                 logger.info("Keeping " + metadata_name + " metadata, value: " + metadata)
 
             else:
-                logger.info("Skipping " + metadata_name + " metadata: '" + metadata + "', incorrect format",
-                           logger.ERROR)
+                logger.error("Skipping " + metadata_name + " metadata: '" + metadata + "', incorrect format")
                 metadata = '0|0|0|0|0|0|0|0|0|0'
                 logger.info("Setting " + metadata_name + " metadata, new value: " + metadata)
 

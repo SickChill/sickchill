@@ -105,7 +105,8 @@ class ErrorLogs(WebRoot):
 
     def submit_errors(self):
         submitter_result, issue_id = logger.submit_errors()
-        logger.warn(submitter_result, (logger.INFO)[not issue_id])
+        log = logger.info if issue_id else logger.warning
+        log(submitter_result)
         submitter_notification = ui.notifications.error if not issue_id else ui.notifications.message
         submitter_notification(submitter_result)
 

@@ -49,7 +49,7 @@ class BitCannonProvider(TorrentProvider):
         url = "http://localhost:3000/"
         if self.custom_url:
             if not validators.url(self.custom_url):
-                logger.warn("Invalid custom url set, please check your settings")
+                logger.warning("Invalid custom url set, please check your settings")
                 return results
             url = self.custom_url
 
@@ -124,7 +124,7 @@ class BitCannonProvider(TorrentProvider):
                     data.pop("status", 200) != 401,
                     data.pop("message", "") != "Invalid API key"]):
 
-            logger.warn("Invalid api key. Check your settings")
+            logger.warning("Invalid api key. Check your settings")
             return False
 
         return True

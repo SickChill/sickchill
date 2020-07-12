@@ -136,11 +136,11 @@ class TNTVillageProvider(TorrentProvider):
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
-            logger.warn("Unable to connect to provider")
+            logger.warning("Unable to connect to provider")
             return False
 
         if re.search('Sono stati riscontrati i seguenti errori', response) or re.search('<title>Connettiti</title>', response):
-            logger.warn("Invalid username or password. Check your settings")
+            logger.warning("Invalid username or password. Check your settings")
             return False
 
         return True

@@ -92,7 +92,7 @@ class ProperFinder(object):
             try:
                 curPropers = curProvider.find_propers(search_date)
             except AuthException as e:
-                logger.warn("Authentication error: " + str(e))
+                logger.warning("Authentication error: " + str(e))
                 continue
             except Exception as e:
                 logger.exception("Exception while searching propers in " + curProvider.name + ", skipping: " + str(e))
@@ -161,8 +161,7 @@ class ProperFinder(object):
 
             # only get anime proper if it has release group and version
             if bestResult.show.is_anime and not bestResult.release_group and bestResult.version == -1:
-                logger.info("Proper " + bestResult.name + " doesn't have a release group and version, ignoring it",
-                           logger.DEBUG)
+                logger.debug("Proper " + bestResult.name + " doesn't have a release group and version, ignoring it")
                 continue
 
             # check if we actually want this proper (if it's the right quality)

@@ -60,7 +60,7 @@ class BTNProvider(TorrentProvider):
 
     def _check_auth(self):
         if not self.api_key:
-            logger.warn("Invalid api key. Check your settings")
+            logger.warning("Invalid api key. Check your settings")
 
         return True
 
@@ -146,26 +146,26 @@ class BTNProvider(TorrentProvider):
 
         except jsonrpclib.jsonrpc.ProtocolError as error:
             if error.message == (-32001, 'Invalid API Key'):
-                logger.warn("The API key you provided was rejected because it is invalid. Check your provider configuration.")
+                logger.warning("The API key you provided was rejected because it is invalid. Check your provider configuration.")
             elif error.message == (-32002, 'Call Limit Exceeded'):
-                logger.warn("You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account")
+                logger.warning("You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account")
             else:
                 logger.exception("JSON-RPC protocol error while accessing provider. Error: {0} ".format(repr(error)))
             parsed_json = {'api-error': str(error)}
             return parsed_json
 
         except socket.timeout:
-            logger.warn("Timeout while accessing provider")
+            logger.warning("Timeout while accessing provider")
 
         except socket.error as error:
             # Note that sometimes timeouts are thrown as socket errors
-            logger.warn("Socket error while accessing provider. Error: {0} ".format(error[1]))
+            logger.warning("Socket error while accessing provider. Error: {0} ".format(error[1]))
 
         except Exception as error:
             errorstring = str(error)
             if errorstring.startswith('<') and errorstring.endswith('>'):
                 errorstring = errorstring[1:-1]
-            logger.warn("Unknown error while accessing provider. Error: {0} ".format(errorstring))
+            logger.warning("Unknown error while accessing provider. Error: {0} ".format(errorstring))
 
         return parsed_json
 

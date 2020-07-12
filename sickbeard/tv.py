@@ -970,7 +970,7 @@ class TVShow(object):
                     os.remove(cache_file)
 
             except OSError as error:
-                logger.warn('Unable to {0} {1}: {2}'.format(action, cache_file, error))
+                logger.warning('Unable to {0} {1}: {2}'.format(action, cache_file, error))
 
         # remove entire show folder
         if full:
@@ -984,7 +984,7 @@ class TVShow(object):
                     try:
                         os.chmod(self.location, stat.S_IWRITE)
                     except Exception as error:
-                        logger.warn('Unable to change permissions of {0}: {1}'.format(self._location, error))
+                        logger.warning('Unable to change permissions of {0}: {1}'.format(self._location, error))
 
                 shows_in_folder = main_db_con.select("SELECT location from tv_shows WHERE location LIKE ? AND indexer_id != ?",
                                                      ["{}%".format(self.location), self.indexerid])
@@ -1002,7 +1002,7 @@ class TVShow(object):
                                 else:
                                     os.remove(show_file)
                             except OSError as error:
-                                logger.warn('Unable to {0} {1}: {2}'.format(action, show_file, error))
+                                logger.warning('Unable to {0} {1}: {2}'.format(action, show_file, error))
                 else:
                     if sickbeard.TRASH_REMOVE_SHOW:
                         send2trash(self.location)
@@ -1013,9 +1013,9 @@ class TVShow(object):
                                (('Deleted', 'Trashed')[sickbeard.TRASH_REMOVE_SHOW], self._location))
 
             except ShowDirectoryNotFoundException:
-                logger.warn("Show folder does not exist, no need to {0} {1}".format(action, self._location))
+                logger.warning("Show folder does not exist, no need to {0} {1}".format(action, self._location))
             except OSError as error:
-                logger.warn('Unable to {0} {1}: {2}'.format(action, self._location, error))
+                logger.warning('Unable to {0} {1}: {2}'.format(action, self._location, error))
 
         if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
             logger.debug("Removing show: indexerid " + str(self.indexerid) + ", Title " + str(self.name) + " from Watchlist")
@@ -1053,8 +1053,7 @@ class TVShow(object):
                 if not curEp:
                     raise EpisodeDeletedException
             except EpisodeDeletedException:
-                logger.info("The episode was deleted while we were refreshing it, moving on to the next one",
-                           logger.DEBUG)
+                logger.debug("The episode was deleted while we were refreshing it, moving on to the next one")
                 continue
 
             # if the path doesn't exist or if it's not in our show dir
@@ -2388,7 +2387,7 @@ class TVEpisode(object):
         """
 
         if not os.path.isfile(self.location):
-            logger.warn("Can't perform rename on " + self.location + " when it doesn't exist, skipping")
+            logger.warning("Can't perform rename on " + self.location + " when it doesn't exist, skipping")
             return
 
         proper_path = self.proper_path()
@@ -2403,13 +2402,11 @@ class TVEpisode(object):
         if absolute_current_path_no_ext.startswith(self.show.location):
             current_path = absolute_current_path_no_ext[len(self.show.location):]
 
-        logger.info("Renaming/moving episode from the base path " + self.location + " to " + absolute_proper_path,
-                   logger.DEBUG)
+        logger.debug("Renaming/moving episode from the base path " + self.location + " to " + absolute_proper_path)
 
         # if it's already named correctly then don't do anything
         if proper_path == current_path:
-            logger.info(str(self.indexerid) + ": File " + self.location + " is already named correctly, skipping",
-                       logger.DEBUG)
+            logger.debug(str(self.indexerid) + ": File " + self.location + " is already named correctly, skipping")
             return
 
         # get related files

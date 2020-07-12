@@ -77,7 +77,7 @@ class TorrentProjectProvider(TorrentProvider):
 
                 if self.custom_url:
                     if not validators.url(self.custom_url):
-                        logger.warn("Invalid custom url set, please check your settings")
+                        logger.warning("Invalid custom url set, please check your settings")
                         return results
                     search_url = self.custom_url
                 else:

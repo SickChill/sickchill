@@ -50,7 +50,7 @@ class HD4FreeProvider(TorrentProvider):
         if self.username and self.api_key:
             return True
 
-        logger.warn('Your authentication credentials for {0} are missing, check your config.'.format(self.name))
+        logger.warning('Your authentication credentials for {0} are missing, check your config.'.format(self.name))
         return False
 
     def search(self, search_strings, age=0, ep_obj=None):

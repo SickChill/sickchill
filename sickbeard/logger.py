@@ -513,7 +513,9 @@ debug = Wrapper.instance.logger.debug
 warning = Wrapper.instance.logger.warning
 info = Wrapper.instance.logger.info
 error = Wrapper.instance.logger.error
+exception = logging.exception
 critical = Wrapper.instance.logger.critical
+
 log = Wrapper.instance.logger.log
 
 set_level = Wrapper.instance.set_level

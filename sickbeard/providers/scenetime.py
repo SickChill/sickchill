@@ -70,13 +70,13 @@ class SceneTimeProvider(TorrentProvider):
 
             response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
             if not response or response.status_code != 200:
-                logger.warn("Unable to connect to provider")
+                logger.warning("Unable to connect to provider")
                 return False
 
             if dict_from_cookiejar(self.session.cookies).get('uid') in response.text:
                 return True
             else:
-                logger.warn('Failed to login, check your cookies')
+                logger.warning('Failed to login, check your cookies')
                 return False
 
     def search(self, search_params, age=0, ep_obj=None):

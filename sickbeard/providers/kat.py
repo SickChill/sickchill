@@ -98,7 +98,7 @@ class KatProvider(TorrentProvider):
 
                 if self.custom_url:
                     if not validators.url(self.custom_url):
-                        logger.warn("Invalid custom url: {0}".format(self.custom_url))
+                        logger.warning("Invalid custom url: {0}".format(self.custom_url))
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 

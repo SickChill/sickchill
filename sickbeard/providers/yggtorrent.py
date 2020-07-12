@@ -71,7 +71,7 @@ class YggTorrentProvider(TorrentProvider):
 
         if not validators.url(new_url):
             if custom:
-                logger.warn("Invalid custom url: {0}".format(self.custom_url))
+                logger.warning("Invalid custom url: {0}".format(self.custom_url))
             else:
                 logger.debug('Url changing has failed!')
 
@@ -103,17 +103,17 @@ class YggTorrentProvider(TorrentProvider):
 
         # The login is now an AJAX call (401 : Bad credentials, 200 : Logged in, other : server failure)
         if not response or response.status_code != 200:
-            logger.warn('Unable to connect to provider')
+            logger.warning('Unable to connect to provider')
             return False
         else:
             # It seems we are logged, let's verify that !
             response = self.get_url(self.url, returns='response')
 
             if response.status_code != 200:
-                logger.warn('Unable to connect to provider')
+                logger.warning('Unable to connect to provider')
                 return False
             if 'logout' not in response.text:
-                logger.warn('Invalid username or password. Check your settings')
+                logger.warning('Invalid username or password. Check your settings')
                 return False
 
         return True

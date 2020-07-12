@@ -82,7 +82,7 @@ class Torrent9Provider(TorrentProvider):
                 if validators.url(self.custom_url):
                     self._used_url = self.custom_url
                 else:
-                    logger.warn("Invalid custom url set, please check your settings")
+                    logger.warning("Invalid custom url set, please check your settings")
 
             self._used_url = self._original_url
 

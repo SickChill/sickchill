@@ -47,7 +47,7 @@ class OmgwtfnzbsProvider(NZBProvider):
     def _check_auth(self):
 
         if not self.username or not self.api_key:
-            logger.warn('Invalid api key. Check your settings')
+            logger.warning('Invalid api key. Check your settings')
             return False
 
         return True
@@ -64,7 +64,7 @@ class OmgwtfnzbsProvider(NZBProvider):
         if 'notice' in parsed_data:
             description_text = parsed_data.get('notice')
             if 'information is incorrect' in description_text:
-                logger.warn('Invalid api key. Check your settings')
+                logger.warning('Invalid api key. Check your settings')
             elif '0 results matched your terms' not in description_text:
                 logger.debug('Unknown error: {0}'.format(description_text))
             return False

@@ -402,10 +402,10 @@ def setup_github():
                              sickbeard.logger.WARNING)
     except BadUserAgentException as error:
         sickbeard.gh = None
-        sickbeard.logger.info(_('Unable to setup GitHub properly, GitHub doesn\'t like the user-agent. Error: {0}').format(error), sickbeard.logger.WARNING)
+        sickbeard.logger.warning(_('Unable to setup GitHub properly, GitHub doesn\'t like the user-agent. Error: {0}').format(error))
     except BadAttributeException as error:
         sickbeard.gh = None
-        sickbeard.logger.info(_('Unable to setup GitHub properly, There might be an error with the library. Error: {0}').format(error), sickbeard.logger.ERROR)
+        sickbeard.logger.error(_('Unable to setup GitHub properly, There might be an error with the library. Error: {0}').format(error))
     except (GithubException, Exception) as error:
             sickbeard.gh = None
-            sickbeard.logger.info(_('Unable to setup GitHub properly. GitHub will not be available. Error: {0}').format(error), sickbeard.logger.ERROR)
+            sickbeard.logger.error(_('Unable to setup GitHub properly. GitHub will not be available. Error: {0}').format(error))

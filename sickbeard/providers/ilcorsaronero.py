@@ -283,8 +283,7 @@ class ilCorsaroNeroProvider(TorrentProvider):
                                     continue
 
                                 if self.engrelease and not self._is_english(title):
-                                    logger.info('Torrent isn\'t english audio/subtitled, skipping: {0}'.format(title),
-                                               logger.DEBUG)
+                                    logger.debug('Torrent isn\'t english audio/subtitled, skipping: {0}'.format(title))
                                     continue
 
                                 search_show = re.split(r'([Ss][\d{1,2}]+)', search_string)[0]

@@ -43,6 +43,6 @@ class KeyHandler(RequestHandler):
             result = {'success': True, 'api_key': sickbeard.API_KEY}
         else:
             result = {'success': False, 'error': _('Failed authentication while getting api key')}
-            logger.warn(_('Authentication failed during api key request: {0}').format((traceback.format_exc())))
+            logger.warning(_('Authentication failed during api key request: {0}').format((traceback.format_exc())))
 
         return self.finish(result)

@@ -164,7 +164,7 @@ class EliteTorrentProvider(TorrentProvider):
                             items.append(item)
 
                 except Exception:
-                    logger.warn("Failed parsing provider. Traceback: {0}".format(traceback.format_exc()))
+                    logger.warning("Failed parsing provider. Traceback: {0}".format(traceback.format_exc()))
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

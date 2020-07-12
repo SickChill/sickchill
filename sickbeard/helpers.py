@@ -355,7 +355,7 @@ def copyFile(srcFile, destFile):
     except (SpecialFileError, Error) as error:
         # noinspection PyProtectedMember
         if not shutil._samefile(srcFile, destFile):
-            logger.warn('{0}'.format(error))
+            logger.warning('{0}'.format(error))
             return
     except Exception as error:
         logger.exception('{0}'.format(error))
@@ -572,7 +572,7 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
                 # do the library update for synoindex
                 sickbeard.notifiers.synoindex_notifier.deleteFolder(check_empty_dir)
             except OSError as error:
-                logger.warn(_("Unable to delete {0}. Error: {1}").format(check_empty_dir, error))
+                logger.warning(_("Unable to delete {0}. Error: {1}").format(check_empty_dir, error))
                 break
             check_empty_dir = os.path.dirname(check_empty_dir)
         else:
@@ -806,7 +806,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         from certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA
     except Exception:
         logger.info(traceback.format_exc())
-        logger.warn(_("pyopenssl module missing, please install for https access"))
+        logger.warning(_("pyopenssl module missing, please install for https access"))
         return False
 
     import time
@@ -830,7 +830,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         open(ssl_cert, 'wb').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except Exception as error:
         logger.info(traceback.format_exc())
-        logger.warn(_("Error creating SSL key and certificate {error}").format(error.message))
+        logger.warning(_("Error creating SSL key and certificate {error}").format(error.message))
         return False
 
     logger.info(_('Created https key: {ssl_key}').format(ssl_key=ssl_key))
@@ -862,7 +862,7 @@ def backupVersionedFile(old_file, version):
             logger.debug(_("Backup done"))
             break
         except Exception as error:
-            logger.warn(_("Error while trying to back up {0} to {1} : {2}").format(old_file, new_file, error))
+            logger.warning(_("Error while trying to back up {0} to {1} : {2}").format(old_file, new_file, error))
             numTries += 1
             time.sleep(1)
             logger.debug(_("Trying again."))
@@ -913,13 +913,13 @@ def restoreVersionedFile(backup_file, version):
             logger.debug(_("Restore done"))
             break
         except Exception as error:
-            logger.warn(_("Error while trying to restore file {0}. Error: {1}").format(restore_file, error))
+            logger.warning(_("Error while trying to restore file {0}. Error: {1}").format(restore_file, error))
             numTries += 1
             time.sleep(1)
             logger.debug(_("Trying again. Attempt #: {0}").format(numTries))
 
         if numTries >= 10:
-            logger.warn(_("Unable to restore file {0} to {1}").format(restore_file, new_file))
+            logger.warning(_("Unable to restore file {0} to {1}").format(restore_file, new_file))
             return False
 
     return True
@@ -1128,7 +1128,7 @@ def set_up_anidb_connection():
         try:
             sickbeard.ADBA_CONNECTION = adba.Connection(keepAlive=True, log=anidb_logger)
         except Exception as error:
-            logger.warn(_("anidb exception msg: {0} ").format(error))
+            logger.warning(_("anidb exception msg: {0} ").format(error))
             return False
 
     try:
@@ -1137,7 +1137,7 @@ def set_up_anidb_connection():
         else:
             return True
     except Exception as error:
-        logger.warn(_("anidb exception msg: {0} ").format(error))
+        logger.warning(_("anidb exception msg: {0} ").format(error))
         return False
 
     return sickbeard.ADBA_CONNECTION.authed()
@@ -1211,7 +1211,7 @@ def backup_config_zip(fileList, archive, arcname=None):
         a.close()
         return True
     except Exception as error:
-        logger.warn(_("Zip creation error: {0} ").format(error))
+        logger.warning(_("Zip creation error: {0} ").format(error))
         return False
 
 
@@ -1372,7 +1372,7 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
 
                 chmodAsParent(filename)
             except Exception as error:
-                logger.warn(_("Problem downloading file, setting permissions or writing file to {0} - ERROR: {1}").format(filename, error))
+                logger.warning(_("Problem downloading file, setting permissions or writing file to {0} - ERROR: {1}").format(filename, error))
 
     except Exception as error:
         # noinspection PyTypeChecker
@@ -1462,8 +1462,8 @@ def get_size(start_path='.'):
         for f in filenames:
             fp = os.path.join(dirpath, f)
             if os.path.islink(fp) and not os.path.isfile(fp):
-                logger.info(_("Unable to get size for file {0} because the link to the file is not valid").format(fp),
-                           logger.DEBUG if sickbeard.IGNORE_BROKEN_SYMLINKS else logger.WARNING)
+                log = logger.debug if sickbeard.IGNORE_BROKEN_SYMLINKS else logger.warning
+                log(_("Unable to get size for file {0} because the link to the file is not valid").format(fp))
                 continue
             try:
                 total_size += os.path.getsize(fp)
@@ -1535,7 +1535,7 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
     logger.debug(_("Trying to determine free space on the destination drive"))
 
     if not os.path.isfile(src):
-        logger.warn(_("A path to a file is required for the source. {0} is not a file.").format(src))
+        logger.warning(_("A path to a file is required for the source. {0} is not a file.").format(src))
         return True
 
     if not (os.path.isdir(dest) or (sickbeard.CREATE_MISSING_SHOW_DIRS and os.path.isdir(os.path.dirname(dest)))):
@@ -1555,7 +1555,7 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
     try:
         disk_free = disk_usage(dest)
     except Exception as error:
-        logger.warn(_("Unable to determine free space, so I will assume there is enough."))
+        logger.warning(_("Unable to determine free space, so I will assume there is enough."))
         logger.debug(_("Error: {error}").format(error=error))
         logger.debug(traceback.format_exc())
         return True
@@ -1588,7 +1588,7 @@ def disk_usage_hr(diskPath=None):
         try:
             free = disk_usage(diskPath)
         except Exception as error:
-            logger.warn(_("Unable to determine free space"))
+            logger.warning(_("Unable to determine free space"))
             logger.debug(_("Error: {error}").format(error=error))
             logger.debug(traceback.format_exc())
         else:

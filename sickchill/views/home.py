@@ -1379,17 +1379,17 @@ class Home(WebRoot):
                 with ep_obj.lock:
                     # don't let them mess up UNAIRED episodes
                     if ep_obj.status == UNAIRED:
-                        logger.warn("Refusing to change status of " + cur_ep + " because it is UNAIRED")
+                        logger.warning("Refusing to change status of " + cur_ep + " because it is UNAIRED")
                         continue
 
                     if int(status) in Quality.DOWNLOADED and ep_obj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + \
                         Quality.DOWNLOADED + [IGNORED] and not os.path.isfile(ep_obj.location):
-                        logger.warn("Refusing to change status of " + cur_ep + " to DOWNLOADED because it's not SNATCHED/DOWNLOADED")
+                        logger.warning("Refusing to change status of " + cur_ep + " to DOWNLOADED because it's not SNATCHED/DOWNLOADED")
                         continue
 
                     if int(status) == FAILED and ep_obj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + \
                         Quality.DOWNLOADED + Quality.ARCHIVED:
-                        logger.warn("Refusing to change status of " + cur_ep + " to FAILED because it's not SNATCHED/DOWNLOADED")
+                        logger.warning("Refusing to change status of " + cur_ep + " to FAILED because it's not SNATCHED/DOWNLOADED")
                         continue
 
                     if ep_obj.status in Quality.DOWNLOADED + Quality.ARCHIVED and int(status) == WANTED:
@@ -1519,7 +1519,7 @@ class Home(WebRoot):
                 "SELECT location FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ? AND 5=5",
                 [show, epInfo[0], epInfo[1]])
             if not ep_result:
-                logger.warn("Unable to find an episode for " + cur_ep + ", skipping")
+                logger.warning("Unable to find an episode for " + cur_ep + ", skipping")
                 continue
             related_eps_result = main_db_con.select(
                 "SELECT season, episode FROM tv_episodes WHERE location = ? AND episode != ?",
@@ -1587,7 +1587,7 @@ class Home(WebRoot):
             show_obj = Show.find(sickbeard.showList, int(search_thread.show.indexerid))
 
             if not show_obj:
-                logger.warn('No Show Object found for show with indexerID: ' + str(search_thread.show.indexerid))
+                logger.warning('No Show Object found for show with indexerID: ' + str(search_thread.show.indexerid))
                 return results
 
             # noinspection PyProtectedMember

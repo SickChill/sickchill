@@ -148,8 +148,7 @@ class Client(GenericClient, DelugeBase):
 
             if labels is not None:
                 if label not in labels:
-                    logger.info(self.name + ': ' + label + " label does not exist in Deluge we must add it",
-                               logger.DEBUG)
+                    logger.debug(self.name + ': ' + label + " label does not exist in Deluge we must add it")
                     post_data = json.dumps({"method": 'label.add',
                                             "params": [label],
                                             "id": 4})

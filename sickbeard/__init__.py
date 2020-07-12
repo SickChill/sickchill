@@ -909,7 +909,7 @@ def initialize(consoleLogging=True):
                         shutil.rmtree(os.path.join(CACHE_DIR, cleanupDir))
                     except Exception as e:
                         if cleanupDir not in ['rss', 'sessions', 'indexers']:
-                            logger.warn("Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, str(e)))
+                            logger.warning("Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, str(e)))
 
         IMAGE_CACHE = image_cache.ImageCache()
         THEME_NAME = check_setting_str(CFG, 'GUI', 'theme_name', 'dark')
@@ -2444,7 +2444,7 @@ def launchBrowser(protocol='http', startPort=None, web_root='/'):
         # noinspection PyUnresolvedReferences
         import webbrowser
     except ImportError:
-        logger.warn("Unable to load the webbrowser module, cannot launch the browser.")
+        logger.warning("Unable to load the webbrowser module, cannot launch the browser.")
         return
 
     if not startPort:

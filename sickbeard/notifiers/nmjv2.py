@@ -100,7 +100,7 @@ class Notifier(object):
                         return True
 
         except IOError as e:
-            logger.warn("Warning: Couldn't contact popcorn hour on host {0}: {1}".format(host, e))
+            logger.warning("Warning: Couldn't contact popcorn hour on host {0}: {1}".format(host, e))
             return False
         return False
 
@@ -129,7 +129,7 @@ class Notifier(object):
             handle2 = urllib.request.urlopen(req)
             response2 = handle2.read()
         except IOError as e:
-            logger.warn("Warning: Couldn't contact popcorn hour on host {0}: {1}".format(host, e))
+            logger.warning("Warning: Couldn't contact popcorn hour on host {0}: {1}".format(host, e))
             return False
         try:
             et = etree.fromstring(response1)

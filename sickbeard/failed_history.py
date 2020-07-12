@@ -63,11 +63,11 @@ def logFailed(release):
         logger.warning(
             "Release not found in snatch history.")
     elif len(sql_results) > 1:
-        logger.warn("Multiple logged snatches found for release")
+        logger.warning("Multiple logged snatches found for release")
         sizes = len(set(x[b"size"] for x in sql_results))
         providers = len(set(x[b"provider"] for x in sql_results))
         if sizes == 1:
-            logger.warn("However, they're all the same size. Continuing with found size.")
+            logger.warning("However, they're all the same size. Continuing with found size.")
             size = sql_results[0][b"size"]
         else:
             logger.info(
@@ -138,14 +138,12 @@ def revertEpisode(epObj):
                 logger.info("Found in history")
                 epObj.status = history_eps[epObj.episode][b'old_status']
             else:
-                logger.info("Episode don't have a previous snatched status to revert. Setting it back to WANTED",
-                           logger.DEBUG)
+                logger.debug("Episode don't have a previous snatched status to revert. Setting it back to WANTED")
                 epObj.status = WANTED
                 epObj.saveToDB()
 
     except EpisodeNotFoundException as e:
-        logger.info("Unable to create episode, please set its status manually: " + str(e),
-                   logger.WARNING)
+        logger.warning("Unable to create episode, please set its status manually: " + str(e))
 
 
 def markFailed(epObj):
@@ -164,7 +162,7 @@ def markFailed(epObj):
             epObj.saveToDB()
 
     except EpisodeNotFoundException as e:
-        logger.warn("Unable to get episode, please set its status manually: " + str(e))
+        logger.warning("Unable to get episode, please set its status manually: " + str(e))
 
     return log_str
 

@@ -77,39 +77,39 @@ class IPTorrentsProvider(TorrentProvider):
 
         if self.custom_url:
             if not validators.url(self.custom_url):
-                logger.warn("Invalid custom url: {0}".format(self.custom_url))
+                logger.warning("Invalid custom url: {0}".format(self.custom_url))
                 return False
 
         # Get the index, redirects to login
         data = self.get_url(self.custom_url or self.url, returns='text')
         if not data:
-            logger.warn("Unable to connect to provider")
+            logger.warning("Unable to connect to provider")
             return False
 
         with BS4Parser(data, 'html5lib') as html:
             action = html.find('form', {'action': re.compile(r'.*login.*')}).get('action')
             if not action:
-                logger.warn('Could not find the login form. Try adding cookies instead')
+                logger.warning('Could not find the login form. Try adding cookies instead')
                 return False
 
         response = self.get_url(urljoin(self.custom_url or self.url, action), post_data=login_params, returns='text')
         if not response:
-            logger.warn("Unable to connect to provider")
+            logger.warning("Unable to connect to provider")
             return False
 
         # Invalid username and password combination
         if re.search('Invalid username and password combination', response):
-            logger.warn("Invalid username or password. Check your settings")
+            logger.warning("Invalid username or password. Check your settings")
             return False
 
         # You tried too often, please try again after 2 hours!
         if re.search('You tried too often', response):
-            logger.warn("You tried too often, please try again after 2 hours! Disable IPTorrents for at least 2 hours")
+            logger.warning("You tried too often, please try again after 2 hours! Disable IPTorrents for at least 2 hours")
             return False
 
         # Captcha!
         if re.search('Captcha verification failed.', response):
-            logger.warn("Stupid captcha")
+            logger.warning("Stupid captcha")
             return False
 
         return True
@@ -134,7 +134,7 @@ class IPTorrentsProvider(TorrentProvider):
 
                 if self.custom_url:
                     if not validators.url(self.custom_url):
-                        logger.warn("Invalid custom url: {0}".format(self.custom_url))
+                        logger.warning("Invalid custom url: {0}".format(self.custom_url))
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 

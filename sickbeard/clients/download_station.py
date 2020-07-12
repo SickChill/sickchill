@@ -199,7 +199,7 @@ class Client(GenericClient):
         logger.debug('Calling {0} Client'.format(self.name))
 
         if not (self.auth or self._get_auth()):
-            logger.warn('{0}: Authentication Failed'.format(self.name))
+            logger.warning('{0}: Authentication Failed'.format(self.name))
             return False
 
         if result.resultType == 'nzb':

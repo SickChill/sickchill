@@ -62,7 +62,7 @@ class HDTorrentsProvider_IT(TorrentProvider):
     def _check_auth(self):
 
         if not self.username or not self.password:
-            logger.warn("Invalid username or password. Check your settings")
+            logger.warning("Invalid username or password. Check your settings")
 
         return True
 
@@ -76,11 +76,11 @@ class HDTorrentsProvider_IT(TorrentProvider):
 
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
         if not response:
-            logger.warn("Unable to connect to provider")
+            logger.warning("Unable to connect to provider")
             return False
 
         if re.search('Lei non e registrato in sistema.', response):
-            logger.warn("Invalid username or password. Check your settings")
+            logger.warning("Invalid username or password. Check your settings")
             return False
 
         return True

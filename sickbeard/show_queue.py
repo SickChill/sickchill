@@ -356,7 +356,7 @@ class QueueItemAdd(ShowQueueItem):
                 error_string = _('Show in {0} has no name on {1}, probably searched with the wrong language. Delete .nfo and add manually in the correct language.').format(
                     self.showDir, sickchill.indexer.name(self.indexer))
 
-                logger.warn(error_string)
+                logger.warning(error_string)
                 ui.notifications.error(_('Unable to add show'), error_string)
 
                 self._finish_early()
@@ -446,7 +446,7 @@ class QueueItemAdd(ShowQueueItem):
 
         except MultipleShowObjectsException:
             error_string = _('The show in {0} is already in your show list, skipping').format(self.showDir)
-            logger.warn(error_string)
+            logger.warning(error_string)
             ui.notifications.error(_('Show skipped'), error_string)
 
             self._finish_early()
@@ -567,7 +567,7 @@ class QueueItemRename(ShowQueueItem):
         try:
             self.show.location
         except ShowDirectoryNotFoundException:
-            logger.warn('Can\'t perform rename on {0} when the show dir is missing.'.format(self.show.name))
+            logger.warning('Can\'t perform rename on {0} when the show dir is missing.'.format(self.show.name))
             super(QueueItemRename, self).finish()
             self.finish()
             return
@@ -630,7 +630,7 @@ class QueueItemUpdate(ShowQueueItem):
         try:
             self.show.loadFromIndexer()
         except Exception as error:
-            logger.warn('Unable to contact {0}, aborting: {1}'.format(self.show.idxr.name, error))
+            logger.warning('Unable to contact {0}, aborting: {1}'.format(self.show.idxr.name, error))
             super(QueueItemUpdate, self).finish()
             self.finish()
             return
@@ -708,7 +708,7 @@ class QueueItemRemove(ShowQueueItem):
             try:
                 sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(self.show)
             except Exception as error:
-                logger.warn(_('Unable to delete show from Trakt: {0}. Error: {1}').format(self.show.name, error))
+                logger.warning(_('Unable to delete show from Trakt: {0}. Error: {1}').format(self.show.name, error))
 
         # If any notification fails, don't stop removal
         try:

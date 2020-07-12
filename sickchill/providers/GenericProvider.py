@@ -128,11 +128,11 @@ class GenericProvider(object):
                     logger.info('Saved result to {0}'.format(downloaded_filename))
                     return True
 
-                logger.warn('Could not download {0}'.format(url))
+                logger.warning('Could not download {0}'.format(url))
                 remove_file_failed(downloaded_filename)
 
         if urls:
-            logger.warn('Failed to download any results')
+            logger.warning('Failed to download any results')
 
         return False
 
@@ -257,9 +257,7 @@ class GenericProvider(object):
                 same_day_special = False
 
                 if not parse_result.is_air_by_date:
-                    logger.info(
-                        'This is supposed to be a date search but the result {0} didn\'t parse as one, skipping it'.format(title),
-                        logger.DEBUG)
+                    logger.debug('This is supposed to be a date search but the result {0} didn\'t parse as one, skipping it'.format(title))
                     add_cache_entry = True
                 else:
                     air_date = parse_result.air_date.toordinal()

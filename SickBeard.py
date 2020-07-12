@@ -119,7 +119,7 @@ class SickChill(object):
             if os.path.isdir(cache_folder):
                 shutil.rmtree(cache_folder)
         except Exception:
-            logger.warn('Unable to remove the cache/mako directory!')
+            logger.warning('Unable to remove the cache/mako directory!')
 
     @staticmethod
     def help_message():

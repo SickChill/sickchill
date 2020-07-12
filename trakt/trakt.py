@@ -74,7 +74,7 @@ class TraktAPI:
             headers = self.headers
 
         if sickbeard.TRAKT_ACCESS_TOKEN == '' and count >= 2:
-            logger.warn(u'You must get a Trakt TOKEN. Check your Trakt settings')
+            logger.warning(u'You must get a Trakt TOKEN. Check your Trakt settings')
             return {}
 
         if sickbeard.TRAKT_ACCESS_TOKEN != '':
@@ -93,7 +93,7 @@ class TraktAPI:
             code = getattr(e.response, 'status_code', None)
             if not code:
                 if 'timed out' in e:
-                    logger.warn(u'Timeout connecting to Trakt. Try to increase timeout value in Trakt settings')
+                    logger.warning(u'Timeout connecting to Trakt. Try to increase timeout value in Trakt settings')
                 # This is pretty much a fatal error if there is no status_code
                 # It means there basically was no response at all
                 else:
@@ -106,7 +106,7 @@ class TraktAPI:
                 if self.traktToken(refresh=True, count=count):
                     return self.traktRequest(path, data, headers, url, method)
                 else:
-                    logger.warn(u'Unauthorized. Please check your Trakt settings')
+                    logger.warning(u'Unauthorized. Please check your Trakt settings')
             elif code in (500,501,503,504,520,521,522):
                 # http://docs.trakt.apiary.io/#introduction/status-codes
                 logger.debug(u'Trakt may have some issues and it\'s unavailable. Try again later please')

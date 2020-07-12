@@ -137,7 +137,7 @@ class Notifier(object):
             return False
 
         if not self.get_token(username, password, plex_server_token):
-            logger.warn('PLEX: Error getting auth token for Plex Media Server, check your settings')
+            logger.warning('PLEX: Error getting auth token for Plex Media Server, check your settings')
             return False
 
         file_location = '' if not ep_obj else ep_obj.location
@@ -165,7 +165,7 @@ class Notifier(object):
                 continue
             except Exception as error:
                 if 'invalid token' in str(error):
-                    logger.warn('PLEX: Please set TOKEN in Plex settings: ')
+                    logger.warning('PLEX: Please set TOKEN in Plex settings: ')
                 else:
                     logger.warning('PLEX: Error while trying to contact Plex Media Server: {0}'.format
                                (str(error)))

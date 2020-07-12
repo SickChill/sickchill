@@ -63,7 +63,7 @@ class SkyTorrents(TorrentProvider):
                 search_url = (self.urls["search"], self.urls["rss"])[mode == "RSS"]
                 if self.custom_url:
                     if not validators.url(self.custom_url):
-                        logger.warn("Invalid custom url: {0}".format(self.custom_url))
+                        logger.warning("Invalid custom url: {0}".format(self.custom_url))
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
@@ -100,8 +100,7 @@ class SkyTorrents(TorrentProvider):
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
                             if mode != "RSS":
-                                logger.info("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers),
-                                           logger.DEBUG)
+                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                             items.append(item)
 

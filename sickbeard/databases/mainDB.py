@@ -61,7 +61,7 @@ class MainSanityCheck(db.DBSanityCheck):
 
         sql_results = self.connection.select(query)
         if sql_results:
-            logger.warn("Found {0:d} shows with bare archived status, attempting automatic conversion...".format(len(sql_results)))
+            logger.warning("Found {0:d} shows with bare archived status, attempting automatic conversion...".format(len(sql_results)))
 
         for archivedEp in sql_results:
             fixedStatus = common.Quality.compositeStatus(common.ARCHIVED, common.Quality.UNKNOWN)
@@ -86,7 +86,7 @@ class MainSanityCheck(db.DBSanityCheck):
         sql_results = self.connection.select("SELECT indexer_id, show_name, location FROM tv_shows WHERE indexer = {0:d}".format(INDEXER_TVRAGE))
 
         if sql_results:
-            logger.warn("Found {0:d} shows with TVRage ID's, attempting automatic conversion...".format(len(sql_results)))
+            logger.warning("Found {0:d} shows with TVRage ID's, attempting automatic conversion...".format(len(sql_results)))
 
         for tvrage_show in sql_results:
             logger.info("Processing {0} at {1}".format(tvrage_show[b'show_name'], tvrage_show[b'location']))
@@ -97,7 +97,7 @@ class MainSanityCheck(db.DBSanityCheck):
                 logger.warning("Error mapping show from tvrage to tvdb for {0} ({1}), found {2:d} mapping results. Cannot convert automatically!".format
                            (tvrage_show[b'show_name'], tvrage_show[b'location'], len(mapping)))
 
-                logger.warn("Removing the TVRage show and it's episodes from the DB, use 'addExistingShow'")
+                logger.warning("Removing the TVRage show and it's episodes from the DB, use 'addExistingShow'")
                 self.connection.action("DELETE FROM tv_shows WHERE indexer_id = {0:d} AND indexer = {1:d}".format(tvrage_show[b'indexer_id'], INDEXER_TVRAGE))
                 self.connection.action("DELETE FROM tv_episodes WHERE showid = {0:d}".format(tvrage_show[b'indexer_id']))
                 continue
@@ -113,7 +113,7 @@ class MainSanityCheck(db.DBSanityCheck):
                     INDEXER_TVDB, duplicate[0][b'indexer_id'])
                 )
 
-                logger.warn("Removing {0} and it's episodes from the DB".format(tvrage_show[b'show_name']))
+                logger.warning("Removing {0} and it's episodes from the DB".format(tvrage_show[b'show_name']))
                 self.connection.action("DELETE FROM tv_shows WHERE indexer_id = {0:d} AND indexer = {1:d}".format(tvrage_show[b'indexer_id'], INDEXER_TVRAGE))
                 self.connection.action("DELETE FROM tv_episodes WHERE showid = {0:d}".format(tvrage_show[b'indexer_id']))
                 logger.warning('Manually move the season folders from {0} into {1}, and delete {2} before rescanning {3} and unpausing it'.format(
@@ -136,7 +136,7 @@ class MainSanityCheck(db.DBSanityCheck):
                 )
             )
 
-            logger.warn('Please perform a full update on {0}'.format(tvrage_show[b'show_name']))
+            logger.warning('Please perform a full update on {0}'.format(tvrage_show[b'show_name']))
 
     def fix_duplicate_shows(self, column=b'indexer_id'):
 

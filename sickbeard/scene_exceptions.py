@@ -339,7 +339,7 @@ def _xem_exceptions_fetcher():
                     try:
                         xem_exception_dict[int(indexerid)] = names
                     except Exception as error:
-                        logger.warn("XEM: Rejected entry: indexerid:{0}; names:{1}".format(indexerid, names))
+                        logger.warning("XEM: Rejected entry: indexerid:{0}; names:{1}".format(indexerid, names))
                         logger.debug("XEM: Rejected entry error message:{0}".format(error))
 
         setLastRefresh('xem')

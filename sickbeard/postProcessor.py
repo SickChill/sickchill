@@ -111,7 +111,7 @@ class PostProcessor(object):
         :param message: The string to log (six.text_type)
         :param level: The log level to use (optional)
         """
-        logger.info(message, level)
+        logger.log(level, message)
         self.log += message + '\n'
 
     def _checkForExistingFile(self, existing_file):
@@ -552,8 +552,7 @@ class PostProcessor(object):
                 self.release_name = helpers.remove_non_release_groups(remove_extension(os.path.basename(parse_result.original_name)))
 
         else:
-            logger.info("Parse result not sufficient (all following have to be set). will not save release name",
-                       logger.DEBUG)
+            logger.debug("Parse result not sufficient (all following have to be set). will not save release name")
             logger.debug("Parse result(series_name): " + str(parse_result.series_name))
             logger.debug("Parse result(season_number): " + str(parse_result.season_number))
             logger.debug("Parse result(episode_numbers): " + str(parse_result.episode_numbers))

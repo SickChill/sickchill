@@ -80,7 +80,7 @@ class GenericClient(object):
         logger.debug(log_string)
 
         if not self.auth:
-            logger.warn('{0}: Authentication Failed'.format(self.name))
+            logger.warning('{0}: Authentication Failed'.format(self.name))
             return False
 
         try:
@@ -213,7 +213,7 @@ class GenericClient(object):
         logger.debug('Calling {0} Client'.format(self.name))
 
         if not (self.auth or self._get_auth()):
-            logger.warn('{0}: Authentication Failed'.format(self.name))
+            logger.warning('{0}: Authentication Failed'.format(self.name))
             return r_code
 
         try:
@@ -229,7 +229,7 @@ class GenericClient(object):
                 r_code = self._add_torrent_file(result)
 
             if not r_code:
-                logger.warn('{0}: Unable to send Torrent'.format(self.name))
+                logger.warning('{0}: Unable to send Torrent'.format(self.name))
                 return False
 
             if not self._set_torrent_pause(result):

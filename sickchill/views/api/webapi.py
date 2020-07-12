@@ -1757,7 +1757,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
         elif self.indexerid:
             indexer, result = sickchill.indexer.search_indexers_for_series_id(indexerid=self.indexerid, language=self.lang)
             if not indexer:
-                logger.warn("API :: Unable to find show with id " + str(self.indexerid))
+                logger.warning("API :: Unable to find show with id " + str(self.indexerid))
                 return _responds(RESULT_SUCCESS, {"results": [], "langid": lang_id})
 
             if not result.seriesName:

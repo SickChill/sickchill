@@ -87,13 +87,13 @@ class HoundDawgsProvider(TorrentProvider):
         self.get_url(self.urls['base_url'], returns='text')
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
-            logger.warn("Unable to connect to provider")
+            logger.warning("Unable to connect to provider")
             return False
 
         if re.search('Dit brugernavn eller kodeord er forkert.', response) \
                 or re.search('<title>Login :: HoundDawgs</title>', response) \
                 or re.search('Dine cookies er ikke aktiveret.', response):
-            logger.warn("Invalid username or password. Check your settings")
+            logger.warning("Invalid username or password. Check your settings")
             return False
 
         return True

@@ -45,7 +45,7 @@ def sendNZB(nzb, proper=False):
     :param proper: True if this is a Proper download, False if not. Defaults to False
     '''
     if sickbeard.NZBGET_HOST is None:
-        logger.warn('No NZBget host found in configuration. Please configure it.')
+        logger.warning('No NZBget host found in configuration. Please configure it.')
         return False
 
     addToTop = False
@@ -65,7 +65,7 @@ def sendNZB(nzb, proper=False):
         if nzbGetRPC.writelog('INFO', 'SickChill connected to drop off {0} any moment now.'.format(nzb.name + '.nzb')):
             logger.debug('Successful connected to NZBget')
         else:
-            logger.warn('Successful connected to NZBget, but unable to send a message')
+            logger.warning('Successful connected to NZBget, but unable to send a message')
 
     except http_client.socket.error:
         logger.info(
@@ -75,7 +75,7 @@ def sendNZB(nzb, proper=False):
 
     except xmlrpc_client.ProtocolError as e:
         if e.errmsg == 'Unauthorized':
-            logger.warn('NZBget username or password is incorrect.')
+            logger.warning('NZBget username or password is incorrect.')
         else:
             logger.exception('Protocol Error: ' + e.errmsg)
         return False
@@ -156,8 +156,8 @@ def sendNZB(nzb, proper=False):
             logger.debug('NZB sent to NZBget successfully')
             return True
         else:
-            logger.warn('NZBget could not add {0} to the queue'.format(nzb.name + '.nzb'))
+            logger.warning('NZBget could not add {0} to the queue'.format(nzb.name + '.nzb'))
             return False
     except Exception:
-        logger.warn('Connect Error to NZBget: could not add {0} to the queue'.format(nzb.name + '.nzb'))
+        logger.warning('Connect Error to NZBget: could not add {0} to the queue'.format(nzb.name + '.nzb'))
         return False

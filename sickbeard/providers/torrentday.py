@@ -85,24 +85,24 @@ class TorrentDayProvider(TorrentProvider):
             login_url = self.urls['login']
             if self.custom_url:
                 if not validators.url(self.custom_url):
-                    logger.warn("Invalid custom url: {0}".format(self.custom_url))
+                    logger.warning("Invalid custom url: {0}".format(self.custom_url))
                     return False
 
                 login_url = urljoin(self.custom_url, self.urls['login'].split(self.url)[1])
 
             response = self.get_url(login_url, post_data=login_params, returns='response')
             if not response or response.status_code != 200:
-                logger.warn('Unable to connect to provider')
+                logger.warning('Unable to connect to provider')
                 return False
 
             if re.search('You tried too often', response.text):
-                logger.warn('Too many login access attempts')
+                logger.warning('Too many login access attempts')
                 return False
 
             if dict_from_cookiejar(self.session.cookies).get('uid') in response.text:
                 return True
             else:
-                logger.warn('Failed to login, check your cookies')
+                logger.warning('Failed to login, check your cookies')
                 return False
         else:
             logger.info('You need to set your cookies to use torrentday')
@@ -115,7 +115,7 @@ class TorrentDayProvider(TorrentProvider):
         download_url = self.urls['download']
         if self.custom_url:
             if not validators.url(self.custom_url):
-                logger.warn("Invalid custom url: {0}".format(self.custom_url))
+                logger.warning("Invalid custom url: {0}".format(self.custom_url))
                 return results
 
             search_url = urljoin(self.custom_url, search_url.split(self.url)[1])

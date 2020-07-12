@@ -102,7 +102,7 @@ class SRWebServer(threading.Thread):
                     sickbeard.ENABLE_HTTPS = self.enable_https = False
 
             if not (os.path.exists(self.https_cert) and os.path.exists(self.https_key)):
-                logger.warn("Disabled HTTPS because of missing CERT and KEY files")
+                logger.warning("Disabled HTTPS because of missing CERT and KEY files")
                 sickbeard.ENABLE_HTTPS = self.enable_https = False
 
         # Load the app

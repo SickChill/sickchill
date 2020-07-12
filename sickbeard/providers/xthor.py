@@ -47,7 +47,7 @@ class XThorProvider(TorrentProvider):
         if self.api_key:
             return True
 
-        logger.warn('Your authentication credentials for {0} are missing, check your config.'.format(self.name))
+        logger.warning('Your authentication credentials for {0} are missing, check your config.'.format(self.name))
         return False
 
     def search(self, search_strings, age=0, ep_obj=None):
@@ -80,13 +80,13 @@ class XThorProvider(TorrentProvider):
                 error_code = jdata.pop('error', {})
                 if error_code.get('code'):
                     if error_code.get('code') != 2:
-                        logger.warn('{0}'.format(error_code.get('descr', 'Error code 2 - no description available')))
+                        logger.warning('{0}'.format(error_code.get('descr', 'Error code 2 - no description available')))
                         return results
                     continue
 
                 account_ok = jdata.pop('user', {}).get('can_leech')
                 if not account_ok:
-                    logger.warn('Sorry, your account is not allowed to download, check your ratio')
+                    logger.warning('Sorry, your account is not allowed to download, check your ratio')
                     return results
 
                 torrents = jdata.pop('torrents', None)

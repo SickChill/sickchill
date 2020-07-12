@@ -177,11 +177,11 @@ class newpctProvider(TorrentProvider):
                     logger.info('Saved result to {0}'.format(filename))
                     return True
                 else:
-                    logger.warn('Could not download {0}'.format(url))
+                    logger.warning('Could not download {0}'.format(url))
                     helpers.remove_file_failed(filename)
 
         if urls:
-            logger.warn('Failed to download any results')
+            logger.warning('Failed to download any results')
 
         return False
 

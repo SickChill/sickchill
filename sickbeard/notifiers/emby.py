@@ -68,7 +68,7 @@ class Notifier(object):
             return True
 
         except (urllib.error.URLError, IOError) as e:
-            logger.warn('EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + str(e))
+            logger.warning('EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + str(e))
             return False
 
 
@@ -96,10 +96,10 @@ class Notifier(object):
                 if show.indexer == 1:
                     provider = 'tvdb'
                 elif show.indexer == 2:
-                    logger.warn('EMBY: TVRage Provider no longer valid')
+                    logger.warning('EMBY: TVRage Provider no longer valid')
                     return False
                 else:
-                    logger.warn('EMBY: Provider unknown')
+                    logger.warning('EMBY: Provider unknown')
                     return False
                 query = '?{0}id={1}'.format(provider, show.indexerid)
             else:
@@ -121,5 +121,5 @@ class Notifier(object):
                 return True
 
             except (urllib.error.URLError, IOError) as e:
-                logger.warn('EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + str(e))
+                logger.warning('EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + str(e))
                 return False

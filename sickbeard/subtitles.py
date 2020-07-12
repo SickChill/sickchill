@@ -278,9 +278,9 @@ def download_subtitles(episode, force_lang=None):
                                   single=not sickbeard.SUBTITLES_MULTI, encoding='utf8')
     except IOError as error:
         if 'No space left on device' in str(error):
-            logger.warn('Not enough space on the drive to save subtitles')
+            logger.warning('Not enough space on the drive to save subtitles')
         else:
-            logger.warn(traceback.format_exc())
+            logger.warning(traceback.format_exc())
     except Exception:
         logger.info('Error occurred when downloading subtitles for: {0}'.format(video_path))
         logger.exception(traceback.format_exc())
@@ -481,7 +481,7 @@ class SubtitlesFinder(object):
 
                 logger.info('Searching for missing subtitles of {0} {1}'.format
                            (ep_to_sub[b'show_name'], episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode']) or
-                            episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute')), logger.INFO)
+                            episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute')))
 
                 show_object = Show.find(sickbeard.showList, int(ep_to_sub[b'showid']))
                 if not show_object:
@@ -490,9 +490,9 @@ class SubtitlesFinder(object):
 
                 episode_object = show_object.getEpisode(ep_to_sub[b'season'], ep_to_sub[b'episode'])
                 if isinstance(episode_object, str):
-                    logger.info('{0} {1} not found in the database'.format
+                    logger.debug('{0} {1} not found in the database'.format
                                (ep_to_sub[b'show_name'], episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode']) or
-                                episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute')), logger.DEBUG)
+                                episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute')))
                     continue
 
                 try:

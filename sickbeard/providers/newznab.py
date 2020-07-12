@@ -175,7 +175,7 @@ class NewznabProvider(NZBProvider):
         data = self.get_url(urljoin(self.url, 'api'), params=url_params, returns='text')
         if not data:
             error_string = 'Error getting caps xml for [{0}]'.format(self.name)
-            logger.warn(error_string)
+            logger.warning(error_string)
             return False, return_categories, error_string
 
         with BS4Parser(data, 'html5lib') as html:
@@ -217,7 +217,7 @@ class NewznabProvider(NZBProvider):
         Returns: True/False
         """
         if self.needs_auth and not self.key:
-            logger.warn('Invalid api key. Check your settings')
+            logger.warning('Invalid api key. Check your settings')
             return False
 
         return True

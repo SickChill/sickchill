@@ -52,7 +52,7 @@ class Notifier(object):
         try:
             terminal = telnetlib.Telnet(host)
         except Exception:
-            logger.warn("Warning: unable to get a telnet session to {0}".format(host))
+            logger.warning("Warning: unable to get a telnet session to {0}".format(host))
             return False
 
         # tell the terminal to output the necessary info to the screen so we can search it later
@@ -72,7 +72,7 @@ class Notifier(object):
             logger.debug("Found NMJ database {0} on device {1}".format(database, device))
             sickbeard.NMJ_DATABASE = database
         else:
-            logger.warn("Could not get current NMJ database on {0}, NMJ is probably not running!".format(host))
+            logger.warning("Could not get current NMJ database on {0}, NMJ is probably not running!".format(host))
             return False
 
         # if the device is a remote host then try to parse the mounting URL and save it to the config
@@ -84,8 +84,7 @@ class Notifier(object):
                 logger.debug("Found mounting url on the Popcorn Hour in configuration: {0}".format(mount))
                 sickbeard.NMJ_MOUNT = mount
             else:
-                logger.info("Detected a network share on the Popcorn Hour, but could not get the mounting url",
-                           logger.WARNING)
+                logger.warning("Detected a network share on the Popcorn Hour, but could not get the mounting url")
                 return False
 
         return True
@@ -131,9 +130,9 @@ class Notifier(object):
                 handle = urllib.request.urlopen(req)
             except IOError as e:
                 if hasattr(e, 'reason'):
-                    logger.warn("NMJ: Could not contact Popcorn Hour on host {0}: {1}".format(host, e.reason))
+                    logger.warning("NMJ: Could not contact Popcorn Hour on host {0}: {1}".format(host, e.reason))
                 elif hasattr(e, 'code'):
-                    logger.warn("NMJ: Problem with Popcorn Hour on host {0}: {1}".format(host, e.code))
+                    logger.warning("NMJ: Problem with Popcorn Hour on host {0}: {1}".format(host, e.code))
                 return False
             except Exception as e:
                 logger.exception("NMJ: Unknown exception: " + str(e))
@@ -158,9 +157,9 @@ class Notifier(object):
             response = handle.read()
         except IOError as e:
             if hasattr(e, 'reason'):
-                logger.warn("NMJ: Could not contact Popcorn Hour on host {0}: {1}".format(host, e.reason))
+                logger.warning("NMJ: Could not contact Popcorn Hour on host {0}: {1}".format(host, e.reason))
             elif hasattr(e, 'code'):
-                logger.warn("NMJ: Problem with Popcorn Hour on host {0}: {1}".format(host, e.code))
+                logger.warning("NMJ: Problem with Popcorn Hour on host {0}: {1}".format(host, e.code))
             return False
         except Exception as e:
             logger.exception("NMJ: Unknown exception: " + str(e))
