@@ -33,7 +33,6 @@ from requests.compat import unquote_plus
 # noinspection PyUnresolvedReferences
 from six.moves import urllib, zip
 from tornado.escape import xhtml_unescape
-from sickbeard.trakt_api import TraktAPI
 
 # First Party Imports
 import sickbeard
@@ -42,6 +41,7 @@ from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.common import cpu_presets, FAILED, IGNORED, Overview, Quality, SKIPPED, statusStrings, UNAIRED, WANTED
 from sickbeard.scene_numbering import (get_scene_absolute_numbering, get_scene_absolute_numbering_for_show, get_scene_numbering, get_scene_numbering_for_show,
                                        get_xem_absolute_numbering_for_show, get_xem_numbering_for_show, set_scene_numbering)
+from sickbeard.trakt_api import TraktAPI
 from sickbeard.versionChecker import CheckVersion
 from sickchill.helper import try_int
 from sickchill.helper.common import pretty_file_size

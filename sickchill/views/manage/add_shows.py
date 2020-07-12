@@ -30,7 +30,6 @@ import six
 from requests.compat import unquote_plus
 from tornado.escape import xhtml_unescape
 from tornado.web import HTTPError
-from sickbeard.trakt_api import TraktAPI
 
 # First Party Imports
 import sickbeard
@@ -38,6 +37,7 @@ import sickchill
 from sickbeard import config, db, filters, helpers, logger, ui
 from sickbeard.blackandwhitelist import short_group_names
 from sickbeard.common import Quality
+from sickbeard.trakt_api import TraktAPI
 from sickbeard.traktTrending import trakt_trending
 from sickchill.helper import sanitize_filename, try_int
 from sickchill.show.recommendations.favorites import favorites

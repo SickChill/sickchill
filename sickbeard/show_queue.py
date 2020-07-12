@@ -26,11 +26,11 @@ from collections import namedtuple
 
 # Third Party Imports
 import dateutil
-from sickbeard.trakt_api import TraktAPI
 
 # First Party Imports
 import sickbeard
 import sickchill
+from sickbeard.trakt_api import TraktAPI
 from sickchill.helper.common import sanitize_filename
 from sickchill.helper.exceptions import (CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, EpisodeDeletedException,
                                          MultipleShowObjectsException, ShowDirectoryNotFoundException)

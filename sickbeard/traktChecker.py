@@ -24,13 +24,10 @@ import datetime
 import os
 import traceback
 
-# Third Party Imports
-from sickbeard.trakt_api import TraktAPI
-from sickbeard.trakt_api import traktException
-
 # First Party Imports
 import sickbeard
 import sickchill
+from sickbeard.trakt_api import TraktAPI, traktException
 from sickchill.helper.common import episode_num, sanitize_filename
 from sickchill.show.Show import Show
 

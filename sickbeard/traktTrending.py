@@ -6,12 +6,9 @@ from __future__ import absolute_import, print_function, unicode_literals
 import os
 import posixpath
 
-# Third Party Imports
-from sickbeard.trakt_api import traktException
-from sickbeard.trakt_api import TraktAPI
-
 # First Party Imports
 import sickbeard
+from sickbeard.trakt_api import TraktAPI, traktException
 from sickchill.helper.exceptions import MultipleShowObjectsException
 
 # Local Folder Imports

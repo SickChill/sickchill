@@ -20,14 +20,11 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
-# Third Party Imports
-from sickbeard.trakt_api import TraktAPI
-from sickbeard.trakt_api import traktAuthException, traktException, traktServerBusy
-
 # First Party Imports
 import sickbeard
 import sickchill
 from sickbeard import logger
+from sickbeard.trakt_api import TraktAPI, traktAuthException, traktException, traktServerBusy
 
 
 class Notifier(object):
