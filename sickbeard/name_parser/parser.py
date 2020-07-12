@@ -531,7 +531,7 @@ class ParseResult(object):
             self.version == other.version
         ])
 
-    def __unicode__(self):
+    def __str__(self):
         if self.series_name is not None:
             to_return = self.series_name + ' - '
         else:
@@ -557,9 +557,6 @@ class ParseResult(object):
         to_return += ' [whichReg: ' + six.text_type(self.which_regex) + ']'
 
         return to_return
-
-    def __str__(self):
-        return self.__unicode__().encode('utf-8', errors='replace')
 
     @property
     def is_air_by_date(self):

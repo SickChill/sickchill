@@ -21,7 +21,6 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
-import io
 import os
 import re
 
@@ -119,7 +118,6 @@ class GenericMetadata(object):
     @staticmethod
     def _check_exists(location):
         if location:
-            assert isinstance(location, six.text_type)
             result = os.path.isfile(location)
             logger.debug("Checking if " + location + " exists: " + str(result))
             return result
@@ -176,7 +174,6 @@ class GenericMetadata(object):
         Returns the path where the episode thumbnail should be stored.
         ep_obj: a TVEpisode instance for which to create the thumbnail
         """
-        assert isinstance(ep_obj.location, six.text_type)
         if os.path.isfile(ep_obj.location):
 
             tbn_filename = ep_obj.location.rpartition(".")
@@ -260,10 +257,9 @@ class GenericMetadata(object):
                 logger.DEBUG)
 
             nfo_file_path = self.get_show_file_path(show_obj)
-            assert isinstance(nfo_file_path, six.text_type)
 
             try:
-                with io.open(nfo_file_path, 'rb') as xmlFileObj:
+                with open(nfo_file_path, 'rb') as xmlFileObj:
                     showXML = etree.ElementTree(file=xmlFileObj)
 
                 indexerid = showXML.find('id')
@@ -299,7 +295,6 @@ class GenericMetadata(object):
         if self.episode_metadata and ep_obj and self._has_episode_metadata(ep_obj):
             logger.debug("Metadata provider " + self.name + " updating episode indexer info metadata file for " + ep_obj.pretty_name())
             nfo_file_path = self.get_episode_file_path(ep_obj)
-            assert isinstance(nfo_file_path, six.text_type)
 
             attribute_map = {
                 'title': 'name',
@@ -311,7 +306,7 @@ class GenericMetadata(object):
                 'plot': 'description'
             }
             try:
-                with io.open(nfo_file_path, 'rb') as xmlFileObj:
+                with open(nfo_file_path, 'rb') as xmlFileObj:
                     episodeXML = etree.ElementTree(file=xmlFileObj)
 
                 changed = False
@@ -427,8 +422,6 @@ class GenericMetadata(object):
             return False
 
         nfo_file_path = self.get_show_file_path(show_obj)
-        assert isinstance(nfo_file_path, six.text_type)
-
         nfo_file_dir = os.path.dirname(nfo_file_path)
 
         try:
@@ -439,7 +432,7 @@ class GenericMetadata(object):
 
             logger.debug("Writing show nfo file to " + nfo_file_path)
 
-            nfo_file = io.open(nfo_file_path, 'wb')
+            nfo_file = open(nfo_file_path, 'wb')
             data.write(nfo_file, encoding='UTF-8')
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
@@ -478,7 +471,6 @@ class GenericMetadata(object):
         # print_data(data)
 
         nfo_file_path = self.get_episode_file_path(ep_obj)
-        assert isinstance(nfo_file_path, six.text_type)
         nfo_file_dir = os.path.dirname(nfo_file_path)
 
         try:
@@ -488,7 +480,7 @@ class GenericMetadata(object):
                 helpers.chmodAsParent(nfo_file_dir)
 
             logger.debug("Writing episode nfo file to " + nfo_file_path)
-            nfo_file = io.open(nfo_file_path, 'wb')
+            nfo_file = open(nfo_file_path, 'wb')
             data.write(nfo_file, encoding='UTF-8')
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
@@ -718,8 +710,6 @@ class GenericMetadata(object):
         image_path: file location to save the image to
         """
 
-        assert isinstance(image_path, six.text_type)
-
         # don't bother overwriting it
         if os.path.isfile(image_path):
             logger.debug("Image already exists, not downloading")
@@ -737,7 +727,7 @@ class GenericMetadata(object):
                 os.makedirs(image_dir)
                 helpers.chmodAsParent(image_dir)
 
-            outFile = io.open(image_path, 'wb')
+            outFile = open(image_path, 'wb')
             outFile.write(image_data)
             outFile.close()
             helpers.chmodAsParent(image_path)
@@ -756,8 +746,6 @@ class GenericMetadata(object):
 
         empty_return = (None, None, None)
 
-        assert isinstance(folder, six.text_type)
-
         metadata_path = os.path.join(folder, self._show_metadata_filename)
 
         if not os.path.isdir(folder) or not os.path.isfile(metadata_path):
@@ -767,7 +755,7 @@ class GenericMetadata(object):
         logger.debug(_("Loading show info from metadata file in {0}").format(metadata_path))
 
         def read_xml():
-            with io.open(metadata_path, 'rb') as __xml_file:
+            with open(metadata_path, 'rb') as __xml_file:
                 try:
                     __show_xml = etree.ElementTree(file=__xml_file)
                 except (etree.ParseError, IOError):
@@ -777,12 +765,12 @@ class GenericMetadata(object):
         def fix_xml():
             logger.info(_("There was an error loading {0}, trying to repair it by fixing & symbols. If it still has problems, please check the file "
                          "manually").format(metadata_path))
-            with io.open(metadata_path, 'rb') as __xml_file:
+            with open(metadata_path, 'rb') as __xml_file:
                 output = __xml_file.read()
 
             regex = re.compile(r"&(?!amp;|lt;|gt;)")
             output = regex.sub("&amp;", output)
-            with io.open(metadata_path, 'wb') as __xml_file:
+            with open(metadata_path, 'wb') as __xml_file:
                 __xml_file.write(output)
 
             return True

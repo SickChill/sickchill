@@ -21,7 +21,6 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
-import io
 import os
 import re
 
@@ -189,7 +188,7 @@ class TorrentRssProvider(TorrentProvider):
         dumpName = os.path.join(sickbeard.CACHE_DIR, 'custom_torrent.html')
 
         try:
-            fileOut = io.open(dumpName, 'wb')
+            fileOut = open(dumpName, 'wb')
             fileOut.write(data)
             fileOut.close()
             helpers.chmodAsParent(dumpName)

@@ -23,7 +23,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import datetime
-import io
 import os
 
 # First Party Imports
@@ -294,9 +293,9 @@ class TIVOMetadata(generic.GenericMetadata):
 
             logger.debug("Writing episode nfo file to " + nfo_file_path)
 
-            with io.open(nfo_file_path, 'wb') as nfo_file:
+            with open(nfo_file_path, 'w', encodeing='utf-8') as nfo_file:
                 # Calling encode directly, b/c often descriptions have wonky characters.
-                nfo_file.write(data.encode("utf-8"))
+                nfo_file.write(data)
 
             helpers.chmodAsParent(nfo_file_path)
 

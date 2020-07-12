@@ -80,7 +80,7 @@ class DemonoidProvider(TorrentProvider):
             for search_string in search_strings[mode]:
                 search_params["query"] = search_string
                 logger.debug("Search string: {0}".format
-                           (search_string.decode("utf-8")))
+                           (search_string))
 
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 

@@ -104,8 +104,7 @@ class Torrent9Provider(TorrentProvider):
                     search_string = re.sub(r'(.*)S0?', r'\1Saison ', search_string)
 
                 if mode != 'RSS':
-                    logger.debug("Search string: {0}".format
-                               (search_string.decode("utf-8")))
+                    logger.debug("Search string: {0}".format(search_string))
 
                     search_url = self.url
                     post_data = {'torrentSearch': search_string}

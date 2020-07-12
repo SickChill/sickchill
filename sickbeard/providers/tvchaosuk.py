@@ -108,8 +108,7 @@ class TVChaosUKProvider(TorrentProvider):
                     search_string = re.sub(r'(.*)S0?', r'\1Series ', search_string)
 
                 if mode != 'RSS':
-                    logger.debug('Search string: {0}'.format
-                               (search_string.decode('utf-8')))
+                    logger.debug('Search string: {0}'.format(search_string))
 
                 search_params['keywords'] = search_string
                 data = self.get_url(self.urls['search'], post_data=search_params, returns='text')

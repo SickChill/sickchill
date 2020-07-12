@@ -68,8 +68,8 @@ class TorrentLeechProvider(TorrentProvider):
             return True
 
         login_params = {
-            "username": self.username.encode("utf-8"),
-            "password": self.password.encode("utf-8"),
+            "username": self.username,
+            "password": self.password,
         }
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
@@ -99,7 +99,7 @@ class TorrentLeechProvider(TorrentProvider):
 
                 if mode != "RSS":
                     logger.debug("Search string: {0}".format
-                               (search_string.decode("utf-8")))
+                               (search_string))
 
                     categories = ["2", "7", "35"]
                     categories += ["26", "32"] if mode == "Episode" else ["27"]

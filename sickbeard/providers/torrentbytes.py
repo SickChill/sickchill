@@ -98,8 +98,7 @@ class TorrentBytesProvider(TorrentProvider):
             for search_string in search_strings[mode]:
 
                 if mode != "RSS":
-                    logger.debug("Search string: {0}".format
-                               (search_string.decode("utf-8")))
+                    logger.debug("Search string: {0}".format(search_string))
 
                 search_params[mode]["search"] = search_string
                 data = self.get_url(self.urls["search"], params=search_params[mode], returns="text")

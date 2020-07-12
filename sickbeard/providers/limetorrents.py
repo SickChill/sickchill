@@ -64,8 +64,7 @@ class LimeTorrentsProvider(TorrentProvider):
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.debug("Search string: {0}".format
-                               (search_string.decode("utf-8")))
+                    logger.debug("Search string: {0}".format(search_string))
 
                 try:
                     search_url = (self.urls['rss'], self.urls['search'] + search_string + '/')[mode != 'RSS']

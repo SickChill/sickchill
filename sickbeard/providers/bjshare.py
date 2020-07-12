@@ -129,7 +129,7 @@ class BJShareProvider(TorrentProvider):
 
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.debug('Search string: {0}'.format(search_string.decode('utf-8')))
+                    logger.debug('Search string: {0}'.format(search_string))
 
                 # Remove season / episode from search (not supported by tracker)
                 search_str = re.sub(r'\d+$' if anime else r'[S|E]\d\d', '', search_string).strip()

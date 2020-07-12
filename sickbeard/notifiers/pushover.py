@@ -78,8 +78,8 @@ class Notifier(object):
                 args = {
                     "token": apiKey,
                     "user": userKey,
-                    "title": title.encode('utf-8'),
-                    "message": msg.encode('utf-8'),
+                    "title": title,
+                    "message": msg,
                     "timestamp": int(time.time()),
                     "retry": 60,
                     "expire": 3600,
@@ -91,8 +91,8 @@ class Notifier(object):
                 args = {
                     "token": apiKey,
                     "user": userKey,
-                    "title": title.encode('utf-8'),
-                    "message": msg.encode('utf-8'),
+                    "title": title,
+                    "message": msg,
                     "timestamp": int(time.time()),
                     "retry": 60,
                     "expire": 3600,

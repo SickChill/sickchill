@@ -128,7 +128,7 @@ class GFTrackerProvider(TorrentProvider):
 
                 if mode != 'RSS':
                     logger.debug("Search string: {0}".format
-                               (search_string.decode("utf-8")))
+                               (search_string))
 
                 search_params['search'] = search_string
 

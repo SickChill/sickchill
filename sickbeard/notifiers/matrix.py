@@ -79,11 +79,8 @@ class Notifier(object):
     def _send_matrix(self, message=None):
         url = 'https://{0}/_matrix/client/r0/rooms/{1}/send/m.room.message/{2}?access_token={3}'.format(sickbeard.MATRIX_SERVER, sickbeard.MATRIX_ROOM, time.time(), sickbeard.MATRIX_API_TOKEN)
 
-        logger.info("Sending matrix message: " + message.encode('ascii', 'xmlcharrefreplace'))
+        logger.info("Sending matrix message: " + message)
         logger.info("Sending matrix message to url: " + url)
-
-        if isinstance(message, six.text_type):
-            message = message.encode('utf-8')
 
         jsonMessage={
             "msgtype": "m.text",

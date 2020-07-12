@@ -253,11 +253,7 @@ class QueueItemAdd(ShowQueueItem):
 
         super(QueueItemAdd, self).__init__(ShowQueueActions.ADD, None)
 
-        if isinstance(showDir, bytes):
-            self.showDir = showDir.decode('utf-8')
-        else:
-            self.showDir = showDir
-
+        self.showDir = showDir
         self.indexer = indexer
         self.indexer_id = indexer_id
         self.default_status = default_status
@@ -310,16 +306,7 @@ class QueueItemAdd(ShowQueueItem):
 
         super(QueueItemAdd, self).run()
 
-        if self.showDir:
-            try:
-                assert isinstance(self.showDir, six.text_type)
-            except AssertionError:
-                logger.warn(traceback.format_exc())
-                self._finish_early()
-                return
-
-        logger.info(_('Starting to add show {0}').format(_('by ShowDir: {0}').format(self.showDir) if self.showDir else _('by Indexer Id: {0}').format(
-            self.indexer_id)))
+        logger.info(_('Starting to add show {0}').format(_('by ShowDir: {0}').format(self.showDir) if self.showDir else _('by Indexer Id: {0}').format(self.indexer_id)))
         # make sure the Indexer IDs are valid
         try:
             s = sickchill.indexer.series_by_id(indexerid=self.indexer_id, indexer=self.indexer, language=self.lang)

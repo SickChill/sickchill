@@ -58,8 +58,7 @@ class SkyTorrents(TorrentProvider):
             logger.debug("Search Mode: {0}".format(mode))
             for search_string in search_strings[mode]:
                 if mode != "RSS":
-                    logger.debug("Search string: {0}".format
-                               (search_string.decode("utf-8")))
+                    logger.debug("Search string: {0}".format(search_string))
 
                 search_url = (self.urls["search"], self.urls["rss"])[mode == "RSS"]
                 if self.custom_url:

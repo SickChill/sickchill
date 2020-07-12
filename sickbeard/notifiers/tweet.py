@@ -127,7 +127,7 @@ class Notifier(object):
 
         logger.debug("Sending tweet: {}".format(message))
         try:
-            api.PostUpdate(message.encode('utf8')[:139])
+            api.PostUpdate(message[:139])
         except Exception as e:
             logger.exception("Error Sending Tweet: {}".format(str(e)))
             return False
@@ -150,7 +150,7 @@ class Notifier(object):
 
         logger.debug("Sending DM @{0}: {1}".format(dmdest, message))
         try:
-            api.PostDirectMessage(message.encode('utf8')[:139], screen_name=dmdest)
+            api.PostDirectMessage(message[:139], screen_name=dmdest)
         except Exception as e:
             logger.exception("Error Sending Tweet (DM): {}".format(str(e)))
             return False

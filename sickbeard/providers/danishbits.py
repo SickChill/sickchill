@@ -79,7 +79,7 @@ class DanishbitsProvider(TorrentProvider):
                 result = td.img.get('title')
             if not result:
                 result = td.get_text(strip=True)
-            return result.encode('utf-8')
+            return result
 
         for mode in search_strings:
             items = []
@@ -89,7 +89,7 @@ class DanishbitsProvider(TorrentProvider):
 
                 if mode != 'RSS':
                     logger.debug("Search string: {0}".format
-                               (search_string.decode("utf-8")))
+                               (search_string))
 
                     search_params['latest'] = 'false'
                     search_params['search'] = search_string

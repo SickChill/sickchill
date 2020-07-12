@@ -22,7 +22,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import datetime
-import io
 import os
 
 # First Party Imports
@@ -337,7 +336,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
             logger.debug("Writing show nfo file to " + nfo_file_path)
 
-            nfo_file = io.open(nfo_file_path, 'wb')
+            nfo_file = open(nfo_file_path, 'wb')
 
             data.write(nfo_file, encoding="utf-8", xml_declaration=True)
             nfo_file.close()
@@ -382,7 +381,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
             logger.debug("Writing episode nfo file to " + nfo_file_path)
 
-            nfo_file = io.open(nfo_file_path, 'wb')
+            nfo_file = open(nfo_file_path, 'wb')
 
             data.write(nfo_file, encoding="utf-8", xml_declaration=True)
             nfo_file.close()

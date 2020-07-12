@@ -57,7 +57,7 @@ class CpasbienProvider(TorrentProvider):
 
                 if mode != 'RSS':
                     logger.debug("Search string: {0}".format
-                               (search_string.decode("utf-8")))
+                               (search_string))
 
                     search_url = self.url + '/recherche/' + search_string.replace('.', '-').replace(' ', '-') + '.html,trie-seeds-d'
                 else:

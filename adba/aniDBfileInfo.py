@@ -63,6 +63,7 @@ def get_file_size(path):
     size = os.path.getsize(path)
     return size
 
+
 def _remove_file_failed(file):
     try:
         os.remove(file)

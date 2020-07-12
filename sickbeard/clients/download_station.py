@@ -144,8 +144,8 @@ class Client(GenericClient):
             'api': 'SYNO.API.Auth',
             'version': 2,
             'method': 'login',
-            'account': self.username.encode('utf-8') if isinstance(self.username, six.text_type) else self.username,
-            'passwd': self.password.encode('utf-8') if isinstance(self.password, six.text_type) else self.password,
+            'account': self.username,
+            'passwd': self.password,
             'session': 'DownloadStation',
             'format': 'cookie'
         }

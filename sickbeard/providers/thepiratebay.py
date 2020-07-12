@@ -142,7 +142,7 @@ class ThePirateBayProvider(TorrentProvider):
                 for search_url in search_urls:
                     if mode != "RSS":
                         search_params["q"] = search_string
-                        logger.debug("Search string: {}".format(search_string.decode("utf-8")))
+                        logger.debug("Search string: {}".format(search_string))
 
                         data = self.get_url(search_url, params=search_params, returns="json")
                     else:

@@ -90,8 +90,7 @@ class SceneTimeProvider(TorrentProvider):
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
-                    logger.debug("Search string: {0}".format
-                               (search_string.decode("utf-8")))
+                    logger.debug("Search string: {0}".format(search_string))
 
                 query = { 'sec': 'jax', 'cata': 'yes', 'search': search_string }
                 query.update({"c"+str(i): 1 for i in self.categories})

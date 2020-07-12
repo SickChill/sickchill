@@ -73,7 +73,7 @@ class AddShows(Home):
         if not lang or lang == 'null':
             lang = sickbeard.INDEXER_DEFAULT_LANGUAGE
 
-        search_term = xhtml_unescape(search_term).encode('utf-8')
+        search_term = xhtml_unescape(search_term)
 
         searchTerms = [search_term]
 
@@ -539,7 +539,7 @@ class AddShows(Home):
             indexer = int(series_pieces[1])
             indexer_id = int(series_pieces[3])
             # Show name was sent in UTF-8 in the form
-            show_name = xhtml_unescape(series_pieces[4]).decode('utf-8')
+            show_name = xhtml_unescape(series_pieces[4])
         else:
             # if no indexer was provided use the default indexer set in General settings
             if not providedIndexer:

@@ -68,7 +68,7 @@ class BitCannonProvider(TorrentProvider):
                 search_params["q"] = search_string
                 if mode != "RSS":
                     logger.debug("Search string: {0}".format
-                               (search_string.decode('utf-8')))
+                               (search_string))
 
                 search_url = urljoin(url, "api/search")
                 parsed_json = self.get_url(search_url, params=search_params, returns="json")

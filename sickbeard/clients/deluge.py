@@ -49,7 +49,7 @@ class Client(GenericClient, DelugeBase):
                                 "id": 1})
 
         try:
-            self.response = self.session.post(self.url, data=post_data.encode('utf-8'), verify=sickbeard.TORRENT_VERIFY_CERT)
+            self.response = self.session.post(self.url, data=post_data, verify=sickbeard.TORRENT_VERIFY_CERT)
         except Exception as e:
             logger.info(e.message)
             return None
@@ -61,7 +61,7 @@ class Client(GenericClient, DelugeBase):
                                 "id": 10})
 
         try:
-            self.response = self.session.post(self.url, data=post_data.encode('utf-8'), verify=sickbeard.TORRENT_VERIFY_CERT)
+            self.response = self.session.post(self.url, data=post_data, verify=sickbeard.TORRENT_VERIFY_CERT)
         except Exception:
             return None
 
@@ -72,7 +72,7 @@ class Client(GenericClient, DelugeBase):
                                     "params": [],
                                     "id": 11})
             try:
-                self.response = self.session.post(self.url, data=post_data.encode('utf-8'), verify=sickbeard.TORRENT_VERIFY_CERT)
+                self.response = self.session.post(self.url, data=post_data, verify=sickbeard.TORRENT_VERIFY_CERT)
             except Exception:
                 return None
 
@@ -86,7 +86,7 @@ class Client(GenericClient, DelugeBase):
                                     "id": 11})
 
             try:
-                self.response = self.session.post(self.url, data=post_data.encode('utf-8'), verify=sickbeard.TORRENT_VERIFY_CERT)
+                self.response = self.session.post(self.url, data=post_data, verify=sickbeard.TORRENT_VERIFY_CERT)
             except Exception:
                 return None
 
@@ -95,7 +95,7 @@ class Client(GenericClient, DelugeBase):
                                     "id": 10})
 
             try:
-                self.response = self.session.post(self.url, data=post_data.encode('utf-8'), verify=sickbeard.TORRENT_VERIFY_CERT)
+                self.response = self.session.post(self.url, data=post_data, verify=sickbeard.TORRENT_VERIFY_CERT)
             except Exception:
                 return None
 

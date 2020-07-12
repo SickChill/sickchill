@@ -126,8 +126,7 @@ class IPTorrentsProvider(TorrentProvider):
             logger.debug("Search Mode: {0}".format(mode))
             for search_string in search_params[mode]:
                 if mode != 'RSS':
-                    logger.debug("Search string: {0}".format
-                               (search_string.decode("utf-8")))
+                    logger.debug("Search string: {0}".format(search_string))
 
                 # URL with 50 tv-show results, or max 150 if adjusted in IPTorrents profile
                 search_url = self.urls['search'] % (self.categories, freeleech, search_string)

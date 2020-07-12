@@ -125,7 +125,7 @@ class ArcheTorrentProvider(TorrentProvider):
                 logger.debug('Search String: {0} for mode {1}'.format(search_strings[mode], mode))
                 if mode != 'RSS':
                     logger.debug('Search string: {0}'.format
-                               (search_string.decode('utf-8')))
+                               (search_string))
 
                 search_params['search'] = re.sub(r'[()]', '', search_string)
                 data = self.get_url(self.urls['search'], params=search_params, returns='text')

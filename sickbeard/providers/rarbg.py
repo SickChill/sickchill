@@ -116,8 +116,7 @@ class RarbgProvider(TorrentProvider):
             for search_string in search_strings[mode]:
                 if mode != "RSS":
                     search_params["search_string"] = search_string
-                    logger.debug("Search string: {0}".format
-                               (search_string.decode("utf-8")))
+                    logger.debug("Search string: {0}".format(search_string))
 
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                 data = self.get_url(self.urls["api"], params=search_params, returns="json")

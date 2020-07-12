@@ -88,7 +88,7 @@ class EliteTorrentProvider(TorrentProvider):
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     logger.debug("Search string: {0}".format
-                               (search_string.decode("utf-8")))
+                               (search_string))
 
                 search_string = re.sub(r'S0*(\d*)E(\d*)', r'\1x\2', search_string)
                 search_params['buscar'] = search_string.strip() if mode != 'RSS' else ''

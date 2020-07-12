@@ -130,8 +130,7 @@ class YggTorrentProvider(TorrentProvider):
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.debug('Search string: {0}'.format
-                               (search_string.decode('utf-8')))
+                    logger.debug('Search string: {0}'.format(search_string))
                 # search string needs to be normalized, single quotes are apparently not allowed on the site
                 # ç should also be replaced, people tend to use c instead
                 replace_chars = {
@@ -142,8 +141,7 @@ class YggTorrentProvider(TorrentProvider):
                 for k, v in six.iteritems(replace_chars):
                     search_string = search_string.replace(k, v)
 
-                logger.debug('Sanitized string: {0}'.format
-                               (search_string.decode('utf-8')))
+                logger.debug('Sanitized string: {0}'.format(search_string))
 
                 try:
                     search_params = {

@@ -123,7 +123,7 @@ class HDTorrentsProvider_IT(TorrentProvider):
                     logger.debug("Could not find table of torrents highlighted")
                     continue
 
-                # data = urllib.unquote(data[index:].encode('utf-8')).decode('utf-8').replace('\t', '')
+                # data = urllib.unquote(data[index:]).replace('\t', '')
                 data = data[index:]
 
                 with BS4Parser(data, 'html5lib') as html:

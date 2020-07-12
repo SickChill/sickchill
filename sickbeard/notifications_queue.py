@@ -144,9 +144,6 @@ class DiscordTask(generic_queue.QueueItem):
         self.finish()
 
     def append(self, message):
-        if isinstance(message, six.text_type):
-            message = message.encode('utf-8')
-
         self.embed['fields'] += [
                 {'name': 'Notification', 'value': message}
             ]

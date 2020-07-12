@@ -105,7 +105,7 @@ class ABNormalProvider(TorrentProvider):
 
                 if mode != 'RSS':
                     logger.debug('Search string: {0}'.format
-                               (search_string.decode('utf-8')))
+                               (search_string))
 
                 # Sorting: Available parameters: ReleaseName, Seeders, Leechers, Snatched, Size
                 search_params['order'] = ('Seeders', 'Time')[mode == 'RSS']

@@ -67,9 +67,6 @@ class Notifier(object):
         logger.info("Sending slack message: " + message)
         logger.info("Sending slack message  to url: " + slack_webhook)
 
-        if isinstance(message, six.text_type):
-            message = message.encode('utf-8')
-
         headers = {b"Content-Type": b"application/json"}
         try:
             r = requests.post(slack_webhook, data=json.dumps(dict(text=message, username="SickChillBot", icon_emoji=slack_icon_emoji, icon_url=self.SLACK_ICON_URL)), headers=headers)

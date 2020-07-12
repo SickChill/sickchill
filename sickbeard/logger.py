@@ -25,7 +25,6 @@ Custom Logger for SickChill
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
-import io
 import locale
 import logging
 import logging.handlers
@@ -84,19 +83,10 @@ class DispatchFormatter(logging.Formatter, object):
         """
         msg = super(DispatchFormatter, self).format(record)
 
-        if not isinstance(msg, six.text_type):
-            msg = msg.decode(self.encoding, 'replace')  # Convert to unicode
-
         # set of censored items
         censored = {item for _, item in six.iteritems(censored_items) if item}
         # set of censored items and urlencoded counterparts
-        censored = censored | {quote(item) for item in censored}
-        # convert set items to unicode and typecast to list
-        censored = list({
-            item.decode(self.encoding, 'replace')
-            if not isinstance(item, six.text_type) else item
-            for item in censored
-        })
+        censored = list(censored | {quote(item) for item in censored})
         # sort the list in order of descending length so that entire item is censored
         # e.g. password and password_1 both get censored instead of getting ********_1
         censored.sort(key=len, reverse=True)
@@ -271,13 +261,13 @@ class Logger(object):
             __log_data = None
 
             if os.path.isfile(self.log_file):
-                with io.open(self.log_file, encoding='utf-8') as log_f:
+                with open(self.log_file) as log_f:
                     __log_data = log_f.readlines()
 
             for i in range(1, int(sickbeard.LOG_NR)):
                 f_name = '{0}.{1:d}'.format(self.log_file, i)
                 if os.path.isfile(f_name) and (len(__log_data) <= 500):
-                    with io.open(f_name, encoding='utf-8') as log_f:
+                    with open(f_name) as log_f:
                         __log_data += log_f.readlines()
 
             __log_data = list(reversed(__log_data))
@@ -480,7 +470,7 @@ def log_data(min_level, log_filter, log_search, max_lines):
     data = []
     for _log_file in log_files:
         if len(data) < max_lines:
-            with io.open(_log_file, 'r', encoding='utf-8') as f:
+            with open(_log_file, 'r') as f:
                 data += [line.strip() + '\n' for line in reversed(f.readlines()) if line.strip()]
         else:
             break

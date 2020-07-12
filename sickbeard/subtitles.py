@@ -337,15 +337,6 @@ def get_video(video_path, subtitles_path=None, subtitles=True, embedded_subtitle
         subtitles_path = get_subtitles_path(video_path)
 
     try:
-        # Encode paths to UTF-8 to ensure subliminal support.
-        video_path = video_path.encode('utf-8')
-        subtitles_path = subtitles_path.encode('utf-8')
-    except UnicodeEncodeError:
-        # Fallback to system encoding. This should never happen.
-        video_path = video_path.encode(sickbeard.SYS_ENCODING)
-        subtitles_path = subtitles_path.encode(sickbeard.SYS_ENCODING)
-
-    try:
         video = subliminal.scan_video(video_path)
 
         # external subtitles
@@ -381,13 +372,6 @@ def get_subtitles_path(video_path):
             sickbeard.helpers.chmodAsParent(new_subtitles_path)
     else:
         new_subtitles_path = os.path.dirname(video_path)
-
-    try:
-        # Encode path to UTF-8 to ensure subliminal support.
-        new_subtitles_path = new_subtitles_path.encode('utf-8')
-    except UnicodeEncodeError:
-        # Fallback to system encoding. This should never happen.
-        new_subtitles_path = new_subtitles_path.encode(sickbeard.SYS_ENCODING)
 
     return new_subtitles_path
 
@@ -462,22 +446,16 @@ class SubtitlesFinder(object):
             return
 
         for ep_to_sub in sql_results:
-            try:
-                # Encode path to system encoding.
-                subtitle_path = ep_to_sub[b'location'].encode(sickbeard.SYS_ENCODING)
-            except UnicodeEncodeError:
-                # Fallback to UTF-8.
-                subtitle_path = ep_to_sub[b'location'].encode('utf-8')
-            if not os.path.isfile(subtitle_path):
-                logger.info('Episode file does not exist, cannot download subtitles for {0} {1}'.format
-                           (ep_to_sub[b'show_name'], episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode']) or
-                            episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute')), logger.DEBUG)
+            if not os.path.isfile(ep_to_sub[b'location']):
+                logger.debug('Episode file does not exist, cannot download subtitles for {0} {1}'.format(
+                    ep_to_sub[b'show_name'], episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode']) or
+                                             episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute')))
                 continue
 
             if not needs_subtitles(ep_to_sub[b'subtitles']):
-                logger.info('Episode already has all needed subtitles, skipping {0} {1}'.format
+                logger.debug('Episode already has all needed subtitles, skipping {0} {1}'.format
                            (ep_to_sub[b'show_name'], episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode']) or
-                            episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute')), logger.DEBUG)
+                            episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute')))
                 continue
 
             try:

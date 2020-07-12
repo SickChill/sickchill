@@ -468,9 +468,9 @@ class GenericProvider(object):
                 if episode_string_fallback:
                     episode_string_fallback += ' ' + add_string
 
-            search_string['Episode'].append(episode_string.encode('utf-8').strip())
+            search_string['Episode'].append(episode_string.strip())
             if episode_string_fallback:
-                search_string['Episode'].append(episode_string_fallback.encode('utf-8').strip())
+                search_string['Episode'].append(episode_string_fallback.strip())
 
         return [search_string]
 
@@ -491,7 +491,7 @@ class GenericProvider(object):
             else:
                 season_string += 'S{0:02d}'.format(int(episode.scene_season))
 
-            search_string['Season'].append(season_string.encode('utf-8').strip())
+            search_string['Season'].append(season_string.strip())
 
         return [search_string]
 

@@ -1121,9 +1121,6 @@ class Home(WebRoot):
                 show_obj.rls_require_words = rls_require_words.strip()
                 show_obj.rls_prefer_words = rls_prefer_words.strip()
 
-            if not isinstance(location, six.text_type):
-                location = six.text_type(location, 'utf-8')
-
             location = os.path.normpath(xhtml_unescape(location))
             # noinspection PyProtectedMember
             old_location = os.path.normpath(show_obj._location)
@@ -1279,7 +1276,7 @@ class Home(WebRoot):
         if show:
             show_obj = Show.find(sickbeard.showList, int(show))
             if show_obj:
-                showName = urllib.parse.quote_plus(show_obj.name.encode('utf-8'))
+                showName = urllib.parse.quote_plus(show_obj.name)
 
         if sickbeard.KODI_UPDATE_ONLYFIRST:
             host = sickbeard.KODI_HOST.split(",")[0].strip()

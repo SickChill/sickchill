@@ -82,8 +82,7 @@ class NorbitsProvider(TorrentProvider):
 
             for search_string in search_params[mode]:
                 if mode != 'RSS':
-                    logger.debug('Search string: {0}'.format
-                               (search_string.decode('utf-8')))
+                    logger.debug('Search string: {0}'.format(search_string))
 
                 post_data = {
                     'username': self.username,

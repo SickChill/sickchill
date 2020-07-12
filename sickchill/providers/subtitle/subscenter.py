@@ -3,7 +3,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import bisect
-import io
 import json
 import logging
 import zipfile

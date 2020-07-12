@@ -95,7 +95,7 @@ class Notifier(object):
         results = dict()
         for connection in self.connections:
             logger.debug("Sending {0} notification to '{1}' - {2}".format(dest_app, connection.host, message))
-            response = connection.GUI.ShowNotification(title=title.encode("utf-8"), message=message.encode("utf-8"), image=sickbeard.LOGO_URL)
+            response = connection.GUI.ShowNotification(title=title, message=message, image=sickbeard.LOGO_URL)
             if response and response.get('result'):
                 results[connection.host] = self.success(response)
             else:

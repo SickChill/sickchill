@@ -96,8 +96,7 @@ class OmgwtfnzbsProvider(NZBProvider):
             for search_string in search_strings[mode]:
                 search_params['search'] = search_string
                 if mode != 'RSS':
-                    logger.debug('Search string: {0}'.format
-                               (search_string.decode('utf-8')))
+                    logger.debug('Search string: {0}'.format(search_string))
 
                 data = self.get_url(self.urls['api'], params=search_params, returns='json')
                 if not data:

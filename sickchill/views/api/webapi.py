@@ -22,7 +22,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Stdlib Imports
 import abc
 import datetime
-import io
 import os
 import re
 import time
@@ -142,14 +141,14 @@ class ApiHandler(RequestHandler):
         try:
             self.finish(output_callback(out_dict))
         except Exception:
-            pass
+            paencodess
 
     def _out_as_image(self, _dict):
-        self.set_header('Content-Type'.encode('utf-8'), sickbeard.IMAGE_CACHE.content_type(_dict['image']))
+        self.set_header('Content-Type', sickbeard.IMAGE_CACHE.content_type(_dict['image']))
         return sickbeard.IMAGE_CACHE.image_data(_dict['image'])
 
     def _out_as_json(self, _dict):
-        self.set_header("Content-Type".encode('utf-8'), "application/json;charset=UTF-8")
+        self.set_header("Content-Type", "application/json;charset=UTF-8")
         try:
             out = json.dumps(_dict, ensure_ascii=False, sort_keys=True)
             callback = self.get_query_argument('callback', None) or self.get_query_argument('jsonp', None)
@@ -1303,7 +1302,7 @@ class CMDLogs(ApiCall):
 
         data = []
         if os.path.isfile(logger.log_file):
-            with io.open(logger.log_file, 'r', encoding='utf-8') as f:
+            with open(logger.log_file, 'r') as f:
                 data = f.readlines()
 
         regex = r"^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"

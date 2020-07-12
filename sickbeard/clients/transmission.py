@@ -40,7 +40,7 @@ class Client(GenericClient):
         post_data = json.dumps({'method': 'session-get', })
 
         try:
-            self.response = self.session.post(self.url, data=post_data.encode('utf-8'), timeout=120,
+            self.response = self.session.post(self.url, data=post_data, timeout=120,
                                               verify=sickbeard.TORRENT_VERIFY_CERT)
             self.auth = self.response.headers['X-Transmission-Session-Id']
         except Exception:

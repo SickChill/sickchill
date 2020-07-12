@@ -309,8 +309,7 @@ class TNTVillageProvider(TorrentProvider):
                         search_url = self.urls['search_page'].format(z, self.categories)
 
                     if mode != 'RSS':
-                        logger.debug("Search string: {0}".format
-                                   (search_string.decode("utf-8")))
+                        logger.debug("Search string: {0}".format(search_string))
 
                     data = self.get_url(search_url, returns='text')
                     if not data:

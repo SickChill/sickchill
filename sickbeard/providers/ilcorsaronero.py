@@ -217,7 +217,7 @@ class ilCorsaroNeroProvider(TorrentProvider):
                     continue
 
                 search_string = six.text_type(search_string).replace('.', ' ')
-                logger.debug('Search string: {0}'.format(search_string.decode('utf-8')))
+                logger.debug('Search string: {0}'.format(search_string))
 
                 last_page = False
                 for page in range(0, self.max_pages):

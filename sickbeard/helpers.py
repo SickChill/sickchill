@@ -27,7 +27,6 @@ import base64
 import ctypes
 import datetime
 import hashlib
-import io
 import ipaddress
 import operator
 import os
@@ -828,8 +827,8 @@ def create_https_certificates(ssl_cert, ssl_key):
     # noinspection PyBroadException
     try:
         # Module has no member
-        io.open(ssl_key, 'wb').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
-        io.open(ssl_cert, 'wb').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
+        open(ssl_key, 'wb').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
+        open(ssl_cert, 'wb').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except Exception as error:
         logger.info(traceback.format_exc())
         logger.warn(_("Error creating SSL key and certificate {error}").format(error.message))
@@ -1321,48 +1320,6 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
 
         hooks, cookies, verify, proxies = request_defaults(kwargs)
 
-        # Dict, loop through and change all key,value pairs to bytes
-        if isinstance(params, dict):
-            for key, value in six.iteritems(params):
-                if isinstance(key, six.text_type):
-                    del params[key]
-                    key = key.encode('utf-8')
-
-                if isinstance(value, six.text_type):
-                    value = value.encode('utf-8')
-                params[key] = value
-
-        if isinstance(post_data, dict):
-            for key, value in six.iteritems(post_data):
-                if isinstance(key, six.text_type):
-                    del post_data[key]
-                    key = key.encode('utf-8')
-
-                if isinstance(value, six.text_type):
-                    value = value.encode('utf-8')
-                post_data[key] = value
-
-        # List, loop through and change all indexes to bytes
-        if isinstance(params, list):
-            for index, value in enumerate(params):
-                if isinstance(value, six.text_type):
-                    params[index] = value.encode('utf-8')
-
-        if isinstance(post_data, list):
-            for index, value in enumerate(post_data):
-                if isinstance(value, six.text_type):
-                    post_data[index] = value.encode('utf-8')
-
-        # Unicode, encode to bytes
-        if isinstance(params, six.text_type):
-            params = params.encode('utf-8')
-
-        if isinstance(post_data, six.text_type):
-            post_data = post_data.encode('utf-8')
-
-        if isinstance(url, six.text_type):
-            url = url.encode('utf-8')
-
         resp = session.request(
             'POST' if post_data else 'GET', url, data=post_data or {}, params=params or {},
             timeout=timeout, allow_redirects=allow_redirects, hooks=hooks, stream=stream,
@@ -1408,7 +1365,7 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
                 filename = replace_extension(filename, 'torrent')
 
             try:
-                with io.open(filename, 'wb') as fp:
+                with open(filename, 'wb') as fp:
                     for chunk in resp.iter_content(chunk_size=1024):
                         if chunk:
                             fp.write(chunk)
@@ -1680,7 +1637,7 @@ def is_file_locked(checkfile, write_check=False):
     if not os.path.exists(checkfile):
         return True
     try:
-        f = io.open(checkfile, 'rb')
+        f = open(checkfile, 'rb')
         f.close()
     except IOError:
         return True

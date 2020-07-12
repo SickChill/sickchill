@@ -21,8 +21,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import binascii
-import io
-
 # Third Party Imports
 from enzyme import MKV
 from pkg_resources import DistributionNotFound, get_distribution
@@ -46,7 +44,7 @@ def _avi_screen_size(filename):
     """
     try:
         if not filename.endswith('.avi'):
-            with io.open(filename, 'rb') as f:
+            with open(filename, 'rb') as f:
                 header = f.read(72)
 
             x = binascii.hexlify(header[68:72])
@@ -73,7 +71,7 @@ def _mkv_screen_size(filename):
     """
     try:
         if filename.endswith('.mkv'):
-            with io.open(filename, 'rb') as f:
+            with open(filename, 'rb') as f:
                 mkv = MKV(f)
 
             return mkv.video_tracks[0].width, mkv.video_tracks[0].height

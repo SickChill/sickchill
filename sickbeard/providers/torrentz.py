@@ -78,8 +78,7 @@ class TorrentzProvider(TorrentProvider):
                 # search_url = self.urls['verified'] if self.confirmed else self.urls['feed']
                 search_url = self.urls['feed']
                 if mode != 'RSS':
-                    logger.debug("Search string: {0}".format
-                               (search_string.decode("utf-8")))
+                    logger.debug("Search string: {0}".format(search_string))
 
                 data = self.get_url(search_url, params={'f': search_string}, returns='text')
                 if not data:

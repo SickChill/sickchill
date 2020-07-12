@@ -129,8 +129,7 @@ class MoreThanTVProvider(TorrentProvider):
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.debug("Search string: {0}".format
-                               (search_string.decode("utf-8")))
+                    logger.debug("Search string: {0}".format(search_string))
 
                 if mode == 'Season':
                     searchedSeason = re.match('.*\s(Season\s\d+|S\d+)', search_string).group(1)
@@ -237,9 +236,9 @@ class MoreThanTVProvider(TorrentProvider):
                 season_string += 'S{0:02d}'.format(int(episode.scene_season))
                 # MTV renames most season packs to just "Season ##"
                 mtv_season_string = '{0} Season {1}'.format(show_name, int(episode.scene_season))
-                search_string['Season'].append(mtv_season_string.encode('utf-8').strip())
+                search_string['Season'].append(mtv_season_string.strip())
 
-            search_string['Season'].append(season_string.encode('utf-8').strip())
+            search_string['Season'].append(season_string)
 
         return [search_string]
 

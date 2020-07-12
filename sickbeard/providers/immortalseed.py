@@ -130,8 +130,7 @@ class ImmortalseedProvider(TorrentProvider):
 
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.debug("Search string: {0}".format
-                               (search_string.decode("utf-8")))
+                    logger.debug("Search string: {0}".format(search_string))
                     search_params['keywords'] = search_string
 
                 data = self.get_url(self.urls['search'], params=search_params, returns='text')

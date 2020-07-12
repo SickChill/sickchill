@@ -278,8 +278,6 @@ class TVCache(object):
             # get quality of release
             quality = parse_result.quality
 
-            assert isinstance(name, six.text_type)
-
             # get release group
             release_group = parse_result.release_group
 
