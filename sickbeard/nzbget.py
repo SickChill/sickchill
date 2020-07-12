@@ -68,9 +68,7 @@ def sendNZB(nzb, proper=False):
             logger.warning('Successful connected to NZBget, but unable to send a message')
 
     except http_client.socket.error:
-        logger.info(
-            'Please check your NZBget host and port (if it is running). NZBget is not responding to this combination',
-            logger.WARNING)
+        logger.warning('Please check your NZBget host and port (if it is running). NZBget is not responding to this combination')
         return False
 
     except xmlrpc_client.ProtocolError as e:

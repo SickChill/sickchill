@@ -281,9 +281,7 @@ class GenericMetadata(object):
 
                 return True
             except IOError as e:
-                logger.info(
-                    "Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e),
-                    logger.ERROR)
+                logger.error("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e))
 
     def create_episode_metadata(self, ep_obj):
         if self.episode_metadata and ep_obj and not self._has_episode_metadata(ep_obj):
@@ -725,9 +723,7 @@ class GenericMetadata(object):
             outFile.close()
             helpers.chmodAsParent(image_path)
         except IOError as e:
-            logger.info(
-                "Unable to write image to " + image_path + " - are you sure the show folder is writable? " + str(e),
-                logger.ERROR)
+            logger.error("Unable to write image to " + image_path + " - are you sure the show folder is writable? " + str(e))
             return False
 
         return True

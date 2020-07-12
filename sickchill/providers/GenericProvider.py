@@ -275,9 +275,7 @@ class GenericProvider(object):
                             actual_episodes = [int(sql_results[0][b'episode'])]
                             same_day_special = True
                     elif len(sql_results) != 1:
-                        logger.info(
-                            'Tried to look up the date for the episode {0} but the database didn\'t give proper results, skipping it'.format(title),
-                            logger.WARNING)
+                        logger.warning('Tried to look up the date for the episode {0} but the database didn\'t give proper results, skipping it'.format(title))
                         add_cache_entry = True
 
                 if not add_cache_entry and not same_day_special:

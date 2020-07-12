@@ -689,19 +689,13 @@ def check_setting_int(config, cfg_name, item_name, def_val=0, min_val=None, max_
     :rtype: int
     """
     if not isinstance(def_val, int):
-        logger.info(
-            "{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(
-                dom=cfg_name, key=item_name, t='int', dt=type(def_val)), logger.ERROR)
+        logger.error("{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t='int', dt=type(def_val)))
 
     if not (min_val is None or isinstance(min_val, int)):
-        logger.info(
-            "{dom}:{key} min_val value is not the correct type. Expected {t}, got {dt}".format(
-                dom=cfg_name, key=item_name, t='int', dt=type(min_val)), logger.ERROR)
+        logger.error("{dom}:{key} min_val value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t='int', dt=type(min_val)))
 
     if not (max_val is None or isinstance(max_val, int)):
-        logger.info(
-            "{dom}:{key} max_val value is not the correct type. Expected {t}, got {dt}".format(
-                dom=cfg_name, key=item_name, t='int', dt=type(max_val)), logger.ERROR)
+        logger.error("{dom}:{key} max_val value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t='int', dt=type(max_val)))
 
     try:
         if not (check_section(config, cfg_name) and check_section(config[cfg_name], item_name)):
@@ -759,19 +753,13 @@ def check_setting_float(config, cfg_name, item_name, def_val=0.0, min_val=None, 
     :rtype: float
     """
     if not isinstance(def_val, float):
-        logger.info(
-            "{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(
-                dom=cfg_name, key=item_name, t='float', dt=type(def_val)), logger.ERROR)
+        logger.error("{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t='float', dt=type(def_val)))
 
     if not (min_val is None or isinstance(min_val, float)):
-        logger.info(
-            "{dom}:{key} min_val value is not the correct type. Expected {t}, got {dt}".format(
-                dom=cfg_name, key=item_name, t='float', dt=type(min_val)), logger.ERROR)
+        logger.error("{dom}:{key} min_val value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t='float', dt=type(min_val)))
 
     if not (max_val is None or isinstance(max_val, float)):
-        logger.info(
-            "{dom}:{key} max_val value is not the correct type. Expected {t}, got {dt}".format(
-                dom=cfg_name, key=item_name, t='float', dt=type(max_val)), logger.ERROR)
+        logger.error("{dom}:{key} max_val value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t='float', dt=type(max_val)))
 
     try:
         if not (check_section(config, cfg_name) and check_section(config[cfg_name], item_name)):
@@ -818,9 +806,7 @@ def check_setting_str(config, cfg_name, item_name, def_val=six.text_type(''), si
     :rtype: six.text_type
     """
     if not isinstance(def_val, six.string_types):
-        logger.info(
-            "{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(
-                dom=cfg_name, key=item_name, t='string', dt=type(def_val)), logger.ERROR)
+        logger.error("{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t='string', dt=type(def_val)))
 
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
     encryption_version = (0, sickbeard.ENCRYPTION_VERSION)['password' in item_name]
@@ -870,9 +856,8 @@ def check_setting_bool(config, cfg_name, item_name, def_val=False, silent=True):
     """
     try:
         if not isinstance(def_val, bool):
-            logger.info(
-                "{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(
-                    dom=cfg_name, key=item_name, t='bool', dt=type(def_val)), logger.ERROR)
+            logger.error("{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(
+                    dom=cfg_name, key=item_name, t='bool', dt=type(def_val)))
 
         if not (check_section(config, cfg_name) and item_name in config[cfg_name]):
             raise ValueError

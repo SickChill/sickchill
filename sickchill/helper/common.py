@@ -382,12 +382,11 @@ def setup_github():
             sickbeard.gh.get_organization(sickbeard.GIT_ORG)
     except BadCredentialsException as error:
         sickbeard.gh = None
-        sickbeard.logger.info(_('Unable to setup GitHub properly with your github token. Please check your credentials. Error: {0}').format(error),
-                             sickbeard.logger.WARNING)
+        sickbeard.logger.warning(_('Unable to setup GitHub properly with your github token. Please check your credentials. Error: {0}').format(error))
     except TwoFactorException as error:
         sickbeard.gh = None
-        sickbeard.logger.info(_('Unable to setup GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {0}').format(
-            error), sickbeard.logger.WARNING)
+        sickbeard.logger.warning(_('Unable to setup GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {0}').format(
+            error))
     except RateLimitExceededException as error:
         sickbeard.gh = None
         if sickbeard.GIT_TOKEN:

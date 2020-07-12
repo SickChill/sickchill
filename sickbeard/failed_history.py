@@ -70,9 +70,7 @@ def logFailed(release):
             logger.warning("However, they're all the same size. Continuing with found size.")
             size = sql_results[0][b"size"]
         else:
-            logger.info(
-                "They also vary in size. Deleting the logged snatches and recording this release with no size/provider",
-                logger.WARNING)
+            logger.warning("They also vary in size. Deleting the logged snatches and recording this release with no size/provider")
             for result in sql_results:
                 deleteLoggedSnatch(result[b"release"], result[b"size"], result[b"provider"])
 
