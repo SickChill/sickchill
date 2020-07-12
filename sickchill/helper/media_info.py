@@ -21,6 +21,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import binascii
+
 # Third Party Imports
 from enzyme import MKV
 from pkg_resources import DistributionNotFound, get_distribution

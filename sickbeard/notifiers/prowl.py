@@ -35,6 +35,7 @@ from six.moves.http_client import HTTPException, HTTPSConnection
 # First Party Imports
 import sickbeard
 from sickbeard import common, db, logger
+
 try:
     # this only exists in 2.6
     from ssl import SSLError

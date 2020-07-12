@@ -24,6 +24,9 @@ from __future__ import absolute_import, print_function, unicode_literals
 from os import sys
 from random import shuffle
 
+# Third Party Imports
+from six.moves import zip
+
 # First Party Imports
 import sickbeard
 from sickbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, bitcannon, bjshare, btn, cpasbien, danishbits, demonoid, elitetorrent, eztv,
@@ -31,7 +34,6 @@ from sickbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, 
                                  immortalseed, iptorrents, kat, limetorrents, magnetdl, morethantv, ncore, nebulance, newpct, norbits, nyaa, omgwtfnzbs,
                                  pretome, rarbg, scc, scenetime, shazbat, skytorrents, speedcd, thepiratebay, tntvillage, tokyotoshokan, torrent9, torrentbytes,
                                  torrentday, torrentleech, torrentproject, torrentz, tvchaosuk, xthor, yggtorrent)
-from six.moves import zip
 
 __all__ = [
     'abnormal', 'alpharatio', 'archetorrent', 'binsearch', 'bitcannon', 'bjshare', 'btn', 'cpasbien', 'danishbits', 'demonoid',

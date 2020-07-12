@@ -35,6 +35,7 @@ import babelfish
 # import guessit
 from imdbpie import Imdb, ImdbFacade
 from imdbpie.exceptions import ImdbAPIError
+from six.moves import zip
 from unidecode import unidecode
 from urllib3.exceptions import MaxRetryError, NewConnectionError
 
@@ -43,9 +44,8 @@ import sickbeard
 import sickchill
 from sickchill.helper import glob
 from sickchill.helper.common import dateTimeFormat, episode_num, remove_extension, replace_extension, sanitize_filename, try_int
-from sickchill.helper.exceptions import (EpisodeDeletedException, EpisodeNotFoundException, MultipleEpisodesInDatabaseException,
-                                         MultipleShowObjectsException, MultipleShowsInDatabaseException, NoNFOException, ShowDirectoryNotFoundException,
-                                         ShowNotFoundException)
+from sickchill.helper.exceptions import (EpisodeDeletedException, EpisodeNotFoundException, MultipleEpisodesInDatabaseException, MultipleShowObjectsException,
+                                         MultipleShowsInDatabaseException, NoNFOException, ShowDirectoryNotFoundException, ShowNotFoundException)
 from sickchill.show.Show import Show
 
 # Local Folder Imports
@@ -54,7 +54,6 @@ from .blackandwhitelist import BlackAndWhiteList
 from .common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
                      NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN, WANTED)
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from six.moves import zip
 
 try:
     import xml.etree.cElementTree as etree

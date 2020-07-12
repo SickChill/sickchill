@@ -29,6 +29,8 @@ import posixpath
 # First Party Imports
 import sickbeard
 from sickbeard import helpers
+
+
 class RecommendedShow(object):
     """
     Base class for show recommendations

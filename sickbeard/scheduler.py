@@ -26,7 +26,6 @@ import threading
 import time
 import traceback
 
-# First Party Imports
 # Local Folder Imports
 from . import logger
 

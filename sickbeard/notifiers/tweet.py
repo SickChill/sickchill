@@ -29,6 +29,8 @@ from requests_oauthlib import OAuth1Session
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
+
+
 class Notifier(object):
     consumer_key = b'vHHtcB6WzpWDG6KYlBMr8g'
     consumer_hash = b'zMqq5CB3f8cWKiRO2KzWPTlBanYmV0VYxSXZ0Pxds0E'  # (consumer_secret)

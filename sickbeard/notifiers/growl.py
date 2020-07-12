@@ -29,6 +29,8 @@ import gntp.core
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
+
+
 class Notifier(object):
 
     def test_notify(self, host, password):

@@ -26,6 +26,7 @@ import os
 
 # First Party Imports
 import sickbeard
+
 # Local Folder Imports
 from . import common, logger, tv
 from .common import DOWNLOADED, Quality

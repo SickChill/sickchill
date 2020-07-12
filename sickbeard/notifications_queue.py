@@ -28,12 +28,13 @@ import traceback
 import requests
 import six
 from requests.exceptions import HTTPError
+from six.moves import range
 
 # First Party Imports
 import sickbeard
+
 # Local Folder Imports
 from . import common, generic_queue, logger
-from six.moves import range
 
 DISCORD = 600
 

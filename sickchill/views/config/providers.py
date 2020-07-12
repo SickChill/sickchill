@@ -22,6 +22,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import os
 
 # Third Party Imports
+from six.moves import zip
 from tornado.web import addslash
 
 # First Party Imports
@@ -35,7 +36,6 @@ from sickchill.views.routes import Route
 
 # Local Folder Imports
 from . import Config
-from six.moves import zip
 
 try:
     import json

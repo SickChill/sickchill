@@ -25,6 +25,8 @@ import os
 
 # First Party Imports
 from sickbeard.metadata import generic
+
+
 class PS3Metadata(generic.GenericMetadata):
     """
     Metadata generation class for Sony PS3.

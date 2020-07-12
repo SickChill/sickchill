@@ -28,6 +28,7 @@ import time
 # Third Party Imports
 import validators
 from requests.compat import urljoin
+from six.moves import zip
 
 # First Party Imports
 import sickbeard
@@ -36,7 +37,6 @@ from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.nzb.NZBProvider import NZBProvider
-from six.moves import zip
 
 
 class NewznabProvider(NZBProvider):

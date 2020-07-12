@@ -30,6 +30,7 @@ import six
 import sickbeard
 from sickbeard import common, logger
 from sickbeard.helpers import getURL, make_session
+
 try:
     import xml.etree.cElementTree as etree
 except ImportError:

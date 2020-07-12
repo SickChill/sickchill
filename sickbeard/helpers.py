@@ -62,7 +62,7 @@ from cloudscraper.exceptions import CloudflareException
 from requests.compat import urljoin
 from requests.utils import urlparse
 # noinspection PyUnresolvedReferences
-from six.moves import urllib
+from six.moves import urllib, zip
 from tornado._locale_data import LOCALE_NAMES
 from unidecode import unidecode
 
@@ -75,7 +75,6 @@ from sickchill.show.Show import Show
 
 # Local Folder Imports
 from . import classes, db, logger
-from six.moves import zip
 
 # from .common import USER_AGENT
 

@@ -21,9 +21,11 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Stdlib Imports
 import abc
 
+# Third Party Imports
+import six
+
 # First Party Imports
 import sickbeard
-import six
 
 
 class Indexer(six.with_metaclass(abc.ABCMeta, object)):

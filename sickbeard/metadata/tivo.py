@@ -29,6 +29,8 @@ import os
 import sickchill
 from sickbeard import helpers, logger
 from sickbeard.metadata import generic
+
+
 class TIVOMetadata(generic.GenericMetadata):
     """
     Metadata generation class for TIVO

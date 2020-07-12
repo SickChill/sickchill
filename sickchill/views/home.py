@@ -31,7 +31,7 @@ import six
 from github.GithubException import GithubException
 from requests.compat import unquote_plus
 # noinspection PyUnresolvedReferences
-from six.moves import urllib
+from six.moves import urllib, zip
 from tornado.escape import xhtml_unescape
 from trakt import TraktAPI
 
@@ -54,7 +54,6 @@ from sickchill.system.Shutdown import Shutdown
 from .common import PageTemplate
 from .index import WebRoot
 from .routes import Route
-from six.moves import zip
 
 try:
     import json

@@ -37,6 +37,7 @@ from sickbeard import helpers, logger
 from sickbeard.metadata import helpers as metadata_helpers
 from sickbeard.show_name_helpers import allPossibleShowNames
 from sickchill.helper.common import replace_extension, try_int
+
 try:
     import xml.etree.cElementTree as etree
 except ImportError:

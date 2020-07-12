@@ -24,7 +24,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Stdlib Imports
 import re
 
-# First Party Imports
 # Local Folder Imports
 from . import classes, helpers, logger
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser

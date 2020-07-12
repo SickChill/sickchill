@@ -41,13 +41,14 @@ import six
 from github import InputFileContent
 from github.GithubException import RateLimitExceededException, TwoFactorException
 from requests.compat import quote
+from six.moves import range
 
 # First Party Imports
 import sickbeard
 from sickchill.helper.common import dateTimeFormat
+
 # Local Folder Imports
 from . import classes
-from six.moves import range
 
 # log levels
 ERROR = logging.ERROR

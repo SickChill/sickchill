@@ -29,6 +29,7 @@ import sickchill
 from sickbeard import helpers, logger
 from sickbeard.metadata import mediabrowser
 from sickchill.helper.common import dateFormat, replace_extension
+
 try:
     import xml.etree.cElementTree as etree
 except ImportError:

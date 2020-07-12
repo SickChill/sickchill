@@ -35,6 +35,8 @@ from email.utils import formatdate
 # First Party Imports
 import sickbeard
 from sickbeard import db, logger
+
+
 class Notifier(object):
     def __init__(self):
         self.last_err = None

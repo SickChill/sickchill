@@ -28,6 +28,8 @@ import six
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
+
+
 class Notifier(object):
 
     ROCKETCHAT_ICON_URL = 'https://github.com/SickChill/SickChill/raw/master/gui/slick/images/sickchill-sc.png'

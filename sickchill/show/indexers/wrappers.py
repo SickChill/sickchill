@@ -27,6 +27,8 @@ from urllib3.exceptions import HTTPError, HTTPWarning
 
 # First Party Imports
 from sickbeard import logger
+
+
 class ExceptionDecorator(object):
 
     def __init__(self, default_return=list(), catch=(HTTPError, HTTPWarning, RequestException, RequestsWarning), image_api=False):

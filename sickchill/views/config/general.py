@@ -23,6 +23,7 @@ import gettext
 import os
 
 # Third Party Imports
+import six
 from tornado.web import addslash
 
 # First Party Imports
@@ -35,7 +36,6 @@ from sickchill.views.routes import Route
 
 # Local Folder Imports
 from .index import Config
-import six
 
 
 @Route('/config/general(/?.*)', name='config:general')

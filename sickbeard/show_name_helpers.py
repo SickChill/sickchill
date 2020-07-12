@@ -26,14 +26,15 @@ import re
 
 # Third Party Imports
 import six
+from six.moves import zip
 
 # First Party Imports
 import sickbeard
+
 # Local Folder Imports
 from . import common, logger
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from .scene_exceptions import get_scene_exceptions
-from six.moves import zip
 
 resultFilters = {
     "sub(bed|ed|pack|s)",

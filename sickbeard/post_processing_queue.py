@@ -27,6 +27,7 @@ import traceback
 
 # First Party Imports
 import sickbeard
+
 # Local Folder Imports
 from . import common, config, generic_queue, logger
 from .processTV import log_helper, process_dir

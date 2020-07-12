@@ -30,10 +30,12 @@ import operator
 import platform
 import re
 import uuid
+from functools import reduce
 from os import path
 
 # Third Party Imports
 import fake_useragent
+import six
 # noinspection PyUnresolvedReferences
 from six.moves import reduce
 
@@ -45,8 +47,6 @@ from sickchill.tagger.episode import EpisodeTags
 
 # Local Folder Imports
 from .numdict import NumDict
-import six
-from functools import reduce
 
 gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
 

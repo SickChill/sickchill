@@ -32,6 +32,8 @@ import sickbeard
 import sickchill
 from sickbeard import db, logger, network_timezones, ui
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException
+
+
 class ShowUpdater(object):
     def __init__(self):
         self.lock = threading.Lock()

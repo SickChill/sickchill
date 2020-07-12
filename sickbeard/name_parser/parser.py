@@ -30,13 +30,15 @@ from threading import Lock
 # Third Party Imports
 import dateutil
 import six
+from six.moves import range
 
 # First Party Imports
 import sickchill
 from sickbeard import common, db, helpers, logger, scene_exceptions, scene_numbering
 from sickbeard.name_parser import regexes
 from sickchill.helper.common import remove_extension
-from six.moves import range
+
+
 class NameParser(object):
     ALL_REGEX = 0
     NORMAL_REGEX = 1

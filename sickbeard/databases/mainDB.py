@@ -33,6 +33,7 @@ import sickbeard
 from sickbeard import common, db, helpers, logger, subtitles
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.helper.common import dateTimeFormat, episode_num
+
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
 MAX_DB_VERSION = 44
 

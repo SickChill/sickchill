@@ -34,6 +34,7 @@ import six
 
 # First Party Imports
 import sickbeard
+
 # Local Folder Imports
 from . import logger
 

@@ -29,6 +29,8 @@ import six
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
+
+
 class Notifier(object):
 
     def notify_snatch(self, ep_name):

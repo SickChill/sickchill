@@ -26,11 +26,11 @@ from time import sleep
 # Third Party Imports
 from requests.auth import HTTPDigestAuth
 from requests.compat import urljoin
+from six.moves import range
 
 # First Party Imports
 import sickbeard
 from sickbeard.clients.generic import GenericClient
-from six.moves import range
 
 
 class Client(GenericClient):

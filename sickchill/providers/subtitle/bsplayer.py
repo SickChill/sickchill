@@ -18,11 +18,11 @@ from xml.etree import ElementTree
 # Third Party Imports
 from babelfish import Language, language_converters
 from requests import Session
+from six.moves import range
 from six.moves.xmlrpc_client import ServerProxy
 from subliminal import __short_version__
 from subliminal.providers import Provider, TimeoutSafeTransport
 from subliminal.subtitle import fix_line_ending, Subtitle
-from six.moves import range
 
 logger = logging.getLogger(__name__)
 

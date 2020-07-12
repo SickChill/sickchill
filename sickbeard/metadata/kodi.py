@@ -26,6 +26,8 @@ import os
 # First Party Imports
 from sickbeard.metadata import generic, kodi_12plus
 from sickchill.helper.common import replace_extension
+
+
 class KODIMetadata(kodi_12plus.KODI_12PlusMetadata):
     """
     Metadata generation class for KODI (legacy).

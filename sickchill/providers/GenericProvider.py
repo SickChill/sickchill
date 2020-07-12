@@ -41,6 +41,8 @@ from sickbeard.name_parser.parser import InvalidNameException, InvalidShowExcept
 from sickbeard.show_name_helpers import allPossibleShowNames
 from sickbeard.tvcache import TVCache
 from sickchill.helper.common import sanitize_filename
+
+
 class GenericProvider(object):
     NZB = 'nzb'
     NZBDATA = 'nzbdata'

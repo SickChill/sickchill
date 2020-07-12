@@ -28,6 +28,8 @@ import six
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
+
+
 class Notifier(object):
 
     SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/'

@@ -29,6 +29,7 @@ from datetime import datetime
 # Third Party Imports
 import jsonrpclib
 import six
+from six.moves import range
 
 # First Party Imports
 import sickbeard
@@ -38,7 +39,6 @@ from sickbeard.helpers import sanitizeSceneName
 from sickchill.helper.common import episode_num
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
-from six.moves import range
 
 
 class BTNProvider(TorrentProvider):

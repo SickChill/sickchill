@@ -27,6 +27,8 @@ import subprocess
 # First Party Imports
 import sickbeard
 from sickbeard import logger
+
+
 class Notifier(object):
     def notify_snatch(self, ep_name):
         pass
