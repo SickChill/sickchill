@@ -125,9 +125,8 @@ class ShowQueue(generic_queue.GenericQueue):
             raise CantRefreshShowException('This show is already being refreshed, not refreshing again.')
 
         if self.is_being_updated(show) or self.is_in_update_queue(show):
-            logger.info(
-                'A refresh was attempted but there is already an update queued or in progress. Updates do a refresh at the end so I\'m skipping this request.',
-                logger.DEBUG)
+            logger.debug(
+                'A refresh was attempted but there is already an update queued or in progress. Updates do a refresh at the end so I\'m skipping this request.')
             return
 
         if show.paused and not force:

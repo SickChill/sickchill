@@ -211,10 +211,9 @@ class TraktChecker(object):
                 for cur_episode in episodes:
                     if not self._checkInList(sickchill.indexer.slug(cur_episode[b"indexer"]), str(cur_episode[b"showid"]), str(cur_episode[b"season"]), str(cur_episode[b"episode"]),
                                              List='Collection'):
-                        logger.info("Adding Episode {show} {ep} to collection".format
+                        logger.debug("Adding Episode {show} {ep} to collection".format
                                    (show=cur_episode[b"show_name"],
-                                    ep=episode_num(cur_episode[b"season"], cur_episode[b"episode"])),
-                                   logger.DEBUG)
+                                    ep=episode_num(cur_episode[b"season"], cur_episode[b"episode"])))
                         trakt_data.append((cur_episode[b"showid"], cur_episode[b"indexer"], cur_episode[b"show_name"], cur_episode[b"startyear"], cur_episode[b"season"], cur_episode[b"episode"]))
 
                 if trakt_data:
@@ -256,10 +255,9 @@ class TraktChecker(object):
                 for cur_episode in episodes:
                     if self._checkInList(sickchill.indexer.slug(cur_episode[b"indexer"]), str(cur_episode[b"showid"]), str(cur_episode[b"season"]), str(cur_episode[b"episode"])):
                         if cur_episode[b"status"] not in Quality.SNATCHED + Quality.SNATCHED_PROPER + [UNKNOWN] + [WANTED]:
-                            logger.info("Removing Episode {show} {ep} from watchlist".format
+                            logger.debug("Removing Episode {show} {ep} from watchlist".format
                                        (show=cur_episode[b"show_name"],
-                                        ep=episode_num(cur_episode[b"season"], cur_episode[b"episode"])),
-                                       logger.DEBUG)
+                                        ep=episode_num(cur_episode[b"season"], cur_episode[b"episode"])))
                             trakt_data.append((cur_episode[b"showid"], cur_episode[b"indexer"], cur_episode[b"show_name"], cur_episode[b"startyear"], cur_episode[b"season"], cur_episode[b"episode"]))
 
                 if trakt_data:
@@ -285,10 +283,9 @@ class TraktChecker(object):
 
                 for cur_episode in episodes:
                     if not self._checkInList(sickchill.indexer.slug(cur_episode[b"indexer"]), str(cur_episode[b"showid"]), str(cur_episode[b"season"]), str(cur_episode[b"episode"])):
-                        logger.info("Adding Episode {show} {ep} to watchlist".format
+                        logger.debug("Adding Episode {show} {ep} to watchlist".format
                                    (show=cur_episode[b"show_name"],
-                                    ep=episode_num(cur_episode[b"season"], cur_episode[b"episode"])),
-                                   logger.DEBUG)
+                                    ep=episode_num(cur_episode[b"season"], cur_episode[b"episode"])))
                         trakt_data.append((cur_episode[b"showid"], cur_episode[b"indexer"], cur_episode[b"show_name"], cur_episode[b"startyear"], cur_episode[b"season"],
                                            cur_episode[b"episode"]))
 

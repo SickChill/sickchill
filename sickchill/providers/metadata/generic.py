@@ -26,7 +26,6 @@ import re
 
 # Third Party Imports
 import fanart
-import six
 import tmdbsimple
 from fanart.core import Request as fanartRequest
 
@@ -34,9 +33,11 @@ from fanart.core import Request as fanartRequest
 import sickbeard
 import sickchill
 from sickbeard import helpers, logger
-from sickbeard.metadata import helpers as metadata_helpers
 from sickbeard.show_name_helpers import allPossibleShowNames
 from sickchill.helper.common import replace_extension, try_int
+
+# Local Folder Imports
+from . import helpers as metadata_helpers
 
 try:
     import xml.etree.cElementTree as etree
@@ -204,7 +205,7 @@ class GenericMetadata(object):
         else:
             season_poster_filename = 'season' + str(season).zfill(2)
 
-        return ek(os.path.join, show_obj.location, season_poster_filename + '-poster.jpg')
+        return os.path.join(show_obj.location, season_poster_filename + '-poster.jpg')
 
     @staticmethod
     def get_season_banner_path(show_obj, season):
@@ -222,7 +223,7 @@ class GenericMetadata(object):
         else:
             season_banner_filename = 'season' + str(season).zfill(2)
 
-        return ek(os.path.join, show_obj.location, season_banner_filename + '-banner.jpg')
+        return os.path.join(show_obj.location, season_banner_filename + '-banner.jpg')
 
     def get_season_all_poster_path(self, show_obj):
         return os.path.join(show_obj.location, self.season_all_poster_name)
@@ -253,9 +254,8 @@ class GenericMetadata(object):
 
     def update_show_indexer_metadata(self, show_obj):
         if self.show_metadata and show_obj and self._has_show_metadata(show_obj):
-            logger.info(
-                "Metadata provider " + self.name + " updating show indexer info metadata file for " + show_obj.name,
-                logger.DEBUG)
+            logger.debug(
+                "Metadata provider " + self.name + " updating show indexer info metadata file for " + show_obj.name)
 
             nfo_file_path = self.get_show_file_path(show_obj)
 
@@ -459,9 +459,9 @@ class GenericMetadata(object):
         if not data:
             return False
 
-        def print_data(d):
-            for child in d.getroot():
-                print(str(child.tag), str(child.text))
+        # def print_data(d):
+        #     for child in d.getroot():
+        #         print(str(child.tag), str(child.text))
 
         # print_data(data)
 

@@ -719,9 +719,9 @@ def get_absolute_number_from_season_and_episode(show, season, episode):
 
         if len(sql_results) == 1:
             absolute_number = int(sql_results[0][b"absolute_number"])
-            logger.info(_("Found absolute number {absolute} for show {show} {ep}").format
+            logger.debug(_("Found absolute number {absolute} for show {show} {ep}").format
                        (absolute=absolute_number, show=show.name,
-                        ep=episode_num(season, episode)), logger.DEBUG)
+                        ep=episode_num(season, episode)))
         else:
             logger.debug(_("No entries for absolute number for show {show} {ep}").format
                        (show=show.name, ep=episode_num(season, episode)))

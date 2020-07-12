@@ -142,9 +142,9 @@ class TVChaosUKProvider(TorrentProvider):
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
-                                    logger.info('Discarding torrent because it doesn\'t meet the'
+                                    logger.debug('Discarding torrent because it doesn\'t meet the'
                                                ' minimum seeders or leechers: {0} (S:{1} L:{2})'.format
-                                               (title, seeders, leechers), logger.DEBUG)
+                                               (title, seeders, leechers))
                                 continue
 
                             # Chop off tracker/channel prefix or we cant parse the result!

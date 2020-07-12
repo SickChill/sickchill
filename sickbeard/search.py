@@ -59,7 +59,7 @@ def _downloadResult(result):
     elif result.resultType == GenericProvider.NZBDATA:
 
         # get the final file path to the nzb
-        file_name = ek(os.path.join, sickbeard.NZB_DIR, result.name + ".nzb")
+        file_name = os.path.join(sickbeard.NZB_DIR, result.name + ".nzb")
 
         logger.info("Saving NZB to " + file_name)
 
@@ -532,9 +532,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
 
             # get the quality of the season nzb
             seasonQual = bestSeasonResult.quality
-            logger.info(
-                "The quality of the season " + bestSeasonResult.provider.provider_type + " is " + Quality.qualityStrings[
-                    seasonQual], logger.DEBUG)
+            logger.info("The quality of the season " + bestSeasonResult.provider.provider_type + " is " + Quality.qualityStrings[seasonQual])
 
             main_db_con = db.DBConnection()
             allEps = [int(x[b"episode"])
@@ -570,9 +568,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                 return [bestSeasonResult]
 
             elif not anyWanted:
-                logger.info(
-                    "No eps from this season are wanted at this quality, ignoring the result of " + bestSeasonResult.name,
-                    logger.DEBUG)
+                logger.info("No eps from this season are wanted at this quality, ignoring the result of " + bestSeasonResult.name)
 
             else:
 
@@ -631,9 +627,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                     else:
                         neededEps.append(epObj.episode)
 
-                logger.info(
-                    "Single-ep check result is neededEps: " + str(neededEps) + ", notNeededEps: " + str(notNeededEps),
-                    logger.DEBUG)
+                logger.debug("Single-ep check result is neededEps: " + str(neededEps) + ", notNeededEps: " + str(notNeededEps))
 
                 if not neededEps:
                     logger.debug("All of these episodes were covered by single episode results, ignoring this multi-episode result")
@@ -648,23 +642,22 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                     else:
                         multiNeededEps.append(epObj.episode)
 
-                logger.info(
+                logger.debug(
                     "Multi-ep check result is multiNeededEps: " + str(multiNeededEps) + ", multiNotNeededEps: " + str(
-                        multiNotNeededEps), logger.DEBUG)
+                        multiNotNeededEps))
 
                 if not multiNeededEps:
-                    logger.info(
-                        "All of these episodes were covered by another multi-episode nzbs, ignoring this multi-ep result",
-                        logger.DEBUG)
+                    logger.debug(
+                        "All of these episodes were covered by another multi-episode nzbs, ignoring this multi-ep result")
                     continue
 
                 # don't bother with the single result if we're going to get it with a multi result
                 for epObj in multiResult.episodes:
                     multiResults[epObj.episode] = multiResult
                     if epObj.episode in foundResults[curProvider.name]:
-                        logger.info(
+                        logger.debug(
                             "A needed multi-episode result overlaps with a single-episode result for ep #" + str(
-                                epObj.episode) + ", removing the single-episode results from the list", logger.DEBUG)
+                                epObj.episode) + ", removing the single-episode results from the list")
                         del foundResults[curProvider.name][epObj.episode]
 
         # of all the single ep results narrow it down to the best one for each episode

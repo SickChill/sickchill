@@ -24,14 +24,15 @@ import datetime
 import re
 
 # Third Party Imports
-import six
 from babelfish import Country
 
 # First Party Imports
 import sickchill
 from sickbeard import helpers, logger
-from sickbeard.metadata import generic
 from sickchill.helper.common import dateFormat
+
+# Local Folder Imports
+from . import generic
 
 try:
     import xml.etree.cElementTree as etree

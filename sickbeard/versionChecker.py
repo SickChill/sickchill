@@ -139,7 +139,7 @@ class CheckVersion(object):
             os.path.join(sickbeard.DATA_DIR, 'failed.db'),
             os.path.join(sickbeard.DATA_DIR, 'cache.db')
         ]
-        target = ek(os.path.join, backupDir, 'sickchill-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
+        target = os.path.join(backupDir, 'sickchill-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
 
         for (path, dirs, files) in os.walk(sickbeard.CACHE_DIR, topdown=True):
             for dirname in dirs:

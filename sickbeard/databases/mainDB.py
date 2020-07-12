@@ -166,10 +166,9 @@ class MainSanityCheck(db.DBSanityCheck):
 
         for cur_duplicate in sql_results:
 
-            logger.info("Duplicate episode detected! showid: {dupe_id} season: {dupe_season} episode {dupe_episode} count: {dupe_count}".format
+            logger.debug("Duplicate episode detected! showid: {dupe_id} season: {dupe_season} episode {dupe_episode} count: {dupe_count}".format
                        (dupe_id=str(cur_duplicate[b"showid"]), dupe_season=str(cur_duplicate[b"season"]), dupe_episode=str(cur_duplicate[b"episode"]),
-                        dupe_count=str(cur_duplicate[b"count"])),
-                       logger.DEBUG)
+                        dupe_count=str(cur_duplicate[b"count"])))
 
             cur_dupe_results = self.connection.select(
                 "SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? and episode = ? ORDER BY episode_id DESC LIMIT ?",
@@ -413,9 +412,7 @@ class AddSizeAndSceneNameFields(InitialSchema):
                 "SELECT episode_id, status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ? AND location != ''",
                 [cur_result[b"showid"], cur_result[b"season"], cur_result[b"episode"]])
             if not ep_results:
-                logger.info(
-                    "The episode " + nzb_name + " was found in history but doesn't exist on disk anymore, skipping",
-                    logger.DEBUG)
+                logger.debug("The episode " + nzb_name + " was found in history but doesn't exist on disk anymore, skipping")
                 continue
 
             # get the status/quality of the existing ep and make sure it's what we expect
@@ -461,9 +458,7 @@ class AddSizeAndSceneNameFields(InitialSchema):
             if not parse_result.release_group:
                 continue
 
-            logger.info(
-                "Name " + ep_file_name + " gave release group of " + parse_result.release_group + ", seems valid",
-                logger.DEBUG)
+            logger.debug("Name " + ep_file_name + " gave release group of " + parse_result.release_group + ", seems valid")
             self.connection.action("UPDATE tv_episodes SET release_name = ? WHERE episode_id = ?",
                                    [ep_file_name, cur_result[b"episode_id"]])
 

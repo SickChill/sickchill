@@ -311,9 +311,8 @@ class BTNCache(tvcache.TVCache):
 
         # Set maximum to 24 hours (24 * 60 * 60 = 86400 seconds) of "RSS" data search, older things will need to be done through backlog
         if seconds_since_last_update > 86400:
-            logger.info(
-                "The last known successful update was more than 24 hours ago, only trying to fetch the last 24 hours!",
-                logger.DEBUG)
+            logger.debug(
+                "The last known successful update was more than 24 hours ago, only trying to fetch the last 24 hours!")
             seconds_since_last_update = 86400
 
         self.search_params = None  # BTN cache does not use search params

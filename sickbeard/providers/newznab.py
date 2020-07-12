@@ -130,8 +130,7 @@ class NewznabProvider(NZBProvider):
         Checks if we have an image for this provider already.
         Returns found image or the default newznab image
         """
-        if ek(os.path.isfile,
-              ek(os.path.join, sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers',
+        if os.path.isfile(os.path.join(sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers',
                  self.get_id() + '.png')):
             return self.get_id() + '.png'
         return 'newznab.png'

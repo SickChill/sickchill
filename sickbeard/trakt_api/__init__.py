@@ -21,4 +21,5 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Local Folder Imports
+from .exceptions import traktAuthException, traktException, traktServerBusy
 from .trakt import TraktAPI

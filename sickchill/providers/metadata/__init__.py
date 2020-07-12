@@ -23,8 +23,8 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Stdlib Imports
 import sys
 
-# First Party Imports
-from sickbeard.metadata import generic, helpers, kodi, kodi_12plus, mede8er, mediabrowser, ps3, tivo, wdtv
+# Local Folder Imports
+from . import generic, helpers, kodi, kodi_12plus, mede8er, mediabrowser, ps3, tivo, wdtv
 
 __all__ = ['generic', 'helpers', 'kodi', 'kodi_12plus', 'mede8er', 'mediabrowser', 'ps3', 'tivo', 'wdtv']
 
@@ -35,7 +35,7 @@ def available_generators():
 
 def _getMetadataModule(name):
     name = name.lower()
-    prefix = "sickbeard.metadata."
+    prefix = "sickchill.providers.metadata."
     if name in available_generators() and prefix + name in sys.modules:
         return sys.modules[prefix + name]
     else:
@@ -44,7 +44,6 @@ def _getMetadataModule(name):
 
 def _getMetadataClass(name):
     module = _getMetadataModule(name)
-
     if not module:
         return None
 

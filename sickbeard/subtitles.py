@@ -212,9 +212,9 @@ def download_subtitles(episode, force_lang=None):
     existing_subtitles = episode.subtitles
 
     if not needs_subtitles(existing_subtitles, force_lang):
-        logger.info('Episode already has all needed subtitles, skipping {0} {1}'.format
+        logger.debug('Episode already has all needed subtitles, skipping {0} {1}'.format
                    (episode.show.name, episode_num(episode.season, episode.episode) or
-                    episode_num(episode.season, episode.episode, numbering='absolute')), logger.DEBUG)
+                    episode_num(episode.season, episode.episode, numbering='absolute')))
         return existing_subtitles, None
 
     if not force_lang:
@@ -223,9 +223,9 @@ def download_subtitles(episode, force_lang=None):
         languages = {from_code(force_lang)}
 
     if not languages:
-        logger.info('No subtitles needed for {0} {1}'.format
+        logger.debug('No subtitles needed for {0} {1}'.format
                    (episode.show.name, episode_num(episode.season, episode.episode) or
-                    episode_num(episode.season, episode.episode, numbering='absolute')), logger.DEBUG)
+                    episode_num(episode.season, episode.episode, numbering='absolute')))
         return existing_subtitles, None
 
     subtitles_path = get_subtitles_path(episode.location)
@@ -243,9 +243,9 @@ def download_subtitles(episode, force_lang=None):
 
     video = get_video(video_path, subtitles_path=subtitles_path, episode=episode)
     if not video:
-        logger.info('Exception caught in subliminal.scan_video for {0} {1}'.format
+        logger.debug('Exception caught in subliminal.scan_video for {0} {1}'.format
                    (episode.show.name, episode_num(episode.season, episode.episode) or
-                    episode_num(episode.season, episode.episode, numbering='absolute')), logger.DEBUG)
+                    episode_num(episode.season, episode.episode, numbering='absolute')))
         return existing_subtitles, None
 
     providers = enabled_service_list()
@@ -259,9 +259,9 @@ def download_subtitles(episode, force_lang=None):
                 logger.debug('Could not search in {0} provider. Discarding for now'.format(provider))
 
         if not subtitles_list:
-            logger.info('No subtitles found for {0} {1}'.format
+            logger.debug('No subtitles found for {0} {1}'.format
                        (episode.show.name, episode_num(episode.season, episode.episode) or
-                        episode_num(episode.season, episode.episode, numbering='absolute')), logger.DEBUG)
+                        episode_num(episode.season, episode.episode, numbering='absolute')))
             return existing_subtitles, None
 
         for subtitle in subtitles_list:
@@ -324,9 +324,9 @@ def refresh_subtitles(episode):
         return episode.subtitles, None
     current_subtitles = get_subtitles(video)
     if episode.subtitles == current_subtitles:
-        logger.info('No changed subtitles for {0} {1}'.format
+        logger.debug('No changed subtitles for {0} {1}'.format
                    (episode.show.name, episode_num(episode.season, episode.episode) or
-                    episode_num(episode.season, episode.episode, numbering='absolute')), logger.DEBUG)
+                    episode_num(episode.season, episode.episode, numbering='absolute')))
         return episode.subtitles, None
     else:
         return current_subtitles, True
@@ -473,10 +473,10 @@ class SubtitlesFinder(object):
                     # After 10 days, search every 7 days, after 30 days search once a month
                     # Will always try an episode regardless of age at least 2 times
                     if lastsearched + delay_time > now and int(ep_to_sub[b'searchcount']) > 2 and days:
-                        logger.info('Subtitle search for {0} {1} delayed for {2}'.format
+                        logger.debug('Subtitle search for {0} {1} delayed for {2}'.format
                                    (ep_to_sub[b'show_name'], episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode']) or
                                     episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute'),
-                                    dhm(lastsearched + delay_time - now)), logger.DEBUG)
+                                    dhm(lastsearched + delay_time - now)))
                         continue
 
                 logger.info('Searching for missing subtitles of {0} {1}'.format

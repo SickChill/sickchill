@@ -163,9 +163,7 @@ class AddShows(Home):
                 cur_dir = {
                     'dir': cur_path,
                     'existing_info': (None, None, None),
-                    'display_dir': '<b>' + os.path.dirname(cur_path) + os.sep + '</b>' + ek(
-                        os.path.basename,
-                        cur_path),
+                    'display_dir': '<b>' + os.path.dirname(cur_path) + os.sep + '</b>' + os.path.basename(cur_path)
                 }
 
                 # see if the folder is in KODI already

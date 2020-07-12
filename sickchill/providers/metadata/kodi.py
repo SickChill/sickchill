@@ -24,8 +24,10 @@ from __future__ import absolute_import, print_function, unicode_literals
 import os
 
 # First Party Imports
-from sickbeard.metadata import generic, kodi_12plus
 from sickchill.helper.common import replace_extension
+
+# Local Folder Imports
+from . import generic, kodi_12plus
 
 
 class KODIMetadata(kodi_12plus.KODI_12PlusMetadata):
@@ -124,7 +126,7 @@ class KODIMetadata(kodi_12plus.KODI_12PlusMetadata):
         else:
             season_poster_filename = 'season' + str(season).zfill(2)
 
-        return ek(os.path.join, show_obj.location, season_poster_filename + '.tbn')
+        return os.path.join(show_obj.location, season_poster_filename + '.tbn')
 
 
 # present a standard "interface" from the module

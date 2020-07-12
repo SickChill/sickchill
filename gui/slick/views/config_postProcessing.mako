@@ -767,7 +767,7 @@
                                         % if cur_preset == sickbeard.NAMING_ABD_PATTERN:
                                             <% is_abd_custom = False %>
                                         % endif
-                                            <option id="${cur_preset}" ${('', 'selected="selected"')[sickbeard.NAMING_ABD_PATTERN == cur_preset]}>${ek(os.path.join, tmp['dir'], tmp['name'])}</option>
+                                            <option id="${cur_preset}" ${('', 'selected="selected"')[sickbeard.NAMING_ABD_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                         % endfor
                                         <option id="${sickbeard.NAMING_ABD_PATTERN}" ${('', 'selected="selected"')[bool(is_abd_custom)]}>Custom...</option>
                                     </select>
@@ -953,7 +953,7 @@
                                         % if cur_preset == sickbeard.NAMING_SPORTS_PATTERN:
                                             <% is_sports_custom = False %>
                                         % endif
-                                            <option id="${cur_preset}" ${('', 'selected="selected"')[sickbeard.NAMING_SPORTS_PATTERN == cur_preset]}>${ek(os.path.join, tmp['dir'], tmp['name'])}</option>
+                                            <option id="${cur_preset}" ${('', 'selected="selected"')[sickbeard.NAMING_SPORTS_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                         % endfor
                                         <option id="${sickbeard.NAMING_SPORTS_PATTERN}" ${('', 'selected="selected"')[bool(is_sports_custom)]}>Custom...</option>
                                     </select>
@@ -1139,7 +1139,7 @@
                                         % if cur_preset == sickbeard.NAMING_ANIME_PATTERN:
                                             <% is_anime_custom = False %>
                                         % endif
-                                            <option id="${cur_preset}" ${('', 'selected="selected"')[cur_preset == sickbeard.NAMING_ANIME_PATTERN]}>${ek(os.path.join, tmp['dir'], tmp['name'])}</option>
+                                            <option id="${cur_preset}" ${('', 'selected="selected"')[cur_preset == sickbeard.NAMING_ANIME_PATTERN]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                         % endfor
                                         <option id="${sickbeard.NAMING_ANIME_PATTERN}" ${('', 'selected="selected"')[bool(is_anime_custom)]}>Custom...</option>
                                     </select>

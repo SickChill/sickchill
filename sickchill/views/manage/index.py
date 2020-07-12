@@ -313,11 +313,11 @@ class Manage(Home, WebRoot):
 
     @staticmethod
     def __gooey_path(name, method):
-        result = ek(getattr(os.path, method), name)
+        result = getattr(os.path, method)(name)
         if result == name or not result:
-            result = ek(getattr(ntpath, method), name)
+            result = getattr(ntpath, method)(name)
             if result == name or not result:
-                result = ek(getattr(posixpath, method), name)
+                result = getattr(posixpath, method)(name)
 
         return result
 

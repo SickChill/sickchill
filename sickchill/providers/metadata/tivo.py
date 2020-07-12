@@ -26,9 +26,10 @@ import datetime
 import os
 
 # First Party Imports
-import sickchill
 from sickbeard import helpers, logger
-from sickbeard.metadata import generic
+
+# Local Folder Imports
+from . import generic
 
 
 class TIVOMetadata(generic.GenericMetadata):
@@ -184,6 +185,7 @@ class TIVOMetadata(generic.GenericMetadata):
                 data += ("title : " + myShow.seriesName + "\n")
                 data += ("seriesTitle : " + myShow.seriesName + "\n")
 
+            # noinspection PyProtectedMember
             data += ("episodeTitle : " + curEpToWrite._format_pattern('%Sx%0E %EN') + "\n")
 
             # This should be entered for episodic shows and omitted for movies. The standard tivo format is to enter

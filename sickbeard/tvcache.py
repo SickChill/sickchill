@@ -164,9 +164,8 @@ class TVCache(object):
             return self._add_cache_entry(title, url)
 
         else:
-            logger.info(
-                "The data returned from the " + self.provider.name + " feed is incomplete, this result is unusable",
-                logger.DEBUG)
+            logger.debug(
+                "The data returned from the " + self.provider.name + " feed is incomplete, this result is unusable")
 
         return False
 

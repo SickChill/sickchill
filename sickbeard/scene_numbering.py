@@ -490,9 +490,8 @@ def xem_refresh(indexer_id, indexer, force=False):
         refresh = True
 
     if refresh or force:
-        logger.info(
-            'Looking up XEM scene mapping for show {0} on {1}'.format(indexer_id, sickchill.indexer.name(indexer)),
-            logger.DEBUG)
+        logger.debug(
+            'Looking up XEM scene mapping for show {0} on {1}'.format(indexer_id, sickchill.indexer.name(indexer)))
 
         # mark refreshed
         main_db_con.upsert(
@@ -579,9 +578,7 @@ def fix_xem_numbering(indexer_id, indexer):
     update_scene_episode = False
     update_scene_absolute_number = False
 
-    logger.info(
-        'Fixing any XEM scene mapping issues for show {0} on {1}'.format(indexer_id, sickchill.indexer.name(indexer)),
-        logger.DEBUG)
+    logger.debug('Fixing any XEM scene mapping issues for show {0} on {1}'.format(indexer_id, sickchill.indexer.name(indexer)))
 
     cl = []
     for row in rows:

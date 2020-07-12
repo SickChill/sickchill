@@ -118,9 +118,9 @@ class NorbitsProvider(TorrentProvider):
                         leechers = try_int(item.pop('leechers', 0))
 
                         if seeders < self.minseed or leechers < self.minleech:
-                            logger.info('Discarding torrent because it does not meet '
+                            logger.debug('Discarding torrent because it does not meet '
                                        'the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
-                                       (title, seeders, leechers), logger.DEBUG)
+                                       (title, seeders, leechers))
                             continue
 
                         info_hash = item.pop('info_hash', '')

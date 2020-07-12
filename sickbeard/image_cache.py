@@ -31,11 +31,11 @@ import imagesize
 import sickbeard
 import sickchill
 from sickchill.helper.exceptions import ShowDirectoryNotFoundException
+from sickchill.providers.metadata.generic import GenericMetadata
+from sickchill.providers.metadata.helpers import getShowImage
 
 # Local Folder Imports
 from . import helpers, logger
-from .metadata.generic import GenericMetadata
-from .metadata.helpers import getShowImage
 
 
 class ImageCache(object):

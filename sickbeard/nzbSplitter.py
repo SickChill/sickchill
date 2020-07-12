@@ -122,7 +122,7 @@ def save_nzb(nzb_name, nzb_string):
     :param nzb_string: Content to write in file
     """
     try:
-        with ek(open, nzb_name + ".nzb", 'w') as nzb_fh:
+        with open(nzb_name + ".nzb", "w", encoding="utf-8") as nzb_fh:
             nzb_fh.write(nzb_string)
 
     except EnvironmentError as error:

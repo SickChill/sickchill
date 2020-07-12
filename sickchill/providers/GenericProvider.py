@@ -245,9 +245,7 @@ class GenericProvider(object):
                         ep.absolute_number in parse_result.ab_episode_numbers]
                     ]):
 
-                        logger.info(
-                            'The result {0} doesn\'t seem to match an episode that we are currently trying to snatch, skipping it'.format(title),
-                            logger.DEBUG)
+                        logger.info('The result {0} doesn\'t seem to match an episode that we are currently trying to snatch, skipping it'.format(title))
                         add_cache_entry = True
 
                 if not add_cache_entry:

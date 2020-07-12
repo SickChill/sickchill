@@ -42,10 +42,11 @@ from tornado.locale import load_gettext_translations
 import sickchill
 from sickchill import show_updater
 from sickchill.helper import setup_github
+from sickchill.providers import metadata
 from sickchill.system.Shutdown import Shutdown
 
 # Local Folder Imports
-from . import (clients, dailysearcher, db, helpers, image_cache, logger, metadata, naming, notifications_queue, post_processing_queue, properFinder, providers,
+from . import (clients, dailysearcher, db, helpers, image_cache, logger, naming, notifications_queue, post_processing_queue, properFinder, providers,
                scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker, versionChecker)
 from .common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
 from .config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
@@ -1572,7 +1573,7 @@ def initialize(consoleLogging=True):
         migrator.migrate_config()
 
         # initialize metadata_providers
-        metadata_provider_dict = metadata.get_metadata_generator_dict()
+        metadata_provider_dict = {}
         for cur_metadata_tuple in [(METADATA_KODI, metadata.kodi),
                                    (METADATA_KODI_12PLUS, metadata.kodi_12plus),
                                    (METADATA_MEDIABROWSER, metadata.mediabrowser),
@@ -1581,10 +1582,10 @@ def initialize(consoleLogging=True):
                                    (METADATA_TIVO, metadata.tivo),
                                    (METADATA_MEDE8ER, metadata.mede8er)]:
 
-            (cur_metadata_config, cur_metadata_class) = cur_metadata_tuple
-            tmp_provider = cur_metadata_class.metadata_class()
-            tmp_provider.set_config(cur_metadata_config)
-            metadata_provider_dict[tmp_provider.name] = tmp_provider
+            cur_metadata_config, cur_metadata_module = cur_metadata_tuple
+            cur_metadata_class = cur_metadata_module.metadata_class()
+            cur_metadata_class.set_config(cur_metadata_config)
+            metadata_provider_dict[cur_metadata_class.name] = cur_metadata_class
 
         # initialize schedulers
         # updaters

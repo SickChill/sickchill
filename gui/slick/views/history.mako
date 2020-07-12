@@ -155,7 +155,8 @@
                                             % if curStatus in [SNATCHED, FAILED]:
                                                 <% provider = providers.getProviderClass(GenericProvider.make_id(action[b"provider"])) %>
                                                 % if provider is not None:
-                                                    <img src="${static_url('images/providers/' + provider.image_name())}" width="16" height="16" style="vertical-align:middle;" alt="${provider.name}" style="cursor: help;" title="${provider.name}: ${ek(os.path.basename, action[b"resource"])}"/>
+                                                    <img src="${static_url('images/providers/' + provider.image_name())}" width="16" height="16"
+                                                         style="vertical-align:middle;" alt="${provider.name}" style="cursor: help;" title="${provider.name}: ${os.path.basename(action[b"resource"])}"/>
                                                 % else:
                                                     <img src="${static_url('images/providers/missing.png')}" width="16" height="16" style="vertical-align:middle;" alt="${_('missing provider')}" title="${_('missing provider')}"/>
                                                 % endif
@@ -167,9 +168,9 @@
                                             <% curStatus, curQuality = Quality.splitCompositeStatus(int(action[b"action"])) %>
                                             % if curStatus in [DOWNLOADED, ARCHIVED]:
                                                 % if action[b"provider"] != "-1":
-                                                    <span style="cursor: help;" title="${ek(os.path.basename, action[b"resource"])}"><i>${action[b"provider"]}</i></span>
+                                                    <span style="cursor: help;" title="${os.path.basename(action[b"resource"])}"><i>${action[b"provider"]}</i></span>
                                                 % else:
-                                                    <span style="cursor: help;" title="${ek(os.path.basename, action[b"resource"])}"><i>${_('Unknown')}</i></span>
+                                                    <span style="cursor: help;" title="${os.path.basename(action[b"resource"])}"><i>${_('Unknown')}</i></span>
                                                 % endif
                                             % endif
                                         % endfor
@@ -179,7 +180,8 @@
                                             % for action in sorted(hItem[b"actions"]):
                                                 <% curStatus, curQuality = Quality.splitCompositeStatus(int(action[b"action"])) %>
                                                 % if curStatus == SUBTITLED:
-                                                    <img src="${static_url('images/subtitles/' + action[b'provider'] + '.png')}" width="16" height="16" style="vertical-align:middle;" alt="${action[b"provider"]}" title="${action[b"provider"].capitalize()}: ${ek(os.path.basename, action[b"resource"])}"/>
+                                                    <img src="${static_url('images/subtitles/' + action[b'provider'] + '.png')}" width="16" height="16"
+                                                         style="vertical-align:middle;" alt="${action[b"provider"]}" title="${action[b"provider"].capitalize()}: ${os.path.basename(action[b"resource"])}"/>
                                                     <span style="vertical-align:middle;"> / </span>
                                                     <img width="16" height="11" style="vertical-align:middle !important;" src="${static_url('images/subtitles/flags/' + action[b'resource'] + '.png') }" onError="this.onerror=null;this.src='${ static_url('images/flags/unknown.png')}';">
                                                     &nbsp;
