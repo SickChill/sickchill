@@ -4,10 +4,9 @@ path_classifiers:
 extraction:
   python:
     python_setup:
-      version: 2
+      version: 3
       requirements_files:
-        # - requirements/requirements.txt
-        - false
+        - requirements.txt
       setup_py: false
     index:
       exclude:
