@@ -117,7 +117,7 @@ class SRWebServer(threading.Thread):
             #  devs. We could now update without restart possibly if we check DB version hasnt changed!
             autoreload=False,
             gzip=sickbeard.WEB_USE_GZIP,
-            cookie_secret=bytes(sickbeard.WEB_COOKIE_SECRET, 'utf-8'),
+            cookie_secret=sickbeard.WEB_COOKIE_SECRET,
             login_url='{0}/login/'.format(self.options['web_root']),
             static_path=self.options['data_root'],
             static_url_prefix='{0}/'.format(self.options['web_root'])

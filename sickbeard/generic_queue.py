@@ -98,6 +98,7 @@ class GenericQueue(object):
                 # if there's something in the queue then run it in a thread and take it out of the queue
                 if self.queue:
 
+                    from functools import cmp_to_key
                     # sort by priority
                     def sorter(x, y):
                         """
@@ -113,7 +114,7 @@ class GenericQueue(object):
                         else:
                             return y.priority - x.priority
 
-                    self.queue.sort(cmp=sorter)
+                    self.queue.sort(key=cmp_to_key(sorter))
                     if self.queue[0].priority < self.min_priority:
                         return
 

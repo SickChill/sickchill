@@ -977,14 +977,14 @@ def encrypt(data, encryption_version=0, _decrypt=False):
 
     if encryption_version == 1:
         if _decrypt:
-            return ''.join(chr(ord(x) ^ ord(y)) for (x, y) in zip(base64.decodestring(data), cycle(unique_key1)))
+            return ''.join(chr(ord(x) ^ ord(y)) for (x, y) in zip(base64.decodebytes(data), cycle(unique_key1)))
         else:
             return base64.encodestring(
                 ''.join(chr(ord(x) ^ ord(y)) for (x, y) in zip(data, cycle(unique_key1)))).strip()
     # Version 2: Simple XOR encryption (this is not very secure, but works)
     elif encryption_version == 2:
         if _decrypt:
-            return ''.join(chr(ord(x) ^ ord(y)) for (x, y) in zip(base64.decodestring(data), cycle(sickbeard.ENCRYPTION_SECRET)))
+            return ''.join(chr(ord(x) ^ ord(y)) for (x, y) in zip(base64.decodebytes(data), cycle(sickbeard.ENCRYPTION_SECRET)))
         else:
             return base64.encodestring(
                 ''.join(chr(ord(x) ^ ord(y)) for (x, y) in zip(data, cycle(sickbeard.ENCRYPTION_SECRET)))).strip()
@@ -1471,8 +1471,8 @@ def get_size(start_path='.'):
 def generateApiKey():
     """ Return a new randomized API_KEY"""
     logger.info(_("Generating New API key"))
-    secure_hash = hashlib.sha512(str(time.time()))
-    secure_hash.update(str(random.SystemRandom().getrandbits(4096)))
+    secure_hash = hashlib.sha512(str(time.time()).encode())
+    secure_hash.update(str(random.SystemRandom().getrandbits(4096)).encode())
     return secure_hash.hexdigest()[:32]
 
 
@@ -1485,7 +1485,7 @@ def remove_article(text=''):
 def generateCookieSecret():
     """Generate a new cookie secret"""
 
-    return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
+    return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes).decode()
 
 
 def disk_usage(path):
@@ -1694,7 +1694,7 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
 
 
 def is_ip_local(ip):
-    request_ip = ipaddress.ip_address(ip.decode())
+    request_ip = ipaddress.ip_address(ip)
     if request_ip.is_private:
         return True
 

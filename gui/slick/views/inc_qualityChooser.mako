@@ -32,7 +32,7 @@ selected = None
 
                 <div style="padding-right: 40px; text-align: left; float: left;">
                     <h5>${_('Allowed')}</h5>
-                    <% anyQualityList = filter(lambda x: x > Quality.NONE, Quality.qualityStrings) %>
+                    <% anyQualityList = [x for x in Quality.qualityStrings if x > Quality.NONE] %>
                     <select id="anyQualities" name="anyQualities" multiple="multiple" size="${len(anyQualityList)}" class="form-control form-control-inline input-sm" title="anyQualities">
                         % for curQuality in sorted(anyQualityList):
                             <option value="${curQuality}" ${('', 'selected="selected"')[curQuality in anyQualities]}>${Quality.qualityStrings[curQuality]}</option>
@@ -42,7 +42,7 @@ selected = None
 
                 <div style="text-align: left; float: left;">
                     <h5>${_('Preferred')}</h5>
-                    <% bestQualityList = filter(lambda x: Quality.SDTV <= x < Quality.UNKNOWN, Quality.qualityStrings) %>
+                    <% bestQualityList = [x for x in Quality.qualityStrings if Quality.SDTV <= x < Quality.UNKNOWN] %>
                     <select id="bestQualities" name="bestQualities" multiple="multiple" size="${len(bestQualityList)}" class="form-control form-control-inline input-sm" title="bestQualities">
                         % for curQuality in sorted(bestQualityList):
                             <option value="${curQuality}" ${('', 'selected="selected"')[curQuality in bestQualities]}>${Quality.qualityStrings[curQuality]}</option>

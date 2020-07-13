@@ -122,6 +122,8 @@ class NumDict(MutableMapping):
         :return: a numeric key
         :rtype: int
         """
+        if key is None:
+            key = 0
         try:
             return int(key)
         except (TypeError, ValueError):

@@ -104,7 +104,7 @@
                                         <div id="customQuality" style="padding-left: 0;">
                                             <div style="padding-right: 40px; text-align: left; float: left;">
                                                 <h5>${_('Allowed')}</h5>
-                                                <% anyQualityList = filter(lambda x: x > common.Quality.NONE, common.Quality.qualityStrings) %>
+                                                <% anyQualityList = [x for x in common.Quality.qualityStrings if x > common.Quality.NONE] %>
                                                 <select id="anyQualities" name="anyQualities" multiple="multiple" size="${len(anyQualityList)}" class="form-control form-control-inline input-sm">
                                                     % for curQuality in sorted(anyQualityList):
                                                         <option value="${curQuality}" ${('', 'selected="selected"')[curQuality in anyQualities]}>${common.Quality.qualityStrings[curQuality]}</option>
@@ -114,7 +114,7 @@
 
                                             <div style="text-align: left; float: left;">
                                                 <h5>${_('Preferred')}</h5>
-                                                <% bestQualityList = filter(lambda x: x >= common.Quality.SDTV, common.Quality.qualityStrings) %>
+                                                <% bestQualityList = [x for x in common.Quality.qualityStrings if x >= common.Quality.SDTV] %>
                                                 <select id="bestQualities" name="bestQualities" multiple="multiple" size="${len(bestQualityList)}" class="form-control form-control-inline input-sm">
                                                     % for curQuality in sorted(bestQualityList):
                                                         <option value="${curQuality}" ${('', 'selected="selected"')[curQuality in bestQualities]}>${common.Quality.qualityStrings[curQuality]}</option>
