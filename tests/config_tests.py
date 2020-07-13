@@ -60,11 +60,6 @@ from collections import namedtuple
 
 # Third Party Imports
 import mock
-
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-# Third Party Imports
 from configobj import ConfigObj
 from rarfile import RarExecError
 

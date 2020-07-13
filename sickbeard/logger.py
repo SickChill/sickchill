@@ -64,7 +64,7 @@ class DispatchFormatter(logging.Formatter, object):
     Censor information such as API keys, user names, and passwords from the Log
     """
     def __init__(self, fmt=None, datefmt=None, style="{"):
-        super(DispatchFormatter, self).__init__(fmt, datefmt, style="{")
+        super(DispatchFormatter, self).__init__(fmt, datefmt, style=style)
 
     def format(self, record):
         """

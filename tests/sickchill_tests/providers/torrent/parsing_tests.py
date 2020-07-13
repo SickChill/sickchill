@@ -35,10 +35,6 @@ from functools import wraps
 import mock
 from vcr_unittest import VCRTestCase
 
-# Have to do this before importing sickbeard
-sys.path.insert(1, 'lib')
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../lib')))
-
 # First Party Imports
 import sickbeard
 
@@ -110,7 +106,7 @@ class BaseParser(type):
         def magic_skip(func):  # pylint:disable=no-self-argument
             @wraps(func)
             def magic(self, *args, **kwargs):
-                # pylint:disable=no-member
+                print(func.__name__)
                 if func.__name__ in disabled_provider_tests.get(self.provider.name, []):
                     self.skipTest('Test is programmatically disabled for provider {}'.format(self.provider.name))
                 func(self, *args, **kwargs)

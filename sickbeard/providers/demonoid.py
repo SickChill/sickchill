@@ -122,8 +122,8 @@ class DemonoidProvider(TorrentProvider):
 
                             items.append(item)
 
-                        except (AttributeError, TypeError, KeyError, ValueError, Exception) as e:
-                            logger.info(traceback.format_exc(e))
+                        except (AttributeError, TypeError, KeyError, ValueError, Exception):
+                            logger.info(traceback.format_exc())
                             continue
 
                             # For each search mode sort all the items by seeders if available

@@ -27,9 +27,6 @@ import re
 import sys
 import unittest
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 # First Party Imports
 import sickbeard
 from sickbeard.tv import TVShow

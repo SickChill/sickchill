@@ -8,11 +8,6 @@ Unit Tests for sickbeard/numdict.py
 import os.path
 import sys
 import unittest
-
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-# Stdlib Imports
 from collections import UserDict
 
 # First Party Imports

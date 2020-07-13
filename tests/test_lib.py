@@ -44,17 +44,12 @@ import shutil
 import sys
 import unittest
 
-# First Party Imports
-import sickchill
-
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 # Third Party Imports
 from configobj import ConfigObj
 
 # First Party Imports
 import sickbeard
+import sickchill
 from sickbeard import db, providers
 from sickbeard.databases import cache_db, failed_db, mainDB
 from sickbeard.providers.newznab import NewznabProvider
