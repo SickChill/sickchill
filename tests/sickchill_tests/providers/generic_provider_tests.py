@@ -22,8 +22,6 @@ Test GenericProvider
 """
 
 # Stdlib Imports
-import os
-import sys
 import unittest
 
 # Third Party Imports

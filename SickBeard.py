@@ -22,9 +22,7 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 # Stdlib Imports
-import codecs
 import datetime
-import locale
 import os
 import platform
 import shutil
@@ -42,7 +40,6 @@ setup_lib_path()
 setup_gettext()
 
 # Stdlib Imports
-# Fix mimetypes on misconfigured systems
 import mimetypes
 
 mimetypes.add_type("text/css", ".css")

@@ -26,8 +26,6 @@ Tests:
 """
 
 # Stdlib Imports
-import os.path
-import sys
 import threading
 import unittest
 

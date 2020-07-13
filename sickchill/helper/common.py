@@ -287,6 +287,9 @@ def sanitize_filename(filename):
     :return: The ``filename``cleaned
     """
 
+    if isinstance(filename, bytes):
+        filename = filename.decode()
+
     if isinstance(filename, str):
         filename = re.sub(r'[\\/\*]', '-', filename)
         filename = re.sub(r'[:"<>|?]', '', filename)

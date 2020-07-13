@@ -45,7 +45,7 @@ class ilCorsaroNeroProvider(TorrentProvider):
         ]
         categories = ','.join(map(str, categories))
 
-        self.url = 'https://ilcorsaronero.ch'
+        self.url = 'https://ilcorsaronero.link'
         self.urls = {
             'search': urljoin(self.url, 'argh.php?search={0}&order=data&by=DESC&page={1}&category=' + categories),
         }
@@ -251,13 +251,12 @@ class ilCorsaroNeroProvider(TorrentProvider):
                                     # Ignore empty rows in the middle of the table
                                     continue
                                 try:
-                                    info_link = result('td')[1].find('a')['href']
-                                    title = re.sub(' +', ' ', info_link.rsplit('/', 1)[-1].replace('_', ' '))
+                                    title = result('td')[1].get_text(strip=True)
+                                    torrent_size = result('td')[2].get_text(strip=True)
                                     info_hash = result('td')[3].find('input', class_='downarrow')['value'].upper()
                                     download_url = self._magnet_from_result(info_hash, title)
-                                    seeders = try_int(result('td')[5].text)
-                                    leechers = try_int(result('td')[6].text)
-                                    torrent_size = result('td')[2].string
+                                    seeders = try_int(result('td')[5].get_text(strip=True))
+                                    leechers = try_int(result('td')[6].get_text(strip=True))
                                     size = convert_size(torrent_size) or -1
 
                                 except (AttributeError, IndexError, TypeError):
@@ -300,9 +299,7 @@ class ilCorsaroNeroProvider(TorrentProvider):
 
                                 # Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
-                                    logger.debug('Discarding torrent because it doesn\'t meet the minimum'
-                                               ' seeders or leechers: {0} (S:{1} L:{2})'.format(
-                                        title, seeders, leechers))
+                                    logger.debug('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format(title, seeders, leechers))
                                     continue
 
                                 item = {'title': title, 'link': download_url, 'size': size,

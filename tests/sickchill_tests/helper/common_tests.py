@@ -23,8 +23,6 @@ Test sickchill.common
 """
 
 # Stdlib Imports
-import os
-import sys
 import unittest
 
 # First Party Imports

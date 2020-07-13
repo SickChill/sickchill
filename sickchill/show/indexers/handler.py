@@ -19,9 +19,6 @@
 # Stdlib Imports
 import re
 
-# Third Party Imports
-from requests.exceptions import HTTPError
-
 # First Party Imports
 import sickbeard
 from sickbeard import logger

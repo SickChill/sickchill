@@ -41,7 +41,6 @@ Classes:
 # Stdlib Imports
 import os.path
 import shutil
-import sys
 import unittest
 
 # Third Party Imports

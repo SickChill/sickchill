@@ -23,7 +23,6 @@ Test the post processor queue
 # Stdlib Imports
 import datetime
 import os.path
-import sys
 import time
 import unittest
 

@@ -24,7 +24,6 @@ Test post processing
 # Stdlib Imports
 import os.path
 import shutil
-import sys
 import unittest
 
 # First Party Imports

@@ -22,8 +22,6 @@ Test restart
 """
 
 # Stdlib Imports
-import os
-import sys
 import unittest
 
 # First Party Imports

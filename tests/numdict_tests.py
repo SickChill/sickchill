@@ -5,8 +5,6 @@ Unit Tests for sickbeard/numdict.py
 
 
 # Stdlib Imports
-import os.path
-import sys
 import unittest
 from collections import UserDict
 

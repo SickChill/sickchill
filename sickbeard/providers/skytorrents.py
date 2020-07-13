@@ -21,7 +21,6 @@ import validators
 from requests.compat import urljoin
 
 # First Party Imports
-import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickchill.helper.common import try_int

@@ -23,8 +23,6 @@ Test SNI and SSL
 """
 
 # Stdlib Imports
-import os.path
-import sys
 import unittest
 
 # Third Party Imports

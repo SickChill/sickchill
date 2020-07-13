@@ -22,9 +22,6 @@ Test XEM
 """
 
 # Stdlib Imports
-import os.path
-import re
-import sys
 import unittest
 
 # First Party Imports

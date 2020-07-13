@@ -30,8 +30,6 @@ Test notifiers
 
 
 # Stdlib Imports
-import os.path
-import sys
 import unittest
 
 # First Party Imports

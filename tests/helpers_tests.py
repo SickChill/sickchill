@@ -86,7 +86,6 @@ Private Methods:
 
 # Stdlib Imports
 import os
-import sys
 import unittest
 from shutil import rmtree
 

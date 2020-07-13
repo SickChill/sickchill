@@ -30,7 +30,7 @@ import sickbeard
 from sickbeard import logger
 
 # Local Folder Imports
-from .exceptions import traktAuthException, traktException, traktServerBusy
+from .exceptions import traktException
 
 
 class TraktAPI:

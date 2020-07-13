@@ -22,8 +22,6 @@ Test exception logging
 """
 
 # Stdlib Imports
-import os.path
-import sys
 import unittest
 
 

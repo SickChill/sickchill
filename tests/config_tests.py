@@ -53,15 +53,12 @@ Methods
 # Stdlib Imports
 import logging
 import os.path
-import platform
 import sys
 import unittest
 from collections import namedtuple
 
 # Third Party Imports
-import mock
 from configobj import ConfigObj
-from rarfile import RarExecError
 
 # First Party Imports
 import sickbeard
