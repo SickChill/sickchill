@@ -1,5 +1,4 @@
 # coding=utf-8
-
 # Author: Tyler Fenby <tylerfenby@gmail.com>
 # URL: https://sickchill.github.io
 #

@@ -1,5 +1,4 @@
 # coding=utf-8
-
 # Author: Joao Santos <jmigueltsantos@riseup.net>
 #
 # This file is part of SickChill.

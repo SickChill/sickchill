@@ -1,5 +1,4 @@
 # coding=utf-8
-
 # Author: Mhynlo<mhynlo@mhynlo.io>
 #
 # This file is part of SickChill.

@@ -1,5 +1,4 @@
 # coding=utf-8
-
 # Author: Maciej Olesinski (https://github.com/molesinski/)
 # Based on prowl.py by Nic Wolfe <nic@wolfeden.ca>
 # URL: https://sickchill.github.io

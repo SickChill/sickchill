@@ -1,5 +1,4 @@
 # coding=utf-8
-
 # Author: Patrick Begley<forge33@gmail.com>
 #
 # This file is part of SickChill.

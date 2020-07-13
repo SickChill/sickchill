@@ -1,5 +1,4 @@
 # coding=utf-8
-
 # Author: Dieter Blomme <dieterblomme@gmail.com>
 # URL: https://sickchill.github.io
 #

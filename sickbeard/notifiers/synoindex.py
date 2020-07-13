@@ -1,5 +1,4 @@
 # coding=utf-8
-
 # Author: Sebastien Erard <sebastien_erard@hotmail.com>
 # URL: https://sickchill.github.io
 #

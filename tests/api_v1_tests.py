@@ -1,5 +1,4 @@
 # coding=utf-8
-
 """
 Test the SR API
 """

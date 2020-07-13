@@ -1,5 +1,4 @@
 # coding=utf-8
-
 # Author: Nyaran <nyayukko@gmail.com>
 #
 # This file is part of SickChill.

@@ -1,5 +1,4 @@
 # coding=utf-8
-
 # URL: https://sickchill.github.io
 #
 # This file is part of SickChill.
