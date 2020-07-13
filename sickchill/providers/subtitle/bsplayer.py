@@ -2,7 +2,6 @@
 """
 Created by Nyaran, based on https://github.com/realgam3/service.subtitles.bsplayer
 """
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports

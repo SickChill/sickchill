@@ -1,5 +1,15 @@
 # coding=utf-8
 """A Norbits (https://norbits.net) provider"""
+from __future__ import absolute_import, print_function, unicode_literals
+
+# Third Party Imports
+from requests.compat import urlencode
+
+# First Party Imports
+from sickbeard import logger, tvcache
+from sickchill.helper.common import convert_size, try_int
+from sickchill.helper.exceptions import AuthException
+from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 # URL: https://sickchill.github.io
 #
@@ -18,21 +28,15 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import, print_function, unicode_literals
 
-# Third Party Imports
-from requests.compat import urlencode
 
-# First Party Imports
-from sickbeard import logger, tvcache
-from sickchill.helper.common import convert_size, try_int
-from sickchill.helper.exceptions import AuthException
-from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 try:
+    # Stdlib Imports
     import json
 except ImportError:
     # noinspection PyUnresolvedReferences
+    # Third Party Imports
     import simplejson as json
 
 

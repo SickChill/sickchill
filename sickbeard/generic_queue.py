@@ -17,7 +17,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
@@ -98,7 +97,9 @@ class GenericQueue(object):
                 # if there's something in the queue then run it in a thread and take it out of the queue
                 if self.queue:
 
+                    # Stdlib Imports
                     from functools import cmp_to_key
+
                     # sort by priority
                     def sorter(x, y):
                         """

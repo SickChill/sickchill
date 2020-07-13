@@ -18,7 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # pylint:disable=too-many-lines
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
@@ -41,13 +40,12 @@ import sys
 import time
 import traceback
 import uuid
-import xml.etree.ElementTree as ElementTree
 import zipfile
 from contextlib import closing
 from itertools import cycle
+from xml.etree import ElementTree as ElementTree
 
 # Third Party Imports
-import adba
 import certifi
 import cfscrape
 import cloudscraper
@@ -66,6 +64,7 @@ from tornado._locale_data import LOCALE_NAMES
 from unidecode import unidecode
 
 # First Party Imports
+import adba
 import sickbeard
 import sickchill
 from sickchill.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS
@@ -344,8 +343,10 @@ def copyFile(srcFile, destFile):
     """
 
     try:
-        from shutil import SpecialFileError, Error
+        # Stdlib Imports
+        from shutil import Error, SpecialFileError
     except ImportError:
+        # Stdlib Imports
         from shutil import Error
         SpecialFileError = Error
 
@@ -790,13 +791,17 @@ def create_https_certificates(ssl_cert, ssl_key):
     # noinspection PyBroadException
     try:
         # noinspection PyUnresolvedReferences
+        # Third Party Imports
         from OpenSSL import crypto
-        from certgen import createKeyPair, createCertRequest, createCertificate, TYPE_RSA
+
+        # First Party Imports
+        from certgen import createCertificate, createCertRequest, createKeyPair, TYPE_RSA
     except Exception:
         logger.info(traceback.format_exc())
         logger.warning(_("pyopenssl module missing, please install for https access"))
         return False
 
+    # Stdlib Imports
     import time
 
     cakey = createKeyPair(TYPE_RSA, 4096)
@@ -1499,6 +1504,7 @@ def disk_usage(path):
         if platform.system() == 'Darwin':
             # noinspection PyBroadException
             try:
+                # Stdlib Imports
                 import subprocess
                 call = subprocess.Popen(["df", "-k", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 output = call.communicate()[0]

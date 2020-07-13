@@ -31,6 +31,7 @@ import sickbeard
 
 try:
     get_distribution('pymediainfo')
+    # Third Party Imports
     from pymediainfo import MediaInfo as mediainfo
 except (ImportError, DistributionNotFound):
     mediainfo = None

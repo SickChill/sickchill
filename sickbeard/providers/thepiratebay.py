@@ -17,7 +17,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
@@ -35,6 +34,7 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 try:
     # https://github.com/SickChill/SickChill/issues/6236
     # Python lower than 2.7.9 Throws a syntax error here.
+    # Third Party Imports
     import js2py
 except SyntaxError:
     js2py = None

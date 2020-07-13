@@ -49,6 +49,7 @@ from .api.webapi import function_mapper
 from .common import PageTemplate
 
 try:
+    # Third Party Imports
     import jwt
     from jwt.algorithms import RSAAlgorithm as jwt_algorithms_RSAAlgorithm
     has_cryptography = True
@@ -58,9 +59,11 @@ except:
 
 
 try:
+    # Stdlib Imports
     import json
 except ImportError:
     # noinspection PyPackageRequirements,PyUnresolvedReferences
+    # Third Party Imports
     import simplejson as json
 
 

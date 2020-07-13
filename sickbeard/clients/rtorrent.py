@@ -17,12 +17,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
-
-
-# based on fuzemans work
-# https://github.com/RuudBurger/CouchPotatoServer/blob/develop/couchpotato/core/downloaders/rtorrent/main.py
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Third Party Imports

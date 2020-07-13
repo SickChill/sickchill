@@ -22,8 +22,8 @@ from __future__ import absolute_import, print_function, unicode_literals
 from datetime import datetime
 
 # Third Party Imports
-from feedparser import FeedParserDict
 import bencodepy
+from feedparser import FeedParserDict
 
 # First Party Imports
 import sickbeard

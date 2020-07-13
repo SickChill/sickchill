@@ -32,9 +32,11 @@ from .index import WebRoot
 from .routes import Route
 
 try:
+    # Stdlib Imports
     import json
 except ImportError:
     # noinspection PyPackageRequirements,PyUnresolvedReferences
+    # Third Party Imports
     import simplejson as json
 
 

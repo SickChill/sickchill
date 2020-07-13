@@ -21,12 +21,15 @@ from subliminal.subtitle import fix_line_ending, Subtitle
 from subliminal.video import Episode
 
 try:
+    # Third Party Imports
     from lxml import etree
 except ImportError:  # pragma: no cover
     try:
-        import xml.etree.cElementTree as etree
+        # Stdlib Imports
+        from xml.etree import cElementTree as etree
     except ImportError:
-        import xml.etree.ElementTree as etree
+        # Stdlib Imports
+        from xml.etree import ElementTree as etree
 
 logger = logging.getLogger(__name__)
 

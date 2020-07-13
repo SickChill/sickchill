@@ -22,7 +22,6 @@
 # @author: Dermot Buckley <dermot@buckley.ie>
 # @copyright: Dermot Buckley
 #
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports

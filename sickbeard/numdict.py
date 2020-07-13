@@ -2,7 +2,6 @@
 """
 class NumDict - A dict with numeric keys
 """
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
@@ -86,6 +85,7 @@ class NumDict(MutableMapping):
         """
         if self.__class__ is NumDict:
             return NumDict(self.data.copy())
+        # Stdlib Imports
         import copy
         data = self.data
         try:

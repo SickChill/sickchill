@@ -17,8 +17,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
@@ -29,9 +27,11 @@ from . import classes, helpers, logger
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 try:
-    import xml.etree.cElementTree as ETree
+    # Stdlib Imports
+    from xml.etree import cElementTree as ETree
 except ImportError:
-    import xml.etree.ElementTree as ETree
+    # Stdlib Imports
+    from xml.etree import ElementTree as ETree
 
 
 

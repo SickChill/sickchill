@@ -51,9 +51,11 @@ from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
 
 try:
+    # Stdlib Imports
     import json
 except ImportError:
     # noinspection PyPackageRequirements,PyUnresolvedReferences
+    # Third Party Imports
     import simplejson as json
 
 
@@ -115,6 +117,7 @@ class ApiHandler(RequestHandler):
         _call_dispatcher = self.call_dispatcher
         # if profile was set wrap "_call_dispatcher" in the profile function
         if 'profile' in kwargs:
+            # Third Party Imports
             from profilehooks import profile
 
             _call_dispatcher = profile(_call_dispatcher, immediate=True)

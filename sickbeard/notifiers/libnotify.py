@@ -16,7 +16,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
@@ -31,10 +30,12 @@ from sickbeard import common
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     try:
+        # Third Party Imports
         from pgi.repository import Notify
     except (ImportError, Exception):
         try:
             # noinspection PyUnresolvedReferences
+            # Third Party Imports
             from gi.repository import Notify
         except (ImportError, Exception):
             Notify = None
@@ -64,6 +65,7 @@ class Notifier(object):
                     "from a desktop login.")
 
         try:
+            # Third Party Imports
             import dbus
         except (ImportError, Exception):
             dbus = None

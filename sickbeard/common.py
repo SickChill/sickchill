@@ -17,6 +17,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+from __future__ import absolute_import, print_function, unicode_literals
 
 """
 Common interface for Quality and Status
@@ -38,8 +39,8 @@ import fake_useragent
 from six.moves import reduce
 
 # First Party Imports
-from setup import setup_gettext
 import sickbeard
+from setup import setup_gettext
 from sickchill.helper import video_screen_size
 from sickchill.recompiled import tags
 from sickchill.tagger.episode import EpisodeTags

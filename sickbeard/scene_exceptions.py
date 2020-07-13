@@ -17,7 +17,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
@@ -26,10 +25,10 @@ import threading
 import time
 
 # Third Party Imports
-import adba
 import six
 
 # First Party Imports
+import adba
 import sickbeard
 import sickchill
 

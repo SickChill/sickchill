@@ -35,9 +35,11 @@ import sickbeard
 from sickbeard import classes, helpers
 
 try:
+    # Stdlib Imports
     import json
 except ImportError:
     # noinspection PyPackageRequirements,PyUnresolvedReferences
+    # Third Party Imports
     import simplejson as json
 
 mako_lookup = {}

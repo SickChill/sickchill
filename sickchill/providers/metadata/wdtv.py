@@ -16,7 +16,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
@@ -32,9 +31,11 @@ from sickchill.helper.common import dateFormat, replace_extension
 from . import generic
 
 try:
-    import xml.etree.cElementTree as etree
+    # Stdlib Imports
+    from xml.etree import cElementTree as etree
 except ImportError:
-    import xml.etree.ElementTree as etree
+    # Stdlib Imports
+    from xml.etree import ElementTree as etree
 
 
 class WDTVMetadata(generic.GenericMetadata):

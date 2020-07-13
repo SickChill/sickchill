@@ -17,7 +17,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
@@ -28,10 +27,10 @@ import stat
 import subprocess
 
 # Third Party Imports
-import adba
 import six
 
 # First Party Imports
+import adba
 import sickbeard
 from sickchill.helper import glob
 from sickchill.helper.common import remove_extension, replace_extension, SUBTITLE_EXTENSIONS

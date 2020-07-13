@@ -26,8 +26,8 @@ import six
 from tornado.web import addslash
 
 # First Party Imports
-from setup import setup_gettext
 import sickbeard
+from setup import setup_gettext
 from sickbeard import config, filters, helpers, logger, ui
 from sickbeard.common import Quality, WANTED
 from sickchill.helper import setup_github, try_int

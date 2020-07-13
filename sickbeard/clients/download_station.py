@@ -17,7 +17,6 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 #
 # Uses the Synology Download Station API: http://download.synology.com/download/Document/DeveloperGuide/Synology_Download_Station_Web_API.pdf
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports

@@ -16,7 +16,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
@@ -56,11 +55,14 @@ from .common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NA
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 try:
-    import xml.etree.cElementTree as etree
+    # Stdlib Imports
+    from xml.etree import cElementTree as etree
 except ImportError:
-    import xml.etree.ElementTree as etree
+    # Stdlib Imports
+    from xml.etree import ElementTree as etree
 
 try:
+    # Third Party Imports
     from send2trash import send2trash
 except ImportError:
     def send2trash(path):

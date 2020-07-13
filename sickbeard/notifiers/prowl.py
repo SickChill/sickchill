@@ -18,7 +18,6 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
@@ -37,6 +36,7 @@ from sickbeard import common, db, logger
 
 try:
     # this only exists in 2.6
+    # Stdlib Imports
     from ssl import SSLError
 except ImportError:
     # make a fake one since I don't know what it is supposed to be in 2.5

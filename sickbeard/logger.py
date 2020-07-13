@@ -17,6 +17,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+from __future__ import absolute_import, print_function, unicode_literals
 
 """
 Custom Logger for SickChill
@@ -235,6 +236,7 @@ class Logger(object):
             return submitter_result, issue_id
 
         try:
+            # Local Folder Imports
             from .versionChecker import CheckVersion
             checkversion = CheckVersion()
             checkversion.check_for_new_version()

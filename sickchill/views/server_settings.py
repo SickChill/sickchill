@@ -2,16 +2,16 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
+import asyncio
+import errno
 import os
 import threading
 from socket import error as socket_error
-import errno
 
 # Third Party Imports
-import asyncio
 from tornado.ioloop import IOLoop
-from tornado.web import Application, RedirectHandler, StaticFileHandler, url
 from tornado.platform.asyncio import AnyThreadEventLoopPolicy
+from tornado.web import Application, RedirectHandler, StaticFileHandler, url
 
 # First Party Imports
 import sickbeard

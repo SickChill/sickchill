@@ -16,7 +16,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
@@ -39,9 +38,11 @@ from sickchill.helper.common import replace_extension, try_int
 from . import helpers as metadata_helpers
 
 try:
-    import xml.etree.cElementTree as etree
+    # Stdlib Imports
+    from xml.etree import cElementTree as etree
 except ImportError:
-    import xml.etree.ElementTree as etree
+    # Stdlib Imports
+    from xml.etree import ElementTree as etree
 
 
 class GenericMetadata(object):
