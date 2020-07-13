@@ -211,7 +211,7 @@ class TrackerCacheDBConnection(db.DBConnection):
     def get_trackers(self):
         sql_result = self.select_one("SELECT * FROM trackers WHERE provider = ?", [self.provider_id])
         if sql_result:
-            last_time = datetime.datetime.fromtimestamp(sql_result[b"time"])
+            last_time = datetime.datetime.fromtimestamp(sql_result["time"])
             if last_time > datetime.datetime.now():
                 last_time = datetime.datetime.min
         else:
@@ -227,7 +227,7 @@ class TrackerCacheDBConnection(db.DBConnection):
             )
             result = trackers
         else:
-            result = sql_result[b'trackers']
+            result = sql_result['trackers']
 
         return result
 

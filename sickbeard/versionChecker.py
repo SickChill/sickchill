@@ -457,7 +457,7 @@ class GitUpdateManager(UpdateManager):
             exit_status = p.returncode
 
             if output:
-                output = output.strip()
+                output = str(output.strip())
 
         except OSError:
             logger.info("Command {} didn't work".format(cmd))
@@ -476,8 +476,7 @@ class GitUpdateManager(UpdateManager):
             if exit_status in (127, 128) or 'fatal:' in output:
                 logger.warning("{0} returned : ({1}) {2}".format(cmd, exit_status, str(output or err)))
             else:
-                logger.exception("{0} returned code {1}, treating as error : {2}"
-                           .format(cmd, exit_status, str(output or err)))
+                logger.exception("{0} returned code {1}, treating as error : {2}".format(cmd, exit_status, str(output or err)))
                 exit_status = 1
 
         return output, err, exit_status

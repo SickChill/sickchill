@@ -104,7 +104,7 @@ class DBConnection(object):
             logger.info(_("If this happened in cache.db, you can safely stop SickChill, and delete the cache.db file without losing any data"))
             # noinspection PyUnresolvedReferences
             logger.info(
-                _("Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables:s}").format(
+                _("Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables}").format(
                     local_variables=local_variables
                 )
             )
@@ -227,7 +227,7 @@ class DBConnection(object):
                             sql_results.append(self._execute(qu[0], fetchall=fetchall))
                         elif len(qu) > 1:
                             # noinspection PyUnresolvedReferences
-                            logger.log(log_level, _("{filename}: {query} with args {args:s}").format(filename=self.filename, query=qu[0], args=qu[1]))
+                            logger.log(log_level, _("{filename}: {query} with args {args}").format(filename=self.filename, query=qu[0], args=qu[1]))
                             sql_results.append(self._execute(qu[0], qu[1], fetchall=fetchall))
                     self.connection.commit()
                     # noinspection PyUnresolvedReferences
@@ -279,9 +279,9 @@ class DBConnection(object):
                 try:
                     if sickbeard.DBDEBUG:
                         if args is None:
-                            logger.debug(self.filename + ": " + query)
+                            logger.database(self.filename + ": " + query)
                         else:
-                            logger.debug("{filename}: {query} with args {args:s}".format(filename=self.filename, query=query, args=args))
+                            logger.database("{filename}: {query} with args {args}".format(filename=self.filename, query=query, args=args))
 
                     sql_results = self._execute(query, args, fetchall=fetchall, fetchone=fetchone)
                     self.connection.commit()
@@ -384,7 +384,7 @@ class DBConnection(object):
         :param table_name: name of table
         :return: array of name/type info
         """
-        return {column[b"name"]: {"type": column[b"type"]} for column in self.select("PRAGMA table_info(`{0}`)".format(table_name))}
+        return {column["name"]: {"type": column["type"]} for column in self.select("PRAGMA table_info(`{0}`)".format(table_name))}
 
     @staticmethod
     def _dict_factory(cursor, row):

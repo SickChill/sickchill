@@ -296,8 +296,8 @@ def validate_dir(process_path, release_name, failed, result):
     sql_results = main_db_con.select("SELECT location FROM tv_shows")
 
     for sqlShow in sql_results:
-        if process_path.lower().startswith(os.path.realpath(sqlShow[b"location"]).lower() + os.sep) or \
-                process_path.lower() == os.path.realpath(sqlShow[b"location"]).lower():
+        if process_path.lower().startswith(os.path.realpath(sqlShow["location"]).lower() + os.sep) or \
+                process_path.lower() == os.path.realpath(sqlShow["location"]).lower():
 
             result.output += log_helper(
                 "Cannot process an episode that's already been moved to its show dir, skipping " + process_path,
@@ -563,7 +563,7 @@ def subtitles_enabled(video):
     if parse_result.show.indexerid:
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT subtitles FROM tv_shows WHERE indexer_id = ? LIMIT 1", [parse_result.show.indexerid])
-        return bool(sql_results[0][b"subtitles"]) if sql_results else False
+        return bool(sql_results[0]["subtitles"]) if sql_results else False
     else:
         logger.warning('Empty indexer ID for: {0}'.format(video))
         return False

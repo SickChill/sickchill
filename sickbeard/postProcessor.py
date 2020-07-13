@@ -507,10 +507,10 @@ class PostProcessor(object):
             if not sql_results:
                 continue
 
-            indexer_id = int(sql_results[0][b"showid"])
-            season = int(sql_results[0][b"season"])
-            quality = int(sql_results[0][b"quality"])
-            version = int(sql_results[0][b"version"])
+            indexer_id = int(sql_results[0]["showid"])
+            season = int(sql_results[0]["season"])
+            quality = int(sql_results[0]["quality"])
+            version = int(sql_results[0]["version"])
 
             if quality == common.Quality.UNKNOWN:
                 quality = None
@@ -707,16 +707,16 @@ class PostProcessor(object):
                     [show.indexerid, show.indexer, airdate])
 
                 if sql_result:
-                    season = int(sql_result[0][b'season'])
-                    episodes = [int(sql_result[0][b'episode'])]
+                    season = int(sql_result[0]['season'])
+                    episodes = [int(sql_result[0]['episode'])]
                 else:
                     # Found no result, try with season 0
                     sql_result = main_db_con.select(
                         "SELECT season, episode FROM tv_episodes WHERE showid = ? and indexer = ? and airdate = ?",
                         [show.indexerid, show.indexer, airdate])
                     if sql_result:
-                        season = int(sql_result[0][b'season'])
-                        episodes = [int(sql_result[0][b'episode'])]
+                        season = int(sql_result[0]['season'])
+                        episodes = [int(sql_result[0]['episode'])]
                     else:
                         self._log(
                             "Unable to find episode with date " +

@@ -68,8 +68,8 @@ class AddShows(Home):
         return sanitize_filename(name)
 
     def searchIndexersForShowName(self, search_term, lang=None, indexer=None):
-        self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
-        self.set_header(b'Content-Type', 'application/json')
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header('Content-Type', 'application/json')
         if not lang or lang == 'null':
             lang = sickbeard.INDEXER_DEFAULT_LANGUAGE
 

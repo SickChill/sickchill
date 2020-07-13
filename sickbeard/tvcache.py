@@ -51,7 +51,7 @@ class CacheDBConnection(db.DBConnection):
                 sql_results = self.select("SELECT url, COUNT(url) AS count FROM [" + provider_name + "] GROUP BY url HAVING count > 1")
 
                 for cur_dupe in sql_results:
-                    self.action("DELETE FROM [" + provider_name + "] WHERE url = ?", [cur_dupe[b"url"]])
+                    self.action("DELETE FROM [" + provider_name + "] WHERE url = ?", [cur_dupe["url"]])
 
             # add unique index to prevent further dupes from happening if one does not exist
             self.action("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON [" + provider_name + "] (url)")
@@ -175,7 +175,7 @@ class TVCache(object):
         sql_results = cache_db_con.select("SELECT time FROM lastUpdate WHERE provider = ?", [self.provider_id])
 
         if sql_results:
-            last_time = int(sql_results[0][b"time"])
+            last_time = int(sql_results[0]["time"])
             if last_time > int(time.mktime(datetime.datetime.today().timetuple())):
                 last_time = 0
         else:
@@ -189,7 +189,7 @@ class TVCache(object):
         sql_results = cache_db_con.select("SELECT time FROM lastSearch WHERE provider = ?", [self.provider_id])
 
         if sql_results:
-            last_time = int(sql_results[0][b"time"])
+            last_time = int(sql_results[0]["time"])
             if last_time > int(time.mktime(datetime.datetime.today().timetuple())):
                 last_time = 0
         else:
@@ -301,7 +301,7 @@ class TVCache(object):
             sql += " AND time >= " + str(int(time.mktime(date.timetuple())))
 
         propers_results = cache_db_con.select(sql)
-        return [x for x in propers_results if x[b'indexerid']]
+        return [x for x in propers_results if x['indexerid']]
 
     def find_needed_episodes(self, episode, manualSearch=False, downCurQuality=False):  # pylint:disable=too-many-locals, too-many-branches
         needed_eps = {}
@@ -327,12 +327,12 @@ class TVCache(object):
         # for each cache entry
         for cur_result in sql_results:
             # get the show object, or if it's not one of our shows then ignore it
-            show_obj = Show.find(sickbeard.showList, int(cur_result[b"indexerid"]))
+            show_obj = Show.find(sickbeard.showList, int(cur_result["indexerid"]))
             if not show_obj:
                 continue
 
             # ignored/required words, and non-tv junk
-            if not show_name_helpers.filter_bad_releases(cur_result[b"name"], show=show_obj):
+            if not show_name_helpers.filter_bad_releases(cur_result["name"], show=show_obj):
                 continue
 
             # skip if provider is anime only and show is not anime
@@ -341,30 +341,30 @@ class TVCache(object):
                 continue
 
             # get season and ep data (ignoring multi-eps for now)
-            cur_season = int(cur_result[b"season"])
+            cur_season = int(cur_result["season"])
             if cur_season == -1:
                 continue
 
-            cur_ep = cur_result[b"episodes"].split("|")[1]
+            cur_ep = cur_result["episodes"].split("|")[1]
             if not cur_ep:
                 continue
 
             cur_ep = int(cur_ep)
 
-            cur_quality = int(cur_result[b"quality"])
-            cur_release_group = cur_result[b"release_group"]
-            cur_version = cur_result[b"version"]
+            cur_quality = int(cur_result["quality"])
+            cur_release_group = cur_result["release_group"]
+            cur_version = cur_result["version"]
 
             # if the show says we want that episode then add it to the list
             if not show_obj.wantEpisode(cur_season, cur_ep, cur_quality, manualSearch, downCurQuality):
-                logger.debug("Ignoring " + cur_result[b"name"])
+                logger.debug("Ignoring " + cur_result["name"])
                 continue
 
             ep_obj = show_obj.getEpisode(cur_season, cur_ep)
 
             # build a result object
-            title = cur_result[b"name"]
-            url = cur_result[b"url"]
+            title = cur_result["name"]
+            url = cur_result["url"]
 
             logger.info("Found result " + title + " at " + url)
 

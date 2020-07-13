@@ -87,7 +87,7 @@ def find_scene_numbering(indexer_id, indexer, season, episode):
         [indexer, indexer_id, season, episode])
 
     if rows:
-        return int(rows[0][b"scene_season"]), int(rows[0][b"scene_episode"])
+        return int(rows[0]["scene_season"]), int(rows[0]["scene_episode"])
 
 
 def get_scene_absolute_numbering(indexer_id, indexer, absolute_number, fallback_to_xem=True):
@@ -140,7 +140,7 @@ def find_scene_absolute_numbering(indexer_id, indexer, absolute_number):
         [indexer, indexer_id, absolute_number])
 
     if rows:
-        return int(rows[0][b"scene_absolute_number"])
+        return int(rows[0]["scene_absolute_number"])
 
 
 def get_indexer_numbering(indexer_id, indexer, sceneSeason, sceneEpisode, fallback_to_xem=True):
@@ -160,7 +160,7 @@ def get_indexer_numbering(indexer_id, indexer, sceneSeason, sceneEpisode, fallba
         [indexer, indexer_id, sceneSeason, sceneEpisode])
 
     if rows:
-        return int(rows[0][b"season"]), int(rows[0][b"episode"])
+        return int(rows[0]["season"]), int(rows[0]["episode"])
     else:
         if fallback_to_xem:
             return get_indexer_numbering_for_xem(indexer_id, indexer, sceneSeason, sceneEpisode)
@@ -189,7 +189,7 @@ def get_indexer_absolute_numbering(indexer_id, indexer, sceneAbsoluteNumber, fal
             [indexer, indexer_id, sceneAbsoluteNumber, scene_season])
 
     if rows:
-        return int(rows[0][b"absolute_number"])
+        return int(rows[0]["absolute_number"])
     else:
         if fallback_to_xem:
             return get_indexer_absolute_numbering_for_xem(indexer_id, indexer, sceneAbsoluteNumber, scene_season)
@@ -257,7 +257,7 @@ def find_xem_numbering(indexer_id, indexer, season, episode):
         [indexer, indexer_id, season, episode])
 
     if rows:
-        return int(rows[0][b"scene_season"]), int(rows[0][b"scene_episode"])
+        return int(rows[0]["scene_season"]), int(rows[0]["scene_episode"])
 
 
 def find_xem_absolute_numbering(indexer_id, indexer, absolute_number):
@@ -283,7 +283,7 @@ def find_xem_absolute_numbering(indexer_id, indexer, absolute_number):
         [indexer, indexer_id, absolute_number])
 
     if rows:
-        return int(rows[0][b"scene_absolute_number"])
+        return int(rows[0]["scene_absolute_number"])
 
 
 def get_indexer_numbering_for_xem(indexer_id, indexer, sceneSeason, sceneEpisode):
@@ -310,7 +310,7 @@ def get_indexer_numbering_for_xem(indexer_id, indexer, sceneSeason, sceneEpisode
         [indexer, indexer_id, sceneSeason, sceneEpisode])
 
     if rows:
-        return int(rows[0][b"season"]), int(rows[0][b"episode"])
+        return int(rows[0]["season"]), int(rows[0]["episode"])
 
     return sceneSeason, sceneEpisode
 
@@ -343,7 +343,7 @@ def get_indexer_absolute_numbering_for_xem(indexer_id, indexer, sceneAbsoluteNum
             [indexer, indexer_id, sceneAbsoluteNumber, scene_season])
 
     if rows:
-        return int(rows[0][b"absolute_number"])
+        return int(rows[0]["absolute_number"])
 
     return sceneAbsoluteNumber
 
@@ -367,10 +367,10 @@ def get_scene_numbering_for_show(indexer_id, indexer):
 
     result = {}
     for row in rows:
-        season = int(row[b'season'])
-        episode = int(row[b'episode'])
-        scene_season = int(row[b'scene_season'])
-        scene_episode = int(row[b'scene_episode'])
+        season = int(row['season'])
+        episode = int(row['episode'])
+        scene_season = int(row['scene_season'])
+        scene_episode = int(row['scene_episode'])
 
         result[(season, episode)] = (scene_season, scene_episode)
 
@@ -398,10 +398,10 @@ def get_xem_numbering_for_show(indexer_id, indexer):
 
     result = {}
     for row in rows:
-        season = int(row[b'season'])
-        episode = int(row[b'episode'])
-        scene_season = int(row[b'scene_season'])
-        scene_episode = int(row[b'scene_episode'])
+        season = int(row['season'])
+        episode = int(row['episode'])
+        scene_season = int(row['scene_season'])
+        scene_episode = int(row['scene_episode'])
 
         result[(season, episode)] = (scene_season, scene_episode)
 
@@ -427,8 +427,8 @@ def get_scene_absolute_numbering_for_show(indexer_id, indexer):
 
     result = {}
     for row in rows:
-        absolute_number = int(row[b'absolute_number'])
-        scene_absolute_number = int(row[b'scene_absolute_number'])
+        absolute_number = int(row['absolute_number'])
+        scene_absolute_number = int(row['scene_absolute_number'])
 
         result[absolute_number] = scene_absolute_number
 
@@ -456,8 +456,8 @@ def get_xem_absolute_numbering_for_show(indexer_id, indexer):
         [indexer, indexer_id])
 
     for row in rows:
-        __absolute_number = row[b'absolute_number']
-        __scene_absolute_number = row[b'scene_absolute_number']
+        __absolute_number = row['absolute_number']
+        __scene_absolute_number = row['scene_absolute_number']
         if not (__absolute_number and __scene_absolute_number):
             continue
 
@@ -484,7 +484,7 @@ def xem_refresh(indexer_id, indexer, force=False):
     rows = main_db_con.select("SELECT last_refreshed FROM xem_refresh WHERE indexer = ? and indexer_id = ?",
                               [indexer, indexer_id])
     if rows:
-        lastRefresh = int(rows[0][b'last_refreshed'])
+        lastRefresh = int(rows[0]['last_refreshed'])
         refresh = int(time.mktime(datetime.datetime.today().timetuple())) > lastRefresh + MAX_REFRESH_AGE_SECS
     else:
         refresh = True
@@ -582,42 +582,42 @@ def fix_xem_numbering(indexer_id, indexer):
 
     cl = []
     for row in rows:
-        season = int(row[b'season'])
-        episode = int(row[b'episode'])
+        season = int(row['season'])
+        episode = int(row['episode'])
 
-        if not int(row[b'scene_season']) and last_scene_season:
+        if not int(row['scene_season']) and last_scene_season:
             scene_season = last_scene_season + 1
             update_scene_season = True
         else:
-            scene_season = int(row[b'scene_season'])
+            scene_season = int(row['scene_season'])
             if last_scene_season and scene_season < last_scene_season:
                 scene_season = last_scene_season + 1
                 update_scene_season = True
 
-        if not int(row[b'scene_episode']) and last_scene_episode:
+        if not int(row['scene_episode']) and last_scene_episode:
             scene_episode = last_scene_episode + 1
             update_scene_episode = True
         else:
-            scene_episode = int(row[b'scene_episode'])
+            scene_episode = int(row['scene_episode'])
             if last_scene_episode and scene_episode < last_scene_episode:
                 scene_episode = last_scene_episode + 1
                 update_scene_episode = True
 
         # check for unset values and correct them
-        if not int(row[b'absolute_number']) and last_absolute_number:
+        if not int(row['absolute_number']) and last_absolute_number:
             absolute_number = last_absolute_number + 1
             update_absolute_number = True
         else:
-            absolute_number = int(row[b'absolute_number'])
+            absolute_number = int(row['absolute_number'])
             if last_absolute_number and absolute_number < last_absolute_number:
                 absolute_number = last_absolute_number + 1
                 update_absolute_number = True
 
-        if not int(row[b'scene_absolute_number']) and last_scene_absolute_number:
+        if not int(row['scene_absolute_number']) and last_scene_absolute_number:
             scene_absolute_number = last_scene_absolute_number + 1
             update_scene_absolute_number = True
         else:
-            scene_absolute_number = int(row[b'scene_absolute_number'])
+            scene_absolute_number = int(row['scene_absolute_number'])
             if last_scene_absolute_number and scene_absolute_number < last_scene_absolute_number:
                 scene_absolute_number = last_scene_absolute_number + 1
                 update_scene_absolute_number = True

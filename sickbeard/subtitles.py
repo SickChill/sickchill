@@ -446,72 +446,72 @@ class SubtitlesFinder(object):
             return
 
         for ep_to_sub in sql_results:
-            if not os.path.isfile(ep_to_sub[b'location']):
+            if not os.path.isfile(ep_to_sub['location']):
                 logger.debug('Episode file does not exist, cannot download subtitles for {0} {1}'.format(
-                    ep_to_sub[b'show_name'], episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode']) or
-                                             episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute')))
+                    ep_to_sub['show_name'], episode_num(ep_to_sub['season'], ep_to_sub['episode']) or
+                                             episode_num(ep_to_sub['season'], ep_to_sub['episode'], numbering='absolute')))
                 continue
 
-            if not needs_subtitles(ep_to_sub[b'subtitles']):
+            if not needs_subtitles(ep_to_sub['subtitles']):
                 logger.debug('Episode already has all needed subtitles, skipping {0} {1}'.format
-                           (ep_to_sub[b'show_name'], episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode']) or
-                            episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute')))
+                           (ep_to_sub['show_name'], episode_num(ep_to_sub['season'], ep_to_sub['episode']) or
+                            episode_num(ep_to_sub['season'], ep_to_sub['episode'], numbering='absolute')))
                 continue
 
             try:
-                lastsearched = datetime.datetime.strptime(ep_to_sub[b'lastsearch'], dateTimeFormat)
+                lastsearched = datetime.datetime.strptime(ep_to_sub['lastsearch'], dateTimeFormat)
             except ValueError:
                 lastsearched = datetime.datetime.min
 
             try:
                 if not force:
                     now = datetime.datetime.now()
-                    days = int(ep_to_sub[b'age'])
+                    days = int(ep_to_sub['age'])
                     delay_time = datetime.timedelta(hours=8 if days < 10 else 7 * 24 if days < 30 else 30 * 24)
 
                     # Search every hour for the first 24 hours since aired, then every 8 hours until 10 days passes
                     # After 10 days, search every 7 days, after 30 days search once a month
                     # Will always try an episode regardless of age at least 2 times
-                    if lastsearched + delay_time > now and int(ep_to_sub[b'searchcount']) > 2 and days:
+                    if lastsearched + delay_time > now and int(ep_to_sub['searchcount']) > 2 and days:
                         logger.debug('Subtitle search for {0} {1} delayed for {2}'.format
-                                   (ep_to_sub[b'show_name'], episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode']) or
-                                    episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute'),
+                                   (ep_to_sub['show_name'], episode_num(ep_to_sub['season'], ep_to_sub['episode']) or
+                                    episode_num(ep_to_sub['season'], ep_to_sub['episode'], numbering='absolute'),
                                     dhm(lastsearched + delay_time - now)))
                         continue
 
                 logger.info('Searching for missing subtitles of {0} {1}'.format
-                           (ep_to_sub[b'show_name'], episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode']) or
-                            episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute')))
+                           (ep_to_sub['show_name'], episode_num(ep_to_sub['season'], ep_to_sub['episode']) or
+                            episode_num(ep_to_sub['season'], ep_to_sub['episode'], numbering='absolute')))
 
-                show_object = Show.find(sickbeard.showList, int(ep_to_sub[b'showid']))
+                show_object = Show.find(sickbeard.showList, int(ep_to_sub['showid']))
                 if not show_object:
-                    logger.debug('Show with ID {0} not found in the database'.format(ep_to_sub[b'showid']))
+                    logger.debug('Show with ID {0} not found in the database'.format(ep_to_sub['showid']))
                     continue
 
-                episode_object = show_object.getEpisode(ep_to_sub[b'season'], ep_to_sub[b'episode'])
+                episode_object = show_object.getEpisode(ep_to_sub['season'], ep_to_sub['episode'])
                 if isinstance(episode_object, str):
                     logger.debug('{0} {1} not found in the database'.format
-                               (ep_to_sub[b'show_name'], episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode']) or
-                                episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute')))
+                               (ep_to_sub['show_name'], episode_num(ep_to_sub['season'], ep_to_sub['episode']) or
+                                episode_num(ep_to_sub['season'], ep_to_sub['episode'], numbering='absolute')))
                     continue
 
                 try:
                     new_subtitles = episode_object.download_subtitles()
                 except Exception as error:
                     logger.info('Unable to find subtitles for {0} {1}. Error: {2}'.format
-                               (ep_to_sub[b'show_name'], episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode']) or
-                                episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute'), str(error)), logger.ERROR)
+                               (ep_to_sub['show_name'], episode_num(ep_to_sub['season'], ep_to_sub['episode']) or
+                                episode_num(ep_to_sub['season'], ep_to_sub['episode'], numbering='absolute'), str(error)), logger.ERROR)
                     continue
 
                 if new_subtitles:
                     logger.info('Downloaded {0} subtitles for {1} {2}'.format
-                               (', '.join(new_subtitles), ep_to_sub[b'show_name'], episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode']) or
-                                episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute')))
+                               (', '.join(new_subtitles), ep_to_sub['show_name'], episode_num(ep_to_sub['season'], ep_to_sub['episode']) or
+                                episode_num(ep_to_sub['season'], ep_to_sub['episode'], numbering='absolute')))
 
             except Exception as error:
                 logger.info('Error while searching subtitles for {0} {1}. Error: {2}'.format
-                           (ep_to_sub[b'show_name'], episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode']) or
-                            episode_num(ep_to_sub[b'season'], ep_to_sub[b'episode'], numbering='absolute'), str(error)), logger.ERROR)
+                           (ep_to_sub['show_name'], episode_num(ep_to_sub['season'], ep_to_sub['episode']) or
+                            episode_num(ep_to_sub['season'], ep_to_sub['episode'], numbering='absolute'), str(error)), logger.ERROR)
                 continue
 
         logger.info('Finished checking for missed subtitles')

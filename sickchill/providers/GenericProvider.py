@@ -139,7 +139,7 @@ class GenericProvider(object):
     def find_propers(self, search_date=None):
         results = self.cache.list_propers(search_date)
 
-        return [Proper(x[b'name'], x[b'url'], datetime.fromtimestamp(x[b'time']), self.show) for x in results]
+        return [Proper(x['name'], x['url'], datetime.fromtimestamp(x['time']), self.show) for x in results]
 
     def find_search_results(self, show, episodes, search_mode,
                             manual_search=False, download_current_quality=False):
@@ -266,21 +266,21 @@ class GenericProvider(object):
                     )
 
                     if len(sql_results) == 2:
-                        if int(sql_results[0][b'season']) == 0 and int(sql_results[1][b'season']) != 0:
-                            actual_season = int(sql_results[1][b'season'])
-                            actual_episodes = [int(sql_results[1][b'episode'])]
+                        if int(sql_results[0]['season']) == 0 and int(sql_results[1]['season']) != 0:
+                            actual_season = int(sql_results[1]['season'])
+                            actual_episodes = [int(sql_results[1]['episode'])]
                             same_day_special = True
-                        elif int(sql_results[1][b'season']) == 0 and int(sql_results[0][b'season']) != 0:
-                            actual_season = int(sql_results[0][b'season'])
-                            actual_episodes = [int(sql_results[0][b'episode'])]
+                        elif int(sql_results[1]['season']) == 0 and int(sql_results[0]['season']) != 0:
+                            actual_season = int(sql_results[0]['season'])
+                            actual_episodes = [int(sql_results[0]['episode'])]
                             same_day_special = True
                     elif len(sql_results) != 1:
                         logger.warning('Tried to look up the date for the episode {0} but the database didn\'t give proper results, skipping it'.format(title))
                         add_cache_entry = True
 
                 if not add_cache_entry and not same_day_special:
-                    actual_season = int(sql_results[0][b'season'])
-                    actual_episodes = [int(sql_results[0][b'episode'])]
+                    actual_season = int(sql_results[0]['season'])
+                    actual_episodes = [int(sql_results[0]['episode'])]
 
             if add_cache_entry:
                 logger.debug('Adding item from search to cache: {0}'.format(title))

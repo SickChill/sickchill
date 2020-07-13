@@ -46,39 +46,39 @@ class History(WebRoot):
 
         for row in data:
             action = {
-                'action': row[b'action'],
-                'provider': row[b'provider'],
-                'resource': row[b'resource'],
-                'time': row[b'date']
+                'action': row['action'],
+                'provider': row['provider'],
+                'resource': row['resource'],
+                'time': row['date']
             }
 
             # noinspection PyTypeChecker
-            if not any((history[b'show_id'] == row[b'show_id'] and
-                        history[b'season'] == row[b'season'] and
-                        history[b'episode'] == row[b'episode'] and
-                        history[b'quality'] == row[b'quality']) for history in compact):
+            if not any((history['show_id'] == row['show_id'] and
+                        history['season'] == row['season'] and
+                        history['episode'] == row['episode'] and
+                        history['quality'] == row['quality']) for history in compact):
                 history = {
                     'actions': [action],
-                    'episode': row[b'episode'],
-                    'quality': row[b'quality'],
-                    'resource': row[b'resource'],
-                    'season': row[b'season'],
-                    'show_id': row[b'show_id'],
-                    'show_name': row[b'show_name']
+                    'episode': row['episode'],
+                    'quality': row['quality'],
+                    'resource': row['resource'],
+                    'season': row['season'],
+                    'show_id': row['show_id'],
+                    'show_name': row['show_name']
                 }
 
                 compact.append(history)
             else:
                 index = [
                     i for i, item in enumerate(compact)
-                    if item[b'show_id'] == row[b'show_id'] and
-                    item[b'season'] == row[b'season'] and
-                    item[b'episode'] == row[b'episode'] and
-                    item[b'quality'] == row[b'quality']
+                    if item['show_id'] == row['show_id'] and
+                    item['season'] == row['season'] and
+                    item['episode'] == row['episode'] and
+                    item['quality'] == row['quality']
                 ][0]
                 history = compact[index]
-                history[b'actions'].append(action)
-                history[b'actions'].sort(key=lambda x: x[b'time'], reverse=True)
+                history['actions'].append(action)
+                history['actions'].sort(key=lambda x: x['time'], reverse=True)
 
         t = PageTemplate(rh=self, filename="history.mako")
         submenu = [

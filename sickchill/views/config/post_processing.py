@@ -170,7 +170,7 @@ class ConfigPostProcessing(Config):
     @staticmethod
     def testNaming(pattern=None, multi=None, abd=False, sports=False, anime_type=None):
         result = naming.test_name(pattern, try_int(multi, None), abd, sports, try_int(anime_type, None))
-        result = os.path.join(result[b'dir'], result[b'name'])
+        result = os.path.join(result['dir'], result['name'])
 
         return result
 

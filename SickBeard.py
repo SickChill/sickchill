@@ -351,12 +351,12 @@ class SickChill(object):
         sickbeard.showList = []
         for sql_show in sql_results:
             try:
-                cur_show = TVShow(sql_show[b'indexer'], sql_show[b'indexer_id'])
+                cur_show = TVShow(sql_show['indexer'], sql_show['indexer_id'])
                 cur_show.nextEpisode()
                 sickbeard.showList.append(cur_show)
             except Exception as error:
                 logger.exception('There was an error creating the show in {0}: Error {1}'.format
-                           (sql_show[b'location'], error))
+                           (sql_show['location'], error))
                 logger.debug(traceback.format_exc())
 
     @staticmethod

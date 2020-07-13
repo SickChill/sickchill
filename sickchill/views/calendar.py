@@ -78,16 +78,16 @@ class CalendarHandler(BaseHandler):
             # Get all episodes of this show airing between today and next month
             episode_list = main_db_con.select(
                 "SELECT indexerid, name, season, episode, description, airdate FROM tv_episodes WHERE airdate >= ? AND airdate < ? AND showid = ?",
-                (past_date, future_date, int(show[b"indexer_id"])))
+                (past_date, future_date, int(show["indexer_id"])))
 
             utc = tz.gettz('GMT')
 
             for episode in episode_list:
 
-                air_date_time = network_timezones.parse_date_time(episode[b'airdate'], show[b"airs"],
-                                                                  show[b'network']).astimezone(utc)
+                air_date_time = network_timezones.parse_date_time(episode['airdate'], show["airs"],
+                                                                  show['network']).astimezone(utc)
                 air_date_time_end = air_date_time + datetime.timedelta(
-                    minutes=try_int(show[b"runtime"], 60))
+                    minutes=try_int(show["runtime"], 60))
 
                 # Create event for episode
                 ical += 'BEGIN:VEVENT\r\n'
@@ -101,19 +101,19 @@ class CalendarHandler(BaseHandler):
                     ical += 'X-GOOGLE-CALENDAR-CONTENT-ICON:https://lh3.googleusercontent.com/-Vp_3ZosvTgg/VjiFu5BzQqI/AAAAAAAA_TY/3ZL_1bC0Pgw/s16-Ic42/SickChill.png\r\n'
                     ical += 'X-GOOGLE-CALENDAR-CONTENT-DISPLAY:CHIP\r\n'
                 ical += 'SUMMARY: {0} - {1}x{2} - {3}\r\n'.format(
-                    show[b'show_name'], episode[b'season'], episode[b'episode'], episode[b'name']
+                    show['show_name'], episode['season'], episode['episode'], episode['name']
                 )
                 ical += 'UID:SickChill-' + str(datetime.date.today().isoformat()) + '-' + \
-                    show[b'show_name'].replace(" ", "-") + '-E' + str(episode[b'episode']) + \
-                    'S' + str(episode[b'season']) + '\r\n'
-                if episode[b'description']:
+                    show['show_name'].replace(" ", "-") + '-E' + str(episode['episode']) + \
+                    'S' + str(episode['season']) + '\r\n'
+                if episode['description']:
                     ical += 'DESCRIPTION: {0} on {1} \\n\\n {2}\r\n'.format(
-                        (show[b'airs'] or '(Unknown airs)'),
-                        (show[b'network'] or 'Unknown network'),
-                        episode[b'description'].splitlines()[0])
+                        (show['airs'] or '(Unknown airs)'),
+                        (show['network'] or 'Unknown network'),
+                        episode['description'].splitlines()[0])
                 else:
-                    ical += 'DESCRIPTION:' + (show[b'airs'] or '(Unknown airs)') + ' on ' + (
-                        show[b'network'] or 'Unknown network') + '\r\n'
+                    ical += 'DESCRIPTION:' + (show['airs'] or '(Unknown airs)') + ' on ' + (
+                        show['network'] or 'Unknown network') + '\r\n'
 
                 ical += 'END:VEVENT\r\n'
 

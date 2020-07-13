@@ -52,7 +52,7 @@ class XEMBasicTests(test.SickbeardTestDBCase):
 
         for sql_show in sql_results:
             try:
-                cur_show = TVShow(int(sql_show[b"indexer"]), int(sql_show[b"indexer_id"]))
+                cur_show = TVShow(int(sql_show["indexer"]), int(sql_show["indexer_id"]))
                 sickbeard.showList.append(cur_show)
             except Exception:
                 pass
@@ -67,7 +67,7 @@ class XEMBasicTests(test.SickbeardTestDBCase):
 
         for sql_show in sql_results:
             try:
-                cur_show = TVShow(int(sql_show[b"indexer"]), int(sql_show[b"indexer_id"]))
+                cur_show = TVShow(int(sql_show["indexer"]), int(sql_show["indexer_id"]))
                 sickbeard.showList.append(cur_show)
             except Exception as error:
                 print("There was an error creating the show {0}".format(error))

@@ -715,7 +715,7 @@ def get_absolute_number_from_season_and_episode(show, season, episode):
         sql_results = main_db_con.select(sql, [show.indexerid, season, episode])
 
         if len(sql_results) == 1:
-            absolute_number = int(sql_results[0][b"absolute_number"])
+            absolute_number = int(sql_results[0]["absolute_number"])
             logger.debug(_("Found absolute number {absolute} for show {show} {ep}").format
                        (absolute=absolute_number, show=show.name,
                         ep=episode_num(season, episode)))
@@ -1687,7 +1687,7 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
         data = getURL(url, session=session, returns='json')
         if data is None:
             return tvdb_id
-        tvdb_id = data[b'externals'][b'thetvdb']
+        tvdb_id = data['externals']['thetvdb']
         return tvdb_id
     else:
         return tvdb_id

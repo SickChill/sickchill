@@ -322,7 +322,7 @@ class Quality(object):
             sd_options = tags.anime_sd.search(name)
             hd_options = tags.anime_hd.search(name)
             full_hd = tags.anime_fullhd.search(name)
-            ep.rex[b'bluray'] = tags.anime_bluray
+            ep.rex['bluray'] = tags.anime_bluray
 
             # BluRay
             if ep.bluray and (full_hd or hd_options):

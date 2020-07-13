@@ -502,6 +502,12 @@ error = Wrapper.instance.logger.error
 exception = logging.exception
 critical = Wrapper.instance.logger.critical
 
+
+def database(msg, *args, **kwargs):
+    if sickbeard.DBDEBUG:
+        debug(msg, args, kwargs)
+
+
 submit_errors = Wrapper.instance.submit_errors
 init_logging = Wrapper.instance.init_logging
 set_level = Wrapper.instance.set_level

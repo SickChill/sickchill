@@ -45,8 +45,8 @@ class BlackAndWhiteList(object):
         Builds black and whitelist
         """
         logger.debug('Building black and white list for {id}'.format(id=self.show_id))
-        self.blacklist = self._load_list(b'blacklist')
-        self.whitelist = self._load_list(b'whitelist')
+        self.blacklist = self._load_list('blacklist')
+        self.whitelist = self._load_list('whitelist')
 
     def _add_keywords(self, table, values):
         """
@@ -65,8 +65,8 @@ class BlackAndWhiteList(object):
 
         :param values: Complete list of keywords to be set as blacklist
         """
-        self._del_all_keywords(b'blacklist')
-        self._add_keywords(b'blacklist', values)
+        self._del_all_keywords('blacklist')
+        self._add_keywords('blacklist', values)
         self.blacklist = values
         logger.debug('Blacklist set to: {blacklist}'.format(blacklist=self.blacklist))
 
@@ -76,8 +76,8 @@ class BlackAndWhiteList(object):
 
         :param values: Complete list of keywords to be set as whitelist
         """
-        self._del_all_keywords(b'whitelist')
-        self._add_keywords(b'whitelist', values)
+        self._del_all_keywords('whitelist')
+        self._add_keywords('whitelist', values)
         self.whitelist = values
         logger.debug('Whitelist set to: {whitelist}'.format(whitelist=self.whitelist))
 
@@ -104,7 +104,7 @@ class BlackAndWhiteList(object):
             return []
         groups = []
         for result in sql_results:
-            groups.append(result[b'keyword'])
+            groups.append(result['keyword'])
 
         logger.debug('BWL: {id} loaded keywords from {table}: {groups}'.format
                    (id=self.show_id, table=table, groups=groups))
@@ -170,8 +170,8 @@ def short_group_names(groups):
                 logger.debug('Failed while loading group from AniDB. Trying next group')
             else:
                 for line in group.datalines:
-                    if line[b'shortname']:
-                        short_group_list.append(line[b'shortname'])
+                    if line['shortname']:
+                        short_group_list.append(line['shortname'])
                     else:
                         if groupName not in short_group_list:
                             short_group_list.append(groupName)

@@ -246,19 +246,19 @@ class TVShow(object):
 
         ep_list = []
         for cur_result in results:
-            cur_ep = self.getEpisode(cur_result[b"season"], cur_result[b"episode"])
+            cur_ep = self.getEpisode(cur_result["season"], cur_result["episode"])
             if not cur_ep:
                 continue
 
             cur_ep.relatedEps = []
             if cur_ep.location:
                 # if there is a location, check if it's a multi-episode (share_location > 0) and put them in relatedEps
-                if cur_result[b"share_location"] > 0:
+                if cur_result["share_location"] > 0:
                     related_eps_result = main_db_con.select(
                         "SELECT season, episode FROM tv_episodes WHERE showid = ? AND season = ? AND location = ? AND episode != ? ORDER BY episode ASC",
                         [self.indexerid, cur_ep.season, cur_ep.location, cur_ep.episode])
                     for cur_related_ep in related_eps_result:
-                        related_ep = self.getEpisode(cur_related_ep[b"season"], cur_related_ep[b"episode"])
+                        related_ep = self.getEpisode(cur_related_ep["season"], cur_related_ep["episode"])
                         if related_ep and related_ep not in cur_ep.relatedEps:
                             cur_ep.relatedEps.append(related_ep)
             ep_list.append(cur_ep)
@@ -280,8 +280,8 @@ class TVShow(object):
             sql_results = main_db_con.select(sql, [self.indexerid, absolute_number])
 
             if len(sql_results) == 1:
-                episode = int(sql_results[0][b"episode"])
-                season = int(sql_results[0][b"season"])
+                episode = int(sql_results[0]["episode"])
+                season = int(sql_results[0]["season"])
                 logger.debug("Found episode by absolute number {absolute} which is {ep}".format
                            (absolute=absolute_number,
                             ep=episode_num(season, episode)))
@@ -333,8 +333,8 @@ class TVShow(object):
             "SELECT IFNULL(MAX(airdate), 0) as last_aired FROM tv_episodes WHERE showid = ? AND season > 0 AND airdate > 1 AND status > 1",
             [self.indexerid])
 
-        if sql_result and sql_result[0][b'last_aired'] != 0:
-            last_airdate = datetime.date.fromordinal(sql_result[0][b'last_aired'])
+        if sql_result and sql_result[0]['last_aired'] != 0:
+            last_airdate = datetime.date.fromordinal(sql_result[0]['last_aired'])
             if (update_date - graceperiod) <= last_airdate <= (update_date + graceperiod):
                 return True
 
@@ -343,8 +343,8 @@ class TVShow(object):
             "SELECT IFNULL(MIN(airdate), 0) as airing_next FROM tv_episodes WHERE showid = ? AND season > 0 AND airdate > 1 AND status = 1",
             [self.indexerid])
 
-        if sql_result and sql_result[0][b'airing_next'] != 0:
-            next_airdate = datetime.date.fromordinal(sql_result[0][b'airing_next'])
+        if sql_result and sql_result[0]['airing_next'] != 0:
+            next_airdate = datetime.date.fromordinal(sql_result[0]['airing_next'])
             if next_airdate <= (update_date + graceperiod):
                 return True
 
@@ -395,8 +395,8 @@ class TVShow(object):
         sql_results = main_db_con.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND location != ''", [self.indexerid])
 
         for epResult in sql_results:
-            logger.debug("{id}: Retrieving/creating episode {ep}".format(id=self.indexerid, ep=episode_num(epResult[b"season"], epResult[b"episode"])))
-            curEp = self.getEpisode(epResult[b"season"], epResult[b"episode"])
+            logger.debug("{id}: Retrieving/creating episode {ep}".format(id=self.indexerid, ep=episode_num(epResult["season"], epResult["episode"])))
+            curEp = self.getEpisode(epResult["season"], epResult["episode"])
             if not curEp:
                 continue
 
@@ -495,10 +495,10 @@ class TVShow(object):
 
         for curResult in sql_results:
 
-            curSeason = int(curResult[b"season"])
-            curEpisode = int(curResult[b"episode"])
-            curShowid = int(curResult[b'showid'])
-            curShowName = str(curResult[b'show_name'])
+            curSeason = int(curResult["season"])
+            curEpisode = int(curResult["episode"])
+            curShowid = int(curResult['showid'])
+            curShowName = str(curResult['show_name'])
 
             if curSeason not in scannedEps:
                 logger.debug("{id}: Not curSeason in scannedEps".format(id=curShowid))
@@ -724,66 +724,66 @@ class TVShow(object):
             # logger.info(str(self.indexerid) + ": Unable to find the show in the database")
             return
         else:
-            self.indexer = int(sql_results[0][b"indexer"] or 0)
+            self.indexer = int(sql_results[0]["indexer"] or 0)
 
             if not self.name:
-                self.name = sql_results[0][b"show_name"]
+                self.name = sql_results[0]["show_name"]
             if not self.network:
-                self.network = sql_results[0][b"network"]
+                self.network = sql_results[0]["network"]
             if not self.genre:
-                self.genre = sql_results[0][b"genre"]
+                self.genre = sql_results[0]["genre"]
 
             if not isinstance(self.genre, list):
                 if self.genre:
                     self.genre = [x.strip() for x in self.genre.split('|') if x.strip()]
 
             if not self.classification:
-                self.classification = sql_results[0][b"classification"]
+                self.classification = sql_results[0]["classification"]
 
-            self.runtime = sql_results[0][b"runtime"]
+            self.runtime = sql_results[0]["runtime"]
 
-            self.status = sql_results[0][b"status"]
+            self.status = sql_results[0]["status"]
             if self.status is None:
                 self.status = "Unknown"
 
-            self.airs = sql_results[0][b"airs"]
+            self.airs = sql_results[0]["airs"]
             if self.airs is None:
                 self.airs = ""
 
-            self.startyear = int(sql_results[0][b"startyear"] or 0)
-            self.air_by_date = int(sql_results[0][b"air_by_date"] or 0)
-            self.anime = int(sql_results[0][b"anime"] or 0)
-            self.sports = int(sql_results[0][b"sports"] or 0)
-            self.scene = int(sql_results[0][b"scene"] or 0)
-            self.subtitles = int(sql_results[0][b"subtitles"] or 0)
-            self.dvdorder = int(sql_results[0][b"dvdorder"] or 0)
-            self.quality = int(sql_results[0][b"quality"] or UNKNOWN)
-            self.season_folders = int(not int(sql_results[0][b"flatten_folders"] or 0))  # FIXME: inverted until next database version
-            self.paused = int(sql_results[0][b"paused"] or 0)
+            self.startyear = int(sql_results[0]["startyear"] or 0)
+            self.air_by_date = int(sql_results[0]["air_by_date"] or 0)
+            self.anime = int(sql_results[0]["anime"] or 0)
+            self.sports = int(sql_results[0]["sports"] or 0)
+            self.scene = int(sql_results[0]["scene"] or 0)
+            self.subtitles = int(sql_results[0]["subtitles"] or 0)
+            self.dvdorder = int(sql_results[0]["dvdorder"] or 0)
+            self.quality = int(sql_results[0]["quality"] or UNKNOWN)
+            self.season_folders = int(not int(sql_results[0]["flatten_folders"] or 0))  # FIXME: inverted until next database version
+            self.paused = int(sql_results[0]["paused"] or 0)
 
             try:
-                self._location = sql_results[0][b"location"]
+                self._location = sql_results[0]["location"]
             except Exception:
-                dirty_setter("_location")(self, sql_results[0][b"location"])
+                dirty_setter("_location")(self, sql_results[0]["location"])
 
             if not self.lang:
-                self.lang = sql_results[0][b"lang"]
+                self.lang = sql_results[0]["lang"]
 
-            self.last_update_indexer = sql_results[0][b"last_update_indexer"]
+            self.last_update_indexer = sql_results[0]["last_update_indexer"]
 
-            self.rls_ignore_words = sql_results[0][b"rls_ignore_words"]
-            self.rls_require_words = sql_results[0][b"rls_require_words"]
-            self.rls_prefer_words = sql_results[0][b"rls_prefer_words"]
+            self.rls_ignore_words = sql_results[0]["rls_ignore_words"]
+            self.rls_require_words = sql_results[0]["rls_require_words"]
+            self.rls_prefer_words = sql_results[0]["rls_prefer_words"]
 
-            self.default_ep_status = int(sql_results[0][b"default_ep_status"] or SKIPPED)
+            self.default_ep_status = int(sql_results[0]["default_ep_status"] or SKIPPED)
 
             if not self.imdbid:
-                self.imdbid = sql_results[0][b"imdb_id"]
+                self.imdbid = sql_results[0]["imdb_id"]
 
             if self.is_anime:
                 self.release_groups = BlackAndWhiteList(self.indexerid)
 
-            self.subtitles_sr_metadata = int(sql_results[0][b"sub_use_sr_metadata"] or 0)
+            self.subtitles_sr_metadata = int(sql_results[0]["sub_use_sr_metadata"] or 0)
 
         # Get IMDb_info from database
         main_db_con = db.DBConnection()
@@ -907,7 +907,7 @@ class TVShow(object):
                 "SELECT airdate, season, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status IN (?,?) ORDER BY airdate ASC LIMIT 1",
                 [self.indexerid, datetime.date.today().toordinal(), UNAIRED, WANTED])
 
-            self.nextaired = sql_results[0][b'airdate'] if sql_results else ''
+            self.nextaired = sql_results[0]['airdate'] if sql_results else ''
 
         return self.nextaired
 
@@ -987,7 +987,7 @@ class TVShow(object):
                     logger.info('Cannot delete the show folder from disk, because this location is the root dir for {num} other shows!'.format(num=num_shows_in_folder))
                     logger.info('Deleting individual episodes. There may be some related files or folders left behind afterwards.')
                     for ep_file in episodes_locations:
-                        for show_file in glob.glob(helpers.replace_extension(glob.escape(ep_file[b'location']), '*')):
+                        for show_file in glob.glob(helpers.replace_extension(glob.escape(ep_file['location']), '*')):
                             logger.info('Attempt to {0} related file {1}'.format(action, show_file))
                             try:
                                 if sickbeard.TRASH_REMOVE_SHOW:
@@ -1037,9 +1037,9 @@ class TVShow(object):
 
         sql_l = []
         for ep in sql_results:
-            curLoc = os.path.normpath(ep[b"location"])
-            season = int(ep[b"season"])
-            episode = int(ep[b"episode"])
+            curLoc = os.path.normpath(ep["location"])
+            season = int(ep["season"])
+            episode = int(ep["episode"])
 
             try:
                 curEp = self.getEpisode(season, episode)
@@ -1200,7 +1200,7 @@ class TVShow(object):
                        (name=self.name, ep=episode_num(season, episode), quality=Quality.qualityStrings[quality]))
             return False
 
-        epStatus = int(sql_results[0][b"status"])
+        epStatus = int(sql_results[0]["status"])
         epStatus_text = statusStrings[epStatus]
 
         # if we know we don't want it then just say no
@@ -1287,11 +1287,11 @@ class TVShow(object):
 
     def __getstate__(self):
         d = dict(self.__dict__)
-        del d[b'lock']
+        del d['lock']
         return d
 
     def __setstate__(self, d):
-        d[b'lock'] = threading.Lock()
+        d['lock'] = threading.Lock()
         self.__dict__.update(d)
 
 
@@ -1491,40 +1491,40 @@ class TVEpisode(object):
                        (id=self.show.indexerid, ep=episode_num(season, episode)))
             return False
         else:
-            if sql_results[0][b"name"]:
-                self.name = sql_results[0][b"name"]
+            if sql_results[0]["name"]:
+                self.name = sql_results[0]["name"]
 
             self.season = season
             self.episode = episode
-            self.absolute_number = try_int(sql_results[0][b"absolute_number"], 0)
-            self.description = sql_results[0][b"description"]
+            self.absolute_number = try_int(sql_results[0]["absolute_number"], 0)
+            self.description = sql_results[0]["description"]
             if not self.description:
                 self.description = ""
-            if sql_results[0][b"subtitles"] and sql_results[0][b"subtitles"]:
-                self.subtitles = sql_results[0][b"subtitles"].split(",")
-            self.subtitles_searchcount = int(sql_results[0][b"subtitles_searchcount"])
-            self.subtitles_lastsearch = sql_results[0][b"subtitles_lastsearch"]
-            self.airdate = datetime.date.fromordinal(int(sql_results[0][b"airdate"]))
-            # logger.debug("1 Status changes from " + str(self.status) + " to " + str(sql_results[0][b"status"]))
-            self.status = int(sql_results[0][b"status"] or -1)
+            if sql_results[0]["subtitles"] and sql_results[0]["subtitles"]:
+                self.subtitles = sql_results[0]["subtitles"].split(",")
+            self.subtitles_searchcount = int(sql_results[0]["subtitles_searchcount"])
+            self.subtitles_lastsearch = sql_results[0]["subtitles_lastsearch"]
+            self.airdate = datetime.date.fromordinal(int(sql_results[0]["airdate"]))
+            # logger.debug("1 Status changes from " + str(self.status) + " to " + str(sql_results[0]["status"]))
+            self.status = int(sql_results[0]["status"] or -1)
 
             # don't overwrite my location
-            if sql_results[0][b"location"] and not self._location:
-                self.location = os.path.normpath(sql_results[0][b"location"])
+            if sql_results[0]["location"] and not self._location:
+                self.location = os.path.normpath(sql_results[0]["location"])
 
-            if sql_results[0][b"file_size"]:
-                self.file_size = int(sql_results[0][b"file_size"])
+            if sql_results[0]["file_size"]:
+                self.file_size = int(sql_results[0]["file_size"])
             else:
                 self.file_size = 0
 
-            self.indexerid = int(sql_results[0][b"indexerid"])
-            self.indexer = int(sql_results[0][b"indexer"])
+            self.indexerid = int(sql_results[0]["indexerid"])
+            self.indexer = int(sql_results[0]["indexer"])
 
             sickbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
-            self.scene_season = try_int(sql_results[0][b"scene_season"], 0)
-            self.scene_episode = try_int(sql_results[0][b"scene_episode"], 0)
-            self.scene_absolute_number = try_int(sql_results[0][b"scene_absolute_number"], 0)
+            self.scene_season = try_int(sql_results[0]["scene_season"], 0)
+            self.scene_episode = try_int(sql_results[0]["scene_episode"], 0)
+            self.scene_absolute_number = try_int(sql_results[0]["scene_absolute_number"], 0)
 
             if self.scene_absolute_number == 0:
                 self.scene_absolute_number = sickbeard.scene_numbering.get_scene_absolute_numbering(
@@ -1540,17 +1540,17 @@ class TVEpisode(object):
                     self.season, self.episode
                 )
 
-            if sql_results[0][b"release_name"] is not None:
-                self.release_name = sql_results[0][b"release_name"]
+            if sql_results[0]["release_name"] is not None:
+                self.release_name = sql_results[0]["release_name"]
 
-            if sql_results[0][b"is_proper"]:
-                self.is_proper = int(sql_results[0][b"is_proper"])
+            if sql_results[0]["is_proper"]:
+                self.is_proper = int(sql_results[0]["is_proper"])
 
-            if sql_results[0][b"version"]:
-                self.version = int(sql_results[0][b"version"])
+            if sql_results[0]["version"]:
+                self.version = int(sql_results[0]["version"])
 
-            if sql_results[0][b"release_group"] is not None:
-                self.release_group = sql_results[0][b"release_group"]
+            if sql_results[0]["release_group"] is not None:
+                self.release_group = sql_results[0]["release_group"]
 
             self.dirty = False
             return True
@@ -1831,12 +1831,12 @@ class TVEpisode(object):
 
             epID = None
             if rows:
-                epID = int(rows[0][b'episode_id'])
+                epID = int(rows[0]['episode_id'])
 
             if epID:
                 # use a custom update method to get the data into the DB for existing records.
                 # Multi or added subtitle or removed subtitles
-                if sickbeard.SUBTITLES_MULTI or not rows[0][b'subtitles'] or not self.subtitles:
+                if sickbeard.SUBTITLES_MULTI or not rows[0]['subtitles'] or not self.subtitles:
                     return [
                         "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, subtitles = ?, "
                         "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
@@ -2048,17 +2048,17 @@ class TVEpisode(object):
             "SickChill": 'SickChill'
         }
         if hasattr(self, 'location'):  # from the location name
-            rel_grp[b'location'] = release_group(self.show, self.location)
-            if not rel_grp[b'location']:
-                del rel_grp[b'location']
+            rel_grp['location'] = release_group(self.show, self.location)
+            if not rel_grp['location']:
+                del rel_grp['location']
         if hasattr(self, '_release_group'):  # from the release group field in db
-            rel_grp[b'database'] = self._release_group.strip('.- []{}')
-            if not rel_grp[b'database']:
-                del rel_grp[b'database']
+            rel_grp['database'] = self._release_group.strip('.- []{}')
+            if not rel_grp['database']:
+                del rel_grp['database']
         if hasattr(self, 'release_name'):  # from the release name field in db
-            rel_grp[b'release_name'] = release_group(self.show, self.release_name)
-            if not rel_grp[b'release_name']:
-                del rel_grp[b'release_name']
+            rel_grp['release_name'] = release_group(self.show, self.release_name)
+            if not rel_grp['release_name']:
+                del rel_grp['release_name']
 
         # use release_group, release_name, location in that order
         if 'database' in rel_grp:
@@ -2154,32 +2154,32 @@ class TVEpisode(object):
         result_name = pattern
 
         # if there's no release group in the db, let the user know we replaced it
-        if replace_map[b'%RG'] and replace_map[b'%RG'] != 'SickChill':
+        if replace_map['%RG'] and replace_map['%RG'] != 'SickChill':
             if not hasattr(self, '_release_group'):
-                logger.debug("Episode has no release group, replacing it with '" + replace_map[b'%RG'] + "'")
-                self._release_group = replace_map[b'%RG']  # if release_group is not in the db, put it there
+                logger.debug("Episode has no release group, replacing it with '" + replace_map['%RG'] + "'")
+                self._release_group = replace_map['%RG']  # if release_group is not in the db, put it there
             elif not self._release_group:
-                logger.debug("Episode has no release group, replacing it with '" + replace_map[b'%RG'] + "'")
-                self._release_group = replace_map[b'%RG']  # if release_group is not in the db, put it there
+                logger.debug("Episode has no release group, replacing it with '" + replace_map['%RG'] + "'")
+                self._release_group = replace_map['%RG']  # if release_group is not in the db, put it there
 
         # if there's no release name then replace it with a reasonable facsimile
-        if not replace_map[b'%RN']:
+        if not replace_map['%RN']:
 
             if self.show.air_by_date or self.show.sports:
-                result_name = result_name.replace('%RN', '%S.N.%A.D.%E.N-' + replace_map[b'%RG'])
-                result_name = result_name.replace('%rn', '%s.n.%A.D.%e.n-' + replace_map[b'%RG'].lower())
+                result_name = result_name.replace('%RN', '%S.N.%A.D.%E.N-' + replace_map['%RG'])
+                result_name = result_name.replace('%rn', '%s.n.%A.D.%e.n-' + replace_map['%RG'].lower())
 
             elif anime_type != 3:
-                result_name = result_name.replace('%RN', '%S.N.%AB.%E.N-' + replace_map[b'%RG'])
-                result_name = result_name.replace('%rn', '%s.n.%ab.%e.n-' + replace_map[b'%RG'].lower())
+                result_name = result_name.replace('%RN', '%S.N.%AB.%E.N-' + replace_map['%RG'])
+                result_name = result_name.replace('%rn', '%s.n.%ab.%e.n-' + replace_map['%RG'].lower())
 
             else:
-                result_name = result_name.replace('%RN', '%S.N.S%0SE%0E.%E.N-' + replace_map[b'%RG'])
-                result_name = result_name.replace('%rn', '%s.n.s%0se%0e.%e.n-' + replace_map[b'%RG'].lower())
+                result_name = result_name.replace('%RN', '%S.N.S%0SE%0E.%E.N-' + replace_map['%RG'])
+                result_name = result_name.replace('%rn', '%s.n.s%0se%0e.%e.n-' + replace_map['%RG'].lower())
 
             # logger.debug("Episode has no release name, replacing it with a generic one: " + result_name)
 
-        if not replace_map[b'%RT']:
+        if not replace_map['%RT']:
             result_name = re.sub('([ _.-]*)%RT([ _.-]*)', r'\2', result_name)
 
         # split off ep name part only
@@ -2493,9 +2493,9 @@ class TVEpisode(object):
 
     def __getstate__(self):
         d = dict(self.__dict__)
-        del d[b'lock']
+        del d['lock']
         return d
 
     def __setstate__(self, d):
-        d[b'lock'] = threading.Lock()
+        d['lock'] = threading.Lock()
         self.__dict__.update(d)

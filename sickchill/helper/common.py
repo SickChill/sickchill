@@ -342,7 +342,7 @@ def episode_num(season=None, episode=None, **kwargs):
 # Backport glob.escape from python 3.4
 # https://hg.python.org/cpython/file/3.4/Lib/glob.py#l87
 MAGIC_CHECK = re.compile('([*?[])')
-MAGIC_CHECK_BYTES = re.compile(b'([*?[])')
+MAGIC_CHECK_BYTES = re.compile('([*?[])')
 
 
 # https://hg.python.org/cpython/file/3.4/Lib/glob.py#l100

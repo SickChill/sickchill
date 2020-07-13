@@ -77,7 +77,7 @@ class BaseHandler(RequestHandler):
         # self.include_host = True
 
     # def set_default_headers(self):
-    #     self.set_header(b'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+    #     self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
 
     def write_error(self, status_code, **kwargs):
         # handle 404 http errors
@@ -99,7 +99,7 @@ class BaseHandler(RequestHandler):
                                     self.request.__dict__.keys()])
             error = exc_info[1]
 
-            self.set_header(b'Content-Type', 'text/html')
+            self.set_header('Content-Type', 'text/html')
             self.finish("""<html>
                                  <title>{0}</title>
                                  <body>
@@ -134,7 +134,7 @@ class BaseHandler(RequestHandler):
             assert isinstance(status, int)
             assert 300 <= status <= 399
         self.set_status(status)
-        self.set_header(b"Location", urljoin(utf8(self.request.uri), utf8(url)))
+        self.set_header("Location", urljoin(utf8(self.request.uri), utf8(url)))
 
     def get_current_user(self):
         if isinstance(self, UI):
@@ -234,7 +234,7 @@ class WebRoot(WebHandler):
 
     def robots_txt(self):
         """ Keep web crawlers out """
-        self.set_header(b'Content-Type', 'text/plain')
+        self.set_header('Content-Type', 'text/plain')
         return "User-agent: *\nDisallow: /"
 
     def apibuilder(self):
@@ -249,13 +249,13 @@ class WebRoot(WebHandler):
         )
 
         for result in results:
-            if result[b'showid'] not in episodes:
-                episodes[result[b'showid']] = {}
+            if result['showid'] not in episodes:
+                episodes[result['showid']] = {}
 
-            if result[b'season'] not in episodes[result[b'showid']]:
-                episodes[result[b'showid']][result[b'season']] = []
+            if result['season'] not in episodes[result['showid']]:
+                episodes[result['showid']][result['season']] = []
 
-            episodes[result[b'showid']][result[b'season']].append(result[b'episode'])
+            episodes[result['showid']][result['season']].append(result['episode'])
 
         if len(sickbeard.API_KEY) == 32:
             apikey = sickbeard.API_KEY
@@ -365,7 +365,7 @@ class UI(WebRoot):
             locale_dir=sickbeard.LOCALE_DIR, lang=sickbeard.GUI_LANG))
 
         if os.path.isfile(locale_file):
-            self.set_header(b'Content-Type', 'application/json')
+            self.set_header('Content-Type', 'application/json')
             with open(locale_file, 'r') as content:
                 return content.read()
         else:
@@ -380,8 +380,8 @@ class UI(WebRoot):
         return "ok"
 
     def get_messages(self):
-        self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
-        self.set_header(b'Content-Type', 'application/json')
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header('Content-Type', 'application/json')
         notifications = ui.notifications.get_notifications(self.request.remote_ip)
         messages = {}
         for index, cur_notification in enumerate(notifications, 1):
@@ -398,7 +398,7 @@ class UI(WebRoot):
         message = self.get_body_argument('message', None)
         tag = self.get_body_argument('tag', None)
         level = self.get_body_argument('level')
-        self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         if message:
             helpers.add_site_message(message, tag=tag, level=level)
         else:
@@ -410,25 +410,25 @@ class UI(WebRoot):
         return sickbeard.SITE_MESSAGES
 
     def get_site_messages(self):
-        self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         return sickbeard.SITE_MESSAGES
 
     def dismiss_site_message(self):
         index = self.get_query_argument('index')
-        self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         helpers.remove_site_message(key=index)
         return sickbeard.SITE_MESSAGES
 
     def sickchill_background(self):
         if sickbeard.SICKCHILL_BACKGROUND_PATH and os.path.isfile(sickbeard.SICKCHILL_BACKGROUND_PATH):
-            self.set_header(b'Content-Type', guess_type(sickbeard.SICKCHILL_BACKGROUND_PATH)[0])
+            self.set_header('Content-Type', guess_type(sickbeard.SICKCHILL_BACKGROUND_PATH)[0])
             with open(sickbeard.SICKCHILL_BACKGROUND_PATH, 'rb') as content:
                 return content.read()
         return None
 
     def custom_css(self):
         if sickbeard.CUSTOM_CSS_PATH and os.path.isfile(sickbeard.CUSTOM_CSS_PATH):
-            self.set_header(b'Content-Type', 'text/css')
+            self.set_header('Content-Type', 'text/css')
             with open(sickbeard.CUSTOM_CSS_PATH, 'r') as content:
                 return content.read()
         return None

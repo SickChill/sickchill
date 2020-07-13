@@ -175,9 +175,9 @@ class Home(WebRoot):
         show_stat = {}
         max_download_count = 1000
         for cur_result in sql_result:
-            show_stat[cur_result[b'showid']] = cur_result
-            if cur_result[b'ep_total'] > max_download_count:
-                max_download_count = cur_result[b'ep_total']
+            show_stat[cur_result['showid']] = cur_result
+            if cur_result['ep_total'] > max_download_count:
+                max_download_count = cur_result['ep_total']
 
         max_download_count *= 100
 
@@ -185,10 +185,10 @@ class Home(WebRoot):
 
     def is_alive(self):
             callback = self.get_query_arguments('callback')[0]
-            self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
-            self.set_header(b'Content-Type', 'text/javascript')
-            self.set_header(b'Access-Control-Allow-Origin', '*')
-            self.set_header(b'Access-Control-Allow-Headers', 'x-requested-with')
+            self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+            self.set_header('Content-Type', 'text/javascript')
+            self.set_header('Access-Control-Allow-Origin', '*')
+            self.set_header('Access-Control-Allow-Headers', 'x-requested-with')
 
             if sickbeard.started:
                 return callback + '(' + json.dumps(
@@ -217,7 +217,7 @@ class Home(WebRoot):
             return False
 
     def testSABnzbd(self):
-        # self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+        # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         username = self.get_body_argument('username')
         password = filters.unhide(sickbeard.SAB_PASSWORD, self.get_body_argument('password'))
         apikey = filters.unhide(sickbeard.SAB_APIKEY, self.get_body_argument('apikey'))
@@ -284,7 +284,7 @@ class Home(WebRoot):
     def testGrowl(self):
         host = self.get_query_argument('host')
         password = filters.unhide(sickbeard.GROWL_PASSWORD, self.get_query_argument('password'))
-        # self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+        # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         host = config.clean_host(host, default_port=23053)
         result = notifiers.growl_notifier.test_notify(host, password)
@@ -411,7 +411,7 @@ class Home(WebRoot):
         return "<br>\n".join(final_results)
 
     def testPHT(self):
-        self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         username = self.get_query_argument('username')
         host = config.clean_hosts(self.get_query_argument('host'))
@@ -431,7 +431,7 @@ class Home(WebRoot):
         return finalResult
 
     def testPMS(self):
-        self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         username = self.get_query_argument('username')
         host = config.clean_hosts(self.get_query_argument('host'))
@@ -536,16 +536,16 @@ class Home(WebRoot):
         size = 0
         for r in rows:
             NotifyList = {'emails': '', 'prowlAPIs': ''}
-            if r[b'notify_list'] and len(r[b'notify_list']) > 0:
+            if r['notify_list'] and len(r['notify_list']) > 0:
                 # First, handle legacy format (emails only)
-                if not r[b'notify_list'][0] == '{':
-                    NotifyList['emails'] = r[b'notify_list']
+                if not r['notify_list'][0] == '{':
+                    NotifyList['emails'] = r['notify_list']
                 else:
-                    NotifyList = dict(ast.literal_eval(r[b'notify_list']))
+                    NotifyList = dict(ast.literal_eval(r['notify_list']))
 
-            data[r[b'show_id']] = {
-                'id': r[b'show_id'],
-                'name': r[b'show_name'],
+            data[r['show_id']] = {
+                'id': r['show_id'],
+                'name': r['show_name'],
                 'list': NotifyList['emails'],
                 'prowl_notify_list': NotifyList['prowlAPIs']
             }
@@ -563,12 +563,12 @@ class Home(WebRoot):
 
         # Get current data
         for subs in main_db_con.select("SELECT notify_list FROM tv_shows WHERE show_id = ?", [show]):
-            if subs[b'notify_list'] and len(subs[b'notify_list']) > 0:
+            if subs['notify_list'] and len(subs['notify_list']) > 0:
                 # First, handle legacy format (emails only)
-                if not subs[b'notify_list'][0] == '{':
-                    entries['emails'] = subs[b'notify_list']
+                if not subs['notify_list'][0] == '{':
+                    entries['emails'] = subs['notify_list']
                 else:
-                    entries = dict(ast.literal_eval(subs[b'notify_list']))
+                    entries = dict(ast.literal_eval(subs['notify_list']))
 
         if emails or prowlAPIs:
             if not main_db_con.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
@@ -609,7 +609,7 @@ class Home(WebRoot):
 
     def getPushbulletDevices(self):
         api = self.get_body_argument('api')
-        # self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+        # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         result = notifiers.pushbullet_notifier.get_devices(api)
         if result:
@@ -836,7 +836,7 @@ class Home(WebRoot):
                                    'requires': self.haveEMBY(),
                                    'icon': 'menu-icon-emby'
                                    })
-                if seasonResults and int(seasonResults[-1][b"season"]) == 0:
+                if seasonResults and int(seasonResults[-1]["season"]) == 0:
                     if sickbeard.DISPLAY_SHOW_SPECIALS:
                         # noinspection PyPep8
                         submenu.append({
@@ -874,9 +874,9 @@ class Home(WebRoot):
         epCats = {}
 
         for curResult in sql_results:
-            curEpCat = show_obj.getOverview(curResult[b"status"])
+            curEpCat = show_obj.getOverview(curResult["status"])
             if curEpCat:
-                epCats[str(curResult[b"season"]) + "x" + str(curResult[b"episode"])] = curEpCat
+                epCats[str(curResult["season"]) + "x" + str(curResult["episode"])] = curEpCat
                 epCounts[curEpCat] += 1
 
         if sickbeard.ANIME_SPLIT_HOME:
@@ -940,7 +940,7 @@ class Home(WebRoot):
         main_db_con = db.DBConnection()
         result = main_db_con.select_one(
             "SELECT description FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?", (int(show), int(season), int(episode)))
-        return result[b'description'] if result else 'Episode not found.'
+        return result['description'] if result else 'Episode not found.'
 
     def sceneExceptions(self):
         show = self.get_query_argument('show')
@@ -1523,14 +1523,14 @@ class Home(WebRoot):
                 continue
             related_eps_result = main_db_con.select(
                 "SELECT season, episode FROM tv_episodes WHERE location = ? AND episode != ?",
-                [ep_result[0][b"location"], epInfo[1]]
+                [ep_result[0]["location"], epInfo[1]]
             )
 
             root_ep_obj = show_obj.getEpisode(epInfo[0], epInfo[1])
             root_ep_obj.relatedEps = []
 
             for cur_related_ep in related_eps_result:
-                related_ep_obj = show_obj.getEpisode(cur_related_ep[b"season"], cur_related_ep[b"episode"])
+                related_ep_obj = show_obj.getEpisode(cur_related_ep["season"], cur_related_ep["episode"])
                 if related_ep_obj not in root_ep_obj.relatedEps:
                     root_ep_obj.relatedEps.append(related_ep_obj)
 
@@ -1540,8 +1540,8 @@ class Home(WebRoot):
 
     # def searchEpisodeListManual(self, show=None, season=None, episode=None, search_mode='eponly'):
     #     # retrieve the episode object and fail if we can't get one
-    #     self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
-    #     self.set_header(b'Content-Type', 'application/json')
+    #     self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+    #     self.set_header('Content-Type', 'application/json')
     #     ep_obj, error_msg = self._getEpisode(show, season, episode)
     #     if error_msg or not ep_obj:
     #         return json.dumps({'result': 'failure', 'errorMessage': error_msg})
@@ -1549,8 +1549,8 @@ class Home(WebRoot):
     #     return search.searchProvidersList(ep_obj.show, ep_obj, search_mode)
     #
     # def snatchEpisodeManual(self, result_dict):
-    #     self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
-    #     self.set_header(b'Content-Type', 'application/json')
+    #     self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+    #     self.set_header('Content-Type', 'application/json')
     #     result = sickbeard.classes.TorrentSearchResult.make_result(result_dict)
     #     return search.snatchEpisode(result, SNATCHED_BEST)
     #
@@ -1663,8 +1663,8 @@ class Home(WebRoot):
                 if not [i for i, j in zip(searchThread.segment, episodes) if i.indexerid == j['episodeindexid']]:
                     episodes += getEpisodes(searchThread, searchstatus)
 
-        self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
-        self.set_header(b'Content-Type', 'application/json')
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header('Content-Type', 'application/json')
         return json.dumps({'episodes': episodes})
 
     @staticmethod
@@ -1770,8 +1770,8 @@ class Home(WebRoot):
             ep_obj, error_msg = self._getEpisode(show, forSeason, forEpisode)
 
         if error_msg or not ep_obj:
-            result[b'success'] = False
-            result[b'errorMessage'] = error_msg
+            result['success'] = False
+            result['errorMessage'] = error_msg
         elif show_obj.is_anime:
             logger.debug("setAbsoluteSceneNumbering for {0} from {1} to {2}".format(show, forAbsolute, sceneAbsolute))
 
@@ -1800,15 +1800,15 @@ class Home(WebRoot):
         if show_obj.is_anime:
             sn = get_scene_absolute_numbering(show, indexer, forAbsolute)
             if sn:
-                result[b'sceneAbsolute'] = sn
+                result['sceneAbsolute'] = sn
             else:
-                result[b'sceneAbsolute'] = None
+                result['sceneAbsolute'] = None
         else:
             sn = get_scene_numbering(show, indexer, forSeason, forEpisode)
             if sn:
-                (result[b'sceneSeason'], result[b'sceneEpisode']) = sn
+                (result['sceneSeason'], result['sceneEpisode']) = sn
             else:
-                (result[b'sceneSeason'], result[b'sceneEpisode']) = (None, None)
+                (result['sceneSeason'], result['sceneEpisode']) = (None, None)
 
         return json.dumps(result)
 

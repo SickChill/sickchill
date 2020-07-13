@@ -7,8 +7,10 @@ import threading
 from socket import errno, error as socket_error
 
 # Third Party Imports
+import asyncio
 from tornado.ioloop import IOLoop
 from tornado.web import Application, RedirectHandler, StaticFileHandler, url
+from tornado.platform.asyncio import AnyThreadEventLoopPolicy
 
 # First Party Imports
 import sickbeard
@@ -105,6 +107,8 @@ class SRWebServer(threading.Thread):
                 logger.warning("Disabled HTTPS because of missing CERT and KEY files")
                 sickbeard.ENABLE_HTTPS = self.enable_https = False
 
+        asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
+
         # Load the app
         self.app = Application(
             [],
@@ -112,7 +116,7 @@ class SRWebServer(threading.Thread):
             #  devs. We could now update without restart possibly if we check DB version hasnt changed!
             autoreload=False,
             gzip=sickbeard.WEB_USE_GZIP,
-            cookie_secret=sickbeard.WEB_COOKIE_SECRET,
+            cookie_secret=bytes(sickbeard.WEB_COOKIE_SECRET, 'utf-8'),
             login_url='{0}/login/'.format(self.options['web_root']),
             static_path=self.options['data_root'],
             static_url_prefix='{0}/'.format(self.options['web_root'])

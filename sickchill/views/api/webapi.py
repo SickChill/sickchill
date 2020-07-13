@@ -705,20 +705,20 @@ class CMDComingEpisodes(ApiCall):
         for section, coming_episodes in six.iteritems(grouped_coming_episodes):
             for coming_episode in coming_episodes:
                 data[section].append({
-                    'airdate': coming_episode[b'airdate'],
-                    'airs': coming_episode[b'airs'],
-                    'ep_name': coming_episode[b'name'],
-                    'ep_plot': coming_episode[b'description'],
-                    'episode': coming_episode[b'episode'],
-                    'indexerid': coming_episode[b'indexer_id'],
-                    'network': coming_episode[b'network'],
-                    'paused': coming_episode[b'paused'],
-                    'quality': coming_episode[b'quality'],
-                    'season': coming_episode[b'season'],
-                    'show_name': coming_episode[b'show_name'],
-                    'show_status': coming_episode[b'status'],
-                    'tvdbid': coming_episode[b'tvdbid'],
-                    'weekday': coming_episode[b'weekday']
+                    'airdate': coming_episode['airdate'],
+                    'airs': coming_episode['airs'],
+                    'ep_name': coming_episode['name'],
+                    'ep_plot': coming_episode['description'],
+                    'episode': coming_episode['episode'],
+                    'indexerid': coming_episode['indexer_id'],
+                    'network': coming_episode['network'],
+                    'paused': coming_episode['paused'],
+                    'quality': coming_episode['quality'],
+                    'season': coming_episode['season'],
+                    'show_name': coming_episode['show_name'],
+                    'show_status': coming_episode['status'],
+                    'tvdbid': coming_episode['tvdbid'],
+                    'weekday': coming_episode['weekday']
                 })
 
         return _responds(RESULT_SUCCESS, data)
@@ -771,23 +771,23 @@ class CMDEpisode(ApiCall):
             pass
 
         if not show_path:  # show dir is broken ... episode path will be empty
-            episode[b"location"] = ""
+            episode["location"] = ""
         elif not self.fullPath:
             # using the length because lstrip() removes to much
             show_path_length = len(show_path) + 1  # the / or \ yeah not that nice i know
-            episode[b"location"] = episode[b"location"][show_path_length:]
+            episode["location"] = episode["location"][show_path_length:]
 
         # convert stuff to human form
-        if try_int(episode[b'airdate'], 1) > 693595:  # 1900
-            episode[b'airdate'] = sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(
-                network_timezones.parse_date_time(int(episode[b'airdate']), show_obj.airs, show_obj.network)), d_preset=dateFormat)
+        if try_int(episode['airdate'], 1) > 693595:  # 1900
+            episode['airdate'] = sbdatetime.sbdatetime.sbfdate(sbdatetime.sbdatetime.convert_to_setting(
+                network_timezones.parse_date_time(int(episode['airdate']), show_obj.airs, show_obj.network)), d_preset=dateFormat)
         else:
-            episode[b'airdate'] = 'Never'
+            episode['airdate'] = 'Never'
 
-        status, quality = Quality.splitCompositeStatus(int(episode[b"status"]))
-        episode[b"status"] = _get_status_strings(status)
-        episode[b"quality"] = get_quality_string(quality)
-        episode[b"file_size_human"] = pretty_file_size(episode[b"file_size"])
+        status, quality = Quality.splitCompositeStatus(int(episode["status"]))
+        episode["status"] = _get_status_strings(status)
+        episode["quality"] = get_quality_string(quality)
+        episode["file_size_human"] = pretty_file_size(episode["file_size"])
 
         return _responds(RESULT_SUCCESS, episode)
 
@@ -1118,10 +1118,10 @@ class CMDExceptions(ApiCall):
             sql_results = cache_db_con.select("SELECT show_name, indexer_id AS 'indexerid' FROM scene_exceptions")
             scene_exceptions = {}
             for row in sql_results:
-                indexerid = row[b"indexerid"]
+                indexerid = row["indexerid"]
                 if indexerid not in scene_exceptions:
                     scene_exceptions[indexerid] = []
-                scene_exceptions[indexerid].append(row[b"show_name"])
+                scene_exceptions[indexerid].append(row["show_name"])
 
         else:
             show_obj = Show.find(sickbeard.showList, int(self.indexerid))
@@ -1133,7 +1133,7 @@ class CMDExceptions(ApiCall):
                 [self.indexerid])
             scene_exceptions = []
             for row in sql_results:
-                scene_exceptions.append(row[b"show_name"])
+                scene_exceptions.append(row["show_name"])
 
         return _responds(RESULT_SUCCESS, scene_exceptions)
 
@@ -1160,24 +1160,24 @@ class CMDHistory(ApiCall):
         results = []
 
         for row in data:
-            status, quality = Quality.splitCompositeStatus(int(row[b"action"]))
+            status, quality = Quality.splitCompositeStatus(int(row["action"]))
             status = _get_status_strings(status)
 
             if self.type and not status.lower() == self.type:
                 continue
 
-            row[b"status"] = status
-            row[b"quality"] = get_quality_string(quality)
-            row[b"date"] = _history_date_to_datetime_form(str(row[b"date"]))
+            row["status"] = status
+            row["quality"] = get_quality_string(quality)
+            row["date"] = _history_date_to_datetime_form(str(row["date"]))
 
-            del row[b"action"]
+            del row["action"]
 
             _rename_element(row, "show_id", "indexerid")
-            row[b"resource_path"] = os.path.dirname(row[b"resource"])
-            row[b"resource"] = os.path.basename(row[b"resource"])
+            row["resource_path"] = os.path.dirname(row["resource"])
+            row["resource"] = os.path.basename(row["resource"])
 
             # Add tvdbid for backward compatibility
-            row[b'tvdbid'] = row[b'indexerid']
+            row['tvdbid'] = row['indexerid']
             results.append(row)
 
         return _responds(RESULT_SUCCESS, results)
@@ -1262,7 +1262,7 @@ class CMDBacklog(ApiCall):
 
             for curResult in sql_results:
 
-                cur_ep_cat = curShow.getOverview(curResult[b"status"])
+                cur_ep_cat = curShow.getOverview(curResult["status"])
                 if cur_ep_cat and cur_ep_cat in (Overview.WANTED, Overview.QUAL):
                     show_eps.append(curResult)
 
@@ -1547,7 +1547,7 @@ class CMDSickBeardCheckScheduler(ApiCall):
 
         data = {
             "backlog_is_paused": int(backlog_paused), "backlog_is_running": int(backlog_running),
-            "last_backlog": _ordinal_to_date_form(sql_results[0][b"last_backlog"]),
+            "last_backlog": _ordinal_to_date_form(sql_results[0]["last_backlog"]),
             "next_backlog": next_backlog
             }
         return _responds(RESULT_SUCCESS, data)
@@ -2045,17 +2045,17 @@ class CMDShowAddExisting(ApiCall):
         indexer_name = None
         indexer_result = CMDSickBeardSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid}).run()
 
-        if indexer_result[b'result'] == result_type_map[RESULT_SUCCESS]:
-            if not indexer_result[b'data']['results']:
+        if indexer_result['result'] == result_type_map[RESULT_SUCCESS]:
+            if not indexer_result['data']['results']:
                 return _responds(RESULT_FAILURE, msg="Empty results returned, check indexerid and try again")
-            if len(indexer_result[b'data']['results']) == 1 and 'name' in indexer_result[b'data']['results'][0]:
-                indexer_name = indexer_result[b'data']['results'][0]['name']
+            if len(indexer_result['data']['results']) == 1 and 'name' in indexer_result['data']['results'][0]:
+                indexer_name = indexer_result['data']['results'][0]['name']
 
         if not indexer_name:
             return _responds(RESULT_FAILURE, msg="Unable to retrieve information from indexer")
 
         # set indexer so we can pass it along when adding show to SR
-        indexer = indexer_result[b'data']['results'][0]['indexer']
+        indexer = indexer_result['data']['results'][0]['indexer']
 
         # use default quality as a fail-safe
         new_quality = int(sickbeard.QUALITY_DEFAULT)
@@ -2204,17 +2204,17 @@ class CMDShowAddNew(ApiCall):
         indexer_name = None
         indexer_result = CMDSickBeardSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid, 'lang': self.lang}).run()
 
-        if indexer_result[b'result'] == result_type_map[RESULT_SUCCESS]:
-            if not indexer_result[b'data']['results']:
+        if indexer_result['result'] == result_type_map[RESULT_SUCCESS]:
+            if not indexer_result['data']['results']:
                 return _responds(RESULT_FAILURE, msg="Empty results returned, check indexerid and try again")
-            if len(indexer_result[b'data']['results']) == 1 and 'name' in indexer_result[b'data']['results'][0]:
-                indexer_name = indexer_result[b'data']['results'][0]['name']
+            if len(indexer_result['data']['results']) == 1 and 'name' in indexer_result['data']['results'][0]:
+                indexer_name = indexer_result['data']['results'][0]['name']
 
         if not indexer_name:
             return _responds(RESULT_FAILURE, msg="Unable to retrieve information from indexer")
 
         # set indexer for found show so we can pass it along
-        indexer = indexer_result[b'data']['results'][0]['indexer']
+        indexer = indexer_result['data']['results'][0]['indexer']
 
         # moved the logic check to the end in an attempt to eliminate empty directory being created from previous errors
         show_path = os.path.join(self.location, sanitize_filename(indexer_name))
@@ -2540,7 +2540,7 @@ class CMDShowSeasonList(ApiCall):
                                              [self.indexerid])
         season_list = []  # a list with all season numbers
         for row in sql_results:
-            season_list.append(int(row[b"season"]))
+            season_list.append(int(row["season"]))
 
         return _responds(RESULT_SUCCESS, season_list)
 
@@ -2577,19 +2577,19 @@ class CMDShowSeasons(ApiCall):
                 [self.indexerid])
             seasons = {}
             for row in sql_results:
-                status, quality = Quality.splitCompositeStatus(int(row[b"status"]))
-                row[b"status"] = _get_status_strings(status)
-                row[b"quality"] = get_quality_string(quality)
-                if try_int(row[b'airdate'], 1) > 693595:  # 1900
+                status, quality = Quality.splitCompositeStatus(int(row["status"]))
+                row["status"] = _get_status_strings(status)
+                row["quality"] = get_quality_string(quality)
+                if try_int(row['airdate'], 1) > 693595:  # 1900
                     dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(
-                        network_timezones.parse_date_time(row[b'airdate'], sho_obj.airs, sho_obj.network))
-                    row[b'airdate'] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)
+                        network_timezones.parse_date_time(row['airdate'], sho_obj.airs, sho_obj.network))
+                    row['airdate'] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)
                 else:
-                    row[b'airdate'] = 'Never'
-                cur_season = int(row[b"season"])
-                cur_episode = int(row[b"episode"])
-                del row[b"season"]
-                del row[b"episode"]
+                    row['airdate'] = 'Never'
+                cur_season = int(row["season"])
+                cur_episode = int(row["episode"])
+                del row["season"]
+                del row["episode"]
                 if cur_season not in seasons:
                     seasons[cur_season] = {}
                 seasons[cur_season][cur_episode] = row
@@ -2602,17 +2602,17 @@ class CMDShowSeasons(ApiCall):
                 return _responds(RESULT_FAILURE, msg="Season not found")
             seasons = {}
             for row in sql_results:
-                cur_episode = int(row[b"episode"])
-                del row[b"episode"]
-                status, quality = Quality.splitCompositeStatus(int(row[b"status"]))
-                row[b"status"] = _get_status_strings(status)
-                row[b"quality"] = get_quality_string(quality)
-                if try_int(row[b'airdate'], 1) > 693595:  # 1900
+                cur_episode = int(row["episode"])
+                del row["episode"]
+                status, quality = Quality.splitCompositeStatus(int(row["status"]))
+                row["status"] = _get_status_strings(status)
+                row["quality"] = get_quality_string(quality)
+                if try_int(row['airdate'], 1) > 693595:  # 1900
                     dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(
-                        network_timezones.parse_date_time(row[b'airdate'], sho_obj.airs, sho_obj.network))
-                    row[b'airdate'] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)
+                        network_timezones.parse_date_time(row['airdate'], sho_obj.airs, sho_obj.network))
+                    row['airdate'] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)
                 else:
-                    row[b'airdate'] = 'Never'
+                    row['airdate'] = 'Never'
                 if cur_episode not in seasons:
                     seasons[cur_episode] = {}
                 seasons[cur_episode] = row
@@ -2718,18 +2718,18 @@ class CMDShowStats(ApiCall):
                                          [self.indexerid])
         # the main loop that goes through all episodes
         for row in sql_results:
-            status, quality = Quality.splitCompositeStatus(int(row[b"status"]))
+            status, quality = Quality.splitCompositeStatus(int(row["status"]))
 
             episode_status_counts_total["total"] += 1
 
             if status in Quality.DOWNLOADED + Quality.ARCHIVED:
                 episode_qualities_counts_download["total"] += 1
                 # noinspection PyTypeChecker
-                episode_qualities_counts_download[int(row[b"status"])] += 1
+                episode_qualities_counts_download[int(row["status"])] += 1
             elif status in Quality.SNATCHED + Quality.SNATCHED_PROPER:
                 episode_qualities_counts_snatch["total"] += 1
                 # noinspection PyTypeChecker
-                episode_qualities_counts_snatch[int(row[b"status"])] += 1
+                episode_qualities_counts_snatch[int(row["status"])] += 1
             elif status > 0:  # we don't count NONE = 0 = N/A
                 episode_status_counts_total[status] += 1
 

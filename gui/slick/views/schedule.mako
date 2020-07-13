@@ -121,23 +121,23 @@
                         <tbody style="text-shadow:none;">
                             % for cur_result in results:
                                 <%
-                                    cur_indexer = int(cur_result[b'indexer'])
-                                    run_time = cur_result[b'runtime']
-                                    snatched_status = int(cur_result[b'epstatus']) in SNATCHED
+                                    cur_indexer = int(cur_result['indexer'])
+                                    run_time = cur_result['runtime']
+                                    snatched_status = int(cur_result['epstatus']) in SNATCHED
 
-                                    if int(cur_result[b'paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
+                                    if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
                                         continue
 
                                     if snatched_status and not sickbeard.COMING_EPS_DISPLAY_SNATCHED:
                                         continue
 
-                                    cur_ep_airdate = cur_result[b'localtime'].date()
-                                    cur_ep_enddate = cur_result[b'localtime']
+                                    cur_ep_airdate = cur_result['localtime'].date()
+                                    cur_ep_enddate = cur_result['localtime']
                                     if run_time:
                                         cur_ep_enddate += datetime.timedelta(minutes = run_time)
 
                                     if snatched_status:
-                                        if cur_result[b'location']:
+                                        if cur_result['location']:
                                             continue
                                         else:
                                             show_div = 'listing-snatched'
@@ -153,7 +153,7 @@
                                 %>
                                 <tr class="${show_div}">
                                     <td align="center" nowrap="nowrap">
-                                        <% airDate = sbdatetime.sbdatetime.convert_to_setting(cur_result[b'localtime']) %>
+                                        <% airDate = sbdatetime.sbdatetime.convert_to_setting(cur_result['localtime']) %>
                                         <time datetime="${airDate.isoformat('T')}"
                                               class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
                                     </td>
@@ -163,65 +163,65 @@
                                               class="date">${sbdatetime.sbdatetime.sbfdatetime(ends)}</time>
                                     </td>
                                     <td class="tvShow">
-                                        <a href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">${cur_result[b'show_name']}</a>
-                                        % if int(cur_result[b'paused']):
+                                        <a href="${srRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}</a>
+                                        % if int(cur_result['paused']):
                                             <span class="pause">[paused]</span>
                                         % endif
                                     </td>
                                     <td class="banner">
-                                        <a href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">
+                                        <a href="${srRoot}/home/displayShow?show=${cur_result['showid']}">
                                             <img alt="" class="bannerThumb"
                                                  src="${static_url("images/banner.png")}"
-                                                 data-src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result[b'showid'], 'banner_thumb'))}"
+                                                 data-src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result['showid'], 'banner_thumb'))}"
                                             />
                                         </a>
                                     </td>
                                     <td nowrap="nowrap" align="center">
-                                        ${'S%02iE%02i' % (int(cur_result[b'season']), int(cur_result[b'episode']))}
+                                        ${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))}
                                     </td>
                                     <td>
-                                        % if cur_result[b'description']:
+                                        % if cur_result['description']:
                                             <img alt="" src="${static_url('images/info32.png')}" height="16" width="16" class="plotInfo"
-                                                 id="plot_info_${'%s_%s_%s' % (cur_result[b'showid'], cur_result[b'season'], cur_result[b'episode'])}"/>
+                                                 id="plot_info_${'%s_%s_%s' % (cur_result['showid'], cur_result['season'], cur_result['episode'])}"/>
                                         % else:
                                             <img alt="" src="${static_url('images/info32.png')}" width="16" height="16" class="plotInfoNone"/>
                                         % endif
-                                        ${cur_result[b'name']}
+                                        ${cur_result['name']}
                                     </td>
                                     <td align="center">
-                                        ${cur_result[b'network']}
+                                        ${cur_result['network']}
                                     </td>
                                     <td align="center">
                                         ${run_time}min
                                     </td>
                                     <td align="center">
-                                        ${renderQualityPill(cur_result[b'quality'], showTitle=True)}
+                                        ${renderQualityPill(cur_result['quality'], showTitle=True)}
                                     </td>
                                     <td align="center" style="vertical-align: middle;">
-                                        % if cur_result[b'imdb_id']:
-                                            <a href="${anon_url('http://www.imdb.com/title/', cur_result[b'imdb_id'])}" rel="noreferrer"
+                                        % if cur_result['imdb_id']:
+                                            <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer"
                                                onclick="window.open(this.href, '_blank'); return false"
-                                               title="http://www.imdb.com/title/${cur_result[b'imdb_id']}">
+                                               title="http://www.imdb.com/title/${cur_result['imdb_id']}">
                                                 <span class="displayshow-icon-imdb"></span>
                                             </a>
-                                            <a href="${anon_url('https://trakt.tv/shows/', cur_result[b'imdb_id'])}" rel="noreferrer"
+                                            <a href="${anon_url('https://trakt.tv/shows/', cur_result['imdb_id'])}" rel="noreferrer"
                                                onclick="window.open(this.href, '_blank'); return false;"
-                                               title="https://trakt.tv/shows/${cur_result[b'imdb_id']}">
+                                               title="https://trakt.tv/shows/${cur_result['imdb_id']}">
                                                 <span class="displayshow-icon-trakt" />
                                             </a>
                                         % endif
-                                        <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result[b'showid'])}"
+                                        <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result['showid'])}"
                                            rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
-                                           title="${show_indexer.show_url(cur_indexer)}${cur_result[b'showid']}">
+                                           title="${show_indexer.show_url(cur_indexer)}${cur_result['showid']}">
                                             <img alt="${show_indexer.name(cur_indexer)}" height="16" width="16"
                                                  src="${static_url(show_indexer.icon(cur_indexer))}"/>
                                         </a>
                                     </td>
                                     <td align="center">
-                                        <a href="${srRoot}/home/searchEpisode?show=${cur_result[b'showid']}&amp;season=${cur_result[b'season']}&amp;episode=${cur_result[b'episode']}"
+                                        <a href="${srRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}"
                                            title="Manual Search" class="forceUpdate epSearch"
-                                           id="forceUpdate-${cur_result[b'showid']}x${cur_result[b'season']}x${cur_result[b'episode']}">
-                                            <span id="forceUpdateImage-${cur_result[b'showid']}"
+                                           id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}">
+                                            <span id="forceUpdateImage-${cur_result['showid']}"
                                                   class="displayshow-icon-search"></span>
                                         </a>
                                     </td>
@@ -255,22 +255,22 @@
                                 <tbody>
                                     <% day_has_show = False %>
                                     % for cur_result in results:
-                                        % if int(cur_result[b'paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
+                                        % if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
                                             <% continue %>
                                         % endif
 
-                                        % if int(cur_result[b'epstatus']) in SNATCHED:
+                                        % if int(cur_result['epstatus']) in SNATCHED:
                                             <% continue %>
                                         % endif
 
-                                        <% cur_indexer = int(cur_result[b'indexer']) %>
-                                        <% run_time = cur_result[b'runtime'] %>
-                                        <% airday = cur_result[b'localtime'].date() %>
+                                        <% cur_indexer = int(cur_result['indexer']) %>
+                                        <% run_time = cur_result['runtime'] %>
+                                        <% airday = cur_result['localtime'].date() %>
 
                                         % if airday == day:
                                             % try:
                                                 <% day_has_show = True %>
-                                                <% airtime = sbdatetime.sbdatetime.fromtimestamp(time.mktime(cur_result[b'localtime'].timetuple())).sbftime() %>
+                                                <% airtime = sbdatetime.sbdatetime.fromtimestamp(time.mktime(cur_result['localtime'].timetuple())).sbftime() %>
                                                 % if sickbeard.TRIM_ZERO:
                                                     <% airtime = re.sub(r'0(\d:\d\d)', r'\1', airtime, 0, re.IGNORECASE | re.MULTILINE) %>
                                                 % endif
@@ -280,23 +280,23 @@
                                             <tr>
                                                 <td class="calendarShow">
                                                     <div class="poster">
-                                                        <a title="${cur_result[b'show_name']}" href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">
+                                                        <a title="${cur_result['show_name']}" href="${srRoot}/home/displayShow?show=${cur_result['showid']}">
                                                             <img alt=""
-                                                                 src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result[b'showid'], 'poster_thumb'))}"
+                                                                 src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result['showid'], 'poster_thumb'))}"
                                                             />
                                                         </a>
                                                     </div>
                                                     <div class="text">
                                                     <span class="airtime">
-                                                        ${airtime} on ${cur_result[b"network"]}
+                                                        ${airtime} on ${cur_result["network"]}
                                                     </span>
-                                                    <span class="episode-title" title="${cur_result[b'name']}">
-                                                        ${'S%02iE%02i' % (int(cur_result[b'season']), int(cur_result[b'episode']))}
-                                                        - ${cur_result[b'name']}
+                                                    <span class="episode-title" title="${cur_result['name']}">
+                                                        ${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))}
+                                                        - ${cur_result['name']}
                                                     </span>
                                                     </div>
                                                 </td>
-                                                <!-- end ${cur_result[b'show_name']} -->
+                                                <!-- end ${cur_result['show_name']} -->
                                             </tr>
                                         % endif
                                     % endfor
@@ -326,31 +326,31 @@
 
                 % for cur_result in results:
                 <%
-                    cur_indexer = int(cur_result[b'indexer'])
-                    snatched_status = int(cur_result[b'epstatus']) in SNATCHED
+                    cur_indexer = int(cur_result['indexer'])
+                    snatched_status = int(cur_result['epstatus']) in SNATCHED
 
-                    if int(cur_result[b'paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
+                    if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
                         continue
 
-                    if snatched_status and (cur_result[b'location'] or not sickbeard.COMING_EPS_DISPLAY_SNATCHED):
+                    if snatched_status and (cur_result['location'] or not sickbeard.COMING_EPS_DISPLAY_SNATCHED):
                         continue
 
-                    run_time = cur_result[b'runtime']
-                    cur_ep_airdate = cur_result[b'localtime'].date()
+                    run_time = cur_result['runtime']
+                    cur_ep_airdate = cur_result['localtime'].date()
 
                     if run_time:
-                        cur_ep_enddate = cur_result[b'localtime'] + datetime.timedelta(minutes = run_time)
+                        cur_ep_enddate = cur_result['localtime'] + datetime.timedelta(minutes = run_time)
                     else:
-                        cur_ep_enddate = cur_result[b'localtime']
+                        cur_ep_enddate = cur_result['localtime']
 
                     this_day_name = datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').capitalize()
                 %>
                 % if sickbeard.COMING_EPS_SORT == 'network':
-                    <% show_network = ('no network', cur_result[b'network'])[bool(cur_result[b'network'])] %>
+                    <% show_network = ('no network', cur_result['network'])[bool(cur_result['network'])] %>
                     % if cur_segment != show_network:
                         <div>
                             <h2 class="network">${show_network}</h2>
-                            <% cur_segment = cur_result[b'network'] %>
+                            <% cur_segment = cur_result['network'] %>
                         </div>
                     % endif
 
@@ -423,14 +423,14 @@
                         % endif
                     % endif
                 % endif
-                    <div class="${show_div}" id="listing-${cur_result[b'showid']}">
+                    <div class="${show_div}" id="listing-${cur_result['showid']}">
                         <div class="tvshowDiv">
                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <th ${('class="nobg"', 'rowspan="3"')[layout == 'poster']} valign="top">
-                                        <a href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">
+                                        <a href="${srRoot}/home/displayShow?show=${cur_result['showid']}">
                                             <img alt="" class="${('posterThumb', 'bannerThumb')[layout == 'banner']}"
-                                                 src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result[b'showid'], (layout, 'poster_thumb')[layout == 'poster']))}"
+                                                 src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result['showid'], (layout, 'poster_thumb')[layout == 'poster']))}"
                                             />
                                         </a>
                                     </th>
@@ -439,33 +439,33 @@
                                     <td class="next_episode">
                                         <div class="clearfix"></div>
                                         <span class="tvshowTitle">
-                                            <a href="${srRoot}/home/displayShow?show=${cur_result[b'showid']}">${cur_result[b'show_name']}
-                                                ${('', '<span class="pause">[paused]</span>')[int(cur_result[b'paused'])]}
+                                            <a href="${srRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}
+                                                ${('', '<span class="pause">[paused]</span>')[int(cur_result['paused'])]}
                                             </a>
                                         </span>
 
                                         <span class="tvshowTitleIcons">
-                                            % if cur_result[b'imdb_id']:
-                                                <a href="${anon_url('http://www.imdb.com/title/', cur_result[b'imdb_id'])}" rel="noreferrer"
-                                                   onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result[b'imdb_id']}">
+                                            % if cur_result['imdb_id']:
+                                                <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer"
+                                                   onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}">
                                                     <span class="displayshow-icon-imdb"></span>
                                                 </a>
-                                                <a href="${anon_url('https://trakt.tv/shows/', cur_result[b'imdb_id'])}" rel="noreferrer"
-                                                   onclick="window.open(this.href, '_blank'); return false;" title="https://trakt.tv/shows/${cur_result[b'imdb_id']}">
+                                                <a href="${anon_url('https://trakt.tv/shows/', cur_result['imdb_id'])}" rel="noreferrer"
+                                                   onclick="window.open(this.href, '_blank'); return false;" title="https://trakt.tv/shows/${cur_result['imdb_id']}">
                                                     <span class="displayshow-icon-trakt" />
                                                 </a>
                                             % endif
-                                            <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result[b'showid'])}"
+                                            <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result['showid'])}"
                                                rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
                                                title="${show_indexer.show_url(cur_indexer)}"><img
                                                     alt="${show_indexer.name(cur_indexer)}" height="16" width="16"
                                                     src="${static_url(show_indexer.icon(cur_indexer))}"/>
                                             </a>
                                             <span>
-                                                <a href="${srRoot}/home/searchEpisode?show=${cur_result[b'showid']}&amp;season=${cur_result[b'season']}&amp;episode=${cur_result[b'episode']}"
-                                                   title="Manual Search" id="forceUpdate-${cur_result[b'showid']}x${cur_result[b'season']}x${cur_result[b'episode']}"
+                                                <a href="${srRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}"
+                                                   title="Manual Search" id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}"
                                                    class="epSearch forceUpdate">
-                                                    <span id="forceUpdateImage-${cur_result[b'showid']}"
+                                                    <span id="forceUpdateImage-${cur_result['showid']}"
                                                           class="displayshow-icon-search"></span>
                                                 </a>
                                             </span>
@@ -474,31 +474,31 @@
                                             <br/>
                                             <span class="title">${_('Next Episode')}:</span>
                                         <span>
-                                            ${'S%02iE%02i' % (int(cur_result[b'season']), int(cur_result[b'episode']))} - ${cur_result[b'name']}
+                                            ${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))} - ${cur_result['name']}
                                         </span>
 
                                         <div class="clearfix">
                                             <span class="title">${_('Airs')}:</span>
                                             <span class="airdate">
-                                                ${sbdatetime.sbdatetime.sbfdatetime(cur_result[b'localtime'])}
+                                                ${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime'])}
                                             </span>
-                                            ${('', '<span> on %s</span>' % cur_result[b'network'])[bool(cur_result[b'network'])]}
+                                            ${('', '<span> on %s</span>' % cur_result['network'])[bool(cur_result['network'])]}
                                         </div>
 
                                         <div class="clearfix">
                                             <span class="title">${_('Quality')}:</span>
-                                            ${renderQualityPill(cur_result[b'quality'], showTitle=True)}
+                                            ${renderQualityPill(cur_result['quality'], showTitle=True)}
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="vertical-align: top;">
                                         <div>
-                                            % if cur_result[b'description']:
+                                            % if cur_result['description']:
                                                 <span class="title" style="vertical-align:middle;">${_('Plot')}:</span>
                                                 <img class="ep_summaryTrigger" src="${static_url('images/plus.png')}" height="16" width="16" alt=""
                                                      title="Toggle Summary"/>
-                                                <div class="ep_summary">${cur_result[b'description']}</div>
+                                                <div class="ep_summary">${cur_result['description']}</div>
                                             % else:
                                                 <span class="title ep_summaryTriggerNone" style="vertical-align:middle;">${_('Plot')}:</span>
                                                 <img class="ep_summaryTriggerNone" src="${static_url('images/plus.png')}" height="16" width="16"
@@ -510,7 +510,7 @@
                             </table>
                         </div>
                     </div>
-                    <!-- end ${cur_result[b'show_name']} //-->
+                    <!-- end ${cur_result['show_name']} //-->
                 % endfor
             </div>
         % endif
