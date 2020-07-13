@@ -1,3 +1,6 @@
+path_classifiers:
+  test:
+    - test
 extraction:
   python:
     python_setup:
@@ -9,3 +12,5 @@ extraction:
     index:
       exclude:
         - lib
+        - lib3
+        - lib2
