@@ -2,8 +2,6 @@
 """
 class NumDict - A dict with numeric keys
 """
-from __future__ import absolute_import, print_function, unicode_literals
-
 # Stdlib Imports
 from collections import MutableMapping
 

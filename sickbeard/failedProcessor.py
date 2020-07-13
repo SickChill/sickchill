@@ -16,8 +16,6 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-from __future__ import absolute_import, print_function, unicode_literals
-
 # First Party Imports
 import sickbeard
 from sickchill.helper.exceptions import FailedPostProcessingFailedException
