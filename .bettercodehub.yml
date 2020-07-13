@@ -1,5 +1,7 @@
 exclude:
   - /lib/.*
+  - /lib2/.*
+  - /lib3/.*
 
 languages:
 - python

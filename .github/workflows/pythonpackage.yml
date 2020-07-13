@@ -15,7 +15,7 @@ jobs:
   test:
     strategy:
       matrix:
-        python-version: [2.7]
+        python-version: [3.7]
         os: [ubuntu-latest]
       fail-fast: false
     runs-on: ${{ matrix.os }}

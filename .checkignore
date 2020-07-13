@@ -1,3 +1,5 @@
 lib/*
+lib2/*
+lib3/*
 contrib/*
 .build/*

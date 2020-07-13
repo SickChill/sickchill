@@ -66,12 +66,20 @@ if babel:
 #         'flake8-coding',
 #         'isort'
 #     ],
-#     python_requires='>=2.7, <3',
+#     python_requires='>=3',
 #     classifiers=[
 #         'Development Status :: 3 - Alpha',
 #         'Intended Audience :: System Administrators',
 #         'Operating System :: OS Independent',
 #         'Topic :: Multimedia :: Video',
+#         'Programming Language :: Python :: 3',
+#         'Programming Language :: Python :: 3.2',
+#         'Programming Language :: Python :: 3.3',
+#         'Programming Language :: Python :: 3.5',
+#         'Programming Language :: Python :: 3.6',
+#         'Programming Language :: Python :: 3.7',
+#         'Programming Language :: Python :: 3.8',
+#         'Programming Language :: Python :: 3.9'
 #     ],
 #
 #     cmdclass=info_dict['commands'],
