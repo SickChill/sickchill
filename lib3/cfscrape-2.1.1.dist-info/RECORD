@@ -1,0 +1,11 @@
+cfscrape-2.1.1.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+cfscrape-2.1.1.dist-info/LICENSE,sha256=De4GEbgEce835EvS57y8WeGSUbLyS_l1PO_tACgweHo,1073
+cfscrape-2.1.1.dist-info/METADATA,sha256=YJKeE6vIBXZT8RkE96w6SNTPBpvqK-O6NdRWBNffya0,11077
+cfscrape-2.1.1.dist-info/RECORD,,
+cfscrape-2.1.1.dist-info/WHEEL,sha256=t_MpApv386-8PVts2R6wsTifdIn0vbUDTVv61IbqFC8,92
+cfscrape-2.1.1.dist-info/top_level.txt,sha256=qWXjH0ekuztWBlnbUIUDQe7zU_mmHSyiHHmd-yX-Jro,9
+cfscrape/__init__.py,sha256=io4Vi-OFrPUyL78izuKbWp53cB4ughtCYDTexislwkA,16780
+cfscrape/__pycache__/__init__.cpython-37.pyc,,
+cfscrape/__pycache__/user_agents.cpython-37.pyc,,
+cfscrape/user_agents.json,sha256=iW2Wi5vY62PmFEqDdnjOCLRc8moksADp_7qB0zMq7Fk,3758
+cfscrape/user_agents.py,sha256=7JZz2WgHT-Vq1EVUoisS5CevF5KZaJnbfJy2TeWAK-g,3773

@@ -1,0 +1,3 @@
+[console_scripts]
+gntp = gntp.cli:main
+
