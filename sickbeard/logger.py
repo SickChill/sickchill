@@ -72,9 +72,8 @@ class DispatchFormatter(logging.Formatter, object):
     """
     Censor information such as API keys, user names, and passwords from the Log
     """
-    def __init__(self, fmt=None, datefmt=None, encoding='utf-8'):
-        super(DispatchFormatter, self).__init__(fmt, datefmt)
-        self.encoding = encoding
+    def __init__(self, fmt=None, datefmt=None, style="{"):
+        super(DispatchFormatter, self).__init__(fmt, datefmt, style="{")
 
     def format(self, record):
         """
@@ -109,16 +108,14 @@ class DispatchFormatter(logging.Formatter, object):
         cur_thread = threading.currentThread().getName().rstrip('_1234567890')
 
         if _('Missing time zone for network') in msg:
-            message = '{thread} :: {message}'.format(
-                thread=cur_thread, message=msg)
+            msg = '{thread} :: {message}'.format(thread=cur_thread, message=msg)
         else:
-            message = '{thread} :: {hash}{message}'.format(
-                thread=cur_thread, hash=cur_hash, message=msg)
+            msg = '{thread} :: {hash}{message}'.format(thread=cur_thread, hash=cur_hash, message=msg)
 
         if record.levelno == ERROR:
-            classes.ErrorViewer.add(classes.UIError(message))
+            classes.ErrorViewer.add(classes.UIError(msg))
         elif record.levelno == WARNING:
-            classes.WarningViewer.add(classes.UIError(message))
+            classes.WarningViewer.add(classes.UIError(msg))
 
         return msg
 
@@ -184,10 +181,11 @@ class Logger(object):
 
         logging.getLogger("tornado.general").setLevel('ERROR')
 
+        log_format = '{asctime} {levelname}::{message}'
         # console log handler
         if self.console_logging:
             console = logging.StreamHandler()
-            console.setFormatter(DispatchFormatter('%(asctime)s %(levelname)s::%(message)s', '%H:%M:%S'))
+            console.setFormatter(DispatchFormatter(log_format, dateTimeFormat))
             console.setLevel(log_level)
 
             for logger in self.loggers:
@@ -195,10 +193,8 @@ class Logger(object):
 
         # rotating log file handler
         if self.file_logging:
-            rfh = logging.handlers.RotatingFileHandler(
-                self.log_file, maxBytes=int(sickbeard.LOG_SIZE * 1048576), backupCount=sickbeard.LOG_NR, encoding='utf-8'
-            )
-            rfh.setFormatter(DispatchFormatter('%(asctime)s %(levelname)-8s %(message)s', dateTimeFormat))
+            rfh = logging.handlers.RotatingFileHandler(self.log_file, maxBytes=int(sickbeard.LOG_SIZE * 1048576), backupCount=sickbeard.LOG_NR)
+            rfh.setFormatter(DispatchFormatter(log_format, dateTimeFormat))
             rfh.setLevel(log_level)
 
             for logger in self.loggers:

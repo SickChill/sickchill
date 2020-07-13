@@ -203,7 +203,7 @@ class SickChill(object):
         if self.console_logging and not os.path.isfile(sickbeard.CONFIG_FILE):
             sys.stdout.write('Unable to find {0}, all settings will be default!\n'.format(sickbeard.CONFIG_FILE))
 
-        sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE, encoding='UTF-8', options={'indent_type': '  '})
+        sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE, encoding='UTF-8', indent_type='  ')
 
         # Initialize the config and our threads
         sickbeard.initialize(consoleLogging=self.console_logging)

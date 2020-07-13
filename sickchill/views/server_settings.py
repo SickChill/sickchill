@@ -4,7 +4,8 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Stdlib Imports
 import os
 import threading
-from socket import errno, error as socket_error
+from socket import error as socket_error
+import errno
 
 # Third Party Imports
 import asyncio
