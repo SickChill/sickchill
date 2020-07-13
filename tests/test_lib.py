@@ -337,7 +337,7 @@ def setup_test_episode_file():
         os.makedirs(FILE_DIR)
 
     try:
-        with open(FILE_PATH, 'wb') as ep_file:
+        with open(FILE_PATH, 'w') as ep_file:
             ep_file.write("foo bar")
             ep_file.flush()
 
@@ -355,7 +355,7 @@ def setup_test_processing_dir():
         for episode in range(11, EPISODES_PER_SEASON):
             path = os.path.join(PROCESSING_DIR, '{show_name}.S0{season}E{episode}.HDTV.x264.[SickChill].mkv'.format(
                 show_name=SHOW_NAME, season=season, episode=episode))
-            with open(path, 'wb') as ep_file:
+            with open(path, 'w') as ep_file:
                 ep_file.write("foo bar")
                 ep_file.flush()
 
