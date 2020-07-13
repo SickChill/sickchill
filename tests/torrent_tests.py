@@ -17,11 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Test torrents
-"""
-
-
 # Stdlib Imports
 import unittest
 
@@ -86,5 +81,16 @@ if __name__ == "__main__":
     print("STARTING - Torrent Basic TESTS")
     print("==================")
     print("######################################################################")
+
+    def override_log(msg, *args, **kwargs):
+        """Override the SickChill logger so we can see the debug output from providers"""
+        _ = args, kwargs
+        print(msg)
+
+    sickbeard.logger.info = override_log
+    sickbeard.logger.debug = override_log
+    sickbeard.logger.error = override_log
+    sickbeard.logger.warning = override_log
+
     SUITE = unittest.TestLoader().loadTestsFromTestCase(TorrentBasicTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

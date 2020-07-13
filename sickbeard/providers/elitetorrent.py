@@ -38,8 +38,8 @@ class EliteTorrentProvider(TorrentProvider):
         TorrentProvider.__init__(self, "EliteTorrent")
 
         self.onlyspasearch = None
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
         self.cache = tvcache.TVCache(self)  # Only poll EliteTorrent every 20 minutes max
 
         self.urls = {

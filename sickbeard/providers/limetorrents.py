@@ -46,8 +46,8 @@ class LimeTorrentsProvider(TorrentProvider):
         self.url = self.urls['index']
 
         self.public = True
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
 
         self.proper_strings = ['PROPER', 'REPACK', 'REAL']
 

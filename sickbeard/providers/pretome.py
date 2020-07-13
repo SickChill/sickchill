@@ -41,8 +41,8 @@ class PretomeProvider(TorrentProvider):
         self.username = None
         self.password = None
         self.pin = None
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
 
         self.urls = {'base_url': 'https://pretome.info',
                      'login': 'https://pretome.info/takelogin.php',

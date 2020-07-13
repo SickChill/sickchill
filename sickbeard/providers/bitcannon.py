@@ -33,8 +33,8 @@ class BitCannonProvider(TorrentProvider):
 
         TorrentProvider.__init__(self, "BitCannon")
 
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
         self.custom_url = None
         self.api_key = None
 

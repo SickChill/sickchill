@@ -43,8 +43,8 @@ class IPTorrentsProvider(TorrentProvider):
         self.username = None
         self.password = None
         self.freeleech = False
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
         self.custom_url = None
 
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll IPTorrents every 10 minutes max

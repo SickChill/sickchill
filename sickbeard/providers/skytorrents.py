@@ -35,8 +35,8 @@ class SkyTorrents(TorrentProvider):
 
         self.public = True
 
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
 
         self.url = "https://www.skytorrents.lol"
         # https://www.skytorrents.lol/?query=arrow&category=show&tag=hd&sort=seeders&type=video

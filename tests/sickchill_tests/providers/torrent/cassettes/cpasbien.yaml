@@ -9,12 +9,13 @@ interactions:
       Accept-Language:
       - en-US,en;q=0.5
       User-Agent:
-      - Mozilla/5.0 (Windows NT 6.1; WOW64; rv:29.0) Gecko/20120101 Firefox/29.0
+      - Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.2309.372
+        Safari/537.36
     method: GET
     uri: http://www.cpasbien.cx/view_cat.php?categorie=series&trie=date-d
   response:
     body:
-      string: '<!DOCTYPE html><html data-adblockkey="MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANDrp2lz7AOmADaN8tA50LsWcjLFyQFcb/P2Txc58oYOeILb3vBw7J6f4pamkAQVSQuqYsKx3YzdUHCvbVZvFUsCAwEAAQ==_sprRWdTbzXOw/XULSB6DgExwXtvqQapxGL1KJtL0ooB6F9rXQhdgWvjdnCnrYmq8wC9GxkE65Xg4pLw8VAumrg=="><head><meta
+      string: '<!DOCTYPE html><html data-adblockkey="MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANDrp2lz7AOmADaN8tA50LsWcjLFyQFcb/P2Txc58oYOeILb3vBw7J6f4pamkAQVSQuqYsKx3YzdUHCvbVZvFUsCAwEAAQ==_EHp/ZYJVhPQZICLR+1JrJjpC1rNHJZWFT7dFyisxBZ7CAOWb8FB0EKmSGVoJxrqsD5nD2/0lqLWTtR+A93YVeg=="><head><meta
         http-equiv="Content-Type" content="text/html; charset=utf-8"><title></title><meta
         name="viewport" content="width=device-width, initial-scale=1"><meta name="description"
         content="See related links to what you are looking for."/></head><!--[if IE
@@ -112,13 +113,13 @@ interactions:
       Content-Type:
       - text/html; charset=UTF-8
       Date:
-      - Mon, 13 Jul 2020 10:31:11 GMT
+      - Mon, 13 Jul 2020 16:58:21 GMT
       Server:
       - openresty
       Transfer-Encoding:
       - chunked
       X-Adblock-Key:
-      - MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANDrp2lz7AOmADaN8tA50LsWcjLFyQFcb/P2Txc58oYOeILb3vBw7J6f4pamkAQVSQuqYsKx3YzdUHCvbVZvFUsCAwEAAQ==_sprRWdTbzXOw/XULSB6DgExwXtvqQapxGL1KJtL0ooB6F9rXQhdgWvjdnCnrYmq8wC9GxkE65Xg4pLw8VAumrg==
+      - MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANDrp2lz7AOmADaN8tA50LsWcjLFyQFcb/P2Txc58oYOeILb3vBw7J6f4pamkAQVSQuqYsKx3YzdUHCvbVZvFUsCAwEAAQ==_EHp/ZYJVhPQZICLR+1JrJjpC1rNHJZWFT7dFyisxBZ7CAOWb8FB0EKmSGVoJxrqsD5nD2/0lqLWTtR+A93YVeg==
     status:
       code: 200
       message: OK
@@ -132,12 +133,13 @@ interactions:
       Accept-Language:
       - en-US,en;q=0.5
       User-Agent:
-      - Mozilla/5.0 (Windows NT 6.1; WOW64; rv:29.0) Gecko/20120101 Firefox/29.0
+      - Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.2309.372
+        Safari/537.36
     method: GET
-    uri: http://www.cpasbien.cx/recherche/The-100-S02E16.html,trie-seeds-d
+    uri: http://www.cpasbien.cx/recherche/The-100-S07E08.html,trie-seeds-d
   response:
     body:
-      string: '<!DOCTYPE html><html data-adblockkey="MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANDrp2lz7AOmADaN8tA50LsWcjLFyQFcb/P2Txc58oYOeILb3vBw7J6f4pamkAQVSQuqYsKx3YzdUHCvbVZvFUsCAwEAAQ==_zKRkMD8dXZ2o9gQuqokePtz0lZoDXl9EKO9E01rXiJlB9YGy6hmUof2tIqRgIkA77/rBJes68Zk3gQElnKQELQ=="><head><meta
+      string: '<!DOCTYPE html><html data-adblockkey="MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANDrp2lz7AOmADaN8tA50LsWcjLFyQFcb/P2Txc58oYOeILb3vBw7J6f4pamkAQVSQuqYsKx3YzdUHCvbVZvFUsCAwEAAQ==_MXHFyW91kuaI7jgyd5h7CtykpLZf6FWG1z0IXF+3c11PGtjF988cbgvKL9HBV2vsrDz46inpI2ssiU1gAppz8g=="><head><meta
         http-equiv="Content-Type" content="text/html; charset=utf-8"><title></title><meta
         name="viewport" content="width=device-width, initial-scale=1"><meta name="description"
         content="See related links to what you are looking for."/></head><!--[if IE
@@ -235,13 +237,13 @@ interactions:
       Content-Type:
       - text/html; charset=UTF-8
       Date:
-      - Mon, 13 Jul 2020 10:31:12 GMT
+      - Mon, 13 Jul 2020 16:58:21 GMT
       Server:
       - openresty
       Transfer-Encoding:
       - chunked
       X-Adblock-Key:
-      - MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANDrp2lz7AOmADaN8tA50LsWcjLFyQFcb/P2Txc58oYOeILb3vBw7J6f4pamkAQVSQuqYsKx3YzdUHCvbVZvFUsCAwEAAQ==_zKRkMD8dXZ2o9gQuqokePtz0lZoDXl9EKO9E01rXiJlB9YGy6hmUof2tIqRgIkA77/rBJes68Zk3gQElnKQELQ==
+      - MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANDrp2lz7AOmADaN8tA50LsWcjLFyQFcb/P2Txc58oYOeILb3vBw7J6f4pamkAQVSQuqYsKx3YzdUHCvbVZvFUsCAwEAAQ==_MXHFyW91kuaI7jgyd5h7CtykpLZf6FWG1z0IXF+3c11PGtjF988cbgvKL9HBV2vsrDz46inpI2ssiU1gAppz8g==
     status:
       code: 200
       message: OK

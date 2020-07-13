@@ -42,8 +42,8 @@ class ThePirateBayProvider(TorrentProvider):
         self.public = True
 
         # Torrent Stats
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
         self.confirmed = True
 
         # URLs

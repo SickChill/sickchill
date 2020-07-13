@@ -39,8 +39,8 @@ class HoundDawgsProvider(TorrentProvider):
 
         self.username = None
         self.password = None
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
         self.freeleech = None
         self.ranked = None
 

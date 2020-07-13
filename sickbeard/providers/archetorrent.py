@@ -44,8 +44,8 @@ class ArcheTorrentProvider(TorrentProvider):
         self.password = None
 
         # Torrent Stats
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
 
         # Freelech
         self.freeleech = False

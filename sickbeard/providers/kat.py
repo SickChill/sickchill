@@ -42,8 +42,8 @@ class KatProvider(TorrentProvider):
         self.public = True
 
         self.confirmed = True
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
         self.confirmed = True
 
         self.mirrors = []

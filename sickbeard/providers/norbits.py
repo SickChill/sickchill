@@ -43,8 +43,8 @@ class NorbitsProvider(TorrentProvider):
 
         self.username = None
         self.passkey = None
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
 
         self.cache = tvcache.TVCache(self, min_time=20)  # only poll Norbits every 15 minutes max
 

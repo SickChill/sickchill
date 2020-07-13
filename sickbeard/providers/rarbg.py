@@ -36,10 +36,10 @@ class RarbgProvider(TorrentProvider):
         TorrentProvider.__init__(self, "Rarbg")
 
         self.public = True
-        self.minseed = None
+        self.minseed = 0
         self.ranked = None
         self.sorting = None
-        self.minleech = None
+        self.minleech = 0
         self.token = None
         self.token_expires = None
 
@@ -161,8 +161,10 @@ class RarbgProvider(TorrentProvider):
 
                         result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': torrent_hash}
                         items.append(result)
-                    except Exception:
-                        continue
+                    except Exception as e:
+                        logger.info(e)
+
+                    continue
 
             # For each search mode sort all the items by seeders
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

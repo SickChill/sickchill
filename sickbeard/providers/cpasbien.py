@@ -34,8 +34,8 @@ class CpasbienProvider(TorrentProvider):
         TorrentProvider.__init__(self, "Cpasbien")
 
         self.public = True
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
         self.url = "http://www.cpasbien.cx"
 
         self.proper_strings = ['PROPER', 'REPACK']

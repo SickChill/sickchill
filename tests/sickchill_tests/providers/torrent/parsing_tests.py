@@ -54,18 +54,26 @@ disabled_provider_tests = {
     'Torrentz': ['test_rss_search', 'test_episode_search', 'test_season_search', 'test_cache_update', 'test_result_values'],
     'ThePirateBay': ['test_rss_search', 'test_episode_search', 'test_season_search', 'test_cache_update', 'test_result_values'],
     'EZTV': ['test_rss_search', 'test_episode_search', 'test_season_search', 'test_cache_update', 'test_result_values'],
-    'Demonoid': ['test_rss_search']
+    'Demonoid': ['test_rss_search', 'test_episode_search', 'test_season_search']
 }
 test_string_overrides = {
-    'Cpasbien': {'Episode': ['The 100 S02E16'], 'Season': ['The 100 S02']},
-    'Torrent9': {'Episode': ['Arrow S07E06'], 'Season': ['Arrow S06']},
+    'Cpasbien': {'Episode': ['The 100 S07E08'], 'Season': ['The 100 S06']},
+    'Torrent9': {'Episode': ['The 100 S07E08'], 'Season': ['The 100 S06']},
     'Nyaa': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
     'TokyoToshokan': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
     'HorribleSubs': {'Episode': ['Fairy Tail S2'], 'Season': ['Fairy Tail S2']},
     'Demonoid': {'Episode': ['Star Trek Picard S01E04'], 'Season': ['Locke and Key 2020 S01']},
+    'ilCorsaroNero': {'Episode': ['The 100 S06E02']},
+    'Rarbg': {'Season': ['The 100 S06']},
 }
 
 magnet_regex = re.compile(r'magnet:\?xt=urn:btih:\w{32,40}(:?&dn=[\w. %+-]+)*(:?&tr=(:?tcp|https?|udp)[\w%. +-]+)*')
+
+
+def override_log(msg, *args, **kwargs):
+    """Override the SickChill logger so we can see the debug output from providers"""
+    _ = args, kwargs
+    print(msg)
 
 
 class BaseParser(type):
@@ -95,8 +103,8 @@ class BaseParser(type):
         def search_strings(self, mode):
             _search_strings = {
                 'RSS': [''],
-                'Episode': ['Game of Thrones S05E08'],
-                'Season': ['Game of Thrones S05']
+                'Episode': ['The 100 S07E08'],
+                'Season': ['Game of Thrones S08']
             }
             _search_strings.update(self.provider.cache.search_params)
             _search_strings.update(test_string_overrides.get(self.provider.name, {}))
@@ -105,10 +113,18 @@ class BaseParser(type):
         def magic_skip(func):  # pylint:disable=no-self-argument
             @wraps(func)
             def magic(self, *args, **kwargs):
-                print(func.__name__)
-                if True or func.__name__ in disabled_provider_tests.get(self.provider.name, []):
+                if func.__name__ in disabled_provider_tests.get(self.provider.name, []):
                     self.skipTest('Test is programmatically disabled for provider {}'.format(self.provider.name))
+                old = sickbeard.logger.info
+                # sickbeard.logger.info = override_log
+                # sickbeard.logger.debug = override_log
+                # sickbeard.logger.error = override_log
+                # sickbeard.logger.warning = override_log
                 func(self, *args, **kwargs)
+                # sickbeard.logger.info = old
+                # sickbeard.logger.debug = old
+                # sickbeard.logger.error = old
+                # sickbeard.logger.warning = old
             return magic
 
         def _get_vcr_kwargs(self):

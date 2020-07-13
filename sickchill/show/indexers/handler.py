@@ -105,8 +105,11 @@ class ShowIndexer(object):
         if not indexer:
             indexer = list(self.indexers)
 
+        assert not isinstance(indexer, bytes)
         if isinstance(indexer, (int, str)):
             indexer = [indexer]
+
+        assert not isinstance(name, bytes)
 
         if isinstance(name, str):
             name = [name]

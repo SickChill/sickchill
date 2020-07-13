@@ -40,8 +40,8 @@ class HorribleSubsProvider(TorrentProvider):
         self.supports_absolute_numbering = True
         self.anime_only = True
 
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
 
         self.url = 'https://horriblesubs.info'
         self.urls = {

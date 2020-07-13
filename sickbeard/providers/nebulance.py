@@ -44,8 +44,8 @@ class NebulanceProvider(TorrentProvider):
         self.password = None
 
         # Torrent Stats
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
         self.freeleech = None
 
         # URLs

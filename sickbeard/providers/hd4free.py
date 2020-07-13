@@ -38,8 +38,8 @@ class HD4FreeProvider(TorrentProvider):
         self.freeleech = None
         self.username = None
         self.api_key = None
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
 
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll HD4Free every 10 minutes max
 

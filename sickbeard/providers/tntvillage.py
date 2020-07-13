@@ -71,8 +71,8 @@ class TNTVillageProvider(TorrentProvider):
         self.engrelease = None
         self.page = 10
         self.subtitle = None
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
 
         self.hdtext = [' - Versione 720p',
                        ' Versione 720p',

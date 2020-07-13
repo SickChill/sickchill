@@ -51,8 +51,8 @@ class ilCorsaroNeroProvider(TorrentProvider):
         }
 
         self.public = True
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
 
         self.engrelease = None
         self.subtitle = None

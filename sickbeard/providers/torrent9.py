@@ -38,10 +38,9 @@ class Torrent9Provider(TorrentProvider):
         TorrentProvider.__init__(self, "Torrent9")
 
         self.public = True
-        self.minseed = None
-        self.minleech = None
-        self._original_url = "https://ww1.torrent9.nz/"
-        # self._original_url = "https://www.torrents9.pw"
+        self.minseed = 0
+        self.minleech = 0
+        self._original_url = "https://www.torrent9.ac/"
         self._custom_url = None
         self._used_url = None
         self._recheck_url = True

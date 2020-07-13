@@ -42,8 +42,8 @@ class TorrentzProvider(TorrentProvider):
         # self.confirmed = True
 
         # Torrent Stats
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
 
         # URLs
         self.url = 'https://torrentz2.eu/'

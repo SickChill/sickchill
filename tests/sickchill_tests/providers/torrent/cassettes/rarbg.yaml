@@ -9,8 +9,8 @@ interactions:
       Accept-Language:
       - en-US,en;q=0.5
       User-Agent:
-      - Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93
-        Safari/537.36
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/41.0.2227.1 Safari/537.36
     method: GET
     uri: http://torrentapi.org/pubapi_v2.php?get_token=get_token&format=json&app_id=sickchill
   response:
@@ -21,7 +21,7 @@ interactions:
       CF-Cache-Status:
       - DYNAMIC
       CF-RAY:
-      - 5b225620ae2ef11e-IAD
+      - 5b248cdffd4ee11a-IAD
       Connection:
       - keep-alive
       Content-Encoding:
@@ -29,21 +29,21 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 13 Jul 2020 10:31:48 GMT
+      - Mon, 13 Jul 2020 16:58:42 GMT
       Server:
       - cloudflare
       Set-Cookie:
-      - __cfduid=d74c2987530ed8273571dc9dd31f5af6f1594636308; expires=Wed, 12-Aug-20
-        10:31:48 GMT; path=/; domain=.torrentapi.org; HttpOnly; SameSite=Lax
-      - __cf_bm=c0577f477dbe969efa4fbf1344c96783dd43d136-1594636308-1800-AVmXbcj/wn4A2i3y30nidAoir6sj9NGG55bubAoEuFVCFV8v5KZ0oGyU4wwRyAS3vI9PwmmC6xCfk4jDn0Yy40c=;
-        path=/; expires=Mon, 13-Jul-20 11:01:48 GMT; domain=.torrentapi.org; HttpOnly;
+      - __cfduid=dc0bc32fedb96bde3f2c032a1641bad261594659522; expires=Wed, 12-Aug-20
+        16:58:42 GMT; path=/; domain=.torrentapi.org; HttpOnly; SameSite=Lax
+      - __cf_bm=14ba0218df51a99b80f593322572d830aad7663a-1594659522-1800-AXCTqDB/mhdX4oju08oQa6H2o6IVbHh0pq2lA4QIZmFDW6x+QDSfa0G4fUhF19BaondL9rQMRDAFWd6AZNVMc6o=;
+        path=/; expires=Mon, 13-Jul-20 17:28:42 GMT; domain=.torrentapi.org; HttpOnly;
         SameSite=None
       Transfer-Encoding:
       - chunked
       Vary:
       - Accept-Encoding
       cf-request-id:
-      - 03e95428640000f11e8883e200000001
+      - 03eab65ff80000e11a7c018200000001
     status:
       code: 200
       message: OK
@@ -57,230 +57,13 @@ interactions:
       Accept-Language:
       - en-US,en;q=0.5
       Cookie:
-      - __cf_bm=c0577f477dbe969efa4fbf1344c96783dd43d136-1594636308-1800-AVmXbcj/wn4A2i3y30nidAoir6sj9NGG55bubAoEuFVCFV8v5KZ0oGyU4wwRyAS3vI9PwmmC6xCfk4jDn0Yy40c=;
-        __cfduid=d74c2987530ed8273571dc9dd31f5af6f1594636308
+      - __cf_bm=14ba0218df51a99b80f593322572d830aad7663a-1594659522-1800-AXCTqDB/mhdX4oju08oQa6H2o6IVbHh0pq2lA4QIZmFDW6x+QDSfa0G4fUhF19BaondL9rQMRDAFWd6AZNVMc6o=;
+        __cfduid=dc0bc32fedb96bde3f2c032a1641bad261594659522
       User-Agent:
-      - Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93
-        Safari/537.36
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/41.0.2227.1 Safari/537.36
     method: GET
     uri: http://torrentapi.org/pubapi_v2.php?app_id=sickchill&category=tv&min_seeders=0&min_leechers=0&limit=100&format=json_extended&ranked=0&token=n8sbma19c5&sort=last&mode=list
-  response:
-    body:
-      string: !!binary |
-        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
-        z/753//8X2p9pr2sMAEA
-    headers:
-      CF-Cache-Status:
-      - DYNAMIC
-      CF-RAY:
-      - 5b22562e0f74f11e-IAD
-      Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Type:
-      - application/json
-      Date:
-      - Mon, 13 Jul 2020 10:31:50 GMT
-      Server:
-      - cloudflare
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - Accept-Encoding
-      cf-request-id:
-      - 03e95430c20000f11e88894200000001
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-      Accept-Encoding:
-      - gzip, deflate
-      Accept-Language:
-      - en-US,en;q=0.5
-      Cookie:
-      - __cf_bm=c0577f477dbe969efa4fbf1344c96783dd43d136-1594636308-1800-AVmXbcj/wn4A2i3y30nidAoir6sj9NGG55bubAoEuFVCFV8v5KZ0oGyU4wwRyAS3vI9PwmmC6xCfk4jDn0Yy40c=;
-        __cfduid=d74c2987530ed8273571dc9dd31f5af6f1594636308
-      User-Agent:
-      - Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93
-        Safari/537.36
-    method: GET
-    uri: http://torrentapi.org/pubapi_v2.php?app_id=sickchill&category=tv&min_seeders=0&min_leechers=0&limit=100&format=json_extended&ranked=0&token=n8sbma19c5&sort=seeders&mode=search&search_string=Game+of+Thrones+S05E08
   response:
     body:
       string: !!binary |
@@ -290,7 +73,7 @@ interactions:
       CF-Cache-Status:
       - DYNAMIC
       CF-RAY:
-      - 5b22563ccc3c9fb2-IAD
+      - 5b248ced5cafe11a-IAD
       Connection:
       - keep-alive
       Content-Encoding:
@@ -298,7 +81,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 13 Jul 2020 10:31:53 GMT
+      - Mon, 13 Jul 2020 16:58:44 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -306,7 +89,7 @@ interactions:
       Vary:
       - Accept-Encoding
       cf-request-id:
-      - 03e95439f800009fb2fc09d200000001
+      - 03eab668550000e11a7c098200000001
     status:
       code: 200
       message: OK
@@ -320,35 +103,40 @@ interactions:
       Accept-Language:
       - en-US,en;q=0.5
       Cookie:
-      - __cf_bm=c0577f477dbe969efa4fbf1344c96783dd43d136-1594636308-1800-AVmXbcj/wn4A2i3y30nidAoir6sj9NGG55bubAoEuFVCFV8v5KZ0oGyU4wwRyAS3vI9PwmmC6xCfk4jDn0Yy40c=;
-        __cfduid=d74c2987530ed8273571dc9dd31f5af6f1594636308
+      - __cf_bm=14ba0218df51a99b80f593322572d830aad7663a-1594659522-1800-AXCTqDB/mhdX4oju08oQa6H2o6IVbHh0pq2lA4QIZmFDW6x+QDSfa0G4fUhF19BaondL9rQMRDAFWd6AZNVMc6o=;
+        __cfduid=dc0bc32fedb96bde3f2c032a1641bad261594659522
       User-Agent:
-      - Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93
-        Safari/537.36
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/41.0.2227.1 Safari/537.36
     method: GET
-    uri: http://torrentapi.org/pubapi_v2.php?app_id=sickchill&category=tv&min_seeders=0&min_leechers=0&limit=100&format=json_extended&ranked=0&token=n8sbma19c5&sort=seeders&mode=search&search_string=Game+of+Thrones+S05
+    uri: http://torrentapi.org/pubapi_v2.php?app_id=sickchill&category=tv&min_seeders=0&min_leechers=0&limit=100&format=json_extended&ranked=0&token=n8sbma19c5&sort=seeders&mode=search&search_string=The+100+S07E08
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA+2WXWvbMBSG/0owtDdrXH1akiGMlWTbxdaWtHQX7TCyJCemiWRkpWtX+t+nOFk/
-        RpNusJuNGoHROUc6xzrPa/s2Cc57Y0PhTbuYhTbJz2+TUIeZSfLkg5yb1FXp6dQ7a9r0BND0YDiu
-        m/QaZaQ/HH1+dzg899KHq6/JXqJkMBPnb+LK07PeqKlbp00bHdp9szMndXTM5cSakL+9DoOFt3kZ
-        6mnOuRREUy25wpxyVBqQKSWJQFplVEmQZYwRpHa1HfxWSTv0oCtqhw53gx9MQ2h28Lsd9D6O4KW6
-        ND5d36v6OlVuHt0cRK+01i2sMstlC/2wSqRxw3KSzk00IQbBpoDgNgS4xthUm7mzdb3OCDFmj3LG
-        g2qN0cbHJmC4l8yMUdNuBkl01d9jSwgSDMCMZngvaRaljiceDxUBKPqA9AHsAZ5DllPRewPiFbc0
-        qzYUta1ckt8m9VyXcUkIQBAiCIsh4crLSbdPtODO0MVABHEGl/NprPuqNisrFiLaZO3X2ZeJ+t3o
-        0tnFfBkFwLqA1sjW2ZWVLjdbw3XS2XvHsQ09mtztJV7aSxMZiY++LLZoVkUtu9fmF/sX+2tUZVOn
-        zk8u9r3RtTcqFMF1j5c20+ZtcJfGDixvy7mEQtHdZgALXoACF6KgBSuKB9xi1u2wH4+PjkfjFAIO
-        mvRgthjLmxVn46Oz0fhkE/ofh39Av4IqQxAgXkJMKs44kAjgioGqEpRgJiutAI9IbqD/hRr/Ay2A
-        J1rA91qAnAMBKYFgixh4DtirGJ4XgyiKB/peFMOKsC+jg/7wUzocRkP6ccnZ4Wn5V4TAFauoEVwB
-        xpEmRDMhsBIECCxxhQhFmtFMbBTClvr+fREg8kQE6KcIEBQIU4g4ZttFQF5F8LwIePwi3JP3oggY
-        +uUtu/0n6I8EwOKXqWRQsBLrqpQi0s5NBQAySivNEMalyrjkmwSwobZ/H37+mH1+j37ELvJIMdr2
-        /o8/Q/QV/efRz4rigbnk7uvdDxRCeywPDAAA
+        H4sIAAAAAAAAA+2Y/U/jNhjH/xUUCX4ZF+zHfvwSCZ24wcakjU3jxKQdp8ixHRpBkyp1GRvif58T
+        SktvoQfabRKnVq3S+PVb+/N8+zi3SWja1tchb/10dhWmSfbhNglVuPJJlrwf+ZQSkp4SeURUKoFM
+        0uPD92fpDQj+5uDs9ENr2nD9MdlNrAn+omn/7HqdbR0fbh1Nqmnj/DTWueaP+qoxLtaNzUXtQ/b2
+        JuzP2jorQjXKZEmBMsMFLyijFj1TpTFc+UKDVSV1xKEqQO24ev+zirbxXa9pGw93Qrs/CmGyzQ62
+        4bv4Dq2xl75N59eyukltM47VisRaU9fNrLa+6zZzy146jQMWF+nYxyKQlDzVIDRPNGgmvk6dHzd1
+        Vc1npIzJR3PGRZp673wb119z2E2uvLej/pZSHiurv+J+aJCacSBkN5nMChdXPK4oECBviHxD9Bah
+        GSEZ51vfkPiKY/r7PcirumyS7Dapxq6IXUIAISjhPDYJ16256MZhXErSF/RtQCjU0N2PovDryvel
+        XCkhYqGp2k+nV/189WwcC1X/e8y0qe/vZTfOnKmD2timdia5201aU1/6iAXdTTqJ+eReSrdp0+x8
+        73xvDqeZVGnTXpzvtd5VrbchD03/o9LJaPI2NJe+3q/VtBgbqi3uTPYhh1zkLOc55jLPl4TFWZ/E
+        mxIVafrt6F163MP0Y/X9yRcBvFQoSiGcsMpKZTUIYJZZVGXBpC6l47SM2nAA8CFNrx9xAXQFccAH
+        xAEVKsU1U08xzjOUGW4Yf8S4jpTnS8jWMb70ytOzg6fgfj7Z3hTIDIsLJwvPCSVeMu6KoisrtDVS
+        W18qcANkryh5/UjzjuEl0gALoiWBaNpCrDVtFBugH5u2yvMlW+uAflA2d8qDn34/6ezy12qSHh7+
+        gim9Z+xbMz0NM1c1X8TQhXEEomphLZPCaKmFLQgBp7UGKsuYrdhSUjaA/Uv1vv7IALVi9kwvIkOT
+        6BiMCjoUGpR0Xs91RtQmNO5Dg8fg0PGaL/lbFxpzrHqefvj5hJJ/YfToOGqNCEqVkXghpCK0KDVz
+        2jpaCIEMY+pOB4j/h4zXyvEnDr/IWTgjkXGEwbS8wxizzuQ3Dr/AmOckfvIlVOsw7s94/0FW7rRy
+        jBgo0TJK0RQMNHKqZRkhRxX3wmovB5EekPT6fZpyXE3KH/hWhAuM/2Z6TUouMsQN349T8sj3krDP
+        2PQz0H4B14JpwbxgKHQJwhok8ZsnjhruvEUXeRfgYNiqvy6kQa0+SllYNgUppCDrTpkig80pcwVp
+        FpFewPWspLw3yv8nJ0dXOEQUglll0XBZKCapAiuEsg7BUEVd4YcesrxQ7lcQF2TF6sVDWFDGKTKI
+        R5i1GTmQTVw8zshll8o80Jfcfbz7G2T4sndWFwAA
     headers:
       CF-Cache-Status:
       - DYNAMIC
       CF-RAY:
-      - 5b225664bd03ea08-IAD
+      - 5b248cfada29f116-IAD
       Connection:
       - keep-alive
       Content-Encoding:
@@ -356,7 +144,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 13 Jul 2020 10:32:00 GMT
+      - Mon, 13 Jul 2020 16:58:47 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -364,7 +152,53 @@ interactions:
       Vary:
       - Accept-Encoding
       cf-request-id:
-      - 03e95452f60000ea08b3bb0200000001
+      - 03eab670c50000f1162a87a200000001
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+      Accept-Encoding:
+      - gzip, deflate
+      Accept-Language:
+      - en-US,en;q=0.5
+      Cookie:
+      - __cf_bm=14ba0218df51a99b80f593322572d830aad7663a-1594659522-1800-AXCTqDB/mhdX4oju08oQa6H2o6IVbHh0pq2lA4QIZmFDW6x+QDSfa0G4fUhF19BaondL9rQMRDAFWd6AZNVMc6o=;
+        __cfduid=dc0bc32fedb96bde3f2c032a1641bad261594659522
+      User-Agent:
+      - Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/41.0.2227.1 Safari/537.36
+    method: GET
+    uri: http://torrentapi.org/pubapi_v2.php?app_id=sickchill&category=tv&min_seeders=0&min_leechers=0&limit=100&format=json_extended&ranked=0&token=n8sbma19c5&sort=seeders&mode=search&search_string=The+100+S05
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA6tWSi0qyi9SslLyy1coSi0uzSkpVkjLL81LUdKBSMUn56ekKlkZGdQCAMvCFuUs
+        AAAA
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 5b248d21bf13e0aa-IAD
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 13 Jul 2020 16:58:53 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      cf-request-id:
+      - 03eab6890f0000e0aa3893d200000001
     status:
       code: 200
       message: OK

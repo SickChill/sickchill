@@ -40,8 +40,8 @@ class HDSpaceProvider(TorrentProvider):
 
         self.username = None
         self.password = None
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
 
         self.cache = tvcache.TVCache(self, min_time=10)  # only poll HDSpace every 10 minutes max
 

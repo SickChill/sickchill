@@ -53,8 +53,8 @@ class BJShareProvider(TorrentProvider):
         self.required_cookies = ['session']
 
         # Torrent Stats
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
 
         # Miscellaneous Options
         self.supports_absolute_numbering = True

@@ -42,8 +42,8 @@ class SCCProvider(TorrentProvider):
 
         self.username = None
         self.password = None
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
 
         self.cache = tvcache.TVCache(self)  # only poll SCC every 20 minutes max
 

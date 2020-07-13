@@ -41,9 +41,9 @@ class DemonoidProvider(TorrentProvider):
         TorrentProvider.__init__(self, "Demonoid")
 
         self.public = True
-        self.minseed = None
+        self.minseed = 0
         self.sorting = None
-        self.minleech = None
+        self.minleech = 0
 
         self.url = "https://demonoid.is"
         self.urls = {"RSS": urljoin(self.url, 'rss.php'), 'search': urljoin(self.url, 'files/')}

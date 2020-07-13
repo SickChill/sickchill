@@ -34,8 +34,8 @@ class MagnetDLProvider(TorrentProvider):
 
         super(MagnetDLProvider, self).__init__("MagnetDL")
 
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
 
         self.url = "http://www.magnetdl.com"
         self.urls = {

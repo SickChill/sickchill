@@ -28,8 +28,8 @@ class NcoreProvider(TorrentProvider):
         TorrentProvider.__init__(self, "ncore.cc")
         self.username = None
         self.password = None
-        self.minseed = None
-        self.minleech = None
+        self.minseed = 0
+        self.minleech = 0
 
         categories = [
             'xvidser_hun', 'xvidser',
