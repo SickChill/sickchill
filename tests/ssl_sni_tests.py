@@ -22,8 +22,7 @@
 Test SNI and SSL
 """
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import os.path
 import sys
 import unittest
@@ -31,9 +30,12 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+# Third Party Imports
 import certifi
 import requests
-import sickbeard.providers as providers
+
+# First Party Imports
+from sickbeard import providers as providers
 
 
 def generator(_provider):

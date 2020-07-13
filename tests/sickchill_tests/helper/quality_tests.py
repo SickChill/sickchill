@@ -21,8 +21,7 @@
 Test qualities
 """
 
-from __future__ import print_function
-
+# Stdlib Imports
 import os
 import sys
 import unittest
@@ -30,7 +29,8 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-from sickbeard.common import ANY, HD, HD1080p, HD720p, Quality, SD
+# First Party Imports
+from sickbeard.common import ANY, HD, HD720p, HD1080p, Quality, SD
 from sickchill.helper.quality import get_quality_string
 
 

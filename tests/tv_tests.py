@@ -21,6 +21,7 @@
 Test tv
 """
 
+# Stdlib Imports
 import os.path
 import sys
 import unittest
@@ -28,9 +29,10 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard.tv import TVEpisode, TVShow
+# First Party Imports
 import sickbeard
-import tests.test_lib as test
+from sickbeard.tv import TVEpisode, TVShow
+from tests import test_lib as test
 
 
 class TVShowTests(test.SickbeardTestDBCase):

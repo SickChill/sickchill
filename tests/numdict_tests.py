@@ -4,8 +4,7 @@ Unit Tests for sickbeard/numdict.py
 """
 
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import os.path
 import sys
 import unittest
@@ -13,9 +12,11 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard.numdict import NumDict
-
+# Stdlib Imports
 from collections import UserDict
+
+# First Party Imports
+from sickbeard.numdict import NumDict
 
 
 class NumDictTest(unittest.TestCase):
@@ -34,7 +35,7 @@ class NumDictTest(unittest.TestCase):
         dict_4 = {'3': 'Aardvark', '4': 'Ant'}  # Multiple numeric string keys
         dict_5 = {5: 'Cat', '6': 'Dog'}  # Mixed numeric and numeric string keys
         dict_6 = {1: None, '2': None}  # None as values
-        dict_7 = {None: 'Empty'}  # None as key
+        dict_7 = {0: 'Empty'}  # None as key
 
         # Construct NumDicts from dicts
         num_dict = NumDict()
@@ -59,7 +60,6 @@ class NumDictTest(unittest.TestCase):
         self.assertNotEqual(num_dict_5, dict_5)
         self.assertNotEqual(num_dict_6, dict_6)
 
-        # ...but None keys work just fine
         self.assertEqual(num_dict_7, dict_7)
 
         # Construct dicts from NumDicts
@@ -149,7 +149,7 @@ class NumDictTest(unittest.TestCase):
         dict_4 = {'3': 'Aardvark', '4': 'Ant'}  # Multiple numeric string keys
         dict_5 = {5: 'Cat', '6': 'Dog'}  # Mixed numeric and numeric string keys
         dict_6 = {1: None, '2': None}  # None as values
-        dict_7 = {None: 'Empty'}  # None as key
+        dict_7 = {0: 'Empty'}  # None as key
 
         #  Construct NumDicts from dicts
         num_dict = NumDict()
@@ -164,13 +164,13 @@ class NumDictTest(unittest.TestCase):
 
         reps = (
             "{}",
-            "{1: u'Elephant'}",
-            "{1: u'Elephant', 2: u'Mouse'}",
-            "'3': u'Aardvark'",
-            "{'3': u'Aardvark', '4': u'Ant'}",
-            "{5: u'Cat', '6': u'Dog'}",
+            "{1: 'Elephant'}",
+            "{1: 'Elephant', 2: 'Mouse'}",
+            "'3': 'Aardvark'",
+            "{'3': 'Aardvark', '4': 'Ant'}",
+            "{5: 'Cat', '6': 'Dog'}",
             "{1: None, '2': None}",
-            "{None: u'Empty'}",
+            "{0: 'Empty'}",
         )
 
         # Most representations of NumDicts should compare equal to dicts...
@@ -493,6 +493,7 @@ def test_main():
     """
     Run tests when run as main
     """
+    # Stdlib Imports
     import logging
     log = logging.getLogger(__name__)
     logging.basicConfig(level=logging.DEBUG)

@@ -21,16 +21,18 @@
 Test GenericProvider
 """
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import os
 import sys
 import unittest
 
-from mock import patch, MagicMock
+# Third Party Imports
+from mock import MagicMock, patch
+
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
+# First Party Imports
 from sickchill.providers.GenericProvider import GenericProvider
 
 

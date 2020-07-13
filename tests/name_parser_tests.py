@@ -4,8 +4,7 @@ Test name parsing
 """
 
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import datetime
 import os.path
 import sys
@@ -14,9 +13,10 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+# First Party Imports
 from sickbeard import tv
 from sickbeard.name_parser import parser
-import tests.test_lib as test
+from tests import test_lib as test
 
 SYS_ENCODING = 'UTF-8'
 

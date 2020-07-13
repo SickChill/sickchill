@@ -25,6 +25,7 @@ Tests:
     DBMultiTests
 """
 
+# Stdlib Imports
 import os.path
 import sys
 import threading
@@ -33,7 +34,8 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import tests.test_lib as test
+# First Party Imports
+from tests import test_lib as test
 
 
 class DBBasicTests(test.SickbeardTestDBCase):

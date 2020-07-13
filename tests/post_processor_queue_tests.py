@@ -20,8 +20,7 @@
 """
 Test the post processor queue
 """
-from __future__ import absolute_import
-
+# Stdlib Imports
 import datetime
 import os.path
 import sys
@@ -31,9 +30,10 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import tests.test_lib as test
+# First Party Imports
 import sickbeard
-from sickbeard.post_processing_queue import ProcessingQueue, PostProcessorTask
+from sickbeard.post_processing_queue import PostProcessorTask, ProcessingQueue
+from tests import test_lib as test
 
 CHECK_CLEARS = False
 

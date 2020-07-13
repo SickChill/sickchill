@@ -3,8 +3,10 @@
 Tests for SickChill helpers
 """
 
+# Stdlib Imports
 import unittest
 
+# Third Party Imports
 from common_tests import CommonTests
 from quality_tests import QualityTests
 

@@ -21,8 +21,7 @@
 Test restart
 """
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import os
 import sys
 import unittest
@@ -30,6 +29,7 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
+# First Party Imports
 import sickbeard
 from sickbeard.event_queue import Events
 from sickchill.system.Restart import Restart

@@ -1,9 +1,9 @@
 #!/usr/bin/env python2.7
 # coding=utf-8
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import unittest
 
+# First Party Imports
 import sickbeard
 from sickbeard.show_name_helpers import filter_bad_releases
 from sickbeard.tv import TVShow as Show

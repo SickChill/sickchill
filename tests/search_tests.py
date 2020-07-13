@@ -23,7 +23,7 @@
 Test searches
 """
 
-from __future__ import print_function, unicode_literals
+# Stdlib Imports
 import os.path
 import sys
 import unittest
@@ -31,11 +31,12 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard.tv import TVEpisode, TVShow
+# First Party Imports
 import sickbeard
-import sickbeard.common as common
+from sickbeard import common as common
+from sickbeard.tv import TVEpisode, TVShow
 from sickchill.providers.GenericProvider import GenericProvider
-import tests.test_lib as test
+from tests import test_lib as test
 
 TESTS = {
     "Game of Thrones": {

@@ -38,27 +38,28 @@ Classes:
     TestCacheDBConnection
 """
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import os.path
 import shutil
 import sys
 import unittest
 
+# First Party Imports
 import sickchill
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+# Third Party Imports
 from configobj import ConfigObj
+
+# First Party Imports
+import sickbeard
 from sickbeard import db, providers
 from sickbeard.databases import cache_db, failed_db, mainDB
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.tv import TVEpisode, TVShow
-import sickbeard
 from sickchill.show.indexers import ShowIndexer
-
-
 
 # =================
 #  test globals
@@ -314,6 +315,7 @@ def teardown_test_db():
     """
     Tear down the test database.
     """
+    # First Party Imports
     from sickbeard.db import db_cons
     for connection in db_cons:
         db_cons[connection].commit()

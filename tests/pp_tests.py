@@ -21,8 +21,7 @@
 Test post processing
 """
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import os.path
 import shutil
 import sys
@@ -31,13 +30,13 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+# First Party Imports
 import sickbeard
 from sickbeard.helpers import make_dirs
 from sickbeard.name_cache import addNameToCache
 from sickbeard.postProcessor import PostProcessor
 from sickbeard.tv import TVEpisode, TVShow
-
-import tests.test_lib as test
+from tests import test_lib as test
 
 
 class PPInitTests(unittest.TestCase):

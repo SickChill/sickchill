@@ -22,19 +22,19 @@
 Test sickchill.common
 """
 
-from __future__ import print_function, unicode_literals
-
-import unittest
+# Stdlib Imports
 import os
 import sys
+import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
+# First Party Imports
 import sickbeard
 from sickchill.helper import glob
-from sickchill.helper.common import http_code_description, is_sync_file, is_torrent_or_nzb_file, pretty_file_size
-from sickchill.helper.common import remove_extension, replace_extension, sanitize_filename, try_int, convert_size, episode_num
+from sickchill.helper.common import (convert_size, episode_num, http_code_description, is_sync_file, is_torrent_or_nzb_file, pretty_file_size, remove_extension,
+                                     replace_extension, sanitize_filename, try_int)
 
 
 class CommonTests(unittest.TestCase):

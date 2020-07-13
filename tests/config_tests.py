@@ -50,23 +50,27 @@ Methods
     check_setting_bool
 """
 
-from __future__ import absolute_import, unicode_literals
-
+# Stdlib Imports
 import logging
 import os.path
 import platform
 import sys
 import unittest
-import mock
 from collections import namedtuple
+
+# Third Party Imports
+import mock
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard import config, scheduler
+# Third Party Imports
 from configobj import ConfigObj
 from rarfile import RarExecError
+
+# First Party Imports
 import sickbeard
+from sickbeard import config, scheduler
 
 
 class ConfigTestBasic(unittest.TestCase):

@@ -84,14 +84,13 @@ Private Methods:
     _setUpSession
 """
 
-from __future__ import print_function
-
+# Stdlib Imports
 import os
 import sys
 import unittest
-
 from shutil import rmtree
 
+# First Party Imports
 import sickbeard
 from sickbeard import helpers
 from sickchill.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
@@ -504,6 +503,7 @@ class HelpersEncryptionTests(unittest.TestCase):
         Test that create_https_certificates successfully generates certificate and private key
         """
         try:
+            # Third Party Imports
             import OpenSSL
         except ImportError:
             self.skipTest('pyOpenSSL is not installed')

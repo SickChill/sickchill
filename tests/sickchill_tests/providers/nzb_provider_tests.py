@@ -21,8 +21,7 @@
 Test NZBProvider
 """
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import os
 import sys
 import unittest
@@ -30,8 +29,11 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-import sickbeard
+# Third Party Imports
 from generic_provider_tests import GenericProviderTests
+
+# First Party Imports
+import sickbeard
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.nzb.NZBProvider import NZBProvider
 

@@ -29,6 +29,7 @@ Test notifiers
 """
 
 
+# Stdlib Imports
 import os.path
 import sys
 import unittest
@@ -36,12 +37,13 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+# First Party Imports
 from sickbeard import db
-from sickbeard.tv import TVEpisode, TVShow
-from sickchill.views.home import Home
 from sickbeard.notifiers.emailnotify import Notifier as EmailNotifier
 from sickbeard.notifiers.prowl import Notifier as ProwlNotifier
-import tests.test_lib as test
+from sickbeard.tv import TVEpisode, TVShow
+from sickchill.views.home import Home
+from tests import test_lib as test
 
 
 # noinspection PyProtectedMember

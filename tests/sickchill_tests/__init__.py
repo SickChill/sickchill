@@ -21,13 +21,11 @@
 Tests for SickChill
 """
 
-from __future__ import print_function
-
-import helper
-import providers
-import show
-import system
+# Stdlib Imports
 import unittest
+
+# Local Folder Imports
+from . import helper, providers, show, system
 
 if __name__ == '__main__':
     print('=====> Running all test in "sickchill_tests" <=====')

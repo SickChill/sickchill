@@ -3,8 +3,10 @@
 Tests for SickChill providers
 """
 
+# Stdlib Imports
 import unittest
 
+# Third Party Imports
 from generic_provider_tests import GenericProviderTests
 from nzb_provider_tests import NZBProviderTests
 from torrent_provider_tests import TorrentProviderTests

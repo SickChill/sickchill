@@ -22,6 +22,7 @@
 Test snatching
 """
 
+# Stdlib Imports
 import os.path
 import sys
 import unittest
@@ -29,11 +30,11 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard.tv import TVEpisode, TVShow
+# First Party Imports
 import sickbeard
-import sickbeard.search as search
-import sickbeard.common as common
-import tests.test_lib as test
+from sickbeard import common as common, search as search
+from sickbeard.tv import TVEpisode, TVShow
+from tests import test_lib as test
 
 TESTS = {
     "Dexter": {"a": 1, "q": common.HD, "s": 5, "e": [7], "b": 'Dexter.S05E07.720p.BluRay.X264-REWARD', "i": ['Dexter.S05E07.720p.BluRay.X264-REWARD', 'Dexter.S05E07.720p.X264-REWARD']},

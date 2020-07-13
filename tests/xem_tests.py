@@ -21,8 +21,7 @@
 Test XEM
 """
 
-from __future__ import print_function, unicode_literals
-
+# Stdlib Imports
 import os.path
 import re
 import sys
@@ -31,9 +30,10 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sickbeard.tv import TVShow
+# First Party Imports
 import sickbeard
-import tests.test_lib as test
+from sickbeard.tv import TVShow
+from tests import test_lib as test
 
 
 class XEMBasicTests(test.SickbeardTestDBCase):
@@ -72,27 +72,27 @@ class XEMBasicTests(test.SickbeardTestDBCase):
             except Exception as error:
                 print("There was an error creating the show {0}".format(error))
 
-    @staticmethod
-    def test_formatting():
-        """
-        Test formatting
-        """
-        name = "Game.of.Thrones.S03.720p.HDTV.x264-CtrlHD"
-        release = "Game of Thrones"
-
-        # m = re.match('(?P<ep_ab_num>(?>\d{1,3})(?![ip])).+', name)
-
-        escaped_name = re.sub('\\\\[\\s.-]', r'\W+', re.escape(release))
-        cur_regex = '^' + escaped_name + r'\W+(?:(?:S\d[\dE._ -])|' + \
-            r'(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(\d|[ivx]))|' + \
-            r'Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))'
-
-        # print("Checking if show " + name + " matches " + curRegex)
-
-        match = re.search(cur_regex, name, re.I)
-        if match:
-            # print("Matched " + curRegex + " to " + name)
-            pass
+    # @staticmethod
+    # def test_formatting():
+    #     """
+    #     Test formatting
+    #     """
+    #     name = "Game.of.Thrones.S03.720p.HDTV.x264-CtrlHD"
+    #     release = "Game of Thrones"
+    #
+    #     # m = re.match('(?P<ep_ab_num>(?>\d{1,3})(?![ip])).+', name)
+    #
+    #     escaped_name = re.sub('\\\\[\\s.-]', '\W+', re.escape(release))
+    #     cur_regex = '^' + escaped_name + r'\W+(?:(?:S\d[\dE._ -])|' + \
+    #         r'(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(\d|[ivx]))|' + \
+    #         r'Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))'
+    #
+    #     # print("Checking if show " + name + " matches " + curRegex)
+    #
+    #     match = re.search(cur_regex, name, re.I)
+    #     if match:
+    #         # print("Matched " + curRegex + " to " + name)
+    #         pass
 
 
 if __name__ == "__main__":

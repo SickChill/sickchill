@@ -21,9 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, unicode_literals
-
-from __future__ import absolute_import
+# Stdlib Imports
 import codecs
 import datetime
 import locale
@@ -37,12 +35,16 @@ import threading
 import time
 import traceback
 
-from setup import setup_lib_path, setup_gettext
+# First Party Imports
+from setup import setup_gettext, setup_lib_path
+
 setup_lib_path()
 setup_gettext()
 
+# Stdlib Imports
 # Fix mimetypes on misconfigured systems
 import mimetypes
+
 mimetypes.add_type("text/css", ".css")
 mimetypes.add_type("application/sfont", ".otf")
 mimetypes.add_type("application/sfont", ".ttf")
@@ -51,19 +53,19 @@ mimetypes.add_type("application/font-woff", ".woff")
 # Not sure about this one, but we also have halflings in .woff so I think it wont matter
 # mimetypes.add_type("application/font-woff2", ".woff2")
 
-import sickbeard
-from sickbeard import db, logger, network_timezones, failed_history, name_cache
-from sickbeard.tv import TVShow
-from sickchill.views.server_settings import SRWebServer
-from sickbeard.event_queue import Events
-from sickbeard.versionChecker import SourceUpdateManager, GitUpdateManager
+# Third Party Imports
 from configobj import ConfigObj
-
-from sickchill.helper.argument_parser import SickChillArgumentParser
-
 # noinspection PyUnresolvedReferences
 from six.moves import reload_module
 
+# First Party Imports
+import sickbeard
+from sickbeard import db, failed_history, logger, name_cache, network_timezones
+from sickbeard.event_queue import Events
+from sickbeard.tv import TVShow
+from sickbeard.versionChecker import GitUpdateManager, SourceUpdateManager
+from sickchill.helper.argument_parser import SickChillArgumentParser
+from sickchill.views.server_settings import SRWebServer
 
 # http://bugs.python.org/issue7980#msg221094
 THROWAWAY = datetime.datetime.strptime('20110101', '%Y%m%d')

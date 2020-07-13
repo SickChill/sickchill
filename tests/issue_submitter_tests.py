@@ -21,7 +21,7 @@
 Test exception logging
 """
 
-from __future__ import print_function, unicode_literals
+# Stdlib Imports
 import os.path
 import sys
 import unittest

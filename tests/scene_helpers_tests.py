@@ -4,13 +4,15 @@ Test scene helpers
 """
 
 
+# Stdlib Imports
 import sys
 import unittest
 
-import tests.test_lib as test
+# First Party Imports
 import sickbeard
 from sickbeard import common, db, name_cache, scene_exceptions, show_name_helpers
 from sickbeard.tv import TVShow as Show
+from tests import test_lib as test
 
 
 class SceneTests(test.SickbeardTestDBCase):

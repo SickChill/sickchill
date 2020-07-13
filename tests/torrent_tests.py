@@ -22,6 +22,7 @@ Test torrents
 """
 
 
+# Stdlib Imports
 import os.path
 import sys
 import unittest
@@ -30,12 +31,12 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../l
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
+# First Party Imports
 import sickbeard
 from sickbeard.providers.bitcannon import BitCannonProvider
 from sickbeard.providers.rarbg import provider as rarbg
-
 from sickbeard.tv import TVEpisode, TVShow
-import tests.test_lib as test
+from tests import test_lib as test
 
 
 class TorrentBasicTests(test.SickbeardTestDBCase):
