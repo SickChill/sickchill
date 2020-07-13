@@ -1543,7 +1543,7 @@ class CMDSickBeardCheckScheduler(ApiCall):
 
         backlog_paused = sickbeard.searchQueueScheduler.action.is_backlog_paused()  # @UndefinedVariable
         backlog_running = sickbeard.searchQueueScheduler.action.is_backlog_in_progress()  # @UndefinedVariable
-        next_backlog = sickbeard.backlogSearchScheduler.nextRun().strftime(dateFormat).decode(sickbeard.SYS_ENCODING)
+        next_backlog = sickbeard.backlogSearchScheduler.nextRun().strftime(dateFormat)
 
         data = {
             "backlog_is_paused": int(backlog_paused), "backlog_is_running": int(backlog_running),

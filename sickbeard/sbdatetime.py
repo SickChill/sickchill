@@ -173,7 +173,7 @@ class sbdatetime(datetime.datetime):
             except Exception:
                 sbdatetime.has_locale = False
 
-        return strt.decode(sickbeard.SYS_ENCODING)
+        return strt
 
     # display Date in SickChill Format
     @static_or_instance
@@ -215,7 +215,7 @@ class sbdatetime(datetime.datetime):
             except Exception:
                 pass
 
-        return strd.decode(sickbeard.SYS_ENCODING)
+        return strd
 
     # display Datetime in SickChill Format
     @static_or_instance
@@ -288,4 +288,4 @@ class sbdatetime(datetime.datetime):
             except Exception:
                 sbdatetime.has_locale = False
 
-        return strd.decode(sickbeard.SYS_ENCODING)
+        return strd

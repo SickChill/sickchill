@@ -225,7 +225,7 @@ class Logger(object):
         self.log(error_msg, ERROR, *args, **kwargs)
 
         if not self.console_logging:
-            sys.exit(error_msg.encode(sickbeard.SYS_ENCODING, 'xmlcharrefreplace'))
+            sys.exit(error_msg)
         else:
             sys.exit(1)
 

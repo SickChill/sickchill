@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*
 # Author: Nic Wolfe <nic@wolfeden.ca>
 # URL: http://code.google.com/p/sickbeard/
@@ -37,16 +37,9 @@ import threading
 import time
 import traceback
 
-codecs.register(lambda name: codecs.lookup('utf-8') if name == 'cp65001' else None)
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), 'lib')))
-
-if (2, 7, 99) < sys.version_info or sys.version_info < (2, 7, 1):
-    print('Sorry, requires Python at least 2.7 but less than 3')
-    sys.exit(1)
-
-if sys.version_info > (2, 7, 9):
-    import ssl
-    ssl._create_default_https_context = ssl._create_unverified_context  # TODO: Not sure we need this anymore
+from setup import setup_lib_path, setup_gettext
+setup_lib_path()
+setup_gettext()
 
 # Fix mimetypes on misconfigured systems
 import mimetypes
@@ -57,12 +50,6 @@ mimetypes.add_type("application/javascript", ".js")
 mimetypes.add_type("application/font-woff", ".woff")
 # Not sure about this one, but we also have halflings in .woff so I think it wont matter
 # mimetypes.add_type("application/font-woff2", ".woff2")
-
-# Do this before importing sickbeard, to prevent locked files and incorrect import
-OLD_TORNADO = os.path.abspath(os.path.join(os.path.dirname(__file__), 'tornado'))
-if os.path.isdir(OLD_TORNADO):
-    shutil.move(OLD_TORNADO, OLD_TORNADO + '_kill')
-    shutil.rmtree(OLD_TORNADO + '_kill')
 
 import sickbeard
 from sickbeard import db, logger, network_timezones, failed_history, name_cache
@@ -143,28 +130,6 @@ class SickChill(object):
         sickbeard.LOCALE_DIR = os.path.join(sickbeard.PROG_DIR, 'locale')
         sickbeard.DATA_DIR = sickbeard.PROG_DIR
         sickbeard.MY_ARGS = sys.argv[1:]
-
-        try:
-            locale.setlocale(locale.LC_ALL, '')
-            sickbeard.SYS_ENCODING = locale.getpreferredencoding()
-        except (locale.Error, IOError):
-            sickbeard.SYS_ENCODING = 'UTF-8'
-
-
-        if not sickbeard.SYS_ENCODING or sickbeard.SYS_ENCODING.lower() in ('ansi_x3.4-1968', 'us-ascii', 'ascii', 'charmap') or \
-                (sys.platform.startswith('win') and sys.getwindowsversion()[0] >= 6 and str(getattr(sys.stdout, 'device', sys.stdout).encoding).lower() in ('cp65001', 'charmap')):
-            sickbeard.SYS_ENCODING = 'UTF-8'
-
-        # TODO: Continue working on making this unnecessary, this hack creates all sorts of hellish problems
-        if not hasattr(sys, 'setdefaultencoding'):
-            reload_module(sys)
-
-        try:
-            # On non-unicode builds this will raise an AttributeError, if encoding type is not valid it throws a LookupError
-            sys.setdefaultencoding(sickbeard.SYS_ENCODING)
-        except (AttributeError, LookupError):
-            sys.exit('Sorry, you MUST add the SickChill folder to the PYTHONPATH environment variable\n'
-                     'or find another way to force Python to use {} for string encoding.'.format(sickbeard.SYS_ENCODING))
 
         # Rename the main thread
         threading.currentThread().name = 'MAIN'

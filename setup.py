@@ -2,10 +2,10 @@
 """
 Use setup tools to install sickchill
 """
-import os
+import os, sys
+import gettext
 
 from setuptools import find_packages, setup
-from requirements.sort import file_to_dict
 
 try:
     from babel.messages import frontend as babel
@@ -14,81 +14,85 @@ except ImportError:
 
 ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__)))
 
-with open(os.path.join(ROOT, 'readme.md'), 'r') as r:
-    long_description = r.read()
+
+info_dict = {'commands': {}}
 
 
-def get_requirements(rel_file_path):
-    file_path = os.path.join(ROOT, rel_file_path)
-    data = file_to_dict(file_path)
-    if data is False:
-        print('get_requirements failed')
-        return []
-    return [pkg['install'] for pkg in data
-            if pkg['active'] and pkg['install']]
+with open(os.path.join(ROOT, 'requirements.txt'), 'r') as fp:
+    info_dict['install_requires'] = [l for l in fp.readlines() if not l.startswith('#')]
 
-requirements = get_requirements('requirements/requirements.txt')
-commands = {}
+with open(os.path.join(ROOT, 'readme.md'), 'r') as fp:
+    info_dict['readme'] = fp.read()
+
+
 if babel:
-    commands.update({
+    info_dict['commands'].update({
         'compile_catalog': babel.compile_catalog,
         'extract_messages': babel.extract_messages,
         'init_catalog': babel.init_catalog,
         'update_catalog': babel.update_catalog
     })
 
-setup(
-    name="sickchill",
-    version="0.0.1",
+# setup(
+#     name="sickchill",
+#     version="0.0.1",
+#
+#     description="Automatic Video Library Manager for TV Shows",
+#     long_description=info_dict['readme'],
+#
+#     url='https://sickchill.github.io',
+#     download_url='https://github.com/SickChill/SickChill.git',
+#
+#     author='miigotu',
+#     author_email='miigotu@gmail.com',
+#
+#     license='GPLv2',
+#
+#     packages=find_packages(),
+#     install_requires=info_dict['install_requires'],
+#
+#     test_suite="tests",
+#     tests_require=[
+#         'coveralls',
+#         'nose',
+#         'rednose',
+#         'mock',
+#         'vcrpy-unittest',
+#         'babel',
+#         'flake8-coding',
+#         'isort'
+#     ],
+#     python_requires='>=2.7, <3',
+#     classifiers=[
+#         'Development Status :: 3 - Alpha',
+#         'Intended Audience :: System Administrators',
+#         'Operating System :: OS Independent',
+#         'Topic :: Multimedia :: Video',
+#     ],
+#
+#     cmdclass=info_dict['commands'],
+#
+#     # message_extractors={
+#     #     'gui': [
+#     #         ('**/views/**.mako', 'mako', {'input_encoding': 'utf-8'}),
+#     #         ('**/js/*.min.js', 'ignore', None),
+#     #         ('**/js/*.js', 'javascript', {'input_encoding': 'utf-8'})
+#     #     ],
+#     #     'sickchill': [('**.py', 'python', None)],
+#     #     'sickbeard': [('**.py', 'python', None)],
+#     # },
+# )
 
-    description="Automatic Video Library Manager for TV Shows",
-    long_description=long_description,
 
-    url='https://sickchill.github.io',
-    download_url='https://github.com/SickChill/SickChill.git',
+def setup_lib_path(additional=None):
+    lib_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'lib3'))
+    if lib_path not in sys.path:
+        sys.path.insert(1, lib_path)
+    if additional and additional not in sys.path:
+        sys.path.insert(1, additional)
 
-    author='miigotu',
-    author_email='miigotu@gmail.com',
 
-    license='GPLv2',
-
-    packages=find_packages(),
-    # install_requires=requirements,  # Commented-out for now
-    install_requires=[
-        'pytz',
-        'requests',
-        'mako',
-        'configobj'
-    ],
-
-    test_suite="tests",
-    tests_require=[
-        'coveralls',
-        'nose',
-        'rednose',
-        'mock',
-        'vcrpy-unittest',
-        'babel',
-        'flake8-coding',
-        'isort'
-    ],
-    python_requires='>=2.7, <3',
-    classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Intended Audience :: System Administrators',
-        'Operating System :: OS Independent',
-        'Topic :: Multimedia :: Video',
-    ],
-
-    cmdclass=commands,
-
-    message_extractors={
-        'gui': [
-            ('**/views/**.mako', 'mako', {'input_encoding': 'utf-8'}),
-            ('**/js/*.min.js', 'ignore', None),
-            ('**/js/*.js', 'javascript', {'input_encoding': 'utf-8'})
-        ],
-        'sickchill': [('**.py', 'python', None)],
-        'sickbeard': [('**.py', 'python', None)],
-    },
-)
+def setup_gettext(language=None):
+    languages = [language] if language else None
+    gt = gettext.translation('messages', os.path.abspath(os.path.join(os.path.dirname(__file__), 'locale')), languages=languages, codeset='UTF-8')
+    gt.install(names=["ngettext"])

@@ -25,7 +25,6 @@ Common interface for Quality and Status
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
-import gettext
 import operator
 import platform
 import re
@@ -35,11 +34,11 @@ from os import path
 
 # Third Party Imports
 import fake_useragent
-import six
 # noinspection PyUnresolvedReferences
 from six.moves import reduce
 
 # First Party Imports
+from setup import setup_gettext
 import sickbeard
 from sickchill.helper import video_screen_size
 from sickchill.recompiled import tags
@@ -48,7 +47,7 @@ from sickchill.tagger.episode import EpisodeTags
 # Local Folder Imports
 from .numdict import NumDict
 
-gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
+setup_gettext()
 
 # If some provider has an issue with functionality of SR, other than user agents, it's best to come talk to us rather than block.
 # It is no different than us going to a provider if we have questions or issues. Be a team player here.
@@ -153,7 +152,7 @@ class Quality(object):
     UNKNOWN = 1 << 15  # 32768
 
     qualityStrings = NumDict({
-        None: "None",
+        # None: "None",
         NONE: "N/A",
         UNKNOWN: "Unknown",
         SDTV: "SDTV",
@@ -174,7 +173,7 @@ class Quality(object):
     })
 
     sceneQualityStrings = NumDict({
-        None: "None",
+        # None: "None",
         NONE: "N/A",
         UNKNOWN: "Unknown",
         SDTV: "HDTV",
@@ -201,7 +200,7 @@ class Quality(object):
     })
 
     cssClassStrings = NumDict({
-        None: "None",
+        # None: "None",
         NONE: "N/A",
         UNKNOWN: "Unknown",
         SDTV: "SDTV",

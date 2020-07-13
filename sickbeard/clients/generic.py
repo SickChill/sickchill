@@ -26,7 +26,7 @@ from base64 import b16encode, b32decode
 from hashlib import sha1
 
 # Third Party Imports
-import bencode
+import bencodepy
 import six
 from requests.compat import urlencode
 from requests.models import HTTPError
@@ -177,8 +177,8 @@ class GenericClient(object):
                 raise Exception('Torrent without content')
 
             try:
-                torrent_bdecode = helpers.bdecode(result.content, True)
-            except (bencode.BTL.BTFailure, Exception) as error:
+                torrent_bdecode = bencodepy.decode(result.content, True)
+            except (bencodepy.DecodingError, Exception) as error:
                 logger.exception('Unable to bdecode torrent')
                 logger.info('Error is: {0}'.format(error))
                 logger.info('Torrent bencoded data: {0!r}'.format(result.content))
@@ -192,9 +192,9 @@ class GenericClient(object):
                 raise
 
             try:
-                result.hash = sha1(bencode.bencode(info)).hexdigest()
+                result.hash = sha1(bencodepy.encode(info)).hexdigest()
                 logger.debug('Result Hash is {0}'.format(result.hash))
-            except (bencode.BTL.BTFailure, Exception) as error:
+            except (bencodepy.EncodingError, Exception) as error:
                 logger.exception('Unable to bencode torrent info')
                 logger.info('Error is: {0}'.format(error))
                 logger.info('Torrent bencoded data: {0!r}'.format(result.content))

@@ -56,7 +56,7 @@ def createCertRequest(pkey, digest="md5", **name):
     return req
 
 
-def createCertificate(req, (issuerCert, issuerKey), serial, (notBefore, notAfter), digest="md5"):
+def createCertificate(req, issuerCert, issuerKey, serial, notBefore, notAfter, digest="md5"):
     """
     Generate a certificate given a certificate request.
 

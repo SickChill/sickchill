@@ -25,7 +25,7 @@ import os
 import re
 
 # Third Party Imports
-from bencode.BTL import BTFailure
+import bencodepy
 from requests.utils import add_dict_to_cookiejar
 
 # First Party Imports
@@ -173,8 +173,8 @@ class TorrentRssProvider(TorrentProvider):
             else:
                 torrent_file = self.get_url(url, returns='content')
                 try:
-                    helpers.bdecode(torrent_file, True)
-                except (BTFailure, Exception) as error:
+                    bencodepy.decode(torrent_file)
+                except (bencodepy.DecodingError, Exception) as error:
                     self.dumpHTML(torrent_file)
                     return False, 'Torrent link is not a valid torrent file: {0}'.format(error)
 

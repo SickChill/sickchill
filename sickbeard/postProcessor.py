@@ -163,7 +163,7 @@ class PostProcessor(object):
         """
         def recursive_glob(treeroot, pattern):
             results = []
-            for base, dirnames_, files in os.walk(treeroot.encode(sickbeard.SYS_ENCODING), followlinks=sickbeard.PROCESSOR_FOLLOW_SYMLINKS):
+            for base, dirnames_, files in os.walk(treeroot, followlinks=sickbeard.PROCESSOR_FOLLOW_SYMLINKS):
                 goodfiles = fnmatch.filter(files, pattern)
                 for f in goodfiles:
                     found_file = os.path.join(base, f)

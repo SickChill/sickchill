@@ -23,7 +23,7 @@ from datetime import datetime
 
 # Third Party Imports
 from feedparser import FeedParserDict
-from rtorrent9.lib.torrentparser import TorrentParser
+import bencodepy
 
 # First Party Imports
 import sickbeard
@@ -130,9 +130,8 @@ class TorrentProvider(GenericProvider):
 
     def _verify_download(self, file_name):
         try:
-            tp = TorrentParser(file_name)
-            return tp.info_hash is not None
-        except AssertionError as e:
+            bencodepy.decode_from_file(file_name)
+        except bencodepy.DecodingError as e:
             logger.debug('Failed to validate torrent file: {0}'.format(str(e)))
 
         logger.debug('Result is not a valid torrent file')

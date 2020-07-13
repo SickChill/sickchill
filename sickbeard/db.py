@@ -69,8 +69,6 @@ class DBConnection(object):
                 db_locks[self.filename] = threading.Lock()
 
                 self.connection = sqlite3.connect(self.full_path, 20, check_same_thread=False)
-                self.connection.text_factory = DBConnection._unicode_text_factory
-
                 db_cons[self.filename] = self.connection
             else:
                 self.connection = db_cons[self.filename]
@@ -387,21 +385,6 @@ class DBConnection(object):
         :return: array of name/type info
         """
         return {column[b"name"]: {"type": column[b"type"]} for column in self.select("PRAGMA table_info(`{0}`)".format(table_name))}
-
-    @staticmethod
-    def _unicode_text_factory(x):
-        """
-        Convert text to six.text_type
-
-        :param x: text to parse
-        :return: six.text_type result
-        """
-        # noinspection PyBroadException
-        try:
-            # Just revert to the old code for now, until we can fix unicode
-            return six.text_type(x, "utf-8")
-        except Exception:
-            return six.text_type(x, sickbeard.SYS_ENCODING, errors="ignore")
 
     @staticmethod
     def _dict_factory(cursor, row):

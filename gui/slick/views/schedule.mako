@@ -249,7 +249,7 @@
                                    cellspacing="0" border="0" cellpadding="0">
                                 <thead>
                                     <tr>
-                                        <th>${day.strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()}</th>
+                                        <th>${day.strftime('%A').capitalize()}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -270,7 +270,7 @@
                                         % if airday == day:
                                             % try:
                                                 <% day_has_show = True %>
-                                                <% airtime = sbdatetime.sbdatetime.fromtimestamp(time.mktime(cur_result[b'localtime'].timetuple())).sbftime().decode(sickbeard.SYS_ENCODING) %>
+                                                <% airtime = sbdatetime.sbdatetime.fromtimestamp(time.mktime(cur_result[b'localtime'].timetuple())).sbftime() %>
                                                 % if sickbeard.TRIM_ZERO:
                                                     <% airtime = re.sub(r'0(\d:\d\d)', r'\1', airtime, 0, re.IGNORECASE | re.MULTILINE) %>
                                                 % endif
@@ -343,7 +343,7 @@
                     else:
                         cur_ep_enddate = cur_result[b'localtime']
 
-                    this_day_name = datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').decode(sickbeard.SYS_ENCODING).capitalize()
+                    this_day_name = datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').capitalize()
                 %>
                 % if sickbeard.COMING_EPS_SORT == 'network':
                     <% show_network = ('no network', cur_result[b'network'])[bool(cur_result[b'network'])] %>

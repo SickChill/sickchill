@@ -48,7 +48,6 @@ from itertools import cycle
 
 # Third Party Imports
 import adba
-import bencode
 import certifi
 import cfscrape
 import cloudscraper
@@ -616,7 +615,7 @@ def chmodAsParent(childPath):
     parentPathStat = os.stat(parentPath)
     parentMode = stat.S_IMODE(parentPathStat[stat.ST_MODE])
 
-    childPathStat = os.stat(childPath.encode(sickbeard.SYS_ENCODING))
+    childPathStat = os.stat(childPath)
     childPath_mode = stat.S_IMODE(childPathStat[stat.ST_MODE])
 
     if os.path.isfile(childPath):
@@ -659,7 +658,7 @@ def fixSetGroupID(childPath):
 
     if parentMode & stat.S_ISGID:
         parentGID = parentStat[stat.ST_GID]
-        childStat = os.stat(childPath.encode(sickbeard.SYS_ENCODING))
+        childStat = os.stat(childPath)
         childGID = childStat[stat.ST_GID]
 
         if childGID == parentGID:
@@ -776,15 +775,6 @@ def sanitizeSceneName(name, anime=False):
     return name
 
 
-_binOps = {
-    ast.Add: operator.add,
-    ast.Sub: operator.sub,
-    ast.Mult: operator.mul,
-    ast.Div: operator.div,
-    ast.Mod: operator.mod
-}
-
-
 def create_https_certificates(ssl_cert, ssl_key):
     """
     Create self-signed HTTPS certificares and store in paths 'ssl_cert' and 'ssl_key'
@@ -808,17 +798,24 @@ def create_https_certificates(ssl_cert, ssl_key):
         return False
 
     import time
-    serial = int(time.time())
-    validity_period = (0, 60 * 60 * 24 * 365 * 10)  # ten years
-    # Create the CA Certificate
+
     cakey = createKeyPair(TYPE_RSA, 4096)
     careq = createCertRequest(cakey, CN='Certificate Authority')
-    cacert = createCertificate(careq, (careq, cakey), serial, validity_period, b'sha256')
+    params = {
+        'req': careq,
+        'issuerCert': careq,
+        'issuerKey': cakey,
+        'serial': int(time.time()),
+        'notBefore': 0,
+        'notAfter': 60 * 60 * 24 * 365 * 10,  # ten years
+        'digest': 'sha256'
+    }
+    # Create the CA Certificate
+    params['issuerCert'] = createCertificate(**params)
 
-    cname = 'SickChill'
     pkey = createKeyPair(TYPE_RSA, 4096)
-    req = createCertRequest(pkey, CN=cname)
-    cert = createCertificate(req, (cacert, cakey), serial, validity_period, b'sha256')
+    params['req'] = createCertRequest(pkey, CN='SickChill')
+    cert = createCertificate(**params)
 
     # Save the key and certificate to disk
     # noinspection PyBroadException
@@ -1781,22 +1778,6 @@ def manage_torrents_url(reset=False):
     sickbeard.CLIENT_WEB_URLS['torrent'] = ('', torrent_ui_url)[test_exists(torrent_ui_url)]
 
     return sickbeard.CLIENT_WEB_URLS.get('torrent')
-
-
-def bdecode(x, allow_extra_data=False):
-    """
-    Custom bdecode function to ignore the 'data after valid prefix' exception.
-    :param x: data to decode
-    :param allow_extra_data: Set to True to allow extra data after valid prefix
-    :return: bdecoded data
-    """
-    try:
-        r, l = bencode.decode_func[x[0]](x, 0)
-    except (IndexError, KeyError, ValueError):
-        raise bencode.BTL.BTFailure("not a valid bencoded string")
-    if not allow_extra_data and l != len(x):
-        raise bencode.BTL.BTFailure("invalid bencoded value (data after valid prefix)")
-    return r
 
 
 def is_docker():

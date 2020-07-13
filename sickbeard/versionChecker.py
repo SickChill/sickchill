@@ -518,6 +518,7 @@ class GitUpdateManager(UpdateManager):
         # if exit_status == 0 and not stdout:
         if helpers.is_docker() and not self.branch:
             logger.info('We found you in a detached state that prevents updates. Fixing')
+            stdout_, stderr_, exit_status = self._run_git(self._git_path, 'fetch origin')
             stdout_, stderr_, exit_status = self._run_git(self._git_path, 'checkout -f master')
             if exit_status == 0:
                 self.branch = sickbeard.BRANCH = 'master'

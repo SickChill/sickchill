@@ -21,7 +21,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import datetime
-import gettext
 import os
 import platform
 import random
@@ -31,14 +30,17 @@ import socket
 import sys
 from threading import Lock
 
+from setup import setup_gettext, setup_lib_path
+setup_lib_path()
+
 # Third Party Imports
 import rarfile
 import requests
-import six
 from configobj import ConfigObj
 from tornado.locale import load_gettext_translations
 
 # First Party Imports
+
 import sickchill
 from sickchill import show_updater
 from sickchill.helper import setup_github
@@ -55,7 +57,7 @@ from .numdict import NumDict
 from .providers.newznab import NewznabProvider
 from .providers.rsstorrent import TorrentRssProvider
 
-gettext.install('messages', unicode=1, codeset='UTF-8', names=["ngettext"])
+setup_gettext()
 
 # Some strings come from metadata or libraries or 3rd party sites,
 # So we need to pre-define them to get translations for them
@@ -91,7 +93,6 @@ MY_FULLNAME = None
 LOCALE_DIR = 'locale'
 MY_NAME = None
 MY_ARGS = []
-SYS_ENCODING = ''
 DATA_DIR = ''
 CREATEPID = False
 PIDFILE = ''
@@ -849,10 +850,7 @@ def initialize(consoleLogging=True):
         GUI_NAME = check_setting_str(CFG, 'GUI', 'gui_name', 'slick')
         GUI_LANG = check_setting_str(CFG, 'GUI', 'language')
 
-        if GUI_LANG:
-            gettext.translation('messages', LOCALE_DIR, languages=[GUI_LANG], codeset='UTF-8').install(unicode=1, names=["ngettext"])
-        else:
-            gettext.install('messages', LOCALE_DIR, unicode=1, codeset='UTF-8', names=["ngettext"])
+        setup_gettext(GUI_LANG)
 
         load_gettext_translations(LOCALE_DIR, 'messages')
 
