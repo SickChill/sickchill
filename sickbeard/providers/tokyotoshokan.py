@@ -22,9 +22,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Stdlib Imports
 import re
 
-# Third Party Imports
-from six.moves import zip
-
 # First Party Imports
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser

@@ -20,13 +20,13 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import datetime
+import json
 import os
 import re
 import traceback
 
 # Third Party Imports
 import dateutil
-import six
 from requests.compat import unquote_plus
 from tornado.escape import xhtml_unescape
 from tornado.web import HTTPError
@@ -46,14 +46,6 @@ from sickchill.show.Show import Show
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home
 from sickchill.views.routes import Route
-
-try:
-    # Stdlib Imports
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    # Third Party Imports
-    import simplejson as json
 
 
 @Route('/addShows(/?.*)', name='addShows')
@@ -108,7 +100,7 @@ class AddShows(Home):
                 # add search results
                 results.setdefault(i, []).extend(indexerResults)
 
-        for i, shows in six.iteritems(results):
+        for i, shows in results.items():
             # noinspection PyUnresolvedReferences
             final_results.extend({(sickchill.indexer.name(i), i, sickchill.indexer[i].show_url, show['id'],
                                    show['seriesName'], show['firstAired'], sickbeard.tv.Show.find(sickbeard.showList, show['id']) is not None

@@ -25,9 +25,7 @@ import traceback
 
 # Third Party Imports
 import requests
-import six
 from requests.exceptions import HTTPError
-from six.moves import range
 
 # First Party Imports
 import sickbeard

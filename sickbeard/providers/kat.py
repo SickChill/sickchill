@@ -21,12 +21,12 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Stdlib Imports
 import re
 import traceback
+import urllib
 from collections import OrderedDict
 
 # Third Party Imports
 import validators
 from requests.compat import urljoin
-from six.moves import urllib
 
 # First Party Imports
 from sickbeard import logger, tvcache

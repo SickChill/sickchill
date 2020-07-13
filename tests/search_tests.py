@@ -37,9 +37,6 @@ import sickbeard.common as common
 from sickchill.providers.GenericProvider import GenericProvider
 import tests.test_lib as test
 
-import six
-
-
 TESTS = {
     "Game of Thrones": {
         "tvdbid": 121361, "s": 5, "e": [10],
@@ -152,7 +149,7 @@ if __name__ == '__main__':
     print("######################################################################")
     # create the test methods
     for forceSearch in (True, False):
-        for name, data in six.iteritems(TESTS):
+        for name, data in TESTS.items():
             filename = name.replace(' ', '_')
 
             for provider in sickbeard.providers.sortedProviderList():

@@ -27,7 +27,6 @@ import traceback
 
 # Third Party Imports
 from rarfile import BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRCError, RarExecError, RarFile, RarOpenError, RarWrongPassword
-from six.moves import filter
 
 # First Party Imports
 import sickbeard

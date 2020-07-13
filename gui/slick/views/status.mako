@@ -1,7 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     import collections
-    import six
     import sickbeard
     from sickbeard import helpers
     from sickbeard.show_queue import ShowQueueActions
@@ -9,7 +8,7 @@
 %>
 <%block name="content">
     <%
-        schedulerList = collections.OrderedDict(sorted(six.iteritems({
+        schedulerList = collections.OrderedDict(sorted({
         _('Daily Search'): 'dailySearchScheduler',
         _('Backlog'): 'backlogSearchScheduler',
         _('Show Update'): 'showUpdateScheduler',
@@ -21,7 +20,7 @@
         _('Post Process'): 'postProcessorTaskScheduler',
         _('Subtitles Finder'): 'subtitlesFinderScheduler',
         _('Trakt Checker'): 'traktCheckerScheduler',
-    })))
+    }.items()))
     %>
     <div class="row">
         <div class="col-md-12">
@@ -53,7 +52,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        % for schedulerName, scheduler in six.iteritems(schedulerList):
+                        % for schedulerName, scheduler in schedulerList.items():
                             ${scheduler_row(schedulerName, scheduler)}
                         % endfor
                     </tbody>

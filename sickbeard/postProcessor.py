@@ -26,9 +26,6 @@ import re
 import stat
 import subprocess
 
-# Third Party Imports
-import six
-
 # First Party Imports
 import adba
 import sickbeard
@@ -107,7 +104,7 @@ class PostProcessor(object):
         """
         A wrapper for the internal logger which also keeps track of messages and saves them to a string for later.
 
-        :param message: The string to log (six.text_type)
+        :param message: The string to log (str)
         :param level: The log level to use (optional)
         """
         logger.log(level, message)
@@ -464,7 +461,7 @@ class PostProcessor(object):
 
             self._log("Creating then symbolic linking file from " + new_file_path + " to " + cur_file_path, logger.DEBUG)
             try:
-                helpers.symlink(cur_file_path, new_file_path)
+                os.symlink(cur_file_path, new_file_path)
                 helpers.chmodAsParent(cur_file_path)
             except (IOError, OSError) as e:
                 self._log("Unable to link file " + cur_file_path + " to " + new_file_path + ": " + str(e), logger.ERROR)
@@ -562,7 +559,7 @@ class PostProcessor(object):
         """
         Takes a name and tries to figure out a show, season, and episode from it.
 
-        :param name: A string which we want to analyze to determine show info from (six.text_type)
+        :param name: A string which we want to analyze to determine show info from (str)
 
         :return: A (indexer_id, season, [episodes]) tuple. The first two may be None and episodes may be []
         if none were found.

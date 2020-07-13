@@ -21,16 +21,16 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Stdlib Imports
 import ast
 import datetime
+import json
 import os
 import time
+# noinspection PyUnresolvedReferences
+import urllib
 from operator import attrgetter
 
 # Third Party Imports
-import six
 from github.GithubException import GithubException
 from requests.compat import unquote_plus
-# noinspection PyUnresolvedReferences
-from six.moves import urllib, zip
 from tornado.escape import xhtml_unescape
 
 # First Party Imports
@@ -54,14 +54,6 @@ from sickchill.system.Shutdown import Shutdown
 from .common import PageTemplate
 from .index import WebRoot
 from .routes import Route
-
-try:
-    # Stdlib Imports
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    # Third Party Imports
-    import simplejson as json
 
 
 @Route('/home(/?.*)', name='home')
@@ -951,7 +943,7 @@ class Home(WebRoot):
             return _("No scene exceptions")
 
         out = []
-        for season, exceptions in iter(sorted(six.iteritems(exceptionsList))):
+        for season, exceptions in iter(sorted(exceptionsList.items())):
             if season == -1:
                 season = "*"
             out.append("S" + str(season) + ": " + ", ".join(exceptions.names))
@@ -1434,7 +1426,7 @@ class Home(WebRoot):
             msg = _("Backlog was automatically started for the following seasons of <b>{show_name}</b>").format(show_name=show_obj.name)
             msg += ':<br><ul>'
 
-            for season, segment in six.iteritems(segments):
+            for season, segment in segments.items():
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(show_obj, segment)
                 sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
 
@@ -1453,7 +1445,7 @@ class Home(WebRoot):
             msg = _("Retrying Search was automatically started for the following season of <b>{show_name}</b>").format(show_name=show_obj.name)
             msg += ':<br><ul>'
 
-            for season, segment in six.iteritems(segments):
+            for season, segment in segments.items():
                 cur_failed_queue_item = search_queue.FailedQueueItem(show_obj, segment)
                 sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)
 

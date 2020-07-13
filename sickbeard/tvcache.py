@@ -23,9 +23,6 @@ import datetime
 import itertools
 import time
 
-# Third Party Imports
-import six
-
 # First Party Imports
 import sickbeard
 from sickchill.helper.exceptions import AuthException

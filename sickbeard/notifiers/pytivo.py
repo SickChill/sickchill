@@ -20,12 +20,12 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import os
+# noinspection PyUnresolvedReferences
+from urllib.request import Request, urlopen
 
 # Third Party Imports
 from requests.compat import urlencode
 from requests.exceptions import HTTPError
-# noinspection PyUnresolvedReferences
-from six.moves.urllib.request import Request, urlopen
 
 # First Party Imports
 import sickbeard

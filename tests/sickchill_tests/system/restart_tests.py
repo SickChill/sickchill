@@ -35,9 +35,6 @@ from sickbeard.event_queue import Events
 from sickchill.system.Restart import Restart
 
 
-import six
-
-
 class RestartTests(unittest.TestCase):
     """
     Test restart
@@ -65,7 +62,7 @@ class RestartTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (pid, result) in six.iteritems(tests):
+            for (pid, result) in tests.items():
                 self.assertEqual(Restart.restart(pid), result)
 
 

@@ -22,15 +22,15 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Stdlib Imports
 import abc
 import datetime
+import json
 import os
 import re
 import time
 import traceback
+# noinspection PyUnresolvedReferences
+import urllib
 
 # Third Party Imports
-import six
-# noinspection PyUnresolvedReferences
-from six.moves import urllib
 from tornado.web import RequestHandler
 
 # First Party Imports
@@ -49,15 +49,6 @@ from sickchill.show.History import History
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
-
-try:
-    # Stdlib Imports
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    # Third Party Imports
-    import simplejson as json
-
 
 indexer_ids = ["indexerid", "tvdbid"]
 
@@ -97,7 +88,7 @@ class ApiHandler(RequestHandler):
     def get(self, *args, **kwargs):
         kwargs = self.request.arguments
         # noinspection PyCompatibility
-        for arg, value in six.iteritems(kwargs):
+        for arg, value in kwargs.items():
             if len(value) == 1:
                 kwargs[arg] = value[0]
 
@@ -705,7 +696,7 @@ class CMDComingEpisodes(ApiCall):
         data = {section: [] for section in grouped_coming_episodes.keys()}
 
         # noinspection PyCompatibility
-        for section, coming_episodes in six.iteritems(grouped_coming_episodes):
+        for section, coming_episodes in grouped_coming_episodes.items():
             for coming_episode in coming_episodes:
                 data[section].append({
                     'airdate': coming_episode['airdate'],
@@ -1033,7 +1024,7 @@ class CMDEpisodeSetStatus(ApiCall):
         extra_msg = ""
         if start_backlog:
             # noinspection PyCompatibility
-            for season, segment in six.iteritems(segments):
+            for season, segment in segments.items():
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(show_obj, segment)
                 sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)  # @UndefinedVariable
 
@@ -1497,7 +1488,7 @@ class CMDSickBeardAddRootDir(ApiCall):
         root_dirs_new = [urllib.parse.unquote_plus(x) for x in root_dirs]
         root_dirs_new.insert(0, index)
         # noinspection PyCompatibility
-        root_dirs_new = '|'.join(six.text_type(x) for x in root_dirs_new)
+        root_dirs_new = '|'.join(str(x) for x in root_dirs_new)
 
         sickbeard.ROOT_DIRS = root_dirs_new
         return _responds(RESULT_SUCCESS, _get_root_dirs(), msg="Root directories updated")
@@ -1597,7 +1588,7 @@ class CMDSickBeardDeleteRootDir(ApiCall):
         if len(root_dirs_new) > 0:
             root_dirs_new.insert(0, new_index)
         # noinspection PyCompatibility
-        root_dirs_new = "|".join(six.text_type(x) for x in root_dirs_new)
+        root_dirs_new = "|".join(str(x) for x in root_dirs_new)
 
         sickbeard.ROOT_DIRS = root_dirs_new
         # what if the root dir was not found?
@@ -1739,7 +1730,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
 
         if self.name and not self.indexerid:  # only name was given
             search_results = sickchill.indexer.search_indexers_for_series_name(str(self.name).encode(), self.lang)
-            for indexer, indexer_results in six.iteritems(search_results):
+            for indexer, indexer_results in search_results.items():
                 for result in indexer_results:
                     # Skip it if it's in our show list already, and we only want new shows
                     # noinspection PyUnresolvedReferences
@@ -1770,7 +1761,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
 
             results = [{
                 indexer_ids[indexer]: result.id,
-                "name": six.text_type(result.seriesName),
+                "name": str(result.seriesName),
                 "first_aired": result.firstAired,
                 "indexer": indexer
             }]

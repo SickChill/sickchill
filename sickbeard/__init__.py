@@ -869,7 +869,7 @@ def initialize(consoleLogging=True):
                     if os.path.isdir(CACHE_DIR):
                         shutil.rmtree(CACHE_DIR)
 
-                    helpers.symlink(DATA_CACHE, CACHE_DIR)
+                    os.symlink(DATA_CACHE, CACHE_DIR)
             except Exception as e:
                 print(e)
 

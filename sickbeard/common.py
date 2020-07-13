@@ -19,12 +19,6 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 from __future__ import absolute_import, print_function, unicode_literals
 
-"""
-Common interface for Quality and Status
-"""
-
-from __future__ import absolute_import, print_function, unicode_literals
-
 # Stdlib Imports
 import operator
 import platform
@@ -35,8 +29,6 @@ from os import path
 
 # Third Party Imports
 import fake_useragent
-# noinspection PyUnresolvedReferences
-from six.moves import reduce
 
 # First Party Imports
 import sickbeard

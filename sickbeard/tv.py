@@ -34,7 +34,6 @@ import babelfish
 # import guessit
 from imdbpie import Imdb, ImdbFacade
 from imdbpie.exceptions import ImdbAPIError
-from six.moves import zip
 from unidecode import unidecode
 from urllib3.exceptions import MaxRetryError, NewConnectionError
 

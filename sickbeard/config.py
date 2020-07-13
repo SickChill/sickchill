@@ -24,12 +24,10 @@ import datetime
 import os.path
 import platform
 import re
+from urllib import parse
 
 # Third Party Imports
 import rarfile
-import six
-# noinspection PyUnresolvedReferences
-from six.moves.urllib import parse
 from tornado.escape import xhtml_unescape
 
 # First Party Imports
@@ -563,8 +561,8 @@ def checkbox_to_value(option, value_on=True, value_off=False):
 
     if isinstance(option, list):
         option = option[-1]
-    if isinstance(option, six.string_types):
-        option = six.text_type(option).strip().lower()
+    if isinstance(option, str):
+        option = option.strip().lower()
 
     if option in (True, 'on', 'true', value_on) or try_int(option) > 0:
         return value_on
@@ -593,7 +591,7 @@ def clean_host(host, default_port=None):
                 host = cleaned_host + ':' + cleaned_port
 
             elif default_port:
-                host = cleaned_host + ':' + six.text_type(default_port)
+                host = cleaned_host + ':' + str(default_port)
 
             else:
                 host = cleaned_host
@@ -702,9 +700,9 @@ def check_setting_int(config, cfg_name, item_name, def_val=0, min_val=None, max_
 
         my_val = config[cfg_name][item_name]
 
-        if six.text_type(my_val).lower() == "true":
+        if str(my_val).lower() == "true":
             my_val = 1
-        elif six.text_type(my_val).lower() == "false":
+        elif str(my_val).lower() == "false":
             my_val = 0
 
         my_val = int(my_val)
@@ -723,7 +721,7 @@ def check_setting_int(config, cfg_name, item_name, def_val=0, min_val=None, max_
         config[cfg_name][item_name] = my_val
 
     if not silent:
-        logger.debug(item_name + " -> " + six.text_type(my_val))
+        logger.debug(item_name + " -> " + str(my_val))
 
     return my_val
 
@@ -779,7 +777,7 @@ def check_setting_float(config, cfg_name, item_name, def_val=0.0, min_val=None, 
         config[cfg_name][item_name] = my_val
 
     if not silent:
-        logger.debug(item_name + " -> " + six.text_type(my_val))
+        logger.debug(item_name + " -> " + str(my_val))
 
     return my_val
 
@@ -787,7 +785,7 @@ def check_setting_float(config, cfg_name, item_name, def_val=0.0, min_val=None, 
 ################################################################################
 # check_setting_str                                                            #
 ################################################################################
-def check_setting_str(config, cfg_name, item_name, def_val=six.text_type(''), silent=True, censor_log=False):
+def check_setting_str(config, cfg_name, item_name, def_val=str(''), silent=True, censor_log=False):
     """
     Checks config setting of string types
 
@@ -796,15 +794,15 @@ def check_setting_str(config, cfg_name, item_name, def_val=six.text_type(''), si
     :param cfg_name: section name of config
     :param item_name: item name of section
     :param def_val: default value to return in case a value can't be retrieved from config
-                    or if couldn't be converted (default: empty six.text_type)
+                    or if couldn't be converted (default: empty str)
     :param silent: don't log result to debug log (default: True)
     :param censor_log: overrides and adds this setting to logger censored items (default: False)
 
     :return: decrypted value of `config[cfg_name][item_name]`
              or `def_val` (see cases of def_val)
-    :rtype: six.text_type
+    :rtype: str
     """
-    if not isinstance(def_val, six.string_types):
+    if not isinstance(def_val, str):
         logger.error("{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t='string', dt=type(def_val)))
 
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
@@ -815,7 +813,7 @@ def check_setting_str(config, cfg_name, item_name, def_val=six.text_type(''), si
             raise ValueError
 
         my_val = helpers.decrypt(config[cfg_name][item_name], encryption_version)
-        if six.text_type(my_val) == six.text_type(None) or not six.text_type(my_val):
+        if str(my_val) == str(None) or not str(my_val):
             raise ValueError
     except (ValueError, IndexError, KeyError):
         my_val = def_val
@@ -825,13 +823,13 @@ def check_setting_str(config, cfg_name, item_name, def_val=six.text_type(''), si
 
         config[cfg_name][item_name] = helpers.encrypt(my_val, encryption_version)
 
-    if (censor_log or (cfg_name, item_name) in six.iteritems(logger.censored_items)) and not item_name.endswith('custom_url'):
+    if (censor_log or (cfg_name, item_name) in logger.censored_items.items()) and not item_name.endswith('custom_url'):
         logger.censored_items[cfg_name, item_name] = my_val
 
     if not silent:
         logger.debug(item_name + " -> " + my_val)
 
-    return six.text_type(my_val)
+    return str(my_val)
 
 
 ################################################################################
@@ -862,8 +860,8 @@ def check_setting_bool(config, cfg_name, item_name, def_val=False, silent=True):
             raise ValueError
 
         my_val = config[cfg_name][item_name]
-        my_val = six.text_type(my_val)
-        if my_val == six.text_type(None) or not my_val:
+        my_val = str(my_val)
+        if my_val == str(None) or not my_val:
             raise ValueError
 
         my_val = checkbox_to_value(my_val)
@@ -876,7 +874,7 @@ def check_setting_bool(config, cfg_name, item_name, def_val=False, silent=True):
         config[cfg_name][item_name] = my_val
 
     if not silent:
-        logger.debug(item_name + " -> " + six.text_type(my_val))
+        logger.debug(item_name + " -> " + str(my_val))
 
     return my_val
 
@@ -936,8 +934,8 @@ class ConfigMigrator(object):
                 logger.info("Proceeding with upgrade")
 
             # do the migration, expect a method named _migrate_v<num>
-            logger.info("Migrating config up to version " + six.text_type(next_version) + migration_name)
-            getattr(self, '_migrate_v' + six.text_type(next_version))()
+            logger.info("Migrating config up to version " + str(next_version) + migration_name)
+            getattr(self, '_migrate_v' + str(next_version))()
             self.config_version = next_version
 
             # save new config after migration
@@ -976,7 +974,7 @@ class ConfigMigrator(object):
             if old_season_format:
                 try:
                     new_season_format = old_season_format % 9
-                    new_season_format = six.text_type(new_season_format).replace('09', '%0S')
+                    new_season_format = str(new_season_format).replace('09', '%0S')
                     new_season_format = new_season_format.replace('9', '%S')
 
                     logger.info(

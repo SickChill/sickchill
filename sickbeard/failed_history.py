@@ -22,10 +22,8 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Stdlib Imports
 import datetime
 import re
-
-# Third Party Imports
 # noinspection PyUnresolvedReferences
-from six.moves import urllib
+import urllib
 
 # First Party Imports
 from sickchill.helper.exceptions import EpisodeNotFoundException

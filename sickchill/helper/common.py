@@ -18,11 +18,6 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 from __future__ import absolute_import, print_function, unicode_literals
 
-"""
-Common helper functions
-"""
-from __future__ import absolute_import, print_function, unicode_literals
-
 # Stdlib Imports
 import glob
 import os
@@ -30,7 +25,6 @@ import re
 from fnmatch import fnmatch
 
 # Third Party Imports
-import six
 from github import Github
 from github.GithubException import (BadAttributeException, BadCredentialsException, BadUserAgentException, GithubException, RateLimitExceededException,
                                     TwoFactorException, UnknownObjectException)
@@ -150,7 +144,7 @@ def is_sync_file(filename):
     :return: ``True`` if the ``filename`` is a sync file, ``False`` otherwise
     """
 
-    if isinstance(filename, six.string_types):
+    if isinstance(filename, str):
         extension = filename.rpartition('.')[2].lower()
 
         return extension in sickbeard.SYNC_FILES.split(',') or \
@@ -167,7 +161,7 @@ def is_torrent_or_nzb_file(filename):
     :return: ``True`` if the ``filename`` is a NZB file or a torrent file, ``False`` otherwise
     """
 
-    if not isinstance(filename, six.string_types):
+    if not isinstance(filename, str):
         return False
 
     return filename.rpartition('.')[2].lower() in ['nzb', 'torrent']
@@ -263,7 +257,7 @@ def remove_extension(filename):
     :return: The ``filename`` without its extension.
     """
 
-    if isinstance(filename, six.string_types) and '.' in filename:
+    if isinstance(filename, str) and '.' in filename:
         basename, dot, extension = filename.rpartition('.')
 
         if basename and extension.lower() in ['nzb', 'torrent'] + MEDIA_EXTENSIONS:
@@ -280,7 +274,7 @@ def replace_extension(filename, new_extension):
     :return: The ``filename`` with the new extension
     """
 
-    if isinstance(filename, six.string_types) and '.' in filename:
+    if isinstance(filename, str) and '.' in filename:
         basename = filename.rpartition('.')[0]
         if basename:
             return '{0}.{1}'.format(basename, new_extension)
@@ -295,7 +289,7 @@ def sanitize_filename(filename):
     :return: The ``filename``cleaned
     """
 
-    if isinstance(filename, six.string_types):
+    if isinstance(filename, str):
         filename = re.sub(r'[\\/\*]', '-', filename)
         filename = re.sub(r'[:"<>|?]', '', filename)
         filename = re.sub(r'™|-u2122', '', filename)  # Trade Mark Sign unicode: \u2122

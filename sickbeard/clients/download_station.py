@@ -24,7 +24,6 @@ import os
 import re
 
 # Third Party Imports
-import six
 from requests.compat import urljoin
 
 # First Party Imports

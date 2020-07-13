@@ -37,9 +37,6 @@ from sickchill.helper.common import http_code_description, is_sync_file, is_torr
 from sickchill.helper.common import remove_extension, replace_extension, sanitize_filename, try_int, convert_size, episode_num
 
 
-import six
-
-
 class CommonTests(unittest.TestCase):
     """
     Test common
@@ -76,7 +73,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for test in test_cases, unicode_test_cases:
-            for (http_code, result) in six.iteritems(test):
+            for (http_code, result) in test.items():
                 self.assertEqual(http_code_description(http_code), result)
 
     def test_is_sync_file(self):
@@ -122,7 +119,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (filename, result) in six.iteritems(tests):
+            for (filename, result) in tests.items():
                 self.assertEqual(is_sync_file(filename), result)
 
     def test_is_torrent_or_nzb_file(self):
@@ -154,7 +151,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (filename, result) in six.iteritems(tests):
+            for (filename, result) in tests.items():
                 self.assertEqual(is_torrent_or_nzb_file(filename), result)
 
     def test_pretty_file_size(self):
@@ -191,7 +188,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (size, result) in six.iteritems(tests):
+            for (size, result) in tests.items():
                 self.assertEqual(pretty_file_size(size), result)
 
     def test_remove_extension(self):
@@ -232,7 +229,7 @@ class CommonTests(unittest.TestCase):
             'file.name.avi': 'file.name',
         }
         for tests in test_cases, unicode_test_cases:
-            for (extension, result) in six.iteritems(tests):
+            for (extension, result) in tests.items():
                 self.assertEqual(remove_extension(extension), result)
 
     def test_replace_extension(self):
@@ -308,7 +305,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for ((filename, extension), result) in six.iteritems(tests):
+            for ((filename, extension), result) in tests.items():
                 self.assertEqual(replace_extension(filename, extension), result)
 
     def test_sanitize_filename(self):
@@ -337,7 +334,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (filename, result) in six.iteritems(tests):
+            for (filename, result) in tests.items():
                 self.assertEqual(sanitize_filename(filename), result)
 
     def test_try_int(self):
@@ -367,7 +364,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for test in test_cases, unicode_test_cases:
-            for (candidate, result) in six.iteritems(test):
+            for (candidate, result) in test.items():
                 self.assertEqual(try_int(candidate), result)
 
     def test_try_int_with_default(self):
@@ -398,7 +395,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for test in test_cases, unicode_test_cases:
-            for (candidate, result) in six.iteritems(test):
+            for (candidate, result) in test.items():
                 self.assertEqual(try_int(candidate, default_value), result)
 
     def test_convert_size(self):

@@ -22,9 +22,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import re
 
 # Third Party Imports
-import six
 from requests.compat import quote_plus, urljoin
-from six.moves import map, range
 
 # First Party Imports
 from sickbeard import db, logger, tvcache
@@ -47,7 +45,7 @@ class ilCorsaroNeroProvider(TorrentProvider):
             20,  # DVD
             19,  # Screener
         ]
-        categories = ','.join(map(six.text_type, categories))
+        categories = ','.join(map(str, categories))
 
         self.url = 'https://ilcorsaronero.ch'
         self.urls = {
@@ -214,7 +212,7 @@ class ilCorsaroNeroProvider(TorrentProvider):
                 if search_string == '':
                     continue
 
-                search_string = six.text_type(search_string).replace('.', ' ')
+                search_string = str(search_string).replace('.', ' ')
                 logger.debug('Search string: {0}'.format(search_string))
 
                 last_page = False

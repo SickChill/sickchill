@@ -32,7 +32,7 @@ tvdbsimple
 Unidecode
 validators
 enzyme
-python3-fanart # Works on python2
+python3-fanart
 gntp
 pymediainfo
 #git+https://github.com/SickChill/rtorrent-python@rtorrent9#egg

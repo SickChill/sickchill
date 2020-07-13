@@ -23,9 +23,6 @@ import datetime
 import os
 import re
 
-# Third Party Imports
-import six
-
 # First Party Imports
 import sickbeard
 import sickchill
@@ -516,7 +513,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 persons_dict['Writer'] += myEp['writers']
 
         # fill in Persons section with collected directors, guest starts and writers
-        for person_type, names in six.iteritems(persons_dict):
+        for person_type, names in persons_dict.items():
             # remove doubles
             names = list(set(names))
             for cur_name in names:

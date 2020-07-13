@@ -21,9 +21,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Stdlib Imports
 import re
 
-# Third Party Imports
-import six
-
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
@@ -205,7 +202,7 @@ class Notifier(object):
             logger.debug('PLEX: Updating all hosts with TV sections: ' + ', '.join(set(hosts_all)))
 
         hosts_try = (hosts_match.copy(), hosts_all.copy())[not len(hosts_match)]
-        for section_key, cur_host in six.iteritems(hosts_try):
+        for section_key, cur_host in hosts_try.items():
 
             url = 'http{0}://{1}/library/sections/{2}/refresh'.format(('', 's')[sickbeard.PLEX_SERVER_HTTPS], cur_host, section_key)
             try:

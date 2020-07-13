@@ -21,9 +21,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Stdlib Imports
 from datetime import datetime, timedelta
 
-# Third Party Imports
-import six
-
 # First Party Imports
 from sickbeard.common import Quality
 from sickbeard.db import DBConnection
@@ -122,7 +119,7 @@ class History(object):
 
     @staticmethod
     def _get_actions(action):
-        action = action.lower() if isinstance(action, six.string_types) else ''
+        action = action.lower() if isinstance(action, str) else ''
 
         if action == 'downloaded':
             return Quality.DOWNLOADED

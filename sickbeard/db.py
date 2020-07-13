@@ -28,9 +28,6 @@ import time
 import warnings
 from sqlite3 import OperationalError
 
-# Third Party Imports
-import six
-
 # First Party Imports
 import sickbeard
 

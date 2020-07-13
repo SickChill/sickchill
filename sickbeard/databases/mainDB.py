@@ -23,9 +23,6 @@ import datetime
 import os.path
 import warnings
 
-# Third Party Imports
-import six
-
 # First Party Imports
 import sickbeard
 from sickbeard import common, db, helpers, logger, subtitles
@@ -246,7 +243,7 @@ class MainSanityCheck(db.DBSanityCheck):
             '': 'Unknown',
         }
 
-        for old_status, new_status in six.iteritems(status_map):
+        for old_status, new_status in status_map.items():
             self.connection.action("UPDATE tv_shows SET status = ? WHERE LOWER(status) = ?", [new_status, old_status])
 
     def fix_episode_statuses(self):

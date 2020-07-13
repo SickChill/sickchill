@@ -21,11 +21,9 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import time
-from xml.dom.minidom import parseString
-
-# Third Party Imports
 # noinspection PyUnresolvedReferences
-from six.moves import urllib
+import urllib
+from xml.dom.minidom import parseString
 
 # First Party Imports
 import sickbeard

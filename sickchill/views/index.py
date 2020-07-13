@@ -29,7 +29,6 @@ from mimetypes import guess_type
 from operator import attrgetter
 
 # Third Party Imports
-import six
 from mako.lookup import Template
 from requests.compat import urljoin
 from tornado.concurrent import run_on_executor
@@ -58,13 +57,8 @@ except:
 
 
 
-try:
-    # Stdlib Imports
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    # Third Party Imports
-    import simplejson as json
+# Stdlib Imports
+import json
 
 
 class BaseHandler(RequestHandler):
@@ -205,10 +199,10 @@ class WebHandler(BaseHandler):
             # TODO: Make all routes use get_argument so we can take advantage of tornado's argument sanitization, separate post and get, and get rid of this
             # nonsense loop so we can just yield the method directly
             kwargs = self.request.arguments
-            for arg, value in six.iteritems(kwargs):
+            for arg, value in kwargs.items():
                 if len(value) == 1:
                     kwargs[arg] = xhtml_escape(value[0])
-                elif isinstance(value, six.string_types):
+                elif isinstance(value, str):
                     kwargs[arg] = xhtml_escape(value)
                 elif isinstance(value, list):
                     kwargs[arg] = [xhtml_escape(v) for v in value]

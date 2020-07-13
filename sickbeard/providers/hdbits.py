@@ -20,6 +20,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
 import datetime
+import json
 
 # Third Party Imports
 from requests.compat import urlencode, urljoin
@@ -28,14 +29,6 @@ from requests.compat import urlencode, urljoin
 from sickbeard import classes, logger, tvcache
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
-
-try:
-    # Stdlib Imports
-    import json
-except ImportError:
-    # noinspection PyUnresolvedReferences
-    # Third Party Imports
-    import simplejson as json
 
 
 class HDBitsProvider(TorrentProvider):

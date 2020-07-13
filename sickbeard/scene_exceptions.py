@@ -24,9 +24,6 @@ import datetime
 import threading
 import time
 
-# Third Party Imports
-import six
-
 # First Party Imports
 import adba
 import sickbeard
@@ -265,7 +262,7 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
             continue
 
         for cur_exception_dict in exception_dict[cur_indexer_id]:
-            for ex in six.iteritems(cur_exception_dict):
+            for ex in cur_exception_dict.items():
                 cur_exception, curSeason = ex
                 if cur_exception not in existing_exceptions:
                     queries.append(
@@ -334,7 +331,7 @@ def _xem_exceptions_fetcher():
                 continue
 
             if parsed_json['data']:
-                for indexerid, names in six.iteritems(parsed_json['data']):
+                for indexerid, names in parsed_json['data'].items():
                     try:
                         xem_exception_dict[int(indexerid)] = names
                     except Exception as error:

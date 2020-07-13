@@ -24,22 +24,13 @@ import datetime
 import time
 
 # Third Party Imports
+import js2py
 from requests.compat import urljoin
 
 # First Party Imports
 from sickbeard import db, logger, tvcache
 from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
-
-try:
-    # https://github.com/SickChill/SickChill/issues/6236
-    # Python lower than 2.7.9 Throws a syntax error here.
-    # Third Party Imports
-    import js2py
-except SyntaxError:
-    js2py = None
-
-
 
 
 class ThePirateBayProvider(TorrentProvider):
@@ -88,9 +79,6 @@ class ThePirateBayProvider(TorrentProvider):
 
     def get_tracker_list(self):
         try:
-            if js2py is None:
-                return ''
-
             script = self.get_url(self.script_url)
             context = js2py.EvalJs()
             context.execute(

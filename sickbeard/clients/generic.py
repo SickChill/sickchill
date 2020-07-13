@@ -25,7 +25,6 @@ from hashlib import sha1
 
 # Third Party Imports
 import bencodepy
-import six
 from requests.compat import urlencode
 from requests.models import HTTPError
 

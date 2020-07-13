@@ -23,10 +23,6 @@ import fnmatch
 import os
 import re
 
-# Third Party Imports
-import six
-from six.moves import zip
-
 # First Party Imports
 import sickbeard
 
@@ -56,16 +52,14 @@ def containsAtLeastOneWord(name, words):
 
     Returns: False if the name doesn't contain any word of words list, or the found word from the list.
     """
-    if isinstance(words, six.string_types):
+    if isinstance(words, str):
         words = words.split(',')
 
     words = {word.strip() for word in words if word.strip()}
     if not any(words):
         return True
 
-    for word, regexp in six.iteritems(
-        {word: re.compile(r'(^|[\W_]){0}($|[\W_])'.format(re.escape(word)), re.I) for word in words}
-    ):
+    for word, regexp in {word: re.compile(r'(^|[\W_]){0}($|[\W_])'.format(re.escape(word)), re.I) for word in words}.items():
         if regexp.search(name):
             return word
     return False

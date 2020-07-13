@@ -19,6 +19,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
+import json
 import os
 
 # Third Party Imports
@@ -30,14 +31,6 @@ from sickbeard.browser import foldersAtPath
 # Local Folder Imports
 from .index import WebRoot
 from .routes import Route
-
-try:
-    # Stdlib Imports
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    # Third Party Imports
-    import simplejson as json
 
 
 @Route('/browser(/?.*)', name='filebrowser')

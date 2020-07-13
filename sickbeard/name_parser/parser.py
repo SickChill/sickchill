@@ -28,8 +28,6 @@ from threading import Lock
 
 # Third Party Imports
 import dateutil
-import six
-from six.moves import range
 
 # First Party Imports
 import sickchill
@@ -311,7 +309,7 @@ class NameParser(object):
                 raise InvalidNameException(("Scene numbering results episodes from "
                                             "seasons %s, (i.e. more than one) and "
                                             "sickchill does not support this.  "
-                                            "Sorry.").format(six.text_type(new_season_numbers)))
+                                            "Sorry.").format(str(new_season_numbers)))
 
             # I guess it's possible that we'd have duplicate episodes too, so lets
             # eliminate them
@@ -331,7 +329,7 @@ class NameParser(object):
 
             if bestResult.show.is_scene and not skip_scene_detection:
                 logger.debug(
-                    "Converted parsed result " + bestResult.original_name + " into " + six.text_type(bestResult))
+                    "Converted parsed result " + bestResult.original_name + " into " + str(bestResult))
 
         # CPU sleep
         time.sleep(0.02)
@@ -364,14 +362,14 @@ class NameParser(object):
     @staticmethod
     def _unicodify(obj, encoding="utf-8"):
         if isinstance(obj, bytes):
-            obj = six.text_type(obj, encoding, 'replace')
+            obj = str(obj, encoding, 'replace')
         return obj
 
     @staticmethod
     def _convert_number(org_number):
         """
          Convert org_number into an integer
-         org_number: integer or representation of a number: string or six.text_type
+         org_number: integer or representation of a number: string or str
          Try force converting to int first, on error try converting from Roman numerals
          returns integer or 0
          """
@@ -391,7 +389,7 @@ class NameParser(object):
                 ('IX', 9), ('V', 5), ('IV', 4), ('I', 1)
             )
 
-            roman_numeral = six.text_type(org_number).upper()
+            roman_numeral = str(org_number).upper()
             number = 0
             index = 0
 
@@ -465,17 +463,17 @@ class NameParser(object):
 
         if not final_result.show:
             raise InvalidShowException("Unable to match {0} to a show in your database. Parser result: {1}".format(
-                name, six.text_type(final_result)))
+                name, str(final_result)))
 
         # if there's no useful info in it then raise an exception
         if final_result.season_number is None and not final_result.episode_numbers and final_result.air_date is None and not final_result.ab_episode_numbers and not final_result.series_name:
             raise InvalidNameException("Unable to parse {0} to a valid episode of {1}. Parser result: {2}".format(
-                name, final_result.show.name, six.text_type(final_result)))
+                name, final_result.show.name, str(final_result)))
 
         if cache_result:
             name_parser_cache.add(name, final_result)
 
-        logger.debug("Parsed " + name + " into " + six.text_type(final_result))
+        logger.debug("Parsed " + name + " into " + str(final_result))
         return final_result
 
 
@@ -538,24 +536,24 @@ class ParseResult(object):
         else:
             to_return = ''
         if self.season_number is not None:
-            to_return += 'S' + six.text_type(self.season_number).zfill(2)
+            to_return += 'S' + str(self.season_number).zfill(2)
         if self.episode_numbers:
             for e in self.episode_numbers:
-                to_return += 'E' + six.text_type(e).zfill(2)
+                to_return += 'E' + str(e).zfill(2)
 
         if self.is_air_by_date:
-            to_return += six.text_type(self.air_date)
+            to_return += str(self.air_date)
         if self.ab_episode_numbers:
-            to_return += ' [ABS: ' + six.text_type(self.ab_episode_numbers) + ']'
+            to_return += ' [ABS: ' + str(self.ab_episode_numbers) + ']'
         if self.version and self.is_anime is True:
-            to_return += ' [ANIME VER: ' + six.text_type(self.version) + ']'
+            to_return += ' [ANIME VER: ' + str(self.version) + ']'
 
         if self.release_group:
             to_return += ' [GROUP: ' + self.release_group + ']'
 
-        to_return += ' [ABD: ' + six.text_type(self.is_air_by_date) + ']'
-        to_return += ' [ANIME: ' + six.text_type(self.is_anime) + ']'
-        to_return += ' [whichReg: ' + six.text_type(self.which_regex) + ']'
+        to_return += ' [ABD: ' + str(self.is_air_by_date) + ']'
+        to_return += ' [ANIME: ' + str(self.is_anime) + ']'
+        to_return += ' [whichReg: ' + str(self.which_regex) + ']'
 
         return to_return
 

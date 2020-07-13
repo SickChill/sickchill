@@ -21,13 +21,11 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
-import ast
 import base64
 import ctypes
 import datetime
 import hashlib
 import ipaddress
-import operator
 import os
 import platform
 import random
@@ -39,6 +37,7 @@ import stat
 import sys
 import time
 import traceback
+import urllib
 import uuid
 import zipfile
 from contextlib import closing
@@ -52,14 +51,11 @@ import cloudscraper
 import ifaddr
 import rarfile
 import requests
-import six
 import urllib3
 from cachecontrol import CacheControl
 from cloudscraper.exceptions import CloudflareException
 from requests.compat import urljoin
 from requests.utils import urlparse
-# noinspection PyUnresolvedReferences
-from six.moves import urllib, zip
 from tornado._locale_data import LOCALE_NAMES
 from unidecode import unidecode
 
@@ -74,8 +70,6 @@ from sickchill.show.Show import Show
 # Local Folder Imports
 from . import classes, db, logger
 
-# from .common import USER_AGENT
-
 # Add some missing languages
 LOCALE_NAMES.update({
     "ar_SA": {"name_en": "Arabic (Saudi Arabia)", "name": "(العربية (المملكة العربية السعودية"},
@@ -83,7 +77,7 @@ LOCALE_NAMES.update({
 })
 
 # Access to a protected member of a client class
-six.moves.urllib.request._urlopener = classes.SickBeardURLopener()
+urllib.request._urlopener = classes.SickBeardURLopener()
 orig_getaddrinfo = socket.getaddrinfo
 
 
@@ -210,7 +204,7 @@ def remove_non_release_groups(name):
     }
 
     _name = name
-    for remove_string, remove_type in six.iteritems(removeWordsList):
+    for remove_string, remove_type in removeWordsList.items():
         if remove_type == 'search':
             _name = _name.replace(remove_string, '')
         elif remove_type == 'searchre':
@@ -229,7 +223,7 @@ def is_media_file(filename):
 
     # ignore samples
     try:
-        assert isinstance(filename, six.string_types), type(filename)
+        assert isinstance(filename, str), type(filename)
         is_rar = is_rar_file(filename)
         filename = os.path.basename(filename)
 
@@ -343,20 +337,12 @@ def copyFile(srcFile, destFile):
     """
 
     try:
-        # Stdlib Imports
-        from shutil import Error, SpecialFileError
-    except ImportError:
-        # Stdlib Imports
-        from shutil import Error
-        SpecialFileError = Error
-
-    try:
         shutil.copyfile(srcFile, destFile)
-    except (SpecialFileError, Error) as error:
-        # noinspection PyProtectedMember
-        if not shutil._samefile(srcFile, destFile):
-            logger.warning('{0}'.format(error))
-            return
+    except shutil.SameFileError:
+        return
+    except (shutil.SpecialFileError, shutil.Error) as error:
+        logger.warning('{0}'.format(error))
+        return
     except Exception as error:
         logger.exception('{0}'.format(error))
         return
@@ -383,22 +369,6 @@ def moveFile(srcFile, destFile):
         os.unlink(srcFile)
 
 
-def link(src, dst):
-    """
-    Create a file link from source to destination.
-    TODO: Make this six.text_type proof
-
-    :param src: Source file
-    :param dst: Destination file
-    """
-
-    if platform.system() == 'Windows':
-        if ctypes.windll.kernel32.CreateHardLinkW(ctypes.c_wchar_p(six.text_type(dst)), ctypes.c_wchar_p(six.text_type(src)), None) == 0:
-            raise ctypes.WinError()
-    else:
-        os.link(src, dst)
-
-
 def hardlinkFile(srcFile, destFile):
     """
     Create a hard-link (inside filesystem link) between source and destination
@@ -408,31 +378,12 @@ def hardlinkFile(srcFile, destFile):
     """
 
     try:
-        link(srcFile, destFile)
+        os.link(srcFile, destFile)
         fixSetGroupID(destFile)
     except Exception as error:
         logger.warning(_("Failed to create hardlink of {0} at {1}. Error: {2}. Copying instead").format
                    (srcFile, destFile, error))
         copyFile(srcFile, destFile)
-
-
-def symlink(src, dst):
-    """
-    Create a soft/symlink between source and destination
-
-    :param src: Source file
-    :param dst: Destination file
-    """
-
-    if platform.system() == 'Windows':
-        if ctypes.windll.kernel32.CreateSymbolicLinkW(
-                ctypes.c_wchar_p(six.text_type(dst)),
-                ctypes.c_wchar_p(six.text_type(src)),
-                1 if os.path.isdir(src) else 0
-        ) in [0, 1280]:
-            raise ctypes.WinError()
-    else:
-        os.symlink(src, dst)
 
 
 def moveAndSymlinkFile(srcFile, destFile):
@@ -446,7 +397,7 @@ def moveAndSymlinkFile(srcFile, destFile):
 
     try:
         moveFile(srcFile, destFile)
-        symlink(destFile, srcFile)
+        os.symlink(destFile, srcFile)
     except Exception as error:
         logger.warning(_("Failed to create symlink of {0} at {1}. Error: {2}. Copying instead").format
                    (srcFile, destFile, error))
@@ -790,7 +741,6 @@ def create_https_certificates(ssl_cert, ssl_key):
 
     # noinspection PyBroadException
     try:
-        # noinspection PyUnresolvedReferences
         # Third Party Imports
         from OpenSSL import crypto
 
@@ -800,9 +750,6 @@ def create_https_certificates(ssl_cert, ssl_key):
         logger.info(traceback.format_exc())
         logger.warning(_("pyopenssl module missing, please install for https access"))
         return False
-
-    # Stdlib Imports
-    import time
 
     cakey = createKeyPair(TYPE_RSA, 4096)
     careq = createCertRequest(cakey, CN='Certificate Authority')
@@ -1074,7 +1021,7 @@ def is_hidden_folder(folder):
 
     def has_hidden_attribute(filepath):
         try:
-            attrs = ctypes.windll.kernel32.GetFileAttributesW(ctypes.c_wchar_p(six.text_type(filepath)))
+            attrs = ctypes.windll.kernel32.GetFileAttributesW(ctypes.c_wchar_p(str(filepath)))
             assert attrs != -1
             result = bool(attrs & 2)
         except (AttributeError, AssertionError, OSError, IOError):
@@ -1496,13 +1443,12 @@ def generateCookieSecret():
 def disk_usage(path):
     if platform.system() == 'Windows':
         free = ctypes.c_ulonglong(0)
-        if ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(six.text_type(path)), None, None, ctypes.pointer(free)) == 0:
+        if ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(str(path)), None, None, ctypes.pointer(free)) == 0:
             raise ctypes.WinError()
         return free.value
 
     elif hasattr(os, 'statvfs'):  # POSIX
         if platform.system() == 'Darwin':
-            # noinspection PyBroadException
             try:
                 # Stdlib Imports
                 import subprocess
@@ -1731,7 +1677,7 @@ def add_site_message(message, tag=None, level='danger'):
 
         if tag:  # prevent duplicate messages of the same type
             # http://www.goodmami.org/2013/01/30/Getting-only-the-first-match-in-a-list-comprehension.html
-            existing = next((x for x, msg in six.iteritems(sickbeard.SITE_MESSAGES) if msg.get('tag') == tag), None)
+            existing = next((x for x, msg in sickbeard.SITE_MESSAGES.items() if msg.get('tag') == tag), None)
             if existing:
                 sickbeard.SITE_MESSAGES[existing] = to_add
                 return
@@ -1746,7 +1692,7 @@ def remove_site_message(key=None, tag=None):
         if key is not None and int(key) in sickbeard.SITE_MESSAGES:
             del sickbeard.SITE_MESSAGES[int(key)]
         elif tag is not None:
-            found = [idx for idx, msg in six.iteritems(sickbeard.SITE_MESSAGES) if msg.get('tag') == tag]
+            found = [idx for idx, msg in sickbeard.SITE_MESSAGES.items() if msg.get('tag') == tag]
             for key in found:
                 del sickbeard.SITE_MESSAGES[key]
 

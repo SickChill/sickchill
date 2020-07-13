@@ -22,10 +22,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Stdlib Imports
 import datetime
 import sys
-
-# Third Party Imports
-# noinspection PyUnresolvedReferences
-from six.moves import urllib
+import urllib
 
 # First Party Imports
 import sickbeard

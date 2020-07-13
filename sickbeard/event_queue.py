@@ -4,10 +4,8 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Stdlib Imports
 import threading
 import traceback
-
-# Third Party Imports
 # noinspection PyUnresolvedReferences
-from six.moves.queue import Empty, Queue
+from queue import Empty, Queue
 
 # Local Folder Imports
 from . import logger

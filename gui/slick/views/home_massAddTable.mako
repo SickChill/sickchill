@@ -1,5 +1,4 @@
 <%!
-    import six
     import sickbeard
     from sickbeard.helpers import anon_url
     import sickchill

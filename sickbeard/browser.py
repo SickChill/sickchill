@@ -24,9 +24,6 @@ import os
 import string
 from operator import itemgetter
 
-# Third Party Imports
-import six
-
 # First Party Imports
 import sickbeard
 
@@ -128,7 +125,7 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=None)
                 letter_path = letter + ':\\'
                 entries.append({'name': letter_path, 'path': letter_path})
 
-            for name, share in six.iteritems(sickbeard.WINDOWS_SHARES):
+            for name, share in sickbeard.WINDOWS_SHARES.items():
                 entries.append({'name': name, 'path': r'\\{server}\{path}'.format(server=share['server'], path=share['path'])})
 
             return entries
@@ -151,7 +148,7 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=None)
 
     entries = [{'currentPath': path}]
     if path == '/':
-        for name, share in six.iteritems(sickbeard.WINDOWS_SHARES):
+        for name, share in sickbeard.WINDOWS_SHARES.items():
             entries.append({'name': name, 'path': r'\\{server}\{path}'.format(server=share['server'], path=share['path'])})
 
     if includeParent and parent_path != path:

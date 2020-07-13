@@ -20,9 +20,9 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 from __future__ import absolute_import, print_function, unicode_literals
 
-# Third Party Imports
+# Stdlib Imports
 # noinspection PyUnresolvedReferences
-from six.moves import urllib
+import urllib
 
 # First Party Imports
 import sickbeard
@@ -39,7 +39,7 @@ class Notifier(object):
         """
         Sends a SMS notification
 
-        msg: The message to send (six.text_type)
+        msg: The message to send (str)
         title: The title of the message
         userKey: The pushover user id to send the message to (or to subscribe with)
 

@@ -129,7 +129,7 @@ class EliteTorrentProvider(TorrentProvider):
 
                                 This is not the best solution but it works.
 
-                                First encode latin1 and then decode utf8 to remains six.text_type
+                                First encode latin1 and then decode utf8 to remains str
                                 """
                                 row_title = row.find('a', class_='nombre')['title']
                                 title = self._processTitle(row_title.encode('latin-1').decode('utf8'))

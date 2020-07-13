@@ -22,7 +22,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 import re
 
 # Third Party Imports
-import six
 from requests.exceptions import HTTPError
 
 # First Party Imports
@@ -47,7 +46,7 @@ class ShowIndexer(object):
         self.__build_indexer_attribute_getters()
 
     def __getitem__(self, item):
-        if isinstance(item, six.string_types):
+        if isinstance(item, str):
             for index, indexer in self.indexers:
                 if item in (indexer.name, indexer.slug):
                     return indexer
@@ -58,7 +57,7 @@ class ShowIndexer(object):
         return self.indexers[item]
 
     def __iter__(self):
-        for i in six.iteritems(self.indexers):
+        for i in self.indexers.items():
             yield i
 
     def __build_indexer_attribute_getters(self):
@@ -111,10 +110,10 @@ class ShowIndexer(object):
         if not indexer:
             indexer = list(self.indexers)
 
-        if isinstance(indexer, (int, six.string_types)):
+        if isinstance(indexer, (int, str)):
             indexer = [indexer]
 
-        if isinstance(name, six.string_types):
+        if isinstance(name, str):
             name = [name]
 
         if indexerid:

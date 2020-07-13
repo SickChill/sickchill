@@ -24,7 +24,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 import re
 
 # Third Party Imports
-import six
 import validators
 from requests.compat import urljoin
 
@@ -137,7 +136,7 @@ class YggTorrentProvider(TorrentProvider):
                                 "ç": 'c'
                 }
 
-                for k, v in six.iteritems(replace_chars):
+                for k, v in replace_chars.items():
                     search_string = search_string.replace(k, v)
 
                 logger.debug('Sanitized string: {0}'.format(search_string))

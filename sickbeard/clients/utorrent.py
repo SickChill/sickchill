@@ -22,7 +22,6 @@ import re
 from collections import OrderedDict
 
 # Third Party Imports
-import six
 from requests.compat import urljoin
 
 # First Party Imports
@@ -43,7 +42,7 @@ class Client(GenericClient):
         Overrides the parent _request method to add the auth token
         """
         ordered_params = OrderedDict({'token': self.auth})
-        for k, v in six.iteritems(params) or {}:
+        for k, v in params.items() or {}:
             ordered_params.update({k: v})
 
         return super(Client, self)._request(method=method, params=ordered_params, data=data, files=files, cookies=cookies)

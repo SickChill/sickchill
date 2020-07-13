@@ -21,14 +21,11 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Stdlib Imports
 import abc
 
-# Third Party Imports
-import six
-
 # First Party Imports
 import sickbeard
 
 
-class Indexer(six.with_metaclass(abc.ABCMeta, object)):
+class Indexer(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def __init__(self):
         self.name = 'Generic'
@@ -58,10 +55,10 @@ class Indexer(six.with_metaclass(abc.ABCMeta, object)):
     def episode(self, show, season, episode):
         raise NotImplementedError
 
-    @abc.abstractproperty
+    @property
     def languages(self):
         raise NotImplementedError
 
-    @abc.abstractproperty
+    @property
     def lang_dict(self):
         raise NotImplementedError

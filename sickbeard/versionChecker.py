@@ -286,7 +286,7 @@ class CheckVersion(object):
         """
         Checks GitHub for the latest news.
 
-        returns: six.text_type, a copy of the news
+        returns: str, a copy of the news
 
         force: ignored
         """

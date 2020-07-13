@@ -22,9 +22,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 # Stdlib Imports
 import threading
 
-# Third Party Imports
-import six
-
 # First Party Imports
 import sickbeard
 
@@ -72,7 +69,7 @@ def clearCache(indexerid=0):
     cache_db_con = db.DBConnection('cache.db')
     cache_db_con.action("DELETE FROM scene_names WHERE indexer_id = ? OR indexer_id = ?", (indexerid, 0))
 
-    toRemove = [key for key, value in six.iteritems(nameCache) if value in (0, indexerid)]
+    toRemove = [key for key, value in nameCache.items() if value in (0, indexerid)]
     for key in toRemove:
         del nameCache[key]
 
@@ -81,7 +78,7 @@ def saveNameCacheToDb():
     """Commit cache to database file"""
     cache_db_con = db.DBConnection('cache.db')
 
-    for name, indexer_id in six.iteritems(nameCache):
+    for name, indexer_id in nameCache.items():
         cache_db_con.action("INSERT OR REPLACE INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name])
 
 
@@ -107,4 +104,4 @@ def buildNameCache(show=None):
                     continue
 
                 nameCache[name] = int(show.indexerid)
-        # logger.debug(u"Internal name cache for " + show.name + " set to: [ " + u', '.join([key for key, value in six.iteritems(nameCache) if value == show.indexerid]) + " ]")
+        # logger.debug(u"Internal name cache for " + show.name + " set to: [ " + u', '.join([key for key, value in nameCache.items() if value == show.indexerid]) + " ]")

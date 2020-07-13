@@ -27,7 +27,6 @@ from os.path import join
 from random import shuffle
 
 # Third Party Imports
-import six
 from requests.utils import add_dict_to_cookiejar
 
 # First Party Imports
@@ -194,7 +193,7 @@ class GenericProvider(object):
                         items[quality] = []
                     items[quality].append(item)
 
-            items_list = list(chain(*[v for (k_, v) in sorted(six.iteritems(items), reverse=True)]))
+            items_list = list(chain(*[v for (k_, v) in sorted(items.items(), reverse=True)]))
             items_list += unknown_items
 
         cl = []
@@ -346,7 +345,7 @@ class GenericProvider(object):
         return results
 
     def get_id(self, suffix=''):
-        return GenericProvider.make_id(self.name) + six.text_type(suffix)
+        return GenericProvider.make_id(self.name) + str(suffix)
 
     def get_quality(self, item, anime=False):
         (title, url_) = self._get_title_and_url(item)

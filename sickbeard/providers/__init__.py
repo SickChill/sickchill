@@ -23,9 +23,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 from os import sys
 from random import shuffle
 
-# Third Party Imports
-from six.moves import zip
-
 # First Party Imports
 import sickbeard
 from sickbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, bitcannon, bjshare, btn, cpasbien, danishbits, demonoid, elitetorrent, eztv,

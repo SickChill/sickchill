@@ -22,9 +22,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 import datetime
 import threading
 
-# Third Party Imports
-import six
-
 # First Party Imports
 import sickbeard
 
@@ -102,7 +99,7 @@ class BacklogSearcher(object):
 
             segments = self._get_segments(curShow, fromDate)
 
-            for season, segment in six.iteritems(segments):
+            for season, segment in segments.items():
                 self.currentSearchInfo = {'title': curShow.name + " Season " + str(season)}
 
                 backlog_queue_item = search_queue.BacklogQueueItem(curShow, segment)

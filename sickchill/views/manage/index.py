@@ -19,12 +19,10 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
+import json
 import ntpath
 import os
 import posixpath
-
-# Third Party Imports
-import six
 
 # First Party Imports
 import sickbeard
@@ -36,14 +34,6 @@ from sickchill.show.Show import Show
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home, WebRoot
 from sickchill.views.routes import Route
-
-try:
-    # Stdlib Imports
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    # Third Party Imports
-    import simplejson as json
 
 
 @Route('/manage(/?.*)', name='manage:main')
@@ -455,7 +445,7 @@ class Manage(Home, WebRoot):
                        **kwargs):
         dir_map = {}
         for cur_arg in [x for x in kwargs if x.startswith('orig_root_dir_')]:
-            dir_map[kwargs[cur_arg]] = six.text_type(kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')], 'utf-8')
+            dir_map[kwargs[cur_arg]] = str(kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')], 'utf-8')
 
         showIDs = toEdit.split("|")
         errors = []

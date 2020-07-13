@@ -19,6 +19,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
+import json
 import os
 import re
 import time
@@ -33,14 +34,6 @@ from tornado.escape import linkify
 # First Party Imports
 import sickbeard
 from sickbeard import classes, helpers
-
-try:
-    # Stdlib Imports
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    # Third Party Imports
-    import simplejson as json
 
 mako_lookup = {}
 

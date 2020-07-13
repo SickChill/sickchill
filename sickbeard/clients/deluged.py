@@ -25,7 +25,6 @@ from base64 import b64encode
 # Third Party Imports
 from deluge_client import DelugeRPCClient, FailedToReconnectException
 from requests.compat import urlparse
-from six.moves import range
 
 # First Party Imports
 import sickbeard

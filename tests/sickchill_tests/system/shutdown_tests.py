@@ -35,9 +35,6 @@ from sickbeard.event_queue import Events
 from sickchill.system.Shutdown import Shutdown
 
 
-import six
-
-
 class ShutdownTests(unittest.TestCase):
     """
     Test shutdown
@@ -65,7 +62,7 @@ class ShutdownTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (pid, result) in six.iteritems(tests):
+            for (pid, result) in tests.items():
                 self.assertEqual(Shutdown.stop(pid), result)
 
 

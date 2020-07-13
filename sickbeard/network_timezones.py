@@ -24,7 +24,6 @@ import datetime
 import re
 
 # Third Party Imports
-import six
 from dateutil import tz
 
 # First Party Imports
@@ -77,7 +76,7 @@ def update_network_dict():
     network_list = dict(cache_db_con.select('SELECT * FROM network_timezones;'))
 
     queries = []
-    for network, timezone in six.iteritems(d):
+    for network, timezone in d.items():
         existing = network in network_list
         if not existing:
             queries.append(['INSERT OR IGNORE INTO network_timezones VALUES (?,?);', [network, timezone]])

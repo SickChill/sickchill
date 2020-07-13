@@ -21,11 +21,10 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 # Stdlib Imports
-import time
-
-# Third Party Imports
 # noinspection PyUnresolvedReferences
-from six.moves import http_client, urllib
+import http.client
+import time
+import urllib
 
 # First Party Imports
 import sickbeard
@@ -47,7 +46,7 @@ class Notifier(object):
         """
         Sends a pushover notification to the address provided
 
-        msg: The message to send (six.text_type)
+        msg: The message to send (str)
         title: The title of the message
         sound: The notification sound to use
         userKey: The pushover user id to send the message to (or to subscribe with)
@@ -102,7 +101,7 @@ class Notifier(object):
             if sickbeard.PUSHOVER_DEVICE:
                 args["device"] = sickbeard.PUSHOVER_DEVICE
 
-            conn = http_client.HTTPSConnection("api.pushover.net:443")
+            conn = http.client.HTTPSConnection("api.pushover.net:443")
             conn.request("POST", "/1/messages.json",
                          urllib.parse.urlencode(args), {"Content-type": "application/x-www-form-urlencoded"})
 

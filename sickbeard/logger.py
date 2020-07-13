@@ -19,12 +19,6 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 from __future__ import absolute_import, print_function, unicode_literals
 
-"""
-Custom Logger for SickChill
-"""
-
-from __future__ import absolute_import, print_function, unicode_literals
-
 # Stdlib Imports
 import locale
 import logging
@@ -38,11 +32,9 @@ import traceback
 from logging import NullHandler
 
 # Third Party Imports
-import six
 from github import InputFileContent
 from github.GithubException import RateLimitExceededException, TwoFactorException
 from requests.compat import quote
-from six.moves import range
 
 # First Party Imports
 import sickbeard
@@ -85,7 +77,7 @@ class DispatchFormatter(logging.Formatter, object):
         msg = super(DispatchFormatter, self).format(record)
 
         # set of censored items
-        censored = {item for _, item in six.iteritems(censored_items) if item}
+        censored = {item for _, item in censored_items.items() if item}
         # set of censored items and urlencoded counterparts
         censored = list(censored | {quote(item) for item in censored})
         # sort the list in order of descending length so that entire item is censored

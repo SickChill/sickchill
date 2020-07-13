@@ -27,8 +27,6 @@ from datetime import datetime
 
 # Third Party Imports
 import jsonrpclib
-import six
-from six.moves import range
 
 # First Party Imports
 import sickbeard
@@ -124,7 +122,7 @@ class BTNProvider(TorrentProvider):
                     if 'torrents' in parsed_json:
                         found_torrents.update(parsed_json['torrents'])
 
-            for _, torrent_info in six.iteritems(found_torrents):
+            for _, torrent_info in found_torrents.items():
                 (title, url) = self._get_title_and_url(torrent_info)
 
                 if title and url:

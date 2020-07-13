@@ -18,21 +18,14 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 from __future__ import absolute_import, print_function, unicode_literals
 
-# Third Party Imports
+# Stdlib Imports
+import json
 # noinspection PyUnresolvedReferences
-from six.moves import urllib
+import urllib
 
 # First Party Imports
 import sickbeard
 from sickbeard import logger
-
-try:
-    # Stdlib Imports
-    import json
-except ImportError:
-    # noinspection PyUnresolvedReferences
-    # Third Party Imports
-    import simplejson as json
 
 
 class Notifier(object):

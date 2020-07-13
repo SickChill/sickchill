@@ -18,9 +18,6 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 from __future__ import absolute_import, print_function, unicode_literals
 
-# Third Party Imports
-import six
-
 
 class SickChillException(Exception):
     """

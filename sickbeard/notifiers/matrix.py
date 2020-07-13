@@ -23,7 +23,6 @@ import time
 
 # Third Party Imports
 import requests
-import six
 
 # First Party Imports
 import sickbeard

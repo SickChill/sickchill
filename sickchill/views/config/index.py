@@ -57,7 +57,6 @@ class Config(WebRoot):
         t = PageTemplate(rh=self, filename="config.mako")
 
         try:
-            # noinspection PyUnresolvedReferences
             # Stdlib Imports
             import pwd
             sr_user = pwd.getpwuid(os.getuid()).pw_name

@@ -23,9 +23,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 import re
 import traceback
 
-# Third Party Imports
-from six.moves import range
-
 # First Party Imports
 from sickbeard import db, logger, tvcache
 from sickbeard.bs4_parser import BS4Parser

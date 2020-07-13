@@ -44,8 +44,6 @@ sickbeard.CPU_PRESET = 'NORMAL'
 
 import validators
 
-import six
-
 disabled_provider_tests = {
     # ???
     'Cpasbien': ['test_rss_search', 'test_episode_search', 'test_season_search'],
@@ -175,12 +173,12 @@ class BaseParser(type):
                 self.assertIsInstance(result, dict)
                 self.assertEqual(sorted(result), ['hash', 'leechers', 'link', 'seeders', 'size', 'title'])
 
-                self.assertIsInstance(result['title'], six.text_type)
-                self.assertIsInstance(result['link'], six.text_type)
-                self.assertIsInstance(result['hash'], six.string_types)
-                self.assertIsInstance(result['seeders'], six.integer_types)
-                self.assertIsInstance(result['leechers'], six.integer_types)
-                self.assertIsInstance(result['size'], six.integer_types)
+                self.assertIsInstance(result['title'], str)
+                self.assertIsInstance(result['link'], str)
+                self.assertIsInstance(result['hash'], str)
+                self.assertIsInstance(result['seeders'], int)
+                self.assertIsInstance(result['leechers'], int)
+                self.assertIsInstance(result['size'], int)
 
                 self.assertTrue(len(result['title']))
                 self.assertTrue(len(result['link']))
@@ -195,7 +193,7 @@ class BaseParser(type):
                 else:
                     self.assertTrue(validators.url(result['link']), result['link'])
 
-                self.assertIsInstance(self.provider._get_size(result), six.integer_types)
+                self.assertIsInstance(self.provider._get_size(result), int)
                 self.assertTrue(all(self.provider._get_title_and_url(result)))
                 self.assertTrue(self.provider._get_size(result))
 

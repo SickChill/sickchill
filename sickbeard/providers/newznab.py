@@ -27,7 +27,6 @@ import time
 # Third Party Imports
 import validators
 from requests.compat import urljoin
-from six.moves import zip
 
 # First Party Imports
 import sickbeard

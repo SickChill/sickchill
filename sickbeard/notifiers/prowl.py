@@ -24,26 +24,15 @@ from __future__ import absolute_import, print_function, unicode_literals
 import ast
 import socket
 import time
+from http.client import HTTPException, HTTPSConnection
+from ssl import SSLError
 
 # Third Party Imports
 from requests.compat import urlencode
-# noinspection PyUnresolvedReferences
-from six.moves.http_client import HTTPException, HTTPSConnection
 
 # First Party Imports
 import sickbeard
 from sickbeard import common, db, logger
-
-try:
-    # this only exists in 2.6
-    # Stdlib Imports
-    from ssl import SSLError
-except ImportError:
-    # make a fake one since I don't know what it is supposed to be in 2.5
-    class SSLError(Exception):
-        pass
-
-
 
 
 class Notifier(object):

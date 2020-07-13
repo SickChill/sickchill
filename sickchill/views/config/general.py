@@ -22,7 +22,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 import os
 
 # Third Party Imports
-import six
 from tornado.web import addslash
 
 # First Party Imports

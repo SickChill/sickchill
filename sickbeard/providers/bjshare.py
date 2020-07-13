@@ -19,10 +19,6 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 from __future__ import absolute_import, print_function, unicode_literals
 
-"""Provider code for BJ-Share."""
-
-from __future__ import absolute_import, print_function, unicode_literals
-
 # Stdlib Imports
 import re
 

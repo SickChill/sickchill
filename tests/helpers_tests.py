@@ -96,9 +96,6 @@ import sickbeard
 from sickbeard import helpers
 from sickchill.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
 
-import six
-
-
 TEST_RESULT = 'Show.Name.S01E01.HDTV.x264-RLSGROUP'
 TEST_CASES = {
     'removewords': [
@@ -356,7 +353,7 @@ class HelpersFileTests(unittest.TestCase):
         }
 
         for cur_test in extension_tests, sample_tests, edge_cases:
-            for cur_name, expected_result in six.iteritems(cur_test):
+            for cur_name, expected_result in cur_test.items():
                 self.assertEqual(helpers.is_media_file(cur_name), expected_result, cur_name)
 
     @unittest.skip('Not yet implemented')
@@ -769,7 +766,7 @@ if __name__ == '__main__':
     print("STARTING - Helpers TESTS")
     print("==================")
     print("######################################################################")
-    for name, test_data in six.iteritems(TEST_CASES):
+    for name, test_data in TEST_CASES.items():
         test_name = 'test_{0}'.format(name)
         test = generator(test_data)
         setattr(HelpersTests, test_name, test)

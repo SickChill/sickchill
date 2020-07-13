@@ -1,6 +1,5 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
-    import six
     import os.path
     import datetime
     import platform
@@ -281,7 +280,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <select name="unpack" id="unpack" class="form-control input-sm input350" title="unpack">
-                                              % for value, description in six.iteritems(unpackStrings):
+                                              % for value, description in unpackStrings.items():
                                                 <option value="${value}" ${('', 'selected="selected"')[int(sickbeard.UNPACK) == value]}>
                                                     ${description}
                                                 </option>
@@ -694,7 +693,7 @@
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <select id="naming_multi_ep" name="naming_multi_ep" class="form-control input-sm input350" title="naming_multi_ep">
-                                    % for cur_multi_ep in sorted(six.iteritems(MULTI_EP_STRINGS), key=lambda x: x[1]):
+                                    % for cur_multi_ep in sorted(MULTI_EP_STRINGS.items(), key=lambda x: x[1]):
                                         <option value="${cur_multi_ep[0]}" ${('', 'selected="selected"')[cur_multi_ep[0] == sickbeard.NAMING_MULTI_EP]}>${cur_multi_ep[1]}</option>
                                     % endfor
                                 </select>
@@ -1287,7 +1286,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                     <select id="naming_anime_multi_ep" name="naming_anime_multi_ep" class="form-control input-sm input350" title="naming_anime_multi_ep">
-                                        % for cur_multi_ep in sorted(six.iteritems(MULTI_EP_STRINGS), key=lambda x: x[1]):
+                                        % for cur_multi_ep in sorted(MULTI_EP_STRINGS.items(), key=lambda x: x[1]):
                                             <option value="${cur_multi_ep[0]}" ${('', 'selected="selected" class="selected"')[cur_multi_ep[0] == sickbeard.NAMING_ANIME_MULTI_EP]}>${cur_multi_ep[1]}</option>
                                         % endfor
                                     </select>
@@ -1404,7 +1403,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <select id="metadataType" class="form-control input-sm input350">
-                                            % for (cur_name, cur_generator) in sorted(six.iteritems(sickbeard.metadata_provider_dict)):
+                                            % for (cur_name, cur_generator) in sorted(sickbeard.metadata_provider_dict.items()):
                                                 <option value="${cur_generator.get_id()}">${cur_name}</option>
                                             % endfor
                                         </select>
@@ -1428,7 +1427,7 @@
                                 <label class="component-title">${_('Select Metadata')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                % for (cur_name, cur_generator) in six.iteritems(sickbeard.metadata_provider_dict):
+                                % for (cur_name, cur_generator) in sickbeard.metadata_provider_dict.items():
                                     <%
                                         cur_metadata_inst = sickbeard.metadata_provider_dict[cur_generator.name]
                                         cur_id = cur_generator.get_id()

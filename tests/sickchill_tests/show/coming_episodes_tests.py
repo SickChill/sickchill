@@ -34,9 +34,6 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 from sickchill.show.ComingEpisodes import ComingEpisodes
 
 
-import six
-
-
 class ComingEpisodesTests(unittest.TestCase):
     """
     Test comping episodes
@@ -107,7 +104,7 @@ class ComingEpisodesTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (sort, result) in six.iteritems(tests):
+            for (sort, result) in tests.items():
                 self.assertEqual(ComingEpisodes._get_sort(sort), result)
 
 
