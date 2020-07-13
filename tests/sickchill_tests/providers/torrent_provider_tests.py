@@ -29,13 +29,13 @@ import unittest
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-# Third Party Imports
-from generic_provider_tests import GenericProviderTests
-
 # First Party Imports
 import sickbeard
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+
+# Local Folder Imports
+from .generic_provider_tests import GenericProviderTests
 
 
 class TorrentProviderTests(GenericProviderTests):
@@ -89,22 +89,9 @@ class TorrentProviderTests(GenericProviderTests):
             1100000
         ]
         results_list = [
-            -1, -1, -1, -1, 0, 123, -1, -123, -1, 1100000, -1, -1, -1, -1, -1, 1100000, -1, -1, -1, -1, -1, 0, 123, -1,
-            -123, -1, 1100000, -1, -1, -1, -1, -1, 1100000, -1, -1, -1, 0, 123, -1, -123, -1, 1100000, -1, -1, -1, -1,
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, 1100000, -1, -1, -1, -1, -1, 1100000, -1, -1, -1, -1, -1, -1, -1, -1,
+            -1, -1, 1100000, -1, -1, -1, -1, -1, 1100000, -1, -1, -1, -1, -1, -1, -1, -1, 1100000, -1, -1, -1, -1,
             -1, -1, -1, -1, -1, -1, -1, -1, -1
-        ]
-
-        unicode_items_list = [
-            {'size': None}, {'size': ''}, {'size': '0'}, {'size': '123'}, {'size': '12.3'}, {'size': '-123'},
-            {'size': '-12.3'}, {'size': '1100000'}, {'size': 0}, {'size': 123}, {'size': 12.3}, {'size': -123},
-            {'size': -12.3}, {'size': 1100000}, [None, None, ''], [None, None, '0'], [None, None, '123'],
-            [None, None, '12.3'], [None, None, '-123'], [None, None, '-12.3'], [None, None, '1100000'],
-            (None, None, ''), (None, None, '0'), (None, None, '123'), (None, None, '12.3'), (None, None, '-123'),
-            (None, None, '-12.3'), (None, None, '1100000'), '', '0', '123', '12.3', '-123', '-12.3', '1100000'
-        ]
-        unicode_results_list = [
-            -1, -1, 0, 123, -1, -123, -1, 1100000, -1, -1, -1, -1, -1, 1100000, -1, 0, 123, -1, -123, -1, 1100000, -1,
-            0, 123, -1, -123, -1, 1100000, -1, -1, -1, -1, -1, -1, -1
         ]
 
         self.assertEqual(
@@ -112,17 +99,9 @@ class TorrentProviderTests(GenericProviderTests):
             'Number of parameters ({0:d}) and results ({1:d}) does not match'.format(len(items_list), len(results_list))
         )
 
-        self.assertEqual(
-            len(unicode_items_list), len(unicode_results_list),
-            'Number of parameters ({0:d}) and results ({1:d}) does not match'.format(
-                len(unicode_items_list), len(unicode_results_list))
-        )
-
         for (index, item) in enumerate(items_list):
             self.assertEqual(TorrentProvider('Test Provider')._get_size(item), results_list[index])
 
-        for (index, item) in enumerate(unicode_items_list):
-            self.assertEqual(TorrentProvider('Test Provider')._get_size(item), unicode_results_list[index])
 
     def test__get_storage_dir(self):
         """

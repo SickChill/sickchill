@@ -111,7 +111,7 @@ class BaseParser(type):
             @wraps(func)
             def magic(self, *args, **kwargs):
                 # pylint:disable=no-member
-                if func.func_name in disabled_provider_tests.get(self.provider.name, []):
+                if func.__name__ in disabled_provider_tests.get(self.provider.name, []):
                     self.skipTest('Test is programmatically disabled for provider {}'.format(self.provider.name))
                 func(self, *args, **kwargs)
             return magic

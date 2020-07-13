@@ -6,10 +6,10 @@ Tests for SickChill providers
 # Stdlib Imports
 import unittest
 
-# Third Party Imports
-from generic_provider_tests import GenericProviderTests
-from nzb_provider_tests import NZBProviderTests
-from torrent_provider_tests import TorrentProviderTests
+# Local Folder Imports
+from .generic_provider_tests import GenericProviderTests
+from .nzb_provider_tests import NZBProviderTests
+from .torrent_provider_tests import TorrentProviderTests
 
 if __name__ == '__main__':
     print('=====> Running all test in "sickchill_tests.providers" <=====')

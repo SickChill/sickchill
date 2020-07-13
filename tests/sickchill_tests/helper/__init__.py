@@ -6,9 +6,9 @@ Tests for SickChill helpers
 # Stdlib Imports
 import unittest
 
-# Third Party Imports
-from common_tests import CommonTests
-from quality_tests import QualityTests
+# Local Folder Imports
+from .common_tests import CommonTests
+from .quality_tests import QualityTests
 
 if __name__ == '__main__':
     print('=====> Running all test in "sickchill_tests.helper" <=====')

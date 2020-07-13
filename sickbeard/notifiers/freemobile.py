@@ -19,7 +19,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
-# noinspection PyUnresolvedReferences
 import urllib
 
 # First Party Imports

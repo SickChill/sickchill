@@ -27,7 +27,9 @@ import socket
 import sys
 from threading import Lock
 
+# First Party Imports
 from setup import setup_gettext, setup_lib_path
+
 setup_lib_path()
 
 # Third Party Imports
@@ -37,7 +39,6 @@ from configobj import ConfigObj
 from tornado.locale import load_gettext_translations
 
 # First Party Imports
-
 import sickchill
 from sickchill import show_updater
 from sickchill.helper import setup_github
@@ -2437,7 +2438,7 @@ def save_config():
 def launchBrowser(protocol='http', startPort=None, web_root='/'):
 
     try:
-        # noinspection PyUnresolvedReferences
+        # Stdlib Imports
         import webbrowser
     except ImportError:
         logger.warning("Unable to load the webbrowser module, cannot launch the browser.")

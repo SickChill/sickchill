@@ -44,6 +44,7 @@ class TorrentProvider(GenericProvider):
         results = []
         db = DBConnection()
         placeholder = ','.join([str(x) for x in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST])
+        # language TEXT
         sql_results = db.select(
             'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate'
             ' FROM tv_episodes AS e'
@@ -91,11 +92,13 @@ class TorrentProvider(GenericProvider):
         else:
             size = -1
 
+        size = try_int(size, -1)
+
         # Make sure we didn't select seeds/leechers by accident
         if not size or size < 1024 * 1024:
             size = -1
 
-        return try_int(size, -1)
+        return size
 
     def _get_storage_dir(self):
         return sickbeard.TORRENT_DIR
