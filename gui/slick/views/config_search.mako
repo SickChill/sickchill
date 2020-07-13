@@ -912,9 +912,8 @@
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <select name="torrent_method" id="torrent_method" class="form-control input-sm input200" title="torrent_method">
-                                            <% client_list = getClientListDict() %>
-                                            % for curAction in client_list.keys():
-                                                <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${client_list[curAction]}</option>
+                                            % for curAction, curTitle in getClientListDict().items():
+                                                <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${curTitle}</option>
                                             % endfor
                                         </select>
                                     </div>

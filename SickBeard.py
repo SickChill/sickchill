@@ -52,8 +52,6 @@ mimetypes.add_type("application/font-woff", ".woff")
 
 # Third Party Imports
 from configobj import ConfigObj
-# noinspection PyUnresolvedReferences
-from six.moves import reload_module
 
 # First Party Imports
 import sickbeard

@@ -22,7 +22,7 @@ from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
 
 # Local Folder Imports
-from .rtorrent9 import RTorrent
+from rtorrent9 import RTorrent
 
 
 class Client(GenericClient):
