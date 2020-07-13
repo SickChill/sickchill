@@ -107,8 +107,7 @@ class ThePirateBayProvider(TorrentProvider):
         }
 
         if not (self.tracker_cache.get_trackers() or self._custom_trackers):
-            logger.info("Cannot use tpb provider without python 2.7.9+ unless you set some custom trackers in config/search on the torrents tab. Re-enable "
-                       "this provider after fixing this issue.")
+            logger.info("Set some custom trackers in config/search on the torrents tab. Re-enable this provider after fixing this issue.")
             self.enabled = False
             return results
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 # coding=UTF-8
 # Author: Dennis Lutter <lad1337@gmail.com>
 # URL: https://sickchill.github.io
