@@ -2,12 +2,18 @@
 """
 Use setup tools to install sickchill
 """
-import os, sys
-import gettext
+from __future__ import absolute_import, print_function, unicode_literals
 
+# Stdlib Imports
+import gettext
+import os
+import sys
+
+# Third Party Imports
 from setuptools import find_packages, setup
 
 try:
+    # Third Party Imports
     from babel.messages import frontend as babel
 except ImportError:
     babel = None

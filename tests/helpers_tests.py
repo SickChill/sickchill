@@ -92,11 +92,7 @@ import unittest
 
 from shutil import rmtree
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 import sickbeard
-from bencode.BTL import BTFailure
 from sickbeard import helpers
 from sickchill.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
 
@@ -766,15 +762,6 @@ class HelpersMiscTests(unittest.TestCase):
         Test manage_torrents_url
         """
         pass
-
-    def test_bdecode(self):
-        """
-        Test the custom bdecode function
-        """
-        bencoded_data = b'd5:hello5:world7:numbersli1ei2eeeEXTRA_DATA_HERE'
-        self.assertEqual(helpers.bdecode(bencoded_data, True), {'hello': b'world', 'numbers': [1, 2]})
-        self.assertRaisesRegexp(BTFailure, 'data after valid prefix', helpers.bdecode, bencoded_data, False)
-        self.assertRaisesRegexp(BTFailure, 'not a valid bencoded string', helpers.bdecode, b'Heythere', False)
 
 
 if __name__ == '__main__':
