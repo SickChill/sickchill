@@ -28,7 +28,7 @@ homedir=${SR_HOME-/opt/sickchill}
 datadir=${SR_DATA-/opt/sickchill}
 pidfile=${SR_PIDFILE-/var/run/sickchill/sickchill.pid}
 nice=${SR_NICE-}
-python_bin=${PYTHON_BIN-/usr/bin/python2.7}
+python_bin=${PYTHON_BIN-/usr/bin/python3}
 ##
 
 pidpath=`dirname ${pidfile}`

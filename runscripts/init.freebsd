@@ -36,7 +36,7 @@ load_rc_config ${name}
 : ${sickchill_datadir:="${sickchill_dir}"}
 
 pidfile="/var/run/sickchill/sickchill.pid"
-command="/usr/local/bin/python2.7"
+command="/usr/local/bin/python3"
 command_args="${sickchill_dir}/SickBeard.py --datadir ${sickchill_datadir} -d --pidfile ${pidfile} --quiet --nolaunch"
 
 start_precmd="sickchill_prestart"
