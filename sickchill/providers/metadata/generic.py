@@ -829,8 +829,8 @@ class GenericMetadata(object):
                     if types[img_type] and getattr(result, types[img_type]):
                         return "{0}{1}{2}".format(base_url, max_size, result[types[img_type]])
 
-        except Exception:
-            pass
+        except Exception as error:
+            logger.debug(error)
 
         logger.info("Could not find any " + img_type + " images on TMDB for " + show.name)
 
@@ -865,8 +865,7 @@ class GenericMetadata(object):
                 if thumb:
                     url = re.sub('/fanart/', '/preview/', url)
                 return url
-        except Exception as e:
-            print(e)
-            pass
+        except Exception as error:
+            logger.debug(error)
 
         logger.info("Could not find any " + img_type + " images on Fanart.tv for " + show.name)
