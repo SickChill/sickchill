@@ -27,8 +27,8 @@ from sickbeard import common, logger
 
 
 class Notifier(object):
-    consumer_key = b'vHHtcB6WzpWDG6KYlBMr8g'
-    consumer_hash = b'zMqq5CB3f8cWKiRO2KzWPTlBanYmV0VYxSXZ0Pxds0E'  # (consumer_secret)
+    consumer_key = 'vHHtcB6WzpWDG6KYlBMr8g'
+    consumer_hash = 'zMqq5CB3f8cWKiRO2KzWPTlBanYmV0VYxSXZ0Pxds0E'  # (consumer_secret)
 
     REQUEST_TOKEN_URL = 'https://api.twitter.com/oauth/request_token'
     ACCESS_TOKEN_URL = 'https://api.twitter.com/oauth/access_token'

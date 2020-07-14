@@ -362,7 +362,7 @@ class TraktChecker(object):
                     indexer_id = int(str(show_el))
                     show = self.ShowWatchlist[indexer.slug][show_el]
 
-                    # logger.debug(u"Checking Show: %s %s %s" % (slug, indexer_id, show['title']))
+                    # logger.debug("Checking Show: %s %s %s" % (slug, indexer_id, show['title']))
                     if int(sickbeard.TRAKT_METHOD_ADD) != 2:
                         self.addDefaultShow(index, indexer_id, show['title'], SKIPPED)
                     else:
@@ -467,7 +467,7 @@ class TraktChecker(object):
          Check in the Watchlist or CollectionList for Show
          Is the Show, Season and Episode in the slug list
         """
-        # logger.debug(u"Checking Show: %s %s %s " % (slug, showid, List))
+        # logger.debug("Checking Show: %s %s %s " % (slug, showid, List))
 
         if "Collection" == List:
             try:

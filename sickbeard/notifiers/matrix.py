@@ -87,7 +87,7 @@ class Notifier(object):
             "formatted_body": message,
         }
 
-        headers = {b"Content-Type": b"application/json"}
+        headers = {"Content-Type": "application/json"}
         try:
             r = requests.put(url , data=json.dumps(jsonMessage), headers=headers)
             r.raise_for_status()

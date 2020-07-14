@@ -448,7 +448,7 @@ def already_processed(process_path, video_file, force, result):
     main_db_con = db.DBConnection()
     sql_result = main_db_con.select("SELECT release_name FROM tv_episodes WHERE release_name IN (?, ?) LIMIT 1", [process_path, video_file.rpartition('.')[0]])
     if sql_result:
-        # result.output += log_helper(u"You're trying to post process a dir that's already been processed, skipping", logger.DEBUG)
+        # result.output += log_helper("You're trying to post process a dir that's already been processed, skipping", logger.DEBUG)
         return True
 
     # Needed if we have downloaded the same episode @ different quality

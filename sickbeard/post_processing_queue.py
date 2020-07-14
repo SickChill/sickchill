@@ -139,7 +139,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
                 **replacements), logger.WARNING)
 
         # if not os.path.isdir(directory):
-        #     return log_helper(u"{mode} post-processing attempted but directory doesn't exist: {info}".format(
+        #     return log_helper("{mode} post-processing attempted but directory doesn't exist: {info}".format(
         #         **replacements), logger.WARNING)
 
         if not os.path.isabs(directory):

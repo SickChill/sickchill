@@ -64,7 +64,7 @@ class Notifier(object):
         logger.info("Sending rocketchat message: " + message)
         logger.info("Sending rocketchat message to url: " + rocketchat_webhook)
 
-        headers = {b"Content-Type": b"application/json"}
+        headers = {"Content-Type": "application/json"}
         try:
             r = requests.post(rocketchat_webhook, data=json.dumps(dict(text=message, attachments=(dict(icon_emoji=rocketchat_icon_emoji, author_icon=self.ROCKETCHAT_ICON_URL)))), headers=headers)
             r.raise_for_status()

@@ -154,7 +154,7 @@ class TVCache(object):
             title = self._translate_title(title)
             url = self._translate_link_url(url)
 
-            # logger.debug(u"Attempting to add item to cache: " + title)
+            # logger.debug("Attempting to add item to cache: " + title)
             return self._add_cache_entry(title, url)
 
         else:

@@ -82,7 +82,7 @@ def filter_bad_releases(name, parse=True, show=None):
     except InvalidShowException:
         pass
     # except InvalidShowException as error:
-    #    logger.debug(u"{0}".format(error))
+    #    logger.debug("{0}".format(error))
     #    return False
 
     def clean_set(words):

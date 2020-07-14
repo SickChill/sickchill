@@ -154,13 +154,13 @@ class HDTorrentsProvider_IT(TorrentProvider):
 
                             size = convert_size(torrent_size) or -1
                             download_url = self.url + '/' + cells[labels.index(1)].a.index(0)['href']
-                            # title = cells[labels.index(u'Filename')].a.get_text(strip=True)
-                            # seeders = try_int(cells[labels.index(u'S')].get_text(strip=True))
-                            # leechers = try_int(cells[labels.index(u'L')].get_text(strip=True))
-                            # torrent_size = cells[labels.index(u'Size')].get_text()
+                            # title = cells[labels.index('Filename')].a.get_text(strip=True)
+                            # seeders = try_int(cells[labels.index('S')].get_text(strip=True))
+                            # leechers = try_int(cells[labels.index('L')].get_text(strip=True))
+                            # torrent_size = cells[labels.index('Size')].get_text()
 
                             # size = convert_size(torrent_size) or -1
-                            # download_url = self.url + '/' + cells[labels.index(u'Dl')].a['href']
+                            # download_url = self.url + '/' + cells[labels.index('Dl')].a['href']
                         except (AttributeError, TypeError, KeyError, ValueError, IndexError):
                             continue
 

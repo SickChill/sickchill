@@ -282,7 +282,7 @@ class FailedQueueItem(generic_queue.QueueItem):
                     time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
             else:
                 pass
-                # logger.info(u"No valid episode found to retry for: [" + self.segment.pretty_name() + "]")
+                # logger.info("No valid episode found to retry for: [" + self.segment.pretty_name() + "]")
         except Exception:
             logger.debug(traceback.format_exc())
 

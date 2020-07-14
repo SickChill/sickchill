@@ -156,7 +156,7 @@ class DiscordTask(generic_queue.QueueItem):
         logger.info("Sending discord message: " + ', '.join(f['value'] for f in self.embed['fields']))
         logger.info("Sending discord message to url: " + discord_webhook)
 
-        headers = {b"Content-Type": b"application/json"}
+        headers = {"Content-Type": "application/json"}
         try:
             r = requests.post(discord_webhook,
                               data=json.dumps(dict(embeds=[self.embed], username=discord_name, avatar_url=avatar_icon, tts=discord_tts)),
