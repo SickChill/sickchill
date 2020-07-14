@@ -17,13 +17,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+# Third Party Imports
+from rtorrent import RTorrent
+
 # First Party Imports
 import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
-
-# Local Folder Imports
-from rtorrent import RTorrent
 
 
 class Client(GenericClient):
