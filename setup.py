@@ -37,7 +37,7 @@ if babel:
         'update_catalog': babel.update_catalog
     })
 
-if 'pydevconsole.py' not in sys.argv[0]:
+if 'setup.py' in sys.argv[0]:
     setup(
         name="sickchill",
         version="0.0.1",
