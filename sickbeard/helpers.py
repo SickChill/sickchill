@@ -920,27 +920,25 @@ unique_key1 = hex(uuid.getnode() ** 2)  # Used in encryption v1
 
 
 # Encryption Functions
-def encrypt(data, encryption_version=0, _decrypt=False):
-    # Version 1: Simple XOR encryption (this is not very secure, but works)
-    if data is None:
+def encrypt(data: str, encryption_version=0, _decrypt=False):
+    if not data:
         return ""
 
-    if encryption_version == 1:
+    if isinstance(data, str):
+        data = data.encode()
+
+    result = data
+    secret_cycle = cycle((unique_key1, sickbeard.ENCRYPTION_SECRET)[encryption_version > 1].encode())
+    if encryption_version in (1, 2):
         if _decrypt:
-            return ''.join(chr(ord(x) ^ ord(y)) for (x, y) in zip(base64.decodebytes(data), cycle(unique_key1)))
+            result = ''.join(chr(x ^ y) for (x, y) in zip(base64.decodebytes(data), secret_cycle))
         else:
-            return base64.encodestring(
-                ''.join(chr(ord(x) ^ ord(y)) for (x, y) in zip(data, cycle(unique_key1)))).strip()
-    # Version 2: Simple XOR encryption (this is not very secure, but works)
-    elif encryption_version == 2:
-        if _decrypt:
-            return ''.join(chr(ord(x) ^ ord(y)) for (x, y) in zip(base64.decodebytes(data), cycle(sickbeard.ENCRYPTION_SECRET)))
-        else:
-            return base64.encodestring(
-                ''.join(chr(ord(x) ^ ord(y)) for (x, y) in zip(data, cycle(sickbeard.ENCRYPTION_SECRET)))).strip()
-    # Version 0: Plain text
-    else:
-        return data
+            result = base64.encodebytes(''.join(chr(x ^ y) for (x, y) in zip(data, secret_cycle)).encode()).decode().strip()
+
+    if isinstance(result, bytes):
+        result = result.decode()
+
+    return result
 
 
 def decrypt(data, encryption_version=0):
