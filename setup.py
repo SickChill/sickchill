@@ -37,63 +37,65 @@ if babel:
         'update_catalog': babel.update_catalog
     })
 
-# setup(
-#     name="sickchill",
-#     version="0.0.1",
-#
-#     description="Automatic Video Library Manager for TV Shows",
-#     long_description=info_dict['readme'],
-#
-#     url='https://sickchill.github.io',
-#     download_url='https://github.com/SickChill/SickChill.git',
-#
-#     author='miigotu',
-#     author_email='miigotu@gmail.com',
-#
-#     license='GPLv2',
-#
-#     packages=find_packages(),
-#     install_requires=info_dict['install_requires'],
-#
-#     test_suite="tests",
-#     tests_require=[
-#         'coveralls',
-#         'nose',
-#         'rednose',
-#         'mock',
-#         'vcrpy-unittest',
-#         'babel',
-#         'flake8-coding',
-#         'isort'
-#     ],
-#     python_requires='>=3',
-#     classifiers=[
-#         'Development Status :: 3 - Alpha',
-#         'Intended Audience :: System Administrators',
-#         'Operating System :: OS Independent',
-#         'Topic :: Multimedia :: Video',
-#         'Programming Language :: Python :: 3',
-#         'Programming Language :: Python :: 3.2',
-#         'Programming Language :: Python :: 3.3',
-#         'Programming Language :: Python :: 3.5',
-#         'Programming Language :: Python :: 3.6',
-#         'Programming Language :: Python :: 3.7',
-#         'Programming Language :: Python :: 3.8',
-#         'Programming Language :: Python :: 3.9'
-#     ],
-#
-#     cmdclass=info_dict['commands'],
-#
-#     # message_extractors={
-#     #     'gui': [
-#     #         ('**/views/**.mako', 'mako', {'input_encoding': 'utf-8'}),
-#     #         ('**/js/*.min.js', 'ignore', None),
-#     #         ('**/js/*.js', 'javascript', {'input_encoding': 'utf-8'})
-#     #     ],
-#     #     'sickchill': [('**.py', 'python', None)],
-#     #     'sickbeard': [('**.py', 'python', None)],
-#     # },
-# )
+if 'pydevconsole.py' not in sys.argv[0]:
+    setup(
+        name="sickchill",
+        version="0.0.1",
+
+        description="Automatic Video Library Manager for TV Shows",
+        long_description=info_dict['readme'],
+
+        url='https://sickchill.github.io',
+        download_url='https://github.com/SickChill/SickChill.git',
+
+        author='miigotu',
+        author_email='miigotu@gmail.com',
+
+        license='GPLv2',
+
+        packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
+        install_requires=info_dict['install_requires'],
+
+        test_suite="tests",
+        tests_require=[
+            'coveralls',
+            'nose',
+            'rednose',
+            'mock',
+            'vcrpy-unittest',
+            'babel',
+            'flake8-coding',
+            'isort'
+        ],
+        python_requires='>=3',
+        classifiers=[
+            'Development Status :: 3 - Alpha',
+            'Intended Audience :: System Administrators',
+            'Operating System :: OS Independent',
+            'Topic :: Multimedia :: Video',
+            'Programming Language :: Python :: 3',
+            'Programming Language :: Python :: 3.2',
+            'Programming Language :: Python :: 3.3',
+            'Programming Language :: Python :: 3.5',
+            'Programming Language :: Python :: 3.6',
+            'Programming Language :: Python :: 3.7',
+            'Programming Language :: Python :: 3.8',
+            'Programming Language :: Python :: 3.9'
+        ],
+
+        cmdclass=info_dict['commands'],
+
+        message_extractors={
+            'gui': [
+                ('**/views/**.mako', 'mako', {'input_encoding': 'utf-8'}),
+                ('**/js/*.min.js', 'ignore', None),
+                ('**/js/*.js', 'javascript', {'input_encoding': 'utf-8'})
+            ],
+            'sickchill': [('**.py', 'python', None)],
+            'sickbeard': [('**.py', 'python', None)],
+        },
+        scripts=['SickBeard.py']
+    )
 
 
 def setup_lib_path(additional=None):
