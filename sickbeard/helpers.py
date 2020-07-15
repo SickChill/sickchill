@@ -44,12 +44,10 @@ from xml.etree import ElementTree as ElementTree
 
 # Third Party Imports
 import certifi
-import cfscrape
 import cloudscraper
 import ifaddr
 import rarfile
 import requests
-import urllib3
 from cachecontrol import CacheControl
 from cloudscraper.exceptions import CloudflareException
 from requests.compat import urljoin
@@ -66,7 +64,7 @@ from sickchill.helper.common import replace_extension
 from sickchill.show.Show import Show
 
 # Local Folder Imports
-from . import classes, db, logger
+from . import db, logger
 
 # Add some missing languages
 LOCALE_NAMES.update({
@@ -1191,8 +1189,8 @@ def touchFile(fname, atime=None):
     return False
 
 
-def make_indexer_session(use_cfscrape=True):
-    session = make_session(use_cfscrape)
+def make_indexer_session():
+    session = make_session()
     session.verify = (False, certifi.where())[sickbeard.SSL_VERIFY]
     if sickbeard.PROXY_SETTING and sickbeard.PROXY_INDEXERS:
         logger.debug(_("Using global proxy: {}").format(sickbeard.PROXY_SETTING))
@@ -1205,14 +1203,9 @@ def make_indexer_session(use_cfscrape=True):
     return session
 
 
-def make_session(use_cfscrape=True):
-    if use_cfscrape and sys.version_info < (2, 7, 9):
-        session = cfscrape.create_scraper()
-    else:
-        session = cloudscraper.create_scraper()
-
+def make_session():
+    session = cloudscraper.create_scraper()
     # session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
-
     return CacheControl(sess=session, cache_etags=True)
 
 

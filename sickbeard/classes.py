@@ -20,7 +20,6 @@
 # Stdlib Imports
 import datetime
 import sys
-import urllib
 
 # First Party Imports
 import sickbeard
