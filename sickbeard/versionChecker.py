@@ -98,8 +98,8 @@ class CheckVersion(object):
                 logger.exception("Config backup failed, aborting update")
                 ui.notifications.message(_('Backup'), _('Config backup failed, aborting update'))
                 return False
-        except Exception as e:
-            logger.exception('Update: Config backup failed. Error: {0}'.format(str(e)))
+        except Exception as error:
+            logger.exception('Update: Config backup failed. Error: {}'.format(error))
             ui.notifications.message(_('Backup'), _('Config backup failed, aborting update'))
             return False
 
@@ -205,7 +205,7 @@ class CheckVersion(object):
     def getDBcompare(self):
         try:
             self.updater.need_update()
-            cur_hash = str(self.updater.get_newest_commit_hash())
+            cur_hash = self.updater.get_newest_commit_hash()
             assert len(cur_hash) == 40, "Commit hash wrong length: {0} hash: {1}".format(len(cur_hash), cur_hash)
 
             response = None
@@ -341,7 +341,7 @@ class CheckVersion(object):
 class UpdateManager(object):
     @staticmethod
     def get_update_url():
-        return sickbeard.WEB_ROOT + "/home/update/?pid=" + str(sickbeard.PID)
+        return sickbeard.WEB_ROOT + "/home/update/?pid=".format(sickbeard.PID)
 
     @staticmethod
     def remove_pyc(path):
@@ -454,7 +454,7 @@ class GitUpdateManager(UpdateManager):
             exit_status = p.returncode
 
             if output:
-                output = str(output.strip())
+                output = output.decode().strip()
 
         except OSError:
             logger.info("Command {} didn't work".format(cmd))
@@ -467,13 +467,13 @@ class GitUpdateManager(UpdateManager):
             if 'stash' in output:
                 logger.warning("Please enable 'git reset' in settings or stash your changes in local files")
             elif log_errors:
-                logger.exception("{0} returned : {1}".format(cmd, str(output)))
+                logger.exception("{0} returned : {1}".format(cmd, output))
 
         elif log_errors:
             if exit_status in (127, 128) or 'fatal:' in output:
-                logger.warning("{0} returned : ({1}) {2}".format(cmd, exit_status, str(output or err)))
+                logger.warning("{0} returned : ({1}) {2}".format(cmd, exit_status, output or err))
             else:
-                logger.exception("{0} returned code {1}, treating as error : {2}".format(cmd, exit_status, str(output or err)))
+                logger.exception("{0} returned code {1}, treating as error : {2}".format(cmd, exit_status, output or err))
                 exit_status = 1
 
         return output, err, exit_status
@@ -494,8 +494,7 @@ class GitUpdateManager(UpdateManager):
             if not re.match('^[a-z0-9]+$', cur_commit_hash):
                 logger.exception("Output doesn't look like a hash, not using it")
                 return False
-            self._cur_commit_hash = cur_commit_hash
-            sickbeard.CUR_COMMIT_HASH = str(cur_commit_hash)
+            self._cur_commit_hash = sickbeard.CUR_COMMIT_HASH = cur_commit_hash
             return True
         else:
             return False
@@ -878,9 +877,9 @@ class SourceUpdateManager(UpdateManager):
             sickbeard.CUR_COMMIT_HASH = self._newest_commit_hash
             sickbeard.CUR_COMMIT_BRANCH = self.branch
 
-        except Exception as e:
-            logger.exception("Error while trying to update: " + str(e))
-            logger.debug("Traceback: " + traceback.format_exc())
+        except Exception as error:
+            logger.exception("Error while trying to update: {}".format(error))
+            logger.debug("Traceback: {}".format(traceback.format_exc()))
             return False
 
         self.clean_libs()
