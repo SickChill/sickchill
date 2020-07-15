@@ -32,7 +32,6 @@ import shutil
 import socket
 import ssl
 import stat
-import sys
 import time
 import traceback
 import urllib
@@ -72,12 +71,9 @@ LOCALE_NAMES.update({
     "no_NO": {"name_en": "Norwegian", "name": "Norsk"},
 })
 
-# Stdlib Imports
-from urllib.request import build_opener, install_opener
-
 opener = urllib.request.build_opener()
 opener.addheaders = [('User-agent', sickbeard.common.USER_AGENT)]
-install_opener(opener)
+urllib.request.install_opener(opener)
 
 # Override original shutil function to increase its speed by increasing its buffer to 10MB (optimal)
 copyfileobj_orig = shutil.copyfileobj
