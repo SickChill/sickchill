@@ -494,9 +494,9 @@ class SubtitlesFinder(object):
                 try:
                     new_subtitles = episode_object.download_subtitles()
                 except Exception as error:
-                    logger.info('Unable to find subtitles for {0} {1}. Error: {2}'.format
+                    logger.error('Unable to find subtitles for {0} {1}. Error: {2}'.format
                                (ep_to_sub['show_name'], episode_num(ep_to_sub['season'], ep_to_sub['episode']) or
-                                episode_num(ep_to_sub['season'], ep_to_sub['episode'], numbering='absolute'), str(error)), logger.ERROR)
+                                episode_num(ep_to_sub['season'], ep_to_sub['episode'], numbering='absolute'), str(error)))
                     continue
 
                 if new_subtitles:
@@ -505,9 +505,9 @@ class SubtitlesFinder(object):
                                 episode_num(ep_to_sub['season'], ep_to_sub['episode'], numbering='absolute')))
 
             except Exception as error:
-                logger.info('Error while searching subtitles for {0} {1}. Error: {2}'.format
+                logger.error('Error while searching subtitles for {0} {1}. Error: {2}'.format
                            (ep_to_sub['show_name'], episode_num(ep_to_sub['season'], ep_to_sub['episode']) or
-                            episode_num(ep_to_sub['season'], ep_to_sub['episode'], numbering='absolute'), str(error)), logger.ERROR)
+                            episode_num(ep_to_sub['season'], ep_to_sub['episode'], numbering='absolute'), str(error)))
                 continue
 
         logger.info('Finished checking for missed subtitles')

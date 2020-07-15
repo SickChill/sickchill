@@ -214,10 +214,8 @@ class GenericProvider(object):
             if not (show_object.air_by_date or show_object.sports):
                 if search_mode == 'sponly':
                     if parse_result.episode_numbers:
-                        logger.info(
-                            'This is supposed to be a season pack search but the result {0} is not a valid season pack, skipping it'.format(title),
-                            logger.DEBUG
-                        )
+                        logger.debug(
+                            'This is supposed to be a season pack search but the result {0} is not a valid season pack, skipping it'.format(title))
                         add_cache_entry = True
                     elif not [ep for ep in episodes if parse_result.season_number == (ep.season, ep.scene_season)[ep.show.is_scene]]:
                         logger.info(

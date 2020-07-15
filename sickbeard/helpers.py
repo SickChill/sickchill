@@ -74,25 +74,10 @@ LOCALE_NAMES.update({
     "no_NO": {"name_en": "Norwegian", "name": "Norsk"},
 })
 
-# Access to a protected member of a client class
-urllib.request._urlopener = classes.SickBeardURLopener()
-orig_getaddrinfo = socket.getaddrinfo
-
-
-# Patches getaddrinfo so that resolving domains like thetvdb do not return ip6 addresses that no longer work on thetvdb.
-# This will not effect SickChill itself from being accessed through ip6
-def getaddrinfo_wrapper(host, port, family=socket.AF_INET, socktype=0, proto=0, flags=0):
-    return orig_getaddrinfo(host, port, family, socktype, proto, flags)
-
-
-if socket.getaddrinfo.__module__ in ('socket', '_socket'):
-    logger.debug(_("Patching socket to IPv4 only"))
-    socket.getaddrinfo = getaddrinfo_wrapper
-
-# Patches urllib3 default ciphers to match those of cfscrape
-# noinspection PyUnresolvedReferences
-# TODO: Not sure if this is needed anymore
-urllib3.util.ssl_.DEFAULT_CIPHERS = cfscrape.DEFAULT_CIPHERS
+from urllib.request import install_opener, build_opener
+opener = urllib.request.build_opener()
+opener.addheader('User-agent', USER_AGENT)
+install_opener(opener)
 
 # Override original shutil function to increase its speed by increasing its buffer to 10MB (optimal)
 copyfileobj_orig = shutil.copyfileobj

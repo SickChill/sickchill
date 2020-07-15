@@ -386,15 +386,14 @@ def setup_github():
     except RateLimitExceededException as error:
         sickbeard.gh = None
         if sickbeard.GIT_TOKEN:
-            sickbeard.logger.info(
-                _('Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests. Error: {0}').format(error), sickbeard.logger.WARNING)
+            sickbeard.logger.warning(
+                _('Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests. Error: {0}').format(error))
         else:
-            sickbeard.logger.info(
-                _('Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests - Try adding an access token. Error: {0}').format(error), sickbeard.logger.WARNING)
+            sickbeard.logger.warning(
+                _('Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests - Try adding an access token. Error: {0}').format(error))
     except UnknownObjectException as error:
         sickbeard.gh = None
-        sickbeard.logger.info(_('Unable to setup GitHub properly, it seems to be down or your organization/repo is set wrong. Error: {0}').format(error),
-                             sickbeard.logger.WARNING)
+        sickbeard.logger.warning(_('Unable to setup GitHub properly, it seems to be down or your organization/repo is set wrong. Error: {0}').format(error))
     except BadUserAgentException as error:
         sickbeard.gh = None
         sickbeard.logger.warning(_('Unable to setup GitHub properly, GitHub doesn\'t like the user-agent. Error: {0}').format(error))

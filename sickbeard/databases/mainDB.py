@@ -387,10 +387,7 @@ class AddSizeAndSceneNameFields(InitialSchema):
                 "SELECT resource FROM history WHERE provider = -1 AND showid = ? AND season = ? AND episode = ? AND date > ?",
                 [cur_result["showid"], cur_result["season"], cur_result["episode"], cur_result["date"]])
             if not download_results:
-                logger.info(
-                    "Found a snatch in the history for " + cur_result["resource"] + " but couldn't find the associated download, skipping it",
-                    logger.DEBUG
-                )
+                logger.debug("Found a snatch in the history for " + cur_result["resource"] + " but couldn't find the associated download, skipping it")
                 continue
 
             nzb_name = cur_result["resource"]

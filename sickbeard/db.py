@@ -87,10 +87,10 @@ class DBConnection(object):
         if attempts in (0, self.MAX_ATTEMPTS):  # Only log the first try and the final failure
             prefix = ("Database", "Fatal")[severity == logger.ERROR]
             # noinspection PyUnresolvedReferences
-            logger.info(
+            logger.log(severity,
                 _("{exception_severity} error executing query with {method} in database {db_location}: ").format(
                     db_location=self.full_path, method=called_method, exception_severity=prefix
-                ) + str(exception), severity
+                ) + str(exception)
             )
 
             # Lets print out all of the arguments so we can debug this better

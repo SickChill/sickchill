@@ -107,9 +107,9 @@ class Notifier(object):
         if success:
             logger.debug('Pushalot notifications sent.')
         else:
-            logger.info('Pushalot notification failed: {0} {1}'.format(
+            logger.error('Pushalot notification failed: {0} {1}'.format(
                 jdata.get('Status', ''),
                 jdata.get('Description', 'Unknown')
-            ), logger.ERROR)
+            ))
 
         return success

@@ -28,11 +28,7 @@ import sickchill
 from sickchill.helper.common import dateTimeFormat
 
 # Local Folder Imports
-from .common import Quality, USER_AGENT
-
-
-class SickBeardURLopener(urllib.request.FancyURLopener, object):
-    version = USER_AGENT
+from .common import Quality
 
 
 class SearchResult(object):
