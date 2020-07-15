@@ -76,7 +76,7 @@ LOCALE_NAMES.update({
 
 from urllib.request import install_opener, build_opener
 opener = urllib.request.build_opener()
-opener.addheader('User-agent', USER_AGENT)
+opener.addheaders = [('User-agent', sickbeard.common.USER_AGENT)]
 install_opener(opener)
 
 # Override original shutil function to increase its speed by increasing its buffer to 10MB (optimal)
