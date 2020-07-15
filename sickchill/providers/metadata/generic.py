@@ -27,7 +27,8 @@ from fanart.core import Request as fanartRequest
 
 # First Party Imports
 import sickchill
-from sickbeard import FANART_API_KEY, helpers, logger, TMDB_API_KEY
+import sickbeard
+from sickbeard import helpers, logger
 from sickbeard.show_name_helpers import allPossibleShowNames
 from sickchill.helper.common import replace_extension, try_int
 
@@ -810,7 +811,7 @@ class GenericMetadata(object):
                  'banner_thumb': None}
 
         # get TMDB configuration info
-        tmdbsimple.API_KEY = TMDB_API_KEY
+        tmdbsimple.API_KEY = sickbeard.TMDB_API_KEY
         config = tmdbsimple.Configuration()
         response = config.info()
         base_url = response['images']['base_url']
@@ -847,7 +848,7 @@ class GenericMetadata(object):
         try:
             if img_type in types:
                 request = fanartRequest(
-                    apikey=FANART_API_KEY,
+                    apikey=sickbeard.FANART_API_KEY,
                     id=show.indexerid,
                     ws=fanart.WS.TV,
                     type=types[img_type],
