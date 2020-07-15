@@ -273,9 +273,9 @@ class DBConnection(object):
                 try:
                     if sickbeard.DBDEBUG:
                         if args is None:
-                            logger.database(self.filename + ": " + query)
+                            logger.log(logger.DB, self.filename + ": " + query)
                         else:
-                            logger.database("{filename}: {query} with args {args}".format(filename=self.filename, query=query, args=args))
+                            logger.log(logger.DB, "{filename}: {query} with args {args}".format(filename=self.filename, query=query, args=args))
 
                     sql_results = self._execute(query, args, fetchall=fetchall, fetchone=fetchone)
                     self.connection.commit()
