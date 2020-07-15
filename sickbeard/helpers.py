@@ -74,7 +74,9 @@ LOCALE_NAMES.update({
     "no_NO": {"name_en": "Norwegian", "name": "Norsk"},
 })
 
-from urllib.request import install_opener, build_opener
+# Stdlib Imports
+from urllib.request import build_opener, install_opener
+
 opener = urllib.request.build_opener()
 opener.addheaders = [('User-agent', sickbeard.common.USER_AGENT)]
 install_opener(opener)
