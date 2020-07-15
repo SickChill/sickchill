@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
-from os import sys
+import sys
 from random import shuffle
 
 # First Party Imports
