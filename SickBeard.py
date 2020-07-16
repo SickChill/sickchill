@@ -52,6 +52,7 @@ mimetypes.add_type("application/font-woff", ".woff")
 
 # Third Party Imports
 from configobj import ConfigObj
+from validate import Validator
 
 # First Party Imports
 import sickbeard
@@ -155,6 +156,8 @@ class SickChill(object):
 
         sickbeard.DATA_DIR = os.path.abspath(args.datadir) if args.datadir else sickbeard.DATA_DIR
         sickbeard.CONFIG_FILE = os.path.abspath(args.config) if args.config else os.path.join(sickbeard.DATA_DIR, 'config.ini')
+        sickbeard.CONFIG_FILE_NEW = os.path.join(sickbeard.DATA_DIR, 'config-new.ini')
+        sickbeard.CONFIG_SPEC = os.path.join(sickbeard.DATA_DIR, 'default.ini')
 
         # The pid file is only useful in daemon mode, make sure we can write the file properly
         if self.create_pid:
@@ -201,6 +204,8 @@ class SickChill(object):
             sys.stdout.write('Unable to find {0}, all settings will be default!\n'.format(sickbeard.CONFIG_FILE))
 
         sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE, encoding='UTF-8', indent_type='  ')
+        sickbeard.CFG2 = ConfigObj(sickbeard.CONFIG_FILE_NEW, encoding='UTF-8', indent_type='  ', configspec=sickbeard.CONFIG_SPEC)
+        sickbeard.CFG2.validate(Validator(), copy=True)
 
         # Initialize the config and our threads
         sickbeard.initialize(consoleLogging=self.console_logging)

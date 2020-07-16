@@ -148,7 +148,7 @@ class BaseParser(type):
             with mock.patch('sickbeard.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
                 results = self.provider.search(self.search_strings('RSS'))
 
-            if self.provider.enable_daily:
+            if self.provider.config('daily'):
                 self.assertTrue(self.cassette.requests)
                 self.assertTrue(results, self.cassette.requests[-1].url)
                 self.assertTrue(len(self.cassette))

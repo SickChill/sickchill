@@ -65,14 +65,7 @@ class TNTVillageProvider(TorrentProvider):
 
         self._uid = None
         self._hash = None
-        self.username = None
-        self.password = None
-        self.cat = None
-        self.engrelease = None
         self.page = 10
-        self.subtitle = None
-        self.minseed = 0
-        self.minleech = 0
 
         self.hdtext = [' - Versione 720p',
                        ' Versione 720p',
@@ -111,9 +104,11 @@ class TNTVillageProvider(TorrentProvider):
 
         self.cache = tvcache.TVCache(self, min_time=30)  # only poll TNTVillage every 30 minutes max
 
+        self.supported_options = ('cat', 'engrelease', 'minleech', 'minseed', 'password', 'subtitle', 'username')
+
     def _check_auth(self):
 
-        if not self.username or not self.password:
+        if not self.config('username') or not self.config('password'):
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
         return True
@@ -123,8 +118,8 @@ class TNTVillageProvider(TorrentProvider):
             if self.session.cookies.get('pass_hash', '') not in ('0', 0) and self.session.cookies.get('member_id') not in ('0', 0):
                 return True
 
-        login_params = {'UserName': self.username,
-                        'PassWord': self.password,
+        login_params = {'UserName': self.config('username'),
+                        'PassWord': self.config('password'),
                         'CookieDate': 1,
                         'submit': 'Connettiti al Forum'}
 
@@ -276,7 +271,7 @@ class TNTVillageProvider(TorrentProvider):
         if not self.login():
             return results
 
-        self.categories = "cat=" + str(self.cat)
+        self.categories = "cat=" + str(self.config('cat'))
 
         for mode in search_params:
             items = []
@@ -351,11 +346,11 @@ class TNTVillageProvider(TorrentProvider):
                                 if Quality.nameQuality(title) == Quality.UNKNOWN:
                                     title += filename_qt
 
-                                if not self._is_italian(result) and not self.subtitle:
+                                if not self._is_italian(result) and not self.config('subtitle'):
                                     logger.debug("Torrent is subtitled, skipping: {0} ".format(title))
                                     continue
 
-                                if self.engrelease and not self._is_english(result):
+                                if self.config('engrelease') and not self._is_english(result):
                                     logger.debug("Torrent isnt english audio/subtitled , skipping: {0} ".format(title))
                                     continue
 
@@ -376,7 +371,7 @@ class TNTVillageProvider(TorrentProvider):
                                     title = re.sub(r'([Ee][\d{1,2}\-?]+)', '', title)
 
                                 # Filter unseeded torrent
-                                if seeders < self.minseed or leechers < self.minleech:
+                                if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                     if mode != 'RSS':
                                         logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                    (title, seeders, leechers))

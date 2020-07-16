@@ -33,13 +33,6 @@ class SceneTimeProvider(TorrentProvider):
 
         TorrentProvider.__init__(self, "SceneTime")
 
-        self.username = None
-        self.password = None
-        self.minseed = 0
-        self.minleech = 0
-
-        self.enable_cookies = True
-
         self.cache = tvcache.TVCache(self)  # only poll SceneTime every 20 minutes max
 
         self.urls = {'base_url': 'https://www.scenetime.com',
@@ -57,13 +50,13 @@ class SceneTimeProvider(TorrentProvider):
         if cookie_dict.get('uid') and cookie_dict.get('pass'):
             return True
 
-        if self.cookies:
+        if self.config('cookies'):
             success, status = self.add_cookies_from_ui()
             if not success:
                 logger.info(status)
                 return False
 
-            login_params = {'username': self.username, 'password': self.password}
+            login_params = {'username': self.config('username'), 'password': self.config('password')}
 
             response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
             if not response or response.status_code != 200:
@@ -137,7 +130,7 @@ class SceneTimeProvider(TorrentProvider):
                             continue
 
                         # Filter unseeded torrent
-                        if seeders < self.minseed or leechers < self.minleech:
+                        if seeders < self.config('minseed') or leechers < self.config('minleech'):
                             if mode != 'RSS':
                                 logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                            (title, seeders, leechers))

@@ -39,16 +39,6 @@ class ImmortalseedProvider(TorrentProvider):
         # Provider Init
         TorrentProvider.__init__(self, "Immortalseed")
 
-        # Credentials
-        self.username = None
-        self.password = None
-        self.passkey = None
-
-        # Torrent Stats
-        self.minseed = 0
-        self.minleech = 0
-        self.freeleech = None
-
         # URLs
         self.url = 'https://immortalseed.me/'
         self.urls = {
@@ -65,13 +55,13 @@ class ImmortalseedProvider(TorrentProvider):
 
     def _check_auth(self):
 
-        if not self.username or not self.password:
+        if not self.config('username') or not self.config('password'):
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
         return True
 
     def _check_auth_from_data(self, data):
-        if not self.passkey:
+        if not self.config('passkey'):
             logger.warning('Invalid passkey. Check your settings')
 
         return True
@@ -81,8 +71,8 @@ class ImmortalseedProvider(TorrentProvider):
             return True
 
         login_params = {
-            'username': self.username,
-            'password': self.password,
+            'username': self.config('username'),
+            'password': self.config('password'),
         }
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
@@ -163,7 +153,7 @@ class ImmortalseedProvider(TorrentProvider):
                             leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
 
                             # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != 'RSS':
                                     logger.debug("Discarding torrent because it doesn't meet the"
                                                " minimum seeders or leechers: {0} (S:{1} L:{2})".format
@@ -191,7 +181,7 @@ class ImmortalseedProvider(TorrentProvider):
 
 
 class ImmortalseedCache(tvcache.TVCache):
-    def _get_rss_data(self):
+    def get_rss_data(self):
         params = {
             'secret_key': self.provider.passkey,
             'feedtype': 'downloadssl',

@@ -45,19 +45,7 @@ class BJShareProvider(TorrentProvider):
             'search': urljoin(self.url, 'torrents.php')
         }
 
-        # Credentials
-        self.enable_cookies = True
-        self.cookies = ''
-        self.username = None
-        self.password = None
-        self.required_cookies = ['session']
-
-        # Torrent Stats
-        self.minseed = 0
-        self.minleech = 0
-
         # Miscellaneous Options
-        self.supports_absolute_numbering = True
         self.max_back_pages = 2
 
         # Proper Strings
@@ -226,7 +214,7 @@ class BJShareProvider(TorrentProvider):
                     leechers = try_int(cells[5].get_text(strip=True))
 
                     # Filter unseeded torrent
-                    if seeders < self.minseed or leechers < self.minleech:
+                    if seeders < self.config('minseed') or leechers < self.config('minleech'):
                         if mode != "RSS":
                             logger.debug("Discarding torrent because it doesn't meet the"
                                        " minimum seeders or leechers: {0} (S:{1} L:{2})".format
@@ -277,8 +265,8 @@ class BJShareProvider(TorrentProvider):
         if cookie_dict.get('session'):
             return True
 
-        if self.cookies:
-            add_dict_to_cookiejar(self.session.cookies, dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
+        if self.config('cookie'):
+            add_dict_to_cookiejar(self.session.cookies, dict(x.rsplit('=', 1) for x in self.config('cookie').split(';')))
 
         cookie_dict = dict_from_cookiejar(self.session.cookies)
         if cookie_dict.get('session'):
@@ -286,8 +274,8 @@ class BJShareProvider(TorrentProvider):
 
         login_params = {
             'submit': 'Login',
-            'username': self.username,
-            'password': self.password,
+            'username': self.config('username'),
+            'password': self.config('password'),
             'keeplogged': 1,
         }
 

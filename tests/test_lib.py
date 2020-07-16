@@ -45,6 +45,7 @@ import unittest
 
 # Third Party Imports
 from configobj import ConfigObj
+from validate import Validator
 
 # First Party Imports
 import sickbeard
@@ -111,13 +112,15 @@ sickbeard.NAMING_MULTI_EP = 1
 sickbeard.TV_DOWNLOAD_DIR = PROCESSING_DIR
 
 sickbeard.PROVIDER_ORDER = ["sick_beard_index"]
-sickbeard.newznabProviderList = NewznabProvider.providers_list("'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0|eponly|0|0|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0|eponly|0|0|0'")
 sickbeard.providerList = providers.makeProviderList()
 
 sickbeard.PROG_DIR = os.path.abspath(os.path.join(TEST_DIR, '..'))
 sickbeard.DATA_DIR = TEST_DIR
 sickbeard.CONFIG_FILE = os.path.join(sickbeard.DATA_DIR, "config.ini")
 sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE, encoding='UTF-8', indent_type='  ')
+sickbeard.CFG2 = ConfigObj(sickbeard.CONFIG_FILE_NEW, encoding='UTF-8', indent_type='  ', configspec=sickbeard.CONFIG_SPEC)
+sickbeard.CFG2.validate(Validator(), copy=True)
+
 sickbeard.GUI_NAME = 'slick'
 
 sickbeard.BRANCH = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'branch')

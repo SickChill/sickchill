@@ -33,30 +33,25 @@ class BitCannonProvider(TorrentProvider):
 
         TorrentProvider.__init__(self, "BitCannon")
 
-        self.minseed = 0
-        self.minleech = 0
-        self.custom_url = None
-        self.api_key = None
-
         self.cache = tvcache.TVCache(self, search_params={"RSS": ["tv", "anime"]})
 
     def search(self, search_strings, age=0, ep_obj=None):
         results = []
 
         url = "http://localhost:3000/"
-        if self.custom_url:
-            if not validators.url(self.custom_url):
+        if self.config('custom_url'):
+            if not validators.url(self.config('custom_url')):
                 logger.warning("Invalid custom url set, please check your settings")
                 return results
-            url = self.custom_url
+            url = self.config('custom_url')
 
         search_params = {}
 
         anime = ep_obj and ep_obj.show and ep_obj.show.anime
         search_params["category"] = ("tv", "anime")[bool(anime)]
 
-        if self.api_key:
-            search_params["apiKey"] = self.api_key
+        if self.config('api_key'):
+            search_params["apiKey"] = self.config('api_key')
 
         for mode in search_strings:
             items = []
@@ -92,7 +87,7 @@ class BitCannonProvider(TorrentProvider):
                         else:
                             seeders = leechers = 0
 
-                        if seeders < self.minseed or leechers < self.minleech:
+                        if seeders < self.config('minseed') or leechers < self.config('minleech'):
                             if mode != "RSS":
                                 logger.debug("Discarding torrent because it doesn't meet the "
                                            "minimum seeders or leechers: {0} (S:{1} L:{2})".format

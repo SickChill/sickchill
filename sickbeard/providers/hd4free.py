@@ -35,16 +35,10 @@ class HD4FreeProvider(TorrentProvider):
         self.url = 'https://hd4free.xyz'
         self.urls = {'search': urljoin(self.url, '/searchapi.php')}
 
-        self.freeleech = None
-        self.username = None
-        self.api_key = None
-        self.minseed = 0
-        self.minleech = 0
-
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll HD4Free every 10 minutes max
 
     def _check_auth(self):
-        if self.username and self.api_key:
+        if self.config('username') and self.config('api_key'):
             return True
 
         logger.warning('Your authentication credentials for {0} are missing, check your config.'.format(self.name))
@@ -57,15 +51,15 @@ class HD4FreeProvider(TorrentProvider):
 
         search_params = {
             'tv': 'true',
-            'username': self.username,
-            'apikey': self.api_key
+            'username': self.config('username'),
+            'apikey': self.config('api_key')
         }
 
         for mode in search_strings:
             items = []
             logger.debug("Search Mode: {0}".format(mode))
             for search_string in search_strings[mode]:
-                if self.freeleech:
+                if self.config('freeleech'):
                     search_params['fl'] = 'true'
                 else:
                     search_params.pop('fl', '')
@@ -107,7 +101,7 @@ class HD4FreeProvider(TorrentProvider):
 
                         seeders = jdata[i]["seeders"]
                         leechers = jdata[i]["leechers"]
-                        if seeders < self.minseed or leechers < self.minleech:
+                        if seeders < self.config('minseed') or leechers < self.config('minleech'):
                             if mode != 'RSS':
                                 logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                            (title, seeders, leechers))

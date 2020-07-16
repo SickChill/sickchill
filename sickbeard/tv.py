@@ -29,7 +29,6 @@ from sqlite3 import OperationalError
 
 # Third Party Imports
 import babelfish
-# import guessit
 from imdbpie import Imdb, ImdbFacade
 from imdbpie.exceptions import ImdbAPIError
 from unidecode import unidecode
@@ -38,6 +37,8 @@ from urllib3.exceptions import MaxRetryError, NewConnectionError
 # First Party Imports
 import sickbeard
 import sickchill
+# import guessit
+import sickchill.providers.metadata
 from sickchill.helper import glob
 from sickchill.helper.common import dateTimeFormat, episode_num, remove_extension, replace_extension, sanitize_filename, try_int
 from sickchill.helper.exceptions import (EpisodeDeletedException, EpisodeNotFoundException, MultipleEpisodesInDatabaseException, MultipleShowObjectsException,
@@ -364,8 +365,8 @@ class TVShow(object):
             return False
 
         logger.debug(str(self.indexerid) + ": Writing NFOs for show")
-        for cur_provider in sickbeard.metadata_provider_dict.values():
-            result = cur_provider.create_show_metadata(self) or result
+        for cur_provider in sickchill.providers.metadata.metadata.extensions:
+            result = cur_provider.plugin().create_show_metadata(self) or result
 
         return result
 

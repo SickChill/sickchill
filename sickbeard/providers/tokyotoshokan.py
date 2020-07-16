@@ -33,13 +33,6 @@ class TokyoToshokanProvider(TorrentProvider):
 
         TorrentProvider.__init__(self, "TokyoToshokan")
 
-        self.public = True
-        self.supports_absolute_numbering = True
-        self.anime_only = True
-
-        self.minseed = 0
-        self.minleech = 0
-
         self.url = 'http://tokyotosho.info/'
         self.urls = {
             'search': self.url + 'search.php',
@@ -99,7 +92,7 @@ class TokyoToshokanProvider(TorrentProvider):
                             continue
 
                         # Filter unseeded torrent
-                        if seeders < self.minseed or leechers < self.minleech:
+                        if seeders < self.config('minseed') or leechers < self.config('minleech'):
                             if mode != 'RSS':
                                 logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                            (title, seeders, leechers))

@@ -32,11 +32,6 @@ class ShazbatProvider(TorrentProvider):
 
         TorrentProvider.__init__(self, 'Shazbat.tv')
 
-        self.supports_backlog = False
-
-        self.passkey = None
-        self.options = None
-
         self.cache = ShazbatCache(self, min_time=20)
 
         self.url = 'http://www.shazbat.tv'
@@ -48,13 +43,13 @@ class ShazbatProvider(TorrentProvider):
         }
 
     def _check_auth(self):
-        if not self.passkey:
+        if not self.config('passkey'):
             raise AuthException('Your authentication credentials are missing, check your config.')
 
         return True
 
     def _check_auth_from_data(self, data):
-        if not self.passkey:
+        if not self.config('passkey'):
             self._check_auth()
         elif data.get('bozo') == 1 and not (data['entries'] and data['feed']):
             logger.warning('Invalid username or password. Check your settings')
@@ -63,9 +58,9 @@ class ShazbatProvider(TorrentProvider):
 
 
 class ShazbatCache(tvcache.TVCache):
-    def _get_rss_data(self):
+    def get_rss_data(self):
         params = {
-            'passkey': self.provider.passkey,
+            'passkey': self.provider.config('passkey'),
             'fname': 'true',
             'limit': 100,
             'duration': '2 hours'

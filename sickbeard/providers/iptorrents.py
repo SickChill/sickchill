@@ -38,15 +38,6 @@ class IPTorrentsProvider(TorrentProvider):
     def __init__(self):
 
         TorrentProvider.__init__(self, "IPTorrents")
-        self.enable_cookies = True
-
-        self.username = None
-        self.password = None
-        self.freeleech = False
-        self.minseed = 0
-        self.minleech = 0
-        self.custom_url = None
-
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll IPTorrents every 10 minutes max
 
         self.urls = {'base_url': 'https://iptorrents.eu',
@@ -62,23 +53,23 @@ class IPTorrentsProvider(TorrentProvider):
         if cookie_dict.get('uid') and cookie_dict.get('pass'):
             return True
 
-        if self.cookies:
+        if self.config('cookies'):
             success, status = self.add_cookies_from_ui()
             if not success:
                 logger.info(status)
                 return False
 
-        login_params = {'username': self.username,
-                        'password': self.password,
+        login_params = {'username': self.config('username'),
+                        'password': self.config('password'),
                         'login': 'submit'}
 
-        if self.custom_url:
-            if not validators.url(self.custom_url):
-                logger.warning("Invalid custom url: {0}".format(self.custom_url))
+        if self.config('custom_url'):
+            if not validators.url(self.config('custom_url')):
+                logger.warning("Invalid custom url: {0}".format(self.config('custom_url')))
                 return False
 
         # Get the index, redirects to login
-        data = self.get_url(self.custom_url or self.url, returns='text')
+        data = self.get_url(self.config('custom_url') or self.url, returns='text')
         if not data:
             logger.warning("Unable to connect to provider")
             return False
@@ -89,7 +80,7 @@ class IPTorrentsProvider(TorrentProvider):
                 logger.warning('Could not find the login form. Try adding cookies instead')
                 return False
 
-        response = self.get_url(urljoin(self.custom_url or self.url, action), post_data=login_params, returns='text')
+        response = self.get_url(urljoin(self.config('custom_url') or self.url, action), post_data=login_params, returns='text')
         if not response:
             logger.warning("Unable to connect to provider")
             return False
@@ -116,7 +107,7 @@ class IPTorrentsProvider(TorrentProvider):
         if not self.login():
             return results
 
-        freeleech = '&free=on' if self.freeleech else ''
+        freeleech = '&free=on' if self.config('freeleech') else ''
 
         for mode in search_params:
             items = []
@@ -129,11 +120,11 @@ class IPTorrentsProvider(TorrentProvider):
                 search_url = self.urls['search'] % (self.categories, freeleech, search_string)
                 search_url += ';o=seeders' if mode != 'RSS' else ''
 
-                if self.custom_url:
-                    if not validators.url(self.custom_url):
-                        logger.warning("Invalid custom url: {0}".format(self.custom_url))
+                if self.config('custom_url'):
+                    if not validators.url(self.config('custom_url')):
+                        logger.warning("Invalid custom url: {0}".format(self.config('custom_url')))
                         return results
-                    search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
+                    search_url = urljoin(self.config('custom_url'), search_url.split(self.url)[1])
 
                 data = self.get_url(search_url, returns='text')
                 if not data:
@@ -173,7 +164,7 @@ class IPTorrentsProvider(TorrentProvider):
                                 continue
 
                             # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != 'RSS':
                                     logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers))

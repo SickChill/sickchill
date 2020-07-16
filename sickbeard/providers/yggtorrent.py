@@ -39,16 +39,7 @@ class YggTorrentProvider(TorrentProvider):
         # Provider Init
         TorrentProvider.__init__(self, 'YggTorrent')
 
-        # Credentials
-        self.username = None
-        self.password = None
-
-        # Torrent Stats
-        self.minseed = 0
-        self.minleech = 0
-
         # URLs
-        self.custom_url = None
         self.url = 'https://www2.yggtorrent.se/'
         self.urls = {
             'login': urljoin(self.url, 'user/login'),
@@ -67,7 +58,7 @@ class YggTorrentProvider(TorrentProvider):
 
         if not validators.url(new_url):
             if custom:
-                logger.warning("Invalid custom url: {0}".format(self.custom_url))
+                logger.warning("Invalid custom url: {0}".format(self.config('custom_url')))
             else:
                 logger.debug('Url changing has failed!')
 
@@ -82,11 +73,11 @@ class YggTorrentProvider(TorrentProvider):
 
     def login(self):
         login_params = {
-            'id': self.username,
-            'pass': self.password,
+            'id': self.config('username'),
+            'pass': self.config('password'),
         }
 
-        self.update_urls(self.custom_url, True)
+        self.update_urls(self.config('custom_url'), True)
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='response')
         if response and self.url not in response.url:
@@ -184,7 +175,7 @@ class YggTorrentProvider(TorrentProvider):
                             size = convert_size(torrent_size) or -1
 
                             # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != 'RSS':
                                     logger.debug('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
                                                (title, seeders, leechers))

@@ -36,13 +36,6 @@ class HorribleSubsProvider(TorrentProvider):
 
         TorrentProvider.__init__(self, 'HorribleSubs')
 
-        self.public = True
-        self.supports_absolute_numbering = True
-        self.anime_only = True
-
-        self.minseed = 0
-        self.minleech = 0
-
         self.url = 'https://horriblesubs.info'
         self.urls = {
             'search': urljoin(self.url, 'api.php'),

@@ -35,13 +35,10 @@ class XThorProvider(TorrentProvider):
         self.url = 'https://xthor.tk'
         self.urls = {'search': 'https://api.xthor.tk'}
 
-        self.freeleech = None
-        self.api_key = None
-
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll XThor every 10 minutes max
 
     def _check_auth(self):
-        if self.api_key:
+        if self.config('api_key'):
             return True
 
         logger.warning('Your authentication credentials for {0} are missing, check your config.'.format(self.name))
@@ -53,9 +50,9 @@ class XThorProvider(TorrentProvider):
             return results
 
         search_params = {
-            'passkey': self.api_key
+            'passkey': self.config('api_key')
         }
-        if self.freeleech:
+        if self.config('freeleech'):
             search_params['freeleech'] = 1
 
         for mode in search_strings:

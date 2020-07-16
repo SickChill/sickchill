@@ -35,9 +35,6 @@ class HDBitsProvider(TorrentProvider):
 
         TorrentProvider.__init__(self, "HDBits")
 
-        self.username = None
-        self.passkey = None
-
         self.cache = HDBitsCache(self, min_time=15)  # only poll HDBits every 15 minutes max
 
         self.url = 'https://hdbits.org'
@@ -49,7 +46,7 @@ class HDBitsProvider(TorrentProvider):
 
     def _check_auth(self):
 
-        if not self.username or not self.passkey:
+        if not self.config('username') or not self.config('passkey'):
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
         return True
@@ -73,7 +70,7 @@ class HDBitsProvider(TorrentProvider):
 
     def _get_title_and_url(self, item):
         title = item.get('name', '').replace(' ', '.')
-        url = self.urls['download'] + '?' + urlencode({'id': item['id'], 'passkey': self.passkey})
+        url = self.urls['download'] + '?' + urlencode({'id': item['id'], 'passkey': self.config('passkey')})
 
         return title, url
 
@@ -124,8 +121,8 @@ class HDBitsProvider(TorrentProvider):
     def _make_post_data_JSON(self, show=None, episode=None, season=None, search_term=None):
 
         post_data = {
-            'username': self.username,
-            'passkey': self.passkey,
+            'username': self.config('username'),
+            'passkey': self.config('passkey'),
             'category': [2],
             # TV Category
         }
@@ -177,7 +174,7 @@ class HDBitsProvider(TorrentProvider):
 
 
 class HDBitsCache(tvcache.TVCache):
-    def _get_rss_data(self):
+    def get_rss_data(self):
         self.search_params = None  # HDBits cache does not use search_params so set it to None
         results = []
 

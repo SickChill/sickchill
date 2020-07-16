@@ -33,52 +33,12 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class TorrentRssProvider(TorrentProvider):
 
-    def __init__(self, name, url, cookies='',
-                 titleTAG='title', search_mode='eponly', search_fallback=False,
-                 enable_daily=False, enable_backlog=False):
+    def __init__(self, name):
 
         TorrentProvider.__init__(self, name)
-
         self.cache = TorrentRssCache(self, min_time=15)
-        self.url = url.rstrip('/')
 
-        self.supports_backlog = False
-
-        self.search_mode = search_mode
-        self.search_fallback = search_fallback
-        self.enable_daily = enable_daily
-        self.enable_backlog = enable_backlog
-        self.enable_cookies = True
-        self.cookies = cookies
-        self.titleTAG = titleTAG
-
-    def configStr(self):
-        return '{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}'.format(
-            self.name or '',
-            self.url or '',
-            self.cookies or '',
-            self.titleTAG or '',
-            int(self.enabled),
-            self.search_mode or '',
-            int(self.search_fallback),
-            int(self.enable_daily),
-            int(self.enable_backlog)
-        )
-
-    @staticmethod
-    def providers_list(data):
-        providers_list = [x for x in (TorrentRssProvider._make_provider(x) for x in data.split('!!!')) if x]
-        seen_values = set()
-        providers_set = []
-
-        for provider in providers_list:
-            value = provider.name
-
-            if value not in seen_values:
-                providers_set.append(provider)
-                seen_values.add(value)
-
-        return [x for x in providers_set if x]
+        self.supported_options = ('daily', 'url', 'title_tag', 'cookies')
 
     def image_name(self):
         if os.path.isfile(os.path.join(sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers', self.get_id() + '.png')):
@@ -87,7 +47,7 @@ class TorrentRssProvider(TorrentProvider):
 
     def _get_title_and_url(self, item):
 
-        title = item.get(self.titleTAG, '').replace(' ', '.')
+        title = item.get(self.config('title_tag'), '').replace(' ', '.')
 
         attempt_list = [
             lambda: item.get('torrent_magneturi'),
@@ -107,53 +67,13 @@ class TorrentRssProvider(TorrentProvider):
 
         return title, url
 
-    @staticmethod
-    def _make_provider(config):
-        if not config:
-            return None
-
-        cookies = None
-        enable_backlog = 0
-        enable_daily = 0
-        search_fallback = 0
-        search_mode = 'eponly'
-        title_tag = 'title'
-
-        try:
-            values = config.split('|')
-
-            if len(values) == 9:
-                name, url, cookies, title_tag, enabled, search_mode, search_fallback, enable_daily, enable_backlog = values
-            elif len(values) == 8:
-                name, url, cookies, enabled, search_mode, search_fallback, enable_daily, enable_backlog = values
-            else:
-                enabled = values[4]
-                name = values[0]
-                url = values[1]
-        except ValueError:
-            logger.exception('Skipping RSS Torrent provider string: {0}, incorrect format'.format(config))
-            return None
-
-        new_provider = TorrentRssProvider(
-            name, url, cookies=cookies, titleTAG=title_tag, search_mode=search_mode,
-            search_fallback=search_fallback, enable_daily=enable_daily, enable_backlog=enable_backlog
-        )
-        new_provider.enabled = enabled == '1'
-
-        return new_provider
-
     def validateRSS(self):
 
         try:
-            if self.cookies:
-                cookie_validator = re.compile(r'^(\w+=\w+)(;\w+=\w+)*$')
-                if not cookie_validator.match(self.cookies):
-                    return False, 'Cookie is not correctly formatted: {0}'.format(self.cookies)
-                add_dict_to_cookiejar(self.session.cookies, dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
-
+            self.add_cookies_from_ui()
 
             # Access to a protected member of a client class
-            data = self.cache._get_rss_data()['entries']
+            data = self.cache.get_rss_data()['entries']
             if not data:
                 return False, 'No items found in the RSS feed {0}'.format(self.url)
 
@@ -198,8 +118,8 @@ class TorrentRssProvider(TorrentProvider):
 
 
 class TorrentRssCache(tvcache.TVCache):
-    def _get_rss_data(self):
-        if self.provider.cookies:
-            add_dict_to_cookiejar(self.provider.session.cookies, dict(x.rsplit('=', 1) for x in self.provider.cookies.split(';')))
+    def get_rss_data(self):
+        if self.provider.config('cookies'):
+            add_dict_to_cookiejar(self.provider.session.cookies, dict(x.rsplit('=', 1) for x in self.provider.config('cookies').split(';')))
 
-        return self.get_rss_feed(self.provider.url)
+        return self.get_rss_feed(self.provider.config('url'))

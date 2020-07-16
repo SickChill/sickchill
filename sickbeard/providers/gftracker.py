@@ -38,14 +38,6 @@ class GFTrackerProvider(TorrentProvider):
         # Provider Init
         TorrentProvider.__init__(self, "GFTracker")
 
-        # Credentials
-        self.username = None
-        self.password = None
-
-        # Torrent Stats
-        self.minseed = 0
-        self.minleech = 0
-
         # URLs
         self.url = 'https://www.thegft.org/'
         self.urls = {
@@ -61,7 +53,7 @@ class GFTrackerProvider(TorrentProvider):
 
     def _check_auth(self):
 
-        if not self.username or not self.password:
+        if not self.config('username') or not self.config('password'):
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
         return True
@@ -71,8 +63,8 @@ class GFTrackerProvider(TorrentProvider):
             return True
 
         login_params = {
-            'username': self.username,
-            'password': self.password,
+            'username': self.config('username'),
+            'password': self.config('password'),
         }
 
         # Initialize session with a GET to have cookies
@@ -161,7 +153,7 @@ class GFTrackerProvider(TorrentProvider):
                             leechers = try_int(peers[1])
 
                             # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != 'RSS':
                                     logger.debug("Discarding torrent because it doesn't meet the"
                                                " minimum seeders or leechers: {0} (S:{1} L:{2})".format

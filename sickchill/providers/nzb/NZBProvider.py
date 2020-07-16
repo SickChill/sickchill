@@ -33,7 +33,7 @@ class NZBProvider(GenericProvider):
 
     @property
     def is_active(self):
-        return bool(sickbeard.USE_NZBS) and self.is_enabled
+        return bool(sickbeard.USE_NZBS) and self.config('enabled')
 
     def _get_result(self, episodes):
         result = NZBSearchResult(episodes)

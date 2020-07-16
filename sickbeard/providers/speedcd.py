@@ -38,15 +38,6 @@ class SpeedCDProvider(TorrentProvider):
         # Provider Init
         TorrentProvider.__init__(self, "Speedcd")
 
-        # Credentials
-        self.username = None
-        self.password = None
-
-        # Torrent Stats
-        self.minseed = 0
-        self.minleech = 0
-        self.freeleech = False
-
         # URLs
         self.url = 'https://speed.cd'
         self.urls = {
@@ -65,8 +56,8 @@ class SpeedCDProvider(TorrentProvider):
             return True
 
         login_params = {
-            'username': self.username,
-            'password': self.password,
+            'username': self.config('username'),
+            'password': self.config('password'),
         }
 
         # Yay lets add another request to the process since they are unreasonable.
@@ -116,7 +107,7 @@ class SpeedCDProvider(TorrentProvider):
                 result = td.get_text(strip=True)
             return result
 
-        if self.freeleech:
+        if self.config('freeleech'):
             search_params['freeleech'] = 'on'
 
         for mode in search_strings:
@@ -160,7 +151,7 @@ class SpeedCDProvider(TorrentProvider):
                             leechers = try_int(cells[labels.index('Leechers') - 1].get_text(strip=True))
 
                             # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != 'RSS':
                                     logger.debug(
                                         "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers))

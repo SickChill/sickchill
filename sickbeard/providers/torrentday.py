@@ -38,17 +38,7 @@ class TorrentDayProvider(TorrentProvider):
         # Provider Init
         TorrentProvider.__init__(self, 'TorrentDay')
 
-        # Credentials
-        self.username = None
-        self.password = None
-
-        # Torrent Stats
-        self.minseed = 0
-        self.minleech = 0
-        self.freeleech = False
-
         # URLs
-        self.custom_url = None
         self.url = 'https://www.torrentday.com'
         self.urls = {
             'login': urljoin(self.url, '/t'),
@@ -62,8 +52,6 @@ class TorrentDayProvider(TorrentProvider):
             'RSS': {'2': 1, '26': 1, '7': 1, '24': 1, '34': 1, '14': 1}
         }
 
-        self.enable_cookies = True
-
         # Cache
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll IPTorrents every 10 minutes max
 
@@ -72,20 +60,20 @@ class TorrentDayProvider(TorrentProvider):
         if cookie_dict.get('uid') and cookie_dict.get('pass'):
             return True
 
-        if self.cookies:
+        if self.config('cookies'):
             success, status = self.add_cookies_from_ui()
             if not success:
                 logger.info(status)
                 return False
 
-            login_params = {'username': self.username, 'password': self.password, 'submit.x': 0, 'submit.y': 0}
+            login_params = {'username': self.config('username'), 'password': self.config('password'), 'submit.x': 0, 'submit.y': 0}
             login_url = self.urls['login']
-            if self.custom_url:
-                if not validators.url(self.custom_url):
-                    logger.warning("Invalid custom url: {0}".format(self.custom_url))
+            if self.config('custom_url'):
+                if not validators.url(self.config('custom_url')):
+                    logger.warning("Invalid custom url: {0}".format(self.config('custom_url')))
                     return False
 
-                login_url = urljoin(self.custom_url, self.urls['login'].split(self.url)[1])
+                login_url = urljoin(self.config('custom_url'), self.urls['login'].split(self.url)[1])
 
             response = self.get_url(login_url, post_data=login_params, returns='response')
             if not response or response.status_code != 200:
@@ -110,13 +98,13 @@ class TorrentDayProvider(TorrentProvider):
 
         search_url = self.urls['search']
         download_url = self.urls['download']
-        if self.custom_url:
-            if not validators.url(self.custom_url):
-                logger.warning("Invalid custom url: {0}".format(self.custom_url))
+        if self.config('custom_url'):
+            if not validators.url(self.config('custom_url')):
+                logger.warning("Invalid custom url: {0}".format(self.config('custom_url')))
                 return results
 
-            search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
-            download_url = urljoin(self.custom_url, download_url.split(self.url)[1])
+            search_url = urljoin(self.config('custom_url'), search_url.split(self.url)[1])
+            download_url = urljoin(self.config('custom_url'), download_url.split(self.url)[1])
 
         if not self.login():
             return results
@@ -155,7 +143,7 @@ class TorrentDayProvider(TorrentProvider):
                     leechers = try_int(torrent['leechers'])
 
                     # Filter unseeded torrent
-                    if seeders < self.minseed or leechers < self.minleech:
+                    if seeders < self.config('minseed') or leechers < self.config('minleech'):
                         if mode != 'RSS':
                             logger.debug('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format(title, seeders, leechers))
                         continue

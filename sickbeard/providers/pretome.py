@@ -37,13 +37,6 @@ class PretomeProvider(TorrentProvider):
     def __init__(self):
 
         TorrentProvider.__init__(self, "Pretome")
-
-        self.username = None
-        self.password = None
-        self.pin = None
-        self.minseed = 0
-        self.minleech = 0
-
         self.urls = {'base_url': 'https://pretome.info',
                      'login': 'https://pretome.info/takelogin.php',
                      'detail': 'https://pretome.info/details.php?id=%s',
@@ -60,7 +53,7 @@ class PretomeProvider(TorrentProvider):
 
     def _check_auth(self):
 
-        if not self.username or not self.password or not self.pin:
+        if not self.config('username') or not self.config('password') or not self.config('pin'):
             logger.warning("Invalid username or password or pin. Check your settings")
 
         return True
@@ -69,9 +62,9 @@ class PretomeProvider(TorrentProvider):
         if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
-        login_params = {'username': self.username,
-                        'password': self.password,
-                        'login_pin': self.pin}
+        login_params = {'username': self.config('username'),
+                        'password': self.config('password'),
+                        'login_pin': self.config('pin')}
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
@@ -147,7 +140,7 @@ class PretomeProvider(TorrentProvider):
                                 continue
 
                             # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != 'RSS':
                                     logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers))

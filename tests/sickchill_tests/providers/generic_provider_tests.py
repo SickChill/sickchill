@@ -164,13 +164,21 @@ class GenericProviderTests(unittest.TestCase):
         """
         Test is_active
         """
-        self.assertFalse(GenericProvider('Test Provider').is_active)
+        import sickbeard
+        sickbeard.USE_TORRENTS = True
+        provider = GenericProvider('Test Provider')
+        provider.provider_type = provider.TORRENT
+        provider.set_config('enabled', True)
+        self.assertFalse(provider.is_active)
 
     def test_is_enabled(self):
         """
         Test is_enabled
         """
-        self.assertFalse(GenericProvider('Test Provider').is_enabled)
+        provider = GenericProvider('Test Provider')
+        provider.provider_type = provider.TORRENT
+        provider.set_config('enabled', False)
+        self.assertFalse(provider.config('enabled'))
 
     def test_make_id(self):
         """

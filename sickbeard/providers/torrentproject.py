@@ -33,17 +33,8 @@ class TorrentProjectProvider(TorrentProvider):
         # Provider Init
         TorrentProvider.__init__(self, "TorrentProject")
 
-        # Credentials
-        self.public = True
-
-        # Torrent Stats
-        self.minseed = 0
-        self.minleech = 0
-
         # URLs
         self.url = 'https://torrentproject.se/'
-
-        self.custom_url = None
 
         self.ability_status = self.PROVIDER_BACKLOG
         # Proper Strings
@@ -72,11 +63,11 @@ class TorrentProjectProvider(TorrentProvider):
 
                 search_params['s'] = search_string
 
-                if self.custom_url:
-                    if not validators.url(self.custom_url):
+                if self.config('custom_url'):
+                    if not validators.url(self.config('custom_url')):
                         logger.warning("Invalid custom url set, please check your settings")
                         return results
-                    search_url = self.custom_url
+                    search_url = self.config('custom_url')
                 else:
                     search_url = self.url
 
@@ -92,7 +83,7 @@ class TorrentProjectProvider(TorrentProvider):
                     title = torrents[i]["title"]
                     seeders = try_int(torrents[i]["seeds"], 1)
                     leechers = try_int(torrents[i]["leechs"], 0)
-                    if seeders < self.minseed or leechers < self.minleech:
+                    if seeders < self.config('minseed') or leechers < self.config('minleech'):
                         if mode != 'RSS':
                             logger.debug("Torrent doesn't meet minimum seeds & leechers not selecting : {0}".format(title))
                         continue

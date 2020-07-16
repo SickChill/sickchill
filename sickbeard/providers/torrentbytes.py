@@ -38,15 +38,6 @@ class TorrentBytesProvider(TorrentProvider):
         # Provider Init
         TorrentProvider.__init__(self, "TorrentBytes")
 
-        # Credentials
-        self.username = None
-        self.password = None
-
-        # Torrent Stats
-        self.minseed = 0
-        self.minleech = 0
-        self.freeleech = False
-
         # URLs
         self.url = "https://www.torrentbytes.net"
         self.urls = {
@@ -64,8 +55,8 @@ class TorrentBytesProvider(TorrentProvider):
         if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
-        login_params = {"username": self.username,
-                        "password": self.password,
+        login_params = {"username": self.config('username'),
+                        "password": self.config('password'),
                         "login": "Log in!"}
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
@@ -125,7 +116,7 @@ class TorrentBytesProvider(TorrentProvider):
                             if not all([title, download_url]):
                                 continue
 
-                            if self.freeleech:
+                            if self.config('freeleech'):
                                 # Free leech torrents are marked with green [F L] in the title (i.e. <font color=green>[F&nbsp;L]</font>)
                                 freeleech = cells[labels.index("Name")].find("font", color="green")
                                 if not freeleech or freeleech.get_text(strip=True) != "[F\xa0L]":
@@ -135,7 +126,7 @@ class TorrentBytesProvider(TorrentProvider):
                             leechers = try_int(cells[labels.index("Leechers")].get_text(strip=True))
 
                             # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != "RSS":
                                     logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers))

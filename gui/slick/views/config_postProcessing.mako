@@ -4,6 +4,7 @@
     import datetime
     import platform
     import sickbeard
+    import sickchill.providers.metadata
     from sickbeard.common import MULTI_EP_STRINGS
     from sickbeard import unpackStrings
     from sickbeard import naming
@@ -1403,8 +1404,8 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <select id="metadataType" class="form-control input-sm input350">
-                                            % for (cur_name, cur_generator) in sorted(sickbeard.metadata_provider_dict.items()):
-                                                <option value="${cur_generator.get_id()}">${cur_name}</option>
+                                            % for cur_extension in sorted(sickchill.providers.metadata.metadata.extensions):
+                                                <option value="${cur_extension.plugin().get_id()}">${cur_extension.plugin().name}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -1427,10 +1428,10 @@
                                 <label class="component-title">${_('Select Metadata')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                % for (cur_name, cur_generator) in sickbeard.metadata_provider_dict.items():
+                                % for cur_extension in sickchill.providers.metadata.metadata.extensions:
                                     <%
-                                        cur_metadata_inst = sickbeard.metadata_provider_dict[cur_generator.name]
-                                        cur_id = cur_generator.get_id()
+                                        cur_metadata_inst = cur_extension.plugin()
+                                        cur_id = cur_metadata_inst.get_id()
                                     %>
                                     <div class="metadataDiv" id="${cur_id}">
                                         <div class="metadata_options_wrapper input350">

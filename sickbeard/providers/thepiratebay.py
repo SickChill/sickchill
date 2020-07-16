@@ -38,14 +38,6 @@ class ThePirateBayProvider(TorrentProvider):
         # Provider Init
         TorrentProvider.__init__(self, "ThePirateBay")
 
-        # Credentials
-        self.public = True
-
-        # Torrent Stats
-        self.minseed = 0
-        self.minleech = 0
-        self.confirmed = True
-
         # URLs
         self.url = "https://thepiratebay.org"
         self.api = "https://apibay.org"
@@ -108,7 +100,7 @@ class ThePirateBayProvider(TorrentProvider):
 
         if not (self.tracker_cache.get_trackers() or self._custom_trackers):
             logger.info("Set some custom trackers in config/search on the torrents tab. Re-enable this provider after fixing this issue.")
-            self.enabled = False
+            self.set_config('enabled', False)
             return results
 
         for mode in search_strings:
@@ -152,14 +144,14 @@ class ThePirateBayProvider(TorrentProvider):
                             leechers = result['leechers']
 
                             # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != "RSS":
                                     logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers))
                                 continue
 
                             # Accept Torrent only from Good People for every Episode Search
-                            if self.confirmed and not result['status'] in ('trusted', 'vip'):
+                            if self.config('confirmed') and not result['status'] in ('trusted', 'vip'):
                                 if mode != "RSS":
                                     logger.debug("Found result: {0} but that doesn't seem like a trusted result so I'm ignoring it".format(title))
                                 continue

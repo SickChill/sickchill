@@ -34,13 +34,6 @@ class EZTVProvider(TorrentProvider):
         # Provider Init
         TorrentProvider.__init__(self, "EZTV")
 
-        # Credentials
-        self.public = True
-
-        # Torrent Stats
-        self.minseed = 0
-        self.minleech = 0
-
         # URLs
         self.url = "https://eztv.io"
         self.api = urljoin(self.url, "api/get-torrents")
@@ -89,7 +82,7 @@ class EZTVProvider(TorrentProvider):
                     leechers = result['peers']
 
                     # Filter unseeded torrent
-                    if seeders < self.minseed or leechers < self.minleech:
+                    if seeders < self.config('minseed') or leechers < self.config('minleech'):
                         if mode != "RSS":
                             logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                        (title, seeders, leechers))

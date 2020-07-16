@@ -25,11 +25,13 @@ from os.path import join
 from random import shuffle
 
 # Third Party Imports
+import configobj
 from requests.utils import add_dict_to_cookiejar
+from validate import Validator
 
 # First Party Imports
 import sickbeard
-from sickbeard import logger
+from sickbeard import config, logger
 from sickbeard.classes import Proper, SearchResult
 from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, ua_pool
 from sickbeard.db import DBConnection
@@ -44,6 +46,7 @@ class GenericProvider(object):
     NZB = 'nzb'
     NZBDATA = 'nzbdata'
     TORRENT = 'torrent'
+    TORRENT_RSS = 'torrent_rss'
 
     PROVIDER_BROKEN = 0
     PROVIDER_DAILY = 1
@@ -60,7 +63,6 @@ class GenericProvider(object):
     def __init__(self, name):
         self.name = name
 
-        self.anime_only = False
         self.bt_cache_urls = [
             #'http://torcache.net/torrent/{torrent_hash}.torrent',
             'http://torrentproject.se/torrent/{torrent_hash}.torrent',
@@ -70,30 +72,52 @@ class GenericProvider(object):
             'https://itorrents.org/torrent/{torrent_hash}.torrent?title={torrent_name}'
         ]
         self.cache = TVCache(self)
-        self.enable_backlog = False
-        self.enable_daily = False
-        self.enabled = False
-        self.headers = {'User-Agent': ua_pool.random}
+
+        self.headers = {'User-Agent': sickbeard.common.USER_AGENT}
         self.proper_strings = ['PROPER|REPACK|REAL']
         self.provider_type = None
-        self.public = False
-        self.search_fallback = False
-        self.search_mode = None
+
         self.session = make_session()
         self.show = None
-        self.supports_absolute_numbering = False
-        self.supports_backlog = True
-        self.url = ''
         self.urls = {}
-
-        # Use and configure the attribute enable_cookies to show or hide the cookies input field per provider
-        self.enable_cookies = False
-        self.cookies = ''
-        self.rss_cookies = ''
 
         self.ability_status = self.PROVIDER_OK
 
+        self.supported_options = tuple()
+        self.default_supported_options = tuple(['enabled'])
+
         shuffle(self.bt_cache_urls)
+
+    @property
+    def all_supported_options(self):
+        return set(self.default_supported_options + self.supported_options)
+
+    def __assure_config(self):
+        sickbeard.CFG2.validate(Validator(), copy=True)
+        if 'providers' not in sickbeard.CFG2:
+            sickbeard.CFG2['providers'] = {}
+        if self.provider_type not in sickbeard.CFG2['providers']:
+            sickbeard.CFG2['providers'][self.provider_type] = {}
+        if self.get_id() not in sickbeard.CFG2['providers'][self.provider_type]:
+            sickbeard.CFG2['providers'][self.provider_type][self.get_id()] = {}
+
+        sickbeard.CFG2.validate(Validator(), copy=True)
+
+    def config(self, key: str):
+        if not self.options(key):
+            raise Exception('Unsupported key attempted to be read for provider: {}, key: {}'.format(self.name, key))
+        self.__assure_config()
+        return sickbeard.CFG2['providers'][self.provider_type][self.get_id()].get(key)
+
+    def set_config(self, key: str, value):
+        if not self.options(key):
+            logger.debug('Unsupported key attempted to be written for provider: {}, key: {}, value: {}'.format(self.name, key, value))
+            return
+        self.__assure_config()
+        sickbeard.CFG2['providers'][self.provider_type][self.get_id()][key] = value
+
+    def options(self, key: str):
+        return key in self.all_supported_options
 
     def download_result(self, result):
         if not self.login():
@@ -375,29 +399,32 @@ class GenericProvider(object):
     def is_active(self):
         return False
 
-    @property
-    def is_enabled(self):
-        return bool(self.enabled)
+    # @property
+    # def is_enabled(self):
+    #     return self.config('enabled')
 
-    @property
-    def daily_enabled(self):
-        return int(self.enable_daily)
+    # @property
+    # def daily_enabled(self):
+    #     return self.config('daily')
 
-    @property
-    def backlog_enabled(self):
-        return int(self.enable_backlog)
-
-    @property
-    def search_fallback_enabled(self):
-        return int(self.search_fallback)
+    # @property
+    # def backlog_enabled(self):
+    #     return self.config('backlog')
 
     @property
     def can_daily(self):
-        return self.ability_status & self.PROVIDER_DAILY != 0
+        return self.ability_status & self.PROVIDER_DAILY != 0 and self.options('daily')
 
     @property
     def can_backlog(self):
-        return self.ability_status & self.PROVIDER_BACKLOG != 0 and self.supports_backlog
+        return self.ability_status & self.PROVIDER_BACKLOG != 0 and self.options('backlog')
+
+    @property
+    def public(self):
+        return self.options('public')
+
+    def default(self):
+        return self.options('default')
 
     def status(self):
         return self.ProviderStatus.get(self.ability_status)
@@ -574,11 +601,11 @@ class GenericProvider(object):
         """
 
         # This is the generic attribute used to manually add cookies for provider authentication
-        if self.enable_cookies and self.cookies:
+        if self.config('cookies'):
             cookie_validator = re.compile(r'^(\w+=\w+)(;\w+=\w+)*$')
-            if not cookie_validator.match(self.cookies):
-                return False, 'Cookie is not correctly formatted: {0}'.format(self.cookies)
-            add_dict_to_cookiejar(self.session.cookies, dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
+            if not cookie_validator.match(self.config('cookies')):
+                return False, 'Cookie is not correctly formatted: {0}'.format(self.config('cookies'))
+            add_dict_to_cookiejar(self.session.cookies, dict(x.rsplit('=', 1) for x in self.config('cookies').split(';')))
             return True, 'torrent cookie'
 
         return False, 'No Cookies added from ui for provider: {0}'.format(self.name)

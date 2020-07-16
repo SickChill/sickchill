@@ -38,14 +38,6 @@ class TorrentLeechProvider(TorrentProvider):
         # Provider Init
         TorrentProvider.__init__(self, "TorrentLeech")
 
-        # Credentials
-        self.username = None
-        self.password = None
-
-        # Torrent Stats
-        self.minseed = 0
-        self.minleech = 0
-
         # URLs
         self.url = "https://www.torrentleech.org"
         self.urls = {
@@ -65,8 +57,8 @@ class TorrentLeechProvider(TorrentProvider):
             return True
 
         login_params = {
-            "username": self.username,
-            "password": self.password,
+            "username": self.config('username'),
+            "password": self.config('password'),
         }
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
@@ -131,7 +123,7 @@ class TorrentLeechProvider(TorrentProvider):
                         seeders = torrent['seeders']
                         leechers = torrent['leechers']
 
-                        if seeders < self.minseed or leechers < self.minleech:
+                        if seeders < self.config('minseed') or leechers < self.config('minleech'):
                             if mode != "RSS":
                                 logger.debug("Discarding torrent because it doesn't meet the"
                                             " minimum seeders or leechers: {0} (S:{1} L:{2})".format

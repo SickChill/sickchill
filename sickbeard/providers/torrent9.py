@@ -37,58 +37,10 @@ class Torrent9Provider(TorrentProvider):
 
         TorrentProvider.__init__(self, "Torrent9")
 
-        self.public = True
-        self.minseed = 0
-        self.minleech = 0
-        self._original_url = "https://www.torrent9.ac/"
-        self._custom_url = None
-        self._used_url = None
-        self._recheck_url = True
+        self.url = "https://www.torrent9.ac/"
 
         self.proper_strings = ['PROPER', 'REPACK']
         self.cache = tvcache.TVCache(self)
-
-    def _retrieve_dllink_from_url(self, inner_url, _type="torrent"):
-        data = self.get_url(inner_url, returns='text')
-        res = {
-            "torrent": "",
-            "magnet": "",
-        }
-        with BS4Parser(data, 'html5lib') as html:
-            download_btns = html.findAll("div", {"class": "download-btn"})
-            for btn in download_btns:
-                link = btn.find('a')["href"]
-                if link.startswith("magnet"):
-                    res["magnet"] = link
-                else:
-                    res["torrent"] = link
-        return res[_type]
-
-    def _get_custom_url(self):
-        return self._custom_url
-
-    def _set_custom_url(self, url):
-        if self._custom_url != url:
-            self._custom_url = url
-            self._recheck_url = True
-
-    def _get_provider_url(self):
-        if self._recheck_url:
-            if self.custom_url:
-                if validators.url(self.custom_url):
-                    self._used_url = self.custom_url
-                else:
-                    logger.warning("Invalid custom url set, please check your settings")
-
-            self._used_url = self._original_url
-
-        return self._used_url
-
-    def _set_provider_url(self, url):
-        self._used_url = url
-
-    url = property(_get_provider_url, _set_provider_url)
-    custom_url = property(_get_custom_url, _set_custom_url)
 
     def search(self, search_strings, age=0, ep_obj=None):
         results = []
@@ -99,13 +51,18 @@ class Torrent9Provider(TorrentProvider):
                 if mode == 'Season':
                     search_string = re.sub(r'(.*)S0?', r'\1Saison ', search_string)
 
+                search_url = self.url
+                if self.config('custom_url'):
+                    if not validators.url(self.config('custom_url')):
+                        logger.warning("Invalid custom url set, please check your settings")
+                        return results
+                    search_url = self.config('custom_url')
+
                 if mode != 'RSS':
                     logger.debug("Search string: {0}".format(search_string))
-
-                    search_url = self.url
                     post_data = {'torrentSearch': search_string}
                 else:
-                    search_url = self.url + '/torrents_series.html'
+                    search_url += '/torrents_series.html'
                     post_data = None
 
                 data = self.get_url(search_url, post_data, returns='text')
@@ -132,7 +89,7 @@ class Torrent9Provider(TorrentProvider):
 
                             seeders = try_int(result.find(class_="seed_ok").get_text(strip=True))
                             leechers = try_int(result.find_all('td')[3].get_text(strip=True))
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != 'RSS':
                                     logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers))
@@ -156,6 +113,22 @@ class Torrent9Provider(TorrentProvider):
             results += items
 
         return results
+
+    def _retrieve_dllink_from_url(self, inner_url, _type="torrent"):
+        data = self.get_url(inner_url, returns='text')
+        res = {
+            "torrent": "",
+            "magnet": "",
+        }
+        with BS4Parser(data, 'html5lib') as html:
+            download_btns = html.findAll("div", {"class": "download-btn"})
+            for btn in download_btns:
+                link = btn.find('a')["href"]
+                if link.startswith("magnet"):
+                    res["magnet"] = link
+                else:
+                    res["torrent"] = link
+        return res[_type]
 
 
 provider = Torrent9Provider()

@@ -28,17 +28,7 @@ class NyaaProvider(TorrentProvider):
     def __init__(self):
 
         TorrentProvider.__init__(self, 'Nyaa')
-
-        self.public = True
-        self.supports_absolute_numbering = True
-        self.anime_only = True
-
         self.url = 'https://nyaa.si'
-
-        self.minseed = 0
-        self.minleech = 0
-        self.confirmed = False
-
         self.cache = tvcache.TVCache(self, min_time=20)  # only poll Nyaa every 20 minutes max
 
     def search(self, search_strings, age=0, ep_obj=None):
@@ -58,7 +48,7 @@ class NyaaProvider(TorrentProvider):
                     'c': '1_0',  # Category: All anime
                     's': 'id',  # Sort by: 'id'=Date / 'size' / 'name' / 'seeders' / 'leechers' / 'downloads'
                     'o': 'desc',  # Sort direction: asc / desc
-                    'f': ('0', '2')[self.confirmed]  # Quality filter: 0 = None / 1 = No Remakes / 2 = Trusted Only
+                    'f': ('0', '2')[self.config('confirmed')]  # Quality filter: 0 = None / 1 = No Remakes / 2 = Trusted Only
                 }
                 if mode != 'RSS':
                     search_params['q'] = search_string
@@ -81,7 +71,7 @@ class NyaaProvider(TorrentProvider):
                         torrent_size = curItem['nyaa_size']
                         info_hash = curItem['nyaa_infohash']
 
-                        if seeders < self.minseed or leechers < self.minleech:
+                        if seeders < self.config('minseed') or leechers < self.config('minleech'):
                             if mode != 'RSS':
                                 logger.debug('Discarding torrent because it doesn\'t meet the'
                                            ' minimum seeders or leechers: {0} (S:{1} L:{2})'.format

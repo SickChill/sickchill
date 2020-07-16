@@ -39,15 +39,6 @@ class NebulanceProvider(TorrentProvider):
         # Provider Init
         TorrentProvider.__init__(self, "Nebulance")
 
-        # Credentials
-        self.username = None
-        self.password = None
-
-        # Torrent Stats
-        self.minseed = 0
-        self.minleech = 0
-        self.freeleech = None
-
         # URLs
         self.url = 'https://nebulance.io/'
         self.urls = {
@@ -55,14 +46,12 @@ class NebulanceProvider(TorrentProvider):
             'search': urljoin(self.url, '/torrents.php'),
         }
 
-        # Proper Strings
-
         # Cache
         self.cache = tvcache.TVCache(self)
 
     def _check_auth(self):
 
-        if not self.username or not self.password:
+        if not self.config('username') or not self.config('password'):
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
         return True
@@ -72,8 +61,8 @@ class NebulanceProvider(TorrentProvider):
             return True
 
         login_params = {
-            'username': self.username,
-            'password': self.password,
+            'username': self.config('username'),
+            'password': self.config('password'),
             'keeplogged': 'on',
             'login': 'Login'
         }
@@ -103,7 +92,7 @@ class NebulanceProvider(TorrentProvider):
 
                 search_params = {
                     'searchtext': search_string,
-                    'filter_freeleech': (0, 1)[self.freeleech is True],
+                    'filter_freeleech': (0, 1)[self.config('freeleech') is True],
                     'order_by': ('seeders', 'time')[mode == 'RSS'],
                     "order_way": "desc"
                 }
@@ -133,7 +122,7 @@ class NebulanceProvider(TorrentProvider):
 
                         for torrent_row in torrent_rows:
                             freeleech = torrent_row.find('img', alt="Freeleech") is not None
-                            if self.freeleech and not freeleech:
+                            if self.config('freeleech') and not freeleech:
                                 continue
 
                             # Normal Download Link
@@ -164,7 +153,7 @@ class NebulanceProvider(TorrentProvider):
                             leechers = try_int(cells[labels.index('∨')].get_text(strip=True))
 
                             # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != 'RSS':
                                     logger.debug("Discarding torrent because it doesn't meet the"
                                                " minimum seeders or leechers: {0} (S:{1} L:{2})".format

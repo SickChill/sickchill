@@ -39,17 +39,6 @@ class ArcheTorrentProvider(TorrentProvider):
         # Provider Init
         TorrentProvider.__init__(self, 'ArcheTorrent')
 
-        # Credentials
-        self.username = None
-        self.password = None
-
-        # Torrent Stats
-        self.minseed = 0
-        self.minleech = 0
-
-        # Freelech
-        self.freeleech = False
-
         # URLs
         self.url = 'https://www.archetorrent.com/'
         self.urls = {
@@ -69,8 +58,8 @@ class ArcheTorrentProvider(TorrentProvider):
             return True
 
         login_params = {
-            'username': self.username,
-            'password': self.password,
+            'username': self.config('username'),
+            'password': self.config('password'),
             'returnto': '/index.php'
         }
 
@@ -92,7 +81,7 @@ class ArcheTorrentProvider(TorrentProvider):
         if not self.login():
             return results
 
-        freeleech = '2' if self.freeleech else '0'
+        freeleech = '2' if self.config('freeleech') else '0'
 
         # Search Params
         # c59=1&c73=1&c5=1&c41=1&c60=1&c66=1&c65=1&c67=1&c62=1&c64=1&c61=1&search=Good+Behavior+S01E01&cat=0&incldead=0&freeleech=0&lang=0
@@ -158,7 +147,7 @@ class ArcheTorrentProvider(TorrentProvider):
                             leechers = try_int(cells[labels.index('L')].get_text(strip=True))
 
                             # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != 'RSS':
                                     logger.debug('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
                                                (title, seeders, leechers))

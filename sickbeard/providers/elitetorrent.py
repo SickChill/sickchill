@@ -37,9 +37,6 @@ class EliteTorrentProvider(TorrentProvider):
 
         TorrentProvider.__init__(self, "EliteTorrent")
 
-        self.onlyspasearch = None
-        self.minseed = 0
-        self.minleech = 0
         self.cache = tvcache.TVCache(self)  # Only poll EliteTorrent every 20 minutes max
 
         self.urls = {
@@ -78,7 +75,7 @@ class EliteTorrentProvider(TorrentProvider):
             logger.debug("Search Mode: {0}".format(mode))
 
             # Only search if user conditions are true
-            if self.onlyspasearch and lang_info != 'es' and mode != 'RSS':
+            if self.config('onlyspasearch') and lang_info != 'es' and mode != 'RSS':
                 logger.debug("Show info is not spanish, skipping provider search")
                 continue
 
@@ -148,7 +145,7 @@ class EliteTorrentProvider(TorrentProvider):
                                 continue
 
                             # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != 'RSS':
                                     logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers))

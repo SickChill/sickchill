@@ -33,13 +33,6 @@ class TVChaosUKProvider(TorrentProvider):
 
         TorrentProvider.__init__(self, 'TvChaosUK')
 
-        self.username = None
-        self.password = None
-
-        self.minseed = 0
-        self.minleech = 0
-        self.freeleech = None
-
         self.url = 'https://www.tvchaosuk.com/'
         self.urls = {
             'login': self.url + 'takelogin.php',
@@ -50,7 +43,7 @@ class TVChaosUKProvider(TorrentProvider):
         self.cache = tvcache.TVCache(self)
 
     def _check_auth(self):
-        if self.username and self.password:
+        if self.config('username') and self.config('password'):
             return True
 
         raise AuthException('Your authentication credentials for ' + self.name + ' are missing, check your config.')
@@ -60,8 +53,8 @@ class TVChaosUKProvider(TorrentProvider):
             return True
 
         login_params = {
-            'username': self.username,
-            'password': self.password,
+            'username': self.config('username'),
+            'password': self.config('password'),
             'logout': 'no',
             'submit': 'LOGIN',
             'returnto': '/browse.php'
@@ -125,7 +118,7 @@ class TVChaosUKProvider(TorrentProvider):
                     labels = [label.img['title'] if label.img else label.get_text(strip=True) for label in torrent_rows[0]('td')]
                     for torrent in torrent_rows[1:]:
                         try:
-                            if self.freeleech and not torrent.find('img', alt=re.compile('Free Torrent')):
+                            if self.config('freeleech') and not torrent.find('img', alt=re.compile('Free Torrent')):
                                 continue
 
                             title = torrent.find(class_='tooltip-content').div.get_text(strip=True)
@@ -137,7 +130,7 @@ class TVChaosUKProvider(TorrentProvider):
                             leechers = try_int(torrent.find(title='Leechers').get_text(strip=True))
 
                             # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != 'RSS':
                                     logger.debug('Discarding torrent because it doesn\'t meet the'
                                                ' minimum seeders or leechers: {0} (S:{1} L:{2})'.format

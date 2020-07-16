@@ -41,11 +41,6 @@ class BTNProvider(TorrentProvider):
     def __init__(self):
 
         TorrentProvider.__init__(self, "BTN")
-
-        self.supports_absolute_numbering = True
-
-        self.api_key = None
-
         self.cache = BTNCache(self, min_time=15)  # Only poll BTN every 15 minutes max
 
         self.urls = {'base_url': 'http://api.broadcasthe.net',
@@ -54,7 +49,7 @@ class BTNProvider(TorrentProvider):
         self.url = self.urls['website']
 
     def _check_auth(self):
-        if not self.api_key:
+        if not self.config('api_key'):
             logger.warning("Invalid api key. Check your settings")
 
         return True
@@ -77,7 +72,7 @@ class BTNProvider(TorrentProvider):
 
         results = []
         params = {}
-        apikey = self.api_key
+        apikey = self.config('api_key')
 
         # age in seconds
         if age:
@@ -295,7 +290,7 @@ class BTNProvider(TorrentProvider):
 
 
 class BTNCache(tvcache.TVCache):
-    def _get_rss_data(self):
+    def get_rss_data(self):
         # Get the torrents uploaded since last check.
         seconds_since_last_update = math.ceil(time.time() - time.mktime(self.last_update.timetuple()))
 

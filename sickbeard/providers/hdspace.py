@@ -37,12 +37,6 @@ class HDSpaceProvider(TorrentProvider):
     def __init__(self):
 
         TorrentProvider.__init__(self, "HDSpace")
-
-        self.username = None
-        self.password = None
-        self.minseed = 0
-        self.minleech = 0
-
         self.cache = tvcache.TVCache(self, min_time=10)  # only poll HDSpace every 10 minutes max
 
         self.urls = {'base_url': 'https://hd-space.org/',
@@ -62,7 +56,7 @@ class HDSpaceProvider(TorrentProvider):
 
     def _check_auth(self):
 
-        if not self.username or not self.password:
+        if not self.config('username') or not self.config('password'):
             logger.warning("Invalid username or password. Check your settings")
 
         return True
@@ -74,8 +68,8 @@ class HDSpaceProvider(TorrentProvider):
         if 'pass' in dict_from_cookiejar(self.session.cookies):
             return True
 
-        login_params = {'uid': self.username,
-                        'pwd': self.password}
+        login_params = {'uid': self.config('username'),
+                        'pwd': self.config('password')}
 
         response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
         if not response:
@@ -151,7 +145,7 @@ class HDSpaceProvider(TorrentProvider):
                             continue
 
                         # Filter unseeded torrent
-                        if seeders < self.minseed or leechers < self.minleech:
+                        if seeders < self.config('minseed') or leechers < self.config('minleech'):
                             if mode != 'RSS':
                                 logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                            (title, seeders, leechers))

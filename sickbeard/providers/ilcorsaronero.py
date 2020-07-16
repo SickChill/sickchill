@@ -50,12 +50,6 @@ class ilCorsaroNeroProvider(TorrentProvider):
             'search': urljoin(self.url, 'argh.php?search={0}&order=data&by=DESC&page={1}&category=' + categories),
         }
 
-        self.public = True
-        self.minseed = 0
-        self.minleech = 0
-
-        self.engrelease = None
-        self.subtitle = None
         self.max_pages = 10
 
         self.proper_strings = ['PROPER', 'REPACK']
@@ -272,11 +266,11 @@ class ilCorsaroNeroProvider(TorrentProvider):
                                 if Quality.nameQuality(title) == Quality.UNKNOWN:
                                     title += filename_qt
 
-                                if not self._is_italian(title) and not self.subtitle:
+                                if not self._is_italian(title) and not self.config('subtitle'):
                                     logger.debug('Torrent is subtitled, skipping: {0}'.format(title))
                                     continue
 
-                                if self.engrelease and not self._is_english(title):
+                                if self.config('engrelease') and not self._is_english(title):
                                     logger.debug('Torrent isn\'t english audio/subtitled, skipping: {0}'.format(title))
                                     continue
 
@@ -298,7 +292,7 @@ class ilCorsaroNeroProvider(TorrentProvider):
                                     title = re.sub(r'([Ee][\d{1,2}\-?]+)', '', title)
 
                                 # Filter unseeded torrent
-                                if seeders < self.minseed or leechers < self.minleech:
+                                if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                     logger.debug('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format(title, seeders, leechers))
                                     continue
 

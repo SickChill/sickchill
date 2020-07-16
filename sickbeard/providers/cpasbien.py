@@ -33,9 +33,6 @@ class CpasbienProvider(TorrentProvider):
 
         TorrentProvider.__init__(self, "Cpasbien")
 
-        self.public = True
-        self.minseed = 0
-        self.minleech = 0
         self.url = "http://www.cpasbien.cx"
 
         self.proper_strings = ['PROPER', 'REPACK']
@@ -77,7 +74,7 @@ class CpasbienProvider(TorrentProvider):
 
                             seeders = try_int(result.find(class_="up").get_text(strip=True))
                             leechers = try_int(result.find(class_="down").get_text(strip=True))
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != 'RSS':
                                     logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers))

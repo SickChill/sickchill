@@ -1,17 +1,4 @@
 # coding=utf-8
-"""A Norbits (https://norbits.net) provider"""
-# Stdlib Imports
-import json
-
-# Third Party Imports
-from requests.compat import urlencode
-
-# First Party Imports
-from sickbeard import logger, tvcache
-from sickchill.helper.common import convert_size, try_int
-from sickchill.helper.exceptions import AuthException
-from sickchill.providers.torrent.TorrentProvider import TorrentProvider
-
 # URL: https://sickchill.github.io
 #
 # This file is part of SickChill.
@@ -28,10 +15,17 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+# Stdlib Imports
+import json
 
+# Third Party Imports
+from requests.compat import urlencode
 
-
-
+# First Party Imports
+from sickbeard import logger, tvcache
+from sickchill.helper.common import convert_size, try_int
+from sickchill.helper.exceptions import AuthException
+from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class NorbitsProvider(TorrentProvider):
@@ -41,11 +35,6 @@ class NorbitsProvider(TorrentProvider):
         """ Initialize the class """
         TorrentProvider.__init__(self, 'Norbits')
 
-        self.username = None
-        self.passkey = None
-        self.minseed = 0
-        self.minleech = 0
-
         self.cache = tvcache.TVCache(self, min_time=20)  # only poll Norbits every 15 minutes max
 
         self.url = 'https://norbits.net'
@@ -54,7 +43,7 @@ class NorbitsProvider(TorrentProvider):
 
     def _check_auth(self):
 
-        if not self.username or not self.passkey:
+        if not self.config('username') or not self.config('passkey'):
             raise AuthException(('Your authentication credentials for {} are '
                                  'missing, check your config.').format(self.name))
 
@@ -83,8 +72,8 @@ class NorbitsProvider(TorrentProvider):
                     logger.debug('Search string: {0}'.format(search_string))
 
                 post_data = {
-                    'username': self.username,
-                    'passkey': self.passkey,
+                    'username': self.config('username'),
+                    'passkey': self.config('passkey'),
                     'category': '2',  # TV Category
                     'search': search_string,
                 }
@@ -107,7 +96,7 @@ class NorbitsProvider(TorrentProvider):
                         title = item.pop('name', '')
                         download_url = '{0}{1}'.format(
                             self.urls['download'],
-                            urlencode({'id': item.pop('id', ''), 'passkey': self.passkey}))
+                            urlencode({'id': item.pop('id', ''), 'passkey': self.config('passkey')}))
 
                         if not all([title, download_url]):
                             continue
@@ -115,7 +104,7 @@ class NorbitsProvider(TorrentProvider):
                         seeders = try_int(item.pop('seeders', 0))
                         leechers = try_int(item.pop('leechers', 0))
 
-                        if seeders < self.minseed or leechers < self.minleech:
+                        if seeders < self.config('minseed') or leechers < self.config('minleech'):
                             logger.debug('Discarding torrent because it does not meet '
                                        'the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
                                        (title, seeders, leechers))

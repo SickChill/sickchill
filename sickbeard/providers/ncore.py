@@ -26,10 +26,6 @@ class NcoreProvider(TorrentProvider):
     def __init__(self):
 
         TorrentProvider.__init__(self, "ncore.cc")
-        self.username = None
-        self.password = None
-        self.minseed = 0
-        self.minleech = 0
 
         categories = [
             'xvidser_hun', 'xvidser',
@@ -43,16 +39,16 @@ class NcoreProvider(TorrentProvider):
             'login': 'https://ncore.cc/login.php',
             'search': ('https://ncore.cc/torrents.php?nyit_sorozat_resz=true&{cats}&mire=%s&miben=name'
                        '&tipus=kivalasztottak_kozott&submit.x=0&submit.y=0&submit=Ok'
-                       '&tags=&searchedfrompotato=true&jsons=true').format(cats=categories),
-		}
+                       '&tags=&searchedfrompotato=true&jsons=true').format(cats=categories)
+        }
 
         self.cache = tvcache.TVCache(self)
 
     def login(self):
 
         login_params = {
-            'nev': self.username,
-            'pass': self.password,
+            'nev': self.config('username'),
+            'pass': self.config('password'),
             'submitted': '1',
         }
 
@@ -110,7 +106,7 @@ class NcoreProvider(TorrentProvider):
                         seeders = item.pop("seeders")
                         leechers = item.pop("leechers")
 
-                        if seeders < self.minseed or leechers < self.minleech:
+                        if seeders < self.config('minseed') or leechers < self.config('minleech'):
                             if mode != "RSS":
                                 logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers))
                             continue

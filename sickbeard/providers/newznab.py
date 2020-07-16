@@ -41,28 +41,9 @@ class NewznabProvider(NZBProvider):
     compatible api.
     Tested with: newznab, nzedb, spotweb, torznab
     """
-
-
-    def __init__(self, name, url, key='0', catIDs='5030,5040', search_mode='eponly',
-                 search_fallback=False, enable_daily=True, enable_backlog=False):
+    def __init__(self, name):
 
         NZBProvider.__init__(self, name)
-
-        self.url = url
-        self.key = key
-
-        self.search_mode = search_mode
-        self.search_fallback = search_fallback
-        self.enable_daily = enable_daily
-        self.enable_backlog = enable_backlog
-
-        # 0 in the key spot indicates that no key is needed
-        self.needs_auth = self.key != '0'
-        self.public = not self.needs_auth
-
-        self.catIDs = catIDs if catIDs else '5030,5040'
-
-        self.default = False
 
         self._caps = False
         self.use_tv_search = None
@@ -72,54 +53,6 @@ class NewznabProvider(NZBProvider):
         # self.cap_audio_search = None
 
         self.cache = tvcache.TVCache(self, min_time=30)  # only poll newznab providers every 30 minutes max
-
-    def configStr(self):
-        """
-        Generates a '|' delimited string of instance attributes, for saving to config.ini
-        """
-        return self.name + '|' + self.url + '|' + self.key + '|' + self.catIDs + '|' + str(
-            int(self.enabled)) + '|' + self.search_mode + '|' + str(int(self.search_fallback)) + '|' + str(
-                int(self.enable_daily)) + '|' + str(int(self.enable_backlog))
-
-    @staticmethod
-    def providers_list(data):
-        default_list = [x for x in (NewznabProvider._make_provider(x) for x in NewznabProvider._get_default_providers().split('!!!')) if x]
-        providers_list = [x for x in (NewznabProvider._make_provider(x) for x in data.split('!!!')) if x]
-        seen_values = set()
-        providers_set = []
-
-        for provider in providers_list:
-            value = provider.name
-
-            if value not in seen_values:
-                providers_set.append(provider)
-                seen_values.add(value)
-
-        providers_list = providers_set
-        providers_dict = dict(list(zip([x.name for x in providers_list], providers_list)))
-
-        for default in default_list:
-            if not default:
-                continue
-
-            if default.name not in providers_dict:
-                providers_dict[default.name] = default
-
-                providers_dict[default.name].default = True
-                providers_dict[default.name].name = default.name
-                providers_dict[default.name].url = default.url
-                providers_dict[default.name].needs_auth = default.needs_auth
-                providers_dict[default.name].search_mode = default.search_mode
-                providers_dict[default.name].search_fallback = default.search_fallback
-                providers_dict[default.name].enable_daily = default.enable_daily
-                providers_dict[default.name].enable_backlog = default.enable_backlog
-                providers_dict[default.name].catIDs = ','.join([x for x in providers_dict[default.name].catIDs.split(',')
-                                                                if 5000 <= try_int(x) <= 5999]) or default.catIDs
-
-                if sickbeard.QUALITY_ALLOW_HEVC and '5090' not in providers_dict[default.name].catIDs:
-                    providers_dict[default.name].catIDs += ',5090'
-
-        return [x for x in providers_list if x]
 
     def image_name(self):
         """
@@ -150,6 +83,9 @@ class NewznabProvider(NZBProvider):
             self.cap_tv_search = elm.get('supportedparams', 'tvdbid,season,ep')
 
         self._caps = any([self.cap_tv_search])
+
+    def needs_auth(self):
+        return self.config('key') and self.config('key') != '0'
 
     def get_newznab_categories(self, just_caps=False):
         """
@@ -197,15 +133,6 @@ class NewznabProvider(NZBProvider):
 
             return True, return_categories, ''
 
-    @staticmethod
-    def _get_default_providers():
-        # name|url|key|catIDs|enabled|search_mode|search_fallback|enable_daily|enable_backlog
-        return 'NZB.Cat|https://nzb.cat/||5030,5040,5010|0|eponly|1|1|1!!!' + \
-            'NZBFinder.ws|https://nzbfinder.ws/||5030,5040,5010,5045|0|eponly|1|1|1!!!' + \
-            'NZBGeek|https://api.nzbgeek.info/||5030,5040|0|eponly|0|0|0!!!' + \
-            'Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040|0|eponly|0|0|0!!!' + \
-            'DOGnzb|https://api.dognzb.cr/||5030,5040,5060,5070|0|eponly|0|1|1'
-
     def _check_auth(self):
         """
         Checks that user has set their api key if it is needed
@@ -235,39 +162,6 @@ class NewznabProvider(NZBProvider):
         logger.info(err_desc)
 
         return False
-
-    @staticmethod
-    def _make_provider(config):
-        if not config:
-            return None
-
-        enable_backlog = 0
-        enable_daily = 0
-        search_fallback = 0
-        search_mode = 'eponly'
-
-        try:
-            values = config.split('|')
-
-            if len(values) == 9:
-                name, url, key, category_ids, enabled, search_mode, search_fallback, enable_daily, enable_backlog = values
-            else:
-                name = values[0]
-                url = values[1]
-                key = values[2]
-                category_ids = values[3]
-                enabled = values[4]
-        except ValueError:
-            logger.exception('Skipping Newznab provider string: \'{0}\', incorrect format'.format(config))
-            return None
-
-        new_provider = NewznabProvider(
-            name, url, key=key, catIDs=category_ids, search_mode=search_mode, search_fallback=search_fallback,
-            enable_daily=enable_daily, enable_backlog=enable_backlog
-        )
-        new_provider.enabled = enabled == '1'
-
-        return new_provider
 
     def search(self, search_strings, age=0, ep_obj=None):
         """

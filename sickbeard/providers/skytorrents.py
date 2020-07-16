@@ -33,17 +33,10 @@ class SkyTorrents(TorrentProvider):
 
         TorrentProvider.__init__(self, "SkyTorrents")
 
-        self.public = True
-
-        self.minseed = 0
-        self.minleech = 0
-
         self.url = "https://www.skytorrents.lol"
         # https://www.skytorrents.lol/?query=arrow&category=show&tag=hd&sort=seeders&type=video
         # https://www.skytorrents.lol/top100?category=show&type=video&sort=created
         self.urls = {"search": urljoin(self.url, "/"), 'rss': urljoin(self.url, "/top100")}
-
-        self.custom_url = None
 
         self.cache = tvcache.TVCache(self, search_params={"RSS": [""]})
 
@@ -57,11 +50,11 @@ class SkyTorrents(TorrentProvider):
                     logger.debug("Search string: {0}".format(search_string))
 
                 search_url = (self.urls["search"], self.urls["rss"])[mode == "RSS"]
-                if self.custom_url:
-                    if not validators.url(self.custom_url):
-                        logger.warning("Invalid custom url: {0}".format(self.custom_url))
+                if self.config('custom_url'):
+                    if not validators.url(self.config('custom_url')):
+                        logger.warning("Invalid custom url: {0}".format(self.config('custom_url')))
                         return results
-                    search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
+                    search_url = urljoin(self.config('custom_url'), search_url.split(self.url)[1])
 
                 if mode != "RSS":
                     search_params = {'query': search_string, 'sort': ('seeders', 'created')[mode == 'RSS'], 'type': 'video', 'tag': 'hd', 'category': 'show'}
@@ -88,7 +81,7 @@ class SkyTorrents(TorrentProvider):
                             seeders = try_int(cells[labels.index('Seeders')].get_text(strip=True))
                             leechers = try_int(cells[labels.index('Leechers')].get_text(strip=True))
 
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != "RSS":
                                     logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers))

@@ -34,15 +34,10 @@ class MagnetDLProvider(TorrentProvider):
 
         super(MagnetDLProvider, self).__init__("MagnetDL")
 
-        self.minseed = 0
-        self.minleech = 0
-
         self.url = "http://www.magnetdl.com"
         self.urls = {
             "rss": urljoin(self.url, "download/tv/age/desc/")
         }
-
-        self.custom_url = None
         self.headers.update({'Accept': 'application/html'})
 
         self.cache = tvcache.TVCache(self)
@@ -61,11 +56,11 @@ class MagnetDLProvider(TorrentProvider):
                 else:
                     search_url = self.urls['rss']
 
-                if self.custom_url:
-                    if not validators.url(self.custom_url):
-                        logger.warning("Invalid custom url: {0}".format(self.custom_url))
+                if self.config('custom_url'):
+                    if not validators.url(self.config('custom_url')):
+                        logger.warning("Invalid custom url: {0}".format(self.config('custom_url')))
                         return results
-                    search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
+                    search_url = urljoin(self.config('custom_url'), search_url.split(self.url)[1])
 
                 data = self.get_url(search_url, returns="text")
                 if not data:
@@ -100,7 +95,7 @@ class MagnetDLProvider(TorrentProvider):
                                 continue
 
                             # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != "RSS":
                                     logger.debug("Discarding torrent because it doesn't meet the"
                                                " minimum seeders or leechers: {0} (S:{1} L:{2})".format

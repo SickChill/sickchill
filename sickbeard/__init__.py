@@ -72,10 +72,13 @@ dynamic_strings = (
 requests.packages.urllib3.disable_warnings()
 
 PID = None
+WINDOWS_SHARES = {}
 
 CFG = None
-WINDOWS_SHARES = {}
+CFG2 = None
 CONFIG_FILE = ""
+CONFIG_FILE_NEW = ""
+CONFIG_SPEC = ""
 
 # This is the version of the config we EXPECT to find
 CONFIG_VERSION = 8
@@ -669,8 +672,6 @@ SHOWS_RECENT = []
 
 __INITIALIZED__ = {}
 
-NEWZNAB_DATA = None
-
 UNPACK_DISABLED = 0
 UNPACK_PROCESS_CONTENTS = 1
 UNPACK_PROCESS_INTACT = 2
@@ -714,7 +715,7 @@ def initialize(consoleLogging=True):
             PLEX_CLIENT_PASSWORD, PLEX_SERVER_HOST, PLEX_SERVER_TOKEN, PLEX_CLIENT_HOST, PLEX_SERVER_USERNAME, PLEX_SERVER_PASSWORD, PLEX_SERVER_HTTPS, \
             MIN_BACKLOG_FREQUENCY, SKIP_REMOVED_FILES, ALLOWED_EXTENSIONS, USE_EMBY, EMBY_HOST, EMBY_APIKEY, SITE_MESSAGES, showUpdateScheduler, \
             INDEXER_DEFAULT_LANGUAGE, EP_DEFAULT_DELETED_STATUS, LAUNCH_BROWSER, TRASH_REMOVE_SHOW, TRASH_ROTATE_LOGS, IGNORE_BROKEN_SYMLINKS, SORT_ARTICLE, \
-            NEWZNAB_DATA, NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, QUALITY_DEFAULT, QUALITY_ALLOW_HEVC, \
+            NZBS, NZBS_UID, NZBS_HASH, INDEXER_DEFAULT, INDEXER_TIMEOUT, USENET_RETENTION, TORRENT_DIR, QUALITY_DEFAULT, QUALITY_ALLOW_HEVC, \
             SEASON_FOLDERS_DEFAULT, \
             SUBTITLES_DEFAULT, STATUS_DEFAULT, STATUS_DEFAULT_AFTER, GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, GROWL_NOTIFY_ONSUBTITLEDOWNLOAD, \
             TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD, USE_FREEMOBILE, FREEMOBILE_ID, FREEMOBILE_APIKEY, \
@@ -1475,72 +1476,7 @@ def initialize(consoleLogging=True):
         if check_section(CFG, 'Shares'):
             WINDOWS_SHARES.update(CFG['Shares'])
 
-        # initialize NZB and TORRENT providers
         providerList = providers.makeProviderList()
-
-        NEWZNAB_DATA = check_setting_str(CFG, 'Newznab', 'newznab_data')
-        newznabProviderList = NewznabProvider.providers_list(NEWZNAB_DATA)
-
-        TORRENTRSS_DATA = check_setting_str(CFG, 'TorrentRss', 'torrentrss_data')
-        torrentRssProviderList = TorrentRssProvider.providers_list(TORRENTRSS_DATA)
-
-        # dynamically load provider settings
-        for curProvider in providers.sortedProviderList():
-            curProvider.enabled = (curProvider.can_daily or curProvider.can_backlog) and \
-                                  check_setting_bool(CFG, curProvider.get_id().upper(), curProvider.get_id())
-            if hasattr(curProvider, 'custom_url'):
-                curProvider.custom_url = check_setting_str(CFG, curProvider.get_id().upper(), curProvider.get_id('_custom_url'), '', censor_log=True)
-            if hasattr(curProvider, 'api_key'):
-                curProvider.api_key = check_setting_str(CFG, curProvider.get_id().upper(), curProvider.get_id('_api_key'), censor_log=True)
-            if hasattr(curProvider, 'hash'):
-                curProvider.hash = check_setting_str(CFG, curProvider.get_id().upper(), curProvider.get_id('_hash'), censor_log=True)
-            if hasattr(curProvider, 'digest'):
-                curProvider.digest = check_setting_str(CFG, curProvider.get_id().upper(), curProvider.get_id('_digest'), censor_log=True)
-            if hasattr(curProvider, 'username'):
-                curProvider.username = check_setting_str(CFG, curProvider.get_id().upper(), curProvider.get_id('_username'), censor_log=True)
-            if hasattr(curProvider, 'password'):
-                curProvider.password = check_setting_str(CFG, curProvider.get_id().upper(), curProvider.get_id('_password'), censor_log=True)
-            if hasattr(curProvider, 'passkey'):
-                curProvider.passkey = check_setting_str(CFG, curProvider.get_id().upper(), curProvider.get_id('_passkey'), censor_log=True)
-            if hasattr(curProvider, 'pin'):
-                curProvider.pin = check_setting_str(CFG, curProvider.get_id().upper(), curProvider.get_id('_pin'), censor_log=True)
-            if hasattr(curProvider, 'confirmed'):
-                curProvider.confirmed = check_setting_bool(CFG, curProvider.get_id().upper(), curProvider.get_id('_confirmed'), True)
-            if hasattr(curProvider, 'ranked'):
-                curProvider.ranked = check_setting_bool(CFG, curProvider.get_id().upper(), curProvider.get_id('_ranked'), True)
-            if hasattr(curProvider, 'engrelease'):
-                curProvider.engrelease = check_setting_bool(CFG, curProvider.get_id().upper(), curProvider.get_id('_engrelease'))
-            if hasattr(curProvider, 'onlyspasearch'):
-                curProvider.onlyspasearch = check_setting_bool(CFG, curProvider.get_id().upper(), curProvider.get_id('_onlyspasearch'))
-            if hasattr(curProvider, 'sorting'):
-                curProvider.sorting = check_setting_str(CFG, curProvider.get_id().upper(), curProvider.get_id('_sorting'), 'seeders')
-            if hasattr(curProvider, 'options'):
-                curProvider.options = check_setting_str(CFG, curProvider.get_id().upper(), curProvider.get_id('_options'), '')
-            if hasattr(curProvider, 'ratio'):
-                curProvider.ratio = check_setting_str(CFG, curProvider.get_id().upper(), curProvider.get_id('_ratio'), '')
-            if hasattr(curProvider, 'minseed'):
-                curProvider.minseed = check_setting_int(CFG, curProvider.get_id().upper(), curProvider.get_id('_minseed'), 1, min_val=0)
-            if hasattr(curProvider, 'minleech'):
-                curProvider.minleech = check_setting_int(CFG, curProvider.get_id().upper(), curProvider.get_id('_minleech'), 0, min_val=0)
-            if hasattr(curProvider, 'freeleech'):
-                curProvider.freeleech = check_setting_bool(CFG, curProvider.get_id().upper(), curProvider.get_id('_freeleech'))
-            if hasattr(curProvider, 'search_mode'):
-                curProvider.search_mode = check_setting_str(CFG, curProvider.get_id().upper(), curProvider.get_id('_search_mode'), 'eponly')
-            if hasattr(curProvider, 'search_fallback'):
-                curProvider.search_fallback = check_setting_bool(CFG, curProvider.get_id().upper(), curProvider.get_id('_search_fallback'))
-            if hasattr(curProvider, 'enable_daily'):
-                curProvider.enable_daily = curProvider.can_daily and check_setting_bool(CFG, curProvider.get_id().upper(), curProvider.get_id(
-                    '_enable_daily'), True)
-            if hasattr(curProvider, 'enable_backlog'):
-                curProvider.enable_backlog = curProvider.can_backlog and check_setting_bool(
-                    CFG, curProvider.get_id().upper(), curProvider.get_id('_enable_backlog'), curProvider.can_backlog
-                )
-            if hasattr(curProvider, 'cat'):
-                curProvider.cat = check_setting_int(CFG, curProvider.get_id().upper(), curProvider.get_id('_cat'), 0)
-            if hasattr(curProvider, 'subtitle'):
-                curProvider.subtitle = check_setting_bool(CFG, curProvider.get_id().upper(), curProvider.get_id('_subtitle'))
-            if hasattr(curProvider, 'cookies'):
-                curProvider.cookies = check_setting_str(CFG, curProvider.get_id().upper(), curProvider.get_id('_cookies'), censor_log=True)
 
         providers.check_enabled_providers()
 
@@ -1811,61 +1747,8 @@ def saveAll():
 def save_config():
     new_config = ConfigObj(CONFIG_FILE, encoding='UTF-8', indent_type='  ')
 
+    CFG2.write()
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
-    # dynamically save provider settings
-    for curProvider in providers.sortedProviderList():
-        new_config[curProvider.get_id().upper()] = {}
-        new_config[curProvider.get_id().upper()][curProvider.get_id()] = int(curProvider.enabled)
-        if hasattr(curProvider, 'custom_url'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_custom_url')] = curProvider.custom_url
-        if hasattr(curProvider, 'digest'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_digest')] = curProvider.digest
-        if hasattr(curProvider, 'hash'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_hash')] = curProvider.hash
-        if hasattr(curProvider, 'api_key'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_api_key')] = curProvider.api_key
-        if hasattr(curProvider, 'username'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_username')] = curProvider.username
-        if hasattr(curProvider, 'password'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_password')] = helpers.encrypt(curProvider.password, ENCRYPTION_VERSION)
-        if hasattr(curProvider, 'passkey'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_passkey')] = curProvider.passkey
-        if hasattr(curProvider, 'pin'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_pin')] = curProvider.pin
-        if hasattr(curProvider, 'confirmed'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_confirmed')] = int(curProvider.confirmed)
-        if hasattr(curProvider, 'ranked'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_ranked')] = int(curProvider.ranked)
-        if hasattr(curProvider, 'engrelease'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_engrelease')] = int(curProvider.engrelease)
-        if hasattr(curProvider, 'onlyspasearch'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_onlyspasearch')] = int(curProvider.onlyspasearch)
-        if hasattr(curProvider, 'sorting'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_sorting')] = curProvider.sorting
-        if hasattr(curProvider, 'ratio'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_ratio')] = curProvider.ratio
-        if hasattr(curProvider, 'minseed'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_minseed')] = int(curProvider.minseed)
-        if hasattr(curProvider, 'minleech'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_minleech')] = int(curProvider.minleech)
-        if hasattr(curProvider, 'options'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_options')] = curProvider.options
-        if hasattr(curProvider, 'freeleech'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_freeleech')] = int(curProvider.freeleech)
-        if hasattr(curProvider, 'search_mode'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_search_mode')] = curProvider.search_mode
-        if hasattr(curProvider, 'search_fallback'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_search_fallback')] = int(curProvider.search_fallback)
-        if hasattr(curProvider, 'enable_daily'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_enable_daily')] = int(curProvider.enable_daily and curProvider.can_daily)
-        if hasattr(curProvider, 'enable_backlog'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_enable_backlog')] = int(curProvider.enable_backlog and curProvider.can_backlog)
-        if hasattr(curProvider, 'cat'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_cat')] = int(curProvider.cat)
-        if hasattr(curProvider, 'subtitle'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_subtitle')] = int(curProvider.subtitle)
-        if hasattr(curProvider, 'cookies'):
-            new_config[curProvider.get_id().upper()][curProvider.get_id('_cookies')] = curProvider.cookies
 
     new_config.update({
         'General': {
@@ -2346,15 +2229,6 @@ def save_config():
             'email_list': EMAIL_LIST,
             'email_subject': EMAIL_SUBJECT
         },
-
-        'Newznab': {
-            'newznab_data': NEWZNAB_DATA
-        },
-
-        'TorrentRss': {
-            'torrentrss_data': '!!!'.join([x.configStr() for x in torrentRssProviderList])
-        },
-
         'GUI': {
             'gui_name': GUI_NAME,
             'language': GUI_LANG,

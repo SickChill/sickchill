@@ -19,6 +19,9 @@
 # Stdlib Imports
 import sys
 
+# Third Party Imports
+from subliminal.extensions import RegistrableExtensionManager
+
 # Local Folder Imports
 from . import generic, helpers, kodi, kodi_12plus, mede8er, mediabrowser, ps3, tivo, wdtv
 
@@ -55,3 +58,21 @@ def get_metadata_generator_dict():
         result[cur_generator.name] = cur_generator
 
     return result
+
+
+metadata = RegistrableExtensionManager('sickchill.providers.metadata', [
+    "mede8er = sickchill.providers.metadata.mede8er:Mede8erMetadata",
+    "ps3 = sickchill.providers.metadata.ps3:PS3Metadata",
+    "tivo = sickchill.providers.metadata.tivo:TIVOMetadata",
+    "mede8er = sickchill.providers.metadata.mede8er:Mede8erMetadata",
+    "tivo = sickchill.providers.metadata.tivo:TIVOMetadata",
+    "mediabrowser = sickchill.providers.metadata.mediabrowser:MediaBrowserMetadata",
+    "wdtv = sickchill.providers.metadata.wdtv:WDTVMetadata",
+    "kodi = sickchill.providers.metadata.kodi:KODIMetadata",
+    "wdtv = sickchill.providers.metadata.wdtv:WDTVMetadata",
+    "kodi = sickchill.providers.metadata.kodi:KODIMetadata",
+    "kodi_12plus = sickchill.providers.metadata.kodi_12plus:KODI_12PlusMetadata",
+    "mediabrowser = sickchill.providers.metadata.mediabrowser:MediaBrowserMetadata",
+    "ps3 = sickchill.providers.metadata.ps3:PS3Metadata",
+    "kodi_12plus = sickchill.providers.metadata.kodi_12plus:KODI_12PlusMetadata",
+])

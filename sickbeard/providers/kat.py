@@ -39,13 +39,6 @@ class KatProvider(TorrentProvider):
 
         TorrentProvider.__init__(self, "KickAssTorrents")
 
-        self.public = True
-
-        self.confirmed = True
-        self.minseed = 0
-        self.minleech = 0
-        self.confirmed = True
-
         self.mirrors = []
         self.disabled_mirrors = []
 
@@ -54,8 +47,6 @@ class KatProvider(TorrentProvider):
 
         self.url = "https://kickasskat.org"
         self.urls = None
-
-        self.custom_url = None
 
         self.cache = tvcache.TVCache(self)
 
@@ -93,11 +84,11 @@ class KatProvider(TorrentProvider):
                 else:
                     search_url = self.urls["rss"]
 
-                if self.custom_url:
-                    if not validators.url(self.custom_url):
-                        logger.warning("Invalid custom url: {0}".format(self.custom_url))
+                if self.config('custom_url'):
+                    if not validators.url(self.config('custom_url')):
+                        logger.warning("Invalid custom url: {0}".format(self.config('custom_url')))
                         return results
-                    search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
+                    search_url = urljoin(self.config('custom_url'), search_url.split(self.url)[1])
 
                 data = self.get_url(search_url, params=OrderedDict(sorted(list(search_params.items()), key=lambda x: x[0])), returns="text")
                 if not data:
@@ -133,13 +124,13 @@ class KatProvider(TorrentProvider):
                             leechers = try_int(result.find(class_="red").get_text(strip=True))
 
                             # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != "RSS":
                                     logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers))
                                 continue
 
-                            if self.confirmed and not result.find(class_="ka-green"):
+                            if self.config('confirmed') and not result.find(class_="ka-green"):
                                 if mode != "RSS":
                                     logger.debug("Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it")
                                 continue

@@ -39,6 +39,7 @@ class TorrentProvider(GenericProvider):
         GenericProvider.__init__(self, name)
         self.ratio = None
         self.provider_type = GenericProvider.TORRENT
+        self.url = ''
 
     def find_propers(self, search_date=None):
         results = []
@@ -72,11 +73,11 @@ class TorrentProvider(GenericProvider):
 
     @property
     def is_active(self):
-        return bool(sickbeard.USE_TORRENTS) and self.is_enabled
+        return sickbeard.USE_TORRENTS and self.config('enabled')
 
     @property
     def _custom_trackers(self):
-        if not (sickbeard.TRACKERS_LIST and self.public):
+        if not (sickbeard.TRACKERS_LIST and self.options('public')):
             return ''
 
         return '&tr=' + '&tr='.join({x.strip() for x in sickbeard.TRACKERS_LIST.split(',') if x.strip()})

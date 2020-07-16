@@ -40,11 +40,6 @@ class DemonoidProvider(TorrentProvider):
 
         TorrentProvider.__init__(self, "Demonoid")
 
-        self.public = True
-        self.minseed = 0
-        self.sorting = None
-        self.minleech = 0
-
         self.url = "https://demonoid.is"
         self.urls = {"RSS": urljoin(self.url, 'rss.php'), 'search': urljoin(self.url, 'files/')}
 
@@ -64,7 +59,7 @@ class DemonoidProvider(TorrentProvider):
             "seeded": 0,  # 0: True
             "external": 2,  # 0: Demonoid (Only works if logged in), 1: External, 2: Both
             "order": "desc",
-            "sort": self.sorting or "seeders"
+            "sort": self.config('sorting')
         }
 
         for mode in search_strings:
@@ -103,7 +98,7 @@ class DemonoidProvider(TorrentProvider):
                             leechers = try_int(info[4].get_text(strip=True))
 
                             # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != "RSS":
                                     logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers))
@@ -149,9 +144,9 @@ class DemonoidProvider(TorrentProvider):
 
 
 class DemonoidCache(tvcache.TVCache):
-    def _get_rss_data(self):
-        if self.provider.cookies:
-            add_dict_to_cookiejar(self.provider.session.cookies, dict(x.rsplit('=', 1) for x in self.provider.cookies.split(';')))
+    def get_rss_data(self):
+        if self.provider.config('cookies'):
+            add_dict_to_cookiejar(self.provider.session.cookies, dict(x.rsplit('=', 1) for x in self.provider.config('cookies').split(';')))
 
         return self.get_rss_feed(self.provider.urls['RSS'], self.provider.cache_rss_params)
 

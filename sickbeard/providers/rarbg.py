@@ -32,16 +32,10 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 class RarbgProvider(TorrentProvider):
 
     def __init__(self):
-
         TorrentProvider.__init__(self, "Rarbg")
 
-        self.public = True
-        self.minseed = 0
-        self.ranked = None
-        self.sorting = None
-        self.minleech = 0
-        self.token = None
-        self.token_expires = None
+        self.__token = None
+        self.__token_expires = None
 
         # Spec: https://torrentapi.org/apidocs_v2.txt
         self.url = "https://rarbg.to"
@@ -51,8 +45,10 @@ class RarbgProvider(TorrentProvider):
 
         self.cache = tvcache.TVCache(self, min_time=10)  # only poll RARBG every 10 minutes max
 
+        self.supported_options = ('ranked', 'minseed', 'minleech', 'sorting', 'backlog', 'daily', 'enabled', 'custom_url')
+
     def login(self):
-        if self.token and self.token_expires and datetime.datetime.now() < self.token_expires:
+        if self.__token and self.__token_expires and datetime.datetime.now() < self.__token_expires:
             return True
 
         login_params = {
@@ -66,9 +62,9 @@ class RarbgProvider(TorrentProvider):
             logger.warning("Unable to connect to provider")
             return False
 
-        self.token = response.get("token")
-        self.token_expires = datetime.datetime.now() + datetime.timedelta(minutes=14) if self.token else None
-        return self.token is not None
+        self.__token = response.get("__token")
+        self.__token_expires = datetime.datetime.now() + datetime.timedelta(minutes=14) if self.__token else None
+        return self.__token is not None
 
     def search(self, search_strings, age=0, ep_obj=None):
         results = []
@@ -78,12 +74,12 @@ class RarbgProvider(TorrentProvider):
         search_params = {
             "app_id": "sickchill",
             "category": "tv",
-            "min_seeders": try_int(self.minseed),
-            "min_leechers": try_int(self.minleech),
+            "min_seeders": self.config('minseed'),
+            "min_leechers": self.config('minleech'),
             "limit": 100,
             "format": "json_extended",
-            "ranked": try_int(self.ranked),
-            "token": self.token,
+            "ranked": try_int(self.config('ranked')),
+            "__token": self.__token,
         }
 
         if ep_obj is not None:
@@ -102,7 +98,7 @@ class RarbgProvider(TorrentProvider):
                 search_params.pop("search_string", None)
                 search_params.pop("search_tvdb", None)
             else:
-                search_params["sort"] = self.sorting if self.sorting else "seeders"
+                search_params["sort"] = self.config('sorting')
                 search_params["mode"] = "search"
 
                 if ep_indexer == 'tvdb' and ep_indexerid:
@@ -144,7 +140,7 @@ class RarbgProvider(TorrentProvider):
 
                         seeders = item.pop("seeders")
                         leechers = item.pop("leechers")
-                        if seeders < self.minseed or leechers < self.minleech:
+                        if seeders < self.config('minseed') or leechers < self.config('minleech'):
                             if mode != "RSS":
                                 logger.debug("Discarding torrent because it doesn't meet the"
                                            " minimum seeders or leechers: {0} (S:{1} L:{2})".format

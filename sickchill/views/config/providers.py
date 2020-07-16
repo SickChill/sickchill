@@ -107,22 +107,26 @@ class ConfigProviders(Config):
         return '1'
 
     @staticmethod
-    def canAddTorrentRssProvider(name, url, cookies, titleTAG):
+    def canAddTorrentRssProvider(name, url, cookies, title_tag):
 
         if not name:
             return json.dumps({'error': 'Invalid name specified'})
 
         url = config.clean_url(url)
-        tempProvider = rsstorrent.TorrentRssProvider(name, url, cookies, titleTAG)
+        tempProvider = rsstorrent.TorrentRssProvider(name)
 
         if tempProvider.get_id() in (x.get_id() for x in sickbeard.torrentRssProviderList):
             return json.dumps({'error': 'Exists as ' + tempProvider.name})
+
+        tempProvider.set_config('url', config.clean_url(url))
+        tempProvider.set_config('cookies', cookies)
+        tempProvider.set_config('title_tag', title_tag)
+
+        (succ, errMsg) = tempProvider.validateRSS()
+        if succ:
+            return json.dumps({'success': tempProvider.get_id()})
         else:
-            (succ, errMsg) = tempProvider.validateRSS()
-            if succ:
-                return json.dumps({'success': tempProvider.get_id()})
-            else:
-                return json.dumps({'error': errMsg})
+            return json.dumps({'error': errMsg})
 
     @staticmethod
     def deleteTorrentRssProvider(provider_id):
@@ -161,21 +165,21 @@ class ConfigProviders(Config):
 
             # if it does not already exist then add it
             if cur_id not in newznabProviderDict:
-                new_provider = newznab.NewznabProvider(cur_name, cur_url, key=cur_key, catIDs=cur_cat)
+                new_provider = newznab.NewznabProvider(cur_name, cur_url)
                 sickbeard.newznabProviderList.append(new_provider)
                 newznabProviderDict[cur_id] = new_provider
 
             # set all params
-            newznabProviderDict[cur_id].name = cur_name
-            newznabProviderDict[cur_id].url = cur_url
-            newznabProviderDict[cur_id].key = cur_key
-            newznabProviderDict[cur_id].catIDs = cur_cat
+            newznabProviderDict[cur_id].config.set_config('name', cur_name)
+            newznabProviderDict[cur_id].config.set_config('url', cur_url)
+            newznabProviderDict[cur_id].config.set_config('key', cur_key)
+            newznabProviderDict[cur_id].config.set_config('catIDs', cur_cat)
             # a 0 in the key spot indicates that no key is needed
-            newznabProviderDict[cur_id].needs_auth = cur_key and cur_key != '0'
-            newznabProviderDict[cur_id].search_mode = str(kwargs.get(cur_id + '_search_mode', 'eponly')).strip()
-            newznabProviderDict[cur_id].search_fallback = config.checkbox_to_value(kwargs.get(cur_id + 'search_fallback', 0), value_on=1, value_off=0)
-            newznabProviderDict[cur_id].enable_daily = config.checkbox_to_value(kwargs.get(cur_id + 'enable_daily', 0), value_on=1, value_off=0)
-            newznabProviderDict[cur_id].enable_backlog = config.checkbox_to_value(kwargs.get(cur_id + 'enable_backlog', 0), value_on=1, value_off=0)
+            newznabProviderDict[cur_id].config.set_config('needs_auth', cur_key and cur_key != '0')
+            newznabProviderDict[cur_id].config.set_config('search_mode', str(kwargs.get(cur_id + '_search_mode', 'eponly')).strip())
+            newznabProviderDict[cur_id].config.set_config('search_fallback', config.checkbox_to_value(kwargs.get(cur_id + 'search_fallback', 0), value_on=1, value_off=0))
+            newznabProviderDict[cur_id].config.set_config('enable_daily', config.checkbox_to_value(kwargs.get(cur_id + 'enable_daily', 0), value_on=1, value_off=0))
+            newznabProviderDict[cur_id].config.set_config('enable_backlog', config.checkbox_to_value(kwargs.get(cur_id + 'enable_backlog', 0), value_on=1, value_off=0))
 
             # mark it finished
             finished_names.append(cur_id)
@@ -207,15 +211,15 @@ class ConfigProviders(Config):
 
                 # if it does not already exist then create it
                 if cur_id not in torrentRssProviderDict:
-                    new_provider = rsstorrent.TorrentRssProvider(cur_name, cur_url, cur_cookies, cur_title_tag)
+                    new_provider = rsstorrent.TorrentRssProvider(cur_name, cur_url)
                     sickbeard.torrentRssProviderList.append(new_provider)
                     torrentRssProviderDict[cur_id] = new_provider
 
                 # update values
-                torrentRssProviderDict[cur_id].name = cur_name
-                torrentRssProviderDict[cur_id].url = cur_url
-                torrentRssProviderDict[cur_id].cookies = cur_cookies
-                torrentRssProviderDict[cur_id].cur_title_tag = cur_title_tag
+                torrentRssProviderDict[cur_id].set_config('name', cur_name)
+                torrentRssProviderDict[cur_id].set_config('url', cur_url)
+                torrentRssProviderDict[cur_id].set_config('cookies', cur_cookies)
+                torrentRssProviderDict[cur_id].set_config('cur_title_tag', cur_title_tag)
 
                 # mark it finished
                 finished_names.append(cur_id)
@@ -233,10 +237,10 @@ class ConfigProviders(Config):
         for cur_id, cur_enabled in (cur_provider_str.split(':') for cur_provider_str in provider_order.split()):
             cur_enabled = bool(try_int(cur_enabled))
 
-            cur_provider_obj = [x for x in sickbeard.providers.sortedProviderList() if x.get_id() == cur_id and hasattr(x, 'enabled')]
+            cur_provider_obj = [x for x in sickbeard.providers.sortedProviderList() if x.get_id() == cur_id and x.options('enabled')]
 
             if cur_provider_obj:
-                cur_provider_obj[0].enabled = cur_enabled
+                cur_provider_obj[0].set_config('enabled', cur_enabled)
 
             if cur_enabled:
                 enabled_provider_list.append(cur_id)
@@ -244,93 +248,35 @@ class ConfigProviders(Config):
                 disabled_provider_list.append(cur_id)
 
             if cur_id in newznabProviderDict:
-                newznabProviderDict[cur_id].enabled = cur_enabled
+                newznabProviderDict[cur_id].set_config('enabled', cur_enabled)
             elif cur_id in torrentRssProviderDict:
-                torrentRssProviderDict[cur_id].enabled = cur_enabled
+                torrentRssProviderDict[cur_id].set_config('enabled', cur_enabled)
 
         # dynamically load provider settings
         for curProvider in sickbeard.providers.sortedProviderList():
-            if hasattr(curProvider, 'custom_url'):
-                curProvider.custom_url = str(kwargs.get(curProvider.get_id('_custom_url'), '')).strip()
+            curProvider.set_config('custom_url', str(kwargs.get(curProvider.get_id('_custom_url'), '')).strip())
+            curProvider.set_config('minseed', int(str(kwargs.get(curProvider.get_id('_minseed'), 0)).strip()))
+            curProvider.set_config('minleech', int(str(kwargs.get(curProvider.get_id('_minleech'), 0)).strip()))
+            curProvider.set_config('ratio', str(kwargs.get(curProvider.get_id('_ratio'))).strip())
+            curProvider.set_config('api_key', str(kwargs.get(curProvider.get_id('_api_key'), '')).strip() or None)
+            curProvider.set_config('username', str(kwargs.get(curProvider.get_id('_username'), '')).strip() or None)
+            curProvider.set_config('password', filters.unhide(curProvider.password, str(kwargs.get(curProvider.get_id('_password'), '')).strip()))
+            curProvider.set_config('passkey', filters.unhide(curProvider.passkey, str(kwargs.get(curProvider.get_id('_passkey'), '')).strip()))
+            curProvider.set_config('pin', filters.unhide(curProvider.pin, str(kwargs.get(curProvider.get_id('_pin'), '')).strip()))
+            curProvider.set_config('confirmed', config.checkbox_to_value(kwargs.get(curProvider.get_id('_confirmed'))))
+            curProvider.set_config('ranked', config.checkbox_to_value(kwargs.get(curProvider.get_id('_ranked'))))
+            curProvider.set_config('engrelease', config.checkbox_to_value(kwargs.get(curProvider.get_id('_engrelease'))))
+            curProvider.set_config('onlyspasearch', config.checkbox_to_value(kwargs.get(curProvider.get_id('_onlyspasearch'))))
+            curProvider.set_config('sorting', str(kwargs.get(curProvider.get_id('_sorting'), 'seeders')).strip())
+            curProvider.set_config('freeleech', config.checkbox_to_value(kwargs.get(curProvider.get_id('_freeleech'))))
+            curProvider.set_config('search_mode', str(kwargs.get(curProvider.get_id('_search_mode'), 'eponly')).strip())
+            curProvider.set_config('search_fallback', config.checkbox_to_value(kwargs.get(curProvider.get_id('_search_fallback'))))
+            curProvider.set_config('enable_daily', curProvider.can_daily and config.checkbox_to_value(kwargs.get(curProvider.get_id('_enable_daily'))))
+            curProvider.set_config('enable_backlog', curProvider.can_backlog and config.checkbox_to_value(kwargs.get(curProvider.get_id('_enable_backlog'))))
+            curProvider.set_config('cat', int(str(kwargs.get(curProvider.get_id('_cat'), 0)).strip()))
+            curProvider.set_config('subtitle', config.checkbox_to_value(kwargs.get(curProvider.get_id('_subtitle'))))
+            curProvider.set_config('cookies', str(kwargs.get(curProvider.get_id('_cookies'))).strip())
 
-            if hasattr(curProvider, 'minseed'):
-                curProvider.minseed = int(str(kwargs.get(curProvider.get_id('_minseed'), 0)).strip())
-
-            if hasattr(curProvider, 'minleech'):
-                curProvider.minleech = int(str(kwargs.get(curProvider.get_id('_minleech'), 0)).strip())
-
-            if hasattr(curProvider, 'ratio'):
-                if curProvider.get_id('_ratio') in kwargs:
-                    ratio = str(kwargs.get(curProvider.get_id('_ratio'))).strip()
-                    print (ratio)
-                    if ratio in ('None', None, ''):
-                        curProvider.ratio = None
-                    else:
-                        curProvider.ratio = max(float(ratio), -1)
-                else:
-                    curProvider.ratio = None
-
-            if hasattr(curProvider, 'digest'):
-                curProvider.digest = str(kwargs.get(curProvider.get_id('_digest'), '')).strip() or None
-
-            if hasattr(curProvider, 'hash'):
-                curProvider.hash = str(kwargs.get(curProvider.get_id('_hash'), '')).strip() or None
-
-            if hasattr(curProvider, 'api_key'):
-                curProvider.api_key = str(kwargs.get(curProvider.get_id('_api_key'), '')).strip() or None
-
-            if hasattr(curProvider, 'username'):
-                curProvider.username = str(kwargs.get(curProvider.get_id('_username'), '')).strip() or None
-
-            if hasattr(curProvider, 'password'):
-                curProvider.password = filters.unhide(curProvider.password, str(kwargs.get(curProvider.get_id('_password'), '')).strip())
-
-            if hasattr(curProvider, 'passkey'):
-                curProvider.passkey = filters.unhide(curProvider.passkey, str(kwargs.get(curProvider.get_id('_passkey'), '')).strip())
-
-            if hasattr(curProvider, 'pin'):
-                curProvider.pin = filters.unhide(curProvider.pin, str(kwargs.get(curProvider.get_id('_pin'), '')).strip())
-
-            if hasattr(curProvider, 'confirmed'):
-                curProvider.confirmed = config.checkbox_to_value(kwargs.get(curProvider.get_id('_confirmed')))
-
-            if hasattr(curProvider, 'ranked'):
-                curProvider.ranked = config.checkbox_to_value(kwargs.get(curProvider.get_id('_ranked')))
-
-            if hasattr(curProvider, 'engrelease'):
-                curProvider.engrelease = config.checkbox_to_value(kwargs.get(curProvider.get_id('_engrelease')))
-
-            if hasattr(curProvider, 'onlyspasearch'):
-                curProvider.onlyspasearch = config.checkbox_to_value(kwargs.get(curProvider.get_id('_onlyspasearch')))
-
-            if hasattr(curProvider, 'sorting'):
-                curProvider.sorting = str(kwargs.get(curProvider.get_id('_sorting'), 'seeders')).strip()
-
-            if hasattr(curProvider, 'freeleech'):
-                curProvider.freeleech = config.checkbox_to_value(kwargs.get(curProvider.get_id('_freeleech')))
-
-            if hasattr(curProvider, 'search_mode'):
-                curProvider.search_mode = str(kwargs.get(curProvider.get_id('_search_mode'), 'eponly')).strip()
-
-            if hasattr(curProvider, 'search_fallback'):
-                curProvider.search_fallback = config.checkbox_to_value(kwargs.get(curProvider.get_id('_search_fallback')))
-
-            if hasattr(curProvider, 'enable_daily'):
-                curProvider.enable_daily = curProvider.can_daily and config.checkbox_to_value(kwargs.get(curProvider.get_id('_enable_daily')))
-
-            if hasattr(curProvider, 'enable_backlog'):
-                curProvider.enable_backlog = curProvider.can_backlog and config.checkbox_to_value(kwargs.get(curProvider.get_id('_enable_backlog')))
-
-            if hasattr(curProvider, 'cat'):
-                curProvider.cat = int(str(kwargs.get(curProvider.get_id('_cat'), 0)).strip())
-
-            if hasattr(curProvider, 'subtitle'):
-                curProvider.subtitle = config.checkbox_to_value(kwargs.get(curProvider.get_id('_subtitle')))
-
-            if curProvider.enable_cookies:
-                curProvider.cookies = str(kwargs.get(curProvider.get_id('_cookies'))).strip()
-
-        sickbeard.NEWZNAB_DATA = '!!!'.join([x.configStr() for x in sickbeard.newznabProviderList])
         sickbeard.PROVIDER_ORDER = enabled_provider_list + disabled_provider_list
 
         sickbeard.save_config()

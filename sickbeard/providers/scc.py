@@ -40,11 +40,6 @@ class SCCProvider(TorrentProvider):
 
         TorrentProvider.__init__(self, "SceneAccess")
 
-        self.username = None
-        self.password = None
-        self.minseed = 0
-        self.minleech = 0
-
         self.cache = tvcache.TVCache(self)  # only poll SCC every 20 minutes max
 
         self.urls = {
@@ -68,8 +63,8 @@ class SCCProvider(TorrentProvider):
             return True
 
         login_params = {
-            'username': self.username,
-            'password': self.password,
+            'username': self.config('username'),
+            'password': self.config('password'),
             'submit': 'come on in'
         }
 
@@ -148,7 +143,7 @@ class SCCProvider(TorrentProvider):
                             continue
 
                         # Filter unseeded torrent
-                        if seeders < self.minseed or leechers < self.minleech:
+                        if seeders < self.config('minseed') or leechers < self.config('minleech'):
                             if mode != 'RSS':
                                 logger.debug(
                                     "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers))

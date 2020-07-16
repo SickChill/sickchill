@@ -37,13 +37,6 @@ class HoundDawgsProvider(TorrentProvider):
 
         TorrentProvider.__init__(self, "HoundDawgs")
 
-        self.username = None
-        self.password = None
-        self.minseed = 0
-        self.minleech = 0
-        self.freeleech = None
-        self.ranked = None
-
         self.urls = {
             'base_url': 'https://hounddawgs.org/',
             'search': 'https://hounddawgs.org/torrents.php',
@@ -75,8 +68,8 @@ class HoundDawgsProvider(TorrentProvider):
             return True
 
         login_params = {
-            'username': self.username,
-            'password': self.password,
+            'username': self.config('username'),
+            'password': self.config('password'),
             'keeplogged': 'on',
             'login': 'Login'
         }
@@ -143,11 +136,11 @@ class HoundDawgsProvider(TorrentProvider):
 
                             try:
                                 notinternal = result.find('img', src='/static//common/user_upload.png')
-                                if self.ranked and notinternal:
+                                if self.config('ranked') and notinternal:
                                     logger.debug("Found a user uploaded release, Ignoring it..")
                                     continue
                                 freeleech = result.find('img', src='/static//common/browse/freeleech.png')
-                                if self.freeleech and not freeleech:
+                                if self.config('freeleech') and not freeleech:
                                     continue
                                 title = allAs[2].string
                                 download_url = self.urls['base_url'] + allAs[0].attrs['href']
@@ -164,7 +157,7 @@ class HoundDawgsProvider(TorrentProvider):
                                 continue
 
                             # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != 'RSS':
                                     logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers))

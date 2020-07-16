@@ -28,9 +28,6 @@ class OmgwtfnzbsProvider(NZBProvider):
     def __init__(self):
         NZBProvider.__init__(self, 'OMGWTFNZBs')
 
-        self.username = None
-        self.api_key = None
-
         self.cache = OmgwtfnzbsCache(self)
 
         self.url = 'https://omgwtfnzbs.me/'
@@ -43,7 +40,7 @@ class OmgwtfnzbsProvider(NZBProvider):
 
     def _check_auth(self):
 
-        if not self.username or not self.api_key:
+        if not self.config('username') or not self.config('api_key'):
             logger.warning('Invalid api key. Check your settings')
             return False
 
@@ -80,8 +77,8 @@ class OmgwtfnzbsProvider(NZBProvider):
             return results
 
         search_params = {
-            'user': self.username,
-            'api': self.api_key,
+            'user': self.config('username'),
+            'api': self.config('api_key'),
             'eng': 1,
             'catid': '19,20,30',  # SD,HD,UHD
             'retention': sickbeard.USENET_RETENTION,
@@ -127,7 +124,7 @@ class OmgwtfnzbsCache(tvcache.TVCache):
 
         return title, url
 
-    def _get_rss_data(self):
+    def get_rss_data(self):
         search_params = {
             'user': provider.username,
             'api': provider.api_key,

@@ -37,13 +37,6 @@ class HDTorrentsProvider_IT(TorrentProvider):
 
         TorrentProvider.__init__(self, "HDTorrents.it")
 
-        self.username = None
-        self.password = None
-        self.ratio = None
-        self.minseed = 0
-        self.minleech = 0
-        self.freeleech = None
-
         self.urls = {'base_url': 'http://hdtorrents.it',
                      'login': 'http://hdtorrents.it/takelogin.php',
                      'search': 'http://hdtorrents.it/browse.php?search=%s',
@@ -58,7 +51,7 @@ class HDTorrentsProvider_IT(TorrentProvider):
 
     def _check_auth(self):
 
-        if not self.username or not self.password:
+        if not self.config('username') or not self.config('password'):
             logger.warning("Invalid username or password. Check your settings")
 
         return True
@@ -67,8 +60,8 @@ class HDTorrentsProvider_IT(TorrentProvider):
         if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
-        login_params = {'username': self.username,
-                        'password': self.password,
+        login_params = {'username': self.config('username'),
+                        'password': self.config('password'),
                         'submit': 'Accedi!'}
 
         response = self.get_url(self.urls['login'], post_data=login_params, timeout=30)
@@ -97,7 +90,7 @@ class HDTorrentsProvider_IT(TorrentProvider):
                 else:
                     search_url = self.urls['rss']
 
-                if self.freeleech:
+                if self.config('freeleech'):
                     search_url = search_url.replace('active=1', 'active=5')
 
                 logger.debug("Search URL: {}".format(search_url))
@@ -168,7 +161,7 @@ class HDTorrentsProvider_IT(TorrentProvider):
                             continue
 
                         # Filter unseeded torrent
-                        if seeders < self.minseed or leechers < self.minleech:
+                        if seeders < self.config('minseed') or leechers < self.config('minleech'):
                             if mode != 'RSS':
                                 logger.debug(
                                     "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers))

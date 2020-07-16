@@ -94,7 +94,7 @@ class TVCache(object):
     def _get_title_and_url(self, item):
         return self.provider._get_title_and_url(item)  # pylint:disable=protected-access
 
-    def _get_rss_data(self):
+    def get_rss_data(self):
         return {'entries': self.provider.search(self.search_params)} if self.search_params else None
 
     def _check_auth(self, data):  # pylint:disable=unused-argument, no-self-use
@@ -109,7 +109,7 @@ class TVCache(object):
             return
 
         try:
-            data = self._get_rss_data()
+            data = self.get_rss_data()
             if self._check_auth(data):
                 # clear cache
                 self._clear_cache()

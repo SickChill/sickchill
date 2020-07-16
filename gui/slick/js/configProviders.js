@@ -85,8 +85,8 @@ $(document).ready(function () {
         $(this).makeNewznabProviderString();
     };
 
-    $.fn.addTorrentRssProvider = function (id, name, url, cookies, titleTAG) { // eslint-disable-line max-params
-        torrentRssProviders[id] = [name, url, cookies, titleTAG];
+    $.fn.addTorrentRssProvider = function (id, name, url, cookies, title_tag) { // eslint-disable-line max-params
+        torrentRssProviders[id] = [name, url, cookies, title_tag];
 
         $('#editATorrentRssProvider').addOption(id, name);
         $(this).populateTorrentRssSection();
@@ -116,10 +116,10 @@ $(document).ready(function () {
         $(this).makeNewznabProviderString();
     };
 
-    $.fn.updateTorrentRssProvider = function (id, url, cookies, titleTAG) {
+    $.fn.updateTorrentRssProvider = function (id, url, cookies, title_tag) {
         torrentRssProviders[id][1] = url;
         torrentRssProviders[id][2] = cookies;
-        torrentRssProviders[id][3] = titleTAG;
+        torrentRssProviders[id][3] = title_tag;
         $(this).populateTorrentRssSection();
         $(this).makeTorrentRssProviderString();
     };
@@ -269,18 +269,18 @@ $(document).ready(function () {
         $('#torrentrss_name').val(data[0]);
         $('#torrentrss_url').val(data[1]);
         $('#torrentrss_cookies').val(data[2]);
-        $('#torrentrss_titleTAG').val(data[3]);
+        $('#torrentrss_title_tag').val(data[3]);
 
         if (selectedProvider === 'addTorrentRss') {
             $('#torrentrss_name').removeAttr('disabled');
             $('#torrentrss_url').removeAttr('disabled');
             $('#torrentrss_cookies').removeAttr('disabled');
-            $('#torrentrss_titleTAG').removeAttr('disabled');
+            $('#torrentrss_title_tag').removeAttr('disabled');
         } else {
             $('#torrentrss_name').attr('disabled', 'disabled');
             $('#torrentrss_url').removeAttr('disabled');
             $('#torrentrss_cookies').removeAttr('disabled');
-            $('#torrentrss_titleTAG').removeAttr('disabled');
+            $('#torrentrss_title_tag').removeAttr('disabled');
             $('#torrentrss_delete').removeAttr('disabled');
         }
     };
@@ -362,7 +362,7 @@ $(document).ready(function () {
         $(this).updateProvider(selectedProvider, url, key, cat);
     });
 
-    $('#torrentrss_url,#torrentrss_cookies,#torrentrss_titleTAG').on('change', function () {
+    $('#torrentrss_url,#torrentrss_cookies,#torrentrss_title_tag').on('change', function () {
         const selectedProvider = $('#editATorrentRssProvider :selected').val();
 
         if (selectedProvider === 'addTorrentRss') {
@@ -371,9 +371,9 @@ $(document).ready(function () {
 
         const url = $('#torrentrss_url').val();
         const cookies = $('#torrentrss_cookies').val();
-        const titleTAG = $('#torrentrss_titleTAG').val();
+        const title_tag = $('#torrentrss_title_tag').val();
 
-        $(this).updateTorrentRssProvider(selectedProvider, url, cookies, titleTAG);
+        $(this).updateTorrentRssProvider(selectedProvider, url, cookies, title_tag);
     });
 
     $('body').on('change', '#editAProvider', function () {
@@ -465,9 +465,9 @@ $(document).ready(function () {
         const name = $('#torrentrss_name').val();
         const url = $('#torrentrss_url').val();
         const cookies = $('#torrentrss_cookies').val();
-        const titleTAG = $('#torrentrss_titleTAG').val();
-        const parameters = {name, url, cookies, titleTAG};
-
+        const title_tag = $('#torrentrss_title_tag').val();
+        const parameters = {name, url, cookies, title_tag};
+        console.log(parameters);
         // Send to the form with ajax, get a return value
         $.getJSON(srRoot + '/config/providers/canAddTorrentRssProvider', parameters, function (data) {
             if (data.error !== undefined) {
@@ -475,7 +475,7 @@ $(document).ready(function () {
                 return;
             }
 
-            $(this).addTorrentRssProvider(data.success, name, url, cookies, titleTAG);
+            $(this).addTorrentRssProvider(data.success, name, url, cookies, title_tag);
             $(this).refreshEditAProvider();
         });
     });

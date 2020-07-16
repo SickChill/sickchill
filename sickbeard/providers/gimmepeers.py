@@ -47,11 +47,6 @@ class GimmePeersProvider(TorrentProvider):
 
         self.url = self.urls['base_url']
 
-        self.username = None
-        self.password = None
-        self.minseed = 0
-        self.minleech = 0
-
         self.cache = tvcache.TVCache(self)
 
         self.search_params = {
@@ -60,7 +55,7 @@ class GimmePeersProvider(TorrentProvider):
         }
 
     def _check_auth(self):
-        if not self.username or not self.password:
+        if not self.config('username') or not self.config('password'):
             logger.warning("Invalid username or password. Check your settings")
 
         return True
@@ -70,8 +65,8 @@ class GimmePeersProvider(TorrentProvider):
             return True
 
         login_params = {
-            'username': self.username,
-            'password': self.password,
+            'username': self.config('username'),
+            'password': self.config('password'),
             'ssl': 'yes'
         }
 
@@ -145,7 +140,7 @@ class GimmePeersProvider(TorrentProvider):
                                 continue
 
                                 # Filter unseeded torrent
-                            if seeders < self.minseed or leechers < self.minleech:
+                            if seeders < self.config('minseed') or leechers < self.config('minleech'):
                                 if mode != 'RSS':
                                     logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
                                                (title, seeders, leechers))

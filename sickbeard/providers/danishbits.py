@@ -33,23 +33,12 @@ class DanishbitsProvider(TorrentProvider):
         # Provider Init
         TorrentProvider.__init__(self, "Danishbits")
 
-        # Credentials
-        self.username = None
-        self.passkey = None
-
-        # Torrent Stats
-        self.minseed = 0
-        self.minleech = 0
-        self.freeleech = True
-
         # URLs
         self.url = 'https://danishbits.org/'
         self.urls = {
             'login': self.url + 'login.php',
             'search': self.url + 'couchpotato.php',
         }
-
-        # Proper Strings
 
         # Cache
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll Danishbits every 10 minutes max
@@ -61,8 +50,8 @@ class DanishbitsProvider(TorrentProvider):
 
         # Search Params
         search_params = {
-            'user': self.username,
-            'passkey': self.passkey,
+            'user': self.config('username'),
+            'passkey': self.config('passkey'),
             'search': '.',  # Dummy query for RSS search, needs the search param sent.
             'latest': 'true'
         }
@@ -103,12 +92,12 @@ class DanishbitsProvider(TorrentProvider):
                         download_url = torrent['download_url']
                         seeders  = torrent['seeders']
                         leechers  = torrent['leechers']
-                        if seeders < self.minseed or leechers < self.minleech:
-                            logger.info("Discarded {0} because with {1}/{2} seeders/leechers does not meet the requirement of {3}/{4} seeders/leechers".format(title, seeders, leechers, self.minseed, self.minleech))
+                        if seeders < self.config('minseed') or leechers < self.config('minleech'):
+                            logger.info("Discarded {0} because with {1}/{2} seeders/leechers does not meet the requirement of {3}/{4} seeders/leechers".format(title, seeders, leechers, self.config('minseed'), self.config('minleech')))
                             continue
 
                         freeleech = torrent['freeleech']
-                        if self.freeleech and not freeleech:
+                        if self.config('freeleech') and not freeleech:
                             continue
 
                         size = torrent['size']

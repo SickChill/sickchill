@@ -36,8 +36,6 @@ class newpctProvider(TorrentProvider):
 
         TorrentProvider.__init__(self, 'Newpct')
 
-        self.onlyspasearch = None
-
         self.url = 'http://www.newpct.com'
         self.urls = {'search': urljoin(self.url, 'index.php')}
 
@@ -69,13 +67,13 @@ class newpctProvider(TorrentProvider):
             items = []
             logger.debug('Search Mode: {0}'.format(mode))
 
-            if self.onlyspasearch:
+            if self.config('onlyspasearch'):
                 search_params['idioma_'] = 1
             else:
                 search_params['idioma_'] = 'All'
 
             # Only search if user conditions are true
-            if self.onlyspasearch and lang_info != 'es' and mode != 'RSS':
+            if self.config('onlyspasearch') and lang_info != 'es' and mode != 'RSS':
                 logger.debug('Show info is not spanish, skipping provider search')
                 continue
 
