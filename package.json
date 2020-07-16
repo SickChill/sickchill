@@ -36,7 +36,7 @@
     "grunt-po2json": "git+https://github.com/rockykitamura/grunt-po2json.git",
     "jquery": "^3.2.1",
     "load-grunt-tasks": "^3.5.2",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "snyk": "^1.28.1",
     "webpack": "^4.43.0",
     "xo": "0.30.0"
