@@ -36,7 +36,7 @@ class GFTrackerProvider(TorrentProvider):
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "GFTracker")
+        super().__init__('GFTracker', extra_options=('username', 'password', 'minseed', 'minleech'))
 
         # URLs
         self.url = 'https://www.thegft.org/'
@@ -47,11 +47,6 @@ class GFTrackerProvider(TorrentProvider):
 
         # Proper Strings
         self.proper_strings = ['PROPER', 'REPACK', 'REAL']
-
-        # Cache
-        self.cache = tvcache.TVCache(self)
-
-        self.supported_options = ('username', 'password', 'minseed', 'minleech')
 
     def _check_auth(self):
 
@@ -82,7 +77,7 @@ class GFTrackerProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

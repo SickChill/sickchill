@@ -31,16 +31,15 @@ class TokyoToshokanProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "TokyoToshokan")
+        super().__init__('TokyoToshokan', extra_options=tuple([]))
 
         self.url = 'http://tokyotosho.info/'
         self.urls = {
             'search': self.url + 'search.php',
             'rss': self.url + 'rss.php'
         }
-        self.cache = tvcache.TVCache(self, min_time=15)  # only poll TokyoToshokan every 15 minutes max
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self.show or not self.show.is_anime:
             return results

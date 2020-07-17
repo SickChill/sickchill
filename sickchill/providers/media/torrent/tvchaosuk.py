@@ -31,7 +31,7 @@ class TVChaosUKProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, 'TvChaosUK')
+        super().__init__('TvChaosUK', extra_options=tuple([]))
 
         self.url = 'https://www.tvchaosuk.com/'
         self.urls = {
@@ -39,8 +39,6 @@ class TVChaosUKProvider(TorrentProvider):
             'index': self.url + 'index.php',
             'search': self.url + 'browse.php'
         }
-
-        self.cache = tvcache.TVCache(self)
 
     def _check_auth(self):
         if self.config('username') and self.config('password'):
@@ -71,7 +69,7 @@ class TVChaosUKProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

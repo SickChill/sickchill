@@ -36,7 +36,7 @@ class TorrentDayProvider(TorrentProvider):
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, 'TorrentDay')
+        super().__init__('TorrentDay', extra_options=tuple([]))
 
         # URLs
         self.url = 'https://www.torrentday.com'
@@ -51,9 +51,6 @@ class TorrentDayProvider(TorrentProvider):
             'Episode': {'2': 1, '26': 1, '7': 1, '24': 1, '34': 1},
             'RSS': {'2': 1, '26': 1, '7': 1, '24': 1, '34': 1, '14': 1}
         }
-
-        # Cache
-        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll IPTorrents every 10 minutes max
 
     def login(self):
         cookie_dict = dict_from_cookiejar(self.session.cookies)
@@ -93,7 +90,7 @@ class TorrentDayProvider(TorrentProvider):
             logger.info('You need to set your cookies to use torrentday')
             return False
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, ep_obj=None) -> list:
         results = []
 
         search_url = self.urls['search']

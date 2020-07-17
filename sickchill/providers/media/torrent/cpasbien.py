@@ -31,16 +31,14 @@ class CpasbienProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "Cpasbien")
+        super().__init__('Cpasbien', extra_options=('public', 'minseed', 'minleech'))
 
         self.url = "http://www.cpasbien.cx"
 
         self.proper_strings = ['PROPER', 'REPACK']
-        self.cache = tvcache.TVCache(self)
         self.ability_status = self.PROVIDER_BACKLOG
-        self.supported_options = ('public', 'minseed', 'minleech')
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         for mode in search_strings:
             items = []

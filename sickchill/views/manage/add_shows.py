@@ -90,7 +90,7 @@ class AddShows(Home):
             for searchTerm in searchTerms:
                 # noinspection PyBroadException
                 try:
-                    indexerResults = sickchill.indexer[i].search(searchTerm, language=lang)
+                    indexerResults = sickchill.indexer[i].search(searchTerm)
                 except Exception:
                     # logger.exception(traceback.format_exc())
                     continue

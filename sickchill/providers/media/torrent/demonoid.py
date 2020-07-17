@@ -38,7 +38,7 @@ class DemonoidProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "Demonoid")
+        super().__init__('Demonoid', extra_options=('public', 'sorting', 'minseed', 'minleech'))
 
         self.url = "https://demonoid.is"
         self.urls = {"RSS": urljoin(self.url, 'rss.php'), 'search': urljoin(self.url, 'files/')}
@@ -51,9 +51,7 @@ class DemonoidProvider(TorrentProvider):
 
         self.cache = DemonoidCache(self)
 
-        self.supported_options = ('public', 'sorting', 'minseed', 'minleech')
-
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         # https://demonoid.is/files/?category=12&quality=58&seeded=0&external=2&sort=seeders&order=desc&query=SEARCH_STRING
         search_params = {

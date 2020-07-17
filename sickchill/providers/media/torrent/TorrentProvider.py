@@ -35,11 +35,10 @@ from sickchill.show.Show import Show
 
 
 class TorrentProvider(GenericProvider):
-    def __init__(self, name):
-        GenericProvider.__init__(self, name)
+    def __init__(self, name:str, extra_options: tuple = tuple()):
+        super().__init__(name, extra_options + tuple(['ratio']))
         self.provider_type = GenericProvider.TORRENT
         self.url = ''
-        self.default_supported_options += tuple(['ratio'])
 
     def find_propers(self, search_date=None):
         results = []

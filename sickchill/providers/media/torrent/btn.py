@@ -40,14 +40,15 @@ class BTNProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "BTN")
-        self.cache = BTNCache(self, min_time=15)  # Only poll BTN every 15 minutes max
+        super().__init__('BTN', extra_options=('api_key', 'absolute_numbering'))
+        self.cache = BTNCache(self)
 
         self.urls = {'base_url': 'http://api.broadcasthe.net',
                      'website': 'http://broadcasthe.net/', }
 
         self.url = self.urls['website']
-        self.supported_options = ('api_key', 'absolute_numbering')
+
+        self.__max_age: int = 0
 
     def _check_auth(self):
         if not self.config('api_key'):
@@ -67,21 +68,19 @@ class BTNProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):  # pylint:disable=too-many-locals
+    def search(self, search_params, ep_obj=None) -> list:
 
         self._check_auth()
 
         results = []
         params = {}
 
-        # age in seconds
-        if age:
-            params['age'] = "<=" + str(int(age))
+        if self.__max_age:
+            params['age'] = "<=" + str(self.__max_age)
 
         if search_params:
             params.update(search_params)
-            logger.debug("Search string: {0}".format
-                       (search_params))
+            logger.debug("Search string: {0}".format(search_params))
 
         parsed_json = self._api_call(params)
         if not parsed_json:
@@ -122,6 +121,7 @@ class BTNProvider(TorrentProvider):
                     logger.debug("Found result: {0} ".format(title))
                     results.append(torrent_info)
 
+        self.__max_age = 0
         # FIXME SORT RESULTS
         return results
 
@@ -274,7 +274,8 @@ class BTNProvider(TorrentProvider):
         search_terms = ['%.proper.%', '%.repack.%']
 
         for term in search_terms:
-            for item in self.search({'release': term}, age=4 * 24 * 60 * 60):
+            self.__max_age = 4 * 24 * 60 * 60
+            for item in self.search({'release': term}):
                 if item['Time']:
                     try:
                         result_date = datetime.fromtimestamp(float(item['Time']))
@@ -295,7 +296,7 @@ class BTNCache(tvcache.TVCache):
         seconds_since_last_update = math.ceil(time.time() - time.mktime(self.last_update.timetuple()))
 
         # default to 15 minutes
-        seconds_minTime = self.min_time * 60
+        seconds_minTime = self.provider.min_cache_time * 60
         if seconds_since_last_update < seconds_minTime:
             seconds_since_last_update = seconds_minTime
 
@@ -305,7 +306,5 @@ class BTNCache(tvcache.TVCache):
                 "The last known successful update was more than 24 hours ago, only trying to fetch the last 24 hours!")
             seconds_since_last_update = 86400
 
-        self.search_params = None  # BTN cache does not use search params
-        return {'entries': self.provider.search(search_params=self.search_params, age=seconds_since_last_update)}
-
-
+        self.provider.__max_age = seconds_since_last_update
+        return {'entries': self.provider.search(search_strings=None)}

@@ -31,7 +31,7 @@ class DanishbitsProvider(TorrentProvider):
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "Danishbits")
+        super().__init__('Danishbits', extra_options=('username', 'password', 'minseed', 'minleech', 'freeleech'))
 
         # URLs
         self.url = 'https://danishbits.org/'
@@ -40,12 +40,7 @@ class DanishbitsProvider(TorrentProvider):
             'search': self.url + 'couchpotato.php',
         }
 
-        # Cache
-        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll Danishbits every 10 minutes max
-
-        self.supported_options = ('username', 'password', 'minseed', 'minleech', 'freeleech')
-
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

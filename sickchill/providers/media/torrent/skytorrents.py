@@ -31,16 +31,14 @@ class SkyTorrents(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "SkyTorrents")
+        super().__init__('SkyTorrents', extra_options=tuple([]))
 
         self.url = "https://www.skytorrents.lol"
         # https://www.skytorrents.lol/?query=arrow&category=show&tag=hd&sort=seeders&type=video
         # https://www.skytorrents.lol/top100?category=show&type=video&sort=created
         self.urls = {"search": urljoin(self.url, "/"), 'rss': urljoin(self.url, "/top100")}
 
-        self.cache = tvcache.TVCache(self, search_params={"RSS": [""]})
-
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         for mode in search_strings:
             items = []

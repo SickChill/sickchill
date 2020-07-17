@@ -41,9 +41,9 @@ class NewznabProvider(NZBProvider):
     compatible api.
     Tested with: newznab, nzedb, spotweb, torznab
     """
-    def __init__(self, name):
+    def __init__(self, name: str):
 
-        NZBProvider.__init__(self, name)
+        super().__init__(name, extra_options=('url', 'key', 'search_mode', 'search_fallback', 'daily', 'backlog', 'categories', 'retention'))
 
         self._caps = False
         self.use_tv_search = None
@@ -52,10 +52,7 @@ class NewznabProvider(NZBProvider):
         # self.cap_movie_search = None
         # self.cap_audio_search = None
 
-        self.cache = tvcache.TVCache(self, min_time=30)  # only poll newznab providers every 30 minutes max
-
-        self.supported_options = ('url', 'key', 'search_mode', 'search_fallback', 'daily', 'backlog', 'categories')
-
+        self.min_cache_time = 30
         self.__torznab = False
 
     def image_name(self):
@@ -63,8 +60,7 @@ class NewznabProvider(NZBProvider):
         Checks if we have an image for this provider already.
         Returns found image or the default newznab image
         """
-        if os.path.isfile(os.path.join(sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers',
-                 self.get_id() + '.png')):
+        if os.path.isfile(os.path.join(sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers', self.get_id() + '.png')):
             return self.get_id() + '.png'
         return 'newznab.png'
 
@@ -168,7 +164,7 @@ class NewznabProvider(NZBProvider):
 
         return False
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         """
         Searches indexer using the params in search_strings, either for latest releases, or a string/id search
         Returns: list of results in dict form
@@ -185,38 +181,38 @@ class NewznabProvider(NZBProvider):
                 return results
 
         for mode in search_strings:
-            search_params = {
+            search_strings = {
                 't': ('search', 'tvsearch')[bool(self.use_tv_search)],
                 'limit': 100,
                 'offset': 0,
                 'cat': self.config('categories').strip(', ') or '5030,5040',
-                'maxage': sickbeard.USENET_RETENTION
+                'maxage': self.config('retention')
             }
 
             if self.needs_auth and self.config('key'):
-                search_params['apikey'] = self.config('key')
+                search_strings['apikey'] = self.config('key')
 
             if mode != 'RSS':
                 if self.use_tv_search:
                     if 'tvdbid' in str(self.cap_tv_search):
-                        search_params['tvdbid'] = ep_obj.show.indexerid
+                        search_strings['tvdbid'] = ep_obj.show.indexerid
 
                     if ep_obj.show.air_by_date or ep_obj.show.sports:
                         date_str = str(ep_obj.airdate)
-                        search_params['season'] = date_str.partition('-')[0]
-                        search_params['ep'] = date_str.partition('-')[2].replace('-', '/')
+                        search_strings['season'] = date_str.partition('-')[0]
+                        search_strings['ep'] = date_str.partition('-')[2].replace('-', '/')
                     elif ep_obj.show.is_anime:
-                        search_params['ep'] = ep_obj.absolute_number
+                        search_strings['ep'] = ep_obj.absolute_number
                     else:
-                        search_params['season'] = ep_obj.scene_season
-                        search_params['ep'] = ep_obj.scene_episode
+                        search_strings['season'] = ep_obj.scene_season
+                        search_strings['ep'] = ep_obj.scene_episode
 
                 if mode == 'Season':
-                    search_params.pop('ep', '')
+                    search_strings.pop('ep', '')
 
             if self.__torznab:
-                search_params.pop('ep', '')
-                search_params.pop('season', '')
+                search_strings.pop('ep', '')
+                search_strings.pop('season', '')
 
             items = []
             logger.debug('Search Mode: {0}'.format(mode))
@@ -224,11 +220,11 @@ class NewznabProvider(NZBProvider):
                 if mode != 'RSS':
                     logger.debug('Search string: {0}'.format(search_string))
 
-                    if 'tvdbid' not in search_params:
-                        search_params['q'] = search_string
+                    if 'tvdbid' not in search_strings:
+                        search_strings['q'] = search_string
 
                 time.sleep(cpu_presets[sickbeard.CPU_PRESET])
-                data = self.get_url(urljoin(self.config('url'), 'api'), params=search_params, returns='text')
+                data = self.get_url(urljoin(self.config('url'), 'api'), params=search_strings, returns='text')
                 if not data:
                     break
 
@@ -281,7 +277,7 @@ class NewznabProvider(NZBProvider):
 
                 # Since we aren't using the search string,
                 # break out of the search string loop
-                if 'tvdbid' in search_params:
+                if 'tvdbid' in search_strings:
                     break
 
             if self.__torznab:

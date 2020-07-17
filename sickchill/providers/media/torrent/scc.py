@@ -38,9 +38,7 @@ class SCCProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "SceneAccess")
-
-        self.cache = tvcache.TVCache(self)  # only poll SCC every 20 minutes max
+        super().__init__('SceneAccess', extra_options=tuple([]))
 
         self.urls = {
             'base_url': 'https://sceneaccess.eu',
@@ -85,7 +83,7 @@ class SCCProvider(TorrentProvider):
         title = r'<title>.+? \| {0}</title>'.format(section)
         return re.search(title, text, re.I)
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

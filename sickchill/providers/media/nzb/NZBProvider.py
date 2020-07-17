@@ -21,28 +21,28 @@ import sickbeard
 from sickbeard import logger
 from sickbeard.classes import NZBSearchResult
 from sickchill.helper.common import try_int
-from sickchill.providers.media.GenericProvider import GenericProvider
+from ..GenericProvider import GenericProvider
 
 
 class NZBProvider(GenericProvider):
-    def __init__(self, name):
-        GenericProvider.__init__(self, name)
+    def __init__(self, name: str, extra_options: tuple = tuple()):
+        super().__init__(name, extra_options=tuple(['retention']) + extra_options)
 
-        self.provider_type = GenericProvider.NZB
-        self.torznab = False
+        self.provider_type: str = GenericProvider.NZB
+        self.__torznab: bool = False
 
     @property
-    def is_active(self):
-        return bool(self.config('enabled')) and self.config('enabled')
+    def is_active(self) -> bool:
+        return self.config('enabled') and self.config('enabled')
 
-    def _get_result(self, episodes):
+    def _get_result(self, episodes) -> NZBSearchResult:
         result = NZBSearchResult(episodes)
-        if self.torznab or result.url.startswith('magnet'):
+        if self.__torznab or result.url.startswith('magnet'):
             result.resultType = GenericProvider.TORRENT
 
         return result
 
-    def _get_size(self, item):
+    def _get_size(self, item) -> int:
         try:
             size = item.get('links')[1].get('length', -1)
         except (AttributeError, IndexError, TypeError):
@@ -53,5 +53,5 @@ class NZBProvider(GenericProvider):
 
         return try_int(size, -1)
 
-    def _get_storage_dir(self):
+    def _get_storage_dir(self) -> str:
         return sickbeard.NZB_DIR

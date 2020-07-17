@@ -31,13 +31,11 @@ class BitCannonProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "BitCannon")
+        super().__init__('BitCannon', extra_options=('custom_url', 'api_key', 'minseed', 'minleech'))
 
-        self.cache = tvcache.TVCache(self, search_params={"RSS": ["tv", "anime"]})
+        self.cache_search_params = {"RSS": ["tv", "anime"]}
 
-        self.supported_options = ('custom_url', 'api_key', 'minseed', 'minleech')
-
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
 
         url = "http://localhost:3000/"

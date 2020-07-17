@@ -30,14 +30,10 @@ class HD4FreeProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "HD4Free")
+        super().__init__('HD4Free', extra_options=('username', 'api_key', 'minseed', 'minleech', 'freeleech'))
 
         self.url = 'https://hd4free.xyz'
         self.urls = {'search': urljoin(self.url, '/searchapi.php')}
-
-        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll HD4Free every 10 minutes max
-
-        self.supported_options = ('username', 'api_key', 'minseed', 'minleech', 'freeleech')
 
     def _check_auth(self):
         if self.config('username') and self.config('api_key'):
@@ -46,7 +42,7 @@ class HD4FreeProvider(TorrentProvider):
         logger.warning('Your authentication credentials for {0} are missing, check your config.'.format(self.name))
         return False
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self._check_auth:
             return results

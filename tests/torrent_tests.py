@@ -57,7 +57,7 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
 
             search_strings_list = bitcannon.get_episode_search_strings(self.shows[0].episodes[0])  # [{'Episode': ['Italian Works S05E10']}]
             for search_strings in search_strings_list:
-                bitcannon.search(search_strings)   # {'Episode': ['Italian Works S05E10']}
+                bitcannon.search(search_strings)  # {'Episode': ['Italian Works S05E10']}
 
         return True
 

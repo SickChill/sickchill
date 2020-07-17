@@ -34,16 +34,14 @@ class newpctProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, 'Newpct')
+        super().__init__('Newpct', extra_options=('public', 'onlyspasearch'))
 
         self.url = 'http://www.newpct.com'
         self.urls = {'search': urljoin(self.url, 'index.php')}
 
-        self.cache = tvcache.TVCache(self, min_time=20)
+        self.min_cache_time = 20
 
-        self.supported_options = ('public', 'onlyspasearch')
-
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         """
         Search query:
         http://www.newpct.com/index.php?l=doSearch&q=fringe&category_=All&idioma_=1&bus_de_=All

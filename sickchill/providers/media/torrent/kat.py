@@ -37,7 +37,7 @@ class KatProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "KickAssTorrents")
+        super().__init__('KickAssTorrents', extra_options=('public', 'confirmed', 'minseed', 'minleech', 'custom_url'))
 
         self.mirrors = []
         self.disabled_mirrors = []
@@ -48,13 +48,9 @@ class KatProvider(TorrentProvider):
         self.url = "https://kickasskat.org"
         self.urls = None
 
-        self.cache = tvcache.TVCache(self)
-
         self.rows_selector = dict(class_=re.compile(r"even|odd"), id=re.compile(r"torrent_.*_torrents"))
 
-        self.supported_options = ('public', 'confirmed', 'minseed', 'minleech', 'custom_url')
-
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not (self.url and self.urls):
             self.find_domain()
@@ -103,7 +99,7 @@ class KatProvider(TorrentProvider):
                         return results
 
                     # This will recurse a few times until all of the mirrors are exhausted if none of them work.
-                    return self.search(search_strings, age, ep_obj)
+                    return self.search(search_strings, ep_obj)
 
                 with BS4Parser(data, "html5lib") as html:
                     labels = [cell.get_text() for cell in html.find(class_="firstr")("th")]

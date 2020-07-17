@@ -30,9 +30,10 @@ class ShazbatProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, 'Shazbat.tv')
+        super().__init__('Shazbat.tv', extra_options=tuple([]))
 
-        self.cache = ShazbatCache(self, min_time=20)
+        self.min_cache_time = 20
+        self.cache = ShazbatCache(self)
 
         self.url = 'http://www.shazbat.tv'
         self.urls = {

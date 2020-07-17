@@ -35,7 +35,7 @@ class GimmePeersProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "GimmePeers")
+        super().__init__('GimmePeers', extra_options=('username', 'password', 'minseed', 'minleech'))
 
         self.urls = {
             'base_url': 'https://www.gimmepeers.com',
@@ -47,14 +47,10 @@ class GimmePeersProvider(TorrentProvider):
 
         self.url = self.urls['base_url']
 
-        self.cache = tvcache.TVCache(self)
-
         self.search_params = {
             #c20=1&c21=1&c25=1&c24=1&c23=1&c22=1&c1=1
             "c20": 1, "c21": 1, "c25": 1, "c24": 1, "c23": 1, "c22": 1, "c1": 1
         }
-
-        self.supported_options = ('username', 'password', 'minseed', 'minleech')
 
     def _check_auth(self):
         if not self.config('username') or not self.config('password'):
@@ -83,7 +79,7 @@ class GimmePeersProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

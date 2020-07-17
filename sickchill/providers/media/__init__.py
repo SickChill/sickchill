@@ -75,3 +75,14 @@ manager = RegistrableExtensionManager('sickbeard.providers', [
     'torrentday = sickchill.providers.media.torrent.torrentday:TorrentDayProvider',
     'torrentleech = sickchill.providers.media.torrent.torrentleech:TorrentLeechProvider',
 ])
+
+
+def get_config(client: str, key: str = ''):
+    result = manager[client].plugin().__config
+    if key:
+        result = result[key]
+    return result
+
+
+def set_config(client: str, key: str, value):
+    get_config(client)[key] = value

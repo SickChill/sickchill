@@ -35,9 +35,7 @@ class EliteTorrentProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "EliteTorrent")
-
-        self.cache = tvcache.TVCache(self)  # Only poll EliteTorrent every 20 minutes max
+        super().__init__('EliteTorrent', extra_options=('onlyspasearch', 'minseed', 'minleech'))
 
         self.urls = {
             'base_url': 'https://www.elitetorrent.eu',
@@ -46,9 +44,7 @@ class EliteTorrentProvider(TorrentProvider):
 
         self.url = self.urls['base_url']
 
-        self.supported_options = ('onlyspasearch', 'minseed', 'minleech')
-
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         lang_info = '' if not ep_obj or not ep_obj.show else ep_obj.show.lang
 

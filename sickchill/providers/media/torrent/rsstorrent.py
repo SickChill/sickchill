@@ -35,10 +35,9 @@ class TorrentRssProvider(TorrentProvider):
 
     def __init__(self, name):
 
-        TorrentProvider.__init__(self, name)
-        self.cache = TorrentRssCache(self, min_time=15)
-
-        self.supported_options = ('daily', 'url', 'title_tag', 'cookies')
+        TorrentProvider.__init__(self, name, extra_options=('daily', 'url', 'title_tag', 'cookies'))
+        self.min_cache_time = 15
+        self.cache = TorrentRssCache(self)
 
     def image_name(self):
         if os.path.isfile(os.path.join(sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers', self.get_id() + '.png')):

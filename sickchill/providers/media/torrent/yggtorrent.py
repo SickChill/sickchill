@@ -37,7 +37,7 @@ class YggTorrentProvider(TorrentProvider):
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, 'YggTorrent')
+        super().__init__('YggTorrent', extra_options=tuple([]))
 
         # URLs
         self.url = 'https://www2.yggtorrent.se/'
@@ -50,7 +50,7 @@ class YggTorrentProvider(TorrentProvider):
         self.proper_strings = ['PROPER']
 
         # Cache
-        self.cache = tvcache.TVCache(self, min_time=30)
+        self.min_cache_time = 30
 
     def update_urls(self, new_url, custom=False):
         if custom and not new_url:
@@ -105,7 +105,7 @@ class YggTorrentProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         self.login()
 
         results = []

@@ -38,7 +38,7 @@ class MoreThanTVProvider(TorrentProvider):
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "MoreThanTV")
+        super().__init__('MoreThanTV', extra_options=('username', 'password', 'minseed', 'minleech', 'freeleech'))
 
         # Credentials
         self._uid = None
@@ -55,11 +55,6 @@ class MoreThanTVProvider(TorrentProvider):
 
         # Proper Strings
         self.proper_strings = ['PROPER', 'REPACK']
-
-        # Cache
-        self.cache = tvcache.TVCache(self)
-
-        self.supported_options = ('username', 'password', 'minseed', 'minleech', 'freeleech')
 
     def _check_auth(self):
 
@@ -90,7 +85,7 @@ class MoreThanTVProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

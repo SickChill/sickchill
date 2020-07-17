@@ -37,8 +37,7 @@ class IPTorrentsProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "IPTorrents")
-        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll IPTorrents every 10 minutes max
+        super().__init__('IPTorrents', extra_options=('username', 'password', 'minseed', 'minleech', 'custom_url', 'cookies', 'freeleech'))
 
         self.urls = {'base_url': 'https://iptorrents.eu',
                      'login': 'https://iptorrents.eu/take_login.php',
@@ -47,8 +46,6 @@ class IPTorrentsProvider(TorrentProvider):
         self.url = self.urls['base_url']
 
         self.categories = '73=&60='
-
-        self.supported_options = ('username', 'password', 'minseed', 'minleech', 'custom_url', 'cookies', 'freeleech')
 
     def login(self):
         cookie_dict = dict_from_cookiejar(self.session.cookies)
@@ -104,7 +101,7 @@ class IPTorrentsProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

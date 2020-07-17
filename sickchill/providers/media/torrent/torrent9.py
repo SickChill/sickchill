@@ -35,14 +35,13 @@ class Torrent9Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "Torrent9")
+        super().__init__('Torrent9', extra_options=tuple([]))
 
         self.url = "https://www.torrent9.ac/"
 
         self.proper_strings = ['PROPER', 'REPACK']
-        self.cache = tvcache.TVCache(self)
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         for mode in search_strings:
             items = []

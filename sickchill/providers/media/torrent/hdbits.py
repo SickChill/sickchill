@@ -33,9 +33,8 @@ class HDBitsProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "HDBits")
-
-        self.cache = HDBitsCache(self, min_time=15)  # only poll HDBits every 15 minutes max
+        super().__init__('HDBits', extra_options=('username', 'password'))
+        self.cache = HDBitsCache(self)
 
         self.url = 'https://hdbits.org'
         self.urls = {
@@ -43,8 +42,6 @@ class HDBitsProvider(TorrentProvider):
             'rss': urljoin(self.url, '/api/torrents'),
             'download': urljoin(self.url, '/download.php')
         }
-
-        self.supported_options = ('username', 'password')
 
     def _check_auth(self):
 
@@ -76,7 +73,7 @@ class HDBitsProvider(TorrentProvider):
 
         return title, url
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, ep_obj=None) -> list:
 
         # FIXME
         results = []

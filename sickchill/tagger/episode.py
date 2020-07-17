@@ -40,7 +40,7 @@ class EpisodeTags(object):
             if type(regexes) is not list:
                 regexes = [regexes]
             for regexItem in regexes:
-                result = regexItem.search(self.name, flags)
+                result = regexItem.search(self.name)
                 if result:
                     break
             setattr(self, match_obj, result)

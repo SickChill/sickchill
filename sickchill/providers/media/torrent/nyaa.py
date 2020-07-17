@@ -27,12 +27,11 @@ class NyaaProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, 'Nyaa')
+        super().__init__('Nyaa', extra_options=('public', 'absolute_numbering', 'minseed', 'minleech', 'confirmed', 'anime_only'))
         self.url = 'https://nyaa.si'
-        self.cache = tvcache.TVCache(self, min_time=20)  # only poll Nyaa every 20 minutes max
-        self.supported_options = ('public', 'absolute_numbering', 'minseed', 'minleech', 'confirmed', 'anime_only')
+        self.min_cache_time = 20
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if self.show and not self.show.is_anime:
             return results

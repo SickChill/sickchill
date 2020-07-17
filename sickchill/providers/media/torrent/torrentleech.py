@@ -36,7 +36,7 @@ class TorrentLeechProvider(TorrentProvider):
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "TorrentLeech")
+        super().__init__('TorrentLeech', extra_options=tuple([]))
 
         # URLs
         self.url = "https://www.torrentleech.org"
@@ -48,9 +48,6 @@ class TorrentLeechProvider(TorrentProvider):
 
         # Proper Strings
         self.proper_strings = ["PROPER", "REPACK"]
-
-        # Cache
-        self.cache = tvcache.TVCache(self)
 
     def login(self):
         if any(dict_from_cookiejar(self.session.cookies).values()):
@@ -72,7 +69,7 @@ class TorrentLeechProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

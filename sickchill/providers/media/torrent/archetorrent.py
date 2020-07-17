@@ -37,7 +37,7 @@ class ArcheTorrentProvider(TorrentProvider):
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, 'ArcheTorrent')
+        super().__init__('ArcheTorrent', extra_options=('username', 'password', 'minseed', 'minleech', 'freeleech'))
 
         # URLs
         self.url = 'https://www.archetorrent.com/'
@@ -49,11 +49,6 @@ class ArcheTorrentProvider(TorrentProvider):
 
         # Proper Strings
         self.proper_strings = ['PROPER']
-
-        self.supported_options = ('username', 'password', 'minseed', 'minleech', 'freeleech')
-
-        # Cache
-        self.cache = tvcache.TVCache(self, min_time=15)
 
     def login(self):
         if any(dict_from_cookiejar(self.session.cookies).values()):
@@ -78,7 +73,7 @@ class ArcheTorrentProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

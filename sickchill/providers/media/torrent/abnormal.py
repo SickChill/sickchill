@@ -28,7 +28,7 @@ from requests.utils import dict_from_cookiejar
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickchill.helper.common import convert_size, try_int
-from sickchill.providers.media.torrent import TorrentProvider
+from .TorrentProvider import TorrentProvider
 
 
 class ABNormalProvider(TorrentProvider):
@@ -36,7 +36,7 @@ class ABNormalProvider(TorrentProvider):
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, 'ABNormal')
+        super().__init__('ABNormal', extra_options=('username', 'password', 'minseed', 'minleech'))
 
         # URLs
         self.url = 'https://abnormal.ws'
@@ -49,9 +49,7 @@ class ABNormalProvider(TorrentProvider):
         self.proper_strings = ['PROPER']
 
         # Cache
-        self.cache = tvcache.TVCache(self, min_time=30)
-
-        self.supported_options = ('username', 'password', 'minseed', 'minleech')
+        self.min_cache_time = 30
 
     def login(self):
         if any(dict_from_cookiejar(self.session.cookies).values()):
@@ -73,7 +71,7 @@ class ABNormalProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results
@@ -95,8 +93,7 @@ class ABNormalProvider(TorrentProvider):
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.debug('Search string: {0}'.format
-                               (search_string))
+                    logger.debug('Search string: {0}'.format(search_string))
 
                 # Sorting: Available parameters: ReleaseName, Seeders, Leechers, Snatched, Size
                 search_params['order'] = ('Seeders', 'Time')[mode == 'RSS']

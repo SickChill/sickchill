@@ -30,12 +30,10 @@ class XThorProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, 'XThor')
+        super().__init__('XThor', extra_options=tuple([]))
 
         self.url = 'https://xthor.tk'
         self.urls = {'search': 'https://api.xthor.tk'}
-
-        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll XThor every 10 minutes max
 
     def _check_auth(self):
         if self.config('api_key'):
@@ -44,7 +42,7 @@ class XThorProvider(TorrentProvider):
         logger.warning('Your authentication credentials for {0} are missing, check your config.'.format(self.name))
         return False
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self._check_auth:
             return results

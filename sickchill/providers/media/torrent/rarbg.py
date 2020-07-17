@@ -32,7 +32,7 @@ from sickchill.providers.media.torrent import TorrentProvider
 class RarbgProvider(TorrentProvider):
 
     def __init__(self):
-        TorrentProvider.__init__(self, "Rarbg")
+        super().__init__('Rarbg', extra_options=('ranked', 'minseed', 'minleech', 'sorting', 'backlog', 'daily', 'enabled', 'custom_url'))
 
         self.__token = None
         self.__token_expires = None
@@ -42,10 +42,6 @@ class RarbgProvider(TorrentProvider):
         self.urls = {"api": "http://torrentapi.org/pubapi_v2.php"}
 
         self.proper_strings = ["{{PROPER|REPACK}}"]
-
-        self.cache = tvcache.TVCache(self, min_time=10)  # only poll RARBG every 10 minutes max
-
-        self.supported_options = ('ranked', 'minseed', 'minleech', 'sorting', 'backlog', 'daily', 'enabled', 'custom_url')
 
     def login(self):
         if self.__token and self.__token_expires and datetime.datetime.now() < self.__token_expires:
@@ -66,7 +62,7 @@ class RarbgProvider(TorrentProvider):
         self.__token_expires = datetime.datetime.now() + datetime.timedelta(minutes=14) if self.__token else None
         return self.__token is not None
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

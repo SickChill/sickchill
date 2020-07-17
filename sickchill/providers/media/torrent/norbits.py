@@ -33,15 +33,13 @@ class NorbitsProvider(TorrentProvider):
 
     def __init__(self):
         """ Initialize the class """
-        TorrentProvider.__init__(self, 'Norbits')
+        super().__init__('Norbits', extra_options=('username', 'passkey', 'minseed', 'minleech'))
 
-        self.cache = tvcache.TVCache(self, min_time=20)  # only poll Norbits every 15 minutes max
+        self.min_cache_time = 20
 
         self.url = 'https://norbits.net'
         self.urls = {'search': self.url + '/api2.php?action=torrents',
                      'download': self.url + '/download.php?'}
-
-        self.supported_options = ('username', 'passkey', 'minseed', 'minleech')
 
     def _check_auth(self):
 
@@ -60,7 +58,7 @@ class NorbitsProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, ep_obj=None) -> list:
         """ Do the actual searching and JSON parsing"""
 
         results = []

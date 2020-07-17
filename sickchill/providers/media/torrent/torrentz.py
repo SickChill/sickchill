@@ -33,7 +33,7 @@ class TorrentzProvider(TorrentProvider):
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "Torrentz")
+        super().__init__('Torrentz', extra_options=tuple([]))
 
         # URLs
         self.url = 'https://torrentz2.eu/'
@@ -43,17 +43,12 @@ class TorrentzProvider(TorrentProvider):
             'base': self.url,
         }
 
-        # Proper Strings
-
-        # Cache
-        self.cache = tvcache.TVCache(self, min_time=15)  # only poll Torrentz every 15 minutes max
-
     @staticmethod
     def _split_description(description):
         match = re.findall(r'[0-9]+', description)
         return int(match[0]) * 1024 ** 2, int(match[1]), int(match[2])
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
 
         for mode in search_strings:

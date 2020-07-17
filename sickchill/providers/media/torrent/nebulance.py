@@ -37,7 +37,7 @@ class NebulanceProvider(TorrentProvider):
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "Nebulance")
+        super().__init__('Nebulance', extra_options=('username', 'password', 'minseed', 'minleech', 'freeleech'))
 
         # URLs
         self.url = 'https://nebulance.io/'
@@ -45,11 +45,6 @@ class NebulanceProvider(TorrentProvider):
             'login': urljoin(self.url, '/login.php'),
             'search': urljoin(self.url, '/torrents.php'),
         }
-
-        # Cache
-        self.cache = tvcache.TVCache(self)
-
-        self.supported_options = ('username', 'password', 'minseed', 'minleech', 'freeleech')
 
     def _check_auth(self):
 
@@ -80,7 +75,7 @@ class NebulanceProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

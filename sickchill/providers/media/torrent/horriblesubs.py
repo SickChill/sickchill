@@ -34,7 +34,7 @@ class HorribleSubsProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, 'HorribleSubs')
+        super().__init__('HorribleSubs', extra_options=('public', 'anime_only', 'absolute_numbering'))
 
         self.url = 'https://horriblesubs.info'
         self.urls = {
@@ -42,11 +42,7 @@ class HorribleSubsProvider(TorrentProvider):
             'rss': 'http://www.horriblesubs.info/rss.php'
         }
 
-        self.cache = tvcache.TVCache(self, min_time=15)  # only poll HorribleSubs every 15 minutes max
-
-        self.supported_options = ('public', 'anime_only', 'absolute_numbering')
-
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         # TODO Removed to allow Tests to pass... Not sure about removing it
         # if not self.show or not self.show.is_anime:

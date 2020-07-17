@@ -61,7 +61,7 @@ class TNTVillageProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "TNTVillage")
+        super().__init__('TNTVillage', extra_options=('cat', 'engrelease', 'minleech', 'minseed', 'password', 'subtitle', 'username'))
 
         self._uid = None
         self._hash = None
@@ -102,9 +102,7 @@ class TNTVillageProvider(TorrentProvider):
 
         self.categories = "cat=29"
 
-        self.cache = tvcache.TVCache(self, min_time=30)  # only poll TNTVillage every 30 minutes max
-
-        self.supported_options = ('cat', 'engrelease', 'minleech', 'minseed', 'password', 'subtitle', 'username')
+        self.min_cache_time = 30
 
     def _check_auth(self):
 
@@ -266,7 +264,7 @@ class TNTVillageProvider(TorrentProvider):
         if int(episodes[0]['count']) == len(parse_result.episode_numbers):
             return True
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

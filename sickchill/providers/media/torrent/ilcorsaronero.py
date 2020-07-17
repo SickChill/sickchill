@@ -34,7 +34,7 @@ from sickchill.providers.media.torrent import TorrentProvider
 class ilCorsaroNeroProvider(TorrentProvider):
 
     def __init__(self):
-        TorrentProvider.__init__(self, 'ilCorsaroNero')
+        super().__init__('ilCorsaroNero', extra_options=('public', 'english_only', 'allow_subtitled', 'minseed', 'minleech'))
 
         categories = [  # Categories included in searches
             15,  # Serie TV
@@ -70,9 +70,7 @@ class ilCorsaroNeroProvider(TorrentProvider):
             ' 720p',
         ]
 
-        self.cache = tvcache.TVCache(self, min_time=30)  # only poll ilCorsaroNero every 30 minutes max
-
-        self.supported_options = ('public', 'english_only', 'allow_subtitled', 'minseed', 'minleech')
+        self.min_cache_time = 30
 
     @staticmethod
     def _reverseQuality(quality):
@@ -196,7 +194,7 @@ class ilCorsaroNeroProvider(TorrentProvider):
             title=quote_plus(title),
             trackers='http://tracker.tntvillage.scambioetico.org:2710/announce')
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, ep_obj=None) -> list:
         results = []
 
         for mode in search_params:

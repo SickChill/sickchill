@@ -26,9 +26,9 @@ from .NZBProvider import NZBProvider
 
 class OmgwtfnzbsProvider(NZBProvider):
     def __init__(self):
-        NZBProvider.__init__(self, 'OMGWTFNZBs')
+        super().__init__('OMGWTFNZBs', extra_options=('username', 'api_key'))
 
-        self.cache = OmgwtfnzbsCache(self)
+        self.cache: tvcache.TVCache = OmgwtfnzbsCache(self)
 
         self.url = 'https://omgwtfnzbs.me/'
         self.urls = {
@@ -37,9 +37,8 @@ class OmgwtfnzbsProvider(NZBProvider):
         }
 
         self.proper_strings = ['.PROPER.', '.REPACK.']
-        self.supported_options = ('username', 'api_key')
 
-    def _check_auth(self):
+    def _check_auth(self) -> bool:
 
         if not self.config('username') or not self.config('api_key'):
             logger.warning('Invalid api key. Check your settings')
@@ -47,7 +46,7 @@ class OmgwtfnzbsProvider(NZBProvider):
 
         return True
 
-    def _check_auth_from_data(self, parsed_data, is_XML=True):
+    def _check_auth_from_data(self, parsed_data, is_XML: bool = True) -> bool:
 
         if not parsed_data:
             return self._check_auth()
@@ -66,34 +65,34 @@ class OmgwtfnzbsProvider(NZBProvider):
 
         return True
 
-    def _get_title_and_url(self, item):
+    def _get_title_and_url(self, item) -> tuple:
         return item['release'], item['getnzb']
 
-    def _get_size(self, item):
+    def _get_size(self, item) -> int:
         return try_int(item['sizebytes'], -1)
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self._check_auth():
             return results
 
-        search_params = {
+        search_strings = {
             'user': self.config('username'),
             'api': self.config('api_key'),
             'eng': 1,
             'catid': '19,20,30',  # SD,HD,UHD
-            'retention': sickbeard.USENET_RETENTION,
+            'retention': self.config('retention'),
         }
 
         for mode in search_strings:
             items = []
             logger.debug('Search Mode: {0}'.format(mode))
             for search_string in search_strings[mode]:
-                search_params['search'] = search_string
+                search_strings['search'] = search_string
                 if mode != 'RSS':
                     logger.debug('Search string: {0}'.format(search_string))
 
-                data = self.get_url(self.urls['api'], params=search_params, returns='json')
+                data = self.get_url(self.urls['api'], params=search_strings, returns='json')
                 if not data:
                     logger.debug('No data returned from provider')
                     continue
@@ -127,8 +126,8 @@ class OmgwtfnzbsCache(tvcache.TVCache):
 
     def get_rss_data(self):
         search_params = {
-            'user': provider.config('username'),
-            'api': provider.config('api_key'),
+            'user': self.provider.config('username'),
+            'api': self.provider.config('api_key'),
             'eng': 1,
             'catid': '19,20,30',  # SD,HD,UHD
         }

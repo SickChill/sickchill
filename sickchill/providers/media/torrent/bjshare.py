@@ -36,7 +36,7 @@ class BJShareProvider(TorrentProvider):
 
     def __init__(self):
         """Initialize the class."""
-        super(BJShareProvider, self).__init__('BJ-Share')
+        super().__init__('BJ-Share', extra_options=('username', 'password', 'minseed', 'minleech', 'cookies', 'absolute_numbering'))
 
         # URLs
         self.url = 'https://bj-share.info'
@@ -50,10 +50,6 @@ class BJShareProvider(TorrentProvider):
 
         # Proper Strings
         self.proper_strings = ['PROPER', 'REPACK', 'REAL', 'RERIP']
-
-        # Cache
-        self.cache = tvcache.TVCache(self)
-        self.supported_options = ('username', 'password', 'minseed', 'minleech', 'cookies', 'absolute_numbering')
 
         # One piece and Boruto is the only animes that i'm aware that is in "absolute" numbering, the problem is that
         # they include the season (wrong season) and episode as absolute, eg: One Piece - S08E836
@@ -69,12 +65,11 @@ class BJShareProvider(TorrentProvider):
             'One Piece', 'Boruto: Naruto Next Generations'
         ]
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         """
         Search a provider and parse the results.
 
         :param search_strings: A dict with mode (key) and the search value (value)
-        :param age: Not used
         :param ep_obj: Informations about the episode being searched (when not RSS)
 
         :returns: A list of search results (structure)

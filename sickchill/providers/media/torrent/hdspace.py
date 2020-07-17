@@ -36,8 +36,7 @@ class HDSpaceProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "HDSpace")
-        self.cache = tvcache.TVCache(self, min_time=10)  # only poll HDSpace every 10 minutes max
+        super().__init__('HDSpace', extra_options=('username', 'password', 'minseed', 'minleech'))
 
         self.urls = {'base_url': 'https://hd-space.org/',
                      'login': 'https://hd-space.org/index.php?page=login',
@@ -53,8 +52,6 @@ class HDSpaceProvider(TorrentProvider):
         self.urls['search'] = self.urls['search'][:-4]  # remove extra %%3B
 
         self.url = self.urls['base_url']
-
-        self.supported_options = ('username', 'password', 'minseed', 'minleech')
 
     def _check_auth(self):
 
@@ -84,7 +81,7 @@ class HDSpaceProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

@@ -35,7 +35,7 @@ class HDTorrentsProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "HDTorrents")
+        super().__init__('HDTorrents', extra_options=('username', 'password', 'minseed', 'minleech', 'freeleech'))
 
         self.urls = {'base_url': 'https://hd-torrents.org',
                      'login': 'https://hd-torrents.org/login.php',
@@ -48,9 +48,7 @@ class HDTorrentsProvider(TorrentProvider):
         self.categories = "&category[]=59&category[]=60&category[]=30&category[]=38&category[]=65"
         self.proper_strings = ['PROPER', 'REPACK']
 
-        self.cache = tvcache.TVCache(self, min_time=30)  # only poll HDTorrents every 30 minutes max
-
-        self.supported_options = ('username', 'password', 'minseed', 'minleech', 'freeleech')
+        self.min_cache_time = 30
 
     def _check_auth(self):
 
@@ -78,7 +76,7 @@ class HDTorrentsProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

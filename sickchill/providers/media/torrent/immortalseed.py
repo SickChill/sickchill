@@ -37,7 +37,7 @@ class ImmortalseedProvider(TorrentProvider):
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "Immortalseed")
+        super().__init__('Immortalseed', extra_options=('username', 'password', 'passkey', 'minseed', 'minleech', 'freeleech'))
 
         # URLs
         self.url = 'https://immortalseed.me/'
@@ -51,9 +51,8 @@ class ImmortalseedProvider(TorrentProvider):
         self.proper_strings = ['PROPER', 'REPACK']
 
         # Cache
-        self.cache = ImmortalseedCache(self, min_time=20)
-
-        self.supported_options = ('username', 'password', 'passkey', 'minseed', 'minleech', 'freeleech')
+        self.min_cache_time = 20
+        self.cache = ImmortalseedCache(self)
 
     def _check_auth(self):
 
@@ -88,7 +87,7 @@ class ImmortalseedProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

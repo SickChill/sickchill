@@ -35,7 +35,7 @@ class LimeTorrentsProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "LimeTorrents")
+        super().__init__('LimeTorrents', extra_options=('public', 'minseed', 'minleech'))
 
         self.urls = {
             'index': 'https://www.limetorrents.info/',
@@ -47,11 +47,9 @@ class LimeTorrentsProvider(TorrentProvider):
 
         self.proper_strings = ['PROPER', 'REPACK', 'REAL']
 
-        self.cache = tvcache.TVCache(self, search_params={'RSS': ['rss']})
+        self.cache_search_params = {'RSS': ['rss']}
 
-        self.supported_options = ('public', 'minseed', 'minleech')
-
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         for mode in search_strings:
             items = []

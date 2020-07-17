@@ -31,18 +31,17 @@ class TorrentProjectProvider(TorrentProvider):
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "TorrentProject")
+        super().__init__('TorrentProject', extra_options=tuple([]))
 
         # URLs
         self.url = 'https://torrentproject.se/'
 
         self.ability_status = self.PROVIDER_BACKLOG
-        # Proper Strings
 
         # Cache
-        self.cache = tvcache.TVCache(self, search_params={'RSS': ['0day']})
+        self.cache_search_params = {'RSS': ['0day']}
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
 
         search_params = {

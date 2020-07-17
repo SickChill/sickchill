@@ -32,18 +32,16 @@ class EZTVProvider(TorrentProvider):
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "EZTV")
+        super().__init__('EZTV', extra_options=('public', 'minseed', 'minleech'))
 
         # URLs
         self.url = "https://eztv.io"
         self.api = urljoin(self.url, "api/get-torrents")
 
         # Cache
-        self.cache = tvcache.TVCache(self, min_time=30)  # only poll ThePirateBay every 30 minutes max
+        self.min_cache_time = 30
 
-        self.supported_options = ('public', 'minseed', 'minleech')
-
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         search_params = {
             "imdb_id": None,

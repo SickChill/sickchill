@@ -36,7 +36,7 @@ class AlphaRatioProvider(TorrentProvider):
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "AlphaRatio")
+        super().__init__('AlphaRatio', extra_options=('username', 'password', 'minseed', 'minleech'))
 
         # URLs
         self.url = "http://alpharatio.cc"
@@ -47,11 +47,6 @@ class AlphaRatioProvider(TorrentProvider):
 
         # Proper Strings
         self.proper_strings = ["PROPER", "REPACK"]
-
-        # Cache
-        self.cache = tvcache.TVCache(self)
-
-        self.supported_options = ('username', 'password', 'minseed', 'minleech')
 
     def login(self):
         if any(dict_from_cookiejar(self.session.cookies).values()):
@@ -76,7 +71,7 @@ class AlphaRatioProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

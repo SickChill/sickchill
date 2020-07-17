@@ -23,15 +23,16 @@ from datetime import datetime
 from itertools import chain
 from os.path import join
 from random import shuffle
+from typing import Union
 
 # Third Party Imports
-import configobj
 from requests.utils import add_dict_to_cookiejar
 from validate import Validator
 
 # First Party Imports
 import sickbeard
 from sickbeard import config, logger
+from sickbeard.tv import TVShow
 from sickbeard.classes import Proper, SearchResult
 from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, ua_pool
 from sickbeard.db import DBConnection
@@ -60,10 +61,10 @@ class GenericProvider(object):
         PROVIDER_OK: _("Daily/RSS and Backlog/Manual Searches working")
     }
 
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, name, extra_options: tuple = tuple()):
+        self.name: str = name
 
-        self.bt_cache_urls = [
+        self.bt_cache_urls: list = [
             #'http://torcache.net/torrent/{torrent_hash}.torrent',
             'http://torrentproject.se/torrent/{torrent_hash}.torrent',
             'http://thetorrent.org/torrent/{torrent_hash}.torrent',
@@ -71,28 +72,26 @@ class GenericProvider(object):
             ('https://t.torrage.info/download?h={torrent_hash}', 'https://torrage.info/torrent.php?h={torrent_hash}'),
             'https://itorrents.org/torrent/{torrent_hash}.torrent?title={torrent_name}'
         ]
-        self.cache = TVCache(self)
+        self.min_cache_time: int = 15
+        self.cache_search_params: dict = dict(RSS=[''])
+        self.cache: TVCache = TVCache(self)
 
-        self.headers = {'User-Agent': sickbeard.common.USER_AGENT}
-        self.proper_strings = ['PROPER|REPACK|REAL']
-        self.provider_type = None
+        self.headers: dict = {'User-Agent': sickbeard.common.USER_AGENT}
+        self.proper_strings: list = ['PROPER|REPACK|REAL']
+        self.provider_type: Union[int, None] = None
 
         self.session = make_session()
-        self.show = None
-        self.urls = {}
+        self.show: Union[TVShow, None] = None
+        self.urls: dict = {}
 
         self.ability_status = self.PROVIDER_OK
 
-        self.supported_options = tuple()
-        self.default_supported_options = tuple(['enabled'])
+        self.supported_options: tuple = tuple(['enabled'])
+        self.supported_options += extra_options
 
         shuffle(self.bt_cache_urls)
 
-    @property
-    def all_supported_options(self):
-        return set(self.default_supported_options + self.supported_options)
-
-    def __assure_config(self):
+    def __assure_config(self) -> None:
         if 'providers' not in sickbeard.CFG2:
             sickbeard.CFG2['providers'] = {}
         if self.provider_type not in sickbeard.CFG2['providers']:
@@ -107,17 +106,17 @@ class GenericProvider(object):
         self.__assure_config()
         return sickbeard.CFG2['providers'][self.provider_type][self.get_id()].get(key)
 
-    def set_config(self, key: str, value):
+    def set_config(self, key: str, value) -> None:
         if not self.options(key):
             logger.debug('Unsupported key attempted to be written for provider: {}, key: {}, value: {}'.format(self.name, key, value))
             return
         self.__assure_config()
         sickbeard.CFG2['providers'][self.provider_type][self.get_id()][key] = value
 
-    def options(self, key: str):
-        return key in self.all_supported_options
+    def options(self, key: str) -> bool:
+        return key in self.supported_options
 
-    def download_result(self, result):
+    def download_result(self, result) -> bool:
         if not self.login():
             return False
 
@@ -362,7 +361,7 @@ class GenericProvider(object):
 
         return results
 
-    def get_id(self, suffix=''):
+    def get_id(self, suffix='') -> str:
         return GenericProvider.make_id(self.name) + str(suffix)
 
     def get_quality(self, item, anime=False):
@@ -390,41 +389,29 @@ class GenericProvider(object):
         kwargs['hooks'] = {'response': self.get_url_hook}
         return getURL(url, post_data, params, self.headers, timeout, self.session, **kwargs)
 
-    def image_name(self):
+    def image_name(self) -> str:
         return self.get_id() + '.png'
 
     @property
-    def is_active(self):
+    def is_active(self) -> bool:
         return False
 
-    # @property
-    # def is_enabled(self):
-    #     return self.config('enabled')
-
-    # @property
-    # def daily_enabled(self):
-    #     return self.config('daily')
-
-    # @property
-    # def backlog_enabled(self):
-    #     return self.config('backlog')
-
     @property
-    def can_daily(self):
+    def can_daily(self) -> bool:
         return self.ability_status & self.PROVIDER_DAILY != 0 and self.options('daily')
 
     @property
-    def can_backlog(self):
+    def can_backlog(self) -> bool:
         return self.ability_status & self.PROVIDER_BACKLOG != 0 and self.options('backlog')
 
-    def default(self):
+    def default(self) -> bool:
         return self.options('default')
 
     def status(self):
         return self.ProviderStatus.get(self.ability_status)
 
     @staticmethod
-    def make_id(name):
+    def make_id(name) -> str:
         if not name:
             return ''
 
@@ -436,19 +423,19 @@ class GenericProvider(object):
     def seed_ratio(self):
         return ''
 
-    def _check_auth(self):
+    def _check_auth(self) -> bool:
         return True
 
-    def login(self):
+    def login(self) -> bool:
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         return []
 
     def _get_result(self, episodes):
         return SearchResult(episodes)
 
-    def get_episode_search_strings(self, episode, add_string=''):
+    def get_episode_search_strings(self, episode, add_string: str = '') -> list:
         if not episode:
             return []
 
@@ -486,7 +473,7 @@ class GenericProvider(object):
 
         return [search_string]
 
-    def get_season_search_strings(self, episode):
+    def get_season_search_strings(self, episode) -> list:
         search_string = {
             'Season': []
         }
@@ -507,16 +494,16 @@ class GenericProvider(object):
 
         return [search_string]
 
-    def _get_size(self, item):
+    def _get_size(self, item) -> int:
         try:
             return item.get('size', -1)
         except AttributeError:
             return -1
 
-    def _get_storage_dir(self):
+    def _get_storage_dir(self) -> str:
         return ''
 
-    def _get_title_and_url(self, item):
+    def _get_title_and_url(self, item) -> tuple:
         if not item:
             return '', ''
 
@@ -536,7 +523,7 @@ class GenericProvider(object):
         return title, url
 
     @staticmethod
-    def hash_from_magnet(magnet):
+    def hash_from_magnet(magnet: str) -> str:
         try:
             torrent_hash = re.findall(r'urn:btih:([\w]{32,40})', magnet)[0].upper()
             if len(torrent_hash) == 32:
@@ -546,7 +533,7 @@ class GenericProvider(object):
             logger.exception('Unable to extract torrent hash or name from magnet: {0}'.format(magnet))
             return ''
 
-    def _make_url(self, result):
+    def _make_url(self, result) -> tuple:
         if not result:
             return '', ''
 
@@ -585,10 +572,10 @@ class GenericProvider(object):
 
         return urls, filename
 
-    def _verify_download(self, file_name):
+    def _verify_download(self, file_name) -> bool:
         return True
 
-    def add_cookies_from_ui(self):
+    def add_cookies_from_ui(self) -> tuple[bool, str]:
         """
         Adds the cookies configured from UI to the providers requests session
         :return: A tuple with the the (success result, and a descriptive message in str)

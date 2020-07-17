@@ -36,7 +36,7 @@ class PretomeProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "Pretome")
+        super().__init__('Pretome', extra_options=tuple([]))
         self.urls = {'base_url': 'https://pretome.info',
                      'login': 'https://pretome.info/takelogin.php',
                      'detail': 'https://pretome.info/details.php?id=%s',
@@ -48,8 +48,6 @@ class PretomeProvider(TorrentProvider):
         self.categories = "&st=1&cat%5B%5D=7"
 
         self.proper_strings = ['PROPER', 'REPACK']
-
-        self.cache = tvcache.TVCache(self)
 
     def _check_auth(self):
 
@@ -77,7 +75,7 @@ class PretomeProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

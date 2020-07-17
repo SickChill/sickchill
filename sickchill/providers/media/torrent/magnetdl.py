@@ -32,7 +32,7 @@ class MagnetDLProvider(TorrentProvider):
 
     def __init__(self):
 
-        super(MagnetDLProvider, self).__init__("MagnetDL")
+        super().__init__("MagnetDL", extra_options=('public', 'custom_url', 'minseed', 'minleech'))
 
         self.url = "http://www.magnetdl.com"
         self.urls = {
@@ -40,11 +40,7 @@ class MagnetDLProvider(TorrentProvider):
         }
         self.headers.update({'Accept': 'application/html'})
 
-        self.cache = tvcache.TVCache(self)
-
-        self.supported_options = ('public', 'custom_url', 'minseed', 'minleech')
-
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
 
         for mode in search_strings:

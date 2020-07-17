@@ -31,9 +31,7 @@ class SceneTimeProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "SceneTime")
-
-        self.cache = tvcache.TVCache(self)  # only poll SceneTime every 20 minutes max
+        super().__init__('SceneTime', extra_options=tuple([]))
 
         self.urls = {'base_url': 'https://www.scenetime.com',
                      'login': 'https://www.scenetime.com/takelogin.php',
@@ -69,7 +67,7 @@ class SceneTimeProvider(TorrentProvider):
                 logger.warning('Failed to login, check your cookies')
                 return False
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

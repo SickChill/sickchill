@@ -35,7 +35,7 @@ class HoundDawgsProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "HoundDawgs")
+        super().__init__('HoundDawgs', extra_options=('username', 'password', 'minseed', 'minleech', 'freeleech', 'ranked'))
 
         self.urls = {
             'base_url': 'https://hounddawgs.org/',
@@ -60,10 +60,6 @@ class HoundDawgsProvider(TorrentProvider):
             "searchimdb": '',
             "searchtags": ''
         }
-
-        self.cache = tvcache.TVCache(self)
-
-        self.supported_options = ('username', 'password', 'minseed', 'minleech', 'freeleech', 'ranked')
 
     def login(self):
         if any(dict_from_cookiejar(self.session.cookies).values()):
@@ -90,7 +86,7 @@ class HoundDawgsProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results

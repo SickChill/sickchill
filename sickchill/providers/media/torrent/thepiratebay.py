@@ -36,7 +36,7 @@ class ThePirateBayProvider(TorrentProvider):
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "ThePirateBay")
+        super().__init__('ThePirateBay', extra_options=tuple([]))
 
         # URLs
         self.url = "https://thepiratebay.org"
@@ -59,9 +59,6 @@ class ThePirateBayProvider(TorrentProvider):
                 urljoin(self.api, "precompiled/data_top100_48h_205.json")
             ]
         }
-
-        # Cache
-        self.cache = tvcache.TVCache(self, min_time=30)  # only poll ThePirateBay every 30 minutes max
 
     @property
     def tracker_cache(self):
@@ -91,7 +88,7 @@ class ThePirateBayProvider(TorrentProvider):
         trackers = self.tracker_cache.get_trackers()
         return "magnet:?xt=urn:btih:{info_hash}&dn={name}{trackers}".format(name=name, info_hash=info_hash, trackers=trackers) + self._custom_trackers
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         search_params = {
             "cat": '208,205',

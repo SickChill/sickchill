@@ -25,7 +25,7 @@ class NcoreProvider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "ncore.cc")
+        super().__init__('ncore.cc', extra_options=('username', 'password', 'minseed', 'minleech'))
 
         categories = [
             'xvidser_hun', 'xvidser',
@@ -41,10 +41,6 @@ class NcoreProvider(TorrentProvider):
                        '&tipus=kivalasztottak_kozott&submit.x=0&submit.y=0&submit=Ok'
                        '&tags=&searchedfrompotato=true&jsons=true').format(cats=categories)
         }
-
-        self.cache = tvcache.TVCache(self)
-
-        self.supported_options = ('username', 'password', 'minseed', 'minleech')
 
     def login(self):
 
@@ -65,7 +61,7 @@ class NcoreProvider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
         if not self.login():
             return results
