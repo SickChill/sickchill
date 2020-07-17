@@ -50,3 +50,4 @@ imagesize
 send2trash
 deluge-client
 ifaddr
+twilio
