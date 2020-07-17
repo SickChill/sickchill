@@ -26,7 +26,7 @@ python-twitter==3.5
 rarfile==3.1
 slugify==0.0.1
 subliminal==2.1.0
-tmdbsimple==2.4.2
+tmdbsimple==2.5.2
 tornado==5.1.1
 tvdbsimple==1.0.6
 Unidecode==1.1.1
