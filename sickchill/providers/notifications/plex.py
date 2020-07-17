@@ -31,11 +31,14 @@ except ImportError:
     # Stdlib Imports
     from xml.etree import ElementTree as etree
 
+# Local Folder Imports
+# Local Folder Imports
+from .base import AbstractNotifier
 
 
-
-class Notifier(object):
+class Notifier(AbstractNotifier):
     def __init__(self):
+        super().__init__('Plex', extra_options=('update_library', 'server_https'))
         self.headers = {
             'X-Plex-Device-Name': 'SickChill',
             'X-Plex-Product': 'SickChill Notifier',
@@ -44,8 +47,7 @@ class Notifier(object):
         }
         self.session = make_session()
 
-    @staticmethod
-    def _notify_pht(message, title='SickChill', host=None, username=None, password=None, force=False):
+    def _notify_pht(self, message, title='SickChill', host=None, username=None, password=None, force=False):
         """Internal wrapper for the notify_snatch and notify_download functions
 
         Args:
@@ -63,7 +65,7 @@ class Notifier(object):
         """
 
         # suppress notifications if the notifier is disabled but the notify options are checked
-        if not sickbeard.USE_PLEX_CLIENT and not force:
+        if not self.config('enabled') and not force:
             return False
 
         host = host or sickbeard.PLEX_CLIENT_HOST
@@ -76,27 +78,27 @@ class Notifier(object):
 # Public functions
 ##############################################################################
 
-    def notify_snatch(self, ep_name):
-        if sickbeard.PLEX_NOTIFY_ONSNATCH:
-            self._notify_pht(ep_name, common.notifyStrings[common.NOTIFY_SNATCH])
+    def notify_snatch(self, name):
+        if self.config('snatch'):
+            self._notify_pht(name, common.notifyStrings[common.NOTIFY_SNATCH])
 
-    def notify_download(self, ep_name):
-        if sickbeard.PLEX_NOTIFY_ONDOWNLOAD:
-            self._notify_pht(ep_name, common.notifyStrings[common.NOTIFY_DOWNLOAD])
+    def notify_download(self, name):
+        if self.config('download'):
+            self._notify_pht(name, common.notifyStrings[common.NOTIFY_DOWNLOAD])
 
-    def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._notify_pht(ep_name + ': ' + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
+    def notify_subtitle_download(self, name, lang):
+        if self.config('subtitle'):
+            self._notify_pht(name + ': ' + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
 
     def notify_git_update(self, new_version='??'):
-        if sickbeard.NOTIFY_ON_UPDATE:
+        if self.config('update'):
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             if update_text and title and new_version:
                 self._notify_pht(update_text + new_version, title)
 
     def notify_login(self, ipaddress=""):
-        if sickbeard.NOTIFY_ON_LOGIN:
+        if self.config('login'):
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             if update_text and title and ipaddress:
@@ -123,10 +125,10 @@ class Notifier(object):
 
         """
 
-        if not (sickbeard.USE_PLEX_SERVER and sickbeard.PLEX_UPDATE_LIBRARY) and not force:
+        if not (self.config('server_enabled') and self.config('server_update_library')) and not force:
             return None
 
-        host = host or sickbeard.PLEX_SERVER_HOST
+        host = host or self.config('server_host')
         if not host:
             logger.debug('PLEX: No Plex Media Server host specified, check your settings')
             return False

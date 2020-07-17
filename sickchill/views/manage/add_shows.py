@@ -35,9 +35,9 @@ import sickchill
 from sickbeard import config, db, filters, helpers, logger, ui
 from sickbeard.blackandwhitelist import short_group_names
 from sickbeard.common import Quality
-from sickbeard.trakt_api import TraktAPI
 from sickbeard.traktTrending import trakt_trending
 from sickchill.helper import sanitize_filename, try_int
+from sickchill.providers.notifications.trakt import TraktAPI
 from sickchill.show.recommendations.favorites import favorites
 from sickchill.show.recommendations.imdb import imdb_popular
 from sickchill.show.Show import Show
@@ -169,9 +169,10 @@ class AddShows(Home):
                 dir_list.append(cur_dir)
 
                 indexer_id = show_name = indexer = None
-                for cur_provider in sickbeard.metadata_provider_dict.values():
+                for cur_provider in sickchill.provider.metadata.metadata.extenstions:
+                    instance = cur_provider.plugin()
                     if not (indexer_id and show_name):
-                        (indexer_id, show_name, indexer) = cur_provider.retrieveShowMetadata(cur_path)
+                        (indexer_id, show_name, indexer) = instance.retrieveShowMetadata(cur_path)
                         if all((indexer_id, show_name, indexer)):
                             break
 

@@ -276,7 +276,7 @@ def makeDir(path):
         try:
             os.makedirs(path)
             # do the library update for synoindex
-            sickbeard.notifiers.synoindex_notifier.addFolder(path)
+            sickchill.providers.notifications.manager['synoindex'].plugin().addFolder(path)
         except OSError:
             return False
     return True

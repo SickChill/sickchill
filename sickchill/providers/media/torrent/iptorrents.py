@@ -190,4 +190,4 @@ class IPTorrentsProvider(TorrentProvider):
         return results
 
 
-provider = IPTorrentsProvider()
+

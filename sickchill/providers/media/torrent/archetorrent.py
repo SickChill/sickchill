@@ -175,4 +175,4 @@ class ArcheTorrentProvider(TorrentProvider):
         return results
 
 
-provider = ArcheTorrentProvider()
+

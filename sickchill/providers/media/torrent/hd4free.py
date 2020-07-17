@@ -128,4 +128,4 @@ class HD4FreeProvider(TorrentProvider):
         return results
 
 
-provider = HD4FreeProvider()
+

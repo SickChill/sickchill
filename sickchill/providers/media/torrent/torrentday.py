@@ -166,4 +166,4 @@ class TorrentDayProvider(TorrentProvider):
         return results
 
 
-provider = TorrentDayProvider()
+

@@ -26,12 +26,13 @@ import traceback
 
 # First Party Imports
 import sickbeard
+from sickchill.clients import manager as client_manager
 from sickchill.helper.common import try_int
 from sickchill.helper.exceptions import AuthException
-from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.providers.media.GenericProvider import GenericProvider
 
 # Local Folder Imports
-from . import clients, common, db, failed_history, helpers, history, logger, notifiers, nzbget, nzbSplitter, sab, show_name_helpers, ui
+from . import common, db, failed_history, helpers, history, logger, notifiers, nzbget, nzbSplitter, sab, show_name_helpers, ui
 from .common import MULTI_EP_RESULT, Quality, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
@@ -114,12 +115,9 @@ def snatchEpisode(result, endStatus=SNATCHED):
         elif sickbeard.NZB_METHOD == "sabnzbd":
             dlResult = sab.sendNZB(result)
         elif sickbeard.NZB_METHOD == "nzbget":
-            is_proper = True if endStatus == SNATCHED_PROPER else False
-            dlResult = nzbget.sendNZB(result, is_proper)
+            dlResult = nzbget.sendNZB(result, endStatus == SNATCHED_PROPER)
         elif sickbeard.NZB_METHOD == "download_station":
-            client = clients.getClientInstance(sickbeard.NZB_METHOD)(
-                sickbeard.SYNOLOGY_DSM_HOST, sickbeard.SYNOLOGY_DSM_USERNAME, sickbeard.SYNOLOGY_DSM_PASSWORD)
-            dlResult = client.sendNZB(result)
+            dlResult = client_manager[sickbeard.NZB_METHOD].sendNZB(result)
         else:
             logger.exception("Unknown NZB action specified in config: " + sickbeard.NZB_METHOD)
             dlResult = False
@@ -135,8 +133,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
                     result.content = result.provider.get_url(result.url, returns='content')
 
             if result.content or result.url.startswith('magnet'):
-                client = clients.getClientInstance(sickbeard.TORRENT_METHOD)()
-                dlResult = client.sendTORRENT(result)
+                dlResult = client_manager[sickbeard.TORRENT_METHOD].sendTORRENT(result)
             else:
                 logger.warning("Torrent file content is empty")
                 dlResult = False

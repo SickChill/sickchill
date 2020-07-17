@@ -169,4 +169,4 @@ class RarbgProvider(TorrentProvider):
         return results
 
 
-provider = RarbgProvider()
+

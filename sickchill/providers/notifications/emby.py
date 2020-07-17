@@ -25,8 +25,11 @@ import urllib
 import sickbeard
 from sickbeard import logger
 
+# Local Folder Imports
+from .base import AbstractNotifier
 
-class Notifier(object):
+
+class Notifier(AbstractNotifier):
 
     def _notify_emby(self, message, host=None, emby_apikey=None):
         """Handles notifying Emby host via HTTP API
@@ -78,7 +81,7 @@ class Notifier(object):
 
         """
 
-        if sickbeard.USE_EMBY:
+        if self.config('enabled'):
             if not sickbeard.EMBY_HOST:
                 logger.debug('EMBY: No host specified, check your settings')
                 return False

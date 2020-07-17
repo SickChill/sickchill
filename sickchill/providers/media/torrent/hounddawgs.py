@@ -182,4 +182,4 @@ class HoundDawgsProvider(TorrentProvider):
         return results
 
 
-provider = HoundDawgsProvider()
+

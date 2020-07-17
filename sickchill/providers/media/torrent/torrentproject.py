@@ -113,4 +113,4 @@ class TorrentProjectProvider(TorrentProvider):
         return results
 
 
-provider = TorrentProjectProvider()
+

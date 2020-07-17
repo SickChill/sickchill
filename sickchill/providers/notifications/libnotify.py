@@ -38,7 +38,11 @@ with warnings.catch_warnings():
             Notify = None
 
 
-class Notifier(object):
+# Local Folder Imports
+from .base import AbstractNotifier
+
+
+class Notifier(AbstractNotifier):
 
     def __init__(self):
         self.notify_initialized = None
@@ -82,26 +86,26 @@ class Notifier(object):
 
         return "<p>Error: Unable to send notification."
 
-    def notify_snatch(self, ep_name):
-        if sickbeard.LIBNOTIFY_NOTIFY_ONSNATCH:
-            self._notify(common.notifyStrings[common.NOTIFY_SNATCH], ep_name)
+    def notify_snatch(self, name):
+        if self.config('snatch'):
+            self._notify(common.notifyStrings[common.NOTIFY_SNATCH], name)
 
-    def notify_download(self, ep_name):
-        if sickbeard.LIBNOTIFY_NOTIFY_ONDOWNLOAD:
-            self._notify(common.notifyStrings[common.NOTIFY_DOWNLOAD], ep_name)
+    def notify_download(self, name):
+        if self.config('download'):
+            self._notify(common.notifyStrings[common.NOTIFY_DOWNLOAD], name)
 
-    def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._notify(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD], ep_name + ": " + lang)
+    def notify_subtitle_download(self, name, lang):
+        if self.config('subtitle'):
+            self._notify(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD], name + ": " + lang)
 
     def notify_git_update(self, new_version="??"):
-        if sickbeard.USE_LIBNOTIFY:
+        if self.config('enabled'):
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notify(title, update_text + new_version)
 
     def notify_login(self, ipaddress=""):
-        if sickbeard.USE_LIBNOTIFY:
+        if self.config('enabled'):
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._notify(title, update_text.format(ipaddress))
@@ -110,7 +114,7 @@ class Notifier(object):
         return self._notify('Test notification', "This is a test notification from SickChill", force=True)
 
     def _notify(self, title, message, force=False):
-        if self.notify_initialized and sickbeard.USE_LIBNOTIFY | force:
+        if self.notify_initialized and self.config('enabled') | force:
             icon = os.path.join(sickbeard.PROG_DIR, 'gui', 'slick', 'images', 'ico', 'favicon-120.png')
             # noinspection PyBroadException
             try:

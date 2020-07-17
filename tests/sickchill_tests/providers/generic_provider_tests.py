@@ -28,7 +28,7 @@ import unittest
 from mock import MagicMock, patch
 
 # First Party Imports
-from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.providers.media.GenericProvider import GenericProvider
 
 
 class GenericProviderTests(unittest.TestCase):
@@ -164,6 +164,7 @@ class GenericProviderTests(unittest.TestCase):
         """
         Test is_active
         """
+        # First Party Imports
         import sickbeard
         sickbeard.USE_TORRENTS = True
         provider = GenericProvider('Test Provider')

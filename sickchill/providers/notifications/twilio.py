@@ -19,47 +19,54 @@
 # Stdlib Imports
 import re
 
+# Third Party Imports
+from twilio.base.exceptions import TwilioRestException
+from twilio.rest import TwilioRestClient
+
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
 
-# Third Party Imports
-from twilio.base.exceptions import TwilioRestException, TwilioException
-from twilio.rest import TwilioRestClient
-
-
+# Local Folder Imports
 from .base import AbstractNotifier
 
 
 class Notifier(AbstractNotifier):
+    def __init__(self):
+        super().__init__('Twilio', extra_options=('to_number', 'account_id', 'auth_token', 'phone_sid'))
 
-    number_regex = re.compile(r'^\+1-\d{3}-\d{3}-\d{4}$')
-    account_regex = re.compile(r'^AC[a-z0-9]{32}$')
-    auth_regex = re.compile(r'^[a-z0-9]{32}$')
-    phone_regex = re.compile(r'^PN[a-z0-9]{32}$')
+        self.number_regex = re.compile(r'^\+1-\d{3}-\d{3}-\d{4}$')
+        self.account_regex = re.compile(r'^AC[a-z0-9]{32}$')
+        self.auth_regex = re.compile(r'^[a-z0-9]{32}$')
+        self.phone_regex = re.compile(r'^PN[a-z0-9]{32}$')
 
-    def notify_snatch(self, ep_name):
-        if sickbeard.TWILIO_NOTIFY_ONSNATCH:
-            self._notifyTwilio(common.notifyStrings[common.NOTIFY_SNATCH] + ': ' + ep_name)
+    def notify_snatch(self, name):
+        if self.config('snatch'):
+            self._notifyTwilio(common.notifyStrings[common.NOTIFY_SNATCH] + ': ' + name)
 
-    def notify_download(self, ep_name):
-        if sickbeard.TWILIO_NOTIFY_ONDOWNLOAD:
-            self._notifyTwilio(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ': ' + ep_name)
+    def notify_download(self, name):
+        if self.config('download'):
+            self._notifyTwilio(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ': ' + name)
 
-    def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._notifyTwilio(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + ep_name + ': ' + lang)
+    def notify_subtitle_download(self, name, lang):
+        if self.config('subtitle'):
+            self._notifyTwilio(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + name + ': ' + lang)
 
     def notify_git_update(self, new_version):
-        if sickbeard.USE_TWILIO:
+        if self.config('update'):
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             self._notifyTwilio(update_text + new_version)
 
     def notify_login(self, ipaddress=""):
-        if sickbeard.USE_TWILIO:
+        if self.config('enabled'):
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._notifyTwilio(title + " - " + update_text.format(ipaddress))
+
+    def notify_postprocess(self, name):
+        if self.config('process'):
+            title = common.notifyStrings[common.NOTIFY_POSTPROCESS]
+            self._notifyTwilio(title + " - " + name)
 
     def test_notify(self):
         try:
@@ -71,14 +78,14 @@ class Notifier(AbstractNotifier):
 
     @property
     def number(self):
-        return self.client.phone_numbers.get(sickbeard.TWILIO_PHONE_SID)
+        return self.client.phone_numbers.get(self.config('phone_sid'))
 
     @property
     def client(self):
-        return TwilioRestClient(sickbeard.TWILIO_ACCOUNT_SID, sickbeard.TWILIO_AUTH_TOKEN)
+        return TwilioRestClient(self.config('account_id'), self.config('auth_token'))
 
     def _notifyTwilio(self, message='', force=False, allow_raise=False):
-        if not (sickbeard.USE_TWILIO or force or self.number_regex.match(sickbeard.TWILIO_TO_NUMBER)):
+        if not (self.config('enabled') or force or self.number_regex.match(self.config('to_number'))):
             return False
 
         logger.debug('Sending Twilio SMS: ' + message)
@@ -86,7 +93,7 @@ class Notifier(AbstractNotifier):
         try:
             self.client.messages.create(
                 body=message,
-                to=sickbeard.TWILIO_TO_NUMBER,
+                to=self.config('to_number'),
                 from_=self.number.phone_number,
             )
         except TwilioRestException as e:

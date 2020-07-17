@@ -27,8 +27,8 @@ import unittest
 
 # First Party Imports
 import sickbeard
-from sickchill.providers.GenericProvider import GenericProvider
-from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+from sickchill.providers.media.GenericProvider import GenericProvider
+from sickchill.providers.media.torrent import TorrentProvider
 
 # Local Folder Imports
 from .generic_provider_tests import GenericProviderTests

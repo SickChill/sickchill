@@ -101,4 +101,4 @@ class CpasbienProvider(TorrentProvider):
         return results
 
 
-provider = CpasbienProvider()
+

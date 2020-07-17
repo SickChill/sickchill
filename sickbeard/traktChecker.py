@@ -24,8 +24,8 @@ import traceback
 # First Party Imports
 import sickbeard
 import sickchill
-from sickbeard.trakt_api import TraktAPI, traktException
 from sickchill.helper.common import episode_num, sanitize_filename
+from sickchill.providers.notifications.trakt import TraktAPI, traktException
 from sickchill.show.Show import Show
 
 # Local Folder Imports
@@ -60,7 +60,7 @@ def setEpisodeToWanted(show, s, e):
 
 class TraktChecker(object):
     def __init__(self):
-        self.trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
+        self.trakt_api = TraktAPI(sickchill.providers.notifications.manager['trakt'].plugin().config('timeout'))
         self.todoBacklog = []
         self.todoWanted = []
         self.ShowWatchlist = {}

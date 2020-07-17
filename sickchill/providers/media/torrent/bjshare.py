@@ -292,4 +292,4 @@ class BJShareProvider(TorrentProvider):
         return True
 
 
-provider = BJShareProvider()
+

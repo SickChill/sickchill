@@ -181,4 +181,4 @@ class KatProvider(TorrentProvider):
         return self.url
 
 
-provider = KatProvider()
+

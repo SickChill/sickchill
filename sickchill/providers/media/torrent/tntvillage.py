@@ -394,4 +394,4 @@ class TNTVillageProvider(TorrentProvider):
         return results
 
 
-provider = TNTVillageProvider()
+

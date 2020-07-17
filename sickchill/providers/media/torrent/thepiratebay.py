@@ -209,4 +209,4 @@ class TrackerCacheDBConnection(db.DBConnection):
         return result
 
 
-provider = ThePirateBayProvider()
+

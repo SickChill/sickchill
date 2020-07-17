@@ -10,7 +10,7 @@
     from sickbeard.common import Quality, statusStrings
 
     from sickchill.show.History import History
-    from sickchill.providers.GenericProvider import GenericProvider
+    from sickchill.providers.media.GenericProvider import GenericProvider
 %>
 <%block name="content">
     <%namespace file="/inc_defs.mako" import="renderQualityPill"/>

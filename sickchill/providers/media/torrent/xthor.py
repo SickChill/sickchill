@@ -120,4 +120,4 @@ class XThorProvider(TorrentProvider):
         return results
 
 
-provider = XThorProvider()
+

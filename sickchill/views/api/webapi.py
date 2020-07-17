@@ -699,7 +699,7 @@ class CMDComingEpisodes(ApiCall):
                 data[section].append({
                     'airdate': coming_episode['airdate'],
                     'airs': coming_episode['airs'],
-                    'ep_name': coming_episode['name'],
+                    'name': coming_episode['name'],
                     'ep_plot': coming_episode['description'],
                     'episode': coming_episode['episode'],
                     'indexerid': coming_episode['indexer_id'],

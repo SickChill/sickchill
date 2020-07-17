@@ -22,9 +22,8 @@ import unittest
 
 # First Party Imports
 import sickbeard
-from sickbeard.providers.bitcannon import BitCannonProvider
-from sickbeard.providers.rarbg import provider as rarbg
 from sickbeard.tv import TVEpisode, TVShow
+from sickchill.providers.media.torrent import BitCannonProvider, provider as rarbg
 from tests import test_lib as test
 
 

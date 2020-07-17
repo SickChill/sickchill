@@ -26,21 +26,24 @@ import requests
 import sickbeard
 from sickbeard import common, logger
 
+# Local Folder Imports
+from .base import AbstractNotifier
 
-class Notifier(object):
 
-    def notify_snatch(self, ep_name):
-        if sickbeard.MATRIX_NOTIFY_SNATCH:
-            show = self._parseEp(ep_name)
+class Notifier(AbstractNotifier):
+
+    def notify_snatch(self, name):
+        if self.config('snatch'):
+            show = self._parseEp(name)
             message = '''<body>
                         <h3>SickChill Notification - Snatched</h3>
                         <p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p><p>Quality: <b>{3}</b></p>
                         <h5>Powered by SickChill.</h5></body>'''.format(show[0], show[1], show[2], show[3])
             self._notify_matrix(message)
 
-    def notify_download(self, ep_name):
+    def notify_download(self, name):
         if sickbeard.MATRIX_NOTIFY_DOWNLOAD:
-            show = self._parseEp(ep_name)
+            show = self._parseEp(name)
             message = '''<body>
                         <h3>SickChill Notification - Downloaded</h3>
                         <p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p><p>Quality: <b>{3}</b></p>
@@ -49,9 +52,9 @@ class Notifier(object):
                         Powered by SickChill.</h5></body>'''.format(show[0], show[1], show[2], show[3])
             self._notify_matrix(message)
 
-    def notify_subtitle_download(self, ep_name, lang):
+    def notify_subtitle_download(self, name, lang):
         if sickbeard.MATRIX_NOTIFY_SUBTITLEDOWNLOAD:
-            show = self._parseEp(ep_name)
+            show = self._parseEp(name)
             message = '''<body>
                         <h3>SickChill Notification - Subtitle Downloaded</h3>
                         <p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p></p>
@@ -60,13 +63,13 @@ class Notifier(object):
             self._notify_matrix(message)
 
     def notify_git_update(self, new_version="??"):
-        if sickbeard.USE_MATRIX:
+        if self.config('enabled'):
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notify_matrix(title + " - " + update_text + new_version)
 
     def notify_login(self, ipaddress=""):
-        if sickbeard.USE_MATRIX:
+        if self.config('enabled'):
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._notify_matrix(title + " - " + update_text.format(ipaddress))
@@ -99,7 +102,7 @@ class Notifier(object):
         return True
 
     def _notify_matrix(self, message='', force=False):
-        if not sickbeard.USE_MATRIX and not force:
+        if not self.config('enabled') and not force:
             return False
 
         return self._send_matrix(message)

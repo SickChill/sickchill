@@ -27,8 +27,8 @@ import unittest
 
 # First Party Imports
 import sickbeard
-from sickchill.providers.GenericProvider import GenericProvider
-from sickchill.providers.nzb.NZBProvider import NZBProvider
+from sickchill.providers.media.GenericProvider import GenericProvider
+from sickchill.providers.media.nzb import NZBProvider
 
 # Local Folder Imports
 from .generic_provider_tests import GenericProviderTests

@@ -131,4 +131,4 @@ class Torrent9Provider(TorrentProvider):
         return res[_type]
 
 
-provider = Torrent9Provider()
+

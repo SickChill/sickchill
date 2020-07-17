@@ -24,8 +24,11 @@ from requests.compat import urljoin
 import sickbeard
 from sickbeard import common, helpers, logger
 
+# Local Folder Imports
+from .base import AbstractNotifier
 
-class Notifier(object):
+
+class Notifier(AbstractNotifier):
 
     def __init__(self):
         self.session = helpers.make_session()
@@ -51,28 +54,28 @@ class Notifier(object):
         headers = {'Access-Token': pushbullet_api}
         return helpers.getURL(urljoin(self.url, 'channels'), session=self.session, headers=headers, returns='text') or {}
 
-    def notify_snatch(self, ep_name):
-        if sickbeard.PUSHBULLET_NOTIFY_ONSNATCH:
+    def notify_snatch(self, name):
+        if self.config('snatch'):
             self._sendPushbullet(
                 pushbullet_api=None,
-                event=common.notifyStrings[common.NOTIFY_SNATCH] + ' : ' + ep_name,
-                message=ep_name
+                event=common.notifyStrings[common.NOTIFY_SNATCH] + ' : ' + name,
+                message=name
             )
 
-    def notify_download(self, ep_name):
-        if sickbeard.PUSHBULLET_NOTIFY_ONDOWNLOAD:
+    def notify_download(self, name):
+        if self.config('download'):
             self._sendPushbullet(
                 pushbullet_api=None,
-                event=common.notifyStrings[common.NOTIFY_DOWNLOAD] + ' : ' + ep_name,
-                message=ep_name
+                event=common.notifyStrings[common.NOTIFY_DOWNLOAD] + ' : ' + name,
+                message=name
             )
 
-    def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD:
+    def notify_subtitle_download(self, name, lang):
+        if self.config('subtitle'):
             self._sendPushbullet(
                 pushbullet_api=None,
-                event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' : ' + ep_name + ' : ' + lang,
-                message=ep_name + ': ' + lang
+                event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' : ' + name + ' : ' + lang,
+                message=name + ': ' + lang
             )
 
     def notify_git_update(self, new_version='??'):
@@ -93,7 +96,7 @@ class Notifier(object):
     def _sendPushbullet(
             self, pushbullet_api=None, pushbullet_device=None, pushbullet_channel=None, event=None, message=None, link=None, force=False):
 
-        if not (sickbeard.USE_PUSHBULLET or force):
+        if not (self.config('enabled') or force):
             return False
 
         pushbullet_api = pushbullet_api or sickbeard.PUSHBULLET_API

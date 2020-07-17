@@ -20,7 +20,7 @@ from putiopy import Client as PutioClient, ClientError
 
 # First Party Imports
 from sickbeard import helpers
-from sickbeard.clients.generic import GenericClient
+from sickchill.clients.generic import GenericClient
 
 
 class Client(GenericClient):

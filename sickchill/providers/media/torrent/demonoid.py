@@ -153,4 +153,4 @@ class DemonoidCache(tvcache.TVCache):
         return self.get_rss_feed(self.provider.urls['RSS'], self.provider.cache_rss_params)
 
 
-provider = DemonoidProvider()
+

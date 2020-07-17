@@ -32,7 +32,11 @@ from sickbeard.common import (NOTIFY_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPD
 API_URL = "https://api.pushover.net/1/messages.json"
 
 
-class Notifier(object):
+# Local Folder Imports
+from .base import AbstractNotifier
+
+
+class Notifier(AbstractNotifier):
     def __init__(self):
         pass
 
@@ -140,26 +144,26 @@ class Notifier(object):
         logger.info("Pushover notification successful.")
         return True
 
-    def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
-        if sickbeard.PUSHOVER_NOTIFY_ONSNATCH:
-            self._notifyPushover(title, ep_name)
+    def notify_snatch(self, name, title=notifyStrings[NOTIFY_SNATCH]):
+        if self.config('snatch'):
+            self._notifyPushover(title, name)
 
-    def notify_download(self, ep_name, title=notifyStrings[NOTIFY_DOWNLOAD]):
-        if sickbeard.PUSHOVER_NOTIFY_ONDOWNLOAD:
-            self._notifyPushover(title, ep_name)
+    def notify_download(self, name, title=notifyStrings[NOTIFY_DOWNLOAD]):
+        if self.config('download'):
+            self._notifyPushover(title, name)
 
-    def notify_subtitle_download(self, ep_name, lang, title=notifyStrings[NOTIFY_SUBTITLE_DOWNLOAD]):
-        if sickbeard.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._notifyPushover(title, ep_name + ": " + lang)
+    def notify_subtitle_download(self, name, lang, title=notifyStrings[NOTIFY_SUBTITLE_DOWNLOAD]):
+        if self.config('subtitle'):
+            self._notifyPushover(title, name + ": " + lang)
 
     def notify_git_update(self, new_version="??"):
-        if sickbeard.USE_PUSHOVER:
+        if self.config('enabled'):
             update_text = notifyStrings[NOTIFY_GIT_UPDATE_TEXT]
             title = notifyStrings[NOTIFY_GIT_UPDATE]
             self._notifyPushover(title, update_text + new_version)
 
     def notify_login(self, ipaddress=""):
-        if sickbeard.USE_PUSHOVER:
+        if self.config('enabled'):
             update_text = notifyStrings[NOTIFY_LOGIN_TEXT]
             title = notifyStrings[NOTIFY_LOGIN]
             self._notifyPushover(title, update_text.format(ipaddress))
@@ -176,7 +180,7 @@ class Notifier(object):
         force: Enforce sending, for instance for testing
         """
 
-        if not sickbeard.USE_PUSHOVER and not force:
+        if not self.config('enabled') and not force:
             logger.debug("Notification for Pushover not enabled, skipping this notification")
             return False
 

@@ -176,4 +176,4 @@ class SpeedCDProvider(TorrentProvider):
         return results
 
 
-provider = SpeedCDProvider()
+

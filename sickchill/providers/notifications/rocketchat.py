@@ -25,31 +25,34 @@ import requests
 import sickbeard
 from sickbeard import common, logger
 
+# Local Folder Imports
+from .base import AbstractNotifier
 
-class Notifier(object):
+
+class Notifier(AbstractNotifier):
 
     ROCKETCHAT_ICON_URL = 'https://github.com/SickChill/SickChill/raw/master/gui/slick/images/sickchill-sc.png'
 
-    def notify_snatch(self, ep_name):
-        if sickbeard.ROCKETCHAT_NOTIFY_SNATCH:
-            self._notify_rocketchat(common.notifyStrings[common.NOTIFY_SNATCH] + ': ' + ep_name)
+    def notify_snatch(self, name):
+        if self.config('snatch'):
+            self._notify_rocketchat(common.notifyStrings[common.NOTIFY_SNATCH] + ': ' + name)
 
-    def notify_download(self, ep_name):
+    def notify_download(self, name):
         if sickbeard.ROCKETCHAT_NOTIFY_DOWNLOAD:
-            self._notify_rocketchat(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ': ' + ep_name)
+            self._notify_rocketchat(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ': ' + name)
 
-    def notify_subtitle_download(self, ep_name, lang):
+    def notify_subtitle_download(self, name, lang):
         if sickbeard.ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD:
-            self._notify_rocketchat(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + ep_name + ": " + lang)
+            self._notify_rocketchat(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + name + ": " + lang)
 
     def notify_git_update(self, new_version="??"):
-        if sickbeard.USE_ROCKETCHAT:
+        if self.config('enabled'):
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notify_rocketchat(title + " - " + update_text + new_version)
 
     def notify_login(self, ipaddress=""):
-        if sickbeard.USE_ROCKETCHAT:
+        if self.config('enabled'):
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._notify_rocketchat(title + " - " + update_text.format(ipaddress))
@@ -75,7 +78,7 @@ class Notifier(object):
         return True
 
     def _notify_rocketchat(self, message='', force=False):
-        if not sickbeard.USE_ROCKETCHAT and not force:
+        if not self.config('enabled') and not force:
             return False
 
         return self._send_rocketchat(message)

@@ -130,4 +130,4 @@ class NcoreProvider(TorrentProvider):
             results += items
         return results
 
-provider = NcoreProvider()
+

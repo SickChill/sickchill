@@ -32,8 +32,12 @@ except ImportError:
     # Stdlib Imports
     from xml.etree import ElementTree as etree
 
+# Local Folder Imports
+# Local Folder Imports
+from .base import AbstractNotifier
 
-class Notifier(object):
+
+class Notifier(AbstractNotifier):
     def notify_settings(self, host):
         """
         Retrieves the settings from a NMJ/Popcorn hour
@@ -84,16 +88,16 @@ class Notifier(object):
 
         return True
 
-    def notify_snatch(self, ep_name):
+    def notify_snatch(self, name):
         return False
         # Not implemented: Start the scanner when snatched does not make any sense
 
-    def notify_download(self, ep_name):
-        if sickbeard.USE_NMJ:
+    def notify_download(self, name):
+        if self.config('enabled'):
             self._notifyNMJ()
 
-    def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.USE_NMJ:
+    def notify_subtitle_download(self, name, lang):
+        if self.config('enabled'):
             self._notifyNMJ()
 
     def notify_git_update(self, new_version):
@@ -185,7 +189,7 @@ class Notifier(object):
         mount: The mount URL (optional, defaults to the mount URL in the config)
         force: If True then the notification will be sent even if NMJ is disabled in the config
         """
-        if not sickbeard.USE_NMJ and not force:
+        if not self.config('enabled') and not force:
             logger.debug("Notification for NMJ scan update not enabled, skipping this notification")
             return False
 

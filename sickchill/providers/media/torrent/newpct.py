@@ -249,4 +249,4 @@ class newpctProvider(TorrentProvider):
 
         return title.strip()
 
-provider = newpctProvider()
+

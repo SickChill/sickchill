@@ -28,6 +28,9 @@ from .base import AbstractNotifier
 
 
 class Notifier(AbstractNotifier):
+    def __init__(self):
+        super().__init__('Synology')
+
     def notify_snatch(self, name):
         if self.config('snatch'):
             self._send_synologyNotifier(name, common.notifyStrings[common.NOTIFY_SNATCH])
@@ -41,16 +44,28 @@ class Notifier(AbstractNotifier):
             self._send_synologyNotifier(name + ": " + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
 
     def notify_git_update(self, new_version="??"):
-        if self.config('enabled'):
+        if self.config('update'):
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._send_synologyNotifier(update_text + new_version, title)
 
     def notify_login(self, ipaddress=""):
-        if self.config('enabled'):
+        if self.config('login'):
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._send_synologyNotifier(update_text.format(ipaddress), title)
+
+    def notify_postprocess(self, name: str):
+        if self.config('process'):
+            title = common.notifyStrings[common.NOTIFY_POSTPROCESS]
+            self._send_synologyNotifier(name, title)
+
+    def update_library(self, item, remove: bool = False):
+        pass
+
+    @staticmethod
+    def test_notify(username):
+        pass
 
     def _send_synologyNotifier(self, message, title):
         synodsmnotify_cmd = ["/usr/syno/bin/synodsmnotify", "@administrators", title, message]

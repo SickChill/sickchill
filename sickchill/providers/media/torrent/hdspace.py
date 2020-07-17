@@ -169,4 +169,4 @@ class HDSpaceProvider(TorrentProvider):
         return results
 
 
-provider = HDSpaceProvider()
+

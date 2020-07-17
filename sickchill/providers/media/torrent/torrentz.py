@@ -111,4 +111,4 @@ class TorrentzProvider(TorrentProvider):
         return results
 
 
-provider = TorrentzProvider()
+

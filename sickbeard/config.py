@@ -663,7 +663,8 @@ def min_max(val, default, low, high):
 ################################################################################
 # check_setting_int                                                            #
 ################################################################################
-def check_setting_int(config, cfg_name, item_name, def_val=0, min_val=None, max_val=None, fallback_def=True, silent=True):
+def check_setting_int(config, cfg_name: str, item_name: str, def_val: int = 0, min_val: int = None, max_val: int = None, fallback_def: bool = True,
+                      silent: bool = True):
     """
     Checks config setting of integer type
 
@@ -727,7 +728,8 @@ def check_setting_int(config, cfg_name, item_name, def_val=0, min_val=None, max_
 ################################################################################
 # check_setting_float                                                          #
 ################################################################################
-def check_setting_float(config, cfg_name, item_name, def_val=0.0, min_val=None, max_val=None, fallback_def=True, silent=True):
+def check_setting_float(config, cfg_name: str, item_name: str, def_val: float = 0.0, min_val: float = None, max_val: float = None, fallback_def: bool = True,
+                        silent: bool = True):
     """
     Checks config setting of float type
 
@@ -783,7 +785,7 @@ def check_setting_float(config, cfg_name, item_name, def_val=0.0, min_val=None, 
 ################################################################################
 # check_setting_str                                                            #
 ################################################################################
-def check_setting_str(config, cfg_name, item_name, def_val=str(''), silent=True, censor_log=False):
+def check_setting_str(config, cfg_name: str, item_name: str, def_val: str = '', silent: bool = True, censor_log: bool = False):
     """
     Checks config setting of string types
 
@@ -833,7 +835,7 @@ def check_setting_str(config, cfg_name, item_name, def_val=str(''), silent=True,
 ################################################################################
 # check_setting_bool                                                           #
 ################################################################################
-def check_setting_bool(config, cfg_name, item_name, def_val=False, silent=True):
+def check_setting_bool(config, cfg_name: str, item_name: str, def_val: bool = False, silent: bool = True):
     """
     Checks config setting of boolean type
 
@@ -893,7 +895,7 @@ class ConfigMigrator(object):
             1: 'Custom naming',
             2: 'Sync backup number with version number',
             3: 'Rename omgwtfnzb variables',
-            4: 'Add newznab catIDs',
+            4: 'Add newznab categories',
             5: 'Metadata update',
             6: 'Convert from XBMC to new KODI variables',
             7: 'Use version 2 for password encryption',
@@ -1064,7 +1066,7 @@ class ConfigMigrator(object):
         sickbeard.OMGWTFNZBS_USERNAME = check_setting_str(self.config_obj, 'omgwtfnzbs', 'omgwtfnzbs_uid')
         sickbeard.OMGWTFNZBS_APIKEY = check_setting_str(self.config_obj, 'omgwtfnzbs', 'omgwtfnzbs_key')
 
-    # Migration v4: Add default newznab catIDs
+    # Migration v4: Add default newznab categories
     def _migrate_v4(self):
         """ Update newznab providers so that the category IDs can be set independently via the config """
 
@@ -1085,11 +1087,11 @@ class ConfigMigrator(object):
                     key = '0'
 
                 if name == 'NZBs.org':
-                    catIDs = '5030,5040,5060,5070,5090'
+                    categories = '5030,5040,5060,5070,5090'
                 else:
-                    catIDs = '5030,5040,5060'
+                    categories = '5030,5040,5060'
 
-                cur_provider_data_list = [name, url, key, catIDs, enabled]
+                cur_provider_data_list = [name, url, key, categories, enabled]
                 new_newznab_data.append("|".join(cur_provider_data_list))
 
             sickbeard.NEWZNAB_DATA = "!!!".join(new_newznab_data)

@@ -152,4 +152,4 @@ class TorrentBytesProvider(TorrentProvider):
         return results
 
 
-provider = TorrentBytesProvider()
+

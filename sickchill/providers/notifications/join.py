@@ -25,8 +25,11 @@ from sickbeard import logger
 from sickbeard.common import (NOTIFY_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, NOTIFY_SNATCH,
                               NOTIFY_SUBTITLE_DOWNLOAD, notifyStrings)
 
+# Local Folder Imports
+from .base import AbstractNotifier
 
-class Notifier(object):
+
+class Notifier(AbstractNotifier):
     """
     Use Join to send notifications
 
@@ -80,36 +83,36 @@ class Notifier(object):
             logger.info(message)
             return success, message
 
-    def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
+    def notify_snatch(self, name, title=notifyStrings[NOTIFY_SNATCH]):
         """
         Sends a Join notification when an episode is snatched
 
-        :param ep_name: The name of the episode snatched
+        :param name: The name of the episode snatched
         :param title: The title of the notification to send
         """
-        if sickbeard.JOIN_NOTIFY_ONSNATCH:
-            self._notify_join(title, ep_name)
+        if self.config('snatch'):
+            self._notify_join(title, name)
 
-    def notify_download(self, ep_name, title=notifyStrings[NOTIFY_DOWNLOAD]):
+    def notify_download(self, name, title=notifyStrings[NOTIFY_DOWNLOAD]):
         """
         Sends a Join notification when an episode is downloaded
 
-        :param ep_name: The name of the episode downloaded
+        :param name: The name of the episode downloaded
         :param title: The title of the notification to send
         """
-        if sickbeard.JOIN_NOTIFY_ONDOWNLOAD:
-            self._notify_join(title, ep_name)
+        if self.config('download'):
+            self._notify_join(title, name)
 
-    def notify_subtitle_download(self, ep_name, lang, title=notifyStrings[NOTIFY_SUBTITLE_DOWNLOAD]):
+    def notify_subtitle_download(self, name, lang, title=notifyStrings[NOTIFY_SUBTITLE_DOWNLOAD]):
         """
         Sends a Join notification when subtitles for an episode are downloaded
 
-        :param ep_name: The name of the episode subtitles were downloaded for
+        :param name: The name of the episode subtitles were downloaded for
         :param lang: The language of the downloaded subtitles
         :param title: The title of the notification to send
         """
-        if sickbeard.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._notify_join(title, '{0}: {1}'.format(ep_name, lang))
+        if self.config('subtitle'):
+            self._notify_join(title, '{0}: {1}'.format(name, lang))
 
     def notify_git_update(self, new_version='??'):
         """
@@ -117,7 +120,7 @@ class Notifier(object):
 
         :param new_version: The new version available from git
         """
-        if sickbeard.USE_JOIN:
+        if self.config('enabled'):
             update_text = notifyStrings[NOTIFY_GIT_UPDATE_TEXT]
             title = notifyStrings[NOTIFY_GIT_UPDATE]
             self._notify_join(title, update_text + new_version)
@@ -128,7 +131,7 @@ class Notifier(object):
 
         :param ipaddress: The IP address the login is originating from
         """
-        if sickbeard.USE_JOIN:
+        if self.config('enabled'):
             update_text = notifyStrings[NOTIFY_LOGIN_TEXT]
             title = notifyStrings[NOTIFY_LOGIN]
             self._notify_join(title, update_text.format(ipaddress))
@@ -146,7 +149,7 @@ class Notifier(object):
         :returns: the message to send
         """
 
-        if not (force or sickbeard.USE_JOIN):
+        if not (force or self.config('enabled')):
             logger.debug('Notification for Join not enabled, skipping this notification')
             return False, 'Disabled'
 

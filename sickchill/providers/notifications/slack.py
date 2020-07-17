@@ -25,32 +25,35 @@ import requests
 import sickbeard
 from sickbeard import common, logger
 
+# Local Folder Imports
+from .base import AbstractNotifier
 
-class Notifier(object):
+
+class Notifier(AbstractNotifier):
 
     SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/'
     SLACK_ICON_URL = 'https://github.com/SickChill/SickChill/raw/master/gui/slick/images/sickchill-sc.png'
 
-    def notify_snatch(self, ep_name):
-        if sickbeard.SLACK_NOTIFY_SNATCH:
-            self._notify_slack(common.notifyStrings[common.NOTIFY_SNATCH] + ': ' + ep_name)
+    def notify_snatch(self, name):
+        if self.config('snatch'):
+            self._notify_slack(common.notifyStrings[common.NOTIFY_SNATCH] + ': ' + name)
 
-    def notify_download(self, ep_name):
+    def notify_download(self, name):
         if sickbeard.SLACK_NOTIFY_DOWNLOAD:
-            self._notify_slack(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ': ' + ep_name)
+            self._notify_slack(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ': ' + name)
 
-    def notify_subtitle_download(self, ep_name, lang):
+    def notify_subtitle_download(self, name, lang):
         if sickbeard.SLACK_NOTIFY_SUBTITLEDOWNLOAD:
-            self._notify_slack(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + ep_name + ": " + lang)
+            self._notify_slack(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + name + ": " + lang)
 
     def notify_git_update(self, new_version="??"):
-        if sickbeard.USE_SLACK:
+        if self.config('enabled'):
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notify_slack(title + " - " + update_text + new_version)
 
     def notify_login(self, ipaddress=""):
-        if sickbeard.USE_SLACK:
+        if self.config('enabled'):
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._notify_slack(title + " - " + update_text.format(ipaddress))
@@ -76,7 +79,7 @@ class Notifier(object):
         return True
 
     def _notify_slack(self, message='', force=False):
-        if not sickbeard.USE_SLACK and not force:
+        if not self.config('enabled') and not force:
             return False
 
         return self._send_slack(message)

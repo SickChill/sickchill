@@ -110,4 +110,4 @@ class TokyoToshokanProvider(TorrentProvider):
 
         return results
 
-provider = TokyoToshokanProvider()
+

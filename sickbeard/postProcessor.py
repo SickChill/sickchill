@@ -30,10 +30,11 @@ import sickbeard
 from sickchill.helper import glob
 from sickchill.helper.common import remove_extension, replace_extension, SUBTITLE_EXTENSIONS
 from sickchill.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ShowDirectoryNotFoundException
+from sickchill.providers import notifications
 from sickchill.show.Show import Show
 
 # Local Folder Imports
-from . import common, db, failed_history, helpers, history, logger, notifiers, show_name_helpers
+from . import common, db, failed_history, helpers, history, logger, show_name_helpers
 from .helpers import verify_freespace
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
@@ -282,7 +283,7 @@ class PostProcessor(object):
                 os.remove(cur_file)
 
                 # do the library update for synoindex
-                notifiers.synoindex_notifier.deleteFile(cur_file)
+                notifications.manager['synoindex'].plugin().update_library(cur_file, remove=True)
 
     def _combined_file_operation(self, file_path, new_path,
                                  new_base_name, associated_files=False,
@@ -1049,7 +1050,7 @@ class PostProcessor(object):
                 helpers.chmodAsParent(ep_obj.show._location)
 
                 # do the library update for synoindex
-                notifiers.synoindex_notifier.addFolder(ep_obj.show._location)
+                notifications.manager['synoindex'].plugin().update_library(ep_obj.show)
             except (OSError, IOError):
                 raise EpisodePostProcessingFailedException("Unable to create the show directory: " + ep_obj.show._location)
 
@@ -1189,28 +1190,8 @@ class PostProcessor(object):
         # If any notification fails, don't stop postProcessor
         try:
             # send notifications
-            notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
-
-            # do the library update for KODI
-            notifiers.kodi_notifier.update_library(ep_obj.show.name)
-
-            # do the library update for Plex
-            notifiers.plex_notifier.update_library(ep_obj)
-
-            # do the library update for EMBY
-            notifiers.emby_notifier.update_library(ep_obj.show)
-
-            # do the library update for NMJ
-            # nmj_notifier kicks off its library update when the notify_download is issued (inside notifiers)
-
-            # do the library update for Synology Indexer
-            notifiers.synoindex_notifier.addFile(ep_obj.location)
-
-            # do the library update for pyTivo
-            notifiers.pytivo_notifier.update_library(ep_obj)
-
-            # do the library update for Trakt
-            notifiers.trakt_notifier.update_library(ep_obj)
+            notifications.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
+            notifications.update_library(ep_obj)
         except Exception:
             logger.info("Some notifications could not be sent. Continuing with postProcessing...")
 
@@ -1219,7 +1200,7 @@ class PostProcessor(object):
         # If any notification fails, don't stop postProcessor
         try:
             # send notifications
-            notifiers.email_notifier.notify_postprocess(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
+            notifiers.notify_postprocess(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
         except Exception:
             logger.info("Some notifications could not be sent. Finishing postProcessing...")
 

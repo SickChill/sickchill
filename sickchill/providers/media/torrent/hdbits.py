@@ -190,4 +190,4 @@ class HDBitsCache(tvcache.TVCache):
 
         return {'entries': results}
 
-provider = HDBitsProvider()
+

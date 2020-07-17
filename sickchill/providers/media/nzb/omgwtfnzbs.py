@@ -21,7 +21,7 @@
 import sickbeard
 from sickbeard import logger, tvcache
 from sickchill.helper.common import try_int
-from sickchill.providers.media.nzb import NZBProvider
+from .NZBProvider import NZBProvider
 
 
 class OmgwtfnzbsProvider(NZBProvider):
@@ -134,4 +134,4 @@ class OmgwtfnzbsCache(tvcache.TVCache):
         }
         return self.get_rss_feed(self.provider.urls['rss'], params=search_params)
 
-provider = OmgwtfnzbsProvider()
+

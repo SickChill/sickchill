@@ -118,4 +118,4 @@ class DanishbitsProvider(TorrentProvider):
         return results
 
 
-provider = DanishbitsProvider()
+

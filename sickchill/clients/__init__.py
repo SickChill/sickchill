@@ -21,16 +21,30 @@
 # Third Party Imports
 from subliminal.extensions import RegistrableExtensionManager
 
-clients = RegistrableExtensionManager('sickbeard.clients', [
-    'deluge = sickbeard.clients.deluge:Client',
-    'deluged = sickbeard.clients.deluged:Client',
-    'download_station = sickbeard.clients.download_station:Client',
-    'mlnet = sickbeard.clients.mlnet:Client',
-    'qbittorrent = sickbeard.clients.qbittorrent:Client',
-    'new_qbittorrent = sickbeard.clients.new_qbittorrent:Client',
-    'putio = sickbeard.clients.putio:Client',
-    'rtorrent = sickbeard.clients.rtorrent:Client',
-    'rtorrent9 = sickbeard.clients.rtorrent9:Client',
-    'transmission = sickbeard.clients.transmission:Client',
-    'utorrent = sickbeard.clients.utorrent:Client',
+manager = RegistrableExtensionManager('sickchill.clients', [
+    'deluge = sickchill.clients.deluge:Client',
+    'deluged = sickchill.clients.deluged:Client',
+    'download_station = sickchill.clients.download_station:Client',
+    'mlnet = sickchill.clients.mlnet:Client',
+    'qbittorrent = sickchill.clients.qbittorrent:Client',
+    'new_qbittorrent = sickchill.clients.new_qbittorrent:Client',
+    'putio = sickchill.clients.putio:Client',
+    'rtorrent = sickchill.clients.rtorrent:Client',
+    'rtorrent9 = sickchill.clients.rtorrent9:Client',
+    'transmission = sickchill.clients.transmission:Client',
+    'utorrent = sickchill.clients.utorrent:Client',
 ])
+
+default_host = {
+    'utorrent': 'http://localhost:8000',
+    'transmission': 'http://localhost:9091',
+    'deluge': 'http://localhost:8112',
+    'deluged': 'scgi://localhost:58846',
+    'download_station': 'http://localhost:5000',
+    'rtorrent': 'scgi://localhost:5000',
+    'rtorrent9': 'scgi://localhost:5000',
+    'qbittorrent': 'http://localhost:8080',
+    'new_qbittorrent': 'http://localhost:8080',
+    'mlnet': 'http://localhost:4080',
+    'putio': 'https://api.put.io/login'
+}

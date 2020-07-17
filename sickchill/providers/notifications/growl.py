@@ -26,25 +26,28 @@ import gntp.core
 import sickbeard
 from sickbeard import common, logger
 
+# Local Folder Imports
+from .base import AbstractNotifier
 
-class Notifier(object):
+
+class Notifier(AbstractNotifier):
 
     def test_notify(self, host, password):
         self._sendRegistration(host, password, 'Test')
         return self._sendGrowl("Test Growl", "Testing Growl settings from SickChill", "Test", host, password,
                                force=True)
 
-    def notify_snatch(self, ep_name):
-        if sickbeard.GROWL_NOTIFY_ONSNATCH:
-            self._sendGrowl(common.notifyStrings[common.NOTIFY_SNATCH], ep_name)
+    def notify_snatch(self, name):
+        if self.config('snatch'):
+            self._sendGrowl(common.notifyStrings[common.NOTIFY_SNATCH], name)
 
-    def notify_download(self, ep_name):
-        if sickbeard.GROWL_NOTIFY_ONDOWNLOAD:
-            self._sendGrowl(common.notifyStrings[common.NOTIFY_DOWNLOAD], ep_name)
+    def notify_download(self, name):
+        if self.config('download'):
+            self._sendGrowl(common.notifyStrings[common.NOTIFY_DOWNLOAD], name)
 
-    def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._sendGrowl(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD], ep_name + ": " + lang)
+    def notify_subtitle_download(self, name, lang):
+        if self.config('subtitle'):
+            self._sendGrowl(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD], name + ": " + lang)
 
     def notify_git_update(self, new_version="??"):
         update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
@@ -101,7 +104,7 @@ class Notifier(object):
 
     def _sendGrowl(self, title="SickChill Notification", message=None, name=None, host=None, password=None,
                    force=False):
-        if not sickbeard.USE_GROWL and not force:
+        if not self.config('enabled') and not force:
             return False
 
         if name is None:

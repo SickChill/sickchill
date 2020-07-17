@@ -198,4 +198,4 @@ class YggTorrentProvider(TorrentProvider):
         return results
 
 
-provider = YggTorrentProvider()
+

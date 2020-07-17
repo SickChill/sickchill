@@ -30,27 +30,27 @@ from sickbeard.classes import Proper, TorrentSearchResult
 from sickbeard.common import Quality
 from sickbeard.db import DBConnection
 from sickchill.helper.common import try_int
-from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.providers.media.GenericProvider import GenericProvider
 from sickchill.show.Show import Show
 
 
 class TorrentProvider(GenericProvider):
     def __init__(self, name):
         GenericProvider.__init__(self, name)
-        self.ratio = None
         self.provider_type = GenericProvider.TORRENT
         self.url = ''
+        self.default_supported_options += tuple(['ratio'])
 
     def find_propers(self, search_date=None):
         results = []
         db = DBConnection()
         placeholder = ','.join([str(x) for x in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST])
-        # language TEXT
+        # language=TEXT
         sql_results = db.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate'
-            ' FROM tv_episodes AS e'
-            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)'
-            ' WHERE e.airdate >= ' + str(search_date.toordinal()) +
+            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate' + \
+            ' FROM tv_episodes AS e' + \
+            ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)' + \
+            ' WHERE e.airdate >= ' + str(search_date.toordinal()) + \
             ' AND e.status IN (' + placeholder + ') and e.is_proper = 0'
         )
 
@@ -73,7 +73,7 @@ class TorrentProvider(GenericProvider):
 
     @property
     def is_active(self):
-        return sickbeard.USE_TORRENTS and self.config('enabled')
+        return self.config('enabled') and self.config('enabled')
 
     @property
     def _custom_trackers(self):

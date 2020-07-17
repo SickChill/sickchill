@@ -123,4 +123,4 @@ class BitCannonProvider(TorrentProvider):
 
         return True
 
-provider = BitCannonProvider()
+

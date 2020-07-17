@@ -30,7 +30,7 @@ import unittest
 import sickbeard
 from sickbeard import common as common
 from sickbeard.tv import TVEpisode, TVShow
-from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.providers.media.GenericProvider import GenericProvider
 from tests import test_lib as test
 
 TESTS = {
@@ -111,7 +111,7 @@ def generator(cur_data, cur_name, cur_provider):
 
             # print(search_strings)
 
-            if not cur_provider.public:
+            if not cur_provider.config('public'):
                 continue
 
             items = cur_provider.search(search_strings)

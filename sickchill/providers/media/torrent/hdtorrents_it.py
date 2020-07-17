@@ -181,6 +181,3 @@ class HDTorrentsProvider_IT(TorrentProvider):
             results += items
 
         return results
-
-
-provider = HDTorrentsProvider_IT()

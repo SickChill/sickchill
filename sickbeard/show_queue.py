@@ -27,10 +27,10 @@ import dateutil
 # First Party Imports
 import sickbeard
 import sickchill
-from sickbeard.trakt_api import TraktAPI
 from sickchill.helper.common import sanitize_filename
 from sickchill.helper.exceptions import (CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, EpisodeDeletedException,
                                          MultipleShowObjectsException, ShowDirectoryNotFoundException)
+from sickchill.providers.notifications.trakt import TraktAPI
 from sickchill.show.Show import Show
 
 # Local Folder Imports

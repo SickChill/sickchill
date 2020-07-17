@@ -168,4 +168,4 @@ class GimmePeersProvider(TorrentProvider):
         return results
 
 
-provider = GimmePeersProvider()
+

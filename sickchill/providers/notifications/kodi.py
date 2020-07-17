@@ -29,8 +29,11 @@ import sickbeard
 from sickbeard import common, logger
 from sickchill.helper import try_int
 
+# Local Folder Imports
+from .base import AbstractNotifier
 
-class Notifier(object):
+
+class Notifier(AbstractNotifier):
     def __init__(self):
         self._connections = list()
 
@@ -109,7 +112,7 @@ class Notifier(object):
         return results
 
     def update_library(self, show_name=None):
-        if not (sickbeard.USE_KODI and sickbeard.KODI_UPDATE_LIBRARY):
+        if not (self.config('enabled') and sickbeard.KODI_UPDATE_LIBRARY):
             return False
 
         if not sickbeard.KODI_HOST:
@@ -244,26 +247,26 @@ class Notifier(object):
             else:
                 logger.info('Could not find the episode on Kodi to play')
 
-    def notify_snatch(self, ep_name):
-        if sickbeard.KODI_NOTIFY_ONSNATCH:
-            self._notify_kodi(ep_name, common.notifyStrings[common.NOTIFY_SNATCH])
+    def notify_snatch(self, name):
+        if self.config('snatch'):
+            self._notify_kodi(name, common.notifyStrings[common.NOTIFY_SNATCH])
 
-    def notify_download(self, ep_name):
-        if sickbeard.KODI_NOTIFY_ONDOWNLOAD:
-            self._notify_kodi(ep_name, common.notifyStrings[common.NOTIFY_DOWNLOAD])
+    def notify_download(self, name):
+        if self.config('download'):
+            self._notify_kodi(name, common.notifyStrings[common.NOTIFY_DOWNLOAD])
 
-    def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.KODI_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._notify_kodi(ep_name + ": " + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
+    def notify_subtitle_download(self, name, lang):
+        if self.config('subtitle'):
+            self._notify_kodi(name + ": " + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
 
     def notify_git_update(self, new_version="??"):
-        if sickbeard.USE_KODI:
+        if self.config('enabled'):
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notify_kodi(update_text + new_version, title)
 
     def notify_login(self, ipaddress=""):
-        if sickbeard.USE_KODI:
+        if self.config('enabled'):
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._notify_kodi(update_text.format(ipaddress), title)

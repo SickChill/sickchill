@@ -203,4 +203,4 @@ class HorribleSubsProvider(TorrentProvider):
         return entries
 
 
-provider = HorribleSubsProvider()
+

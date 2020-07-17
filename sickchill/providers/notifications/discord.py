@@ -15,33 +15,39 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+# Stdlib Imports
+from abc import ABC
+
 # First Party Imports
 import sickbeard
 from sickbeard import common
 
+# Local Folder Imports
+from .base import AbstractNotifier
 
-class Notifier(object):
 
-    def notify_snatch(self, ep_name):
-        if sickbeard.DISCORD_NOTIFY_SNATCH:
-            self._notify_discord(common.notifyStrings[common.NOTIFY_SNATCH] + ': ' + ep_name)
+class Notifier(AbstractNotifier):
 
-    def notify_download(self, ep_name):
-        if sickbeard.DISCORD_NOTIFY_DOWNLOAD:
-            self._notify_discord(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ': ' + ep_name)
+    def notify_snatch(self, name):
+        if self.config('snatch'):
+            self._notify_discord(common.notifyStrings[common.NOTIFY_SNATCH] + ': ' + name)
 
-    def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.DISCORD_NOTIFY_SUBTITLEDOWNLOAD:
-            self._notify_discord(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + ep_name + ": " + lang)
+    def notify_download(self, name):
+        if self.config('download'):
+            self._notify_discord(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ': ' + name)
+
+    def notify_subtitle_download(self, name, lang):
+        if self.config('subtitle'):
+            self._notify_discord(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + name + ": " + lang)
 
     def notify_git_update(self, new_version="??"):
-        if sickbeard.USE_DISCORD:
+        if self.config('update'):
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notify_discord(title + " - " + update_text + new_version)
 
     def notify_login(self, ipaddress=""):
-        if sickbeard.USE_DISCORD:
+        if self.config('login'):
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._notify_discord(title + " - " + update_text.format(ipaddress))
@@ -54,7 +60,7 @@ class Notifier(object):
         return sickbeard.notificationsTaskScheduler.action.add_item(message, notifier='discord', force_next=force)
 
     def _notify_discord(self, message='', force=False):
-        if not sickbeard.USE_DISCORD and not force:
+        if not self.config('enabled') and not force:
             return False
 
         return self._send_discord(message, force=force)

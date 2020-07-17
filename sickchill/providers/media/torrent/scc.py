@@ -163,4 +163,4 @@ class SCCProvider(TorrentProvider):
         return results
 
 
-provider = SCCProvider()
+

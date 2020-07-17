@@ -172,4 +172,4 @@ class AlphaRatioProvider(TorrentProvider):
         return results
 
 
-provider = AlphaRatioProvider()
+

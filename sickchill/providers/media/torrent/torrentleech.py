@@ -150,4 +150,4 @@ class TorrentLeechProvider(TorrentProvider):
         return results
 
 
-provider = TorrentLeechProvider()
+

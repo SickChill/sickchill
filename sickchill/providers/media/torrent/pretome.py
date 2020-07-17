@@ -163,4 +163,4 @@ class PretomeProvider(TorrentProvider):
         return results
 
 
-provider = PretomeProvider()
+

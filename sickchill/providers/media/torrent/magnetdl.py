@@ -120,4 +120,4 @@ class MagnetDLProvider(TorrentProvider):
             return results
 
 
-provider = MagnetDLProvider()
+

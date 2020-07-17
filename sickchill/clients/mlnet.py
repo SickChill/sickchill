@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # First Party Imports
-from sickbeard.clients.generic import GenericClient
+from sickchill.clients.generic import GenericClient
 
 
 class Client(GenericClient):

@@ -97,4 +97,4 @@ class NyaaProvider(TorrentProvider):
         return results
 
 
-provider = NyaaProvider()
+

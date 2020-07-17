@@ -34,9 +34,9 @@ import unittest
 
 # First Party Imports
 from sickbeard import db
-from sickbeard.notifiers.emailnotify import Notifier as EmailNotifier
-from sickbeard.notifiers.prowl import Notifier as ProwlNotifier
 from sickbeard.tv import TVEpisode, TVShow
+from sickchill.providers.notifications.emailnotify import Notifier as EmailNotifier
+from sickchill.providers.notifications.prowl import Notifier as ProwlNotifier
 from sickchill.views.home import Home
 from tests import test_lib as test
 

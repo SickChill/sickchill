@@ -5,8 +5,8 @@ import posixpath
 
 # First Party Imports
 import sickbeard
-from sickbeard.trakt_api import TraktAPI, traktException
 from sickchill.helper.exceptions import MultipleShowObjectsException
+from sickchill.providers.notifications.trakt import TraktAPI, traktException
 
 # Local Folder Imports
 from . import helpers, logger

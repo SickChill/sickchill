@@ -32,7 +32,7 @@ from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
 from sickchill.helper.common import convert_size, try_int
-from sickchill.providers.media.nzb import NZBProvider
+from .NZBProvider import NZBProvider
 
 
 class NewznabProvider(NZBProvider):

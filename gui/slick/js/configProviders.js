@@ -57,7 +57,7 @@ $(document).ready(function () {
 
     const newznabProvidersCapabilities = [];
 
-    $.fn.addProvider = function (id, name, url, key, cat, isDefault) { // eslint-disable-line max-params
+    $.fn.addNZBProvider = function (id, name, url, key, cat, isDefault) { // eslint-disable-line max-params
         url = $.trim(url);
         if (!url) {
             return;
@@ -452,7 +452,7 @@ $(document).ready(function () {
                 return;
             }
 
-            $(this).addProvider(data.success, name, url, key, cat, 0);
+            $(this).addNZBProvider(data.success, name, url, key, cat, 0);
         });
     });
 

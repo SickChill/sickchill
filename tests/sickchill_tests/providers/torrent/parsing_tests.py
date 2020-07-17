@@ -89,8 +89,10 @@ class BaseParser(type):
 
             self.provider.session.verify = False
 
-            self.provider.username = self.username
-            self.provider.password = self.password
+            if self.provider.options('username'):
+                self.provider.set_config('username', self.username)
+            if self.provider.options('password'):
+                self.provider.set_config('password', self.password)
 
         @property
         def username(self):
@@ -230,7 +232,7 @@ def generate_test_cases():
     """
     for p in sickbeard.providers.__all__:
         provider = sickbeard.providers.getProviderModule(p).provider
-        if provider.can_backlog and provider.provider_type == 'torrent' and provider.public:
+        if provider.can_backlog and provider.provider_type == 'torrent' and provider.config('public'):
             generated_class = type(str(provider.name), (BaseParser.TestCase,), {'provider': provider})
             globals()[generated_class.__name__] = generated_class
             del generated_class

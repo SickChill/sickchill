@@ -1405,7 +1405,8 @@
                                     <div class="col-md-12">
                                         <select id="metadataType" class="form-control input-sm input350">
                                             % for cur_extension in sorted(sickchill.providers.metadata.metadata.extensions):
-                                                <option value="${cur_extension.plugin().get_id()}">${cur_extension.plugin().name}</option>
+                                                <% plugin = cur_extension.plugin() %>
+                                                <option value="${plugin.get_id()}">${plugin.name}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -1428,7 +1429,7 @@
                                 <label class="component-title">${_('Select Metadata')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                % for cur_extension in sickchill.providers.metadata.metadata.extensions:
+                                % for cur_extension in sorted(sickchill.providers.metadata.metadata.extensions):
                                     <%
                                         cur_metadata_inst = cur_extension.plugin()
                                         cur_id = cur_metadata_inst.get_id()

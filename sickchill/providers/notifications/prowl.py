@@ -32,53 +32,56 @@ from requests.compat import urlencode
 import sickbeard
 from sickbeard import common, db, logger
 
+# Local Folder Imports
+from .base import AbstractNotifier
 
-class Notifier(object):
+
+class Notifier(AbstractNotifier):
     def test_notify(self, prowl_api, prowl_priority):
         return self._send_prowl(prowl_api, prowl_priority, event="Test", message="Testing Prowl settings from SickChill", force=True)
 
-    def notify_snatch(self, ep_name):
-        if sickbeard.PROWL_NOTIFY_ONSNATCH:
-            show = self._parse_episode(ep_name)
+    def notify_snatch(self, name):
+        if self.config('snatch'):
+            show = self._parse_episode(name)
             recipients = self._generate_recipients(show)
             if not recipients:
                 logger.debug('Skipping prowl notify because there are no configured recipients')
             else:
                 for api in recipients:
                     self._send_prowl(prowl_api=api, prowl_priority=None, event=common.notifyStrings[common.NOTIFY_SNATCH],
-                                     message=ep_name + " :: " + time.strftime(sickbeard.DATE_PRESET + " " + sickbeard.TIME_PRESET))
+                                     message=name + " :: " + time.strftime(sickbeard.DATE_PRESET + " " + sickbeard.TIME_PRESET))
 
-    def notify_download(self, ep_name):
-        if sickbeard.PROWL_NOTIFY_ONDOWNLOAD:
-            show = self._parse_episode(ep_name)
+    def notify_download(self, name):
+        if self.config('download'):
+            show = self._parse_episode(name)
             recipients = self._generate_recipients(show)
             if not recipients:
                 logger.debug('Skipping prowl notify because there are no configured recipients')
             else:
                 for api in recipients:
                     self._send_prowl(prowl_api=api, prowl_priority=None, event=common.notifyStrings[common.NOTIFY_DOWNLOAD],
-                                     message=ep_name + " :: " + time.strftime(sickbeard.DATE_PRESET + " " + sickbeard.TIME_PRESET))
+                                     message=name + " :: " + time.strftime(sickbeard.DATE_PRESET + " " + sickbeard.TIME_PRESET))
 
-    def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD:
-            show = self._parse_episode(ep_name)
+    def notify_subtitle_download(self, name, lang):
+        if self.config('subtitle'):
+            show = self._parse_episode(name)
             recipients = self._generate_recipients(show)
             if not recipients:
                 logger.debug('Skipping prowl notify because there are no configured recipients')
             else:
                 for api in recipients:
                     self._send_prowl(prowl_api=api, prowl_priority=None, event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD],
-                                     message=ep_name + " [" + lang + "] :: " + time.strftime(sickbeard.DATE_PRESET + " " + sickbeard.TIME_PRESET))
+                                     message=name + " [" + lang + "] :: " + time.strftime(sickbeard.DATE_PRESET + " " + sickbeard.TIME_PRESET))
 
     def notify_git_update(self, new_version="??"):
-        if sickbeard.USE_PROWL:
+        if self.config('enabled'):
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._send_prowl(prowl_api=None, prowl_priority=None,
                              event=title, message=update_text + new_version)
 
     def notify_login(self, ipaddress=""):
-        if sickbeard.USE_PROWL:
+        if self.config('enabled'):
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._send_prowl(prowl_api=None, prowl_priority=None,
@@ -111,7 +114,7 @@ class Notifier(object):
     @staticmethod
     def _send_prowl(prowl_api=None, prowl_priority=None, event=None, message=None, force=False):
 
-        if not sickbeard.USE_PROWL and not force:
+        if not self.config('enabled') and not force:
             return False
 
         if prowl_api is None:

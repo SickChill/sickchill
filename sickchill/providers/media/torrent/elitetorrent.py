@@ -188,4 +188,4 @@ class EliteTorrentProvider(TorrentProvider):
 
         return title.strip()
 
-provider = EliteTorrentProvider()
+

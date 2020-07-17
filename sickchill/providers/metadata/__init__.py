@@ -16,51 +16,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# Stdlib Imports
-import sys
-
 # Third Party Imports
 from subliminal.extensions import RegistrableExtensionManager
 
-# Local Folder Imports
-from . import generic, helpers, kodi, kodi_12plus, mede8er, mediabrowser, ps3, tivo, wdtv
-
-__all__ = ['generic', 'helpers', 'kodi', 'kodi_12plus', 'mede8er', 'mediabrowser', 'ps3', 'tivo', 'wdtv']
-
-
-def available_generators():
-    return [x for x in __all__ if x not in ['generic', 'helpers']]
-
-
-def _getMetadataModule(name):
-    name = name.lower()
-    prefix = "sickchill.providers.metadata."
-    if name in available_generators() and prefix + name in sys.modules:
-        return sys.modules[prefix + name]
-    else:
-        return None
-
-
-def _getMetadataClass(name):
-    module = _getMetadataModule(name)
-    if not module:
-        return None
-
-    return module.metadata_class()
-
-
-def get_metadata_generator_dict():
-    result = {}
-    for cur_generator_id in available_generators():
-        cur_generator = _getMetadataClass(cur_generator_id)
-        if not cur_generator:
-            continue
-        result[cur_generator.name] = cur_generator
-
-    return result
-
-
-metadata = RegistrableExtensionManager('sickchill.providers.metadata', [
+manager = RegistrableExtensionManager('sickchill.providers.metadata', [
     "mede8er = sickchill.providers.metadata.mede8er:Mede8erMetadata",
     "ps3 = sickchill.providers.metadata.ps3:PS3Metadata",
     "tivo = sickchill.providers.metadata.tivo:TIVOMetadata",

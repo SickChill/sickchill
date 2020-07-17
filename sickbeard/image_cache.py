@@ -334,10 +334,11 @@ class ImageCache(object):
         # check the show dir for poster or banner images and use them
         if need_images[self.POSTER] or need_images[self.BANNER] or need_images[self.FANART]:
             try:
-                for cur_provider in sickbeard.metadata_provider_dict.values():
-                    logger.debug("[{}] Checking if we can use images from {} metadata".format(show_obj.indexerid, cur_provider.name))
+                for cur_provider in sickchill.providers.metadata.metadata.extensions:
+                    instance = cur_provider.plugin()
+                    logger.debug("[{}] Checking if we can use images from {} metadata".format(show_obj.indexerid, instance.name))
 
-                    for method in (cur_provider.get_poster_path, cur_provider.get_banner_path, cur_provider.get_fanart_path):
+                    for method in (instance.get_poster_path, instance.get_banner_path, instance.get_fanart_path):
                         current_path = method(show_obj)
                         if os.path.isfile(current_path):
                             cur_file_name = os.path.abspath(current_path)

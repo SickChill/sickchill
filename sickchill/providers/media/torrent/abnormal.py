@@ -159,4 +159,4 @@ class ABNormalProvider(TorrentProvider):
         return results
 
 
-provider = ABNormalProvider()
+

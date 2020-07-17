@@ -175,4 +175,4 @@ class HDTorrentsProvider(TorrentProvider):
         return results
 
 
-provider = HDTorrentsProvider()
+

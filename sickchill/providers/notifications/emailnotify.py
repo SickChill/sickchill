@@ -32,8 +32,11 @@ from email.utils import formatdate
 import sickbeard
 from sickbeard import db, logger
 
+# Local Folder Imports
+from .base import AbstractNotifier
 
-class Notifier(object):
+
+class Notifier(AbstractNotifier):
     def __init__(self):
         self.last_err = None
 
@@ -49,15 +52,15 @@ class Notifier(object):
         msg['Date'] = formatdate(localtime=True)
         return self._sendmail(host, port, smtp_from, use_tls, user, pwd, [to], msg, True)
 
-    def notify_snatch(self, ep_name, title='Snatched:'):
+    def notify_snatch(self, name):
         '''
         Send a notification that an episode was snatched
 
-        ep_name: The name of the episode that was snatched
+        name: The name of the episode that was snatched
         title: The title of the notification (optional)
         '''
-        if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONSNATCH:
-            show = self._parseEp(ep_name)
+        if self.config('snatch'):
+            show = self._parseEp(name)
             to = self._generate_recipients(show)
             if not to:
                 logger.debug('Skipping email notify because there are no configured recipients')
@@ -79,32 +82,32 @@ class Notifier(object):
 
                 except Exception:
                     try:
-                        msg = MIMEText(ep_name)
+                        msg = MIMEText(name)
                     except Exception:
                         msg = MIMEText('Episode Snatched')
 
                 if sickbeard.EMAIL_SUBJECT:
                     msg['Subject'] = '[SN] ' + sickbeard.EMAIL_SUBJECT
                 else:
-                    msg['Subject'] = 'Snatched: ' + ep_name
+                    msg['Subject'] = 'Snatched: ' + name
                 msg['From'] = sickbeard.EMAIL_FROM
                 msg['To'] = ','.join(to)
                 msg['Date'] = formatdate(localtime=True)
                 if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS,
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
-                    logger.debug('Snatch notification sent to [{0}] for "{1}"'.format(to, ep_name))
+                    logger.debug('Snatch notification sent to [{0}] for "{1}"'.format(to, name))
                 else:
                     logger.warning('Snatch notification error: {0}'.format(self.last_err))
 
-    def notify_download(self, ep_name, title='Completed:'):
+    def notify_download(self, name):
         '''
         Send a notification that an episode was downloaded
 
-        ep_name: The name of the episode that was downloaded
+        name: The name of the episode that was downloaded
         title: The title of the notification (optional)
         '''
-        if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONDOWNLOAD:
-            show = self._parseEp(ep_name)
+        if self.config('download'):
+            show = self._parseEp(name)
             to = self._generate_recipients(show)
             if not to:
                 logger.debug('Skipping email notify because there are no configured recipients')
@@ -126,32 +129,32 @@ class Notifier(object):
 
                 except Exception:
                     try:
-                        msg = MIMEText(ep_name)
+                        msg = MIMEText(name)
                     except Exception:
                         msg = MIMEText('Episode Downloaded')
 
                 if sickbeard.EMAIL_SUBJECT:
                     msg['Subject'] = '[DL] ' + sickbeard.EMAIL_SUBJECT
                 else:
-                    msg['Subject'] = 'Downloaded: ' + ep_name
+                    msg['Subject'] = 'Downloaded: ' + name
                 msg['From'] = sickbeard.EMAIL_FROM
                 msg['To'] = ','.join(to)
                 msg['Date'] = formatdate(localtime=True)
                 if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS,
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
-                    logger.debug('Download notification sent to [{0}] for "{1}"'.format(to, ep_name))
+                    logger.debug('Download notification sent to [{0}] for "{1}"'.format(to, name))
                 else:
                     logger.warning('Download notification error: {0}'.format(self.last_err))
 
-    def notify_postprocess(self, ep_name, title='Postprocessed:'):
+    def notify_postprocess(self, name):
         '''
         Send a notification that an episode was postprocessed
 
-        ep_name: The name of the episode that was postprocessed
+        name: The name of the episode that was postprocessed
         title: The title of the notification (optional)
         '''
-        if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONPOSTPROCESS:
-            show = self._parseEp(ep_name)
+        if self.config('enabled') and sickbeard.EMAIL_NOTIFY_ONPOSTPROCESS:
+            show = self._parseEp(name)
             to = self._generate_recipients(show)
             if not to:
                 logger.debug('Skipping email notify because there are no configured recipients')
@@ -173,32 +176,32 @@ class Notifier(object):
 
                 except Exception:
                     try:
-                        msg = MIMEText(ep_name)
+                        msg = MIMEText(name)
                     except Exception:
                         msg = MIMEText('Episode Postprocessed')
 
                 if sickbeard.EMAIL_SUBJECT:
                     msg['Subject'] = '[PP] ' + sickbeard.EMAIL_SUBJECT
                 else:
-                    msg['Subject'] = 'Postprocessed: ' + ep_name
+                    msg['Subject'] = 'Postprocessed: ' + name
                 msg['From'] = sickbeard.EMAIL_FROM
                 msg['To'] = ','.join(to)
                 msg['Date'] = formatdate(localtime=True)
                 if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS,
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
-                    logger.debug('Postprocess notification sent to [{0}] for "{1}"'.format(to, ep_name))
+                    logger.debug('Postprocess notification sent to [{0}] for "{1}"'.format(to, name))
                 else:
                     logger.warning('Postprocess notification error: {0}'.format(self.last_err))
 
-    def notify_subtitle_download(self, ep_name, lang, title='Downloaded subtitle:'):
+    def notify_subtitle_download(self, name, lang):
         '''
         Send a notification that an subtitle was downloaded
 
-        ep_name: The name of the episode that was downloaded
+        name: The name of the episode that was downloaded
         lang: Subtitle language wanted
         '''
-        if sickbeard.USE_EMAIL and sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD:
-            show = self._parseEp(ep_name)
+        if self.config('subtitle'):
+            show = self._parseEp(name)
             to = self._generate_recipients(show)
             if not to:
                 logger.debug('Skipping email notify because there are no configured recipients')
@@ -221,19 +224,19 @@ class Notifier(object):
                         'html'))
                 except Exception:
                     try:
-                        msg = MIMEText(ep_name + ': ' + lang)
+                        msg = MIMEText(name + ': ' + lang)
                     except Exception:
                         msg = MIMEText('Episode Subtitle Downloaded')
 
                 if sickbeard.EMAIL_SUBJECT:
                     msg['Subject'] = '[ST] ' + sickbeard.EMAIL_SUBJECT
                 else:
-                    msg['Subject'] = lang + ' Subtitle Downloaded: ' + ep_name
+                    msg['Subject'] = lang + ' Subtitle Downloaded: ' + name
                 msg['From'] = sickbeard.EMAIL_FROM
                 msg['To'] = ','.join(to)
                 if self._sendmail(sickbeard.EMAIL_HOST, sickbeard.EMAIL_PORT, sickbeard.EMAIL_FROM, sickbeard.EMAIL_TLS,
                                   sickbeard.EMAIL_USER, sickbeard.EMAIL_PASSWORD, to, msg):
-                    logger.debug('Download notification sent to [{0}] for "{1}"'.format(to, ep_name))
+                    logger.debug('Download notification sent to [{0}] for "{1}"'.format(to, name))
                 else:
                     logger.warning('Download notification error: {0}'.format(self.last_err))
 
@@ -242,7 +245,7 @@ class Notifier(object):
         Send a notification that SickChill was updated
         new_version: The commit SickChill was updated to
         '''
-        if sickbeard.USE_EMAIL:
+        if self.config('enabled'):
             to = self._generate_recipients(None)
             if not to:
                 logger.debug('Skipping email notify because there are no configured recipients')
@@ -283,7 +286,7 @@ class Notifier(object):
         Send a notification that SickChill was logged into remotely
         ipaddress: The ip SickChill was logged into from
         '''
-        if sickbeard.USE_EMAIL:
+        if self.config('enabled'):
             to = self._generate_recipients(None)
             if not len(to):
                 logger.debug('Skipping email notify because there are no configured recipients')

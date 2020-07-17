@@ -3,7 +3,7 @@
     import sickbeard
     from sickbeard.filters import hide
     from sickbeard.helpers import anon_url
-    from sickchill.providers.GenericProvider import GenericProvider
+    from sickchill.providers.media.GenericProvider import GenericProvider
 %>
 
 <%block name="scripts">
@@ -13,13 +13,12 @@
             $('#config-components').tabs();
             % if sickbeard.USE_NZBS:
                 % for curNewznabProvider in sickbeard.newznabProviderList:
-                    $(this).addProvider(
+                    $(this).addNZBProvider(
                         '${curNewznabProvider.get_id()}',
                         '${curNewznabProvider.config('name')}',
                         '${curNewznabProvider.config('url')}',
                         '${curNewznabProvider.config('key')}',
-                        '${curNewznabProvider.config('catIDs')}',
-                         ${int(curNewznabProvider.config('default'))}
+                        '${curNewznabProvider.config('categories')}'
                     );
                 % endfor
             % endif
@@ -105,7 +104,7 @@
                                     ${('<span class="red-text">*</span>', '')[curProvider.can_backlog]}
                                     ${('<span class="red-text">!</span>', '')[curProvider.can_daily]}
                                     <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>
-                                    <span class="ui-icon ${('ui-icon-locked','ui-icon-unlocked')[curProvider.public]} pull-right" style="vertical-align:middle;"></span>
+                                    <span class="ui-icon ${('ui-icon-locked','ui-icon-unlocked')[curProvider.config('public')]} pull-right" style="vertical-align:middle;"></span>
                                 </li>
                             % endfor
                         </ul>

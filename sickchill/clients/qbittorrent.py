@@ -25,7 +25,7 @@ from requests.compat import urljoin
 
 # First Party Imports
 import sickbeard
-from sickbeard.clients.generic import GenericClient
+from sickchill.clients.generic import GenericClient
 
 
 class Client(GenericClient):

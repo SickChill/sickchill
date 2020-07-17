@@ -108,4 +108,4 @@ class EZTVProvider(TorrentProvider):
         return results
 
 
-provider = EZTVProvider()
+

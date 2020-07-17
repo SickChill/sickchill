@@ -22,9 +22,13 @@
 import sickbeard
 from sickbeard import common, logger
 
+# Local Folder Imports
+from .base import AbstractNotifier
 
-class Notifier(object):
+
+class Notifier(AbstractNotifier):
     def __init__(self):
+        super().__init__('Boxcar2', extra_options=tuple(['access_token']))
         self.session = sickbeard.helpers.make_session()
         self.url = 'https://new.boxcar.io/api/notifications'
 
@@ -60,27 +64,34 @@ class Notifier(object):
         logger.debug('Boxcar2 notification successful.')
         return True
 
-    def notify_snatch(self, ep_name, title=common.notifyStrings[common.NOTIFY_SNATCH]):
-        if sickbeard.BOXCAR2_NOTIFY_ONSNATCH:
-            self._notifyBoxcar2(title, ep_name)
+    def notify_snatch(self, name, title=common.notifyStrings[common.NOTIFY_SNATCH]):
+        if self.config('snatch'):
+            self._notifyBoxcar2(title, name)
 
-    def notify_download(self, ep_name, title=common.notifyStrings[common.NOTIFY_DOWNLOAD]):
-        if sickbeard.BOXCAR2_NOTIFY_ONDOWNLOAD:
-            self._notifyBoxcar2(title, ep_name)
+    def notify_download(self, name, title=common.notifyStrings[common.NOTIFY_DOWNLOAD]):
+        if self.config('download'):
+            self._notifyBoxcar2(title, name)
 
-    def notify_subtitle_download(self, ep_name, lang, title=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD]):
-        if sickbeard.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._notifyBoxcar2(title, ep_name + ': ' + lang)
+    def notify_subtitle_download(self, name, lang, title=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD]):
+        if self.config('subtitle'):
+            self._notifyBoxcar2(title, name + ': ' + lang)
 
     def notify_git_update(self, new_version='??'):
-        update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
-        title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
-        self._notifyBoxcar2(title, update_text + new_version)
+        if self.config('update'):
+            update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
+            title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
+            self._notifyBoxcar2(title, update_text + new_version)
 
     def notify_login(self, ipaddress=''):
-        update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
-        title = common.notifyStrings[common.NOTIFY_LOGIN]
-        self._notifyBoxcar2(title, update_text.format(ipaddress))
+        if self.config('login'):
+            update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
+            title = common.notifyStrings[common.NOTIFY_LOGIN]
+            self._notifyBoxcar2(title, update_text.format(ipaddress))
+
+    def notify_postprocess(self, name):
+        if self.config('process'):
+            title = common.notifyStrings[common.NOTIFY_POSTPROCESS]
+            self._notifyBoxcar2(title, name)
 
     def _notifyBoxcar2(self, title, message, accesstoken=None):
         '''
@@ -91,11 +102,11 @@ class Notifier(object):
         accesstoken: to send to this device
         '''
 
-        if not sickbeard.USE_BOXCAR2:
+        if not self.config('enabled'):
             logger.debug('Notification for Boxcar2 not enabled, skipping this notification')
             return False
 
-        accesstoken = accesstoken or sickbeard.BOXCAR2_ACCESSTOKEN
+        accesstoken = accesstoken or self.config('access_token')
 
         logger.debug('Sending notification for {0}'.format(message))
 

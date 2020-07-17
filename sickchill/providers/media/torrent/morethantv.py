@@ -237,4 +237,4 @@ class MoreThanTVProvider(TorrentProvider):
         return [search_string]
 
 
-provider = MoreThanTVProvider()
+

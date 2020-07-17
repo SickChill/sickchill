@@ -183,4 +183,4 @@ class FileListProvider(TorrentProvider):
         return results
 
 
-provider = FileListProvider()
+

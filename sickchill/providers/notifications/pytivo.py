@@ -29,15 +29,18 @@ from requests.exceptions import HTTPError
 import sickbeard
 from sickbeard import logger
 
+# Local Folder Imports
+from .base import AbstractNotifier
 
-class Notifier(object):
-    def notify_snatch(self, ep_name):
+
+class Notifier(AbstractNotifier):
+    def notify_snatch(self, name):
         pass
 
-    def notify_download(self, ep_name):
+    def notify_download(self, name):
         pass
 
-    def notify_subtitle_download(self, ep_name, lang):
+    def notify_subtitle_download(self, name, lang):
         pass
 
     def notify_git_update(self, new_version):
@@ -50,7 +53,7 @@ class Notifier(object):
 
         # Values from config
 
-        if not sickbeard.USE_PYTIVO:
+        if not self.config('enabled'):
             return False
 
         host = sickbeard.PYTIVO_HOST

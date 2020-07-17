@@ -46,7 +46,7 @@ def generator(_provider):
         :param self:
         :return: test to run
         """
-        if not _provider.url:
+        if not _provider.config('url'):
             print('{0} has no url set, skipping'.format(_provider.name))
             return
 

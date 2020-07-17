@@ -170,4 +170,4 @@ class TVChaosUKProvider(TorrentProvider):
         return results
 
 
-provider = TVChaosUKProvider()
+

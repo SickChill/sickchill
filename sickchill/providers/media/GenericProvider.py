@@ -93,15 +93,13 @@ class GenericProvider(object):
         return set(self.default_supported_options + self.supported_options)
 
     def __assure_config(self):
-        sickbeard.CFG2.validate(Validator(), copy=True)
         if 'providers' not in sickbeard.CFG2:
             sickbeard.CFG2['providers'] = {}
         if self.provider_type not in sickbeard.CFG2['providers']:
             sickbeard.CFG2['providers'][self.provider_type] = {}
         if self.get_id() not in sickbeard.CFG2['providers'][self.provider_type]:
             sickbeard.CFG2['providers'][self.provider_type][self.get_id()] = {}
-
-        sickbeard.CFG2.validate(Validator(), copy=True)
+            sickbeard.CFG2.validate(Validator(), copy=True)
 
     def config(self, key: str):
         if not self.options(key):

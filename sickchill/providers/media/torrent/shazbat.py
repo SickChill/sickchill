@@ -71,4 +71,4 @@ class ShazbatCache(tvcache.TVCache):
     def _check_auth(self, data):
         return self.provider._check_auth_from_data(data)
 
-provider = ShazbatProvider()
+

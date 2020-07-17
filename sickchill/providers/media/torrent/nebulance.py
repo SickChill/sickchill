@@ -180,4 +180,4 @@ class NebulanceProvider(TorrentProvider):
         return results
 
 
-provider = NebulanceProvider()
+

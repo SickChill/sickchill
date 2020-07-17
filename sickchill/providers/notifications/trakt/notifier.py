@@ -20,10 +20,11 @@
 import sickbeard
 import sickchill
 from sickbeard import logger
-from sickbeard.trakt_api import TraktAPI, traktAuthException, traktException, traktServerBusy
-
-
 from sickchill.providers.notifications.base import AbstractNotifier
+
+# Local Folder Imports
+from .api import TraktAPI
+from .exceptions import traktAuthException, traktException, traktServerBusy
 
 
 class Notifier(AbstractNotifier):
@@ -33,19 +34,22 @@ class Notifier(AbstractNotifier):
     def __init__(self):
         super().__init__('Trakt')
 
-    def notify_snatch(self, ep_name):
+    def notify_snatch(self, name):
         pass
 
-    def notify_download(self, ep_name):
+    def notify_download(self, name):
         pass
 
-    def notify_subtitle_download(self, ep_name, lang):
+    def notify_subtitle_download(self, name, lang):
         pass
 
     def notify_git_update(self, new_version):
         pass
 
     def notify_login(self, ipaddress=""):
+        pass
+
+    def notify_postprocess(self, name):
         pass
 
     def update_library(self, ep_obj):

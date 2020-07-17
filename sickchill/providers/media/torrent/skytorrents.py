@@ -103,4 +103,4 @@ class SkyTorrents(TorrentProvider):
 
         return results
 
-provider = SkyTorrents()
+

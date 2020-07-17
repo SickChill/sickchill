@@ -28,7 +28,7 @@ from requests.utils import add_dict_to_cookiejar
 # First Party Imports
 import sickbeard
 from sickbeard import helpers, logger, tvcache
-from sickchill.providers.media.torrent import TorrentProvider
+from .TorrentProvider import TorrentProvider
 
 
 class TorrentRssProvider(TorrentProvider):

@@ -129,4 +129,4 @@ class NorbitsProvider(TorrentProvider):
         return results
 
 
-provider = NorbitsProvider()
+

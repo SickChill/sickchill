@@ -317,4 +317,4 @@ class ilCorsaroNeroProvider(TorrentProvider):
         return results
 
 
-provider = ilCorsaroNeroProvider()
+

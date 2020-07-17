@@ -150,4 +150,4 @@ class SceneTimeProvider(TorrentProvider):
         return results
 
 
-provider = SceneTimeProvider()
+

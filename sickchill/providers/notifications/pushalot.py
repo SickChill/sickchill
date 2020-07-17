@@ -21,8 +21,11 @@
 import sickbeard
 from sickbeard import common, logger
 
+# Local Folder Imports
+from .base import AbstractNotifier
 
-class Notifier(object):
+
+class Notifier(AbstractNotifier):
     def __init__(self):
         self.session = sickbeard.helpers.make_session()
 
@@ -34,28 +37,28 @@ class Notifier(object):
             force=True
         )
 
-    def notify_snatch(self, ep_name):
-        if sickbeard.PUSHALOT_NOTIFY_ONSNATCH:
+    def notify_snatch(self, name):
+        if self.config('snatch'):
             self._sendPushalot(
                 pushalot_authorizationtoken=None,
                 event=common.notifyStrings[common.NOTIFY_SNATCH],
-                message=ep_name
+                message=name
             )
 
-    def notify_download(self, ep_name):
-        if sickbeard.PUSHALOT_NOTIFY_ONDOWNLOAD:
+    def notify_download(self, name):
+        if self.config('download'):
             self._sendPushalot(
                 pushalot_authorizationtoken=None,
                 event=common.notifyStrings[common.NOTIFY_DOWNLOAD],
-                message=ep_name
+                message=name
             )
 
-    def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD:
+    def notify_subtitle_download(self, name, lang):
+        if self.config('subtitle'):
             self._sendPushalot(
                 pushalot_authorizationtoken=None,
                 event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD],
-                message='{0}:{1}'.format(ep_name, lang)
+                message='{0}:{1}'.format(name, lang)
             )
 
     def notify_git_update(self, new_version='??'):
@@ -78,7 +81,7 @@ class Notifier(object):
 
     def _sendPushalot(self, pushalot_authorizationtoken=None, event=None, message=None, force=False):
 
-        if not (sickbeard.USE_PUSHALOT or force):
+        if not (self.config('enabled') or force):
             return False
 
         pushalot_authorizationtoken = pushalot_authorizationtoken or sickbeard.PUSHALOT_AUTHORIZATIONTOKEN

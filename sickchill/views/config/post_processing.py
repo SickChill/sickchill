@@ -113,22 +113,6 @@ class ConfigPostProcessing(Config):
         sickbeard.NAMING_STRIP_YEAR = config.checkbox_to_value(naming_strip_year)
         sickbeard.NFO_RENAME = config.checkbox_to_value(nfo_rename)
 
-        sickbeard.METADATA_KODI = kodi_data
-        sickbeard.METADATA_KODI_12PLUS = kodi_12plus_data
-        sickbeard.METADATA_MEDIABROWSER = mediabrowser_data
-        sickbeard.METADATA_PS3 = sony_ps3_data
-        sickbeard.METADATA_WDTV = wdtv_data
-        sickbeard.METADATA_TIVO = tivo_data
-        sickbeard.METADATA_MEDE8ER = mede8er_data
-
-        sickbeard.metadata_provider_dict['KODI'].set_config(sickbeard.METADATA_KODI)
-        sickbeard.metadata_provider_dict['KODI 12+'].set_config(sickbeard.METADATA_KODI_12PLUS)
-        sickbeard.metadata_provider_dict['MediaBrowser'].set_config(sickbeard.METADATA_MEDIABROWSER)
-        sickbeard.metadata_provider_dict['Sony PS3'].set_config(sickbeard.METADATA_PS3)
-        sickbeard.metadata_provider_dict['WDTV'].set_config(sickbeard.METADATA_WDTV)
-        sickbeard.metadata_provider_dict['TIVO'].set_config(sickbeard.METADATA_TIVO)
-        sickbeard.metadata_provider_dict['Mede8er'].set_config(sickbeard.METADATA_MEDE8ER)
-
         if self.isNamingValid(naming_pattern, naming_multi_ep, anime_type=naming_anime) != "invalid":
             sickbeard.NAMING_PATTERN = naming_pattern
             sickbeard.NAMING_MULTI_EP = try_int(naming_multi_ep, NAMING_LIMITED_EXTEND_E_PREFIXED)

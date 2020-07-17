@@ -22,7 +22,7 @@ from base64 import b64encode
 
 # First Party Imports
 import sickbeard
-from sickbeard.clients.generic import GenericClient
+from sickchill.clients.generic import GenericClient
 
 
 class Client(GenericClient):

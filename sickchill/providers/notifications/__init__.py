@@ -20,58 +20,109 @@
 # Third Party Imports
 from subliminal.extensions import RegistrableExtensionManager
 
-notifiers = RegistrableExtensionManager('sickbeard.notifiers', [
-    'plex = sickbeard.notifiers.plex:Notifier',
-    'synoindex = sickbeard.notifiers.synoindex:Notifier',
-    'telegram = sickbeard.notifiers.telegram:Notifier',
-    'trakt = sickbeard.notifiers.trakt:Notifier',
-    'join = sickbeard.notifiers.join:Notifier',
-    'growl = sickbeard.notifiers.growl:Notifier',
-    'emby = sickbeard.notifiers.emby:Notifier',
-    'pushbullet = sickbeard.notifiers.pushbullet:Notifier',
-    'nmjv2 = sickbeard.notifiers.nmjv2:Notifier',
-    'tweet = sickbeard.notifiers.tweet:Notifier',
-    'growl = sickbeard.notifiers.growl:Notifier',
-    'pushalot = sickbeard.notifiers.pushalot:Notifier',
-    'emailnotify = sickbeard.notifiers.emailnotify:Notifier',
-    'prowl = sickbeard.notifiers.prowl:Notifier',
-    'boxcar2 = sickbeard.notifiers.boxcar2:Notifier',
-    'pytivo = sickbeard.notifiers.pytivo:Notifier',
-    'boxcar2 = sickbeard.notifiers.boxcar2:Notifier',
-    'nmj = sickbeard.notifiers.nmj:Notifier',
-    'synologynotifier = sickbeard.notifiers.synologynotifier:Notifier',
-    'matrix = sickbeard.notifiers.matrix:Notifier',
-    'rocketchat = sickbeard.notifiers.rocketchat:Notifier',
-    'trakt = sickbeard.notifiers.trakt:Notifier',
-    'libnotify = sickbeard.notifiers.libnotify:Notifier',
-    'rocketchat = sickbeard.notifiers.rocketchat:Notifier',
-    'discord = sickbeard.notifiers.discord:Notifier',
-    'pushbullet = sickbeard.notifiers.pushbullet:Notifier',
-    'twilio_notify = sickbeard.notifiers.twilio_notify:Notifier',
-    'tweet = sickbeard.notifiers.tweet:Notifier',
-    'synologynotifier = sickbeard.notifiers.synologynotifier:Notifier',
-    'plex = sickbeard.notifiers.plex:Notifier',
-    'twilio_notify = sickbeard.notifiers.twilio_notify:Notifier',
-    'discord = sickbeard.notifiers.discord:Notifier',
-    'freemobile = sickbeard.notifiers.freemobile:Notifier',
-    'slack = sickbeard.notifiers.slack:Notifier',
-    'matrix = sickbeard.notifiers.matrix:Notifier',
-    'synoindex = sickbeard.notifiers.synoindex:Notifier',
-    'kodi = sickbeard.notifiers.kodi:Notifier',
-    'nmjv2 = sickbeard.notifiers.nmjv2:Notifier',
-    'emailnotify = sickbeard.notifiers.emailnotify:Notifier',
-    'kodi = sickbeard.notifiers.kodi:Notifier',
-    'pushalot = sickbeard.notifiers.pushalot:Notifier',
-    'prowl = sickbeard.notifiers.prowl:Notifier',
-    'pushover = sickbeard.notifiers.pushover:Notifier',
-    'telegram = sickbeard.notifiers.telegram:Notifier',
-    'pytivo = sickbeard.notifiers.pytivo:Notifier',
-    'join = sickbeard.notifiers.join:Notifier',
-    'pushover = sickbeard.notifiers.pushover:Notifier',
-    'base = sickbeard.notifiers.base:Notifier',
-    'emby = sickbeard.notifiers.emby:Notifier',
-    'slack = sickbeard.notifiers.slack:Notifier',
-    'freemobile = sickbeard.notifiers.freemobile:Notifier',
-    'libnotify = sickbeard.notifiers.libnotify:Notifier',
-    'nmj = sickbeard.notifiers.nmj:Notifier',
+# First Party Imports
+import sickbeard
+
+manager = RegistrableExtensionManager('sickchill.providers.notifications', [
+    'plex = sickchill.providers.notifications.plex:Notifier',
+    'synoindex = sickchill.providers.notifications.synoindex:Notifier',
+    'telegram = sickchill.providers.notifications.telegram:Notifier',
+    'trakt = sickchill.providers.notifications.trakt:Notifier',
+    'join = sickchill.providers.notifications.join:Notifier',
+    'growl = sickchill.providers.notifications.growl:Notifier',
+    'emby = sickchill.providers.notifications.emby:Notifier',
+    'pushbullet = sickchill.providers.notifications.pushbullet:Notifier',
+    'nmjv2 = sickchill.providers.notifications.nmjv2:Notifier',
+    'tweet = sickchill.providers.notifications.tweet:Notifier',
+    'growl = sickchill.providers.notifications.growl:Notifier',
+    'pushalot = sickchill.providers.notifications.pushalot:Notifier',
+    'emailnotify = sickchill.providers.notifications.emailnotify:Notifier',
+    'prowl = sickchill.providers.notifications.prowl:Notifier',
+    'boxcar2 = sickchill.providers.notifications.boxcar2:Notifier',
+    'pytivo = sickchill.providers.notifications.pytivo:Notifier',
+    'boxcar2 = sickchill.providers.notifications.boxcar2:Notifier',
+    'nmj = sickchill.providers.notifications.nmj:Notifier',
+    'synologynotifier = sickchill.providers.notifications.synologynotifier:Notifier',
+    'matrix = sickchill.providers.notifications.matrix:Notifier',
+    'rocketchat = sickchill.providers.notifications.rocketchat:Notifier',
+    'trakt = sickchill.providers.notifications.trakt:Notifier',
+    'libnotify = sickchill.providers.notifications.libnotify:Notifier',
+    'rocketchat = sickchill.providers.notifications.rocketchat:Notifier',
+    'discord = sickchill.providers.notifications.discord:Notifier',
+    'pushbullet = sickchill.providers.notifications.pushbullet:Notifier',
+    'twilio_notify = sickchill.providers.notifications.twilio_notify:Notifier',
+    'tweet = sickchill.providers.notifications.tweet:Notifier',
+    'synologynotifier = sickchill.providers.notifications.synologynotifier:Notifier',
+    'plex = sickchill.providers.notifications.plex:Notifier',
+    'twilio_notify = sickchill.providers.notifications.twilio_notify:Notifier',
+    'discord = sickchill.providers.notifications.discord:Notifier',
+    'freemobile = sickchill.providers.notifications.freemobile:Notifier',
+    'slack = sickchill.providers.notifications.slack:Notifier',
+    'matrix = sickchill.providers.notifications.matrix:Notifier',
+    'synoindex = sickchill.providers.notifications.synoindex:Notifier',
+    'kodi = sickchill.providers.notifications.kodi:Notifier',
+    'nmjv2 = sickchill.providers.notifications.nmjv2:Notifier',
+    'emailnotify = sickchill.providers.notifications.emailnotify:Notifier',
+    'kodi = sickchill.providers.notifications.kodi:Notifier',
+    'pushalot = sickchill.providers.notifications.pushalot:Notifier',
+    'prowl = sickchill.providers.notifications.prowl:Notifier',
+    'pushover = sickchill.providers.notifications.pushover:Notifier',
+    'telegram = sickchill.providers.notifications.telegram:Notifier',
+    'pytivo = sickchill.providers.notifications.pytivo:Notifier',
+    'join = sickchill.providers.notifications.join:Notifier',
+    'pushover = sickchill.providers.notifications.pushover:Notifier',
+    'base = sickchill.providers.notifications.base:Notifier',
+    'emby = sickchill.providers.notifications.emby:Notifier',
+    'slack = sickchill.providers.notifications.slack:Notifier',
+    'freemobile = sickchill.providers.notifications.freemobile:Notifier',
+    'libnotify = sickchill.providers.notifications.libnotify:Notifier',
+    'nmj = sickchill.providers.notifications.nmj:Notifier',
 ])
+
+
+def notify_download(ep_name):
+    if sickbeard.CFG2['notifications']['download']:
+        manager.map_method('notify_download', ep_name)
+
+
+def notify_postprocess(ep_name):
+    if sickbeard.CFG2['notifications']['process']:
+        manager.map_method('notify_postprocess', ep_name)
+
+
+def notify_subtitle_download(ep_name, lang):
+    if sickbeard.CFG2['notifications']['subtitle']:
+        manager.map_method('notify_subtitle_download', ep_name, lang)
+
+
+def notify_snatch(ep_name):
+    if sickbeard.CFG2['notifications']['snatch']:
+        manager.map_method('notify_snatch', ep_name)
+
+
+def notify_git_update(new_version=""):
+    if sickbeard.CFG2['notifications']['update']:
+        manager.map_method('notify_git_update', new_version)
+
+
+def notify_login(ipaddress):
+    if sickbeard.CFG2['notifications']['login'] and not sickbeard.helpers.is_ip_local(ipaddress):
+        manager.map_method('notify_login', ipaddress)
+
+
+def update_library(item):
+    manager.map_method('update_library', item)
+
+
+def get_config(client: str, key: str = ''):
+    result = manager[client].plugin().__config
+    if key:
+        result = result[key]
+    return result
+
+
+def set_config(client: str, key: str, value):
+    get_config(client)[key] = value
+
+
+

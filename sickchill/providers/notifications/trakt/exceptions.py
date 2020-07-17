@@ -1,5 +1,5 @@
 # coding=utf-8
-# Author: The SickChill Dev Team
+# Author: Dustyn Gibson <miigotu@gmail.com>
 #
 # URL: https://sickchill.github.io
 #

@@ -21,7 +21,7 @@ import sickbeard
 from sickbeard import logger
 from sickbeard.classes import NZBSearchResult
 from sickchill.helper.common import try_int
-from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.providers.media.GenericProvider import GenericProvider
 
 
 class NZBProvider(GenericProvider):
@@ -33,7 +33,7 @@ class NZBProvider(GenericProvider):
 
     @property
     def is_active(self):
-        return bool(sickbeard.USE_NZBS) and self.config('enabled')
+        return bool(self.config('enabled')) and self.config('enabled')
 
     def _get_result(self, episodes):
         result = NZBSearchResult(episodes)

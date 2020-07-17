@@ -50,9 +50,8 @@ from validate import Validator
 # First Party Imports
 import sickbeard
 import sickchill
-from sickbeard import db, providers
+from sickbeard import db
 from sickbeard.databases import cache_db, failed_db, mainDB
-from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.tv import TVEpisode, TVShow
 from sickchill.show.indexers import ShowIndexer
 
@@ -112,7 +111,6 @@ sickbeard.NAMING_MULTI_EP = 1
 sickbeard.TV_DOWNLOAD_DIR = PROCESSING_DIR
 
 sickbeard.PROVIDER_ORDER = ["sick_beard_index"]
-sickbeard.providerList = providers.makeProviderList()
 
 sickbeard.PROG_DIR = os.path.abspath(os.path.join(TEST_DIR, '..'))
 sickbeard.DATA_DIR = TEST_DIR

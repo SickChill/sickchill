@@ -415,8 +415,9 @@ class TVShow(object):
             return False
 
         logger.info(str(self.indexerid) + ": Updating NFOs for show with new indexer info")
-        for cur_provider in sickbeard.metadata_provider_dict.values():
-            result = cur_provider.update_show_indexer_metadata(self) or result
+        for cur_provider in sickchill.providers.metadata.metadata.extensions:
+            instance = cur_provider.plugin()
+            result = instance.update_show_indexer_metadata(self) or result
 
         return result
 
@@ -570,18 +571,19 @@ class TVShow(object):
         fanart_result = poster_result = banner_result = False
         season_posters_result = season_banners_result = season_all_poster_result = season_all_banner_result = False
 
-        for cur_provider in sickbeard.metadata_provider_dict.values():
+        for cur_provider in sickchill.providers.metadata.metadata.extensions:
 
             # logger.debug("Running metadata routines for " + cur_provider.name)
 
-            fanart_result = cur_provider.create_fanart(self) or fanart_result
-            poster_result = cur_provider.create_poster(self) or poster_result
-            banner_result = cur_provider.create_banner(self) or banner_result
+            instance = cur_provider.plugin()
+            fanart_result = instance.create_fanart(self) or fanart_result
+            poster_result = instance.create_poster(self) or poster_result
+            banner_result = instance.create_banner(self) or banner_result
 
-            season_posters_result = cur_provider.create_season_posters(self) or season_posters_result
-            season_banners_result = cur_provider.create_season_banners(self) or season_banners_result
-            season_all_poster_result = cur_provider.create_season_all_poster(self) or season_all_poster_result
-            season_all_banner_result = cur_provider.create_season_all_banner(self) or season_all_banner_result
+            season_posters_result = instance.create_season_posters(self) or season_posters_result
+            season_banners_result = instance.create_season_banners(self) or season_banners_result
+            season_all_poster_result = instance.create_season_all_poster(self) or season_all_poster_result
+            season_all_banner_result = instance.create_season_all_banner(self) or season_all_banner_result
 
         return fanart_result or poster_result or banner_result or season_posters_result or season_banners_result or season_all_poster_result or season_all_banner_result
 
@@ -1432,15 +1434,16 @@ class TVEpisode(object):
 
         # check for nfo and tbn
         if os.path.isfile(self.location):
-            for cur_provider in sickbeard.metadata_provider_dict.values():
-                if cur_provider.episode_metadata:
-                    new_result = cur_provider._has_episode_metadata(self)
+            for cur_provider in sickchill.providers.metadata.metadata.extensions:
+                instance = cur_provider.plugin()
+                if instance.episode_metadata:
+                    new_result = instance._has_episode_metadata(self)
                 else:
                     new_result = False
                 cur_nfo = new_result or cur_nfo
 
-                if cur_provider.episode_thumbnails:
-                    new_result = cur_provider._has_episode_thumb(self)
+                if instance.episode_thumbnails:
+                    new_result = instance._has_episode_thumb(self)
                 else:
                     new_result = False
                 cur_tbn = new_result or cur_tbn
@@ -1781,9 +1784,10 @@ class TVEpisode(object):
 
         result = False
 
-        for cur_provider in sickbeard.metadata_provider_dict.values():
-            result = cur_provider.create_episode_metadata(self) or result
-            result = cur_provider.update_episode_metadata(self) or result
+        for cur_provider in sickchill.providers.metadata.metadata.extensions:
+            instance = cur_provider.plugin()
+            result = instance.create_episode_metadata(self) or result
+            result = instance.update_episode_metadata(self) or result
 
         return result
 
@@ -1791,8 +1795,9 @@ class TVEpisode(object):
 
         result = False
 
-        for cur_provider in sickbeard.metadata_provider_dict.values():
-            result = cur_provider.create_episode_thumb(self) or result
+        for cur_provider in sickchill.providers.metadata.metadata.extensions:
+            instance = cur_provider.plugin()
+            result = instance.create_episode_thumb(self) or result
 
         return result
 

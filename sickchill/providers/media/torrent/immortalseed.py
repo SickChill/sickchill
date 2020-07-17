@@ -198,4 +198,4 @@ class ImmortalseedCache(tvcache.TVCache):
         return self.provider._check_auth_from_data(data)
 
 
-provider = ImmortalseedProvider()
+

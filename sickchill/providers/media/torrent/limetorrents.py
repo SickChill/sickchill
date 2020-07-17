@@ -137,4 +137,4 @@ class LimeTorrentsProvider(TorrentProvider):
         return results
 
 
-provider = LimeTorrentsProvider()
+

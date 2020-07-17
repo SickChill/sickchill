@@ -181,4 +181,4 @@ class GFTrackerProvider(TorrentProvider):
         return results
 
 
-provider = GFTrackerProvider()
+
