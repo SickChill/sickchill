@@ -51,3 +51,4 @@ send2trash
 deluge-client
 ifaddr
 twilio
+pyaes
