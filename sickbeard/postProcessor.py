@@ -24,9 +24,6 @@ import re
 import stat
 import subprocess
 
-# Third Party Imports
-import adba
-
 # First Party Imports
 import sickbeard
 from sickchill.helper import glob
@@ -606,11 +603,12 @@ class PostProcessor(object):
         :param filePath: file to check
         :return: episode object
         """
-        ep = adba.Episode(connection, filePath=filePath,
-                          paramsF=["quality", "anidb_file_name", "crc32"],
-                          paramsA=["epno", "english_name", "short_name_list", "other_name", "synonym_list"])
-
-        return ep
+        # TODO: ANIME
+        # ep = adba.Episode(connection, filePath=filePath,
+        #                   paramsF=["quality", "anidb_file_name", "crc32"],
+        #                   paramsA=["epno", "english_name", "short_name_list", "other_name", "synonym_list"])
+        #
+        # return ep
 
     def _add_to_anidb_mylist(self, filePath):
         """
@@ -618,15 +616,16 @@ class PostProcessor(object):
 
         :param filePath: file to add to mylist
         """
-        if helpers.set_up_anidb_connection():
-            if not self.anidbEpisode:  # seems like we could parse the name before, now lets build the anidb object
-                self.anidbEpisode = self._build_anidb_episode(sickbeard.ADBA_CONNECTION, filePath)
-
-            self._log("Adding the file to the anidb mylist", logger.DEBUG)
-            try:
-                self.anidbEpisode.add_to_mylist(status=1)  # status = 1 sets the status of the file to "internal HDD"
-            except Exception as e:
-                self._log("exception msg: " + str(e))
+        # TODO: ANIME
+        # if helpers.set_up_anidb_connection():
+        #     if not self.anidbEpisode:  # seems like we could parse the name before, now lets build the anidb object
+        #         self.anidbEpisode = self._build_anidb_episode(sickbeard.ADBA_CONNECTION, filePath)
+        #
+        #     self._log("Adding the file to the anidb mylist", logger.DEBUG)
+        #     try:
+        #         self.anidbEpisode.add_to_mylist(status=1)  # status = 1 sets the status of the file to "internal HDD"
+        #     except Exception as e:
+        #         self._log("exception msg: " + str(e))
 
     def _find_info(self):
         """

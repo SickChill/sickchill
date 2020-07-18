@@ -17,14 +17,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# Third Party Imports
-from adba.aniDBerrors import AniDBCommandTimeoutError
-
 # First Party Imports
-import sickbeard
 
 # Local Folder Imports
-from . import db, helpers, logger
+from . import db, logger
 
 
 class BlackAndWhiteList(object):
@@ -157,21 +153,23 @@ def short_group_names(groups):
     """
     groups = groups.split(',')
     short_group_list = []
-    if helpers.set_up_anidb_connection():
-        for groupName in groups:
-            try:
-                group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
-            except AniDBCommandTimeoutError:
-                logger.debug('Timeout while loading group from AniDB. Trying next group')
-            except Exception:
-                logger.debug('Failed while loading group from AniDB. Trying next group')
-            else:
-                for line in group.datalines:
-                    if line['shortname']:
-                        short_group_list.append(line['shortname'])
-                    else:
-                        if groupName not in short_group_list:
-                            short_group_list.append(groupName)
-    else:
-        short_group_list = groups
+    # TODO: ANIME
+    # if helpers.set_up_anidb_connection():
+    #     for groupName in groups:
+    #         try:
+    #             group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
+    #         except AniDBCommandTimeoutError:
+    #             logger.debug('Timeout while loading group from AniDB. Trying next group')
+    #         except Exception:
+    #             logger.debug('Failed while loading group from AniDB. Trying next group')
+    #         else:
+    #             for line in group.datalines:
+    #                 if line['shortname']:
+    #                     short_group_list.append(line['shortname'])
+    #                 else:
+    #                     if groupName not in short_group_list:
+    #                         short_group_list.append(groupName)
+    # else:
+    #     short_group_list = groups
+    short_group_list = groups
     return short_group_list

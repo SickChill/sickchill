@@ -33,6 +33,7 @@ class Notifier(AbstractNotifier):
     """
     def __init__(self):
         super().__init__('Trakt', extra_options=('timeout', 'enable'))
+        self.api = TraktAPI()
 
     def notify_snatch(self, name):
         pass
@@ -59,8 +60,6 @@ class Notifier(AbstractNotifier):
         ep_obj: The TVEpisode object to add to trakt
         """
 
-        trakt_api = TraktAPI(self.config('timeout'))
-
         if self.config('enabled'):
             try:
                 # URL parameters
@@ -75,7 +74,7 @@ class Notifier(AbstractNotifier):
                 }
 
                 if self.config('sync_watchlist') and self.config('remove_from_serieslist'):
-                        trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
+                        self.api.traktRequest("sync/watchlist/remove", data, method='POST')
 
                 # Add Season and Episode + Related Episodes
                 data['shows'][0]['seasons'] = [{'number': ep_obj.season, 'episodes': []}]
@@ -84,10 +83,10 @@ class Notifier(AbstractNotifier):
                     data['shows'][0]['seasons'][0]['episodes'].append({'number': relEp_Obj.episode})
 
                 if self.config('sync_watchlist') and self.config('remove_from_watchlist'):
-                    trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
+                    self.api.traktRequest("sync/watchlist/remove", data, method='POST')
 
                 # update library
-                trakt_api.traktRequest("sync/collection", data, method='POST')
+                self.api.traktRequest("sync/collection", data, method='POST')
 
             except (traktException, traktAuthException, traktServerBusy) as e:
                 logger.warning("Could not connect to Trakt service: {0}".format(str(e)))
@@ -159,7 +158,7 @@ class Notifier(AbstractNotifier):
                 if update == "remove":
                     trakt_url += "/remove"
 
-                trakt_api.traktRequest(trakt_url, data, method='POST')
+                self.api.traktRequest(trakt_url, data, method='POST')
 
             except (traktException, traktAuthException, traktServerBusy) as e:
                 logger.warning("Could not connect to Trakt service: {0}".format(str(e)))
@@ -202,8 +201,7 @@ class Notifier(AbstractNotifier):
 
         return post_data
 
-    @staticmethod
-    def test_notify(username, blacklist_name=None):
+    def test_notify(self, username, blacklist_name=None):
         """
         Sends a test notification to trakt with the given authentication info and returns a boolean
         representing success.
@@ -215,10 +213,10 @@ class Notifier(AbstractNotifier):
         Returns: True if the request succeeded, False otherwise
         """
         try:
-            trakt_api = TraktAPI(self.config('timeout'))
-            trakt_api.validateAccount()
+            trakt_api = TraktAPI()
+            self.api.validateAccount()
             if blacklist_name and blacklist_name is not None:
-                trakt_lists = trakt_api.traktRequest("users/" + username + "/lists")
+                trakt_lists = self.api.traktRequest("users/" + username + "/lists")
                 found = False
                 for trakt_list in trakt_lists:
                     if trakt_list['ids']['slug'] == blacklist_name:
@@ -230,3 +228,7 @@ class Notifier(AbstractNotifier):
         except (traktException, traktAuthException, traktServerBusy) as e:
             logger.warning("Could not connect to Trakt service: {0}".format(str(e)))
             return "Test notice failed to Trakt: {0}".format(str(e))
+
+    def blacklist(self, show_id: str):
+        url = "users/{username}/lists/{blacklist_name}/items".format(username=self.config('username'), blacklist_name=self.config('blacklist_name'))
+        self.api.traktRequest(url, {'shows': [{'ids': {'tvdb': show_id}}]}, method='POST')

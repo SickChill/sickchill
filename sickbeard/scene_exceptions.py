@@ -22,9 +22,6 @@ import datetime
 import threading
 import time
 
-# Third Party Imports
-import adba
-
 # First Party Imports
 import sickbeard
 import sickchill
@@ -245,13 +242,14 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
         else:
             exception_dict[xem_ex] = xem_exception_dict[xem_ex]
 
-    # AniDB scene exceptions
-    _anidb_exceptions_fetcher()
-    for anidb_ex in anidb_exception_dict:
-        if anidb_ex in exception_dict:
-            exception_dict[anidb_ex] += anidb_exception_dict[anidb_ex]
-        else:
-            exception_dict[anidb_ex] = anidb_exception_dict[anidb_ex]
+    # TODO: ANIME
+    # # AniDB scene exceptions
+    # _anidb_exceptions_fetcher()
+    # for anidb_ex in anidb_exception_dict:
+    #     if anidb_ex in exception_dict:
+    #         exception_dict[anidb_ex] += anidb_exception_dict[anidb_ex]
+    #     else:
+    #         exception_dict[anidb_ex] = anidb_exception_dict[anidb_ex]
 
     queries = []
     cache_db_con = db.DBConnection('cache.db')
@@ -294,22 +292,22 @@ def update_scene_exceptions(indexer_id, scene_exceptions):
 
     rebuild_exception_cache(indexer_id)
 
-
-def _anidb_exceptions_fetcher():
-    if shouldRefresh('anidb'):
-        logger.info("Checking for scene exception updates for AniDB")
-        for show in sickbeard.showList:
-            if show.is_anime and show.indexer == 1:
-                try:
-                    anime = adba.Anime(None, name=show.name, tvdbid=show.indexerid, autoCorrectName=True)
-                except Exception:
-                    continue
-                else:
-                    if anime.name and anime.name != show.name:
-                        anidb_exception_dict[show.indexerid] = [{anime.name: -1}]
-
-        setLastRefresh('anidb')
-    return anidb_exception_dict
+# TODO: ANIME
+# def _anidb_exceptions_fetcher():
+#     if shouldRefresh('anidb'):
+#         logger.info("Checking for scene exception updates for AniDB")
+#         for show in sickbeard.showList:
+#             if show.is_anime and show.indexer == 1:
+#                 try:
+#                     anime = adba.Anime(None, name=show.name, tvdbid=show.indexerid, autoCorrectName=True)
+#                 except Exception:
+#                     continue
+#                 else:
+#                     if anime.name and anime.name != show.name:
+#                         anidb_exception_dict[show.indexerid] = [{anime.name: -1}]
+#
+#         setLastRefresh('anidb')
+#     return anidb_exception_dict
 
 xem_session = helpers.make_session()
 

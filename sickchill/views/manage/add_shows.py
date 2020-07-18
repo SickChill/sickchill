@@ -32,6 +32,7 @@ from tornado.web import HTTPError
 # First Party Imports
 import sickbeard
 import sickchill
+from sickchill.providers import metadata, notifications
 from sickbeard import config, db, filters, helpers, logger, ui
 from sickbeard.blackandwhitelist import short_group_names
 from sickbeard.common import Quality
@@ -169,7 +170,7 @@ class AddShows(Home):
                 dir_list.append(cur_dir)
 
                 indexer_id = show_name = indexer = None
-                for cur_provider in sickchill.provider.metadata.metadata.extenstions:
+                for cur_provider in metadata.manager.extenstions:
                     instance = cur_provider.plugin()
                     if not (indexer_id and show_name):
                         (indexer_id, show_name, indexer) = instance.retrieveShowMetadata(cur_path)
@@ -365,11 +366,7 @@ class AddShows(Home):
         if not indexer_id:
             raise HTTPError(404)
 
-        data = {'shows': [{'ids': {'tvdb': indexer_id}}]}
-
-        trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
-
-        trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items", data, method='POST')
+        notifications.manager['trakt'].plugin().blacklist(indexer_id)
 
         return self.redirect('/addShows/trendingShows/')
 

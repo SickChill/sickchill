@@ -27,7 +27,6 @@ import urllib
 from operator import attrgetter
 
 # Third Party Imports
-import adba
 from github.GithubException import GithubException
 from requests.compat import unquote_plus
 from tornado.escape import xhtml_unescape
@@ -65,7 +64,8 @@ class Home(WebRoot):
         t = PageTemplate(rh=self, filename="genericMessage.mako")
         return t.render(message=message, subject=subject, topmenu="home", title="")
 
-    def _getEpisode(self, show, season=None, episode=None, absolute=None):
+    @staticmethod
+    def _getEpisode(show, season=None, episode=None, absolute=None):
         if not show:
             return None, _("Invalid show parameters")
 
@@ -192,15 +192,15 @@ class Home(WebRoot):
 
     @staticmethod
     def haveKODI():
-        return sickbeard.USE_KODI and sickbeard.KODI_UPDATE_LIBRARY
+        return notifications.get_config('kodi', 'enable') and notifications.get_config('kodi', 'update')
 
     @staticmethod
     def havePLEX():
-        return sickbeard.USE_PLEX_SERVER and sickbeard.PLEX_UPDATE_LIBRARY
+        return notifications.get_config('plex', 'enable') and notifications.get_config('plex', 'update')
 
     @staticmethod
     def haveEMBY():
-        return sickbeard.USE_EMBY
+        return notifications.get_config('emby', 'enable')
 
     @staticmethod
     def haveTORRENT():
@@ -248,9 +248,9 @@ class Home(WebRoot):
 
     def testFreeMobile(self):
         freemobile_id = self.get_body_argument('freemobile_id')
-        freemobile_apikey = filters.unhide(sickbeard.FREEMOBILE_APIKEY, self.get_body_argument('freemobile_apikey'))
+        freemobile_apikey = filters.unhide(notifications.get_config('freemobile', 'api_key'), self.get_body_argument('freemobile_apikey'))
 
-        result, message = notififcations.manager.freemobile_notifier.test_notify(freemobile_id, freemobile_apikey)
+        result, message = notifications.manager['freemobile'].test_notify(freemobile_id, freemobile_apikey)
         if result:
             return _("SMS sent successfully")
         else:
@@ -258,7 +258,7 @@ class Home(WebRoot):
 
     def testTelegram(self):
         telegram_id = self.get_body_argument('telegram_id')
-        telegram_apikey = filters.unhide(sickbeard.TELEGRAM_APIKEY, self.get_body_argument('telegram_apikey'))
+        telegram_apikey = filters.unhide(notifications.get_config('telegram', 'api_key'), self.get_body_argument('telegram_apikey'))
         result, message = notifications.manager['telegram'].test_notify(telegram_id, telegram_apikey)
         if result:
             return _("Telegram notification succeeded. Check your Telegram clients to make sure it worked")
@@ -267,7 +267,7 @@ class Home(WebRoot):
 
     def testJoin(self):
         join_id = self.get_body_argument('join_id')
-        join_apikey = filters.unhide(sickbeard.JOIN_APIKEY, self.get_body_argument('join_apikey'))
+        join_apikey = filters.unhide(notifications.get_config('join', 'api_key'), self.get_body_argument('join_apikey'))
 
         result, message = notifications.manager['join'].test_notify(join_id, join_apikey)
         if result:
@@ -277,7 +277,7 @@ class Home(WebRoot):
 
     def testGrowl(self):
         host = self.get_query_argument('host')
-        password = filters.unhide(sickbeard.GROWL_PASSWORD, self.get_query_argument('password'))
+        password = filters.unhide(notifications.get_config('growl', 'password'), self.get_query_argument('password'))
         # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         host = config.clean_host(host, default_port=23053)
@@ -956,8 +956,6 @@ class Home(WebRoot):
                  anime=None, blacklist=None, whitelist=None, scene=None,
                  defaultEpStatus=None, quality_preset=None):
 
-        anidb_failed = False
-
         try:
             show_obj = Show.find(sickbeard.showList, int(show))
         except (ValueError, TypeError):
@@ -989,17 +987,17 @@ class Home(WebRoot):
             t = PageTemplate(rh=self, filename="editShow.mako")
             groups = []
 
-            if show_obj.is_anime:
-                whitelist = show_obj.release_groups.whitelist
-                blacklist = show_obj.release_groups.blacklist
-
-                if helpers.set_up_anidb_connection() and not anidb_failed:
-                    try:
-                        anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=show_obj.name)
-                        groups = anime.get_groups()
-                    except Exception as e:
-                        ui.notifications.error(_('Unable to retreive Fansub Groups from AniDB.'))
-                        logger.debug('Unable to retreive Fansub Groups from AniDB. Error is {0}'.format(e))
+            # TODO: ANIME
+            # if show_obj.is_anime:
+            #     whitelist = show_obj.release_groups.whitelist
+            #     blacklist = show_obj.release_groups.blacklist
+            #
+            #     try:
+            #         anime = anidb.search(show_obj.name)[0]
+            #         groups = anime['groups']
+            #     except Exception as e:
+            #         ui.notifications.error(_('Unable to retreive Fansub Groups from AniDB.'))
+            #         logger.debug('Unable to retreive Fansub Groups from AniDB. Error is {0}'.format(e))
 
             with show_obj.lock:
                 show = show_obj
@@ -1396,10 +1394,10 @@ class Home(WebRoot):
                     # mass add to database
                     sql_l.append(ep_obj.get_sql())
 
-                    if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+                    if notifications.get_config('trakt', 'enable') and notifications.get_config('trakt', 'sync_watchlist'):
                         trakt_data.append((ep_obj.season, ep_obj.episode))
 
-            if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+            if notifications.get_config('trakt', 'enable') and notifications.get_config('trakt', 'sync_watchlist'):
                 data = notifications.manager['trakt'].trakt_episode_data_generate(trakt_data)
                 if data['seasons']:
                     upd = ""
@@ -1827,13 +1825,14 @@ class Home(WebRoot):
     @staticmethod
     def fetch_releasegroups(show_name):
         logger.info('ReleaseGroups: {0}'.format(show_name))
-        if helpers.set_up_anidb_connection():
-            try:
-                anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=show_name)
-                groups = anime.get_groups()
-                logger.info('ReleaseGroups: {0}'.format(groups))
-                return json.dumps({'result': 'success', 'groups': groups})
-            except AttributeError as error:
-                logger.debug('Unable to get ReleaseGroups: {0}'.format(error))
+        # TODO: ANIME
+        # if helpers.set_up_anidb_connection():
+        #     try:
+        #         anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=show_name)
+        #         groups = anime.get_groups()
+        #         logger.info('ReleaseGroups: {0}'.format(groups))
+        #         return json.dumps({'result': 'success', 'groups': groups})
+        #     except AttributeError as error:
+        #         logger.debug('Unable to get ReleaseGroups: {0}'.format(error))
 
         return json.dumps({'result': 'failure'})

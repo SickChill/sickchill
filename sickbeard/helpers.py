@@ -42,7 +42,6 @@ from itertools import cycle
 from xml.etree import ElementTree
 
 # Third Party Imports
-import adba
 import certifi
 import cloudscraper
 import ifaddr
@@ -1032,39 +1031,6 @@ def is_subdirectory(subdir_path, topdir_path):
     # checks if the common prefix of both is equal to directory
     # e.g. /a/b/c/d.rst and directory is /a/b, the common prefix is /a/b
     return os.path.commonprefix([subdir_path, topdir_path]) == topdir_path
-
-
-def set_up_anidb_connection():
-    """Connect to anidb"""
-
-    if not sickbeard.USE_ANIDB:
-        logger.debug(_("Usage of anidb disabled. Skiping"))
-        return False
-
-    if not sickbeard.ANIDB_USERNAME and not sickbeard.ANIDB_PASSWORD:
-        logger.debug(_("anidb username and/or password are not set. Aborting anidb lookup."))
-        return False
-
-    if not sickbeard.ADBA_CONNECTION:
-        def anidb_logger(msg):
-            return logger.debug(_("anidb: {0} ").format(msg))
-
-        try:
-            sickbeard.ADBA_CONNECTION = adba.Connection(keepAlive=True, log=anidb_logger)
-        except Exception as error:
-            logger.warning(_("anidb exception msg: {0} ").format(error))
-            return False
-
-    try:
-        if not sickbeard.ADBA_CONNECTION.authed():
-            sickbeard.ADBA_CONNECTION.auth(sickbeard.ANIDB_USERNAME, sickbeard.ANIDB_PASSWORD)
-        else:
-            return True
-    except Exception as error:
-        logger.warning(_("anidb exception msg: {0} ").format(error))
-        return False
-
-    return sickbeard.ADBA_CONNECTION.authed()
 
 
 def makeZip(fileList, archive):

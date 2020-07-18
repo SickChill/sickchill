@@ -28,16 +28,15 @@ import requests
 # First Party Imports
 import sickbeard
 from sickbeard import logger
+from sickchill.providers import notifications
 
 # Local Folder Imports
 from .exceptions import traktException
 
 
 class TraktAPI:
-    def __init__(self, timeout=30):
-        self.session = requests.Session()
-        self.verify = certifi.where() if sickbeard.SSL_VERIFY else False
-        self.timeout = timeout if timeout else None
+    def __init__(self):
+        self.session = sickbeard.helpers.make_indexer_session()
         self.auth_url = sickbeard.TRAKT_OAUTH_URL
         self.api_url = sickbeard.TRAKT_API_URL
         self.headers = {
@@ -62,7 +61,7 @@ class TraktAPI:
 
         if refresh:
             data['grant_type'] = 'refresh_token'
-            data['refresh_token'] = sickbeard.TRAKT_REFRESH_TOKEN
+            data['refresh_token'] = notifications.get_config('trakt', 'refresh_token')
         else:
             data['grant_type'] = 'authorization_code'
             if not None == trakt_pin:
@@ -98,16 +97,15 @@ class TraktAPI:
         if headers is None:
             headers = self.headers
 
-        if sickbeard.TRAKT_ACCESS_TOKEN == '' and count >= 2:
+        if notifications.get_config('trakt', 'access_token') == '' and count >= 2:
             logger.warning('You must get a Trakt TOKEN. Check your Trakt settings')
             return {}
 
-        if sickbeard.TRAKT_ACCESS_TOKEN != '':
-            headers['Authorization'] = 'Bearer ' + sickbeard.TRAKT_ACCESS_TOKEN
+        if notifications.get_config('trakt', 'access_token'):
+            headers['Authorization'] = 'Bearer ' + notifications.get_config('trakt', 'access_token')
 
         try:
-            resp = self.session.request(method, url + path, headers=headers, timeout=self.timeout,
-                data=json.dumps(data) if data else [], verify=self.verify)
+            resp = self.session.request(method, url + path, headers=headers, data=json.dumps(data) if data else None)
 
             # check for http errors and raise if any are present
             resp.raise_for_status()

@@ -35,7 +35,7 @@ setup_lib_path()
 # Third Party Imports
 import rarfile
 import requests
-from adba import Connection as AniDBConnection
+
 from configobj import ConfigObj
 from tornado.locale import load_gettext_translations
 
@@ -294,7 +294,7 @@ USE_ANIDB: bool = False
 ANIDB_USERNAME: str
 ANIDB_PASSWORD: str
 ANIDB_USE_MYLIST: bool = False
-ADBA_CONNECTION: AniDBConnection
+
 ANIME_SPLIT_HOME: bool = False
 ANIME_SPLIT_HOME_IN_TABS: bool = False
 
@@ -1066,14 +1066,6 @@ def halt():
                 logger.info("Waiting for the {0} thread to exit".format(t.name))
                 try:
                     t.join(10)
-                except Exception:
-                    pass
-
-            if ADBA_CONNECTION:
-                ADBA_CONNECTION.logout()
-                logger.info("Waiting for the ANIDB CONNECTION thread to exit")
-                try:
-                    ADBA_CONNECTION.join(10)
                 except Exception:
                     pass
 
