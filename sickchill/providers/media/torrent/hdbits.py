@@ -73,16 +73,16 @@ class HDBitsProvider(TorrentProvider):
 
         return title, url
 
-    def search(self, search_params, ep_obj=None) -> list:
+    def search(self, search_strings, ep_obj=None) -> list:
 
         # FIXME
         results = []
 
-        logger.debug("Search string: {0}".format(search_params))
+        logger.debug("Search string: {0}".format(search_strings))
 
         self._check_auth()
 
-        parsed_json = self.get_url(self.urls['search'], post_data=search_params, returns='json')
+        parsed_json = self.get_url(self.urls['search'], post_data=search_strings, returns='json')
         if not parsed_json:
             return []
 
@@ -174,7 +174,6 @@ class HDBitsProvider(TorrentProvider):
 
 class HDBitsCache(tvcache.TVCache):
     def get_rss_data(self):
-        self.search_params = None  # HDBits cache does not use search_params so set it to None
         results = []
 
         try:

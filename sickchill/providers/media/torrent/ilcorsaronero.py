@@ -194,13 +194,13 @@ class ilCorsaroNeroProvider(TorrentProvider):
             title=quote_plus(title),
             trackers='http://tracker.tntvillage.scambioetico.org:2710/announce')
 
-    def search(self, search_params, ep_obj=None) -> list:
+    def search(self, search_strings, ep_obj=None) -> list:
         results = []
 
-        for mode in search_params:
+        for mode in search_strings:
             items = []
             logger.debug('Search Mode: {0}'.format(mode))
-            for search_string in search_params[mode]:
+            for search_string in search_strings[mode]:
                 if search_string == '':
                     continue
 
