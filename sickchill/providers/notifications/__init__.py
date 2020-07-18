@@ -22,6 +22,8 @@ from subliminal.extensions import RegistrableExtensionManager
 
 # First Party Imports
 import sickbeard
+from sickbeard.filters import unhide
+
 
 manager = RegistrableExtensionManager('sickchill.providers.notifications', [
     'plex = sickchill.providers.notifications.plex:Notifier',
@@ -122,6 +124,9 @@ def get_config(provider: str, key: str = ''):
 
 
 def set_config(provider: str, key: str, value):
+    import re
+    if re.match(r'pass|api_?key|token', key):
+        value = unhide(get_config(provider, key), value)
     get_config(provider)[key] = value
 
 

@@ -135,9 +135,9 @@ class BTNProvider(TorrentProvider):
             time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
         except jsonrpclib.jsonrpc.ProtocolError as error:
-            if error.message == (-32001, 'Invalid API Key'):
+            if error.args[0] == (-32001, 'Invalid API Key'):
                 logger.warning("The API key you provided was rejected because it is invalid. Check your provider configuration.")
-            elif error.message == (-32002, 'Call Limit Exceeded'):
+            elif error.args[0] == (-32002, 'Call Limit Exceeded'):
                 logger.warning("You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account")
             else:
                 logger.exception("JSON-RPC protocol error while accessing provider. Error: {0} ".format(repr(error)))
@@ -152,14 +152,12 @@ class BTNProvider(TorrentProvider):
             logger.warning("Socket error while accessing provider. Error: {0} ".format(error[1]))
 
         except Exception as error:
-            errorstring = str(error)
-            if errorstring.startswith('<') and errorstring.endswith('>'):
-                errorstring = errorstring[1:-1]
-            logger.warning("Unknown error while accessing provider. Error: {0} ".format(errorstring))
+            logger.warning("Unknown error while accessing provider. Error: {0} ".format( str(error).strip('<>')))
 
         return parsed_json
 
-    def _get_title_and_url(self, parsed_json):
+    @staticmethod
+    def _get_title_and_url(parsed_json):
 
         # The BTN API gives a lot of information in response,
         # however SickChill is built mostly around Scene or
@@ -203,7 +201,8 @@ class BTNProvider(TorrentProvider):
 
         return title, url
 
-    def get_season_search_strings(self, ep_obj):
+    @staticmethod
+    def get_season_search_strings(ep_obj):
         search_strings = []
         current_params = {'category': 'Season'}
 

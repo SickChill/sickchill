@@ -5,6 +5,7 @@
     from sickbeard.filters import hide
     from sickbeard.helpers import anon_url
     import sickchill
+    from sickchill.providers.notifications import get_config
 %>
 
 <%block name="tabs">
@@ -58,8 +59,8 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_notify_onsnatch" id="kodi_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.KODI_NOTIFY_ONSNATCH)]}/>
-                                    <label for="kodi_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+                                    <input type="checkbox" name="kodi_notify_snatch" id="kodi_notify_snatch" ${('', 'checked="checked"')[bool(get_config('kodi', 'snatch'))]}/>
+                                    <label for="kodi_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
 
@@ -68,8 +69,8 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_notify_ondownload" id="kodi_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.KODI_NOTIFY_ONDOWNLOAD)]}/>
-                                    <label for="kodi_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                    <input type="checkbox" name="kodi_notify_download" id="kodi_notify_download" ${('', 'checked="checked"')[bool(get_config('kodi', 'download'))]}/>
+                                    <label for="kodi_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
 
@@ -78,8 +79,8 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_notify_onsubtitledownload" id="kodi_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.KODI_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="kodi_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                    <input type="checkbox" name="kodi_notify_subtitle" id="kodi_notify_subtitle" ${('', 'checked="checked"')[bool(get_config('kodi', 'subtitle'))]}/>
+                                    <label for="kodi_notify_subtitle">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
 
@@ -372,8 +373,8 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="plex_notify_onsnatch" id="plex_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.PLEX_NOTIFY_ONSNATCH)]}/>
-                                    <label for="plex_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+                                    <input type="checkbox" name="plex_notify_snatch" id="plex_notify_snatch" ${('', 'checked="checked"')[bool(get_config('plex', 'snatch'))]}/>
+                                    <label for="plex_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
 
@@ -382,8 +383,8 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="plex_notify_ondownload" id="plex_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.PLEX_NOTIFY_ONDOWNLOAD)]}/>
-                                    <label for="plex_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                    <input type="checkbox" name="plex_notify_download" id="plex_notify_download" ${('', 'checked="checked"')[bool(get_config('plex', 'download'))]}/>
+                                    <label for="plex_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
 
@@ -392,8 +393,8 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="plex_notify_onsubtitledownload" id="plex_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="plex_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                    <input type="checkbox" name="plex_notify_subtitle" id="plex_notify_subtitle" ${('', 'checked="checked"')[bool(get_config('plex', 'subtitle'))]}/>
+                                    <label for="plex_notify_subtitle">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
 
@@ -892,8 +893,8 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="synologynotifier_notify_onsnatch" id="synologynotifier_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH)]}/>
-                                    <label for="synologynotifier_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+                                    <input type="checkbox" name="synologynotifier_notify_snatch" id="synologynotifier_notify_snatch" ${('', 'checked="checked"')[bool(get_config('synologynotifier', 'snatch'))]}/>
+                                    <label for="synologynotifier_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
 
@@ -902,8 +903,8 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="synologynotifier_notify_ondownload" id="synologynotifier_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD)]}/>
-                                    <label for="synologynotifier_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                    <input type="checkbox" name="synologynotifier_notify_download" id="synologynotifier_notify_download" ${('', 'checked="checked"')[bool(get_config('synologynotifier', 'download'))]}/>
+                                    <label for="synologynotifier_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
 
@@ -912,8 +913,8 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="synologynotifier_notify_onsubtitledownload" id="synologynotifier_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="synologynotifier_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                    <input type="checkbox" name="synologynotifier_notify_subtitle" id="synologynotifier_notify_subtitle" ${('', 'checked="checked"')[bool(get_config('synologynotifier', 'subtitle'))]}/>
+                                    <label for="synologynotifier_notify_subtitle">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
 
@@ -1059,8 +1060,8 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="growl_notify_onsnatch" id="growl_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.GROWL_NOTIFY_ONSNATCH)]}/>
-                                    <label for="growl_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+                                    <input type="checkbox" name="growl_notify_snatch" id="growl_notify_snatch" ${('', 'checked="checked"')[bool(get_config('growl', 'snatch'))]}/>
+                                    <label for="growl_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
                             <div class="field-pair row">
@@ -1068,8 +1069,8 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="growl_notify_ondownload" id="growl_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.GROWL_NOTIFY_ONDOWNLOAD)]}/>
-                                    <label for="growl_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                    <input type="checkbox" name="growl_notify_download" id="growl_notify_download" ${('', 'checked="checked"')[bool(get_config('growl', 'download'))]}/>
+                                    <label for="growl_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
                             <div class="field-pair row">
@@ -1077,8 +1078,8 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="growl_notify_onsubtitledownload" id="growl_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="growl_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                    <input type="checkbox" name="growl_notify_subtitle" id="growl_notify_subtitle" ${('', 'checked="checked"')[bool(get_config('growl', 'subtitle'))]}/>
+                                    <label for="growl_notify_subtitle">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
                             <div class="field-pair row">
@@ -1174,8 +1175,8 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="prowl_notify_onsnatch" id="prowl_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.PROWL_NOTIFY_ONSNATCH)]}/>
-                                    <label for="prowl_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+                                    <input type="checkbox" name="prowl_notify_snatch" id="prowl_notify_snatch" ${('', 'checked="checked"')[bool(get_config('prowl', 'snatch'))]}/>
+                                    <label for="prowl_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
 
@@ -1184,8 +1185,8 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="prowl_notify_ondownload" id="prowl_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.PROWL_NOTIFY_ONDOWNLOAD)]}/>
-                                    <label for="prowl_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                    <input type="checkbox" name="prowl_notify_download" id="prowl_notify_download" ${('', 'checked="checked"')[bool(get_config('prowl', 'download'))]}/>
+                                    <label for="prowl_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
 
@@ -1194,8 +1195,8 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="prowl_notify_onsubtitledownload" id="prowl_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="prowl_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                    <input type="checkbox" name="prowl_notify_subtitle" id="prowl_notify_subtitle" ${('', 'checked="checked"')[bool(get_config('prowl', 'subtitle'))]}/>
+                                    <label for="prowl_notify_subtitle">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
 
@@ -1327,8 +1328,8 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="libnotify_notify_onsnatch" id="libnotify_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.LIBNOTIFY_NOTIFY_ONSNATCH)]}/>
-                                    <label for="libnotify_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+                                    <input type="checkbox" name="libnotify_notify_snatch" id="libnotify_notify_snatch" ${('', 'checked="checked"')[bool(get_config('libnotify', 'snatch'))]}/>
+                                    <label for="libnotify_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
 
@@ -1337,8 +1338,8 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="libnotify_notify_ondownload" id="libnotify_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.LIBNOTIFY_NOTIFY_ONDOWNLOAD)]}/>
-                                    <label for="libnotify_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                    <input type="checkbox" name="libnotify_notify_download" id="libnotify_notify_download" ${('', 'checked="checked"')[bool(get_config('libnotify', 'download'))]}/>
+                                    <label for="libnotify_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
 
@@ -1347,8 +1348,8 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="libnotify_notify_onsubtitledownload" id="libnotify_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="libnotify_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                    <input type="checkbox" name="libnotify_notify_subtitle" id="libnotify_notify_subtitle" ${('', 'checked="checked"')[bool(get_config('libnotify', 'subtitle'))]}/>
+                                    <label for="libnotify_notify_subtitle">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
 
@@ -1402,8 +1403,8 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushover_notify_onsnatch" id="pushover_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.PUSHOVER_NOTIFY_ONSNATCH)]}/>
-                                    <label for="pushover_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+                                    <input type="checkbox" name="pushover_notify_snatch" id="pushover_notify_snatch" ${('', 'checked="checked"')[bool(get_config('pushover', 'snatch'))]}/>
+                                    <label for="pushover_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
 
@@ -1412,8 +1413,8 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushover_notify_ondownload" id="pushover_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHOVER_NOTIFY_ONDOWNLOAD)]}/>
-                                    <label for="pushover_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                    <input type="checkbox" name="pushover_notify_download" id="pushover_notify_download" ${('', 'checked="checked"')[bool(get_config('pushover', 'download'))]}/>
+                                    <label for="pushover_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
 
@@ -1422,8 +1423,8 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushover_notify_onsubtitledownload" id="pushover_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="pushover_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                    <input type="checkbox" name="pushover_notify_subtitle" id="pushover_notify_subtitle" ${('', 'checked="checked"')[bool(get_config('pushover', 'subtitle'))]}/>
+                                    <label for="pushover_notify_subtitle">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
 
@@ -1597,8 +1598,8 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="boxcar2_notify_onsnatch" id="boxcar2_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.BOXCAR2_NOTIFY_ONSNATCH)]}/>
-                                    <label for="boxcar2_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+                                    <input type="checkbox" name="boxcar2_notify_snatch" id="boxcar2_notify_snatch" ${('', 'checked="checked"')[bool(sickbeard.BOXCAR2_NOTIFY_SNATCH)]}/>
+                                    <label for="boxcar2_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
 
@@ -1607,8 +1608,8 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="boxcar2_notify_ondownload" id="boxcar2_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.BOXCAR2_NOTIFY_ONDOWNLOAD)]}/>
-                                    <label for="boxcar2_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                    <input type="checkbox" name="boxcar2_notify_download" id="boxcar2_notify_download" ${('', 'checked="checked"')[bool(sickbeard.BOXCAR2_NOTIFY_DOWNLOAD)]}/>
+                                    <label for="boxcar2_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
 
@@ -1617,8 +1618,8 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="boxcar2_notify_onsubtitledownload" id="boxcar2_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="boxcar2_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                    <input type="checkbox" name="boxcar2_notify_subtitle" id="boxcar2_notify_subtitle" ${('', 'checked="checked"')[bool(sickbeard.BOXCAR2_NOTIFY_SUBTITLE_DOWNLOAD)]}/>
+                                    <label for="boxcar2_notify_subtitle">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
 
@@ -1690,8 +1691,8 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushalot_notify_onsnatch" id="pushalot_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.PUSHALOT_NOTIFY_ONSNATCH)]}/>
-                                    <label for="pushalot_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+                                    <input type="checkbox" name="pushalot_notify_snatch" id="pushalot_notify_snatch" ${('', 'checked="checked"')[bool(get_config('pushalot', 'snatch'))]}/>
+                                    <label for="pushalot_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
 
@@ -1700,8 +1701,8 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushalot_notify_ondownload" id="pushalot_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHALOT_NOTIFY_ONDOWNLOAD)]}/>
-                                    <label for="pushalot_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                    <input type="checkbox" name="pushalot_notify_download" id="pushalot_notify_download" ${('', 'checked="checked"')[bool(get_config('pushalot', 'download'))]}/>
+                                    <label for="pushalot_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
 
@@ -1710,8 +1711,8 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushalot_notify_onsubtitledownload" id="pushalot_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="pushalot_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                    <input type="checkbox" name="pushalot_notify_subtitle" id="pushalot_notify_subtitle" ${('', 'checked="checked"')[bool(get_config('pushalot', 'subtitle'))]}/>
+                                    <label for="pushalot_notify_subtitle">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
 
@@ -1783,8 +1784,8 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushbullet_notify_onsnatch" id="pushbullet_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.PUSHBULLET_NOTIFY_ONSNATCH)]}/>
-                                    <label for="pushbullet_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+                                    <input type="checkbox" name="pushbullet_notify_snatch" id="pushbullet_notify_snatch" ${('', 'checked="checked"')[bool(get_config('pushbullet', 'snatch'))]}/>
+                                    <label for="pushbullet_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
 
@@ -1793,8 +1794,8 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushbullet_notify_ondownload" id="pushbullet_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHBULLET_NOTIFY_ONDOWNLOAD)]}/>
-                                    <label for="pushbullet_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                    <input type="checkbox" name="pushbullet_notify_download" id="pushbullet_notify_download" ${('', 'checked="checked"')[bool(get_config('pushbullet', 'download'))]}/>
+                                    <label for="pushbullet_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
 
@@ -1803,8 +1804,8 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushbullet_notify_onsubtitledownload" id="pushbullet_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="pushbullet_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                    <input type="checkbox" name="pushbullet_notify_subtitle" id="pushbullet_notify_subtitle" ${('', 'checked="checked"')[bool(get_config('pushbullet', 'subtitle'))]}/>
+                                    <label for="pushbullet_notify_subtitle">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
 
@@ -1917,8 +1918,8 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="freemobile_notify_onsnatch" id="freemobile_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.FREEMOBILE_NOTIFY_ONSNATCH)]}/>
-                                    <label for="freemobile_notify_onsnatch">${_('send a SMS when a download starts?')}</label>
+                                    <input type="checkbox" name="freemobile_notify_snatch" id="freemobile_notify_snatch" ${('', 'checked="checked"')[bool(get_config('freemobile', 'snatch'))]}/>
+                                    <label for="freemobile_notify_snatch">${_('send a SMS when a download starts?')}</label>
                                 </div>
                             </div>
 
@@ -1927,8 +1928,8 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="freemobile_notify_ondownload" id="freemobile_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.FREEMOBILE_NOTIFY_ONDOWNLOAD)]}/>
-                                    <label for="freemobile_notify_ondownload">${_('send a SMS when a download finishes?')}</label>
+                                    <input type="checkbox" name="freemobile_notify_download" id="freemobile_notify_download" ${('', 'checked="checked"')[bool(get_config('freemobile', 'download'))]}/>
+                                    <label for="freemobile_notify_download">${_('send a SMS when a download finishes?')}</label>
                                 </div>
                             </div>
 
@@ -1937,8 +1938,8 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="freemobile_notify_onsubtitledownload" id="freemobile_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="freemobile_notify_onsubtitledownload">${_('send a SMS when subtitles are downloaded?')}</label>
+                                    <input type="checkbox" name="freemobile_notify_subtitle" id="freemobile_notify_subtitle" ${('', 'checked="checked"')[bool(get_config('freemobile', 'subtitle'))]}/>
+                                    <label for="freemobile_notify_subtitle">${_('send a SMS when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
 
@@ -2028,8 +2029,8 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="telegram_notify_onsnatch" id="telegram_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.TELEGRAM_NOTIFY_ONSNATCH)]}/>
-                                    <label for="telegram_notify_onsnatch">${_('send a message when a download starts?')}</label>
+                                    <input type="checkbox" name="telegram_notify_snatch" id="telegram_notify_snatch" ${('', 'checked="checked"')[bool(get_config('telegram', 'snatch'))]}/>
+                                    <label for="telegram_notify_snatch">${_('send a message when a download starts?')}</label>
                                 </div>
                             </div>
 
@@ -2038,8 +2039,8 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="telegram_notify_ondownload" id="telegram_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.TELEGRAM_NOTIFY_ONDOWNLOAD)]}/>
-                                    <label for="telegram_notify_ondownload">${_('send a message when a download finishes?')}</label>
+                                    <input type="checkbox" name="telegram_notify_download" id="telegram_notify_download" ${('', 'checked="checked"')[bool(get_config('telegram', 'download'))]}/>
+                                    <label for="telegram_notify_download">${_('send a message when a download finishes?')}</label>
                                 </div>
                             </div>
 
@@ -2048,8 +2049,8 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="telegram_notify_onsubtitledownload" id="telegram_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="telegram_notify_onsubtitledownload">${_('send a message when subtitles are downloaded?')}</label>
+                                    <input type="checkbox" name="telegram_notify_subtitle" id="telegram_notify_subtitle" ${('', 'checked="checked"')[bool(get_config('telegram', 'subtitle'))]}/>
+                                    <label for="telegram_notify_subtitle">${_('send a message when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
 
@@ -2144,8 +2145,8 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="join_notify_onsnatch" id="telegram_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.JOIN_NOTIFY_ONSNATCH)]}/>
-                                    <label for="join_notify_onsnatch">${_('send a message when a download starts?')}</label>
+                                    <input type="checkbox" name="join_notify_snatch" id="telegram_notify_snatch" ${('', 'checked="checked"')[bool(get_config('telegram', 'snatch'))]}/>
+                                    <label for="join_notify_snatch">${_('send a message when a download starts?')}</label>
                                 </div>
                             </div>
 
@@ -2154,8 +2155,8 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="join_notify_ondownload" id="join_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.JOIN_NOTIFY_ONDOWNLOAD)]}/>
-                                    <label for="join_notify_ondownload">${_('send a message when a download finishes?')}</label>
+                                    <input type="checkbox" name="join_notify_download" id="join_notify_download" ${('', 'checked="checked"')[bool(get_config('join', 'download'))]}/>
+                                    <label for="join_notify_download">${_('send a message when a download finishes?')}</label>
                                 </div>
                             </div>
 
@@ -2164,8 +2165,8 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="join_notify_onsubtitledownload" id="join_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="join_notify_onsubtitledownload">${_('send a message when subtitles are downloaded?')}</label>
+                                    <input type="checkbox" name="join_notify_subtitle" id="join_notify_subtitle" ${('', 'checked="checked"')[bool(get_config('join', 'subtitle'))]}/>
+                                    <label for="join_notify_subtitle">${_('send a message when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
 
@@ -2259,8 +2260,8 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="twilio_notify_onsnatch" id="twilio_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.TWILIO_NOTIFY_ONSNATCH)]}/>
-                                    <label for="twilio_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+                                    <input type="checkbox" name="twilio_notify_snatch" id="twilio_notify_snatch" ${('', 'checked="checked"')[bool(get_config('twilio', 'snatch'))]}/>
+                                    <label for="twilio_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
 
@@ -2269,8 +2270,8 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="twilio_notify_ondownload" id="twilio_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.TWILIO_NOTIFY_ONDOWNLOAD)]}/>
-                                    <label for="twilio_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                    <input type="checkbox" name="twilio_notify_download" id="twilio_notify_download" ${('', 'checked="checked"')[bool(get_config('twilio', 'download'))]}/>
+                                    <label for="twilio_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
 
@@ -2279,8 +2280,8 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="twilio_notify_onsubtitledownload" id="twilio_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="twilio_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                    <input type="checkbox" name="twilio_notify_subtitle" id="twilio_notify_subtitle" ${('', 'checked="checked"')[bool(get_config('twilio', 'subtitle'))]}/>
+                                    <label for="twilio_notify_subtitle">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
 
@@ -2416,8 +2417,8 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="twitter_notify_onsnatch" id="twitter_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.TWITTER_NOTIFY_ONSNATCH)]}/>
-                                    <label for="twitter_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+                                    <input type="checkbox" name="twitter_notify_snatch" id="twitter_notify_snatch" ${('', 'checked="checked"')[bool(get_config('twitter', 'snatch'))]}/>
+                                    <label for="twitter_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
 
@@ -2426,8 +2427,8 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="twitter_notify_ondownload" id="twitter_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.TWITTER_NOTIFY_ONDOWNLOAD)]}/>
-                                    <label for="twitter_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                    <input type="checkbox" name="twitter_notify_download" id="twitter_notify_download" ${('', 'checked="checked"')[bool(get_config('twitter', 'download'))]}/>
+                                    <label for="twitter_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
 
@@ -2436,8 +2437,8 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="twitter_notify_onsubtitledownload" id="twitter_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="twitter_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                    <input type="checkbox" name="twitter_notify_subtitle" id="twitter_notify_subtitle" ${('', 'checked="checked"')[bool(get_config('twitter', 'subtitle'))]}/>
+                                    <label for="twitter_notify_subtitle">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
 
@@ -2795,8 +2796,8 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="email_notify_onsnatch" id="email_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_NOTIFY_ONSNATCH)]}/>
-                                    <label for="email_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+                                    <input type="checkbox" name="email_notify_snatch" id="email_notify_snatch" ${('', 'checked="checked"')[bool(get_config('email', 'snatch'))]}/>
+                                    <label for="email_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
 
@@ -2805,8 +2806,8 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="email_notify_ondownload" id="email_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_NOTIFY_ONDOWNLOAD)]}/>
-                                    <label for="email_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                    <input type="checkbox" name="email_notify_download" id="email_notify_download" ${('', 'checked="checked"')[bool(get_config('email', 'download'))]}/>
+                                    <label for="email_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
 
@@ -2815,7 +2816,7 @@
                                     <label class="component-title">${_('Notify on postprocess')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="email_notify_onpostprocess" id="email_notify_onpostprocess" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_NOTIFY_ONPOSTPROCESS)]}/>
+                                    <input type="checkbox" name="email_notify_onpostprocess" id="email_notify_onpostprocess" ${('', 'checked="checked"')[bool(get_config('email', 'onpostprocess'))]}/>
                                     <label for="email_notify_onpostprocess">${_('send a notification when a postprocessing finishes?')}</label>
                                 </div>
                             </div>
@@ -2825,8 +2826,8 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="email_notify_onsubtitledownload" id="email_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
-                                    <label for="email_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                    <input type="checkbox" name="email_notify_subtitle" id="email_notify_subtitle" ${('', 'checked="checked"')[bool(get_config('email', 'subtitle'))]}/>
+                                    <label for="email_notify_subtitle">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
 
@@ -3059,7 +3060,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="slack_notify_snatch" id="slack_notify_snatch" ${('', 'checked="checked"')[bool(sickbeard.SLACK_NOTIFY_SNATCH)]}/>
+                                    <input type="checkbox" name="slack_notify_snatch" id="slack_notify_snatch" ${('', 'checked="checked"')[bool(get_config('slack', 'snatch'))]}/>
                                     <label for="slack_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -3069,7 +3070,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="slack_notify_download" id="slack_notify_download" ${('', 'checked="checked"')[bool(sickbeard.SLACK_NOTIFY_DOWNLOAD)]}/>
+                                    <input type="checkbox" name="slack_notify_download" id="slack_notify_download" ${('', 'checked="checked"')[bool(get_config('slack', 'download'))]}/>
                                     <label for="slack_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -3079,7 +3080,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="slack_notify_subtitledownload" id="clack_notify_subtitledownload" ${('', 'checked="checked"')[bool(sickbeard.SLACK_NOTIFY_SUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="slack_notify_subtitledownload" id="clack_notify_subtitledownload" ${('', 'checked="checked"')[bool(get_config('clack', 'subtitledownload'))]}/>
                                     <label for="slack_notify_subtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -3152,7 +3153,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="rocketchat_notify_snatch" id="rocketchat_notify_snatch" ${('', 'checked="checked"')[bool(sickbeard.ROCKETCHAT_NOTIFY_SNATCH)]}/>
+                                    <input type="checkbox" name="rocketchat_notify_snatch" id="rocketchat_notify_snatch" ${('', 'checked="checked"')[bool(get_config('rocketchat', 'snatch'))]}/>
                                     <label for="rocketchat_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -3161,7 +3162,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="rocketchat_notify_download" id="rocketchat_notify_download" ${('', 'checked="checked"')[bool(sickbeard.ROCKETCHAT_NOTIFY_DOWNLOAD)]}/>
+                                    <input type="checkbox" name="rocketchat_notify_download" id="rocketchat_notify_download" ${('', 'checked="checked"')[bool(get_config('rocketchat', 'download'))]}/>
                                     <label for="rocketchat_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -3170,7 +3171,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="rocketchat_notify_subtitledownload" id="rocketchat_notify_subtitledownload" ${('', 'checked="checked"')[bool(sickbeard.ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="rocketchat_notify_subtitledownload" id="rocketchat_notify_subtitledownload" ${('', 'checked="checked"')[bool(get_config('rocketchat', 'subtitledownload'))]}/>
                                     <label for="rocketchat_notify_subtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -3242,7 +3243,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="matrix_notify_snatch" id="matrix_notify_snatch" ${('', 'checked="checked"')[bool(sickbeard.MATRIX_NOTIFY_SNATCH)]}/>
+                                    <input type="checkbox" name="matrix_notify_snatch" id="matrix_notify_snatch" ${('', 'checked="checked"')[bool(get_config('matrix', 'snatch'))]}/>
                                     <label for="matrix_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -3252,7 +3253,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="matrix_notify_download" id="matrix_notify_download" ${('', 'checked="checked"')[bool(sickbeard.MATRIX_NOTIFY_DOWNLOAD)]}/>
+                                    <input type="checkbox" name="matrix_notify_download" id="matrix_notify_download" ${('', 'checked="checked"')[bool(get_config('matrix', 'download'))]}/>
                                     <label for="matrix_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -3262,7 +3263,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="matrix_notify_subtitledownload" id="matrix_notify_subtitledownload" ${('', 'checked="checked"')[bool(sickbeard.MATRIX_NOTIFY_SUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="matrix_notify_subtitledownload" id="matrix_notify_subtitledownload" ${('', 'checked="checked"')[bool(get_config('matrix', 'subtitledownload'))]}/>
                                     <label for="matrix_notify_subtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -3363,7 +3364,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="discord_notify_snatch" id="discord_notify_snatch" ${('', 'checked="checked"')[bool(sickbeard.DISCORD_NOTIFY_SNATCH)]}/>
+                                    <input type="checkbox" name="discord_notify_snatch" id="discord_notify_snatch" ${('', 'checked="checked"')[bool(get_config('discord', 'snatch'))]}/>
                                     <label for="discord_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -3373,7 +3374,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="discord_notify_download" id="discord_notify_download" ${('', 'checked="checked"')[bool(sickbeard.DISCORD_NOTIFY_DOWNLOAD)]}/>
+                                    <input type="checkbox" name="discord_notify_download" id="discord_notify_download" ${('', 'checked="checked"')[bool(get_config('discord', 'download'))]}/>
                                     <label for="discord_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>

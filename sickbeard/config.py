@@ -1175,9 +1175,9 @@ class ConfigMigrator(object):
     def _migrate_v6(self):
         sickbeard.USE_KODI = check_setting_bool(self.config_obj, 'XBMC', 'use_xbmc')
         sickbeard.KODI_ALWAYS_ON = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_always_on', True)
-        sickbeard.KODI_NOTIFY_ONSNATCH = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_notify_onsnatch')
-        sickbeard.KODI_NOTIFY_ONDOWNLOAD = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_notify_ondownload')
-        sickbeard.KODI_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_notify_onsubtitledownload')
+        sickbeard.KODI_NOTIFY_SNATCH = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_notify_snatch')
+        sickbeard.KODI_NOTIFY_DOWNLOAD = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_notify_download')
+        sickbeard.KODI_NOTIFY_SUBTITLE_DOWNLOAD = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_notify_subtitle_download')
         sickbeard.KODI_UPDATE_LIBRARY = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_update_library')
         sickbeard.KODI_UPDATE_FULL = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_update_full')
         sickbeard.KODI_UPDATE_ONLYFIRST = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_update_onlyfirst')

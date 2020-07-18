@@ -81,7 +81,7 @@ class SearchResult(object):
         self.version = result_dict.get('version')
         self.release_group = result_dict.get('release_group')
         self.quality = result_dict.get('quality')
-        self.provider = sickbeard.providers.getProviderModule(result_dict.get('provider')).provider
+        self.provider = sickchill.providers.media.manager[result_dict.get('provider')].plugin()
 
     @classmethod
     def make_result(cls, result_dict):
