@@ -49,11 +49,10 @@ from validate import Validator
 
 # First Party Imports
 import sickbeard
-import sickchill
-from sickbeard import db
-from sickbeard import databases
-from sickbeard.tv import TVEpisode, TVShow
 import sickbeard.tvcache
+import sickchill
+from sickbeard import databases, db
+from sickbeard.tv import TVEpisode, TVShow
 from sickchill.show.indexers import ShowIndexer
 
 # =================
@@ -113,7 +112,7 @@ sickbeard.NAMING_MULTI_EP = 1
 
 sickbeard.TV_DOWNLOAD_DIR = PROCESSING_DIR
 
-sickbeard.PROVIDER_ORDER = ["sick_beard_index"]
+sickbeard.PROVIDER_ORDER = ["rarbg"]
 
 sickbeard.PROG_DIR = os.path.abspath(os.path.join(TEST_DIR, '..'))
 sickbeard.DATA_DIR = TEST_DIR

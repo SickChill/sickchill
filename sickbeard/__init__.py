@@ -46,11 +46,10 @@ from sickchill.helper import setup_github
 from sickchill.system.Shutdown import Shutdown
 
 # Local Folder Imports
-from . import (dailysearcher, db, event_queue, helpers, image_cache, logger, naming, notifications_queue, post_processing_queue, properFinder, scene_exceptions,
-               scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker, versionChecker)
+from . import (dailysearcher, databases, db, event_queue, helpers, image_cache, logger, naming, notifications_queue, post_processing_queue, properFinder,
+               scene_exceptions, scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker, versionChecker)
 from .common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
 from .config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
-from . import databases
 from .numdict import NumDict
 
 setup_gettext()

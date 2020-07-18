@@ -17,4 +17,5 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
-__all__ = ["main", "cache", "failed"]
+# Local Folder Imports
+from . import cache, failed, main
