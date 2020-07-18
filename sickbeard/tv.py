@@ -26,6 +26,7 @@ import threading
 import time
 import traceback
 from sqlite3 import OperationalError
+from xml.etree import ElementTree
 
 # Third Party Imports
 import babelfish
@@ -37,22 +38,20 @@ from urllib3.exceptions import MaxRetryError, NewConnectionError
 # First Party Imports
 import sickbeard
 import sickchill
-# import guessit
 import sickchill.providers.metadata
 from sickchill.helper import glob
 from sickchill.helper.common import dateTimeFormat, episode_num, remove_extension, replace_extension, sanitize_filename, try_int
 from sickchill.helper.exceptions import (EpisodeDeletedException, EpisodeNotFoundException, MultipleEpisodesInDatabaseException, MultipleShowObjectsException,
                                          MultipleShowsInDatabaseException, NoNFOException, ShowDirectoryNotFoundException, ShowNotFoundException)
+from sickchill.providers import notifications
 from sickchill.show.Show import Show
 
 # Local Folder Imports
-from . import db, helpers, logger, network_timezones, notifiers, postProcessor, subtitles
+from . import db, helpers, logger, network_timezones, postProcessor, subtitles
 from .blackandwhitelist import BlackAndWhiteList
 from .common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
                      NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN, WANTED)
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-
-from xml.etree import ElementTree as etree
 
 try:
     # Third Party Imports
@@ -63,7 +62,6 @@ except ImportError:
             os.remove(path)
         elif os.path.isdir(path):
             shutil.rmtree(path)
-
 
 def dirty_setter(attr_name):
     def wrapper(self, val):
@@ -360,7 +358,7 @@ class TVShow(object):
             return False
 
         logger.debug(str(self.indexerid) + ": Writing NFOs for show")
-        for cur_provider in sickchill.providers.metadata.metadata.extensions:
+        for cur_provider in sickchill.providers.metadata.manager.extensions:
             result = cur_provider.plugin().create_show_metadata(self) or result
 
         return result
@@ -410,7 +408,7 @@ class TVShow(object):
             return False
 
         logger.info(str(self.indexerid) + ": Updating NFOs for show with new indexer info")
-        for cur_provider in sickchill.providers.metadata.metadata.extensions:
+        for cur_provider in sickchill.providers.metadata.manager.extensions:
             instance = cur_provider.plugin()
             result = instance.update_show_indexer_metadata(self) or result
 
@@ -566,7 +564,7 @@ class TVShow(object):
         fanart_result = poster_result = banner_result = False
         season_posters_result = season_banners_result = season_all_poster_result = season_all_banner_result = False
 
-        for cur_provider in sickchill.providers.metadata.metadata.extensions:
+        for cur_provider in sickchill.providers.metadata.manager.extensions:
 
             # logger.debug("Running metadata routines for " + cur_provider.name)
 
@@ -1007,9 +1005,9 @@ class TVShow(object):
             except OSError as error:
                 logger.warning('Unable to {0} {1}: {2}'.format(action, self._location, error))
 
-        if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+        if notifications.get_config('trakt', 'enable') and notifications.get_config('trakt', 'sync_watchlist'):
             logger.debug("Removing show: indexerid " + str(self.indexerid) + ", Title " + str(self.name) + " from Watchlist")
-            notifiers.trakt_notifier.update_watchlist(self, update="remove")
+            notifications.manager['trakt'].update_watchlist(self, update="remove")
 
     def populateCache(self):
         logger.debug("Checking & filling cache for show " + self.name)
@@ -1411,7 +1409,7 @@ class TVEpisode(object):
                        (id=self.show.indexerid, subtitles=subtitle_list, show=self.show.name,
                         ep=episode_num(self.season, self.episode)))
 
-            notifiers.notify_subtitle_download(self.pretty_name(), subtitle_list)
+            notifications.notify_subtitle_download(self.pretty_name(), subtitle_list)
         else:
             logger.debug("{id}: No subtitles downloaded for {show} {ep}".format
                        (id=self.show.indexerid, show=self.show.name,
@@ -1429,7 +1427,7 @@ class TVEpisode(object):
 
         # check for nfo and tbn
         if os.path.isfile(self.location):
-            for cur_provider in sickchill.providers.metadata.metadata.extensions:
+            for cur_provider in sickchill.providers.metadata.manager.extensions:
                 instance = cur_provider.plugin()
                 if instance.episode_metadata:
                     new_result = instance._has_episode_metadata(self)
@@ -1692,7 +1690,7 @@ class TVEpisode(object):
 
             if os.path.isfile(nfoFile):
                 try:
-                    showXML = etree.ElementTree(file=nfoFile)
+                    showXML = ElementTree.ElementTree(file=nfoFile)
                 except (SyntaxError, ValueError) as error:
                     logger.exception("Error loading the NFO, backing up the NFO and skipping for now: " + str(error))
                     try:
@@ -1779,7 +1777,7 @@ class TVEpisode(object):
 
         result = False
 
-        for cur_provider in sickchill.providers.metadata.metadata.extensions:
+        for cur_provider in sickchill.providers.metadata.manager.extensions:
             instance = cur_provider.plugin()
             result = instance.create_episode_metadata(self) or result
             result = instance.update_episode_metadata(self) or result
@@ -1790,7 +1788,7 @@ class TVEpisode(object):
 
         result = False
 
-        for cur_provider in sickchill.providers.metadata.metadata.extensions:
+        for cur_provider in sickchill.providers.metadata.manager.extensions:
             instance = cur_provider.plugin()
             result = instance.create_episode_thumb(self) or result
 

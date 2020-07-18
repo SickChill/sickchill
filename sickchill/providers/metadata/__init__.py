@@ -30,7 +30,7 @@ manager = RegistrableExtensionManager('sickchill.providers.metadata', [
 
 
 def get_config(provider: str, key: str = ''):
-    result = manager[provider].plugin().__config
+    result = manager[provider].plugin()._config
     if key:
         result = result[key]
     return result

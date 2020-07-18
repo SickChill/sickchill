@@ -19,6 +19,7 @@
 # Stdlib Imports
 import datetime
 import os
+from xml.etree import ElementTree
 
 # First Party Imports
 import sickchill
@@ -27,8 +28,6 @@ from sickchill.helper.common import dateFormat, replace_extension
 
 # Local Folder Imports
 from . import mediabrowser
-
-from xml.etree import ElementTree
 
 
 class Metadata(mediabrowser.Metadata):

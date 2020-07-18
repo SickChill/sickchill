@@ -32,7 +32,7 @@ class Notifier(AbstractNotifier):
     A "notifier" for trakt.tv which keeps track of what has and hasn't been added to your library.
     """
     def __init__(self):
-        super().__init__('Trakt')
+        super().__init__('Trakt', extra_options=('timeout', 'enable'))
 
     def notify_snatch(self, name):
         pass

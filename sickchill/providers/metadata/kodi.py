@@ -18,6 +18,7 @@
 # Stdlib Imports
 import datetime
 import re
+from xml.etree import ElementTree
 
 # Third Party Imports
 from babelfish import Country
@@ -29,8 +30,6 @@ from sickchill.helper.common import dateFormat
 
 # Local Folder Imports
 from . import generic
-
-from xml.etree import ElementTree
 
 
 class Metadata(generic.GenericMetadata):

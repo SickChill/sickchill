@@ -27,11 +27,12 @@ import sickchill.config.mixin
 class AbstractNotifier(sickchill.config.mixin.ConfigMixin, metaclass=ABCMeta):
     def __init__(self, name: str, extra_options: tuple = tuple()):
         self.name = name
-        self.__options = ('enabled', 'snatch', 'download', 'subtitle', 'update', 'login', 'process')
+        self._options = ('enabled', 'snatch', 'download', 'subtitle', 'update', 'login', 'process')
         if extra_options:
-            self.__options += extra_options
+            self._options += extra_options
 
-        self.__config = sickbeard.CFG2['providers']['notifications'][self.name]
+        sickchill.config.assure_config(['providers', 'notifications', self.name])
+        self._config = sickbeard.CFG2['providers']['notifications'][self.name]
 
     @abstractmethod
     def notify_snatch(self, name: str):

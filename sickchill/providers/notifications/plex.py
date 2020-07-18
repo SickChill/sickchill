@@ -18,15 +18,13 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import re
+from xml.etree import ElementTree
 
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
 from sickbeard.helpers import getURL, make_session
 
-from xml.etree import ElementTree
-
-# Local Folder Imports
 # Local Folder Imports
 from .base import AbstractNotifier
 

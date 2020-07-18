@@ -29,10 +29,11 @@ import sickbeard
 from sickchill.clients import manager as client_manager
 from sickchill.helper.common import try_int
 from sickchill.helper.exceptions import AuthException
+from sickchill.providers import notifications
 from sickchill.providers.media.GenericProvider import GenericProvider
 
 # Local Folder Imports
-from . import common, db, failed_history, helpers, history, logger, notifiers, nzbget, nzbSplitter, sab, show_name_helpers, ui
+from . import common, db, failed_history, helpers, history, logger, nzbget, nzbSplitter, sab, show_name_helpers, ui
 from .common import MULTI_EP_RESULT, Quality, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
@@ -165,7 +166,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
         if curEpObj.status not in Quality.DOWNLOADED:
             try:
-                notifiers.notify_snatch("{0} from {1}".format(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN'), result.provider.name))
+                notifications.notify_snatch("{0} from {1}".format(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN'), result.provider.name))
             except Exception:
                 # Without this, when notification fail, it crashes the snatch thread and SR will
                 # keep snatching until notification is sent
@@ -173,12 +174,11 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
             trakt_data.append((curEpObj.season, curEpObj.episode))
 
-    data = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)
-
-    if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+    if notifications.get_config('trakt', 'enable') and notifications.get_config('trakt', 'sync_watchlist'):
         logger.debug("Add episodes, showid: indexerid " + str(result.show.indexerid) + ", Title " + str(result.show.name) + " to Traktv Watchlist")
+        data = notifications.manager['trakt'].trakt_episode_data_generate(trakt_data)
         if data:
-            notifiers.trakt_notifier.update_watchlist(result.show, data_episode=data, update="add")
+            notifications.manager['trakt'].update_watchlist(result.show, data_episode=data, update="add")
 
     if sql_l:
         main_db_con = db.DBConnection()

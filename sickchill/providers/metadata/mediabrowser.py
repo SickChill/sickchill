@@ -20,6 +20,7 @@
 import datetime
 import os
 import re
+from xml.etree import ElementTree
 
 # First Party Imports
 import sickbeard
@@ -29,8 +30,6 @@ from sickchill.helper.common import dateFormat, replace_extension
 
 # Local Folder Imports
 from . import generic
-
-from xml.etree import ElementTree
 
 
 class Metadata(generic.GenericMetadata):

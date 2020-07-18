@@ -4,6 +4,7 @@ import copy
 import io
 import logging
 import re
+from xml.etree import ElementTree
 from zipfile import is_zipfile, ZipFile
 
 # Third Party Imports
@@ -17,8 +18,6 @@ from subliminal.matches import guess_matches, sanitize
 from subliminal.providers import Provider
 from subliminal.subtitle import fix_line_ending, Subtitle
 from subliminal.video import Episode
-
-from xml.etree import ElementTree
 
 logger = logging.getLogger(__name__)
 

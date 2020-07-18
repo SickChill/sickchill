@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Stdlib Imports
 import bisect
+import io
 import json
 import logging
 import zipfile
 from collections import defaultdict
-import io
 
 # Third Party Imports
 from babelfish import Language

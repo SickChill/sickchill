@@ -15,12 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with aDBa.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-
-from xml.etree import ElementTree as etree
-
 from . import aniDBfileInfo as fileInfo
-
 
 
 class TvDBMap():

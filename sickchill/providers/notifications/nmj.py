@@ -19,16 +19,14 @@
 # Stdlib Imports
 import re
 import telnetlib
-import urllib.request
 import urllib.parse
+import urllib.request
+from xml.etree import ElementTree
 
 # First Party Imports
 import sickbeard
 from sickbeard import logger
 
-from xml.etree import ElementTree
-
-# Local Folder Imports
 # Local Folder Imports
 from .base import AbstractNotifier
 

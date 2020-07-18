@@ -34,16 +34,17 @@ from tornado.escape import xhtml_unescape
 # First Party Imports
 import adba
 import sickbeard
-from sickbeard import config, db, filters, helpers, logger, notifiers, sab, search_queue, subtitles as subtitle_module, ui
+from sickbeard import config, db, filters, helpers, logger, sab, search_queue, subtitles as subtitle_module, ui
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickbeard.common import cpu_presets, FAILED, IGNORED, Overview, Quality, SKIPPED, statusStrings, UNAIRED, WANTED
 from sickbeard.scene_numbering import (get_scene_absolute_numbering, get_scene_absolute_numbering_for_show, get_scene_numbering, get_scene_numbering_for_show,
                                        get_xem_absolute_numbering_for_show, get_xem_numbering_for_show, set_scene_numbering)
 from sickbeard.versionChecker import CheckVersion
+from sickchill import clients
 from sickchill.helper import try_int
 from sickchill.helper.common import pretty_file_size
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException
-from sickchill import clients
+from sickchill.providers import notifications
 from sickchill.providers.notifications.trakt import TraktAPI
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
@@ -249,7 +250,7 @@ class Home(WebRoot):
         freemobile_id = self.get_body_argument('freemobile_id')
         freemobile_apikey = filters.unhide(sickbeard.FREEMOBILE_APIKEY, self.get_body_argument('freemobile_apikey'))
 
-        result, message = notifiers.freemobile_notifier.test_notify(freemobile_id, freemobile_apikey)
+        result, message = notififcations.manager.freemobile_notifier.test_notify(freemobile_id, freemobile_apikey)
         if result:
             return _("SMS sent successfully")
         else:
@@ -258,7 +259,7 @@ class Home(WebRoot):
     def testTelegram(self):
         telegram_id = self.get_body_argument('telegram_id')
         telegram_apikey = filters.unhide(sickbeard.TELEGRAM_APIKEY, self.get_body_argument('telegram_apikey'))
-        result, message = notifiers.telegram_notifier.test_notify(telegram_id, telegram_apikey)
+        result, message = notifications.manager['telegram'].test_notify(telegram_id, telegram_apikey)
         if result:
             return _("Telegram notification succeeded. Check your Telegram clients to make sure it worked")
         else:
@@ -268,7 +269,7 @@ class Home(WebRoot):
         join_id = self.get_body_argument('join_id')
         join_apikey = filters.unhide(sickbeard.JOIN_APIKEY, self.get_body_argument('join_apikey'))
 
-        result, message = notifiers.join_notifier.test_notify(join_id, join_apikey)
+        result, message = notifications.manager['join'].test_notify(join_id, join_apikey)
         if result:
             return _("join notification succeeded. Check your join clients to make sure it worked")
         else:
@@ -280,7 +281,7 @@ class Home(WebRoot):
         # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         host = config.clean_host(host, default_port=23053)
-        result = notifiers.growl_notifier.test_notify(host, password)
+        result = notifications.manager['growl'].test_notify(host, password)
 
         pw_append = _(" with password") + ": " + password if password else ''
         if result:
@@ -292,7 +293,7 @@ class Home(WebRoot):
 
         prowl_api = self.get_query_argument('prowl_api')
         prowl_priority = self.get_query_argument('prowl_priority')
-        result = notifiers.prowl_notifier.test_notify(prowl_api, prowl_priority)
+        result = notifications.manager['prowl'].test_notify(prowl_api, prowl_priority)
         if result:
             return _("Test prowl notice sent successfully")
         else:
@@ -300,7 +301,7 @@ class Home(WebRoot):
 
     def testBoxcar2(self):
         accesstoken = self.get_query_argument('accesstoken')
-        result = notifiers.boxcar2_notifier.test_notify(accesstoken)
+        result = notifications.manager['boxcar2'].test_notify(accesstoken)
         if result:
             return _("Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure it worked")
         else:
@@ -310,7 +311,7 @@ class Home(WebRoot):
         userKey = self.get_query_argument('userKey')
         apiKey = self.get_query_argument('apiKey')
 
-        result = notifiers.pushover_notifier.test_notify(userKey, apiKey)
+        result = notifications.manager['pushover'].test_notify(userKey, apiKey)
         if result:
             return _("Pushover notification succeeded. Check your Pushover clients to make sure it worked")
         else:
@@ -319,12 +320,12 @@ class Home(WebRoot):
     @staticmethod
     def twitterStep1():
         # noinspection PyProtectedMember
-        return notifiers.twitter_notifier._get_authorization()
+        return notifications.manager['twitter']._get_authorization()
 
     def twitterStep2(self):
         key = self.get_query_argument('key')
         # noinspection PyProtectedMember
-        result = notifiers.twitter_notifier._get_credentials(key)
+        result = notifications.manager['twitter']._get_credentials(key)
         logger.info("result: " + str(result))
         if result:
             return _("Key verification successful")
@@ -334,7 +335,7 @@ class Home(WebRoot):
     @staticmethod
     def testTwitter():
 
-        result = notifiers.twitter_notifier.test_notify()
+        result = notifications.manager['twitter'].test_notify()
         if result:
             return _("Tweet successful, check your twitter to make sure it worked")
         else:
@@ -342,19 +343,19 @@ class Home(WebRoot):
 
     @staticmethod
     def testTwilio():
-        if not notifiers.twilio_notifier.account_regex.match(sickbeard.TWILIO_ACCOUNT_SID):
+        if not notifications.manager['twilio'].account_regex.match(sickbeard.TWILIO_ACCOUNT_SID):
             return _('Please enter a valid account sid')
 
-        if not notifiers.twilio_notifier.auth_regex.match(sickbeard.TWILIO_AUTH_TOKEN):
+        if not notifications.manager['twilio'].auth_regex.match(sickbeard.TWILIO_AUTH_TOKEN):
             return _('Please enter a valid auth token')
 
-        if not notifiers.twilio_notifier.phone_regex.match(sickbeard.TWILIO_PHONE_SID):
+        if not notifications.manager['twilio'].phone_regex.match(sickbeard.TWILIO_PHONE_SID):
             return _('Please enter a valid phone sid')
 
-        if not notifiers.twilio_notifier.number_regex.match(sickbeard.TWILIO_TO_NUMBER):
+        if not notifications.manager['twilio'].number_regex.match(sickbeard.TWILIO_TO_NUMBER):
             return _('Please format the phone number as "+1-###-###-####"')
 
-        result = notifiers.twilio_notifier.test_notify()
+        result = notifications.manager['twilio'].test_notify()
         if result:
             return _('Authorization successful and number ownership verified')
         else:
@@ -362,7 +363,7 @@ class Home(WebRoot):
 
     @staticmethod
     def testSlack():
-        result = notifiers.slack_notifier.test_notify()
+        result = notifications.manager['slack'].test_notify()
         if result:
             return _("Slack message successful")
         else:
@@ -370,7 +371,7 @@ class Home(WebRoot):
 
     @staticmethod
     def testRocketChat():
-        result = notifiers.rocketchat_notifier.test_notify()
+        result = notifications.manager['rocketchat'].test_notify()
         if result:
             return _("Rocket.Chat message successful")
         else:
@@ -378,7 +379,7 @@ class Home(WebRoot):
 
     @staticmethod
     def testMatrix():
-        result = notifiers.matrix_notifier.test_notify()
+        result = notifications.manager['matrix'].test_notify()
         if result:
             return _("Matrix message successful")
         else:
@@ -386,7 +387,7 @@ class Home(WebRoot):
 
     @staticmethod
     def testDiscord():
-        result = notifiers.discord_notifier.test_notify()
+        result = notifications.manager['discord'].test_notify()
         if result:
             return _("Discord message successful")
         else:
@@ -397,7 +398,7 @@ class Home(WebRoot):
         host = config.clean_hosts(self.get_query_argument('host'))
         password = filters.unhide(sickbeard.KODI_PASSWORD, self.get_query_argument('password'))
 
-        results = notifiers.kodi_notifier.test_notify(unquote_plus(host), username, password)
+        results = notifications.manager['kodi'].test_notify(unquote_plus(host), username, password)
         final_results = [
             _("Test KODI notice {result} to {kodi_host}").format(kodi_host=host, result=('failed', 'sent successfully')[result]) for host, result in results.items()]
 
@@ -412,7 +413,7 @@ class Home(WebRoot):
 
         finalResult = ''
         for curHost in [x.strip() for x in host.split(',')]:
-            curResult = notifiers.plex_notifier.test_notify_pht(unquote_plus(curHost), username, password)
+            curResult = notifications.manager['plex'].test_notify_pht(unquote_plus(curHost), username, password)
             if len(curResult.split(':')) > 2 and 'OK' in curResult.split(':')[2]:
                 finalResult += _('Successful test notice sent to Plex Home Theater ... {plex_clients}').format(plex_clients=unquote_plus(curHost))
             else:
@@ -428,12 +429,12 @@ class Home(WebRoot):
 
         username = self.get_query_argument('username')
         host = config.clean_hosts(self.get_query_argument('host'))
-        password = filters.unhide(sickbeard.PLEX_SERVER_PASSWORD, self.get_query_argument('password'))
+        password = filters.unhide(notifications.get_config('plex', 'server_password'), self.get_query_argument('password'))
         plex_server_token = self.get_query_argument('plex_server_token')
 
         finalResult = ''
 
-        curResult = notifiers.plex_notifier.test_notify_pms(unquote_plus(host), username, password, plex_server_token)
+        curResult = notifications.manager['plex'].test_notify_pms(unquote_plus(host), username, password, plex_server_token)
         if curResult is None:
             finalResult += _('Successful test of Plex Media Server(s) ... {plex_servers}').format(plex_servers=unquote_plus(host.replace(',', ', ')))
         elif curResult is False:
@@ -448,14 +449,14 @@ class Home(WebRoot):
 
     @staticmethod
     def testLibnotify():
-        if notifiers.libnotify_notifier.test_notify():
+        if notifications.manager['libnotify'].test_notify():
             return _("Tried sending desktop notification via libnotify")
-        return notifiers.libnotify_notifier.diagnose()
+        return notifications.manager['libnotify'].diagnose()
 
     def testEMBY(self):
         host = config.clean_url(self.get_query_argument('host'))
-        emby_apikey = filters.unhide(sickbeard.EMBY_APIKEY, self.get_query_argument('emby_apikey'))
-        result = notifiers.emby_notifier.test_notify(host, emby_apikey)
+        emby_apikey = filters.unhide(notifications.get_config('emby', 'api_key'), self.get_query_argument('emby_apikey'))
+        result = notifications.manager['emby'].test_notify(host, emby_apikey)
         if result:
             return _("Test notice sent successfully to {emby_host}").format(emby_host=unquote_plus(host))
         else:
@@ -466,7 +467,7 @@ class Home(WebRoot):
         database = self.get_body_argument('database')
         mount = self.get_body_argument('mount')
 
-        result = notifiers.nmj_notifier.test_notify(unquote_plus(host), database, mount)
+        result = notifications.manager['nmj'].test_notify(unquote_plus(host), database, mount)
         if result:
             return _("Successfully started the scan update")
         else:
@@ -474,10 +475,10 @@ class Home(WebRoot):
 
     def settingsNMJ(self):
         host = config.clean_host(self.get_body_argument('host'))
-        result = notifiers.nmj_notifier.notify_settings(unquote_plus(host))
+        result = notifications.manager['nmj'].notify_settings(unquote_plus(host))
         if result:
             return '{{"message": _("Got settings from {host}"), "database": "{database}", "mount": "{mount}"}}'.format(**{
-                "host": host, "database": sickbeard.NMJ_DATABASE, "mount": sickbeard.NMJ_MOUNT
+                "host": host, "database": notifications.get_config('nmj', 'database'), "mount": notifications.get_config('nmj', 'mount')
             })
         else:
             # noinspection PyPep8
@@ -485,7 +486,7 @@ class Home(WebRoot):
 
     def testNMJv2(self):
         host = config.clean_host(self.get_body_argument('host'))
-        result = notifiers.nmjv2_notifier.test_notify(unquote_plus(host))
+        result = notifications.manager['nmjv2'].test_notify(unquote_plus(host))
         if result:
             return _("Test notice sent successfully to {nmj2_host}").format(nmj2_host=unquote_plus(host))
         else:
@@ -495,10 +496,10 @@ class Home(WebRoot):
         host = config.clean_host(self.get_body_argument('host'))
         dbloc = self.get_body_argument('dbloc')
         instance = self.get_body_argument('instance')
-        result = notifiers.nmjv2_notifier.notify_settings(unquote_plus(host), dbloc, instance)
+        result = notifications.manager['nmj2'].notify_settings(unquote_plus(host), dbloc, instance)
         if result:
             return '{{"message": _("NMJ Database found at: {host}"), "database": "{database}"}}'.format(
-                **{"host": host, "database": sickbeard.NMJv2_DATABASE})
+                **{"host": host, "database": notifications.get_config('nmj2', 'database')})
         else:
             # noinspection PyPep8
             return '{{"message": _("Unable to find NMJ Database at location: {dbloc}. Is the right location selected and PCH running?"), "database": ""}}'.format(
@@ -508,7 +509,7 @@ class Home(WebRoot):
 
     def getTraktToken(self):
         trakt_pin = self.get_body_argument('trakt_pin')
-        trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
+        trakt_api = TraktAPI(notifications.get_config('trakt', 'timeout'))
         response = trakt_api.traktToken(trakt_pin)
         if response:
             return _("Trakt Authorized")
@@ -517,13 +518,13 @@ class Home(WebRoot):
     def testTrakt(self):
         username = self.get_body_argument('username')
         blacklist_name = self.get_body_argument('blacklist_name')
-        return notifiers.trakt_notifier.test_notify(username, blacklist_name)
+        return notifications.manager['trakt'].test_notify(username, blacklist_name)
 
     @staticmethod
     def loadShowNotifyLists():
 
         main_db_con = db.DBConnection()
-        rows = main_db_con.select("SELECT show_id, show_name, notify_list FROM tv_shows ORDER BY show_name ASC")
+        rows = main_db_con.select("SELECT show_id, show_name, notify_list FROM tv_shows ORDER BY show_name")
 
         data = {}
         size = 0
@@ -574,19 +575,19 @@ class Home(WebRoot):
         smtp_from = self.get_body_argument('smtp_from')
         use_tls = self.get_body_argument('use_tls')
         user = self.get_body_argument('user')
-        pwd = filters.unhide(sickbeard.EMAIL_PASSWORD, self.get_body_argument('pwd'))
+        pwd = filters.unhide(notifications.get_config('email', 'password'), self.get_body_argument('pwd'))
         to = self.get_body_argument('to')
 
         host = config.clean_host(self.get_body_argument('host'))
 
-        if notifiers.email_notifier.test_notify(host, port, smtp_from, use_tls, user, pwd, to):
+        if notifications.manager['email'].test_notify(host, port, smtp_from, use_tls, user, pwd, to):
             return _('Test email sent successfully! Check inbox.')
         else:
-            return _('ERROR: {last_error}').format(last_error=notifiers.email_notifier.last_err)
+            return _('ERROR: {last_error}').format(last_error=notifications.manager['email'].last_err)
 
     def testPushalot(self):
         authorizationToken = self.get_body_argument('authorizationToken')
-        result = notifiers.pushalot_notifier.test_notify(authorizationToken)
+        result = notifications.manager['pushalot'].test_notify(authorizationToken)
         if result:
             return _("Pushalot notification succeeded. Check your Pushalot clients to make sure it worked")
         else:
@@ -594,7 +595,7 @@ class Home(WebRoot):
 
     def testPushbullet(self):
         api = self.get_body_argument('api')
-        result = notifiers.pushbullet_notifier.test_notify(api)
+        result = notifications.manager['pushbullet'].test_notify(api)
         if result:
             return _("Pushbullet notification succeeded. Check your device to make sure it worked")
         else:
@@ -604,7 +605,7 @@ class Home(WebRoot):
         api = self.get_body_argument('api')
         # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
-        result = notifiers.pushbullet_notifier.get_devices(api)
+        result = notifications.manager['pushbullet'].get_devices(api)
         if result:
             return result
         else:
@@ -612,7 +613,7 @@ class Home(WebRoot):
 
     def getPushbulletChannels(self):
         api = self.get_body_argument('api')
-        result = notifiers.pushbullet_notifier.get_channels(api)
+        result = notifications.manager['pushbullet'].get_channels(api)
         if result:
             return result
         else:
@@ -1275,7 +1276,7 @@ class Home(WebRoot):
         else:
             host = sickbeard.KODI_HOST
 
-        if notifiers.kodi_notifier.update_library(show_name=showName):
+        if notifications.manager['kodi'].update_library(show_name=showName):
             ui.notifications.message(_("Library update command sent to KODI host(s)): {kodi_hosts}").format(kodi_hosts=host))
         else:
             ui.notifications.error(_("Unable to contact one or more KODI host(s)): {kodi_hosts}").format(kodi_hosts=host))
@@ -1286,7 +1287,7 @@ class Home(WebRoot):
             return self.redirect('/home/')
 
     def updatePLEX(self):
-        if None is notifiers.plex_notifier.update_library():
+        if None is notifications.manager['plex'].update_library():
             ui.notifications.message(_("Library update command sent to Plex Media Server host: {plex_server}").format
                                      (plex_server=sickbeard.PLEX_SERVER_HOST))
         else:
@@ -1300,7 +1301,7 @@ class Home(WebRoot):
         if show:
             show_obj = Show.find(sickbeard.showList, int(show))
 
-        if notifiers.emby_notifier.update_library(show_obj):
+        if notifications.manager['emby'].update_library(show_obj):
             ui.notifications.message(
                 _("Library update command sent to Emby host: {emby_host}").format(emby_host=sickbeard.EMBY_HOST))
         else:
@@ -1399,7 +1400,7 @@ class Home(WebRoot):
                         trakt_data.append((ep_obj.season, ep_obj.episode))
 
             if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
-                data = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)
+                data = notifications.manager['trakt'].trakt_episode_data_generate(trakt_data)
                 if data['seasons']:
                     upd = ""
                     if int(status) in [WANTED, FAILED]:
@@ -1415,7 +1416,7 @@ class Home(WebRoot):
                         upd = "remove"
 
                     if upd:
-                        notifiers.trakt_notifier.update_watchlist(show_obj, data_episode=data, update=upd)
+                        notifications.manager['trakt'].update_watchlist(show_obj, data_episode=data, update=upd)
 
             if sql_l:
                 main_db_con = db.DBConnection()
@@ -1701,7 +1702,7 @@ class Home(WebRoot):
             print('error')
             return json.dumps({'result': 'failure', 'errorMessage': error_msg})
 
-        sickbeard.notifiers.kodi_notifier.play_episode(ep_obj, host)
+        notifications.manager['kodi'].play_episode(ep_obj, host)
         return json.dumps({'result': 'success'})
 
     def retrySearchSubtitles(self, show, season, episode, lang):

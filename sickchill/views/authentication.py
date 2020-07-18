@@ -18,7 +18,8 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # First Party Imports
 import sickbeard
-from sickbeard import config, logger, notifiers
+from sickbeard import config, logger
+from sickchill.providers import notifications
 
 # Local Folder Imports
 from .common import PageTemplate
@@ -35,7 +36,7 @@ class LoginHandler(BaseHandler):
             self.finish(t.render(title=_("Login"), header=_("Login"), topmenu="login"))
 
     def post(self, next_=None):
-        notifiers.notify_login(self.request.remote_ip)
+        notifications.notify_login(self.request.remote_ip)
 
         if self.get_body_argument('username', None) == sickbeard.WEB_USERNAME and self.get_body_argument('password', None) == sickbeard.WEB_PASSWORD:
             remember_me = config.checkbox_to_value(self.get_body_argument('remember_me', 0))

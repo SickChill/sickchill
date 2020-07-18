@@ -20,6 +20,7 @@
 import datetime
 import os
 import re
+from xml.etree import ElementTree
 
 # First Party Imports
 from sickbeard import helpers, logger
@@ -27,8 +28,6 @@ from sickchill.helper.common import dateFormat, replace_extension
 
 # Local Folder Imports
 from . import generic
-
-from xml.etree import ElementTree
 
 
 class Metadata(generic.GenericMetadata):
@@ -44,31 +43,8 @@ class Metadata(generic.GenericMetadata):
     show_root/Season ##/filename.xml        (episode metadata)
     """
 
-    def __init__(self,
-                 show_metadata=False,
-                 episode_metadata=False,
-                 fanart=False,
-                 poster=False,
-                 banner=False,
-                 episode_thumbnails=False,
-                 season_posters=False,
-                 season_banners=False,
-                 season_all_poster=False,
-                 season_all_banner=False):
-
-        generic.GenericMetadata.__init__(self,
-                                         show_metadata,
-                                         episode_metadata,
-                                         fanart,
-                                         poster,
-                                         banner,
-                                         episode_thumbnails,
-                                         season_posters,
-                                         season_banners,
-                                         season_all_poster,
-                                         season_all_banner)
-
-        self.name = 'WDTV'
+    def __init__(self):
+        super().__init__('WDTV', extra_options=('episode', 'poster', 'episode_thumb', 'season_poster'))
 
         self._ep_nfo_extension = 'xml'
 

@@ -30,9 +30,10 @@ import traceback
 # First Party Imports
 import sickbeard
 from sickchill.helper import glob
+from sickchill.providers import notifications
 
 # Local Folder Imports
-from . import db, helpers, logger, notifiers, ui
+from . import db, helpers, logger, ui
 
 
 class CheckVersion(object):
@@ -643,7 +644,7 @@ class GitUpdateManager(UpdateManager):
             self.clean_libs()
 
             # Notify update successful
-            notifiers.notify_git_update(sickbeard.CUR_COMMIT_HASH or "")
+            notifications.notify_git_update(sickbeard.CUR_COMMIT_HASH or "")
             return True
         else:
             return False
@@ -885,7 +886,7 @@ class SourceUpdateManager(UpdateManager):
         self.clean_libs()
 
         # Notify update successful
-        notifiers.notify_git_update(sickbeard.CUR_COMMIT_HASH or "")
+        notifications.notify_git_update(sickbeard.CUR_COMMIT_HASH or "")
         return True
 
     def clean_libs(self):

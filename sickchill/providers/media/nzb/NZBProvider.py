@@ -21,6 +21,8 @@ import sickbeard
 from sickbeard import logger
 from sickbeard.classes import NZBSearchResult
 from sickchill.helper.common import try_int
+
+# Local Folder Imports
 from ..GenericProvider import GenericProvider
 
 

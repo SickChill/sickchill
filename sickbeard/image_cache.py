@@ -345,7 +345,7 @@ class ImageCache(object):
         # check the show dir for poster or banner images and use them
         if need_images[self.POSTER] or need_images[self.BANNER] or need_images[self.FANART]:
             try:
-                for cur_provider in sickchill.providers.metadata.metadata.extensions:
+                for cur_provider in sickchill.providers.metadata.manager.extensions:
                     instance = cur_provider.plugin()
                     logger.debug("[{}] Checking if we can use images from {} metadata".format(show_obj.indexerid, instance.name))
 

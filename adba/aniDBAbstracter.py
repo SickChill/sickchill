@@ -22,9 +22,7 @@ from . import aniDBfileInfo as fileInfo
 from .aniDBmaper import AniDBMaper
 from .aniDBtvDBmaper import TvDBMap
 from .aniDBerrors import *
-from .aniDBfileInfo import read_anidb_xml, read_tvdb_map_xml
-
-from xml.etree import ElementTree as etree
+from .aniDBfileInfo import read_anidb_xml
 
 
 class aniDBabstractObject(object):

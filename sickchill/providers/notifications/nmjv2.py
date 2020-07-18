@@ -21,16 +21,13 @@
 import time
 # noinspection PyUnresolvedReferences
 import urllib.request
-
 from xml.dom.minidom import parseString
+from xml.etree import ElementTree
 
 # First Party Imports
 import sickbeard
 from sickbeard import logger
 
-from xml.etree import ElementTree
-
-# Local Folder Imports
 # Local Folder Imports
 from .base import AbstractNotifier
 

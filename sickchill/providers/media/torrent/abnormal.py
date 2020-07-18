@@ -28,6 +28,8 @@ from requests.utils import dict_from_cookiejar
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickchill.helper.common import convert_size, try_int
+
+# Local Folder Imports
 from .TorrentProvider import TorrentProvider
 
 

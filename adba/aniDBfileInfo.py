@@ -22,7 +22,7 @@ import os
 import time
 from functools import reduce
 
-from xml.etree import ElementTree as etree
+from xml.etree import ElementTree
 
 # http://www.radicand.org/blog/orz/2010/2/21/edonkey2000-hash-in-python/
 import requests
@@ -128,4 +128,4 @@ def read_xml_into_etree(filePath):
         return None
 
     with open(filePath, "r") as f:
-        return etree.ElementTree(file=f)
+        return ElementTree(file=f)

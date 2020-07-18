@@ -20,6 +20,7 @@
 import os
 import re
 from typing import Union
+from xml.etree import ElementTree
 
 # Third Party Imports
 import fanart
@@ -36,8 +37,6 @@ from sickchill.helper.common import replace_extension, try_int
 
 # Local Folder Imports
 from . import helpers as metadata_helpers
-
-from xml.etree import ElementTree
 
 
 class GenericMetadata(sickchill.config.mixin.ConfigMixin):
@@ -58,7 +57,7 @@ class GenericMetadata(sickchill.config.mixin.ConfigMixin):
 
     def __init__(self, name: str, extra_options: tuple = tuple([''])):
 
-        self.__options = extra_options
+        self._options = extra_options
 
         self.name = name
 
@@ -73,7 +72,7 @@ class GenericMetadata(sickchill.config.mixin.ConfigMixin):
         self.season_all_banner_name = "season-all-banner.jpg"
 
         sickchill.config.assure_config(['providers', 'metadata', self.name])
-        self.__config = sickbeard.CFG2['providers']['metadata'][self.name]
+        self._config = sickbeard.CFG2['providers']['metadata'][self.name]
 
     def get_id(self):
         name_id = re.sub(r"[+]", "plus", self.name)
@@ -194,14 +193,14 @@ class GenericMetadata(sickchill.config.mixin.ConfigMixin):
     def get_season_all_banner_path(self, show_obj):
         return os.path.join(show_obj.location, self.season_all_banner_name)
 
-    def _show_data(self, show_obj) -> Union[ElementTree, None]:
+    def _show_data(self, show_obj) -> Union[type(ElementTree), None]:
         """
         This should be overridden by the implementing class. It should
         provide the content of the show metadata file.
         """
         return None
 
-    def _ep_data(self, ep_obj) -> Union[ElementTree, None]:
+    def _ep_data(self, ep_obj) -> Union[type(ElementTree), None]:
         """
         This should be overridden by the implementing class. It should
         provide the content of the episode metadata file.

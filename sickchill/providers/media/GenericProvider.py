@@ -23,24 +23,25 @@ from datetime import datetime
 from itertools import chain
 from os.path import join
 from random import shuffle
-from typing import Union, Tuple
+from typing import Tuple, Union
 
 # Third Party Imports
 from requests.utils import add_dict_to_cookiejar
 
 # First Party Imports
 import sickbeard
+import sickchill
 from sickbeard import logger
-from sickbeard.tv import TVShow
 from sickbeard.classes import Proper, SearchResult
 from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT
 from sickbeard.db import DBConnection
 from sickbeard.helpers import download_file, getURL, make_session, remove_file_failed
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickbeard.show_name_helpers import allPossibleShowNames
+from sickbeard.tv import TVShow
 from sickbeard.tvcache import TVCache
-from sickchill.helper.common import sanitize_filename
 from sickchill.config.mixin import ConfigMixin
+from sickchill.helper.common import sanitize_filename
 
 
 class GenericProvider(ConfigMixin):
@@ -86,10 +87,11 @@ class GenericProvider(ConfigMixin):
 
         self.ability_status = self.PROVIDER_OK
 
-        self.__options: tuple = tuple(['enabled'])
-        self.__options += extra_options
+        self._options: tuple = tuple(['enabled'])
+        self._options += extra_options
 
-        self.__config = sickbeard.CFG2['providers']['media'][self.provider_type][self.name]
+        sickchill.config.assure_config(['providers', 'media', self.provider_type, self.name])
+        self._config = sickbeard.CFG2['providers']['media'][self.provider_type][self.name]
 
         shuffle(self.bt_cache_urls)
 

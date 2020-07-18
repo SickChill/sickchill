@@ -30,11 +30,12 @@ import sickchill
 from sickchill.helper.common import sanitize_filename
 from sickchill.helper.exceptions import (CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, EpisodeDeletedException,
                                          MultipleShowObjectsException, ShowDirectoryNotFoundException)
+from sickchill.providers import notifications
 from sickchill.providers.notifications.trakt import TraktAPI
 from sickchill.show.Show import Show
 
 # Local Folder Imports
-from . import generic_queue, logger, name_cache, notifiers, scene_numbering, ui
+from . import generic_queue, logger, name_cache, scene_numbering, ui
 from .blackandwhitelist import BlackAndWhiteList
 from .common import WANTED
 from .helpers import chmodAsParent, makeDir, sortable_name
@@ -488,16 +489,16 @@ class QueueItemAdd(ShowQueueItem):
 
         self.show.flushEpisodes()
 
-        if sickbeard.USE_TRAKT:
+        if notifications.get_config('trakt', 'enable'):
             # if there are specific episodes that need to be added by trakt
             sickbeard.traktCheckerScheduler.action.manageNewShow(self.show)
             # add show to trakt.tv library
-            if sickbeard.TRAKT_SYNC:
+            if notifications.get_config('trakt', 'sync'):
                 sickbeard.traktCheckerScheduler.action.addShowToTraktLibrary(self.show)
 
-            if sickbeard.TRAKT_SYNC_WATCHLIST:
+            if notifications.get_config('trakt', 'sync_watchlist'):
                 logger.info('update watchlist')
-                notifiers.trakt_notifier.update_watchlist(show_obj=self.show)
+                notifications.manager['trakt'].update_watchlist(show_obj=self.show)
 
         # Load XEM data to DB for show
         scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=True)
@@ -707,27 +708,7 @@ class QueueItemRemove(ShowQueueItem):
 
         # If any notification fails, don't stop removal
         try:
-            # TODO: ep_obj is undefined here, so all of these will fail.
-            # send notifications
-            # notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
-
-            # do the library update for KODI
-            notifiers.kodi_notifier.update_library(self.show.name)
-
-            # do the library update for Plex
-            notifiers.plex_notifier.update_library(self.show)
-
-            # do the library update for EMBY
-            notifiers.emby_notifier.update_library(self.show)
-
-            # do the library update for NMJ
-            # nmj_notifier kicks off its library update when the notify_download is issued (inside notifiers)
-
-            # do the library update for Synology Indexer
-            notifiers.synoindex_notifier.addFolder(self.show._location)
-
-            # do the library update for pyTivo
-            notifiers.pytivo_notifier.update_library(self.show)
+            notifications.update_library(self.show)
         except Exception:
             logger.info(_("Some notifications could not be sent. Continuing removal of {}...").format(self.show.name))
 
