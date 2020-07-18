@@ -22,8 +22,10 @@ import datetime
 import threading
 import time
 
-# First Party Imports
+# Third Party Imports
 import adba
+
+# First Party Imports
 import sickbeard
 import sickchill
 

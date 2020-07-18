@@ -24,7 +24,6 @@ from twilio.base.exceptions import TwilioRestException
 from twilio.rest import TwilioRestClient
 
 # First Party Imports
-import sickbeard
 from sickbeard import common, logger
 
 # Local Folder Imports

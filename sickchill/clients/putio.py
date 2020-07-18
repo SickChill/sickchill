@@ -24,13 +24,13 @@ from sickchill.clients.generic import GenericClient
 
 
 class Client(GenericClient):
-    def __init__(self, host=None, username=None, password=None):
+    def __init__(self):
 
-        super(Client, self).__init__('put.io', host, username, password)
+        super().__init__('put.io', extra_options=('host', 'username', 'password'))
         self.url = 'https://api.put.io/login'
 
     def _get_auth(self):
-        client = PutioClient(self.password)
+        client = PutioClient(self.config('password'))
         try:
             client.Account.info()
         except ClientError as error:
@@ -44,9 +44,9 @@ class Client(GenericClient):
     @property
     def _parent_id(self):
         parent_id = 0
-        if self.username is not None and self.username != '':
+        if self.config('username') is not None and self.config('username') != '':
             for f in self.auth.File.list():
-                if f.name == self.username:
+                if f.name == self.config('username'):
                     parent_id = f.id
                     break
 

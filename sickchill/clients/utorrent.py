@@ -28,12 +28,12 @@ from sickchill.clients.generic import GenericClient
 
 
 class Client(GenericClient):
-    def __init__(self, host=None, username=None, password=None):
+    def __init__(self):
         """
         Initializes the utorrent client class and sets the url, username, and password
         """
-        super(Client, self).__init__('uTorrent', host, username, password)
-        self.url = urljoin(self.host, 'gui/')
+        super().__init__('uTorrent', extra_options=('host', 'username', 'password'))
+        self.url = urljoin(self.config('host'), 'gui/')
 
     def _request(self, method='get', params=None, data=None, files=None, cookies=None):
         """
@@ -81,7 +81,7 @@ class Client(GenericClient):
         Sets a label on an existing torrent in the client
         params: :result: an instance of the searchResult class
         """
-        label = sickbeard.TORRENT_LABEL_ANIME or sickbeard.TORRENT_LABEL if result.show.is_anime else sickbeard.TORRENT_LABEL
+        label = self.config('label_anime') or self.config('label') if result.show.is_anime else self.config('label')
         params = {
             'action': 'setprops',
             'hash': result.hash,
@@ -120,7 +120,7 @@ class Client(GenericClient):
         Sets the amount of time a torrent that exists in the client should seed for
         params: :result: an instance of the searchResult class
         """
-        if not sickbeard.TORRENT_SEED_TIME:
+        if not self.config('seed_time'):
             return True
 
         params = {
@@ -136,7 +136,7 @@ class Client(GenericClient):
             'action': 'setprops',
             'hash': result.hash,
             's': 'seed_time',
-            'v': 3600 * float(sickbeard.TORRENT_SEED_TIME)
+            'v': 3600 * float(self.config('seed_time'))
         }
         return self._request(params=params)
 
@@ -157,7 +157,7 @@ class Client(GenericClient):
         params: :result: an instance of the searchResult class
         """
         params = {
-            'action': 'pause' if sickbeard.TORRENT_PAUSED else 'start',
+            'action': 'pause' if self.config('add_paused') else 'start',
             'hash': result.hash
         }
         return self._request(params=params)

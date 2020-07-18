@@ -35,12 +35,12 @@ setup_lib_path()
 # Third Party Imports
 import rarfile
 import requests
+from adba import Connection as AniDBConnection
 from configobj import ConfigObj
 from tornado.locale import load_gettext_translations
 
 # First Party Imports
 import sickchill
-from adba import Connection as AniDBConnection
 from sickchill import show_updater
 from sickchill.helper import setup_github
 from sickchill.system.Shutdown import Shutdown
@@ -111,7 +111,7 @@ gh = None
 
 # schedulers
 dailySearchScheduler: scheduler.Scheduler
-backlogSearchScheduler: scheduler.Scheduler
+backlogSearchScheduler: searchBacklog.BacklogSearchScheduler
 showUpdateScheduler: scheduler.Scheduler
 versionCheckScheduler: scheduler.Scheduler
 showQueueScheduler: scheduler.Scheduler

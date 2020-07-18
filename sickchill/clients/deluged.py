@@ -25,32 +25,30 @@ from deluge_client import DelugeRPCClient, FailedToReconnectException
 from requests.compat import urlparse
 
 # First Party Imports
-import sickbeard
 from sickbeard import logger
-from sickchill.clients.generic import GenericClient
 
 # Local Folder Imports
 from .__deluge_base import DelugeBase
 
 
-class Client(GenericClient, DelugeBase):
-    def __init__(self, host=None, username=None, password=None):
-        super(Client, self).__init__('DelugeD', host, username, password)
+class Client(DelugeBase):
+    def __init__(self):
+        super().__init__('DelugeD', extra_options=('host', 'username', 'password'))
         self.client = None
 
     def setup(self):
-        parsed_url = urlparse(self.host)
+        parsed_url = urlparse(self.config('host'))
         if self.client and all(
             [
                 self.client.host == parsed_url.hostname,
                 self.client.port == parsed_url.port,
-                self.client.username == self.username,
-                self.client.password == self.password
+                self.client.username == self.config('username'),
+                self.client.password == self.config('password')
             ]
         ):
             return
 
-        self.client = DelugeRPCClient(parsed_url.hostname, parsed_url.port or 58846, self.username, self.password)
+        self.client = DelugeRPCClient(parsed_url.hostname, parsed_url.port or 58846, self.config('username'), self.config('password'))
 
     def _get_auth(self):
         self.setup()
@@ -89,9 +87,9 @@ class Client(GenericClient, DelugeBase):
 
     def _set_torrent_label(self, result):
         # No option for this built into the rpc, because it is a plugin
-        label = sickbeard.TORRENT_LABEL.lower()
+        label = self.config('label').lower()
         if result.show.is_anime:
-            label = sickbeard.TORRENT_LABEL_ANIME.lower()
+            label = self.config('label_anime').lower()
         if ' ' in label:
             logger.exception(self.name + ': Invalid label. Label must not contain a space')
             return False

@@ -25,8 +25,7 @@ import os
 import re
 import time
 import traceback
-# noinspection PyUnresolvedReferences
-import urllib
+import urllib.parse
 
 # Third Party Imports
 from tornado.web import RequestHandler
@@ -132,8 +131,8 @@ class ApiHandler(RequestHandler):
         # noinspection PyBroadException
         try:
             self.finish(output_callback(out_dict))
-        except Exception:
-            paencodess
+        except Exception as error:
+            logger.error(error)
 
     def _out_as_image(self, _dict):
         self.set_header('Content-Type', sickbeard.IMAGE_CACHE.content_type(_dict['image']))

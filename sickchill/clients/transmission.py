@@ -21,15 +21,14 @@ import json
 from base64 import b64encode
 
 # First Party Imports
-import sickbeard
 from sickchill.clients.generic import GenericClient
 
 
 class Client(GenericClient):
-    def __init__(self, host=None, username=None, password=None):
+    def __init__(self):
 
-        super(Client, self).__init__('Transmission', host, username, password)
-        self.url = '/'.join((self.host.rstrip('/'), sickbeard.TORRENT_RPCURL.strip('/'), 'rpc'))
+        super().__init__('Transmission', extra_options=('host', 'username', 'password'))
+        self.url = '/'.join((self.config('host').rstrip('/'), self.config('rpc_url').strip('/'), 'rpc'))
 
     def _get_auth(self):
 
@@ -37,7 +36,7 @@ class Client(GenericClient):
 
         try:
             self.response = self.session.post(self.url, data=post_data, timeout=120,
-                                              verify=sickbeard.TORRENT_VERIFY_CERT)
+                                              verify=self.config('ssl_verify'))
             self.auth = self.response.headers['X-Transmission-Session-Id']
         except Exception:
             return None
@@ -60,21 +59,20 @@ class Client(GenericClient):
         self._request(method='post', data=self.__make_post(result, method='file'))
         return self.response.json()['result'] == "success"
 
-    @staticmethod
-    def __make_post(result, method='file'):
+    def __make_post(self, result, method='file'):
         arguments = {
-            'paused': int(sickbeard.TORRENT_PAUSED)
+            'paused': int(self.config('add_paused'))
         }
         if method == 'file':
             arguments.update({'metainfo': b64encode(result.content)})
         else:
             arguments.update({'filename': result.url})
 
-        if sickbeard.TORRENT_PATH:
-            arguments['download-dir'] = sickbeard.TORRENT_PATH
+        if self.config('torrent_path'):
+            arguments['download-dir'] = self.config('torrent_path')
 
-        if sickbeard.TORRENT_PATH_INCOMPLETE:
-            arguments['incomplete-dir'] = sickbeard.TORRENT_PATH_INCOMPLETE
+        if self.config('incomplete_path'):
+            arguments['incomplete-dir'] = self.config('incomplete_path')
             arguments['incomplete-enabled'] = 1
 
         ratio = None
@@ -92,8 +90,8 @@ class Client(GenericClient):
 
         arguments.update({'seedRatioLimit': ratio, 'seedRatioMode': mode})
 
-        if sickbeard.TORRENT_SEED_TIME and sickbeard.TORRENT_SEED_TIME != -1:
-            time = int(60 * float(sickbeard.TORRENT_SEED_TIME))
+        if self.config('seed_time') and self.config('seed_time') != -1:
+            time = int(60 * float(self.config('seed_time')))
             arguments.update({'seedIdleLimit': time, 'seedIdleMode': 1})
 
         if result.priority == -1:
@@ -103,7 +101,7 @@ class Client(GenericClient):
             arguments['priority-high'] = []
             # move torrent to the top if the queue
             arguments['queuePosition'] = 0
-            if sickbeard.TORRENT_HIGH_BANDWIDTH:
+            if self.config('download_priority'):
                 arguments['bandwidthPriority'] = 1
         else:
             arguments['priority-normal'] = []

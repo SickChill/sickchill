@@ -21,17 +21,17 @@ from sickchill.clients.generic import GenericClient
 
 
 class Client(GenericClient):
-    def __init__(self, host=None, username=None, password=None):
+    def __init__(self):
 
-        super(Client, self).__init__('mlnet', host, username, password)
+        super().__init__('mlnet', extra_options=('host', 'username', 'password'))
 
-        self.url = self.host
-        # self.session.auth = HTTPDigestAuth(self.username, self.password);
+        self.url = self.config('host')
+        # self.session.auth = HTTPDigestAuth(self.config('username'), self.config('password'));
 
     def _get_auth(self):
 
         try:
-            self.response = self.session.get(self.host, verify=False)
+            self.response = self.session.get(self.config('host'), verify=False)
             self.auth = self.response.content
         except Exception:
             return None
@@ -40,12 +40,12 @@ class Client(GenericClient):
 
     def _add_torrent_uri(self, result):
 
-        self.url = self.host + 'submit'
+        self.url = self.config('host') + 'submit'
         params = {'q': 'dllink ' + result.url}
         return self._request(method='get', params=params)
 
     def _add_torrent_file(self, result):
 
-        self.url = self.host + 'submit'
+        self.url = self.config('host') + 'submit'
         params = {'q': 'dllink ' + result.url}
         return self._request(method='get', params=params)

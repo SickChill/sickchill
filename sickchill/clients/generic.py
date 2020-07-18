@@ -20,6 +20,7 @@ import re
 import time
 from base64 import b16encode, b32decode
 from hashlib import sha1
+from typing import Iterable, Union
 
 # Third Party Imports
 import bencodepy
@@ -29,10 +30,12 @@ from requests.models import HTTPError
 # First Party Imports
 import sickbeard
 from sickbeard import helpers, logger
+from sickchill.config import assure_config
+from sickchill.config.mixin import ConfigMixin
 
 
-class GenericClient(object):
-    def __init__(self, name, host=None, username=None, password=None):
+class GenericClient(ConfigMixin):
+    def __init__(self, name, extra_options: tuple = tuple()):
         """
         Initializes the client
         :name: str:name of the client
@@ -41,17 +44,21 @@ class GenericClient(object):
         :password: str: password for authentication with the client
         """
 
+        self._options = extra_options
+
         self.name = name
-        self.username = username or sickbeard.TORRENT_USERNAME
-        self.password = password or sickbeard.TORRENT_PASSWORD
-        self.host = host or sickbeard.TORRENT_HOST
 
         self.url = None
         self.response = None
         self.auth = None
         self.last_time = time.time()
+
+        assure_config(['clients', self.name])
+        self._config = sickbeard.CFG2['clients'][self.name]
+
         self.session = helpers.make_session()
-        self.session.auth = (self.username, self.password)
+        if self.options('username') and self.options('password'):
+            self.session.auth = (self.config('username'), self.config('password'))
 
     def _request(self, method='get', params=None, data=None, files=None, cookies=None):
         """
@@ -88,8 +95,7 @@ class GenericClient(object):
             helpers.handle_requests_exception(error)
             return False
 
-        logger.debug('{0}: Response to the {1} request is {2}'.format
-                   (self.name, method.upper(), self.response.text))
+        logger.debug('{0}: Response to the {1} request is {2}'.format(self.name, method.upper(), self.response.text))
 
         return True
 
@@ -99,56 +105,56 @@ class GenericClient(object):
         """
         return None
 
-    def _add_torrent_uri(self, result):  # pylint:disable=unused-argument, no-self-use
+    def _add_torrent_uri(self, result):
         """
         This should be overridden should return the True/False from the client
         when a torrent is added via url (magnet or .torrent link)
         """
         return False
 
-    def _add_torrent_file(self, result):  # pylint:disable=unused-argument, no-self-use
+    def _add_torrent_file(self, result):
         """
         This should be overridden should return the True/False from the client
         when a torrent is added via result.content (only .torrent file)
         """
         return False
 
-    def _set_torrent_label(self, result):  # pylint:disable=unused-argument, no-self-use
+    def _set_torrent_label(self, result):
         """
         This should be overridden should return the True/False from the client
         when a torrent is set with label
         """
         return True
 
-    def _set_torrent_ratio(self, result):  # pylint:disable=unused-argument, no-self-use
+    def _set_torrent_ratio(self, result):
         """
         This should be overridden should return the True/False from the client
         when a torrent is set with ratio
         """
         return True
 
-    def _set_torrent_seed_time(self, result):  # pylint:disable=unused-argument, no-self-use
+    def _set_torrent_seed_time(self, result):
         """
         This should be overridden should return the True/False from the client
         when a torrent is set with a seed time
         """
         return True
 
-    def _set_torrent_priority(self, result):  # pylint:disable=unused-argument, no-self-use
+    def _set_torrent_priority(self, result):
         """
         This should be overriden should return the True/False from the client
         when a torrent is set with result.priority (-1 = low, 0 = normal, 1 = high)
         """
         return True
 
-    def _set_torrent_path(self, torrent_path):  # pylint:disable=unused-argument, no-self-use
+    def _set_torrent_path(self, torrent_path: str):
         """
         This should be overridden should return the True/False from the client
         when a torrent is set with path
         """
         return True
 
-    def _set_torrent_pause(self, result):  # pylint:disable=unused-argument, no-self-use
+    def _set_torrent_pause(self, result):
         """
         This should be overridden should return the True/False from the client
         when a torrent is set with pause
@@ -172,7 +178,7 @@ class GenericClient(object):
                 raise Exception('Torrent without content')
 
             try:
-                torrent_bdecode = bencodepy.decode(result.content, True)
+                torrent_bdecode: Union[dict, Iterable] = bencodepy.decode(result.content)
             except (bencodepy.DecodingError, Exception) as error:
                 logger.exception('Unable to bdecode torrent')
                 logger.info('Error is: {0}'.format(error))

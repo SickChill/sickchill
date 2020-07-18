@@ -17,9 +17,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+# Third Party Imports
+from adba.aniDBerrors import AniDBCommandTimeoutError
+
 # First Party Imports
 import sickbeard
-from adba.aniDBerrors import AniDBCommandTimeoutError
 
 # Local Folder Imports
 from . import db, helpers, logger

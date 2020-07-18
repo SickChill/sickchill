@@ -27,12 +27,12 @@ import urllib
 from operator import attrgetter
 
 # Third Party Imports
+import adba
 from github.GithubException import GithubException
 from requests.compat import unquote_plus
 from tornado.escape import xhtml_unescape
 
 # First Party Imports
-import adba
 import sickbeard
 from sickbeard import config, db, filters, helpers, logger, sab, search_queue, subtitles as subtitle_module, ui
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names

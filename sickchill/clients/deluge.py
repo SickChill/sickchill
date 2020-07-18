@@ -32,33 +32,31 @@ from sickchill.clients.generic import GenericClient
 from .__deluge_base import DelugeBase
 
 
-class Client(GenericClient, DelugeBase):
-    def __init__(self, host=None, username=None, password=None):
-        super(Client, self).__init__('Deluge', host, username, password)
+class Client(DelugeBase):
+    def __init__(self):
+        super().__init__('Deluge', extra_options=('host', 'username', 'password'))
 
-        self.url = urljoin(self.host, 'json')
+        self.url = urljoin(self.config('host'), 'json')
         self.session.headers.update({'Content-Type': 'application/json'})
 
     def _get_auth(self):
 
         post_data = json.dumps({"method": "auth.login",
-                                "params": [self.password],
+                                "params": [self.config('password')],
                                 "id": 1})
 
         try:
-            self.response = self.session.post(self.url, data=post_data, verify=sickbeard.TORRENT_VERIFY_CERT)
+            self.response = self.session.post(self.url, data=post_data, verify=self.config('ssl_verify'))
         except Exception as e:
-            logger.info(e.message)
+            logger.info(e)
             return None
 
         self.auth = self.response.json()["result"]
 
-        post_data = json.dumps({"method": "web.connected",
-                                "params": [],
-                                "id": 10})
+        post_data = json.dumps({"method": "web.connected", "params": [], "id": 10})
 
         try:
-            self.response = self.session.post(self.url, data=post_data, verify=sickbeard.TORRENT_VERIFY_CERT)
+            self.response = self.session.post(self.url, data=post_data, verify=self.config('ssl_verify'))
         except Exception:
             return None
 
@@ -69,7 +67,7 @@ class Client(GenericClient, DelugeBase):
                                     "params": [],
                                     "id": 11})
             try:
-                self.response = self.session.post(self.url, data=post_data, verify=sickbeard.TORRENT_VERIFY_CERT)
+                self.response = self.session.post(self.url, data=post_data, verify=self.config('ssl_verify'))
             except Exception:
                 return None
 
@@ -83,7 +81,7 @@ class Client(GenericClient, DelugeBase):
                                     "id": 11})
 
             try:
-                self.response = self.session.post(self.url, data=post_data, verify=sickbeard.TORRENT_VERIFY_CERT)
+                self.response = self.session.post(self.url, data=post_data, verify=self.config('ssl_verify'))
             except Exception:
                 return None
 
@@ -92,7 +90,7 @@ class Client(GenericClient, DelugeBase):
                                     "id": 10})
 
             try:
-                self.response = self.session.post(self.url, data=post_data, verify=sickbeard.TORRENT_VERIFY_CERT)
+                self.response = self.session.post(self.url, data=post_data, verify=self.config('ssl_verify'))
             except Exception:
                 return None
 
@@ -127,9 +125,9 @@ class Client(GenericClient, DelugeBase):
 
     def _set_torrent_label(self, result):
 
-        label = sickbeard.TORRENT_LABEL.lower()
+        label = self.config('label').lower()
         if result.show.is_anime:
-            label = sickbeard.TORRENT_LABEL_ANIME.lower()
+            label = self.config('label_anime').lower()
         if ' ' in label:
             logger.exception(self.name + ': Invalid label. Label must not contain a space')
             return False

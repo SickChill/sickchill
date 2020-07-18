@@ -25,7 +25,6 @@ import re
 from requests.compat import urljoin
 
 # First Party Imports
-import sickbeard
 from sickbeard import logger
 from sickchill.clients.generic import GenericClient
 
@@ -34,18 +33,18 @@ class Client(GenericClient):
     """
     Class to send torrents/NZBs or links to them to DownloadStation
     """
-    def __init__(self, host=None, username=None, password=None):
+    def __init__(self):
         """
         Initializes the DownloadStation client
         params: :host: Url to the Download Station API
                 :username: Username to use for authentication
                 :password: Password to use for authentication
         """
-        super(Client, self).__init__('DownloadStation', host, username, password)
+        super().__init__('DownloadStation', extra_options=('host', 'username', 'password'))
 
         self.urls = {
-            'login': urljoin(self.host, 'webapi/auth.cgi'),
-            'task': urljoin(self.host, 'webapi/DownloadStation/task.cgi'),
+            'login': urljoin(self.config('host'), 'webapi/auth.cgi'),
+            'task': urljoin(self.config('host'), 'webapi/DownloadStation/task.cgi'),
         }
 
         self.url = self.urls['task']
@@ -115,12 +114,6 @@ class Client(GenericClient):
                     except ValueError:
                         return False
 
-                    if jdata.get('success'):
-                        if destination == sickbeard.SYNOLOGY_DSM_PATH:
-                            sickbeard.SYNOLOGY_DSM_PATH = data['destination']
-                        elif destination == sickbeard.TORRENT_PATH:
-                            sickbeard.TORRENT_PATH = data['destination']
-
         if not jdata.get('success'):
             error_code = jdata.get('error', {}).get('code')
             api_method = (data or {}).get('method', 'login')
@@ -140,8 +133,8 @@ class Client(GenericClient):
             'api': 'SYNO.API.Auth',
             'version': 2,
             'method': 'login',
-            'account': self.username,
-            'passwd': self.password,
+            'account': self.config('username'),
+            'passwd': self.config('password'),
             'session': 'DownloadStation',
             'format': 'cookie'
         }
@@ -158,12 +151,8 @@ class Client(GenericClient):
         """
         data = self._task_post_data
         data['uri'] = result.url
-
-        if result.resultType == 'torrent':
-            if sickbeard.TORRENT_PATH:
-                data['destination'] = sickbeard.TORRENT_PATH
-        elif sickbeard.SYNOLOGY_DSM_PATH:
-            data['destination'] = sickbeard.SYNOLOGY_DSM_PATH
+        if self.config(result.resultType + '_path'):
+            data['destination'] = self.config(result.resultType + '_path')
 
         self._request(method='post', data=data)
         return self._check_response(data)
@@ -174,15 +163,13 @@ class Client(GenericClient):
         params: :result: an object subclassing sickbeard.classes.SearchResult
         """
         data = self._task_post_data
+        if self.config(result.resultType + '_path'):
+            data['destination'] = self.config(result.resultType + '_path')
 
         if result.resultType == 'torrent':
             files = {'file': (result.name + '.torrent', result.content)}
-            if sickbeard.TORRENT_PATH:
-                data['destination'] = sickbeard.TORRENT_PATH
         else:
             files = {'file': (result.name + '.nzb', result.extraInfo[0])}
-            if sickbeard.SYNOLOGY_DSM_PATH:
-                data['destination'] = sickbeard.SYNOLOGY_DSM_PATH
 
         self._request(method='post', data=data, files=files)
         return self._check_response(data, files)

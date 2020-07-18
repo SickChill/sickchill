@@ -19,25 +19,27 @@
 # First Party Imports
 import sickbeard
 
+# Local Folder Imports
+from .generic import GenericClient
 
-class DelugeBase(object):
-    @staticmethod
-    def make_options(result):
+
+class DelugeBase(GenericClient):
+    def make_options(self, result):
         options = {}
 
-        if sickbeard.TORRENT_PATH or sickbeard.TORRENT_PATH_INCOMPLETE:
+        if self.config('download_path') or self.config('incomplete_path') :
             options.update({
-                'download_location': sickbeard.TORRENT_PATH_INCOMPLETE or sickbeard.TORRENT_PATH,
-                'move_completed': bool(sickbeard.TORRENT_PATH_INCOMPLETE),
+                'download_location': self.config('incomplete_path') or self.config('download_path') ,
+                'move_completed': bool(self.config('incomplete_path')),
             })
 
-        if sickbeard.TORRENT_PATH and sickbeard.TORRENT_PATH_INCOMPLETE:
+        if self.config('download_path') and self.config('incomplete_path') :
             options.update({
                 'move_completed': True,
-                'move_completed_path': sickbeard.TORRENT_PATH
+                'move_completed_path': self.config('download_path')
             })
 
-        if sickbeard.TORRENT_PAUSED:
+        if self.config('add_paused'):
             options.update({'add_paused': True})
 
         # TODO: Figure out a nice way to do this. Will currently only work if there is only one file in the download.

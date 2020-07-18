@@ -37,6 +37,7 @@ from urllib3.exceptions import MaxRetryError, NewConnectionError
 
 # First Party Imports
 import sickbeard
+import sickbeard.scene_numbering
 import sickchill
 import sickchill.providers.metadata
 from sickchill.helper import glob
@@ -931,7 +932,7 @@ class TVShow(object):
 
         cache_db_con.mass_action(sql_l)
 
-        for provider in sickbeard.providers.__all__:
+        for provider in sickchill.providers.media.manager.names():
             if cache_db_con.has_table(provider) and cache_db_con.has_column(provider, 'indexerid'):
                 cache_db_con.action("delete from {} WHERE indexerid = ?".format(provider), [self.indexerid])
 
@@ -1200,7 +1201,7 @@ class TVShow(object):
 
         # if we know we don't want it then just say no
         if epStatus in Quality.ARCHIVED + [UNAIRED, SKIPPED, IGNORED] and not manualSearch:
-            loggerdebug("Existing episode status is '{status}', ignoring found result for {name} {ep} with quality {quality}".format
+            logger.debug("Existing episode status is '{status}', ignoring found result for {name} {ep} with quality {quality}".format
                        (status=epStatus_text, name=self.name, ep=episode_num(season, episode),
                         quality=Quality.qualityStrings[quality]))
             return False

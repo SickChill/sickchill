@@ -24,8 +24,10 @@ import re
 import stat
 import subprocess
 
-# First Party Imports
+# Third Party Imports
 import adba
+
+# First Party Imports
 import sickbeard
 from sickchill.helper import glob
 from sickchill.helper.common import remove_extension, replace_extension, SUBTITLE_EXTENSIONS

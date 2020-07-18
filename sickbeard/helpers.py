@@ -42,6 +42,7 @@ from itertools import cycle
 from xml.etree import ElementTree
 
 # Third Party Imports
+import adba
 import certifi
 import cloudscraper
 import ifaddr
@@ -55,7 +56,6 @@ from tornado._locale_data import LOCALE_NAMES
 from unidecode import unidecode
 
 # First Party Imports
-import adba
 import sickbeard
 import sickchill
 from sickchill.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS

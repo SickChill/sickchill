@@ -23,27 +23,26 @@ from requests.auth import HTTPDigestAuth
 from requests.compat import urljoin
 
 # First Party Imports
-import sickbeard
 from sickchill.clients.generic import GenericClient
 
 
 class Client(GenericClient):
 
-    def __init__(self, host=None, username=None, password=None):
-        super(Client, self).__init__('qBittorrent APIv2', host, username, password)
-        self.url = self.host
+    def __init__(self):
+        super().__init__('qBittorrent APIv2', extra_options=('host', 'username', 'password'))
+        self.url = self.config('host')
         self.api_prefix = 'api/v2/'
-        self.session.auth = HTTPDigestAuth(self.username, self.password)
+        self.session.auth = HTTPDigestAuth(self.config('username'), self.config('password'))
         self.session.headers.update({
-            'Origin': self.host,
-            'Referer': self.host
+            'Origin': self.config('host'),
+            'Referer': self.config('host')
         })
 
     @property
     def api(self):
         try:
-            self.url = urljoin(self.host, self.api_prefix + 'app/webapiVersion')
-            response = self.session.get(self.url, verify=sickbeard.TORRENT_VERIFY_CERT)
+            self.url = urljoin(self.config('host'), self.api_prefix + 'app/webapiVersion')
+            response = self.session.get(self.url, verify=self.config('ssl_verify'))
             if response.status_code == 401:
                 version = None
             else:
@@ -55,8 +54,8 @@ class Client(GenericClient):
     def _get_auth(self):
         if self.api is None:
             return None
-        self.url = urljoin(self.host, self.api_prefix + 'auth/login')
-        data = {'username': self.username, 'password': self.password}
+        self.url = urljoin(self.config('host'), self.api_prefix + 'auth/login')
+        data = {'username': self.config('username'), 'password': self.config('password')}
         try:
             self.response = self.session.post(self.url, data=data)
         except Exception:
@@ -67,34 +66,34 @@ class Client(GenericClient):
 
     def _add_torrent_uri(self, result):
         data = {'urls': result.url}
-        self.url = urljoin(self.host, self.api_prefix + 'torrents/add')
+        self.url = urljoin(self.config('host'), self.api_prefix + 'torrents/add')
         return self._request(method='post', data=data, cookies=self.session.cookies)
 
     def _add_torrent_file(self, result):
         files = {'torrents': (result.name + '.torrent', result.content)}
-        self.url = urljoin(self.host, self.api_prefix + 'torrents/add')
+        self.url = urljoin(self.config('host'), self.api_prefix + 'torrents/add')
         return self._request(method='post', files=files, cookies=self.session.cookies)
 
     def _set_torrent_label(self, result):
-        label = sickbeard.TORRENT_LABEL
+        label = self.config('label')
         if result.show.is_anime:
-            label = sickbeard.TORRENT_LABEL_ANIME
-        self.url = urljoin(self.host, self.api_prefix + 'torrents/setCategory')
+            label = self.config('label_anime')
+        self.url = urljoin(self.config('host'), self.api_prefix + 'torrents/setCategory')
         data = {'hashes': result.hash.lower(), 'category': label.replace(' ', '_')}
         return self._request(method='post', data=data, cookies=self.session.cookies)
 
     def _set_torrent_priority(self, result):
-        self.url = urljoin(self.host, self.api_prefix + 'app/preferences')
+        self.url = urljoin(self.config('host'), self.api_prefix + 'app/preferences')
         self._request(method='get', cookies=self.session.cookies)
         json = self.response.json()
         if json and json.get('queueing_enabled'):
-            self.url = urljoin(self.host, self.api_prefix + 'torrents/decreasePrio?hashes={}'.format(result.hash.lower))
+            self.url = urljoin(self.config('host'), self.api_prefix + 'torrents/decreasePrio?hashes={}'.format(result.hash.lower))
             if result.priority == 1:
-                self.url = urljoin(self.host, self.api_prefix + 'torrents/increasePrio?hashes={}'.format(result.hash.lower))
+                self.url = urljoin(self.config('host'), self.api_prefix + 'torrents/increasePrio?hashes={}'.format(result.hash.lower))
             return self._request(method='get', cookies=self.session.cookies)
 
     def _set_torrent_pause(self, result):
-        self.url = urljoin(self.host, self.api_prefix + 'torrents/resume?hashes={}'.format(result.hash.lower()))
-        if sickbeard.TORRENT_PAUSED:
-            self.url = urljoin(self.host, self.api_prefix + 'torrents/pause?hashes={}'.format(result.hash.lower()))
+        self.url = urljoin(self.config('host'), self.api_prefix + 'torrents/resume?hashes={}'.format(result.hash.lower()))
+        if self.config('add_paused'):
+            self.url = urljoin(self.config('host'), self.api_prefix + 'torrents/pause?hashes={}'.format(result.hash.lower()))
         return self._request(method='get', cookies=self.session.cookies)

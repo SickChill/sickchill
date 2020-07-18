@@ -16,8 +16,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+# Stdlib Imports
+from xmlrpc.client import ServerProxy
+
 # Third Party Imports
-from rtorrent9 import RTorrent
+from rtorrent_xmlrpc import SCGIServerProxy
 
 # First Party Imports
 import sickbeard
@@ -26,28 +29,30 @@ from sickchill.clients.generic import GenericClient
 
 
 class Client(GenericClient):
-    def __init__(self, host=None, username=None, password=None):
-        super(Client, self).__init__('rTorrent v9+', host, username, password)
+    def __init__(self):
+        super().__init__('rTorrent v9+', extra_options=('host', 'username', 'password'))
 
     def _get_auth(self):
 
-        if self.auth is not None:
+        if self.auth:
             return self.auth
 
-        if not self.host:
+        if not self.config('host'):
             return
 
-        tp_kwargs = {}
-        if sickbeard.TORRENT_AUTH_TYPE != 'none':
-            tp_kwargs['authtype'] = sickbeard.TORRENT_AUTH_TYPE
+        # TODO: Add back auth for rtorrent
+        # tp_kwargs = {}
+        # if self.config('auth_type') and self.config('auth_type') != 'none':
+        #     tp_kwargs['authtype'] = self.config('auth_type')
+        #
+        # tp_kwargs['check_ssl_cert'] = self.config('ssl_verify')
 
-        if not sickbeard.TORRENT_VERIFY_CERT:
-            tp_kwargs['check_ssl_cert'] = False
-
-        if self.username and self.password:
-            self.auth = RTorrent(self.host, self.username, self.password, True, tp_kwargs=tp_kwargs)
+        if self.config('host').startswith('scgi'):
+            self.auth = SCGIServerProxy(self.config('host'))
         else:
-            self.auth = RTorrent(self.host, None, None, True, tp_kwargs=tp_kwargs)
+            self.auth = ServerProxy(self.config('host'))
+
+        # self.auth = SCGIServerProxy(self.config('host'), True, tp_kwargs=tp_kwargs)
 
         return self.auth
 
@@ -58,7 +63,7 @@ class Client(GenericClient):
 
         try:
             # Send torrent magnet with params to rTorrent and optionally start download
-            torrent = self.auth.load_magnet(result.url, result.hash, start=not sickbeard.TORRENT_PAUSED, params=self._get_params(result))
+            torrent = self.auth.load_magnet(result.url, result.hash, start=not self.config('add_paused'), params=self._get_params(result))
 
             if not torrent:
                 return False
@@ -78,7 +83,7 @@ class Client(GenericClient):
         try:
 
             # Send torrent file with params to rTorrent and optionally start download
-            torrent = self.auth.load_torrent(result.content, start=not sickbeard.TORRENT_PAUSED, params=self._get_params(result))
+            torrent = self.auth.load_torrent(result.content, start=not self.config('add_paused'), params=self._get_params(result))
 
             if not torrent:
                 return False
@@ -137,19 +142,18 @@ class Client(GenericClient):
         except Exception:
             return False, 'Error: Unable to connect to {name}'.format(name=self.name)
 
-    @staticmethod
-    def _get_params(result):
+    def _get_params(self, result):
         params = []
 
         # Set label
-        label = sickbeard.TORRENT_LABEL
+        label = self.config('label')
         if result.show.is_anime:
-            label = sickbeard.TORRENT_LABEL_ANIME
+            label = self.config('label_anime')
         if label:
             params.append('d.custom1.set={0}'.format(label))
 
         # Set download folder
-        if sickbeard.TORRENT_PATH:
-            params.append('d.directory.set={0}'.format(sickbeard.TORRENT_PATH))
+        if self.config('download_path'):
+            params.append('d.directory.set={0}'.format(self.config('download_path')))
 
         return params
