@@ -23,7 +23,7 @@ import re
 from requests.compat import quote_plus, urljoin
 
 # First Party Imports
-from sickbeard import db, logger, tvcache
+from sickbeard import db, logger
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import Quality
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser

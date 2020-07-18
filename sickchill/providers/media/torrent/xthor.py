@@ -21,7 +21,7 @@
 import time
 
 # First Party Imports
-from sickbeard import logger, tvcache
+from sickbeard import logger
 from sickchill.helper.common import try_int
 from sickchill.providers.media.torrent import TorrentProvider
 

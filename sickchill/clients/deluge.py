@@ -24,9 +24,7 @@ from base64 import b64encode
 from requests.compat import urljoin
 
 # First Party Imports
-import sickbeard
 from sickbeard import logger
-from sickchill.clients.generic import GenericClient
 
 # Local Folder Imports
 from .__deluge_base import DelugeBase

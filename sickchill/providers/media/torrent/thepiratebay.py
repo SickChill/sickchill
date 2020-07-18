@@ -26,7 +26,7 @@ import js2py
 from requests.compat import urljoin
 
 # First Party Imports
-from sickbeard import db, logger, tvcache
+from sickbeard import db, logger
 from sickchill.helper.common import try_int
 from sickchill.providers.media.torrent import TorrentProvider
 

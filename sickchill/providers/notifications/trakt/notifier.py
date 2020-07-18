@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # First Party Imports
-import sickbeard
 import sickchill
 from sickbeard import logger
 from sickchill.providers.notifications.base import AbstractNotifier

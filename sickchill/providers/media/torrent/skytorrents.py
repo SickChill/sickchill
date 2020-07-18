@@ -21,7 +21,7 @@ import validators
 from requests.compat import urljoin
 
 # First Party Imports
-from sickbeard import logger, tvcache
+from sickbeard import logger
 from sickbeard.bs4_parser import BS4Parser
 from sickchill.helper.common import try_int
 from sickchill.providers.media.torrent import TorrentProvider

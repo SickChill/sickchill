@@ -22,7 +22,6 @@ import json
 import time
 
 # Third Party Imports
-import certifi
 import requests
 
 # First Party Imports

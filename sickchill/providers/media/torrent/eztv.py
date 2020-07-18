@@ -22,7 +22,7 @@ from requests.compat import urljoin
 
 # First Party Imports
 import sickbeard
-from sickbeard import logger, tvcache
+from sickbeard import logger
 from sickchill.helper.common import try_int
 from sickchill.providers.media.torrent import TorrentProvider
 

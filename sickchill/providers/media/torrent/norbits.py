@@ -22,7 +22,7 @@ import json
 from requests.compat import urlencode
 
 # First Party Imports
-from sickbeard import logger, tvcache
+from sickbeard import logger
 from sickchill.helper.common import convert_size, try_int
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.media.torrent import TorrentProvider

@@ -25,7 +25,7 @@ from requests.compat import quote_plus
 from requests.utils import dict_from_cookiejar
 
 # First Party Imports
-from sickbeard import logger, tvcache
+from sickbeard import logger
 from sickbeard.bs4_parser import BS4Parser
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.media.torrent import TorrentProvider

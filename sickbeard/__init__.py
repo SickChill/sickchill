@@ -35,7 +35,6 @@ setup_lib_path()
 # Third Party Imports
 import rarfile
 import requests
-
 from configobj import ConfigObj
 from tornado.locale import load_gettext_translations
 

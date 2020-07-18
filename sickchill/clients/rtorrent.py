@@ -23,7 +23,6 @@ from xmlrpc.client import ServerProxy
 from rtorrent_xmlrpc import SCGIServerProxy
 
 # First Party Imports
-import sickbeard
 from sickbeard import logger
 from sickchill.clients.generic import GenericClient
 

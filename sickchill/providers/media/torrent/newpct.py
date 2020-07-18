@@ -24,7 +24,7 @@ import re
 from requests.compat import urljoin
 
 # First Party Imports
-from sickbeard import helpers, logger, tvcache
+from sickbeard import helpers, logger
 from sickbeard.bs4_parser import BS4Parser
 from sickchill.helper.common import convert_size
 from sickchill.providers.media.torrent import TorrentProvider

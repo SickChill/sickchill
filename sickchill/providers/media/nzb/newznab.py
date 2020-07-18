@@ -28,7 +28,7 @@ from requests.compat import urljoin
 
 # First Party Imports
 import sickbeard
-from sickbeard import logger, tvcache
+from sickbeard import logger
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
 from sickchill.helper.common import convert_size, try_int
