@@ -89,8 +89,7 @@ class NorbitsProvider(TorrentProvider):
                 if self._check_auth_from_data(parsed_json):
                     json_items = parsed_json.get('data', '')
                     if not json_items:
-                        logger.exception('Resulting JSON from provider is not correct, '
-                                   'not parsing it')
+                        logger.exception('Resulting JSON from provider is not correct, not parsing it')
 
                     for item in json_items.get('torrents', []):
                         title = item.pop('name', '')
@@ -105,9 +104,7 @@ class NorbitsProvider(TorrentProvider):
                         leechers = try_int(item.pop('leechers', 0))
 
                         if seeders < self.config('minseed') or leechers < self.config('minleech'):
-                            logger.debug('Discarding torrent because it does not meet '
-                                       'the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
-                                       (title, seeders, leechers))
+                            logger.debug('Discarding torrent because it does not meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format(title, seeders, leechers))
                             continue
 
                         info_hash = item.pop('info_hash', '')
@@ -115,8 +112,7 @@ class NorbitsProvider(TorrentProvider):
 
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
                         if mode != 'RSS':
-                            logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format(
-                                title, seeders, leechers))
+                            logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format(title, seeders, leechers))
 
                         items.append(item)
             # For each search mode sort all the items by seeders if available
@@ -125,6 +121,3 @@ class NorbitsProvider(TorrentProvider):
             results += items
 
         return results
-
-
-

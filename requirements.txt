@@ -52,3 +52,4 @@ deluge-client
 ifaddr
 twilio
 pyaes
+rtorrent-xmlrpc

@@ -86,8 +86,8 @@ class GenericProvider(object):
 
         self.ability_status = self.PROVIDER_OK
 
-        self.supported_options: tuple = tuple(['enabled'])
-        self.supported_options += extra_options
+        self.__options: tuple = tuple(['enabled'])
+        self.__options += extra_options
 
         shuffle(self.bt_cache_urls)
 
@@ -114,7 +114,7 @@ class GenericProvider(object):
         sickbeard.CFG2['providers'][self.provider_type][self.get_id()][key] = value
 
     def options(self, key: str) -> bool:
-        return key in self.supported_options
+        return key in self.__options
 
     def download_result(self, result) -> bool:
         if not self.login():
