@@ -39,11 +39,9 @@ class History(object):
         query = ''
 
         for item in toRemove:
-            query = query + ' OR ' if query != '' else ''
-            query = query + '(date IN ({0}) AND showid = {1} ' \
-                            'AND season = {2} AND episode = {3})' \
-                            .format(','.join(item['dates']), item['show_id'], \
-                                    item['season'], item['episode'])
+            query += ' OR ' if query != '' else ''
+            query += '(date IN ({0}) AND showid = {1} AND season = {2} AND episode = {3})'.format(
+                ','.join(item['dates']), item['show_id'], item['season'], item['episode'])
 
         self.db.action(
             'DELETE FROM history WHERE ' + query

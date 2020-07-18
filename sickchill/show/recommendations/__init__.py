@@ -1,3 +1,3 @@
 # coding=utf-8
 
-__all__ = ['anidb', 'imdb']
+__all__ = ['imdb']
