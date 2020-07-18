@@ -104,7 +104,7 @@ class TorrentRssProvider(TorrentProvider):
         dumpName = os.path.join(sickbeard.CACHE_DIR, 'custom_torrent.html')
 
         try:
-            fileOut = open(dumpName, 'wb')
+            fileOut = open(dumpName, 'w')
             fileOut.write(data)
             fileOut.close()
             helpers.chmodAsParent(dumpName)

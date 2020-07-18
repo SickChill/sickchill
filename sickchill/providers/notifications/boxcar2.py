@@ -36,7 +36,7 @@ class Notifier(AbstractNotifier):
         return self._sendBoxcar2('This is a test notification from SickChill', title, accesstoken)
 
     def _sendBoxcar2(self, msg, title, accesstoken):
-        '''
+        """
         Sends a boxcar2 notification to the address provided
 
         msg: The message to send
@@ -44,7 +44,7 @@ class Notifier(AbstractNotifier):
         accesstoken: to send to this device
 
         returns: True if the message succeeded, False otherwise
-        '''
+        """
         # http://blog.boxcar.io/post/93211745502/boxcar-api-update-boxcar-api-update-icon-and
 
         post_data = {
@@ -94,13 +94,13 @@ class Notifier(AbstractNotifier):
             self._notifyBoxcar2(title, name)
 
     def _notifyBoxcar2(self, title, message, accesstoken=None):
-        '''
+        """
         Sends a boxcar2 notification based on the provided info or SB config
 
         title: The title of the notification to send
         message: The message string to send
         accesstoken: to send to this device
-        '''
+        """
 
         if not self.config('enabled'):
             logger.debug('Notification for Boxcar2 not enabled, skipping this notification')

@@ -19,6 +19,7 @@
 # Stdlib Imports
 import os
 import re
+from typing import Union
 
 # Third Party Imports
 import fanart
@@ -28,6 +29,7 @@ from fanart.core import Request as fanartRequest
 # First Party Imports
 import sickbeard
 import sickchill
+import sickchill.config.mixin
 from sickbeard import helpers, logger
 from sickbeard.show_name_helpers import allPossibleShowNames
 from sickchill.helper.common import replace_extension, try_int
@@ -35,15 +37,10 @@ from sickchill.helper.common import replace_extension, try_int
 # Local Folder Imports
 from . import helpers as metadata_helpers
 
-try:
-    # Stdlib Imports
-    from xml.etree import cElementTree as etree
-except ImportError:
-    # Stdlib Imports
-    from xml.etree import ElementTree as etree
+from xml.etree import ElementTree
 
 
-class GenericMetadata(object):
+class GenericMetadata(sickchill.config.mixin.ConfigMixin):
     """
     Base class for all metadata providers. Default behavior is meant to mostly
     follow KODI 12+ metadata standards. Has support for:
@@ -59,12 +56,11 @@ class GenericMetadata(object):
     - season all banner
     """
 
-    def __init__(self, show_metadata=False, episode_metadata=False, fanart=False,
-                 poster=False, banner=False, episode_thumbnails=False,
-                 season_posters=False, season_banners=False,
-                 season_all_poster=False, season_all_banner=False):
+    def __init__(self, name: str, extra_options: tuple = tuple([''])):
 
-        self.name = "Generic"
+        self.__options = extra_options
+
+        self.name = name
 
         self._ep_nfo_extension = "nfo"
         self._show_metadata_filename = "tvshow.nfo"
@@ -76,44 +72,13 @@ class GenericMetadata(object):
         self.season_all_poster_name = "season-all-poster.jpg"
         self.season_all_banner_name = "season-all-banner.jpg"
 
-        self.show_metadata = show_metadata
-        self.episode_metadata = episode_metadata
-        self.fanart = fanart
-        self.poster = poster
-        self.banner = banner
-        self.episode_thumbnails = episode_thumbnails
-        self.season_posters = season_posters
-        self.season_banners = season_banners
-        self.season_all_poster = season_all_poster
-        self.season_all_banner = season_all_banner
-
-    def get_config(self):
-        config_list = [self.show_metadata, self.episode_metadata, self.fanart, self.poster, self.banner,
-                       self.episode_thumbnails, self.season_posters, self.season_banners, self.season_all_poster,
-                       self.season_all_banner]
-        return '|'.join([str(int(x)) for x in config_list])
+        sickchill.config.assure_config(['providers', 'metadata', self.name])
+        self.__config = sickbeard.CFG2['providers']['metadata'][self.name]
 
     def get_id(self):
-        return GenericMetadata.makeID(self.name)
-
-    @staticmethod
-    def makeID(name):
-        name_id = re.sub(r"[+]", "plus", name)
+        name_id = re.sub(r"[+]", "plus", self.name)
         name_id = re.sub(r"[^\w\d_]", "_", name_id).lower()
         return name_id
-
-    def set_config(self, config_string):
-        config_list = [bool(int(x)) for x in config_string.split('|')]
-        self.show_metadata = config_list[0]
-        self.episode_metadata = config_list[1]
-        self.fanart = config_list[2]
-        self.poster = config_list[3]
-        self.banner = config_list[4]
-        self.episode_thumbnails = config_list[5]
-        self.season_posters = config_list[6]
-        self.season_banners = config_list[7]
-        self.season_all_poster = config_list[8]
-        self.season_all_banner = config_list[9]
 
     @staticmethod
     def _check_exists(location):
@@ -229,15 +194,14 @@ class GenericMetadata(object):
     def get_season_all_banner_path(self, show_obj):
         return os.path.join(show_obj.location, self.season_all_banner_name)
 
-
-    def _show_data(self, show_obj):
+    def _show_data(self, show_obj) -> Union[ElementTree, None]:
         """
         This should be overridden by the implementing class. It should
         provide the content of the show metadata file.
         """
         return None
 
-    def _ep_data(self, ep_obj):
+    def _ep_data(self, ep_obj) -> Union[ElementTree, None]:
         """
         This should be overridden by the implementing class. It should
         provide the content of the episode metadata file.
@@ -245,21 +209,21 @@ class GenericMetadata(object):
         return None
 
     def create_show_metadata(self, show_obj):
-        if self.show_metadata and show_obj and not self._has_show_metadata(show_obj):
+        if self.config('show') and show_obj and not self._has_show_metadata(show_obj):
             logger.debug("Metadata provider " + self.name + " creating show metadata for " + show_obj.name)
             return self.write_show_file(show_obj)
         return False
 
     def update_show_indexer_metadata(self, show_obj):
-        if self.show_metadata and show_obj and self._has_show_metadata(show_obj):
+        if self.config('show') and show_obj and self._has_show_metadata(show_obj):
             logger.debug(
                 "Metadata provider " + self.name + " updating show indexer info metadata file for " + show_obj.name)
 
             nfo_file_path = self.get_show_file_path(show_obj)
 
             try:
-                with open(nfo_file_path, 'rb') as xmlFileObj:
-                    showXML = etree.ElementTree(file=xmlFileObj)
+                with open(nfo_file_path, 'r') as xmlFileObj:
+                    showXML = ElementTree.ElementTree(file=xmlFileObj)
 
                 indexerid = showXML.find('id')
 
@@ -269,7 +233,7 @@ class GenericMetadata(object):
                         return True
                     indexerid.text = str(show_obj.indexerid)
                 else:
-                    etree.SubElement(root, "id").text = str(show_obj.indexerid)
+                    ElementTree.SubElement(root, "id").text = str(show_obj.indexerid)
 
                 # Make it purdy
                 helpers.indentXML(root)
@@ -282,13 +246,13 @@ class GenericMetadata(object):
                 logger.error("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e))
 
     def create_episode_metadata(self, ep_obj):
-        if self.episode_metadata and ep_obj and not self._has_episode_metadata(ep_obj):
+        if self.config('episode') and ep_obj and not self._has_episode_metadata(ep_obj):
             logger.debug("Metadata provider " + self.name + " creating episode metadata for " + ep_obj.pretty_name())
             return self.write_ep_file(ep_obj)
         return False
 
     def update_episode_metadata(self, ep_obj):
-        if self.episode_metadata and ep_obj and self._has_episode_metadata(ep_obj):
+        if self.config('episode') and ep_obj and self._has_episode_metadata(ep_obj):
             logger.debug("Metadata provider " + self.name + " updating episode indexer info metadata file for " + ep_obj.pretty_name())
             nfo_file_path = self.get_episode_file_path(ep_obj)
 
@@ -302,8 +266,8 @@ class GenericMetadata(object):
                 'plot': 'description'
             }
             try:
-                with open(nfo_file_path, 'rb') as xmlFileObj:
-                    episodeXML = etree.ElementTree(file=xmlFileObj)
+                with open(nfo_file_path, 'r') as xmlFileObj:
+                    episodeXML = ElementTree.ElementTree(file=xmlFileObj)
 
                 changed = False
                 for attribute in attribute_map:
@@ -334,35 +298,35 @@ class GenericMetadata(object):
                 return True
             except IOError as error:
                 logger.warning("Unable to write file to {} - are you sure the folder is writable? {}".format(nfo_file_path, str(error)))
-            except etree.ParseError as error:
+            except ElementTree.ParseError as error:
                 logger.warning("Error parsing existing nfo file at {} - {}".format(nfo_file_path, str(error)))
 
     def create_fanart(self, show_obj):
-        if self.fanart and show_obj and not self._has_fanart(show_obj):
+        if self.config('fanart') and show_obj and not self._has_fanart(show_obj):
             logger.debug("Metadata provider " + self.name + " creating fanart for " + show_obj.name)
             return self.save_fanart(show_obj)
         return False
 
     def create_poster(self, show_obj):
-        if self.poster and show_obj and not self._has_poster(show_obj):
+        if self.config('poster') and show_obj and not self._has_poster(show_obj):
             logger.debug("Metadata provider " + self.name + " creating poster for " + show_obj.name)
             return self.save_poster(show_obj)
         return False
 
     def create_banner(self, show_obj):
-        if self.banner and show_obj and not self._has_banner(show_obj):
+        if self.config('banner') and show_obj and not self._has_banner(show_obj):
             logger.debug("Metadata provider " + self.name + " creating banner for " + show_obj.name)
             return self.save_banner(show_obj)
         return False
 
     def create_episode_thumb(self, ep_obj):
-        if self.episode_thumbnails and ep_obj and not self._has_episode_thumb(ep_obj):
+        if self.config('episode_thumb') and ep_obj and not self._has_episode_thumb(ep_obj):
             logger.debug("Metadata provider " + self.name + " creating episode thumbnail for " + ep_obj.pretty_name())
             return self.save_thumbnail(ep_obj)
         return False
 
     def create_season_posters(self, show_obj):
-        if self.season_posters and show_obj:
+        if self.config('season_poster') and show_obj:
             result = []
             for season in show_obj.episodes:
                 if not self._has_season_poster(show_obj, season):
@@ -372,7 +336,7 @@ class GenericMetadata(object):
         return False
 
     def create_season_banners(self, show_obj):
-        if self.season_banners and show_obj:
+        if self.config('season_banner') and show_obj:
             result = []
             logger.debug("Metadata provider " + self.name + " creating season banners for " + show_obj.name)
             for season in show_obj.episodes:
@@ -382,13 +346,13 @@ class GenericMetadata(object):
         return False
 
     def create_season_all_poster(self, show_obj):
-        if self.season_all_poster and show_obj and not self._has_season_all_poster(show_obj):
+        if self.config('season_all_poster') and show_obj and not self._has_season_all_poster(show_obj):
             logger.debug("Metadata provider " + self.name + " creating season all poster for " + show_obj.name)
             return self.save_season_all_poster(show_obj)
         return False
 
     def create_season_all_banner(self, show_obj):
-        if self.season_all_banner and show_obj and not self._has_season_all_banner(show_obj):
+        if self.config('season_all_banner') and show_obj and not self._has_season_all_banner(show_obj):
             logger.debug("Metadata provider " + self.name + " creating season all banner for " + show_obj.name)
             return self.save_season_all_banner(show_obj)
         return False
@@ -424,7 +388,7 @@ class GenericMetadata(object):
 
             logger.debug("Writing show nfo file to " + nfo_file_path)
 
-            nfo_file = open(nfo_file_path, 'wb')
+            nfo_file = open(nfo_file_path, 'w')
             data.write(nfo_file, encoding='UTF-8')
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
@@ -471,7 +435,7 @@ class GenericMetadata(object):
                 helpers.chmodAsParent(nfo_file_dir)
 
             logger.debug("Writing episode nfo file to " + nfo_file_path)
-            nfo_file = open(nfo_file_path, 'wb')
+            nfo_file = open(nfo_file_path, 'w')
             data.write(nfo_file, encoding='UTF-8')
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
@@ -742,22 +706,21 @@ class GenericMetadata(object):
         logger.debug(_("Loading show info from metadata file in {0}").format(metadata_path))
 
         def read_xml():
-            with open(metadata_path, 'rb') as __xml_file:
+            with open(metadata_path, 'r') as __xml_file:
                 try:
-                    __show_xml = etree.ElementTree(file=__xml_file)
-                except (etree.ParseError, IOError):
+                    __show_xml = ElementTree.ElementTree(file=__xml_file)
+                except (ElementTree.ParseError, IOError):
                     __show_xml = None
             return __show_xml
 
         def fix_xml():
-            logger.info(_("There was an error loading {0}, trying to repair it by fixing & symbols. If it still has problems, please check the file "
-                         "manually").format(metadata_path))
-            with open(metadata_path, 'rb') as __xml_file:
+            logger.info(_("There was an error loading {0}, trying to repair it by fixing & symbols. If it still has problems, please check the file manually").format(metadata_path))
+            with open(metadata_path, 'r') as __xml_file:
                 output = __xml_file.read()
 
             regex = re.compile(r"&(?!amp;|lt;|gt;)")
             output = regex.sub("&amp;", output)
-            with open(metadata_path, 'wb') as __xml_file:
+            with open(metadata_path, 'w') as __xml_file:
                 __xml_file.write(output)
 
             return True
@@ -769,8 +732,8 @@ class GenericMetadata(object):
                 return empty_return
 
             if not (show_xml.findtext('title') or (show_xml.findtext('tvdbid') and show_xml.findtext('id'))):
-                logger.info(_("Invalid info in tvshow.nfo (missing name or id): {0} {1} {2}").format(show_xml.findtext('title'), show_xml.findtext('tvdbid'),
-                                                                                                    show_xml.findtext('id')))
+                logger.info(_("Invalid info in tvshow.nfo (missing name or id): {0} {1} {2}").format(
+                    show_xml.findtext('title'), show_xml.findtext('tvdbid'), show_xml.findtext('id')))
                 return empty_return
 
             name = show_xml.findtext('title')

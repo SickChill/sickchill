@@ -19,18 +19,14 @@
 # Stdlib Imports
 import re
 import telnetlib
-import urllib
+import urllib.request
+import urllib.parse
 
 # First Party Imports
 import sickbeard
 from sickbeard import logger
 
-try:
-    # Stdlib Imports
-    from xml.etree import cElementTree as etree
-except ImportError:
-    # Stdlib Imports
-    from xml.etree import ElementTree as etree
+from xml.etree import ElementTree
 
 # Local Folder Imports
 # Local Folder Imports
@@ -166,7 +162,7 @@ class Notifier(AbstractNotifier):
 
         # try to parse the resulting XML
         try:
-            et = etree.fromstring(response)
+            et = ElementTree.fromstring(response)
             result = et.findtext("returnValue")
         except SyntaxError as e:
             logger.exception("Unable to parse XML returned from the Popcorn Hour: {0}".format(e))

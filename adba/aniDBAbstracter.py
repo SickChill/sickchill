@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with aDBa.  If not, see <http://www.gnu.org/licenses/>.
 
-
-
 import os, re, string
 from time import time, sleep
 
@@ -26,10 +24,8 @@ from .aniDBtvDBmaper import TvDBMap
 from .aniDBerrors import *
 from .aniDBfileInfo import read_anidb_xml, read_tvdb_map_xml
 
-try:
-    import xml.etree.cElementTree as etree
-except ImportError:
-    import xml.etree.ElementTree as etree
+from xml.etree import ElementTree as etree
+
 
 class aniDBabstractObject(object):
     def __init__(self, aniDB, load=False):

@@ -20,19 +20,15 @@
 # Stdlib Imports
 import time
 # noinspection PyUnresolvedReferences
-import urllib
+import urllib.request
+
 from xml.dom.minidom import parseString
 
 # First Party Imports
 import sickbeard
 from sickbeard import logger
 
-try:
-    # Stdlib Imports
-    from xml.etree import cElementTree as etree
-except ImportError:
-    # Stdlib Imports
-    from xml.etree import ElementTree as etree
+from xml.etree import ElementTree
 
 # Local Folder Imports
 # Local Folder Imports
@@ -117,9 +113,9 @@ class Notifier(AbstractNotifier):
 
         # if a host is provided then attempt to open a handle to that URL
         try:
-            url_scandir = "http://" + host + ":8008/metadata_database?arg0=update_scandir&arg1=" + sickbeard.NMJv2_DATABASE + "&arg2=&arg3=update_all"
+            url_scandir = "http://" + host + ":8008/metadata_database?arg0=update_scandir&arg1=" + self.config('database') + "&arg2=&arg3=update_all"
             logger.debug("NMJ scan update command sent to host: {0}".format(host))
-            url_updatedb = "http://" + host + ":8008/metadata_database?arg0=scanner_start&arg1=" + sickbeard.NMJv2_DATABASE + "&arg2=background&arg3="
+            url_updatedb = "http://" + host + ":8008/metadata_database?arg0=scanner_start&arg1=" + self.config('database') + "&arg2=background&arg3="
             logger.debug("Try to mount network drive via url: {0}".format(host))
             prereq = urllib.request.Request(url_scandir)
             req = urllib.request.Request(url_updatedb)
@@ -132,13 +128,13 @@ class Notifier(AbstractNotifier):
             logger.warning("Warning: Couldn't contact popcorn hour on host {0}: {1}".format(host, e))
             return False
         try:
-            et = etree.fromstring(response1)
+            et = ElementTree.fromstring(response1)
             result1 = et.findtext("returnValue")
         except SyntaxError as e:
             logger.exception("Unable to parse XML returned from the Popcorn Hour: update_scandir, {0}".format(e))
             return False
         try:
-            et = etree.fromstring(response2)
+            et = ElementTree.fromstring(response2)
             result2 = et.findtext("returnValue")
         except SyntaxError as e:
             logger.exception("Unable to parse XML returned from the Popcorn Hour: scanner_start, {0}".format(e))

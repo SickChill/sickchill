@@ -28,7 +28,7 @@ from sickbeard import helpers, logger
 from . import generic
 
 
-class TIVOMetadata(generic.GenericMetadata):
+class Metadata(generic.GenericMetadata):
     """
     Metadata generation class for TIVO
 
@@ -40,31 +40,9 @@ class TIVOMetadata(generic.GenericMetadata):
     This class only generates episode specific metadata files, it does NOT generate a default.txt file.
     """
 
-    def __init__(self,
-                 show_metadata=False,
-                 episode_metadata=False,
-                 fanart=False,
-                 poster=False,
-                 banner=False,
-                 episode_thumbnails=False,
-                 season_posters=False,
-                 season_banners=False,
-                 season_all_poster=False,
-                 season_all_banner=False):
+    def __init__(self):
 
-        generic.GenericMetadata.__init__(self,
-                                         show_metadata,
-                                         episode_metadata,
-                                         fanart,
-                                         poster,
-                                         banner,
-                                         episode_thumbnails,
-                                         season_posters,
-                                         season_banners,
-                                         season_all_poster,
-                                         season_all_banner)
-
-        self.name = 'TIVO'
+        super().__init__('Tivo', extra_options=('episode',))
 
         self._ep_nfo_extension = "txt"
 
@@ -198,7 +176,6 @@ class TIVOMetadata(generic.GenericMetadata):
             # Must be entered as true or false. If true, the year from originalAirDate will be shown in parentheses
             # after the episode's title and before the description on the Program screen.
 
-            # FIXME: Hardcode isEpisode to true for now, not sure how to handle movies
             data += "isEpisode : true\n"
 
             # Write the synopsis of the video here
@@ -293,7 +270,7 @@ class TIVOMetadata(generic.GenericMetadata):
 
             logger.debug("Writing episode nfo file to " + nfo_file_path)
 
-            with open(nfo_file_path, 'w', encodeing='utf-8') as nfo_file:
+            with open(nfo_file_path, 'w') as nfo_file:
                 # Calling encode directly, b/c often descriptions have wonky characters.
                 nfo_file.write(data)
 
@@ -304,7 +281,3 @@ class TIVOMetadata(generic.GenericMetadata):
             return False
 
         return True
-
-
-# present a standard "interface" from the module
-metadata_class = TIVOMetadata

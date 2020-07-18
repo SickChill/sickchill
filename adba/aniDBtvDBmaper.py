@@ -17,10 +17,7 @@
 
 import os
 
-try:
-    import xml.etree.cElementTree as etree
-except ImportError:
-    import xml.etree.ElementTree as etree
+from xml.etree import ElementTree as etree
 
 from . import aniDBfileInfo as fileInfo
 

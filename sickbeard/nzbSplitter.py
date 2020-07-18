@@ -24,12 +24,7 @@ import re
 from . import classes, helpers, logger
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
-try:
-    # Stdlib Imports
-    from xml.etree import cElementTree as ETree
-except ImportError:
-    # Stdlib Imports
-    from xml.etree import ElementTree as ETree
+from xml.etree import ElementTree as etree
 
 
 

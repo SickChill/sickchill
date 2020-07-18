@@ -23,7 +23,7 @@ import os
 from . import generic
 
 
-class PS3Metadata(generic.GenericMetadata):
+class Metadata(generic.GenericMetadata):
     """
     Metadata generation class for Sony PS3.
 
@@ -34,31 +34,9 @@ class PS3Metadata(generic.GenericMetadata):
     show_root/Season ##/filename.ext.cover.jpg  (episode thumb)
     """
 
-    def __init__(self,
-                 show_metadata=False,
-                 episode_metadata=False,
-                 fanart=False,
-                 poster=False,
-                 banner=False,
-                 episode_thumbnails=False,
-                 season_posters=False,
-                 season_banners=False,
-                 season_all_poster=False,
-                 season_all_banner=False):
+    def __init__(self):
 
-        generic.GenericMetadata.__init__(self,
-                                         show_metadata,
-                                         episode_metadata,
-                                         fanart,
-                                         poster,
-                                         banner,
-                                         episode_thumbnails,
-                                         season_posters,
-                                         season_banners,
-                                         season_all_poster,
-                                         season_all_banner)
-
-        self.name = "Sony PS3"
+        super().__init__('Sony PS3', extra_options=('poster', 'episode_thumb'))
 
         self.poster_name = "cover.jpg"
 
@@ -123,7 +101,3 @@ class PS3Metadata(generic.GenericMetadata):
             return None
 
         return tbn_filename
-
-
-# present a standard "interface" from the module
-metadata_class = PS3Metadata

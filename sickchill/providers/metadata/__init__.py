@@ -20,18 +20,22 @@
 from subliminal.extensions import RegistrableExtensionManager
 
 manager = RegistrableExtensionManager('sickchill.providers.metadata', [
-    "mede8er = sickchill.providers.metadata.mede8er:Mede8erMetadata",
-    "ps3 = sickchill.providers.metadata.ps3:PS3Metadata",
-    "tivo = sickchill.providers.metadata.tivo:TIVOMetadata",
-    "mede8er = sickchill.providers.metadata.mede8er:Mede8erMetadata",
-    "tivo = sickchill.providers.metadata.tivo:TIVOMetadata",
-    "mediabrowser = sickchill.providers.metadata.mediabrowser:MediaBrowserMetadata",
-    "wdtv = sickchill.providers.metadata.wdtv:WDTVMetadata",
-    "kodi = sickchill.providers.metadata.kodi:KODIMetadata",
-    "wdtv = sickchill.providers.metadata.wdtv:WDTVMetadata",
-    "kodi = sickchill.providers.metadata.kodi:KODIMetadata",
-    "kodi_12plus = sickchill.providers.metadata.kodi_12plus:KODI_12PlusMetadata",
-    "mediabrowser = sickchill.providers.metadata.mediabrowser:MediaBrowserMetadata",
-    "ps3 = sickchill.providers.metadata.ps3:PS3Metadata",
-    "kodi_12plus = sickchill.providers.metadata.kodi_12plus:KODI_12PlusMetadata",
+    "kodi = sickchill.providers.metadata.kodi:Metadata",
+    "mede8er = sickchill.providers.metadata.mede8er:Metadata",
+    "mediabrowser = sickchill.providers.metadata.mediabrowser:Metadata",
+    "ps3 = sickchill.providers.metadata.ps3:Metadata",
+    "tivo = sickchill.providers.metadata.tivo:Metadata",
+    "wdtv = sickchill.providers.metadata.wdtv:Metadata",
 ])
+
+
+def get_config(provider: str, key: str = ''):
+    result = manager[provider].plugin().__config
+    if key:
+        result = result[key]
+    return result
+
+
+def set_config(provider: str, key: str, value):
+    get_config(provider)[key] = value
+

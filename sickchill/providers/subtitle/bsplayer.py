@@ -88,7 +88,7 @@ class BSPlayerSubtitle(Subtitle):
 class BSPlayerProvider(Provider):
     """BSPlayer Provider.
     """
-    languages = {Language.fromalpha3b(l) for l in language_converters['alpha3b'].codes}
+    languages = {Language.fromalpha3b(code) for code in language_converters['alpha3b'].codes}
     server_url = 'https://api.bsplayer.org/xml-rpc'
     user_agent = 'subliminal v%s' % __short_version__
 
@@ -148,7 +148,7 @@ class BSPlayerProvider(Provider):
             logger.error('[BSPlayer] ERROR: Unable to close session.')
         self.token = None
 
-    def query(self, languages, hash=None, size=None):
+    def query(self, languages, video_hash=None, size=None):
         # fill the search criteria
         root = self._api_request(
             func_name='searchSubtitles',
@@ -158,8 +158,8 @@ class BSPlayerProvider(Provider):
                 '<movieSize>{movie_size}</movieSize>'
                 '<languageId>{language_ids}</languageId>'
                 '<imdbId>*</imdbId>'
-            ).format(token=self.token, movie_hash=hash,
-                     movie_size=size, language_ids=','.join([l.alpha3 for l in languages]))
+            ).format(token=self.token, movie_hash=video_hash,
+                     movie_size=size, language_ids=','.join([lang.alpha3 for lang in languages]))
         )
         res = root.find('.//return/result')
         if res.find('status').text != 'OK':
@@ -198,7 +198,7 @@ class BSPlayerProvider(Provider):
         return subtitles
 
     def list_subtitles(self, video, languages):
-        return self.query(languages, hash=self.hash_bsplayer(video.name), size=video.size)
+        return self.query(languages, video_hash=self.hash_bsplayer(video.name), size=video.size)
 
     def download_subtitle(self, subtitle):
         logger.info('Downloading subtitle %r', subtitle)
@@ -211,7 +211,8 @@ class BSPlayerProvider(Provider):
 
         subtitle.content = fix_line_ending(zlib.decompress(response.content, 47))
 
-    def hash_bsplayer(self, video_path):
+    @staticmethod
+    def hash_bsplayer(video_path):
         """Compute a hash using BSPlayer's algorithm.
         :param str video_path: path of the video.
         :return: the hash.

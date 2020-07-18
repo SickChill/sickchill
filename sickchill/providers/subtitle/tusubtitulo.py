@@ -5,14 +5,13 @@ import re
 
 # Third Party Imports
 from babelfish import Language, language_converters, LanguageReverseConverter
-from guessit import guessit
 from requests import Session
 from subliminal import __short_version__
 from subliminal.cache import region, SHOW_EXPIRATION_TIME
 from subliminal.exceptions import ProviderError
 from subliminal.providers import ParserBeautifulSoup, Provider
 from subliminal.score import get_equivalent_release_groups
-from subliminal.subtitle import fix_line_ending, guess_matches, Subtitle
+from subliminal.subtitle import fix_line_ending, Subtitle
 from subliminal.utils import sanitize, sanitize_release_group
 from subliminal.video import Episode
 
@@ -56,10 +55,10 @@ release_pattern = re.compile('Versi.+n (.+)')
 
 class TuSubtituloSubtitle(Subtitle):
     """TuSubtitulo Subtitle."""
+
     provider_name = 'tusubtitulo'
 
-    def __init__(self, language, hearing_impaired, page_link, series, season, episode, title, year, version,
-                 download_link):
+    def __init__(self, language, hearing_impaired, page_link, series, season, episode, title, year, version, download_link):
         super(TuSubtituloSubtitle, self).__init__(language, hearing_impaired, page_link)
         self.page_link = page_link
         self.series = series
@@ -74,7 +73,11 @@ class TuSubtituloSubtitle(Subtitle):
     def id(self):
         return self.download_link
 
-    def get_matches(self, video):
+    @property
+    def info(self):
+        return self.version
+
+    def get_matches(self, video: Episode):
         matches = set()
 
         # series
@@ -100,18 +103,18 @@ class TuSubtituloSubtitle(Subtitle):
         # resolution
         if video.resolution and self.version and video.resolution in self.version.lower():
             matches.add('resolution')
-        # format
-        if video.format and self.version and video.format.lower() in self.version.lower():
-            matches.add('format')
+        # source
+        if video.source and self.version and video.source.lower() in self.version.lower():
+            matches.add('source')
         # other properties
-        matches |= guess_matches(video, guessit(self.version), partial=True)
+        matches |= Episode.fromname(self.version)
 
         return matches
 
 
 class TuSubtituloProvider(Provider):
     """TuSubtitulo Provider."""
-    languages = {Language('por', 'BR')} | {Language(l) for l in [
+    languages = {Language('por', 'BR')} | {Language(lang) for lang in [
         'cat', 'eng', 'glg', 'por', 'spa'
     ]}
     video_types = (Episode,)
@@ -284,12 +287,12 @@ class TuSubtituloProvider(Provider):
 
         return subtitles
 
-    def list_subtitles(self, video, languages):
+    def list_subtitles(self, video: Episode, languages):
         return [s for s in self.query(video.series, video.season, video.episode,
                                       video.year)
                 if s.language in languages]
 
-    def download_subtitle(self, subtitle):
+    def download_subtitle(self, subtitle: TuSubtituloSubtitle):
         # download the subtitle
         logger.info('Downloading subtitle %s', subtitle.download_link)
         r = self.session.get(subtitle.download_link, headers={'Referer': subtitle.page_link},

@@ -52,12 +52,7 @@ from .common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NA
                      NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN, WANTED)
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
-try:
-    # Stdlib Imports
-    from xml.etree import cElementTree as etree
-except ImportError:
-    # Stdlib Imports
-    from xml.etree import ElementTree as etree
+from xml.etree import ElementTree as etree
 
 try:
     # Third Party Imports

@@ -39,7 +39,7 @@ import uuid
 import zipfile
 from contextlib import closing
 from itertools import cycle
-from xml.etree import ElementTree as ElementTree
+from xml.etree import ElementTree
 
 # Third Party Imports
 import certifi

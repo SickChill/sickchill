@@ -5,6 +5,7 @@ import json
 import logging
 import zipfile
 from collections import defaultdict
+import io
 
 # Third Party Imports
 from babelfish import Language
@@ -24,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 class SubsCenterSubtitle(Subtitle):
     """SubsCenter Subtitle."""
+
     provider_name = 'subscenter'
 
     def __init__(self, language, hearing_impaired, page_link, series, season, episode, title, subtitle_id, subtitle_key,
@@ -42,6 +44,10 @@ class SubsCenterSubtitle(Subtitle):
     @property
     def id(self):
         return str(self.subtitle_id)
+
+    @property
+    def info(self):
+        return self.title
 
     def get_matches(self, video):
         matches = set()
@@ -75,7 +81,7 @@ class SubsCenterSubtitle(Subtitle):
 
 class SubsCenterProvider(Provider):
     """SubsCenter Provider."""
-    languages = {Language.fromalpha2(l) for l in ['he']}
+    languages = {Language.fromalpha2(code) for code in ['he']}
     server_url = 'http://www.subscenter.info/he/'
 
     def __init__(self, username=None, password=None):
@@ -211,7 +217,7 @@ class SubsCenterProvider(Provider):
 
         return list(subtitles.values())
 
-    def list_subtitles(self, video, languages):
+    def list_subtitles(self, video: Episode, languages):
         season = episode = None
         title = video.title
 
@@ -222,7 +228,7 @@ class SubsCenterProvider(Provider):
 
         return [s for s in self.query(title, season, episode) if s.language in languages]
 
-    def download_subtitle(self, subtitle):
+    def download_subtitle(self, subtitle: SubsCenterSubtitle):
         # download
         url = self.server_url + 'subtitle/download/{}/{}/'.format(subtitle.language.alpha2, subtitle.subtitle_id)
         params = {'v': subtitle.subtitle_version, 'key': subtitle.subtitle_key}

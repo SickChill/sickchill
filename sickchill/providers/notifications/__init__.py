@@ -114,15 +114,14 @@ def update_library(item):
     manager.map_method('update_library', item)
 
 
-def get_config(client: str, key: str = ''):
-    result = manager[client].plugin().__config
+def get_config(provider: str, key: str = ''):
+    result = manager[provider].plugin().__config
     if key:
         result = result[key]
     return result
 
 
-def set_config(client: str, key: str, value):
-    get_config(client)[key] = value
-
+def set_config(provider: str, key: str, value):
+    get_config(provider)[key] = value
 
 

@@ -60,9 +60,6 @@ class Notifier(AbstractNotifier):
             title = common.notifyStrings[common.NOTIFY_POSTPROCESS]
             self._send_synologyNotifier(name, title)
 
-    def update_library(self, item, remove: bool = False):
-        pass
-
     @staticmethod
     def test_notify(username):
         pass

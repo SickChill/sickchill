@@ -24,12 +24,7 @@ import sickbeard
 from sickbeard import common, logger
 from sickbeard.helpers import getURL, make_session
 
-try:
-    # Stdlib Imports
-    from xml.etree import cElementTree as etree
-except ImportError:
-    # Stdlib Imports
-    from xml.etree import ElementTree as etree
+from xml.etree import ElementTree
 
 # Local Folder Imports
 # Local Folder Imports
@@ -104,6 +99,15 @@ class Notifier(AbstractNotifier):
             if update_text and title and ipaddress:
                 self._notify_pht(update_text.format(ipaddress), title)
 
+    def notify_postprocess(self, name: str):
+        if self.config('process'):
+            title = common.notifyStrings[common.NOTIFY_POSTPROCESS]
+            self._notify_pht(name, title)
+
+    @staticmethod
+    def test_notify(username):
+        pass
+
     def test_notify_pht(self, host, username, password):
         return self._notify_pht('This is a test notification from SickChill',
                                 'Test Notification', host, username, password, force=True)
@@ -154,7 +158,7 @@ class Notifier(AbstractNotifier):
                     hosts_failed.add(cur_host)
                     continue
 
-                media_container = etree.fromstring(xml_response)
+                media_container = ElementTree.fromstring(xml_response)
             except IOError as error:
                 logger.warning('PLEX: Error while trying to contact Plex Media Server: {0}'.format
                            (str(error)))

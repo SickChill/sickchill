@@ -26,9 +26,9 @@ class SubtitulamosConverter(LanguageReverseConverter):
         self.name_converter = language_converters['name']
         self.from_subtitulamos = {
             'Español': ('spa',), 'Español (España)': ('spa',),
-                                  'Español (Latinoamérica)': ('spa', 'MX'), 'Català': ('cat',), 'English': ('eng',),
-                                  'Galego': ('glg',), 'Portuguese': ('por',), 'English (US)': ('eng', 'US'),
-                                  'English (UK)': ('eng', 'GB'), 'Brazilian': ('por', 'BR')}
+            'Español (Latinoamérica)': ('spa', 'MX'), 'Català': ('cat',), 'English': ('eng',),
+            'Galego': ('glg',), 'Portuguese': ('por',), 'English (US)': ('eng', 'US'),
+            'English (UK)': ('eng', 'GB'), 'Brazilian': ('por', 'BR')}
 
         self.to_subtitulamos = {('cat',): 'Català', ('glg',): 'Galego', ('por', 'BR'): 'Brazilian'}
 
@@ -54,6 +54,7 @@ language_converters.register('subtitulamos = sickchill.providers.subtitle.subtit
 
 class SubtitulamosSubtitle(Subtitle):
     """Subtitulamos Subtitle."""
+
     provider_name = 'subtitulamos'
 
     def __init__(self, language, hearing_impaired, page_link, series, season, episode, title, year, version,
@@ -71,6 +72,10 @@ class SubtitulamosSubtitle(Subtitle):
     @property
     def id(self):
         return self.download_link
+
+    @property
+    def info(self):
+        return self.title
 
     def get_matches(self, video):
         matches = set()

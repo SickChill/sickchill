@@ -27,7 +27,6 @@ from .base import AbstractNotifier
 
 
 class Notifier(AbstractNotifier):
-
     def notify_snatch(self, name):
         if self.config('snatch'):
             self._notify_discord(common.notifyStrings[common.NOTIFY_SNATCH] + ': ' + name)
@@ -51,6 +50,10 @@ class Notifier(AbstractNotifier):
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._notify_discord(title + " - " + update_text.format(ipaddress))
+
+    def notify_postprocess(self, name: str):
+        if self.config('process'):
+            self._notify_discord(common.notifyStrings[common.NOTIFY_POSTPROCESS] + ': ' + name)
 
     def test_notify(self):
         return self._notify_discord("This is a test notification from SickChill", force=True)

@@ -23,27 +23,27 @@ from datetime import datetime
 from itertools import chain
 from os.path import join
 from random import shuffle
-from typing import Union
+from typing import Union, Tuple
 
 # Third Party Imports
 from requests.utils import add_dict_to_cookiejar
-from validate import Validator
 
 # First Party Imports
 import sickbeard
-from sickbeard import config, logger
+from sickbeard import logger
 from sickbeard.tv import TVShow
 from sickbeard.classes import Proper, SearchResult
-from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, ua_pool
+from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT
 from sickbeard.db import DBConnection
 from sickbeard.helpers import download_file, getURL, make_session, remove_file_failed
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickbeard.show_name_helpers import allPossibleShowNames
 from sickbeard.tvcache import TVCache
 from sickchill.helper.common import sanitize_filename
+from sickchill.config.mixin import ConfigMixin
 
 
-class GenericProvider(object):
+class GenericProvider(ConfigMixin):
     NZB = 'nzb'
     NZBDATA = 'nzbdata'
     TORRENT = 'torrent'
@@ -65,7 +65,7 @@ class GenericProvider(object):
         self.name: str = name
 
         self.bt_cache_urls: list = [
-            #'http://torcache.net/torrent/{torrent_hash}.torrent',
+            # 'http://torcache.net/torrent/{torrent_hash}.torrent',
             'http://torrentproject.se/torrent/{torrent_hash}.torrent',
             'http://thetorrent.org/torrent/{torrent_hash}.torrent',
             'http://btdig.com/torrent/{torrent_hash}.torrent',
@@ -89,32 +89,9 @@ class GenericProvider(object):
         self.__options: tuple = tuple(['enabled'])
         self.__options += extra_options
 
+        self.__config = sickbeard.CFG2['providers']['media'][self.provider_type][self.name]
+
         shuffle(self.bt_cache_urls)
-
-    def __assure_config(self) -> None:
-        if 'providers' not in sickbeard.CFG2:
-            sickbeard.CFG2['providers'] = {}
-        if self.provider_type not in sickbeard.CFG2['providers']:
-            sickbeard.CFG2['providers'][self.provider_type] = {}
-        if self.get_id() not in sickbeard.CFG2['providers'][self.provider_type]:
-            sickbeard.CFG2['providers'][self.provider_type][self.get_id()] = {}
-            sickbeard.CFG2.validate(Validator(), copy=True)
-
-    def config(self, key: str):
-        if not self.options(key):
-            raise Exception('Unsupported key attempted to be read for provider: {}, key: {}'.format(self.name, key))
-        self.__assure_config()
-        return sickbeard.CFG2['providers'][self.provider_type][self.get_id()].get(key)
-
-    def set_config(self, key: str, value) -> None:
-        if not self.options(key):
-            logger.debug('Unsupported key attempted to be written for provider: {}, key: {}, value: {}'.format(self.name, key, value))
-            return
-        self.__assure_config()
-        sickbeard.CFG2['providers'][self.provider_type][self.get_id()][key] = value
-
-    def options(self, key: str) -> bool:
-        return key in self.__options
 
     def download_result(self, result) -> bool:
         if not self.login():
@@ -247,18 +224,16 @@ class GenericProvider(object):
 
                 else:
                     if not all([
-
-                        parse_result.season_number is not None,
-                        parse_result.episode_numbers,
-                        [ep for ep in episodes if (ep.season, ep.scene_season)[ep.show.is_scene] ==
-                        (parse_result.season_number, parse_result.scene_season)[ep.show.is_scene] and
-                        (ep.episode, ep.scene_episode)[ep.show.is_scene] in parse_result.episode_numbers]
+                        parse_result.season_number is not None, parse_result.episode_numbers,
+                        [ep for ep in episodes
+                         if (ep.season, ep.scene_season)[ep.show.is_scene] == (parse_result.season_number, parse_result.scene_season)[ep.show.is_scene]
+                            and (ep.episode, ep.scene_episode)[ep.show.is_scene] in parse_result.episode_numbers
+                         ]
                     ]) and not all([
                         # fallback for anime on absolute numbering
                         parse_result.is_anime,
                         parse_result.ab_episode_numbers is not None,
-                        [ep for ep in episodes if ep.show.is_anime and
-                        ep.absolute_number in parse_result.ab_episode_numbers]
+                        [ep for ep in episodes if ep.show.is_anime and ep.absolute_number in parse_result.ab_episode_numbers]
                     ]):
 
                         logger.info('The result {0} doesn\'t seem to match an episode that we are currently trying to snatch, skipping it'.format(title))
@@ -379,8 +354,7 @@ class GenericProvider(object):
     @staticmethod
     def get_url_hook(response, **kwargs_):
         if response:
-            logger.debug('{0} URL: {1} [Status: {2}]'.format
-                       (response.request.method, response.request.url, response.status_code))
+            logger.debug('{0} URL: {1} [Status: {2}]'.format(response.request.method, response.request.url, response.status_code))
 
             if response.request.method == 'POST':
                 logger.debug('With post data: {0}'.format(response.request.body))
@@ -575,7 +549,7 @@ class GenericProvider(object):
     def _verify_download(self, file_name) -> bool:
         return True
 
-    def add_cookies_from_ui(self) -> tuple[bool, str]:
+    def add_cookies_from_ui(self) -> Tuple[bool, str]:
         """
         Adds the cookies configured from UI to the providers requests session
         :return: A tuple with the the (success result, and a descriptive message in str)

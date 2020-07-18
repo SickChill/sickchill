@@ -22,10 +22,7 @@ import os
 import time
 from functools import reduce
 
-try:
-    import xml.etree.cElementTree as etree
-except ImportError:
-    import xml.etree.ElementTree as etree
+from xml.etree import ElementTree as etree
 
 # http://www.radicand.org/blog/orz/2010/2/21/edonkey2000-hash-in-python/
 import requests
