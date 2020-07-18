@@ -50,7 +50,7 @@ from . import (dailysearcher, db, event_queue, helpers, image_cache, logger, nam
                scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker, versionChecker)
 from .common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
 from .config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
-from .databases import cache_db, failed_db, mainDB
+from . import databases
 from .numdict import NumDict
 
 setup_gettext()
@@ -858,19 +858,19 @@ def initialize(consoleLogging=True):
 
         # initialize the main SB database
         main_db_con = db.DBConnection()
-        db.upgrade_database(main_db_con, mainDB.InitialSchema)
+        db.upgrade_database(main_db_con, databases.main.InitialSchema)
 
         # initialize the cache database
         cache_db_con = db.DBConnection('cache.db')
-        db.upgrade_database(cache_db_con, cache_db.InitialSchema)
+        db.upgrade_database(cache_db_con, databases.cache.InitialSchema)
 
         # initialize the failed downloads database
         failed_db_con = db.DBConnection('failed.db')
-        db.upgrade_database(failed_db_con, failed_db.InitialSchema)
+        db.upgrade_database(failed_db_con, databases.failed.InitialSchema)
 
         # fix up any db problems
         main_db_con = db.DBConnection()
-        db.sanity_check_database(main_db_con, mainDB.MainSanityCheck)
+        db.sanity_check_database(main_db_con, databases.main.MainSanityCheck)
 
         # migrate the config if it needs it
         migrator = ConfigMigrator(CFG)

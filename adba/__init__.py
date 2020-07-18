@@ -784,7 +784,8 @@ class Connection(threading.Thread):
         it's better that way, let it go as utf8 to databases etc. because then you've the real data stored
 
         """
-        raise AniDBStupidUserError("pylibanidb sets the encoding to utf8 as default and it's stupid to use any other encoding. you WILL lose some data if you use other encodings, and now you've been warned. you will need to modify the code yourself if you want to do something as stupid as changing the encoding")
+        raise AniDBError("pylibanidb sets the encoding to utf8 as default and it's stupid to use any other encoding. you WILL lose some data if you use other "
+                "encodings, and now you've been warned. you will need to modify the code yourself if you want to do something as stupid as changing the encoding")
         return self.handle(EncodingCommand(name), callback)
 
     def sendmsg(self, to, title, body, callback=None):

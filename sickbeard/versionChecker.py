@@ -210,7 +210,7 @@ class CheckVersion(object):
             assert len(cur_hash) == 40, "Commit hash wrong length: {0} hash: {1}".format(len(cur_hash), cur_hash)
 
             response = None
-            check_url = "https://raw.githubusercontent.com/{0}/{1}/{2}/sickbeard/databases/mainDB.py"
+            check_url = "https://raw.githubusercontent.com/{0}/{1}/{2}/sickbeard/databases/main.py"
             for attempt in (cur_hash, "master"):
                 response = helpers.getURL(check_url.format(sickbeard.GIT_ORG, sickbeard.GIT_REPO, attempt), session=self.session, returns='text')
                 if response:

@@ -51,8 +51,9 @@ from validate import Validator
 import sickbeard
 import sickchill
 from sickbeard import db
-from sickbeard.databases import cache_db, failed_db, mainDB
+from sickbeard import databases
 from sickbeard.tv import TVEpisode, TVShow
+import sickbeard.tvcache
 from sickchill.show.indexers import ShowIndexer
 
 # =================
@@ -74,6 +75,7 @@ PROCESSING_DIR = os.path.join(TEST_DIR, 'Downloads')
 NUM_SEASONS = 5
 EPISODES_PER_SEASON = 20
 
+
 # =================
 #  prepare env functions
 # =================
@@ -93,6 +95,7 @@ def create_test_cache_folder():
         os.mkdir(sickbeard.CACHE_DIR)
 
 # call env functions at appropriate time during SickBeard var setup
+
 
 # =================
 #  SickBeard globals
@@ -149,9 +152,10 @@ def _dummy_save_config():
     """
     return True
 
+
 # this overrides the SickBeard save_config which gets called during a db upgrade
 # this might be considered a hack
-mainDB.sickbeard.save_config = _dummy_save_config
+databases.main.sickbeard.save_config = _dummy_save_config
 
 
 def _fake_specify_ep(self, season, episode):
@@ -209,7 +213,7 @@ class SickbeardTestPostProcessorCase(unittest.TestCase):
         setup_test_processing_dir()
 
         show = TVShow(1, 1, 'en')
-        show.name = SHOW_NAME
+        show._name = SHOW_NAME
         show.location = FILE_DIR
 
         show.episodes = {}
@@ -280,6 +284,7 @@ class TestCacheDBConnection(TestDBConnection, object):
             if str(error) != "table lastUpdate already exists":
                 raise
 
+
 # this will override the normal db connection
 sickbeard.db.DBConnection = TestDBConnection
 sickbeard.tvcache.CacheDBConnection = TestCacheDBConnection
@@ -294,16 +299,16 @@ def setup_test_db():
     """
     # Upgrade the db to the latest version.
     # upgrading the db
-    db.upgrade_database(db.DBConnection(), mainDB.InitialSchema)
+    db.upgrade_database(db.DBConnection(), databases.main.InitialSchema)
 
     # fix up any db problems
-    db.sanity_check_database(db.DBConnection(), mainDB.MainSanityCheck)
+    db.sanity_check_database(db.DBConnection(), databases.main.MainSanityCheck)
 
     # and for cache.db too
-    db.upgrade_database(db.DBConnection('cache.db'), cache_db.InitialSchema)
+    db.upgrade_database(db.DBConnection('cache.db'), databases.cache.InitialSchema)
 
     # and for failed.db too
-    db.upgrade_database(db.DBConnection('failed.db'), failed_db.InitialSchema)
+    db.upgrade_database(db.DBConnection('failed.db'), databases.failed.InitialSchema)
 
 
 def teardown_test_db():
