@@ -50,3 +50,7 @@ imagesize
 send2trash
 deluge-client
 ifaddr
+twilio
+pyaes
+rtorrent-xmlrpc
+#mir.anidb

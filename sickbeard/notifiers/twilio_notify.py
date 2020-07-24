@@ -19,12 +19,12 @@
 # Stdlib Imports
 import re
 
+# Third Party Imports
+from twilio.rest import Client, TwilioException
+
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
-
-# import twilio
-
 
 
 class Notifier(object):
@@ -62,18 +62,17 @@ class Notifier(object):
             if not self.number.capabilities['sms']:
                 return False
 
-
             return self._notifyTwilio(_('This is a test notification from SickChill'), force=True, allow_raise=True)
-        except twilio.TwilioRestException:
+        except TwilioException:
             return False
 
     @property
     def number(self):
-        return self.client.phone_numbers.get(sickbeard.TWILIO_PHONE_SID)
+        return self.client.api.incoming_phone_numbers.get(sickbeard.TWILIO_PHONE_SID).fetch()
 
     @property
     def client(self):
-        return twilio.rest.TwilioRestClient(sickbeard.TWILIO_ACCOUNT_SID, sickbeard.TWILIO_AUTH_TOKEN)
+        return Client(sickbeard.TWILIO_ACCOUNT_SID, sickbeard.TWILIO_AUTH_TOKEN)
 
     def _notifyTwilio(self, message='', force=False, allow_raise=False):
         if not (sickbeard.USE_TWILIO or force or self.number_regex.match(sickbeard.TWILIO_TO_NUMBER)):
@@ -87,7 +86,7 @@ class Notifier(object):
                 to=sickbeard.TWILIO_TO_NUMBER,
                 from_=self.number.phone_number,
             )
-        except twilio.TwilioRestException as e:
+        except TwilioException as e:
             logger.exception('Twilio notification failed:' + str(e))
 
             if allow_raise:

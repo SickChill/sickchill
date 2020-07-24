@@ -1,7 +1,5 @@
 import operator
 
-from ..util.compat import py3k
-
 
 class NoValue(object):
     """Describe a missing cache value.
@@ -22,15 +20,8 @@ class NoValue(object):
         """
         return "<dogpile.cache.api.NoValue object>"
 
-    if py3k:
-
-        def __bool__(self):  # pragma NO COVERAGE
-            return False
-
-    else:
-
-        def __nonzero__(self):  # pragma NO COVERAGE
-            return False
+    def __bool__(self):  # pragma NO COVERAGE
+        return False
 
 
 NO_VALUE = NoValue()

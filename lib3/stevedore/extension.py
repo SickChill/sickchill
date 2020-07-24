@@ -48,6 +48,38 @@ class Extension(object):
         self.obj = obj
 
     @property
+    def module_name(self):
+        """The name of the module from which the entry point is loaded.
+
+        :return: A string in 'dotted.module' format.
+        """
+        # NOTE: importlib_metadata from PyPI includes this but the
+        # Python 3.8 standard library does not.
+        match = self.entry_point.pattern.match(self.entry_point.value)
+        return match.group('module')
+
+    @property
+    def extras(self):
+        """The 'extras' settings for the plugin."""
+        # NOTE: The underlying package returns re.Match objects for
+        # some reason. Translate those to the matched strings, which
+        # seem more useful.
+        return [
+            # Python 3.6 returns _sre.SRE_Match objects. Later
+            # versions of python return re.Match objects. Both types
+            # have a 'string' attribute containing the text that
+            # matched the pattern.
+            getattr(e, 'string', e)
+            for e in self.entry_point.extras
+        ]
+
+    @property
+    def attr(self):
+        """The attribute of the module to be loaded."""
+        match = self.entry_point.pattern.match(self.entry_point.value)
+        return match.group('attr')
+
+    @property
     def entry_point_target(self):
         """The module and attribute referenced by this extension's entry_point.
 

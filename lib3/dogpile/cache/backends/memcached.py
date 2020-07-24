@@ -7,12 +7,12 @@ Provides backends for talking to `memcached <http://memcached.org>`_.
 """
 
 import random
+import threading
 import time
 
 from ..api import CacheBackend
 from ..api import NO_VALUE
 from ... import util
-from ...util import compat
 
 __all__ = (
     "GenericMemcachedBackend",
@@ -138,7 +138,7 @@ class GenericMemcachedBackend(CacheBackend):
     def _clients(self):
         backend = self
 
-        class ClientPool(compat.threading.local):
+        class ClientPool(threading.local):
             def __init__(self):
                 self.memcached = backend._create_client()
 

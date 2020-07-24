@@ -2,6 +2,7 @@ from __future__ import absolute_import
 import errno
 import warnings
 import hmac
+import os
 import sys
 
 from binascii import hexlify, unhexlify
@@ -29,8 +30,8 @@ def _const_compare_digest_backport(a, b):
     Returns True if the digests match, and False otherwise.
     """
     result = abs(len(a) - len(b))
-    for l, r in zip(bytearray(a), bytearray(b)):
-        result |= l ^ r
+    for left, right in zip(bytearray(a), bytearray(b)):
+        result |= left ^ right
     return result == 0
 
 
@@ -293,6 +294,12 @@ def create_urllib3_context(
         # We do our own verification, including fingerprints and alternative
         # hostnames. So disable it here
         context.check_hostname = False
+
+    # Enable logging of TLS session keys via defacto standard environment variable
+    # 'SSLKEYLOGFILE', if the feature is available (Python 3.8+).
+    if hasattr(context, "keylog_filename"):
+        context.keylog_filename = os.environ.get("SSLKEYLOGFILE")
+
     return context
 
 

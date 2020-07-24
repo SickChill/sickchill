@@ -1,0 +1,15 @@
+Metadata-Version: 2.0
+Name: rtorrent-xmlrpc
+Version: 0.0.3
+Summary: Library for direct communication with rtorrent's xmlrpc via scgi
+Home-page: https://github.com/dbowring/rtorrent_xmlrpc
+Author: Daniel Bowring
+Author-email: contact@danielb.codes
+License: UNKNOWN
+Download-URL: https://github.com/dbowring/rtorrent_xmlrpc/archive/0.0.3.tar.gz
+Keywords: rtorrent,xmlrpc,scgi
+Platform: UNKNOWN
+
+UNKNOWN
+
+

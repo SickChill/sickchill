@@ -8,7 +8,8 @@ from cryptography import utils
 from cryptography.hazmat.backends.openssl.utils import _evp_pkey_derive
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.x25519 import (
-    X25519PrivateKey, X25519PublicKey
+    X25519PrivateKey,
+    X25519PublicKey,
 )
 
 
@@ -23,27 +24,18 @@ class _X25519PublicKey(object):
 
     def public_bytes(self, encoding, format):
         if (
-            encoding is serialization.Encoding.Raw or
-            format is serialization.PublicFormat.Raw
+            encoding is serialization.Encoding.Raw
+            or format is serialization.PublicFormat.Raw
         ):
             if (
-                encoding is not serialization.Encoding.Raw or
-                format is not serialization.PublicFormat.Raw
+                encoding is not serialization.Encoding.Raw
+                or format is not serialization.PublicFormat.Raw
             ):
                 raise ValueError(
                     "When using Raw both encoding and format must be Raw"
                 )
 
             return self._raw_public_bytes()
-
-        if (
-            encoding in serialization._PEM_DER and
-            format is not serialization.PublicFormat.SubjectPublicKeyInfo
-        ):
-            raise ValueError(
-                "format must be SubjectPublicKeyInfo when encoding is PEM or "
-                "DER"
-            )
 
         return self._backend._public_key_bytes(
             encoding, format, self, self._evp_pkey, None
@@ -85,19 +77,19 @@ class _X25519PrivateKey(object):
         if not isinstance(peer_public_key, X25519PublicKey):
             raise TypeError("peer_public_key must be X25519PublicKey.")
 
-        return _evp_pkey_derive(
-            self._backend, self._evp_pkey, peer_public_key
-        )
+        return _evp_pkey_derive(self._backend, self._evp_pkey, peer_public_key)
 
     def private_bytes(self, encoding, format, encryption_algorithm):
         if (
-            encoding is serialization.Encoding.Raw or
-            format is serialization.PublicFormat.Raw
+            encoding is serialization.Encoding.Raw
+            or format is serialization.PublicFormat.Raw
         ):
             if (
-                format is not serialization.PrivateFormat.Raw or
-                encoding is not serialization.Encoding.Raw or not
-                isinstance(encryption_algorithm, serialization.NoEncryption)
+                format is not serialization.PrivateFormat.Raw
+                or encoding is not serialization.Encoding.Raw
+                or not isinstance(
+                    encryption_algorithm, serialization.NoEncryption
+                )
             ):
                 raise ValueError(
                     "When using Raw both encoding and format must be Raw "
@@ -106,16 +98,8 @@ class _X25519PrivateKey(object):
 
             return self._raw_private_bytes()
 
-        if (
-            encoding in serialization._PEM_DER and
-            format is not serialization.PrivateFormat.PKCS8
-        ):
-            raise ValueError(
-                "format must be PKCS8 when encoding is PEM or DER"
-            )
-
         return self._backend._private_key_bytes(
-            encoding, format, encryption_algorithm, self._evp_pkey, None
+            encoding, format, encryption_algorithm, self, self._evp_pkey, None
         )
 
     def _raw_private_bytes(self):
@@ -125,9 +109,13 @@ class _X25519PrivateKey(object):
         # using the last 32 bytes, which is the key itself.
         bio = self._backend._create_mem_bio_gc()
         res = self._backend._lib.i2d_PKCS8PrivateKey_bio(
-            bio, self._evp_pkey,
-            self._backend._ffi.NULL, self._backend._ffi.NULL,
-            0, self._backend._ffi.NULL, self._backend._ffi.NULL
+            bio,
+            self._evp_pkey,
+            self._backend._ffi.NULL,
+            self._backend._ffi.NULL,
+            0,
+            self._backend._ffi.NULL,
+            self._backend._ffi.NULL,
         )
         self._backend.openssl_assert(res == 1)
         pkcs8 = self._backend._read_mem_bio(bio)

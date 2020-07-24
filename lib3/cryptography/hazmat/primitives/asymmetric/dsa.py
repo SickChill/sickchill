@@ -128,8 +128,10 @@ def generate_private_key(key_size, backend):
 
 
 def _check_dsa_parameters(parameters):
-    if parameters.p.bit_length() not in [1024, 2048, 3072]:
-        raise ValueError("p must be exactly 1024, 2048, or 3072 bits long")
+    if parameters.p.bit_length() not in [1024, 2048, 3072, 4096]:
+        raise ValueError(
+            "p must be exactly 1024, 2048, 3072, or 4096 bits long"
+        )
     if parameters.q.bit_length() not in [160, 224, 256]:
         raise ValueError("q must be exactly 160, 224, or 256 bits long")
 
@@ -150,9 +152,9 @@ def _check_dsa_private_numbers(numbers):
 class DSAParameterNumbers(object):
     def __init__(self, p, q, g):
         if (
-            not isinstance(p, six.integer_types) or
-            not isinstance(q, six.integer_types) or
-            not isinstance(g, six.integer_types)
+            not isinstance(p, six.integer_types)
+            or not isinstance(q, six.integer_types)
+            or not isinstance(g, six.integer_types)
         ):
             raise TypeError(
                 "DSAParameterNumbers p, q, and g arguments must be integers."
@@ -180,9 +182,8 @@ class DSAParameterNumbers(object):
 
     def __repr__(self):
         return (
-            "<DSAParameterNumbers(p={self.p}, q={self.q}, g={self.g})>".format(
-                self=self
-            )
+            "<DSAParameterNumbers(p={self.p}, q={self.q}, "
+            "g={self.g})>".format(self=self)
         )
 
 
@@ -210,8 +211,8 @@ class DSAPublicNumbers(object):
             return NotImplemented
 
         return (
-            self.y == other.y and
-            self.parameter_numbers == other.parameter_numbers
+            self.y == other.y
+            and self.parameter_numbers == other.parameter_numbers
         )
 
     def __ne__(self, other):

@@ -13,22 +13,8 @@ def cryptography_has_ec2m():
     ]
 
 
-def cryptography_has_ec_1_0_2():
-    return [
-        "EC_curve_nid2nist",
-    ]
-
-
-def cryptography_has_set_ecdh_auto():
-    return [
-        "SSL_CTX_set_ecdh_auto",
-    ]
-
-
 def cryptography_has_rsa_r_pkcs_decoding_error():
-    return [
-        "RSA_R_PKCS_DECODING_ERROR"
-    ]
+    return ["RSA_R_PKCS_DECODING_ERROR"]
 
 
 def cryptography_has_rsa_oaep_md():
@@ -51,15 +37,6 @@ def cryptography_has_ssl3_method():
     ]
 
 
-def cryptography_has_alpn():
-    return [
-        "SSL_CTX_set_alpn_protos",
-        "SSL_set_alpn_protos",
-        "SSL_CTX_set_alpn_select_cb",
-        "SSL_get0_alpn_selected",
-    ]
-
-
 def cryptography_has_compression():
     return [
         "SSL_get_current_compression",
@@ -68,62 +45,22 @@ def cryptography_has_compression():
     ]
 
 
-def cryptography_has_get_server_tmp_key():
+def cryptography_has_102_verification():
     return [
-        "SSL_get_server_tmp_key",
-    ]
-
-
-def cryptography_has_102_verification_error_codes():
-    return [
-        'X509_V_ERR_SUITE_B_INVALID_VERSION',
-        'X509_V_ERR_SUITE_B_INVALID_ALGORITHM',
-        'X509_V_ERR_SUITE_B_INVALID_CURVE',
-        'X509_V_ERR_SUITE_B_INVALID_SIGNATURE_ALGORITHM',
-        'X509_V_ERR_SUITE_B_LOS_NOT_ALLOWED',
-        'X509_V_ERR_SUITE_B_CANNOT_SIGN_P_384_WITH_P_256',
-        'X509_V_ERR_HOSTNAME_MISMATCH',
-        'X509_V_ERR_EMAIL_MISMATCH',
-        'X509_V_ERR_IP_ADDRESS_MISMATCH'
-    ]
-
-
-def cryptography_has_102_verification_params():
-    return [
+        "X509_V_ERR_SUITE_B_INVALID_VERSION",
+        "X509_V_ERR_SUITE_B_INVALID_ALGORITHM",
+        "X509_V_ERR_SUITE_B_INVALID_CURVE",
+        "X509_V_ERR_SUITE_B_INVALID_SIGNATURE_ALGORITHM",
+        "X509_V_ERR_SUITE_B_LOS_NOT_ALLOWED",
+        "X509_V_ERR_SUITE_B_CANNOT_SIGN_P_384_WITH_P_256",
         "X509_V_FLAG_SUITEB_128_LOS_ONLY",
         "X509_V_FLAG_SUITEB_192_LOS",
         "X509_V_FLAG_SUITEB_128_LOS",
-        "X509_VERIFY_PARAM_set1_host",
-        "X509_VERIFY_PARAM_set1_email",
-        "X509_VERIFY_PARAM_set1_ip",
-        "X509_VERIFY_PARAM_set1_ip_asc",
-        "X509_VERIFY_PARAM_set_hostflags",
-        "SSL_get0_param",
-        "SSL_CTX_get0_param",
-        "X509_CHECK_FLAG_ALWAYS_CHECK_SUBJECT",
-        "X509_CHECK_FLAG_NO_WILDCARDS",
-        "X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS",
-        "X509_CHECK_FLAG_MULTI_LABEL_WILDCARDS",
-        "X509_CHECK_FLAG_SINGLE_LABEL_SUBDOMAINS"
     ]
 
 
 def cryptography_has_110_verification_params():
-    return [
-        "X509_CHECK_FLAG_NEVER_CHECK_SUBJECT"
-    ]
-
-
-def cryptography_has_x509_v_flag_trusted_first():
-    return [
-        "X509_V_FLAG_TRUSTED_FIRST",
-    ]
-
-
-def cryptography_has_x509_v_flag_partial_chain():
-    return [
-        "X509_V_FLAG_PARTIAL_CHAIN",
-    ]
+    return ["X509_CHECK_FLAG_NEVER_CHECK_SUBJECT"]
 
 
 def cryptography_has_set_cert_cb():
@@ -158,18 +95,6 @@ def cryptography_has_locking_callbacks():
 def cryptography_has_scrypt():
     return [
         "EVP_PBE_scrypt",
-    ]
-
-
-def cryptography_has_generic_dtls_method():
-    return [
-        "DTLS_method",
-        "DTLS_server_method",
-        "DTLS_client_method",
-        "SSL_OP_NO_DTLSv1",
-        "SSL_OP_NO_DTLSv1_2",
-        "DTLS_set_link_mtu",
-        "DTLS_get_link_min_mtu",
     ]
 
 
@@ -329,6 +254,13 @@ def cryptography_has_tlsv13():
     ]
 
 
+def cryptography_has_keylog():
+    return [
+        "SSL_CTX_set_keylog_callback",
+        "SSL_CTX_get_keylog_callback",
+    ]
+
+
 def cryptography_has_raw_key():
     return [
         "EVP_PKEY_new_raw_private_key",
@@ -372,40 +304,22 @@ def cryptography_has_verified_chain():
 # lists so we can use coverage to measure which are used.
 CONDITIONAL_NAMES = {
     "Cryptography_HAS_EC2M": cryptography_has_ec2m,
-    "Cryptography_HAS_EC_1_0_2": cryptography_has_ec_1_0_2,
-    "Cryptography_HAS_SET_ECDH_AUTO": cryptography_has_set_ecdh_auto,
     "Cryptography_HAS_RSA_R_PKCS_DECODING_ERROR": (
         cryptography_has_rsa_r_pkcs_decoding_error
     ),
     "Cryptography_HAS_RSA_OAEP_MD": cryptography_has_rsa_oaep_md,
     "Cryptography_HAS_RSA_OAEP_LABEL": cryptography_has_rsa_oaep_label,
     "Cryptography_HAS_SSL3_METHOD": cryptography_has_ssl3_method,
-    "Cryptography_HAS_ALPN": cryptography_has_alpn,
     "Cryptography_HAS_COMPRESSION": cryptography_has_compression,
-    "Cryptography_HAS_GET_SERVER_TMP_KEY": cryptography_has_get_server_tmp_key,
-    "Cryptography_HAS_102_VERIFICATION_ERROR_CODES": (
-        cryptography_has_102_verification_error_codes
-    ),
-    "Cryptography_HAS_102_VERIFICATION_PARAMS": (
-        cryptography_has_102_verification_params
-    ),
+    "Cryptography_HAS_102_VERIFICATION": cryptography_has_102_verification,
     "Cryptography_HAS_110_VERIFICATION_PARAMS": (
         cryptography_has_110_verification_params
-    ),
-    "Cryptography_HAS_X509_V_FLAG_TRUSTED_FIRST": (
-        cryptography_has_x509_v_flag_trusted_first
-    ),
-    "Cryptography_HAS_X509_V_FLAG_PARTIAL_CHAIN": (
-        cryptography_has_x509_v_flag_partial_chain
     ),
     "Cryptography_HAS_SET_CERT_CB": cryptography_has_set_cert_cb,
     "Cryptography_HAS_SSL_ST": cryptography_has_ssl_st,
     "Cryptography_HAS_TLS_ST": cryptography_has_tls_st,
     "Cryptography_HAS_LOCKING_CALLBACKS": cryptography_has_locking_callbacks,
     "Cryptography_HAS_SCRYPT": cryptography_has_scrypt,
-    "Cryptography_HAS_GENERIC_DTLS_METHOD": (
-        cryptography_has_generic_dtls_method
-    ),
     "Cryptography_HAS_EVP_PKEY_DHX": cryptography_has_evp_pkey_dhx,
     "Cryptography_HAS_MEM_FUNCTIONS": cryptography_has_mem_functions,
     "Cryptography_HAS_SCT": cryptography_has_sct,
@@ -430,6 +344,7 @@ CONDITIONAL_NAMES = {
     "Cryptography_HAS_OPENSSL_CLEANUP": cryptography_has_openssl_cleanup,
     "Cryptography_HAS_CIPHER_DETAILS": cryptography_has_cipher_details,
     "Cryptography_HAS_TLSv1_3": cryptography_has_tlsv13,
+    "Cryptography_HAS_KEYLOG": cryptography_has_keylog,
     "Cryptography_HAS_RAW_KEY": cryptography_has_raw_key,
     "Cryptography_HAS_EVP_DIGESTFINAL_XOF": (
         cryptography_has_evp_digestfinal_xof

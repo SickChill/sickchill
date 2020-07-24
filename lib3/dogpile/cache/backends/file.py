@@ -10,11 +10,12 @@ from __future__ import with_statement
 
 from contextlib import contextmanager
 import os
+import pickle
+import threading
 
 from ..api import CacheBackend
 from ..api import NO_VALUE
 from ... import util
-from ...util import compat
 
 __all__ = ["DBMBackend", "FileLock", "AbstractFileLock"]
 
@@ -156,11 +157,8 @@ class DBMBackend(CacheBackend):
             util.KeyReentrantMutex.factory,
         )
 
-        # TODO: make this configurable
-        if compat.py3k:
-            import dbm
-        else:
-            import anydbm as dbm
+        import dbm
+
         self.dbmmodule = dbm
         self._init_dbm_file()
 
@@ -230,7 +228,7 @@ class DBMBackend(CacheBackend):
                 except KeyError:
                     value = NO_VALUE
             if value is not NO_VALUE:
-                value = compat.pickle.loads(value)
+                value = pickle.loads(value)
             return value
 
     def get_multi(self, keys):
@@ -238,16 +236,12 @@ class DBMBackend(CacheBackend):
 
     def set(self, key, value):
         with self._dbm_file(True) as dbm:
-            dbm[key] = compat.pickle.dumps(
-                value, compat.pickle.HIGHEST_PROTOCOL
-            )
+            dbm[key] = pickle.dumps(value, pickle.HIGHEST_PROTOCOL)
 
     def set_multi(self, mapping):
         with self._dbm_file(True) as dbm:
             for key, value in mapping.items():
-                dbm[key] = compat.pickle.dumps(
-                    value, compat.pickle.HIGHEST_PROTOCOL
-                )
+                dbm[key] = pickle.dumps(value, pickle.HIGHEST_PROTOCOL)
 
     def delete(self, key):
         with self._dbm_file(True) as dbm:
@@ -397,7 +391,7 @@ class FileLock(AbstractFileLock):
     """
 
     def __init__(self, filename):
-        self._filedescriptor = compat.threading.local()
+        self._filedescriptor = threading.local()
         self.filename = filename
 
     @util.memoized_property
