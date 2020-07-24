@@ -195,7 +195,7 @@ class AniDBLink(threading.Thread):
             raise AniDBBannedError("Not sending, banned")
         self._do_delay()
         self.lastpacket = time()
-        settings.started = time()
+        command.started = time()
         data = command.raw_data()
 
         self.sock.sendto(data, self.target)
@@ -215,6 +215,6 @@ class AniDBLink(threading.Thread):
     def request(self, command):
         if not (self.session and command.session) and command.command not in ('AUTH', 'PING', 'ENCRYPT'):
             raise AniDBMustAuthError("You must be authed to execute commands besides AUTH and PING")
-        settings.started = time()
+        command.started = time()
         self._cmd_queue(command)
         self._send(command)
