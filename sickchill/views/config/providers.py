@@ -25,8 +25,10 @@ from tornado.web import addslash
 
 # First Party Imports
 import sickbeard
+import sickchill.start
 from sickbeard import config, filters, ui
 from sickbeard.providers import newznab, rsstorrent
+from sickchill import settings
 from sickchill.helper import try_int
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.views.common import PageTemplate
@@ -55,7 +57,7 @@ class ConfigProviders(Config):
         if not name:
             return json.dumps({'error': 'No Provider Name specified'})
 
-        providerDict = dict(list(zip((x.get_id() for x in sickbeard.newznabProviderList), sickbeard.newznabProviderList)))
+        providerDict = dict(list(zip((x.get_id() for x in settings.newznabProviderList), settings.newznabProviderList)))
 
         cur_id = GenericProvider.make_id(name)
 
@@ -93,16 +95,16 @@ class ConfigProviders(Config):
     @staticmethod
     def deleteNewznabProvider(nnid):
 
-        providerDict = dict(list(zip((x.get_id() for x in sickbeard.newznabProviderList), sickbeard.newznabProviderList)))
+        providerDict = dict(list(zip((x.get_id() for x in settings.newznabProviderList), settings.newznabProviderList)))
 
         if nnid not in providerDict or providerDict[nnid].default:
             return '0'
 
         # delete it from the list
-        sickbeard.newznabProviderList.remove(providerDict[nnid])
+        settings.newznabProviderList.remove(providerDict[nnid])
 
-        if nnid in sickbeard.PROVIDER_ORDER:
-            sickbeard.PROVIDER_ORDER.remove(nnid)
+        if nnid in settings.PROVIDER_ORDER:
+            settings.PROVIDER_ORDER.remove(nnid)
 
         return '1'
 
@@ -115,7 +117,7 @@ class ConfigProviders(Config):
         url = config.clean_url(url)
         tempProvider = rsstorrent.TorrentRssProvider(name, url, cookies, titleTAG)
 
-        if tempProvider.get_id() in (x.get_id() for x in sickbeard.torrentRssProviderList):
+        if tempProvider.get_id() in (x.get_id() for x in settings.torrentRssProviderList):
             return json.dumps({'error': 'Exists as ' + tempProvider.name})
         else:
             (succ, errMsg) = tempProvider.validateRSS()
@@ -128,22 +130,22 @@ class ConfigProviders(Config):
     def deleteTorrentRssProvider(provider_id):
 
         providerDict = dict(
-            list(zip((x.get_id() for x in sickbeard.torrentRssProviderList), sickbeard.torrentRssProviderList)))
+            list(zip((x.get_id() for x in settings.torrentRssProviderList), settings.torrentRssProviderList)))
 
         if provider_id not in providerDict:
             return '0'
 
         # delete it from the list
-        sickbeard.torrentRssProviderList.remove(providerDict[provider_id])
+        settings.torrentRssProviderList.remove(providerDict[provider_id])
 
-        if provider_id in sickbeard.PROVIDER_ORDER:
-            sickbeard.PROVIDER_ORDER.remove(provider_id)
+        if provider_id in settings.PROVIDER_ORDER:
+            settings.PROVIDER_ORDER.remove(provider_id)
 
         return '1'
 
     def saveProviders(self, newznab_string='', torrentrss_string='', provider_order=None, **kwargs):
         newznabProviderDict = dict(
-            list(zip((x.get_id() for x in sickbeard.newznabProviderList), sickbeard.newznabProviderList)))
+            list(zip((x.get_id() for x in settings.newznabProviderList), settings.newznabProviderList)))
 
         finished_names = []
 
@@ -162,7 +164,7 @@ class ConfigProviders(Config):
             # if it does not already exist then add it
             if cur_id not in newznabProviderDict:
                 new_provider = newznab.NewznabProvider(cur_name, cur_url, key=cur_key, catIDs=cur_cat)
-                sickbeard.newznabProviderList.append(new_provider)
+                settings.newznabProviderList.append(new_provider)
                 newznabProviderDict[cur_id] = new_provider
 
             # set all params
@@ -182,16 +184,16 @@ class ConfigProviders(Config):
 
         # delete anything that is in the list that was not processed just now
         if newznab_string:
-            for curProvider in sickbeard.newznabProviderList:
+            for curProvider in settings.newznabProviderList:
                 if curProvider.get_id() not in finished_names:
-                    sickbeard.newznabProviderList.remove(curProvider)
+                    settings.newznabProviderList.remove(curProvider)
                     del newznabProviderDict[curProvider.get_id()]
 
         # if not torrentrss_string:
         #     logger.debug('No torrentrss_string passed to saveProviders')
 
         torrentRssProviderDict = dict(
-            list(zip((x.get_id() for x in sickbeard.torrentRssProviderList), sickbeard.torrentRssProviderList)))
+            list(zip((x.get_id() for x in settings.torrentRssProviderList), settings.torrentRssProviderList)))
 
         finished_names = []
 
@@ -208,7 +210,7 @@ class ConfigProviders(Config):
                 # if it does not already exist then create it
                 if cur_id not in torrentRssProviderDict:
                     new_provider = rsstorrent.TorrentRssProvider(cur_name, cur_url, cur_cookies, cur_title_tag)
-                    sickbeard.torrentRssProviderList.append(new_provider)
+                    settings.torrentRssProviderList.append(new_provider)
                     torrentRssProviderDict[cur_id] = new_provider
 
                 # update values
@@ -222,9 +224,9 @@ class ConfigProviders(Config):
 
         # delete anything that is in the list that was not processed just now
         if torrentrss_string:
-            for curProvider in sickbeard.torrentRssProviderList:
+            for curProvider in settings.torrentRssProviderList:
                 if curProvider.get_id() not in finished_names:
-                    sickbeard.torrentRssProviderList.remove(curProvider)
+                    settings.torrentRssProviderList.remove(curProvider)
                     del torrentRssProviderDict[curProvider.get_id()]
 
         # do the enable/disable
@@ -330,14 +332,14 @@ class ConfigProviders(Config):
             if curProvider.enable_cookies:
                 curProvider.cookies = str(kwargs.get(curProvider.get_id('_cookies'))).strip()
 
-        sickbeard.NEWZNAB_DATA = '!!!'.join([x.configStr() for x in sickbeard.newznabProviderList])
-        sickbeard.PROVIDER_ORDER = enabled_provider_list + disabled_provider_list
+        settings.NEWZNAB_DATA = '!!!'.join([x.configStr() for x in settings.newznabProviderList])
+        settings.PROVIDER_ORDER = enabled_provider_list + disabled_provider_list
 
-        sickbeard.save_config()
+        sickchill.start.save_config()
 
         # Add a site_message if no providers are enabled for daily and/or backlog
         sickbeard.providers.check_enabled_providers()
 
-        ui.notifications.message(_('Configuration Saved'), os.path.join(sickbeard.CONFIG_FILE))
+        ui.notifications.message(_('Configuration Saved'), os.path.join(settings.CONFIG_FILE))
 
         return self.redirect("/config/providers/")

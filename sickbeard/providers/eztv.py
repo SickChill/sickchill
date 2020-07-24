@@ -23,6 +23,7 @@ from requests.compat import urljoin
 # First Party Imports
 import sickbeard
 from sickbeard import logger, tvcache
+from sickchill import settings
 from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -83,7 +84,7 @@ class EZTVProvider(TorrentProvider):
                     if not all([title, info_hash]):
                         continue
 
-                    link = result[('magnet_url', 'torrent_url')[sickbeard.TORRENT_METHOD == 'blackhole']]
+                    link = result[('magnet_url', 'torrent_url')[settings.TORRENT_METHOD == 'blackhole']]
 
                     seeders = result['seeds']
                     leechers = result['peers']

@@ -19,6 +19,7 @@
 # First Party Imports
 import sickbeard
 from sickbeard.event_queue import Events
+from sickchill import settings
 
 
 class Restart(object):
@@ -27,9 +28,9 @@ class Restart(object):
 
     @staticmethod
     def restart(pid):
-        if str(pid) != str(sickbeard.PID):
+        if str(pid) != str(settings.PID):
             return False
 
-        sickbeard.events.put(Events.SystemEvent.RESTART)
+        settings.events.put(Events.SystemEvent.RESTART)
 
         return True

@@ -20,6 +20,7 @@
 # First Party Imports
 import sickbeard
 from sickbeard import logger, tvcache
+from sickchill import settings
 from sickchill.helper.common import try_int
 from sickchill.providers.nzb.NZBProvider import NZBProvider
 
@@ -84,7 +85,7 @@ class OmgwtfnzbsProvider(NZBProvider):
             'api': self.api_key,
             'eng': 1,
             'catid': '19,20,30',  # SD,HD,UHD
-            'retention': sickbeard.USENET_RETENTION,
+            'retention': settings.USENET_RETENTION,
         }
 
         for mode in search_strings:

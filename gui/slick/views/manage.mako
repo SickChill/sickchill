@@ -1,7 +1,7 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     from operator import attrgetter
-    import sickbeard
+    from sickchill import settings
     from sickbeard.common import statusStrings
 %>
 
@@ -50,7 +50,7 @@
                                 <th width="1%">${_('Update')}<br><input type="checkbox" class="bulkCheck" id="updateCheck" /></th>
                                 <th width="1%">${_('Rescan')}<br><input type="checkbox" class="bulkCheck" id="refreshCheck" /></th>
                                 <th width="1%">${_('Rename')}<br><input type="checkbox" class="bulkCheck" id="renameCheck" /></th>
-                                % if sickbeard.USE_SUBTITLES:
+                                % if settings.USE_SUBTITLES:
                                     <th width="1%">${_('Search Subtitle')}<br><input type="checkbox" class="bulkCheck" id="subtitleCheck" /></th>
                                 % endif
                                 <!-- <th>${_('Force Metadata Regen')} <input type="checkbox" class="bulkCheck" id="metadataCheck" /></th>//-->
@@ -59,27 +59,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            % for curShow in sorted(sickbeard.showList, key=lambda mbr: attrgetter('sort_name')(mbr)):
+                            % for curShow in sorted(settings.showList, key=lambda mbr: attrgetter('sort_name')(mbr)):
                             <%
-                                if sickbeard.showQueueScheduler.action.is_in_remove_queue(curShow) or sickbeard.showQueueScheduler.action.is_being_removed(curShow):
+                                if settings.showQueueScheduler.action.is_in_remove_queue(curShow) or settings.showQueueScheduler.action.is_being_removed(curShow):
                                     continue
 
-                                disabled = sickbeard.showQueueScheduler.action.is_being_updated(curShow) or sickbeard.showQueueScheduler.action.is_in_update_queue(curShow)
+                                disabled = settings.showQueueScheduler.action.is_being_updated(curShow) or settings.showQueueScheduler.action.is_in_update_queue(curShow)
                                 curUpdate = "<input type=\"checkbox\" class=\"updateCheck\" id=\"update-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 
-                                disabled = sickbeard.showQueueScheduler.action.is_being_refreshed(curShow) or sickbeard.showQueueScheduler.action.is_in_refresh_queue(curShow)
+                                disabled = settings.showQueueScheduler.action.is_being_refreshed(curShow) or settings.showQueueScheduler.action.is_in_refresh_queue(curShow)
                                 curRefresh = "<input type=\"checkbox\" class=\"refreshCheck\" id=\"refresh-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 
-                                disabled = sickbeard.showQueueScheduler.action.is_being_renamed(curShow) or sickbeard.showQueueScheduler.action.is_in_rename_queue(curShow)
+                                disabled = settings.showQueueScheduler.action.is_being_renamed(curShow) or settings.showQueueScheduler.action.is_in_rename_queue(curShow)
                                 curRename = "<input type=\"checkbox\" class=\"renameCheck\" id=\"rename-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 
-                                disabled = not curShow.subtitles or sickbeard.showQueueScheduler.action.is_being_subtitled(curShow) or sickbeard.showQueueScheduler.action.is_in_subtitle_queue(curShow)
+                                disabled = not curShow.subtitles or settings.showQueueScheduler.action.is_being_subtitled(curShow) or settings.showQueueScheduler.action.is_in_subtitle_queue(curShow)
                                 curSubtitle = "<input type=\"checkbox\" class=\"subtitleCheck\" id=\"subtitle-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 
-                                disabled = sickbeard.showQueueScheduler.action.is_being_renamed(curShow) or sickbeard.showQueueScheduler.action.is_in_rename_queue(curShow) or sickbeard.showQueueScheduler.action.is_in_refresh_queue(curShow)
+                                disabled = settings.showQueueScheduler.action.is_being_renamed(curShow) or settings.showQueueScheduler.action.is_in_rename_queue(curShow) or settings.showQueueScheduler.action.is_in_refresh_queue(curShow)
                                 curDelete = "<input type=\"checkbox\" class=\"confirm deleteCheck\" id=\"delete-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
 
-                                disabled = sickbeard.showQueueScheduler.action.is_being_renamed(curShow) or sickbeard.showQueueScheduler.action.is_in_rename_queue(curShow) or sickbeard.showQueueScheduler.action.is_in_refresh_queue(curShow)
+                                disabled = settings.showQueueScheduler.action.is_being_renamed(curShow) or settings.showQueueScheduler.action.is_in_rename_queue(curShow) or settings.showQueueScheduler.action.is_in_refresh_queue(curShow)
                                 curRemove = "<input type=\"checkbox\" class=\"removeCheck\" id=\"remove-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
                             %>
                                 <tr>
@@ -105,7 +105,7 @@
                                     <td align="center">${curUpdate}</td>
                                     <td align="center">${curRefresh}</td>
                                     <td align="center">${curRename}</td>
-                                    % if sickbeard.USE_SUBTITLES:
+                                    % if settings.USE_SUBTITLES:
                                         <td align="center">${curSubtitle}</td>
                                     % endif
                                     <td align="center">${curDelete}</td>
@@ -116,7 +116,7 @@
                         <tfoot>
                             <tr>
                                 <td rowspan="1" colspan="2" class="align-center alt"><input class="btn pull-left submitMassEdit" type="button" value="${_('Edit Selected')}" /></td>
-                                <td rowspan="1" colspan="${(15, 16)[bool(sickbeard.USE_SUBTITLES)]}" class="align-right alt"><input class="btn pull-right submitMassUpdate" type="button" value="${_('Submit')}" /></td>
+                                <td rowspan="1" colspan="${(15, 16)[bool(settings.USE_SUBTITLES)]}" class="align-right alt"><input class="btn pull-right submitMassUpdate" type="button" value="${_('Submit')}" /></td>
                             </tr>
                         </tfoot>
                     </table>

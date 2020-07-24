@@ -19,6 +19,7 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import fnmatch
+import logging
 import os
 import re
 import stat
@@ -27,13 +28,15 @@ import subprocess
 # First Party Imports
 import adba
 import sickbeard
+from sickbeard import logger
+from sickchill import settings
 from sickchill.helper import glob
 from sickchill.helper.common import remove_extension, replace_extension, SUBTITLE_EXTENSIONS
 from sickchill.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ShowDirectoryNotFoundException
 from sickchill.show.Show import Show
 
 # Local Folder Imports
-from . import common, db, failed_history, helpers, history, logger, notifiers, show_name_helpers
+from . import common, db, failed_history, helpers, history, notifiers, show_name_helpers
 from .helpers import verify_freespace
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
@@ -80,7 +83,7 @@ class PostProcessor(object):
         # name of the NZB that resulted in this folder
         self.nzb_name = nzb_name
 
-        self.process_method = process_method if process_method else sickbeard.PROCESS_METHOD
+        self.process_method = process_method if process_method else settings.PROCESS_METHOD
 
         self.in_history = False
 
@@ -98,7 +101,7 @@ class PostProcessor(object):
 
         self.anidbEpisode = None
 
-    def _log(self, message, level=logger.INFO):
+    def _log(self, message, level=logging.INFO):
         """
         A wrapper for the internal logger which also keeps track of messages and saves them to a string for later.
 
@@ -157,7 +160,7 @@ class PostProcessor(object):
         """
         def recursive_glob(treeroot, pattern):
             results = []
-            for base, dirnames_, files in os.walk(treeroot, followlinks=sickbeard.PROCESSOR_FOLLOW_SYMLINKS):
+            for base, dirnames_, files in os.walk(treeroot, followlinks=settings.PROCESSOR_FOLLOW_SYMLINKS):
                 goodfiles = fnmatch.filter(files, pattern)
                 for f in goodfiles:
                     found_file = os.path.join(base, f)
@@ -222,9 +225,9 @@ class PostProcessor(object):
             # Define associated files (all, allowed and non allowed)
             if os.path.isfile(associated_file_path):
                 # check if allowed or not during post processing
-                if sickbeard.MOVE_ASSOCIATED_FILES and associated_file_path.endswith(tuple(sickbeard.ALLOWED_EXTENSIONS.split(","))):
+                if settings.MOVE_ASSOCIATED_FILES and associated_file_path.endswith(tuple(settings.ALLOWED_EXTENSIONS.split(","))):
                     file_path_list_to_allow.append(associated_file_path)
-                elif sickbeard.DELETE_NON_ASSOCIATED_FILES:
+                elif settings.DELETE_NON_ASSOCIATED_FILES:
                     file_path_list_to_delete.append(associated_file_path)
 
         if file_path_list_to_allow or file_path_list_to_delete:
@@ -304,7 +307,7 @@ class PostProcessor(object):
             return
 
         file_list = [file_path]
-        subfolders = os.path.normpath(os.path.dirname(file_path)) != os.path.normpath(sickbeard.TV_DOWNLOAD_DIR)
+        subfolders = os.path.normpath(os.path.dirname(file_path)) != os.path.normpath(settings.TV_DOWNLOAD_DIR)
         if associated_files:
             file_list = file_list + self.list_associated_files(file_path, subfolders=subfolders)
         elif subtitles:
@@ -331,7 +334,7 @@ class PostProcessor(object):
                     cur_extension = '.'.join((cur_lang, cur_extension))
 
             # replace .nfo with .nfo-orig to avoid conflicts
-            if cur_extension == 'nfo' and sickbeard.NFO_RENAME is True:
+            if cur_extension == 'nfo' and settings.NFO_RENAME is True:
                 cur_extension = 'nfo-orig'
 
             # If new base name then convert name
@@ -341,8 +344,8 @@ class PostProcessor(object):
             else:
                 new_file_name = os.path.basename(replace_extension(cur_file_path, cur_extension))
 
-            if sickbeard.SUBTITLES_DIR and cur_extension.endswith(tuple(SUBTITLE_EXTENSIONS)):
-                subs_new_path = os.path.join(new_path, sickbeard.SUBTITLES_DIR)
+            if settings.SUBTITLES_DIR and cur_extension.endswith(tuple(SUBTITLE_EXTENSIONS)):
+                subs_new_path = os.path.join(new_path, settings.SUBTITLES_DIR)
                 dir_exists = helpers.makeDir(subs_new_path)
                 if not dir_exists:
                     logger.exception("Unable to create subtitles folder " + subs_new_path)
@@ -509,7 +512,7 @@ class PostProcessor(object):
             if quality == common.Quality.UNKNOWN:
                 quality = None
 
-            show = Show.find(sickbeard.showList, indexer_id)
+            show = Show.find(settings.showList, indexer_id)
 
             self.in_history = True
             self.version = version
@@ -617,7 +620,7 @@ class PostProcessor(object):
         """
         if helpers.set_up_anidb_connection():
             if not self.anidbEpisode:  # seems like we could parse the name before, now lets build the anidb object
-                self.anidbEpisode = self._build_anidb_episode(sickbeard.ADBA_CONNECTION, filePath)
+                self.anidbEpisode = self._build_anidb_episode(settings.ADBA_CONNECTION, filePath)
 
             self._log("Adding the file to the anidb mylist", logger.DEBUG)
             try:
@@ -837,10 +840,10 @@ class PostProcessor(object):
         :param ep_obj: The object to use when calling the extra script
         """
 
-        if not sickbeard.EXTRA_SCRIPTS:
+        if not settings.EXTRA_SCRIPTS:
             return
 
-        for curScriptName in sickbeard.EXTRA_SCRIPTS:
+        for curScriptName in settings.EXTRA_SCRIPTS:
             # generate a safe command line string to execute the script and provide all the parameters
             script_cmd = [piece for piece in re.split(r'(\'.*?\'|".*?"| )', curScriptName) if piece.strip()]
             script_cmd[0] = os.path.abspath(script_cmd[0])
@@ -856,7 +859,7 @@ class PostProcessor(object):
             try:
                 p = subprocess.Popen(
                     script_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT, cwd=sickbeard.PROG_DIR
+                    stderr=subprocess.STDOUT, cwd=settings.PROG_DIR
                 )
                 out, err_ = p.communicate()
 
@@ -1018,7 +1021,7 @@ class PostProcessor(object):
                 "This download is marked a priority download so I'm going to replace an existing file if I find one")
 
         # try to find out if we have enough space to perform the copy or move action.
-        if sickbeard.USE_FREE_SPACE_CHECK:
+        if settings.USE_FREE_SPACE_CHECK:
             if not helpers.is_file_locked(self.file_path):
                 if not verify_freespace(self.file_path, ep_obj.show._location, [ep_obj] + ep_obj.relatedEps, method=self.process_method):
                     self._log("Not enough space to continue PP, exiting", logger.WARNING)
@@ -1042,7 +1045,7 @@ class PostProcessor(object):
             #    curEp.status = common.Quality.compositeStatus(common.SNATCHED, new_ep_quality)
 
         # if the show directory doesn't exist then make it if allowed
-        if not os.path.isdir(ep_obj.show._location) and sickbeard.CREATE_MISSING_SHOW_DIRS:
+        if not os.path.isdir(ep_obj.show._location) and settings.CREATE_MISSING_SHOW_DIRS:
             self._log("Show directory doesn't exist, creating it", logger.DEBUG)
             try:
                 os.mkdir(ep_obj.show._location)
@@ -1114,7 +1117,7 @@ class PostProcessor(object):
         helpers.make_dirs(dest_path)
 
         # figure out the base name of the resulting episode file
-        if sickbeard.RENAME_EPISODES:
+        if settings.RENAME_EPISODES:
             orig_extension = self.file_name.rpartition('.')[-1]
             new_base_name = os.path.basename(proper_path)
             new_file_name = new_base_name + '.' + orig_extension
@@ -1125,7 +1128,7 @@ class PostProcessor(object):
             new_file_name = self.file_name
 
         # add to anidb
-        if ep_obj.show.is_anime and sickbeard.ANIDB_USE_MYLIST:
+        if ep_obj.show.is_anime and settings.ANIDB_USE_MYLIST:
             self._add_to_anidb_mylist(self.file_path)
 
         try:
@@ -1133,24 +1136,24 @@ class PostProcessor(object):
             if self.process_method == METHOD_COPY:
                 if helpers.is_file_locked(self.file_path, False):
                     raise EpisodePostProcessingFailedException("File is locked for reading")
-                self._copy(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
-                           sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
+                self._copy(self.file_path, dest_path, new_base_name, settings.MOVE_ASSOCIATED_FILES,
+                           settings.USE_SUBTITLES and ep_obj.show.subtitles)
             elif self.process_method == METHOD_MOVE:
                 if helpers.is_file_locked(self.file_path, True):
                     raise EpisodePostProcessingFailedException("File is locked for reading/writing")
-                self._move(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
-                           sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
+                self._move(self.file_path, dest_path, new_base_name, settings.MOVE_ASSOCIATED_FILES,
+                           settings.USE_SUBTITLES and ep_obj.show.subtitles)
             elif self.process_method == METHOD_HARDLINK:
-                self._hardlink(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
-                               sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
+                self._hardlink(self.file_path, dest_path, new_base_name, settings.MOVE_ASSOCIATED_FILES,
+                               settings.USE_SUBTITLES and ep_obj.show.subtitles)
             elif self.process_method == METHOD_SYMLINK:
                 if helpers.is_file_locked(self.file_path, True):
                     raise EpisodePostProcessingFailedException("File is locked for reading/writing")
-                self._moveAndSymlink(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
-                                     sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
+                self._moveAndSymlink(self.file_path, dest_path, new_base_name, settings.MOVE_ASSOCIATED_FILES,
+                                     settings.USE_SUBTITLES and ep_obj.show.subtitles)
             elif self.process_method == METHOD_SYMLINK_REVERSED:
-                self._symlink(self.file_path, dest_path, new_base_name, sickbeard.MOVE_ASSOCIATED_FILES,
-                                     sickbeard.USE_SUBTITLES and ep_obj.show.subtitles)
+                self._symlink(self.file_path, dest_path, new_base_name, settings.MOVE_ASSOCIATED_FILES,
+                              settings.USE_SUBTITLES and ep_obj.show.subtitles)
             else:
                 logger.exception("Unknown process method: " + str(self.process_method))
                 raise EpisodePostProcessingFailedException("Unable to move the files to their new home")
@@ -1161,8 +1164,8 @@ class PostProcessor(object):
             with cur_ep.lock:
                 cur_ep.location = os.path.join(dest_path, new_file_name)
                 # download subtitles
-                if sickbeard.USE_SUBTITLES and ep_obj.show.subtitles \
-                    and (cur_ep.season != 0 or sickbeard.SUBTITLES_INCLUDE_SPECIALS):
+                if settings.USE_SUBTITLES and ep_obj.show.subtitles \
+                    and (cur_ep.season != 0 or settings.SUBTITLES_INCLUDE_SPECIALS):
                     cur_ep.refreshSubtitles()
                     cur_ep.download_subtitles(force=True)
                 sql_l.append(cur_ep.get_sql())
@@ -1174,7 +1177,7 @@ class PostProcessor(object):
 
         ep_obj.airdateModifyStamp()
 
-        if sickbeard.USE_ICACLS and os.name == 'nt':
+        if settings.USE_ICACLS and os.name == 'nt':
             os.popen('icacls "' + ep_obj._location + '"* /reset /T')
 
         # generate nfo/tbn

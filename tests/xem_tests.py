@@ -27,6 +27,7 @@ import unittest
 # First Party Imports
 import sickbeard
 from sickbeard.tv import TVShow
+from sickchill import settings
 from tests import test_lib as test
 
 
@@ -47,7 +48,7 @@ class XEMBasicTests(test.SickbeardTestDBCase):
         for sql_show in sql_results:
             try:
                 cur_show = TVShow(int(sql_show["indexer"]), int(sql_show["indexer_id"]))
-                sickbeard.showList.append(cur_show)
+                settings.showList.append(cur_show)
             except Exception:
                 pass
 
@@ -62,7 +63,7 @@ class XEMBasicTests(test.SickbeardTestDBCase):
         for sql_show in sql_results:
             try:
                 cur_show = TVShow(int(sql_show["indexer"]), int(sql_show["indexer_id"]))
-                sickbeard.showList.append(cur_show)
+                settings.showList.append(cur_show)
             except Exception as error:
                 print("There was an error creating the show {0}".format(error))
 

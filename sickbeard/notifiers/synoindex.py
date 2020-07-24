@@ -23,6 +23,7 @@ import subprocess
 # First Party Imports
 import sickbeard
 from sickbeard import logger
+from sickchill import settings
 
 
 class Notifier(object):
@@ -48,14 +49,14 @@ class Notifier(object):
         self.moveObject(old_file, new_file)
 
     def moveObject(self, old_path, new_path):
-        if sickbeard.USE_SYNOINDEX:
+        if settings.USE_SYNOINDEX:
             synoindex_cmd = ['/usr/syno/bin/synoindex', '-N', os.path.abspath(new_path),
                              os.path.abspath(old_path)]
             logger.debug("Executing command " + str(synoindex_cmd))
             logger.debug("Absolute path to command: " + os.path.abspath(synoindex_cmd[0]))
             try:
                 p = subprocess.Popen(synoindex_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                     cwd=sickbeard.PROG_DIR)
+                                     cwd=settings.PROG_DIR)
                 out, err = p.communicate()  # @UnusedVariable
                 logger.debug("Script result: " + str(out))
             except OSError as e:
@@ -74,13 +75,13 @@ class Notifier(object):
         self.makeObject('-a', cur_file)
 
     def makeObject(self, cmd_arg, cur_path):
-        if sickbeard.USE_SYNOINDEX:
+        if settings.USE_SYNOINDEX:
             synoindex_cmd = ['/usr/syno/bin/synoindex', cmd_arg, os.path.abspath(cur_path)]
             logger.debug("Executing command " + str(synoindex_cmd))
             logger.debug("Absolute path to command: " + os.path.abspath(synoindex_cmd[0]))
             try:
                 p = subprocess.Popen(synoindex_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                     cwd=sickbeard.PROG_DIR)
+                                     cwd=settings.PROG_DIR)
                 out, err = p.communicate()  # @UnusedVariable
                 logger.debug("Script result: " + str(out))
             except OSError as e:

@@ -30,6 +30,7 @@ import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
+from sickchill import settings
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -107,7 +108,7 @@ class SCCProvider(TorrentProvider):
 
                 try:
                     data = self.get_url(search_url, returns='text')
-                    time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+                    time.sleep(cpu_presets[settings.CPU_PRESET])
                 except Exception as e:
                     logger.warning("Unable to fetch data. Error: {0}".format(repr(e)))
 

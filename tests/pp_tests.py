@@ -32,6 +32,7 @@ from sickbeard.helpers import make_dirs
 from sickbeard.name_cache import addNameToCache
 from sickbeard.postProcessor import PostProcessor
 from sickbeard.tv import TVEpisode, TVShow
+from sickchill import settings
 from tests import test_lib as test
 
 
@@ -71,13 +72,13 @@ class PPBasicTests(test.SickbeardTestDBCase):
         show.location = test.SHOW_DIR
         show.saveToDB()
 
-        sickbeard.showList = [show]
+        settings.showList = [show]
         episode = TVEpisode(show, test.SEASON, test.EPISODE)
         episode.name = "some episode name"
         episode.saveToDB()
 
         addNameToCache('show name', 3)
-        sickbeard.PROCESS_METHOD = 'move'
+        settings.PROCESS_METHOD = 'move'
 
         post_processor = PostProcessor(test.FILE_PATH)
         self.assertTrue(post_processor.process())
@@ -101,8 +102,8 @@ class ListAssociatedFiles(unittest.TestCase):
         self.file_list = [os.path.join('Show Name', f) for f in file_names] + [os.path.join(self.test_tree, f) for f in file_names]
         self.post_processor = PostProcessor('Show Name')
         self.maxDiff = None
-        sickbeard.MOVE_ASSOCIATED_FILES = True
-        sickbeard.ALLOWED_EXTENSIONS = ''
+        settings.MOVE_ASSOCIATED_FILES = True
+        settings.ALLOWED_EXTENSIONS = ''
 
     def setUp(self):
         make_dirs(self.test_tree)

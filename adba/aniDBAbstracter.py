@@ -26,10 +26,6 @@ from .aniDBtvDBmaper import TvDBMap
 from .aniDBerrors import *
 from .aniDBfileInfo import read_anidb_xml, read_tvdb_map_xml
 
-try:
-    import xml.etree.cElementTree as etree
-except ImportError:
-    import xml.etree.ElementTree as etree
 
 class aniDBabstractObject(object):
     def __init__(self, aniDB, load=False):

@@ -26,10 +26,10 @@ import threading
 import time
 import traceback
 from sqlite3 import OperationalError
+from xml.etree import ElementTree
 
 # Third Party Imports
 import babelfish
-# import guessit
 from imdbpie import Imdb, ImdbFacade
 from imdbpie.exceptions import ImdbAPIError
 from unidecode import unidecode
@@ -37,7 +37,10 @@ from urllib3.exceptions import MaxRetryError, NewConnectionError
 
 # First Party Imports
 import sickbeard
+import sickbeard.providers
+import sickbeard.scene_numbering
 import sickchill
+from sickchill import settings
 from sickchill.helper import glob
 from sickchill.helper.common import dateTimeFormat, episode_num, remove_extension, replace_extension, sanitize_filename, try_int
 from sickchill.helper.exceptions import (EpisodeDeletedException, EpisodeNotFoundException, MultipleEpisodesInDatabaseException, MultipleShowObjectsException,
@@ -50,13 +53,6 @@ from .blackandwhitelist import BlackAndWhiteList
 from .common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
                      NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN, WANTED)
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-
-try:
-    # Stdlib Imports
-    from xml.etree import cElementTree as etree
-except ImportError:
-    # Stdlib Imports
-    from xml.etree import ElementTree as etree
 
 try:
     # Third Party Imports
@@ -89,14 +85,14 @@ class TVShow(object):
         self._classification = ""
         self._runtime = 0
         self._imdb_info = {}
-        self._quality = int(sickbeard.QUALITY_DEFAULT)
-        self._season_folders = int(sickbeard.SEASON_FOLDERS_DEFAULT)
+        self._quality = int(settings.QUALITY_DEFAULT)
+        self._season_folders = int(settings.SEASON_FOLDERS_DEFAULT)
         self._status = "Unknown"
         self._airs = ""
         self._startyear = 0
         self._paused = 0
         self._air_by_date = 0
-        self._subtitles = int(sickbeard.SUBTITLES_DEFAULT)
+        self._subtitles = int(settings.SUBTITLES_DEFAULT)
         self._subtitles_sr_metadata = 0
         self._dvdorder = 0
         self._lang = lang
@@ -116,7 +112,7 @@ class TVShow(object):
         self.nextaired = ""
         self.release_groups = None
 
-        otherShow = Show.find(sickbeard.showList, self.indexerid)
+        otherShow = Show.find(settings.showList, self.indexerid)
         if otherShow is not None:
             raise MultipleShowObjectsException("Can't create a show if it already exists")
 
@@ -185,11 +181,11 @@ class TVShow(object):
         return 'images/network/{0}.png'.format(unidecode(self.network or 'nonetwork').lower())
 
     def show_image_url(self, which):
-        return sickbeard.IMAGE_CACHE.image_url(self.indexerid, which)
+        return settings.IMAGE_CACHE.image_url(self.indexerid, which)
 
     def _getLocation(self):
         # no dir check needed if missing show dirs are created during post-processing
-        if sickbeard.CREATE_MISSING_SHOW_DIRS or os.path.isdir(self._location):
+        if settings.CREATE_MISSING_SHOW_DIRS or os.path.isdir(self._location):
             return self._location
 
         raise ShowDirectoryNotFoundException("Show folder doesn't exist, you shouldn't be using it")
@@ -197,7 +193,7 @@ class TVShow(object):
     def _setLocation(self, newLocation):
         logger.debug("Setter sets location to " + newLocation)
         # Don't validate dir if user wants to add shows without creating a dir
-        if sickbeard.ADD_SHOWS_WO_DIR or os.path.isdir(newLocation):
+        if settings.ADD_SHOWS_WO_DIR or os.path.isdir(newLocation):
             dirty_setter("_location")(self, newLocation)
         else:
             raise NoNFOException("Invalid folder for the show!")
@@ -217,9 +213,8 @@ class TVShow(object):
 
         for curSeason in self.episodes:
             for curEp in self.episodes[curSeason]:
-                myEp = self.episodes[curSeason][curEp]
                 self.episodes[curSeason][curEp] = None
-                del myEp
+                del self.episodes[curSeason][curEp]
 
     def getAllEpisodes(self, season=None, has_location=False):
 
@@ -254,7 +249,7 @@ class TVShow(object):
                 # if there is a location, check if it's a multi-episode (share_location > 0) and put them in relatedEps
                 if cur_result["share_location"] > 0:
                     related_eps_result = main_db_con.select(
-                        "SELECT season, episode FROM tv_episodes WHERE showid = ? AND season = ? AND location = ? AND episode != ? ORDER BY episode ASC",
+                        "SELECT season, episode FROM tv_episodes WHERE showid = ? AND season = ? AND location = ? AND episode != ? ORDER BY episode",
                         [self.indexerid, cur_ep.season, cur_ep.location, cur_ep.episode])
                     for cur_related_ep in related_eps_result:
                         related_ep = self.getEpisode(cur_related_ep["season"], cur_related_ep["episode"])
@@ -364,7 +359,7 @@ class TVShow(object):
             return False
 
         logger.debug(str(self.indexerid) + ": Writing NFOs for show")
-        for cur_provider in sickbeard.metadata_provider_dict.values():
+        for cur_provider in settings.metadata_provider_dict.values():
             result = cur_provider.create_show_metadata(self) or result
 
         return result
@@ -414,7 +409,7 @@ class TVShow(object):
             return False
 
         logger.info(str(self.indexerid) + ": Updating NFOs for show with new indexer info")
-        for cur_provider in sickbeard.metadata_provider_dict.values():
+        for cur_provider in settings.metadata_provider_dict.values():
             result = cur_provider.update_show_indexer_metadata(self) or result
 
         return result
@@ -569,7 +564,7 @@ class TVShow(object):
         fanart_result = poster_result = banner_result = False
         season_posters_result = season_banners_result = season_all_poster_result = season_all_banner_result = False
 
-        for cur_provider in sickbeard.metadata_provider_dict.values():
+        for cur_provider in settings.metadata_provider_dict.values():
 
             # logger.debug("Running metadata routines for " + cur_provider.name)
 
@@ -841,8 +836,8 @@ class TVShow(object):
     def loadIMDbInfo(self):
         try:
             # client = Imdb(session=helpers.make_indexer_session(), locale=sickbeard.GUI_LANG, exclude_episodes=True)
-            client = Imdb(session=helpers.make_indexer_session(), locale=sickbeard.GUI_LANG)
-            client._cachedir = sickbeard.CACHE_DIR
+            client = Imdb(session=helpers.make_indexer_session(), locale=settings.GUI_LANG)
+            client._cachedir = settings.CACHE_DIR
             i = ImdbFacade(client=client)
 
             # Check that the imdbid we have is valid for searching
@@ -903,7 +898,7 @@ class TVShow(object):
         if not self.nextaired or self.nextaired and curDate > self.nextaired:
             main_db_con = db.DBConnection()
             sql_results = main_db_con.select(
-                "SELECT airdate, season, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status IN (?,?) ORDER BY airdate ASC LIMIT 1",
+                "SELECT airdate, season, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status IN (?,?) ORDER BY airdate LIMIT 1",
                 [self.indexerid, datetime.date.today().toordinal(), UNAIRED, WANTED])
 
             self.nextaired = sql_results[0]['airdate'] if sql_results else ''
@@ -937,6 +932,7 @@ class TVShow(object):
 
         for provider in sickbeard.providers.__all__:
             if cache_db_con.has_table(provider) and cache_db_con.has_column(provider, 'indexerid'):
+                # language=TEXT
                 cache_db_con.action("delete from {} WHERE indexerid = ?".format(provider), [self.indexerid])
 
         failed_db_con = db.DBConnection('failed.db')
@@ -946,17 +942,17 @@ class TVShow(object):
 
         failed_db_con.mass_action(sql_l)
 
-        action = ('delete', 'trash')[sickbeard.TRASH_REMOVE_SHOW]
+        action = ('delete', 'trash')[settings.TRASH_REMOVE_SHOW]
 
         # remove self from show list
-        sickbeard.showList = [x for x in sickbeard.showList if int(x.indexerid) != self.indexerid]
+        settings.showList = [x for x in settings.showList if int(x.indexerid) != self.indexerid]
 
         # clear the cache
-        image_cache_dir = os.path.join(sickbeard.CACHE_DIR, 'images')
+        image_cache_dir = os.path.join(settings.CACHE_DIR, 'images')
         for cache_file in glob.glob(os.path.join(glob.escape(image_cache_dir), str(self.indexerid) + '.*')):
             logger.info('Attempt to {0} cache file {1}'.format(action, cache_file))
             try:
-                if sickbeard.TRASH_REMOVE_SHOW:
+                if settings.TRASH_REMOVE_SHOW:
                     send2trash(cache_file)
                 else:
                     os.remove(cache_file)
@@ -989,38 +985,38 @@ class TVShow(object):
                         for show_file in glob.glob(helpers.replace_extension(glob.escape(ep_file['location']), '*')):
                             logger.info('Attempt to {0} related file {1}'.format(action, show_file))
                             try:
-                                if sickbeard.TRASH_REMOVE_SHOW:
+                                if settings.TRASH_REMOVE_SHOW:
                                     send2trash(show_file)
                                 else:
                                     os.remove(show_file)
                             except OSError as error:
                                 logger.warning('Unable to {0} {1}: {2}'.format(action, show_file, error))
                 else:
-                    if sickbeard.TRASH_REMOVE_SHOW:
+                    if settings.TRASH_REMOVE_SHOW:
                         send2trash(self.location)
                     else:
                         shutil.rmtree(self.location)
 
                     logger.info('{0} show folder {1}'.format
-                               (('Deleted', 'Trashed')[sickbeard.TRASH_REMOVE_SHOW], self._location))
+                               (('Deleted', 'Trashed')[settings.TRASH_REMOVE_SHOW], self._location))
 
             except ShowDirectoryNotFoundException:
                 logger.warning("Show folder does not exist, no need to {0} {1}".format(action, self._location))
             except OSError as error:
                 logger.warning('Unable to {0} {1}: {2}'.format(action, self._location, error))
 
-        if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+        if settings.USE_TRAKT and settings.TRAKT_SYNC_WATCHLIST:
             logger.debug("Removing show: indexerid " + str(self.indexerid) + ", Title " + str(self.name) + " from Watchlist")
             notifiers.trakt_notifier.update_watchlist(self, update="remove")
 
     def populateCache(self):
         logger.debug("Checking & filling cache for show " + self.name)
-        sickbeard.IMAGE_CACHE.fill_cache(self)
+        settings.IMAGE_CACHE.fill_cache(self)
 
     def refreshDir(self):
 
         # make sure the show dir is where we think it is unless dirs are created on the fly
-        if not os.path.isdir(self._location) and not sickbeard.CREATE_MISSING_SHOW_DIRS:
+        if not os.path.isdir(self._location) and not settings.CREATE_MISSING_SHOW_DIRS:
             logger.info('Show dir does not exist, and `create missing show dirs` is disabled. Skipping refresh (statuses will not be updated): {}'.format(
                 self._location))
             return False
@@ -1053,16 +1049,16 @@ class TVShow(object):
                     os.path.normpath(self._location)):
 
                 # check if downloaded files still exist, update our data if this has changed
-                if not sickbeard.SKIP_REMOVED_FILES:
+                if not settings.SKIP_REMOVED_FILES:
                     with curEp.lock:
                         # if it used to have a file associated with it and it doesn't anymore then set it to sickbeard.EP_DEFAULT_DELETED_STATUS
                         if curEp.status in Quality.DOWNLOADED:
 
-                            if sickbeard.EP_DEFAULT_DELETED_STATUS == ARCHIVED:
+                            if settings.EP_DEFAULT_DELETED_STATUS == ARCHIVED:
                                 oldStatus_, oldQuality = Quality.splitCompositeStatus(curEp.status)
                                 new_status = Quality.compositeStatus(ARCHIVED, oldQuality)
                             else:
-                                new_status = sickbeard.EP_DEFAULT_DELETED_STATUS
+                                new_status = settings.EP_DEFAULT_DELETED_STATUS
 
                             logger.debug("{id}: Location for {ep} doesn't exist, removing it and changing our status to {status}".format
                                        (id=self.indexerid, ep=episode_num(season, episode), status=statusStrings[new_status]))
@@ -1204,7 +1200,7 @@ class TVShow(object):
 
         # if we know we don't want it then just say no
         if epStatus in Quality.ARCHIVED + [UNAIRED, SKIPPED, IGNORED] and not manualSearch:
-            loggerdebug("Existing episode status is '{status}', ignoring found result for {name} {ep} with quality {quality}".format
+            logger.debug("Existing episode status is '{status}', ignoring found result for {name} {ep} with quality {quality}".format
                        (status=epStatus_text, name=self.name, ep=episode_num(season, episode),
                         quality=Quality.qualityStrings[quality]))
             return False
@@ -1431,7 +1427,7 @@ class TVEpisode(object):
 
         # check for nfo and tbn
         if os.path.isfile(self.location):
-            for cur_provider in sickbeard.metadata_provider_dict.values():
+            for cur_provider in settings.metadata_provider_dict.values():
                 if cur_provider.episode_metadata:
                     new_result = cur_provider._has_episode_metadata(self)
                 else:
@@ -1638,7 +1634,7 @@ class TVEpisode(object):
             return False
 
         # don't update show status if show dir is missing, unless it's missing on purpose
-        if not os.path.isdir(self.show._location) and not sickbeard.CREATE_MISSING_SHOW_DIRS and not sickbeard.ADD_SHOWS_WO_DIR:
+        if not os.path.isdir(self.show._location) and not settings.CREATE_MISSING_SHOW_DIRS and not settings.ADD_SHOWS_WO_DIR:
             logger.info("The show dir {0} is missing, not bothering to change the episode statuses since it'd probably be invalid".format(self.show._location))
             return
 
@@ -1693,7 +1689,7 @@ class TVEpisode(object):
 
             if os.path.isfile(nfoFile):
                 try:
-                    showXML = etree.ElementTree(file=nfoFile)
+                    showXML = ElementTree.ElementTree(file=nfoFile)
                 except (SyntaxError, ValueError) as error:
                     logger.exception("Error loading the NFO, backing up the NFO and skipping for now: " + str(error))
                     try:
@@ -1780,7 +1776,7 @@ class TVEpisode(object):
 
         result = False
 
-        for cur_provider in sickbeard.metadata_provider_dict.values():
+        for cur_provider in settings.metadata_provider_dict.values():
             result = cur_provider.create_episode_metadata(self) or result
             result = cur_provider.update_episode_metadata(self) or result
 
@@ -1790,7 +1786,7 @@ class TVEpisode(object):
 
         result = False
 
-        for cur_provider in sickbeard.metadata_provider_dict.values():
+        for cur_provider in settings.metadata_provider_dict.values():
             result = cur_provider.create_episode_thumb(self) or result
 
         return result
@@ -1835,7 +1831,7 @@ class TVEpisode(object):
             if epID:
                 # use a custom update method to get the data into the DB for existing records.
                 # Multi or added subtitle or removed subtitles
-                if sickbeard.SUBTITLES_MULTI or not rows[0]['subtitles'] or not self.subtitles:
+                if settings.SUBTITLES_MULTI or not rows[0]['subtitles'] or not self.subtitles:
                     return [
                         "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, subtitles = ?, "
                         "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
@@ -2037,7 +2033,7 @@ class TVEpisode(object):
 
         epStatus_, epQual = Quality.splitCompositeStatus(self.status)  # @UnusedVariable
 
-        if sickbeard.NAMING_STRIP_YEAR:
+        if settings.NAMING_STRIP_YEAR:
             show_name = re.sub(r"\(\d+\)$", "", self.show.name).strip()
         else:
             show_name = self.show.name
@@ -2137,14 +2133,14 @@ class TVEpisode(object):
         """
 
         if pattern is None:
-            pattern = sickbeard.NAMING_PATTERN
+            pattern = settings.NAMING_PATTERN
 
         if multi is None:
-            multi = sickbeard.NAMING_MULTI_EP
+            multi = settings.NAMING_MULTI_EP
 
-        if sickbeard.NAMING_CUSTOM_ANIME:
+        if settings.NAMING_CUSTOM_ANIME:
             if anime_type is None:
-                anime_type = sickbeard.NAMING_ANIME
+                anime_type = settings.NAMING_ANIME
         else:
             anime_type = 3
 
@@ -2301,14 +2297,14 @@ class TVEpisode(object):
         Figures out the path where this episode SHOULD live according to the renaming rules, relative from the show dir
         """
 
-        anime_type = sickbeard.NAMING_ANIME
+        anime_type = settings.NAMING_ANIME
         if not self.show.is_anime:
             anime_type = 3
 
         result = self.formatted_filename(anime_type=anime_type)
 
         # if they want us to flatten it and we're allowed to flatten it then we will
-        if not (self.show.season_folders or sickbeard.NAMING_FORCE_FOLDERS):
+        if not (self.show.season_folders or settings.NAMING_FORCE_FOLDERS):
             return result
 
         # if not we append the folder on and use that
@@ -2324,14 +2320,14 @@ class TVEpisode(object):
 
         if pattern is None:
             # we only use ABD if it's enabled, this is an ABD show, AND this is not a multi-ep
-            if self.show.air_by_date and sickbeard.NAMING_CUSTOM_ABD and not self.relatedEps:
-                pattern = sickbeard.NAMING_ABD_PATTERN
-            elif self.show.sports and sickbeard.NAMING_CUSTOM_SPORTS and not self.relatedEps:
-                pattern = sickbeard.NAMING_SPORTS_PATTERN
-            elif self.show.anime and sickbeard.NAMING_CUSTOM_ANIME:
-                pattern = sickbeard.NAMING_ANIME_PATTERN
+            if self.show.air_by_date and settings.NAMING_CUSTOM_ABD and not self.relatedEps:
+                pattern = settings.NAMING_ABD_PATTERN
+            elif self.show.sports and settings.NAMING_CUSTOM_SPORTS and not self.relatedEps:
+                pattern = settings.NAMING_SPORTS_PATTERN
+            elif self.show.anime and settings.NAMING_CUSTOM_ANIME:
+                pattern = settings.NAMING_ANIME_PATTERN
             else:
-                pattern = sickbeard.NAMING_PATTERN
+                pattern = settings.NAMING_PATTERN
 
         # split off the dirs only, if they exist
         name_groups = re.split(r'[\\/]', pattern)
@@ -2348,14 +2344,14 @@ class TVEpisode(object):
 
         if pattern is None:
             # we only use ABD if it's enabled, this is an ABD show, AND this is not a multi-ep
-            if self.show.air_by_date and sickbeard.NAMING_CUSTOM_ABD and not self.relatedEps:
-                pattern = sickbeard.NAMING_ABD_PATTERN
-            elif self.show.sports and sickbeard.NAMING_CUSTOM_SPORTS and not self.relatedEps:
-                pattern = sickbeard.NAMING_SPORTS_PATTERN
-            elif self.show.anime and sickbeard.NAMING_CUSTOM_ANIME:
-                pattern = sickbeard.NAMING_ANIME_PATTERN
+            if self.show.air_by_date and settings.NAMING_CUSTOM_ABD and not self.relatedEps:
+                pattern = settings.NAMING_ABD_PATTERN
+            elif self.show.sports and settings.NAMING_CUSTOM_SPORTS and not self.relatedEps:
+                pattern = settings.NAMING_SPORTS_PATTERN
+            elif self.show.anime and settings.NAMING_CUSTOM_ANIME:
+                pattern = settings.NAMING_ANIME_PATTERN
             else:
-                pattern = sickbeard.NAMING_PATTERN
+                pattern = settings.NAMING_PATTERN
 
         # split off the dirs only, if they exist
         name_groups = re.split(r'[\\/]', pattern)
@@ -2396,9 +2392,9 @@ class TVEpisode(object):
             self.location, subfolders=True, rename=True)
 
         # get related subs
-        if self.show.subtitles and sickbeard.SUBTITLES_DIR:
+        if self.show.subtitles and settings.SUBTITLES_DIR:
             # assume that the video file is in the subtitles dir to find associated subs
-            subs_path = os.path.join(sickbeard.SUBTITLES_DIR, os.path.basename(self.location))
+            subs_path = os.path.join(settings.SUBTITLES_DIR, os.path.basename(self.location))
             related_subs = postProcessor.PostProcessor(self.location).list_associated_files(
                 subs_path, subtitles_only=True, subfolders=True, rename=True)
 
@@ -2423,7 +2419,7 @@ class TVEpisode(object):
                 logger.exception(str(self.indexerid) + ": Unable to rename file " + cur_related_file)
 
         for cur_related_sub in related_subs:
-            absolute_proper_subs_path = os.path.join(sickbeard.SUBTITLES_DIR, self.formatted_filename())
+            absolute_proper_subs_path = os.path.join(settings.SUBTITLES_DIR, self.formatted_filename())
             cur_result = helpers.rename_ep_file(cur_related_sub, absolute_proper_subs_path,
                                                 absolute_current_path_no_ext_length)
             if not cur_result:
@@ -2456,7 +2452,7 @@ class TVEpisode(object):
         Note: Also called from postProcessor
 
         """
-        if not all([sickbeard.AIRDATE_EPISODES, self.airdate, self.location,
+        if not all([settings.AIRDATE_EPISODES, self.airdate, self.location,
                     self.show, self.show.airs, self.show.network]):
             return
 
@@ -2467,7 +2463,7 @@ class TVEpisode(object):
 
             airdatetime = network_timezones.parse_date_time(airdate_ordinal, self.show.airs, self.show.network)
 
-            if sickbeard.FILE_TIMESTAMP_TIMEZONE == 'local':
+            if settings.FILE_TIMESTAMP_TIMEZONE == 'local':
                 airdatetime = airdatetime.astimezone(network_timezones.sb_timezone)
 
             filemtime = datetime.datetime.fromtimestamp(os.path.getmtime(self.location)).replace(tzinfo=network_timezones.sb_timezone)

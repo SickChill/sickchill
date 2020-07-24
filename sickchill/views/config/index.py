@@ -25,6 +25,7 @@ from tornado.web import addslash
 # First Party Imports
 import sickbeard
 from sickbeard.versionChecker import CheckVersion
+from sickchill import settings
 from sickchill.views.common import PageTemplate
 from sickchill.views.index import WebRoot
 from sickchill.views.routes import Route
@@ -81,7 +82,7 @@ class Config(WebRoot):
             ssl_version = 'Unknown'
 
         sr_version = ''
-        if sickbeard.VERSION_NOTIFY:
+        if settings.VERSION_NOTIFY:
             updater = CheckVersion().updater
             if updater:
                 updater.need_update()

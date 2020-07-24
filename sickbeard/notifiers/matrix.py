@@ -25,12 +25,13 @@ import requests
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
+from sickchill import settings
 
 
 class Notifier(object):
 
     def notify_snatch(self, ep_name):
-        if sickbeard.MATRIX_NOTIFY_SNATCH:
+        if settings.MATRIX_NOTIFY_SNATCH:
             show = self._parseEp(ep_name)
             message = '''<body>
                         <h3>SickChill Notification - Snatched</h3>
@@ -39,7 +40,7 @@ class Notifier(object):
             self._notify_matrix(message)
 
     def notify_download(self, ep_name):
-        if sickbeard.MATRIX_NOTIFY_DOWNLOAD:
+        if settings.MATRIX_NOTIFY_DOWNLOAD:
             show = self._parseEp(ep_name)
             message = '''<body>
                         <h3>SickChill Notification - Downloaded</h3>
@@ -50,7 +51,7 @@ class Notifier(object):
             self._notify_matrix(message)
 
     def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.MATRIX_NOTIFY_SUBTITLEDOWNLOAD:
+        if settings.MATRIX_NOTIFY_SUBTITLEDOWNLOAD:
             show = self._parseEp(ep_name)
             message = '''<body>
                         <h3>SickChill Notification - Subtitle Downloaded</h3>
@@ -60,13 +61,13 @@ class Notifier(object):
             self._notify_matrix(message)
 
     def notify_git_update(self, new_version="??"):
-        if sickbeard.USE_MATRIX:
+        if settings.USE_MATRIX:
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notify_matrix(title + " - " + update_text + new_version)
 
     def notify_login(self, ipaddress=""):
-        if sickbeard.USE_MATRIX:
+        if settings.USE_MATRIX:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._notify_matrix(title + " - " + update_text.format(ipaddress))
@@ -75,7 +76,9 @@ class Notifier(object):
         return self._notify_matrix("This is a test notification from SickChill", force=True)
 
     def _send_matrix(self, message=None):
-        url = 'https://{0}/_matrix/client/r0/rooms/{1}/send/m.room.message/{2}?access_token={3}'.format(sickbeard.MATRIX_SERVER, sickbeard.MATRIX_ROOM, time.time(), sickbeard.MATRIX_API_TOKEN)
+        url = 'https://{0}/_matrix/client/r0/rooms/{1}/send/m.room.message/{2}?access_token={3}'.format(settings.MATRIX_SERVER,
+                                                                                                        settings.MATRIX_ROOM, time.time(),
+                                                                                                        settings.MATRIX_API_TOKEN)
 
         logger.info("Sending matrix message: " + message)
         logger.info("Sending matrix message to url: " + url)
@@ -99,7 +102,7 @@ class Notifier(object):
         return True
 
     def _notify_matrix(self, message='', force=False):
-        if not sickbeard.USE_MATRIX and not force:
+        if not settings.USE_MATRIX and not force:
             return False
 
         return self._send_matrix(message)

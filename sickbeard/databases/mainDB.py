@@ -23,8 +23,10 @@ import warnings
 
 # First Party Imports
 import sickbeard
+import sickchill.start
 from sickbeard import common, db, helpers, logger, subtitles
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickchill import settings
 from sickchill.helper.common import dateTimeFormat, episode_num
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from
@@ -545,8 +547,8 @@ class Add1080pAndRawHDQualities(RenameSeasonFolders):
         backupDatabase(self.get_db_version())
 
         # update the default quality so we dont grab the wrong qualities after migration
-        sickbeard.QUALITY_DEFAULT = self._update_composite_qualities(sickbeard.QUALITY_DEFAULT)
-        sickbeard.save_config()
+        settings.QUALITY_DEFAULT = self._update_composite_qualities(settings.QUALITY_DEFAULT)
+        sickchill.start.save_config()
 
         # upgrade previous HD to HD720p -- shift previous qualities to new placevalues
         old_hd = common.Quality.combineQualities(

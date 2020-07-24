@@ -28,6 +28,7 @@ from requests.exceptions import HTTPError
 # First Party Imports
 import sickbeard
 from sickbeard import logger
+from sickchill import settings
 
 
 class Notifier(object):
@@ -50,12 +51,12 @@ class Notifier(object):
 
         # Values from config
 
-        if not sickbeard.USE_PYTIVO:
+        if not settings.USE_PYTIVO:
             return False
 
-        host = sickbeard.PYTIVO_HOST
-        shareName = sickbeard.PYTIVO_SHARE_NAME
-        tsn = sickbeard.PYTIVO_TIVO_NAME
+        host = settings.PYTIVO_HOST
+        shareName = settings.PYTIVO_SHARE_NAME
+        tsn = settings.PYTIVO_TIVO_NAME
 
         # There are two more values required, the container and file.
         #

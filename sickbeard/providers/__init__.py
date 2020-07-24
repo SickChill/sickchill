@@ -28,6 +28,7 @@ from sickbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, 
                                  immortalseed, iptorrents, kat, limetorrents, magnetdl, morethantv, ncore, nebulance, newpct, norbits, nyaa, omgwtfnzbs,
                                  pretome, rarbg, scc, scenetime, shazbat, skytorrents, speedcd, thepiratebay, tntvillage, tokyotoshokan, torrent9, torrentbytes,
                                  torrentday, torrentleech, torrentproject, torrentz, tvchaosuk, xthor, yggtorrent)
+from sickchill import settings
 
 __all__ = [
     'abnormal', 'alpharatio', 'archetorrent', 'binsearch', 'bitcannon', 'bjshare', 'btn', 'cpasbien', 'danishbits', 'demonoid',
@@ -44,13 +45,13 @@ broken_providers = [
 
 
 def sortedProviderList(randomize=False):
-    initialList = sickbeard.providerList + sickbeard.newznabProviderList + sickbeard.torrentRssProviderList
+    initialList = settings.providerList + settings.newznabProviderList + settings.torrentRssProviderList
     providerDict = dict(list(zip([x.get_id() for x in initialList], initialList)))
 
     newList = []
 
     # add all modules in the priority list, in order
-    for curModule in sickbeard.PROVIDER_ORDER:
+    for curModule in settings.PROVIDER_ORDER:
         if curModule in providerDict:
             newList.append(providerDict[curModule])
 
@@ -85,7 +86,7 @@ def getProviderModule(name):
 
 def getProviderClass(provider_id):
     providerMatch = [x for x in
-                     sickbeard.providerList + sickbeard.newznabProviderList + sickbeard.torrentRssProviderList if
+                     settings.providerList + settings.newznabProviderList + settings.torrentRssProviderList if
                      x and x.get_id() == provider_id]
 
     if len(providerMatch) != 1:
@@ -95,7 +96,7 @@ def getProviderClass(provider_id):
 
 
 def check_enabled_providers():
-    if not sickbeard.DEVELOPER:
+    if not settings.DEVELOPER:
         backlog_enabled, daily_enabled = False, False
         for provider in sortedProviderList():
             if provider.is_active:
@@ -113,7 +114,7 @@ def check_enabled_providers():
                         _('backlog searches'))[daily_enabled]
             formatted_msg = _('No NZB/Torrent providers found or enabled for {searches}.<br/>'
                               'Please <a href="{web_root}/config/providers/">check your settings</a>.')
-            sickbeard.helpers.add_site_message(formatted_msg.format(searches=searches, web_root=sickbeard.WEB_ROOT),
+            sickbeard.helpers.add_site_message(formatted_msg.format(searches=searches, web_root=settings.WEB_ROOT),
                                                tag='no_providers_enabled', level='danger')
         else:
             sickbeard.helpers.remove_site_message(tag='no_providers_enabled')

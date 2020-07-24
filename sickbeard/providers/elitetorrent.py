@@ -27,6 +27,7 @@ import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
+from sickchill import settings
 from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -90,7 +91,7 @@ class EliteTorrentProvider(TorrentProvider):
                 search_string = re.sub(r'S0*(\d*)E(\d*)', r'\1x\2', search_string)
                 search_params['buscar'] = search_string.strip() if mode != 'RSS' else ''
 
-                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+                time.sleep(cpu_presets[settings.CPU_PRESET])
                 data = self.get_url(self.urls['search'], params=search_params, returns='text')
                 if not data:
                     continue

@@ -23,6 +23,7 @@ from rtorrent9 import RTorrent
 import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
+from sickchill import settings
 
 
 class Client(GenericClient):
@@ -38,10 +39,10 @@ class Client(GenericClient):
             return
 
         tp_kwargs = {}
-        if sickbeard.TORRENT_AUTH_TYPE != 'none':
-            tp_kwargs['authtype'] = sickbeard.TORRENT_AUTH_TYPE
+        if settings.TORRENT_AUTH_TYPE != 'none':
+            tp_kwargs['authtype'] = settings.TORRENT_AUTH_TYPE
 
-        if not sickbeard.TORRENT_VERIFY_CERT:
+        if not settings.TORRENT_VERIFY_CERT:
             tp_kwargs['check_ssl_cert'] = False
 
         if self.username and self.password:
@@ -58,7 +59,7 @@ class Client(GenericClient):
 
         try:
             # Send torrent magnet with params to rTorrent and optionally start download
-            torrent = self.auth.load_magnet(result.url, result.hash, start=not sickbeard.TORRENT_PAUSED, params=self._get_params(result))
+            torrent = self.auth.load_magnet(result.url, result.hash, start=not settings.TORRENT_PAUSED, params=self._get_params(result))
 
             if not torrent:
                 return False
@@ -78,7 +79,7 @@ class Client(GenericClient):
         try:
 
             # Send torrent file with params to rTorrent and optionally start download
-            torrent = self.auth.load_torrent(result.content, start=not sickbeard.TORRENT_PAUSED, params=self._get_params(result))
+            torrent = self.auth.load_torrent(result.content, start=not settings.TORRENT_PAUSED, params=self._get_params(result))
 
             if not torrent:
                 return False
@@ -142,14 +143,14 @@ class Client(GenericClient):
         params = []
 
         # Set label
-        label = sickbeard.TORRENT_LABEL
+        label = settings.TORRENT_LABEL
         if result.show.is_anime:
-            label = sickbeard.TORRENT_LABEL_ANIME
+            label = settings.TORRENT_LABEL_ANIME
         if label:
             params.append('d.custom1.set={0}'.format(label))
 
         # Set download folder
-        if sickbeard.TORRENT_PATH:
-            params.append('d.directory.set={0}'.format(sickbeard.TORRENT_PATH))
+        if settings.TORRENT_PATH:
+            params.append('d.directory.set={0}'.format(settings.TORRENT_PATH))
 
         return params

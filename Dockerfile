@@ -22,5 +22,5 @@ WORKDIR /app/sickchill
 VOLUME /data /downloads /tv
 COPY . /app/sickchill
 RUN chmod -R 777 /app/sickchill
-CMD /usr/local/bin/python SickBeard.py -q --nolaunch --datadir=/data --port 8081
+CMD /usr/local/bin/python SickChill.py -q --nolaunch --datadir=/data --port 8081
 EXPOSE 8081

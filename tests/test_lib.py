@@ -47,12 +47,14 @@ import unittest
 from configobj import ConfigObj
 
 # First Party Imports
-import sickbeard
-import sickchill
+import sickbeard.config
+import sickbeard.logger
+import sickchill.start
 from sickbeard import db, providers
 from sickbeard.databases import cache_db, failed_db, mainDB
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.tv import TVEpisode, TVShow
+from sickchill import settings
 from sickchill.show.indexers import ShowIndexer
 
 # =================
@@ -81,16 +83,16 @@ def create_test_log_folder():
     """
     Create a log folder for test logs.
     """
-    if not os.path.isdir(sickbeard.LOG_DIR):
-        os.mkdir(sickbeard.LOG_DIR)
+    if not os.path.isdir(settings.LOG_DIR):
+        os.mkdir(settings.LOG_DIR)
 
 
 def create_test_cache_folder():
     """
     Create a cache folder for caching tests.
     """
-    if not os.path.isdir(sickbeard.CACHE_DIR):
-        os.mkdir(sickbeard.CACHE_DIR)
+    if not os.path.isdir(settings.CACHE_DIR):
+        os.mkdir(settings.CACHE_DIR)
 
 # call env functions at appropriate time during SickBeard var setup
 
@@ -99,37 +101,37 @@ def create_test_cache_folder():
 # =================
 sickbeard.SYS_ENCODING = 'UTF-8'
 
-sickbeard.showList = []
-sickbeard.QUALITY_DEFAULT = 4  # hdtv
-sickbeard.SEASON_FOLDERS_DEFAULT = 0
+settings.showList = []
+settings.QUALITY_DEFAULT = 4  # hdtv
+settings.SEASON_FOLDERS_DEFAULT = 0
 
-sickbeard.NAMING_PATTERN = ''
-sickbeard.NAMING_ABD_PATTERN = ''
-sickbeard.NAMING_SPORTS_PATTERN = ''
-sickbeard.NAMING_MULTI_EP = 1
+settings.NAMING_PATTERN = ''
+settings.NAMING_ABD_PATTERN = ''
+settings.NAMING_SPORTS_PATTERN = ''
+settings.NAMING_MULTI_EP = 1
 
-sickbeard.TV_DOWNLOAD_DIR = PROCESSING_DIR
+settings.TV_DOWNLOAD_DIR = PROCESSING_DIR
 
-sickbeard.PROVIDER_ORDER = ["sick_beard_index"]
-sickbeard.newznabProviderList = NewznabProvider.providers_list("'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0|eponly|0|0|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0|eponly|0|0|0'")
-sickbeard.providerList = providers.makeProviderList()
+settings.PROVIDER_ORDER = ["sick_beard_index"]
+settings.newznabProviderList = NewznabProvider.providers_list("'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0|eponly|0|0|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0|eponly|0|0|0'")
+settings.providerList = providers.makeProviderList()
 
-sickbeard.PROG_DIR = os.path.abspath(os.path.join(TEST_DIR, '..'))
-sickbeard.DATA_DIR = TEST_DIR
-sickbeard.CONFIG_FILE = os.path.join(sickbeard.DATA_DIR, "config.ini")
-sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE, encoding='UTF-8', indent_type='  ')
-sickbeard.GUI_NAME = 'slick'
+settings.PROG_DIR = os.path.abspath(os.path.join(TEST_DIR, '..'))
+settings.DATA_DIR = TEST_DIR
+settings.CONFIG_FILE = os.path.join(settings.DATA_DIR, "config.ini")
+settings.CFG = ConfigObj(settings.CONFIG_FILE, encoding='UTF-8', indent_type='  ')
+settings.GUI_NAME = 'slick'
 
-sickbeard.BRANCH = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'branch')
-sickbeard.CUR_COMMIT_HASH = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'cur_commit_hash')
-sickbeard.GIT_USERNAME = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'git_username')
-sickbeard.GIT_TOKEN = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'git_token_password', censor_log=True)
+settings.BRANCH = sickbeard.config.check_setting_str(settings.CFG, 'General', 'branch')
+settings.CUR_COMMIT_HASH = sickbeard.config.check_setting_str(settings.CFG, 'General', 'cur_commit_hash')
+settings.GIT_USERNAME = sickbeard.config.check_setting_str(settings.CFG, 'General', 'git_username')
+settings.GIT_TOKEN = sickbeard.config.check_setting_str(settings.CFG, 'General', 'git_token_password', censor_log=True)
 
-sickbeard.LOG_DIR = os.path.join(TEST_DIR, 'Logs')
-sickbeard.logger.log_file = os.path.join(sickbeard.LOG_DIR, 'test_sickbeard.log')
+settings.LOG_DIR = os.path.join(TEST_DIR, 'Logs')
+sickbeard.logger.log_file = os.path.join(settings.LOG_DIR, 'test_sickbeard.log')
 create_test_log_folder()
 
-sickbeard.CACHE_DIR = os.path.join(TEST_DIR, 'cache')
+settings.CACHE_DIR = os.path.join(TEST_DIR, 'cache')
 create_test_cache_folder()
 
 sickbeard.logger.init_logging(False, True)
@@ -148,9 +150,10 @@ def _dummy_save_config():
     """
     return True
 
+
 # this overrides the SickBeard save_config which gets called during a db upgrade
 # this might be considered a hack
-mainDB.sickbeard.save_config = _dummy_save_config
+sickchill.start.save_config = _dummy_save_config
 
 
 def _fake_specify_ep(self, season, episode):
@@ -180,13 +183,13 @@ class SickbeardTestDBCase(unittest.TestCase):
         tearDown
     """
     def setUp(self):
-        sickbeard.showList = []
+        settings.showList = []
         setup_test_db()
         setup_test_episode_file()
         setup_test_show_dir()
 
     def tearDown(self):
-        sickbeard.showList = []
+        settings.showList = []
         teardown_test_db()
         teardown_test_episode_file()
         teardown_test_show_dir()
@@ -201,7 +204,7 @@ class SickbeardTestPostProcessorCase(unittest.TestCase):
         tearDown
     """
     def setUp(self):
-        sickbeard.showList = []
+        settings.showList = []
         setup_test_db()
         setup_test_episode_file()
         setup_test_show_dir()
@@ -223,10 +226,10 @@ class SickbeardTestPostProcessorCase(unittest.TestCase):
                 episode.saveToDB()
 
         show.saveToDB()
-        sickbeard.showList = [show]
+        settings.showList = [show]
 
     def tearDown(self):
-        sickbeard.showList = []
+        settings.showList = []
         teardown_test_db()
         teardown_test_episode_file()
         teardown_test_show_dir()

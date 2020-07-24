@@ -22,6 +22,7 @@ from tornado.web import addslash
 # First Party Imports
 import sickbeard
 from sickbeard import logger, ui
+from sickchill import settings
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
@@ -63,7 +64,7 @@ class ConfigShares(Config):
                                 index=index, info=info, copula=('is', 'are')['and' in info],
                                 name=share.get('name'), server=share.get('server'), path=share.get('path')))
 
-        sickbeard.WINDOWS_SHARES.clear()
-        sickbeard.WINDOWS_SHARES.update(new_shares)
+        settings.WINDOWS_SHARES.clear()
+        settings.WINDOWS_SHARES.update(new_shares)
 
         ui.notifications.message(_('Saved Shares'), _('Your Windows share settings have been saved'))

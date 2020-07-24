@@ -29,6 +29,7 @@ import unittest
 # First Party Imports
 import sickbeard
 from sickbeard.post_processing_queue import PostProcessorTask, ProcessingQueue
+from sickchill import settings
 from tests import test_lib as test
 
 CHECK_CLEARS = False
@@ -59,9 +60,9 @@ class PostProcessorQueueTests(test.SickbeardTestPostProcessorCase):
         super(PostProcessorQueueTests, self).tearDown()
 
     def test_post_processor_queue_spam(self):
-        sickbeard.TV_DOWNLOAD_DIR = os.path.abspath('.')
+        settings.TV_DOWNLOAD_DIR = os.path.abspath('.')
         for i in range(100):
-            result = self.queue.action.add_item(sickbeard.TV_DOWNLOAD_DIR, method='move', mode=('manual', 'auto')[i % 2])
+            result = self.queue.action.add_item(settings.TV_DOWNLOAD_DIR, method='move', mode=('manual', 'auto')[i % 2])
             self.assertIsNotNone(result)
             self.assertTrue(self.queue.action.queue_length()['auto'] <= 1)
             self.assertTrue(self.queue.action.queue_length()['manual'] <= 1)

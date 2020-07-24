@@ -20,6 +20,7 @@
 # First Party Imports
 import sickbeard
 from adba.aniDBerrors import AniDBCommandTimeoutError
+from sickchill import settings
 
 # Local Folder Imports
 from . import db, helpers, logger
@@ -158,7 +159,7 @@ def short_group_names(groups):
     if helpers.set_up_anidb_connection():
         for groupName in groups:
             try:
-                group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
+                group = settings.ADBA_CONNECTION.group(gname=groupName)
             except AniDBCommandTimeoutError:
                 logger.debug('Timeout while loading group from AniDB. Trying next group')
             except Exception:

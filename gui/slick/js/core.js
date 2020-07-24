@@ -105,7 +105,7 @@ const SICKCHILL = {
 
                 if (metaToBool('sickbeard.SICKCHILL_BACKGROUND')) {
                     $.backstretch(srRoot + '/ui/sickchill_background');
-                    $('.backstretch').css('opacity', getMeta('sickbeard.FANART_BACKGROUND_OPACITY')).fadeIn('500');
+                    $('.backstretch').css('opacity', getMeta('settings.FANART_BACKGROUND_OPACITY')).fadeIn('500');
                 }
             })();
 
@@ -2389,12 +2389,12 @@ const SICKCHILL = {
             });
 
             $('.show-grid').imagesLoaded(() => {
-                const sort = getMeta('sickbeard.POSTER_SORTBY') === 'date' ? ['status', 'date', 'name'] : getMeta('sickbeard.POSTER_SORTBY');
+                const sort = getMeta('settings.POSTER_SORTBY') === 'date' ? ['status', 'date', 'name'] : getMeta('settings.POSTER_SORTBY');
                 $('.loading-spinner').hide();
                 $('.show-grid').show().isotope({
                     itemSelector: '.show-container',
                     sortBy: sort,
-                    sortAscending: getMeta('sickbeard.POSTER_SORTDIR'),
+                    sortAscending: getMeta('settings.POSTER_SORTDIR'),
                     layoutMode: 'masonry',
                     masonry: {
                         isFitWidth: true
@@ -2518,7 +2518,7 @@ const SICKCHILL = {
         displayShow() {
             if (metaToBool('sickbeard.FANART_BACKGROUND')) {
                 $.backstretch(srRoot + '/cache/images/' + $('#showID').attr('value') + '.fanart.jpg');
-                $('.backstretch').css('opacity', getMeta('sickbeard.FANART_BACKGROUND_OPACITY')).fadeIn('500');
+                $('.backstretch').css('opacity', getMeta('settings.FANART_BACKGROUND_OPACITY')).fadeIn('500');
             }
 
             $('.displayShowTable').tablesorter({
@@ -3766,7 +3766,7 @@ const SICKCHILL = {
         index() {
             if (isMeta('sickbeard.COMING_EPS_LAYOUT', ['list'])) {
                 const sortCodes = {date: 0, show: 2, network: 5};
-                const sort = getMeta('sickbeard.COMING_EPS_SORT');
+                const sort = getMeta('settings.COMING_EPS_SORT');
                 const sortList = (sort in sortCodes) ? [[sortCodes[sort], 0]] : [[0, 0]];
 
                 $('.resetsorting').on('click', () => {
@@ -4042,7 +4042,7 @@ const SICKCHILL = {
                 let table =
                     '<div class="row">' +
                     '<div class="col-lg-6 col-md-12">' +
-                    '<table class="sickbeardTable new-show-table tablesorter">' +
+                    '<table class="sickchillTable new-show-table tablesorter">' +
                     '<thead>' +
                     '<tr>' +
                     '<th></th>' +

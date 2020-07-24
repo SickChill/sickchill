@@ -1,6 +1,6 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
-    import sickbeard
+    from sickchill import settings
     from sickbeard.filters import hide
     from sickbeard.helpers import anon_url
 %>
@@ -33,7 +33,7 @@
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" class="enabler" name="use_anidb"
-                                       id="use_anidb" ${('', 'checked="checked"')[bool(sickbeard.USE_ANIDB)]} />
+                                       id="use_anidb" ${('', 'checked="checked"')[bool(settings.USE_ANIDB)]} />
                                 <label for="use_anidb">${_('should SickChill use data from AniDB?')}</label>
                             </div>
                         </div>
@@ -48,7 +48,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="text" name="anidb_username" id="anidb_username"
-                                                   value="${sickbeard.ANIDB_USERNAME}"
+                                                   value="${settings.ANIDB_USERNAME}"
                                                    class="form-control input-sm input350 pull-left" autocapitalize="off"
                                                    autocomplete="no" title="Username"/>
                                         </div>
@@ -69,7 +69,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input
-                                                type="password" name="anidb_password" id="anidb_password" value="${sickbeard.ANIDB_PASSWORD|hide}"
+                                                type="password" name="anidb_password" id="anidb_password" value="${settings.ANIDB_PASSWORD|hide}"
                                                 class="form-control input-sm input350 pull-left" autocomplete="no" autocapitalize="off" title="Password"
                                             />
                                         </div>
@@ -88,7 +88,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 component-desc">
                                     <input type="checkbox" name="anidb_use_mylist"
-                                           id="anidb_use_mylist" ${('', 'checked="checked"')[bool(sickbeard.ANIDB_USE_MYLIST)]}/>
+                                           id="anidb_use_mylist" ${('', 'checked="checked"')[bool(settings.ANIDB_USE_MYLIST)]}/>
                                     <label for="anidb_use_mylist">${_('do you want to add the PostProcessed episodes to the MyList?')}</label>
                                 </div>
                             </div>
@@ -116,7 +116,7 @@
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" class="enabler" name="split_home"
-                                       id="split_home" ${('', 'checked="checked"')[bool(sickbeard.ANIME_SPLIT_HOME)]} title="Split"/>
+                                       id="split_home" ${('', 'checked="checked"')[bool(settings.ANIME_SPLIT_HOME)]} title="Split"/>
                                 <label for="split_home">${_('separate anime and normal shows in groups')}</label>
                             </div>
                         </div>
@@ -132,7 +132,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                     <input type="checkbox" name="split_home_in_tabs"
-                                           id="split_home_in_tabs" ${('', 'checked="checked"')[bool(sickbeard.ANIME_SPLIT_HOME_IN_TABS)]} title="Split in tabs"/>
+                                           id="split_home_in_tabs" ${('', 'checked="checked"')[bool(settings.ANIME_SPLIT_HOME_IN_TABS)]} title="Split in tabs"/>
                                     <label for="split_home_in_tabs">${_('use tabs for when splitting show lists')}</label>
                                 </div>
                             </div>

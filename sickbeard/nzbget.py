@@ -25,6 +25,7 @@ from base64 import standard_b64encode
 
 # First Party Imports
 import sickbeard
+from sickchill import settings
 from sickchill.helper.common import try_int
 
 # Local Folder Imports
@@ -39,21 +40,21 @@ def sendNZB(nzb, proper=False):
     :param nzb: nzb object
     :param proper: True if this is a Proper download, False if not. Defaults to False
     '''
-    if sickbeard.NZBGET_HOST is None:
+    if settings.NZBGET_HOST is None:
         logger.warning('No NZBget host found in configuration. Please configure it.')
         return False
 
     addToTop = False
     nzbgetprio = 0
-    category = sickbeard.NZBGET_CATEGORY
+    category = settings.NZBGET_CATEGORY
     if nzb.show.is_anime:
-        category = sickbeard.NZBGET_CATEGORY_ANIME
+        category = settings.NZBGET_CATEGORY_ANIME
 
     url = 'http{0}://{1}:{2}@{3}/xmlrpc'.format(
-        's' if sickbeard.NZBGET_USE_HTTPS else '',
-        sickbeard.NZBGET_USERNAME,
-        sickbeard.NZBGET_PASSWORD,
-        sickbeard.NZBGET_HOST)
+        's' if settings.NZBGET_USE_HTTPS else '',
+        settings.NZBGET_USERNAME,
+        settings.NZBGET_PASSWORD,
+        settings.NZBGET_HOST)
 
     nzbGetRPC = xmlrpc.client.ServerProxy(url)
     try:
@@ -85,11 +86,11 @@ def sendNZB(nzb, proper=False):
         dupekey += '-' + str(curEp.season) + '.' + str(curEp.episode)
         if datetime.date.today() - curEp.airdate <= datetime.timedelta(days=7):
             addToTop = True
-            nzbgetprio = sickbeard.NZBGET_PRIORITY
+            nzbgetprio = settings.NZBGET_PRIORITY
         else:
-            category = sickbeard.NZBGET_CATEGORY_BACKLOG
+            category = settings.NZBGET_CATEGORY_BACKLOG
             if nzb.show.is_anime:
-                category = sickbeard.NZBGET_CATEGORY_ANIME_BACKLOG
+                category = settings.NZBGET_CATEGORY_ANIME_BACKLOG
 
     if nzb.quality != Quality.UNKNOWN:
         dupescore = nzb.quality * 100

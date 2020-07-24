@@ -1,6 +1,7 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
-    import sickbeard
+    from sickbeard import providers
+    from sickchill import settings
     from sickbeard.filters import hide
     from sickbeard.helpers import anon_url
     from sickchill.providers.GenericProvider import GenericProvider
@@ -11,13 +12,13 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('#config-components').tabs();
-            % if sickbeard.USE_NZBS:
-                % for curNewznabProvider in sickbeard.newznabProviderList:
+            % if settings.USE_NZBS:
+                % for curNewznabProvider in settings.newznabProviderList:
                     $(this).addProvider('${curNewznabProvider.get_id()}', '${curNewznabProvider.name}', '${curNewznabProvider.url}', '${curNewznabProvider.key}', '${curNewznabProvider.catIDs}', ${int(curNewznabProvider.default)});
                 % endfor
             % endif
-            % if sickbeard.USE_TORRENTS:
-                % for curTorrentRssProvider in sickbeard.torrentRssProviderList:
+            % if settings.USE_TORRENTS:
+                % for curTorrentRssProvider in settings.torrentRssProviderList:
                     $(this).addTorrentRssProvider('${curTorrentRssProvider.get_id()}', '${curTorrentRssProvider.name}', '${curTorrentRssProvider.url}', '${curTorrentRssProvider.cookies}', '${curTorrentRssProvider.titleTAG}');
                 % endfor
             % endif
@@ -29,11 +30,11 @@
     <li><a href="#provider-priorities">${_('Provider Priorities')}</a></li>
     <li><a href="#provider-options">${_('Provider Options')}</a></li>
 
-    % if sickbeard.USE_NZBS:
+    % if settings.USE_NZBS:
         <li><a href="#custom-newznab">${_('Configure Custom Newznab Providers')}</a></li>
     % endif
 
-    % if sickbeard.USE_TORRENTS:
+    % if settings.USE_TORRENTS:
         <li><a href="#custom-torrent">${_('Configure Custom Torrent Providers')}</a></li>
     % endif
 </%block>
@@ -49,7 +50,7 @@
                         <p>${_('Check off and drag the providers into the order you want them to be used.')}</p>
                         <p>${_('At least one provider is required but two are recommended.')}</p>
 
-                        % if not sickbeard.USE_NZBS or not sickbeard.USE_TORRENTS:
+                        % if not settings.USE_NZBS or not settings.USE_TORRENTS:
                             <blockquote style="margin: 20px 0;">NZB/${_('Torrent and NZB providers can be toggled in ')}
                                 <b><a href="/config/search">Search Settings</a></b></blockquote>
                         % else:
@@ -67,11 +68,11 @@
                     <fieldset class="component-group-list">
 
                         <ul id="provider_order_list">
-                            % for curProvider in sickbeard.providers.sortedProviderList():
+                            % for curProvider in providers.sortedProviderList():
                             <%
-                                if curProvider.provider_type == GenericProvider.NZB and not sickbeard.USE_NZBS:
+                                if curProvider.provider_type == GenericProvider.NZB and not settings.USE_NZBS:
                                     continue
-                                elif curProvider.provider_type == GenericProvider.TORRENT and not sickbeard.USE_TORRENTS:
+                                elif curProvider.provider_type == GenericProvider.TORRENT and not settings.USE_TORRENTS:
                                     continue
 
                                 curName = curProvider.get_id()
@@ -96,7 +97,7 @@
                                 </li>
                             % endfor
                         </ul>
-                        <input type="hidden" name="provider_order" id="provider_order" value="${" ".join([x.get_id(':'+str(int(x.is_enabled))) for x in sickbeard.providers.sortedProviderList()])}" />
+                        <input type="hidden" name="provider_order" id="provider_order" value="${" ".join([x.get_id(':'+str(int(x.is_enabled))) for x in providers.sortedProviderList()])}" />
                     </fieldset>
                 </div>
             </div>
@@ -123,10 +124,10 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <%
                                     provider_config_list = []
-                                    for curProvider in sickbeard.providers.sortedProviderList():
-                                        if curProvider.provider_type == GenericProvider.NZB and not (sickbeard.USE_NZBS and curProvider.is_enabled):
+                                    for curProvider in providers.sortedProviderList():
+                                        if curProvider.provider_type == GenericProvider.NZB and not (settings.USE_NZBS and curProvider.is_enabled):
                                             continue
-                                        elif curProvider.provider_type == GenericProvider.TORRENT and not (sickbeard.USE_TORRENTS and curProvider.is_enabled):
+                                        elif curProvider.provider_type == GenericProvider.TORRENT and not (settings.USE_TORRENTS and curProvider.is_enabled):
                                             continue
                                         provider_config_list.append(curProvider)
                                 %>
@@ -144,7 +145,7 @@
 
 
                         <!-- start div for editing providers //-->
-                        % for curNewznabProvider in sickbeard.newznabProviderList:
+                        % for curNewznabProvider in settings.newznabProviderList:
                             <div class="providerDiv" id="${curNewznabProvider.get_id("Div")}">
                                 % if curNewznabProvider.default and curNewznabProvider.needs_auth:
 
@@ -257,7 +258,7 @@
                             </div>
                         % endfor
 
-                        % for curNzbProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if curProvider.provider_type == GenericProvider.NZB and curProvider not in sickbeard.newznabProviderList]:
+                        % for curNzbProvider in [curProvider for curProvider in providers.sortedProviderList() if curProvider.provider_type == GenericProvider.NZB and curProvider not in settings.newznabProviderList]:
                             <div class="providerDiv" id="${curNzbProvider.get_id("Div")}">
                                 % if hasattr(curNzbProvider, 'username'):
                                     <div class="field-pair row">
@@ -370,7 +371,7 @@
                             </div>
                         % endfor
 
-                        % for curTorrentProvider in [curProvider for curProvider in sickbeard.providers.sortedProviderList() if curProvider.provider_type == GenericProvider.TORRENT]:
+                        % for curTorrentProvider in [curProvider for curProvider in providers.sortedProviderList() if curProvider.provider_type == GenericProvider.TORRENT]:
                             <div class="providerDiv" id="${curTorrentProvider.get_id("Div")}">
 
                                 % if hasattr(curTorrentProvider, 'custom_url'):
@@ -764,7 +765,7 @@
             </div>
         </div>
 
-        % if sickbeard.USE_NZBS:
+        % if settings.USE_NZBS:
             <div id="custom-newznab" class="component-group">
                 <div class="row">
                     <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
@@ -873,7 +874,7 @@
             </div>
         % endif
 
-        % if sickbeard.USE_TORRENTS:
+        % if settings.USE_TORRENTS:
             <div id="custom-torrent" class="component-group">
                 <div class="row">
                     <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">

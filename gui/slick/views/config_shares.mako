@@ -1,6 +1,6 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
-    import sickbeard
+     from sickchill import settings
 %>
 <%block name="pages">
     <form id="shares_form" action="save_shares" method="post">
@@ -14,7 +14,7 @@
                 </div>
             </div>
             <div class="row">
-                % for i in range(0, len(sickbeard.WINDOWS_SHARES) + 3):
+                % for i in range(0, len(settings.WINDOWS_SHARES) + 3):
                     <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
                         <fieldset class="component-group-list">
                             <div class="form-group">

@@ -24,6 +24,7 @@ import sys
 # First Party Imports
 import sickbeard
 import sickchill
+from sickchill import settings
 from sickchill.helper.common import dateTimeFormat
 
 # Local Folder Imports
@@ -86,7 +87,7 @@ class SearchResult(object):
     @classmethod
     def make_result(cls, result_dict):
         # noinspection PyUnresolvedReferences
-        show = sickbeard.tv.Show.find(sickbeard.showList, int(result_dict.get('show')))
+        show = sickbeard.tv.Show.find(settings.showList, int(result_dict.get('show')))
         episode = show.getEpisode(result_dict.get('season'), result_dict.get('episode'))
         result = cls([episode])
         result.from_json(result_dict)

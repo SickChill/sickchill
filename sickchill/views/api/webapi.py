@@ -39,6 +39,7 @@ from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Q
                               WANTED)
 from sickbeard.postProcessor import PROCESS_METHODS
 from sickbeard.versionChecker import CheckVersion
+from sickchill import settings
 from sickchill.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
 from sickchill.helper.exceptions import CantUpdateShowException, ShowDirectoryNotFoundException
 from sickchill.helper.quality import get_quality_string
@@ -136,8 +137,8 @@ class ApiHandler(RequestHandler):
             paencodess
 
     def _out_as_image(self, _dict):
-        self.set_header('Content-Type', sickbeard.IMAGE_CACHE.content_type(_dict['image']))
-        return sickbeard.IMAGE_CACHE.image_data(_dict['image'])
+        self.set_header('Content-Type', settings.IMAGE_CACHE.content_type(_dict['image']))
+        return settings.IMAGE_CACHE.image_data(_dict['image'])
 
     def _out_as_json(self, _dict):
         self.set_header("Content-Type", "application/json;charset=UTF-8")
@@ -589,14 +590,14 @@ def _map_quality(show_quality):
 
 
 def _get_root_dirs():
-    if sickbeard.ROOT_DIRS == "":
+    if settings.ROOT_DIRS == "":
         return {}
 
     root_dir = {}
-    root_dirs = sickbeard.ROOT_DIRS.split('|')
-    default_index = int(sickbeard.ROOT_DIRS.split('|')[0])
+    root_dirs = settings.ROOT_DIRS.split('|')
+    default_index = int(settings.ROOT_DIRS.split('|')[0])
 
-    root_dir["default_index"] = int(sickbeard.ROOT_DIRS.split('|')[0])
+    root_dir["default_index"] = int(settings.ROOT_DIRS.split('|')[0])
     # remove default_index value from list (this fixes the offset)
     root_dirs.pop(0)
 
@@ -685,7 +686,7 @@ class CMDComingEpisodes(ApiCall):
         self.sort, args = self.check_params(args, kwargs, "sort", "date", False, "string", list(ComingEpisodes.sorts))
         self.type, args = self.check_params(args, kwargs, "type", '|'.join(ComingEpisodes.categories), False, "list",
                                             ComingEpisodes.categories)
-        self.paused, args = self.check_params(args, kwargs, "paused", bool(sickbeard.COMING_EPS_DISPLAY_PAUSED), False,
+        self.paused, args = self.check_params(args, kwargs, "paused", bool(settings.COMING_EPS_DISPLAY_PAUSED), False,
                                               "bool", [])
 
     def run(self):
@@ -742,7 +743,7 @@ class CMDEpisode(ApiCall):
 
     def run(self):
         """ Get detailed information about an episode """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -806,7 +807,7 @@ class CMDEpisodeSearch(ApiCall):
 
     def run(self):
         """ Search for an episode """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -817,7 +818,7 @@ class CMDEpisodeSearch(ApiCall):
 
         # make a queue item for it and put it on the queue
         ep_queue_item = search_queue.ManualSearchQueueItem(show_obj, ep_obj)
-        sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
+        settings.searchQueueScheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
 
         # wait until the queue item tells us whether it worked or not
         while ep_queue_item.success is None:  # @UndefinedVariable
@@ -881,7 +882,7 @@ class CMDFullSubtitleSearch(AbstractStartScheduler):
 
     @property
     def scheduler(self):
-        return sickbeard.subtitlesFinderScheduler
+        return settings.subtitlesFinderScheduler
 
     @property
     def scheduler_class_str(self):
@@ -896,7 +897,7 @@ class CMDProperSearch(AbstractStartScheduler):
 
     @property
     def scheduler(self):
-        return sickbeard.properFinderScheduler
+        return settings.properFinderScheduler
 
     @property
     def scheduler_class_str(self):
@@ -911,7 +912,7 @@ class CMDDailySearch(AbstractStartScheduler):
 
     @property
     def scheduler(self):
-        return sickbeard.dailySearchScheduler
+        return settings.dailySearchScheduler
 
     @property
     def scheduler_class_str(self):
@@ -945,7 +946,7 @@ class CMDEpisodeSetStatus(ApiCall):
 
     def run(self):
         """ Set the status of an episode or a season (when no episode is provided) """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -997,7 +998,7 @@ class CMDEpisodeSetStatus(ApiCall):
                         failure = True
                     continue
 
-                if self.status == FAILED and not sickbeard.USE_FAILED_DOWNLOADS:
+                if self.status == FAILED and not settings.USE_FAILED_DOWNLOADS:
                     ep_results.append(_ep_result(RESULT_FAILURE, ep_obj, "Refusing to change status to FAILED because failed download handling is disabled"))
                     failure = True
                     continue
@@ -1024,7 +1025,7 @@ class CMDEpisodeSetStatus(ApiCall):
             # noinspection PyCompatibility
             for season, segment in segments.items():
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(show_obj, segment)
-                sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)  # @UndefinedVariable
+                settings.searchQueueScheduler.action.add_item(cur_backlog_queue_item)  # @UndefinedVariable
 
                 logger.info("API :: Starting backlog for " + show_obj.name + " season " + str(
                     season) + " because some episodes were set to WANTED")
@@ -1059,7 +1060,7 @@ class CMDSubtitleSearch(ApiCall):
 
     def run(self):
         """ Search for an episode subtitles """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -1116,7 +1117,7 @@ class CMDExceptions(ApiCall):
                 scene_exceptions[indexerid].append(row["show_name"])
 
         else:
-            show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+            show_obj = Show.find(settings.showList, int(self.indexerid))
             if not show_obj:
                 return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -1243,7 +1244,7 @@ class CMDBacklog(ApiCall):
         shows = []
 
         main_db_con = db.DBConnection(row_type="dict")
-        for curShow in sickbeard.showList:
+        for curShow in settings.showList:
 
             show_eps = []
 
@@ -1395,16 +1396,16 @@ class CMDPostProcess(ApiCall):
 
     def run(self):
         """ Manually post-process the files in the download folder """
-        if not self.path and not sickbeard.TV_DOWNLOAD_DIR:
+        if not self.path and not settings.TV_DOWNLOAD_DIR:
             return _responds(RESULT_FAILURE, msg="You need to provide a path or set TV Download Dir")
 
         if not self.path:
-            self.path = sickbeard.TV_DOWNLOAD_DIR
+            self.path = settings.TV_DOWNLOAD_DIR
 
         if not self.type:
             self.type = 'manual'
 
-        data = sickbeard.postProcessorTaskScheduler.action.add_item(
+        data = settings.postProcessorTaskScheduler.action.add_item(
             self.path, self.release_name, method=self.process_method, force=self.force_replace,
             is_priority=self.is_priority, failed=self.failed, delete=self.delete,
             mode=self.type, force_next=self.force_next
@@ -1426,7 +1427,7 @@ class CMDSickBeard(ApiCall):
     def run(self):
         """ dGet miscellaneous information about SickChill """
         data = {
-            "sr_version": sickbeard.BRANCH, "api_version": self.version,
+            "sr_version": settings.BRANCH, "api_version": self.version,
             "api_commands": sorted(function_mapper)
             }
         return _responds(RESULT_SUCCESS, data)
@@ -1462,11 +1463,11 @@ class CMDSickBeardAddRootDir(ApiCall):
 
         root_dirs = []
 
-        if sickbeard.ROOT_DIRS == "":
+        if settings.ROOT_DIRS == "":
             self.default = 1
         else:
-            root_dirs = sickbeard.ROOT_DIRS.split('|')
-            index = int(sickbeard.ROOT_DIRS.split('|')[0])
+            root_dirs = settings.ROOT_DIRS.split('|')
+            index = int(settings.ROOT_DIRS.split('|')[0])
             root_dirs.pop(0)
             # clean up the list - replace %xx escapes by their single-character equivalent
             root_dirs = [urllib.parse.unquote_plus(x) for x in root_dirs]
@@ -1488,7 +1489,7 @@ class CMDSickBeardAddRootDir(ApiCall):
         # noinspection PyCompatibility
         root_dirs_new = '|'.join(str(x) for x in root_dirs_new)
 
-        sickbeard.ROOT_DIRS = root_dirs_new
+        settings.ROOT_DIRS = root_dirs_new
         return _responds(RESULT_SUCCESS, _get_root_dirs(), msg="Root directories updated")
 
 
@@ -1533,9 +1534,9 @@ class CMDSickBeardCheckScheduler(ApiCall):
         main_db_con = db.DBConnection(row_type="dict")
         sql_results = main_db_con.select("SELECT last_backlog FROM info")
 
-        backlog_paused = sickbeard.searchQueueScheduler.action.is_backlog_paused()  # @UndefinedVariable
-        backlog_running = sickbeard.searchQueueScheduler.action.is_backlog_in_progress()  # @UndefinedVariable
-        next_backlog = sickbeard.backlogSearchScheduler.nextRun().strftime(dateFormat)
+        backlog_paused = settings.searchQueueScheduler.action.is_backlog_paused()  # @UndefinedVariable
+        backlog_running = settings.searchQueueScheduler.action.is_backlog_in_progress()  # @UndefinedVariable
+        next_backlog = settings.backlogSearchScheduler.nextRun().strftime(dateFormat)
 
         data = {
             "backlog_is_paused": int(backlog_paused), "backlog_is_running": int(backlog_running),
@@ -1560,12 +1561,12 @@ class CMDSickBeardDeleteRootDir(ApiCall):
 
     def run(self):
         """ Delete a root (parent) directory from SickChill """
-        if sickbeard.ROOT_DIRS == "":
+        if settings.ROOT_DIRS == "":
             return _responds(RESULT_FAILURE, _get_root_dirs(), msg="No root directories detected")
 
         new_index = 0
         root_dirs_new = []
-        root_dirs = sickbeard.ROOT_DIRS.split('|')
+        root_dirs = settings.ROOT_DIRS.split('|')
         index = int(root_dirs[0])
         root_dirs.pop(0)
         # clean up the list - replace %xx escapes by their single-character equivalent
@@ -1588,7 +1589,7 @@ class CMDSickBeardDeleteRootDir(ApiCall):
         # noinspection PyCompatibility
         root_dirs_new = "|".join(str(x) for x in root_dirs_new)
 
-        sickbeard.ROOT_DIRS = root_dirs_new
+        settings.ROOT_DIRS = root_dirs_new
         # what if the root dir was not found?
         return _responds(RESULT_SUCCESS, _get_root_dirs(), msg="Root directory deleted")
 
@@ -1603,14 +1604,14 @@ class CMDSickBeardGetDefaults(ApiCall):
     def run(self):
         """ Get SickChill's user default configuration value """
 
-        any_qualities, best_qualities = _map_quality(sickbeard.QUALITY_DEFAULT)
+        any_qualities, best_qualities = _map_quality(settings.QUALITY_DEFAULT)
 
         data = {
-            "status": statusStrings[sickbeard.STATUS_DEFAULT].lower(),
-            "flatten_folders": int(not sickbeard.SEASON_FOLDERS_DEFAULT),
-            "season_folders": int(sickbeard.SEASON_FOLDERS_DEFAULT),
+            "status": statusStrings[settings.STATUS_DEFAULT].lower(),
+            "flatten_folders": int(not settings.SEASON_FOLDERS_DEFAULT),
+            "season_folders": int(settings.SEASON_FOLDERS_DEFAULT),
             "initial": any_qualities, "archive": best_qualities,
-            "future_show_paused": int(sickbeard.COMING_EPS_DISPLAY_PAUSED)
+            "future_show_paused": int(settings.COMING_EPS_DISPLAY_PAUSED)
             }
         return _responds(RESULT_SUCCESS, data)
 
@@ -1662,10 +1663,10 @@ class CMDSickBeardPauseBacklog(ApiCall):
     def run(self):
         """ Pause or un-pause the backlog search """
         if self.pause:
-            sickbeard.searchQueueScheduler.action.pause_backlog()  # @UndefinedVariable
+            settings.searchQueueScheduler.action.pause_backlog()  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg="Backlog paused")
         else:
-            sickbeard.searchQueueScheduler.action.unpause_backlog()  # @UndefinedVariable
+            settings.searchQueueScheduler.action.unpause_backlog()  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg="Backlog un-paused")
 
 
@@ -1678,8 +1679,8 @@ class CMDSickBeardPing(ApiCall):
 
     def run(self):
         """ Ping SickChill to check if it is running """
-        if sickbeard.started:
-            return _responds(RESULT_SUCCESS, {"pid": sickbeard.PID}, "Pong")
+        if settings.started:
+            return _responds(RESULT_SUCCESS, {"pid": settings.PID}, "Pong")
         else:
             return _responds(RESULT_SUCCESS, msg="Pong")
 
@@ -1693,7 +1694,7 @@ class CMDSickBeardRestart(ApiCall):
 
     def run(self):
         """ Restart SickChill """
-        if not Restart.restart(sickbeard.PID):
+        if not Restart.restart(settings.PID):
             return _responds(RESULT_FAILURE, msg='SickChill can not be restarted')
 
         return _responds(RESULT_SUCCESS, msg="SickChill is restarting...")
@@ -1715,7 +1716,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
         super(CMDSickBeardSearchIndexers, self).__init__(args, kwargs)
         self.valid_languages = sickchill.indexer.lang_dict()
         self.name, args = self.check_params(args, kwargs, "name", None, False, "string", [])
-        self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string",
+        self.lang, args = self.check_params(args, kwargs, "lang", settings.INDEXER_DEFAULT_LANGUAGE, False, "string",
                                             list(self.valid_languages))
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, False, "int", [])
         self.only_new, args = self.check_params(args, kwargs, "only_new", True, False, "bool", [])
@@ -1732,7 +1733,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
                 for result in indexer_results:
                     # Skip it if it's in our show list already, and we only want new shows
                     # noinspection PyUnresolvedReferences
-                    in_show_list = sickbeard.tv.Show.find(sickbeard.showList, int(result['id']))
+                    in_show_list = sickbeard.tv.Show.find(settings.showList, int(result['id']))
                     if in_show_list and self.only_new:
                         continue
 
@@ -1827,7 +1828,7 @@ class CMDSickBeardSetDefaults(ApiCall):
         self.archive, args = self.check_params(args, kwargs, "archive", [], False, "list", PREFERRED_QUALITY_LIST)
 
         self.future_show_paused, args = self.check_params(args, kwargs, "future_show_paused", None, False, "bool", [])
-        self.season_folders, args = self.check_params(args, kwargs, "flatten_folders", not bool(sickbeard.SEASON_FOLDERS_DEFAULT), False, "bool", [])
+        self.season_folders, args = self.check_params(args, kwargs, "flatten_folders", not bool(settings.SEASON_FOLDERS_DEFAULT), False, "bool", [])
         self.season_folders, args = self.check_params(args, kwargs, "season_folders", self.season_folders, False, "bool", [])
         self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
                                               ["wanted", "skipped", "ignored"])
@@ -1848,7 +1849,7 @@ class CMDSickBeardSetDefaults(ApiCall):
                 a_quality_id.append(QUALITY_MAP[quality])
 
         if i_quality_id or a_quality_id:
-            sickbeard.QUALITY_DEFAULT = Quality.combineQualities(i_quality_id, a_quality_id)
+            settings.QUALITY_DEFAULT = Quality.combineQualities(i_quality_id, a_quality_id)
 
         if self.status:
             # convert the string status to a int
@@ -1862,13 +1863,13 @@ class CMDSickBeardSetDefaults(ApiCall):
             # only allow the status options we want
             if int(self.status) not in (3, 5, 6, 7):
                 raise ApiError("Status Prohibited")
-            sickbeard.STATUS_DEFAULT = self.status
+            settings.STATUS_DEFAULT = self.status
 
         if self.season_folders is not None:
-            sickbeard.SEASON_FOLDERS_DEFAULT = int(self.season_folders)
+            settings.SEASON_FOLDERS_DEFAULT = int(self.season_folders)
 
         if self.future_show_paused is not None:
-            sickbeard.COMING_EPS_DISPLAY_PAUSED = int(self.future_show_paused)
+            settings.COMING_EPS_DISPLAY_PAUSED = int(self.future_show_paused)
 
         return _responds(RESULT_SUCCESS, msg="Saved defaults")
 
@@ -1882,7 +1883,7 @@ class CMDSickBeardShutdown(ApiCall):
 
     def run(self):
         """ Shutdown SickChill """
-        if not Shutdown.stop(sickbeard.PID):
+        if not Shutdown.stop(settings.PID):
             return _responds(RESULT_FAILURE, msg='SickChill can not be shut down')
 
         return _responds(RESULT_SUCCESS, msg="SickChill is shutting down...")
@@ -1924,7 +1925,7 @@ class CMDShow(ApiCall):
 
     def run(self):
         """ Get detailed information about a show """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2019,15 +2020,15 @@ class CMDShowAddExisting(ApiCall):
         self.initial, args = self.check_params(args, kwargs, "initial", [], False, "list", ALLOWED_QUALITY_LIST)
         self.archive, args = self.check_params(args, kwargs, "archive", [], False, "list", PREFERRED_QUALITY_LIST)
         self.season_folders, args = self.check_params(args, kwargs, "flatten_folders",
-                                                      bool(sickbeard.SEASON_FOLDERS_DEFAULT), False, "bool", [])
+                                                      bool(settings.SEASON_FOLDERS_DEFAULT), False, "bool", [])
         self.season_folders, args = self.check_params(args, kwargs, "season_folders",
                                                       self.season_folders, False, "bool", [])
-        self.subtitles, args = self.check_params(args, kwargs, "subtitles", int(sickbeard.USE_SUBTITLES),
+        self.subtitles, args = self.check_params(args, kwargs, "subtitles", int(settings.USE_SUBTITLES),
                                                  False, "int", [])
 
     def run(self):
         """ Add an existing show in SickChill """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(settings.showList, int(self.indexerid))
         if show_obj:
             return _responds(RESULT_FAILURE, msg="An existing indexerid already exists in the database")
 
@@ -2050,7 +2051,7 @@ class CMDShowAddExisting(ApiCall):
         indexer = indexer_result['data']['results'][0]['indexer']
 
         # use default quality as a fail-safe
-        new_quality = int(sickbeard.QUALITY_DEFAULT)
+        new_quality = int(settings.QUALITY_DEFAULT)
         i_quality_id = []
         a_quality_id = []
 
@@ -2066,11 +2067,11 @@ class CMDShowAddExisting(ApiCall):
         if i_quality_id or a_quality_id:
             new_quality = Quality.combineQualities(i_quality_id, a_quality_id)
 
-        sickbeard.showQueueScheduler.action.add_show(
+        settings.showQueueScheduler.action.add_show(
             int(indexer), int(self.indexerid), self.location,
-            default_status=sickbeard.STATUS_DEFAULT, quality=new_quality,
+            default_status=settings.STATUS_DEFAULT, quality=new_quality,
             season_folders=int(self.season_folders), subtitles=self.subtitles,
-            default_status_after=sickbeard.STATUS_DEFAULT_AFTER
+            default_status_after=settings.STATUS_DEFAULT_AFTER
         )
 
         return _responds(RESULT_SUCCESS, {"name": indexer_name}, indexer_name + " has been queued to be added")
@@ -2108,33 +2109,33 @@ class CMDShowAddNew(ApiCall):
         self.archive, args = self.check_params(
             args, kwargs, "archive", None, False, "list", PREFERRED_QUALITY_LIST)
         self.season_folders, args = self.check_params(args, kwargs, "flatten_folders",
-                                                      bool(sickbeard.SEASON_FOLDERS_DEFAULT), False, "bool", [])
+                                                      bool(settings.SEASON_FOLDERS_DEFAULT), False, "bool", [])
         self.season_folders, args = self.check_params(args, kwargs, "season_folders",
                                                       self.season_folders, False, "bool", [])
         self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
                                               ["wanted", "skipped", "ignored"])
-        self.lang, args = self.check_params(args, kwargs, "lang", sickbeard.INDEXER_DEFAULT_LANGUAGE, False, "string",
+        self.lang, args = self.check_params(args, kwargs, "lang", settings.INDEXER_DEFAULT_LANGUAGE, False, "string",
                                             list(self.valid_languages))
-        self.subtitles, args = self.check_params(args, kwargs, "subtitles", bool(sickbeard.USE_SUBTITLES),
+        self.subtitles, args = self.check_params(args, kwargs, "subtitles", bool(settings.USE_SUBTITLES),
                                                  False, "bool", [])
-        self.anime, args = self.check_params(args, kwargs, "anime", bool(sickbeard.ANIME_DEFAULT), False,
+        self.anime, args = self.check_params(args, kwargs, "anime", bool(settings.ANIME_DEFAULT), False,
                                              "bool", [])
-        self.scene, args = self.check_params(args, kwargs, "scene", bool(sickbeard.SCENE_DEFAULT), False,
+        self.scene, args = self.check_params(args, kwargs, "scene", bool(settings.SCENE_DEFAULT), False,
                                              "bool", [])
         self.future_status, args = self.check_params(args, kwargs, "future_status", None, False, "string",
                                                      ["wanted", "skipped", "ignored"])
 
     def run(self):
         """ Add a new show to SickChill """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(settings.showList, int(self.indexerid))
         if show_obj:
             return _responds(RESULT_FAILURE, msg="An existing indexerid already exists in database")
 
         if not self.location:
-            if sickbeard.ROOT_DIRS != "":
-                root_dirs = sickbeard.ROOT_DIRS.split('|')
+            if settings.ROOT_DIRS != "":
+                root_dirs = settings.ROOT_DIRS.split('|')
                 root_dirs.pop(0)
-                default_index = int(sickbeard.ROOT_DIRS.split('|')[0])
+                default_index = int(settings.ROOT_DIRS.split('|')[0])
                 self.location = root_dirs[default_index]
             else:
                 return _responds(RESULT_FAILURE, msg="Root directory is not set, please provide a location")
@@ -2143,7 +2144,7 @@ class CMDShowAddNew(ApiCall):
             return _responds(RESULT_FAILURE, msg="'" + self.location + "' is not a valid location")
 
         # use default quality as a fail-safe
-        new_quality = int(sickbeard.QUALITY_DEFAULT)
+        new_quality = int(settings.QUALITY_DEFAULT)
         i_quality_id = []
         a_quality_id = []
 
@@ -2160,7 +2161,7 @@ class CMDShowAddNew(ApiCall):
             new_quality = Quality.combineQualities(i_quality_id, a_quality_id)
 
         # use default status as a fail-safe
-        new_status = sickbeard.STATUS_DEFAULT
+        new_status = settings.STATUS_DEFAULT
         if self.status:
             # convert the string status to a int
             for status in statusStrings:
@@ -2177,7 +2178,7 @@ class CMDShowAddNew(ApiCall):
             new_status = self.status
 
         # use default status as a fail-safe
-        default_ep_status_after = sickbeard.STATUS_DEFAULT_AFTER
+        default_ep_status_after = settings.STATUS_DEFAULT_AFTER
         if self.future_status:
             # convert the string status to a int
             for status in statusStrings:
@@ -2212,7 +2213,7 @@ class CMDShowAddNew(ApiCall):
         show_path = os.path.join(self.location, sanitize_filename(indexer_name))
 
         # don't create show dir if config says not to
-        if sickbeard.ADD_SHOWS_WO_DIR:
+        if settings.ADD_SHOWS_WO_DIR:
             logger.info("Skipping initial creation of " + show_path + " due to config.ini setting")
         else:
             dir_exists = helpers.makeDir(show_path)
@@ -2223,7 +2224,7 @@ class CMDShowAddNew(ApiCall):
             else:
                 helpers.chmodAsParent(show_path)
 
-        sickbeard.showQueueScheduler.action.add_show(
+        settings.showQueueScheduler.action.add_show(
             int(indexer), int(self.indexerid), show_path, default_status=new_status,
             quality=new_quality, season_folders=int(self.season_folders),
             lang=self.lang, subtitles=self.subtitles, anime=self.anime,
@@ -2251,7 +2252,7 @@ class CMDShowCache(ApiCall):
 
     def run(self):
         """ Check SickChill's cache to see if the images (poster, banner, fanart) for a show are valid """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2260,17 +2261,17 @@ class CMDShowCache(ApiCall):
 
         has_poster = has_banner = has_fanart = has_poster_thumb = has_banner_thumb = 0
 
-        if sickbeard.IMAGE_CACHE.has_poster(show_obj.indexerid):
+        if settings.IMAGE_CACHE.has_poster(show_obj.indexerid):
             has_poster = 1
-        if sickbeard.IMAGE_CACHE.has_poster_thumb(show_obj.indexerid):
+        if settings.IMAGE_CACHE.has_poster_thumb(show_obj.indexerid):
             has_poster_thumb = 1
 
-        if sickbeard.IMAGE_CACHE.has_banner(show_obj.indexerid):
+        if settings.IMAGE_CACHE.has_banner(show_obj.indexerid):
             has_banner = 1
-        if sickbeard.IMAGE_CACHE.has_banner_thumb(show_obj.indexerid):
+        if settings.IMAGE_CACHE.has_banner_thumb(show_obj.indexerid):
             has_banner_thumb = 1
 
-        if sickbeard.IMAGE_CACHE.has_fanart(show_obj.indexerid):
+        if settings.IMAGE_CACHE.has_fanart(show_obj.indexerid):
             has_fanart = 1
 
         return _responds(RESULT_SUCCESS,
@@ -2327,7 +2328,7 @@ class CMDShowGetQuality(ApiCall):
 
     def run(self):
         """ Get the quality setting of a show """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2357,7 +2358,7 @@ class CMDShowGetPoster(ApiCall):
 
     def run(self):
         """ Get the poster a show """
-        method = (sickbeard.IMAGE_CACHE.poster_path, sickbeard.IMAGE_CACHE.poster_thumb_path)[self.media_format == "thumb"]
+        method = (settings.IMAGE_CACHE.poster_path, settings.IMAGE_CACHE.poster_thumb_path)[self.media_format == "thumb"]
         return {
             'outputType': 'image',
             'image': method(self.tvdbid or self.indexerid),
@@ -2385,7 +2386,7 @@ class CMDShowGetBanner(ApiCall):
 
     def run(self):
         """ Get the banner of a show """
-        method = (sickbeard.IMAGE_CACHE.banner_path, sickbeard.IMAGE_CACHE.banner_thumb_path)[self.media_format == "thumb"]
+        method = (settings.IMAGE_CACHE.banner_path, settings.IMAGE_CACHE.banner_thumb_path)[self.media_format == "thumb"]
         return {
             'outputType': 'image',
             'image': method(self.tvdbid or self.indexerid),
@@ -2413,10 +2414,10 @@ class CMDShowGetNetworkLogo(ApiCall):
         """
         :return: Get the network logo of a show
         """
-        show = Show.find(sickbeard.showList, self.tvdbid or self.indexerid)
+        show = Show.find(settings.showList, self.tvdbid or self.indexerid)
         return {
             'outputType': 'image',
-            'image': os.path.join(sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images/network', show.network_logo_name)
+            'image': os.path.join(settings.PROG_DIR, 'gui', settings.GUI_NAME, 'images/network', show.network_logo_name)
         }
 
 
@@ -2441,7 +2442,7 @@ class CMDShowGetFanArt(ApiCall):
         """ Get the fan art of a show """
         return {
             'outputType': 'image',
-            'image': sickbeard.IMAGE_CACHE.fanart_path(self.tvdbid or self.indexerid),
+            'image': settings.IMAGE_CACHE.fanart_path(self.tvdbid or self.indexerid),
         }
 
 
@@ -2519,7 +2520,7 @@ class CMDShowSeasonList(ApiCall):
 
     def run(self):
         """ Get the list of seasons of a show """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2557,7 +2558,7 @@ class CMDShowSeasons(ApiCall):
 
     def run(self):
         """ Get the list of episodes for one or all seasons of a show """
-        sho_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        sho_obj = Show.find(settings.showList, int(self.indexerid))
         if not sho_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2634,12 +2635,12 @@ class CMDShowSetQuality(ApiCall):
 
     def run(self):
         """ Set the quality setting of a show. If no quality is provided, the default user setting is used. """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         # use default quality as a fail-safe
-        new_quality = int(sickbeard.QUALITY_DEFAULT)
+        new_quality = int(settings.QUALITY_DEFAULT)
         i_quality_id = []
         a_quality_id = []
 
@@ -2678,7 +2679,7 @@ class CMDShowStats(ApiCall):
 
     def run(self):
         """ Get episode statistics for a given show """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2780,12 +2781,12 @@ class CMDShowUpdate(ApiCall):
 
     def run(self):
         """ Update a show in SickChill """
-        show_obj = Show.find(sickbeard.showList, int(self.indexerid))
+        show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         try:
-            sickbeard.showQueueScheduler.action.update_show(show_obj, True)  # @UndefinedVariable
+            settings.showQueueScheduler.action.update_show(show_obj, True)  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg=str(show_obj.name) + " has queued to be updated")
         except CantUpdateShowException as e:
             logger.debug("API::Unable to update show: {0}".format(e))
@@ -2810,7 +2811,7 @@ class CMDShows(ApiCall):
     def run(self):
         """ Get all shows in SickChill """
         shows = {}
-        for curShow in sickbeard.showList:
+        for curShow in settings.showList:
             # If self.paused is None: show all, 0: show un-paused, 1: show paused
             if self.paused is not None and self.paused != curShow.paused:
                 continue
