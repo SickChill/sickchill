@@ -3,7 +3,7 @@ import re
 from .utils import validator
 
 ip_middle_octet = r"(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5]))"
-ip_last_octet = r"(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))"
+ip_last_octet = r"(?:\.(?:0|[1-9]\d?|1\d\d|2[0-4]\d|25[0-5]))"
 
 regex = re.compile(  # noqa: W605
     r"^"
@@ -69,16 +69,19 @@ regex = re.compile(  # noqa: W605
     r"(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])"
     r")\]|"
     # host name
-    r"(?:(?:[a-z\u00a1-\uffff0-9]-?)*[a-z\u00a1-\uffff0-9]+)"
+    r"(?:(?:(?:xn--)|[a-z\u00a1-\uffff\U00010000-\U0010ffff0-9]-?)*"
+    r"[a-z\u00a1-\uffff\U00010000-\U0010ffff0-9]+)"
     # domain name
-    r"(?:\.(?:[a-z\u00a1-\uffff0-9]-?)*[a-z\u00a1-\uffff0-9]+)*"
+    r"(?:\.(?:(?:xn--)|[a-z\u00a1-\uffff\U00010000-\U0010ffff0-9]-?)*"
+    r"[a-z\u00a1-\uffff\U00010000-\U0010ffff0-9]+)*"
     # TLD identifier
-    r"(?:\.(?:[a-z\u00a1-\uffff]{2,}))"
+    r"(?:\.(?:(?:xn--[a-z\u00a1-\uffff\U00010000-\U0010ffff0-9]{2,})|"
+    r"[a-z\u00a1-\uffff\U00010000-\U0010ffff]{2,}))"
     r")"
     # port number
     r"(?::\d{2,5})?"
     # resource path
-    u"(?:/[-a-z\u00a1-\uffff0-9._~%!$&'()*+,;=:@/]*)?"
+    u"(?:/[-a-z\u00a1-\uffff\U00010000-\U0010ffff0-9._~%!$&'()*+,;=:@/]*)?"
     # query string
     r"(?:\?\S*)?"
     # fragment

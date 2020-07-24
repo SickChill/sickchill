@@ -10,9 +10,10 @@ places the value as given into the dictionary.
 
 """
 
+import pickle
+
 from ..api import CacheBackend
 from ..api import NO_VALUE
-from ...util.compat import pickle
 
 
 class MemoryBackend(CacheBackend):

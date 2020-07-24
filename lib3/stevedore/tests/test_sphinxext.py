@@ -12,8 +12,6 @@
 """Tests for the sphinx extension
 """
 
-from unittest import mock
-
 try:
     # For python 3.8 and later
     import importlib.metadata as importlib_metadata
@@ -31,10 +29,9 @@ def _make_ext(name, docstring):
         pass
 
     inner.__doc__ = docstring
-    m1 = mock.Mock(spec=importlib_metadata.EntryPoint)
-    m1.module = '%s_module' % name
-    s = mock.Mock(return_value='ENTRY_POINT(%s)' % name)
-    m1.__str__ = s
+    m1 = importlib_metadata.EntryPoint(
+        name, '{}_module:{}'.format(name, name), 'group',
+    )
     return extension.Extension(name, m1, inner, None)
 
 
@@ -116,7 +113,8 @@ class TestSphinxExt(utils.TestCase):
                 ('nodoc', 'nodoc_module'),
                 ('-----', 'nodoc_module'),
                 ('\n', 'nodoc_module'),
-                ('.. warning:: No documentation found in ENTRY_POINT(nodoc)',
+                (('.. warning:: No documentation found for '
+                 'nodoc in nodoc_module:nodoc'),
                  'nodoc_module'),
                 ('\n', 'nodoc_module'),
             ],

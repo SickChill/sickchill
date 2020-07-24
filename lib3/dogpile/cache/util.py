@@ -4,7 +4,7 @@ from ..util import compat
 from ..util import langhelpers
 
 
-def function_key_generator(namespace, fn, to_str=compat.string_type):
+def function_key_generator(namespace, fn, to_str=str):
     """Return a function that generates a string
     key, based on a given function as well as
     arguments to the returned function itself.
@@ -45,7 +45,7 @@ def function_key_generator(namespace, fn, to_str=compat.string_type):
     return generate_key
 
 
-def function_multi_key_generator(namespace, fn, to_str=compat.string_type):
+def function_multi_key_generator(namespace, fn, to_str=str):
 
     if namespace is None:
         namespace = "%s:%s" % (fn.__module__, fn.__name__)
@@ -68,7 +68,7 @@ def function_multi_key_generator(namespace, fn, to_str=compat.string_type):
     return generate_keys
 
 
-def kwarg_function_key_generator(namespace, fn, to_str=compat.string_type):
+def kwarg_function_key_generator(namespace, fn, to_str=str):
     """Return a function that generates a string
     key, based on a given function as well as
     arguments to the returned function itself.
@@ -131,7 +131,7 @@ def kwarg_function_key_generator(namespace, fn, to_str=compat.string_type):
 def sha1_mangle_key(key):
     """a SHA1 key mangler."""
 
-    if isinstance(key, compat.text_type):
+    if isinstance(key, str):
         key = key.encode("utf-8")
 
     return sha1(key).hexdigest()

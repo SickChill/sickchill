@@ -1,13 +1,14 @@
 import collections
 import re
+import threading
 
-from . import compat
+import stevedore
 
 
 def coerce_string_conf(d):
     result = {}
     for k, v in d.items():
-        if not isinstance(v, compat.string_types):
+        if not isinstance(v, str):
             result[k] = v
             continue
 
@@ -28,18 +29,23 @@ def coerce_string_conf(d):
 class PluginLoader(object):
     def __init__(self, group):
         self.group = group
-        self.impls = {}
+        self.impls = {}  # loaded plugins
+        self._mgr = None  # lazily defined stevedore manager
+        self._unloaded = {}  # plugins registered but not loaded
 
     def load(self, name):
+        if name in self._unloaded:
+            self.impls[name] = self._unloaded[name]()
+            return self.impls[name]
         if name in self.impls:
-            return self.impls[name]()
+            return self.impls[name]
         else:  # pragma NO COVERAGE
-            import pkg_resources
-
-            for impl in pkg_resources.iter_entry_points(self.group, name):
-                self.impls[name] = impl.load
-                return impl.load()
-            else:
+            if self._mgr is None:
+                self._mgr = stevedore.ExtensionManager(self.group)
+            try:
+                self.impls[name] = self._mgr[name].plugin
+                return self.impls[name]
+            except KeyError:
                 raise self.NotFound(
                     "Can't load plugin %s %s" % (self.group, name)
                 )
@@ -49,7 +55,7 @@ class PluginLoader(object):
             mod = __import__(modulepath, fromlist=[objname])
             return getattr(mod, objname)
 
-        self.impls[name] = load
+        self._unloaded[name] = load
 
     class NotFound(Exception):
         """The specified plugin could not be found."""
@@ -99,7 +105,7 @@ class KeyReentrantMutex(object):
         return fac
 
     def acquire(self, wait=True):
-        current_thread = compat.threading.current_thread().ident
+        current_thread = threading.current_thread().ident
         keys = self.keys.get(current_thread)
         if keys is not None and self.key not in keys:
             # current lockholder, new key. add it in
@@ -113,7 +119,7 @@ class KeyReentrantMutex(object):
             return False
 
     def release(self):
-        current_thread = compat.threading.current_thread().ident
+        current_thread = threading.current_thread().ident
         keys = self.keys.get(current_thread)
         assert keys is not None, "this thread didn't do the acquire"
         assert self.key in keys, "No acquire held for key '%s'" % self.key

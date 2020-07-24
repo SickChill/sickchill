@@ -273,6 +273,7 @@ class Authentication(TMDB):
         'token_new': '/token/new',
         'session_new': '/session/new',
         'token_validate_with_login': '/token/validate_with_login',
+        'session_delete': '/session',
     }
 
     def guest_session_new(self, **kwargs):
@@ -363,6 +364,26 @@ class Authentication(TMDB):
         path = self._get_path('token_validate_with_login')
 
         response = self._GET(path, kwargs)
+        self._set_attrs_to_values(response)
+        return response
+
+    def session_delete(self, **kwargs):
+        """
+        If you would like to delete (or "logout") from a session, call this
+        method with a valid session ID.
+
+        Args:
+
+        Returns:
+            A dict respresentation of the JSON returned from the API.
+        """
+        path = self._get_path('session_delete')
+
+        payload = {
+            'session_id': kwargs.pop('session_id', None),
+        }
+
+        response = self._DELETE(path, kwargs, payload)
         self._set_attrs_to_values(response)
         return response
 
@@ -509,9 +530,8 @@ class Lists(TMDB):
         payload = {
             'name': kwargs.pop('name', None),
             'description': kwargs.pop('description', None),
+            'language': kwargs.pop('language', None),
         }
-        if 'language' in kwargs:
-            payload['language'] = kwargs['language']
 
         response = self._POST(path, kwargs, payload)
         self._set_attrs_to_values(response)

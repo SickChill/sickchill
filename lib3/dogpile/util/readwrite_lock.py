@@ -1,6 +1,5 @@
 import logging
-
-from .compat import threading
+import threading
 
 log = logging.getLogger(__name__)
 

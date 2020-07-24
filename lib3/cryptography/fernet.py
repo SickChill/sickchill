@@ -47,7 +47,9 @@ class Fernet(object):
         return base64.urlsafe_b64encode(os.urandom(32))
 
     def encrypt(self, data):
-        current_time = int(time.time())
+        return self.encrypt_at_time(data, int(time.time()))
+
+    def encrypt_at_time(self, data, current_time):
         iv = os.urandom(16)
         return self._encrypt_from_parts(data, current_time, iv)
 
@@ -72,7 +74,15 @@ class Fernet(object):
 
     def decrypt(self, token, ttl=None):
         timestamp, data = Fernet._get_unverified_token_data(token)
-        return self._decrypt_data(data, timestamp, ttl)
+        return self._decrypt_data(data, timestamp, ttl, int(time.time()))
+
+    def decrypt_at_time(self, token, ttl, current_time):
+        if ttl is None:
+            raise ValueError(
+                "decrypt_at_time() can only be used with a non-None ttl"
+            )
+        timestamp, data = Fernet._get_unverified_token_data(token)
+        return self._decrypt_data(data, timestamp, ttl, current_time)
 
     def extract_timestamp(self, token):
         timestamp, data = Fernet._get_unverified_token_data(token)
@@ -92,7 +102,7 @@ class Fernet(object):
             raise InvalidToken
 
         try:
-            timestamp, = struct.unpack(">Q", data[1:9])
+            (timestamp,) = struct.unpack(">Q", data[1:9])
         except struct.error:
             raise InvalidToken
         return timestamp, data
@@ -105,8 +115,7 @@ class Fernet(object):
         except InvalidSignature:
             raise InvalidToken
 
-    def _decrypt_data(self, data, timestamp, ttl):
-        current_time = int(time.time())
+    def _decrypt_data(self, data, timestamp, ttl, current_time):
         if ttl is not None:
             if timestamp + ttl < current_time:
                 raise InvalidToken
@@ -146,13 +155,16 @@ class MultiFernet(object):
         self._fernets = fernets
 
     def encrypt(self, msg):
-        return self._fernets[0].encrypt(msg)
+        return self.encrypt_at_time(msg, int(time.time()))
+
+    def encrypt_at_time(self, msg, current_time):
+        return self._fernets[0].encrypt_at_time(msg, current_time)
 
     def rotate(self, msg):
         timestamp, data = Fernet._get_unverified_token_data(msg)
         for f in self._fernets:
             try:
-                p = f._decrypt_data(data, timestamp, None)
+                p = f._decrypt_data(data, timestamp, None, None)
                 break
             except InvalidToken:
                 pass
@@ -166,6 +178,14 @@ class MultiFernet(object):
         for f in self._fernets:
             try:
                 return f.decrypt(msg, ttl)
+            except InvalidToken:
+                pass
+        raise InvalidToken
+
+    def decrypt_at_time(self, msg, ttl, current_time):
+        for f in self._fernets:
+            try:
+                return f.decrypt_at_time(msg, ttl, current_time)
             except InvalidToken:
                 pass
         raise InvalidToken

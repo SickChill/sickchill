@@ -5,10 +5,8 @@
 from __future__ import absolute_import, division, print_function
 
 import collections
-import os
 import threading
 import types
-import warnings
 
 import cryptography
 from cryptography import utils
@@ -76,7 +74,7 @@ def _openssl_assert(lib, ok):
             "please file an issue at https://github.com/pyca/cryptography/"
             "issues with information on how to reproduce "
             "this. ({0!r})".format(errors_with_text),
-            errors_with_text
+            errors_with_text,
         )
 
 
@@ -99,6 +97,7 @@ class Binding(object):
     """
     OpenSSL API wrapper.
     """
+
     lib = None
     ffi = ffi
     _lib_loaded = False
@@ -116,7 +115,7 @@ class Binding(object):
         # reliably clear the error queue. Once we clear it here we will
         # error on any subsequent unexpected item in the stack.
         cls.lib.ERR_clear_error()
-        if cls.lib.Cryptography_HAS_ENGINE:
+        if cls.lib.CRYPTOGRAPHY_NEEDS_OSRANDOM_ENGINE:
             result = cls.lib.Cryptography_add_osrandom_engine()
             _openssl_assert(cls.lib, result in (1, 2))
 
@@ -142,34 +141,16 @@ class Binding(object):
             # the setup for this.
             __import__("_ssl")
 
-            if (not cls.lib.Cryptography_HAS_LOCKING_CALLBACKS or
-                    cls.lib.CRYPTO_get_locking_callback() != cls.ffi.NULL):
+            if (
+                not cls.lib.Cryptography_HAS_LOCKING_CALLBACKS
+                or cls.lib.CRYPTO_get_locking_callback() != cls.ffi.NULL
+            ):
                 return
 
             # If nothing else has setup a locking callback already, we set up
             # our own
             res = lib.Cryptography_setup_ssl_threads()
             _openssl_assert(cls.lib, res == 1)
-
-
-def _verify_openssl_version(lib):
-    if (
-        lib.CRYPTOGRAPHY_OPENSSL_LESS_THAN_102 and
-        not lib.CRYPTOGRAPHY_IS_LIBRESSL
-    ):
-        if os.environ.get("CRYPTOGRAPHY_ALLOW_OPENSSL_101"):
-            warnings.warn(
-                "OpenSSL version 1.0.1 is no longer supported by the OpenSSL "
-                "project, please upgrade. The next version of cryptography "
-                "will completely remove support for it.",
-                utils.CryptographyDeprecationWarning
-            )
-        else:
-            raise RuntimeError(
-                "You are linking against OpenSSL 1.0.1, which is no longer "
-                "supported by the OpenSSL project. You need to upgrade to a "
-                "newer version of OpenSSL."
-            )
 
 
 def _verify_package_version(version):
@@ -201,5 +182,3 @@ _verify_package_version(cryptography.__version__)
 # condition registering the OpenSSL locks. On Python 3.4+ the import lock
 # is per module so this approach will not work.
 Binding.init_static_locks()
-
-_verify_openssl_version(Binding.lib)

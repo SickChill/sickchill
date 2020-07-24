@@ -1,6 +1,5 @@
+import threading
 import weakref
-
-from .compat import threading
 
 
 class NameRegistry(object):

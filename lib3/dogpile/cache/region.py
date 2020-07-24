@@ -23,7 +23,6 @@ from .util import repr_obj
 from .. import Lock
 from .. import NeedRegenerationException
 from ..util import coerce_string_conf
-from ..util import compat
 from ..util import memoized_property
 from ..util import NameRegistry
 from ..util import PluginLoader
@@ -441,9 +440,7 @@ class CacheRegion(object):
         if not expiration_time or isinstance(expiration_time, Number):
             self.expiration_time = expiration_time
         elif isinstance(expiration_time, datetime.timedelta):
-            self.expiration_time = int(
-                compat.timedelta_total_seconds(expiration_time)
-            )
+            self.expiration_time = int(expiration_time.total_seconds())
         else:
             raise exception.ValidationError(
                 "expiration_time is not a number or timedelta."
@@ -1161,7 +1158,7 @@ class CacheRegion(object):
         namespace=None,
         expiration_time=None,
         should_cache_fn=None,
-        to_str=compat.string_type,
+        to_str=str,
         function_key_generator=None,
     ):
         """A function decorator that will cache the return
@@ -1343,7 +1340,7 @@ class CacheRegion(object):
             :meth:`.CacheRegion.get_or_create`
 
         """
-        expiration_time_is_callable = compat.callable(expiration_time)
+        expiration_time_is_callable = callable(expiration_time)
 
         if function_key_generator is None:
             function_key_generator = self.function_key_generator
@@ -1361,7 +1358,7 @@ class CacheRegion(object):
             )
 
         def cache_decorator(user_func):
-            if to_str is compat.string_type:
+            if to_str is str:
                 # backwards compatible
                 key_generator = function_key_generator(namespace, user_func)
             else:
@@ -1410,7 +1407,7 @@ class CacheRegion(object):
         expiration_time=None,
         should_cache_fn=None,
         asdict=False,
-        to_str=compat.string_type,
+        to_str=str,
         function_multi_key_generator=None,
     ):
         """A function decorator that will cache multiple return
@@ -1529,7 +1526,7 @@ class CacheRegion(object):
             :meth:`.CacheRegion.get_or_create_multi`
 
         """
-        expiration_time_is_callable = compat.callable(expiration_time)
+        expiration_time_is_callable = callable(expiration_time)
 
         if function_multi_key_generator is None:
             function_multi_key_generator = self.function_multi_key_generator
