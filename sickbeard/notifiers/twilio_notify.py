@@ -19,11 +19,12 @@
 # Stdlib Imports
 import re
 
+# Third Party Imports
+from twilio.rest import Client, TwilioException
+
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
-
-from twilio.rest import Client, TwilioException
 
 
 class Notifier(object):
