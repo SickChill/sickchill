@@ -20,7 +20,6 @@
 import abc
 
 # First Party Imports
-import sickbeard
 from sickchill import settings
 
 

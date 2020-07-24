@@ -18,12 +18,13 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 
+# Stdlib Imports
+from urllib.parse import urljoin
+
 # Third Party Imports
 from requests.auth import HTTPDigestAuth
-from requests.compat import urljoin
 
 # First Party Imports
-import sickbeard
 from sickbeard.clients.generic import GenericClient
 from sickchill import settings
 

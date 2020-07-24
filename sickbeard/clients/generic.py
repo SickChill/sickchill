@@ -20,14 +20,13 @@ import re
 import time
 from base64 import b16encode, b32decode
 from hashlib import sha1
+from urllib.parse import urlencode
 
 # Third Party Imports
 import bencodepy
-from requests.compat import urlencode
 from requests.models import HTTPError
 
 # First Party Imports
-import sickbeard
 from sickbeard import helpers, logger
 from sickchill import settings
 

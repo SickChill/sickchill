@@ -22,10 +22,10 @@ import json
 import os
 import re
 import traceback
+from urllib.parse import unquote_plus
 
 # Third Party Imports
 import dateutil
-from requests.compat import unquote_plus
 from tornado.escape import xhtml_unescape
 from tornado.web import HTTPError
 
@@ -93,7 +93,7 @@ class AddShows(Home):
                 try:
                     indexerResults = sickchill.indexer[i].search(searchTerm, language=lang)
                 except Exception:
-                    # logger.exception(traceback.format_exc())
+                    logger.exception(traceback.format_exc())
                     continue
 
                 # add search results

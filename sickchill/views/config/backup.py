@@ -24,7 +24,6 @@ import time
 from tornado.web import addslash
 
 # First Party Imports
-import sickbeard
 from sickbeard import helpers
 from sickchill import settings
 from sickchill.views.common import PageTemplate

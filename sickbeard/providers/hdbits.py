@@ -19,9 +19,7 @@
 # Stdlib Imports
 import datetime
 import json
-
-# Third Party Imports
-from requests.compat import urlencode, urljoin
+from urllib.parse import urlencode, urljoin
 
 # First Party Imports
 from sickbeard import classes, logger, tvcache

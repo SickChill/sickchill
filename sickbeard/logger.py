@@ -25,14 +25,13 @@ import os
 import platform
 import re
 import sys
-import threading
 import traceback
 from logging import NullHandler
+from urllib.parse import quote
 
 # Third Party Imports
 from github import InputFileContent
 from github.GithubException import RateLimitExceededException, TwoFactorException
-from requests.compat import quote
 
 # First Party Imports
 from sickchill import settings
@@ -72,7 +71,8 @@ class DispatchFormatter(logging.Formatter, object):
 
         :param record: to format
         """
-        msg = super(DispatchFormatter, self).format(record)
+
+        msg = record.msg
 
         # set of censored items
         censored = {item for _, item in censored_items.items() if item}
@@ -92,23 +92,12 @@ class DispatchFormatter(logging.Formatter, object):
         # Needed because Newznab apikey isn't stored as key=value in a section.
         msg = re.sub(r'([&?]r|[&?]apikey|[&?]jackett_apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)', r'\1=**********\2', msg, re.I)
 
-        cur_hash = ''
-        if record.levelno == ERROR and settings.CUR_COMMIT_HASH and len(settings.CUR_COMMIT_HASH) > 6:
-            cur_hash = '[{0}] '.format(settings.CUR_COMMIT_HASH[:7])
-
-        cur_thread = threading.currentThread().getName().rstrip('_1234567890')
-
-        if _('Missing time zone for network') in msg:
-            msg = '{thread} :: {message}'.format(thread=cur_thread, message=msg)
-        else:
-            msg = '{thread} :: {hash}{message}'.format(thread=cur_thread, hash=cur_hash, message=msg)
-
         if record.levelno == ERROR:
             classes.ErrorViewer.add(classes.UIError(msg))
         elif record.levelno == WARNING:
             classes.WarningViewer.add(classes.UIError(msg))
 
-        return msg
+        return super(DispatchFormatter, self).format(record)
 
 
 class Logger(object):
@@ -172,7 +161,7 @@ class Logger(object):
 
         logging.getLogger("tornado.general").setLevel('ERROR')
 
-        log_format = '{asctime} {levelname}::{message}'
+        log_format = '{asctime} {levelname} :: {threadName} :: {message}'
         # console log handler
         if self.console_logging:
             console = logging.StreamHandler()
@@ -420,7 +409,7 @@ LOG_FILTERS = {
 
 
 def log_data(min_level, log_filter, log_search, max_lines):
-    regex = r"^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
+    regex = r"^\d{4}\-\d{2}\-\d{2} \d{2}\:\d{2}:\d{2} ([A-Z]+) \:\: (.+?) \:\: (.*)$"
     if log_filter not in LOG_FILTERS:
         log_filter = '<NONE>'
 
@@ -451,8 +440,8 @@ def log_data(min_level, log_filter, log_search, max_lines):
         match = re.match(regex, x)
 
         if match:
-            level = match.group(7)
-            log_name = match.group(8)
+            level = match.group(1)
+            log_name = match.group(2)
 
             if not settings.DEBUG and level == 'DEBUG':
                 continue

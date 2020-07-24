@@ -25,7 +25,6 @@ Test restart
 import unittest
 
 # First Party Imports
-import sickbeard
 from sickbeard.event_queue import Events
 from sickchill import settings
 from sickchill.system.Restart import Restart

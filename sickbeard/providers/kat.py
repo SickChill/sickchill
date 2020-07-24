@@ -21,10 +21,10 @@ import re
 import traceback
 import urllib
 from collections import OrderedDict
+from urllib.parse import urljoin
 
 # Third Party Imports
 import validators
-from requests.compat import urljoin
 
 # First Party Imports
 from sickbeard import logger, tvcache

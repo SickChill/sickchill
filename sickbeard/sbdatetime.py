@@ -23,7 +23,6 @@ import functools
 import locale
 
 # First Party Imports
-import sickbeard
 from sickchill import settings
 
 # Local Folder Imports

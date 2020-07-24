@@ -19,10 +19,10 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import datetime
+import re
 import time
 
 # First Party Imports
-import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.common import cpu_presets
 from sickchill import settings
@@ -113,6 +113,7 @@ class RarbgProvider(TorrentProvider):
 
             for search_string in search_strings[mode]:
                 if mode != "RSS":
+                    search_string = re.sub(r"\((\d{4})\)", r'\1', search_string).replace(' ', '.')
                     search_params["search_string"] = search_string
                     logger.debug("Search string: {0}".format(search_string))
 

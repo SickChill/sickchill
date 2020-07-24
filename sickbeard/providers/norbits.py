@@ -2,9 +2,7 @@
 """A Norbits (https://norbits.net) provider"""
 # Stdlib Imports
 import json
-
-# Third Party Imports
-from requests.compat import urlencode
+from urllib.parse import urlencode
 
 # First Party Imports
 from sickbeard import logger, tvcache

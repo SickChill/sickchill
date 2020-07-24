@@ -12,7 +12,6 @@ from tornado.platform.asyncio import AnyThreadEventLoopPolicy
 from tornado.web import Application, RedirectHandler, StaticFileHandler, url
 
 # First Party Imports
-import sickbeard
 import sickchill.start
 from sickbeard import logger
 from sickbeard.helpers import create_https_certificates, generateApiKey
@@ -128,6 +127,8 @@ class SRWebServer(threading.Thread):
         self.app.add_handlers(".*$", [
             url(r'{0}/favicon.ico'.format(self.options['web_root']), StaticFileHandler,
                 {"path": os.path.join(self.options['data_root'], 'images/ico/favicon.ico')}, name='favicon'),
+            url(r'/favicon.ico', StaticFileHandler,
+                {"path": os.path.join(self.options['data_root'], 'images/ico/favicon.ico')}, name='favicon2'),
 
             url(r'{0}/images/(.*)'.format(self.options['web_root']), StaticFileHandler,
                 {"path": os.path.join(self.options['data_root'], 'images')}, name='images'),

@@ -4,7 +4,6 @@ import os
 import posixpath
 
 # First Party Imports
-import sickbeard
 from sickbeard.trakt_api import TraktAPI, traktException
 from sickchill import settings
 from sickchill.helper.exceptions import MultipleShowObjectsException

@@ -26,7 +26,6 @@ import bencodepy
 from requests.utils import add_dict_to_cookiejar
 
 # First Party Imports
-import sickbeard
 from sickbeard import helpers, logger, tvcache
 from sickchill import settings
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider

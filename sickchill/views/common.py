@@ -29,7 +29,6 @@ from mako.template import Template
 from tornado.escape import linkify
 
 # First Party Imports
-import sickbeard
 from sickbeard import classes, helpers
 from sickchill import settings
 

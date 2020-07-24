@@ -29,7 +29,6 @@ from email.mime.text import MIMEText
 from email.utils import formatdate
 
 # First Party Imports
-import sickbeard
 from sickbeard import db, logger
 from sickchill import settings
 

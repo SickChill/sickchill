@@ -25,7 +25,6 @@ from mimetypes import guess_type
 import imagesize
 
 # First Party Imports
-import sickbeard
 import sickchill
 from sickchill import settings
 from sickchill.helper.exceptions import ShowDirectoryNotFoundException

@@ -123,7 +123,7 @@ class GenericQueue(object):
                     # launch the queue item in a thread
                     self.currentItem = self.queue.pop(0)
                     self.currentItem.name = self.queue_name + '-' + self.currentItem.name
-                    sickchill.start.start()
+                    self.currentItem.start()
 
         self.amActive = False
 

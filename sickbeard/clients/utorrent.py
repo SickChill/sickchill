@@ -18,9 +18,7 @@
 # Stdlib Imports
 import re
 from collections import OrderedDict
-
-# Third Party Imports
-from requests.compat import urljoin
+from urllib.parse import urljoin
 
 # First Party Imports
 import sickbeard

@@ -17,11 +17,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# Third Party Imports
-from requests.compat import urljoin
+# Stdlib Imports
+from urllib.parse import urljoin
 
 # First Party Imports
-import sickbeard
 from sickbeard import common, helpers, logger
 from sickchill import settings
 

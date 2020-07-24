@@ -90,7 +90,6 @@ import unittest
 from shutil import rmtree
 
 # First Party Imports
-import sickbeard
 from sickbeard import helpers
 from sickchill import settings
 from sickchill.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS

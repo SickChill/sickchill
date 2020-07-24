@@ -22,7 +22,6 @@ from requests.exceptions import RequestException
 from requests_oauthlib import OAuth1Session
 
 # First Party Imports
-import sickbeard
 from sickbeard import common, logger
 from sickchill import settings
 

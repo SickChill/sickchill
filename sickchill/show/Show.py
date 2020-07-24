@@ -20,7 +20,6 @@
 from datetime import date
 
 # First Party Imports
-import sickbeard
 from sickbeard.common import Quality, SKIPPED, WANTED
 from sickbeard.db import DBConnection
 from sickchill import settings

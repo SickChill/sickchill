@@ -18,14 +18,13 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 from urllib.error import URLError
+from urllib.parse import unquote_plus
 
 # Third Party Imports
 from beekeeper.exceptions import RequestTimeout
 from kodipydent import Kodi
-from requests.compat import unquote_plus
 
 # First Party Imports
-import sickbeard
 from sickbeard import common, logger
 from sickchill import settings
 from sickchill.helper import try_int

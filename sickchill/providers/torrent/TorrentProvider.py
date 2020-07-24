@@ -24,7 +24,6 @@ import bencodepy
 from feedparser import FeedParserDict
 
 # First Party Imports
-import sickbeard
 from sickbeard import logger
 from sickbeard.classes import Proper, TorrentSearchResult
 from sickbeard.common import Quality
@@ -135,9 +134,9 @@ class TorrentProvider(GenericProvider):
             bencodepy.decode_from_file(file_name)
         except bencodepy.DecodingError as e:
             logger.debug('Failed to validate torrent file: {0}'.format(str(e)))
-
-        logger.debug('Result is not a valid torrent file')
-        return False
+            logger.debug('Result is not a valid torrent file')
+            return False
+        return True
 
     def seed_ratio(self):
         return self.ratio

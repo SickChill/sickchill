@@ -26,7 +26,6 @@ Test shows
 import unittest
 
 # First Party Imports
-import sickbeard
 from sickbeard.common import Quality
 from sickbeard.tv import TVShow
 from sickchill import settings

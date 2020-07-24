@@ -20,10 +20,10 @@
 # Stdlib Imports
 import datetime
 import time
+from urllib.parse import urljoin
 
 # Third Party Imports
 import js2py
-from requests.compat import urljoin
 
 # First Party Imports
 from sickbeard import db, logger, tvcache

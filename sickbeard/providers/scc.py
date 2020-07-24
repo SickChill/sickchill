@@ -20,13 +20,12 @@
 # Stdlib Imports
 import re
 import time
+from urllib.parse import quote, urljoin
 
 # Third Party Imports
-from requests.compat import quote, urljoin
 from requests.utils import dict_from_cookiejar
 
 # First Party Imports
-import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
