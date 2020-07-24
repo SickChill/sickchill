@@ -1,4 +1,4 @@
-    import settings.   import settings.%inherit file="/layouts/config.mako"/>
+<%inherit file="/layouts/config.mako"/>
 <%!
     from sickbeard import subtitles
     from sickbeard.filters import hide
