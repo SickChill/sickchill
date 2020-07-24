@@ -311,8 +311,7 @@ def initialize(consoleLogging=True):
         settings.NAMING_ABD_PATTERN = check_setting_str(settings.CFG, 'General', 'naming_abd_pattern', '%SN - %A.D - %EN')
         settings.NAMING_CUSTOM_ABD = check_setting_bool(settings.CFG, 'General', 'naming_custom_abd')
         settings.NAMING_SPORTS_PATTERN = check_setting_str(settings.CFG, 'General', 'naming_sports_pattern', '%SN - %A-D - %EN')
-        settings.NAMING_ANIME_PATTERN = check_setting_str(settings.CFG, 'General', 'naming_anime_pattern',
-                                                 'Season %0S/%SN - S%0SE%0E - %EN')
+        settings.NAMING_ANIME_PATTERN = check_setting_str(settings.CFG, 'General', 'naming_anime_pattern', 'Season %0S/%SN - S%0SE%0E - %EN')
         settings.NAMING_ANIME = check_setting_int(settings.CFG, 'General', 'naming_anime', 3, min_val=1, max_val=3)
         settings.NAMING_CUSTOM_SPORTS = check_setting_bool(settings.CFG, 'General', 'naming_custom_sports')
         settings.NAMING_CUSTOM_ANIME = check_setting_bool(settings.CFG, 'General', 'naming_custom_anime')
@@ -348,22 +347,20 @@ def initialize(consoleLogging=True):
         settings.USENET_RETENTION = check_setting_int(settings.CFG, 'General', 'usenet_retention', 500)
 
         settings.AUTOPOSTPROCESSOR_FREQUENCY = check_setting_int(settings.CFG, 'General', 'autopostprocessor_frequency',
-                                                                           settings.DEFAULT_AUTOPOSTPROCESSOR_FREQUENCY,
-                                                                           min_val=settings.MIN_AUTOPOSTPROCESSOR_FREQUENCY, fallback_def=False)
+                                                                 settings.DEFAULT_AUTOPOSTPROCESSOR_FREQUENCY,
+                                                                 min_val=settings.MIN_AUTOPOSTPROCESSOR_FREQUENCY, fallback_def=False)
 
-        settings.DAILYSEARCH_FREQUENCY = check_setting_int(settings.CFG, 'General', 'dailysearch_frequency',
-                                                                     settings.DEFAULT_DAILYSEARCH_FREQUENCY,
-                                                                     min_val=settings.MIN_DAILYSEARCH_FREQUENCY, fallback_def=False)
+        settings.DAILYSEARCH_FREQUENCY = check_setting_int(settings.CFG, 'General', 'dailysearch_frequency', settings.DEFAULT_DAILYSEARCH_FREQUENCY,
+                                                           min_val=settings.MIN_DAILYSEARCH_FREQUENCY, fallback_def=False)
 
         settings.MIN_BACKLOG_FREQUENCY = settings.get_backlog_cycle_time()
         settings.BACKLOG_FREQUENCY = check_setting_int(settings.CFG, 'General', 'backlog_frequency', settings.DEFAULT_BACKLOG_FREQUENCY,
-                                                                 min_val=settings.MIN_BACKLOG_FREQUENCY, fallback_def=False)
+                                                       min_val=settings.MIN_BACKLOG_FREQUENCY, fallback_def=False)
 
         settings.UPDATE_FREQUENCY = check_setting_int(settings.CFG, 'General', 'update_frequency', settings.DEFAULT_UPDATE_FREQUENCY,
-                                                                min_val=settings.MIN_UPDATE_FREQUENCY, fallback_def=False)
+                                                      min_val=settings.MIN_UPDATE_FREQUENCY, fallback_def=False)
 
-        settings.SHOWUPDATE_HOUR = check_setting_int(settings.CFG, 'General', 'showupdate_hour', settings.DEFAULT_SHOWUPDATE_HOUR,
-                                                               min_val=0, max_val=23)
+        settings.SHOWUPDATE_HOUR = check_setting_int(settings.CFG, 'General', 'showupdate_hour', settings.DEFAULT_SHOWUPDATE_HOUR, min_val=0, max_val=23)
 
         settings.BACKLOG_DAYS = check_setting_int(settings.CFG, 'General', 'backlog_days', 7)
 
@@ -684,9 +681,9 @@ def initialize(consoleLogging=True):
             settings.SUBTITLES_LANGUAGES = []
         settings.SUBTITLES_DIR = check_setting_str(settings.CFG, 'Subtitles', 'subtitles_dir')
         settings.SUBTITLES_SERVICES_LIST = check_setting_str(settings.CFG, 'Subtitles', 'SUBTITLES_SERVICES_LIST').split(',')
-        settings.SUBTITLES_SERVICES_ENABLED = [int(x) for x in
-                                                         check_setting_str(settings.CFG, 'Subtitles', 'SUBTITLES_SERVICES_ENABLED').split('|')
-                                                         if x]
+        settings.SUBTITLES_SERVICES_ENABLED = [
+            int(x) for x in check_setting_str(settings.CFG, 'Subtitles', 'SUBTITLES_SERVICES_ENABLED').split('|') if x
+        ]
         settings.SUBTITLES_DEFAULT = check_setting_bool(settings.CFG, 'Subtitles', 'subtitles_default')
         settings.SUBTITLES_HISTORY = check_setting_bool(settings.CFG, 'Subtitles', 'subtitles_history')
         settings.SUBTITLES_PERFECT_MATCH = check_setting_bool(settings.CFG, 'Subtitles', 'subtitles_perfect_match', True)
@@ -1288,7 +1285,7 @@ def save_config():
             'unrar_tool': settings.UNRAR_TOOL,
             'unar_tool': settings.UNAR_TOOL,
             'lsaar_tool': settings.LSAR_TOOL,
-            'bsdtar_tool': settings.BSDAR_TOOL,
+            'bsdtar_tool': settings.BSDTAR_TOOL,
             'rename_episodes': int(settings.RENAME_EPISODES),
             'airdate_episodes': int(settings.AIRDATE_EPISODES),
             'file_timestamp_timezone': settings.FILE_TIMESTAMP_TIMEZONE,
