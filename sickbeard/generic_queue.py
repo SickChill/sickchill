@@ -21,6 +21,9 @@
 import datetime
 import threading
 
+# First Party Imports
+import sickchill.start
+
 # Local Folder Imports
 from . import logger
 
@@ -120,7 +123,7 @@ class GenericQueue(object):
                     # launch the queue item in a thread
                     self.currentItem = self.queue.pop(0)
                     self.currentItem.name = self.queue_name + '-' + self.currentItem.name
-                    self.currentItem.start()
+                    sickchill.start.start()
 
         self.amActive = False
 

@@ -23,6 +23,7 @@ import time
 
 # First Party Imports
 import sickbeard
+from sickchill import settings
 from sickchill.helper.exceptions import AuthException
 from sickchill.show.Show import Show
 
@@ -246,7 +247,7 @@ class TVCache(object):
             # create show_obj from indexer_id if available
             show_obj = None
             if indexer_id:
-                show_obj = Show.find(sickbeard.showList, indexer_id)
+                show_obj = Show.find(settings.showList, indexer_id)
 
             try:
                 parse_result = NameParser(showObj=show_obj).parse(name)
@@ -321,7 +322,7 @@ class TVCache(object):
         # for each cache entry
         for cur_result in sql_results:
             # get the show object, or if it's not one of our shows then ignore it
-            show_obj = Show.find(sickbeard.showList, int(cur_result["indexerid"]))
+            show_obj = Show.find(settings.showList, int(cur_result["indexerid"]))
             if not show_obj:
                 continue
 

@@ -25,6 +25,7 @@ from requests.compat import urljoin
 # First Party Imports
 import sickbeard
 from sickbeard.clients.generic import GenericClient
+from sickchill import settings
 
 
 class Client(GenericClient):
@@ -43,7 +44,7 @@ class Client(GenericClient):
     def api(self):
         try:
             self.url = urljoin(self.host, self.api_prefix + 'app/webapiVersion')
-            response = self.session.get(self.url, verify=sickbeard.TORRENT_VERIFY_CERT)
+            response = self.session.get(self.url, verify=settings.TORRENT_VERIFY_CERT)
             if response.status_code == 401:
                 version = None
             else:
@@ -76,9 +77,9 @@ class Client(GenericClient):
         return self._request(method='post', files=files, cookies=self.session.cookies)
 
     def _set_torrent_label(self, result):
-        label = sickbeard.TORRENT_LABEL
+        label = settings.TORRENT_LABEL
         if result.show.is_anime:
-            label = sickbeard.TORRENT_LABEL_ANIME
+            label = settings.TORRENT_LABEL_ANIME
         self.url = urljoin(self.host, self.api_prefix + 'torrents/setCategory')
         data = {'hashes': result.hash.lower(), 'category': label.replace(' ', '_')}
         return self._request(method='post', data=data, cookies=self.session.cookies)
@@ -95,6 +96,6 @@ class Client(GenericClient):
 
     def _set_torrent_pause(self, result):
         self.url = urljoin(self.host, self.api_prefix + 'torrents/resume?hashes={}'.format(result.hash.lower()))
-        if sickbeard.TORRENT_PAUSED:
+        if settings.TORRENT_PAUSED:
             self.url = urljoin(self.host, self.api_prefix + 'torrents/pause?hashes={}'.format(result.hash.lower()))
         return self._request(method='get', cookies=self.session.cookies)

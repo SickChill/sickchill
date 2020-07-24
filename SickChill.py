@@ -34,7 +34,9 @@ import time
 import traceback
 
 # First Party Imports
+import sickchill.start
 from setup import setup_gettext, setup_lib_path
+from sickchill import settings
 
 setup_lib_path()
 setup_gettext()
@@ -65,8 +67,8 @@ from sickchill.views.server_settings import SRWebServer
 # http://bugs.python.org/issue7980#msg221094
 THROWAWAY = datetime.datetime.strptime('20110101', '%Y%m%d')
 
-signal.signal(signal.SIGINT, sickbeard.sig_handler)
-signal.signal(signal.SIGTERM, sickbeard.sig_handler)
+signal.signal(signal.SIGINT, sickchill.start.sig_handler)
+signal.signal(signal.SIGTERM, sickchill.start.sig_handler)
 
 
 class SickChill(object):
@@ -77,7 +79,7 @@ class SickChill(object):
 
     def __init__(self):
         # system event callback for shutdown/restart
-        sickbeard.events = Events(self.shutdown)
+        settings.events = Events(self.shutdown)
 
         # daemon constants
         self.run_as_daemon = False
@@ -89,7 +91,7 @@ class SickChill(object):
         self.forced_port = None
         self.no_launch = False
 
-        self.start_port = sickbeard.WEB_PORT
+        self.start_port = settings.WEB_PORT
 
         self.console_logging = True
 
@@ -99,7 +101,7 @@ class SickChill(object):
         Remove the Mako cache directory
         """
         try:
-            cache_folder = os.path.join(sickbeard.CACHE_DIR, 'mako')
+            cache_folder = os.path.join(settings.CACHE_DIR, 'mako')
             if os.path.isdir(cache_folder):
                 shutil.rmtree(cache_folder)
         except Exception:
@@ -111,8 +113,8 @@ class SickChill(object):
         Print help message for commandline options
         """
         help_msg = __doc__
-        help_msg = help_msg.replace('SickBeard.py', sickbeard.MY_FULLNAME)
-        help_msg = help_msg.replace('SickChill directory', sickbeard.PROG_DIR)
+        help_msg = help_msg.replace('SickChill.py', settings.MY_FULLNAME)
+        help_msg = help_msg.replace('SickChill directory', settings.PROG_DIR)
 
         return help_msg
 
@@ -121,25 +123,25 @@ class SickChill(object):
         Start SickChill
         """
         # do some preliminary stuff
-        sickbeard.MY_FULLNAME = os.path.normpath(os.path.abspath(__file__))
-        sickbeard.MY_NAME = os.path.basename(sickbeard.MY_FULLNAME)
-        sickbeard.PROG_DIR = os.path.dirname(sickbeard.MY_FULLNAME)
-        sickbeard.LOCALE_DIR = os.path.join(sickbeard.PROG_DIR, 'locale')
-        sickbeard.DATA_DIR = sickbeard.PROG_DIR
-        sickbeard.MY_ARGS = sys.argv[1:]
+        settings.MY_FULLNAME = os.path.normpath(os.path.abspath(__file__))
+        settings.MY_NAME = os.path.basename(settings.MY_FULLNAME)
+        settings.PROG_DIR = os.path.dirname(settings.MY_FULLNAME)
+        settings.LOCALE_DIR = os.path.join(settings.PROG_DIR, 'locale')
+        settings.DATA_DIR = settings.PROG_DIR
+        settings.MY_ARGS = sys.argv[1:]
 
         # Rename the main thread
         threading.currentThread().name = 'MAIN'
 
-        args = SickChillArgumentParser(sickbeard.PROG_DIR).parse_args()
+        args = SickChillArgumentParser(settings.PROG_DIR).parse_args()
 
         if args.force_update:
             result = self.force_update()
             sys.exit(int(not result))  # Ok -> 0 , Error -> 1
 
-        # Need console logging for SickBeard.py and SickBeard-console.exe
-        sickbeard.NO_RESIZE = args.noresize
-        self.console_logging = (not hasattr(sys, 'frozen')) or (sickbeard.MY_NAME.lower().find('-console') > 0) and not args.quiet
+        # Need console logging for SickChill.py and SickBeard-console.exe
+        settings.NO_RESIZE = args.noresize
+        self.console_logging = (not hasattr(sys, 'frozen')) or (settings.MY_NAME.lower().find('-console') > 0) and not args.quiet
         self.no_launch = args.nolaunch
         self.forced_port = args.port
         if args.daemon:
@@ -153,8 +155,8 @@ class SickChill(object):
             # If the pid file already exists, SickChill may still be running, so exit
             raise SystemExit('PID file: {0} already exists. Exiting.'.format(self.pid_file))
 
-        sickbeard.DATA_DIR = os.path.abspath(args.datadir) if args.datadir else sickbeard.DATA_DIR
-        sickbeard.CONFIG_FILE = os.path.abspath(args.config) if args.config else os.path.join(sickbeard.DATA_DIR, 'config.ini')
+        settings.DATA_DIR = os.path.abspath(args.datadir) if args.datadir else settings.DATA_DIR
+        settings.CONFIG_FILE = os.path.abspath(args.config) if args.config else os.path.join(settings.DATA_DIR, 'config.ini')
 
         # The pid file is only useful in daemon mode, make sure we can write the file properly
         if self.create_pid:
@@ -170,52 +172,52 @@ class SickChill(object):
                 self.create_pid = False
 
         # Make sure that we can create the data dir
-        if not os.access(sickbeard.DATA_DIR, os.F_OK):
+        if not os.access(settings.DATA_DIR, os.F_OK):
             try:
-                os.makedirs(sickbeard.DATA_DIR, 0o744)
+                os.makedirs(settings.DATA_DIR, 0o744)
             except os.error:
-                raise SystemExit('Unable to create data directory: {0}'.format(sickbeard.DATA_DIR))
+                raise SystemExit('Unable to create data directory: {0}'.format(settings.DATA_DIR))
 
         # Make sure we can write to the data dir
-        if not os.access(sickbeard.DATA_DIR, os.W_OK):
-            raise SystemExit('Data directory must be writeable: {0}'.format(sickbeard.DATA_DIR))
+        if not os.access(settings.DATA_DIR, os.W_OK):
+            raise SystemExit('Data directory must be writeable: {0}'.format(settings.DATA_DIR))
 
         # Make sure we can write to the config file
-        if not os.access(sickbeard.CONFIG_FILE, os.W_OK):
-            if os.path.isfile(sickbeard.CONFIG_FILE):
-                raise SystemExit('Config file must be writeable: {0}'.format(sickbeard.CONFIG_FILE))
-            elif not os.access(os.path.dirname(sickbeard.CONFIG_FILE), os.W_OK):
-                raise SystemExit('Config file root dir must be writeable: {0}'.format(os.path.dirname(sickbeard.CONFIG_FILE)))
+        if not os.access(settings.CONFIG_FILE, os.W_OK):
+            if os.path.isfile(settings.CONFIG_FILE):
+                raise SystemExit('Config file must be writeable: {0}'.format(settings.CONFIG_FILE))
+            elif not os.access(os.path.dirname(settings.CONFIG_FILE), os.W_OK):
+                raise SystemExit('Config file root dir must be writeable: {0}'.format(os.path.dirname(settings.CONFIG_FILE)))
 
-        os.chdir(sickbeard.DATA_DIR)
+        os.chdir(settings.DATA_DIR)
 
         # Check if we need to perform a restore first
-        restore_dir = os.path.join(sickbeard.DATA_DIR, 'restore')
+        restore_dir = os.path.join(settings.DATA_DIR, 'restore')
         if os.path.exists(restore_dir):
-            success = self.restore_db(restore_dir, sickbeard.DATA_DIR)
+            success = self.restore_db(restore_dir, settings.DATA_DIR)
             if self.console_logging:
                 sys.stdout.write('Restore: restoring DB and config.ini {0}!\n'.format(('FAILED', 'SUCCESSFUL')[success]))
 
         # Load the config and publish it to the sickbeard package
-        if self.console_logging and not os.path.isfile(sickbeard.CONFIG_FILE):
-            sys.stdout.write('Unable to find {0}, all settings will be default!\n'.format(sickbeard.CONFIG_FILE))
+        if self.console_logging and not os.path.isfile(settings.CONFIG_FILE):
+            sys.stdout.write('Unable to find {0}, all settings will be default!\n'.format(settings.CONFIG_FILE))
 
-        sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE, encoding='UTF-8', indent_type='  ')
+        settings.CFG = ConfigObj(settings.CONFIG_FILE, encoding='UTF-8', indent_type='  ')
 
         # Initialize the config and our threads
-        sickbeard.initialize(consoleLogging=self.console_logging)
+        sickchill.start.initialize(consoleLogging=self.console_logging)
 
         if self.run_as_daemon:
             self.daemonize()
 
         # Get PID
-        sickbeard.PID = os.getpid()
+        settings.PID = os.getpid()
 
         # Build from the DB to start with
         self.load_shows_from_db()
 
         logger.info('Starting SickChill [{branch}] using \'{config}\''.format
-                   (branch=sickbeard.BRANCH, config=sickbeard.CONFIG_FILE))
+                   (branch=settings.BRANCH, config=settings.CONFIG_FILE))
 
         self.clear_cache()
 
@@ -227,14 +229,14 @@ class SickChill(object):
                 'port': int(self.start_port),
             })
         else:
-            self.start_port = sickbeard.WEB_PORT
+            self.start_port = settings.WEB_PORT
 
         # start web server
         self.web_server = SRWebServer(web_options)
         self.web_server.start()
 
         # Fire up all our threads
-        sickbeard.start()
+        sickchill.start.start()
 
         # Build internal name cache
         name_cache.buildNameCache()
@@ -243,15 +245,15 @@ class SickChill(object):
         network_timezones.update_network_dict()
 
         # sure, why not?
-        if sickbeard.USE_FAILED_DOWNLOADS:
+        if settings.USE_FAILED_DOWNLOADS:
             failed_history.trimHistory()
 
         # Check for metadata indexer updates for shows (sets the next aired ep!)
         # sickbeard.showUpdateScheduler.forceRun()
 
         # Launch browser
-        if sickbeard.LAUNCH_BROWSER and not (self.no_launch or self.run_as_daemon):
-            sickbeard.launchBrowser('https' if sickbeard.ENABLE_HTTPS else 'http', self.start_port, sickbeard.WEB_ROOT)
+        if settings.LAUNCH_BROWSER and not (self.no_launch or self.run_as_daemon):
+            sickchill.start.launchBrowser('https' if settings.ENABLE_HTTPS else 'http', self.start_port, settings.WEB_ROOT)
 
         # main loop
         while True:
@@ -345,12 +347,12 @@ class SickChill(object):
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select('SELECT indexer, indexer_id, location FROM tv_shows;')
 
-        sickbeard.showList = []
+        settings.showList = []
         for sql_show in sql_results:
             try:
                 cur_show = TVShow(sql_show['indexer'], sql_show['indexer_id'])
                 cur_show.nextEpisode()
-                sickbeard.showList.append(cur_show)
+                settings.showList.append(cur_show)
             except Exception as error:
                 logger.exception('There was an error creating the show in {0}: Error {1}'.format
                            (sql_show['location'], error))
@@ -385,9 +387,9 @@ class SickChill(object):
 
         :param event: Type of shutdown event, used to see if restart required
         """
-        if sickbeard.started:
-            sickbeard.halt()  # stop all tasks
-            sickbeard.saveAll()  # save all shows to DB
+        if settings.started:
+            sickchill.start.halt()  # stop all tasks
+            sickchill.start.saveAll()  # save all shows to DB
 
             # shutdown web server
             if self.web_server:
@@ -406,18 +408,18 @@ class SickChill(object):
                 self.remove_pid_file(self.pid_file)
 
             if event == sickbeard.event_queue.Events.SystemEvent.RESTART:
-                install_type = sickbeard.versionCheckScheduler.action.install_type
+                install_type = settings.versionCheckScheduler.action.install_type
 
                 popen_list = []
 
                 if install_type in ('git', 'source'):
-                    popen_list = [sys.executable, sickbeard.MY_FULLNAME]
+                    popen_list = [sys.executable, settings.MY_FULLNAME]
                 elif install_type == 'win':
                     logger.exception('You are using a binary Windows build of SickChill. '
                                'Please switch to using git.')
 
-                if popen_list and not sickbeard.NO_RESTART:
-                    popen_list += sickbeard.MY_ARGS
+                if popen_list and not settings.NO_RESTART:
+                    popen_list += settings.MY_ARGS
                     if '--nolaunch' not in popen_list:
                         popen_list += ['--nolaunch']
                     logger.info('Restarting SickChill with {options}'.format(options=popen_list))
@@ -458,7 +460,7 @@ class SickChill(object):
 
             return True
 
-        if os.path.isdir(os.path.join(sickbeard.PROG_DIR, '.git')):  # update with git
+        if os.path.isdir(os.path.join(settings.PROG_DIR, '.git')):  # update with git
             print('Forcing SickChill to update using git...')
             result = update_with_git()
             if result:

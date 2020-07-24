@@ -94,7 +94,7 @@ if 'setup.py' in sys.argv[0]:
             'sickchill': [('**.py', 'python', None)],
             'sickbeard': [('**.py', 'python', None)],
         },
-        scripts=['SickBeard.py']
+        scripts=['SickChill.py']
     )
 
 

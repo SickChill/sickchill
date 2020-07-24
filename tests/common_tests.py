@@ -29,15 +29,15 @@ Classes:
 import unittest
 
 # First Party Imports
-import sickbeard
 from sickbeard import common
+from sickchill import settings
 
 
 class QualityStringTests(unittest.TestCase):
     """
     Test Case for strings in common.Quality
     """
-    sickbeard.QUALITY_ALLOW_HEVC = True
+    settings.QUALITY_ALLOW_HEVC = True
     test_cases = {
         'sd_tv': [
             "Test.Show.S01E02.PDTV.XViD-GROUP",

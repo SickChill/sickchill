@@ -19,20 +19,13 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import time
-# noinspection PyUnresolvedReferences
-import urllib
+import urllib.request
 from xml.dom.minidom import parseString
+from xml.etree import ElementTree
 
 # First Party Imports
-import sickbeard
 from sickbeard import logger
-
-try:
-    # Stdlib Imports
-    from xml.etree import cElementTree as etree
-except ImportError:
-    # Stdlib Imports
-    from xml.etree import ElementTree as etree
+from sickchill import settings
 
 
 class Notifier(object):
@@ -87,12 +80,12 @@ class Notifier(object):
                     DB_path = xmldb.getElementsByTagName('database_path')[0].toxml().replace(
                         '<database_path>', '').replace('</database_path>', '').replace('[=]', '')
                     if dbloc == "local" and DB_path.find("localhost") > -1:
-                        sickbeard.NMJv2_HOST = host
-                        sickbeard.NMJv2_DATABASE = DB_path
+                        settings.NMJv2_HOST = host
+                        settings.NMJv2_DATABASE = DB_path
                         return True
                     if dbloc == "network" and DB_path.find("://") > -1:
-                        sickbeard.NMJv2_HOST = host
-                        sickbeard.NMJv2_DATABASE = DB_path
+                        settings.NMJv2_HOST = host
+                        settings.NMJv2_DATABASE = DB_path
                         return True
 
         except IOError as e:
@@ -113,9 +106,9 @@ class Notifier(object):
 
         # if a host is provided then attempt to open a handle to that URL
         try:
-            url_scandir = "http://" + host + ":8008/metadata_database?arg0=update_scandir&arg1=" + sickbeard.NMJv2_DATABASE + "&arg2=&arg3=update_all"
+            url_scandir = "http://" + host + ":8008/metadata_database?arg0=update_scandir&arg1=" + settings.NMJv2_DATABASE + "&arg2=&arg3=update_all"
             logger.debug("NMJ scan update command sent to host: {0}".format(host))
-            url_updatedb = "http://" + host + ":8008/metadata_database?arg0=scanner_start&arg1=" + sickbeard.NMJv2_DATABASE + "&arg2=background&arg3="
+            url_updatedb = "http://" + host + ":8008/metadata_database?arg0=scanner_start&arg1=" + settings.NMJv2_DATABASE + "&arg2=background&arg3="
             logger.debug("Try to mount network drive via url: {0}".format(host))
             prereq = urllib.request.Request(url_scandir)
             req = urllib.request.Request(url_updatedb)
@@ -128,13 +121,13 @@ class Notifier(object):
             logger.warning("Warning: Couldn't contact popcorn hour on host {0}: {1}".format(host, e))
             return False
         try:
-            et = etree.fromstring(response1)
+            et = ElementTree.fromstring(response1)
             result1 = et.findtext("returnValue")
         except SyntaxError as e:
             logger.exception("Unable to parse XML returned from the Popcorn Hour: update_scandir, {0}".format(e))
             return False
         try:
-            et = etree.fromstring(response2)
+            et = ElementTree.fromstring(response2)
             result2 = et.findtext("returnValue")
         except SyntaxError as e:
             logger.exception("Unable to parse XML returned from the Popcorn Hour: scanner_start, {0}".format(e))
@@ -171,13 +164,13 @@ class Notifier(object):
         mount: The mount URL (optional, defaults to the mount URL in the config)
         force: If True then the notification will be sent even if NMJ is disabled in the config
         """
-        if not sickbeard.USE_NMJv2 and not force:
+        if not settings.USE_NMJv2 and not force:
             logger.debug("Notification for NMJ scan update not enabled, skipping this notification")
             return False
 
         # fill in omitted parameters
         if not host:
-            host = sickbeard.NMJv2_HOST
+            host = settings.NMJv2_HOST
 
         logger.debug("Sending scan command for NMJ ")
 

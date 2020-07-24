@@ -18,6 +18,7 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # First Party Imports
 import sickbeard
+from sickchill import settings
 
 
 class DelugeBase(object):
@@ -25,19 +26,19 @@ class DelugeBase(object):
     def make_options(result):
         options = {}
 
-        if sickbeard.TORRENT_PATH or sickbeard.TORRENT_PATH_INCOMPLETE:
+        if settings.TORRENT_PATH or settings.TORRENT_PATH_INCOMPLETE:
             options.update({
-                'download_location': sickbeard.TORRENT_PATH_INCOMPLETE or sickbeard.TORRENT_PATH,
-                'move_completed': bool(sickbeard.TORRENT_PATH_INCOMPLETE),
+                'download_location': settings.TORRENT_PATH_INCOMPLETE or settings.TORRENT_PATH,
+                'move_completed': bool(settings.TORRENT_PATH_INCOMPLETE),
             })
 
-        if sickbeard.TORRENT_PATH and sickbeard.TORRENT_PATH_INCOMPLETE:
+        if settings.TORRENT_PATH and settings.TORRENT_PATH_INCOMPLETE:
             options.update({
                 'move_completed': True,
-                'move_completed_path': sickbeard.TORRENT_PATH
+                'move_completed_path': settings.TORRENT_PATH
             })
 
-        if sickbeard.TORRENT_PAUSED:
+        if settings.TORRENT_PAUSED:
             options.update({'add_paused': True})
 
         # TODO: Figure out a nice way to do this. Will currently only work if there is only one file in the download.

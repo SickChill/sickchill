@@ -1,7 +1,7 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     import datetime
-    import sickbeard
+    from sickchill import settings
     from sickbeard import sbdatetime, network_timezones
     from sickbeard.common import WANTED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, Overview, Quality
     from sickchill.helper.common import episode_num
@@ -13,7 +13,7 @@
                 showQualSnatched = lambda x: Quality.splitQuality(x.quality)[1]
 
                 totalWanted = totalQual = totalQualSnatched = 0
-                backLogShows = sorted([x for x in sickbeard.showList if showCounts[x.indexerid][Overview.QUAL] + showCounts[x.indexerid][Overview.WANTED] + (0, showCounts[x.indexerid][Overview.SNATCHED])[len(showQualSnatched(x)) > 0]], key=lambda x: x.sort_name)
+                backLogShows = sorted([x for x in settings.showList if showCounts[x.indexerid][Overview.QUAL] + showCounts[x.indexerid][Overview.WANTED] + (0, showCounts[x.indexerid][Overview.SNATCHED])[len(showQualSnatched(x)) > 0]], key=lambda x: x.sort_name)
                 for curShow in backLogShows:
                     totalWanted += showCounts[curShow.indexerid][Overview.WANTED]
                     totalQual += showCounts[curShow.indexerid][Overview.QUAL]
@@ -85,7 +85,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="horizontal-scroll">
-                    <table class="sickbeardTable" cellspacing="0" border="0" cellpadding="0">
+                    <table class="sickchillTable" cellspacing="0" border="0" cellpadding="0">
                         <tr class="seasonheader" id="show-${curShow.indexerid}">
                             <td colspan="3" class="align-left" style="position: relative;"></td>
                         </tr>

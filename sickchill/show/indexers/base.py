@@ -21,6 +21,7 @@ import abc
 
 # First Party Imports
 import sickbeard
+from sickchill import settings
 
 
 class Indexer(metaclass=abc.ABCMeta):
@@ -29,9 +30,9 @@ class Indexer(metaclass=abc.ABCMeta):
         self.name = 'Generic'
         self.slug = 'generic'
 
-        self.language = sickbeard.INDEXER_DEFAULT_LANGUAGE
-        self.indexer = sickbeard.INDEXER_DEFAULT
-        self.timeout = sickbeard.INDEXER_TIMEOUT
+        self.language = settings.INDEXER_DEFAULT_LANGUAGE
+        self.indexer = settings.INDEXER_DEFAULT
+        self.timeout = settings.INDEXER_TIMEOUT
 
     @abc.abstractmethod
     def search(self, name, language=None):

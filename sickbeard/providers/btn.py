@@ -31,6 +31,7 @@ import sickbeard
 from sickbeard import classes, logger, scene_exceptions, tvcache
 from sickbeard.common import cpu_presets
 from sickbeard.helpers import sanitizeSceneName
+from sickchill import settings
 from sickchill.helper.common import episode_num
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
@@ -137,7 +138,7 @@ class BTNProvider(TorrentProvider):
 
         try:
             parsed_json = server.getTorrents(apikey, params or {}, int(results_per_page), int(offset))
-            time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+            time.sleep(cpu_presets[settings.CPU_PRESET])
 
         except jsonrpclib.jsonrpc.ProtocolError as error:
             if error.message == (-32001, 'Invalid API Key'):

@@ -23,6 +23,7 @@ from requests.compat import urljoin
 # First Party Imports
 import sickbeard
 from sickbeard import common, helpers, logger
+from sickchill import settings
 
 
 class Notifier(object):
@@ -52,7 +53,7 @@ class Notifier(object):
         return helpers.getURL(urljoin(self.url, 'channels'), session=self.session, headers=headers, returns='text') or {}
 
     def notify_snatch(self, ep_name):
-        if sickbeard.PUSHBULLET_NOTIFY_ONSNATCH:
+        if settings.PUSHBULLET_NOTIFY_ONSNATCH:
             self._sendPushbullet(
                 pushbullet_api=None,
                 event=common.notifyStrings[common.NOTIFY_SNATCH] + ' : ' + ep_name,
@@ -60,7 +61,7 @@ class Notifier(object):
             )
 
     def notify_download(self, ep_name):
-        if sickbeard.PUSHBULLET_NOTIFY_ONDOWNLOAD:
+        if settings.PUSHBULLET_NOTIFY_ONDOWNLOAD:
             self._sendPushbullet(
                 pushbullet_api=None,
                 event=common.notifyStrings[common.NOTIFY_DOWNLOAD] + ' : ' + ep_name,
@@ -68,7 +69,7 @@ class Notifier(object):
             )
 
     def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD:
+        if settings.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._sendPushbullet(
                 pushbullet_api=None,
                 event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' : ' + ep_name + ' : ' + lang,
@@ -93,12 +94,12 @@ class Notifier(object):
     def _sendPushbullet(
             self, pushbullet_api=None, pushbullet_device=None, pushbullet_channel=None, event=None, message=None, link=None, force=False):
 
-        if not (sickbeard.USE_PUSHBULLET or force):
+        if not (settings.USE_PUSHBULLET or force):
             return False
 
-        pushbullet_api = pushbullet_api or sickbeard.PUSHBULLET_API
-        pushbullet_device = pushbullet_device or sickbeard.PUSHBULLET_DEVICE
-        pushbullet_channel = pushbullet_channel or sickbeard.PUSHBULLET_CHANNEL
+        pushbullet_api = pushbullet_api or settings.PUSHBULLET_API
+        pushbullet_device = pushbullet_device or settings.PUSHBULLET_DEVICE
+        pushbullet_channel = pushbullet_channel or settings.PUSHBULLET_CHANNEL
 
         logger.debug('Pushbullet event: {0!r}'.format(event))
         logger.debug('Pushbullet message: {0!r}'.format(message))

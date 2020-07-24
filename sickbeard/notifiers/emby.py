@@ -24,6 +24,7 @@ import urllib
 # First Party Imports
 import sickbeard
 from sickbeard import logger
+from sickchill import settings
 
 
 class Notifier(object):
@@ -38,12 +39,12 @@ class Notifier(object):
 
         # fill in omitted parameters
         if not host:
-            host = sickbeard.EMBY_HOST
+            host = settings.EMBY_HOST
         if not emby_apikey:
-            emby_apikey = sickbeard.EMBY_APIKEY
+            emby_apikey = settings.EMBY_APIKEY
 
         url = '{0}/emby/Notifications/Admin'.format(host)
-        values = {'Name': 'SickChill', 'Description': message, 'ImageUrl': sickbeard.LOGO_URL}
+        values = {'Name': 'SickChill', 'Description': message, 'ImageUrl': settings.LOGO_URL}
         data = json.dumps(values)
 
         try:
@@ -78,8 +79,8 @@ class Notifier(object):
 
         """
 
-        if sickbeard.USE_EMBY:
-            if not sickbeard.EMBY_HOST:
+        if settings.USE_EMBY:
+            if not settings.EMBY_HOST:
                 logger.debug('EMBY: No host specified, check your settings')
                 return False
 
@@ -96,13 +97,13 @@ class Notifier(object):
             else:
                 query = ''
 
-            url = '{0}/emby/Library/Series/Updated{1}'.format(sickbeard.EMBY_HOST, query)
+            url = '{0}/emby/Library/Series/Updated{1}'.format(settings.EMBY_HOST, query)
 
             values = {}
             data = urllib.parse.urlencode(values)
             try:
                 req = urllib.request.Request(url, data)
-                req.add_header('X-MediaBrowser-Token', sickbeard.EMBY_APIKEY)
+                req.add_header('X-MediaBrowser-Token', settings.EMBY_APIKEY)
 
                 response = urllib.request.urlopen(req)
                 result = response.read()

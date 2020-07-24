@@ -25,6 +25,7 @@ import sickbeard
 from sickbeard.providers.bitcannon import BitCannonProvider
 from sickbeard.providers.rarbg import provider as rarbg
 from sickbeard.tv import TVEpisode, TVShow
+from sickchill import settings
 from tests import test_lib as test
 
 
@@ -67,7 +68,7 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         """
         Test searching, using rarbg
         """
-        sickbeard.CPU_PRESET = 'LOW'
+        settings.CPU_PRESET = 'LOW'
         results = rarbg.search({'Episode': ['The Mandalorian S01E08']})
         self.assertTrue(results)
         self.assertIn('Mandalorian', results[0]['title'])

@@ -27,6 +27,7 @@ import unittest
 # First Party Imports
 import sickbeard
 from sickbeard.event_queue import Events
+from sickchill import settings
 from sickchill.system.Restart import Restart
 
 
@@ -38,8 +39,8 @@ class RestartTests(unittest.TestCase):
         """
         Test restart
         """
-        sickbeard.PID = 123456
-        sickbeard.events = Events(None)
+        settings.PID = 123456
+        settings.events = Events(None)
 
         test_cases = {
             0: False,

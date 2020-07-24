@@ -1,6 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    import sickbeard
+    from sickchill import settings
 %>
 <%block name="scripts">
 <script type="text/javascript" src="${static_url('js/plotTooltip.js')}"></script>
@@ -31,26 +31,26 @@
     <div class="row">
         <div class="col-md-12">
             <h3>${_('Find Propers Search')}:</h3>
-            <a class="btn ${('disabled', '')[sickbeard.DOWNLOAD_PROPERS]}" href="${srRoot}/manage/manageSearches/forceFindPropers"><i class="icon-exclamation-sign"></i> ${_('Force')}</a>
-            ${(_('Not in progress'), _('In Progress'))[findPropersStatus] if sickbeard.DOWNLOAD_PROPERS else _('Propers search disabled')}
+            <a class="btn ${('disabled', '')[settings.DOWNLOAD_PROPERS]}" href="${srRoot}/manage/manageSearches/forceFindPropers"><i class="icon-exclamation-sign"></i> ${_('Force')}</a>
+            ${(_('Not in progress'), _('In Progress'))[findPropersStatus] if settings.DOWNLOAD_PROPERS else _('Propers search disabled')}
         </div>
     </div>
     <br>
     <div class="row">
         <div class="col-md-12">
             <h3>${_('Subtitle Search')}:</h3>
-            <a class="btn ${('disabled', '')[sickbeard.USE_SUBTITLES]}" href="${srRoot}/manage/manageSearches/forceSubtitlesFinder"><i class="icon-exclamation-sign"></i> ${_('Force')}</a>
-            ${(_('Not in progress'), _('In Progress'))[subtitlesFinderStatus] if sickbeard.USE_SUBTITLES else _('Subtitle search disabled')}
+            <a class="btn ${('disabled', '')[settings.USE_SUBTITLES]}" href="${srRoot}/manage/manageSearches/forceSubtitlesFinder"><i class="icon-exclamation-sign"></i> ${_('Force')}</a>
+            ${(_('Not in progress'), _('In Progress'))[subtitlesFinderStatus] if settings.USE_SUBTITLES else _('Subtitle search disabled')}
         </div>
     </div>
     <br>
     <div class="row">
         <div class="col-md-12">
             <h3>${_('Auto Post Processor')}:</h3>
-            <a class="btn ${('disabled', '')[sickbeard.PROCESS_AUTOMATICALLY]}" href="${srRoot}/manage/manageSearches/forceAutoPostProcess">
+            <a class="btn ${('disabled', '')[settings.PROCESS_AUTOMATICALLY]}" href="${srRoot}/manage/manageSearches/forceAutoPostProcess">
                 <i class="icon-exclamation-sign"></i> ${_('Force')}
             </a>
-            ${(_('Not in progress'), _('In Progress'))[autoPostProcessorStatus] if sickbeard.PROCESS_AUTOMATICALLY else _('Auto Post Processor disabled')}
+            ${(_('Not in progress'), _('In Progress'))[autoPostProcessorStatus] if settings.PROCESS_AUTOMATICALLY else _('Auto Post Processor disabled')}
         </div>
     </div>
     <br>

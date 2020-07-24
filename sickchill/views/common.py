@@ -31,15 +31,16 @@ from tornado.escape import linkify
 # First Party Imports
 import sickbeard
 from sickbeard import classes, helpers
+from sickchill import settings
 
 mako_lookup = {}
 
 
 def get_lookup():
     mako_lookup['mako'] = mako_lookup.get('mako') or TemplateLookup(
-        directories=[os.path.join(sickbeard.PROG_DIR, "gui/" + sickbeard.GUI_NAME + "/views/")],
-        module_directory=os.path.join(sickbeard.CACHE_DIR, 'mako'),
-        strict_undefined=sickbeard.BRANCH and sickbeard.BRANCH != 'master',
+        directories=[os.path.join(settings.PROG_DIR, "gui/" + settings.GUI_NAME + "/views/")],
+        module_directory=os.path.join(settings.CACHE_DIR, 'mako'),
+        strict_undefined=settings.BRANCH and settings.BRANCH != 'master',
         #  format_exceptions=True,
         filesystem_checks=True
     )
@@ -54,12 +55,12 @@ class PageTemplate(Template):
         lookup = get_lookup()
         self.template = lookup.get_template(filename)
 
-        self.arguments['srRoot'] = sickbeard.WEB_ROOT
-        self.arguments['sbHttpPort'] = sickbeard.WEB_PORT
-        self.arguments['sbHttpsPort'] = sickbeard.WEB_PORT
-        self.arguments['sbHttpsEnabled'] = sickbeard.ENABLE_HTTPS
-        self.arguments['sbHandleReverseProxy'] = sickbeard.HANDLE_REVERSE_PROXY
-        self.arguments['sbDefaultPage'] = sickbeard.DEFAULT_PAGE
+        self.arguments['srRoot'] = settings.WEB_ROOT
+        self.arguments['sbHttpPort'] = settings.WEB_PORT
+        self.arguments['sbHttpsPort'] = settings.WEB_PORT
+        self.arguments['sbHttpsEnabled'] = settings.ENABLE_HTTPS
+        self.arguments['sbHandleReverseProxy'] = settings.HANDLE_REVERSE_PROXY
+        self.arguments['sbDefaultPage'] = settings.DEFAULT_PAGE
         self.arguments['srLogin'] = rh.get_current_user()
         self.arguments['sbStartTime'] = rh.startTime
         self.arguments['static_url'] = rh.static_url
@@ -81,7 +82,7 @@ class PageTemplate(Template):
 
         self.arguments['numErrors'] = len(classes.ErrorViewer.errors)
         self.arguments['numWarnings'] = len(classes.WarningViewer.errors)
-        self.arguments['sbPID'] = str(sickbeard.PID)
+        self.arguments['sbPID'] = str(settings.PID)
 
         self.arguments['title'] = "FixME"
         self.arguments['header'] = "FixME"

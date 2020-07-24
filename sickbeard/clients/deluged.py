@@ -28,6 +28,7 @@ from requests.compat import urlparse
 import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
+from sickchill import settings
 
 # Local Folder Imports
 from .__deluge_base import DelugeBase
@@ -89,9 +90,9 @@ class Client(GenericClient, DelugeBase):
 
     def _set_torrent_label(self, result):
         # No option for this built into the rpc, because it is a plugin
-        label = sickbeard.TORRENT_LABEL.lower()
+        label = settings.TORRENT_LABEL.lower()
         if result.show.is_anime:
-            label = sickbeard.TORRENT_LABEL_ANIME.lower()
+            label = settings.TORRENT_LABEL_ANIME.lower()
         if ' ' in label:
             logger.exception(self.name + ': Invalid label. Label must not contain a space')
             return False

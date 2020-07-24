@@ -20,6 +20,7 @@
 import datetime
 import os
 import re
+from xml.etree import ElementTree
 
 # First Party Imports
 from sickbeard import helpers, logger
@@ -27,13 +28,6 @@ from sickchill.helper.common import dateFormat, replace_extension
 
 # Local Folder Imports
 from . import generic
-
-try:
-    # Stdlib Imports
-    from xml.etree import cElementTree as etree
-except ImportError:
-    # Stdlib Imports
-    from xml.etree import ElementTree as etree
 
 
 class WDTVMetadata(generic.GenericMetadata):
@@ -185,7 +179,7 @@ class WDTVMetadata(generic.GenericMetadata):
 
         myShow = ep_obj.idxr.series_from_episode(ep_obj)
 
-        rootNode = etree.Element("details")
+        rootNode = ElementTree.Element("details")
 
         # write an WDTV XML containing info for all matching episodes
         for curEpToWrite in eps_to_write:
@@ -203,32 +197,32 @@ class WDTVMetadata(generic.GenericMetadata):
                 return None
 
             if len(eps_to_write) > 1:
-                episode = etree.SubElement(rootNode, "details")
+                episode = ElementTree.SubElement(rootNode, "details")
             else:
                 episode = rootNode
 
             if myEp.get('id'):
-                episodeID = etree.SubElement(episode, "id")
+                episodeID = ElementTree.SubElement(episode, "id")
                 episodeID.text = str(myEp['id'])
 
-            title = etree.SubElement(episode, "title")
+            title = ElementTree.SubElement(episode, "title")
             title.text = ep_obj.pretty_name()
 
             if getattr(myShow, 'seriesName', None):
-                seriesName = etree.SubElement(episode, "series_name")
+                seriesName = ElementTree.SubElement(episode, "series_name")
                 seriesName.text = myShow.seriesName
 
             if curEpToWrite.name:
-                episodeName = etree.SubElement(episode, "episode_name")
+                episodeName = ElementTree.SubElement(episode, "episode_name")
                 episodeName.text = curEpToWrite.name
 
-            seasonNumber = etree.SubElement(episode, "season_number")
+            seasonNumber = ElementTree.SubElement(episode, "season_number")
             seasonNumber.text = str(curEpToWrite.season)
 
-            episodeNum = etree.SubElement(episode, "episode_number")
+            episodeNum = ElementTree.SubElement(episode, "episode_number")
             episodeNum.text = str(curEpToWrite.episode)
 
-            firstAired = etree.SubElement(episode, "firstAired")
+            firstAired = ElementTree.SubElement(episode, "firstAired")
 
             if curEpToWrite.airdate != datetime.date.min:
                 firstAired.text = str(curEpToWrite.airdate)
@@ -237,22 +231,22 @@ class WDTVMetadata(generic.GenericMetadata):
                 try:
                     year_text = str(datetime.datetime.strptime(myShow.firstAired, dateFormat).year)
                     if year_text:
-                        year = etree.SubElement(episode, "year")
+                        year = ElementTree.SubElement(episode, "year")
                         year.text = year_text
                 except Exception:
                     pass
 
             if curEpToWrite.season != 0 and getattr(myShow, 'runtime', None):
-                runtime = etree.SubElement(episode, "runtime")
+                runtime = ElementTree.SubElement(episode, "runtime")
                 runtime.text = myShow.runtime
 
             if getattr(myShow, 'genre', None):
-                genre = etree.SubElement(episode, "genre")
+                genre = ElementTree.SubElement(episode, "genre")
                 genre.text = " / ".join(myShow.genre)
 
             if myEp.get('directors') and isinstance(myEp['directors'], list):
                 for director in myEp['directors']:
-                    director_element = etree.SubElement(episode, "director")
+                    director_element = ElementTree.SubElement(episode, "director")
                     director_element.text = director
 
             data = ep_obj.idxr.actors(myShow)
@@ -260,22 +254,22 @@ class WDTVMetadata(generic.GenericMetadata):
                 if not ('name' in actor and actor['name'].strip()):
                     continue
 
-                cur_actor = etree.SubElement(episode, "actor")
+                cur_actor = ElementTree.SubElement(episode, "actor")
 
-                cur_actor_name = etree.SubElement(cur_actor, "name")
+                cur_actor_name = ElementTree.SubElement(cur_actor, "name")
                 cur_actor_name.text = actor['name']
 
                 if 'role' in actor and actor['role'].strip():
-                    cur_actor_role = etree.SubElement(cur_actor, "role")
+                    cur_actor_role = ElementTree.SubElement(cur_actor, "role")
                     cur_actor_role.text = actor['role'].strip()
 
             if curEpToWrite.description:
-                overview = etree.SubElement(episode, "overview")
+                overview = ElementTree.SubElement(episode, "overview")
                 overview.text = curEpToWrite.description
 
             # Make it purdy
             helpers.indentXML(rootNode)
-            data = etree.ElementTree(rootNode)
+            data = ElementTree.ElementTree(rootNode)
 
         return data
 

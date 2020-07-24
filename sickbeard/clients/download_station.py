@@ -28,6 +28,7 @@ from requests.compat import urljoin
 import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
+from sickchill import settings
 
 
 class Client(GenericClient):
@@ -116,10 +117,10 @@ class Client(GenericClient):
                         return False
 
                     if jdata.get('success'):
-                        if destination == sickbeard.SYNOLOGY_DSM_PATH:
-                            sickbeard.SYNOLOGY_DSM_PATH = data['destination']
-                        elif destination == sickbeard.TORRENT_PATH:
-                            sickbeard.TORRENT_PATH = data['destination']
+                        if destination == settings.SYNOLOGY_DSM_PATH:
+                            settings.SYNOLOGY_DSM_PATH = data['destination']
+                        elif destination == settings.TORRENT_PATH:
+                            settings.TORRENT_PATH = data['destination']
 
         if not jdata.get('success'):
             error_code = jdata.get('error', {}).get('code')
@@ -160,10 +161,10 @@ class Client(GenericClient):
         data['uri'] = result.url
 
         if result.resultType == 'torrent':
-            if sickbeard.TORRENT_PATH:
-                data['destination'] = sickbeard.TORRENT_PATH
-        elif sickbeard.SYNOLOGY_DSM_PATH:
-            data['destination'] = sickbeard.SYNOLOGY_DSM_PATH
+            if settings.TORRENT_PATH:
+                data['destination'] = settings.TORRENT_PATH
+        elif settings.SYNOLOGY_DSM_PATH:
+            data['destination'] = settings.SYNOLOGY_DSM_PATH
 
         self._request(method='post', data=data)
         return self._check_response(data)
@@ -177,12 +178,12 @@ class Client(GenericClient):
 
         if result.resultType == 'torrent':
             files = {'file': (result.name + '.torrent', result.content)}
-            if sickbeard.TORRENT_PATH:
-                data['destination'] = sickbeard.TORRENT_PATH
+            if settings.TORRENT_PATH:
+                data['destination'] = settings.TORRENT_PATH
         else:
             files = {'file': (result.name + '.nzb', result.extraInfo[0])}
-            if sickbeard.SYNOLOGY_DSM_PATH:
-                data['destination'] = sickbeard.SYNOLOGY_DSM_PATH
+            if settings.SYNOLOGY_DSM_PATH:
+                data['destination'] = settings.SYNOLOGY_DSM_PATH
 
         self._request(method='post', data=data, files=files)
         return self._check_response(data, files)

@@ -18,6 +18,8 @@
 import socket, sys, zlib
 from time import time, sleep
 import threading
+
+from sickchill import settings
 from .aniDBresponses import ResponseResolver
 from .aniDBerrors import *
 
@@ -193,7 +195,7 @@ class AniDBLink(threading.Thread):
             raise AniDBBannedError("Not sending, banned")
         self._do_delay()
         self.lastpacket = time()
-        command.started = time()
+        settings.started = time()
         data = command.raw_data()
 
         self.sock.sendto(data, self.target)
@@ -213,6 +215,6 @@ class AniDBLink(threading.Thread):
     def request(self, command):
         if not (self.session and command.session) and command.command not in ('AUTH', 'PING', 'ENCRYPT'):
             raise AniDBMustAuthError("You must be authed to execute commands besides AUTH and PING")
-        command.started = time()
+        settings.started = time()
         self._cmd_queue(command)
         self._send(command)

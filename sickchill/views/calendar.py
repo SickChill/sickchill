@@ -26,6 +26,7 @@ from tornado.web import authenticated
 # First Party Imports
 import sickbeard
 from sickbeard import db, logger, network_timezones
+from sickchill import settings
 from sickchill.helper import try_int
 
 # Local Folder Imports
@@ -34,7 +35,7 @@ from .index import BaseHandler
 
 class CalendarHandler(BaseHandler):
     def get(self):
-        if sickbeard.CALENDAR_UNPROTECTED:
+        if settings.CALENDAR_UNPROTECTED:
             self.write(self.calendar())
         else:
             self.calendar_auth()
@@ -94,7 +95,7 @@ class CalendarHandler(BaseHandler):
                 ical += 'DTEND:' + air_date_time_end.strftime(
                     "%Y%m%d") + 'T' + air_date_time_end.strftime(
                         "%H%M%S") + 'Z\r\n'
-                if sickbeard.CALENDAR_ICONS:
+                if settings.CALENDAR_ICONS:
                     # noinspection PyPep8
                     ical += 'X-GOOGLE-CALENDAR-CONTENT-ICON:https://lh3.googleusercontent.com/-Vp_3ZosvTgg/VjiFu5BzQqI/AAAAAAAA_TY/3ZL_1bC0Pgw/s16-Ic42/SickChill.png\r\n'
                     ical += 'X-GOOGLE-CALENDAR-CONTENT-DISPLAY:CHIP\r\n'

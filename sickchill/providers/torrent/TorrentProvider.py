@@ -29,6 +29,7 @@ from sickbeard import logger
 from sickbeard.classes import Proper, TorrentSearchResult
 from sickbeard.common import Quality
 from sickbeard.db import DBConnection
+from sickchill import settings
 from sickchill.helper.common import try_int
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.show.Show import Show
@@ -54,7 +55,7 @@ class TorrentProvider(GenericProvider):
         )
 
         for result in sql_results or []:
-            show = Show.find(sickbeard.showList, int(result['showid']))
+            show = Show.find(settings.showList, int(result['showid']))
 
             if show:
                 episode = show.getEpisode(result['season'], result['episode'])
@@ -72,14 +73,14 @@ class TorrentProvider(GenericProvider):
 
     @property
     def is_active(self):
-        return bool(sickbeard.USE_TORRENTS) and self.is_enabled
+        return bool(settings.USE_TORRENTS) and self.is_enabled
 
     @property
     def _custom_trackers(self):
-        if not (sickbeard.TRACKERS_LIST and self.public):
+        if not (settings.TRACKERS_LIST and self.public):
             return ''
 
-        return '&tr=' + '&tr='.join({x.strip() for x in sickbeard.TRACKERS_LIST.split(',') if x.strip()})
+        return '&tr=' + '&tr='.join({x.strip() for x in settings.TRACKERS_LIST.split(',') if x.strip()})
 
     def _get_result(self, episodes):
         return TorrentSearchResult(episodes)
@@ -101,7 +102,7 @@ class TorrentProvider(GenericProvider):
         return size
 
     def _get_storage_dir(self):
-        return sickbeard.TORRENT_DIR
+        return settings.TORRENT_DIR
 
     def _get_title_and_url(self, item):
         if isinstance(item, (dict, FeedParserDict)):
