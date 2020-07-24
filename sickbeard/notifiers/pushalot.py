@@ -20,6 +20,7 @@
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
+from sickchill import settings
 
 
 class Notifier(object):
@@ -35,7 +36,7 @@ class Notifier(object):
         )
 
     def notify_snatch(self, ep_name):
-        if sickbeard.PUSHALOT_NOTIFY_ONSNATCH:
+        if settings.PUSHALOT_NOTIFY_ONSNATCH:
             self._sendPushalot(
                 pushalot_authorizationtoken=None,
                 event=common.notifyStrings[common.NOTIFY_SNATCH],
@@ -43,7 +44,7 @@ class Notifier(object):
             )
 
     def notify_download(self, ep_name):
-        if sickbeard.PUSHALOT_NOTIFY_ONDOWNLOAD:
+        if settings.PUSHALOT_NOTIFY_ONDOWNLOAD:
             self._sendPushalot(
                 pushalot_authorizationtoken=None,
                 event=common.notifyStrings[common.NOTIFY_DOWNLOAD],
@@ -51,7 +52,7 @@ class Notifier(object):
             )
 
     def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD:
+        if settings.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._sendPushalot(
                 pushalot_authorizationtoken=None,
                 event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD],
@@ -78,10 +79,10 @@ class Notifier(object):
 
     def _sendPushalot(self, pushalot_authorizationtoken=None, event=None, message=None, force=False):
 
-        if not (sickbeard.USE_PUSHALOT or force):
+        if not (settings.USE_PUSHALOT or force):
             return False
 
-        pushalot_authorizationtoken = pushalot_authorizationtoken or sickbeard.PUSHALOT_AUTHORIZATIONTOKEN
+        pushalot_authorizationtoken = pushalot_authorizationtoken or settings.PUSHALOT_AUTHORIZATIONTOKEN
 
         logger.debug('Pushalot event: {0}'.format(event))
         logger.debug('Pushalot message: {0}'.format(message))

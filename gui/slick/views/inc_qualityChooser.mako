@@ -1,5 +1,5 @@
 <%!
-    import sickbeard
+    from sickchill import settings
     from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
 %>
 
@@ -7,7 +7,7 @@
 if show is not UNDEFINED:
     __quality = int(show.quality)
 else:
-    __quality = int(sickbeard.QUALITY_DEFAULT)
+    __quality = int(settings.QUALITY_DEFAULT)
 
 anyQualities, bestQualities = Quality.splitQuality(__quality)
 overall_quality = Quality.combineQualities(anyQualities, bestQualities)

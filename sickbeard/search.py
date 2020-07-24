@@ -26,6 +26,7 @@ import traceback
 
 # First Party Imports
 import sickbeard
+from sickchill import settings
 from sickchill.helper.common import try_int
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.GenericProvider import GenericProvider
@@ -56,7 +57,7 @@ def _downloadResult(result):
     elif result.resultType == GenericProvider.NZBDATA:
 
         # get the final file path to the nzb
-        file_name = os.path.join(sickbeard.NZB_DIR, result.name + ".nzb")
+        file_name = os.path.join(settings.NZB_DIR, result.name + ".nzb")
 
         logger.info("Saving NZB to " + file_name)
 
@@ -93,7 +94,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
         return False
 
     result.priority = 0  # -1 = low, 0 = normal, 1 = high
-    if sickbeard.ALLOW_HIGH_PRIORITY:
+    if settings.ALLOW_HIGH_PRIORITY:
         # if it aired recently make it high priority
         for curEp in result.episodes:
             if datetime.date.today() - curEp.airdate <= datetime.timedelta(days=7):
@@ -109,25 +110,25 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
     # NZBs can be sent straight to SAB or saved to disk
     if result.resultType in (GenericProvider.NZB, GenericProvider.NZBDATA):
-        if sickbeard.NZB_METHOD == "blackhole":
+        if settings.NZB_METHOD == "blackhole":
             dlResult = _downloadResult(result)
-        elif sickbeard.NZB_METHOD == "sabnzbd":
+        elif settings.NZB_METHOD == "sabnzbd":
             dlResult = sab.sendNZB(result)
-        elif sickbeard.NZB_METHOD == "nzbget":
+        elif settings.NZB_METHOD == "nzbget":
             is_proper = True if endStatus == SNATCHED_PROPER else False
             dlResult = nzbget.sendNZB(result, is_proper)
-        elif sickbeard.NZB_METHOD == "download_station":
-            client = clients.getClientInstance(sickbeard.NZB_METHOD)(
-                sickbeard.SYNOLOGY_DSM_HOST, sickbeard.SYNOLOGY_DSM_USERNAME, sickbeard.SYNOLOGY_DSM_PASSWORD)
+        elif settings.NZB_METHOD == "download_station":
+            client = clients.getClientInstance(settings.NZB_METHOD)(
+                settings.SYNOLOGY_DSM_HOST, settings.SYNOLOGY_DSM_USERNAME, settings.SYNOLOGY_DSM_PASSWORD)
             dlResult = client.sendNZB(result)
         else:
-            logger.exception("Unknown NZB action specified in config: " + sickbeard.NZB_METHOD)
+            logger.exception("Unknown NZB action specified in config: " + settings.NZB_METHOD)
             dlResult = False
 
     # Torrents can be sent to clients or saved to disk
     elif result.resultType == GenericProvider.TORRENT:
         # torrents are saved to disk when blackhole mode
-        if sickbeard.TORRENT_METHOD == "blackhole":
+        if settings.TORRENT_METHOD == "blackhole":
             dlResult = _downloadResult(result)
         else:
             if not result.content and not result.url.startswith('magnet'):
@@ -135,7 +136,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
                     result.content = result.provider.get_url(result.url, returns='content')
 
             if result.content or result.url.startswith('magnet'):
-                client = clients.getClientInstance(sickbeard.TORRENT_METHOD)()
+                client = clients.getClientInstance(settings.TORRENT_METHOD)()
                 dlResult = client.sendTORRENT(result)
             else:
                 logger.warning("Torrent file content is empty")
@@ -147,7 +148,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
     if not dlResult:
         return False
 
-    if sickbeard.USE_FAILED_DOWNLOADS:
+    if settings.USE_FAILED_DOWNLOADS:
         failed_history.logSnatch(result)
 
     ui.notifications.message('Episode snatched', result.name)
@@ -178,7 +179,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
     data = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)
 
-    if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+    if settings.USE_TRAKT and settings.TRAKT_SYNC_WATCHLIST:
         logger.debug("Add episodes, showid: indexerid " + str(result.show.indexerid) + ", Title " + str(result.show.name) + " to Traktv Watchlist")
         if data:
             notifiers.trakt_notifier.update_watchlist(result.show, data_episode=data, update="add")
@@ -229,8 +230,8 @@ def pickBestResult(results, show):
             continue
 
         if hasattr(cur_result, 'size'):
-            if sickbeard.USE_FAILED_DOWNLOADS and failed_history.hasFailed(cur_result.name, cur_result.size,
-                                                                           cur_result.provider.name):
+            if settings.USE_FAILED_DOWNLOADS and failed_history.hasFailed(cur_result.name, cur_result.size,
+                                                                                    cur_result.provider.name):
                 logger.info(cur_result.name + " has previously failed, rejecting it")
                 continue
 
@@ -363,7 +364,7 @@ def searchForNeededEpisodes():
 
     didSearch = False
 
-    show_list = sickbeard.showList
+    show_list = settings.showList
     fromDate = datetime.date.min
     episodes = []
 
@@ -381,7 +382,7 @@ def searchForNeededEpisodes():
 
     origThreadName = threading.currentThread().name
 
-    providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active and x.enable_daily and x.can_daily]
+    providers = [x for x in sickbeard.providers.sortedProviderList(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.enable_daily and x.can_daily]
     for curProvider in providers:
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
         curProvider.cache.update_cache()
@@ -447,7 +448,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
 
     origThreadName = threading.currentThread().name
 
-    providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog]
+    providers = [x for x in sickbeard.providers.sortedProviderList(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog]
     for curProvider in providers:
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
         curProvider.cache.update_cache()
@@ -720,7 +721,7 @@ def searchProvidersList(show, episodes, search_mode='eponly'):
     # build name cache for show
     sickbeard.name_cache.buildNameCache(show)
 
-    providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog]
+    providers = [x for x in sickbeard.providers.sortedProviderList(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog]
     if not providers:
         logger.info("No NZB/Torrent providers found or enabled in the sickchill config for backlog searches. Please check your settings.")
         return foundResults

@@ -35,10 +35,7 @@ time_regex = re.compile(r'(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})?)? ?(?P<meri
 
 network_dict = {}
 
-try:
-    sb_timezone = tz.tzwinlocal() if tz.tzwinlocal else tz.tzlocal()
-except Exception:
-    sb_timezone = tz.tzlocal()
+sb_timezone = tz.gettz()
 
 missing_network_timezones = set()
 

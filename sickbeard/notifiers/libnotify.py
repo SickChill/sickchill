@@ -24,6 +24,7 @@ import warnings
 # First Party Imports
 import sickbeard
 from sickbeard import common
+from sickchill import settings
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
@@ -83,25 +84,25 @@ class Notifier(object):
         return "<p>Error: Unable to send notification."
 
     def notify_snatch(self, ep_name):
-        if sickbeard.LIBNOTIFY_NOTIFY_ONSNATCH:
+        if settings.LIBNOTIFY_NOTIFY_ONSNATCH:
             self._notify(common.notifyStrings[common.NOTIFY_SNATCH], ep_name)
 
     def notify_download(self, ep_name):
-        if sickbeard.LIBNOTIFY_NOTIFY_ONDOWNLOAD:
+        if settings.LIBNOTIFY_NOTIFY_ONDOWNLOAD:
             self._notify(common.notifyStrings[common.NOTIFY_DOWNLOAD], ep_name)
 
     def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD:
+        if settings.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notify(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD], ep_name + ": " + lang)
 
     def notify_git_update(self, new_version="??"):
-        if sickbeard.USE_LIBNOTIFY:
+        if settings.USE_LIBNOTIFY:
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notify(title, update_text + new_version)
 
     def notify_login(self, ipaddress=""):
-        if sickbeard.USE_LIBNOTIFY:
+        if settings.USE_LIBNOTIFY:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._notify(title, update_text.format(ipaddress))
@@ -110,8 +111,8 @@ class Notifier(object):
         return self._notify('Test notification', "This is a test notification from SickChill", force=True)
 
     def _notify(self, title, message, force=False):
-        if self.notify_initialized and sickbeard.USE_LIBNOTIFY | force:
-            icon = os.path.join(sickbeard.PROG_DIR, 'gui', 'slick', 'images', 'ico', 'favicon-120.png')
+        if self.notify_initialized and settings.USE_LIBNOTIFY | force:
+            icon = os.path.join(settings.PROG_DIR, 'gui', 'slick', 'images', 'ico', 'favicon-120.png')
             # noinspection PyBroadException
             try:
                 n = Notify.Notification.new(title, message, icon)

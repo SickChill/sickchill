@@ -50,7 +50,7 @@ start() {
         --pidfile $(get_pidfile) \
         --exec ${PATH_TO_PYTHON_2} \
         -- \
-        ${SICKCHILL_DIR}/SickBeard.py \
+        ${SICKCHILL_DIR}/SickChill.py \
         -d \
         --pidfile $(get_pidfile) \
         --config ${SICKCHILL_CONFDIR}/config.ini \

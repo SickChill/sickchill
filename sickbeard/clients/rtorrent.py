@@ -22,8 +22,10 @@ from rtorrent import RTorrent
 
 # First Party Imports
 import sickbeard
+import sickchill.start
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
+from sickchill import settings
 
 
 class Client(GenericClient):
@@ -40,10 +42,10 @@ class Client(GenericClient):
             return
 
         tp_kwargs = {}
-        if sickbeard.TORRENT_AUTH_TYPE != 'none':
-            tp_kwargs['authtype'] = sickbeard.TORRENT_AUTH_TYPE
+        if settings.TORRENT_AUTH_TYPE != 'none':
+            tp_kwargs['authtype'] = settings.TORRENT_AUTH_TYPE
 
-        if not sickbeard.TORRENT_VERIFY_CERT:
+        if not settings.TORRENT_VERIFY_CERT:
             tp_kwargs['check_ssl_cert'] = False
 
         if self.username and self.password:
@@ -69,18 +71,18 @@ class Client(GenericClient):
                 return False
 
             # Set label
-            label = sickbeard.TORRENT_LABEL
+            label = settings.TORRENT_LABEL
             if result.show.is_anime:
-                label = sickbeard.TORRENT_LABEL_ANIME
+                label = settings.TORRENT_LABEL_ANIME
             if label:
                 torrent.set_custom(1, label)
 
-            if sickbeard.TORRENT_PATH:
-                torrent.set_directory(sickbeard.TORRENT_PATH)
+            if settings.TORRENT_PATH:
+                torrent.set_directory(settings.TORRENT_PATH)
 
-            if not sickbeard.TORRENT_PAUSED:
+            if not settings.TORRENT_PAUSED:
                 # Start torrent
-                torrent.start()
+                sickchill.start.start()
 
             return True
 
@@ -110,21 +112,21 @@ class Client(GenericClient):
                 return False
 
             # Set label
-            label = sickbeard.TORRENT_LABEL
+            label = settings.TORRENT_LABEL
             if result.show.is_anime:
-                label = sickbeard.TORRENT_LABEL_ANIME
+                label = settings.TORRENT_LABEL_ANIME
             if label:
                 torrent.set_custom(1, label)
 
-            if sickbeard.TORRENT_PATH:
-                torrent.set_directory(sickbeard.TORRENT_PATH)
+            if settings.TORRENT_PATH:
+                torrent.set_directory(settings.TORRENT_PATH)
 
             # Set Ratio Group
             # torrent.set_visible(group_name)
 
-            if not sickbeard.TORRENT_PAUSED:
+            if not settings.TORRENT_PAUSED:
                 # Start torrent
-                torrent.start()
+                sickchill.start.start()
 
             return True
 

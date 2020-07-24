@@ -24,7 +24,9 @@ from tornado.web import addslash
 
 # First Party Imports
 import sickbeard
+import sickchill.start
 from sickbeard import config, filters, subtitles as subtitle_module, ui
+from sickchill import settings
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
@@ -55,20 +57,20 @@ class ConfigSubtitles(Config):
         config.change_subtitle_finder_frequency(subtitles_finder_frequency)
         config.change_use_subtitles(use_subtitles)
 
-        sickbeard.SUBTITLES_INCLUDE_SPECIALS = config.checkbox_to_value(subtitles_include_specials)
-        sickbeard.SUBTITLES_LANGUAGES = [
+        settings.SUBTITLES_INCLUDE_SPECIALS = config.checkbox_to_value(subtitles_include_specials)
+        settings.SUBTITLES_LANGUAGES = [
             code.strip() for code in subtitles_languages.split(',') if code.strip() in subtitle_module.subtitle_code_filter()
         ] if subtitles_languages else []
 
-        sickbeard.SUBTITLES_DIR = subtitles_dir
-        sickbeard.SUBTITLES_PERFECT_MATCH = config.checkbox_to_value(subtitles_perfect_match)
-        sickbeard.SUBTITLES_HISTORY = config.checkbox_to_value(subtitles_history)
-        sickbeard.EMBEDDED_SUBTITLES_ALL = config.checkbox_to_value(embedded_subtitles_all)
-        sickbeard.SUBTITLES_HEARING_IMPAIRED = config.checkbox_to_value(subtitles_hearing_impaired)
-        sickbeard.SUBTITLES_MULTI = config.checkbox_to_value(subtitles_multi)
+        settings.SUBTITLES_DIR = subtitles_dir
+        settings.SUBTITLES_PERFECT_MATCH = config.checkbox_to_value(subtitles_perfect_match)
+        settings.SUBTITLES_HISTORY = config.checkbox_to_value(subtitles_history)
+        settings.EMBEDDED_SUBTITLES_ALL = config.checkbox_to_value(embedded_subtitles_all)
+        settings.SUBTITLES_HEARING_IMPAIRED = config.checkbox_to_value(subtitles_hearing_impaired)
+        settings.SUBTITLES_MULTI = config.checkbox_to_value(subtitles_multi)
         sickbeard.SUBTITLES_DOWNLOAD_IN_PP = config.checkbox_to_value(subtitles_download_in_pp)
-        sickbeard.SUBTITLES_KEEP_ONLY_WANTED = config.checkbox_to_value(subtitles_keep_only_wanted)
-        sickbeard.SUBTITLES_EXTRA_SCRIPTS = [x.strip() for x in subtitles_extra_scripts.split('|') if x.strip()]
+        settings.SUBTITLES_KEEP_ONLY_WANTED = config.checkbox_to_value(subtitles_keep_only_wanted)
+        settings.SUBTITLES_EXTRA_SCRIPTS = [x.strip() for x in subtitles_extra_scripts.split('|') if x.strip()]
 
         # Subtitles services
         services_str_list = service_order.split()
@@ -79,24 +81,24 @@ class ConfigSubtitles(Config):
             subtitles_services_list.append(curService)
             subtitles_services_enabled.append(int(curEnabled))
 
-        sickbeard.SUBTITLES_SERVICES_LIST = subtitles_services_list
-        sickbeard.SUBTITLES_SERVICES_ENABLED = subtitles_services_enabled
+        settings.SUBTITLES_SERVICES_LIST = subtitles_services_list
+        settings.SUBTITLES_SERVICES_ENABLED = subtitles_services_enabled
 
-        sickbeard.ADDIC7ED_USER = addic7ed_user or ''
-        sickbeard.ADDIC7ED_PASS = filters.unhide(sickbeard.ADDIC7ED_PASS, addic7ed_pass) or ''
-        sickbeard.ITASA_USER = itasa_user or ''
-        sickbeard.ITASA_PASS = filters.unhide(sickbeard.ITASA_PASS, itasa_pass) or ''
-        sickbeard.LEGENDASTV_USER = legendastv_user or ''
-        sickbeard.LEGENDASTV_PASS = filters.unhide(sickbeard.LEGENDASTV_PASS, legendastv_pass) or ''
-        sickbeard.OPENSUBTITLES_USER = opensubtitles_user or ''
-        sickbeard.OPENSUBTITLES_PASS = filters.unhide(sickbeard.OPENSUBTITLES_PASS, opensubtitles_pass) or ''
-        sickbeard.SUBSCENTER_USER = subscenter_user or ''
-        sickbeard.SUBSCENTER_PASS = filters.unhide(sickbeard.SUBSCENTER_PASS, subscenter_pass) or ''
+        settings.ADDIC7ED_USER = addic7ed_user or ''
+        settings.ADDIC7ED_PASS = filters.unhide(settings.ADDIC7ED_PASS, addic7ed_pass) or ''
+        settings.ITASA_USER = itasa_user or ''
+        settings.ITASA_PASS = filters.unhide(settings.ITASA_PASS, itasa_pass) or ''
+        settings.LEGENDASTV_USER = legendastv_user or ''
+        settings.LEGENDASTV_PASS = filters.unhide(settings.LEGENDASTV_PASS, legendastv_pass) or ''
+        settings.OPENSUBTITLES_USER = opensubtitles_user or ''
+        settings.OPENSUBTITLES_PASS = filters.unhide(settings.OPENSUBTITLES_PASS, opensubtitles_pass) or ''
+        settings.SUBSCENTER_USER = subscenter_user or ''
+        settings.SUBSCENTER_PASS = filters.unhide(settings.SUBSCENTER_PASS, subscenter_pass) or ''
 
-        sickbeard.save_config()
+        sickchill.start.save_config()
         # Reset provider pool so next time we use the newest settings
         subtitle_module.SubtitleProviderPool().reset()
 
-        ui.notifications.message(_('Configuration Saved'), os.path.join(sickbeard.CONFIG_FILE))
+        ui.notifications.message(_('Configuration Saved'), os.path.join(settings.CONFIG_FILE))
 
         return self.redirect("/config/subtitles/")

@@ -24,7 +24,9 @@ from tornado.web import addslash
 
 # First Party Imports
 import sickbeard
+import sickchill.start
 from sickbeard import config, filters, logger, ui
+from sickchill import settings
 from sickchill.helper import try_int
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
@@ -106,212 +108,212 @@ class ConfigNotifications(Config):
 
         results = []
 
-        sickbeard.USE_KODI = config.checkbox_to_value(use_kodi)
-        sickbeard.KODI_ALWAYS_ON = config.checkbox_to_value(kodi_always_on)
-        sickbeard.KODI_NOTIFY_ONSNATCH = config.checkbox_to_value(kodi_notify_onsnatch)
-        sickbeard.KODI_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(kodi_notify_ondownload)
-        sickbeard.KODI_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(kodi_notify_onsubtitledownload)
-        sickbeard.KODI_UPDATE_LIBRARY = config.checkbox_to_value(kodi_update_library)
-        sickbeard.KODI_UPDATE_FULL = config.checkbox_to_value(kodi_update_full)
-        sickbeard.KODI_UPDATE_ONLYFIRST = config.checkbox_to_value(kodi_update_onlyfirst)
-        sickbeard.KODI_HOST = config.clean_hosts(kodi_host)
-        sickbeard.KODI_USERNAME = kodi_username
-        sickbeard.KODI_PASSWORD = filters.unhide(sickbeard.KODI_PASSWORD, kodi_password)
+        settings.USE_KODI = config.checkbox_to_value(use_kodi)
+        settings.KODI_ALWAYS_ON = config.checkbox_to_value(kodi_always_on)
+        settings.KODI_NOTIFY_ONSNATCH = config.checkbox_to_value(kodi_notify_onsnatch)
+        settings.KODI_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(kodi_notify_ondownload)
+        settings.KODI_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(kodi_notify_onsubtitledownload)
+        settings.KODI_UPDATE_LIBRARY = config.checkbox_to_value(kodi_update_library)
+        settings.KODI_UPDATE_FULL = config.checkbox_to_value(kodi_update_full)
+        settings.KODI_UPDATE_ONLYFIRST = config.checkbox_to_value(kodi_update_onlyfirst)
+        settings.KODI_HOST = config.clean_hosts(kodi_host)
+        settings.KODI_USERNAME = kodi_username
+        settings.KODI_PASSWORD = filters.unhide(settings.KODI_PASSWORD, kodi_password)
 
-        sickbeard.USE_PLEX_SERVER = config.checkbox_to_value(use_plex_server)
-        sickbeard.PLEX_NOTIFY_ONSNATCH = config.checkbox_to_value(plex_notify_onsnatch)
-        sickbeard.PLEX_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(plex_notify_ondownload)
-        sickbeard.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(plex_notify_onsubtitledownload)
-        sickbeard.PLEX_UPDATE_LIBRARY = config.checkbox_to_value(plex_update_library)
-        sickbeard.PLEX_CLIENT_HOST = config.clean_hosts(plex_client_host)
-        sickbeard.PLEX_SERVER_HOST = config.clean_hosts(plex_server_host)
-        sickbeard.PLEX_SERVER_TOKEN = config.clean_host(plex_server_token)
-        sickbeard.PLEX_SERVER_USERNAME = plex_server_username
-        sickbeard.PLEX_SERVER_PASSWORD = filters.unhide(sickbeard.PLEX_SERVER_PASSWORD, plex_server_password)
+        settings.USE_PLEX_SERVER = config.checkbox_to_value(use_plex_server)
+        settings.PLEX_NOTIFY_ONSNATCH = config.checkbox_to_value(plex_notify_onsnatch)
+        settings.PLEX_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(plex_notify_ondownload)
+        settings.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(plex_notify_onsubtitledownload)
+        settings.PLEX_UPDATE_LIBRARY = config.checkbox_to_value(plex_update_library)
+        settings.PLEX_CLIENT_HOST = config.clean_hosts(plex_client_host)
+        settings.PLEX_SERVER_HOST = config.clean_hosts(plex_server_host)
+        settings.PLEX_SERVER_TOKEN = config.clean_host(plex_server_token)
+        settings.PLEX_SERVER_USERNAME = plex_server_username
+        settings.PLEX_SERVER_PASSWORD = filters.unhide(settings.PLEX_SERVER_PASSWORD, plex_server_password)
 
-        sickbeard.USE_PLEX_CLIENT = config.checkbox_to_value(use_plex_client)
-        sickbeard.PLEX_CLIENT_USERNAME = plex_client_username
-        sickbeard.PLEX_CLIENT_PASSWORD = filters.unhide(sickbeard.PLEX_CLIENT_PASSWORD, plex_client_password)
-        sickbeard.PLEX_SERVER_HTTPS = config.checkbox_to_value(plex_server_https)
+        settings.USE_PLEX_CLIENT = config.checkbox_to_value(use_plex_client)
+        settings.PLEX_CLIENT_USERNAME = plex_client_username
+        settings.PLEX_CLIENT_PASSWORD = filters.unhide(settings.PLEX_CLIENT_PASSWORD, plex_client_password)
+        settings.PLEX_SERVER_HTTPS = config.checkbox_to_value(plex_server_https)
 
-        sickbeard.USE_EMBY = config.checkbox_to_value(use_emby)
-        sickbeard.EMBY_HOST = config.clean_url(emby_host)
-        sickbeard.EMBY_APIKEY = filters.unhide(sickbeard.EMBY_APIKEY, emby_apikey)
+        settings.USE_EMBY = config.checkbox_to_value(use_emby)
+        settings.EMBY_HOST = config.clean_url(emby_host)
+        settings.EMBY_APIKEY = filters.unhide(settings.EMBY_APIKEY, emby_apikey)
 
-        sickbeard.USE_GROWL = config.checkbox_to_value(use_growl)
-        sickbeard.GROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(growl_notify_onsnatch)
-        sickbeard.GROWL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(growl_notify_ondownload)
-        sickbeard.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(growl_notify_onsubtitledownload)
-        sickbeard.GROWL_HOST = config.clean_host(growl_host, default_port=23053)
-        sickbeard.GROWL_PASSWORD = filters.unhide(sickbeard.GROWL_PASSWORD, growl_password)
+        settings.USE_GROWL = config.checkbox_to_value(use_growl)
+        settings.GROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(growl_notify_onsnatch)
+        settings.GROWL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(growl_notify_ondownload)
+        settings.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(growl_notify_onsubtitledownload)
+        settings.GROWL_HOST = config.clean_host(growl_host, default_port=23053)
+        settings.GROWL_PASSWORD = filters.unhide(settings.GROWL_PASSWORD, growl_password)
 
-        sickbeard.USE_FREEMOBILE = config.checkbox_to_value(use_freemobile)
-        sickbeard.FREEMOBILE_NOTIFY_ONSNATCH = config.checkbox_to_value(freemobile_notify_onsnatch)
-        sickbeard.FREEMOBILE_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(freemobile_notify_ondownload)
-        sickbeard.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(freemobile_notify_onsubtitledownload)
-        sickbeard.FREEMOBILE_ID = freemobile_id
-        sickbeard.FREEMOBILE_APIKEY = filters.unhide(sickbeard.FREEMOBILE_APIKEY, freemobile_apikey)
+        settings.USE_FREEMOBILE = config.checkbox_to_value(use_freemobile)
+        settings.FREEMOBILE_NOTIFY_ONSNATCH = config.checkbox_to_value(freemobile_notify_onsnatch)
+        settings.FREEMOBILE_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(freemobile_notify_ondownload)
+        settings.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(freemobile_notify_onsubtitledownload)
+        settings.FREEMOBILE_ID = freemobile_id
+        settings.FREEMOBILE_APIKEY = filters.unhide(settings.FREEMOBILE_APIKEY, freemobile_apikey)
 
-        sickbeard.USE_TELEGRAM = config.checkbox_to_value(use_telegram)
-        sickbeard.TELEGRAM_NOTIFY_ONSNATCH = config.checkbox_to_value(telegram_notify_onsnatch)
-        sickbeard.TELEGRAM_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(telegram_notify_ondownload)
-        sickbeard.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(telegram_notify_onsubtitledownload)
-        sickbeard.TELEGRAM_ID = telegram_id
-        sickbeard.TELEGRAM_APIKEY = filters.unhide(sickbeard.TELEGRAM_APIKEY, telegram_apikey)
+        settings.USE_TELEGRAM = config.checkbox_to_value(use_telegram)
+        settings.TELEGRAM_NOTIFY_ONSNATCH = config.checkbox_to_value(telegram_notify_onsnatch)
+        settings.TELEGRAM_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(telegram_notify_ondownload)
+        settings.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(telegram_notify_onsubtitledownload)
+        settings.TELEGRAM_ID = telegram_id
+        settings.TELEGRAM_APIKEY = filters.unhide(settings.TELEGRAM_APIKEY, telegram_apikey)
 
-        sickbeard.USE_JOIN = config.checkbox_to_value(use_join)
-        sickbeard.JOIN_NOTIFY_ONSNATCH = config.checkbox_to_value(join_notify_onsnatch)
-        sickbeard.JOIN_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(join_notify_ondownload)
-        sickbeard.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(join_notify_onsubtitledownload)
-        sickbeard.JOIN_ID = join_id
-        sickbeard.JOIN_APIKEY = filters.unhide(sickbeard.JOIN_APIKEY, join_apikey)
+        settings.USE_JOIN = config.checkbox_to_value(use_join)
+        settings.JOIN_NOTIFY_ONSNATCH = config.checkbox_to_value(join_notify_onsnatch)
+        settings.JOIN_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(join_notify_ondownload)
+        settings.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(join_notify_onsubtitledownload)
+        settings.JOIN_ID = join_id
+        settings.JOIN_APIKEY = filters.unhide(settings.JOIN_APIKEY, join_apikey)
 
-        sickbeard.USE_PROWL = config.checkbox_to_value(use_prowl)
-        sickbeard.PROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(prowl_notify_onsnatch)
-        sickbeard.PROWL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(prowl_notify_ondownload)
-        sickbeard.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(prowl_notify_onsubtitledownload)
-        sickbeard.PROWL_API = prowl_api
-        sickbeard.PROWL_PRIORITY = prowl_priority
-        sickbeard.PROWL_MESSAGE_TITLE = prowl_message_title
+        settings.USE_PROWL = config.checkbox_to_value(use_prowl)
+        settings.PROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(prowl_notify_onsnatch)
+        settings.PROWL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(prowl_notify_ondownload)
+        settings.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(prowl_notify_onsubtitledownload)
+        settings.PROWL_API = prowl_api
+        settings.PROWL_PRIORITY = prowl_priority
+        settings.PROWL_MESSAGE_TITLE = prowl_message_title
 
-        sickbeard.USE_TWITTER = config.checkbox_to_value(use_twitter)
-        sickbeard.TWITTER_NOTIFY_ONSNATCH = config.checkbox_to_value(twitter_notify_onsnatch)
-        sickbeard.TWITTER_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(twitter_notify_ondownload)
-        sickbeard.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(twitter_notify_onsubtitledownload)
-        sickbeard.TWITTER_USEDM = config.checkbox_to_value(twitter_usedm)
-        sickbeard.TWITTER_DMTO = twitter_dmto
+        settings.USE_TWITTER = config.checkbox_to_value(use_twitter)
+        settings.TWITTER_NOTIFY_ONSNATCH = config.checkbox_to_value(twitter_notify_onsnatch)
+        settings.TWITTER_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(twitter_notify_ondownload)
+        settings.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(twitter_notify_onsubtitledownload)
+        settings.TWITTER_USEDM = config.checkbox_to_value(twitter_usedm)
+        settings.TWITTER_DMTO = twitter_dmto
 
-        sickbeard.USE_TWILIO = config.checkbox_to_value(use_twilio)
-        sickbeard.TWILIO_NOTIFY_ONSNATCH = config.checkbox_to_value(twilio_notify_onsnatch)
-        sickbeard.TWILIO_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(twilio_notify_ondownload)
-        sickbeard.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(twilio_notify_onsubtitledownload)
-        sickbeard.TWILIO_PHONE_SID = twilio_phone_sid
-        sickbeard.TWILIO_ACCOUNT_SID = twilio_account_sid
-        sickbeard.TWILIO_AUTH_TOKEN = twilio_auth_token
-        sickbeard.TWILIO_TO_NUMBER = twilio_to_number
+        settings.USE_TWILIO = config.checkbox_to_value(use_twilio)
+        settings.TWILIO_NOTIFY_ONSNATCH = config.checkbox_to_value(twilio_notify_onsnatch)
+        settings.TWILIO_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(twilio_notify_ondownload)
+        settings.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(twilio_notify_onsubtitledownload)
+        settings.TWILIO_PHONE_SID = twilio_phone_sid
+        settings.TWILIO_ACCOUNT_SID = twilio_account_sid
+        settings.TWILIO_AUTH_TOKEN = twilio_auth_token
+        settings.TWILIO_TO_NUMBER = twilio_to_number
 
-        sickbeard.USE_SLACK = config.checkbox_to_value(use_slack)
-        sickbeard.SLACK_NOTIFY_SNATCH = config.checkbox_to_value(slack_notify_snatch)
-        sickbeard.SLACK_NOTIFY_DOWNLOAD = config.checkbox_to_value(slack_notify_download)
-        sickbeard.SLACK_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(slack_notify_subtitledownload)
-        sickbeard.SLACK_WEBHOOK = slack_webhook
-        sickbeard.SLACK_ICON_EMOJI = slack_icon_emoji
+        settings.USE_SLACK = config.checkbox_to_value(use_slack)
+        settings.SLACK_NOTIFY_SNATCH = config.checkbox_to_value(slack_notify_snatch)
+        settings.SLACK_NOTIFY_DOWNLOAD = config.checkbox_to_value(slack_notify_download)
+        settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(slack_notify_subtitledownload)
+        settings.SLACK_WEBHOOK = slack_webhook
+        settings.SLACK_ICON_EMOJI = slack_icon_emoji
 
-        sickbeard.USE_ROCKETCHAT = config.checkbox_to_value(use_rocketchat)
-        sickbeard.ROCKETCHAT_NOTIFY_SNATCH = config.checkbox_to_value(rocketchat_notify_snatch)
-        sickbeard.ROCKETCHAT_NOTIFY_DOWNLOAD = config.checkbox_to_value(rocketchat_notify_download)
-        sickbeard.ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(rocketchat_notify_subtitledownload)
-        sickbeard.ROCKETCHAT_WEBHOOK = rocketchat_webhook
-        sickbeard.ROCKETCHAT_ICON_EMOJI = rocketchat_icon_emoji
+        settings.USE_ROCKETCHAT = config.checkbox_to_value(use_rocketchat)
+        settings.ROCKETCHAT_NOTIFY_SNATCH = config.checkbox_to_value(rocketchat_notify_snatch)
+        settings.ROCKETCHAT_NOTIFY_DOWNLOAD = config.checkbox_to_value(rocketchat_notify_download)
+        settings.ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(rocketchat_notify_subtitledownload)
+        settings.ROCKETCHAT_WEBHOOK = rocketchat_webhook
+        settings.ROCKETCHAT_ICON_EMOJI = rocketchat_icon_emoji
 
-        sickbeard.USE_MATRIX = config.checkbox_to_value(use_matrix)
-        sickbeard.MATRIX_NOTIFY_SNATCH = config.checkbox_to_value(matrix_notify_snatch)
-        sickbeard.MATRIX_NOTIFY_DOWNLOAD = config.checkbox_to_value(matrix_notify_download)
-        sickbeard.MATRIX_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(matrix_notify_subtitledownload)
-        sickbeard.MATRIX_API_TOKEN = matrix_api_token
-        sickbeard.MATRIX_SERVER = matrix_server
-        sickbeard.MATRIX_ROOM = matrix_room
+        settings.USE_MATRIX = config.checkbox_to_value(use_matrix)
+        settings.MATRIX_NOTIFY_SNATCH = config.checkbox_to_value(matrix_notify_snatch)
+        settings.MATRIX_NOTIFY_DOWNLOAD = config.checkbox_to_value(matrix_notify_download)
+        settings.MATRIX_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(matrix_notify_subtitledownload)
+        settings.MATRIX_API_TOKEN = matrix_api_token
+        settings.MATRIX_SERVER = matrix_server
+        settings.MATRIX_ROOM = matrix_room
 
-        sickbeard.USE_DISCORD = config.checkbox_to_value(use_discord)
-        sickbeard.DISCORD_NOTIFY_SNATCH = config.checkbox_to_value(discord_notify_snatch)
-        sickbeard.DISCORD_NOTIFY_DOWNLOAD = config.checkbox_to_value(discord_notify_download)
-        sickbeard.DISCORD_WEBHOOK = discord_webhook
-        sickbeard.DISCORD_NAME = discord_name
-        sickbeard.DISCORD_AVATAR_URL = discord_avatar_url
-        sickbeard.DISCORD_TTS = discord_tts
+        settings.USE_DISCORD = config.checkbox_to_value(use_discord)
+        settings.DISCORD_NOTIFY_SNATCH = config.checkbox_to_value(discord_notify_snatch)
+        settings.DISCORD_NOTIFY_DOWNLOAD = config.checkbox_to_value(discord_notify_download)
+        settings.DISCORD_WEBHOOK = discord_webhook
+        settings.DISCORD_NAME = discord_name
+        settings.DISCORD_AVATAR_URL = discord_avatar_url
+        settings.DISCORD_TTS = discord_tts
 
-        sickbeard.USE_BOXCAR2 = config.checkbox_to_value(use_boxcar2)
-        sickbeard.BOXCAR2_NOTIFY_ONSNATCH = config.checkbox_to_value(boxcar2_notify_onsnatch)
-        sickbeard.BOXCAR2_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(boxcar2_notify_ondownload)
-        sickbeard.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(boxcar2_notify_onsubtitledownload)
-        sickbeard.BOXCAR2_ACCESSTOKEN = boxcar2_accesstoken
+        settings.USE_BOXCAR2 = config.checkbox_to_value(use_boxcar2)
+        settings.BOXCAR2_NOTIFY_ONSNATCH = config.checkbox_to_value(boxcar2_notify_onsnatch)
+        settings.BOXCAR2_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(boxcar2_notify_ondownload)
+        settings.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(boxcar2_notify_onsubtitledownload)
+        settings.BOXCAR2_ACCESSTOKEN = boxcar2_accesstoken
 
-        sickbeard.USE_PUSHOVER = config.checkbox_to_value(use_pushover)
-        sickbeard.PUSHOVER_NOTIFY_ONSNATCH = config.checkbox_to_value(pushover_notify_onsnatch)
-        sickbeard.PUSHOVER_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(pushover_notify_ondownload)
-        sickbeard.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pushover_notify_onsubtitledownload)
-        sickbeard.PUSHOVER_USERKEY = pushover_userkey
-        sickbeard.PUSHOVER_APIKEY = filters.unhide(sickbeard.PUSHOVER_APIKEY, pushover_apikey)
-        sickbeard.PUSHOVER_DEVICE = pushover_device
-        sickbeard.PUSHOVER_SOUND = pushover_sound
-        sickbeard.PUSHOVER_PRIORITY = pushover_priority
+        settings.USE_PUSHOVER = config.checkbox_to_value(use_pushover)
+        settings.PUSHOVER_NOTIFY_ONSNATCH = config.checkbox_to_value(pushover_notify_onsnatch)
+        settings.PUSHOVER_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(pushover_notify_ondownload)
+        settings.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pushover_notify_onsubtitledownload)
+        settings.PUSHOVER_USERKEY = pushover_userkey
+        settings.PUSHOVER_APIKEY = filters.unhide(settings.PUSHOVER_APIKEY, pushover_apikey)
+        settings.PUSHOVER_DEVICE = pushover_device
+        settings.PUSHOVER_SOUND = pushover_sound
+        settings.PUSHOVER_PRIORITY = pushover_priority
 
-        sickbeard.USE_LIBNOTIFY = config.checkbox_to_value(use_libnotify)
-        sickbeard.LIBNOTIFY_NOTIFY_ONSNATCH = config.checkbox_to_value(libnotify_notify_onsnatch)
-        sickbeard.LIBNOTIFY_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(libnotify_notify_ondownload)
-        sickbeard.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(libnotify_notify_onsubtitledownload)
+        settings.USE_LIBNOTIFY = config.checkbox_to_value(use_libnotify)
+        settings.LIBNOTIFY_NOTIFY_ONSNATCH = config.checkbox_to_value(libnotify_notify_onsnatch)
+        settings.LIBNOTIFY_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(libnotify_notify_ondownload)
+        settings.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(libnotify_notify_onsubtitledownload)
 
-        sickbeard.USE_NMJ = config.checkbox_to_value(use_nmj)
-        sickbeard.NMJ_HOST = config.clean_host(nmj_host)
-        sickbeard.NMJ_DATABASE = nmj_database
-        sickbeard.NMJ_MOUNT = nmj_mount
+        settings.USE_NMJ = config.checkbox_to_value(use_nmj)
+        settings.NMJ_HOST = config.clean_host(nmj_host)
+        settings.NMJ_DATABASE = nmj_database
+        settings.NMJ_MOUNT = nmj_mount
 
-        sickbeard.USE_NMJv2 = config.checkbox_to_value(use_nmjv2)
-        sickbeard.NMJv2_HOST = config.clean_host(nmjv2_host)
-        sickbeard.NMJv2_DATABASE = nmjv2_database
-        sickbeard.NMJv2_DBLOC = nmjv2_dbloc
+        settings.USE_NMJv2 = config.checkbox_to_value(use_nmjv2)
+        settings.NMJv2_HOST = config.clean_host(nmjv2_host)
+        settings.NMJv2_DATABASE = nmjv2_database
+        settings.NMJv2_DBLOC = nmjv2_dbloc
 
-        sickbeard.USE_SYNOINDEX = config.checkbox_to_value(use_synoindex)
+        settings.USE_SYNOINDEX = config.checkbox_to_value(use_synoindex)
 
-        sickbeard.USE_SYNOLOGYNOTIFIER = config.checkbox_to_value(use_synologynotifier)
-        sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH = config.checkbox_to_value(synologynotifier_notify_onsnatch)
-        sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(synologynotifier_notify_ondownload)
-        sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(
+        settings.USE_SYNOLOGYNOTIFIER = config.checkbox_to_value(use_synologynotifier)
+        settings.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH = config.checkbox_to_value(synologynotifier_notify_onsnatch)
+        settings.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(synologynotifier_notify_ondownload)
+        settings.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(
             synologynotifier_notify_onsubtitledownload)
 
         config.change_use_trakt(use_trakt)
-        sickbeard.TRAKT_USERNAME = trakt_username
-        sickbeard.TRAKT_REMOVE_WATCHLIST = config.checkbox_to_value(trakt_remove_watchlist)
-        sickbeard.TRAKT_REMOVE_SERIESLIST = config.checkbox_to_value(trakt_remove_serieslist)
-        sickbeard.TRAKT_REMOVE_SHOW_FROM_SICKCHILL = config.checkbox_to_value(trakt_remove_show_from_sickchill)
-        sickbeard.TRAKT_SYNC_WATCHLIST = config.checkbox_to_value(trakt_sync_watchlist)
-        sickbeard.TRAKT_METHOD_ADD = int(trakt_method_add)
-        sickbeard.TRAKT_START_PAUSED = config.checkbox_to_value(trakt_start_paused)
-        sickbeard.TRAKT_USE_RECOMMENDED = config.checkbox_to_value(trakt_use_recommended)
-        sickbeard.TRAKT_SYNC = config.checkbox_to_value(trakt_sync)
-        sickbeard.TRAKT_SYNC_REMOVE = config.checkbox_to_value(trakt_sync_remove)
-        sickbeard.TRAKT_DEFAULT_INDEXER = int(trakt_default_indexer)
-        sickbeard.TRAKT_TIMEOUT = int(trakt_timeout)
-        sickbeard.TRAKT_BLACKLIST_NAME = trakt_blacklist_name
+        settings.TRAKT_USERNAME = trakt_username
+        settings.TRAKT_REMOVE_WATCHLIST = config.checkbox_to_value(trakt_remove_watchlist)
+        settings.TRAKT_REMOVE_SERIESLIST = config.checkbox_to_value(trakt_remove_serieslist)
+        settings.TRAKT_REMOVE_SHOW_FROM_SICKCHILL = config.checkbox_to_value(trakt_remove_show_from_sickchill)
+        settings.TRAKT_SYNC_WATCHLIST = config.checkbox_to_value(trakt_sync_watchlist)
+        settings.TRAKT_METHOD_ADD = int(trakt_method_add)
+        settings.TRAKT_START_PAUSED = config.checkbox_to_value(trakt_start_paused)
+        settings.TRAKT_USE_RECOMMENDED = config.checkbox_to_value(trakt_use_recommended)
+        settings.TRAKT_SYNC = config.checkbox_to_value(trakt_sync)
+        settings.TRAKT_SYNC_REMOVE = config.checkbox_to_value(trakt_sync_remove)
+        settings.TRAKT_DEFAULT_INDEXER = int(trakt_default_indexer)
+        settings.TRAKT_TIMEOUT = int(trakt_timeout)
+        settings.TRAKT_BLACKLIST_NAME = trakt_blacklist_name
 
-        sickbeard.USE_EMAIL = config.checkbox_to_value(use_email)
-        sickbeard.EMAIL_NOTIFY_ONSNATCH = config.checkbox_to_value(email_notify_onsnatch)
-        sickbeard.EMAIL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(email_notify_ondownload)
-        sickbeard.EMAIL_NOTIFY_ONPOSTPROCESS = config.checkbox_to_value(email_notify_onpostprocess)
-        sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(email_notify_onsubtitledownload)
-        sickbeard.EMAIL_HOST = config.clean_host(email_host)
-        sickbeard.EMAIL_PORT = try_int(email_port, 25)
-        sickbeard.EMAIL_FROM = email_from
-        sickbeard.EMAIL_TLS = config.checkbox_to_value(email_tls)
-        sickbeard.EMAIL_USER = email_user
-        sickbeard.EMAIL_PASSWORD = filters.unhide(sickbeard.EMAIL_PASSWORD, email_password)
-        sickbeard.EMAIL_LIST = email_list
-        sickbeard.EMAIL_SUBJECT = email_subject
+        settings.USE_EMAIL = config.checkbox_to_value(use_email)
+        settings.EMAIL_NOTIFY_ONSNATCH = config.checkbox_to_value(email_notify_onsnatch)
+        settings.EMAIL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(email_notify_ondownload)
+        settings.EMAIL_NOTIFY_ONPOSTPROCESS = config.checkbox_to_value(email_notify_onpostprocess)
+        settings.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(email_notify_onsubtitledownload)
+        settings.EMAIL_HOST = config.clean_host(email_host)
+        settings.EMAIL_PORT = try_int(email_port, 25)
+        settings.EMAIL_FROM = email_from
+        settings.EMAIL_TLS = config.checkbox_to_value(email_tls)
+        settings.EMAIL_USER = email_user
+        settings.EMAIL_PASSWORD = filters.unhide(settings.EMAIL_PASSWORD, email_password)
+        settings.EMAIL_LIST = email_list
+        settings.EMAIL_SUBJECT = email_subject
 
-        sickbeard.USE_PYTIVO = config.checkbox_to_value(use_pytivo)
-        sickbeard.PYTIVO_NOTIFY_ONSNATCH = config.checkbox_to_value(pytivo_notify_onsnatch)
-        sickbeard.PYTIVO_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(pytivo_notify_ondownload)
-        sickbeard.PYTIVO_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pytivo_notify_onsubtitledownload)
-        sickbeard.PYTIVO_UPDATE_LIBRARY = config.checkbox_to_value(pytivo_update_library)
-        sickbeard.PYTIVO_HOST = config.clean_host(pytivo_host)
-        sickbeard.PYTIVO_SHARE_NAME = pytivo_share_name
-        sickbeard.PYTIVO_TIVO_NAME = pytivo_tivo_name
+        settings.USE_PYTIVO = config.checkbox_to_value(use_pytivo)
+        settings.PYTIVO_NOTIFY_ONSNATCH = config.checkbox_to_value(pytivo_notify_onsnatch)
+        settings.PYTIVO_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(pytivo_notify_ondownload)
+        settings.PYTIVO_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pytivo_notify_onsubtitledownload)
+        settings.PYTIVO_UPDATE_LIBRARY = config.checkbox_to_value(pytivo_update_library)
+        settings.PYTIVO_HOST = config.clean_host(pytivo_host)
+        settings.PYTIVO_SHARE_NAME = pytivo_share_name
+        settings.PYTIVO_TIVO_NAME = pytivo_tivo_name
 
-        sickbeard.USE_PUSHALOT = config.checkbox_to_value(use_pushalot)
-        sickbeard.PUSHALOT_NOTIFY_ONSNATCH = config.checkbox_to_value(pushalot_notify_onsnatch)
-        sickbeard.PUSHALOT_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(pushalot_notify_ondownload)
-        sickbeard.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pushalot_notify_onsubtitledownload)
-        sickbeard.PUSHALOT_AUTHORIZATIONTOKEN = pushalot_authorizationtoken
+        settings.USE_PUSHALOT = config.checkbox_to_value(use_pushalot)
+        settings.PUSHALOT_NOTIFY_ONSNATCH = config.checkbox_to_value(pushalot_notify_onsnatch)
+        settings.PUSHALOT_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(pushalot_notify_ondownload)
+        settings.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pushalot_notify_onsubtitledownload)
+        settings.PUSHALOT_AUTHORIZATIONTOKEN = pushalot_authorizationtoken
 
-        sickbeard.USE_PUSHBULLET = config.checkbox_to_value(use_pushbullet)
-        sickbeard.PUSHBULLET_NOTIFY_ONSNATCH = config.checkbox_to_value(pushbullet_notify_onsnatch)
-        sickbeard.PUSHBULLET_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(pushbullet_notify_ondownload)
-        sickbeard.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pushbullet_notify_onsubtitledownload)
-        sickbeard.PUSHBULLET_API = pushbullet_api
-        sickbeard.PUSHBULLET_DEVICE = pushbullet_device_list
-        sickbeard.PUSHBULLET_CHANNEL = pushbullet_channel_list or ""
+        settings.USE_PUSHBULLET = config.checkbox_to_value(use_pushbullet)
+        settings.PUSHBULLET_NOTIFY_ONSNATCH = config.checkbox_to_value(pushbullet_notify_onsnatch)
+        settings.PUSHBULLET_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(pushbullet_notify_ondownload)
+        settings.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pushbullet_notify_onsubtitledownload)
+        settings.PUSHBULLET_API = pushbullet_api
+        settings.PUSHBULLET_DEVICE = pushbullet_device_list
+        settings.PUSHBULLET_CHANNEL = pushbullet_channel_list or ""
 
-        sickbeard.save_config()
+        sickchill.start.save_config()
 
         if len(results) > 0:
             for x in results:
@@ -319,6 +321,6 @@ class ConfigNotifications(Config):
             ui.notifications.error(_('Error(s) Saving Configuration'),
                                    '<br>\n'.join(results))
         else:
-            ui.notifications.message(_('Configuration Saved'), os.path.join(sickbeard.CONFIG_FILE))
+            ui.notifications.message(_('Configuration Saved'), os.path.join(settings.CONFIG_FILE))
 
         return self.redirect("/config/notifications/")

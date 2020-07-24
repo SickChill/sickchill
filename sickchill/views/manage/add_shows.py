@@ -37,6 +37,7 @@ from sickbeard.blackandwhitelist import short_group_names
 from sickbeard.common import Quality
 from sickbeard.trakt_api import TraktAPI
 from sickbeard.traktTrending import trakt_trending
+from sickchill import settings
 from sickchill.helper import sanitize_filename, try_int
 from sickchill.show.recommendations.favorites import favorites
 from sickchill.show.recommendations.imdb import imdb_popular
@@ -63,7 +64,7 @@ class AddShows(Home):
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header('Content-Type', 'application/json')
         if not lang or lang == 'null':
-            lang = sickbeard.INDEXER_DEFAULT_LANGUAGE
+            lang = settings.INDEXER_DEFAULT_LANGUAGE
 
         search_term = xhtml_unescape(search_term)
 
@@ -101,7 +102,7 @@ class AddShows(Home):
         for i, shows in results.items():
             # noinspection PyUnresolvedReferences
             final_results.extend({(sickchill.indexer.name(i), i, sickchill.indexer[i].show_url, show['id'],
-                                   show['seriesName'], show['firstAired'], sickbeard.tv.Show.find(sickbeard.showList, show['id']) is not None
+                                   show['seriesName'], show['firstAired'], sickbeard.tv.Show.find(settings.showList, show['id']) is not None
                                    ) for show in shows})
 
         lang_id = sickchill.indexer.lang_dict()[lang]
@@ -119,8 +120,8 @@ class AddShows(Home):
 
         root_dirs = [unquote_plus(xhtml_unescape(x)) for x in root_dirs]
 
-        if sickbeard.ROOT_DIRS:
-            default_index = int(sickbeard.ROOT_DIRS.split('|')[0])
+        if settings.ROOT_DIRS:
+            default_index = int(settings.ROOT_DIRS.split('|')[0])
         else:
             default_index = 0
 
@@ -169,7 +170,7 @@ class AddShows(Home):
                 dir_list.append(cur_dir)
 
                 indexer_id = show_name = indexer = None
-                for cur_provider in sickbeard.metadata_provider_dict.values():
+                for cur_provider in settings.metadata_provider_dict.values():
                     if not (indexer_id and show_name):
                         (indexer_id, show_name, indexer) = cur_provider.retrieveShowMetadata(cur_path)
                         if all((indexer_id, show_name, indexer)):
@@ -178,7 +179,7 @@ class AddShows(Home):
                 if all((indexer_id, show_name, indexer)):
                     cur_dir['existing_info'] = (indexer_id, show_name, indexer)
 
-                if indexer_id and Show.find(sickbeard.showList, indexer_id):
+                if indexer_id and Show.find(settings.showList, indexer_id):
                     cur_dir['added_already'] = True
         return t.render(dirList=dir_list)
 
@@ -218,7 +219,7 @@ class AddShows(Home):
         provided_indexer_id = int(indexer_id or 0)
         provided_indexer_name = show_name
 
-        provided_indexer = int(indexer or sickbeard.INDEXER_DEFAULT)
+        provided_indexer = int(indexer or settings.INDEXER_DEFAULT)
 
         return t.render(
             enable_anime_options=True, use_provided_info=use_provided_info,
@@ -340,9 +341,9 @@ class AddShows(Home):
 
         if self.get_body_argument('submit', None):
             tvdb_user = self.get_body_argument('tvdb_user')
-            tvdb_user_key = filters.unhide(sickbeard.TVDB_USER_KEY, self.get_body_argument('tvdb_user_key'))
+            tvdb_user_key = filters.unhide(settings.TVDB_USER_KEY, self.get_body_argument('tvdb_user_key'))
             if tvdb_user and tvdb_user_key:
-                if tvdb_user != sickbeard.TVDB_USER or tvdb_user_key != sickbeard.TVDB_USER_KEY:
+                if tvdb_user != settings.TVDB_USER or tvdb_user_key != settings.TVDB_USER_KEY:
                     favorites.test_user_key(tvdb_user, tvdb_user_key, 1)
 
         try:
@@ -366,9 +367,9 @@ class AddShows(Home):
 
         data = {'shows': [{'ids': {'tvdb': indexer_id}}]}
 
-        trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
+        trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
 
-        trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items", data, method='POST')
+        trakt_api.traktRequest("users/" + settings.TRAKT_USERNAME + "/lists/" + settings.TRAKT_BLACKLIST_NAME + "/items", data, method='POST')
 
         return self.redirect('/addShows/trendingShows/')
 
@@ -404,7 +405,7 @@ class AddShows(Home):
 
         indexer_id = try_int(indexer_id)
 
-        if indexer_id <= 0 or Show.find(sickbeard.showList, indexer_id):
+        if indexer_id <= 0 or Show.find(settings.showList, indexer_id):
             return
 
         # Sanitize the parameter anyQualities and bestQualities. As these would normally be passed as lists
@@ -441,16 +442,16 @@ class AddShows(Home):
             location = root_dir
 
         else:
-            default_status = sickbeard.STATUS_DEFAULT
-            quality = sickbeard.QUALITY_DEFAULT
-            season_folders = sickbeard.SEASON_FOLDERS_DEFAULT
-            subtitles = sickbeard.SUBTITLES_DEFAULT
-            anime = sickbeard.ANIME_DEFAULT
-            scene = sickbeard.SCENE_DEFAULT
-            default_status_after = sickbeard.STATUS_DEFAULT_AFTER
+            default_status = settings.STATUS_DEFAULT
+            quality = settings.QUALITY_DEFAULT
+            season_folders = settings.SEASON_FOLDERS_DEFAULT
+            subtitles = settings.SUBTITLES_DEFAULT
+            anime = settings.ANIME_DEFAULT
+            scene = settings.SCENE_DEFAULT
+            default_status_after = settings.STATUS_DEFAULT_AFTER
 
-            if sickbeard.ROOT_DIRS:
-                root_dirs = sickbeard.ROOT_DIRS.split('|')
+            if settings.ROOT_DIRS:
+                root_dirs = settings.ROOT_DIRS.split('|')
                 location = root_dirs[int(root_dirs[0]) + 1]
             else:
                 location = None
@@ -467,7 +468,7 @@ class AddShows(Home):
             return self.redirect('/home/')
 
         # add the show
-        sickbeard.showQueueScheduler.action.add_show(
+        settings.showQueueScheduler.action.add_show(
             indexer=1, indexer_id=indexer_id, showDir=show_dir, default_status=default_status, quality=quality,
             season_folders=season_folders, lang=indexer_lang, subtitles=subtitles, subtitles_sr_metadata=None,
             anime=anime, scene=scene, paused=None, blacklist=blacklist, whitelist=whitelist,
@@ -488,7 +489,7 @@ class AddShows(Home):
         """
 
         if not indexerLang:
-            indexerLang = sickbeard.INDEXER_DEFAULT_LANGUAGE
+            indexerLang = settings.INDEXER_DEFAULT_LANGUAGE
 
         # grab our list of other dirs if given
         if not other_shows:
@@ -532,7 +533,7 @@ class AddShows(Home):
         else:
             # if no indexer was provided use the default indexer set in General settings
             if not providedIndexer:
-                providedIndexer = sickbeard.INDEXER_DEFAULT
+                providedIndexer = settings.INDEXER_DEFAULT
 
             indexer = int(providedIndexer)
             indexer_id = int(whichSeries)
@@ -545,7 +546,7 @@ class AddShows(Home):
         else:
             folder_name = show_name
             s = sickchill.indexer.series_by_id(indexerid=indexer_id, indexer=indexer, language=indexerLang)
-            if sickbeard.ADD_SHOWS_WITH_YEAR and s.firstAired:
+            if settings.ADD_SHOWS_WITH_YEAR and s.firstAired:
                 try:
                     year = '({0})'.format(dateutil.parser.parse(s.firstAired).year)
                     if year not in folder_name:
@@ -562,7 +563,7 @@ class AddShows(Home):
             return self.redirect('/addShows/existingShows/')
 
         # don't create show dir if config says not to
-        if sickbeard.ADD_SHOWS_WO_DIR:
+        if settings.ADD_SHOWS_WO_DIR:
             logger.info("Skipping initial creation of " + show_dir + " due to config.ini setting")
         else:
             dir_exists = helpers.makeDir(show_dir)
@@ -598,7 +599,7 @@ class AddShows(Home):
         newQuality = Quality.combineQualities([int(q) for q in anyQualities], [int(q) for q in bestQualities])
 
         # add the show
-        sickbeard.showQueueScheduler.action.add_show(
+        settings.showQueueScheduler.action.add_show(
             indexer, indexer_id, showDir=show_dir, default_status=int(defaultStatus), quality=newQuality,
             season_folders=season_folders, lang=indexerLang, subtitles=subtitles, subtitles_sr_metadata=subtitles_sr_metadata,
             anime=anime, scene=scene, paused=None, blacklist=blacklist, whitelist=whitelist,
@@ -666,15 +667,15 @@ class AddShows(Home):
 
             if indexer is not None and indexer_id is not None:
                 # add the show
-                sickbeard.showQueueScheduler.action.add_show(
+                settings.showQueueScheduler.action.add_show(
                     indexer, indexer_id, show_dir,
-                    default_status=sickbeard.STATUS_DEFAULT,
-                    quality=sickbeard.QUALITY_DEFAULT,
-                    season_folders=sickbeard.SEASON_FOLDERS_DEFAULT,
-                    subtitles=sickbeard.SUBTITLES_DEFAULT,
-                    anime=sickbeard.ANIME_DEFAULT,
-                    scene=sickbeard.SCENE_DEFAULT,
-                    default_status_after=sickbeard.STATUS_DEFAULT_AFTER
+                    default_status=settings.STATUS_DEFAULT,
+                    quality=settings.QUALITY_DEFAULT,
+                    season_folders=settings.SEASON_FOLDERS_DEFAULT,
+                    subtitles=settings.SUBTITLES_DEFAULT,
+                    anime=settings.ANIME_DEFAULT,
+                    scene=settings.SCENE_DEFAULT,
+                    default_status_after=settings.STATUS_DEFAULT_AFTER
                 )
                 num_added += 1
 

@@ -14,18 +14,12 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with aDBa.  If not, see <http://www.gnu.org/licenses/>.
-
-
-
 import hashlib
 import os
 import time
 from functools import reduce
 
-try:
-    import xml.etree.cElementTree as etree
-except ImportError:
-    import xml.etree.ElementTree as etree
+from xml.etree import ElementTree
 
 # http://www.radicand.org/blog/orz/2010/2/21/edonkey2000-hash-in-python/
 import requests
@@ -131,4 +125,4 @@ def read_xml_into_etree(filePath):
         return None
 
     with open(filePath, "r") as f:
-        return etree.ElementTree(file=f)
+        return ElementTree.ElementTree(file=f)

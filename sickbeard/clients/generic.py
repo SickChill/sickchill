@@ -29,6 +29,7 @@ from requests.models import HTTPError
 # First Party Imports
 import sickbeard
 from sickbeard import helpers, logger
+from sickchill import settings
 
 
 class GenericClient(object):
@@ -42,9 +43,9 @@ class GenericClient(object):
         """
 
         self.name = name
-        self.username = username or sickbeard.TORRENT_USERNAME
-        self.password = password or sickbeard.TORRENT_PASSWORD
-        self.host = host or sickbeard.TORRENT_HOST
+        self.username = username or settings.TORRENT_USERNAME
+        self.password = password or settings.TORRENT_PASSWORD
+        self.host = host or settings.TORRENT_HOST
 
         self.url = None
         self.response = None

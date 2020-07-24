@@ -39,7 +39,7 @@ import uuid
 import zipfile
 from contextlib import closing
 from itertools import cycle
-from xml.etree import ElementTree as ElementTree
+from xml.etree import ElementTree
 
 # Third Party Imports
 import certifi
@@ -58,6 +58,7 @@ from unidecode import unidecode
 import adba
 import sickbeard
 import sickchill
+from sickchill import settings
 from sickchill.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS
 from sickchill.helper.common import replace_extension
 from sickchill.show.Show import Show
@@ -226,7 +227,7 @@ def is_media_file(filename):
         if re.search('extras?$', filname_parts[0], re.I):
             return False
 
-        return filname_parts[-1].lower() in MEDIA_EXTENSIONS or (sickbeard.UNPACK == sickbeard.UNPACK_PROCESS_INTACT and is_rar)
+        return filname_parts[-1].lower() in MEDIA_EXTENSIONS or (settings.UNPACK == settings.UNPACK_PROCESS_INTACT and is_rar)
     except (TypeError, AssertionError) as error:  # Not a string
         logger.debug(_('Invalid filename. Filename must be a string. {0}').format(error))
         return False
@@ -616,7 +617,7 @@ def is_anime_in_show_list():
     :return: True if global showlist contains Anime, False if not
     """
 
-    for show in sickbeard.showList:
+    for show in settings.showList:
         if show.is_anime:
             return True
     return False
@@ -625,7 +626,7 @@ def is_anime_in_show_list():
 def update_anime_support():
     """Check if we need to support anime, and if we do, enable the feature"""
 
-    sickbeard.ANIMESUPPORT = is_anime_in_show_list()
+    settings.ANIMESUPPORT = is_anime_in_show_list()
 
 
 def get_absolute_number_from_season_and_episode(show, season, episode):
@@ -663,7 +664,7 @@ def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=Non
 
     if len(absolute_numbers):
         if not show and indexer_id:
-            show = Show.find(sickbeard.showList, indexer_id)
+            show = Show.find(settings.showList, indexer_id)
 
         for absolute_number in absolute_numbers if show else []:
             ep = show.getEpisode(None, None, absolute_number=absolute_number)
@@ -879,7 +880,7 @@ def anon_url(*url):
     """
     Return a URL string consisting of the Anonymous redirect URL and an arbitrary number of values appended.
     """
-    return '' if None in url else '{0}{1}'.format(sickbeard.ANON_REDIRECT, ''.join(str(s) for s in url))
+    return '' if None in url else '{0}{1}'.format(settings.ANON_REDIRECT, ''.join(str(s) for s in url))
 
 
 """
@@ -909,7 +910,7 @@ def encrypt(data: str, encryption_version=0, _decrypt=False):
         data = data.encode()
 
     result = data
-    secret_cycle = cycle((unique_key1, sickbeard.ENCRYPTION_SECRET)[encryption_version > 1].encode())
+    secret_cycle = cycle((unique_key1, settings.ENCRYPTION_SECRET)[encryption_version > 1].encode())
     if encryption_version in (1, 2):
         if _decrypt:
             result = ''.join(chr(x ^ y) for (x, y) in zip(base64.decodebytes(data), secret_cycle))
@@ -946,7 +947,7 @@ def _check_against_names(nameInQuestion, show, season=-1):
 
 
 def get_show(name, tryIndexers=False):
-    if not sickbeard.showList:
+    if not settings.showList:
         return
 
     showObj = None
@@ -960,19 +961,19 @@ def get_show(name, tryIndexers=False):
         cache = sickbeard.name_cache.retrieveNameFromCache(name)
         if cache:
             fromCache = True
-            showObj = Show.find(sickbeard.showList, int(cache))
+            showObj = Show.find(settings.showList, int(cache))
 
         # try indexers
         if not showObj and tryIndexers:
             showObj = Show.find(
-                sickbeard.showList, sickchill.indexer.search_indexers_for_series_id(name=full_sanitizeSceneName(name))[1].id)
+                settings.showList, sickchill.indexer.search_indexers_for_series_id(name=full_sanitizeSceneName(name))[1].id)
 
         # try scene exceptions
         if not showObj:
             scene_exceptions = sickbeard.scene_exceptions.get_scene_exception_by_name_multiple(name)
             for scene_exception in scene_exceptions:
                 if scene_exception[1]:
-                    showObj = Show.find(sickbeard.showList, scene_exception[1])
+                    showObj = Show.find(settings.showList, scene_exception[1])
                     if showObj:
                         break
 
@@ -1037,34 +1038,34 @@ def is_subdirectory(subdir_path, topdir_path):
 def set_up_anidb_connection():
     """Connect to anidb"""
 
-    if not sickbeard.USE_ANIDB:
+    if not settings.USE_ANIDB:
         logger.debug(_("Usage of anidb disabled. Skiping"))
         return False
 
-    if not sickbeard.ANIDB_USERNAME and not sickbeard.ANIDB_PASSWORD:
+    if not settings.ANIDB_USERNAME and not settings.ANIDB_PASSWORD:
         logger.debug(_("anidb username and/or password are not set. Aborting anidb lookup."))
         return False
 
-    if not sickbeard.ADBA_CONNECTION:
+    if not settings.ADBA_CONNECTION:
         def anidb_logger(msg):
             return logger.debug(_("anidb: {0} ").format(msg))
 
         try:
-            sickbeard.ADBA_CONNECTION = adba.Connection(keepAlive=True, log=anidb_logger)
+            settings.ADBA_CONNECTION = adba.Connection(keepAlive=True, log=anidb_logger)
         except Exception as error:
             logger.warning(_("anidb exception msg: {0} ").format(error))
             return False
 
     try:
-        if not sickbeard.ADBA_CONNECTION.authed():
-            sickbeard.ADBA_CONNECTION.auth(sickbeard.ANIDB_USERNAME, sickbeard.ANIDB_PASSWORD)
+        if not settings.ADBA_CONNECTION.authed():
+            settings.ADBA_CONNECTION.auth(settings.ANIDB_USERNAME, settings.ANIDB_PASSWORD)
         else:
             return True
     except Exception as error:
         logger.warning(_("anidb exception msg: {0} ").format(error))
         return False
 
-    return sickbeard.ADBA_CONNECTION.authed()
+    return settings.ADBA_CONNECTION.authed()
 
 
 def makeZip(fileList, archive):
@@ -1187,11 +1188,11 @@ def touchFile(fname, atime=None):
 
 def make_indexer_session():
     session = make_session()
-    session.verify = (False, certifi.where())[sickbeard.SSL_VERIFY]
-    if sickbeard.PROXY_SETTING and sickbeard.PROXY_INDEXERS:
-        logger.debug(_("Using global proxy: {}").format(sickbeard.PROXY_SETTING))
-        parsed_url = urlparse(sickbeard.PROXY_SETTING)
-        address = sickbeard.PROXY_SETTING if parsed_url.scheme else 'http://' + sickbeard.PROXY_SETTING
+    session.verify = (False, certifi.where())[settings.SSL_VERIFY]
+    if settings.PROXY_SETTING and settings.PROXY_INDEXERS:
+        logger.debug(_("Using global proxy: {}").format(settings.PROXY_SETTING))
+        parsed_url = urlparse(settings.PROXY_SETTING)
+        address = settings.PROXY_SETTING if parsed_url.scheme else 'http://' + settings.PROXY_SETTING
         session.proxies = {
             "http": address,
             "https": address,
@@ -1209,13 +1210,13 @@ def request_defaults(kwargs):
     hooks = kwargs.pop('hooks', None)
     cookies = kwargs.pop('cookies', None)
     allow_proxy = kwargs.pop('allow_proxy', True)
-    verify = certifi.where() if all([sickbeard.SSL_VERIFY, kwargs.pop('verify', True)]) else False
+    verify = certifi.where() if all([settings.SSL_VERIFY, kwargs.pop('verify', True)]) else False
 
     # request session proxies
-    if allow_proxy and sickbeard.PROXY_SETTING:
-        logger.debug(_("Using global proxy: {}").format(sickbeard.PROXY_SETTING))
-        parsed_url = urlparse(sickbeard.PROXY_SETTING)
-        address = sickbeard.PROXY_SETTING if parsed_url.scheme else 'http://' + sickbeard.PROXY_SETTING
+    if allow_proxy and settings.PROXY_SETTING:
+        logger.debug(_("Using global proxy: {}").format(settings.PROXY_SETTING))
+        parsed_url = urlparse(settings.PROXY_SETTING)
+        address = settings.PROXY_SETTING if parsed_url.scheme else 'http://' + settings.PROXY_SETTING
         proxies = {
             "http": address,
             "https": address,
@@ -1311,7 +1312,7 @@ def handle_requests_exception(requests_exception):
     except requests.exceptions.SSLError as error:
         if ssl.OPENSSL_VERSION_INFO < (1, 0, 1, 5):
             logger.info(_("SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to 1.0.1e+").format(error.request.url, ssl.OPENSSL_VERSION))
-        if sickbeard.SSL_VERIFY:
+        if settings.SSL_VERIFY:
             logger.info(_("SSL Error requesting url: '{0}' Try disabling Cert Verification on the advanced tab of /config/general").format(error.request.url))
         logger.debug(default.format(error, type(error.__class__.__name__)))
         logger.debug(traceback.format_exc())
@@ -1381,7 +1382,7 @@ def get_size(start_path='.'):
         for f in filenames:
             fp = os.path.join(dirpath, f)
             if os.path.islink(fp) and not os.path.isfile(fp):
-                log = logger.debug if sickbeard.IGNORE_BROKEN_SYMLINKS else logger.warning
+                log = logger.debug if settings.IGNORE_BROKEN_SYMLINKS else logger.warning
                 log(_("Unable to get size for file {0} because the link to the file is not valid").format(fp))
                 continue
             try:
@@ -1457,7 +1458,7 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
         logger.warning(_("A path to a file is required for the source. {0} is not a file.").format(src))
         return True
 
-    if not (os.path.isdir(dest) or (sickbeard.CREATE_MISSING_SHOW_DIRS and os.path.isdir(os.path.dirname(dest)))):
+    if not (os.path.isdir(dest) or (settings.CREATE_MISSING_SHOW_DIRS and os.path.isdir(os.path.dirname(dest)))):
         logger.warning(_("A path is required for the destination. Check that the root dir and show locations are correct for {0} (I got '{1}')").format(
             oldfile[0].name, dest))
         return False
@@ -1644,47 +1645,47 @@ MESSAGE_COUNTER = 0
 
 
 def add_site_message(message, tag=None, level='danger'):
-    with sickbeard.MESSAGES_LOCK:
+    with settings.MESSAGES_LOCK:
         to_add = dict(level=level, tag=tag, message=message)
 
         if tag:  # prevent duplicate messages of the same type
             # http://www.goodmami.org/2013/01/30/Getting-only-the-first-match-in-a-list-comprehension.html
-            existing = next((x for x, msg in sickbeard.SITE_MESSAGES.items() if msg.get('tag') == tag), None)
+            existing = next((x for x, msg in settings.SITE_MESSAGES.items() if msg.get('tag') == tag), None)
             if existing:
-                sickbeard.SITE_MESSAGES[existing] = to_add
+                settings.SITE_MESSAGES[existing] = to_add
                 return
 
         global MESSAGE_COUNTER
         MESSAGE_COUNTER += 1
-        sickbeard.SITE_MESSAGES[MESSAGE_COUNTER] = to_add
+        settings.SITE_MESSAGES[MESSAGE_COUNTER] = to_add
 
 
 def remove_site_message(key=None, tag=None):
-    with sickbeard.MESSAGES_LOCK:
-        if key is not None and int(key) in sickbeard.SITE_MESSAGES:
-            del sickbeard.SITE_MESSAGES[int(key)]
+    with settings.MESSAGES_LOCK:
+        if key is not None and int(key) in settings.SITE_MESSAGES:
+            del settings.SITE_MESSAGES[int(key)]
         elif tag is not None:
-            found = [idx for idx, msg in sickbeard.SITE_MESSAGES.items() if msg.get('tag') == tag]
+            found = [idx for idx, msg in settings.SITE_MESSAGES.items() if msg.get('tag') == tag]
             for key in found:
-                del sickbeard.SITE_MESSAGES[key]
+                del settings.SITE_MESSAGES[key]
 
 
 def sortable_name(name):
-    if not sickbeard.SORT_ARTICLE:
+    if not settings.SORT_ARTICLE:
         name = re.sub(r'(?:The|A|An)\s', '', name, flags=re.I)
     return unidecode(name.lower())
 
 
 def manage_torrents_url(reset=False):
     if not reset:
-        return sickbeard.CLIENT_WEB_URLS.get('torrent', '')
+        return settings.CLIENT_WEB_URLS.get('torrent', '')
 
-    if not sickbeard.USE_TORRENTS or not sickbeard.TORRENT_HOST.lower().startswith('http') or sickbeard.TORRENT_METHOD == 'blackhole' or \
-            sickbeard.ENABLE_HTTPS and not sickbeard.TORRENT_HOST.lower().startswith('https'):
-        sickbeard.CLIENT_WEB_URLS['torrent'] = ''
-        return sickbeard.CLIENT_WEB_URLS.get('torrent')
+    if not settings.USE_TORRENTS or not settings.TORRENT_HOST.lower().startswith('http') or settings.TORRENT_METHOD == 'blackhole' or \
+            settings.ENABLE_HTTPS and not settings.TORRENT_HOST.lower().startswith('https'):
+        settings.CLIENT_WEB_URLS['torrent'] = ''
+        return settings.CLIENT_WEB_URLS.get('torrent')
 
-    torrent_ui_url = re.sub('localhost|127.0.0.1', sickbeard.LOCALHOST_IP or get_lan_ip(), sickbeard.TORRENT_HOST or '', re.I)
+    torrent_ui_url = re.sub('localhost|127.0.0.1', settings.LOCALHOST_IP or get_lan_ip(), settings.TORRENT_HOST or '', re.I)
 
     def test_exists(url):
         try:
@@ -1693,15 +1694,15 @@ def manage_torrents_url(reset=False):
         except (requests.exceptions.ConnectionError, requests.exceptions.ConnectTimeout):
             return False
 
-    if sickbeard.TORRENT_METHOD == 'utorrent':
+    if settings.TORRENT_METHOD == 'utorrent':
         torrent_ui_url = '/'.join(s.strip('/') for s in (torrent_ui_url, 'gui/'))
-    elif sickbeard.TORRENT_METHOD == 'download_station':
+    elif settings.TORRENT_METHOD == 'download_station':
         if test_exists(urljoin(torrent_ui_url, 'download/')):
             torrent_ui_url = urljoin(torrent_ui_url, 'download/')
 
-    sickbeard.CLIENT_WEB_URLS['torrent'] = ('', torrent_ui_url)[test_exists(torrent_ui_url)]
+    settings.CLIENT_WEB_URLS['torrent'] = ('', torrent_ui_url)[test_exists(torrent_ui_url)]
 
-    return sickbeard.CLIENT_WEB_URLS.get('torrent')
+    return settings.CLIENT_WEB_URLS.get('torrent')
 
 
 def is_docker():

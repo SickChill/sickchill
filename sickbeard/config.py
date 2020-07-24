@@ -30,6 +30,8 @@ from tornado.escape import xhtml_unescape
 
 # First Party Imports
 import sickbeard
+import sickchill.start
+from sickchill import settings
 from sickchill.helper.common import try_int
 
 # Local Folder Imports
@@ -69,12 +71,12 @@ def change_https_cert(https_cert):
     :return: True on success, False on failure
     """
     if https_cert == '':
-        sickbeard.HTTPS_CERT = ''
+        settings.HTTPS_CERT = ''
         return True
 
-    if os.path.normpath(sickbeard.HTTPS_CERT) != os.path.normpath(https_cert):
+    if os.path.normpath(settings.HTTPS_CERT) != os.path.normpath(https_cert):
         if helpers.makeDir(os.path.dirname(os.path.abspath(https_cert))):
-            sickbeard.HTTPS_CERT = os.path.normpath(https_cert)
+            settings.HTTPS_CERT = os.path.normpath(https_cert)
             logger.info("Changed https cert path to " + https_cert)
         else:
             return False
@@ -90,12 +92,12 @@ def change_https_key(https_key):
     :return: True on success, False on failure
     """
     if not https_key:
-        sickbeard.HTTPS_KEY = ''
+        settings.HTTPS_KEY = ''
         return True
 
-    if os.path.normpath(sickbeard.HTTPS_KEY) != os.path.normpath(https_key):
+    if os.path.normpath(settings.HTTPS_KEY) != os.path.normpath(https_key):
         if helpers.makeDir(os.path.dirname(os.path.abspath(https_key))):
-            sickbeard.HTTPS_KEY = os.path.normpath(https_key)
+            settings.HTTPS_KEY = os.path.normpath(https_key)
             logger.info("Changed https key path to " + https_key)
         else:
             return False
@@ -103,30 +105,50 @@ def change_https_key(https_key):
     return True
 
 
-def change_unrar_tool(unrar_tool, alt_unrar_tool):
+def change_unrar_tool(unrar_tool, unar_tool, bsdtar_tool, lsar_tool):
+    try:
+        rarfile.tool_setup()
+    except rarfile.RarCannotExec:
+        pass
+    else:
+        settings.UNAR_TOOL = rarfile.UNRAR_TOOL
+        settings.UNAR_TOOL = rarfile.UNAR_TOOL
+        settings.BSDTAR_TOOL = rarfile.BSDTAR_TOOL
+        settings.LSAR_TOOL = rarfile.LSAR_TOOL
+        return True
 
-    # Check for failed unrar attempt, and remove it
-    # Must be done before unrar is ever called or the self-extractor opens and locks startup
-    bad_unrar = os.path.join(sickbeard.DATA_DIR, 'unrar.exe')
-    if os.path.exists(bad_unrar) and os.path.getsize(bad_unrar) == 447440:
-        try:
-            os.remove(bad_unrar)
-            logger.info('Removed a bad copy of unrar')
-        except OSError as e:
-            logger.warning("Unable to delete bad unrar.exe file {0}: {1}. You should delete it manually".format(bad_unrar, e.strerror))
+    _unrar_tool = rarfile.UNRAR_TOOL
+    _unar_tool = rarfile.UNAR_TOOL
+    _bsdtar_tool = rarfile.BSDTAR_TOOL
+    _lsar_tool = rarfile.LSAR_TOOL
 
-    for tool in (unrar_tool, alt_unrar_tool, rarfile.UNRAR_TOOL, rarfile.ALT_TOOL):
-        try:
-            rarfile.custom_check([tool])
-            set_requested = tool in (unrar_tool, alt_unrar_tool)
-            sickbeard.UNRAR_TOOL = rarfile.UNRAR_TOOL = sickbeard.ALT_UNRAR_TOOL = rarfile.ALT_TOOL = rarfile.ORIG_UNRAR_TOOL = tool
-            # noinspection PyProtectedMember
-            rarfile._check_unrar_tool()
-            if not set_requested:
-                logger.info('Unrar tool set to `{}`. Your selection was not found so we reverted to a working default.'.format(tool))
-            return True
-        except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-            pass
+    if unrar_tool and unrar_tool != rarfile.UNRAR_TOOL:
+        rarfile.UNRAR_TOOL = unrar_tool
+
+    if unar_tool and unar_tool != rarfile.UNAR_TOOL:
+        rarfile.UNAR_TOOL = unar_tool
+
+    if bsdtar_tool and bsdtar_tool != rarfile.BSDTAR_TOOL:
+        rarfile.BSDTAR_TOOL = bsdtar_tool
+
+    if lsar_tool and lsar_tool != rarfile.LSAR_TOOL:
+        rarfile.LSAR_TOOL = lsar_tool
+
+    try:
+        rarfile.tool_setup()
+    except rarfile.RarCannotExec:
+        pass
+    else:
+        settings.UNAR_TOOL = rarfile.UNRAR_TOOL
+        settings.UNAR_TOOL = rarfile.UNAR_TOOL
+        settings.BSDTAR_TOOL = rarfile.BSDTAR_TOOL
+        settings.LSAR_TOOL = rarfile.LSAR_TOOL
+        return True
+
+    rarfile.UNRAR_TOOL = _unar_tool
+    rarfile.UNAR_TOOL = _unar_tool
+    rarfile.BSDTAR_TOOL = _bsdtar_tool
+    rarfile.LSAR_TOOL = _lsar_tool
 
     if platform.system() == 'Windows':
         # Look for WinRAR installations
@@ -139,54 +161,55 @@ def change_unrar_tool(unrar_tool, alt_unrar_tool):
                 os.environ.get("ProgramFiles"), re.sub(r'\s?\(x86\)', '', os.environ["ProgramFiles"])
             ) if location
         }
-        check_locations.add(os.path.join(sickbeard.PROG_DIR, 'unrar\\unrar.exe'))
+        check_locations.add(os.path.join(settings.PROG_DIR, 'unrar\\unrar.exe'))
 
         for check in check_locations:
             if os.path.isfile(check):
-                # Can use it?
                 try:
-                    rarfile.custom_check(check)
-                    unrar_tool = check
-                    found = True
-                    break
-                except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-                    found = False
+                    rarfile.UNRAR_TOOL = check
+                    rarfile.tool_setup()
+                    settings.UNRAR_TOOL = check
+                    return True
+                except rarfile.RarCannotExec:
+                    pass
 
-        # Download
-        if not found:
-            logger.info('Trying to download unrar.exe and set the path')
-            unrar_store = os.path.join(sickbeard.PROG_DIR, 'unrar')  # ./unrar (folder)
-            unrar_zip = os.path.join(sickbeard.PROG_DIR, 'unrar_win.zip')  # file download
+        logger.info('Trying to download unrar.exe and set the path')
+        unrar_store = os.path.join(settings.PROG_DIR, 'unrar')  # ./unrar (folder)
+        unrar_zip = os.path.join(settings.PROG_DIR, 'unrar_win.zip')  # file download
 
-            if (helpers.download_file(
-                "https://sickchill.github.io/unrar/unrar_win.zip", filename=unrar_zip, session=helpers.make_session()
-            ) and helpers.extractZip(archive=unrar_zip, targetDir=unrar_store)):
-                try:
-                    os.remove(unrar_zip)
-                except OSError as e:
-                    logger.info("Unable to delete downloaded file {0}: {1}. You may delete it manually".format(unrar_zip, e.strerror))
+        if (helpers.download_file(
+            "https://sickchill.github.io/unrar/unrar_win.zip", filename=unrar_zip, session=helpers.make_session()
+        ) and helpers.extractZip(archive=unrar_zip, targetDir=unrar_store)):
+            try:
+                os.remove(unrar_zip)
+            except OSError as e:
+                logger.info("Unable to delete downloaded file {0}: {1}. You may delete it manually".format(unrar_zip, e.strerror))
 
-                check = os.path.join(unrar_store, "unrar.exe")
-                try:
-                    rarfile.custom_check(check)
-                    unrar_tool = check
-                    logger.info('Successfully downloaded unrar.exe and set as unrar tool')
-                except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-                    logger.info('Sorry, unrar was not set up correctly. Try installing WinRAR and make sure it is on the system PATH')
-            else:
-                logger.info('Unable to download unrar.exe')
+            check = os.path.join(unrar_store, "unrar.exe")
+            try:
+                rarfile.UNRAR_TOOL = check
+                rarfile.tool_setup()
+                settings.UNRAR_TOOL = check
+                logger.info('Successfully downloaded unrar.exe and set as unrar tool')
+                return True
+            except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
+                logger.info('Sorry, unrar was not set up correctly. Try installing WinRAR and make sure it is on the system PATH')
+        else:
+            logger.info('Unable to download unrar.exe')
 
     # These must always be set to something before returning
-    sickbeard.UNRAR_TOOL = rarfile.UNRAR_TOOL = rarfile.ORIG_UNRAR_TOOL = unrar_tool
-    sickbeard.ALT_UNRAR_TOOL = rarfile.ALT_TOOL = alt_unrar_tool
+    settings.UNRAR_TOOL = rarfile.UNRAR_TOOL = _unrar_tool
+    settings.UNAR_TOOL = rarfile.UNAR_TOOL = _unar_tool
+    settings.BSDTAR_TOOL = rarfile.BSDTAR_TOOL = _bsdtar_tool
+    settings.LSAR_TOOL = rarfile.LSAR_TOOL = _lsar_tool
 
     try:
-        rarfile.custom_check([rarfile.UNRAR_TOOL], True)
+        rarfile.tool_setup()
         return True
-    except (rarfile.RarCannotExec, rarfile.RarExecError, OSError, IOError):
-        if sickbeard.UNPACK == sickbeard.UNPACK_PROCESS_CONTENTS:
-            logger.info(_('Disabling UNPACK setting because no unrar is found and accessible.'))
-            sickbeard.UNPACK = sickbeard.UNPACK_DISABLED
+    except rarfile.RarCannotExec:
+        if settings.UNPACK == settings.UNPACK_PROCESS_CONTENTS:
+            logger.info(_('Disabling UNPACK setting because no unrar/unar/bsdtar/lsar is found and accessible in the path or setting.'))
+            settings.UNPACK = settings.UNPACK_DISABLED
         return False
 
 
@@ -198,7 +221,7 @@ def change_sickchill_background(background):
     :return: True on success, False on failure
     """
     if not background:
-        sickbeard.SICKCHILL_BACKGROUND_PATH = ''
+        settings.SICKCHILL_BACKGROUND_PATH = ''
         return True
 
     background = os.path.normpath(background)
@@ -206,7 +229,7 @@ def change_sickchill_background(background):
         logger.info("Background image does not exist: {0}".format(background))
         return False
 
-    sickbeard.SICKCHILL_BACKGROUND_PATH = background
+    settings.SICKCHILL_BACKGROUND_PATH = background
 
     return True
 
@@ -219,7 +242,7 @@ def change_custom_css(new_css):
     :return: True on success, False on failure
     """
     if not new_css:
-        sickbeard.CUSTOM_CSS_PATH = ''
+        settings.CUSTOM_CSS_PATH = ''
         return True
 
     new_css = os.path.normpath(new_css)
@@ -230,7 +253,7 @@ def change_custom_css(new_css):
         logger.info("Custom css file should have the .css extension: {0}".format(new_css))
         return False
 
-    sickbeard.CUSTOM_CSS_PATH = new_css
+    settings.CUSTOM_CSS_PATH = new_css
     return True
 
 
@@ -242,12 +265,12 @@ def change_nzb_dir(nzb_dir):
     :return: True on success, False on failure
     """
     if nzb_dir == '':
-        sickbeard.NZB_DIR = ''
+        settings.NZB_DIR = ''
         return True
 
-    if os.path.normpath(sickbeard.NZB_DIR) != os.path.normpath(nzb_dir):
+    if os.path.normpath(settings.NZB_DIR) != os.path.normpath(nzb_dir):
         if helpers.makeDir(nzb_dir):
-            sickbeard.NZB_DIR = os.path.normpath(nzb_dir)
+            settings.NZB_DIR = os.path.normpath(nzb_dir)
             logger.info("Changed NZB folder to " + nzb_dir)
         else:
             return False
@@ -263,12 +286,12 @@ def change_torrent_dir(torrent_dir):
     :return: True on success, False on failure
     """
     if torrent_dir == '':
-        sickbeard.TORRENT_DIR = ''
+        settings.TORRENT_DIR = ''
         return True
 
-    if os.path.normpath(sickbeard.TORRENT_DIR) != os.path.normpath(torrent_dir):
+    if os.path.normpath(settings.TORRENT_DIR) != os.path.normpath(torrent_dir):
         if helpers.makeDir(torrent_dir):
-            sickbeard.TORRENT_DIR = os.path.normpath(torrent_dir)
+            settings.TORRENT_DIR = os.path.normpath(torrent_dir)
             logger.info("Changed torrent folder to " + torrent_dir)
         else:
             return False
@@ -284,12 +307,12 @@ def change_tv_download_dir(tv_download_dir):
     :return: True on success, False on failure
     """
     if tv_download_dir == '':
-        sickbeard.TV_DOWNLOAD_DIR = ''
+        settings.TV_DOWNLOAD_DIR = ''
         return True
 
-    if os.path.normpath(sickbeard.TV_DOWNLOAD_DIR) != os.path.normpath(tv_download_dir):
+    if os.path.normpath(settings.TV_DOWNLOAD_DIR) != os.path.normpath(tv_download_dir):
         if helpers.makeDir(tv_download_dir):
-            sickbeard.TV_DOWNLOAD_DIR = os.path.normpath(tv_download_dir)
+            settings.TV_DOWNLOAD_DIR = os.path.normpath(tv_download_dir)
             logger.info("Changed TV download folder to " + tv_download_dir)
         else:
             return False
@@ -305,18 +328,18 @@ def change_unpack_dir(unpack_dir):
     :return: True on success, False on failure
     """
     if unpack_dir == '':
-        sickbeard.UNPACK_DIR = ''
+        settings.UNPACK_DIR = ''
         return True
 
-    if os.path.normpath(sickbeard.UNPACK_DIR) != os.path.normpath(unpack_dir):
-        if bool(sickbeard.ROOT_DIRS) and \
-                any(helpers.is_subdirectory(unpack_dir, rd) for rd in sickbeard.ROOT_DIRS.split('|')[1:]):
+    if os.path.normpath(settings.UNPACK_DIR) != os.path.normpath(unpack_dir):
+        if bool(settings.ROOT_DIRS) and \
+                any(helpers.is_subdirectory(unpack_dir, rd) for rd in settings.ROOT_DIRS.split('|')[1:]):
             # don't change if it's in any of the TV root directories
             logger.info("Unable to change unpack directory to a sub-directory of a TV root dir")
             return False
 
         if helpers.makeDir(unpack_dir):
-            sickbeard.UNPACK_DIR = os.path.normpath(unpack_dir)
+            settings.UNPACK_DIR = os.path.normpath(unpack_dir)
             logger.info("Changed unpack directory to " + unpack_dir)
         else:
             logger.info("Unable to create unpack directory " + os.path.normpath(unpack_dir) + ", dir not changed.")
@@ -331,12 +354,12 @@ def change_postprocessor_frequency(freq):
 
     :param freq: New frequency
     """
-    sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = try_int(freq, sickbeard.DEFAULT_AUTOPOSTPROCESSOR_FREQUENCY)
+    settings.AUTOPOSTPROCESSOR_FREQUENCY = try_int(freq, settings.DEFAULT_AUTOPOSTPROCESSOR_FREQUENCY)
 
-    if sickbeard.AUTOPOSTPROCESSOR_FREQUENCY < sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY:
-        sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = sickbeard.MIN_AUTOPOSTPROCESSOR_FREQUENCY
+    if settings.AUTOPOSTPROCESSOR_FREQUENCY < settings.MIN_AUTOPOSTPROCESSOR_FREQUENCY:
+        settings.AUTOPOSTPROCESSOR_FREQUENCY = settings.MIN_AUTOPOSTPROCESSOR_FREQUENCY
 
-    sickbeard.autoPostProcessorScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.AUTOPOSTPROCESSOR_FREQUENCY)
+    settings.autoPostProcessorScheduler.cycleTime = datetime.timedelta(minutes=settings.AUTOPOSTPROCESSOR_FREQUENCY)
     return True
 
 
@@ -346,12 +369,12 @@ def change_daily_search_frequency(freq):
 
     :param freq: New frequency
     """
-    sickbeard.DAILYSEARCH_FREQUENCY = try_int(freq, sickbeard.DEFAULT_DAILYSEARCH_FREQUENCY)
+    settings.DAILYSEARCH_FREQUENCY = try_int(freq, settings.DEFAULT_DAILYSEARCH_FREQUENCY)
 
-    if sickbeard.DAILYSEARCH_FREQUENCY < sickbeard.MIN_DAILYSEARCH_FREQUENCY:
-        sickbeard.DAILYSEARCH_FREQUENCY = sickbeard.MIN_DAILYSEARCH_FREQUENCY
+    if settings.DAILYSEARCH_FREQUENCY < settings.MIN_DAILYSEARCH_FREQUENCY:
+        settings.DAILYSEARCH_FREQUENCY = settings.MIN_DAILYSEARCH_FREQUENCY
 
-    sickbeard.dailySearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.DAILYSEARCH_FREQUENCY)
+    settings.dailySearchScheduler.cycleTime = datetime.timedelta(minutes=settings.DAILYSEARCH_FREQUENCY)
     return True
 
 
@@ -361,13 +384,13 @@ def change_backlog_frequency(freq):
 
     :param freq: New frequency
     """
-    sickbeard.BACKLOG_FREQUENCY = try_int(freq, sickbeard.DEFAULT_BACKLOG_FREQUENCY)
+    settings.BACKLOG_FREQUENCY = try_int(freq, settings.DEFAULT_BACKLOG_FREQUENCY)
 
-    sickbeard.MIN_BACKLOG_FREQUENCY = sickbeard.get_backlog_cycle_time()
-    if sickbeard.BACKLOG_FREQUENCY < sickbeard.MIN_BACKLOG_FREQUENCY:
-        sickbeard.BACKLOG_FREQUENCY = sickbeard.MIN_BACKLOG_FREQUENCY
+    settings.MIN_BACKLOG_FREQUENCY = settings.get_backlog_cycle_time()
+    if settings.BACKLOG_FREQUENCY < settings.MIN_BACKLOG_FREQUENCY:
+        settings.BACKLOG_FREQUENCY = settings.MIN_BACKLOG_FREQUENCY
 
-    sickbeard.backlogSearchScheduler.cycleTime = datetime.timedelta(minutes=sickbeard.BACKLOG_FREQUENCY)
+    settings.backlogSearchScheduler.cycleTime = datetime.timedelta(minutes=settings.BACKLOG_FREQUENCY)
     return True
 
 
@@ -377,12 +400,12 @@ def change_update_frequency(freq):
 
     :param freq: New frequency
     """
-    sickbeard.UPDATE_FREQUENCY = try_int(freq, sickbeard.DEFAULT_UPDATE_FREQUENCY)
+    settings.UPDATE_FREQUENCY = try_int(freq, settings.DEFAULT_UPDATE_FREQUENCY)
 
-    if sickbeard.UPDATE_FREQUENCY < sickbeard.MIN_UPDATE_FREQUENCY:
-        sickbeard.UPDATE_FREQUENCY = sickbeard.MIN_UPDATE_FREQUENCY
+    if settings.UPDATE_FREQUENCY < settings.MIN_UPDATE_FREQUENCY:
+        settings.UPDATE_FREQUENCY = settings.MIN_UPDATE_FREQUENCY
 
-    sickbeard.versionCheckScheduler.cycleTime = datetime.timedelta(hours=sickbeard.UPDATE_FREQUENCY)
+    settings.versionCheckScheduler.cycleTime = datetime.timedelta(hours=settings.UPDATE_FREQUENCY)
     return True
 
 
@@ -392,14 +415,14 @@ def change_showupdate_hour(freq):
 
     :param freq: New frequency
     """
-    sickbeard.SHOWUPDATE_HOUR = try_int(freq, sickbeard.DEFAULT_SHOWUPDATE_HOUR)
+    settings.SHOWUPDATE_HOUR = try_int(freq, settings.DEFAULT_SHOWUPDATE_HOUR)
 
-    if sickbeard.SHOWUPDATE_HOUR > 23:
-        sickbeard.SHOWUPDATE_HOUR = 0
-    elif sickbeard.SHOWUPDATE_HOUR < 0:
-        sickbeard.SHOWUPDATE_HOUR = 0
+    if settings.SHOWUPDATE_HOUR > 23:
+        settings.SHOWUPDATE_HOUR = 0
+    elif settings.SHOWUPDATE_HOUR < 0:
+        settings.SHOWUPDATE_HOUR = 0
 
-    sickbeard.showUpdateScheduler.start_time = datetime.time(hour=sickbeard.SHOWUPDATE_HOUR)
+    settings.showUpdateScheduler.start_time = datetime.time(hour=settings.SHOWUPDATE_HOUR)
     return True
 
 def change_subtitle_finder_frequency(subtitles_finder_frequency):
@@ -411,7 +434,7 @@ def change_subtitle_finder_frequency(subtitles_finder_frequency):
     if subtitles_finder_frequency == '' or subtitles_finder_frequency is None:
         subtitles_finder_frequency = 1
 
-    sickbeard.SUBTITLES_FINDER_FREQUENCY = try_int(subtitles_finder_frequency, 1)
+    settings.SUBTITLES_FINDER_FREQUENCY = try_int(subtitles_finder_frequency, 1)
     return True
 
 
@@ -423,19 +446,19 @@ def change_version_notify(version_notify):
     """
     version_notify = checkbox_to_value(version_notify)
 
-    if sickbeard.VERSION_NOTIFY == version_notify:
+    if settings.VERSION_NOTIFY == version_notify:
         return True
 
-    sickbeard.VERSION_NOTIFY = version_notify
-    if sickbeard.VERSION_NOTIFY:
-        if not sickbeard.versionCheckScheduler.enable:
+    settings.VERSION_NOTIFY = version_notify
+    if settings.VERSION_NOTIFY:
+        if not settings.versionCheckScheduler.enable:
             logger.info("Starting VERSIONCHECK thread")
-            sickbeard.versionCheckScheduler.silent = False
-            sickbeard.versionCheckScheduler.enable = True
-            sickbeard.versionCheckScheduler.forceRun()
+            settings.versionCheckScheduler.silent = False
+            settings.versionCheckScheduler.enable = True
+            settings.versionCheckScheduler.forceRun()
     else:
-        sickbeard.versionCheckScheduler.enable = False
-        sickbeard.versionCheckScheduler.silent = True
+        settings.versionCheckScheduler.enable = False
+        settings.versionCheckScheduler.silent = True
         logger.info("Stopping VERSIONCHECK thread")
 
     return True
@@ -449,18 +472,18 @@ def change_download_propers(download_propers):
     """
     download_propers = checkbox_to_value(download_propers)
 
-    if sickbeard.DOWNLOAD_PROPERS == download_propers:
+    if settings.DOWNLOAD_PROPERS == download_propers:
         return True
 
-    sickbeard.DOWNLOAD_PROPERS = download_propers
-    if sickbeard.DOWNLOAD_PROPERS:
-        if not sickbeard.properFinderScheduler.enable:
+    settings.DOWNLOAD_PROPERS = download_propers
+    if settings.DOWNLOAD_PROPERS:
+        if not settings.properFinderScheduler.enable:
             logger.info("Starting PROPERFINDER thread")
-            sickbeard.properFinderScheduler.silent = False
-            sickbeard.properFinderScheduler.enable = True
+            settings.properFinderScheduler.silent = False
+            settings.properFinderScheduler.enable = True
     else:
-        sickbeard.properFinderScheduler.enable = False
-        sickbeard.properFinderScheduler.silent = True
+        settings.properFinderScheduler.enable = False
+        settings.properFinderScheduler.silent = True
         logger.info("Stopping PROPERFINDER thread")
 
     return True
@@ -474,18 +497,18 @@ def change_use_trakt(use_trakt):
     """
     use_trakt = checkbox_to_value(use_trakt)
 
-    if sickbeard.USE_TRAKT == use_trakt:
+    if settings.USE_TRAKT == use_trakt:
         return True
 
-    sickbeard.USE_TRAKT = use_trakt
-    if sickbeard.USE_TRAKT:
-        if not sickbeard.traktCheckerScheduler.enable:
+    settings.USE_TRAKT = use_trakt
+    if settings.USE_TRAKT:
+        if not settings.traktCheckerScheduler.enable:
             logger.info("Starting TRAKTCHECKER thread")
-            sickbeard.traktCheckerScheduler.silent = False
-            sickbeard.traktCheckerScheduler.enable = True
+            settings.traktCheckerScheduler.silent = False
+            settings.traktCheckerScheduler.enable = True
     else:
-        sickbeard.traktCheckerScheduler.enable = False
-        sickbeard.traktCheckerScheduler.silent = True
+        settings.traktCheckerScheduler.enable = False
+        settings.traktCheckerScheduler.silent = True
         logger.info("Stopping TRAKTCHECKER thread")
 
     return True
@@ -499,18 +522,18 @@ def change_use_subtitles(use_subtitles):
     """
     use_subtitles = checkbox_to_value(use_subtitles)
 
-    if sickbeard.USE_SUBTITLES == use_subtitles:
+    if settings.USE_SUBTITLES == use_subtitles:
         return True
 
-    sickbeard.USE_SUBTITLES = use_subtitles
-    if sickbeard.USE_SUBTITLES:
-        if not sickbeard.subtitlesFinderScheduler.enable:
+    settings.USE_SUBTITLES = use_subtitles
+    if settings.USE_SUBTITLES:
+        if not settings.subtitlesFinderScheduler.enable:
             logger.info("Starting SUBTITLESFINDER thread")
-            sickbeard.subtitlesFinderScheduler.silent = False
-            sickbeard.subtitlesFinderScheduler.enable = True
+            settings.subtitlesFinderScheduler.silent = False
+            settings.subtitlesFinderScheduler.enable = True
     else:
-        sickbeard.subtitlesFinderScheduler.enable = False
-        sickbeard.subtitlesFinderScheduler.silent = True
+        settings.subtitlesFinderScheduler.enable = False
+        settings.subtitlesFinderScheduler.silent = True
         logger.debug("Stopping SUBTITLESFINDER thread")
 
     return True
@@ -524,19 +547,19 @@ def change_process_automatically(process_automatically):
     """
     process_automatically = checkbox_to_value(process_automatically)
 
-    if sickbeard.PROCESS_AUTOMATICALLY == process_automatically:
+    if settings.PROCESS_AUTOMATICALLY == process_automatically:
         return True
 
-    sickbeard.PROCESS_AUTOMATICALLY = process_automatically
-    if sickbeard.PROCESS_AUTOMATICALLY:
-        if not sickbeard.autoPostProcessorScheduler.enable:
+    settings.PROCESS_AUTOMATICALLY = process_automatically
+    if settings.PROCESS_AUTOMATICALLY:
+        if not settings.autoPostProcessorScheduler.enable:
             logger.info("Starting POSTPROCESSOR thread")
-            sickbeard.autoPostProcessorScheduler.silent = False
-            sickbeard.autoPostProcessorScheduler.enable = True
+            settings.autoPostProcessorScheduler.silent = False
+            settings.autoPostProcessorScheduler.enable = True
     else:
         logger.info("Stopping POSTPROCESSOR thread")
-        sickbeard.autoPostProcessorScheduler.enable = False
-        sickbeard.autoPostProcessorScheduler.silent = True
+        settings.autoPostProcessorScheduler.enable = False
+        settings.autoPostProcessorScheduler.silent = True
 
     return True
 
@@ -804,7 +827,7 @@ def check_setting_str(config, cfg_name, item_name, def_val=str(''), silent=True,
         logger.error("{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t='string', dt=type(def_val)))
 
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
-    encryption_version = (0, sickbeard.ENCRYPTION_VERSION)['password' in item_name]
+    encryption_version = (0, settings.ENCRYPTION_VERSION)['password' in item_name]
 
     try:
         if not (check_section(config, cfg_name) and item_name in config[cfg_name]):
@@ -887,8 +910,8 @@ class ConfigMigrator(object):
         self.config_obj = config_obj
 
         # check the version of the config
-        self.config_version = check_setting_int(config_obj, 'General', 'config_version', sickbeard.CONFIG_VERSION)
-        self.expected_config_version = sickbeard.CONFIG_VERSION
+        self.config_version = check_setting_int(config_obj, 'General', 'config_version', settings.CONFIG_VERSION)
+        self.expected_config_version = settings.CONFIG_VERSION
         self.migration_names = {
             1: 'Custom naming',
             2: 'Sync backup number with version number',
@@ -915,7 +938,7 @@ class ConfigMigrator(object):
                 )
             )
 
-        sickbeard.CONFIG_VERSION = self.config_version
+        settings.CONFIG_VERSION = self.config_version
 
         while self.config_version < self.expected_config_version:
             next_version = self.config_version + 1
@@ -926,7 +949,7 @@ class ConfigMigrator(object):
                 migration_name = ''
 
             logger.info("Backing up config before upgrade")
-            if not helpers.backupVersionedFile(sickbeard.CONFIG_FILE, self.config_version):
+            if not helpers.backupVersionedFile(settings.CONFIG_FILE, self.config_version):
                 logger.log_error_and_exit("Config backup failed, abort upgrading config")
             else:
                 logger.info("Proceeding with upgrade")
@@ -937,9 +960,9 @@ class ConfigMigrator(object):
             self.config_version = next_version
 
             # save new config after migration
-            sickbeard.CONFIG_VERSION = self.config_version
+            settings.CONFIG_VERSION = self.config_version
             logger.info("Saving config file to disk")
-            sickbeard.save_config()
+            sickchill.start.save_config()
 
     # Migration v1: Custom naming
     def _migrate_v1(self):
@@ -947,18 +970,18 @@ class ConfigMigrator(object):
         Reads in the old naming settings from your config and generates a new config template from them.
         """
 
-        sickbeard.NAMING_PATTERN = self._name_to_pattern()
-        logger.info("Based on your old settings I'm setting your new naming pattern to: " + sickbeard.NAMING_PATTERN)
+        settings.NAMING_PATTERN = self._name_to_pattern()
+        logger.info("Based on your old settings I'm setting your new naming pattern to: " + settings.NAMING_PATTERN)
 
-        sickbeard.NAMING_CUSTOM_ABD = check_setting_bool(self.config_obj, 'General', 'naming_dates')
+        settings.NAMING_CUSTOM_ABD = check_setting_bool(self.config_obj, 'General', 'naming_dates')
 
-        if sickbeard.NAMING_CUSTOM_ABD:
-            sickbeard.NAMING_ABD_PATTERN = self._name_to_pattern(True)
-            logger.info("Adding a custom air-by-date naming pattern to your config: " + sickbeard.NAMING_ABD_PATTERN)
+        if settings.NAMING_CUSTOM_ABD:
+            settings.NAMING_ABD_PATTERN = self._name_to_pattern(True)
+            logger.info("Adding a custom air-by-date naming pattern to your config: " + settings.NAMING_ABD_PATTERN)
         else:
-            sickbeard.NAMING_ABD_PATTERN = naming.name_abd_presets[0]
+            settings.NAMING_ABD_PATTERN = naming.name_abd_presets[0]
 
-        sickbeard.NAMING_MULTI_EP = int(check_setting_int(self.config_obj, 'General', 'naming_multi_ep_type', 1))
+        settings.NAMING_MULTI_EP = int(check_setting_int(self.config_obj, 'General', 'naming_multi_ep_type', 1))
 
         # see if any of their shows used season folders
         main_db_con = db.DBConnection()
@@ -977,7 +1000,7 @@ class ConfigMigrator(object):
 
                     logger.info(
                         "Changed season folder format from " + old_season_format + " to " + new_season_format + ", prepending it to your naming config")
-                    sickbeard.NAMING_PATTERN = new_season_format + os.sep + sickbeard.NAMING_PATTERN
+                    settings.NAMING_PATTERN = new_season_format + os.sep + settings.NAMING_PATTERN
 
                 except (TypeError, ValueError):
                     logger.exception("Can't change " + old_season_format + " to new season format")
@@ -990,7 +1013,7 @@ class ConfigMigrator(object):
             # don't flatten any shows at all
             main_db_con.action("UPDATE tv_shows SET flatten_folders = 0")
 
-        sickbeard.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
+        settings.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
 
     def _name_to_pattern(self, abd=False):
 
@@ -1061,8 +1084,8 @@ class ConfigMigrator(object):
         Reads in the old naming settings from your config and generates a new config template from them.
         """
         # get the old settings from the file and store them in the new variable names
-        sickbeard.OMGWTFNZBS_USERNAME = check_setting_str(self.config_obj, 'omgwtfnzbs', 'omgwtfnzbs_uid')
-        sickbeard.OMGWTFNZBS_APIKEY = check_setting_str(self.config_obj, 'omgwtfnzbs', 'omgwtfnzbs_key')
+        settings.OMGWTFNZBS_USERNAME = check_setting_str(self.config_obj, 'omgwtfnzbs', 'omgwtfnzbs_uid')
+        settings.OMGWTFNZBS_APIKEY = check_setting_str(self.config_obj, 'omgwtfnzbs', 'omgwtfnzbs_key')
 
     # Migration v4: Add default newznab catIDs
     def _migrate_v4(self):
@@ -1092,7 +1115,7 @@ class ConfigMigrator(object):
                 cur_provider_data_list = [name, url, key, catIDs, enabled]
                 new_newznab_data.append("|".join(cur_provider_data_list))
 
-            sickbeard.NEWZNAB_DATA = "!!!".join(new_newznab_data)
+            settings.NEWZNAB_DATA = "!!!".join(new_newznab_data)
 
     # Migration v5: Metadata upgrade
     def _migrate_v5(self):
@@ -1163,44 +1186,44 @@ class ConfigMigrator(object):
 
         sickbeard.METADATA_XBMC = _migrate_metadata(metadata_xbmc, 'XBMC', use_banner)
         sickbeard.METADATA_XBMC_12PLUS = _migrate_metadata(metadata_xbmc_12plus, 'XBMC 12+', use_banner)
-        sickbeard.METADATA_MEDIABROWSER = _migrate_metadata(metadata_mediabrowser, 'MediaBrowser', use_banner)
-        sickbeard.METADATA_PS3 = _migrate_metadata(metadata_ps3, 'PS3', use_banner)
-        sickbeard.METADATA_WDTV = _migrate_metadata(metadata_wdtv, 'WDTV', use_banner)
-        sickbeard.METADATA_TIVO = _migrate_metadata(metadata_tivo, 'TIVO', use_banner)
-        sickbeard.METADATA_MEDE8ER = _migrate_metadata(metadata_mede8er, 'Mede8er', use_banner)
+        settings.METADATA_MEDIABROWSER = _migrate_metadata(metadata_mediabrowser, 'MediaBrowser', use_banner)
+        settings.METADATA_PS3 = _migrate_metadata(metadata_ps3, 'PS3', use_banner)
+        settings.METADATA_WDTV = _migrate_metadata(metadata_wdtv, 'WDTV', use_banner)
+        settings.METADATA_TIVO = _migrate_metadata(metadata_tivo, 'TIVO', use_banner)
+        settings.METADATA_MEDE8ER = _migrate_metadata(metadata_mede8er, 'Mede8er', use_banner)
 
     # Migration v6: Convert from XBMC to KODI variables
     def _migrate_v6(self):
-        sickbeard.USE_KODI = check_setting_bool(self.config_obj, 'XBMC', 'use_xbmc')
-        sickbeard.KODI_ALWAYS_ON = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_always_on', True)
-        sickbeard.KODI_NOTIFY_ONSNATCH = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_notify_onsnatch')
-        sickbeard.KODI_NOTIFY_ONDOWNLOAD = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_notify_ondownload')
-        sickbeard.KODI_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_notify_onsubtitledownload')
-        sickbeard.KODI_UPDATE_LIBRARY = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_update_library')
-        sickbeard.KODI_UPDATE_FULL = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_update_full')
-        sickbeard.KODI_UPDATE_ONLYFIRST = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_update_onlyfirst')
-        sickbeard.KODI_HOST = check_setting_str(self.config_obj, 'XBMC', 'xbmc_host')
-        sickbeard.KODI_USERNAME = check_setting_str(self.config_obj, 'XBMC', 'xbmc_username', censor_log=True)
-        sickbeard.KODI_PASSWORD = check_setting_str(self.config_obj, 'XBMC', 'xbmc_password', censor_log=True)
-        sickbeard.METADATA_KODI = check_setting_str(self.config_obj, 'General', 'metadata_xbmc', '0|0|0|0|0|0|0|0|0|0')
-        sickbeard.METADATA_KODI_12PLUS = check_setting_str(self.config_obj, 'General', 'metadata_xbmc_12plus', '0|0|0|0|0|0|0|0|0|0')
+        settings.USE_KODI = check_setting_bool(self.config_obj, 'XBMC', 'use_xbmc')
+        settings.KODI_ALWAYS_ON = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_always_on', True)
+        settings.KODI_NOTIFY_ONSNATCH = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_notify_onsnatch')
+        settings.KODI_NOTIFY_ONDOWNLOAD = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_notify_ondownload')
+        settings.KODI_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_notify_onsubtitledownload')
+        settings.KODI_UPDATE_LIBRARY = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_update_library')
+        settings.KODI_UPDATE_FULL = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_update_full')
+        settings.KODI_UPDATE_ONLYFIRST = check_setting_bool(self.config_obj, 'XBMC', 'xbmc_update_onlyfirst')
+        settings.KODI_HOST = check_setting_str(self.config_obj, 'XBMC', 'xbmc_host')
+        settings.KODI_USERNAME = check_setting_str(self.config_obj, 'XBMC', 'xbmc_username', censor_log=True)
+        settings.KODI_PASSWORD = check_setting_str(self.config_obj, 'XBMC', 'xbmc_password', censor_log=True)
+        settings.METADATA_KODI = check_setting_str(self.config_obj, 'General', 'metadata_xbmc', '0|0|0|0|0|0|0|0|0|0')
+        settings.METADATA_KODI_12PLUS = check_setting_str(self.config_obj, 'General', 'metadata_xbmc_12plus', '0|0|0|0|0|0|0|0|0|0')
 
     # Migration v7: Use version 2 for password encryption
     @staticmethod
     def _migrate_v7():
-        sickbeard.ENCRYPTION_VERSION = 2
+        settings.ENCRYPTION_VERSION = 2
 
     # Migration v8: Rename plex settings
     def _migrate_v8(self):
-        sickbeard.PLEX_CLIENT_HOST = check_setting_str(self.config_obj, 'Plex', 'plex_host')
-        sickbeard.PLEX_SERVER_USERNAME = check_setting_str(self.config_obj, 'Plex', 'plex_username', censor_log=True)
-        sickbeard.PLEX_SERVER_PASSWORD = check_setting_str(self.config_obj, 'Plex', 'plex_password', censor_log=True)
-        sickbeard.USE_PLEX_SERVER = check_setting_bool(self.config_obj, 'Plex', 'use_plex')
+        settings.PLEX_CLIENT_HOST = check_setting_str(self.config_obj, 'Plex', 'plex_host')
+        settings.PLEX_SERVER_USERNAME = check_setting_str(self.config_obj, 'Plex', 'plex_username', censor_log=True)
+        settings.PLEX_SERVER_PASSWORD = check_setting_str(self.config_obj, 'Plex', 'plex_password', censor_log=True)
+        settings.USE_PLEX_SERVER = check_setting_bool(self.config_obj, 'Plex', 'use_plex')
 
     # Migration v9: Rename autopostprocesser (typo) to autopostprocessor
     def _migrate_v9(self):
-        sickbeard.AUTOPOSTPROCESSOR_FREQUENCY = check_setting_str(self.config_obj, 'General', 'autopostprocesser_frequency')
+        settings.AUTOPOSTPROCESSOR_FREQUENCY = check_setting_str(self.config_obj, 'General', 'autopostprocesser_frequency')
 
     # Migration v10: Change flatten_folders_default to season_folders_default (inverted)
     def _migrate_v10(self):
-        sickbeard.SEASON_FOLDERS_DEFAULT = not check_setting_str(self.config_obj, 'General', 'flatten_folders_default')
+        settings.SEASON_FOLDERS_DEFAULT = not check_setting_str(self.config_obj, 'General', 'flatten_folders_default')

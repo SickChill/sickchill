@@ -31,6 +31,7 @@ import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
+from sickchill import settings
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.nzb.NZBProvider import NZBProvider
 
@@ -116,7 +117,7 @@ class NewznabProvider(NZBProvider):
                 providers_dict[default.name].catIDs = ','.join([x for x in providers_dict[default.name].catIDs.split(',')
                                                                 if 5000 <= try_int(x) <= 5999]) or default.catIDs
 
-                if sickbeard.QUALITY_ALLOW_HEVC and '5090' not in providers_dict[default.name].catIDs:
+                if settings.QUALITY_ALLOW_HEVC and '5090' not in providers_dict[default.name].catIDs:
                     providers_dict[default.name].catIDs += ',5090'
 
         return [x for x in providers_list if x]
@@ -126,7 +127,7 @@ class NewznabProvider(NZBProvider):
         Checks if we have an image for this provider already.
         Returns found image or the default newznab image
         """
-        if os.path.isfile(os.path.join(sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers',
+        if os.path.isfile(os.path.join(settings.PROG_DIR, 'gui', settings.GUI_NAME, 'images', 'providers',
                  self.get_id() + '.png')):
             return self.get_id() + '.png'
         return 'newznab.png'
@@ -291,7 +292,7 @@ class NewznabProvider(NZBProvider):
                 'limit': 100,
                 'offset': 0,
                 'cat': self.catIDs.strip(', ') or '5030,5040',
-                'maxage': sickbeard.USENET_RETENTION
+                'maxage': settings.USENET_RETENTION
             }
 
             if self.needs_auth and self.key:
@@ -328,7 +329,7 @@ class NewznabProvider(NZBProvider):
                     if 'tvdbid' not in search_params:
                         search_params['q'] = search_string
 
-                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+                time.sleep(cpu_presets[settings.CPU_PRESET])
                 data = self.get_url(urljoin(self.url, 'api'), params=search_params, returns='text')
                 if not data:
                     break

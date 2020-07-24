@@ -25,6 +25,7 @@ from requests.compat import urljoin
 
 # First Party Imports
 import sickbeard
+from sickchill import settings
 
 # Local Folder Imports
 from . import helpers, logger
@@ -39,32 +40,32 @@ def sendNZB(nzb):  # pylint:disable=too-many-return-statements, too-many-branche
     :param nzb: The NZBSearchResult object to send to SAB
     '''
 
-    category = sickbeard.SAB_CATEGORY
+    category = settings.SAB_CATEGORY
     if nzb.show.is_anime:
-        category = sickbeard.SAB_CATEGORY_ANIME
+        category = settings.SAB_CATEGORY_ANIME
 
     # if it aired more than 7 days ago, override with the backlog category IDs
     for curEp in nzb.episodes:
         if datetime.date.today() - curEp.airdate > datetime.timedelta(days=7):
-            category = sickbeard.SAB_CATEGORY_ANIME_BACKLOG if nzb.show.is_anime else sickbeard.SAB_CATEGORY_BACKLOG
+            category = settings.SAB_CATEGORY_ANIME_BACKLOG if nzb.show.is_anime else settings.SAB_CATEGORY_BACKLOG
 
     # set up a dict with the URL params in it
     params = {'output': 'json'}
-    if sickbeard.SAB_USERNAME:
-        params['ma_username'] = sickbeard.SAB_USERNAME
-    if sickbeard.SAB_PASSWORD:
-        params['ma_password'] = sickbeard.SAB_PASSWORD
-    if sickbeard.SAB_APIKEY:
-        params['apikey'] = sickbeard.SAB_APIKEY
+    if settings.SAB_USERNAME:
+        params['ma_username'] = settings.SAB_USERNAME
+    if settings.SAB_PASSWORD:
+        params['ma_password'] = settings.SAB_PASSWORD
+    if settings.SAB_APIKEY:
+        params['apikey'] = settings.SAB_APIKEY
 
     if category:
         params['cat'] = category
 
     if nzb.priority:
-        params['priority'] = 2 if sickbeard.SAB_FORCED else 1
+        params['priority'] = 2 if settings.SAB_FORCED else 1
 
     logger.info('Sending NZB to SABnzbd')
-    url = urljoin(sickbeard.SAB_HOST, 'api')
+    url = urljoin(settings.SAB_HOST, 'api')
 
     if nzb.resultType == 'nzb':
         params['mode'] = 'addurl'

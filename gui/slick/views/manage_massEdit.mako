@@ -1,6 +1,5 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
-    import sickbeard
     from sickbeard import common
 %>
 
@@ -45,7 +44,7 @@
                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                         <div class="row">
                             <div class="col-md-12">
-                                <table class="sickbeardTable" cellspacing="1" cellpadding="0" border="0">
+                                <table class="sickchillTable" cellspacing="1" cellpadding="0" border="0">
                                     <thead>
                                         <tr>
                                             <th class="nowrap tablesorter-header">${_('Current')}</th>

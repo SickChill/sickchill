@@ -21,7 +21,9 @@ import markdown2
 
 # First Party Imports
 import sickbeard
+import sickchill.start
 from sickbeard import logger
+from sickchill import settings
 
 # Local Folder Imports
 from .common import PageTemplate
@@ -37,14 +39,14 @@ class HomeNews(Home):
     def index(self):
         # noinspection PyBroadException
         try:
-            news = sickbeard.versionCheckScheduler.action.check_for_new_news()
+            news = settings.versionCheckScheduler.action.check_for_new_news()
         except Exception:
             logger.debug('Could not load news from repo, giving a link!')
-            news = _('Could not load news from the repo. [Click here for news.md])({news_url})').format(news_url=sickbeard.NEWS_URL)
+            news = _('Could not load news from the repo. [Click here for news.md])({news_url})').format(news_url=settings.NEWS_URL)
 
-        sickbeard.NEWS_LAST_READ = sickbeard.NEWS_LATEST
-        sickbeard.NEWS_UNREAD = 0
-        sickbeard.save_config()
+        settings.NEWS_LAST_READ = settings.NEWS_LATEST
+        settings.NEWS_UNREAD = 0
+        sickchill.start.save_config()
 
         t = PageTemplate(rh=self, filename="markdown.mako")
         data = markdown2.markdown(news if news else _("The was a problem connecting to github, please refresh and try again"), extras=['header-ids'])

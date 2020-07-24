@@ -31,6 +31,7 @@ import fake_useragent
 # First Party Imports
 import sickbeard
 from setup import setup_gettext
+from sickchill import settings
 from sickchill.helper import video_screen_size
 from sickchill.recompiled import tags
 from sickchill.tagger.episode import EpisodeTags
@@ -327,7 +328,7 @@ class Quality(object):
             # SD TV
             elif sd_options:
                 result = Quality.SDTV
-        elif ep.hevc and not sickbeard.QUALITY_ALLOW_HEVC:
+        elif ep.hevc and not settings.QUALITY_ALLOW_HEVC:
             result = Quality.NONE
         elif ep.mpeg:
             result = Quality.RAWHDTV

@@ -1,6 +1,5 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    import sickbeard
     import os.path
     import datetime
 
@@ -11,6 +10,7 @@
 
     from sickchill.show.History import History
     from sickchill.providers.GenericProvider import GenericProvider
+    from sickchill import settings
 %>
 <%block name="content">
     <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
@@ -35,8 +35,8 @@
                 <label>
                     <span> ${_('Layout')}:</span>
                     <select id="layout" class="form-control form-control-inline input-sm">
-                        <option value="${srRoot}/setHistoryLayout/?layout=compact"  ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'compact']}>${_('Compact')}</option>
-                        <option value="${srRoot}/setHistoryLayout/?layout=detailed" ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'detailed']}>${_('Detailed')}</option>
+                        <option value="${srRoot}/setHistoryLayout/?layout=compact"  ${('', 'selected="selected"')[settings.HISTORY_LAYOUT == 'compact']}>${_('Compact')}</option>
+                        <option value="${srRoot}/setHistoryLayout/?layout=detailed" ${('', 'selected="selected"')[settings.HISTORY_LAYOUT == 'detailed']}>${_('Detailed')}</option>
                     </select>
                 </label>
             </div>
@@ -52,8 +52,8 @@
     <div class="row">
         <div class="col-md-12">
             <div class="horizontal-scroll">
-                <table id="historyTable" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
-                    % if sickbeard.HISTORY_LAYOUT == "detailed":
+                <table id="historyTable" class="sickchillTable tablesorter" cellspacing="1" border="0" cellpadding="0">
+                    % if settings.HISTORY_LAYOUT == "detailed":
                         <thead>
                             <tr>
                                 <th class="nowrap">${_('Time')}</th>
@@ -128,7 +128,7 @@
                                 <th>${_('Episode')}</th>
                                 <th>${_('Snatched')}</th>
                                 <th>${_('Downloaded')}</th>
-                                % if sickbeard.USE_SUBTITLES:
+                                % if settings.USE_SUBTITLES:
                                     <th>${_('Subtitled')}</th>
                                 % endif
                                 <th>${_('Quality')}</th>
@@ -175,7 +175,7 @@
                                             % endif
                                         % endfor
                                     </td>
-                                    % if sickbeard.USE_SUBTITLES:
+                                    % if settings.USE_SUBTITLES:
                                         <td align="center">
                                             % for action in sorted(hItem["actions"]):
                                                 <% curStatus, curQuality = Quality.splitCompositeStatus(int(action["action"])) %>
@@ -202,7 +202,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th class="nowrap" colspan="${("6", "7")[sickbeard.USE_SUBTITLES]}">&nbsp;</th>
+                                <th class="nowrap" colspan="${("6", "7")[settings.USE_SUBTITLES]}">&nbsp;</th>
                             </tr>
                         </tfoot>
                     % endif

@@ -18,7 +18,9 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # First Party Imports
 import sickbeard
+import sickchill.start
 from sickbeard import ui
+from sickchill import settings
 from sickchill.helper import try_int
 from sickchill.show.History import History as HistoryTool
 
@@ -36,8 +38,8 @@ class History(WebRoot):
         self.history = HistoryTool()
 
     def index(self, limit=None):
-        sickbeard.HISTORY_LIMIT = limit = try_int(limit or sickbeard.HISTORY_LIMIT or 100, 100)
-        sickbeard.save_config()
+        settings.HISTORY_LIMIT = limit = try_int(limit or settings.HISTORY_LIMIT or 100, 100)
+        sickchill.start.save_config()
 
         compact = []
         data = self.history.get(limit)

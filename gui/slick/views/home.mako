@@ -1,6 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    import sickbeard
+    from sickchill import settings
 %>
 <%block name="metas">
     <meta data-var="max_download_count" data-content="${max_download_count}"/>
@@ -10,8 +10,8 @@
 
     <%include file="/inc_home_menu.mako"/>
 
-     % if sickbeard.ANIME_SPLIT_HOME:
-         % if sickbeard.ANIME_SPLIT_HOME_IN_TABS:
+     % if settings.ANIME_SPLIT_HOME:
+         % if settings.ANIME_SPLIT_HOME_IN_TABS:
              <!-- Split in tabs -->
              <div id="showTabs">
                  <!-- Nav tabs -->
@@ -31,10 +31,10 @@
                              <div id=${("showsTabContent", "animeTabContent")[curListType == "Anime"]}>
                                  <div class="row home-container">
                                      <div class="col-md-12">
-                                         % if not sickbeard.ANIME_SPLIT_HOME_IN_TABS:
+                                         % if not settings.ANIME_SPLIT_HOME_IN_TABS:
                                             <h1 class="header">${(_('Shows'), _('Anime'))[curListType == "Anime"]}</h1>
                                          % endif
-                                         % if sickbeard.HOME_LAYOUT == 'poster':
+                                         % if settings.HOME_LAYOUT == 'poster':
                                              <div class="loading-spinner"></div>
                                          % endif
                                          <div class="row">
@@ -47,7 +47,7 @@
                              </div>
                          % endif
                      % endfor
-         % if sickbeard.ANIME_SPLIT_HOME_IN_TABS:
+         % if settings.ANIME_SPLIT_HOME_IN_TABS:
                  </div>
              </div>
          % endif
@@ -55,7 +55,7 @@
         <!-- no split -->
         <div class="row home-container">
             <div class="col-md-12">
-                % if sickbeard.HOME_LAYOUT == 'poster':
+                % if settings.HOME_LAYOUT == 'poster':
                     <div class="loading-spinner"></div>
                 % endif
                 % for curShowlist in sortedShowLists:

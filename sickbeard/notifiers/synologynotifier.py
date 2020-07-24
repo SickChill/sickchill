@@ -22,29 +22,30 @@ import subprocess
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
+from sickchill import settings
 
 
 class Notifier(object):
     def notify_snatch(self, ep_name):
-        if sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH:
+        if settings.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH:
             self._send_synologyNotifier(ep_name, common.notifyStrings[common.NOTIFY_SNATCH])
 
     def notify_download(self, ep_name):
-        if sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD:
+        if settings.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD:
             self._send_synologyNotifier(ep_name, common.notifyStrings[common.NOTIFY_DOWNLOAD])
 
     def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD:
+        if settings.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._send_synologyNotifier(ep_name + ": " + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
 
     def notify_git_update(self, new_version="??"):
-        if sickbeard.USE_SYNOLOGYNOTIFIER:
+        if settings.USE_SYNOLOGYNOTIFIER:
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._send_synologyNotifier(update_text + new_version, title)
 
     def notify_login(self, ipaddress=""):
-        if sickbeard.USE_SYNOLOGYNOTIFIER:
+        if settings.USE_SYNOLOGYNOTIFIER:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._send_synologyNotifier(update_text.format(ipaddress), title)
@@ -55,7 +56,7 @@ class Notifier(object):
         logger.debug("Absolute path to command: " + os.path.abspath(synodsmnotify_cmd[0]))
         try:
             p = subprocess.Popen(synodsmnotify_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                 cwd=sickbeard.PROG_DIR)
+                                 cwd=settings.PROG_DIR)
             out, err = p.communicate()  # @UnusedVariable
             logger.debug("Script result: " + str(out))
         except OSError as e:

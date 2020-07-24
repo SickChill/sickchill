@@ -19,6 +19,7 @@
 # First Party Imports
 import sickbeard
 from sickbeard.event_queue import Events
+from sickchill import settings
 
 
 class Shutdown(object):
@@ -27,9 +28,9 @@ class Shutdown(object):
 
     @staticmethod
     def stop(pid):
-        if str(pid) != str(sickbeard.PID):
+        if str(pid) != str(settings.PID):
             return False
 
-        sickbeard.events.put(Events.SystemEvent.SHUTDOWN)
+        settings.events.put(Events.SystemEvent.SHUTDOWN)
 
         return True

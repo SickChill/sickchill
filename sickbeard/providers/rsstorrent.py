@@ -28,6 +28,7 @@ from requests.utils import add_dict_to_cookiejar
 # First Party Imports
 import sickbeard
 from sickbeard import helpers, logger, tvcache
+from sickchill import settings
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -81,7 +82,7 @@ class TorrentRssProvider(TorrentProvider):
         return [x for x in providers_set if x]
 
     def image_name(self):
-        if os.path.isfile(os.path.join(sickbeard.PROG_DIR, 'gui', sickbeard.GUI_NAME, 'images', 'providers', self.get_id() + '.png')):
+        if os.path.isfile(os.path.join(settings.PROG_DIR, 'gui', settings.GUI_NAME, 'images', 'providers', self.get_id() + '.png')):
             return self.get_id() + '.png'
         return 'torrentrss.png'
 
@@ -182,7 +183,7 @@ class TorrentRssProvider(TorrentProvider):
 
     @staticmethod
     def dumpHTML(data):
-        dumpName = os.path.join(sickbeard.CACHE_DIR, 'custom_torrent.html')
+        dumpName = os.path.join(settings.CACHE_DIR, 'custom_torrent.html')
 
         try:
             fileOut = open(dumpName, 'wb')

@@ -5,7 +5,7 @@
 %>
 <%block name="content">
     <div class="row">
-        % if not (is_ip_local(remote_ip) or (sickbeard.WEB_PASSWORD and sickbeard.WEB_USERNAME)):
+        % if not (is_ip_local(remote_ip) or (settings.WEB_PASSWORD and settings.WEB_USERNAME)):
             <% sickbeard.logger.warning('Remote access was attempted by {}'.format(remote_ip)) %>
             <div class="nicetry col-md-10">
                 <div class="row">

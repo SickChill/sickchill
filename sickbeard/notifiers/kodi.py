@@ -27,6 +27,7 @@ from requests.compat import unquote_plus
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
+from sickchill import settings
 from sickchill.helper import try_int
 
 
@@ -36,13 +37,13 @@ class Notifier(object):
 
     def setup(self, hosts=None, username=None, password=None):
         self._connections = []
-        for host in (x.strip() for x in (hosts or sickbeard.KODI_HOST or '').split(",") if x.strip()):
+        for host in (x.strip() for x in (hosts or settings.KODI_HOST or '').split(",") if x.strip()):
             try:
                 if ':' in host:
                     bare_host, port = host.split(':')
-                    kodi = Kodi(bare_host, username or sickbeard.KODI_USERNAME, password or sickbeard.KODI_PASSWORD, port=try_int(port, 8080))
+                    kodi = Kodi(bare_host, username or settings.KODI_USERNAME, password or settings.KODI_PASSWORD, port=try_int(port, 8080))
                 else:
-                    kodi = Kodi(host, username or sickbeard.KODI_USERNAME, password or sickbeard.KODI_PASSWORD)
+                    kodi = Kodi(host, username or settings.KODI_USERNAME, password or settings.KODI_PASSWORD)
                 kodi.host = kodi.variables()['hostname']['value']
                 kodi.name = kodi.Settings.GetSettingValue(setting="services.devicename")['result']['value']
                 if kodi not in self._connections:
@@ -93,15 +94,15 @@ class Notifier(object):
         results = dict()
         for connection in self.connections:
             logger.debug("Sending {0} notification to '{1}' - {2}".format(dest_app, connection.host, message))
-            response = connection.GUI.ShowNotification(title=title, message=message, image=sickbeard.LOGO_URL)
+            response = connection.GUI.ShowNotification(title=title, message=message, image=settings.LOGO_URL)
             if response and response.get('result'):
                 results[connection.host] = self.success(response)
             else:
-                if sickbeard.KODI_ALWAYS_ON or force:
+                if settings.KODI_ALWAYS_ON or force:
                     logger.warning("Failed to send notification to {0} for '{1}', check configuration and try again.".format(dest_app, connection.host))
                 results[connection.host] = False
 
-        for host in [x.strip() for x in (hosts or sickbeard.KODI_HOST or '').split(",") if x.strip()]:
+        for host in [x.strip() for x in (hosts or settings.KODI_HOST or '').split(",") if x.strip()]:
             base_host = host.split(':')[0]
             if base_host not in results and host not in results:
                 results[host] = False
@@ -109,10 +110,10 @@ class Notifier(object):
         return results
 
     def update_library(self, show_name=None):
-        if not (sickbeard.USE_KODI and sickbeard.KODI_UPDATE_LIBRARY):
+        if not (settings.USE_KODI and settings.KODI_UPDATE_LIBRARY):
             return False
 
-        if not sickbeard.KODI_HOST:
+        if not settings.KODI_HOST:
             logger.debug("No KODI hosts specified, check your settings")
             return False
 
@@ -162,14 +163,14 @@ class Notifier(object):
                         if not self.success(response):
                             logger.warning("Update of show directory failed on " + show_name + " on " + connection.host + " at " + path)
                         else:
-                            if sickbeard.KODI_UPDATE_ONLYFIRST:
+                            if settings.KODI_UPDATE_ONLYFIRST:
                                 logger.debug("Successfully updated '" + connection.host + "', stopped sending update library commands.")
                                 return True
 
                             result += 1
                             continue
 
-                if show_name and not sickbeard.KODI_UPDATE_FULL:
+                if show_name and not settings.KODI_UPDATE_FULL:
                     continue
 
                 logger.debug("Doing Full Library KODI update on host: " + connection.host)
@@ -177,7 +178,7 @@ class Notifier(object):
                 if not response:
                     logger.warning("KODI Full Library update failed on: " + connection.host)
                 elif self.success(response):
-                    if sickbeard.KODI_UPDATE_ONLYFIRST:
+                    if settings.KODI_UPDATE_ONLYFIRST:
                         logger.debug("Successfully updated '" + connection.host + "', stopped sending update library commands.")
                         return True
 
@@ -245,25 +246,25 @@ class Notifier(object):
                 logger.info('Could not find the episode on Kodi to play')
 
     def notify_snatch(self, ep_name):
-        if sickbeard.KODI_NOTIFY_ONSNATCH:
+        if settings.KODI_NOTIFY_ONSNATCH:
             self._notify_kodi(ep_name, common.notifyStrings[common.NOTIFY_SNATCH])
 
     def notify_download(self, ep_name):
-        if sickbeard.KODI_NOTIFY_ONDOWNLOAD:
+        if settings.KODI_NOTIFY_ONDOWNLOAD:
             self._notify_kodi(ep_name, common.notifyStrings[common.NOTIFY_DOWNLOAD])
 
     def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.KODI_NOTIFY_ONSUBTITLEDOWNLOAD:
+        if settings.KODI_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notify_kodi(ep_name + ": " + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
 
     def notify_git_update(self, new_version="??"):
-        if sickbeard.USE_KODI:
+        if settings.USE_KODI:
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notify_kodi(update_text + new_version, title)
 
     def notify_login(self, ipaddress=""):
-        if sickbeard.USE_KODI:
+        if settings.USE_KODI:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._notify_kodi(update_text.format(ipaddress), title)
