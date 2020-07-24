@@ -4,7 +4,6 @@
 import unittest
 
 # First Party Imports
-import sickbeard
 from sickbeard.show_name_helpers import filter_bad_releases
 from sickbeard.tv import TVShow as Show
 from sickchill import settings

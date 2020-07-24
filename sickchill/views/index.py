@@ -25,10 +25,10 @@ import traceback
 from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
 from operator import attrgetter
+from urllib.parse import urljoin
 
 # Third Party Imports
 from mako.lookup import Template
-from requests.compat import urljoin
 from tornado.concurrent import run_on_executor
 from tornado.escape import utf8, xhtml_escape
 from tornado.gen import coroutine
@@ -36,7 +36,6 @@ from tornado.process import cpu_count
 from tornado.web import authenticated, HTTPError, RequestHandler
 
 # First Party Imports
-import sickbeard
 import sickchill.start
 from sickbeard import db, helpers, logger, network_timezones, ui
 from sickchill import settings

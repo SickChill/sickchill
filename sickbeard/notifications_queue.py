@@ -26,7 +26,6 @@ import requests
 from requests.exceptions import HTTPError
 
 # First Party Imports
-import sickbeard
 from sickchill import settings
 
 # Local Folder Imports

@@ -19,9 +19,9 @@
 # Stdlib Imports
 import re
 import traceback
+from urllib.parse import urljoin
 
 # Third Party Imports
-from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
 # First Party Imports

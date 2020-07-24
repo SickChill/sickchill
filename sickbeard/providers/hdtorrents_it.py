@@ -19,9 +19,9 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import re
+from urllib.parse import quote_plus
 
 # Third Party Imports
-from requests.compat import quote_plus
 from requests.utils import dict_from_cookiejar
 
 # First Party Imports

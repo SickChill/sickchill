@@ -20,13 +20,12 @@
 # Stdlib Imports
 import time
 import traceback
+from urllib.parse import urljoin
 
 # Third Party Imports
-from requests.compat import urljoin
 from requests.utils import add_dict_to_cookiejar
 
 # First Party Imports
-import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets

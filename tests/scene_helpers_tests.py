@@ -9,7 +9,6 @@ import sys
 import unittest
 
 # First Party Imports
-import sickbeard
 from sickbeard import common, db, name_cache, scene_exceptions, show_name_helpers
 from sickbeard.tv import TVShow as Show
 from sickchill import settings

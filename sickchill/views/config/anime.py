@@ -23,7 +23,6 @@ import os
 from tornado.web import addslash
 
 # First Party Imports
-import sickbeard
 import sickchill.start
 from sickbeard import config, filters, ui
 from sickchill import settings

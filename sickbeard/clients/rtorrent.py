@@ -21,7 +21,6 @@
 from rtorrent import RTorrent
 
 # First Party Imports
-import sickbeard
 import sickchill.start
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
@@ -82,7 +81,7 @@ class Client(GenericClient):
 
             if not settings.TORRENT_PAUSED:
                 # Start torrent
-                sickchill.start.start()
+                torrent.start()
 
             return True
 
@@ -126,7 +125,7 @@ class Client(GenericClient):
 
             if not settings.TORRENT_PAUSED:
                 # Start torrent
-                sickchill.start.start()
+                torrent.start()
 
             return True
 

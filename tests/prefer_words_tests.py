@@ -4,7 +4,6 @@
 import unittest
 
 # First Party Imports
-import sickbeard
 from sickbeard.show_name_helpers import hasPreferredWords
 from sickchill import settings
 

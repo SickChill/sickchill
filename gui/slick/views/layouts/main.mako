@@ -1,7 +1,7 @@
 <%!
     import re
     import datetime
-    from requests.compat import urljoin
+    from urllib.parse import urljoin
     from sickbeard import logger
     from sickbeard.filters import hide
     from sickchill.helper.common import pretty_file_size

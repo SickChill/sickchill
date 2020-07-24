@@ -21,7 +21,6 @@ from datetime import date, timedelta
 from operator import itemgetter
 
 # First Party Imports
-import sickbeard
 from sickbeard.common import Quality, UNAIRED, WANTED
 from sickbeard.db import DBConnection
 from sickbeard.network_timezones import parse_date_time

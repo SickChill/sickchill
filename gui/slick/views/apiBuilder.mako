@@ -1,6 +1,6 @@
 <%!
     import json
-    from requests.compat import urljoin
+    from urllib.parse import urljoin
 
     from sickchill import settings
 %>

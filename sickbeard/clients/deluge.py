@@ -19,12 +19,9 @@
 # Stdlib Imports
 import json
 from base64 import b64encode
-
-# Third Party Imports
-from requests.compat import urljoin
+from urllib.parse import urljoin
 
 # First Party Imports
-import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
 from sickchill import settings

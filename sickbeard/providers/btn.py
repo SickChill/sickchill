@@ -27,7 +27,6 @@ from datetime import datetime
 import jsonrpclib
 
 # First Party Imports
-import sickbeard
 from sickbeard import classes, logger, scene_exceptions, tvcache
 from sickbeard.common import cpu_presets
 from sickbeard.helpers import sanitizeSceneName

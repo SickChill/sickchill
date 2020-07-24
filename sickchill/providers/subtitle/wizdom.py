@@ -19,7 +19,6 @@ from subliminal.utils import sanitize
 from subliminal.video import Episode, Movie
 
 # First Party Imports
-import sickbeard
 from sickchill import settings
 
 logger = logging.getLogger(__name__)

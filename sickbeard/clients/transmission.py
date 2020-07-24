@@ -21,7 +21,6 @@ import json
 from base64 import b64encode
 
 # First Party Imports
-import sickbeard
 from sickbeard.clients.generic import GenericClient
 from sickchill import settings
 

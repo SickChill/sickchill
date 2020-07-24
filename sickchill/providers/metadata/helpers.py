@@ -20,7 +20,6 @@
 from requests.exceptions import HTTPError
 
 # First Party Imports
-import sickbeard
 from sickbeard import helpers, logger
 from sickchill import settings
 

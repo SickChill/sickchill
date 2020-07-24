@@ -25,7 +25,6 @@ import traceback
 from bs4 import BeautifulSoup
 
 # First Party Imports
-import sickbeard
 from sickbeard import logger, tvcache
 from sickchill import settings
 from sickchill.helper.common import convert_size, try_int

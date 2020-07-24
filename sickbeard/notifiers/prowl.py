@@ -24,12 +24,9 @@ import socket
 import time
 from http.client import HTTPException, HTTPSConnection
 from ssl import SSLError
-
-# Third Party Imports
-from requests.compat import urlencode
+from urllib.parse import urlencode
 
 # First Party Imports
-import sickbeard
 from sickbeard import common, db, logger
 from sickchill import settings
 

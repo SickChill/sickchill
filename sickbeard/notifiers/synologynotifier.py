@@ -20,7 +20,6 @@ import os
 import subprocess
 
 # First Party Imports
-import sickbeard
 from sickbeard import common, logger
 from sickchill import settings
 

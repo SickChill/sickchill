@@ -93,18 +93,18 @@ class TVShow(object):
 class TVEpisode(sickbeard.tv.TVEpisode):
     def __init__(self, season, episode, absolute_number, name):
         self.relatedEps = []
-        self._name = name
-        self._season = season
-        self._episode = episode
-        self._absolute_number = absolute_number
+        self.name = name
+        self.season = season
+        self.episode = episode
+        self.absolute_number = absolute_number
         self.scene_season = season
         self.scene_episode = episode
         self.scene_absolute_number = absolute_number
-        self._airdate = datetime.date(2010, 3, 9)
+        self.airdate = datetime.date(2010, 3, 9)
         self.show = TVShow()
-        self._status = Quality.compositeStatus(common.DOWNLOADED, common.Quality.SDTV)
-        self._release_name = 'Show.Name.S02E03.HDTV.XviD-RLSGROUP'
-        self._is_proper = True
+        self.status = Quality.compositeStatus(common.DOWNLOADED, common.Quality.SDTV)
+        self.release_name = 'Show.Name.S02E03.HDTV.XviD-RLSGROUP'
+        self.is_proper = True
 
 
 def check_force_season_folders(pattern=None, multi=None, anime_type=None):

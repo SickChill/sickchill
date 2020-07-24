@@ -26,7 +26,6 @@ import os
 import unittest
 
 # First Party Imports
-import sickbeard
 from sickchill import settings
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.nzb.NZBProvider import NZBProvider

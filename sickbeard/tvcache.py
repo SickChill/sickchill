@@ -22,7 +22,6 @@ import itertools
 import time
 
 # First Party Imports
-import sickbeard
 from sickchill import settings
 from sickchill.helper.exceptions import AuthException
 from sickchill.show.Show import Show

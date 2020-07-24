@@ -23,7 +23,6 @@ import os
 from tornado.web import addslash
 
 # First Party Imports
-import sickbeard
 from sickbeard.versionChecker import CheckVersion
 from sickchill import settings
 from sickchill.views.common import PageTemplate

@@ -28,7 +28,6 @@ import time
 import traceback
 
 # First Party Imports
-import sickbeard
 from sickchill import settings
 from sickchill.helper import glob
 

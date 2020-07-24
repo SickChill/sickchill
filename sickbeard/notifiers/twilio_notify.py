@@ -23,7 +23,6 @@ import re
 from twilio.rest import Client, TwilioException
 
 # First Party Imports
-import sickbeard
 from sickbeard import common, logger
 from sickchill import settings
 

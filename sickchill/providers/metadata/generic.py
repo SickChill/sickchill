@@ -27,7 +27,6 @@ import tmdbsimple
 from fanart.core import Request as fanartRequest
 
 # First Party Imports
-import sickbeard
 import sickchill
 from sickbeard import helpers, logger
 from sickbeard.show_name_helpers import allPossibleShowNames

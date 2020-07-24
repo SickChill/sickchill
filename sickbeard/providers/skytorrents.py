@@ -16,9 +16,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+# Stdlib Imports
+from urllib.parse import urljoin
+
 # Third Party Imports
 import validators
-from requests.compat import urljoin
 
 # First Party Imports
 from sickbeard import logger, tvcache
