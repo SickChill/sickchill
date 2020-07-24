@@ -3,7 +3,6 @@
 import os
 
 # First Party Imports
-import sickbeard
 import sickchill
 from sickbeard import helpers
 from sickchill import settings

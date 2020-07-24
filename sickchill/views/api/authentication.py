@@ -23,7 +23,6 @@ import traceback
 from tornado.web import RequestHandler
 
 # First Party Imports
-import sickbeard
 from sickbeard import helpers, logger
 from sickchill import settings
 

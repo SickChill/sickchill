@@ -22,7 +22,6 @@ import os
 import traceback
 
 # First Party Imports
-import sickbeard
 import sickchill
 from sickbeard.trakt_api import TraktAPI, traktException
 from sickchill import settings

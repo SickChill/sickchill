@@ -19,12 +19,9 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import datetime
-
-# Third Party Imports
-from requests.compat import urljoin
+from urllib.parse import urljoin
 
 # First Party Imports
-import sickbeard
 from sickchill import settings
 
 # Local Folder Imports

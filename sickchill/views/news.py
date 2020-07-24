@@ -20,7 +20,6 @@
 import markdown2
 
 # First Party Imports
-import sickbeard
 import sickchill.start
 from sickbeard import logger
 from sickchill import settings

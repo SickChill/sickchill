@@ -21,7 +21,6 @@ from tornado.escape import xhtml_unescape
 from tornado.web import addslash
 
 # First Party Imports
-import sickbeard
 from sickbeard import config
 from sickchill import settings
 from sickchill.views.common import PageTemplate

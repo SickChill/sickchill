@@ -22,7 +22,6 @@ import os
 import warnings
 
 # First Party Imports
-import sickbeard
 from sickbeard import common
 from sickchill import settings
 

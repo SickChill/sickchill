@@ -23,7 +23,6 @@ import time
 import traceback
 
 # First Party Imports
-import sickbeard
 from sickchill import settings
 
 # Local Folder Imports

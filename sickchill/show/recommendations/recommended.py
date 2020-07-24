@@ -25,7 +25,6 @@ import os
 import posixpath
 
 # First Party Imports
-import sickbeard
 from sickbeard import helpers
 from sickchill import settings
 

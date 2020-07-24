@@ -22,12 +22,15 @@ from threading import Lock
 
 # First Party Imports
 from setup import setup_gettext, setup_lib_path
-from sickbeard.numdict import NumDict
 
 setup_lib_path()
 
 # Third Party Imports
 import rarfile
+
+# First Party Imports
+from sickbeard.common import SD
+from sickbeard.numdict import NumDict
 
 setup_gettext()
 
@@ -357,7 +360,7 @@ PYTIVO_SHARE_NAME = ''
 PYTIVO_TIVO_NAME = ''
 PYTIVO_UPDATE_LIBRARY = False
 QUALITY_ALLOW_HEVC = None
-QUALITY_DEFAULT = None
+QUALITY_DEFAULT = SD
 RANDOMIZE_PROVIDERS = False
 RENAME_EPISODES = False
 REQUIRE_WORDS = ""

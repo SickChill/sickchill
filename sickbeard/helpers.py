@@ -39,6 +39,7 @@ import uuid
 import zipfile
 from contextlib import closing
 from itertools import cycle
+from urllib.parse import urljoin
 from xml.etree import ElementTree
 
 # Third Party Imports
@@ -49,7 +50,6 @@ import rarfile
 import requests
 from cachecontrol import CacheControl
 from cloudscraper.exceptions import CloudflareException
-from requests.compat import urljoin
 from requests.utils import urlparse
 from tornado._locale_data import LOCALE_NAMES
 from unidecode import unidecode

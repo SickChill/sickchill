@@ -20,7 +20,6 @@
 from rtorrent9 import RTorrent
 
 # First Party Imports
-import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
 from sickchill import settings

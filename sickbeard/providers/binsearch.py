@@ -19,9 +19,7 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import re
-
-# Third Party Imports
-from requests.compat import urljoin
+from urllib.parse import urljoin
 
 # First Party Imports
 from sickbeard import logger, tvcache

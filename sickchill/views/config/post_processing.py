@@ -23,7 +23,6 @@ import os
 from tornado.web import addslash
 
 # First Party Imports
-import sickbeard
 import sickchill.start
 from sickbeard import config, logger, naming, ui
 from sickbeard.common import NAMING_LIMITED_EXTEND_E_PREFIXED

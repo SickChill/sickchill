@@ -29,7 +29,6 @@ from os import path
 import fake_useragent
 
 # First Party Imports
-import sickbeard
 from setup import setup_gettext
 from sickchill import settings
 from sickchill.helper import video_screen_size

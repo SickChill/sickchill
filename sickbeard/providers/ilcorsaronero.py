@@ -18,9 +18,7 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import re
-
-# Third Party Imports
-from requests.compat import quote_plus, urljoin
+from urllib.parse import quote_plus, urljoin
 
 # First Party Imports
 from sickbeard import db, logger, tvcache

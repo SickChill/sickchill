@@ -26,7 +26,6 @@ Test sickchill.common
 import unittest
 
 # First Party Imports
-import sickbeard
 from sickchill import settings
 from sickchill.helper import glob
 from sickchill.helper.common import (convert_size, episode_num, http_code_description, is_sync_file, is_torrent_or_nzb_file, pretty_file_size, remove_extension,

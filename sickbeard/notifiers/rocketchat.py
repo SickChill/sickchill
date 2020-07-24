@@ -22,7 +22,6 @@ import json
 import requests
 
 # First Party Imports
-import sickbeard
 from sickbeard import common, logger
 from sickchill import settings
 

@@ -25,7 +25,6 @@ from collections import namedtuple
 import dateutil
 
 # First Party Imports
-import sickbeard
 import sickchill
 from sickbeard.trakt_api import TraktAPI
 from sickchill import settings

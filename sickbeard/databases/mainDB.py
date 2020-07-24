@@ -22,7 +22,6 @@ import os.path
 import warnings
 
 # First Party Imports
-import sickbeard
 import sickchill.start
 from sickbeard import common, db, helpers, logger, subtitles
 from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser

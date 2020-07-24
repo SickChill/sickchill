@@ -23,7 +23,6 @@ import os
 import posixpath
 
 # First Party Imports
-import sickbeard
 from sickbeard import db, logger, subtitles as subtitle_module, ui
 from sickbeard.common import Overview, Quality, SNATCHED
 from sickchill import settings

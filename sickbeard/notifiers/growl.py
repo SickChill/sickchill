@@ -23,7 +23,6 @@ import socket
 import gntp.core
 
 # First Party Imports
-import sickbeard
 from sickbeard import common, logger
 from sickchill import settings
 

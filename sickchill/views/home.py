@@ -25,10 +25,10 @@ import time
 # noinspection PyUnresolvedReferences
 import urllib
 from operator import attrgetter
+from urllib.parse import unquote_plus
 
 # Third Party Imports
 from github.GithubException import GithubException
-from requests.compat import unquote_plus
 from tornado.escape import xhtml_unescape
 
 # First Party Imports

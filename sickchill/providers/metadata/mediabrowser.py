@@ -23,7 +23,6 @@ import re
 from xml.etree import ElementTree
 
 # First Party Imports
-import sickbeard
 import sickchill
 from sickbeard import helpers, logger
 from sickchill import settings

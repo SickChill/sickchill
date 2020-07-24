@@ -24,7 +24,6 @@ from dateutil import tz
 from tornado.web import authenticated
 
 # First Party Imports
-import sickbeard
 from sickbeard import db, logger, network_timezones
 from sickchill import settings
 from sickchill.helper import try_int

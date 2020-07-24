@@ -20,7 +20,6 @@
 import datetime
 
 # First Party Imports
-import sickbeard
 from sickchill import settings
 
 MESSAGE = 'notice'

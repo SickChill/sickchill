@@ -26,7 +26,6 @@ import threading
 import time
 
 # First Party Imports
-import sickbeard
 import sickchill
 from sickbeard import db, logger, network_timezones, ui
 from sickchill import settings

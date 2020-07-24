@@ -28,7 +28,6 @@ from requests.exceptions import HTTPError
 
 # First Party Imports
 # from sickbeard import logger
-import sickbeard
 import sickchill.start
 from sickbeard import logger
 from sickbeard.tv import TVEpisode
@@ -48,7 +47,7 @@ class TVDB(Indexer):
         self.show_url = 'https://thetvdb.com/?tab=series&id='
         self.base_url = 'https://thetvdb.com/api/%(apikey)s/series/'
         self.icon = 'images/indexers/thetvdb16.png'
-        settings.API_KEY = self.api_key
+        tvdbsimple.keys.API_KEY = self.api_key
         self._search = tvdbsimple.search.Search().series
         self._series = tvdbsimple.Series
         self.series_episodes = tvdbsimple.Series_Episodes
@@ -134,7 +133,7 @@ class TVDB(Indexer):
                     if series:
                         result = [series.info(language)]
             except HTTPError:
-                pass
+                logger.exception(traceback.format_exc())
         else:
             # Name as provided (usually from nfo)
             names = [name]
@@ -156,7 +155,7 @@ class TVDB(Indexer):
                     if result:
                         break
                 except HTTPError:
-                    pass
+                    logger.exception(traceback.format_exc())
 
         return result
 

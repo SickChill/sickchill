@@ -27,7 +27,6 @@ import shutil
 import unittest
 
 # First Party Imports
-import sickbeard
 from sickbeard.helpers import make_dirs
 from sickbeard.name_cache import addNameToCache
 from sickbeard.postProcessor import PostProcessor

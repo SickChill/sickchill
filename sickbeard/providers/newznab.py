@@ -21,13 +21,12 @@
 import os
 import re
 import time
+from urllib.parse import urljoin
 
 # Third Party Imports
 import validators
-from requests.compat import urljoin
 
 # First Party Imports
-import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets

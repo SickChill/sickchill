@@ -23,7 +23,6 @@ import os
 from tornado.web import RedirectHandler, StaticFileHandler, url
 
 # First Party Imports
-import sickbeard
 from sickchill import settings
 
 # Local Folder Imports
@@ -35,7 +34,6 @@ from .routes import Route
 class Urls(object):
     def __init__(self, **options):
         self.options = options
-
         self.urls = [
                         url(r'{0}/favicon.ico'.format(self.options['web_root']), StaticFileHandler,
                             {"path": os.path.join(self.options['data_root'], 'images/ico/favicon.ico')}, name='favicon'),

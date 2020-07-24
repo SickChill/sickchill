@@ -20,9 +20,9 @@
 # Stdlib Imports
 import re
 import traceback
+from urllib.parse import quote
 
 # Third Party Imports
-from requests.compat import quote
 from requests.utils import dict_from_cookiejar
 
 # First Party Imports

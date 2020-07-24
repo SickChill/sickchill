@@ -25,7 +25,6 @@ Test XEM
 import unittest
 
 # First Party Imports
-import sickbeard
 from sickbeard.tv import TVShow
 from sickchill import settings
 from tests import test_lib as test

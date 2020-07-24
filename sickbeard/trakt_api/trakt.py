@@ -26,7 +26,6 @@ import certifi
 import requests
 
 # First Party Imports
-import sickbeard
 from sickbeard import logger
 from sickchill import settings
 

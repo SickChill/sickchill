@@ -18,11 +18,11 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import os
+from urllib.parse import urlencode
 # noinspection PyUnresolvedReferences
 from urllib.request import Request, urlopen
 
 # Third Party Imports
-from requests.compat import urlencode
 from requests.exceptions import HTTPError
 
 # First Party Imports
