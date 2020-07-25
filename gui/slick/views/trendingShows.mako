@@ -34,7 +34,7 @@
                         </div>
 
                         <div class="clearfix">
-                            <p>${int(cur_show['show']['rating']*10)}% <span class="displayshow-icon-heart"></p>
+                            <p>${int(cur_show['show']['rating']*10)}% <span class="displayshow-icon-heart"></span></p>
                             <i>${cur_show['show']['votes']} ${_('votes')}</i>
                             <div class="traktShowTitleIcons">
                                 <a href="${srRoot}/addShows/addShowByID?indexer_id=${cur_show['show']['ids']['tvdb']}&amp;show_name=${cur_show['show']['title'] | u}"

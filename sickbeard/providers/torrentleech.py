@@ -31,12 +31,12 @@ from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TorrentLeechProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "TorrentLeech")
+        super().__init__("TorrentLeech")
 
         # Credentials
         self.username = None
@@ -156,6 +156,3 @@ class TorrentLeechProvider(TorrentProvider):
             results += items
 
         return results
-
-
-provider = TorrentLeechProvider()

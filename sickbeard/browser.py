@@ -38,7 +38,7 @@ def getWinDrives():
 
     drives = []
     bitmask = windll.kernel32.GetLogicalDrives()  # @UndefinedVariable
-    for letter in string.uppercase:
+    for letter in string.ascii_uppercase:
         if bitmask & 1:
             drives.append(letter)
         bitmask >>= 1
@@ -88,8 +88,8 @@ def getFileList(path, includeFiles, fileTypes):
             dir_list.append(item_to_add)
 
     # Sort folders first, alphabetically, case insensitive
-    dir_list.sort(key=lambda mbr: itemgetter('name')(mbr).lower())
-    file_list.sort(key=lambda mbr: itemgetter('name')(mbr).lower())
+    dir_list.sort(key=lambda mbr: mbr.get('name').lower())
+    file_list.sort(key=lambda mbr: mbr.get('name').lower())
     return dir_list + file_list
 
 

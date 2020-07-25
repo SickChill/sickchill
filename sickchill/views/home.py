@@ -22,8 +22,7 @@ import datetime
 import json
 import os
 import time
-# noinspection PyUnresolvedReferences
-import urllib
+import urllib.parse
 from operator import attrgetter
 from urllib.parse import unquote_plus
 
@@ -1713,7 +1712,7 @@ class Home(WebRoot):
         try:
             new_subtitles = ep_obj.download_subtitles(force_lang=lang)
         except Exception as error:
-            return json.dumps({'result': 'failure', 'errorMessage': error.message})
+            return json.dumps({'result': 'failure', 'errorMessage': error})
 
         if new_subtitles:
             new_languages = [subtitle_module.name_from_code(code) for code in new_subtitles]

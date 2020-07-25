@@ -32,12 +32,12 @@ from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class ImmortalseedProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "Immortalseed")
+        super().__init__("Immortalseed")
 
         # Credentials
         self.username = None
@@ -204,6 +204,3 @@ class ImmortalseedCache(tvcache.TVCache):
 
     def _check_auth(self, data):
         return self.provider._check_auth_from_data(data)
-
-
-provider = ImmortalseedProvider()

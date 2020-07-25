@@ -31,11 +31,11 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class LimeTorrentsProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "LimeTorrents")
+        super().__init__("LimeTorrents")
 
         self.urls = {
             'index': 'https://www.limetorrents.info/',
@@ -137,6 +137,3 @@ class LimeTorrentsProvider(TorrentProvider):
             results += items
 
         return results
-
-
-provider = LimeTorrentsProvider()

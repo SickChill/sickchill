@@ -31,12 +31,12 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class BJShareProvider(TorrentProvider):
+class Provider(TorrentProvider):
     """BJ-Share Torrent provider."""
 
     def __init__(self):
         """Initialize the class."""
-        super(BJShareProvider, self).__init__('BJ-Share')
+        super().__init__('BJ-Share')
 
         # URLs
         self.url = 'https://bj-share.info'
@@ -301,6 +301,3 @@ class BJShareProvider(TorrentProvider):
             return False
 
         return True
-
-
-provider = BJShareProvider()

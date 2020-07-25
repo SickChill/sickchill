@@ -25,6 +25,7 @@ import warnings
 from sickbeard import common
 from sickchill import settings
 
+# noinspection PyUnresolvedReferences
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     try:
@@ -38,6 +39,7 @@ with warnings.catch_warnings():
             Notify = None
 
 
+# noinspection PyUnresolvedReferences
 class Notifier(object):
 
     def __init__(self):

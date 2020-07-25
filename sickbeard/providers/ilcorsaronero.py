@@ -29,10 +29,10 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class ilCorsaroNeroProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
-        TorrentProvider.__init__(self, 'ilCorsaroNero')
+        super().__init__("ilCorsaroNero")
 
         categories = [  # Categories included in searches
             15,  # Serie TV
@@ -317,6 +317,3 @@ class ilCorsaroNeroProvider(TorrentProvider):
                 results += items
 
         return results
-
-
-provider = ilCorsaroNeroProvider()

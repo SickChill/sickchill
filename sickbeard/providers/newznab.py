@@ -397,3 +397,6 @@ class NewznabProvider(NZBProvider):
         Returns int size or -1
         """
         return try_int(item.get('size', -1), -1)
+
+
+Provider = NewznabProvider

@@ -31,11 +31,11 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class HDTorrentsProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "HDTorrents")
+        super().__init__("HDTorrents")
 
         self.username = None
         self.password = None
@@ -177,6 +177,3 @@ class HDTorrentsProvider(TorrentProvider):
             results += items
 
         return results
-
-
-provider = HDTorrentsProvider()

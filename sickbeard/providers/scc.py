@@ -34,11 +34,11 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class SCCProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "SceneAccess")
+        super().__init__("SceneAccess")
 
         self.username = None
         self.password = None
@@ -166,6 +166,3 @@ class SCCProvider(TorrentProvider):
             results += items
 
         return results
-
-
-provider = SCCProvider()

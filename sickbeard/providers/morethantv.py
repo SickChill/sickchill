@@ -33,12 +33,12 @@ from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class MoreThanTVProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "MoreThanTV")
+        super().__init__("MoreThanTV")
 
         # Credentials
         self.username = None
@@ -238,6 +238,3 @@ class MoreThanTVProvider(TorrentProvider):
             search_string['Season'].append(season_string)
 
         return [search_string]
-
-
-provider = MoreThanTVProvider()

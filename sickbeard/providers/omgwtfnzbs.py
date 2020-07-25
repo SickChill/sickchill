@@ -24,9 +24,9 @@ from sickchill.helper.common import try_int
 from sickchill.providers.nzb.NZBProvider import NZBProvider
 
 
-class OmgwtfnzbsProvider(NZBProvider):
+class Provider(NZBProvider):
     def __init__(self):
-        NZBProvider.__init__(self, 'OMGWTFNZBs')
+        super().__init__("OMGWTFNZBs")
 
         self.username = None
         self.api_key = None
@@ -129,11 +129,9 @@ class OmgwtfnzbsCache(tvcache.TVCache):
 
     def _get_rss_data(self):
         search_params = {
-            'user': provider.username,
-            'api': provider.api_key,
+            'user': self.provider.username,
+            'api': self.provider.api_key,
             'eng': 1,
             'catid': '19,20,30',  # SD,HD,UHD
         }
         return self.get_rss_feed(self.provider.urls['rss'], params=search_params)
-
-provider = OmgwtfnzbsProvider()

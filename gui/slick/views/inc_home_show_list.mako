@@ -56,15 +56,14 @@
                                 <div class="imgsmallposter ${settings.HOME_LAYOUT}">
                                     % if curLoadingShow.show:
                                         <a href="${srRoot}/home/displayShow?show=${loading_show.id}" title="${loading_show.name}">
-                                    % else:
-                                        <span title="${loading_show.name}">
-                                    % endif
-                                    <img src="${static_url("images/poster.png")}" data-src="${static_url(loading_show.show_image_url('poster_thumb'))}"
-                                         class="${settings.HOME_LAYOUT}" alt="${loading_show.name}"/>
-                                    % if curLoadingShow.show:
+                                            <img src="${static_url("images/poster.png")}" data-src="${static_url(loading_show.show_image_url('poster_thumb'))}"
+                                                 class="${settings.HOME_LAYOUT}" alt="${loading_show.name}"/>
                                         </a>
                                         <a href="${srRoot}/home/displayShow?show=${loading_show.id}" style="vertical-align: middle;">${loading_show.name}</a>
                                     % else:
+                                        <span title="${loading_show.name}">
+                                        <img src="${static_url("images/poster.png")}" data-src="${static_url(loading_show.show_image_url('poster_thumb'))}"
+                                             class="${settings.HOME_LAYOUT}" alt="${loading_show.name}"/>
                                         </span>
                                         <span style="vertical-align: middle;">${_('Loading...')} (${loading_show.name})</span>
                                     % endif

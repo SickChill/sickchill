@@ -92,7 +92,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="horizontal-scroll">
-                        <table class="sickchillTable manageTable" cellspacing="1" border="0" cellpadding="0">
+                        <table class="sickchillTable manageTable">
                             % for cur_indexer_id in sorted_show_ids:
                                 <tr id="${cur_indexer_id}">
                                     <th>

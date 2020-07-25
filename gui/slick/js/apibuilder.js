@@ -36,7 +36,7 @@ $(document).ready(() => {
             $(urlId).text(url + (jsonp ? '&jsonp=foo' : ''));
 
             if (responseType.slice(0, 6) === 'image/') {
-                target.html($('<img/>').attr('src', url));
+                target.html($('<img/>', {src: url}));
             } else {
                 const json = JSON.stringify(data, null, 4);
 
@@ -57,7 +57,7 @@ $(document).ready(() => {
     });
 
     // Update the list of episodes
-    $('[data-action="update-episodes"').on('change', function () {
+    $('[data-action="update-episodes"]').on('change', function () {
         const command = $(this).data('command');
         const select = $('[data-command="' + command + '"][name="episode"]');
         const season = $(this).val();
@@ -77,7 +77,7 @@ $(document).ready(() => {
     });
 
     // Update the list of seasons
-    $('[data-action="update-seasons"').on('change', function () {
+    $('[data-action="update-seasons"]').on('change', function () {
         const command = $(this).data('command');
         const select = $('[data-command="' + command + '"][name="season"]');
         const show = $(this).val();

@@ -26,11 +26,11 @@ from sickbeard import logger, tvcache
 from sickchill.providers.nzb.NZBProvider import NZBProvider
 
 
-class BinSearchProvider(NZBProvider):
+class Provider(NZBProvider):
 
     def __init__(self):
 
-        NZBProvider.__init__(self, 'BinSearch')
+        super().__init__("BinSearch")
 
         self.url = 'https://www.binsearch.info'
         self.urls = {'rss': urljoin(self.url, 'rss.php')}
@@ -118,5 +118,3 @@ class BinSearchCache(tvcache.TVCache):
 
     def _check_auth(self, data):
         return data if data['feed'] and data['feed']['title'] != 'Invalid Link' else None
-
-provider = BinSearchProvider()

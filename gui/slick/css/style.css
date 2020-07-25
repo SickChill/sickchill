@@ -1163,6 +1163,7 @@ span.snatched b {
     text-align: center;
     border: none;
     empty-cells: show;
+    padding: 0;
 }
 
 .sickchillTable.display_show {

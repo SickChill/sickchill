@@ -16,6 +16,6 @@ indent_style = space
 indent_size = 4
 
 # Matches configuration files for services like Travis, AppVeyor and Codecov
-[{*.yml}]
+[*.yml]
 indent_style = space
 indent_size = 2
