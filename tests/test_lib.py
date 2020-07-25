@@ -51,7 +51,7 @@ import sickbeard.config
 import sickbeard.logger
 import sickchill.start
 from sickbeard import db, providers
-from sickbeard.databases import cache_db, failed_db, mainDB
+from sickbeard.databases import cache, failed, main
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.tv import TVEpisode, TVShow
 from sickchill import settings
@@ -296,16 +296,16 @@ def setup_test_db():
     """
     # Upgrade the db to the latest version.
     # upgrading the db
-    db.upgrade_database(db.DBConnection(), mainDB.InitialSchema)
+    db.upgrade_database(db.DBConnection(), main.InitialSchema)
 
     # fix up any db problems
-    db.sanity_check_database(db.DBConnection(), mainDB.MainSanityCheck)
+    db.sanity_check_database(db.DBConnection(), main.MainSanityCheck)
 
     # and for cache.db too
-    db.upgrade_database(db.DBConnection('cache.db'), cache_db.InitialSchema)
+    db.upgrade_database(db.DBConnection('cache.db'), cache.InitialSchema)
 
     # and for failed.db too
-    db.upgrade_database(db.DBConnection('failed.db'), failed_db.InitialSchema)
+    db.upgrade_database(db.DBConnection('failed.db'), failed.InitialSchema)
 
 
 def teardown_test_db():
