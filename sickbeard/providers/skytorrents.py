@@ -29,11 +29,11 @@ from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class SkyTorrents(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "SkyTorrents")
+        super().__init__("SkyTorrents")
 
         self.public = True
 
@@ -111,5 +111,3 @@ class SkyTorrents(TorrentProvider):
             results += items
 
         return results
-
-provider = SkyTorrents()

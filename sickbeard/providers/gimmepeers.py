@@ -31,11 +31,11 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class GimmePeersProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "GimmePeers")
+        super().__init__("GimmePeers")
 
         self.urls = {
             'base_url': 'https://www.gimmepeers.com',
@@ -169,6 +169,3 @@ class GimmePeersProvider(TorrentProvider):
             results += items
 
         return results
-
-
-provider = GimmePeersProvider()

@@ -1066,7 +1066,7 @@
                                                         </span>
                                                         <span id="label_warning_qbittorrent" style="display:none">
                                                             <label for="torrent_label">${_('(blank spaces are not allowed)')}</label>
-                                                            <label><b>${_('note')}:</b> ${_('for QBitTorrent 3.3.1 and up')}</>
+                                                            <label><b>${_('note')}:</b> ${_('for QBitTorrent 3.3.1 and up')}</label>
                                                         </span>
                                                     </div>
                                                 </div>

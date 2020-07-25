@@ -230,7 +230,7 @@ def generate_test_cases():
     Auto Generate TestCases from providers and add them to globals()
     """
     for p in sickbeard.providers.__all__:
-        provider = sickbeard.providers.getProviderModule(p).provider
+        provider = sickbeard.providers.getProviderModule(p).Provider()
         if provider.can_backlog and provider.provider_type == 'torrent' and provider.public:
             generated_class = type(str(provider.name), (BaseParser.TestCase,), {'provider': provider})
             globals()[generated_class.__name__] = generated_class

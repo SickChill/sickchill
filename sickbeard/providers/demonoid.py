@@ -34,11 +34,11 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class DemonoidProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "Demonoid")
+        super().__init__("Demonoid")
 
         self.public = True
         self.minseed = 0
@@ -154,6 +154,3 @@ class DemonoidCache(tvcache.TVCache):
             add_dict_to_cookiejar(self.provider.session.cookies, dict(x.rsplit('=', 1) for x in self.provider.cookies.split(';')))
 
         return self.get_rss_feed(self.provider.urls['RSS'], self.provider.cache_rss_params)
-
-
-provider = DemonoidProvider()

@@ -19,7 +19,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
-import urllib
+import urllib.parse
+import urllib.request
 
 # First Party Imports
 from sickbeard import logger

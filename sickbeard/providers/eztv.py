@@ -27,12 +27,12 @@ from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class EZTVProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "EZTV")
+        super().__init__("EZTV")
 
         # Credentials
         self.public = True
@@ -111,6 +111,3 @@ class EZTVProvider(TorrentProvider):
             results += items
 
         return results
-
-
-provider = EZTVProvider()

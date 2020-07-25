@@ -62,7 +62,7 @@ def sendNZB(nzb, proper=False):
         else:
             logger.warning('Successful connected to NZBget, but unable to send a message')
 
-    except http.client.socket.error:
+    except http.client.error:
         logger.warning('Please check your NZBget host and port (if it is running). NZBget is not responding to this combination')
         return False
 

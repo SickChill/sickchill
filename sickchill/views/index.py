@@ -19,6 +19,7 @@
 # Stdlib Imports
 import base64
 import datetime
+import json
 import os
 import time
 import traceback
@@ -55,14 +56,7 @@ except:
     has_cryptography = False
 
 
-
-# Stdlib Imports
-import json
-
-
 class BaseHandler(RequestHandler):
-    startTime = 0.
-
     def data_received(self, chunk):
         pass
 
@@ -210,8 +204,8 @@ class WebHandler(BaseHandler):
             return function(**kwargs)
         except TypeError:
             return function()
-        except OSError as e:
-            return Template("Looks like we do not have enough disk space to render the page! {error}").render_unicode(data=e.message)
+        except OSError as error:
+            return Template("Looks like we do not have enough disk space to render the page! {error}").render_unicode(error=error)
         except Exception:
             logger.exception('Failed doing webui callback: {0}'.format((traceback.format_exc())))
             raise

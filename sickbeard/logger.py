@@ -198,7 +198,7 @@ class Logger(object):
         logging.shutdown()
 
     def log_error_and_exit(self, error_msg, *args, **kwargs):
-        self.log(error_msg, ERROR, *args, **kwargs)
+        self.logger.log(ERROR, error_msg, *args, **kwargs)
 
         if not self.console_logging:
             sys.exit(error_msg)
@@ -261,7 +261,7 @@ class Logger(object):
                         title_error = title_error[0:1000]
 
                 except Exception as err_msg:
-                    self.log('Unable to get error title : {0}'.format(str(err_msg)), ERROR)
+                    self.logger.log(ERROR, 'Unable to get error title : {0}'.format(str(err_msg)))
                     title_error = 'UNKNOWN'
 
                 gist = None
@@ -359,7 +359,7 @@ class Logger(object):
                                 'please change your auth method in the config')
             issue_id = None
         except Exception:
-            self.log(traceback.format_exc(), ERROR)
+            self.logger.log(ERROR, traceback.format_exc())
             submitter_result = 'Exception generated in issue submitter, please check the log'
             issue_id = None
         finally:

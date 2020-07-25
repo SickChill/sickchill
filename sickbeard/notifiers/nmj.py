@@ -19,7 +19,8 @@
 # Stdlib Imports
 import re
 import telnetlib
-import urllib
+import urllib.parse
+import urllib.request
 from xml.etree import ElementTree
 
 # First Party Imports

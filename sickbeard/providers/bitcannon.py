@@ -29,11 +29,11 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class BitCannonProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "BitCannon")
+        super().__init__("BitCannon")
 
         self.minseed = 0
         self.minleech = 0
@@ -127,5 +127,3 @@ class BitCannonProvider(TorrentProvider):
             return False
 
         return True
-
-provider = BitCannonProvider()

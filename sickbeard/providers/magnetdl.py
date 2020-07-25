@@ -30,11 +30,11 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class MagnetDLProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        super(MagnetDLProvider, self).__init__("MagnetDL")
+        super().__init__("MagnetDL")
 
         self.minseed = 0
         self.minleech = 0
@@ -123,6 +123,3 @@ class MagnetDLProvider(TorrentProvider):
                 results += items
 
             return results
-
-
-provider = MagnetDLProvider()

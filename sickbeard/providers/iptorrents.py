@@ -33,11 +33,11 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class IPTorrentsProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "IPTorrents")
+        super().__init__("IPTorrents")
         self.enable_cookies = True
 
         self.username = None
@@ -195,6 +195,3 @@ class IPTorrentsProvider(TorrentProvider):
             results += items
 
         return results
-
-
-provider = IPTorrentsProvider()

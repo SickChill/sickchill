@@ -30,11 +30,11 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class RarbgProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "Rarbg")
+        super().__init__("Rarbg")
 
         self.public = True
         self.minseed = 0
@@ -173,6 +173,3 @@ class RarbgProvider(TorrentProvider):
             results += items
 
         return results
-
-
-provider = RarbgProvider()

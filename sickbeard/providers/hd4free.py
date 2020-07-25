@@ -26,11 +26,11 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class HD4FreeProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "HD4Free")
+        super().__init__("HD4Free")
 
         self.url = 'https://hd4free.xyz'
         self.urls = {'search': urljoin(self.url, '/searchapi.php')}
@@ -130,6 +130,3 @@ class HD4FreeProvider(TorrentProvider):
             results += items
 
         return results
-
-
-provider = HD4FreeProvider()

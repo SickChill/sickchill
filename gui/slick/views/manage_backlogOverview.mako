@@ -85,7 +85,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="horizontal-scroll">
-                    <table class="sickchillTable" cellspacing="0" border="0" cellpadding="0">
+                    <table class="sickchillTable">
                         <tr class="seasonheader" id="show-${curShow.indexerid}">
                             <td colspan="3" class="align-left" style="position: relative;"></td>
                         </tr>

@@ -28,11 +28,11 @@ from sickchill.helper.common import convert_size
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class newpctProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, 'Newpct')
+        super().__init__("Newpct")
 
         self.onlyspasearch = None
 
@@ -138,12 +138,12 @@ class newpctProvider(TorrentProvider):
         trickery = kwargs.pop('returns', '')
         if trickery == 'content':
             kwargs['returns'] = 'text'
-            data = super(newpctProvider, self).get_url(url, post_data=post_data, params=params, timeout=timeout, **kwargs)
+            data = super().get_url(url, post_data=post_data, params=params, timeout=timeout, **kwargs)
             url = re.search(r'http://tumejorserie.com/descargar/.+\.torrent', data, re.DOTALL).group()
             url = urljoin(self.url, url.rsplit('=', 1)[-1])
 
         kwargs['returns'] = trickery
-        return super(newpctProvider, self).get_url(url, post_data=post_data, params=params,
+        return super().get_url(url, post_data=post_data, params=params,
                                                    timeout=timeout, **kwargs)
 
     def download_result(self, result):
@@ -211,7 +211,7 @@ class newpctProvider(TorrentProvider):
         title_1080p = re.search(r'1080p', title, flags=re.I)
         title_x264 = re.search(r'x264', title, flags=re.I)
         title_bluray = re.search(r'bluray', title, flags=re.I)
-        title_serie_hd = re.search(r'descargar\-seriehd', title, flags=re.I)
+        title_serie_hd = re.search(r'descargar-seriehd', title, flags=re.I)
         url_hdtv = re.search(r'HDTV', url, flags=re.I)
         url_720p = re.search(r'720p', url, flags=re.I)
         url_1080p = re.search(r'1080p', url, flags=re.I)
@@ -246,5 +246,3 @@ class newpctProvider(TorrentProvider):
             title += '-NEWPCT'
 
         return title.strip()
-
-provider = newpctProvider()

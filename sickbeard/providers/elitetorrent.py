@@ -31,11 +31,11 @@ from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class EliteTorrentProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "EliteTorrent")
+        super().__init__("EliteTorrent")
 
         self.onlyspasearch = None
         self.minseed = 0
@@ -188,5 +188,3 @@ class EliteTorrentProvider(TorrentProvider):
         title += '-ELITETORRENT'
 
         return title.strip()
-
-provider = EliteTorrentProvider()
