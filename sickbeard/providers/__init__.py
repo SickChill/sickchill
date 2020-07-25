@@ -22,7 +22,7 @@ import sys
 from random import shuffle
 
 # First Party Imports
-import sickbeard
+import sickbeard.helpers
 from sickbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, bitcannon, bjshare, btn, cpasbien, danishbits, demonoid, elitetorrent, eztv,
                                  filelist, gftracker, gimmepeers, hd4free, hdbits, hdspace, hdtorrents, hdtorrents_it, horriblesubs, hounddawgs, ilcorsaronero,
                                  immortalseed, iptorrents, kat, limetorrents, magnetdl, morethantv, ncore, nebulance, newpct, norbits, nyaa, omgwtfnzbs,
