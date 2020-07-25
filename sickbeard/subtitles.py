@@ -235,7 +235,7 @@ def download_subtitles(episode, force_lang=None):
     # Non-perfect match = 108 + 54 + 18 + 18 = 198
     # From latest subliminal code:
     # episode_scores = {'hash': 215, 'series': 108, 'year': 54, 'season': 18, 'episode': 18, 'release_group': 9,
-    #                   'format': 4, 'audio_codec': 2, 'resolution': 1, 'hearing_impaired': 1, 'video_codec': 1}
+    #                   'source': 4, 'audio_codec': 2, 'resolution': 1, 'hearing_impaired': 1, 'video_codec': 1}
     user_score = 213 if settings.SUBTITLES_PERFECT_MATCH else 198
 
     video = get_video(video_path, subtitles_path=subtitles_path, episode=episode)
@@ -425,6 +425,7 @@ class SubtitlesFinder(object):
         logger.info('Checking for missed subtitles')
 
         database = db.DBConnection()
+        # language=TEXT
         sql_results = database.select(
             "SELECT s.show_name, e.showid, e.season, e.episode, "
             "e.status, e.subtitles, e.subtitles_searchcount AS searchcount, "

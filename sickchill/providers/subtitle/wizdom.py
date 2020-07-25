@@ -171,7 +171,7 @@ class WizdomProvider(Provider):
 
         return list(subtitles.values())
 
-    def list_subtitles(self, video, languages):
+    def list_subtitles(self, video: Episode, languages):
         season = episode = None
         title = video.title
         year = video.year
@@ -186,7 +186,7 @@ class WizdomProvider(Provider):
 
         return [s for s in self.query(title, season, episode, year, filename, imdb_id) if s.language in languages]
 
-    def download_subtitle(self, subtitle):
+    def download_subtitle(self, subtitle: WizdomSubtitle):
         # download
         url = 'http://zip.{}/{}.zip'.format(self.server_url, subtitle.subtitle_id)
         r = self.session.get(url, headers={'Referer': subtitle.page_link}, timeout=10)
