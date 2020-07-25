@@ -32,12 +32,12 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 
-class NorbitsProvider(TorrentProvider):
+class Provider(TorrentProvider):
     """Main provider object"""
 
     def __init__(self):
         """ Initialize the class """
-        TorrentProvider.__init__(self, 'Norbits')
+        super().__init__("Norbits")
 
         self.username = None
         self.passkey = None
@@ -134,6 +134,3 @@ class NorbitsProvider(TorrentProvider):
             results += items
 
         return results
-
-
-provider = NorbitsProvider()

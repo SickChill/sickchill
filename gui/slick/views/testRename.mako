@@ -66,7 +66,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="horizontal-scroll">
-                        <table id="testRenameTable" class="sickchillTable" cellspacing="1" border="0" cellpadding="0">
+                        <table id="testRenameTable" class="sickchillTable">
                             <thead>
                                 <tr class="seasoncols" id="season-${current_season}-cols">
                                     <th class="col-checkbox"><input type="checkbox" title="check_season" class="seasonCheck" id="${current_season}" /></th>

@@ -26,7 +26,7 @@ from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class ShazbatProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
@@ -75,5 +75,3 @@ class ShazbatCache(tvcache.TVCache):
 
     def _check_auth(self, data):
         return self.provider._check_auth_from_data(data)
-
-provider = ShazbatProvider()

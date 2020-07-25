@@ -72,7 +72,8 @@ def sortedProviderList(randomize=False):
 
 
 def makeProviderList():
-    return [x.provider for x in (getProviderModule(y) for y in __all__ if y not in broken_providers) if x]
+    # noinspection PyUnresolvedReferences
+    return [x.Provider() for x in (getProviderModule(y) for y in __all__ if y not in broken_providers) if x]
 
 
 def getProviderModule(name):

@@ -31,12 +31,12 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class AlphaRatioProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "AlphaRatio")
+        super().__init__("AlphaRatio")
 
         # Credentials
         self.username = None
@@ -176,6 +176,3 @@ class AlphaRatioProvider(TorrentProvider):
             results += items
 
         return results
-
-
-provider = AlphaRatioProvider()

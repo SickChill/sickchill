@@ -103,7 +103,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="number" name="subtitles_finder_frequency"
-                                                   value="${settings.SUBTITLES_FINDER_FREQUENCY}" hours="1" min="1"
+                                                   value="${settings.SUBTITLES_FINDER_FREQUENCY}" min="1"
                                                    step="1" class="form-control input-sm input75" title="Frequency"/>
                                         </div>
                                     </div>

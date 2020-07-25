@@ -100,7 +100,7 @@
                 <% show_div = 'listing-default' %>
 
                 <div class="horizontal-scroll">
-                    <table id="showListTable" class="sickchillTable tablesorter seasonstyle" cellspacing="1" border="0" cellpadding="0">
+                    <table id="showListTable" class="sickchillTable tablesorter seasonstyle">
                         <thead>
                             <tr>
                                 <th>${_('Airdate')} (${('local', 'network')[settings.TIMEZONE_DISPLAY == 'network']})</th>
@@ -176,12 +176,12 @@
                                         </a>
                                     </td>
                                     <td nowrap="nowrap" align="center">
-                                        ${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))}
+                                        ${'S{:02}E{:02}'.format(int(cur_result['season']), int(cur_result['episode']))}
                                     </td>
                                     <td>
                                         % if cur_result['description']:
                                             <img alt="" src="${static_url('images/info32.png')}" height="16" width="16" class="plotInfo"
-                                                 id="plot_info_${'%s_%s_%s' % (cur_result['showid'], cur_result['season'], cur_result['episode'])}"/>
+                                                 id="plot_info_${'{}_{}_{}'.format(cur_result['showid'], cur_result['season'], cur_result['episode'])}"/>
                                         % else:
                                             <img alt="" src="${static_url('images/info32.png')}" width="16" height="16" class="plotInfoNone"/>
                                         % endif
@@ -206,7 +206,7 @@
                                             <a href="${anon_url('https://trakt.tv/shows/', cur_result['imdb_id'])}" rel="noreferrer"
                                                onclick="window.open(this.href, '_blank'); return false;"
                                                title="https://trakt.tv/shows/${cur_result['imdb_id']}">
-                                                <span class="displayshow-icon-trakt" />
+                                                <span class="displayshow-icon-trakt"></span>
                                             </a>
                                         % endif
                                         <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result['showid'])}"
@@ -244,8 +244,7 @@
                     <div class="calendarWrapper">
                         % for day in dates:
                         <% tbl_day += 1 %>
-                            <table class="sickchillTable tablesorter calendarTable ${'cal-%s' % (('even', 'odd')[bool(tbl_day % 2)])}"
-                                   cellspacing="0" border="0" cellpadding="0">
+                            <table class="sickchillTable tablesorter calendarTable ${'cal-{}'.format(('even', 'odd')[bool(tbl_day % 2)])}">
                                 <thead>
                                     <tr>
                                         <th>${day.strftime('%A').capitalize()}</th>
@@ -290,8 +289,7 @@
                                                         ${airtime} on ${cur_result["network"]}
                                                     </span>
                                                     <span class="episode-title" title="${cur_result['name']}">
-                                                        ${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))}
-                                                        - ${cur_result['name']}
+                                                        ${'S{:02}E{:02} - {}'.format(int(cur_result['season']), int(cur_result['episode']), cur_result['name'])}
                                                     </span>
                                                     </div>
                                                 </td>
@@ -451,7 +449,7 @@
                                                 </a>
                                                 <a href="${anon_url('https://trakt.tv/shows/', cur_result['imdb_id'])}" rel="noreferrer"
                                                    onclick="window.open(this.href, '_blank'); return false;" title="https://trakt.tv/shows/${cur_result['imdb_id']}">
-                                                    <span class="displayshow-icon-trakt" />
+                                                    <span class="displayshow-icon-trakt"></span>
                                                 </a>
                                             % endif
                                             <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result['showid'])}"
@@ -473,7 +471,7 @@
                                             <br/>
                                             <span class="title">${_('Next Episode')}:</span>
                                         <span>
-                                            ${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))} - ${cur_result['name']}
+                                            ${'S{:02}E{:02} - {}'.format(int(cur_result['season']), int(cur_result['episode']), cur_result['name'])}
                                         </span>
 
                                         <div class="clearfix">

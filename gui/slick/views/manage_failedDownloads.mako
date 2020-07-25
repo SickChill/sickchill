@@ -29,7 +29,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="horizontal-scroll">
-                <table id="failedTable" class="sickchillTable" cellspacing="1" border="0" cellpadding="0">
+                <table id="failedTable" class="sickchillTable">
                     <thead>
                         <tr>
                             <th width="1%" data-sorter="false"></th>

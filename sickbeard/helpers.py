@@ -34,7 +34,7 @@ import ssl
 import stat
 import time
 import traceback
-import urllib
+import urllib.request
 import uuid
 import zipfile
 from contextlib import closing
@@ -83,6 +83,8 @@ copyfileobj_orig = shutil.copyfileobj
 def _copyfileobj(fsrc, fdst, length=10485760):
     """ Run shutil.copyfileobj with a bigger buffer """
     return copyfileobj_orig(fsrc, fdst, length)
+
+
 shutil.copyfileobj = _copyfileobj
 
 
@@ -757,7 +759,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         open(ssl_cert, 'wb').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except Exception as error:
         logger.info(traceback.format_exc())
-        logger.warning(_("Error creating SSL key and certificate {error}").format(error.message))
+        logger.warning(_("Error creating SSL key and certificate {error}").format(error))
         return False
 
     logger.info(_('Created https key: {ssl_key}').format(ssl_key=ssl_key))
@@ -1304,7 +1306,7 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
 
 def handle_requests_exception(requests_exception):
     def get_level(exception):
-        return (logger.ERROR, logger.WARNING)[exception.message and 's,t,o,p,b,r,e,a,k,i,n,g,f' in exception.message]
+        return (logger.ERROR, logger.WARNING)[exception and 's,t,o,p,b,r,e,a,k,i,n,g,f' in exception]
 
     default = _("Request failed: {0} ({1})")
     try:
@@ -1427,7 +1429,7 @@ def disk_usage(path):
                 import subprocess
                 call = subprocess.Popen(["df", "-k", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 output = call.communicate()[0]
-                return int(output.split("\n")[1].split()[3]) * 1024
+                return int(output.decode().split("\n")[1].split()[3]) * 1024
             except Exception:
                 pass
 
@@ -1586,7 +1588,7 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
             return tvdb_id
         try:
             tree = ElementTree.fromstring(data)
-            for show in tree.getiterator("Series"):
+            for show in tree.iter("Series"):
                 tvdb_id = show.findtext("seriesid")
 
         except SyntaxError:
@@ -1600,7 +1602,7 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
             return tvdb_id
         try:
             tree = ElementTree.fromstring(data)
-            for show in tree.getiterator("Series"):
+            for show in tree.iter("Series"):
                 tvdb_id = show.findtext("seriesid")
 
         except SyntaxError:

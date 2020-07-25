@@ -21,7 +21,7 @@
 import datetime
 import re
 # noinspection PyUnresolvedReferences
-import urllib
+import urllib.parse
 
 # First Party Imports
 from sickchill.helper.exceptions import EpisodeNotFoundException
@@ -52,7 +52,7 @@ def logFailed(release):
     release = prepareFailedName(release)
 
     failed_db_con = db.DBConnection('failed.db')
-    sql_results = failed_db_con.select("SELECT * FROM history WHERE release=?", [release])
+    sql_results = failed_db_con.select("SELECT * FROM history WHERE release = ?", [release])
 
     if not sql_results:
         logger.warning(

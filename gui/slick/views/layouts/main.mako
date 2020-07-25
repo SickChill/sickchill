@@ -358,8 +358,8 @@
                             % if has_resource_module:
                                 <span class="footer-item">${_('Memory used')}: <span class="footerhighlight">${pretty_file_size(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)}</span></span> |
                             % endif
-                            <span class="footer-item">${_('Load time')}: <span class="footerhighlight">${"%.4f" % (time() - sbStartTime)}s</span></span> |
-                            <span class="footer-item">Mako: <span class="footerhighlight">${"%.4f" % (time() - makoStartTime)}s</span></span> |
+                            <span class="footer-item">${_('Load time')}: <span class="footerhighlight">${"{:.4f}".format(time() - sbStartTime)}s</span></span> |
+                            <span class="footer-item">Mako: <span class="footerhighlight">${"{:.4f}".format(time() - makoStartTime)}s</span></span> |
                             <span class="footer-item">${_('Branch')}: <span class="footerhighlight">${settings.BRANCH}</span></span> |
                             <span class="footer-item">${_('Now')}: <span class="footerhighlight">${datetime.datetime.now().strftime(settings.DATE_PRESET+" "+settings.TIME_PRESET)}</span></span>
                         </div>
@@ -372,7 +372,7 @@
                 <script type="text/javascript" src="${static_url('js/parsers.js')}"></script>
                 <script type="text/javascript" src="${static_url('js/rootDirs.js')}"></script>
                 % if settings.DEVELOPER:
-                    <script type="text/javascript" src="${static_url('js/core.js')}"></script>
+                    <script type="text/javascript" src="/js/core.js"></script>
                 % else:
                     <script type="text/javascript" src="${static_url('js/core.min.js')}"></script>
                 % endif

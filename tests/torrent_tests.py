@@ -21,9 +21,8 @@
 import unittest
 
 # First Party Imports
-import sickbeard
-from sickbeard.providers.bitcannon import BitCannonProvider
-from sickbeard.providers.rarbg import provider as rarbg
+import sickbeard.logger
+from sickbeard.providers import bitcannon, rarbg
 from sickbeard.tv import TVEpisode, TVShow
 from sickchill import settings
 from tests import test_lib as test
@@ -51,15 +50,15 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         """
         Test bitcannon
         """
-        bitcannon = BitCannonProvider()
-        bitcannon.custom_url = ""        # true testing requires a valid URL here (e.g., "http://localhost:3000/")
-        bitcannon.api_key = ""
+        provider = bitcannon.Provider()
+        provider.custom_url = ""        # true testing requires a valid URL here (e.g., "http://localhost:3000/")
+        provider.api_key = ""
 
-        if bitcannon.custom_url:
+        if provider.custom_url:
 
-            search_strings_list = bitcannon.get_episode_search_strings(self.shows[0].episodes[0])  # [{'Episode': ['Italian Works S05E10']}]
+            search_strings_list = provider.get_episode_search_strings(self.shows[0].episodes[0])  # [{'Episode': ['Italian Works S05E10']}]
             for search_strings in search_strings_list:
-                bitcannon.search(search_strings)   # {'Episode': ['Italian Works S05E10']}
+                provider.search(search_strings)   # {'Episode': ['Italian Works S05E10']}
 
         return True
 
@@ -69,11 +68,12 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         Test searching, using rarbg
         """
         settings.CPU_PRESET = 'LOW'
-        results = rarbg.search({'Episode': ['The Mandalorian S01E08']})
+        provider = rarbg.Provider()
+        results = provider.search({'Episode': ['The Mandalorian S01E08']})
         self.assertTrue(results)
         self.assertIn('Mandalorian', results[0]['title'])
 
-        results = rarbg.search({'RSS': ['']})
+        results = provider.search({'RSS': ['']})
         self.assertTrue(results)
 
 

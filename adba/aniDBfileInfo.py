@@ -48,7 +48,7 @@ def get_file_hash(filePath):
         a = gen(f)
         hashes = [md4_hash(data).digest() for data in a]
         if len(hashes) == 1:
-            return hashes[0].encode("hex")
+            return hashes[0].hex()
         else:
             return md4_hash(reduce(lambda a, d: a + d, hashes, "")).hexdigest()
 

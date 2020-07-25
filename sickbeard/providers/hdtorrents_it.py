@@ -31,7 +31,7 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class HDTorrentsProvider_IT(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
@@ -186,6 +186,3 @@ class HDTorrentsProvider_IT(TorrentProvider):
             results += items
 
         return results
-
-
-provider = HDTorrentsProvider_IT()

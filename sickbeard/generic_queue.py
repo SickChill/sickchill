@@ -21,9 +21,6 @@
 import datetime
 import threading
 
-# First Party Imports
-import sickchill.start
-
 # Local Folder Imports
 from . import logger
 

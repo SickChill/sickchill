@@ -18,8 +18,9 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import json
-# noinspection PyUnresolvedReferences
-import urllib
+import urllib.error
+import urllib.parse
+import urllib.request
 
 # First Party Imports
 from sickbeard import logger

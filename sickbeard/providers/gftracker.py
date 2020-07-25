@@ -31,12 +31,12 @@ from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class GFTrackerProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "GFTracker")
+        super().__init__("GFTracker")
 
         # Credentials
         self.username = None
@@ -185,6 +185,3 @@ class GFTrackerProvider(TorrentProvider):
             results += items
 
         return results
-
-
-provider = GFTrackerProvider()

@@ -22,7 +22,6 @@ import datetime
 import sys
 
 # First Party Imports
-import sickbeard
 import sickchill
 from sickchill import settings
 from sickchill.helper.common import dateTimeFormat
@@ -82,12 +81,12 @@ class SearchResult(object):
         self.version = result_dict.get('version')
         self.release_group = result_dict.get('release_group')
         self.quality = result_dict.get('quality')
-        self.provider = sickbeard.providers.getProviderModule(result_dict.get('provider')).provider
+        # self.provider = sickbeard.providers.getProviderModule(result_dict.get('provider')).provider
+
 
     @classmethod
     def make_result(cls, result_dict):
-        # noinspection PyUnresolvedReferences
-        show = sickbeard.tv.Show.find(settings.showList, int(result_dict.get('show')))
+        show = sickchill.show.Show.find(settings.showList, int(result_dict.get('show')))
         episode = show.getEpisode(result_dict.get('season'), result_dict.get('episode'))
         result = cls([episode])
         result.from_json(result_dict)

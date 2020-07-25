@@ -311,7 +311,7 @@ class MyListCommand(Command):
         elif fid or size or ed2k:
             resp = intr.file(fid=fid, size=size, ed2k=ed2k)
             if resp.rescode != '220':
-                resp = NoSuchMylistResponse(self, None, '321', 'NO SUCH ENTRY (FILE NOT FOUND)', [])
+                resp = NoSuchMylistEntryResponse(self, None, '321', 'NO SUCH ENTRY (FILE NOT FOUND)', [])
                 resp.parse()
                 return resp
             fid = resp.datalines[0]['fid']

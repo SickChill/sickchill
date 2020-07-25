@@ -36,11 +36,11 @@ from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class BTNProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "BTN")
+        super().__init__("BTN")
 
         self.supports_absolute_numbering = True
 
@@ -140,9 +140,9 @@ class BTNProvider(TorrentProvider):
             time.sleep(cpu_presets[settings.CPU_PRESET])
 
         except jsonrpclib.jsonrpc.ProtocolError as error:
-            if error.message == (-32001, 'Invalid API Key'):
+            if error == (-32001, 'Invalid API Key'):
                 logger.warning("The API key you provided was rejected because it is invalid. Check your provider configuration.")
-            elif error.message == (-32002, 'Call Limit Exceeded'):
+            elif error == (-32002, 'Call Limit Exceeded'):
                 logger.warning("You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account")
             else:
                 logger.exception("JSON-RPC protocol error while accessing provider. Error: {0} ".format(repr(error)))
@@ -312,5 +312,3 @@ class BTNCache(tvcache.TVCache):
 
         self.search_params = None  # BTN cache does not use search params
         return {'entries': self.provider.search(search_params=self.search_params, age=seconds_since_last_update)}
-
-provider = BTNProvider()

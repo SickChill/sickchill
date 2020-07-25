@@ -19,7 +19,6 @@ import socket, sys, zlib
 from time import time, sleep
 import threading
 
-from sickchill import settings
 from .aniDBresponses import ResponseResolver
 from .aniDBerrors import *
 
@@ -136,10 +135,10 @@ class AniDBLink(threading.Thread):
                 sys.excepthook(*sys.exc_info())
                 print("Avoiding flood by paranoidly panicing: Aborting link thread, killing connection, releasing waiters and quiting")
                 self.sock.close()
-                try:cmd.waiter.release()
+                try: cmd.waiter.release()
                 except:pass
                 for tag, cmd in self.cmd_queue.items():
-                    try:cmd.waiter.release()
+                    try: cmd.waiter.release()
                     except:pass
                 sys.exit()
 

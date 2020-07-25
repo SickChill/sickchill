@@ -52,7 +52,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="horizontal-scroll">
-                <table id="historyTable" class="sickchillTable tablesorter" cellspacing="1" border="0" cellpadding="0">
+                <table id="historyTable" class="sickchillTable tablesorter">
                     % if settings.HISTORY_LAYOUT == "detailed":
                         <thead>
                             <tr>
@@ -76,7 +76,9 @@
                                         %>
                                         <time datetime="${isoDate}" class="date">${airDate}</time>
                                     </td>
-                                    <td class="tvShow" width="35%"><a href="${srRoot}/home/displayShow?show=${hItem["show_id"]}#S${hItem["season"]}E${hItem["episode"]}">${hItem["show_name"]} - ${"S%02i" % int(hItem["season"])}${"E%02i" % int(hItem["episode"])} ${('', '<span class="quality Proper">Proper</span>')["proper" in hItem["resource"].lower() or "repack" in hItem["resource"].lower()]}</a></td>
+                                    <td class="tvShow" width="35%"><a href="${srRoot}/home/displayShow?show=${hItem["show_id"]}#S${hItem["season"]}E${hItem["episode"]}">
+                                        ${"{} - S{:02}E{:02}".format(hItem["show_name"], int(hItem["season"]), int(hItem["episode"]))} ${('', '<span class="quality Proper">Proper</span>')["proper" in hItem["resource"].lower() or "repack" in hItem["resource"].lower()]}
+                                    </a></td>
                                     <td align="center" ${('', 'class="subtitles_column"')[curStatus == SUBTITLED]}>
                                         % if curStatus == SUBTITLED:
                                             <img width="16" height="11" style="vertical-align:middle;" src="${static_url('images/subtitles/flags/' + hItem['resource'] + '.png') }" onError="this.onerror=null;this.src='${ static_url('images/flags/unknown.png')}';">
@@ -91,7 +93,7 @@
                                                 <span style="vertical-align:middle;"><i>${_('Unknown')}</i></span>
                                             % endif
                                         % else:
-                                            % if hItem["provider"] > 0:
+                                            % if hItem["provider"]:
                                                 % if curStatus in [SNATCHED, FAILED]:
                                                     <% provider = providers.getProviderClass(GenericProvider.make_id(hItem["provider"])) %>
                                                     % if provider is not None:
@@ -147,7 +149,11 @@
                                         <time datetime="${isoDate}" class="date">${airDate}</time>
                                     </td>
                                     <td class="tvShow" width="25%">
-                                        <span><a href="${srRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">${hItem["show_name"]} - ${"S%02i" % int(hItem["season"])}${"E%02i" % int(hItem["episode"])}${('', ' <span class="quality Proper">Proper</span>')['proper' in hItem["resource"].lower() or 'repack' in hItem["resource"].lower()]}</a></span>
+                                        <span>
+                                            <a href="${srRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">
+                                                ${"{} - S{:02}E{:02}".format(hItem["show_name"], int(hItem["season"]), int(hItem["episode"]))}${('', ' <span class="quality Proper">Proper</span>')['proper' in hItem["resource"].lower() or 'repack' in hItem["resource"].lower()]}
+                                            </a>
+                                        </span>
                                     </td>
                                     <td align="center" provider="${str(sorted(hItem["actions"])[0]["provider"])}">
                                         % for action in sorted(hItem["actions"]):

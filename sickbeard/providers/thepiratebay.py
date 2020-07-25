@@ -31,12 +31,12 @@ from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class ThePirateBayProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "ThePirateBay")
+        super().__init__("ThePirateBay")
 
         # Credentials
         self.public = True
@@ -215,6 +215,3 @@ class TrackerCacheDBConnection(db.DBConnection):
             result = sql_result['trackers']
 
         return result
-
-
-provider = ThePirateBayProvider()

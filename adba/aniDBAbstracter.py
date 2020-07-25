@@ -17,8 +17,7 @@
 
 
 
-import os, re, string
-from time import time, sleep
+import re, string
 
 from . import aniDBfileInfo as fileInfo
 from .aniDBmaper import AniDBMaper

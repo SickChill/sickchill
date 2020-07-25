@@ -24,6 +24,9 @@ Test exception logging
 # Stdlib Imports
 import unittest
 
+# First Party Imports
+from sickbeard import logger
+
 
 def exception_generator():
     """
