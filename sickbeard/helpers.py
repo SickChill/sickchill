@@ -55,10 +55,9 @@ from tornado._locale_data import LOCALE_NAMES
 from unidecode import unidecode
 
 # First Party Imports
-import adba
 import sickbeard
 import sickchill
-from sickchill import settings
+from sickchill import adba, settings
 from sickchill.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS
 from sickchill.helper.common import replace_extension
 from sickchill.show.Show import Show
@@ -727,7 +726,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         from OpenSSL import crypto
 
         # First Party Imports
-        from certgen import createCertificate, createCertRequest, createKeyPair, TYPE_RSA
+        from sickchill.certgen import createCertificate, createCertRequest, createKeyPair, TYPE_RSA
     except Exception:
         logger.info(traceback.format_exc())
         logger.warning(_("pyopenssl module missing, please install for https access"))

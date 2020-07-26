@@ -26,10 +26,9 @@ import stat
 import subprocess
 
 # First Party Imports
-import adba
 import sickbeard
 from sickbeard import logger
-from sickchill import settings
+from sickchill import adba, settings
 from sickchill.helper import glob
 from sickchill.helper.common import remove_extension, replace_extension, SUBTITLE_EXTENSIONS
 from sickchill.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ShowDirectoryNotFoundException

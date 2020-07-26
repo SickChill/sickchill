@@ -213,7 +213,7 @@ class ApiHandler(RequestHandler):
             if multi_commands:  # if we had multiple commands we have to wrap it in a response dict
                 out_dict = _responds(RESULT_SUCCESS, out_dict)
         else:  # index / no cmd given
-            out_dict = CMDSickBeard(args, kwargs).run()
+            out_dict = CMDSickChill(args, kwargs).run()
 
         return out_dict
 
@@ -1417,11 +1417,11 @@ class CMDPostProcess(ApiCall):
 
 
 # noinspection PyAbstractClass
-class CMDSickBeard(ApiCall):
+class CMDSickChill(ApiCall):
     _help = {"desc": "Get miscellaneous information about SickChill"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickBeard, self).__init__(args, kwargs)
+        super(CMDSickChill, self).__init__(args, kwargs)
 
     def run(self):
         """ dGet miscellaneous information about SickChill """
@@ -1433,7 +1433,7 @@ class CMDSickBeard(ApiCall):
 
 
 # noinspection PyAbstractClass
-class CMDSickBeardAddRootDir(ApiCall):
+class CMDSickChillAddRootDir(ApiCall):
     _help = {
         "desc": "Add a new root (parent) directory to SickChill",
         "requiredParameters": {
@@ -1445,7 +1445,7 @@ class CMDSickBeardAddRootDir(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDSickBeardAddRootDir, self).__init__(args, kwargs)
+        super(CMDSickChillAddRootDir, self).__init__(args, kwargs)
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
         self.default, args = self.check_params(args, kwargs, "default", False, False, "bool", [])
 
@@ -1493,11 +1493,11 @@ class CMDSickBeardAddRootDir(ApiCall):
 
 
 # noinspection PyAbstractClass
-class CMDSickBeardCheckVersion(ApiCall):
+class CMDSickChillCheckVersion(ApiCall):
     _help = {"desc": "Check if a new version of SickChill is available"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickBeardCheckVersion, self).__init__(args, kwargs)
+        super(CMDSickChillCheckVersion, self).__init__(args, kwargs)
 
     def run(self):
         check_version = CheckVersion()
@@ -1522,11 +1522,11 @@ class CMDSickBeardCheckVersion(ApiCall):
 
 
 # noinspection PyAbstractClass
-class CMDSickBeardCheckScheduler(ApiCall):
+class CMDSickChillCheckScheduler(ApiCall):
     _help = {"desc": "Get information about the scheduler"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickBeardCheckScheduler, self).__init__(args, kwargs)
+        super(CMDSickChillCheckScheduler, self).__init__(args, kwargs)
 
     def run(self):
         """ Get information about the scheduler """
@@ -1546,7 +1546,7 @@ class CMDSickBeardCheckScheduler(ApiCall):
 
 
 # noinspection PyAbstractClass
-class CMDSickBeardDeleteRootDir(ApiCall):
+class CMDSickChillDeleteRootDir(ApiCall):
     _help = {
         "desc": "Delete a root (parent) directory from SickChill",
         "requiredParameters": {
@@ -1555,7 +1555,7 @@ class CMDSickBeardDeleteRootDir(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDSickBeardDeleteRootDir, self).__init__(args, kwargs)
+        super(CMDSickChillDeleteRootDir, self).__init__(args, kwargs)
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
 
     def run(self):
@@ -1594,11 +1594,11 @@ class CMDSickBeardDeleteRootDir(ApiCall):
 
 
 # noinspection PyAbstractClass
-class CMDSickBeardGetDefaults(ApiCall):
+class CMDSickChillGetDefaults(ApiCall):
     _help = {"desc": "Get SickChill's user default configuration value"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickBeardGetDefaults, self).__init__(args, kwargs)
+        super(CMDSickChillGetDefaults, self).__init__(args, kwargs)
 
     def run(self):
         """ Get SickChill's user default configuration value """
@@ -1616,11 +1616,11 @@ class CMDSickBeardGetDefaults(ApiCall):
 
 
 # noinspection PyAbstractClass
-class CMDSickBeardGetMessages(ApiCall):
+class CMDSickChillGetMessages(ApiCall):
     _help = {"desc": "Get all messages"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickBeardGetMessages, self).__init__(args, kwargs)
+        super(CMDSickChillGetMessages, self).__init__(args, kwargs)
 
     def run(self):
         messages = []
@@ -1634,11 +1634,11 @@ class CMDSickBeardGetMessages(ApiCall):
 
 
 # noinspection PyAbstractClass
-class CMDSickBeardGetRootDirs(ApiCall):
+class CMDSickChillGetRootDirs(ApiCall):
     _help = {"desc": "Get all root (parent) directories"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickBeardGetRootDirs, self).__init__(args, kwargs)
+        super(CMDSickChillGetRootDirs, self).__init__(args, kwargs)
 
     def run(self):
         """ Get all root (parent) directories """
@@ -1647,7 +1647,7 @@ class CMDSickBeardGetRootDirs(ApiCall):
 
 
 # noinspection PyAbstractClass
-class CMDSickBeardPauseBacklog(ApiCall):
+class CMDSickChillPauseBacklog(ApiCall):
     _help = {
         "desc": "Pause or un-pause the backlog search",
         "optionalParameters": {
@@ -1656,7 +1656,7 @@ class CMDSickBeardPauseBacklog(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDSickBeardPauseBacklog, self).__init__(args, kwargs)
+        super(CMDSickChillPauseBacklog, self).__init__(args, kwargs)
         self.pause, args = self.check_params(args, kwargs, "pause", False, False, "bool", [])
 
     def run(self):
@@ -1670,11 +1670,11 @@ class CMDSickBeardPauseBacklog(ApiCall):
 
 
 # noinspection PyAbstractClass
-class CMDSickBeardPing(ApiCall):
+class CMDSickChillPing(ApiCall):
     _help = {"desc": "Ping SickChill to check if it is running"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickBeardPing, self).__init__(args, kwargs)
+        super(CMDSickChillPing, self).__init__(args, kwargs)
 
     def run(self):
         """ Ping SickChill to check if it is running """
@@ -1685,11 +1685,11 @@ class CMDSickBeardPing(ApiCall):
 
 
 # noinspection PyAbstractClass
-class CMDSickBeardRestart(ApiCall):
+class CMDSickChillRestart(ApiCall):
     _help = {"desc": "Restart SickChill"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickBeardRestart, self).__init__(args, kwargs)
+        super(CMDSickChillRestart, self).__init__(args, kwargs)
 
     def run(self):
         """ Restart SickChill """
@@ -1700,7 +1700,7 @@ class CMDSickBeardRestart(ApiCall):
 
 
 # noinspection PyAbstractClass
-class CMDSickBeardSearchIndexers(ApiCall):
+class CMDSickChillSearchIndexers(ApiCall):
     _help = {
         "desc": "Search for a show with a given name on all the indexers, in a specific language",
         "optionalParameters": {
@@ -1712,7 +1712,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDSickBeardSearchIndexers, self).__init__(args, kwargs)
+        super(CMDSickChillSearchIndexers, self).__init__(args, kwargs)
         self.valid_languages = sickchill.indexer.lang_dict()
         self.name, args = self.check_params(args, kwargs, "name", None, False, "string", [])
         self.lang, args = self.check_params(args, kwargs, "lang", settings.INDEXER_DEFAULT_LANGUAGE, False, "string",
@@ -1770,7 +1770,7 @@ class CMDSickBeardSearchIndexers(ApiCall):
 
 
 # noinspection PyAbstractClass
-class CMDSickBeardSearchTVDB(CMDSickBeardSearchIndexers):
+class CMDSickChillSearchTVDB(CMDSickChillSearchIndexers):
     _help = {
         "desc": "Search for a show with a given name on The TVDB, in a specific language",
         "optionalParameters": {
@@ -1781,12 +1781,12 @@ class CMDSickBeardSearchTVDB(CMDSickBeardSearchIndexers):
     }
 
     def __init__(self, args, kwargs):
-        CMDSickBeardSearchIndexers.__init__(self, args, kwargs)
+        CMDSickChillSearchIndexers.__init__(self, args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
 
 
 # noinspection PyAbstractClass
-class CMDSickBeardSearchTVRAGE(CMDSickBeardSearchIndexers):
+class CMDSickChillSearchTVRAGE(CMDSickChillSearchIndexers):
     """
     Deprecated, TVRage is no more.
     """
@@ -1802,14 +1802,14 @@ class CMDSickBeardSearchTVRAGE(CMDSickBeardSearchIndexers):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDSickBeardSearchTVRAGE, self).__init__(args, kwargs)
+        super(CMDSickChillSearchTVRAGE, self).__init__(args, kwargs)
 
     def run(self):
         return _responds(RESULT_FAILURE, msg="TVRage is no more, invalid result")
 
 
 # noinspection PyAbstractClass
-class CMDSickBeardSetDefaults(ApiCall):
+class CMDSickChillSetDefaults(ApiCall):
     _help = {
         "desc": "Set SickChill's user default configuration value",
         "optionalParameters": {
@@ -1822,7 +1822,7 @@ class CMDSickBeardSetDefaults(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDSickBeardSetDefaults, self).__init__(args, kwargs)
+        super(CMDSickChillSetDefaults, self).__init__(args, kwargs)
         self.initial, args = self.check_params(args, kwargs, "initial", [], False, "list", ALLOWED_QUALITY_LIST)
         self.archive, args = self.check_params(args, kwargs, "archive", [], False, "list", PREFERRED_QUALITY_LIST)
 
@@ -1874,11 +1874,11 @@ class CMDSickBeardSetDefaults(ApiCall):
 
 
 # noinspection PyAbstractClass
-class CMDSickBeardShutdown(ApiCall):
+class CMDSickChillShutdown(ApiCall):
     _help = {"desc": "Shutdown SickChill"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickBeardShutdown, self).__init__(args, kwargs)
+        super(CMDSickChillShutdown, self).__init__(args, kwargs)
 
     def run(self):
         """ Shutdown SickChill """
@@ -1889,11 +1889,11 @@ class CMDSickBeardShutdown(ApiCall):
 
 
 # noinspection PyAbstractClass
-class CMDSickBeardUpdate(ApiCall):
+class CMDSickChillUpdate(ApiCall):
     _help = {"desc": "Update SickChill to the latest version available"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickBeardUpdate, self).__init__(args, kwargs)
+        super(CMDSickChillUpdate, self).__init__(args, kwargs)
 
     def run(self):
         check_version = CheckVersion()
@@ -2035,7 +2035,7 @@ class CMDShowAddExisting(ApiCall):
             return _responds(RESULT_FAILURE, msg='Not a valid location')
 
         indexer_name = None
-        indexer_result = CMDSickBeardSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid}).run()
+        indexer_result = CMDSickChillSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid}).run()
 
         if indexer_result['result'] == result_type_map[RESULT_SUCCESS]:
             if not indexer_result['data']['results']:
@@ -2194,7 +2194,7 @@ class CMDShowAddNew(ApiCall):
             default_ep_status_after = self.future_status
 
         indexer_name = None
-        indexer_result = CMDSickBeardSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid, 'lang': self.lang}).run()
+        indexer_result = CMDSickChillSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid, 'lang': self.lang}).run()
 
         if indexer_result['result'] == result_type_map[RESULT_SUCCESS]:
             if not indexer_result['data']['results']:
@@ -2888,27 +2888,27 @@ function_mapper = {
     "backlog": CMDBacklog,
     "logs": CMDLogs,
     "logs.clear": CMDLogsClear,
-    "sb": CMDSickBeard,
+    "sb": CMDSickChill,
     "postprocess": CMDPostProcess,
-    "sb.addrootdir": CMDSickBeardAddRootDir,
-    "sb.checkversion": CMDSickBeardCheckVersion,
-    "sb.checkscheduler": CMDSickBeardCheckScheduler,
-    "sb.deleterootdir": CMDSickBeardDeleteRootDir,
-    "sb.getdefaults": CMDSickBeardGetDefaults,
-    "sb.getmessages": CMDSickBeardGetMessages,
-    "sb.getrootdirs": CMDSickBeardGetRootDirs,
-    "sb.pausebacklog": CMDSickBeardPauseBacklog,
-    "sb.ping": CMDSickBeardPing,
-    "sb.restart": CMDSickBeardRestart,
+    "sb.addrootdir": CMDSickChillAddRootDir,
+    "sb.checkversion": CMDSickChillCheckVersion,
+    "sb.checkscheduler": CMDSickChillCheckScheduler,
+    "sb.deleterootdir": CMDSickChillDeleteRootDir,
+    "sb.getdefaults": CMDSickChillGetDefaults,
+    "sb.getmessages": CMDSickChillGetMessages,
+    "sb.getrootdirs": CMDSickChillGetRootDirs,
+    "sb.pausebacklog": CMDSickChillPauseBacklog,
+    "sb.ping": CMDSickChillPing,
+    "sb.restart": CMDSickChillRestart,
     "sb.dailysearch": CMDDailySearch,
     "sb.propersearch": CMDProperSearch,
     "sb.subtitlesearch": CMDFullSubtitleSearch,
-    "sb.searchindexers": CMDSickBeardSearchIndexers,
-    "sb.searchtvdb": CMDSickBeardSearchTVDB,
-    "sb.searchtvrage": CMDSickBeardSearchTVRAGE,
-    "sb.setdefaults": CMDSickBeardSetDefaults,
-    "sb.update": CMDSickBeardUpdate,
-    "sb.shutdown": CMDSickBeardShutdown,
+    "sb.searchindexers": CMDSickChillSearchIndexers,
+    "sb.searchtvdb": CMDSickChillSearchTVDB,
+    "sb.searchtvrage": CMDSickChillSearchTVRAGE,
+    "sb.setdefaults": CMDSickChillSetDefaults,
+    "sb.update": CMDSickChillUpdate,
+    "sb.shutdown": CMDSickChillShutdown,
     "show": CMDShow,
     "show.addexisting": CMDShowAddExisting,
     "show.addnew": CMDShowAddNew,

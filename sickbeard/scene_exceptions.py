@@ -23,10 +23,9 @@ import threading
 import time
 
 # First Party Imports
-import adba
 import sickbeard
 import sickchill
-from sickchill import settings
+from sickchill import adba, settings
 
 # Local Folder Imports
 from . import db, helpers, logger

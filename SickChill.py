@@ -35,8 +35,8 @@ import traceback
 
 # First Party Imports
 import sickchill.start
-from setup import setup_gettext, setup_lib_path
 from sickchill import settings
+from sickchill.init_helpers import setup_gettext, setup_lib_path
 
 setup_lib_path()
 setup_gettext()
@@ -139,7 +139,7 @@ class SickChill(object):
             result = self.force_update()
             sys.exit(int(not result))  # Ok -> 0 , Error -> 1
 
-        # Need console logging for SickChill.py and SickBeard-console.exe
+        # Need console logging for SickChill.py and SickChill-console.exe
         settings.NO_RESIZE = args.noresize
         self.console_logging = (not hasattr(sys, 'frozen')) or (settings.MY_NAME.lower().find('-console') > 0) and not args.quiet
         self.no_launch = args.nolaunch

@@ -29,8 +29,7 @@ import sys
 from configobj import ConfigObj
 
 # First Party Imports
-from setup import setup_gettext, setup_lib_path
-
+from .init_helpers import setup_lib_path
 setup_lib_path()
 
 # Third Party Imports
@@ -47,6 +46,7 @@ from sickbeard.databases import cache, failed, main
 from sickbeard.providers.newznab import NewznabProvider
 from sickbeard.providers.rsstorrent import TorrentRssProvider
 from sickchill import settings, show_updater
+from .init_helpers import setup_gettext, setup_lib_path
 
 # Local Folder Imports
 from .helper import setup_github

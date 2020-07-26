@@ -21,7 +21,7 @@ import random
 from threading import Lock
 
 # First Party Imports
-from setup import setup_gettext, setup_lib_path
+from .init_helpers import setup_gettext, setup_lib_path
 
 setup_lib_path()
 
