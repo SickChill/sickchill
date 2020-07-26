@@ -56,6 +56,7 @@ class Config(WebRoot):
 
         try:
             # Stdlib Imports
+            # noinspection PyUnresolvedReferences
             import pwd
             sr_user = pwd.getpwuid(os.getuid()).pw_name
         except ImportError:

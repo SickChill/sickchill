@@ -30,10 +30,12 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     try:
         # Third Party Imports
+        # noinspection PyUnresolvedReferences
         from pgi.repository import Notify
     except (ImportError, Exception):
         try:
             # Third Party Imports
+            # noinspection PyUnresolvedReferences
             from gi.repository import Notify
         except (ImportError, Exception):
             Notify = None

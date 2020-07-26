@@ -334,7 +334,7 @@ class TraktChecker(object):
                             continue
 
                         try:
-                            progress = self.trakt_api.traktRequest("shows/" + show.imdbid + "/progress/watched") or []
+                            progress = self.trakt_api.traktRequest("shows/" + show.imdbid + "/progress/watched") or {}
                         except traktException as e:
                             logger.warning("Could not connect to Trakt service. Aborting removing show {0} from SickChill. Error: {1}".format(show.name, repr(e)))
                             continue

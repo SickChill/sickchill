@@ -21,6 +21,7 @@ import time
 from base64 import b16encode, b32decode
 from hashlib import sha1
 from urllib.parse import urlencode
+from typing import Union, Iterable, Dict
 
 # Third Party Imports
 import bencodepy
@@ -172,7 +173,7 @@ class GenericClient(object):
                 raise Exception('Torrent without content')
 
             try:
-                torrent_bdecode = bencodepy.decode(result.content, True)
+                torrent_bdecode: Union[Iterable, Dict] = bencodepy.decode(result.content)
             except (bencodepy.DecodingError, Exception) as error:
                 logger.exception('Unable to bdecode torrent')
                 logger.info('Error is: {0}'.format(error))

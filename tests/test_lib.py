@@ -50,6 +50,7 @@ from configobj import ConfigObj
 import sickbeard.config
 import sickbeard.logger
 import sickchill.start
+import sickbeard.tvcache
 from sickbeard import db, providers
 from sickbeard.databases import cache, failed, main
 from sickbeard.providers.newznab import NewznabProvider
