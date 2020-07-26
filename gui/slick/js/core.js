@@ -1963,7 +1963,7 @@ const SICKCHILL = {
                         $('#torrent_path_option').find('.fileBrowser').hide();
                         $('#host_desc_torrent').text(_('URL to your Synology DS client (e.g. http://localhost:5000)'));
                         $('#path_synology').show();
-                    } else if (selectedProvider.toLowerCase() === 'rtorrent' || selectedProvider.toLowerCase() === 'rtorrent9') {
+                    } else if (selectedProvider.toLowerCase() === 'rtorrent') {
                         client = 'rTorrent';
                         $('#host_desc_torrent').html(_('URL to your rTorrent client (e.g. scgi://localhost:5000 <br> ' +
                                                         'or https://localhost/rutorrent/plugins/httprpc/action.php)'));

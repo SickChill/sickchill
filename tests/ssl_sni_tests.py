@@ -37,13 +37,12 @@ def generator(_provider):
     """
     Generate tests for each provider
 
-    :param test_strings: to generate tests from
+    :param _provider: to generate tests from
     :return: test
     """
     def _connectivity_test():
         """
         Generate tests
-        :param self:
         :return: test to run
         """
         if not _provider.url:
@@ -56,7 +55,7 @@ def generator(_provider):
             if 'certificate verify failed' in str(error):
                 print('Cannot verify certificate for {0}'.format(_provider.name))
             else:
-                print('SSLError on {0}: {1}'.format(_provider.name, str(error.message)))
+                print('SSLError on {0}: {1}'.format(_provider.name, str(error)))
                 raise
         except requests.exceptions.Timeout:
             print('Provider timed out')

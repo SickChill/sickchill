@@ -25,8 +25,7 @@ import os
 import re
 import time
 import traceback
-# noinspection PyUnresolvedReferences
-import urllib
+import urllib.parse
 
 # Third Party Imports
 from tornado.web import RequestHandler
@@ -134,7 +133,7 @@ class ApiHandler(RequestHandler):
         try:
             self.finish(output_callback(out_dict))
         except Exception:
-            paencodess
+            pass
 
     def _out_as_image(self, _dict):
         self.set_header('Content-Type', settings.IMAGE_CACHE.content_type(_dict['image']))
@@ -869,7 +868,7 @@ class AbstractStartScheduler(ApiCall):
             return _responds(RESULT_SUCCESS, msg=result_str)
         else:
             # Scheduler is currently active
-            error_str = '{0}: {1} search underway. Time remaining: {}.'.format(
+            error_str = '{}: {} search underway. Time remaining: {}.'.format(
                 error_str, self.scheduler_class_str, time_remain)
             return _responds(RESULT_FAILURE, msg=error_str)
 

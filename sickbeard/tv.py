@@ -738,11 +738,7 @@ class TVShow(object):
             if not self.network:
                 self.network = sql_results[0]["network"]
             if not self.genre:
-                self.genre = sql_results[0]["genre"]
-
-            if not isinstance(self.genre, list):
-                if self.genre:
-                    self.genre = [x.strip() for x in self.genre.split('|') if x.strip()]
+                self.genre = [x.strip() for x in sql_results[0]["genre"].split('|') if x.strip()]
 
             if not self.classification:
                 self.classification = sql_results[0]["classification"]

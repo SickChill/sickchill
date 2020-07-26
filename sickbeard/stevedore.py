@@ -29,7 +29,6 @@ clients = RegistrableExtensionManager('sickbeard.clients', [
     'new_qbittorrent = sickbeard.clients.new_qbittorrent:Client',
     'putio = sickbeard.clients.putio:Client',
     'rtorrent = sickbeard.clients.rtorrent:Client',
-    'rtorrent9 = sickbeard.clients.rtorrent9:Client',
     'transmission = sickbeard.clients.transmission:Client',
     'utorrent = sickbeard.clients.utorrent:Client',
 ])
