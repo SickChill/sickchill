@@ -1,41 +1,26 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*
 """
 Use setup tools to install sickchill
 """
 # Stdlib Imports
-import gettext
-import os
 import sys
+from pathlib import Path
 
 # Third Party Imports
 from setuptools import find_packages, setup
-
-try:
-    # Third Party Imports
-    from babel.messages import frontend as babel
-except ImportError:
-    babel = None
-
-ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__)))
 
 
 info_dict = {'commands': {}}
 
 
-with open(os.path.join(ROOT, 'requirements.txt'), 'r') as fp:
-    info_dict['install_requires'] = [l for l in fp.readlines() if not l.startswith('#')]
-
-with open(os.path.join(ROOT, 'readme.md'), 'r') as fp:
-    info_dict['readme'] = fp.read()
+with open(Path('requirements.txt').absolute(), 'r') as fp:
+    info_dict['install_requires'] = [line for line in fp.readlines() if not line.startswith('#') and not line.startswith('git+')]
 
 
-if babel:
-    info_dict['commands'].update({
-        'compile_catalog': babel.compile_catalog,
-        'extract_messages': babel.extract_messages,
-        'init_catalog': babel.init_catalog,
-        'update_catalog': babel.update_catalog
-    })
+with open(Path('readme.md').absolute(), 'r') as fp:
+    long_description = fp.read()
+
 
 if 'setup.py' in sys.argv[0]:
     setup(
@@ -43,7 +28,8 @@ if 'setup.py' in sys.argv[0]:
         version="0.0.1",
 
         description="Automatic Video Library Manager for TV Shows",
-        long_description=info_dict['readme'],
+        long_description=long_description,
+        long_description_content_type='text/markdown',
 
         url='https://sickchill.github.io',
         download_url='https://github.com/SickChill/SickChill.git',
@@ -67,15 +53,14 @@ if 'setup.py' in sys.argv[0]:
             'flake8-coding',
             'isort'
         ],
-        python_requires='>=3',
+        python_requires='>=3.5',
         classifiers=[
             'Development Status :: 3 - Alpha',
             'Intended Audience :: System Administrators',
             'Operating System :: OS Independent',
             'Topic :: Multimedia :: Video',
             'Programming Language :: Python :: 3',
-            'Programming Language :: Python :: 3.2',
-            'Programming Language :: Python :: 3.3',
+            'Programming Language :: Python :: 3 :: Only',
             'Programming Language :: Python :: 3.5',
             'Programming Language :: Python :: 3.6',
             'Programming Language :: Python :: 3.7',
@@ -99,14 +84,15 @@ if 'setup.py' in sys.argv[0]:
 
 
 def setup_lib_path(additional=None):
-    lib_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'lib3'))
-    if lib_path not in sys.path:
-        sys.path.insert(1, lib_path)
+    lib_path = Path('lib3').resolve()
+    if lib_path.exists() and str(lib_path) not in sys.path:
+        sys.path.insert(1, str(lib_path))
     if additional and additional not in sys.path:
         sys.path.insert(1, additional)
 
 
 def setup_gettext(language=None):
+    import gettext
     languages = [language] if language else None
-    gt = gettext.translation('messages', os.path.abspath(os.path.join(os.path.dirname(__file__), 'locale')), languages=languages, codeset='UTF-8')
+    gt = gettext.translation('messages', str(Path('locale').resolve()), languages=languages, codeset='UTF-8')
     gt.install(names=["ngettext"])
