@@ -21,18 +21,18 @@ import os
 import os.path
 import re
 import time
-from typing import Union
 from collections import OrderedDict
 from threading import Lock
+from typing import Union
 
 # Third Party Imports
 import dateutil
 
 # First Party Imports
-from sickbeard.tv import TVShow
 import sickchill
 from sickbeard import common, db, helpers, logger, scene_exceptions, scene_numbering
 from sickbeard.name_parser import regexes
+from sickbeard.tv import TVShow
 from sickchill.helper.common import remove_extension
 
 
