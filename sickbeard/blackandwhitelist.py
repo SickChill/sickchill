@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # First Party Imports
-from adba.aniDBerrors import AniDBCommandTimeoutError
+from sickchill.adba.aniDBerrors import AniDBCommandTimeoutError
 from sickchill import settings
 
 # Local Folder Imports

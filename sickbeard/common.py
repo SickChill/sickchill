@@ -29,8 +29,8 @@ from os import path
 import fake_useragent
 
 # First Party Imports
-from setup import setup_gettext
 from sickchill import settings
+from sickchill.init_helpers import setup_gettext
 from sickchill.helper import video_screen_size
 from sickchill.recompiled import tags
 from sickchill.tagger.episode import EpisodeTags

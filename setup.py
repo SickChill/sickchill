@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 # Third Party Imports
-from setuptools import find_packages, setup
+from setuptools import find_namespace_packages, setup
 
 
 info_dict = {'commands': {}}
@@ -25,7 +25,7 @@ with open(Path('readme.md').absolute(), 'r') as fp:
 if 'setup.py' in sys.argv[0]:
     setup(
         name="sickchill",
-        version="0.0.1",
+        version="0.0.2",
 
         description="Automatic Video Library Manager for TV Shows",
         long_description=long_description,
@@ -39,7 +39,7 @@ if 'setup.py' in sys.argv[0]:
 
         license='GPLv2',
 
-        packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
+        packages=find_namespace_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests", "lib3/*"]),
         install_requires=info_dict['install_requires'],
 
         test_suite="tests",
@@ -83,16 +83,3 @@ if 'setup.py' in sys.argv[0]:
     )
 
 
-def setup_lib_path(additional=None):
-    lib_path = Path('lib3').resolve()
-    if lib_path.exists() and str(lib_path) not in sys.path:
-        sys.path.insert(1, str(lib_path))
-    if additional and additional not in sys.path:
-        sys.path.insert(1, additional)
-
-
-def setup_gettext(language=None):
-    import gettext
-    languages = [language] if language else None
-    gt = gettext.translation('messages', str(Path('locale').resolve()), languages=languages, codeset='UTF-8')
-    gt.install(names=["ngettext"])
