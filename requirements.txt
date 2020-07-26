@@ -35,9 +35,7 @@ enzyme
 python3-fanart
 gntp
 pymediainfo
-#git+https://github.com/SickChill/rtorrent-python@rtorrent9#egg
 tus.py
-#rtorrent-python
 win-inet-pton
 pynma
 putio.py
@@ -52,5 +50,5 @@ deluge-client
 ifaddr
 twilio
 pyaes
-rtorrent-xmlrpc
+git+https://github.com/SickChill/rtorrent-python@9_plus-py3#egg=rtorrent
 #mir.anidb

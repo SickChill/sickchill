@@ -21,6 +21,7 @@ import os
 import os.path
 import re
 import time
+from typing import Union
 from collections import OrderedDict
 from threading import Lock
 
@@ -28,6 +29,7 @@ from threading import Lock
 import dateutil
 
 # First Party Imports
+from sickbeard.tv import TVShow
 import sickchill
 from sickbeard import common, db, helpers, logger, scene_exceptions, scene_numbering
 from sickbeard.name_parser import regexes
@@ -335,7 +337,7 @@ class NameParser(object):
         return bestResult
 
     @staticmethod
-    def _combine_results(first, second, attr):
+    def _combine_results(first, second, attr) -> Union[TVShow, None]:
         # if the first doesn't exist then return the second or nothing
         if not first:
             if not second:

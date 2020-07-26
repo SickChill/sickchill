@@ -19,6 +19,7 @@
 # Stdlib Imports
 import os
 import re
+from typing import Union
 from xml.etree import ElementTree
 
 # Third Party Imports
@@ -223,15 +224,14 @@ class GenericMetadata(object):
     def get_season_all_banner_path(self, show_obj):
         return os.path.join(show_obj.location, self.season_all_banner_name)
 
-
-    def _show_data(self, show_obj):
+    def _show_data(self, show_obj) -> Union[ElementTree, None]:
         """
         This should be overridden by the implementing class. It should
         provide the content of the show metadata file.
         """
         return None
 
-    def _ep_data(self, ep_obj):
+    def _ep_data(self, ep_obj) -> Union[ElementTree, None]:
         """
         This should be overridden by the implementing class. It should
         provide the content of the episode metadata file.

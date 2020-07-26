@@ -21,7 +21,8 @@
 # Stdlib Imports
 import http.client
 import time
-import urllib
+import urllib.parse
+import urllib.error
 
 # First Party Imports
 from sickbeard import logger

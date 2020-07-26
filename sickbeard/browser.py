@@ -20,7 +20,6 @@
 # Stdlib Imports
 import os
 import string
-from operator import itemgetter
 
 # First Party Imports
 from sickchill import settings

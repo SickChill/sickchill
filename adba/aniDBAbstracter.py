@@ -14,16 +14,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with aDBa.  If not, see <http://www.gnu.org/licenses/>.
-
-
-
 import re, string
 
 from . import aniDBfileInfo as fileInfo
 from .aniDBmaper import AniDBMaper
 from .aniDBtvDBmaper import TvDBMap
 from .aniDBerrors import *
-from .aniDBfileInfo import read_anidb_xml, read_tvdb_map_xml
+from .aniDBfileInfo import read_anidb_xml
 
 
 class aniDBabstractObject(object):
