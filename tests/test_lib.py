@@ -49,8 +49,8 @@ from configobj import ConfigObj
 # First Party Imports
 import sickbeard.config
 import sickbeard.logger
-import sickchill.start
 import sickbeard.tvcache
+import sickchill.start
 from sickbeard import db, providers
 from sickbeard.databases import cache, failed, main
 from sickbeard.providers.newznab import NewznabProvider
