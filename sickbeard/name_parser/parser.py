@@ -32,7 +32,6 @@ import dateutil
 import sickchill
 from sickbeard import common, db, helpers, logger, scene_exceptions, scene_numbering
 from sickbeard.name_parser import regexes
-from sickbeard.tv import TVShow
 from sickchill.helper.common import remove_extension
 
 
@@ -337,7 +336,7 @@ class NameParser(object):
         return bestResult
 
     @staticmethod
-    def _combine_results(first, second, attr) -> Union[TVShow, None]:
+    def _combine_results(first, second, attr):
         # if the first doesn't exist then return the second or nothing
         if not first:
             if not second:
