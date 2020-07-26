@@ -31,7 +31,6 @@ from github.GithubException import GithubException
 from tornado.escape import xhtml_unescape
 
 # First Party Imports
-import adba
 import sickbeard
 from sickbeard import clients, config, db, filters, helpers, logger, notifiers, sab, search_queue, subtitles as subtitle_module, ui
 from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
@@ -40,7 +39,7 @@ from sickbeard.scene_numbering import (get_scene_absolute_numbering, get_scene_a
                                        get_xem_absolute_numbering_for_show, get_xem_numbering_for_show, set_scene_numbering)
 from sickbeard.trakt_api import TraktAPI
 from sickbeard.versionChecker import CheckVersion
-from sickchill import settings
+from sickchill import adba, settings
 from sickchill.helper import try_int
 from sickchill.helper.common import pretty_file_size
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException

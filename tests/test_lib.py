@@ -95,10 +95,10 @@ def create_test_cache_folder():
     if not os.path.isdir(settings.CACHE_DIR):
         os.mkdir(settings.CACHE_DIR)
 
-# call env functions at appropriate time during SickBeard var setup
+# call env functions at appropriate time during SickChill var setup
 
 # =================
-#  SickBeard globals
+#  SickChill globals
 # =================
 sickbeard.SYS_ENCODING = 'UTF-8'
 
@@ -145,14 +145,14 @@ sickchill.indexer = ShowIndexer()
 # =================
 def _dummy_save_config():
     """
-    Override the SickBeard save_config which gets called during a db upgrade.
+    Override the SickChill save_config which gets called during a db upgrade.
 
     :return: True
     """
     return True
 
 
-# this overrides the SickBeard save_config which gets called during a db upgrade
+# this overrides the SickChill save_config which gets called during a db upgrade
 # this might be considered a hack
 sickchill.start.save_config = _dummy_save_config
 
