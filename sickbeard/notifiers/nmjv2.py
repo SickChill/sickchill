@@ -19,8 +19,7 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import time
-import urllib.request
-from xml.dom.minidom import parseString
+import requests
 from xml.etree import ElementTree
 
 # First Party Imports
@@ -60,32 +59,24 @@ class Notifier(object):
         Returns: True if the settings were retrieved successfully, False otherwise
         """
         try:
-            url_loc = "http://{0}:8008/file_operation?arg0=list_user_storage_file&arg1=&arg2={1}&arg3=20&arg4=true&arg5=true&arg6=true&arg7=all&arg8=name_asc&arg9=false&arg10=false".format(host, instance)
-            req = urllib.request.Request(url_loc)
-            handle1 = urllib.request.urlopen(req)
-            response1 = handle1.read()
-            xml = parseString(response1)
+
+            url = "http://{0}:8008/file_operation?arg0=list_user_storage_file&arg1=&arg2={1}&arg3=20&arg4=true&arg5=true&arg6=true&arg7=all&arg8=name_asc&arg9=false&arg10=false".format(host, instance)
+            response = requests.get(url)
+            et = ElementTree.fromstring(response.text)
             time.sleep(300.0 / 1000.0)
-            for node in xml.getElementsByTagName('path'):
-                xmlTag = node.toxml()
-                xmlData = xmlTag.replace('<path>', '').replace('</path>', '').replace('[=]', '')
-                url_db = "http://" + host + ":8008/metadata_database?arg0=check_database&arg1=" + xmlData
-                reqdb = urllib.request.Request(url_db)
-                handledb = urllib.request.urlopen(reqdb)
-                responsedb = handledb.read()
-                xmldb = parseString(responsedb)
-                returnvalue = xmldb.getElementsByTagName('returnValue')[0].toxml().replace('<returnValue>', '').replace(
-                    '</returnValue>', '')
-                if returnvalue == "0":
-                    DB_path = xmldb.getElementsByTagName('database_path')[0].toxml().replace(
-                        '<database_path>', '').replace('</database_path>', '').replace('[=]', '')
-                    if dbloc == "local" and DB_path.find("localhost") > -1:
+            for node in et.iter('path'):
+                url = "http://{}:8008/metadata_database?arg0=check_database&arg1={}".format(host, node.text.replace('[=]', ''))
+                response = requests.get(url)
+                xml_db = ElementTree.fromstring(response.text)
+                if xml_db.findtext('returnValue') == "0":
+                    db_path = xml_db.findtext('database_path')
+                    if dbloc == "local" and "localhost" in db_path:
                         settings.NMJv2_HOST = host
-                        settings.NMJv2_DATABASE = DB_path
+                        settings.NMJv2_DATABASE = db_path
                         return True
-                    if dbloc == "network" and DB_path.find("://") > -1:
+                    if dbloc == "network" and "://" in db_path:
                         settings.NMJv2_HOST = host
-                        settings.NMJv2_DATABASE = DB_path
+                        settings.NMJv2_DATABASE = db_path
                         return True
 
         except IOError as e:
@@ -106,28 +97,25 @@ class Notifier(object):
 
         # if a host is provided then attempt to open a handle to that URL
         try:
-            url_scandir = "http://" + host + ":8008/metadata_database?arg0=update_scandir&arg1=" + settings.NMJv2_DATABASE + "&arg2=&arg3=update_all"
+            url = "http://{}:8008/metadata_database?arg0=update_scandir&arg1={}&arg2=&arg3=update_all".format(host, settings.NMJv2_DATABASE)
             logger.debug("NMJ scan update command sent to host: {0}".format(host))
-            url_updatedb = "http://" + host + ":8008/metadata_database?arg0=scanner_start&arg1=" + settings.NMJv2_DATABASE + "&arg2=background&arg3="
-            logger.debug("Try to mount network drive via url: {0}".format(host))
-            prereq = urllib.request.Request(url_scandir)
-            req = urllib.request.Request(url_updatedb)
-            handle1 = urllib.request.urlopen(prereq)
-            response1 = handle1.read()
+            response1 = requests.get(url)
             time.sleep(300.0 / 1000.0)
-            handle2 = urllib.request.urlopen(req)
-            response2 = handle2.read()
+
+            url = "http://{}:8008/metadata_database?arg0=scanner_start&arg1{}&arg2=background&arg3=".format(host, settings.NMJv2_DATABASE)
+            logger.debug("Try to mount network drive via url: {0}".format(host))
+            response2 = requests.get(url)
         except IOError as e:
             logger.warning("Warning: Couldn't contact popcorn hour on host {0}: {1}".format(host, e))
             return False
         try:
-            et = ElementTree.fromstring(response1)
+            et = ElementTree.fromstring(response1.text)
             result1 = et.findtext("returnValue")
         except SyntaxError as e:
             logger.exception("Unable to parse XML returned from the Popcorn Hour: update_scandir, {0}".format(e))
             return False
         try:
-            et = ElementTree.fromstring(response2)
+            et = ElementTree.fromstring(response2.text)
             result2 = et.findtext("returnValue")
         except SyntaxError as e:
             logger.exception("Unable to parse XML returned from the Popcorn Hour: scanner_start, {0}".format(e))
