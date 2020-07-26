@@ -356,7 +356,7 @@
 
                         <div>
                             % if has_resource_module:
-                                <span class="footer-item">${_('Memory used')}: <span class="footerhighlight">${pretty_file_size(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)}</span></span> |
+                                <span class="footer-item">${_('Memory used')}: <span class="footerhighlight">${pretty_file_size(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024)}</span></span> |
                             % endif
                             <span class="footer-item">${_('Load time')}: <span class="footerhighlight">${"{:.4f}".format(time() - sbStartTime)}s</span></span> |
                             <span class="footer-item">Mako: <span class="footerhighlight">${"{:.4f}".format(time() - makoStartTime)}s</span></span> |
