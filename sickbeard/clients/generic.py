@@ -20,8 +20,8 @@ import re
 import time
 from base64 import b16encode, b32decode
 from hashlib import sha1
+from typing import Dict, Iterable, Union
 from urllib.parse import urlencode
-from typing import Union, Iterable, Dict
 
 # Third Party Imports
 import bencodepy

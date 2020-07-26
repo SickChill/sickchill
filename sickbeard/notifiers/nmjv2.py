@@ -19,8 +19,10 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import time
-import requests
 from xml.etree import ElementTree
+
+# Third Party Imports
+import requests
 
 # First Party Imports
 from sickbeard import logger
