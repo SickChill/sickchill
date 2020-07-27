@@ -16,14 +16,13 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# Stdlib Imports
-import logging
-
 # First Party Imports
-from sickbeard import logger, search_queue, show_name_helpers
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickchill import settings
+import sickbeard
 from sickchill.helper.exceptions import FailedPostProcessingFailedException
+
+# Local Folder Imports
+from . import logger, search_queue, show_name_helpers
+from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 
 class FailedProcessor(object):
@@ -70,11 +69,11 @@ class FailedProcessor(object):
             segment = parsed.show.getEpisode(parsed.season_number, episode)
 
             cur_failed_queue_item = search_queue.FailedQueueItem(parsed.show, [segment])
-            settings.searchQueueScheduler.action.add_item(cur_failed_queue_item)
+            sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)
 
         return True
 
-    def _log(self, message, level=logging.INFO):
+    def _log(self, message, level=logger.INFO):
         """Log to regular logfile and save for return for PP script log"""
         logger.log(level, message)
         self.log += message + "\n"

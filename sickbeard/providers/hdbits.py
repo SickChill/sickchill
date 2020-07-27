@@ -19,7 +19,9 @@
 # Stdlib Imports
 import datetime
 import json
-from urllib.parse import urlencode, urljoin
+
+# Third Party Imports
+from requests.compat import urlencode, urljoin
 
 # First Party Imports
 from sickbeard import classes, logger, tvcache
@@ -27,11 +29,11 @@ from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class HDBitsProvider(TorrentProvider):
 
     def __init__(self):
 
-        super().__init__("HDBits")
+        TorrentProvider.__init__(self, "HDBits")
 
         self.username = None
         self.passkey = None
@@ -62,11 +64,11 @@ class Provider(TorrentProvider):
         return True
 
     def get_season_search_strings(self, ep_obj):
-        season_search_string = [self.make_post_data_JSON(show=ep_obj.show, season=ep_obj)]
+        season_search_string = [self._make_post_data_JSON(show=ep_obj.show, season=ep_obj)]
         return season_search_string
 
     def get_episode_search_strings(self, ep_obj, add_string=''):
-        episode_search_string = [self.make_post_data_JSON(show=ep_obj.show, episode=ep_obj)]
+        episode_search_string = [self._make_post_data_JSON(show=ep_obj.show, episode=ep_obj)]
         return episode_search_string
 
     def _get_title_and_url(self, item):
@@ -106,7 +108,7 @@ class Provider(TorrentProvider):
         search_terms = [' proper ', ' repack ']
 
         for term in search_terms:
-            for item in self.search(self.make_post_data_JSON(search_term=term)):
+            for item in self.search(self._make_post_data_JSON(search_term=term)):
                 if item['utadded']:
                     try:
                         result_date = datetime.datetime.fromtimestamp(int(item['utadded']))
@@ -119,7 +121,7 @@ class Provider(TorrentProvider):
 
         return results
 
-    def make_post_data_JSON(self, show=None, episode=None, season=None, search_term=None):
+    def _make_post_data_JSON(self, show=None, episode=None, season=None, search_term=None):
 
         post_data = {
             'username': self.username,
@@ -180,7 +182,7 @@ class HDBitsCache(tvcache.TVCache):
         results = []
 
         try:
-            parsed_json = self.provider.get_url(self.provider.urls['rss'], post_data=self.provider.make_post_data_JSON(), returns='json')
+            parsed_json = self.provider.get_url(self.provider.urls['rss'], post_data=self.provider._make_post_data_JSON(), returns='json')
 
             if self.provider._check_auth_from_data(parsed_json):
                 results = parsed_json['data']
@@ -188,3 +190,5 @@ class HDBitsCache(tvcache.TVCache):
             pass
 
         return {'entries': results}
+
+provider = HDBitsProvider()

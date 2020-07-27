@@ -18,7 +18,9 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import re
-from urllib.parse import quote_plus, urljoin
+
+# Third Party Imports
+from requests.compat import quote_plus, urljoin
 
 # First Party Imports
 from sickbeard import db, logger, tvcache
@@ -29,10 +31,10 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class ilCorsaroNeroProvider(TorrentProvider):
 
     def __init__(self):
-        super().__init__("ilCorsaroNero")
+        TorrentProvider.__init__(self, 'ilCorsaroNero')
 
         categories = [  # Categories included in searches
             15,  # Serie TV
@@ -317,3 +319,6 @@ class Provider(TorrentProvider):
                 results += items
 
         return results
+
+
+provider = ilCorsaroNeroProvider()

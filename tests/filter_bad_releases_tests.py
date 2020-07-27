@@ -4,17 +4,17 @@
 import unittest
 
 # First Party Imports
+import sickbeard
 from sickbeard.show_name_helpers import filter_bad_releases
 from sickbeard.tv import TVShow as Show
-from sickchill import settings
 
 
 class ReleaseWordFilterTests(unittest.TestCase):
     def setUp(self):
-        settings.QUALITY_DEFAULT = 2
+        sickbeard.QUALITY_DEFAULT = 2
         self.show = Show(1, 1)
-        settings.REQUIRE_WORDS = 'REQUIRED'
-        settings.IGNORE_WORDS = 'IGNORED'
+        sickbeard.REQUIRE_WORDS = 'REQUIRED'
+        sickbeard.IGNORE_WORDS = 'IGNORED'
 
         # These are opposite of global, to prove they override
         self.show.rls_ignore_words = 'REQUIRED'

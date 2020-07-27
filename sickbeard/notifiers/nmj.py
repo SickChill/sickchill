@@ -19,13 +19,18 @@
 # Stdlib Imports
 import re
 import telnetlib
-import urllib.parse
-import urllib.request
-from xml.etree import ElementTree
+import urllib
 
 # First Party Imports
+import sickbeard
 from sickbeard import logger
-from sickchill import settings
+
+try:
+    # Stdlib Imports
+    from xml.etree import cElementTree as etree
+except ImportError:
+    # Stdlib Imports
+    from xml.etree import ElementTree as etree
 
 
 class Notifier(object):
@@ -60,7 +65,7 @@ class Notifier(object):
             database = match.group(1)
             device = match.group(2)
             logger.debug("Found NMJ database {0} on device {1}".format(database, device))
-            settings.NMJ_DATABASE = database
+            sickbeard.NMJ_DATABASE = database
         else:
             logger.warning("Could not get current NMJ database on {0}, NMJ is probably not running!".format(host))
             return False
@@ -72,7 +77,7 @@ class Notifier(object):
             if match:
                 mount = match.group().replace("127.0.0.1", host)
                 logger.debug("Found mounting url on the Popcorn Hour in configuration: {0}".format(mount))
-                settings.NMJ_MOUNT = mount
+                sickbeard.NMJ_MOUNT = mount
             else:
                 logger.warning("Detected a network share on the Popcorn Hour, but could not get the mounting url")
                 return False
@@ -84,11 +89,11 @@ class Notifier(object):
         # Not implemented: Start the scanner when snatched does not make any sense
 
     def notify_download(self, ep_name):
-        if settings.USE_NMJ:
+        if sickbeard.USE_NMJ:
             self._notifyNMJ()
 
     def notify_subtitle_download(self, ep_name, lang):
-        if settings.USE_NMJ:
+        if sickbeard.USE_NMJ:
             self._notifyNMJ()
 
     def notify_git_update(self, new_version):
@@ -157,7 +162,7 @@ class Notifier(object):
 
         # try to parse the resulting XML
         try:
-            et = ElementTree.fromstring(response)
+            et = etree.fromstring(response)
             result = et.findtext("returnValue")
         except SyntaxError as e:
             logger.exception("Unable to parse XML returned from the Popcorn Hour: {0}".format(e))
@@ -180,17 +185,17 @@ class Notifier(object):
         mount: The mount URL (optional, defaults to the mount URL in the config)
         force: If True then the notification will be sent even if NMJ is disabled in the config
         """
-        if not settings.USE_NMJ and not force:
+        if not sickbeard.USE_NMJ and not force:
             logger.debug("Notification for NMJ scan update not enabled, skipping this notification")
             return False
 
         # fill in omitted parameters
         if not host:
-            host = settings.NMJ_HOST
+            host = sickbeard.NMJ_HOST
         if not database:
-            database = settings.NMJ_DATABASE
+            database = sickbeard.NMJ_DATABASE
         if not mount:
-            mount = settings.NMJ_MOUNT
+            mount = sickbeard.NMJ_MOUNT
 
         logger.debug("Sending scan command for NMJ ")
 

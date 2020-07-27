@@ -19,15 +19,15 @@
 # Stdlib Imports
 import time
 from base64 import b64encode
-from urllib.parse import urlparse
 
 # Third Party Imports
 from deluge_client import DelugeRPCClient, FailedToReconnectException
+from requests.compat import urlparse
 
 # First Party Imports
+import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
-from sickchill import settings
 
 # Local Folder Imports
 from .__deluge_base import DelugeBase
@@ -89,9 +89,9 @@ class Client(GenericClient, DelugeBase):
 
     def _set_torrent_label(self, result):
         # No option for this built into the rpc, because it is a plugin
-        label = settings.TORRENT_LABEL.lower()
+        label = sickbeard.TORRENT_LABEL.lower()
         if result.show.is_anime:
-            label = settings.TORRENT_LABEL_ANIME.lower()
+            label = sickbeard.TORRENT_LABEL_ANIME.lower()
         if ' ' in label:
             logger.exception(self.name + ': Invalid label. Label must not contain a space')
             return False

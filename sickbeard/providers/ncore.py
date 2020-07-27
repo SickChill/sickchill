@@ -21,7 +21,7 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class NcoreProvider(TorrentProvider):
 
     def __init__(self):
 
@@ -131,3 +131,5 @@ class Provider(TorrentProvider):
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
             results += items
         return results
+
+provider = NcoreProvider()

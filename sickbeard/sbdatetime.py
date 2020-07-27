@@ -23,7 +23,7 @@ import functools
 import locale
 
 # First Party Imports
-from sickchill import settings
+import sickbeard
 
 # Local Folder Imports
 from .network_timezones import sb_timezone
@@ -111,7 +111,7 @@ class sbdatetime(datetime.datetime):
     @static_or_instance
     def convert_to_setting(self, dt=None):
         try:
-            if settings.TIMEZONE_DISPLAY == 'local':
+            if sickbeard.TIMEZONE_DISPLAY == 'local':
                 return dt.astimezone(sb_timezone) if self is None else self.astimezone(sb_timezone)
             else:
                 return dt if self is None else self
@@ -153,16 +153,16 @@ class sbdatetime(datetime.datetime):
                     if t_preset is not None:
                         strt = dt.strftime(t_preset)
                     elif show_seconds:
-                        strt = dt.strftime(settings.TIME_PRESET_W_SECONDS)
+                        strt = dt.strftime(sickbeard.TIME_PRESET_W_SECONDS)
                     else:
-                        strt = dt.strftime(settings.TIME_PRESET)
+                        strt = dt.strftime(sickbeard.TIME_PRESET)
             else:
                 if t_preset is not None:
                     strt = self.strftime(t_preset)
                 elif show_seconds:
-                    strt = self.strftime(settings.TIME_PRESET_W_SECONDS)
+                    strt = self.strftime(sickbeard.TIME_PRESET_W_SECONDS)
                 else:
-                    strt = self.strftime(settings.TIME_PRESET)
+                    strt = self.strftime(sickbeard.TIME_PRESET)
         finally:
             try:
                 if sbdatetime.has_locale:
@@ -196,12 +196,12 @@ class sbdatetime(datetime.datetime):
                     if d_preset is not None:
                         strd = dt.strftime(d_preset)
                     else:
-                        strd = dt.strftime(settings.DATE_PRESET)
+                        strd = dt.strftime(sickbeard.DATE_PRESET)
             else:
                 if d_preset is not None:
                     strd = self.strftime(d_preset)
                 else:
-                    strd = self.strftime(settings.DATE_PRESET)
+                    strd = self.strftime(sickbeard.DATE_PRESET)
         except ValueError:
             strd = 'UNK'
 
@@ -240,7 +240,7 @@ class sbdatetime(datetime.datetime):
                     if d_preset is not None:
                         strd = dt.strftime(d_preset)
                     else:
-                        strd = dt.strftime(settings.DATE_PRESET)
+                        strd = dt.strftime(sickbeard.DATE_PRESET)
                     try:
                         if sbdatetime.has_locale:
                             locale.setlocale(locale.LC_TIME, 'en_US')
@@ -253,14 +253,14 @@ class sbdatetime(datetime.datetime):
                     if t_preset is not None:
                         strd += ', ' + dt.strftime(t_preset)
                     elif show_seconds:
-                        strd += ', ' + dt.strftime(settings.TIME_PRESET_W_SECONDS)
+                        strd += ', ' + dt.strftime(sickbeard.TIME_PRESET_W_SECONDS)
                     else:
-                        strd += ', ' + dt.strftime(settings.TIME_PRESET)
+                        strd += ', ' + dt.strftime(sickbeard.TIME_PRESET)
             else:
                 if d_preset is not None:
                     strd = self.strftime(d_preset)
                 else:
-                    strd = self.strftime(settings.DATE_PRESET)
+                    strd = self.strftime(sickbeard.DATE_PRESET)
                 try:
                     if sbdatetime.has_locale:
                         locale.setlocale(locale.LC_TIME, 'en_US')
@@ -273,9 +273,9 @@ class sbdatetime(datetime.datetime):
                 if t_preset is not None:
                     strd += ', ' + self.strftime(t_preset)
                 elif show_seconds:
-                    strd += ', ' + self.strftime(settings.TIME_PRESET_W_SECONDS)
+                    strd += ', ' + self.strftime(sickbeard.TIME_PRESET_W_SECONDS)
                 else:
-                    strd += ', ' + self.strftime(settings.TIME_PRESET)
+                    strd += ', ' + self.strftime(sickbeard.TIME_PRESET)
         except ValueError:
             strd = 'UNK'
         finally:

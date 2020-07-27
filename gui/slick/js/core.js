@@ -103,9 +103,9 @@ const SICKCHILL = {
                     }
                 }
 
-                if (metaToBool('settings.SICKCHILL_BACKGROUND')) {
+                if (metaToBool('sickbeard.SICKCHILL_BACKGROUND')) {
                     $.backstretch(srRoot + '/ui/sickchill_background');
-                    $('.backstretch').css('opacity', getMeta('settings.FANART_BACKGROUND_OPACITY')).fadeIn('500');
+                    $('.backstretch').css('opacity', getMeta('sickbeard.FANART_BACKGROUND_OPACITY')).fadeIn('500');
                 }
             })();
 
@@ -203,7 +203,7 @@ const SICKCHILL = {
                 });
             }
 
-            if (metaToBool('settings.FUZZY_DATING')) {
+            if (metaToBool('sickbeard.FUZZY_DATING')) {
                 $.timeago.settings.allowFuture = true;
                 $.timeago.settings.strings = {
                     prefixAgo: null,
@@ -1963,7 +1963,7 @@ const SICKCHILL = {
                         $('#torrent_path_option').find('.fileBrowser').hide();
                         $('#host_desc_torrent').text(_('URL to your Synology DS client (e.g. http://localhost:5000)'));
                         $('#path_synology').show();
-                    } else if (selectedProvider.toLowerCase() === 'rtorrent') {
+                    } else if (selectedProvider.toLowerCase() === 'rtorrent' || selectedProvider.toLowerCase() === 'rtorrent9') {
                         client = 'rTorrent';
                         $('#host_desc_torrent').html(_('URL to your rTorrent client (e.g. scgi://localhost:5000 <br> ' +
                                                         'or https://localhost/rutorrent/plugins/httprpc/action.php)'));
@@ -2389,12 +2389,12 @@ const SICKCHILL = {
             });
 
             $('.show-grid').imagesLoaded(() => {
-                const sort = getMeta('settings.POSTER_SORTBY') === 'date' ? ['status', 'date', 'name'] : getMeta('settings.POSTER_SORTBY');
+                const sort = getMeta('sickbeard.POSTER_SORTBY') === 'date' ? ['status', 'date', 'name'] : getMeta('sickbeard.POSTER_SORTBY');
                 $('.loading-spinner').hide();
                 $('.show-grid').show().isotope({
                     itemSelector: '.show-container',
                     sortBy: sort,
-                    sortAscending: getMeta('settings.POSTER_SORTDIR'),
+                    sortAscending: getMeta('sickbeard.POSTER_SORTDIR'),
                     layoutMode: 'masonry',
                     masonry: {
                         isFitWidth: true
@@ -2402,7 +2402,7 @@ const SICKCHILL = {
                     getSortData: {
                         name(itemElement) {
                             const name = $(itemElement).attr('data-name') || '';
-                            return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase().normalize('NFC'));
+                            return latinize((metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase().normalize('NFC'));
                         },
                         network: '[data-network]',
                         date(itemElement) {
@@ -2510,15 +2510,15 @@ const SICKCHILL = {
             }).on('shown.bs.popover', () => { // Bootstrap popover event triggered when the popover opens
                 // call this function to copy the column selection code into the popover
                 $.tablesorter.columnSelector.attachTo($('#showListTableShows'), '#popover-target');
-                if (metaToBool('settings.ANIME_SPLIT_HOME')) {
+                if (metaToBool('sickbeard.ANIME_SPLIT_HOME')) {
                     $.tablesorter.columnSelector.attachTo($('#showListTableAnime'), '#popover-target');
                 }
             });
         },
         displayShow() {
-            if (metaToBool('settings.FANART_BACKGROUND')) {
+            if (metaToBool('sickbeard.FANART_BACKGROUND')) {
                 $.backstretch(srRoot + '/cache/images/' + $('#showID').attr('value') + '.fanart.jpg');
-                $('.backstretch').css('opacity', getMeta('settings.FANART_BACKGROUND_OPACITY')).fadeIn('500');
+                $('.backstretch').css('opacity', getMeta('sickbeard.FANART_BACKGROUND_OPACITY')).fadeIn('500');
             }
 
             $('.displayShowTable').tablesorter({
@@ -2604,7 +2604,7 @@ const SICKCHILL = {
                         subtitlesTd.empty();
                         $.each(subtitles, (index, language) => {
                             if (language !== '') {
-                                subtitlesTd.append($('<img/>', {src: srRoot + '/images/subtitles/flags/' + language + '.png', alt: language, width: 16, height: 11}));
+                                subtitlesTd.append($('<img/>').attr({src: srRoot + '/images/subtitles/flags/' + language + '.png', alt: language, width: 16, height: 11}));
                             }
                         });
                         icon.prop('class', 'displayshow-icon-sub');
@@ -3572,7 +3572,7 @@ const SICKCHILL = {
                 widgets: ['zebra', 'filter'],
                 sortList: [[0, 1]],
                 textExtraction: (function () {
-                    if (isMeta('settings.HISTORY_LAYOUT', ['detailed'])) {
+                    if (isMeta('sickbeard.HISTORY_LAYOUT', ['detailed'])) {
                         return {
                             0(node) { // Time
                                 return $(node).find('time').attr('datetime');
@@ -3592,7 +3592,7 @@ const SICKCHILL = {
                         }
                     };
 
-                    if (isMeta('settings.USE_SUBTITLES', ['True'])) {
+                    if (isMeta('sickbeard.USE_SUBTITLES', ['True'])) {
                         compactExtract[4] = function (node) { // Subtitles
                             return $(node).find('img').attr('title');
                         };
@@ -3609,7 +3609,7 @@ const SICKCHILL = {
                     return compactExtract;
                 })(),
                 headers: (function () {
-                    if (isMeta('settings.HISTORY_LAYOUT', ['detailed'])) {
+                    if (isMeta('sickbeard.HISTORY_LAYOUT', ['detailed'])) {
                         return {
                             0: {sorter: 'realISODate'},
                             1: {sorter: 'loadingNames'},
@@ -3618,7 +3618,7 @@ const SICKCHILL = {
                         };
                     }
 
-                    if (isMeta('settings.USE_SUBTITLES', ['True'])) {
+                    if (isMeta('sickbeard.USE_SUBTITLES', ['True'])) {
                         return {
                             0: {sorter: 'realISODate'},
                             1: {sorter: 'loadingNames'},
@@ -3764,9 +3764,9 @@ const SICKCHILL = {
             $('.btn-cal-subscribe').attr('href', document.location.href.replace(/https?/, 'webcal').replace(/schedule.*/, 'calendar'));
         },
         index() {
-            if (isMeta('settings.COMING_EPS_LAYOUT', ['list'])) {
+            if (isMeta('sickbeard.COMING_EPS_LAYOUT', ['list'])) {
                 const sortCodes = {date: 0, show: 2, network: 5};
-                const sort = getMeta('settings.COMING_EPS_SORT');
+                const sort = getMeta('sickbeard.COMING_EPS_SORT');
                 const sortList = (sort in sortCodes) ? [[sortCodes[sort], 0]] : [[0, 0]];
 
                 $('.resetsorting').on('click', () => {
@@ -3811,7 +3811,7 @@ const SICKCHILL = {
                 $(document).ajaxEpSearch();
             }
 
-            if (isMeta('settings.COMING_EPS_LAYOUT', ['banner', 'poster'])) {
+            if (isMeta('sickbeard.COMING_EPS_LAYOUT', ['banner', 'poster'])) {
                 $(document).ajaxEpSearch();
                 $('.ep_summary').hide();
                 $('.ep_summaryTrigger').on('click', function () {
@@ -3841,7 +3841,7 @@ const SICKCHILL = {
         init() {
             $('#tabs').tabs({
                 collapsible: true,
-                selected: (metaToBool('settings.SORT_ARTICLE') ? -1 : 0)
+                selected: (metaToBool('sickbeard.SORT_ARTICLE') ? -1 : 0)
             });
 
             $.initRemoteShowGrid = function () {
@@ -3890,7 +3890,7 @@ const SICKCHILL = {
                     getSortData: {
                         name(itemElement) {
                             const name = $(itemElement).attr('data-name') || '';
-                            return (metaToBool('settings.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase();
+                            return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase();
                         },
                         rating: '[data-rating] parseInt',
                         votes: '[data-votes] parseInt'
@@ -4042,7 +4042,7 @@ const SICKCHILL = {
                 let table =
                     '<div class="row">' +
                     '<div class="col-lg-6 col-md-12">' +
-                    '<table class="sickchillTable new-show-table tablesorter">' +
+                    '<table class="sickbeardTable new-show-table tablesorter">' +
                     '<thead>' +
                     '<tr>' +
                     '<th></th>' +

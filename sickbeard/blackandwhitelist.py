@@ -18,8 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # First Party Imports
-from sickchill import settings
-from sickchill.adba.aniDBerrors import AniDBCommandTimeoutError
+import sickbeard
+from adba.aniDBerrors import AniDBCommandTimeoutError
 
 # Local Folder Imports
 from . import db, helpers, logger
@@ -158,7 +158,7 @@ def short_group_names(groups):
     if helpers.set_up_anidb_connection():
         for groupName in groups:
             try:
-                group = settings.ADBA_CONNECTION.group(gname=groupName)
+                group = sickbeard.ADBA_CONNECTION.group(gname=groupName)
             except AniDBCommandTimeoutError:
                 logger.debug('Timeout while loading group from AniDB. Trying next group')
             except Exception:

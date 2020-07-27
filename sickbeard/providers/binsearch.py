@@ -19,18 +19,20 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import re
-from urllib.parse import urljoin
+
+# Third Party Imports
+from requests.compat import urljoin
 
 # First Party Imports
 from sickbeard import logger, tvcache
 from sickchill.providers.nzb.NZBProvider import NZBProvider
 
 
-class Provider(NZBProvider):
+class BinSearchProvider(NZBProvider):
 
     def __init__(self):
 
-        super().__init__("BinSearch")
+        NZBProvider.__init__(self, 'BinSearch')
 
         self.url = 'https://www.binsearch.info'
         self.urls = {'rss': urljoin(self.url, 'rss.php')}
@@ -118,3 +120,5 @@ class BinSearchCache(tvcache.TVCache):
 
     def _check_auth(self, data):
         return data if data['feed'] and data['feed']['title'] != 'Invalid Link' else None
+
+provider = BinSearchProvider()

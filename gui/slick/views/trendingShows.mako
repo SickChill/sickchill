@@ -1,10 +1,10 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    from sickchill import settings
-    from settings.helpers import anon_url
+    import sickbeard
+    from sickbeard.helpers import anon_url
 %>
 <%block name="metas">
-    <meta data-var="settings.SORT_ARTICLE" data-content="${settings.SORT_ARTICLE}">
+    <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
 </%block>
 <%block name="scripts">
     <script type="text/javascript" src="${static_url('js/trendingShows.js')}"></script>
@@ -34,7 +34,7 @@
                         </div>
 
                         <div class="clearfix">
-                            <p>${int(cur_show['show']['rating']*10)}% <span class="displayshow-icon-heart"></span></p>
+                            <p>${int(cur_show['show']['rating']*10)}% <span class="displayshow-icon-heart"></p>
                             <i>${cur_show['show']['votes']} ${_('votes')}</i>
                             <div class="traktShowTitleIcons">
                                 <a href="${srRoot}/addShows/addShowByID?indexer_id=${cur_show['show']['ids']['tvdb']}&amp;show_name=${cur_show['show']['title'] | u}"

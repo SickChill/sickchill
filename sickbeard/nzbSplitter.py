@@ -19,11 +19,18 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import re
-from xml.etree import ElementTree
 
 # Local Folder Imports
 from . import classes, helpers, logger
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+
+try:
+    # Stdlib Imports
+    from xml.etree import cElementTree as ETree
+except ImportError:
+    # Stdlib Imports
+    from xml.etree import ElementTree as ETree
+
 
 
 def get_season_nzbs(name, url_data, season):
@@ -47,7 +54,7 @@ def get_season_nzbs(name, url_data, season):
     }
 
     try:
-        show_xml = ElementTree.ElementTree(ElementTree.XML(url_data))
+        show_xml = ETree.ElementTree(ETree.XML(url_data))
     except SyntaxError:
         logger.exception("Unable to parse the XML of " + name + ", not splitting it")
         return {}, ''
@@ -95,14 +102,14 @@ def create_nzb_string(file_elements, xmlns):
     :param xmlns: the xml namespace to be used
     :return: string containing all extra info extracted from the file_elements
     """
-    root_element = ElementTree.Element("nzb")
+    root_element = ETree.Element("nzb")
     if xmlns:
         root_element.set("xmlns", xmlns)
 
     for cur_file in file_elements:
         root_element.append(strip_xmlns(cur_file, xmlns))
 
-    return ElementTree.tostring(root_element)
+    return ETree.tostring(root_element)
 
 
 def save_nzb(nzb_name, nzb_string):

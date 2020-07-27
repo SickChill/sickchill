@@ -4,10 +4,11 @@
     import time
     import re
 
+    import sickbeard
     from sickbeard.helpers import anon_url
     from sickbeard import sbdatetime
     from sickbeard.common import Quality
-    from sickchill import indexer as show_indexer, settings
+    from sickchill import indexer as show_indexer
 
     SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list
 %>
@@ -24,7 +25,7 @@
                 % if 'calendar' != layout:
                     <b>${_('Key')}:</b>
                     <span class="listing-key listing-overdue">${_('Missed')}</span>
-                    % if settings.COMING_EPS_DISPLAY_SNATCHED:
+                    % if sickbeard.COMING_EPS_DISPLAY_SNATCHED:
                         <span class="listing-key listing-snatched">${_('Snatched')}</span>
                     % endif
                     <span class="listing-key listing-current">${_('Today')}</span>
@@ -53,9 +54,9 @@
                     <label>
                         <span>${_('Sort By')}:</span>
                         <select id="sort" class="form-control form-control-inline input-sm" title="Sort">
-                            <option value="${srRoot}/setScheduleSort/?sort=date" ${('', 'selected="selected"')[settings.COMING_EPS_SORT == 'date']} >${_('Date')}</option>
-                            <option value="${srRoot}/setScheduleSort/?sort=network" ${('', 'selected="selected"')[settings.COMING_EPS_SORT == 'network']} >${_('Network')}</option>
-                            <option value="${srRoot}/setScheduleSort/?sort=show" ${('', 'selected="selected"')[settings.COMING_EPS_SORT == 'show']} >${_('Show')}</option>
+                            <option value="${srRoot}/setScheduleSort/?sort=date" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'date']} >${_('Date')}</option>
+                            <option value="${srRoot}/setScheduleSort/?sort=network" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'network']} >${_('Network')}</option>
+                            <option value="${srRoot}/setScheduleSort/?sort=show" ${('', 'selected="selected"')[sickbeard.COMING_EPS_SORT == 'show']} >${_('Show')}</option>
                         </select>
                         &nbsp;
                     </label>
@@ -63,8 +64,8 @@
                 <label>
                     <span>${_('View Paused')}:</span>
                     <select id="viewpaused" class="form-control form-control-inline input-sm" title="View paused">
-                        <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[not bool(settings.COMING_EPS_DISPLAY_PAUSED)]}>${_('Hidden')}</option>
-                        <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[bool(settings.COMING_EPS_DISPLAY_PAUSED)]}>${_('Shown')}</option>
+                        <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[not bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>${_('Hidden')}</option>
+                        <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[bool(sickbeard.COMING_EPS_DISPLAY_PAUSED)]}>${_('Shown')}</option>
                     </select>
                     &nbsp;
                 </label>
@@ -72,8 +73,8 @@
                 <label>
                     <span>${_('View Snatched')}:</span>
                     <select id="viewsnatched" class="form-control form-control-inline input-sm" title="View snatched">
-                        <option value="${srRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[not bool(settings.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Hidden')}</option>
-                        <option value="${srRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[bool(settings.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Shown')}</option>
+                        <option value="${srRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[not bool(sickbeard.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Hidden')}</option>
+                        <option value="${srRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[bool(sickbeard.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Shown')}</option>
                     </select>
                     &nbsp;
                 </label>
@@ -81,10 +82,10 @@
                 <label>
                     <span>${_('Layout')}:</span>
                     <select id="layout" class="form-control form-control-inline input-sm" title="Layout">
-                        <option value="${srRoot}/setScheduleLayout/?layout=poster" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'poster']} >${_('Poster')}</option>
-                        <option value="${srRoot}/setScheduleLayout/?layout=calendar" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'calendar']} >${_('Calendar')}</option>
-                        <option value="${srRoot}/setScheduleLayout/?layout=banner" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'banner']} >${_('Banner')}</option>
-                        <option value="${srRoot}/setScheduleLayout/?layout=list" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'list']} >${_('List')}</option>
+                        <option value="${srRoot}/setScheduleLayout/?layout=poster" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'poster']} >${_('Poster')}</option>
+                        <option value="${srRoot}/setScheduleLayout/?layout=calendar" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'calendar']} >${_('Calendar')}</option>
+                        <option value="${srRoot}/setScheduleLayout/?layout=banner" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'banner']} >${_('Banner')}</option>
+                        <option value="${srRoot}/setScheduleLayout/?layout=list" ${('', 'selected="selected"')[sickbeard.COMING_EPS_LAYOUT == 'list']} >${_('List')}</option>
                     </select>
                 </label>
             </div>
@@ -100,10 +101,10 @@
                 <% show_div = 'listing-default' %>
 
                 <div class="horizontal-scroll">
-                    <table id="showListTable" class="sickchillTable tablesorter seasonstyle">
+                    <table id="showListTable" class="sickbeardTable tablesorter seasonstyle" cellspacing="1" border="0" cellpadding="0">
                         <thead>
                             <tr>
-                                <th>${_('Airdate')} (${('local', 'network')[settings.TIMEZONE_DISPLAY == 'network']})</th>
+                                <th>${_('Airdate')} (${('local', 'network')[sickbeard.TIMEZONE_DISPLAY == 'network']})</th>
                                 <th>${_('Ends')}</th>
                                 <th>${_('Show')}</th>
                                 <th>${_('Banner')}</th>
@@ -124,10 +125,10 @@
                                     run_time = cur_result['runtime']
                                     snatched_status = int(cur_result['epstatus']) in SNATCHED
 
-                                    if int(cur_result['paused']) and not settings.COMING_EPS_DISPLAY_PAUSED:
+                                    if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
                                         continue
 
-                                    if snatched_status and not settings.COMING_EPS_DISPLAY_SNATCHED:
+                                    if snatched_status and not sickbeard.COMING_EPS_DISPLAY_SNATCHED:
                                         continue
 
                                     cur_ep_airdate = cur_result['localtime'].date()
@@ -171,17 +172,17 @@
                                         <a href="${srRoot}/home/displayShow?show=${cur_result['showid']}">
                                             <img alt="" class="bannerThumb"
                                                  src="${static_url("images/banner.png")}"
-                                                 data-src="${static_url(settings.IMAGE_CACHE.image_url(cur_result['showid'], 'banner_thumb'))}"
+                                                 data-src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result['showid'], 'banner_thumb'))}"
                                             />
                                         </a>
                                     </td>
                                     <td nowrap="nowrap" align="center">
-                                        ${'S{:02}E{:02}'.format(int(cur_result['season']), int(cur_result['episode']))}
+                                        ${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))}
                                     </td>
                                     <td>
                                         % if cur_result['description']:
                                             <img alt="" src="${static_url('images/info32.png')}" height="16" width="16" class="plotInfo"
-                                                 id="plot_info_${'{}_{}_{}'.format(cur_result['showid'], cur_result['season'], cur_result['episode'])}"/>
+                                                 id="plot_info_${'%s_%s_%s' % (cur_result['showid'], cur_result['season'], cur_result['episode'])}"/>
                                         % else:
                                             <img alt="" src="${static_url('images/info32.png')}" width="16" height="16" class="plotInfoNone"/>
                                         % endif
@@ -206,7 +207,7 @@
                                             <a href="${anon_url('https://trakt.tv/shows/', cur_result['imdb_id'])}" rel="noreferrer"
                                                onclick="window.open(this.href, '_blank'); return false;"
                                                title="https://trakt.tv/shows/${cur_result['imdb_id']}">
-                                                <span class="displayshow-icon-trakt"></span>
+                                                <span class="displayshow-icon-trakt" />
                                             </a>
                                         % endif
                                         <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result['showid'])}"
@@ -244,7 +245,8 @@
                     <div class="calendarWrapper">
                         % for day in dates:
                         <% tbl_day += 1 %>
-                            <table class="sickchillTable tablesorter calendarTable ${'cal-{}'.format(('even', 'odd')[bool(tbl_day % 2)])}">
+                            <table class="sickbeardTable tablesorter calendarTable ${'cal-%s' % (('even', 'odd')[bool(tbl_day % 2)])}"
+                                   cellspacing="0" border="0" cellpadding="0">
                                 <thead>
                                     <tr>
                                         <th>${day.strftime('%A').capitalize()}</th>
@@ -253,7 +255,7 @@
                                 <tbody>
                                     <% day_has_show = False %>
                                     % for cur_result in results:
-                                        % if int(cur_result['paused']) and not settings.COMING_EPS_DISPLAY_PAUSED:
+                                        % if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
                                             <% continue %>
                                         % endif
 
@@ -269,7 +271,7 @@
                                             % try:
                                                 <% day_has_show = True %>
                                                 <% airtime = sbdatetime.sbdatetime.fromtimestamp(time.mktime(cur_result['localtime'].timetuple())).sbftime() %>
-                                                % if settings.TRIM_ZERO:
+                                                % if sickbeard.TRIM_ZERO:
                                                     <% airtime = re.sub(r'0(\d:\d\d)', r'\1', airtime, 0, re.IGNORECASE | re.MULTILINE) %>
                                                 % endif
                                                 % except OverflowError:
@@ -280,7 +282,7 @@
                                                     <div class="poster">
                                                         <a title="${cur_result['show_name']}" href="${srRoot}/home/displayShow?show=${cur_result['showid']}">
                                                             <img alt=""
-                                                                 src="${static_url(settings.IMAGE_CACHE.image_url(cur_result['showid'], 'poster_thumb'))}"
+                                                                 src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result['showid'], 'poster_thumb'))}"
                                                             />
                                                         </a>
                                                     </div>
@@ -289,7 +291,8 @@
                                                         ${airtime} on ${cur_result["network"]}
                                                     </span>
                                                     <span class="episode-title" title="${cur_result['name']}">
-                                                        ${'S{:02}E{:02} - {}'.format(int(cur_result['season']), int(cur_result['episode']), cur_result['name'])}
+                                                        ${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))}
+                                                        - ${cur_result['name']}
                                                     </span>
                                                     </div>
                                                 </td>
@@ -326,10 +329,10 @@
                     cur_indexer = int(cur_result['indexer'])
                     snatched_status = int(cur_result['epstatus']) in SNATCHED
 
-                    if int(cur_result['paused']) and not settings.COMING_EPS_DISPLAY_PAUSED:
+                    if int(cur_result['paused']) and not sickbeard.COMING_EPS_DISPLAY_PAUSED:
                         continue
 
-                    if snatched_status and (cur_result['location'] or not settings.COMING_EPS_DISPLAY_SNATCHED):
+                    if snatched_status and (cur_result['location'] or not sickbeard.COMING_EPS_DISPLAY_SNATCHED):
                         continue
 
                     run_time = cur_result['runtime']
@@ -342,7 +345,7 @@
 
                     this_day_name = datetime.date.fromordinal(cur_ep_airdate.toordinal()).strftime('%A').capitalize()
                 %>
-                % if settings.COMING_EPS_SORT == 'network':
+                % if sickbeard.COMING_EPS_SORT == 'network':
                     <% show_network = ('no network', cur_result['network'])[bool(cur_result['network'])] %>
                     % if cur_segment != show_network:
                         <div>
@@ -364,7 +367,7 @@
                             <% show_div = 'ep_listing listing-default' %>
                         % endif
                     % endif
-                % elif settings.COMING_EPS_SORT == 'date':
+                % elif sickbeard.COMING_EPS_SORT == 'date':
                     % if snatched_status:
                         <% cur_category = 'snatched' %>
                     % elif cur_ep_enddate < today and cur_ep_airdate != today.date():
@@ -405,7 +408,7 @@
                             <% show_div = 'ep_listing listing-default'%>
                         % endif
                     % endif
-                % elif settings.COMING_EPS_SORT == 'show':
+                % elif sickbeard.COMING_EPS_SORT == 'show':
                     % if snatched_status:
                         <% show_div = 'ep_listing listing-snatched listingradius' %>
                     % elif cur_ep_enddate < today:
@@ -427,7 +430,7 @@
                                     <th ${('class="nobg"', 'rowspan="3"')[layout == 'poster']} valign="top">
                                         <a href="${srRoot}/home/displayShow?show=${cur_result['showid']}">
                                             <img alt="" class="${('posterThumb', 'bannerThumb')[layout == 'banner']}"
-                                                 src="${static_url(settings.IMAGE_CACHE.image_url(cur_result['showid'], (layout, 'poster_thumb')[layout == 'poster']))}"
+                                                 src="${static_url(sickbeard.IMAGE_CACHE.image_url(cur_result['showid'], (layout, 'poster_thumb')[layout == 'poster']))}"
                                             />
                                         </a>
                                     </th>
@@ -449,7 +452,7 @@
                                                 </a>
                                                 <a href="${anon_url('https://trakt.tv/shows/', cur_result['imdb_id'])}" rel="noreferrer"
                                                    onclick="window.open(this.href, '_blank'); return false;" title="https://trakt.tv/shows/${cur_result['imdb_id']}">
-                                                    <span class="displayshow-icon-trakt"></span>
+                                                    <span class="displayshow-icon-trakt" />
                                                 </a>
                                             % endif
                                             <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result['showid'])}"
@@ -471,7 +474,7 @@
                                             <br/>
                                             <span class="title">${_('Next Episode')}:</span>
                                         <span>
-                                            ${'S{:02}E{:02} - {}'.format(int(cur_result['season']), int(cur_result['episode']), cur_result['name'])}
+                                            ${'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode']))} - ${cur_result['name']}
                                         </span>
 
                                         <div class="clearfix">

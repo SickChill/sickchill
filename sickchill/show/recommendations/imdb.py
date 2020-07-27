@@ -4,14 +4,14 @@ import os
 import posixpath
 import re
 from datetime import date
-from urllib.parse import urljoin
 
 # Third Party Imports
 from bs4 import BeautifulSoup
+from requests.compat import urljoin
 
 # First Party Imports
+import sickbeard
 from sickbeard import helpers
-from sickchill import settings
 
 
 class imdbPopular(object):
@@ -102,7 +102,7 @@ class imdbPopular(object):
         Store cache of image in cache dir
         :param image_url: Source URL
         """
-        path = os.path.abspath(os.path.join(settings.CACHE_DIR, 'images', 'imdb_popular'))
+        path = os.path.abspath(os.path.join(sickbeard.CACHE_DIR, 'images', 'imdb_popular'))
 
         if not os.path.exists(path):
             os.makedirs(path)

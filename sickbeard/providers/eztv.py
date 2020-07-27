@@ -17,22 +17,22 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# Stdlib Imports
-from urllib.parse import urljoin
+# Third Party Imports
+from requests.compat import urljoin
 
 # First Party Imports
+import sickbeard
 from sickbeard import logger, tvcache
-from sickchill import settings
 from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class EZTVProvider(TorrentProvider):
 
     def __init__(self):
 
         # Provider Init
-        super().__init__("EZTV")
+        TorrentProvider.__init__(self, "EZTV")
 
         # Credentials
         self.public = True
@@ -83,7 +83,7 @@ class Provider(TorrentProvider):
                     if not all([title, info_hash]):
                         continue
 
-                    link = result[('magnet_url', 'torrent_url')[settings.TORRENT_METHOD == 'blackhole']]
+                    link = result[('magnet_url', 'torrent_url')[sickbeard.TORRENT_METHOD == 'blackhole']]
 
                     seeders = result['seeds']
                     leechers = result['peers']
@@ -111,3 +111,6 @@ class Provider(TorrentProvider):
             results += items
 
         return results
+
+
+provider = EZTVProvider()

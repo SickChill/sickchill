@@ -3,9 +3,9 @@
 import os
 
 # First Party Imports
+import sickbeard
 import sickchill
 from sickbeard import helpers
-from sickchill import settings
 from sickchill.show.Show import Show
 
 
@@ -20,7 +20,7 @@ class IndexerFavorites(object):
         indexer_favorites = sickchill.indexer.get_indexer_favorites()
         results = []
         for series in indexer_favorites:
-            if Show().find(settings.showList, series.id):
+            if Show().find(sickbeard.showList, series.id):
                 continue
             results.append(series)
             self.cache_image(series.id)
@@ -32,7 +32,7 @@ class IndexerFavorites(object):
         Store cache of image in cache dir
         :param indexerid: Source indexer id
         """
-        path = os.path.abspath(os.path.join(settings.CACHE_DIR, 'images', 'favorites'))
+        path = os.path.abspath(os.path.join(sickbeard.CACHE_DIR, 'images', 'favorites'))
 
         if not os.path.exists(path):
             os.makedirs(path)

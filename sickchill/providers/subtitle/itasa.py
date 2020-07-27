@@ -4,7 +4,6 @@ import copy
 import io
 import logging
 import re
-from xml.etree import ElementTree
 from zipfile import is_zipfile, ZipFile
 
 # Third Party Imports
@@ -19,19 +18,30 @@ from subliminal.providers import Provider
 from subliminal.subtitle import fix_line_ending, Subtitle
 from subliminal.video import Episode
 
+try:
+    # Third Party Imports
+    from lxml import etree
+except ImportError:  # pragma: no cover
+    try:
+        # Stdlib Imports
+        from xml.etree import cElementTree as etree
+    except ImportError:
+        # Stdlib Imports
+        from xml.etree import ElementTree as etree
+
 logger = logging.getLogger(__name__)
 
 
 class ItaSASubtitle(Subtitle):
     provider_name = 'itasa'
 
-    def __init__(self, sub_id, series, season, episode, source, year, tvdb_id, full_data):
+    def __init__(self, sub_id, series, season, episode, video_format, year, tvdb_id, full_data):
         super(ItaSASubtitle, self).__init__(Language('ita'))
         self.sub_id = sub_id
         self.series = series
         self.season = season
         self.episode = episode
-        self.source = source
+        self.format = video_format
         self.year = year
         self.tvdb_id = tvdb_id
         self.full_data = full_data
@@ -40,7 +50,7 @@ class ItaSASubtitle(Subtitle):
     def id(self):  # pragma: no cover
         return self.sub_id
 
-    def get_matches(self, video: Episode, hearing_impaired=False):
+    def get_matches(self, video, hearing_impaired=False):
         matches = set()
 
         # series
@@ -52,9 +62,9 @@ class ItaSASubtitle(Subtitle):
         # episode
         if video.episode and self.episode == video.episode:
             matches.add('episode')
-        # source
-        if video.source and video.source.lower() in self.source.lower():
-            matches.add('source')
+        # format
+        if video.format and video.format.lower() in self.format.lower():
+            matches.add('format')
         if video.year and self.year == video.year:
             matches.add('year')
         if video.series_tvdb_id and self.tvdb_id == video.series_tvdb_id:
@@ -100,7 +110,7 @@ class ItaSAProvider(Provider):
             }
 
             r = self.session.get(self.server_url + 'users/login', params=params, allow_redirects=False, timeout=10)
-            root = ElementTree.fromstring(r.content)
+            root = etree.fromstring(r.content)
 
             if root.find('status').text == 'fail':
                 raise AuthenticationError(root.find('error/message').text)
@@ -140,7 +150,7 @@ class ItaSAProvider(Provider):
         params = {'apikey': self.apikey}
         r = self.session.get(self.server_url + 'shows', timeout=10, params=params)
         r.raise_for_status()
-        root = ElementTree.fromstring(r.content)
+        root = etree.fromstring(r.content)
 
         # populate the show ids
         show_ids = {}
@@ -168,7 +178,7 @@ class ItaSAProvider(Provider):
         logger.info('Searching show ids with %r', params)
         r = self.session.get(self.server_url + 'shows/search', params=params, timeout=10)
         r.raise_for_status()
-        root = ElementTree.fromstring(r.content)
+        root = etree.fromstring(r.content)
 
         if int(root.find('data/count').text) == 0:
             logger.warning('Show id not found: no suggestion')
@@ -188,7 +198,7 @@ class ItaSAProvider(Provider):
 
             r = self.session.get(next_page.text, timeout=10)
             r.raise_for_status()
-            root = ElementTree.fromstring(r.content)
+            root = etree.fromstring(r.content)
 
             logger.info('Loading suggestion page %r', root.find('data/page').text)
 
@@ -255,24 +265,24 @@ class ItaSAProvider(Provider):
 
         return r.content
 
-    def _get_season_subtitles(self, show_id, season, sub_source):
+    def _get_season_subtitles(self, show_id, season, sub_format):
         params = {
             'apikey': self.apikey,
             'show_id': show_id,
             'q': 'Stagione %%%d' % season,
-            'version': sub_source
+            'version': sub_format
         }
         r = self.session.get(self.server_url + 'subtitles/search', params=params, timeout=30)
         r.raise_for_status()
-        root = ElementTree.fromstring(r.content)
+        root = etree.fromstring(r.content)
 
         if int(root.find('data/count').text) == 0:
             logger.warning('Subtitles for season not found, try with rip suffix')
 
-            params['version'] = sub_source + 'rip'
+            params['version'] = sub_format + 'rip'
             r = self.session.get(self.server_url + 'subtitles/search', params=params, timeout=30)
             r.raise_for_status()
-            root = ElementTree.fromstring(r.content)
+            root = etree.fromstring(r.content)
             if int(root.find('data/count').text) == 0:
                 logger.warning('Subtitles for season not found')
                 return []
@@ -315,7 +325,7 @@ class ItaSAProvider(Provider):
 
         return subs
 
-    def query(self, series, season, episode, source, resolution, country=None):
+    def query(self, series, season, episode, video_format, resolution, country=None):
 
         # To make queries you need to be logged in
         if not self.logged_in:  # pragma: no cover
@@ -328,18 +338,18 @@ class ItaSAProvider(Provider):
             return []
 
         # get the page of the season of the show
-        logger.info('Getting the subtitle of show id %d, season %d episode %d, source %r', show_id,
-                    season, episode, source)
+        logger.info('Getting the subtitle of show id %d, season %d episode %d, format %r', show_id,
+                    season, episode, video_format)
         subtitles = []
 
-        # Default source is SDTV
-        if not source or source.lower() == 'hdtv':
+        # Default format is SDTV
+        if not video_format or video_format.lower() == 'hdtv':
             if resolution in ('1080i', '1080p', '720p'):
-                sub_source = resolution
+                sub_format = resolution
             else:
-                sub_source = 'normale'
+                sub_format = 'normale'
         else:
-            sub_source = source.lower()
+            sub_format = video_format.lower()
 
         # Look for year
         params = {
@@ -347,7 +357,7 @@ class ItaSAProvider(Provider):
         }
         r = self.session.get(self.server_url + 'shows/' + str(show_id), params=params, timeout=30)
         r.raise_for_status()
-        root = ElementTree.fromstring(r.content)
+        root = etree.fromstring(r.content)
 
         year = root.find('data/show/started').text
         if year:
@@ -360,27 +370,27 @@ class ItaSAProvider(Provider):
             'apikey': self.apikey,
             'show_id': show_id,
             'q': '%dx%02d' % (season, episode),
-            'version': sub_source
+            'version': sub_format
             }
         r = self.session.get(self.server_url + 'subtitles/search', params=params, timeout=30)
         r.raise_for_status()
-        root = ElementTree.fromstring(r.content)
+        root = etree.fromstring(r.content)
 
         if int(root.find('data/count').text) == 0:
             logger.warning('Subtitles not found,  try with rip suffix')
 
-            params['version'] = sub_source + 'rip'
+            params['version'] = sub_format + 'rip'
             r = self.session.get(self.server_url + 'subtitles/search', params=params, timeout=30)
             r.raise_for_status()
-            root = ElementTree.fromstring(r.content)
+            root = etree.fromstring(r.content)
             if int(root.find('data/count').text) == 0:
                 logger.warning('Subtitles not found, go season mode')
 
                 # If no subtitle are found for single episode try to download all season zip
-                subs = self._get_season_subtitles(show_id, season, sub_source)
+                subs = self._get_season_subtitles(show_id, season, sub_format)
                 if subs:
                     for subtitle in subs:
-                        subtitle.source = source
+                        subtitle.format = video_format
                         subtitle.year = year
                         subtitle.tvdb_id = tvdb_id
 
@@ -402,7 +412,7 @@ class ItaSAProvider(Provider):
                         subtitle.find('show_name').text,
                         season,
                         episode,
-                        source,
+                        video_format,
                         year,
                         tvdb_id,
                         subtitle.find('name').text)
@@ -415,9 +425,9 @@ class ItaSAProvider(Provider):
 
             r = self.session.get(next_page.text, timeout=30)
             r.raise_for_status()
-            root = ElementTree.fromstring(r.content)
+            root = etree.fromstring(r.content)
 
-            # logger.info('Loading subtitles page %r', root.data.page.text)
+            logger.info('Loading subtitles page %r', root.data.page.text)
 
             # Looking for show in following pages
             for subtitle in root.findall('data/subtitles/subtitle'):
@@ -433,7 +443,7 @@ class ItaSAProvider(Provider):
                         subtitle.find('show_name').text,
                         season,
                         episode,
-                        source,
+                        video_format,
                         year,
                         tvdb_id,
                         subtitle.find('name').text)
@@ -474,8 +484,8 @@ class ItaSAProvider(Provider):
 
         return subtitles + additional_subs
 
-    def list_subtitles(self, video: Episode, languages):
-        return self.query(video.series, video.season, video.episode, video.source, video.resolution)
+    def list_subtitles(self, video, languages):
+        return self.query(video.series, video.season, video.episode, video.format, video.resolution)
 
     def download_subtitle(self, subtitle):   # pragma: no cover
         pass

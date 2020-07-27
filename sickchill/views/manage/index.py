@@ -23,9 +23,9 @@ import os
 import posixpath
 
 # First Party Imports
+import sickbeard
 from sickbeard import db, logger, subtitles as subtitle_module, ui
 from sickbeard.common import Overview, Quality, SNATCHED
-from sickchill import settings
 from sickchill.helper import episode_num, try_int
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException
 from sickchill.show.Show import Show
@@ -150,7 +150,7 @@ class Manage(Home, WebRoot):
         main_db_con = db.DBConnection()
         cur_show_results = main_db_con.select(
             "SELECT season, episode, name, subtitles FROM tv_episodes WHERE showid = ? {0} AND (status LIKE '%4' OR status LIKE '%6') and "
-            "location != ''".format(("AND season != 0 ", "")[settings.SUBTITLES_INCLUDE_SPECIALS]), [int(indexer_id)])
+            "location != ''".format(("AND season != 0 ", "")[sickbeard.SUBTITLES_INCLUDE_SPECIALS]), [int(indexer_id)])
         result = {}
         for cur_result in cur_show_results:
             if whichSubs == 'all':
@@ -237,22 +237,22 @@ class Manage(Home, WebRoot):
                 main_db_con = db.DBConnection()
                 all_eps_results = main_db_con.select(
                     "SELECT season, episode FROM tv_episodes WHERE (status LIKE '%4' OR status LIKE '%6') {0} AND showid = ? AND location != ''".format(
-                        ("AND season != 0 ", "")[settings.SUBTITLES_INCLUDE_SPECIALS]), [cur_indexer_id])
+                        ("AND season != 0 ", "")[sickbeard.SUBTITLES_INCLUDE_SPECIALS]), [cur_indexer_id])
                 to_download[cur_indexer_id] = [str(x["season"]) + 'x' + str(x["episode"]) for x in all_eps_results]
 
             for epResult in to_download[cur_indexer_id]:
                 season, episode = epResult.split('x')
 
-                show = Show.find(settings.showList, int(cur_indexer_id))
+                show = Show.find(sickbeard.showList, int(cur_indexer_id))
                 show.getEpisode(season, episode).download_subtitles()
 
         return self.redirect('/manage/subtitleMissed/')
 
     def backlogShow(self, indexer_id):
-        show_obj = Show.find(settings.showList, int(indexer_id))
+        show_obj = Show.find(sickbeard.showList, int(indexer_id))
 
         if show_obj:
-            settings.backlogSearchScheduler.action.searchBacklog([show_obj])
+            sickbeard.backlogSearchScheduler.action.searchBacklog([show_obj])
 
         return self.redirect("/manage/backlogOverview/")
 
@@ -264,7 +264,7 @@ class Manage(Home, WebRoot):
         showSQLResults = {}
 
         main_db_con = db.DBConnection()
-        for curShow in settings.showList:
+        for curShow in sickbeard.showList:
 
             epCounts = {
                 Overview.SKIPPED: 0,
@@ -285,7 +285,7 @@ class Manage(Home, WebRoot):
                 [curShow.indexerid])
 
             for curResult in sql_results:
-                curEpCat = curShow.getOverview(curResult["status"], backlog=settings.BACKLOG_MISSING_ONLY)
+                curEpCat = curShow.getOverview(curResult["status"], backlog=sickbeard.BACKLOG_MISSING_ONLY)
                 if curEpCat:
 
                     epCats['{ep}'.format(ep=episode_num(curResult['season'], curResult['episode']))] = curEpCat
@@ -323,7 +323,7 @@ class Manage(Home, WebRoot):
         showNames = []
         for curID in showIDs:
             curID = int(curID)
-            show_obj = Show.find(settings.showList, curID)
+            show_obj = Show.find(sickbeard.showList, curID)
             if show_obj:
                 showList.append(show_obj)
                 showNames.append(show_obj.name)
@@ -449,7 +449,7 @@ class Manage(Home, WebRoot):
         errors = []
         for curShow in showIDs:
             curErrors = []
-            show_obj = Show.find(settings.showList, int(curShow or 0))
+            show_obj = Show.find(sickbeard.showList, int(curShow or 0))
             if not show_obj:
                 continue
 
@@ -521,23 +521,23 @@ class Manage(Home, WebRoot):
             if curShowID == '':
                 continue
 
-            show_obj = Show.find(settings.showList, int(curShowID))
+            show_obj = Show.find(sickbeard.showList, int(curShowID))
             if not show_obj:
                 continue
 
             if curShowID in toDelete:
-                settings.showQueueScheduler.action.remove_show(show_obj, True)
+                sickbeard.showQueueScheduler.action.remove_show(show_obj, True)
                 # don't do anything else if it's being deleted
                 continue
 
             if curShowID in toRemove:
-                settings.showQueueScheduler.action.remove_show(show_obj)
+                sickbeard.showQueueScheduler.action.remove_show(show_obj)
                 # don't do anything else if it's being remove
                 continue
 
             if curShowID in toUpdate:
                 try:
-                    settings.showQueueScheduler.action.update_show(show_obj, True)
+                    sickbeard.showQueueScheduler.action.update_show(show_obj, True)
                     updates.append(show_obj.name)
                 except CantUpdateShowException as e:
                     errors.append(_("Unable to update show: {exception_format}").format(exception_format=e))
@@ -545,17 +545,17 @@ class Manage(Home, WebRoot):
             # don't bother refreshing shows that were updated anyway
             if curShowID in toRefresh and curShowID not in toUpdate:
                 try:
-                    settings.showQueueScheduler.action.refresh_show(show_obj, force=True)
+                    sickbeard.showQueueScheduler.action.refresh_show(show_obj, force=True)
                     refreshes.append(show_obj.name)
                 except CantRefreshShowException as e:
                     errors.append(_("Unable to refresh show {show_name}: {exception_format}").format(show_name=show_obj.name, exception_format=e))
 
             if curShowID in toRename:
-                settings.showQueueScheduler.action.rename_show_episodes(show_obj)
+                sickbeard.showQueueScheduler.action.rename_show_episodes(show_obj)
                 renames.append(show_obj.name)
 
             if curShowID in toSubtitle:
-                settings.showQueueScheduler.action.download_subtitles(show_obj)
+                sickbeard.showQueueScheduler.action.download_subtitles(show_obj)
                 subtitles.append(show_obj.name)
 
         if errors:

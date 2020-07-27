@@ -26,7 +26,7 @@ Test sickchill.common
 import unittest
 
 # First Party Imports
-from sickchill import settings
+import sickbeard
 from sickchill.helper import glob
 from sickchill.helper.common import (convert_size, episode_num, http_code_description, is_sync_file, is_torrent_or_nzb_file, pretty_file_size, remove_extension,
                                      replace_extension, sanitize_filename, try_int)
@@ -75,7 +75,7 @@ class CommonTests(unittest.TestCase):
         """
         Test is sync file
         """
-        settings.SYNC_FILES = '!sync,lftp-pget-status'
+        sickbeard.SYNC_FILES = '!sync,lftp-pget-status'
 
         test_cases = {
             None: False,

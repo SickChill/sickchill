@@ -17,8 +17,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# Stdlib Imports
-from urllib.parse import urljoin
+# Third Party Imports
+from requests.compat import urljoin
 
 # First Party Imports
 from sickbeard import logger, tvcache
@@ -26,11 +26,11 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class HD4FreeProvider(TorrentProvider):
 
     def __init__(self):
 
-        super().__init__("HD4Free")
+        TorrentProvider.__init__(self, "HD4Free")
 
         self.url = 'https://hd4free.xyz'
         self.urls = {'search': urljoin(self.url, '/searchapi.php')}
@@ -130,3 +130,6 @@ class Provider(TorrentProvider):
             results += items
 
         return results
+
+
+provider = HD4FreeProvider()

@@ -1,10 +1,10 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     from sickbeard.helpers import anon_url
-    from sickchill import settings
+    import sickbeard
 %>
 <%block name="metas">
-    <meta data-var="settings.SORT_ARTICLE" data-content="${settings.SORT_ARTICLE}">
+    <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
 </%block>
 <%block name="content">
     <div class="col-md-12">
@@ -40,7 +40,7 @@
             </div>
         </div>
         <div class="row">
-            <% imdb_tt = {show.imdbid for show in settings.showList if show.imdbid} %>
+            <% imdb_tt = {show.imdbid for show in sickbeard.showList if show.imdbid} %>
             <div id="popularShows">
                 <div id="container">
                     % if not popular_shows:

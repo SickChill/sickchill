@@ -19,14 +19,13 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
-import urllib.parse
-import urllib.request
+import urllib
 
 # First Party Imports
+import sickbeard
 from sickbeard import logger
 from sickbeard.common import (NOTIFY_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, NOTIFY_SNATCH,
                               NOTIFY_SUBTITLE_DOWNLOAD, notifyStrings)
-from sickchill import settings
 
 
 class Notifier(object):
@@ -45,9 +44,9 @@ class Notifier(object):
         """
 
         if cust_id is None:
-            cust_id = settings.FREEMOBILE_ID
+            cust_id = sickbeard.FREEMOBILE_ID
         if apiKey is None:
-            apiKey = settings.FREEMOBILE_APIKEY
+            apiKey = sickbeard.FREEMOBILE_APIKEY
 
         logger.debug("Free Mobile in use with API KEY: " + apiKey)
 
@@ -88,25 +87,25 @@ class Notifier(object):
         return True, message
 
     def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
-        if settings.FREEMOBILE_NOTIFY_ONSNATCH:
+        if sickbeard.FREEMOBILE_NOTIFY_ONSNATCH:
             self._notifyFreeMobile(title, ep_name)
 
     def notify_download(self, ep_name, title=notifyStrings[NOTIFY_DOWNLOAD]):
-        if settings.FREEMOBILE_NOTIFY_ONDOWNLOAD:
+        if sickbeard.FREEMOBILE_NOTIFY_ONDOWNLOAD:
             self._notifyFreeMobile(title, ep_name)
 
     def notify_subtitle_download(self, ep_name, lang, title=notifyStrings[NOTIFY_SUBTITLE_DOWNLOAD]):
-        if settings.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD:
+        if sickbeard.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyFreeMobile(title, ep_name + ": " + lang)
 
     def notify_git_update(self, new_version="??"):
-        if settings.USE_FREEMOBILE:
+        if sickbeard.USE_FREEMOBILE:
             update_text = notifyStrings[NOTIFY_GIT_UPDATE_TEXT]
             title = notifyStrings[NOTIFY_GIT_UPDATE]
             self._notifyFreeMobile(title, update_text + new_version)
 
     def notify_login(self, ipaddress=""):
-        if settings.USE_FREEMOBILE:
+        if sickbeard.USE_FREEMOBILE:
             update_text = notifyStrings[NOTIFY_LOGIN_TEXT]
             title = notifyStrings[NOTIFY_LOGIN]
             self._notifyFreeMobile(title, update_text.format(ipaddress))
@@ -122,7 +121,7 @@ class Notifier(object):
         force: Enforce sending, for instance for testing
         """
 
-        if not settings.USE_FREEMOBILE and not force:
+        if not sickbeard.USE_FREEMOBILE and not force:
             logger.debug("Notification for Free Mobile not enabled, skipping this notification")
             return False, "Disabled"
 

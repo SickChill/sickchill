@@ -23,9 +23,8 @@ import os
 from tornado.web import addslash
 
 # First Party Imports
-import sickchill.start
+import sickbeard
 from sickbeard import config, filters, helpers, logger, ui
-from sickchill import settings
 from sickchill.helper import try_int
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
@@ -71,100 +70,100 @@ class ConfigSearch(Config):
         config.change_daily_search_frequency(dailysearch_frequency)
 
         config.change_backlog_frequency(backlog_frequency)
-        settings.BACKLOG_DAYS = try_int(backlog_days, 7)
+        sickbeard.BACKLOG_DAYS = try_int(backlog_days, 7)
 
-        settings.USE_NZBS = config.checkbox_to_value(use_nzbs)
-        settings.USE_TORRENTS = config.checkbox_to_value(use_torrents)
+        sickbeard.USE_NZBS = config.checkbox_to_value(use_nzbs)
+        sickbeard.USE_TORRENTS = config.checkbox_to_value(use_torrents)
 
-        settings.NZB_METHOD = nzb_method
-        settings.TORRENT_METHOD = torrent_method
-        settings.USENET_RETENTION = try_int(usenet_retention, 500)
+        sickbeard.NZB_METHOD = nzb_method
+        sickbeard.TORRENT_METHOD = torrent_method
+        sickbeard.USENET_RETENTION = try_int(usenet_retention, 500)
 
-        settings.IGNORE_WORDS = ignore_words if ignore_words else ""
-        settings.TRACKERS_LIST = trackers_list if trackers_list else ""
-        settings.REQUIRE_WORDS = require_words if require_words else ""
-        settings.PREFER_WORDS = prefer_words if prefer_words else ""
-        settings.IGNORED_SUBS_LIST = ignored_subs_list if ignored_subs_list else ""
+        sickbeard.IGNORE_WORDS = ignore_words if ignore_words else ""
+        sickbeard.TRACKERS_LIST = trackers_list if trackers_list else ""
+        sickbeard.REQUIRE_WORDS = require_words if require_words else ""
+        sickbeard.PREFER_WORDS = prefer_words if prefer_words else ""
+        sickbeard.IGNORED_SUBS_LIST = ignored_subs_list if ignored_subs_list else ""
 
-        settings.RANDOMIZE_PROVIDERS = config.checkbox_to_value(randomize_providers)
+        sickbeard.RANDOMIZE_PROVIDERS = config.checkbox_to_value(randomize_providers)
 
         config.change_download_propers(download_propers)
 
-        settings.CHECK_PROPERS_INTERVAL = check_propers_interval
+        sickbeard.CHECK_PROPERS_INTERVAL = check_propers_interval
 
-        settings.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(allow_high_priority)
-        settings.QUALITY_ALLOW_HEVC = config.checkbox_to_value(quality_allow_hevc)
+        sickbeard.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(allow_high_priority)
+        sickbeard.QUALITY_ALLOW_HEVC = config.checkbox_to_value(quality_allow_hevc)
 
-        settings.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
-        settings.DELETE_FAILED = config.checkbox_to_value(delete_failed)
+        sickbeard.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
+        sickbeard.DELETE_FAILED = config.checkbox_to_value(delete_failed)
 
-        settings.BACKLOG_MISSING_ONLY = config.checkbox_to_value(backlog_missing_only)
+        sickbeard.BACKLOG_MISSING_ONLY = config.checkbox_to_value(backlog_missing_only)
 
-        settings.SAB_USERNAME = sab_username
-        settings.SAB_PASSWORD = filters.unhide(settings.SAB_PASSWORD, sab_password)
-        settings.SAB_APIKEY = filters.unhide(settings.SAB_APIKEY, sab_apikey.strip())
-        settings.SAB_CATEGORY = sab_category
-        settings.SAB_CATEGORY_BACKLOG = sab_category_backlog
-        settings.SAB_CATEGORY_ANIME = sab_category_anime
-        settings.SAB_CATEGORY_ANIME_BACKLOG = sab_category_anime_backlog
-        settings.SAB_HOST = config.clean_url(sab_host)
-        settings.SAB_FORCED = config.checkbox_to_value(sab_forced)
+        sickbeard.SAB_USERNAME = sab_username
+        sickbeard.SAB_PASSWORD = filters.unhide(sickbeard.SAB_PASSWORD, sab_password)
+        sickbeard.SAB_APIKEY = filters.unhide(sickbeard.SAB_APIKEY, sab_apikey.strip())
+        sickbeard.SAB_CATEGORY = sab_category
+        sickbeard.SAB_CATEGORY_BACKLOG = sab_category_backlog
+        sickbeard.SAB_CATEGORY_ANIME = sab_category_anime
+        sickbeard.SAB_CATEGORY_ANIME_BACKLOG = sab_category_anime_backlog
+        sickbeard.SAB_HOST = config.clean_url(sab_host)
+        sickbeard.SAB_FORCED = config.checkbox_to_value(sab_forced)
 
-        settings.NZBGET_USERNAME = nzbget_username
-        settings.NZBGET_PASSWORD = filters.unhide(settings.NZBGET_PASSWORD, nzbget_password)
-        settings.NZBGET_CATEGORY = nzbget_category
-        settings.NZBGET_CATEGORY_BACKLOG = nzbget_category_backlog
-        settings.NZBGET_CATEGORY_ANIME = nzbget_category_anime
-        settings.NZBGET_CATEGORY_ANIME_BACKLOG = nzbget_category_anime_backlog
-        settings.NZBGET_HOST = config.clean_host(nzbget_host)
-        settings.NZBGET_USE_HTTPS = config.checkbox_to_value(nzbget_use_https)
-        settings.NZBGET_PRIORITY = try_int(nzbget_priority, 100)
+        sickbeard.NZBGET_USERNAME = nzbget_username
+        sickbeard.NZBGET_PASSWORD = filters.unhide(sickbeard.NZBGET_PASSWORD, nzbget_password)
+        sickbeard.NZBGET_CATEGORY = nzbget_category
+        sickbeard.NZBGET_CATEGORY_BACKLOG = nzbget_category_backlog
+        sickbeard.NZBGET_CATEGORY_ANIME = nzbget_category_anime
+        sickbeard.NZBGET_CATEGORY_ANIME_BACKLOG = nzbget_category_anime_backlog
+        sickbeard.NZBGET_HOST = config.clean_host(nzbget_host)
+        sickbeard.NZBGET_USE_HTTPS = config.checkbox_to_value(nzbget_use_https)
+        sickbeard.NZBGET_PRIORITY = try_int(nzbget_priority, 100)
 
-        settings.TORRENT_USERNAME = torrent_username
-        settings.TORRENT_PASSWORD = filters.unhide(settings.TORRENT_PASSWORD, torrent_password)
-        settings.TORRENT_LABEL = torrent_label
-        settings.TORRENT_LABEL_ANIME = torrent_label_anime
-        settings.TORRENT_VERIFY_CERT = config.checkbox_to_value(torrent_verify_cert)
+        sickbeard.TORRENT_USERNAME = torrent_username
+        sickbeard.TORRENT_PASSWORD = filters.unhide(sickbeard.TORRENT_PASSWORD, torrent_password)
+        sickbeard.TORRENT_LABEL = torrent_label
+        sickbeard.TORRENT_LABEL_ANIME = torrent_label_anime
+        sickbeard.TORRENT_VERIFY_CERT = config.checkbox_to_value(torrent_verify_cert)
 
-        settings.TORRENT_PATH = torrent_path.rstrip('/\\')
-        settings.TORRENT_PATH_INCOMPLETE = torrent_path_incomplete.rstrip('/\\')
+        sickbeard.TORRENT_PATH = torrent_path.rstrip('/\\')
+        sickbeard.TORRENT_PATH_INCOMPLETE = torrent_path_incomplete.rstrip('/\\')
 
-        settings.TORRENT_SEED_TIME = torrent_seed_time
-        settings.TORRENT_PAUSED = config.checkbox_to_value(torrent_paused)
-        settings.TORRENT_HIGH_BANDWIDTH = config.checkbox_to_value(torrent_high_bandwidth)
-        settings.TORRENT_HOST = config.clean_url(torrent_host)
-        settings.TORRENT_RPCURL = torrent_rpcurl
-        settings.TORRENT_AUTH_TYPE = torrent_auth_type
+        sickbeard.TORRENT_SEED_TIME = torrent_seed_time
+        sickbeard.TORRENT_PAUSED = config.checkbox_to_value(torrent_paused)
+        sickbeard.TORRENT_HIGH_BANDWIDTH = config.checkbox_to_value(torrent_high_bandwidth)
+        sickbeard.TORRENT_HOST = config.clean_url(torrent_host)
+        sickbeard.TORRENT_RPCURL = torrent_rpcurl
+        sickbeard.TORRENT_AUTH_TYPE = torrent_auth_type
 
-        settings.SYNOLOGY_DSM_HOST = config.clean_url(syno_dsm_host)
-        settings.SYNOLOGY_DSM_USERNAME = syno_dsm_user
-        settings.SYNOLOGY_DSM_PASSWORD = filters.unhide(settings.SYNOLOGY_DSM_PASSWORD, syno_dsm_pass)
-        settings.SYNOLOGY_DSM_PATH = syno_dsm_path.rstrip('/\\')
+        sickbeard.SYNOLOGY_DSM_HOST = config.clean_url(syno_dsm_host)
+        sickbeard.SYNOLOGY_DSM_USERNAME = syno_dsm_user
+        sickbeard.SYNOLOGY_DSM_PASSWORD = filters.unhide(sickbeard.SYNOLOGY_DSM_PASSWORD, syno_dsm_pass)
+        sickbeard.SYNOLOGY_DSM_PATH = syno_dsm_path.rstrip('/\\')
 
         # This is a PITA, but lets merge the settings if they only set DSM up in one section to save them some time
-        if settings.TORRENT_METHOD == 'download_station':
-            if not settings.SYNOLOGY_DSM_HOST:
-                settings.SYNOLOGY_DSM_HOST = settings.TORRENT_HOST
-            if not settings.SYNOLOGY_DSM_USERNAME:
-                settings.SYNOLOGY_DSM_USERNAME = settings.TORRENT_USERNAME
-            if not settings.SYNOLOGY_DSM_PASSWORD:
-                settings.SYNOLOGY_DSM_PASSWORD = settings.TORRENT_PASSWORD
-            if not settings.SYNOLOGY_DSM_PATH:
-                settings.SYNOLOGY_DSM_PATH = settings.TORRENT_PATH
+        if sickbeard.TORRENT_METHOD == 'download_station':
+            if not sickbeard.SYNOLOGY_DSM_HOST:
+                sickbeard.SYNOLOGY_DSM_HOST = sickbeard.TORRENT_HOST
+            if not sickbeard.SYNOLOGY_DSM_USERNAME:
+                sickbeard.SYNOLOGY_DSM_USERNAME = sickbeard.TORRENT_USERNAME
+            if not sickbeard.SYNOLOGY_DSM_PASSWORD:
+                sickbeard.SYNOLOGY_DSM_PASSWORD = sickbeard.TORRENT_PASSWORD
+            if not sickbeard.SYNOLOGY_DSM_PATH:
+                sickbeard.SYNOLOGY_DSM_PATH = sickbeard.TORRENT_PATH
 
-        if settings.NZB_METHOD == 'download_station':
-            if not settings.TORRENT_HOST:
-                settings.TORRENT_HOST = settings.SYNOLOGY_DSM_HOST
-            if not settings.TORRENT_USERNAME:
-                settings.TORRENT_USERNAME = settings.SYNOLOGY_DSM_USERNAME
-            if not settings.TORRENT_PASSWORD:
-                settings.TORRENT_PASSWORD = settings.SYNOLOGY_DSM_PASSWORD
-            if not settings.TORRENT_PATH:
-                settings.TORRENT_PATH = settings.SYNOLOGY_DSM_PATH
+        if sickbeard.NZB_METHOD == 'download_station':
+            if not sickbeard.TORRENT_HOST:
+                sickbeard.TORRENT_HOST = sickbeard.SYNOLOGY_DSM_HOST
+            if not sickbeard.TORRENT_USERNAME:
+                sickbeard.TORRENT_USERNAME = sickbeard.SYNOLOGY_DSM_USERNAME
+            if not sickbeard.TORRENT_PASSWORD:
+                sickbeard.TORRENT_PASSWORD = sickbeard.SYNOLOGY_DSM_PASSWORD
+            if not sickbeard.TORRENT_PATH:
+                sickbeard.TORRENT_PATH = sickbeard.SYNOLOGY_DSM_PATH
 
         helpers.manage_torrents_url(reset=True)
 
-        sickchill.start.save_config()
+        sickbeard.save_config()
 
         if len(results) > 0:
             for x in results:
@@ -172,6 +171,6 @@ class ConfigSearch(Config):
             ui.notifications.error(_('Error(s) Saving Configuration'),
                                    '<br>\n'.join(results))
         else:
-            ui.notifications.message(_('Configuration Saved'), os.path.join(settings.CONFIG_FILE))
+            ui.notifications.message(_('Configuration Saved'), os.path.join(sickbeard.CONFIG_FILE))
 
         return self.redirect("/config/search/")

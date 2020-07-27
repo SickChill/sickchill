@@ -18,17 +18,16 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import os
-from urllib.parse import urlencode
 # noinspection PyUnresolvedReferences
 from urllib.request import Request, urlopen
 
 # Third Party Imports
+from requests.compat import urlencode
 from requests.exceptions import HTTPError
 
 # First Party Imports
 import sickbeard
 from sickbeard import logger
-from sickchill import settings
 
 
 class Notifier(object):
@@ -51,12 +50,12 @@ class Notifier(object):
 
         # Values from config
 
-        if not settings.USE_PYTIVO:
+        if not sickbeard.USE_PYTIVO:
             return False
 
-        host = settings.PYTIVO_HOST
-        shareName = settings.PYTIVO_SHARE_NAME
-        tsn = settings.PYTIVO_TIVO_NAME
+        host = sickbeard.PYTIVO_HOST
+        shareName = sickbeard.PYTIVO_SHARE_NAME
+        tsn = sickbeard.PYTIVO_TIVO_NAME
 
         # There are two more values required, the container and file.
         #

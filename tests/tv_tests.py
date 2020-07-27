@@ -25,8 +25,8 @@ Test tv
 import unittest
 
 # First Party Imports
+import sickbeard
 from sickbeard.tv import TVEpisode, TVShow
-from sickchill import settings
 from tests import test_lib as test
 
 
@@ -39,7 +39,7 @@ class TVShowTests(test.SickbeardTestDBCase):
         Set up tests
         """
         super(TVShowTests, self).setUp()
-        settings.showList = []
+        sickbeard.showList = []
 
     def test_init_indexerid(self):
         """
@@ -91,7 +91,7 @@ class TVEpisodeTests(test.SickbeardTestDBCase):
         Set up
         """
         super(TVEpisodeTests, self).setUp()
-        settings.showList = []
+        sickbeard.showList = []
 
     def test_init_empty_db(self):
         """
@@ -114,7 +114,7 @@ class TVTests(test.SickbeardTestDBCase):
         Set up
         """
         super(TVTests, self).setUp()
-        settings.showList = []
+        sickbeard.showList = []
 
     @staticmethod
     def test_get_episode():
@@ -131,7 +131,7 @@ class TVTests(test.SickbeardTestDBCase):
         show.airs = "monday"
         show.startyear = 1987
         show.saveToDB()
-        settings.showList = [show]
+        sickbeard.showList = [show]
         # TODO: implement
 
 

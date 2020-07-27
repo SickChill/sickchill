@@ -19,22 +19,21 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import datetime
-import re
 import time
 
 # First Party Imports
+import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.common import cpu_presets
-from sickchill import settings
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class RarbgProvider(TorrentProvider):
 
     def __init__(self):
 
-        super().__init__("Rarbg")
+        TorrentProvider.__init__(self, "Rarbg")
 
         self.public = True
         self.minseed = 0
@@ -113,11 +112,10 @@ class Provider(TorrentProvider):
 
             for search_string in search_strings[mode]:
                 if mode != "RSS":
-                    search_string = re.sub(r"\((\d{4})\)", r'\1', search_string).replace(' ', '.')
                     search_params["search_string"] = search_string
                     logger.debug("Search string: {0}".format(search_string))
 
-                time.sleep(cpu_presets[settings.CPU_PRESET])
+                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                 data = self.get_url(self.urls["api"], params=search_params, returns="json")
                 if not isinstance(data, dict):
                     logger.debug("No data returned from provider")
@@ -173,3 +171,6 @@ class Provider(TorrentProvider):
             results += items
 
         return results
+
+
+provider = RarbgProvider()

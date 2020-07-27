@@ -20,7 +20,6 @@
 import sickbeard
 from sickbeard.notifiers import (boxcar2, discord, emailnotify, emby, freemobile, growl, join, kodi, libnotify, matrix, nmj, nmjv2, plex, prowl, pushalot,
                                  pushbullet, pushover, pytivo, rocketchat, slack, synoindex, synologynotifier, telegram, trakt, tweet, twilio_notify)
-from sickchill import settings
 
 # home theater / nas
 kodi_notifier = kodi.Notifier()
@@ -103,7 +102,7 @@ def notify_snatch(ep_name):
 
 
 def notify_git_update(new_version=""):
-    if settings.NOTIFY_ON_UPDATE:
+    if sickbeard.NOTIFY_ON_UPDATE:
         for n in notifiers:
             if hasattr(n, 'notify_git_update'):
                 n.notify_git_update(new_version)
@@ -112,7 +111,7 @@ def notify_git_update(new_version=""):
 
 
 def notify_login(ipaddress):
-    if settings.NOTIFY_ON_LOGIN and not sickbeard.helpers.is_ip_local(ipaddress):
+    if sickbeard.NOTIFY_ON_LOGIN and not sickbeard.helpers.is_ip_local(ipaddress):
         for n in notifiers:
             if hasattr(n, 'notify_login'):
                 n.notify_login(ipaddress)

@@ -20,10 +20,10 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import re
-from urllib.parse import urljoin
 
 # Third Party Imports
 import validators
+from requests.compat import urljoin
 
 # First Party Imports
 from sickbeard import logger, tvcache
@@ -32,12 +32,12 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class YggTorrentProvider(TorrentProvider):
 
     def __init__(self):
 
         # Provider Init
-        super().__init__("YggTorrent")
+        TorrentProvider.__init__(self, 'YggTorrent')
 
         # Credentials
         self.username = None
@@ -205,3 +205,6 @@ class Provider(TorrentProvider):
             results += items
 
         return results
+
+
+provider = YggTorrentProvider()

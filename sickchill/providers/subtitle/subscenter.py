@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Stdlib Imports
 import bisect
-import io
 import json
 import logging
 import zipfile
@@ -212,7 +211,7 @@ class SubsCenterProvider(Provider):
 
         return list(subtitles.values())
 
-    def list_subtitles(self, video: Episode, languages):
+    def list_subtitles(self, video, languages):
         season = episode = None
         title = video.title
 
@@ -223,7 +222,7 @@ class SubsCenterProvider(Provider):
 
         return [s for s in self.query(title, season, episode) if s.language in languages]
 
-    def download_subtitle(self, subtitle: SubsCenterSubtitle):
+    def download_subtitle(self, subtitle):
         # download
         url = self.server_url + 'subtitle/download/{}/{}/'.format(subtitle.language.alpha2, subtitle.subtitle_id)
         params = {'v': subtitle.subtitle_version, 'key': subtitle.subtitle_key}

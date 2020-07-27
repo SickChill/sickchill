@@ -2,8 +2,9 @@
 <%!
     import datetime
     import urllib
-    from sickchill import settings
-    from sickbeard import subtitles, sbdatetime, network_timezones, helpers, notifiers
+    import sickbeard
+    from sickbeard import subtitles, sbdatetime, network_timezones
+    import sickbeard.helpers
 
     from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, FAILED, DOWNLOADED
     from sickbeard.common import Quality, qualityPresets, statusStrings, Overview
@@ -59,7 +60,7 @@
                     % if seasonResults:
                         ##There is a special/season_0?##
                         <% season_special = (int(seasonResults[-1]["season"]) == 0) %>
-                        % if not settings.DISPLAY_SHOW_SPECIALS and season_special:
+                        % if not sickbeard.DISPLAY_SHOW_SPECIALS and season_special:
                             <% lastSeason = seasonResults.pop(-1) %>
                         % endif
 
@@ -121,7 +122,7 @@
                             <div class="pull-left col-lg-8 col-md-8 col-sm-12 col-xs-12">
                                 % if 'rating' in show.imdb_info and 'votes' in show.imdb_info:
                                     <% rating_tip = str(show.imdb_info['rating']) + " / 10" + _('Stars') + "<br>" + str(show.imdb_info['votes']) +  _('Votes') %>
-                                    <span class="imdbstars" data-qtip-content="${rating_tip}">${show.imdb_info['rating']}</span>
+                                    <span class="imdbstars" qtip-content="${rating_tip}">${show.imdb_info['rating']}</span>
                                 % endif
 
                                 % if not show.imdbid:
@@ -146,7 +147,7 @@
                                 <a href="${anon_url(show.idxr.show_url, show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;"
                                    title="${show.idxr.show_url + str(show.indexerid)}"><img alt="${show.idxr.name}" src="${static_url(show.idxr.icon)}" style="margin-top: -1px; vertical-align:middle;"/></a>
                                 % if xem_numbering or xem_absolute_numbering:
-                                    <a href="${anon_url('http://thexem.de/search?q=', show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><span class="displayshow-icon-xem" /></a>
+                                    <a href="${anon_url('http://thexem.de/search?q=', show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><span alt="" class="displayshow-icon-xem" /></a>
                                 % endif
                                 <a href="${anon_url('https://fanart.tv/series/', show.indexerid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="https://fanart.tv/series/${show.name}"><span class="displayshow-icon-fanart" /></a>
                             </div>
@@ -257,7 +258,7 @@
                                             % endif
                                             <tr>
                                                 <td class="showLegend">${_('Size')}:</td>
-                                                <td>${pretty_file_size(helpers.get_size(showLoc[0]))}</td>
+                                                <td>${pretty_file_size(sickbeard.helpers.get_size(showLoc[0]))}</td>
                                             </tr>
                                         </table>
                                     </div>
@@ -268,7 +269,7 @@
                                                 <td class="showLegend">${_('Info Language')}:</td>
                                                 <td><img src="${static_url('images/subtitles/flags/' + info_flag + '.png') }" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${static_url('images/flags/unknown.png')}';"/></td>
                                             </tr>
-                                            % if settings.USE_SUBTITLES:
+                                            % if sickbeard.USE_SUBTITLES:
                                                 <tr>
                                                     <td class="showLegend">${_('Subtitles')}: </td>
                                                     <td><span class="displayshow-icon-${("disable", "enable")[bool(show.subtitles)]}" title=${("N", "Y")[bool(show.subtitles)]}></span></td>
@@ -280,7 +281,7 @@
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Season Folders')}: </td>
-                                                <td><span class="displayshow-icon-${("disable", "enable")[bool(show.season_folders or settings.NAMING_FORCE_FOLDERS)]}" title=${("N", "Y")[bool(show.season_folders or settings.NAMING_FORCE_FOLDERS)]}></span></td>
+                                                <td><span class="displayshow-icon-${("disable", "enable")[bool(show.season_folders or sickbeard.NAMING_FORCE_FOLDERS)]}" title=${("N", "Y")[bool(show.season_folders or sickbeard.NAMING_FORCE_FOLDERS)]}></span></td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Paused')}: </td>
@@ -341,7 +342,7 @@
                     ${_('Change selected episodes to')}:<br>
                     <select id="statusSelect" class="form-control form-control-inline input-sm" title="Change Status">
                         <% availableStatus = [WANTED, SKIPPED, IGNORED, FAILED] %>
-                        % if not settings.USE_FAILED_DOWNLOADS:
+                        % if not sickbeard.USE_FAILED_DOWNLOADS:
                             <% availableStatus.remove(FAILED) %>
                         % endif
                         % for curStatus in availableStatus + Quality.DOWNLOADED + Quality.ARCHIVED:
@@ -368,7 +369,7 @@
                     if not epStr in epCats:
                         continue
 
-                    if not settings.DISPLAY_SHOW_SPECIALS and int(epResult["season"]) == 0:
+                    if not sickbeard.DISPLAY_SHOW_SPECIALS and int(epResult["season"]) == 0:
                         continue
 
                     scene = False
@@ -415,7 +416,7 @@
                         <div class="col-md-12">
                             <br/>
                             <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${(_("Specials"), _("Season") + ' ' + str(epResult["season"]))[int(epResult["season"]) > 0]}</h3>
-                            % if not settings.DISPLAY_ALL_SEASONS:
+                            % if not sickbeard.DISPLAY_ALL_SEASONS:
                                 % if curSeason == -1:
                                     <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}" aria-expanded="true">${_('Hide Episodes')}</button>
                                 %else:
@@ -443,15 +444,15 @@
                                             <th data-sorter="false" class="col-name columnSelector-false location">${_('File Name')}</th>
                                             <th data-sorter="false" class="col-ep columnSelector-false size">${_('Size')}</th>
                                             <th data-sorter="false" class="col-airdate">${_('Airdate')}</th>
-                                            <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(settings.DOWNLOAD_URL)]}>${_('Download')}</th>
-                                            <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(settings.KODI_HOST and settings.USE_KODI)]}>${_('Play')}</th>
-                                            <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(settings.USE_SUBTITLES)]}>${_('Subtitles')}</th>
+                                            <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(sickbeard.DOWNLOAD_URL)]}>${_('Download')}</th>
+                                            <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(sickbeard.KODI_HOST and sickbeard.USE_KODI)]}>${_('Play')}</th>
+                                            <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(sickbeard.USE_SUBTITLES)]}>${_('Subtitles')}</th>
                                             <th data-sorter="false" class="col-ep">${_('Status')}</th>
                                             <th data-sorter="false" class="col-search">${_('Search')}</th>
                                         </tr>
                                     </thead>
 
-                                % if not settings.DISPLAY_ALL_SEASONS:
+                                % if not sickbeard.DISPLAY_ALL_SEASONS:
                                     <tbody class="toggle collapse${("", " in")[curSeason == -1]}" id="collapseSeason-${epResult['season']}">
                                 % else:
                                     <tbody>
@@ -496,7 +497,7 @@
                                         <td align="center">
                                             <input type="text" placeholder="${str(default_absolute_number)}" size="6" maxlength="8"
                                                    class="sceneAbsolute form-control input-scene" data-for-absolute="${epResult["absolute_number"]}"
-                                                   id="sceneAbsolute_${show.indexerid}_${epResult["absolute_number"]}"
+                                                   id="sceneAbsolute_${show.indexerid}${"_"+str(epResult["absolute_number"])}"
                                                    title="${_('Change the value here if scene absolute numbering differs from the indexer absolute numbering')}"
                                                 % if default_absolute_numbering:
                                                    value=""
@@ -533,19 +534,19 @@
                                             % endif
                                         </td>
                                         <td class="col-download">
-                                            % if settings.DOWNLOAD_URL and epResult['location']:
+                                            % if sickbeard.DOWNLOAD_URL and epResult['location']:
                                                 <%
                                                     filename = epResult['location']
-                                                    for rootDir in settings.ROOT_DIRS.split('|'):
+                                                    for rootDir in sickbeard.ROOT_DIRS.split('|'):
                                                         if rootDir.startswith('/'):
                                                             filename = filename.replace(rootDir, "")
-                                                    filename = settings.DOWNLOAD_URL + urllib.quote(filename)
+                                                    filename = sickbeard.DOWNLOAD_URL + urllib.quote(filename)
                                                 %>
                                                 <a href="${filename}">${_('Download')}</a>
                                             % endif
                                         </td>
                                         <td class="col-play" align="center">
-                                            <a class="play-on-kodi${(' hidden', '')[bool(epResult['location'] and settings.USE_KODI and settings.KODI_HOST)]}"
+                                            <a class="play-on-kodi${(' hidden', '')[bool(epResult['location'] and sickbeard.USE_KODI and sickbeard.KODI_HOST)]}"
                                                href="playOnKodi?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"
                                             >
                                                 <span class="displayshow-play-icon-kodi" title="KODI"></span>
@@ -572,7 +573,7 @@
                                         % endif
                                         <td class="col-search">
                                             % if int(epResult["season"]) != 0:
-                                                % if (int(epResult["status"]) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.DOWNLOADED ) and settings.USE_FAILED_DOWNLOADS:
+                                                % if (int(epResult["status"]) in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.DOWNLOADED ) and sickbeard.USE_FAILED_DOWNLOADS:
                                                     <a class="epRetry" id="${str(show.indexerid)}x${epStr}" name="${str(show.indexerid)}x${epStr}" href="retryEpisode?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}">
                                                         <span class="displayshow-icon-search" title="Retry Download" />
                                                     </a>
@@ -582,8 +583,8 @@
                                                     </a>
                                                 % endif
                                             % endif
-                                            % if int(epResult["status"]) not in Quality.SNATCHED + Quality.SNATCHED_PROPER and settings.USE_SUBTITLES and show.subtitles and epResult["location"] and subtitles.needs_subtitles(epResult['subtitles']):
-                                                % if int(epResult["season"]) != 0 or settings.SUBTITLES_INCLUDE_SPECIALS:
+                                            % if int(epResult["status"]) not in Quality.SNATCHED + Quality.SNATCHED_PROPER and sickbeard.USE_SUBTITLES and show.subtitles and epResult["location"] and subtitles.needs_subtitles(epResult['subtitles']):
+                                                % if int(epResult["season"]) != 0 or sickbeard.SUBTITLES_INCLUDE_SPECIALS:
                                                     <a class="epSubtitlesSearch" href="searchEpisodeSubtitles?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}">
                                                         <span class="displayshow-icon-sub" title="Search Subtitles" />
                                                     </a>
@@ -668,9 +669,9 @@
                 <div class="modal-body">
                     <div class="form-group col-md-12">
                         <select id="kodi-play-host" name="kodi-play-host" class="form-control">
-                            % if settings.USE_KODI and settings.KODI_HOST:
+                            % if sickbeard.USE_KODI and sickbeard.KODI_HOST:
                                 % try:
-                                    % for index, connection in enumerate(notifiers.kodi_notifier.connections):
+                                    % for index, connection in enumerate(sickbeard.notifiers.kodi_notifier.connections):
                                         <option value="${index}">${connection.name} (${connection.host})</option>
                                     % endfor
                                 % except:

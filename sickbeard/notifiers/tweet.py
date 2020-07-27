@@ -22,8 +22,8 @@ from requests.exceptions import RequestException
 from requests_oauthlib import OAuth1Session
 
 # First Party Imports
+import sickbeard
 from sickbeard import common, logger
-from sickchill import settings
 
 
 class Notifier(object):
@@ -35,25 +35,25 @@ class Notifier(object):
     AUTHORIZATION_URL = 'https://api.twitter.com/oauth/authorize'
 
     def notify_snatch(self, ep_name):
-        if settings.TWITTER_NOTIFY_ONSNATCH:
+        if sickbeard.TWITTER_NOTIFY_ONSNATCH:
             self._notifyTwitter(common.notifyStrings[common.NOTIFY_SNATCH] + ': ' + ep_name)
 
     def notify_download(self, ep_name):
-        if settings.TWITTER_NOTIFY_ONDOWNLOAD:
+        if sickbeard.TWITTER_NOTIFY_ONDOWNLOAD:
             self._notifyTwitter(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ': ' + ep_name)
 
     def notify_subtitle_download(self, ep_name, lang):
-        if settings.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD:
+        if sickbeard.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyTwitter(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + ep_name + ": " + lang)
 
     def notify_git_update(self, new_version='??'):
-        if settings.USE_TWITTER:
+        if sickbeard.USE_TWITTER:
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             self._notifyTwitter(title + ' - ' + update_text + new_version)
 
     def notify_login(self, ipaddress=''):
-        if settings.USE_TWITTER:
+        if sickbeard.USE_TWITTER:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._notifyTwitter(title + ' - ' + update_text.format(ipaddress))
@@ -80,8 +80,8 @@ class Notifier(object):
         except RequestException as err:
             logger.exception('Invalid response from Twitter requesting temp token: {}'.format(err))
         else:
-            settings.TWITTER_USERNAME = request_token['oauth_token']
-            settings.TWITTER_PASSWORD = request_token['oauth_token_secret']
+            sickbeard.TWITTER_USERNAME = request_token['oauth_token']
+            sickbeard.TWITTER_PASSWORD = request_token['oauth_token_secret']
             return oauth_session.authorization_url(self.AUTHORIZATION_URL)
 
     def _get_credentials(self, key):
@@ -95,8 +95,8 @@ class Notifier(object):
         logger.debug('Generating and signing request for an access token using key ' + key)
         oauth_session = OAuth1Session(client_key=self.consumer_key,
                                       client_secret=self.consumer_hash,
-                                      resource_owner_key=settings.TWITTER_USERNAME,
-                                      resource_owner_secret=settings.TWITTER_PASSWORD)
+                                      resource_owner_key=sickbeard.TWITTER_USERNAME,
+                                      resource_owner_secret=sickbeard.TWITTER_PASSWORD)
 
         try:
             access_token = oauth_session.fetch_access_token(self.ACCESS_TOKEN_URL, verifier=str(key))
@@ -106,8 +106,8 @@ class Notifier(object):
 
         logger.debug('Your Twitter Access Token key: {0}'.format(access_token['oauth_token']))
         logger.debug('Access Token secret: {0}'.format(access_token['oauth_token_secret']))
-        settings.TWITTER_USERNAME = access_token['oauth_token']
-        settings.TWITTER_PASSWORD = access_token['oauth_token_secret']
+        sickbeard.TWITTER_USERNAME = access_token['oauth_token']
+        sickbeard.TWITTER_PASSWORD = access_token['oauth_token_secret']
         return True
 
     def _send_tweet(self, message=None):
@@ -119,8 +119,8 @@ class Notifier(object):
         """
         api = twitter.Api(consumer_key=self.consumer_key,
                           consumer_secret=self.consumer_hash,
-                          access_token_key=settings.TWITTER_USERNAME,
-                          access_token_secret=settings.TWITTER_PASSWORD)
+                          access_token_key=sickbeard.TWITTER_USERNAME,
+                          access_token_secret=sickbeard.TWITTER_PASSWORD)
 
         logger.debug("Sending tweet: {}".format(message))
         try:
@@ -138,12 +138,12 @@ class Notifier(object):
         :param message: Message to send
         :return: True if succeeded, False otherwise
         """
-        dmdest = settings.TWITTER_DMTO
+        dmdest = sickbeard.TWITTER_DMTO
 
         api = twitter.Api(consumer_key=self.consumer_key,
                           consumer_secret=self.consumer_hash,
-                          access_token_key=settings.TWITTER_USERNAME,
-                          access_token_secret=settings.TWITTER_PASSWORD)
+                          access_token_key=sickbeard.TWITTER_USERNAME,
+                          access_token_secret=sickbeard.TWITTER_PASSWORD)
 
         logger.debug("Sending DM @{0}: {1}".format(dmdest, message))
         try:
@@ -155,12 +155,12 @@ class Notifier(object):
         return True
 
     def _notifyTwitter(self, message='', force=False):
-        prefix = settings.TWITTER_PREFIX
+        prefix = sickbeard.TWITTER_PREFIX
 
-        if not settings.USE_TWITTER and not force:
+        if not sickbeard.USE_TWITTER and not force:
             return False
 
-        if settings.TWITTER_USEDM and settings.TWITTER_DMTO:
+        if sickbeard.TWITTER_USEDM and sickbeard.TWITTER_DMTO:
             return self._send_dm(prefix + ": " + message)
         else:
             return self._send_tweet(prefix + ": " + message)

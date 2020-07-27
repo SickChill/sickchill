@@ -26,7 +26,7 @@ import requests
 from requests.exceptions import HTTPError
 
 # First Party Imports
-from sickchill import settings
+import sickbeard
 
 # Local Folder Imports
 from . import common, generic_queue, logger
@@ -108,7 +108,7 @@ class DiscordTask(generic_queue.QueueItem):
             'author': {
                 'name': 'SickChill',
                 # 'url':
-                'icon_url': settings.DISCORD_AVATAR_URL
+                'icon_url': sickbeard.DISCORD_AVATAR_URL
             },
             'fields': []
         }
@@ -132,7 +132,7 @@ class DiscordTask(generic_queue.QueueItem):
             logger.debug("Task for {} completed".format(self.action_id))
 
             # give the CPU a break
-            time.sleep(common.cpu_presets[settings.CPU_PRESET])
+            time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
         except Exception:
             logger.debug(traceback.format_exc())
 
@@ -148,10 +148,10 @@ class DiscordTask(generic_queue.QueueItem):
         return len(self.embed['fields'])
 
     def _send_discord(self):
-        discord_webhook = settings.DISCORD_WEBHOOK
-        discord_name = settings.DISCORD_NAME
-        avatar_icon = settings.DISCORD_AVATAR_URL
-        discord_tts = bool(settings.DISCORD_TTS)
+        discord_webhook = sickbeard.DISCORD_WEBHOOK
+        discord_name = sickbeard.DISCORD_NAME
+        avatar_icon = sickbeard.DISCORD_AVATAR_URL
+        discord_tts = bool(sickbeard.DISCORD_TTS)
 
         logger.info("Sending discord message: " + ', '.join(f['value'] for f in self.embed['fields']))
         logger.info("Sending discord message to url: " + discord_webhook)

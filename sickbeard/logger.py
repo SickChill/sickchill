@@ -25,16 +25,17 @@ import os
 import platform
 import re
 import sys
+import threading
 import traceback
 from logging import NullHandler
-from urllib.parse import quote
 
 # Third Party Imports
 from github import InputFileContent
 from github.GithubException import RateLimitExceededException, TwoFactorException
+from requests.compat import quote
 
 # First Party Imports
-from sickchill import settings
+import sickbeard
 from sickchill.helper.common import dateTimeFormat
 
 # Local Folder Imports
@@ -71,8 +72,7 @@ class DispatchFormatter(logging.Formatter, object):
 
         :param record: to format
         """
-
-        msg = record.msg
+        msg = super(DispatchFormatter, self).format(record)
 
         # set of censored items
         censored = {item for _, item in censored_items.items() if item}
@@ -92,12 +92,23 @@ class DispatchFormatter(logging.Formatter, object):
         # Needed because Newznab apikey isn't stored as key=value in a section.
         msg = re.sub(r'([&?]r|[&?]apikey|[&?]jackett_apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)', r'\1=**********\2', msg, re.I)
 
+        cur_hash = ''
+        if record.levelno == ERROR and sickbeard.CUR_COMMIT_HASH and len(sickbeard.CUR_COMMIT_HASH) > 6:
+            cur_hash = '[{0}] '.format(sickbeard.CUR_COMMIT_HASH[:7])
+
+        cur_thread = threading.currentThread().getName().rstrip('_1234567890')
+
+        if _('Missing time zone for network') in msg:
+            msg = '{thread} :: {message}'.format(thread=cur_thread, message=msg)
+        else:
+            msg = '{thread} :: {hash}{message}'.format(thread=cur_thread, hash=cur_hash, message=msg)
+
         if record.levelno == ERROR:
             classes.ErrorViewer.add(classes.UIError(msg))
         elif record.levelno == WARNING:
             classes.WarningViewer.add(classes.UIError(msg))
 
-        return super(DispatchFormatter, self).format(record)
+        return msg
 
 
 class Logger(object):
@@ -134,7 +145,7 @@ class Logger(object):
         :param debug_logging: True if debug logging is enabled
         :param database_logging: True if logging database access
         """
-        self.log_file = self.log_file or os.path.join(settings.LOG_DIR, 'sickchill.log')
+        self.log_file = self.log_file or os.path.join(sickbeard.LOG_DIR, 'sickchill.log')
 
         global log_file
         log_file = self.log_file
@@ -161,7 +172,7 @@ class Logger(object):
 
         logging.getLogger("tornado.general").setLevel('ERROR')
 
-        log_format = '{asctime} {levelname} :: {threadName} :: {message}'
+        log_format = '{asctime} {levelname}::{message}'
         # console log handler
         if self.console_logging:
             console = logging.StreamHandler()
@@ -173,7 +184,7 @@ class Logger(object):
 
         # rotating log file handler
         if self.file_logging:
-            rfh = logging.handlers.RotatingFileHandler(self.log_file, maxBytes=int(settings.LOG_SIZE * 1048576), backupCount=settings.LOG_NR)
+            rfh = logging.handlers.RotatingFileHandler(self.log_file, maxBytes=int(sickbeard.LOG_SIZE * 1048576), backupCount=sickbeard.LOG_NR)
             rfh.setFormatter(DispatchFormatter(log_format, dateTimeFormat))
             rfh.setLevel(log_level)
 
@@ -181,8 +192,8 @@ class Logger(object):
                 logger.addHandler(rfh)
 
     def set_level(self):
-        self.debug_logging = settings.DEBUG
-        self.database_logging = settings.DBDEBUG
+        self.debug_logging = sickbeard.DEBUG
+        self.database_logging = sickbeard.DBDEBUG
 
         level = DB if self.database_logging else DEBUG if self.debug_logging else INFO
         for logger in self.loggers:
@@ -198,7 +209,7 @@ class Logger(object):
         logging.shutdown()
 
     def log_error_and_exit(self, error_msg, *args, **kwargs):
-        self.logger.log(ERROR, error_msg, *args, **kwargs)
+        self.log(error_msg, ERROR, *args, **kwargs)
 
         if not self.console_logging:
             sys.exit(error_msg)
@@ -210,7 +221,7 @@ class Logger(object):
         submitter_result = ''
         issue_id = None
 
-        if not all((settings.GIT_TOKEN, settings.DEBUG, settings.gh, classes.ErrorViewer.errors)):
+        if not all((sickbeard.GIT_TOKEN, sickbeard.DEBUG, sickbeard.gh, classes.ErrorViewer.errors)):
             submitter_result = 'Please set your GitHub token in the config and enable debug. Unable to submit issue ticket to GitHub!'
             return submitter_result, issue_id
 
@@ -242,7 +253,7 @@ class Logger(object):
                 with open(self.log_file) as log_f:
                     __log_data = log_f.readlines()
 
-            for i in range(1, int(settings.LOG_NR)):
+            for i in range(1, int(sickbeard.LOG_NR)):
                 f_name = '{0}.{1:d}'.format(self.log_file, i)
                 if os.path.isfile(f_name) and (len(__log_data) <= 500):
                     with open(f_name) as log_f:
@@ -261,7 +272,7 @@ class Logger(object):
                         title_error = title_error[0:1000]
 
                 except Exception as err_msg:
-                    self.logger.log(ERROR, 'Unable to get error title : {0}'.format(str(err_msg)))
+                    self.log('Unable to get error title : {0}'.format(str(err_msg)), ERROR)
                     title_error = 'UNKNOWN'
 
                 gist = None
@@ -273,7 +284,7 @@ class Logger(object):
                         if LOGGING_LEVELS[level] == ERROR:
                             paste_data = ''.join(__log_data[i:i + 50])
                             if paste_data:
-                                gist = settings.gh.get_user().create_gist(False, {'sickchill.log': InputFileContent(paste_data)})
+                                gist = sickbeard.gh.get_user().create_gist(False, {'sickchill.log': InputFileContent(paste_data)})
                             break
                     else:
                         gist = 'No ERROR found'
@@ -293,8 +304,8 @@ class Logger(object):
                     'Python Version: **{0}**'.format(sys.version[:120].replace('\n', '')),
                     'Operating System: **{0}**'.format(platform.platform()),
                     'Locale: {0}'.format(locale_name),
-                    'Branch: **{0}**'.format(settings.BRANCH),
-                    'Commit: SickChill/SickChill@{0}'.format(settings.CUR_COMMIT_HASH),
+                    'Branch: **{0}**'.format(sickbeard.BRANCH),
+                    'Commit: SickChill/SickChill@{0}'.format(sickbeard.CUR_COMMIT_HASH),
                     log_link,
                     '### ERROR',
                     '```',
@@ -307,7 +318,7 @@ class Logger(object):
                 message = '\n'.join(msg)
                 title_error = '[APP SUBMITTED]: {0}'.format(title_error)
 
-                repo = settings.gh.get_organization(settings.GIT_ORG).get_repo(settings.GIT_REPO)
+                repo = sickbeard.gh.get_organization(sickbeard.GIT_ORG).get_repo(sickbeard.GIT_REPO)
                 reports = repo.get_issues(state='all')
 
                 def is_ascii_error(title):
@@ -359,7 +370,7 @@ class Logger(object):
                                 'please change your auth method in the config')
             issue_id = None
         except Exception:
-            self.logger.log(ERROR, traceback.format_exc())
+            self.log(traceback.format_exc(), ERROR)
             submitter_result = 'Exception generated in issue submitter, please check the log'
             issue_id = None
         finally:
@@ -409,7 +420,7 @@ LOG_FILTERS = {
 
 
 def log_data(min_level, log_filter, log_search, max_lines):
-    regex = r"^\d{4}\-\d{2}\-\d{2} \d{2}\:\d{2}:\d{2} ([A-Z]+) \:\: (.+?) \:\: (.*)$"
+    regex = r"^(\d\d\d\d)\-(\d\d)\-(\d\d)\s*(\d\d)\:(\d\d):(\d\d)\s*([A-Z]+)\s*(.+?)\s*\:\:\s*(.*)$"
     if log_filter not in LOG_FILTERS:
         log_filter = '<NONE>'
 
@@ -419,7 +430,7 @@ def log_data(min_level, log_filter, log_search, max_lines):
     if os.path.isfile(Wrapper.instance.log_file):
         log_files.append(Wrapper.instance.log_file)
 
-        for i in range(1, int(settings.LOG_NR)):
+        for i in range(1, int(sickbeard.LOG_NR)):
             name = Wrapper.instance.log_file + "." + str(i)
             if not os.path.isfile(name):
                 break
@@ -440,13 +451,13 @@ def log_data(min_level, log_filter, log_search, max_lines):
         match = re.match(regex, x)
 
         if match:
-            level = match.group(1)
-            log_name = match.group(2)
+            level = match.group(7)
+            log_name = match.group(8)
 
-            if not settings.DEBUG and level == 'DEBUG':
+            if not sickbeard.DEBUG and level == 'DEBUG':
                 continue
 
-            if not settings.DBDEBUG and level == 'DB':
+            if not sickbeard.DBDEBUG and level == 'DB':
                 continue
 
             if level not in LOGGING_LEVELS:
@@ -481,7 +492,7 @@ critical = Wrapper.instance.logger.critical
 
 
 def database(msg, *args, **kwargs):
-    if settings.DBDEBUG:
+    if sickbeard.DBDEBUG:
         debug(msg, args, kwargs)
 
 

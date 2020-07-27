@@ -20,9 +20,10 @@
 # Stdlib Imports
 import os
 import string
+from operator import itemgetter
 
 # First Party Imports
-from sickchill import settings
+import sickbeard
 
 # Local Folder Imports
 from . import logger
@@ -37,7 +38,7 @@ def getWinDrives():
 
     drives = []
     bitmask = windll.kernel32.GetLogicalDrives()  # @UndefinedVariable
-    for letter in string.ascii_uppercase:
+    for letter in string.uppercase:
         if bitmask & 1:
             drives.append(letter)
         bitmask >>= 1
@@ -87,8 +88,8 @@ def getFileList(path, includeFiles, fileTypes):
             dir_list.append(item_to_add)
 
     # Sort folders first, alphabetically, case insensitive
-    dir_list.sort(key=lambda mbr: mbr.get('name').lower())
-    file_list.sort(key=lambda mbr: mbr.get('name').lower())
+    dir_list.sort(key=lambda mbr: itemgetter('name')(mbr).lower())
+    file_list.sort(key=lambda mbr: itemgetter('name')(mbr).lower())
     return dir_list + file_list
 
 
@@ -122,7 +123,7 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=None)
                 letter_path = letter + ':\\'
                 entries.append({'name': letter_path, 'path': letter_path})
 
-            for name, share in settings.WINDOWS_SHARES.items():
+            for name, share in sickbeard.WINDOWS_SHARES.items():
                 entries.append({'name': name, 'path': r'\\{server}\{path}'.format(server=share['server'], path=share['path'])})
 
             return entries
@@ -145,7 +146,7 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=None)
 
     entries = [{'currentPath': path}]
     if path == '/':
-        for name, share in settings.WINDOWS_SHARES.items():
+        for name, share in sickbeard.WINDOWS_SHARES.items():
             entries.append({'name': name, 'path': r'\\{server}\{path}'.format(server=share['server'], path=share['path'])})
 
     if includeParent and parent_path != path:

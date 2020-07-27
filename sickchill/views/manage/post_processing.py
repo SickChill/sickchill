@@ -21,8 +21,8 @@ from tornado.escape import xhtml_unescape
 from tornado.web import addslash
 
 # First Party Imports
+import sickbeard
 from sickbeard import config
-from sickchill import settings
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home
 from sickchill.views.routes import Route
@@ -48,7 +48,7 @@ class PostProcess(Home):
 
         release_name = xhtml_unescape(nzbName) if nzbName else nzbName
 
-        result = settings.postProcessorTaskScheduler.action.add_item(
+        result = sickbeard.postProcessorTaskScheduler.action.add_item(
             process_path, release_name, method=process_method, force=force,
             is_priority=is_priority, delete=delete_on, failed=failed, mode=mode,
             force_next=force_next

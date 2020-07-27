@@ -20,9 +20,9 @@
 # Stdlib Imports
 import re
 import traceback
-from urllib.parse import quote
 
 # Third Party Imports
+from requests.compat import quote
 from requests.utils import dict_from_cookiejar
 
 # First Party Imports
@@ -32,11 +32,11 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class PretomeProvider(TorrentProvider):
 
     def __init__(self):
 
-        super().__init__("Pretome")
+        TorrentProvider.__init__(self, "Pretome")
 
         self.username = None
         self.password = None
@@ -168,3 +168,6 @@ class Provider(TorrentProvider):
             results += items
 
         return results
+
+
+provider = PretomeProvider()

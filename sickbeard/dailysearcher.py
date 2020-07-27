@@ -23,7 +23,6 @@ import threading
 
 # First Party Imports
 import sickbeard
-from sickchill import settings
 from sickchill.helper.exceptions import MultipleShowObjectsException
 from sickchill.show.Show import Show
 
@@ -68,7 +67,7 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
         for sqlEp in sql_results:
             try:
                 if not show or int(sqlEp["showid"]) != show.indexerid:
-                    show = Show.find(settings.showList, int(sqlEp["showid"]))
+                    show = Show.find(sickbeard.showList, int(sqlEp["showid"]))
 
                 # for when there is orphaned series in the database but not loaded into our showlist
                 if not show or show.paused:
@@ -107,6 +106,6 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
 
         # queue episode for daily search
         dailysearch_queue_item = sickbeard.search_queue.DailySearchQueueItem()
-        settings.searchQueueScheduler.action.add_item(dailysearch_queue_item)
+        sickbeard.searchQueueScheduler.action.add_item(dailysearch_queue_item)
 
         self.amActive = False

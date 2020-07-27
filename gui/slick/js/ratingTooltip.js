@@ -3,7 +3,7 @@ $(() => {
         content: {
             text() {
                 // Retrieve content from custom attribute of the $('.selector') elements.
-                return $(this).data('qtip-content');
+                return $(this).attr('qtip-content');
             }
         },
         show: {

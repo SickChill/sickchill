@@ -57,11 +57,11 @@ category_excluded = {'Sport': 22,
                      'Mobile': 37}
 
 
-class Provider(TorrentProvider):
+class TNTVillageProvider(TorrentProvider):
 
     def __init__(self):
 
-        super().__init__("TNTVillage")
+        TorrentProvider.__init__(self, "TNTVillage")
 
         self._uid = None
         self._hash = None
@@ -397,3 +397,6 @@ class Provider(TorrentProvider):
                 results += items
 
         return results
+
+
+provider = TNTVillageProvider()

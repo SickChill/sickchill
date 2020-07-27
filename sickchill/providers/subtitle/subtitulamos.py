@@ -72,7 +72,7 @@ class SubtitulamosSubtitle(Subtitle):
     def id(self):
         return self.download_link
 
-    def get_matches(self, video: Episode):
+    def get_matches(self, video):
         matches = set()
 
         # series
@@ -98,9 +98,9 @@ class SubtitulamosSubtitle(Subtitle):
         # resolution
         if video.resolution and self.version and video.resolution in self.version.lower():
             matches.add('resolution')
-        # source
-        if video.source and self.version and video.source.lower() in self.version.lower():
-            matches.add('source')
+        # format
+        if video.format and self.version and video.format.lower() in self.version.lower():
+            matches.add('format')
         # other properties
         matches |= guess_matches(video, guessit(self.version), partial=True)
 
@@ -219,12 +219,12 @@ class SubtitulamosProvider(Provider):
 
         return subtitles
 
-    def list_subtitles(self, video: Episode, languages):
+    def list_subtitles(self, video, languages):
         return [s for s in self.query(video.series, video.season, video.episode,
                                       video.year)
                 if s.language in languages]
 
-    def download_subtitle(self, subtitle: SubtitulamosSubtitle):
+    def download_subtitle(self, subtitle):
         # download the subtitle
         logger.info('Downloading subtitle %s', subtitle.download_link)
         r = self.session.get(subtitle.download_link, headers={'Referer': subtitle.page_link},

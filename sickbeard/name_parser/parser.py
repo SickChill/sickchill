@@ -23,7 +23,6 @@ import re
 import time
 from collections import OrderedDict
 from threading import Lock
-from typing import Union
 
 # Third Party Imports
 import dateutil

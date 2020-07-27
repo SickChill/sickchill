@@ -19,7 +19,6 @@
 # Stdlib Imports
 import os
 import re
-from xml.etree import ElementTree
 
 # Third Party Imports
 import fanart
@@ -27,14 +26,21 @@ import tmdbsimple
 from fanart.core import Request as fanartRequest
 
 # First Party Imports
+import sickbeard
 import sickchill
 from sickbeard import helpers, logger
 from sickbeard.show_name_helpers import allPossibleShowNames
-from sickchill import settings
 from sickchill.helper.common import replace_extension, try_int
 
 # Local Folder Imports
 from . import helpers as metadata_helpers
+
+try:
+    # Stdlib Imports
+    from xml.etree import cElementTree as etree
+except ImportError:
+    # Stdlib Imports
+    from xml.etree import ElementTree as etree
 
 
 class GenericMetadata(object):
@@ -223,6 +229,7 @@ class GenericMetadata(object):
     def get_season_all_banner_path(self, show_obj):
         return os.path.join(show_obj.location, self.season_all_banner_name)
 
+
     def _show_data(self, show_obj):
         """
         This should be overridden by the implementing class. It should
@@ -252,7 +259,7 @@ class GenericMetadata(object):
 
             try:
                 with open(nfo_file_path, 'rb') as xmlFileObj:
-                    showXML = ElementTree.ElementTree(file=xmlFileObj)
+                    showXML = etree.ElementTree(file=xmlFileObj)
 
                 indexerid = showXML.find('id')
 
@@ -262,7 +269,7 @@ class GenericMetadata(object):
                         return True
                     indexerid.text = str(show_obj.indexerid)
                 else:
-                    ElementTree.SubElement(root, "id").text = str(show_obj.indexerid)
+                    etree.SubElement(root, "id").text = str(show_obj.indexerid)
 
                 # Make it purdy
                 helpers.indentXML(root)
@@ -296,7 +303,7 @@ class GenericMetadata(object):
             }
             try:
                 with open(nfo_file_path, 'rb') as xmlFileObj:
-                    episodeXML = ElementTree.ElementTree(file=xmlFileObj)
+                    episodeXML = etree.ElementTree(file=xmlFileObj)
 
                 changed = False
                 for attribute in attribute_map:
@@ -327,7 +334,7 @@ class GenericMetadata(object):
                 return True
             except IOError as error:
                 logger.warning("Unable to write file to {} - are you sure the folder is writable? {}".format(nfo_file_path, str(error)))
-            except ElementTree.ParseError as error:
+            except etree.ParseError as error:
                 logger.warning("Error parsing existing nfo file at {} - {}".format(nfo_file_path, str(error)))
 
     def create_fanart(self, show_obj):
@@ -737,8 +744,8 @@ class GenericMetadata(object):
         def read_xml():
             with open(metadata_path, 'rb') as __xml_file:
                 try:
-                    __show_xml = ElementTree.ElementTree(file=__xml_file)
-                except (ElementTree.ParseError, IOError):
+                    __show_xml = etree.ElementTree(file=__xml_file)
+                except (etree.ParseError, IOError):
                     __show_xml = None
             return __show_xml
 
@@ -804,7 +811,7 @@ class GenericMetadata(object):
                  'banner_thumb': None}
 
         # get TMDB configuration info
-        tmdbsimple.API_KEY = settings.TMDB_API_KEY
+        tmdbsimple.API_KEY = sickbeard.TMDB_API_KEY
         config = tmdbsimple.Configuration()
         response = config.info()
         base_url = response['images']['base_url']
@@ -841,7 +848,7 @@ class GenericMetadata(object):
         try:
             if img_type in types:
                 request = fanartRequest(
-                    apikey=settings.FANART_API_KEY,
+                    apikey=sickbeard.FANART_API_KEY,
                     id=show.indexerid,
                     ws=fanart.WS.TV,
                     type=types[img_type],

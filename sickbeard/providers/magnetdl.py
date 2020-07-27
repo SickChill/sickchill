@@ -16,11 +16,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# Stdlib Imports
-from urllib.parse import urljoin
-
 # Third Party Imports
 import validators
+from requests.compat import urljoin
 from slugify import slugify
 
 # First Party Imports
@@ -30,11 +28,11 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class MagnetDLProvider(TorrentProvider):
 
     def __init__(self):
 
-        super().__init__("MagnetDL")
+        super(MagnetDLProvider, self).__init__("MagnetDL")
 
         self.minseed = 0
         self.minleech = 0
@@ -123,3 +121,6 @@ class Provider(TorrentProvider):
                 results += items
 
             return results
+
+
+provider = MagnetDLProvider()

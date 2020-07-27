@@ -266,16 +266,16 @@ ul.tags li {
     background-color: transparent;
 }
 
-.sickchillTable {
+.sickbeardTable {
     color: #000000;
 }
 
-.sickchillTable th {
+.sickbeardTable th {
     background-color: #15528F;
 }
 
-.sickchillTable th,
-.sickchillTable td {
+.sickbeardTable th,
+.sickbeardTable td {
     border-top: 1px solid #222222;
     border-left: 1px solid #222222;
 }
@@ -670,11 +670,11 @@ thead.tablesorter-stickyHeader {
 }
 
 /* Zebra Widget - row alternating colors */
-.tablesorter tr.odd, .sickchillTable tr.odd {
+.tablesorter tr.odd, .sickbeardTable tr.odd {
     background-color: #333333;
 }
 
-.tablesorter tr.even, .sickchillTable tr.even {
+.tablesorter tr.even, .sickbeardTable tr.even {
     background-color: #2E2E2E;
 }
 

@@ -22,7 +22,7 @@ import os
 import re
 
 # First Party Imports
-from sickchill import settings
+import sickbeard
 
 # Local Folder Imports
 from . import common, logger
@@ -37,8 +37,8 @@ resultFilters = {
     "dub(bed)?"
 }
 
-if hasattr('General', 'ignored_subs_list') and settings.IGNORED_SUBS_LIST:
-    resultFilters.add("(" + settings.IGNORED_SUBS_LIST.replace(",", "|") + ")sub(bed|ed|s)?")
+if hasattr('General', 'ignored_subs_list') and sickbeard.IGNORED_SUBS_LIST:
+    resultFilters.add("(" + sickbeard.IGNORED_SUBS_LIST.replace(",", "|") + ")sub(bed|ed|s)?")
 
 
 def containsAtLeastOneWord(name, words):
@@ -91,10 +91,10 @@ def filter_bad_releases(name, parse=True, show=None):
     # if any of the bad strings are in the name then say no
     ignore_words = resultFilters
     ignore_words = ignore_words.union(clean_set(show and show.rls_ignore_words or ''))  # Show specific ignored words
-    ignore_words = ignore_words.union(clean_set(settings.IGNORE_WORDS))  # Plus Global ignored words
+    ignore_words = ignore_words.union(clean_set(sickbeard.IGNORE_WORDS))  # Plus Global ignored words
     ignore_words = ignore_words.difference(clean_set(show and show.rls_require_words or ''))  # Minus show specific required words
-    if settings.REQUIRE_WORDS and not (show and show.rls_ignore_words):  # Only remove global require words from the list if we arent using show ignore words
-        ignore_words = ignore_words.difference(clean_set(settings.REQUIRE_WORDS))
+    if sickbeard.REQUIRE_WORDS and not (show and show.rls_ignore_words):  # Only remove global require words from the list if we arent using show ignore words
+        ignore_words = ignore_words.difference(clean_set(sickbeard.REQUIRE_WORDS))
 
     word = containsAtLeastOneWord(name, ignore_words)
     if word:
@@ -104,10 +104,10 @@ def filter_bad_releases(name, parse=True, show=None):
     # if any of the good strings aren't in the name then say no
     require_words = set()
     require_words = require_words.union(clean_set(show and show.rls_require_words or ''))  # Show specific required words
-    require_words = require_words.union(clean_set(settings.REQUIRE_WORDS))  # Plus Global required words
+    require_words = require_words.union(clean_set(sickbeard.REQUIRE_WORDS))  # Plus Global required words
     require_words = require_words.difference(clean_set(show and show.rls_ignore_words or ''))  # Minus show specific ignored words
-    if settings.IGNORE_WORDS and not (show and show.rls_require_words):  # Only remove global ignore words from the list if we arent using show require words
-        require_words = require_words.difference(clean_set(settings.IGNORE_WORDS))
+    if sickbeard.IGNORE_WORDS and not (show and show.rls_require_words):  # Only remove global ignore words from the list if we arent using show require words
+        require_words = require_words.difference(clean_set(sickbeard.IGNORE_WORDS))
 
     if require_words and not containsAtLeastOneWord(name, require_words):
         logger.info("Release: " + name + " doesn't contain any of " + ', '.join(set(require_words)) +
@@ -219,8 +219,8 @@ def hasPreferredWords(name, show=None):
     prefer_words = []
 
     ## Because we weigh values, we can not union global and show based values, so we don't do that
-    if settings.PREFER_WORDS:
-        prefer_words = clean_set(settings.PREFER_WORDS)
+    if sickbeard.PREFER_WORDS:
+        prefer_words = clean_set(sickbeard.PREFER_WORDS)
     if show and show.rls_prefer_words:
         prefer_words = clean_set(show.rls_prefer_words or '')
 

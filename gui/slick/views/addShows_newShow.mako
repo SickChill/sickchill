@@ -1,6 +1,6 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
-    from sickchill import settings
+    import sickbeard
     from sickbeard.helpers import anon_url
     from sickchill import indexer as show_indexer
 %>
@@ -24,7 +24,7 @@
                     <legend class="legendStep">#1 ${_('Search for a Show')}</legend>
                     <div class="row stepDiv">
                         <div class="col-md-12">
-                            <input type="hidden" id="indexer_timeout" value="${settings.INDEXER_TIMEOUT}"/>
+                            <input type="hidden" id="indexer_timeout" value="${sickbeard.INDEXER_TIMEOUT}"/>
 
                             % if use_provided_info:
                                 <label>${_('Show retrieved from existing metadata')}:
@@ -55,7 +55,7 @@
                                             <div class="col-md-12">
                                                 <select name="indexerLang" id="indexerLangSelect"
                                                         class="form-control form-control-inline input-sm bfh-languages"
-                                                        data-language="${settings.INDEXER_DEFAULT_LANGUAGE}"
+                                                        data-language="${sickbeard.INDEXER_DEFAULT_LANGUAGE}"
                                                         data-available="${','.join(show_indexer.languages())}"></select>
                                             </div>
                                         </div>

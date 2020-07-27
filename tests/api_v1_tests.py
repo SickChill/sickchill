@@ -126,7 +126,7 @@ class APITestShow(unittest.TestCase):
         pass
 
 
-class APITestSickChill(unittest.TestCase):
+class APITestSickBeard(unittest.TestCase):
     @unittest.skip('Not yet implemented')
     def test_sickbeard(self):
         pass
@@ -241,7 +241,7 @@ class APITestMisc(unittest.TestCase):
 
 
 TEST_CLASSES = {
-    APITestEpisodes, APITestHistory, APITestMisc, APITestShow, APITestShows, APITestSickChill
+    APITestEpisodes, APITestHistory, APITestMisc, APITestShow, APITestShows, APITestSickBeard
 }
 
 

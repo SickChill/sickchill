@@ -22,9 +22,9 @@ import os
 import traceback
 
 # First Party Imports
+import sickbeard
 import sickchill
 from sickbeard.trakt_api import TraktAPI, traktException
-from sickchill import settings
 from sickchill.helper.common import episode_num, sanitize_filename
 from sickchill.show.Show import Show
 
@@ -52,7 +52,7 @@ def setEpisodeToWanted(show, s, e):
             epObj.saveToDB()
 
         cur_backlog_queue_item = search_queue.BacklogQueueItem(show, [epObj])
-        settings.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
+        sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
 
         logger.info("Starting backlog search for {show} {ep} because some episodes were set to wanted".format
                    (show=show.name, ep=episode_num(s, e)))
@@ -60,7 +60,7 @@ def setEpisodeToWanted(show, s, e):
 
 class TraktChecker(object):
     def __init__(self):
-        self.trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
+        self.trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
         self.todoBacklog = []
         self.todoWanted = []
         self.ShowWatchlist = {}
@@ -72,9 +72,9 @@ class TraktChecker(object):
         self.amActive = True
 
         # add shows from trakt.tv watchlist
-        if settings.TRAKT_SYNC_WATCHLIST:
+        if sickbeard.TRAKT_SYNC_WATCHLIST:
             self.todoWanted = []  # its about to all get re-added
-            if len(settings.ROOT_DIRS.split('|')) < 2:
+            if len(sickbeard.ROOT_DIRS.split('|')) < 2:
                 logger.warning("No default root directory")
                 return
 
@@ -154,16 +154,16 @@ class TraktChecker(object):
                 return
 
     def syncLibrary(self):
-        if settings.TRAKT_SYNC and settings.USE_TRAKT:
+        if sickbeard.TRAKT_SYNC and sickbeard.USE_TRAKT:
             logger.debug("Sync SickChill with Trakt Collection")
 
             if self._getShowCollection():
                 self.addEpisodeToTraktCollection()
-                if settings.TRAKT_SYNC_REMOVE:
+                if sickbeard.TRAKT_SYNC_REMOVE:
                     self.removeEpisodeFromTraktCollection()
 
     def removeEpisodeFromTraktCollection(self):
-        if settings.TRAKT_SYNC_REMOVE and settings.TRAKT_SYNC and settings.USE_TRAKT:
+        if sickbeard.TRAKT_SYNC_REMOVE and sickbeard.TRAKT_SYNC and sickbeard.USE_TRAKT:
             logger.debug("COLLECTION::REMOVE::START - Look for Episodes to Remove From Trakt Collection")
 
             main_db_con = db.DBConnection()
@@ -195,7 +195,7 @@ class TraktChecker(object):
             logger.debug("COLLECTION::REMOVE::FINISH - Look for Episodes to Remove From Trakt Collection")
 
     def addEpisodeToTraktCollection(self):
-        if settings.TRAKT_SYNC and settings.USE_TRAKT:
+        if sickbeard.TRAKT_SYNC and sickbeard.USE_TRAKT:
             logger.debug("COLLECTION::ADD::START - Look for Episodes to Add to Trakt Collection")
 
             main_db_con = db.DBConnection()
@@ -224,7 +224,7 @@ class TraktChecker(object):
             logger.debug("COLLECTION::ADD::FINISH - Look for Episodes to Add to Trakt Collection")
 
     def syncWatchlist(self):
-        if settings.TRAKT_SYNC_WATCHLIST and settings.USE_TRAKT:
+        if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.USE_TRAKT:
             logger.debug("Sync SickChill with Trakt Watchlist")
 
             self.removeShowFromSickChill()
@@ -239,7 +239,7 @@ class TraktChecker(object):
                 self.updateEpisodes()
 
     def removeEpisodeFromTraktWatchList(self):
-        if settings.TRAKT_SYNC_WATCHLIST and settings.USE_TRAKT:
+        if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.USE_TRAKT:
             logger.debug("WATCHLIST::REMOVE::START - Look for Episodes to Remove from Trakt Watchlist")
 
             main_db_con = db.DBConnection()
@@ -268,7 +268,7 @@ class TraktChecker(object):
                 logger.debug("WATCHLIST::REMOVE::FINISH - Look for Episodes to Remove from Trakt Watchlist")
 
     def addEpisodeToTraktWatchList(self):
-        if settings.TRAKT_SYNC_WATCHLIST and settings.USE_TRAKT:
+        if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.USE_TRAKT:
             logger.debug("WATCHLIST::ADD::START - Look for Episodes to Add to Trakt Watchlist")
 
             main_db_con = db.DBConnection()
@@ -297,13 +297,13 @@ class TraktChecker(object):
             logger.debug("WATCHLIST::ADD::FINISH - Look for Episodes to Add to Trakt Watchlist")
 
     def addShowToTraktWatchList(self):
-        if settings.TRAKT_SYNC_WATCHLIST and settings.USE_TRAKT:
+        if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.USE_TRAKT:
             logger.debug("SHOW_WATCHLIST::ADD::START - Look for Shows to Add to Trakt Watchlist")
 
-            if settings.showList is not None:
+            if sickbeard.showList is not None:
                 trakt_data = []
 
-                for show in settings.showList:
+                for show in sickbeard.showList:
                     if not self._checkInList(show.idxr.slug, str(show.indexerid), '0', '0', List='Show'):
                         logger.debug("Adding Show: Indexer {0} {1} - {2} to Watchlist".format(
                             show.idxr.name, str(show.indexerid), show.name))
@@ -322,11 +322,11 @@ class TraktChecker(object):
             logger.debug("SHOW_WATCHLIST::ADD::FINISH - Look for Shows to Add to Trakt Watchlist")
 
     def removeShowFromSickChill(self):
-        if settings.TRAKT_SYNC_WATCHLIST and settings.USE_TRAKT and settings.TRAKT_REMOVE_SHOW_FROM_SICKCHILL:
+        if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.USE_TRAKT and sickbeard.TRAKT_REMOVE_SHOW_FROM_SICKCHILL:
             logger.debug("SHOW_SICKCHILL::REMOVE::START - Look for Shows to remove from SickChill")
 
-            if settings.showList:
-                for show in settings.showList:
+            if sickbeard.showList:
+                for show in sickbeard.showList:
                     if show.status in ("Ended", "Canceled"):
                         if not show.imdbid:
                             logger.warning('Could not check trakt progress for {0} because the imdb id is missing from {} data, skipping'.format(
@@ -334,7 +334,7 @@ class TraktChecker(object):
                             continue
 
                         try:
-                            progress = self.trakt_api.traktRequest("shows/" + show.imdbid + "/progress/watched") or {}
+                            progress = self.trakt_api.traktRequest("shows/" + show.imdbid + "/progress/watched") or []
                         except traktException as e:
                             logger.warning("Could not connect to Trakt service. Aborting removing show {0} from SickChill. Error: {1}".format(show.name, repr(e)))
                             continue
@@ -343,7 +343,7 @@ class TraktChecker(object):
                             continue
 
                         if progress.get('aired', True) == progress.get('completed', False):
-                            settings.showQueueScheduler.action.remove_show(show, full=True)
+                            sickbeard.showQueueScheduler.action.remove_show(show, full=True)
                             logger.debug("Show: {0} has been removed from SickChill".format(show.name))
 
             logger.debug("SHOW_SICKCHILL::REMOVE::FINISH - Trakt Show Watchlist")
@@ -363,13 +363,13 @@ class TraktChecker(object):
                     show = self.ShowWatchlist[indexer.slug][show_el]
 
                     # logger.debug("Checking Show: %s %s %s" % (slug, indexer_id, show['title']))
-                    if int(settings.TRAKT_METHOD_ADD) != 2:
+                    if int(sickbeard.TRAKT_METHOD_ADD) != 2:
                         self.addDefaultShow(index, indexer_id, show['title'], SKIPPED)
                     else:
                         self.addDefaultShow(index, indexer_id, show['title'], WANTED)
 
-                    if int(settings.TRAKT_METHOD_ADD) == 1:
-                        newShow = Show.find(settings.showList, indexer_id)
+                    if int(sickbeard.TRAKT_METHOD_ADD) == 1:
+                        newShow = Show.find(sickbeard.showList, indexer_id)
 
                         if newShow is not None:
                             setEpisodeToWanted(newShow, 1, 1)
@@ -396,7 +396,7 @@ class TraktChecker(object):
                     indexer_id = int(show_el)
                     show = self.EpisodeWatchlist[indexer.slug][show_el]
 
-                    newShow = Show.find(settings.showList, indexer_id)
+                    newShow = Show.find(sickbeard.showList, indexer_id)
 
                     try:
                         if newShow is None:
@@ -425,9 +425,9 @@ class TraktChecker(object):
         """
         Adds a new show with the default settings
         """
-        if not Show.find(settings.showList, int(indexer_id)):
+        if not Show.find(sickbeard.showList, int(indexer_id)):
             logger.info("Adding show " + str(indexer_id))
-            root_dirs = settings.ROOT_DIRS.split('|')
+            root_dirs = sickbeard.ROOT_DIRS.split('|')
 
             try:
                 location = root_dirs[int(root_dirs[0]) + 1]
@@ -444,12 +444,12 @@ class TraktChecker(object):
                 else:
                     helpers.chmodAsParent(showPath)
 
-                settings.showQueueScheduler.action.add_show(int(indexer), int(indexer_id), showPath,
-                                                                      default_status=status,
-                                                                      quality=int(settings.QUALITY_DEFAULT),
-                                                                      season_folders=int(settings.SEASON_FOLDERS_DEFAULT),
-                                                                      paused=settings.TRAKT_START_PAUSED,
-                                                                      default_status_after=status)
+                sickbeard.showQueueScheduler.action.add_show(int(indexer), int(indexer_id), showPath,
+                                                             default_status=status,
+                                                             quality=int(sickbeard.QUALITY_DEFAULT),
+                                                             season_folders=int(sickbeard.SEASON_FOLDERS_DEFAULT),
+                                                             paused=sickbeard.TRAKT_START_PAUSED,
+                                                             default_status_after=status)
             else:
                 logger.warning("There was an error creating the show, no root directory setting found")
                 return

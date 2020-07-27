@@ -23,9 +23,9 @@ import threading
 import time
 
 # First Party Imports
+import adba
 import sickbeard
 import sickchill
-from sickchill import adba, settings
 
 # Local Folder Imports
 from . import db, helpers, logger
@@ -203,8 +203,8 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
         logger.info("Checking for scene exception updates from {0}".format(loc))
 
         session = helpers.make_session()
-        proxy = settings.PROXY_SETTING
-        if proxy and settings.PROXY_INDEXERS:
+        proxy = sickbeard.PROXY_SETTING
+        if proxy and sickbeard.PROXY_INDEXERS:
             session.proxies = {
                 "http": proxy,
                 "https": proxy,
@@ -296,7 +296,7 @@ def update_scene_exceptions(indexer_id, scene_exceptions):
 def _anidb_exceptions_fetcher():
     if shouldRefresh('anidb'):
         logger.info("Checking for scene exception updates for AniDB")
-        for show in settings.showList:
+        for show in sickbeard.showList:
             if show.is_anime and show.indexer == 1:
                 try:
                     anime = adba.Anime(None, name=show.name, tvdbid=show.indexerid, autoCorrectName=True)

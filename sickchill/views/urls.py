@@ -23,7 +23,7 @@ import os
 from tornado.web import RedirectHandler, StaticFileHandler, url
 
 # First Party Imports
-from sickchill import settings
+import sickbeard
 
 # Local Folder Imports
 from . import CalendarHandler, LoginHandler, LogoutHandler
@@ -34,6 +34,7 @@ from .routes import Route
 class Urls(object):
     def __init__(self, **options):
         self.options = options
+
         self.urls = [
                         url(r'{0}/favicon.ico'.format(self.options['web_root']), StaticFileHandler,
                             {"path": os.path.join(self.options['data_root'], 'images/ico/favicon.ico')}, name='favicon'),
@@ -42,7 +43,7 @@ class Urls(object):
                             {"path": os.path.join(self.options['data_root'], 'images')}, name='images'),
 
                         url(r'{0}/cache/images/(.*)'.format(self.options['web_root']), StaticFileHandler,
-                            {"path": os.path.join(settings.CACHE_DIR, 'images')}, name='image_cache'),
+                            {"path": os.path.join(sickbeard.CACHE_DIR, 'images')}, name='image_cache'),
 
                         url(r'{0}/css/(.*)'.format(self.options['web_root']), StaticFileHandler,
                             {"path": os.path.join(self.options['data_root'], 'css')}, name='css'),

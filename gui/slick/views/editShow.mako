@@ -1,6 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    from sickchill import settings
+    import sickbeard
     from sickbeard import common
     from sickbeard.common import SKIPPED, WANTED, IGNORED
     from sickbeard.common import statusStrings
@@ -120,7 +120,7 @@
                                         <span class="component-title">${_('Subtitles')}</span>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" class="enabler" id="subtitles" name="subtitles" ${('', 'checked="checked"')[show.subtitles == 1 and settings.USE_SUBTITLES is True]} ${('disabled="disabled"', '')[bool(settings.USE_SUBTITLES)]}/>
+                                        <input type="checkbox" class="enabler" id="subtitles" name="subtitles" ${('', 'checked="checked"')[show.subtitles == 1 and sickbeard.USE_SUBTITLES is True]} ${('disabled="disabled"', '')[bool(sickbeard.USE_SUBTITLES)]}/>
                                         <label for="subtitles">${_('search for subtitles')}</label>
                                     </div>
                                 </div>
@@ -223,7 +223,7 @@
                                         <span class="component-title">${_('Season folders')}</span>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" id="season_folders" name="season_folders" ${('', 'checked="checked"')[show.season_folders == 1 or settings.NAMING_FORCE_FOLDERS]} ${('', 'disabled="disabled"')[bool(settings.NAMING_FORCE_FOLDERS)]} title="season_folders"/>
+                                        <input type="checkbox" id="season_folders" name="season_folders" ${('', 'checked="checked"')[show.season_folders == 1 or sickbeard.NAMING_FORCE_FOLDERS]} ${('', 'disabled="disabled"')[bool(sickbeard.NAMING_FORCE_FOLDERS)]} title="season_folders"/>
                                         <label for="season_folders">${_('group episodes by season folder (uncheck to store in a single folder)')}</label>
                                     </div>
                                 </div>

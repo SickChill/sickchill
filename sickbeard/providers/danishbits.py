@@ -26,12 +26,12 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class DanishbitsProvider(TorrentProvider):
 
     def __init__(self):
 
         # Provider Init
-        super().__init__("Danishbits")
+        TorrentProvider.__init__(self, "Danishbits")
 
         # Credentials
         self.username = None
@@ -127,3 +127,6 @@ class Provider(TorrentProvider):
             results += items
 
         return results
+
+
+provider = DanishbitsProvider()

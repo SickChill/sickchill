@@ -20,9 +20,9 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import re
-from urllib.parse import urljoin
 
 # Third Party Imports
+from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
 # First Party Imports
@@ -31,12 +31,12 @@ from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class TorrentLeechProvider(TorrentProvider):
 
     def __init__(self):
 
         # Provider Init
-        super().__init__("TorrentLeech")
+        TorrentProvider.__init__(self, "TorrentLeech")
 
         # Credentials
         self.username = None
@@ -156,3 +156,6 @@ class Provider(TorrentProvider):
             results += items
 
         return results
+
+
+provider = TorrentLeechProvider()

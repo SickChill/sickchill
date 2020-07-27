@@ -90,8 +90,8 @@ import unittest
 from shutil import rmtree
 
 # First Party Imports
+import sickbeard
 from sickbeard import helpers
-from sickchill import settings
 from sickchill.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
 
 TEST_RESULT = 'Show.Name.S01E01.HDTV.x264-RLSGROUP'
@@ -749,7 +749,7 @@ class HelpersMiscTests(unittest.TestCase):
             ('An Unexpected Journey', True, 'an unexpected journey'),
         ]
         for raw_name, option, expected in cases:
-            settings.SORT_ARTICLE = option
+            sickbeard.SORT_ARTICLE = option
             self.assertEqual(helpers.sortable_name(raw_name), expected)
 
     @unittest.skip('Not yet implemented')

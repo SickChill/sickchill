@@ -27,11 +27,11 @@ from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class TVChaosUKProvider(TorrentProvider):
 
     def __init__(self):
 
-        super().__init__("TvChaosUK")
+        TorrentProvider.__init__(self, 'TvChaosUK')
 
         self.username = None
         self.password = None
@@ -155,7 +155,7 @@ class Provider(TorrentProvider):
                                 title = re.sub(r'(.*)(?i)Series', r'\1Season', title)
 
                             # Strip year from the end or we can't parse it!
-                            title = re.sub(r'(.*)[. ]?\(\d{4}\)', r'\1', title)
+                            title = re.sub(r'(.*)[\. ]?\(\d{4}\)', r'\1', title)
                             title = re.sub(r'\s+', r' ', title)
 
                             torrent_size = torrent('td')[labels.index('Size')].get_text(strip=True)
@@ -175,3 +175,6 @@ class Provider(TorrentProvider):
             results += items
 
         return results
+
+
+provider = TVChaosUKProvider()

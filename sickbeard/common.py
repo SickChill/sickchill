@@ -25,10 +25,13 @@ import uuid
 from functools import reduce
 from os import path
 
+# Third Party Imports
+import fake_useragent
+
 # First Party Imports
-from sickchill import settings
+import sickbeard
+from setup import setup_gettext
 from sickchill.helper import video_screen_size
-from sickchill.init_helpers import setup_gettext, setup_useragent
 from sickchill.recompiled import tags
 from sickchill.tagger.episode import EpisodeTags
 
@@ -41,10 +44,10 @@ setup_gettext()
 # It is no different than us going to a provider if we have questions or issues. Be a team player here.
 # This is disabled, was only added for testing, and has no config.ini or web ui setting. To enable, set SPOOF_USER_AGENT = True
 SPOOF_USER_AGENT = True
-ua_pool = setup_useragent()
+ua_pool = fake_useragent.FakeUserAgent(path=path.join(path.dirname(__file__), '../fake_useragent.ua.json'))
 
 if SPOOF_USER_AGENT:
-    USER_AGENT = ua_pool.get_random_user_agent()
+    USER_AGENT = ua_pool.random
 else:
     INSTANCE_ID = str(uuid.uuid1())
     USER_AGENT = ('SickChill.CE.1/(' + platform.system() + '; ' + platform.release() + '; ' + INSTANCE_ID + ')')
@@ -324,7 +327,7 @@ class Quality(object):
             # SD TV
             elif sd_options:
                 result = Quality.SDTV
-        elif ep.hevc and not settings.QUALITY_ALLOW_HEVC:
+        elif ep.hevc and not sickbeard.QUALITY_ALLOW_HEVC:
             result = Quality.NONE
         elif ep.mpeg:
             result = Quality.RAWHDTV

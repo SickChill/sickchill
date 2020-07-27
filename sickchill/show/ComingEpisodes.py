@@ -21,11 +21,11 @@ from datetime import date, timedelta
 from operator import itemgetter
 
 # First Party Imports
+import sickbeard
 from sickbeard.common import Quality, UNAIRED, WANTED
 from sickbeard.db import DBConnection
 from sickbeard.network_timezones import parse_date_time
 from sickbeard.sbdatetime import sbdatetime
-from sickchill import settings
 from sickchill.helper.common import dateFormat, timeFormat
 from sickchill.helper.quality import get_quality_string
 
@@ -51,7 +51,7 @@ class ComingEpisodes(object):
         pass
 
     @staticmethod
-    def get_coming_episodes(categories, sort, group, paused=settings.COMING_EPS_DISPLAY_PAUSED):
+    def get_coming_episodes(categories, sort, group, paused=sickbeard.COMING_EPS_DISPLAY_PAUSED):
         """
         :param categories: The categories of coming episodes. See ``ComingEpisodes.categories``
         :param sort: The sort to apply to the coming episodes. See ``ComingEpisodes.sorts``
@@ -64,7 +64,7 @@ class ComingEpisodes(object):
         sort = ComingEpisodes._get_sort(sort)
 
         today = date.today().toordinal()
-        recently = (date.today() - timedelta(days=settings.COMING_EPS_MISSED_RANGE)).toordinal()
+        recently = (date.today() - timedelta(days=sickbeard.COMING_EPS_MISSED_RANGE)).toordinal()
         next_week = (date.today() + timedelta(days=7)).toordinal()
 
         db = DBConnection(row_type='dict')
@@ -77,7 +77,7 @@ class ComingEpisodes(object):
         status_list = [WANTED, UNAIRED] + SNATCHED
 
         sql_l = []
-        for show_obj in settings.showList:
+        for show_obj in sickbeard.showList:
             next_air_date = show_obj.nextEpisode()
             sql_l.append(
                 [

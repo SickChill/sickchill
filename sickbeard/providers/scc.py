@@ -20,25 +20,25 @@
 # Stdlib Imports
 import re
 import time
-from urllib.parse import quote, urljoin
 
 # Third Party Imports
+from requests.compat import quote, urljoin
 from requests.utils import dict_from_cookiejar
 
 # First Party Imports
+import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
-from sickchill import settings
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class SCCProvider(TorrentProvider):
 
     def __init__(self):
 
-        super().__init__("SceneAccess")
+        TorrentProvider.__init__(self, "SceneAccess")
 
         self.username = None
         self.password = None
@@ -107,7 +107,7 @@ class Provider(TorrentProvider):
 
                 try:
                     data = self.get_url(search_url, returns='text')
-                    time.sleep(cpu_presets[settings.CPU_PRESET])
+                    time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                 except Exception as e:
                     logger.warning("Unable to fetch data. Error: {0}".format(repr(e)))
 
@@ -166,3 +166,6 @@ class Provider(TorrentProvider):
             results += items
 
         return results
+
+
+provider = SCCProvider()

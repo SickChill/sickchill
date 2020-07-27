@@ -1,8 +1,8 @@
 <%!
     import json
-    from urllib.parse import urljoin
+    from requests.compat import urljoin
 
-    from sickchill import settings
+    import sickbeard
 %>
 <!DOCTYPE html>
 <html>
@@ -14,11 +14,11 @@
 
         <% themeColors = { "dark": "#15528F", "light": "#333333" } %>
         <!-- Android -->
-        <meta name="theme-color" content="${themeColors[settings.THEME_NAME]}">
+        <meta name="theme-color" content="${themeColors[sickbeard.THEME_NAME]}">
         <!-- Windows Phone -->
-        <meta name="msapplication-navbutton-color" content="${themeColors[settings.THEME_NAME]}">
+        <meta name="msapplication-navbutton-color" content="${themeColors[sickbeard.THEME_NAME]}">
         <!-- iOS -->
-        <meta name="apple-mobile-web-app-status-bar-style" content="${themeColors[settings.THEME_NAME]}">
+        <meta name="apple-mobile-web-app-status-bar-style" content="${themeColors[sickbeard.THEME_NAME]}">
 
         <title>SickChill - ${title}</title>
 
@@ -32,25 +32,25 @@
         <meta name="msapplication-config" content="${static_url('css/browserconfig.xml')}">
 
         <meta data-var="srRoot" data-content="${srRoot}">
-        <meta data-var="themeSpinner" data-content="${('', '-dark')[settings.THEME_NAME == 'dark']}">
-        <meta data-var="anonURL" data-content="${settings.ANON_REDIRECT}">
+        <meta data-var="themeSpinner" data-content="${('', '-dark')[sickbeard.THEME_NAME == 'dark']}">
+        <meta data-var="anonURL" data-content="${sickbeard.ANON_REDIRECT}">
 
-        <meta data-var="settings.ANIME_SPLIT_HOME" data-content="${settings.ANIME_SPLIT_HOME}">
-        <meta data-var="settings.ANIME_SPLIT_HOME_IN_TABS" data-content="${settings.ANIME_SPLIT_HOME_IN_TABS}">
-        <meta data-var="settings.COMING_EPS_LAYOUT" data-content="${settings.COMING_EPS_LAYOUT}">
-        <meta data-var="settings.COMING_EPS_SORT" data-content="${settings.COMING_EPS_SORT}">
-        <meta data-var="settings.DATE_PRESET" data-content="${settings.DATE_PRESET}">
-        <meta data-var="settings.FUZZY_DATING" data-content="${settings.FUZZY_DATING}">
-        <meta data-var="settings.HISTORY_LAYOUT" data-content="${settings.HISTORY_LAYOUT}">
-        <meta data-var="settings.HOME_LAYOUT" data-content="${settings.HOME_LAYOUT}">
-        <meta data-var="settings.POSTER_SORTBY" data-content="${settings.POSTER_SORTBY}">
-        <meta data-var="settings.POSTER_SORTDIR" data-content="${settings.POSTER_SORTDIR}">
-        <meta data-var="settings.ROOT_DIRS" data-content="${settings.ROOT_DIRS}">
-        <meta data-var="settings.SORT_ARTICLE" data-content="${settings.SORT_ARTICLE}">
-        <meta data-var="settings.TIME_PRESET" data-content="${settings.TIME_PRESET}">
-        <meta data-var="settings.TRIM_ZERO" data-content="${settings.TRIM_ZERO}">
-        <meta data-var="settings.FANART_BACKGROUND" data-content="${settings.FANART_BACKGROUND}">
-        <meta data-var="settings.FANART_BACKGROUND_OPACITY" data-content="${settings.FANART_BACKGROUND_OPACITY}">
+        <meta data-var="sickbeard.ANIME_SPLIT_HOME" data-content="${sickbeard.ANIME_SPLIT_HOME}">
+        <meta data-var="sickbeard.ANIME_SPLIT_HOME_IN_TABS" data-content="${sickbeard.ANIME_SPLIT_HOME_IN_TABS}">
+        <meta data-var="sickbeard.COMING_EPS_LAYOUT" data-content="${sickbeard.COMING_EPS_LAYOUT}">
+        <meta data-var="sickbeard.COMING_EPS_SORT" data-content="${sickbeard.COMING_EPS_SORT}">
+        <meta data-var="sickbeard.DATE_PRESET" data-content="${sickbeard.DATE_PRESET}">
+        <meta data-var="sickbeard.FUZZY_DATING" data-content="${sickbeard.FUZZY_DATING}">
+        <meta data-var="sickbeard.HISTORY_LAYOUT" data-content="${sickbeard.HISTORY_LAYOUT}">
+        <meta data-var="sickbeard.HOME_LAYOUT" data-content="${sickbeard.HOME_LAYOUT}">
+        <meta data-var="sickbeard.POSTER_SORTBY" data-content="${sickbeard.POSTER_SORTBY}">
+        <meta data-var="sickbeard.POSTER_SORTDIR" data-content="${sickbeard.POSTER_SORTDIR}">
+        <meta data-var="sickbeard.ROOT_DIRS" data-content="${sickbeard.ROOT_DIRS}">
+        <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
+        <meta data-var="sickbeard.TIME_PRESET" data-content="${sickbeard.TIME_PRESET}">
+        <meta data-var="sickbeard.TRIM_ZERO" data-content="${sickbeard.TRIM_ZERO}">
+        <meta data-var="sickbeard.FANART_BACKGROUND" data-content="${sickbeard.FANART_BACKGROUND}">
+        <meta data-var="sickbeard.FANART_BACKGROUND_OPACITY" data-content="${sickbeard.FANART_BACKGROUND_OPACITY}">
         <%block name="metas" />
 
         <link rel="shortcut icon" href="${static_url('images/ico/favicon.ico')}">
@@ -76,8 +76,8 @@
         <link rel="stylesheet" type="text/css" href="${static_url('css/style.css')}"/>
         <link rel="stylesheet" type="text/css" href="${static_url('css/print.css')}" />
 
-        %if settings.THEME_NAME != "light":
-            <link rel="stylesheet" type="text/css" href="${static_url(urljoin('css/', '.'.join((settings.THEME_NAME, 'css'))))}" />
+        %if sickbeard.THEME_NAME != "light":
+            <link rel="stylesheet" type="text/css" href="${static_url(urljoin('css/', '.'.join((sickbeard.THEME_NAME, 'css'))))}" />
         %endif
         <%block name="css" />
     </head>

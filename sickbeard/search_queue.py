@@ -21,7 +21,7 @@ import time
 import traceback
 
 # First Party Imports
-from sickchill import settings
+import sickbeard
 
 # Local Folder Imports
 from . import common, failed_history, generic_queue, history, logger, search, ui
@@ -146,7 +146,7 @@ class DailySearchQueueItem(generic_queue.QueueItem):
                     self.success = search.snatchEpisode(result)
 
                     # give the CPU a break
-                    time.sleep(common.cpu_presets[settings.CPU_PRESET])
+                    time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
         except Exception:
             logger.debug(traceback.format_exc())
 
@@ -183,7 +183,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
                 self.success = search.snatchEpisode(searchResult[0])
 
                 # give the CPU a break
-                time.sleep(common.cpu_presets[settings.CPU_PRESET])
+                time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
 
             else:
                 ui.notifications.message('No downloads were found',
@@ -228,7 +228,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
                         search.snatchEpisode(result)
 
                         # give the CPU a break
-                        time.sleep(common.cpu_presets[settings.CPU_PRESET])
+                        time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
                 else:
                     logger.info("No needed episodes found during backlog search for: [" + self.show.name + "]")
             except Exception:
@@ -279,7 +279,7 @@ class FailedQueueItem(generic_queue.QueueItem):
                     search.snatchEpisode(result)
 
                     # give the CPU a break
-                    time.sleep(common.cpu_presets[settings.CPU_PRESET])
+                    time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
             else:
                 pass
                 # logger.info("No valid episode found to retry for: [" + self.segment.pretty_name() + "]")

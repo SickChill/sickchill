@@ -17,8 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # First Party Imports
+import sickbeard
 from sickbeard.event_queue import Events
-from sickchill import settings
 
 
 class Shutdown(object):
@@ -27,9 +27,9 @@ class Shutdown(object):
 
     @staticmethod
     def stop(pid):
-        if str(pid) != str(settings.PID):
+        if str(pid) != str(sickbeard.PID):
             return False
 
-        settings.events.put(Events.SystemEvent.SHUTDOWN)
+        sickbeard.events.put(Events.SystemEvent.SHUTDOWN)
 
         return True

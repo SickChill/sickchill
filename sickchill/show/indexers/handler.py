@@ -23,7 +23,6 @@ import re
 import sickbeard
 from sickbeard import logger
 from sickbeard.tv import Show
-from sickchill import settings
 from sickchill.helper.common import try_int
 
 # Local Folder Imports
@@ -35,8 +34,8 @@ class ShowIndexer(object):
     TVRAGE = 2
 
     def __init__(self):
-        if settings.INDEXER_DEFAULT is None:
-            settings.INDEXER_DEFAULT = 1
+        if sickbeard.INDEXER_DEFAULT is None:
+            sickbeard.INDEXER_DEFAULT = 1
 
         self.indexers = {1: TVDB()}
         self.__build_indexer_attribute_getters()
@@ -80,7 +79,7 @@ class ShowIndexer(object):
 
                 # If we didn't find it in our available indexers, use the default.
                 if not indexer or indexer not in self.indexers:
-                    indexer = settings.INDEXER_DEFAULT
+                    indexer = sickbeard.INDEXER_DEFAULT
 
                 return getattr(self.indexers[indexer], _attribute)
             return indexer_attribute
@@ -90,7 +89,7 @@ class ShowIndexer(object):
 
     def search(self, indexer=None, *args, **kwargs):
         if indexer is None:
-            indexer = settings.INDEXER_DEFAULT
+            indexer = sickbeard.INDEXER_DEFAULT
         return self.indexers[indexer].search(*args, **kwargs)
 
     def search_indexers_for_series_name(self, name, language=None, exact=False):
@@ -119,7 +118,7 @@ class ShowIndexer(object):
             indexerid = int(indexerid)
 
         if not language:
-            language = settings.INDEXER_DEFAULT_LANGUAGE
+            language = sickbeard.INDEXER_DEFAULT_LANGUAGE
 
         assert bool(indexerid) or bool(name), "Must provide either a name or an indexer id to search indexers with"
 
@@ -142,7 +141,7 @@ class ShowIndexer(object):
                     logger.debug("Failed to find {} on {}".format(search, self.name(i)))
                     continue
 
-                ShowObj = Show.find(settings.showList, result.id)
+                ShowObj = Show.find(sickbeard.showList, result.id)
                 if indexerid and ShowObj and ShowObj.indexerid == result.id:
                     return i, result
                 elif indexerid and indexerid == result.id:
@@ -179,8 +178,8 @@ class ShowIndexer(object):
         class __TVShow(object):
             def __init__(self, __indexerid, __language, __indexer):
                 self.indexerid = __indexerid
-                self.indexer = __indexer or settings.INDEXER_DEFAULT
-                self.lang = __language or settings.INDEXER_DEFAULT_LANGUAGE
+                self.indexer = __indexer or sickbeard.INDEXER_DEFAULT
+                self.lang = __language or sickbeard.INDEXER_DEFAULT_LANGUAGE
         return self.series_poster_url(__TVShow(indexerid, language, indexer), thumb)
 
     def series_poster_url(self, show, thumb=False):

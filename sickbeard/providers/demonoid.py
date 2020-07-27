@@ -20,25 +20,25 @@
 # Stdlib Imports
 import time
 import traceback
-from urllib.parse import urljoin
 
 # Third Party Imports
+from requests.compat import urljoin
 from requests.utils import add_dict_to_cookiejar
 
 # First Party Imports
+import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
-from sickchill import settings
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class DemonoidProvider(TorrentProvider):
 
     def __init__(self):
 
-        super().__init__("Demonoid")
+        TorrentProvider.__init__(self, "Demonoid")
 
         self.public = True
         self.minseed = 0
@@ -79,7 +79,7 @@ class Provider(TorrentProvider):
                 logger.debug("Search string: {0}".format
                            (search_string))
 
-                time.sleep(cpu_presets[settings.CPU_PRESET])
+                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
                 data = self.get_url(self.urls['search'], params=search_params)
                 if not data:
@@ -154,3 +154,6 @@ class DemonoidCache(tvcache.TVCache):
             add_dict_to_cookiejar(self.provider.session.cookies, dict(x.rsplit('=', 1) for x in self.provider.cookies.split(';')))
 
         return self.get_rss_feed(self.provider.urls['RSS'], self.provider.cache_rss_params)
+
+
+provider = DemonoidProvider()

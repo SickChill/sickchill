@@ -18,13 +18,20 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import re
-from xml.etree import ElementTree
 
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
 from sickbeard.helpers import getURL, make_session
-from sickchill import settings
+
+try:
+    # Stdlib Imports
+    from xml.etree import cElementTree as etree
+except ImportError:
+    # Stdlib Imports
+    from xml.etree import ElementTree as etree
+
+
 
 
 class Notifier(object):
@@ -56,12 +63,12 @@ class Notifier(object):
         """
 
         # suppress notifications if the notifier is disabled but the notify options are checked
-        if not settings.USE_PLEX_CLIENT and not force:
+        if not sickbeard.USE_PLEX_CLIENT and not force:
             return False
 
-        host = host or settings.PLEX_CLIENT_HOST
-        username = username or settings.PLEX_CLIENT_USERNAME
-        password = password or settings.PLEX_CLIENT_PASSWORD
+        host = host or sickbeard.PLEX_CLIENT_HOST
+        username = username or sickbeard.PLEX_CLIENT_USERNAME
+        password = password or sickbeard.PLEX_CLIENT_PASSWORD
 
         return sickbeard.notifiers.kodi_notifier._notify_kodi(message, title=title, host=host, username=username, password=password, force=force, dest_app="PLEX")
 
@@ -70,26 +77,26 @@ class Notifier(object):
 ##############################################################################
 
     def notify_snatch(self, ep_name):
-        if settings.PLEX_NOTIFY_ONSNATCH:
+        if sickbeard.PLEX_NOTIFY_ONSNATCH:
             self._notify_pht(ep_name, common.notifyStrings[common.NOTIFY_SNATCH])
 
     def notify_download(self, ep_name):
-        if settings.PLEX_NOTIFY_ONDOWNLOAD:
+        if sickbeard.PLEX_NOTIFY_ONDOWNLOAD:
             self._notify_pht(ep_name, common.notifyStrings[common.NOTIFY_DOWNLOAD])
 
     def notify_subtitle_download(self, ep_name, lang):
-        if settings.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD:
+        if sickbeard.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notify_pht(ep_name + ': ' + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
 
     def notify_git_update(self, new_version='??'):
-        if settings.NOTIFY_ON_UPDATE:
+        if sickbeard.NOTIFY_ON_UPDATE:
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
             if update_text and title and new_version:
                 self._notify_pht(update_text + new_version, title)
 
     def notify_login(self, ipaddress=""):
-        if settings.NOTIFY_ON_LOGIN:
+        if sickbeard.NOTIFY_ON_LOGIN:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             if update_text and title and ipaddress:
@@ -116,10 +123,10 @@ class Notifier(object):
 
         """
 
-        if not (settings.USE_PLEX_SERVER and settings.PLEX_UPDATE_LIBRARY) and not force:
+        if not (sickbeard.USE_PLEX_SERVER and sickbeard.PLEX_UPDATE_LIBRARY) and not force:
             return None
 
-        host = host or settings.PLEX_SERVER_HOST
+        host = host or sickbeard.PLEX_SERVER_HOST
         if not host:
             logger.debug('PLEX: No Plex Media Server host specified, check your settings')
             return False
@@ -135,7 +142,7 @@ class Notifier(object):
 
         for cur_host in host_list:
 
-            url = 'http{0}://{1}/library/sections'.format(('', 's')[settings.PLEX_SERVER_HTTPS], cur_host)
+            url = 'http{0}://{1}/library/sections'.format(('', 's')[sickbeard.PLEX_SERVER_HTTPS], cur_host)
             try:
                 xml_response = getURL(url, headers=self.headers, session=self.session, returns='text', verify=False,
                                       allow_proxy=False)
@@ -145,7 +152,7 @@ class Notifier(object):
                     hosts_failed.add(cur_host)
                     continue
 
-                media_container = ElementTree.fromstring(xml_response)
+                media_container = etree.fromstring(xml_response)
             except IOError as error:
                 logger.warning('PLEX: Error while trying to contact Plex Media Server: {0}'.format
                            (str(error)))
@@ -195,7 +202,7 @@ class Notifier(object):
         hosts_try = (hosts_match.copy(), hosts_all.copy())[not len(hosts_match)]
         for section_key, cur_host in hosts_try.items():
 
-            url = 'http{0}://{1}/library/sections/{2}/refresh'.format(('', 's')[settings.PLEX_SERVER_HTTPS], cur_host, section_key)
+            url = 'http{0}://{1}/library/sections/{2}/refresh'.format(('', 's')[sickbeard.PLEX_SERVER_HTTPS], cur_host, section_key)
             try:
                 getURL(url, headers=self.headers, session=self.session, returns='text', verify=False, allow_proxy=False)
             except Exception as error:
@@ -206,9 +213,9 @@ class Notifier(object):
         return (', '.join(set(hosts_failed)), None)[not len(hosts_failed)]
 
     def get_token(self, username=None, password=None, plex_server_token=None):
-        username = username or settings.PLEX_SERVER_USERNAME
-        password = password or settings.PLEX_SERVER_PASSWORD
-        plex_server_token = plex_server_token or settings.PLEX_SERVER_TOKEN
+        username = username or sickbeard.PLEX_SERVER_USERNAME
+        password = password or sickbeard.PLEX_SERVER_PASSWORD
+        plex_server_token = plex_server_token or sickbeard.PLEX_SERVER_TOKEN
 
         if plex_server_token:
             self.headers['X-Plex-Token'] = plex_server_token

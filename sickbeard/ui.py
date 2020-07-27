@@ -20,7 +20,7 @@
 import datetime
 
 # First Party Imports
-from sickchill import settings
+import sickbeard
 
 MESSAGE = 'notice'
 ERROR = 'error'
@@ -162,7 +162,7 @@ class QueueProgressIndicator(object):
         return len([x for x in self.queueItemList if x.is_in_queue()])
 
     def nextName(self):
-        for curItem in [settings.showQueueScheduler.action.currentItem] + settings.showQueueScheduler.action.queue:  # @UndefinedVariable
+        for curItem in [sickbeard.showQueueScheduler.action.currentItem] + sickbeard.showQueueScheduler.action.queue:  # @UndefinedVariable
             if curItem in self.queueItemList:
                 return curItem.name
 

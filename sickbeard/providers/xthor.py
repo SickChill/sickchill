@@ -26,11 +26,11 @@ from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class XThorProvider(TorrentProvider):
 
     def __init__(self):
 
-        super().__init__("XThor")
+        TorrentProvider.__init__(self, 'XThor')
 
         self.url = 'https://xthor.tk'
         self.urls = {'search': 'https://api.xthor.tk'}
@@ -121,3 +121,6 @@ class Provider(TorrentProvider):
             results += items
 
         return results
+
+
+provider = XThorProvider()

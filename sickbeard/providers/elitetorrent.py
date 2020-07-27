@@ -23,19 +23,19 @@ import time
 import traceback
 
 # First Party Imports
+import sickbeard
 from sickbeard import logger, tvcache
 from sickbeard.bs4_parser import BS4Parser
 from sickbeard.common import cpu_presets
-from sickchill import settings
 from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class EliteTorrentProvider(TorrentProvider):
 
     def __init__(self):
 
-        super().__init__("EliteTorrent")
+        TorrentProvider.__init__(self, "EliteTorrent")
 
         self.onlyspasearch = None
         self.minseed = 0
@@ -90,7 +90,7 @@ class Provider(TorrentProvider):
                 search_string = re.sub(r'S0*(\d*)E(\d*)', r'\1x\2', search_string)
                 search_params['buscar'] = search_string.strip() if mode != 'RSS' else ''
 
-                time.sleep(cpu_presets[settings.CPU_PRESET])
+                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
                 data = self.get_url(self.urls['search'], params=search_params, returns='text')
                 if not data:
                     continue
@@ -188,3 +188,5 @@ class Provider(TorrentProvider):
         title += '-ELITETORRENT'
 
         return title.strip()
+
+provider = EliteTorrentProvider()

@@ -20,16 +20,15 @@ import re
 import time
 from base64 import b16encode, b32decode
 from hashlib import sha1
-from typing import Dict, Iterable, Union
-from urllib.parse import urlencode
 
 # Third Party Imports
 import bencodepy
+from requests.compat import urlencode
 from requests.models import HTTPError
 
 # First Party Imports
+import sickbeard
 from sickbeard import helpers, logger
-from sickchill import settings
 
 
 class GenericClient(object):
@@ -43,9 +42,9 @@ class GenericClient(object):
         """
 
         self.name = name
-        self.username = username or settings.TORRENT_USERNAME
-        self.password = password or settings.TORRENT_PASSWORD
-        self.host = host or settings.TORRENT_HOST
+        self.username = username or sickbeard.TORRENT_USERNAME
+        self.password = password or sickbeard.TORRENT_PASSWORD
+        self.host = host or sickbeard.TORRENT_HOST
 
         self.url = None
         self.response = None
@@ -173,7 +172,7 @@ class GenericClient(object):
                 raise Exception('Torrent without content')
 
             try:
-                torrent_bdecode: Union[Iterable, Dict] = bencodepy.decode(result.content)
+                torrent_bdecode = bencodepy.decode(result.content, True)
             except (bencodepy.DecodingError, Exception) as error:
                 logger.exception('Unable to bdecode torrent')
                 logger.info('Error is: {0}'.format(error))

@@ -1,7 +1,7 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
     import re
-    from sickchill import settings
+    import sickbeard
     from sickbeard.filters import hide
     from sickbeard.helpers import anon_url
     import sickchill
@@ -35,7 +35,7 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_kodi" id="use_kodi" ${('', 'checked="checked"')[bool(settings.USE_KODI)]}/>
+                                <input type="checkbox" class="enabler" name="use_kodi" id="use_kodi" ${('', 'checked="checked"')[bool(sickbeard.USE_KODI)]}/>
                                 <label for="use_kodi">${_('send KODI commands?')}</label>
                             </div>
                         </div>
@@ -48,7 +48,7 @@
                                     <label class="component-title">${_('Always on')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_always_on" id="kodi_always_on" ${('', 'checked="checked"')[bool(settings.KODI_ALWAYS_ON)]}/>
+                                    <input type="checkbox" name="kodi_always_on" id="kodi_always_on" ${('', 'checked="checked"')[bool(sickbeard.KODI_ALWAYS_ON)]}/>
                                     <label for="kodi_always_on">${_('log errors when unreachable?')}</label>
                                 </div>
                             </div>
@@ -58,7 +58,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_notify_onsnatch" id="kodi_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.KODI_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="kodi_notify_onsnatch" id="kodi_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.KODI_NOTIFY_ONSNATCH)]}/>
                                     <label for="kodi_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -68,7 +68,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_notify_ondownload" id="kodi_notify_ondownload" ${('', 'checked="checked"')[bool(settings.KODI_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="kodi_notify_ondownload" id="kodi_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.KODI_NOTIFY_ONDOWNLOAD)]}/>
                                     <label for="kodi_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -78,7 +78,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_notify_onsubtitledownload" id="kodi_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.KODI_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="kodi_notify_onsubtitledownload" id="kodi_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.KODI_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
                                     <label for="kodi_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -88,7 +88,7 @@
                                     <label class="component-title">${_('Update library')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_update_library" id="kodi_update_library" ${('', 'checked="checked"')[bool(settings.KODI_UPDATE_LIBRARY)]}/>
+                                    <input type="checkbox" name="kodi_update_library" id="kodi_update_library" ${('', 'checked="checked"')[bool(sickbeard.KODI_UPDATE_LIBRARY)]}/>
                                     <label for="kodi_update_library">${_('update KODI library when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -98,7 +98,7 @@
                                     <label class="component-title">${_('Full library update')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_update_full" id="kodi_update_full" ${('', 'checked="checked"')[bool(settings.KODI_UPDATE_FULL)]}/>
+                                    <input type="checkbox" name="kodi_update_full" id="kodi_update_full" ${('', 'checked="checked"')[bool(sickbeard.KODI_UPDATE_FULL)]}/>
                                     <label for="kodi_update_full">${_('perform a full library update if update per-show fails?')}</label>
                                 </div>
                             </div>
@@ -108,7 +108,7 @@
                                     <label class="component-title">${_('Only update first host')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_update_onlyfirst" id="kodi_update_onlyfirst" ${('', 'checked="checked"')[bool(settings.KODI_UPDATE_ONLYFIRST)]}/>
+                                    <input type="checkbox" name="kodi_update_onlyfirst" id="kodi_update_onlyfirst" ${('', 'checked="checked"')[bool(sickbeard.KODI_UPDATE_ONLYFIRST)]}/>
                                     <label for="kodi_update_onlyfirst">${_('only send library updates to the first active host?')}</label>
                                 </div>
                             </div>
@@ -120,7 +120,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="kodi_host" id="kodi_host" value="${settings.KODI_HOST}" class="form-control input-sm input350" autocapitalize="off" />
+                                            <input type="text" name="kodi_host" id="kodi_host" value="${sickbeard.KODI_HOST}" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -143,7 +143,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="kodi_username" id="kodi_username" value="${settings.KODI_USERNAME}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
+                                            <input type="text" name="kodi_username" id="kodi_username" value="${sickbeard.KODI_USERNAME}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -162,7 +162,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input
-                                                type="password" name="kodi_password" id="kodi_password" value="${settings.KODI_PASSWORD|hide}"
+                                                type="password" name="kodi_password" id="kodi_password" value="${sickbeard.KODI_PASSWORD|hide}"
                                                 class="form-control input-sm input250" autocomplete="no" autocapitalize="off"
                                             />
                                         </div>
@@ -212,7 +212,7 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_plex_server" id="use_plex_server" ${('', 'checked="checked"')[bool(settings.USE_PLEX_SERVER)]}/>
+                                <input type="checkbox" class="enabler" name="use_plex_server" id="use_plex_server" ${('', 'checked="checked"')[bool(sickbeard.USE_PLEX_SERVER)]}/>
                                 <label for="use_plex_server">${_('send Plex Media Server library updates?')}</label>
                             </div>
                         </div>
@@ -226,7 +226,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="plex_server_token" id="plex_server_token" value="${settings.PLEX_SERVER_TOKEN}" class="form-control input-sm input350" autocapitalize="off" />
+                                            <input type="text" name="plex_server_token" id="plex_server_token" value="${sickbeard.PLEX_SERVER_TOKEN}" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -251,7 +251,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="plex_server_username" id="plex_server_username" value="${settings.PLEX_SERVER_USERNAME}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
+                                            <input type="text" name="plex_server_username" id="plex_server_username" value="${sickbeard.PLEX_SERVER_USERNAME}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -271,7 +271,7 @@
                                         <div class="col-md-12">
                                             <input
                                                 type="password" name="plex_server_password" id="plex_server_password"
-                                                value="${settings.PLEX_SERVER_PASSWORD|hide}" class="form-control input-sm input250"
+                                                value="${sickbeard.PLEX_SERVER_PASSWORD|hide}" class="form-control input-sm input250"
                                                 autocomplete="no" autocapitalize="off"
                                             />
                                         </div>
@@ -289,7 +289,7 @@
                                     <label class="component-title">${_('Update Library')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" class="enabler" name="plex_update_library" id="plex_update_library" ${('', 'checked="checked"')[bool(settings.PLEX_UPDATE_LIBRARY)]}/>
+                                    <input type="checkbox" class="enabler" name="plex_update_library" id="plex_update_library" ${('', 'checked="checked"')[bool(sickbeard.PLEX_UPDATE_LIBRARY)]}/>
                                     <label for="plex_update_library">${_('update Plex Media Server library when a download finishes')}</label>
                                 </div>
                             </div>
@@ -303,7 +303,7 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="text" name="plex_server_host" id="plex_server_host" value="${re.sub(r'\b,\b', ', ', settings.PLEX_SERVER_HOST)}" class="form-control input-sm input350" autocapitalize="off" />
+                                                <input type="text" name="plex_server_host" id="plex_server_host" value="${re.sub(r'\b,\b', ', ', sickbeard.PLEX_SERVER_HOST)}" class="form-control input-sm input350" autocapitalize="off" />
                                             </div>
                                         </div>
                                         <div class="row">
@@ -319,7 +319,7 @@
                                         <label class="component-title">${_('HTTPS')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" name="plex_server_https" id="plex_server_https" ${('', 'checked="checked"')[bool(settings.PLEX_SERVER_HTTPS)]}/>
+                                        <input type="checkbox" name="plex_server_https" id="plex_server_https" ${('', 'checked="checked"')[bool(sickbeard.PLEX_SERVER_HTTPS)]}/>
                                         <label for="plex_server_https">${_('use https for plex media server requests?')}</label>
                                     </div>
                                 </div>
@@ -360,7 +360,7 @@
                                  <label class="component-title">${_('Enable')}</label>
                              </div>
                              <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                 <input type="checkbox" class="enabler" name="use_plex_client" id="use_plex_client" ${('', 'checked="checked"')[bool(settings.USE_PLEX_CLIENT)]}/>
+                                 <input type="checkbox" class="enabler" name="use_plex_client" id="use_plex_client" ${('', 'checked="checked"')[bool(sickbeard.USE_PLEX_CLIENT)]}/>
                                  <label for="use_plex_client">${_('send Plex Home Theater notifications?')}</label>
                              </div>
                         </div>
@@ -372,7 +372,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="plex_notify_onsnatch" id="plex_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.PLEX_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="plex_notify_onsnatch" id="plex_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.PLEX_NOTIFY_ONSNATCH)]}/>
                                     <label for="plex_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -382,7 +382,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="plex_notify_ondownload" id="plex_notify_ondownload" ${('', 'checked="checked"')[bool(settings.PLEX_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="plex_notify_ondownload" id="plex_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.PLEX_NOTIFY_ONDOWNLOAD)]}/>
                                     <label for="plex_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -392,7 +392,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="plex_notify_onsubtitledownload" id="plex_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="plex_notify_onsubtitledownload" id="plex_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
                                     <label for="plex_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -404,7 +404,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="plex_client_host" id="plex_client_host" value="${settings.PLEX_CLIENT_HOST}" class="form-control input-sm input350" autocapitalize="off" />
+                                            <input type="text" name="plex_client_host" id="plex_client_host" value="${sickbeard.PLEX_CLIENT_HOST}" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -422,7 +422,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="plex_client_username" id="plex_client_username" value="${settings.PLEX_CLIENT_USERNAME}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
+                                            <input type="text" name="plex_client_username" id="plex_client_username" value="${sickbeard.PLEX_CLIENT_USERNAME}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -442,7 +442,7 @@
                                         <div class="col-md-12">
                                             <input
                                                 type="password" name="plex_client_password" id="plex_client_password"
-                                                value="${settings.PLEX_CLIENT_PASSWORD|hide}" class="form-control input-sm input250"
+                                                value="${sickbeard.PLEX_CLIENT_PASSWORD|hide}" class="form-control input-sm input250"
                                                 autocomplete="no" autocapitalize="off"
                                             />
                                         </div>
@@ -497,7 +497,7 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_emby" id="use_emby" ${('', 'checked="checked"')[bool(settings.USE_EMBY)]} />
+                                <input type="checkbox" class="enabler" name="use_emby" id="use_emby" ${('', 'checked="checked"')[bool(sickbeard.USE_EMBY)]} />
                                 <label for="use_emby">${_('send update commands to Emby?')}</label>
                             </div>
                         </div>
@@ -511,7 +511,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="emby_host" id="emby_host" value="${settings.EMBY_HOST}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="emby_host" id="emby_host" value="${sickbeard.EMBY_HOST}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -526,7 +526,7 @@
                                     <label for="emby_apikey" class="component-title">${_('Emby API Key')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="text" name="emby_apikey" id="emby_apikey" value="${settings.EMBY_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
+                                    <input type="text" name="emby_apikey" id="emby_apikey" value="${sickbeard.EMBY_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
                                 </div>
                             </div>
 
@@ -565,7 +565,7 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_nmj" id="use_nmj" ${('', 'checked="checked"')[bool(settings.USE_NMJ)]}/>
+                                <input type="checkbox" class="enabler" name="use_nmj" id="use_nmj" ${('', 'checked="checked"')[bool(sickbeard.USE_NMJ)]}/>
                                 <label for="use_nmj">${_('send update commands to NMJ?')}</label>
                             </div>
                         </div>
@@ -579,7 +579,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="nmj_host" id="nmj_host" value="${settings.NMJ_HOST}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="nmj_host" id="nmj_host" value="${sickbeard.NMJ_HOST}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -615,7 +615,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="nmj_database" id="nmj_database" value="${settings.NMJ_DATABASE}" class="form-control input-sm input250" ${(' readonly="readonly"', '')[settings.NMJ_DATABASE is True]} autocapitalize="off" />
+                                            <input type="text" name="nmj_database" id="nmj_database" value="${sickbeard.NMJ_DATABASE}" class="form-control input-sm input250" ${(' readonly="readonly"', '')[sickbeard.NMJ_DATABASE is True]} autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -633,7 +633,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="nmj_mount" id="nmj_mount" value="${settings.NMJ_MOUNT}" class="form-control input-sm input250" ${(' readonly="readonly"', '')[settings.NMJ_MOUNT is True]} autocapitalize="off" />
+                                            <input type="text" name="nmj_mount" id="nmj_mount" value="${sickbeard.NMJ_MOUNT}" class="form-control input-sm input250" ${(' readonly="readonly"', '')[sickbeard.NMJ_MOUNT is True]} autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -681,7 +681,7 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_nmjv2" id="use_nmjv2" ${('', 'checked="checked"')[bool(settings.USE_NMJv2)]}/>
+                                <input type="checkbox" class="enabler" name="use_nmjv2" id="use_nmjv2" ${('', 'checked="checked"')[bool(sickbeard.USE_NMJv2)]}/>
                                 <label for="use_nmjv2">${_('send update commands to NMJv2?')}</label>
                             </div>
                         </div>
@@ -695,7 +695,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="nmjv2_host" id="nmjv2_host" value="${settings.NMJv2_HOST}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="nmjv2_host" id="nmjv2_host" value="${sickbeard.NMJv2_HOST}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -713,13 +713,13 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="radio" NAME="nmjv2_dbloc" VALUE="local" id="NMJV2_DBLOC_A" ${('', 'checked="checked"')[settings.NMJv2_DBLOC == 'local']}/>
+                                            <input type="radio" NAME="nmjv2_dbloc" VALUE="local" id="NMJV2_DBLOC_A" ${('', 'checked="checked"')[sickbeard.NMJv2_DBLOC == 'local']}/>
                                             <label for="NMJV2_DBLOC_A">PCH Local Media</label>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="radio" NAME="nmjv2_dbloc" VALUE="network" id="NMJV2_DBLOC_B" ${('', 'checked="checked"')[settings.NMJv2_DBLOC == 'network']}/>
+                                            <input type="radio" NAME="nmjv2_dbloc" VALUE="network" id="NMJV2_DBLOC_B" ${('', 'checked="checked"')[sickbeard.NMJv2_DBLOC == 'network']}/>
                                             <label for="NMJV2_DBLOC_B">PCH Network Media</label>
                                         </div>
                                     </div>
@@ -777,7 +777,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="nmjv2_database" id="nmjv2_database" value="${settings.NMJv2_DATABASE}" class="form-control input-sm input250" ${(' readonly="readonly"', '')[settings.NMJv2_DATABASE is True]} autocapitalize="off" />
+                                            <input type="text" name="nmjv2_database" id="nmjv2_database" value="${sickbeard.NMJv2_DATABASE}" class="form-control input-sm input250" ${(' readonly="readonly"', '')[sickbeard.NMJv2_DATABASE is True]} autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -828,7 +828,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" class="enabler" name="use_synoindex" id="use_synoindex" ${('', 'checked="checked"')[bool(settings.USE_SYNOINDEX)]}/>
+                                        <input type="checkbox" class="enabler" name="use_synoindex" id="use_synoindex" ${('', 'checked="checked"')[bool(sickbeard.USE_SYNOINDEX)]}/>
                                         <label for="use_synoindex">${_('send Synology notifications?')}</label>
                                     </div>
                                 </div>
@@ -873,7 +873,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" class="enabler" name="use_synologynotifier" id="use_synologynotifier" ${('', 'checked="checked"')[bool(settings.USE_SYNOLOGYNOTIFIER)]}/>
+                                        <input type="checkbox" class="enabler" name="use_synologynotifier" id="use_synologynotifier" ${('', 'checked="checked"')[bool(sickbeard.USE_SYNOLOGYNOTIFIER)]}/>
                                         <label for="use_synologynotifier">${_('send notifications to the Synology Notifier?')}</label>
                                     </div>
                                 </div>
@@ -892,7 +892,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="synologynotifier_notify_onsnatch" id="synologynotifier_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="synologynotifier_notify_onsnatch" id="synologynotifier_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH)]}/>
                                     <label for="synologynotifier_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -902,7 +902,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="synologynotifier_notify_ondownload" id="synologynotifier_notify_ondownload" ${('', 'checked="checked"')[bool(settings.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="synologynotifier_notify_ondownload" id="synologynotifier_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD)]}/>
                                     <label for="synologynotifier_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -912,7 +912,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="synologynotifier_notify_onsubtitledownload" id="synologynotifier_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="synologynotifier_notify_onsubtitledownload" id="synologynotifier_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
                                     <label for="synologynotifier_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -948,7 +948,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" class="enabler" name="use_pytivo" id="use_pytivo" ${('', 'checked="checked"')[bool(settings.USE_PYTIVO)]}/>
+                                        <input type="checkbox" class="enabler" name="use_pytivo" id="use_pytivo" ${('', 'checked="checked"')[bool(sickbeard.USE_PYTIVO)]}/>
                                         <label for="use_pytivo">${_('send notifications to pyTivo?')}</label>
                                     </div>
                                 </div>
@@ -969,7 +969,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="pytivo_host" id="pytivo_host" value="${settings.PYTIVO_HOST}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="pytivo_host" id="pytivo_host" value="${sickbeard.PYTIVO_HOST}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -987,7 +987,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="pytivo_share_name" id="pytivo_share_name" value="${settings.PYTIVO_SHARE_NAME}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="pytivo_share_name" id="pytivo_share_name" value="${sickbeard.PYTIVO_SHARE_NAME}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -1005,7 +1005,7 @@
                                  <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                      <div class="row">
                                          <div class="col-md-12">
-                                             <input type="text" name="pytivo_tivo_name" id="pytivo_tivo_name" value="${settings.PYTIVO_TIVO_NAME}" class="form-control input-sm input250" autocapitalize="off" />
+                                             <input type="text" name="pytivo_tivo_name" id="pytivo_tivo_name" value="${sickbeard.PYTIVO_TIVO_NAME}" class="form-control input-sm input250" autocapitalize="off" />
                                          </div>
                                      </div>
                                      <div class="row">
@@ -1048,7 +1048,7 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_growl" id="use_growl" ${('', 'checked="checked"')[bool(settings.USE_GROWL)]}/>
+                                <input type="checkbox" class="enabler" name="use_growl" id="use_growl" ${('', 'checked="checked"')[bool(sickbeard.USE_GROWL)]}/>
                                 <label for="use_growl">${_('send Growl notifications?')}</label>
                             </div>
                         </div>
@@ -1059,7 +1059,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="growl_notify_onsnatch" id="growl_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.GROWL_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="growl_notify_onsnatch" id="growl_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.GROWL_NOTIFY_ONSNATCH)]}/>
                                     <label for="growl_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -1068,7 +1068,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="growl_notify_ondownload" id="growl_notify_ondownload" ${('', 'checked="checked"')[bool(settings.GROWL_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="growl_notify_ondownload" id="growl_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.GROWL_NOTIFY_ONDOWNLOAD)]}/>
                                     <label for="growl_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -1077,7 +1077,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="growl_notify_onsubtitledownload" id="growl_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="growl_notify_onsubtitledownload" id="growl_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
                                     <label for="growl_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -1088,7 +1088,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="growl_host" id="growl_host" value="${settings.GROWL_HOST}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="growl_host" id="growl_host" value="${sickbeard.GROWL_HOST}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -1106,7 +1106,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input
-                                                type="password" name="growl_password" id="growl_password" value="${settings.GROWL_PASSWORD|hide}"
+                                                type="password" name="growl_password" id="growl_password" value="${sickbeard.GROWL_PASSWORD|hide}"
                                                 class="form-control input-sm input250" autocomplete="no" autocapitalize="off"
                                             />
                                         </div>
@@ -1162,7 +1162,7 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_prowl" id="use_prowl" ${('', 'checked="checked"')[bool(settings.USE_PROWL)]}/>
+                                <input type="checkbox" class="enabler" name="use_prowl" id="use_prowl" ${('', 'checked="checked"')[bool(sickbeard.USE_PROWL)]}/>
                                 <label for="use_prowl">${_('send Prowl notifications?')}</label>
                             </div>
                         </div>
@@ -1174,7 +1174,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="prowl_notify_onsnatch" id="prowl_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.PROWL_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="prowl_notify_onsnatch" id="prowl_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.PROWL_NOTIFY_ONSNATCH)]}/>
                                     <label for="prowl_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -1184,7 +1184,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="prowl_notify_ondownload" id="prowl_notify_ondownload" ${('', 'checked="checked"')[bool(settings.PROWL_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="prowl_notify_ondownload" id="prowl_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.PROWL_NOTIFY_ONDOWNLOAD)]}/>
                                     <label for="prowl_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -1194,7 +1194,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="prowl_notify_onsubtitledownload" id="prowl_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="prowl_notify_onsubtitledownload" id="prowl_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
                                     <label for="prowl_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -1204,7 +1204,7 @@
                                     <label for="prowl_message_title" class="component-title">${_('Prowl Message Title')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="text" name="prowl_message_title" id="prowl_message_title" value="${settings.PROWL_MESSAGE_TITLE}" class="form-control input-sm input250" autocapitalize="off" />
+                                    <input type="text" name="prowl_message_title" id="prowl_message_title" value="${sickbeard.PROWL_MESSAGE_TITLE}" class="form-control input-sm input250" autocapitalize="off" />
                                 </div>
                             </div>
 
@@ -1215,7 +1215,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="prowl_api" id="prowl_api" value="${settings.PROWL_API}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="prowl_api" id="prowl_api" value="${sickbeard.PROWL_API}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -1271,11 +1271,11 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <select id="prowl_priority" name="prowl_priority" class="form-control input-sm input250">
-                                                <option value="-2" ${('', 'selected="selected"')[settings.PROWL_PRIORITY == '-2']}>${_('Very Low')}</option>
-                                                <option value="-1" ${('', 'selected="selected"')[settings.PROWL_PRIORITY == '-1']}>${_('Moderate')}</option>
-                                                <option value="0" ${('', 'selected="selected"')[settings.PROWL_PRIORITY == '0']}>${_('Normal')}</option>
-                                                <option value="1" ${('', 'selected="selected"')[settings.PROWL_PRIORITY == '1']}>${_('High')}</option>
-                                                <option value="2" ${('', 'selected="selected"')[settings.PROWL_PRIORITY == '2']}>${_('Emergency')}</option>
+                                                <option value="-2" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '-2']}>${_('Very Low')}</option>
+                                                <option value="-1" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '-1']}>${_('Moderate')}</option>
+                                                <option value="0" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '0']}>${_('Normal')}</option>
+                                                <option value="1" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '1']}>${_('High')}</option>
+                                                <option value="2" ${('', 'selected="selected"')[sickbeard.PROWL_PRIORITY == '2']}>${_('Emergency')}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -1315,7 +1315,7 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_libnotify" id="use_libnotify" ${('', 'checked="checked"')[bool(settings.USE_LIBNOTIFY)]}/>
+                                <input type="checkbox" class="enabler" name="use_libnotify" id="use_libnotify" ${('', 'checked="checked"')[bool(sickbeard.USE_LIBNOTIFY)]}/>
                                 <label for="use_libnotify">${_('send Libnotify notifications?')}</label>
                             </div>
                         </div>
@@ -1327,7 +1327,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="libnotify_notify_onsnatch" id="libnotify_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.LIBNOTIFY_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="libnotify_notify_onsnatch" id="libnotify_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.LIBNOTIFY_NOTIFY_ONSNATCH)]}/>
                                     <label for="libnotify_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -1337,7 +1337,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="libnotify_notify_ondownload" id="libnotify_notify_ondownload" ${('', 'checked="checked"')[bool(settings.LIBNOTIFY_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="libnotify_notify_ondownload" id="libnotify_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.LIBNOTIFY_NOTIFY_ONDOWNLOAD)]}/>
                                     <label for="libnotify_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -1347,7 +1347,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="libnotify_notify_onsubtitledownload" id="libnotify_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="libnotify_notify_onsubtitledownload" id="libnotify_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
                                     <label for="libnotify_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -1390,7 +1390,7 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_pushover" id="use_pushover" ${('', 'checked="checked"')[bool(settings.USE_PUSHOVER)]}/>
+                                <input type="checkbox" class="enabler" name="use_pushover" id="use_pushover" ${('', 'checked="checked"')[bool(sickbeard.USE_PUSHOVER)]}/>
                                 <label for="use_pushover">${_('send Pushover notifications?')}</label>
                             </div>
                         </div>
@@ -1402,7 +1402,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushover_notify_onsnatch" id="pushover_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.PUSHOVER_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="pushover_notify_onsnatch" id="pushover_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.PUSHOVER_NOTIFY_ONSNATCH)]}/>
                                     <label for="pushover_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -1412,7 +1412,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushover_notify_ondownload" id="pushover_notify_ondownload" ${('', 'checked="checked"')[bool(settings.PUSHOVER_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="pushover_notify_ondownload" id="pushover_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHOVER_NOTIFY_ONDOWNLOAD)]}/>
                                     <label for="pushover_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -1422,7 +1422,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushover_notify_onsubtitledownload" id="pushover_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="pushover_notify_onsubtitledownload" id="pushover_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
                                     <label for="pushover_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -1434,7 +1434,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="pushover_userkey" id="pushover_userkey" value="${settings.PUSHOVER_USERKEY}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
+                                            <input type="text" name="pushover_userkey" id="pushover_userkey" value="${sickbeard.PUSHOVER_USERKEY}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -1452,7 +1452,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="pushover_apikey" id="pushover_apikey" value="${settings.PUSHOVER_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="pushover_apikey" id="pushover_apikey" value="${sickbeard.PUSHOVER_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -1470,7 +1470,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="pushover_device" id="pushover_device" value="${settings.PUSHOVER_DEVICE}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="pushover_device" id="pushover_device" value="${sickbeard.PUSHOVER_DEVICE}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -1489,29 +1489,29 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <select id="pushover_sound" name="pushover_sound" class="form-control input-sm input250">
-                                                <option value="pushover" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'pushover']}>${_('Pushover')}</option>
-                                                <option value="bike" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'bike']}>${_('Bike')}</option>
-                                                <option value="bugle" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'bugle']}>${_('Bugle')}</option>
-                                                <option value="cashregister" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'cashregister']}>${_('Cash Register')}</option>
-                                                <option value="classical" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'classical']}>${_('Classical')}</option>
-                                                <option value="cosmic" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'cosmic']}>${_('Cosmic')}</option>
-                                                <option value="falling" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'falling']}>${_('Falling')}</option>
-                                                <option value="gamelan" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'gamelan']}>${_('Gamelan')}</option>
-                                                <option value="incoming" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'incoming']}> ${_('Incoming')}</option>
-                                                <option value="intermission" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'intermission']}>${_('Intermission')}</option>
-                                                <option value="magic" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'magic']}>${_('Magic')}</option>
-                                                <option value="mechanical" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'mechanical']}>${_('Mechanical')}</option>
-                                                <option value="pianobar" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'pianobar']}>${_('Piano Bar')}</option>
-                                                <option value="siren" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'siren']}>${_('Siren')}</option>
-                                                <option value="spacealarm" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'spacealarm']}>${_('Space Alarm')}</option>
-                                                <option value="tugboat" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'tugboat']}>${_('Tug Boat')}</option>
-                                                <option value="alien" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'alien']}>${_('Alien Alarm (long)')}</option>
-                                                <option value="climb" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'climb']}>${_('Climb (long)')}</option>
-                                                <option value="persistent" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'persistent']}>${_('Persistent (long)')}</option>
-                                                <option value="echo" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'echo']}>${_('Pushover Echo (long)')}</option>
-                                                <option value="updown" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'updown']}>${_('Up Down (long)')}</option>
-                                                <option value="none" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'none']}>${_('None (silent)')}</option>
-                                                <option value="default" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'default']}>${_('Device specific')}</option>
+                                                <option value="pushover" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'pushover']}>${_('Pushover')}</option>
+                                                <option value="bike" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'bike']}>${_('Bike')}</option>
+                                                <option value="bugle" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'bugle']}>${_('Bugle')}</option>
+                                                <option value="cashregister" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'cashregister']}>${_('Cash Register')}</option>
+                                                <option value="classical" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'classical']}>${_('Classical')}</option>
+                                                <option value="cosmic" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'cosmic']}>${_('Cosmic')}</option>
+                                                <option value="falling" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'falling']}>${_('Falling')}</option>
+                                                <option value="gamelan" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'gamelan']}>${_('Gamelan')}</option>
+                                                <option value="incoming" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'incoming']}> ${_('Incoming')}</option>
+                                                <option value="intermission" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'intermission']}>${_('Intermission')}</option>
+                                                <option value="magic" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'magic']}>${_('Magic')}</option>
+                                                <option value="mechanical" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'mechanical']}>${_('Mechanical')}</option>
+                                                <option value="pianobar" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'pianobar']}>${_('Piano Bar')}</option>
+                                                <option value="siren" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'siren']}>${_('Siren')}</option>
+                                                <option value="spacealarm" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'spacealarm']}>${_('Space Alarm')}</option>
+                                                <option value="tugboat" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'tugboat']}>${_('Tug Boat')}</option>
+                                                <option value="alien" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'alien']}>${_('Alien Alarm (long)')}</option>
+                                                <option value="climb" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'climb']}>${_('Climb (long)')}</option>
+                                                <option value="persistent" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'persistent']}>${_('Persistent (long)')}</option>
+                                                <option value="echo" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'echo']}>${_('Pushover Echo (long)')}</option>
+                                                <option value="updown" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'updown']}>${_('Up Down (long)')}</option>
+                                                <option value="none" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'none']}>${_('None (silent)')}</option>
+                                                <option value="default" ${('', 'selected="selected"')[sickbeard.PUSHOVER_SOUND == 'default']}>${_('Device specific')}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -1531,11 +1531,11 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <select id="pushover_priority" name="pushover_priority" class="form-control input-sm input250">
-                                            <option value="-2" ${('', 'selected="selected"')[settings.PUSHOVER_PRIORITY == '-2']}>${_('Very Low')}</option>
-                                            <option value="-1" ${('', 'selected="selected"')[settings.PUSHOVER_PRIORITY == '-1']}>${_('Moderate')}</option>
-                                            <option value="0" ${('', 'selected="selected"')[settings.PUSHOVER_PRIORITY == '0']}>${_('Normal')}</option>
-                                            <option value="1" ${('', 'selected="selected"')[settings.PUSHOVER_PRIORITY == '1']}>${_('High')}</option>
-                                            <option value="2" ${('', 'selected="selected"')[settings.PUSHOVER_PRIORITY == '2']}>${_('Emergency')}</option>
+                                            <option value="-2" ${('', 'selected="selected"')[sickbeard.PUSHOVER_PRIORITY == '-2']}>${_('Very Low')}</option>
+                                            <option value="-1" ${('', 'selected="selected"')[sickbeard.PUSHOVER_PRIORITY == '-1']}>${_('Moderate')}</option>
+                                            <option value="0" ${('', 'selected="selected"')[sickbeard.PUSHOVER_PRIORITY == '0']}>${_('Normal')}</option>
+                                            <option value="1" ${('', 'selected="selected"')[sickbeard.PUSHOVER_PRIORITY == '1']}>${_('High')}</option>
+                                            <option value="2" ${('', 'selected="selected"')[sickbeard.PUSHOVER_PRIORITY == '2']}>${_('Emergency')}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -1585,7 +1585,7 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_boxcar2" id="use_boxcar2" ${('', 'checked="checked"')[bool(settings.USE_BOXCAR2)]}/>
+                                <input type="checkbox" class="enabler" name="use_boxcar2" id="use_boxcar2" ${('', 'checked="checked"')[bool(sickbeard.USE_BOXCAR2)]}/>
                                 <label for="use_boxcar2">${_('send Boxcar notifications?')}</label>
                             </div>
                         </div>
@@ -1597,7 +1597,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="boxcar2_notify_onsnatch" id="boxcar2_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.BOXCAR2_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="boxcar2_notify_onsnatch" id="boxcar2_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.BOXCAR2_NOTIFY_ONSNATCH)]}/>
                                     <label for="boxcar2_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -1607,7 +1607,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="boxcar2_notify_ondownload" id="boxcar2_notify_ondownload" ${('', 'checked="checked"')[bool(settings.BOXCAR2_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="boxcar2_notify_ondownload" id="boxcar2_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.BOXCAR2_NOTIFY_ONDOWNLOAD)]}/>
                                     <label for="boxcar2_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -1617,7 +1617,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="boxcar2_notify_onsubtitledownload" id="boxcar2_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="boxcar2_notify_onsubtitledownload" id="boxcar2_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
                                     <label for="boxcar2_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -1629,7 +1629,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="boxcar2_accesstoken" id="boxcar2_accesstoken" value="${settings.BOXCAR2_ACCESSTOKEN}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="boxcar2_accesstoken" id="boxcar2_accesstoken" value="${sickbeard.BOXCAR2_ACCESSTOKEN}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -1678,7 +1678,7 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_pushalot" id="use_pushalot" ${('', 'checked="checked"')[bool(settings.USE_PUSHALOT)]}/>
+                                <input type="checkbox" class="enabler" name="use_pushalot" id="use_pushalot" ${('', 'checked="checked"')[bool(sickbeard.USE_PUSHALOT)]}/>
                                 <label for="use_pushalot">${_('send Pushalot notifications ?')}</label>
                             </div>
                         </div>
@@ -1690,7 +1690,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushalot_notify_onsnatch" id="pushalot_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.PUSHALOT_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="pushalot_notify_onsnatch" id="pushalot_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.PUSHALOT_NOTIFY_ONSNATCH)]}/>
                                     <label for="pushalot_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -1700,7 +1700,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushalot_notify_ondownload" id="pushalot_notify_ondownload" ${('', 'checked="checked"')[bool(settings.PUSHALOT_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="pushalot_notify_ondownload" id="pushalot_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHALOT_NOTIFY_ONDOWNLOAD)]}/>
                                     <label for="pushalot_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -1710,7 +1710,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushalot_notify_onsubtitledownload" id="pushalot_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="pushalot_notify_onsubtitledownload" id="pushalot_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
                                     <label for="pushalot_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -1722,7 +1722,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="pushalot_authorizationtoken" id="pushalot_authorizationtoken" value="${settings.PUSHALOT_AUTHORIZATIONTOKEN}" class="form-control input-sm input350" autocapitalize="off" />
+                                            <input type="text" name="pushalot_authorizationtoken" id="pushalot_authorizationtoken" value="${sickbeard.PUSHALOT_AUTHORIZATIONTOKEN}" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -1771,7 +1771,7 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_pushbullet" id="use_pushbullet" ${('', 'checked="checked"')[bool(settings.USE_PUSHBULLET)]}/>
+                                <input type="checkbox" class="enabler" name="use_pushbullet" id="use_pushbullet" ${('', 'checked="checked"')[bool(sickbeard.USE_PUSHBULLET)]}/>
                                 <label for="use_pushbullet">${_('send Pushbullet notifications?')}</label>
                             </div>
                         </div>
@@ -1783,7 +1783,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushbullet_notify_onsnatch" id="pushbullet_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.PUSHBULLET_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="pushbullet_notify_onsnatch" id="pushbullet_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.PUSHBULLET_NOTIFY_ONSNATCH)]}/>
                                     <label for="pushbullet_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -1793,7 +1793,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushbullet_notify_ondownload" id="pushbullet_notify_ondownload" ${('', 'checked="checked"')[bool(settings.PUSHBULLET_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="pushbullet_notify_ondownload" id="pushbullet_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHBULLET_NOTIFY_ONDOWNLOAD)]}/>
                                     <label for="pushbullet_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -1803,7 +1803,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushbullet_notify_onsubtitledownload" id="pushbullet_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="pushbullet_notify_onsubtitledownload" id="pushbullet_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
                                     <label for="pushbullet_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -1815,7 +1815,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="pushbullet_api" id="pushbullet_api" value="${settings.PUSHBULLET_API}" class="form-control input-sm input350" autocapitalize="off" />
+                                            <input type="text" name="pushbullet_api" id="pushbullet_api" value="${sickbeard.PUSHBULLET_API}" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -1838,7 +1838,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="hidden" id="pushbullet_device" value="${settings.PUSHBULLET_DEVICE}">
+                                            <input type="hidden" id="pushbullet_device" value="${sickbeard.PUSHBULLET_DEVICE}">
                                         </div>
                                     </div>
                                     <div class="row">
@@ -1861,7 +1861,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="hidden" id="pushbullet_channel" value="${settings.PUSHBULLET_CHANNEL}">
+                                            <input type="hidden" id="pushbullet_channel" value="${sickbeard.PUSHBULLET_CHANNEL}">
                                         </div>
                                     </div>
                                 </div>
@@ -1905,7 +1905,7 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_freemobile" id="use_freemobile" ${('', 'checked="checked"')[bool(settings.USE_FREEMOBILE)]}/>
+                                <input type="checkbox" class="enabler" name="use_freemobile" id="use_freemobile" ${('', 'checked="checked"')[bool(sickbeard.USE_FREEMOBILE)]}/>
                                 <label for="use_freemobile">${_('send SMS notifications?')}</label>
                             </div>
                         </div>
@@ -1917,7 +1917,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="freemobile_notify_onsnatch" id="freemobile_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.FREEMOBILE_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="freemobile_notify_onsnatch" id="freemobile_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.FREEMOBILE_NOTIFY_ONSNATCH)]}/>
                                     <label for="freemobile_notify_onsnatch">${_('send a SMS when a download starts?')}</label>
                                 </div>
                             </div>
@@ -1927,7 +1927,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="freemobile_notify_ondownload" id="freemobile_notify_ondownload" ${('', 'checked="checked"')[bool(settings.FREEMOBILE_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="freemobile_notify_ondownload" id="freemobile_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.FREEMOBILE_NOTIFY_ONDOWNLOAD)]}/>
                                     <label for="freemobile_notify_ondownload">${_('send a SMS when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -1937,7 +1937,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="freemobile_notify_onsubtitledownload" id="freemobile_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="freemobile_notify_onsubtitledownload" id="freemobile_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
                                     <label for="freemobile_notify_onsubtitledownload">${_('send a SMS when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -1949,7 +1949,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="freemobile_id" id="freemobile_id" value="${settings.FREEMOBILE_ID}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="freemobile_id" id="freemobile_id" value="${sickbeard.FREEMOBILE_ID}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -1967,7 +1967,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="freemobile_apikey" id="freemobile_apikey" value="${settings.FREEMOBILE_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="freemobile_apikey" id="freemobile_apikey" value="${sickbeard.FREEMOBILE_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2016,7 +2016,7 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_telegram" id="use_telegram" ${('', 'checked="checked"')[bool(settings.USE_TELEGRAM)]}/>
+                                <input type="checkbox" class="enabler" name="use_telegram" id="use_telegram" ${('', 'checked="checked"')[bool(sickbeard.USE_TELEGRAM)]}/>
                                 <label for="use_telegram">${_('send Telegram notifications?')}</label>
                             </div>
                         </div>
@@ -2028,7 +2028,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="telegram_notify_onsnatch" id="telegram_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.TELEGRAM_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="telegram_notify_onsnatch" id="telegram_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.TELEGRAM_NOTIFY_ONSNATCH)]}/>
                                     <label for="telegram_notify_onsnatch">${_('send a message when a download starts?')}</label>
                                 </div>
                             </div>
@@ -2038,7 +2038,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="telegram_notify_ondownload" id="telegram_notify_ondownload" ${('', 'checked="checked"')[bool(settings.TELEGRAM_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="telegram_notify_ondownload" id="telegram_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.TELEGRAM_NOTIFY_ONDOWNLOAD)]}/>
                                     <label for="telegram_notify_ondownload">${_('send a message when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -2048,7 +2048,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="telegram_notify_onsubtitledownload" id="telegram_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="telegram_notify_onsubtitledownload" id="telegram_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
                                     <label for="telegram_notify_onsubtitledownload">${_('send a message when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -2060,7 +2060,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="telegram_id" id="telegram_id" value="${settings.TELEGRAM_ID}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="telegram_id" id="telegram_id" value="${sickbeard.TELEGRAM_ID}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2083,7 +2083,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="telegram_apikey" id="telegram_apikey" value="${settings.TELEGRAM_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="telegram_apikey" id="telegram_apikey" value="${sickbeard.TELEGRAM_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2132,7 +2132,7 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_join" id="use_join" ${('', 'checked="checked"')[bool(settings.USE_JOIN)]}/>
+                                <input type="checkbox" class="enabler" name="use_join" id="use_join" ${('', 'checked="checked"')[bool(sickbeard.USE_JOIN)]}/>
                                 <label for="use_join">${_('send Join notifications?')}</label>
                             </div>
                         </div>
@@ -2144,7 +2144,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="join_notify_onsnatch" id="telegram_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.JOIN_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="join_notify_onsnatch" id="telegram_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.JOIN_NOTIFY_ONSNATCH)]}/>
                                     <label for="join_notify_onsnatch">${_('send a message when a download starts?')}</label>
                                 </div>
                             </div>
@@ -2154,7 +2154,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="join_notify_ondownload" id="join_notify_ondownload" ${('', 'checked="checked"')[bool(settings.JOIN_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="join_notify_ondownload" id="join_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.JOIN_NOTIFY_ONDOWNLOAD)]}/>
                                     <label for="join_notify_ondownload">${_('send a message when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -2164,7 +2164,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="join_notify_onsubtitledownload" id="join_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="join_notify_onsubtitledownload" id="join_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
                                     <label for="join_notify_onsubtitledownload">${_('send a message when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -2176,7 +2176,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="join_id" id="join_id" value="${settings.JOIN_ID}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="join_id" id="join_id" value="${sickbeard.JOIN_ID}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2194,7 +2194,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="join_apikey" id="join_apikey" value="${settings.JOIN_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="join_apikey" id="join_apikey" value="${sickbeard.JOIN_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2245,7 +2245,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" class="enabler" name="use_twilio" id="use_twilio" ${('', 'checked="checked"')[bool(settings.USE_TWILIO)]}/>
+                                        <input type="checkbox" class="enabler" name="use_twilio" id="use_twilio" ${('', 'checked="checked"')[bool(sickbeard.USE_TWILIO)]}/>
                                         <label for="use_twilio">${_('should SickChill text your mobile device?')}</label>
                                     </div>
                                 </div>
@@ -2259,7 +2259,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="twilio_notify_onsnatch" id="twilio_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.TWILIO_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="twilio_notify_onsnatch" id="twilio_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.TWILIO_NOTIFY_ONSNATCH)]}/>
                                     <label for="twilio_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -2269,7 +2269,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="twilio_notify_ondownload" id="twilio_notify_ondownload" ${('', 'checked="checked"')[bool(settings.TWILIO_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="twilio_notify_ondownload" id="twilio_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.TWILIO_NOTIFY_ONDOWNLOAD)]}/>
                                     <label for="twilio_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -2279,7 +2279,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="twilio_notify_onsubtitledownload" id="twilio_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="twilio_notify_onsubtitledownload" id="twilio_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
                                     <label for="twilio_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -2291,7 +2291,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="twilio_account_sid" id="twilio_account_sid" value="${settings.TWILIO_ACCOUNT_SID}" class="form-control input-sm input300" autocapitalize="off" />
+                                            <input type="text" name="twilio_account_sid" id="twilio_account_sid" value="${sickbeard.TWILIO_ACCOUNT_SID}" class="form-control input-sm input300" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2309,7 +2309,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="twilio_auth_token" id="twilio_auth_token" value="${settings.TWILIO_AUTH_TOKEN}" class="form-control input-sm input300" autocapitalize="off" />
+                                            <input type="text" name="twilio_auth_token" id="twilio_auth_token" value="${sickbeard.TWILIO_AUTH_TOKEN}" class="form-control input-sm input300" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2327,7 +2327,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="twilio_phone_sid" id="twilio_phone_sid" value="${settings.TWILIO_PHONE_SID}" class="form-control input-sm input300" autocapitalize="off" />
+                                            <input type="text" name="twilio_phone_sid" id="twilio_phone_sid" value="${sickbeard.TWILIO_PHONE_SID}" class="form-control input-sm input300" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2345,7 +2345,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="twilio_to_number" id="twilio_to_number" value="${settings.TWILIO_TO_NUMBER}" class="form-control input-sm input200" autocapitalize="off" />
+                                            <input type="text" name="twilio_to_number" id="twilio_to_number" value="${sickbeard.TWILIO_TO_NUMBER}" class="form-control input-sm input200" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2397,7 +2397,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" class="enabler" name="use_twitter" id="use_twitter" ${('', 'checked="checked"')[bool(settings.USE_TWITTER)]}/>
+                                        <input type="checkbox" class="enabler" name="use_twitter" id="use_twitter" ${('', 'checked="checked"')[bool(sickbeard.USE_TWITTER)]}/>
                                         <label for="use_twitter">${_('should SickChill post tweets on Twitter?')}</label>
                                     </div>
                                 </div>
@@ -2416,7 +2416,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="twitter_notify_onsnatch" id="twitter_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.TWITTER_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="twitter_notify_onsnatch" id="twitter_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.TWITTER_NOTIFY_ONSNATCH)]}/>
                                     <label for="twitter_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -2426,7 +2426,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="twitter_notify_ondownload" id="twitter_notify_ondownload" ${('', 'checked="checked"')[bool(settings.TWITTER_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="twitter_notify_ondownload" id="twitter_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.TWITTER_NOTIFY_ONDOWNLOAD)]}/>
                                     <label for="twitter_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -2436,7 +2436,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="twitter_notify_onsubtitledownload" id="twitter_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="twitter_notify_onsubtitledownload" id="twitter_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
                                     <label for="twitter_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -2446,7 +2446,7 @@
                                     <label class="component-title">${_('send direct message')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="twitter_usedm" id="twitter_usedm" ${('', 'checked="checked"')[bool(settings.TWITTER_USEDM)]}/>
+                                    <input type="checkbox" name="twitter_usedm" id="twitter_usedm" ${('', 'checked="checked"')[bool(sickbeard.TWITTER_USEDM)]}/>
                                     <label for="twitter_usedm">${_('send a notification via Direct Message, not via status update')}</label>
                                 </div>
                             </div>
@@ -2458,7 +2458,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="twitter_dmto" id="twitter_dmto" value="${settings.TWITTER_DMTO}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="twitter_dmto" id="twitter_dmto" value="${sickbeard.TWITTER_DMTO}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2535,7 +2535,7 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_trakt" id="use_trakt" ${('', 'checked="checked"')[bool(settings.USE_TRAKT)]}/>
+                                <input type="checkbox" class="enabler" name="use_trakt" id="use_trakt" ${('', 'checked="checked"')[bool(sickbeard.USE_TRAKT)]}/>
                                 <label for="use_trakt">${_('send Trakt.tv notifications?')}</label>
                             </div>
                         </div>
@@ -2549,7 +2549,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="trakt_username" id="trakt_username" value="${settings.TRAKT_USERNAME}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
+                                            <input type="text" name="trakt_username" id="trakt_username" value="${sickbeard.TRAKT_USERNAME}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2567,8 +2567,8 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="hidden" id="trakt_pin_url" value="${settings.TRAKT_PIN_URL}">
-                                            <input type="button" class="btn ${('', 'hide')[bool(settings.TRAKT_ACCESS_TOKEN)]}" value="${_('Get Trakt PIN')}" id="TraktGetPin" />
+                                            <input type="hidden" id="trakt_pin_url" value="${sickbeard.TRAKT_PIN_URL}">
+                                            <input type="button" class="btn ${('', 'hide')[bool(sickbeard.TRAKT_ACCESS_TOKEN)]}" value="${_('Get Trakt PIN')}" id="TraktGetPin" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2597,7 +2597,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="number" min="10" step="1" name="trakt_timeout" id="trakt_timeout" value="${settings.TRAKT_TIMEOUT}" class="form-control input-sm input75" autocapitalize="off" />
+                                            <input type="number" min="10" step="1" name="trakt_timeout" id="trakt_timeout" value="${sickbeard.TRAKT_TIMEOUT}" class="form-control input-sm input75" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2615,7 +2615,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <select id="trakt_default_indexer" name="trakt_default_indexer" class="form-control input-sm input250" title="trakt_default_indexer">
                                         % for indexer, instance in sickchill.indexer:
-                                            <option value="${indexer}" ${('', 'selected="selected"')[settings.TRAKT_DEFAULT_INDEXER == indexer]}>${instance.name}</option>
+                                            <option value="${indexer}" ${('', 'selected="selected"')[sickbeard.TRAKT_DEFAULT_INDEXER == indexer]}>${instance.name}</option>
                                         % endfor
                                     </select>
                                 </div>
@@ -2626,7 +2626,7 @@
                                     <label class="component-title">${_('Sync libraries')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" class="enabler" name="trakt_sync" id="trakt_sync" ${('', 'checked="checked"')[bool(settings.TRAKT_SYNC)]}/>
+                                    <input type="checkbox" class="enabler" name="trakt_sync" id="trakt_sync" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_SYNC)]}/>
                                     <label for="trakt_sync">${_('sync your SickChill show library with your trakt show library.')}</label>
                                 </div>
                             </div>
@@ -2638,7 +2638,7 @@
                                         <label class="component-title">${_('Remove Episodes From Collection')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" name="trakt_sync_remove" id="trakt_sync_remove" ${('', 'checked="checked"')[bool(settings.TRAKT_SYNC_REMOVE)]}/>
+                                        <input type="checkbox" name="trakt_sync_remove" id="trakt_sync_remove" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_SYNC_REMOVE)]}/>
                                         <label for="trakt_sync_remove">${_('remove an episode from your Trakt Collection if it is not in your SickChill Library.')}</label>
                                     </div>
                                 </div>
@@ -2652,7 +2652,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="checkbox" class="enabler" name="trakt_sync_watchlist" id="trakt_sync_watchlist" ${('', 'checked="checked"')[bool(settings.TRAKT_SYNC_WATCHLIST)]}/>
+                                            <input type="checkbox" class="enabler" name="trakt_sync_watchlist" id="trakt_sync_watchlist" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_SYNC_WATCHLIST)]}/>
                                             <label for="trakt_sync_watchlist">${_('sync your SickChill show watchlist with your trakt show watchlist (either Show and Episode).')}</label>
                                         </div>
                                     </div>
@@ -2674,9 +2674,9 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <select id="trakt_method_add" name="trakt_method_add" class="form-control input-sm input250">
-                                                    <option value="0" ${('', 'selected="selected"')[settings.TRAKT_METHOD_ADD == 0]}>${_('Skip All')}</option>
-                                                    <option value="1" ${('', 'selected="selected"')[settings.TRAKT_METHOD_ADD == 1]}>${_('Download Pilot Only')}</option>
-                                                    <option value="2" ${('', 'selected="selected"')[settings.TRAKT_METHOD_ADD == 2]}>${_('Get whole show')}</option>
+                                                    <option value="0" ${('', 'selected="selected"')[sickbeard.TRAKT_METHOD_ADD == 0]}>${_('Skip All')}</option>
+                                                    <option value="1" ${('', 'selected="selected"')[sickbeard.TRAKT_METHOD_ADD == 1]}>${_('Download Pilot Only')}</option>
+                                                    <option value="2" ${('', 'selected="selected"')[sickbeard.TRAKT_METHOD_ADD == 2]}>${_('Get whole show')}</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -2693,7 +2693,7 @@
                                         <label class="component-title">${_('Remove episode')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" name="trakt_remove_watchlist" id="trakt_remove_watchlist" ${('', 'checked="checked"')[bool(settings.TRAKT_REMOVE_WATCHLIST)]}/>
+                                        <input type="checkbox" name="trakt_remove_watchlist" id="trakt_remove_watchlist" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_REMOVE_WATCHLIST)]}/>
                                         <label for="trakt_remove_watchlist">${_('remove an episode from your watchlist after it is downloaded.')}</label>
                                     </div>
                                 </div>
@@ -2703,7 +2703,7 @@
                                         <label class="component-title">${_('Remove series')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" name="trakt_remove_serieslist" id="trakt_remove_serieslist" ${('', 'checked="checked"')[bool(settings.TRAKT_REMOVE_SERIESLIST)]}/>
+                                        <input type="checkbox" name="trakt_remove_serieslist" id="trakt_remove_serieslist" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_REMOVE_SERIESLIST)]}/>
                                         <label for="trakt_remove_serieslist">${_('remove the whole series from your watchlist after any download.')}</label>
                                     </div>
                                 </div>
@@ -2713,7 +2713,7 @@
                                         <label class="component-title">${_('Remove watched show')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" name="trakt_remove_show_from_sickchill" id="trakt_remove_show_from_sickchill" ${('', 'checked="checked"')[bool(settings.TRAKT_REMOVE_SHOW_FROM_SICKCHILL)]}/>
+                                        <input type="checkbox" name="trakt_remove_show_from_sickchill" id="trakt_remove_show_from_sickchill" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_REMOVE_SHOW_FROM_SICKCHILL)]}/>
                                         <label for="trakt_remove_show_from_sickchill">${_('remove the show from sickchill if it\'s ended and completely watched')}</label>
                                     </div>
                                 </div>
@@ -2723,7 +2723,7 @@
                                         <label class="component-title">${_('Start paused')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" name="trakt_start_paused" id="trakt_start_paused" ${('', 'checked="checked"')[bool(settings.TRAKT_START_PAUSED)]}/>
+                                        <input type="checkbox" name="trakt_start_paused" id="trakt_start_paused" ${('', 'checked="checked"')[bool(sickbeard.TRAKT_START_PAUSED)]}/>
                                         <label for="trakt_start_paused">${_('shows grabbed from your trakt watchlist start paused.')}</label>
                                     </div>
                                 </div>
@@ -2737,7 +2737,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="trakt_blacklist_name" id="trakt_blacklist_name" value="${settings.TRAKT_BLACKLIST_NAME}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="trakt_blacklist_name" id="trakt_blacklist_name" value="${sickbeard.TRAKT_BLACKLIST_NAME}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2783,7 +2783,7 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_email" id="use_email" ${('', 'checked="checked"')[bool(settings.USE_EMAIL)]}/>
+                                <input type="checkbox" class="enabler" name="use_email" id="use_email" ${('', 'checked="checked"')[bool(sickbeard.USE_EMAIL)]}/>
                                 <label for="use_email">${_('send email notifications?')}</label>
                             </div>
                         </div>
@@ -2795,7 +2795,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="email_notify_onsnatch" id="email_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.EMAIL_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="email_notify_onsnatch" id="email_notify_onsnatch" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_NOTIFY_ONSNATCH)]}/>
                                     <label for="email_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -2805,7 +2805,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="email_notify_ondownload" id="email_notify_ondownload" ${('', 'checked="checked"')[bool(settings.EMAIL_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="email_notify_ondownload" id="email_notify_ondownload" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_NOTIFY_ONDOWNLOAD)]}/>
                                     <label for="email_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -2815,7 +2815,7 @@
                                     <label class="component-title">${_('Notify on postprocess')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="email_notify_onpostprocess" id="email_notify_onpostprocess" ${('', 'checked="checked"')[bool(settings.EMAIL_NOTIFY_ONPOSTPROCESS)]}/>
+                                    <input type="checkbox" name="email_notify_onpostprocess" id="email_notify_onpostprocess" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_NOTIFY_ONPOSTPROCESS)]}/>
                                     <label for="email_notify_onpostprocess">${_('send a notification when a postprocessing finishes?')}</label>
                                 </div>
                             </div>
@@ -2825,7 +2825,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="email_notify_onsubtitledownload" id="email_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="email_notify_onsubtitledownload" id="email_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
                                     <label for="email_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -2837,7 +2837,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="email_host" id="email_host" value="${settings.EMAIL_HOST}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="email_host" id="email_host" value="${sickbeard.EMAIL_HOST}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2855,7 +2855,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="number" min="1" step="1" name="email_port" id="email_port" value="${settings.EMAIL_PORT}" class="form-control input-sm input75" autocapitalize="off" />
+                                            <input type="number" min="1" step="1" name="email_port" id="email_port" value="${sickbeard.EMAIL_PORT}" class="form-control input-sm input75" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2873,7 +2873,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="email_from" id="email_from" value="${settings.EMAIL_FROM | h}" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="email_from" id="email_from" value="${sickbeard.EMAIL_FROM | h}" class="form-control input-sm input250" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2889,7 +2889,7 @@
                                     <label class="component-title">${_('Use TLS')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="email_tls" id="email_tls" ${('', 'checked="checked"')[bool(settings.EMAIL_TLS)]}/>
+                                    <input type="checkbox" name="email_tls" id="email_tls" ${('', 'checked="checked"')[bool(sickbeard.EMAIL_TLS)]}/>
                                     <label for="email_tls">${_('check to use TLS encryption.')}</label>
                                 </div>
                             </div>
@@ -2901,7 +2901,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="email_user" id="email_user" value="${settings.EMAIL_USER}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
+                                            <input type="text" name="email_user" id="email_user" value="${sickbeard.EMAIL_USER}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2920,7 +2920,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input
-                                                type="password" name="email_password" id="email_password" value="${settings.EMAIL_PASSWORD|hide}"
+                                                type="password" name="email_password" id="email_password" value="${sickbeard.EMAIL_PASSWORD|hide}"
                                                 class="form-control input-sm input250" autocomplete="no" autocapitalize="off"
                                             />
                                         </div>
@@ -2940,7 +2940,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="email_list" id="email_list" value="${settings.EMAIL_LIST}" class="form-control input-sm input350" autocapitalize="off" />
+                                            <input type="text" name="email_list" id="email_list" value="${sickbeard.EMAIL_LIST}" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2958,7 +2958,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="email_subject" id="email_subject" value="${settings.EMAIL_SUBJECT}" class="form-control input-sm input350" autocapitalize="off" />
+                                            <input type="text" name="email_subject" id="email_subject" value="${sickbeard.EMAIL_SUBJECT}" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -3045,7 +3045,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" class="enabler" name="use_slack" id="use_slack" ${('', 'checked="checked"')[bool(settings.USE_SLACK)]}/>
+                                        <input type="checkbox" class="enabler" name="use_slack" id="use_slack" ${('', 'checked="checked"')[bool(sickbeard.USE_SLACK)]}/>
                                         <label for="use_slack">${_('should SickChill post messages on Slack?')}</label>
                                     </div>
                                 </div>
@@ -3059,7 +3059,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="slack_notify_snatch" id="slack_notify_snatch" ${('', 'checked="checked"')[bool(settings.SLACK_NOTIFY_SNATCH)]}/>
+                                    <input type="checkbox" name="slack_notify_snatch" id="slack_notify_snatch" ${('', 'checked="checked"')[bool(sickbeard.SLACK_NOTIFY_SNATCH)]}/>
                                     <label for="slack_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -3069,7 +3069,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="slack_notify_download" id="slack_notify_download" ${('', 'checked="checked"')[bool(settings.SLACK_NOTIFY_DOWNLOAD)]}/>
+                                    <input type="checkbox" name="slack_notify_download" id="slack_notify_download" ${('', 'checked="checked"')[bool(sickbeard.SLACK_NOTIFY_DOWNLOAD)]}/>
                                     <label for="slack_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -3079,7 +3079,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="slack_notify_subtitledownload" id="clack_notify_subtitledownload" ${('', 'checked="checked"')[bool(settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="slack_notify_subtitledownload" id="clack_notify_subtitledownload" ${('', 'checked="checked"')[bool(sickbeard.SLACK_NOTIFY_SUBTITLEDOWNLOAD)]}/>
                                     <label for="slack_notify_subtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -3089,7 +3089,7 @@
                                     <label for="slack_webhook" class="component-title">${_('Slack Incoming Webhook')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="text" name="slack_webhook" id="slack_webhook" value="${settings.SLACK_WEBHOOK}" class="form-control input-sm input350" autocapitalize="off" />
+                                    <input type="text" name="slack_webhook" id="slack_webhook" value="${sickbeard.SLACK_WEBHOOK}" class="form-control input-sm input350" autocapitalize="off" />
                                 </div>
                             </div>
 
@@ -3098,7 +3098,7 @@
                                     <label for="slack_icon_emoji" class="component-title">${_('Slack Icon Emoji')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="text" name="slack_icon_emoji" id="slack_icon_emoji" value="${settings.SLACK_ICON_EMOJI}" class="form-control input-sm input350" autocapitalize="off" />
+                                    <input type="text" name="slack_icon_emoji" id="slack_icon_emoji" value="${sickbeard.SLACK_ICON_EMOJI}" class="form-control input-sm input350" autocapitalize="off" />
                                 </div>
                             </div>
 
@@ -3140,7 +3140,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" class="enabler" name="use_rocketchat" id="use_rocketchat" ${('', 'checked="checked"')[bool(settings.USE_ROCKETCHAT)]}/>
+                                        <input type="checkbox" class="enabler" name="use_rocketchat" id="use_rocketchat" ${('', 'checked="checked"')[bool(sickbeard.USE_ROCKETCHAT)]}/>
                                         <label for="use_rocketchat">${_('should SickChill post messages on Rocket.Chat?')}</label>
                                     </div>
                                 </div>
@@ -3152,7 +3152,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="rocketchat_notify_snatch" id="rocketchat_notify_snatch" ${('', 'checked="checked"')[bool(settings.ROCKETCHAT_NOTIFY_SNATCH)]}/>
+                                    <input type="checkbox" name="rocketchat_notify_snatch" id="rocketchat_notify_snatch" ${('', 'checked="checked"')[bool(sickbeard.ROCKETCHAT_NOTIFY_SNATCH)]}/>
                                     <label for="rocketchat_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -3161,7 +3161,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="rocketchat_notify_download" id="rocketchat_notify_download" ${('', 'checked="checked"')[bool(settings.ROCKETCHAT_NOTIFY_DOWNLOAD)]}/>
+                                    <input type="checkbox" name="rocketchat_notify_download" id="rocketchat_notify_download" ${('', 'checked="checked"')[bool(sickbeard.ROCKETCHAT_NOTIFY_DOWNLOAD)]}/>
                                     <label for="rocketchat_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -3170,7 +3170,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="rocketchat_notify_subtitledownload" id="rocketchat_notify_subtitledownload" ${('', 'checked="checked"')[bool(settings.ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="rocketchat_notify_subtitledownload" id="rocketchat_notify_subtitledownload" ${('', 'checked="checked"')[bool(sickbeard.ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD)]}/>
                                     <label for="rocketchat_notify_subtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -3179,7 +3179,7 @@
                                     <label for="rocketchat_webhook" class="component-title">${_('Rocket.Chat Incoming Webhook')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="text" name="rocketchat_webhook" id="rocketchat_webhook" value="${settings.ROCKETCHAT_WEBHOOK}" class="form-control input-sm input350" autocapitalize="off" />
+                                    <input type="text" name="rocketchat_webhook" id="rocketchat_webhook" value="${sickbeard.ROCKETCHAT_WEBHOOK}" class="form-control input-sm input350" autocapitalize="off" />
                                 </div>
                             </div>
 
@@ -3188,7 +3188,7 @@
                                     <label for="rocketchat_icon_emoji" class="component-title">${_('Rocket.Chat Icon Emoji')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="text" name="rocketchat_icon_emoji" id="rocketchat_icon_emoji" value="${settings.ROCKETCHAT_ICON_EMOJI}" class="form-control input-sm input350" autocapitalize="off" />
+                                    <input type="text" name="rocketchat_icon_emoji" id="rocketchat_icon_emoji" value="${sickbeard.ROCKETCHAT_ICON_EMOJI}" class="form-control input-sm input350" autocapitalize="off" />
                                 </div>
                             </div>
                             <div class="row">
@@ -3228,7 +3228,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" class="enabler" name="use_matrix" id="use_matrix" ${('', 'checked="checked"')[bool(settings.USE_MATRIX)]}/>
+                                        <input type="checkbox" class="enabler" name="use_matrix" id="use_matrix" ${('', 'checked="checked"')[bool(sickbeard.USE_MATRIX)]}/>
                                         <label for="use_matrix">${_('should SickChill post messages on Matrix?')}</label>
                                     </div>
                                 </div>
@@ -3242,7 +3242,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="matrix_notify_snatch" id="matrix_notify_snatch" ${('', 'checked="checked"')[bool(settings.MATRIX_NOTIFY_SNATCH)]}/>
+                                    <input type="checkbox" name="matrix_notify_snatch" id="matrix_notify_snatch" ${('', 'checked="checked"')[bool(sickbeard.MATRIX_NOTIFY_SNATCH)]}/>
                                     <label for="matrix_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -3252,7 +3252,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="matrix_notify_download" id="matrix_notify_download" ${('', 'checked="checked"')[bool(settings.MATRIX_NOTIFY_DOWNLOAD)]}/>
+                                    <input type="checkbox" name="matrix_notify_download" id="matrix_notify_download" ${('', 'checked="checked"')[bool(sickbeard.MATRIX_NOTIFY_DOWNLOAD)]}/>
                                     <label for="matrix_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -3262,7 +3262,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="matrix_notify_subtitledownload" id="matrix_notify_subtitledownload" ${('', 'checked="checked"')[bool(settings.MATRIX_NOTIFY_SUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="matrix_notify_subtitledownload" id="matrix_notify_subtitledownload" ${('', 'checked="checked"')[bool(sickbeard.MATRIX_NOTIFY_SUBTITLEDOWNLOAD)]}/>
                                     <label for="matrix_notify_subtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -3274,7 +3274,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="matrix_api_token" id="matrix_api_token" value="${settings.MATRIX_API_TOKEN}" class="form-control input-sm input350" autocapitalize="off" />
+                                            <input type="text" name="matrix_api_token" id="matrix_api_token" value="${sickbeard.MATRIX_API_TOKEN}" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                 </div>
@@ -3287,7 +3287,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="matrix_server" id="matrix_server" value="${settings.MATRIX_SERVER}" class="form-control input-sm input350" autocapitalize="off" />
+                                            <input type="text" name="matrix_server" id="matrix_server" value="${sickbeard.MATRIX_SERVER}" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                 </div>
@@ -3301,7 +3301,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="matrix_room" id="matrix_room" value="${settings.MATRIX_ROOM}" class="form-control input-sm input350" autocapitalize="off" />
+                                            <input type="text" name="matrix_room" id="matrix_room" value="${sickbeard.MATRIX_ROOM}" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                 </div>
@@ -3349,7 +3349,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" class="enabler" name="use_discord" id="use_discord" ${('', 'checked="checked"')[bool(settings.USE_DISCORD)]}/>
+                                        <input type="checkbox" class="enabler" name="use_discord" id="use_discord" ${('', 'checked="checked"')[bool(sickbeard.USE_DISCORD)]}/>
                                         <label for="use_discord">${_('Should SickChill post messages on Discord?')}</label>
                                     </div>
                                 </div>
@@ -3363,7 +3363,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="discord_notify_snatch" id="discord_notify_snatch" ${('', 'checked="checked"')[bool(settings.DISCORD_NOTIFY_SNATCH)]}/>
+                                    <input type="checkbox" name="discord_notify_snatch" id="discord_notify_snatch" ${('', 'checked="checked"')[bool(sickbeard.DISCORD_NOTIFY_SNATCH)]}/>
                                     <label for="discord_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -3373,7 +3373,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="discord_notify_download" id="discord_notify_download" ${('', 'checked="checked"')[bool(settings.DISCORD_NOTIFY_DOWNLOAD)]}/>
+                                    <input type="checkbox" name="discord_notify_download" id="discord_notify_download" ${('', 'checked="checked"')[bool(sickbeard.DISCORD_NOTIFY_DOWNLOAD)]}/>
                                     <label for="discord_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -3385,7 +3385,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                   <div class="row">
                                     <div class="col-md-12">
-                                      <input type="text" name="discord_webhook" id="discord_webhook" value="${settings.DISCORD_WEBHOOK}" class="form-control input-sm input350" autocapitalize="off" />
+                                      <input type="text" name="discord_webhook" id="discord_webhook" value="${sickbeard.DISCORD_WEBHOOK}" class="form-control input-sm input350" autocapitalize="off" />
                                     </div>
                                     <div class="col-md-12">
                                       <label for="discord_webhook">${_('Create webhook under channel settings.')}</label>
@@ -3401,7 +3401,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                   <div class="row">
                                     <div class="col-md-12">
-                                      <input type="text" name="discord_name" id="discord_name" value="${settings.DISCORD_NAME}" class="form-control input-sm input350" autocapitalize="off" />
+                                      <input type="text" name="discord_name" id="discord_name" value="${sickbeard.DISCORD_NAME}" class="form-control input-sm input350" autocapitalize="off" />
                                     </div>
                                     <div class="col-md-12">
                                       <label for="discord_name">${_('Blank will use webhook default Name.')}</label>
@@ -3417,7 +3417,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                   <div class="row">
                                     <div class="col-md-12">
-                                      <input type="text" name="discord_avatar_url" id="discord_avatar_url" value="${settings.DISCORD_AVATAR_URL}" class="form-control input-sm input350" autocapitalize="off" />
+                                      <input type="text" name="discord_avatar_url" id="discord_avatar_url" value="${sickbeard.DISCORD_AVATAR_URL}" class="form-control input-sm input350" autocapitalize="off" />
                                     </div>
                                     <div class="col-md-12">
                                       <label for="discord_avatar_url">${_('Blank will use webhook default Avatar.')}</label>
@@ -3431,7 +3431,7 @@
                                     <label class="component-title">${_('Discord TTS')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="discord_tts" id="discord_tts" ${('', 'checked="checked"')[bool(settings.DISCORD_TTS)]}/>
+                                    <input type="checkbox" name="discord_tts" id="discord_tts" ${('', 'checked="checked"')[bool(sickbeard.DISCORD_TTS)]}/>
                                     <label for="discord_tts">${_('Send notifications using text-to-speech')}</label>
                                 </div>
                             </div>

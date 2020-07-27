@@ -7,6 +7,7 @@ CacheControl
 chardet
 cloudscraper
 configobj
+fake-useragent
 feedparser
 html5lib
 ipaddress
@@ -34,7 +35,9 @@ enzyme
 python3-fanart
 gntp
 pymediainfo
+#git+https://github.com/SickChill/rtorrent-python@rtorrent9#egg
 tus.py
+#rtorrent-python
 win-inet-pton
 pynma
 putio.py
@@ -49,6 +52,5 @@ deluge-client
 ifaddr
 twilio
 pyaes
-git+https://github.com/SickChill/rtorrent-python@9_plus-py3#egg=new-rtorrent-python
+rtorrent-xmlrpc
 #mir.anidb
-random_user_agent

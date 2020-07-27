@@ -23,11 +23,11 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class NyaaProvider(TorrentProvider):
 
     def __init__(self):
 
-        super().__init__("Nyaa")
+        TorrentProvider.__init__(self, 'Nyaa')
 
         self.public = True
         self.supports_absolute_numbering = True
@@ -104,3 +104,6 @@ class Provider(TorrentProvider):
             results += items
 
         return results
+
+
+provider = NyaaProvider()

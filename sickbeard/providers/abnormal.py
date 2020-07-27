@@ -19,9 +19,9 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import re
-from urllib.parse import urljoin
 
 # Third Party Imports
+from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
 # First Party Imports
@@ -31,12 +31,12 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class ABNormalProvider(TorrentProvider):
 
     def __init__(self):
 
         # Provider Init
-        super().__init__("ABNormal")
+        TorrentProvider.__init__(self, 'ABNormal')
 
         # Credentials
         self.username = None
@@ -151,7 +151,8 @@ class Provider(TorrentProvider):
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
-                                logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format(title, seeders, leechers))
+                                logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format
+                                           (title, seeders, leechers))
 
                             items.append(item)
                         except Exception:
@@ -162,3 +163,6 @@ class Provider(TorrentProvider):
             results += items
 
         return results
+
+
+provider = ABNormalProvider()

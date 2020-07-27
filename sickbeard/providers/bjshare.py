@@ -19,9 +19,9 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import re
-from urllib.parse import urljoin
 
 # Third Party Imports
+from requests.compat import urljoin
 from requests.utils import add_dict_to_cookiejar, dict_from_cookiejar
 
 # First Party Imports
@@ -31,12 +31,12 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class BJShareProvider(TorrentProvider):
     """BJ-Share Torrent provider."""
 
     def __init__(self):
         """Initialize the class."""
-        super().__init__('BJ-Share')
+        super(BJShareProvider, self).__init__('BJ-Share')
 
         # URLs
         self.url = 'https://bj-share.info'
@@ -301,3 +301,6 @@ class Provider(TorrentProvider):
             return False
 
         return True
+
+
+provider = BJShareProvider()

@@ -1,5 +1,5 @@
 <%
-    from sickchill import settings
+    import sickbeard
     from sickbeard.common import SKIPPED, WANTED, IGNORED
     from sickbeard.common import Quality, statusStrings
 %>
@@ -8,19 +8,19 @@
             <span class="component-title">${_('Preferred Quality')}</span>
         </div>
         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-            <% anyQualities, bestQualities = Quality.splitQuality(settings.QUALITY_DEFAULT) %>
+            <% anyQualities, bestQualities = Quality.splitQuality(sickbeard.QUALITY_DEFAULT) %>
             <%include file="/inc_qualityChooser.mako"/>
         </div>
     </div>
     <br>
 
-    % if settings.USE_SUBTITLES:
+    % if sickbeard.USE_SUBTITLES:
         <div class="field-pair row">
             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                 <span class="component-title">${_('Subtitles')}</span>
             </div>
             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                <input type="checkbox" name="subtitles" id="subtitles" ${('', 'checked="checked"')[bool(settings.SUBTITLES_DEFAULT)]} />
+                <input type="checkbox" name="subtitles" id="subtitles" ${('', 'checked="checked"')[bool(sickbeard.SUBTITLES_DEFAULT)]} />
                 <label for="subtitles">${_('Download subtitles for this show?')}</label>
             </div>
             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -41,7 +41,7 @@
         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
             <select name="defaultStatus" id="statusSelect" class="form-control form-control-inline input-sm" title="defaultStatus">
                 % for curStatus in [SKIPPED, WANTED, IGNORED]:
-                    <option value="${curStatus}" ${('', 'selected="selected"')[settings.STATUS_DEFAULT == curStatus]}>${statusStrings[curStatus]}</option>
+                    <option value="${curStatus}" ${('', 'selected="selected"')[sickbeard.STATUS_DEFAULT == curStatus]}>${statusStrings[curStatus]}</option>
                 % endfor
             </select>
         </div>
@@ -55,7 +55,7 @@
         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
             <select name="defaultStatusAfter" id="statusSelectAfter" class="form-control form-control-inline input-sm">
                 % for curStatus in [SKIPPED, WANTED, IGNORED]:
-                    <option value="${curStatus}" ${('', 'selected="selected"')[settings.STATUS_DEFAULT_AFTER == curStatus]}>${statusStrings[curStatus]}</option>
+                    <option value="${curStatus}" ${('', 'selected="selected"')[sickbeard.STATUS_DEFAULT_AFTER == curStatus]}>${statusStrings[curStatus]}</option>
                 % endfor
             </select>
         </div>
@@ -67,7 +67,7 @@
             <span class="component-title">${_('Season Folders')}</span>
         </div>
         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-            <input type="checkbox" name="season_folders" id="season_folders" ${('', 'checked="checked"')[bool(settings.SEASON_FOLDERS_DEFAULT)]}/>
+            <input type="checkbox" name="season_folders" id="season_folders" ${('', 'checked="checked"')[bool(sickbeard.SEASON_FOLDERS_DEFAULT)]}/>
             <label for="season_folders">${_('Group episodes by season folder?')}</label>
         </div>
     </div>
@@ -79,7 +79,7 @@
                 <span class="component-title">${_('Anime')}</span>
             </div>
             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                <input type="checkbox" name="anime" id="anime" ${('', 'checked="checked"')[bool(settings.ANIME_DEFAULT)]} />
+                <input type="checkbox" name="anime" id="anime" ${('', 'checked="checked"')[bool(sickbeard.ANIME_DEFAULT)]} />
                 <label for="anime">${_('Is this show an Anime?')}</label>
             </div>
         </div>
@@ -91,7 +91,7 @@
             <span class="component-title">${_('Scene Numbering')}</span>
         </div>
         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-            <input type="checkbox" name="scene" id="scene" ${('', 'checked="checked"')[bool(settings.SCENE_DEFAULT)]} />
+            <input type="checkbox" name="scene" id="scene" ${('', 'checked="checked"')[bool(sickbeard.SCENE_DEFAULT)]} />
             <label for="scene">${_('Is this show scene numbered?')}</label>
         </div>
     </div>

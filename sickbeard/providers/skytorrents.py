@@ -16,11 +16,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# Stdlib Imports
-from urllib.parse import urljoin
-
 # Third Party Imports
 import validators
+from requests.compat import urljoin
 
 # First Party Imports
 from sickbeard import logger, tvcache
@@ -29,11 +27,11 @@ from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class Provider(TorrentProvider):
+class SkyTorrents(TorrentProvider):
 
     def __init__(self):
 
-        super().__init__("SkyTorrents")
+        TorrentProvider.__init__(self, "SkyTorrents")
 
         self.public = True
 
@@ -111,3 +109,5 @@ class Provider(TorrentProvider):
             results += items
 
         return results
+
+provider = SkyTorrents()

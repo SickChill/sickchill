@@ -20,8 +20,8 @@
 from requests.exceptions import HTTPError
 
 # First Party Imports
+import sickbeard
 from sickbeard import helpers, logger
-from sickchill import settings
 
 meta_session = helpers.make_session()
 
@@ -39,7 +39,7 @@ def getShowImage(url, imgNum=None):
     logger.debug("Fetching image from " + tempURL)
 
     try:
-        image_data = helpers.getURL(tempURL, session=meta_session, returns='content', allow_proxy=settings.PROXY_INDEXERS)
+        image_data = helpers.getURL(tempURL, session=meta_session, returns='content', allow_proxy=sickbeard.PROXY_INDEXERS)
     except HTTPError:
         image_data = None
 

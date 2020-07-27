@@ -1,4 +1,7 @@
 <%inherit file="/layouts/main.mako"/>
+<%!
+    import sickbeard
+%>
 <%block name="metas">
     <meta data-var="srDefaultPage" data-content="${sbDefaultPage}">
 </%block>

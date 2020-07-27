@@ -18,12 +18,13 @@
 # Stdlib Imports
 import re
 from collections import OrderedDict
-from urllib.parse import urljoin
+
+# Third Party Imports
+from requests.compat import urljoin
 
 # First Party Imports
 import sickbeard
 from sickbeard.clients.generic import GenericClient
-from sickchill import settings
 
 
 class Client(GenericClient):
@@ -80,7 +81,7 @@ class Client(GenericClient):
         Sets a label on an existing torrent in the client
         params: :result: an instance of the searchResult class
         """
-        label = settings.TORRENT_LABEL_ANIME or settings.TORRENT_LABEL if result.show.is_anime else settings.TORRENT_LABEL
+        label = sickbeard.TORRENT_LABEL_ANIME or sickbeard.TORRENT_LABEL if result.show.is_anime else sickbeard.TORRENT_LABEL
         params = {
             'action': 'setprops',
             'hash': result.hash,
@@ -119,7 +120,7 @@ class Client(GenericClient):
         Sets the amount of time a torrent that exists in the client should seed for
         params: :result: an instance of the searchResult class
         """
-        if not settings.TORRENT_SEED_TIME:
+        if not sickbeard.TORRENT_SEED_TIME:
             return True
 
         params = {
@@ -135,7 +136,7 @@ class Client(GenericClient):
             'action': 'setprops',
             'hash': result.hash,
             's': 'seed_time',
-            'v': 3600 * float(settings.TORRENT_SEED_TIME)
+            'v': 3600 * float(sickbeard.TORRENT_SEED_TIME)
         }
         return self._request(params=params)
 
@@ -156,7 +157,7 @@ class Client(GenericClient):
         params: :result: an instance of the searchResult class
         """
         params = {
-            'action': 'pause' if settings.TORRENT_PAUSED else 'start',
+            'action': 'pause' if sickbeard.TORRENT_PAUSED else 'start',
             'hash': result.hash
         }
         return self._request(params=params)

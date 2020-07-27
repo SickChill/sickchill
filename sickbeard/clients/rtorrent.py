@@ -1,8 +1,9 @@
 # coding=utf-8
-# This file is part of SickChill.
+# Author: jkaberg <joel.kaberg@gmail.com>
 #
 # URL: https://sickchill.github.io
-# Git: https://github.com/SickChill/SickChill.git
+#
+# This file is part of SickChill.
 #
 # SickChill is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,9 +21,9 @@
 from rtorrent import RTorrent
 
 # First Party Imports
+import sickbeard
 from sickbeard import logger
 from sickbeard.clients.generic import GenericClient
-from sickchill import settings
 
 
 class Client(GenericClient):
@@ -30,6 +31,7 @@ class Client(GenericClient):
         super(Client, self).__init__('rTorrent', host, username, password)
 
     def _get_auth(self):
+        self.auth = None
 
         if self.auth is not None:
             return self.auth
@@ -38,30 +40,47 @@ class Client(GenericClient):
             return
 
         tp_kwargs = {}
-        if settings.TORRENT_AUTH_TYPE != 'none':
-            tp_kwargs['authtype'] = settings.TORRENT_AUTH_TYPE
+        if sickbeard.TORRENT_AUTH_TYPE != 'none':
+            tp_kwargs['authtype'] = sickbeard.TORRENT_AUTH_TYPE
 
-        if not settings.TORRENT_VERIFY_CERT:
+        if not sickbeard.TORRENT_VERIFY_CERT:
             tp_kwargs['check_ssl_cert'] = False
 
         if self.username and self.password:
             self.auth = RTorrent(self.host, self.username, self.password, True, tp_kwargs=tp_kwargs)
         else:
-            self.auth = RTorrent(self.host, None, None, True, tp_kwargs=tp_kwargs)
+            self.auth = RTorrent(self.host, None, None, True)
 
         return self.auth
 
     def _add_torrent_uri(self, result):
 
-        if not (self.auth and result):
+        if not self.auth:
+            return False
+
+        if not result:
             return False
 
         try:
-            # Send torrent magnet with params to rTorrent and optionally start download
-            torrent = self.auth.load_magnet(result.url, result.hash, start=not settings.TORRENT_PAUSED, params=self._get_params(result))
+            # Send magnet to rTorrent
+            torrent = self.auth.load_magnet(result.url, result.hash)
 
             if not torrent:
                 return False
+
+            # Set label
+            label = sickbeard.TORRENT_LABEL
+            if result.show.is_anime:
+                label = sickbeard.TORRENT_LABEL_ANIME
+            if label:
+                torrent.set_custom(1, label)
+
+            if sickbeard.TORRENT_PATH:
+                torrent.set_directory(sickbeard.TORRENT_PATH)
+
+            if not sickbeard.TORRENT_PAUSED:
+                # Start torrent
+                torrent.start()
 
             return True
 
@@ -72,16 +91,40 @@ class Client(GenericClient):
 
     def _add_torrent_file(self, result):
 
-        if not (self.auth and result):
+        if not self.auth:
             return False
 
-        try:
+        if not result:
+            return False
 
-            # Send torrent file with params to rTorrent and optionally start download
-            torrent = self.auth.load_torrent(result.content, start=not settings.TORRENT_PAUSED, params=self._get_params(result))
+            # group_name = 'sb_test'.lower() ##### Use provider instead of _test
+            # if not self._set_torrent_ratio(group_name):
+            # return False
+
+        # Send request to rTorrent
+        try:
+            # Send torrent to rTorrent
+            torrent = self.auth.load_torrent(result.content)
 
             if not torrent:
                 return False
+
+            # Set label
+            label = sickbeard.TORRENT_LABEL
+            if result.show.is_anime:
+                label = sickbeard.TORRENT_LABEL_ANIME
+            if label:
+                torrent.set_custom(1, label)
+
+            if sickbeard.TORRENT_PATH:
+                torrent.set_directory(sickbeard.TORRENT_PATH)
+
+            # Set Ratio Group
+            # torrent.set_visible(group_name)
+
+            if not sickbeard.TORRENT_PAUSED:
+                # Start torrent
+                torrent.start()
 
             return True
 
@@ -123,7 +166,6 @@ class Client(GenericClient):
         #
         # except:
         # return False
-
         return True
 
     def testAuthentication(self):
@@ -136,20 +178,3 @@ class Client(GenericClient):
                 return False, 'Error: Unable to get {name} Authentication, check your config!'.format(name=self.name)
         except Exception:
             return False, 'Error: Unable to connect to {name}'.format(name=self.name)
-
-    @staticmethod
-    def _get_params(result):
-        params = []
-
-        # Set label
-        label = settings.TORRENT_LABEL
-        if result.show.is_anime:
-            label = settings.TORRENT_LABEL_ANIME
-        if label:
-            params.append('d.custom1.set={0}'.format(label))
-
-        # Set download folder
-        if settings.TORRENT_PATH:
-            params.append('d.directory.set={0}'.format(settings.TORRENT_PATH))
-
-        return params

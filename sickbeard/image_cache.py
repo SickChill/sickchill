@@ -25,8 +25,8 @@ from mimetypes import guess_type
 import imagesize
 
 # First Party Imports
+import sickbeard
 import sickchill
-from sickchill import settings
 from sickchill.helper.exceptions import ShowDirectoryNotFoundException
 from sickchill.providers.metadata.generic import GenericMetadata
 from sickchill.providers.metadata.helpers import getShowImage
@@ -47,7 +47,7 @@ class ImageCache(object):
         """
         Builds up the full path to the image cache directory
         """
-        return os.path.abspath(os.path.join(settings.CACHE_DIR, 'images'))
+        return os.path.abspath(os.path.join(sickbeard.CACHE_DIR, 'images'))
 
     def _thumbnails_dir(self):
         """
@@ -149,10 +149,10 @@ class ImageCache(object):
         path = self.__getattribute__(which + "_path")(indexer_id)
         if os.path.isfile(path):
             try:
-                return 'cache' + path.split(settings.CACHE_DIR)[1].replace('\\', '/')
+                return 'cache' + path.split(sickbeard.CACHE_DIR)[1].replace('\\', '/')
             except (AttributeError, ValueError, IndexError):
                 logger.info('Error with cache path, path={}, cache={}, split={}'.format(
-                    path, settings.CACHE_DIR, str(path.split(settings.CACHE_DIR))))
+                    path, sickbeard.CACHE_DIR, str(path.split(sickbeard.CACHE_DIR))))
         return ('images/poster.png', 'images/banner.png')['banner' in which]
 
     BANNER = 1
@@ -334,7 +334,7 @@ class ImageCache(object):
         # check the show dir for poster or banner images and use them
         if need_images[self.POSTER] or need_images[self.BANNER] or need_images[self.FANART]:
             try:
-                for cur_provider in settings.metadata_provider_dict.values():
+                for cur_provider in sickbeard.metadata_provider_dict.values():
                     logger.debug("[{}] Checking if we can use images from {} metadata".format(show_obj.indexerid, cur_provider.name))
 
                     for method in (cur_provider.get_poster_path, cur_provider.get_banner_path, cur_provider.get_fanart_path):

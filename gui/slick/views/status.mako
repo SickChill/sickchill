@@ -1,7 +1,7 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     import collections
-    from sickchill import settings
+    import sickbeard
     from sickbeard import helpers
     from sickbeard.show_queue import ShowQueueActions
     from sickchill.helper.common import dateTimeFormat
@@ -60,7 +60,7 @@
             </div>
         </div>
     </div>
-    % if len(settings.showQueueScheduler.action):
+    % if len(sickbeard.showQueueScheduler.action):
     <br/>
     <div class="row">
         <div class="col-md-12">
@@ -78,10 +78,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        % if settings.showQueueScheduler.action.currentItem is not None:
-                            ${show_queue_row(settings.showQueueScheduler.action.currentItem)}
+                        % if sickbeard.showQueueScheduler.action.currentItem is not None:
+                            ${show_queue_row(sickbeard.showQueueScheduler.action.currentItem)}
                         % endif
-                        % for item in settings.showQueueScheduler.action.queue:
+                        % for item in sickbeard.showQueueScheduler.action.queue:
                             ${show_queue_row(item)}
                         % endfor
                     </tbody>
@@ -90,7 +90,7 @@
         </div>
     </div>
     % endif
-    % if len(settings.postProcessorTaskScheduler.action):
+    % if len(sickbeard.postProcessorTaskScheduler.action):
     <br/>
     <div class="row">
         <div class="col-md-12">
@@ -112,10 +112,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        % if settings.postProcessorTaskScheduler.action.currentItem is not None:
-                            ${post_processor_task_row(settings.postProcessorTaskScheduler.action.currentItem)}
+                        % if sickbeard.postProcessorTaskScheduler.action.currentItem is not None:
+                            ${post_processor_task_row(sickbeard.postProcessorTaskScheduler.action.currentItem)}
                         % endif
-                        % for item in settings.postProcessorTaskScheduler.action.queue:
+                        % for item in sickbeard.postProcessorTaskScheduler.action.queue:
                             ${post_processor_task_row(item)}
                         % endfor
                     </tbody>
@@ -138,10 +138,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        % if settings.TV_DOWNLOAD_DIR:
+                        % if sickbeard.TV_DOWNLOAD_DIR:
                             <tr>
                                 <td>${_('TV Download Directory')}</td>
-                                <td>${settings.TV_DOWNLOAD_DIR}</td>
+                                <td>${sickbeard.TV_DOWNLOAD_DIR}</td>
                                 % if tvdirFree is not False:
                                     <td align="middle">${tvdirFree}</td>
                                 % else:
@@ -168,7 +168,7 @@
 </%block>
 
 <%def name="scheduler_row(schedulerName, scheduler)">
-    <% service = getattr(settings, scheduler) %>
+    <% service = getattr(sickbeard, scheduler) %>
 
     <tr>
         <td>${schedulerName}</td>
@@ -178,7 +178,7 @@
             <td style="background-color:red">${service.isAlive()}</td>
         % endif
         % if scheduler == 'backlogSearchScheduler':
-            <% searchQueue = getattr(settings, 'searchQueueScheduler') %>
+            <% searchQueue = getattr(sickbeard, 'searchQueueScheduler') %>
             <% BLSpaused = searchQueue.action.is_backlog_paused() %>
             <% BLSinProgress = searchQueue.action.is_backlog_in_progress() %>
 

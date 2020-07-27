@@ -18,7 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
-import logging
 import os
 import shutil
 import stat
@@ -28,12 +27,12 @@ import traceback
 from rarfile import BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRCError, RarExecError, RarFile, RarOpenError, RarWrongPassword
 
 # First Party Imports
-from sickbeard import common, db, failedProcessor, helpers, logger, postProcessor
-from sickchill import settings
+import sickbeard
 from sickchill.helper.common import is_sync_file, is_torrent_or_nzb_file
 from sickchill.helper.exceptions import EpisodePostProcessingFailedException, FailedPostProcessingFailedException
 
 # Local Folder Imports
+from . import common, db, failedProcessor, helpers, logger, postProcessor
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 
@@ -59,7 +58,7 @@ def delete_folder(folder, check_empty=True):
         return False
 
     # check if it isn't TV_DOWNLOAD_DIR
-    if settings.TV_DOWNLOAD_DIR and helpers.real_path(folder) == helpers.real_path(settings.TV_DOWNLOAD_DIR):
+    if sickbeard.TV_DOWNLOAD_DIR and helpers.real_path(folder) == helpers.real_path(sickbeard.TV_DOWNLOAD_DIR):
         return False
 
     # check if it's empty folder when wanted checked
@@ -123,7 +122,7 @@ def delete_files(process_path, unwanted_files, result, force=False):
             result.output += log_helper("Unable to delete file {0}: {1}".format(cur_file, e.strerror), logger.DEBUG)
 
 
-def log_helper(message, level=logging.INFO):
+def log_helper(message, level=logger.INFO):
     logger.log(level, message)
     return message + "\n"
 
@@ -149,10 +148,10 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             result.output += log_helper("Processing in folder {0}".format(process_path), logger.DEBUG)
 
         # if the client and SickChill are not on the same machine translate the directory into a network directory
-        elif all([settings.TV_DOWNLOAD_DIR,
-                  os.path.isdir(settings.TV_DOWNLOAD_DIR),
-                  os.path.normpath(process_path) == os.path.normpath(settings.TV_DOWNLOAD_DIR)]):
-            process_path = os.path.join(settings.TV_DOWNLOAD_DIR, os.path.abspath(process_path).split(os.path.sep)[-1])
+        elif all([sickbeard.TV_DOWNLOAD_DIR,
+                  os.path.isdir(sickbeard.TV_DOWNLOAD_DIR),
+                  os.path.normpath(process_path) == os.path.normpath(sickbeard.TV_DOWNLOAD_DIR)]):
+            process_path = os.path.join(sickbeard.TV_DOWNLOAD_DIR, os.path.abspath(process_path).split(os.path.sep)[-1])
             result.output += log_helper("Trying to use folder: {0} ".format(process_path), logger.DEBUG)
 
         # if we didn't find a real dir then quit
@@ -163,7 +162,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
                                         logger.DEBUG)
             return result.output
 
-        process_method = process_method or settings.PROCESS_METHOD
+        process_method = process_method or sickbeard.PROCESS_METHOD
 
         directories_from_rars = set()
 
@@ -173,7 +172,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             generator_to_use = [(process_path, [], [release_name])]
         else:
             result.output += log_helper("Processing {}".format(process_path), logger.INFO)
-            generator_to_use = os.walk(process_path, followlinks=settings.PROCESSOR_FOLLOW_SYMLINKS)
+            generator_to_use = os.walk(process_path, followlinks=sickbeard.PROCESSOR_FOLLOW_SYMLINKS)
 
         for current_directory, directory_names, file_names in generator_to_use:
             result.result = True
@@ -220,8 +219,8 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         # auto post-processing deletes rar content by default if method is 'move',
         # sickbeard.DELRARCONTENTS allows to override even if method is NOT 'move'
         # manual post-processing will only delete when prompted by delete_on
-        delete_rar_contents = any([settings.DELRARCONTENTS and mode != 'manual',
-                                   not settings.DELRARCONTENTS and mode == 'auto' and method_fallback == 'move',
+        delete_rar_contents = any([sickbeard.DELRARCONTENTS and mode != 'manual',
+                                   not sickbeard.DELRARCONTENTS and mode == 'auto' and method_fallback == 'move',
                                    mode == 'manual' and delete_on])
 
         for directory_from_rar in directories_from_rars:
@@ -283,7 +282,7 @@ def validate_dir(process_path, release_name, failed, result):
         result.missed_files.append("{0} : Failed download".format(process_path))
         return False
 
-    if settings.TV_DOWNLOAD_DIR and helpers.real_path(process_path) != helpers.real_path(settings.TV_DOWNLOAD_DIR) and helpers.is_hidden_folder(process_path):
+    if sickbeard.TV_DOWNLOAD_DIR and helpers.real_path(process_path) != helpers.real_path(sickbeard.TV_DOWNLOAD_DIR) and helpers.is_hidden_folder(process_path):
         result.output += log_helper("Ignoring hidden folder: {0}".format(process_path), logger.DEBUG)
         result.missed_files.append("{0} : Hidden folder".format(process_path))
         return False
@@ -301,19 +300,19 @@ def validate_dir(process_path, release_name, failed, result):
                 logger.WARNING)
             return False
 
-    for current_directory, directory_names, file_names in os.walk(process_path, topdown=False, followlinks=settings.PROCESSOR_FOLLOW_SYMLINKS):
+    for current_directory, directory_names, file_names in os.walk(process_path, topdown=False, followlinks=sickbeard.PROCESSOR_FOLLOW_SYMLINKS):
         sync_files = list(filter(is_sync_file, file_names))
-        if sync_files and settings.POSTPONE_IF_SYNC_FILES:
+        if sync_files and sickbeard.POSTPONE_IF_SYNC_FILES:
             result.output += log_helper("Found temporary sync files: {0} in path: {1}".format(sync_files, os.path.join(process_path, sync_files[0])))
             result.output += log_helper("Skipping post processing for folder: {0}".format(process_path))
             result.missed_files.append("{0} : Sync files found".format(os.path.join(process_path, sync_files[0])))
             continue
 
         found_files = list(filter(helpers.is_media_file, file_names))
-        if settings.UNPACK == settings.UNPACK_PROCESS_CONTENTS:
+        if sickbeard.UNPACK == sickbeard.UNPACK_PROCESS_CONTENTS:
             found_files += list(filter(helpers.is_rar_file, file_names))
 
-        if current_directory != settings.TV_DOWNLOAD_DIR and found_files:
+        if current_directory != sickbeard.TV_DOWNLOAD_DIR and found_files:
             found_files.append(os.path.basename(current_directory))
 
         for found_file in found_files:
@@ -341,7 +340,7 @@ def unrar(path, rar_files, force, result):
 
     unpacked_dirs = []
 
-    if settings.UNPACK == settings.UNPACK_PROCESS_CONTENTS and rar_files:
+    if sickbeard.UNPACK == sickbeard.UNPACK_PROCESS_CONTENTS and rar_files:
         result.output += log_helper("Packed Releases detected: {0}".format(rar_files), logger.DEBUG)
         for archive in rar_files:
             failure = None
@@ -364,7 +363,7 @@ def unrar(path, rar_files, force, result):
                     result.output += log_helper('Archive needs a password, skipping: {0}'.format(archive_path))
                     continue
 
-                rar_handle.testrar()
+                # rar_handle.testrar()
 
                 # If there are no video files in the rar, don't extract it
                 rar_media_files = list(filter(helpers.is_media_file, rar_handle.namelist()))
@@ -374,11 +373,11 @@ def unrar(path, rar_files, force, result):
                 rar_release_name = archive.rpartition('.')[0]
 
                 # Choose the directory we'll unpack to:
-                if settings.UNPACK_DIR and os.path.isdir(settings.UNPACK_DIR): # verify the unpack dir exists
-                    unpack_base_dir = settings.UNPACK_DIR
+                if sickbeard.UNPACK_DIR and os.path.isdir(sickbeard.UNPACK_DIR): # verify the unpack dir exists
+                    unpack_base_dir = sickbeard.UNPACK_DIR
                 else:
                     unpack_base_dir = path
-                    if settings.UNPACK_DIR: # Let user know if we can't unpack there
+                    if sickbeard.UNPACK_DIR: # Let user know if we can't unpack there
                         result.output += log_helper('Unpack directory cannot be verified. Using {0}'.format(path), logger.DEBUG)
 
                 # Fix up the list for checking if already processed
@@ -520,7 +519,7 @@ def process_media(process_path, video_files, release_name, process_method, force
 def process_failed(process_path, release_name, result):
     """Process a download that did not complete correctly"""
 
-    if settings.USE_FAILED_DOWNLOADS:
+    if sickbeard.USE_FAILED_DOWNLOADS:
         processor = None
 
         try:
@@ -534,7 +533,7 @@ def process_failed(process_path, release_name, result):
         if processor:
             result.output += processor.log
 
-        if settings.DELETE_FAILED and result.result:
+        if sickbeard.DELETE_FAILED and result.result:
             if delete_folder(process_path, check_empty=False):
                 result.output += log_helper("Deleted folder: {0}".format(process_path), logger.DEBUG)
 

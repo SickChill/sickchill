@@ -1,6 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    from sickchill import settings
+    import sickbeard
 %>
 <%block name="scripts">
     <script type="text/javascript" src="${static_url('js/plotTooltip.js')}"></script>
@@ -64,7 +64,7 @@
                         <option value="watched" ${('', ' selected="selected"')[traktList == "watched"]}>${_('Most Watched')}</option>
                         <option value="played" ${('', ' selected="selected"')[traktList == "played"]}>${_('Most Played')}</option>
                         <option value="collected" ${('', ' selected="selected"')[traktList == "collected"]}>${_('Most Collected')}</option>
-                        % if settings.TRAKT_ACCESS_TOKEN:
+                        % if sickbeard.TRAKT_ACCESS_TOKEN:
                             <option value="recommended"  ${('', ' selected="selected"')[traktList == "recommended"]}>${_('Recommended')}</option>
                         % endif
                     </select>

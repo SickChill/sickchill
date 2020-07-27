@@ -21,10 +21,10 @@
 import unittest
 
 # First Party Imports
-import sickbeard.logger
-from sickbeard.providers import bitcannon, rarbg
+import sickbeard
+from sickbeard.providers.bitcannon import BitCannonProvider
+from sickbeard.providers.rarbg import provider as rarbg
 from sickbeard.tv import TVEpisode, TVShow
-from sickchill import settings
 from tests import test_lib as test
 
 
@@ -50,15 +50,15 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         """
         Test bitcannon
         """
-        provider = bitcannon.Provider()
-        provider.custom_url = ""        # true testing requires a valid URL here (e.g., "http://localhost:3000/")
-        provider.api_key = ""
+        bitcannon = BitCannonProvider()
+        bitcannon.custom_url = ""        # true testing requires a valid URL here (e.g., "http://localhost:3000/")
+        bitcannon.api_key = ""
 
-        if provider.custom_url:
+        if bitcannon.custom_url:
 
-            search_strings_list = provider.get_episode_search_strings(self.shows[0].episodes[0])  # [{'Episode': ['Italian Works S05E10']}]
+            search_strings_list = bitcannon.get_episode_search_strings(self.shows[0].episodes[0])  # [{'Episode': ['Italian Works S05E10']}]
             for search_strings in search_strings_list:
-                provider.search(search_strings)   # {'Episode': ['Italian Works S05E10']}
+                bitcannon.search(search_strings)   # {'Episode': ['Italian Works S05E10']}
 
         return True
 
@@ -67,13 +67,12 @@ class TorrentBasicTests(test.SickbeardTestDBCase):
         """
         Test searching, using rarbg
         """
-        settings.CPU_PRESET = 'LOW'
-        provider = rarbg.Provider()
-        results = provider.search({'Episode': ['The Mandalorian S01E08']})
+        sickbeard.CPU_PRESET = 'LOW'
+        results = rarbg.search({'Episode': ['The Mandalorian S01E08']})
         self.assertTrue(results)
         self.assertIn('Mandalorian', results[0]['title'])
 
-        results = provider.search({'RSS': ['']})
+        results = rarbg.search({'RSS': ['']})
         self.assertTrue(results)
 
 

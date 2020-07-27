@@ -23,8 +23,8 @@ import os
 from tornado.web import addslash
 
 # First Party Imports
+import sickbeard
 from sickbeard.versionChecker import CheckVersion
-from sickchill import settings
 from sickchill.views.common import PageTemplate
 from sickchill.views.index import WebRoot
 from sickchill.views.routes import Route
@@ -56,7 +56,6 @@ class Config(WebRoot):
 
         try:
             # Stdlib Imports
-            # noinspection PyUnresolvedReferences
             import pwd
             sr_user = pwd.getpwuid(os.getuid()).pw_name
         except ImportError:
@@ -82,7 +81,7 @@ class Config(WebRoot):
             ssl_version = 'Unknown'
 
         sr_version = ''
-        if settings.VERSION_NOTIFY:
+        if sickbeard.VERSION_NOTIFY:
             updater = CheckVersion().updater
             if updater:
                 updater.need_update()

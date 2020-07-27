@@ -36,9 +36,8 @@ from vcr_unittest import VCRTestCase
 
 # First Party Imports
 import sickbeard
-from sickchill import settings
 
-settings.CPU_PRESET = 'NORMAL'
+sickbeard.CPU_PRESET = 'NORMAL'
 
 # Third Party Imports
 import validators
@@ -146,7 +145,7 @@ class BaseParser(type):
         @magic_skip
         def test_rss_search(self):
             """Check that the provider parses rss search results"""
-            with mock.patch('sickchill.settings.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
+            with mock.patch('sickbeard.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
                 results = self.provider.search(self.search_strings('RSS'))
 
             if self.provider.enable_daily:
@@ -157,7 +156,7 @@ class BaseParser(type):
         @magic_skip
         def test_episode_search(self):
             """Check that the provider parses episode search results"""
-            with mock.patch('sickchill.settings.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
+            with mock.patch('sickbeard.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
                 results = self.provider.search(self.search_strings('Episode'))
 
             self.assertTrue(self.cassette.requests)
@@ -168,7 +167,7 @@ class BaseParser(type):
         @magic_skip
         def test_season_search(self):
             """Check that the provider parses season search results"""
-            with mock.patch('sickchill.settings.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
+            with mock.patch('sickbeard.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
                 results = self.provider.search(self.search_strings('Season'))
 
             self.assertTrue(self.cassette.requests)
@@ -178,13 +177,13 @@ class BaseParser(type):
         @magic_skip
         def test_cache_update(self):
             """Check that the provider's cache parses rss search results"""
-            with mock.patch('sickchill.settings.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
+            with mock.patch('sickbeard.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
                 self.provider.cache.update_cache()
 
         @magic_skip
         def test_result_values(self):
             """Check that the provider returns results in proper format"""
-            with mock.patch('sickchill.settings.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
+            with mock.patch('sickbeard.SSL_VERIFY', 'ilcorsaronero' not in self.provider.name.lower()):
                 results = self.provider.search(self.search_strings('Episode'))
             for result in results:
                 self.assertIsInstance(result, dict)
@@ -230,7 +229,7 @@ def generate_test_cases():
     Auto Generate TestCases from providers and add them to globals()
     """
     for p in sickbeard.providers.__all__:
-        provider = sickbeard.providers.getProviderModule(p).Provider()
+        provider = sickbeard.providers.getProviderModule(p).provider
         if provider.can_backlog and provider.provider_type == 'torrent' and provider.public:
             generated_class = type(str(provider.name), (BaseParser.TestCase,), {'provider': provider})
             globals()[generated_class.__name__] = generated_class

@@ -28,7 +28,6 @@ from sqlite3 import OperationalError
 
 # First Party Imports
 import sickbeard
-from sickchill import settings
 
 # Local Folder Imports
 from . import logger
@@ -47,7 +46,7 @@ def db_full_path(filename="sickbeard.db", suffix=None):
     """
     if suffix:
         filename = "{0}.{1}".format(filename, suffix)
-    return os.path.join(settings.DATA_DIR, filename)
+    return os.path.join(sickbeard.DATA_DIR, filename)
 
 
 class DBConnection(object):
@@ -272,7 +271,7 @@ class DBConnection(object):
             self._set_row_factory()
             while attempt < self.MAX_ATTEMPTS:
                 try:
-                    if settings.DBDEBUG:
+                    if sickbeard.DBDEBUG:
                         if args is None:
                             logger.log(logger.DB, self.filename + ": " + query)
                         else:

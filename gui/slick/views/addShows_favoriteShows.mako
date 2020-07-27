@@ -1,11 +1,11 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     from sickbeard.helpers import anon_url
-    from sickchill import settings
+    import sickbeard
     from sickbeard.filters import hide
 %>
 <%block name="metas">
-    <meta data-var="settings.SORT_ARTICLE" data-content="${settings.SORT_ARTICLE}">
+    <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
 </%block>
 <%block name="content">
     <div class="col-md-12">
@@ -47,12 +47,12 @@
                     <div class="form-group">
                         <label for="tvdb_user">${_('TVDB Username')}</label>
                         <input class="form-control" title="${_('TVDB Username')}" name="tvdb_user"
-                               type="text" value="${settings.TVDB_USER or ''}" autocomplete="off"/>
+                               type="text" value="${sickbeard.TVDB_USER or ''}" autocomplete="off"/>
                     </div>
                     <div class="form-group">
                         <label for="password">${_('TVDB User Key')}</label>
                         <input class="form-control" title="${_('TVDB User Key')}" name="tvdb_user_key"
-                               type="password" value="${settings.TVDB_USER_KEY|hide}" autocomplete="off"/>
+                               type="password" value="${sickbeard.TVDB_USER_KEY|hide}" autocomplete="off"/>
                     </div>
                     <div class="form-group">
                         <input class="btn btn-default pull-right" name="submit" type="submit" value="${_('Submit')}"/>

@@ -1,10 +1,10 @@
 <%!
-    from sickchill import settings
+    import sickbeard
     from sickbeard.helpers import anon_url
     import sickchill
 %>
 
-<table id="addRootDirTable" class="sickchillTable tablesorter">
+<table id="addRootDirTable" class="sickbeardTable tablesorter">
     <thead>
         <tr>
             <th class="col-checkbox"><input type="checkbox" id="checkAll" checked=checked></th>
@@ -27,8 +27,8 @@
 
                 if curDir['existing_info'][0]:
                     indexer = curDir['existing_info'][2]
-                elif settings.INDEXER_DEFAULT > 0:
-                    indexer = settings.INDEXER_DEFAULT
+                elif sickbeard.INDEXER_DEFAULT > 0:
+                    indexer = sickbeard.INDEXER_DEFAULT
             %>
             <tr>
                 <td class="col-checkbox"><input type="checkbox" id="${show_id}" class="dirCheck" checked=checked></td>

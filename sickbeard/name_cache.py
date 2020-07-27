@@ -22,7 +22,6 @@ import threading
 
 # First Party Imports
 import sickbeard
-from sickchill import settings
 
 # Local Folder Imports
 from . import db
@@ -91,7 +90,7 @@ def buildNameCache(show=None):
 
     if not show:
         # logger.info("Building internal name cache for all shows")
-        for show in settings.showList:
+        for show in sickbeard.showList:
             buildNameCache(show)
     else:
         # logger.debug("Building internal name cache for " + show.name)

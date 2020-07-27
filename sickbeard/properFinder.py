@@ -27,7 +27,6 @@ import traceback
 
 # First Party Imports
 import sickbeard
-from sickchill import settings
 from sickchill.helper.exceptions import AuthException
 from sickchill.show.History import History
 
@@ -60,8 +59,8 @@ class ProperFinder(object):
         self._set_lastProperSearch(datetime.datetime.today().toordinal())
 
         run_at = ""
-        if None is settings.properFinderScheduler.start_time:
-            run_in = settings.properFinderScheduler.lastRun + settings.properFinderScheduler.cycleTime - datetime.datetime.now()
+        if None is sickbeard.properFinderScheduler.start_time:
+            run_in = sickbeard.properFinderScheduler.lastRun + sickbeard.properFinderScheduler.cycleTime - datetime.datetime.now()
             hours, remainder = divmod(run_in.seconds, 3600)
             minutes, seconds = divmod(remainder, 60)
             run_at = ", next check in approx. " + (
@@ -81,7 +80,7 @@ class ProperFinder(object):
 
         # for each provider get a list of the
         origThreadName = threading.currentThread().name
-        providers = [x for x in sickbeard.providers.sortedProviderList(settings.RANDOMIZE_PROVIDERS) if x.is_active]
+        providers = [x for x in sickbeard.providers.sortedProviderList(sickbeard.RANDOMIZE_PROVIDERS) if x.is_active]
         for curProvider in providers:
             threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
 
@@ -255,7 +254,7 @@ class ProperFinder(object):
 
                 # snatch it
                 snatchEpisode(result, SNATCHED_PROPER)
-                time.sleep(cpu_presets[settings.CPU_PRESET])
+                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
 
     @staticmethod
     def _genericName(name):

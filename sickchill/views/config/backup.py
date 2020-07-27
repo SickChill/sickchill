@@ -24,8 +24,8 @@ import time
 from tornado.web import addslash
 
 # First Party Imports
+import sickbeard
 from sickbeard import helpers
-from sickchill import settings
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
@@ -52,19 +52,19 @@ class ConfigBackupRestore(Config):
         finalResult = ''
 
         if backupDir:
-            source = [os.path.join(settings.DATA_DIR, 'sickbeard.db'), settings.CONFIG_FILE,
-                      os.path.join(settings.DATA_DIR, 'failed.db'),
-                      os.path.join(settings.DATA_DIR, 'cache.db')]
+            source = [os.path.join(sickbeard.DATA_DIR, 'sickbeard.db'), sickbeard.CONFIG_FILE,
+                      os.path.join(sickbeard.DATA_DIR, 'failed.db'),
+                      os.path.join(sickbeard.DATA_DIR, 'cache.db')]
             target = os.path.join(backupDir, 'sickchill-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
 
-            for (path, dirs, files) in os.walk(settings.CACHE_DIR, topdown=True):
+            for (path, dirs, files) in os.walk(sickbeard.CACHE_DIR, topdown=True):
                 for dirname in dirs:
-                    if path == settings.CACHE_DIR and dirname not in ['images']:
+                    if path == sickbeard.CACHE_DIR and dirname not in ['images']:
                         dirs.remove(dirname)
                 for filename in files:
                     source.append(os.path.join(path, filename))
 
-            if helpers.backup_config_zip(source, target, settings.DATA_DIR):
+            if helpers.backup_config_zip(source, target, sickbeard.DATA_DIR):
                 finalResult += "Successful backup to " + target
             else:
                 finalResult += "Backup FAILED"
@@ -82,7 +82,7 @@ class ConfigBackupRestore(Config):
 
         if backupFile:
             source = backupFile
-            target_dir = os.path.join(settings.DATA_DIR, 'restore')
+            target_dir = os.path.join(sickbeard.DATA_DIR, 'restore')
 
             if helpers.restore_config_zip(source, target_dir):
                 finalResult += "Successfully extracted restore files to " + target_dir
