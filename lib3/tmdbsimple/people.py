@@ -3,8 +3,7 @@
 """
 tmdbsimple.people
 ~~~~~~~~~~~~~~~~~
-This module implements the People, Credits, and Jobs functionality
-of tmdbsimple.
+This module implements the People and Credits functionality of tmdbsimple.
 
 Created by Celia Oakley on 2013-10-31.
 
@@ -251,31 +250,6 @@ class Credits(TMDB):
             A dict respresentation of the JSON returned from the API.
         """
         path = self._get_credit_id_path('info')
-
-        response = self._GET(path, kwargs)
-        self._set_attrs_to_values(response)
-        return response
-
-
-class Jobs(TMDB):
-    """
-    Jobs functionality.
-
-    See: https://developers.themoviedb.org/3/jobs
-    """
-    BASE_PATH = 'job'
-    URLS = {
-        'list': '/list',
-    }
-
-    def list(self, **kwargs):
-        """
-        Get a list of valid jobs.
-
-        Returns:
-            A dict respresentation of the JSON returned from the API.
-        """
-        path = self._get_path('list')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)

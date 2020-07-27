@@ -3,7 +3,7 @@ new_rtorrent_python-1.0.0a0.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7V
 new_rtorrent_python-1.0.0a0.dist-info/METADATA,sha256=WwbSaaeFH-8Xm3eeG0Sxt8NzqgfLIP5qU-oduaH_fUQ,797
 new_rtorrent_python-1.0.0a0.dist-info/RECORD,,
 new_rtorrent_python-1.0.0a0.dist-info/WHEEL,sha256=8Lm45v9gcYRm70DrgFGVe4WsUtUMi1_0Tso1hqPGMjA,92
-new_rtorrent_python-1.0.0a0.dist-info/direct_url.json,sha256=8opkaO25xOni421QmrNchyJjHCfS951ZuXf1dWTEivI,176
+new_rtorrent_python-1.0.0a0.dist-info/direct_url.json,sha256=YqmEagezQbkMPZAJfEvBZUXsh2cwfKmJlTKWXn0ov4g,176
 new_rtorrent_python-1.0.0a0.dist-info/metadata.json,sha256=x6l4KyaL3qfLznNq3QHoeeQ56wimTKmjmNq71BDsquY,1012
 new_rtorrent_python-1.0.0a0.dist-info/top_level.txt,sha256=FWRJ_srAK8kcTx4BAjKrIblsxeg1LUskHzXmsTHD92A,9
 rtorrent/__init__.py,sha256=NMgRW6Dj9SF4_aK2LvYQMrncnDcETZlpAA1fsCxcTAs,26370
@@ -21,6 +21,14 @@ rtorrent/context.py,sha256=ulYt6B9xw_aYZUokvj9TmF9OSKqcUf58M6I9ZSYde2Y,206
 rtorrent/err.py,sha256=9GuPFD7gqt5Yf8VKs_VPMQApJR0VSSe8v8Q3aTXOe7Y,1628
 rtorrent/file.py,sha256=d5uSZnLnlFTugT_nReRN06ph3GoKwGDFXRJcjk-U5Cw,3419
 rtorrent/group.py,sha256=jaAnSUqgw0QoClSBxTr8yH_h3Xs1aFXc3-Z3fzgx6CI,3082
+rtorrent/lib/__pycache__/torrentparser.cpython-37.pyc,,
+rtorrent/lib/torrentparser.py,sha256=tkBTTyydE0mVjE2LDDQJDphAPJpW8Iro0BTFH_b-eZc,3887
+rtorrent/lib/xmlrpc/__pycache__/basic_auth.cpython-37.pyc,,
+rtorrent/lib/xmlrpc/__pycache__/requests_transport.cpython-37.pyc,,
+rtorrent/lib/xmlrpc/__pycache__/scgi.cpython-37.pyc,,
+rtorrent/lib/xmlrpc/basic_auth.py,sha256=f743Dasl9zHyglTWEdpUAj1KcSOaNmQ-YrHeCTcwDDA,3068
+rtorrent/lib/xmlrpc/requests_transport.py,sha256=6XNBxCWDE8vQR0e9-mVLzENa-LvAV-wE1YKQm0QiePo,4820
+rtorrent/lib/xmlrpc/scgi.py,sha256=n2GfmqHs13IEp9F1r1WO63H5_AfWVAF4u1zw_ncVLnU,8058
 rtorrent/peer.py,sha256=_IM66933sMIqIdghobqg1k5Ee1zJNM9AKkN9mSyoXk4,3507
 rtorrent/rpc/__init__.py,sha256=LsOy6eEkn9HToBLm3bu16oVN_R7gYHLPGaiUCQThRpA,10479
 rtorrent/rpc/__pycache__/__init__.cpython-37.pyc,,

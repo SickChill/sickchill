@@ -37,9 +37,9 @@ class Changes(TMDB):
         100 items are returned per page.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
             start_date: (optional) Expected format is 'YYYY-MM-DD'.
             end_date: (optional) Expected format is 'YYYY-MM-DD'.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -60,9 +60,9 @@ class Changes(TMDB):
         100 items are returned per page.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
             start_date: (optional) Expected format is 'YYYY-MM-DD'.
             end_date: (optional) Expected format is 'YYYY-MM-DD'.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -83,9 +83,9 @@ class Changes(TMDB):
         100 items are returned per page.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
             start_date: (optional) Expected format is 'YYYY-MM-DD'.
             end_date: (optional) Expected format is 'YYYY-MM-DD'.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.

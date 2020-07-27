@@ -111,7 +111,7 @@ def tohex(data):
     return hexlify(data).decode("ascii")
 
 
-__version__ = "3.2"
+__version__ = "3.3"
 
 # export only interesting items
 __all__ = ["is_rarfile", "is_rarfile_sfx", "RarInfo", "RarFile", "RarExtFile"]

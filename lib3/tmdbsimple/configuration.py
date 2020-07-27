@@ -4,8 +4,8 @@
 tmdbsimple.configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-This module implements the Configuration, Certifications, and Timezones
-functionality of tmdbsimple.
+This module implements the Configuration and Certifications functionality of
+tmdbsimple.
 
 Created by Celia Oakley on 2013-10-31.
 
@@ -53,6 +53,9 @@ class Configuration(TMDB):
         can be useful if you are building an app that consumes data from the
         change feed.
 
+        Args:
+            None
+
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
@@ -65,6 +68,9 @@ class Configuration(TMDB):
     def countries(self, **kwargs):
         """
         Get the list of countries (ISO 3166-1 tags) used throughout TMDb.
+
+        Args:
+            None
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -79,6 +85,9 @@ class Configuration(TMDB):
         """
         Get a list of the jobs and departments we use on TMDb.
 
+        Args:
+            None
+
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
@@ -91,6 +100,9 @@ class Configuration(TMDB):
     def languages(self, **kwargs):
         """
         Get the list of languages (ISO 639-1 tags) used throughout TMDb.
+
+        Args:
+            None
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -105,6 +117,9 @@ class Configuration(TMDB):
         """
         Get a list of the officially supported translations on TMDb.
 
+        Args:
+            None
+
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
@@ -117,6 +132,9 @@ class Configuration(TMDB):
     def timezones(self, **kwargs):
         """
         Get the list of timezones used throughout TMDb.
+
+        Args:
+            None
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -144,6 +162,9 @@ class Certifications(TMDB):
         """
         Get an up to date list of the officially supported movie certifications on TMDb.
 
+        Args:
+            None
+
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
@@ -156,6 +177,9 @@ class Certifications(TMDB):
     def tv_list(self, **kwargs):
         """
         Get an up to date list of the officially supported TV show certifications on TMDb.
+
+        Args:
+            None
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -171,36 +195,13 @@ class Certifications(TMDB):
         """
         Get the list of supported certifications for movies.
 
+        Args:
+            None
+
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
         path = self._get_path('movie_list')
-
-        response = self._GET(path, kwargs)
-        self._set_attrs_to_values(response)
-        return response
-
-
-class Timezones(TMDB):
-    """
-    Timezones functionality.
-
-    See: https://developers.themoviedb.org/3/timezones
-    """
-    BASE_PATH = 'timezones'
-    URLS = {
-        'list': '/list',
-    }
-
-    def list(self, **kwargs):
-        """
-        Get the list of supported timezones for the API methods that support
-        them.
-
-        Returns:
-            A dict respresentation of the JSON returned from the API.
-        """
-        path = self._get_path('list')
 
         response = self._GET(path, kwargs)
         self._set_attrs_to_values(response)

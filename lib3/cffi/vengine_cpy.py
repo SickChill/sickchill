@@ -762,7 +762,7 @@ class VCPythonEngine(object):
         if isinstance(tp, model.ArrayType):
             tp_ptr = model.PointerType(tp.item)
             self._generate_cpy_const(False, name, tp, vartp=tp_ptr,
-                                     size_too = (tp.length == '...'))
+                                     size_too = tp.length_is_unknown())
         else:
             tp_ptr = model.PointerType(tp)
             self._generate_cpy_const(False, name, tp_ptr, category='var')
@@ -774,7 +774,7 @@ class VCPythonEngine(object):
         value = getattr(library, name)
         if isinstance(tp, model.ArrayType):   # int a[5] is "constant" in the
                                               # sense that "a=..." is forbidden
-            if tp.length == '...':
+            if tp.length_is_unknown():
                 assert isinstance(value, tuple)
                 (value, size) = value
                 BItemType = self.ffi._get_cached_btype(tp.item)

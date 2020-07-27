@@ -1,6 +1,6 @@
 Metadata-Version: 2.0
 Name: rarfile
-Version: 3.2
+Version: 3.3
 Summary: RAR archive reader for Python
 Home-page: https://github.com/markokr/rarfile
 Author: Marko Kreen

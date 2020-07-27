@@ -522,7 +522,6 @@ class Collections(TMDB):
 
         Args:
             language: (optional) ISO 639-1 code.
-            append_to_response: (optional) Comma separated, any movie method.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -539,9 +538,6 @@ class Collections(TMDB):
 
         Args:
             language: (optional) ISO 639-1 code.
-            append_to_response: (optional) Comma separated, any movie method.
-            include_image_language: (optional) Comma separated, a valid
-            ISO 69-1.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -558,7 +554,6 @@ class Collections(TMDB):
 
         Args:
             language: (optional) ISO 639-1 code.
-            append_to_response: (optional) Comma separated, any movie method.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -593,7 +588,6 @@ class Companies(TMDB):
         Get a companies details by id.
 
         Args:
-            append_to_response: (optional) Comma separated, any movie method.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -650,9 +644,8 @@ class Companies(TMDB):
         Get the list of movies associated with a particular company.
 
         Args:
-            page: (optional) Minimum value of 1.  Expected value is an integer.
             language: (optional) ISO 639-1 code.
-            append_to_response: (optional) Comma separated, any movie method.
+            page: (optional) Minimum value of 1.  Expected value is an integer.
 
         Returns:
             A dict representation of the JSON returned from the API.

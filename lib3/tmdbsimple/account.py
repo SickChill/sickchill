@@ -45,7 +45,7 @@ class Account(TMDB):
         """
         Get your account details.
 
-        Call this method first, before calling other Account methods.
+        Args:
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -60,11 +60,12 @@ class Account(TMDB):
 
     def lists(self, **kwargs):
         """
-        Get all of the lists created by an account. Will include private lists if you are the owner.
+        Get all of the lists created by an account. Will include private lists
+        if you are the owner.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
             language: (optional) ISO 639-1 code.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -81,9 +82,9 @@ class Account(TMDB):
         Get the list of your favorite movies.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
-            sort_by: (optional) 'created_at.asc' | 'created_at.desc'
             language: (optional) ISO 639-1 code.
+            sort_by: (optional) 'created_at.asc' | 'created_at.desc'
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -100,9 +101,9 @@ class Account(TMDB):
         Get the list of your favorite TV shows.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
-            sort_by: (optional) 'created_at.asc' | 'created_at.desc'
             language: (optional) ISO 639-1 code.
+            sort_by: (optional) 'created_at.asc' | 'created_at.desc'
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -144,9 +145,9 @@ class Account(TMDB):
         Get a list of all the movies you have rated.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
+            language: (optional) ISO 639-1 value.
             sort_by: (optional) 'created_at.asc' | 'created_at.desc'
-            language: (optional) ISO 639-1 code.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -163,9 +164,9 @@ class Account(TMDB):
         Get a list of all the TV shows you have rated.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
+            language: (optional) ISO 639-1 value.
             sort_by: (optional) 'created_at.asc' | 'created_at.desc'
-            language: (optional) ISO 639-1 code.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -182,9 +183,9 @@ class Account(TMDB):
         Get a list of all the TV episodes you have rated.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
+            language: (optional) ISO 639-1 value.
             sort_by: (optional) 'created_at.asc' | 'created_at.desc'
-            language: (optional) ISO 639-1 code.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -201,9 +202,9 @@ class Account(TMDB):
         Get a list of all the movies you have added to your watchlist.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
+            language: (optional) ISO 639-1 value.
             sort_by: (optional) 'created_at.asc' | 'created_at.desc'
-            language: (optional) ISO 639-1 code.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -220,9 +221,9 @@ class Account(TMDB):
         Get a list of all the TV shows you have added to your watchlist.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
+            language: (optional) ISO 639-1 value.
             sort_by: (optional) 'created_at.asc' | 'created_at.desc'
-            language: (optional) ISO 639-1 code.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -293,6 +294,8 @@ class Authentication(TMDB):
         If a guest session is not used for the first time within 24 hours,
         it will be automatically deleted.
 
+        Args:
+
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
@@ -307,6 +310,8 @@ class Authentication(TMDB):
         Create a temporary request token that can be used to validate a TMDb
         user login. More details about how this works can be found here
         (https://developers.themoviedb.org/3/authentication/how-do-i-generate-a-session-id).
+
+        Args:
 
         Returns:
             A dict respresentation of the JSON returned from the API.
