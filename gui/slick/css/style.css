@@ -1155,7 +1155,7 @@ span.snatched b {
     text-align: center;
 }
 
-.sickbeardTable {
+.sickchillTable {
     table-layout: auto;
     width: 100%;
     border-collapse: collapse;
@@ -1163,21 +1163,22 @@ span.snatched b {
     text-align: center;
     border: none;
     empty-cells: show;
+    padding: 0;
 }
 
-.sickbeardTable.display_show {
+.sickchillTable.display_show {
     clear: both
 }
 
-.sickbeardTable th {
+.sickchillTable th {
     color: #FFFFFF;
     text-align: center;
     background-color: #333333;
     white-space: nowrap;
 }
 
-.sickbeardTable th,
-.sickbeardTable td {
+.sickchillTable th,
+.sickchillTable td {
     border-top: 1px solid #FFFFFF;
     border-left: 1px solid #FFFFFF;
     padding: 4px;
@@ -3194,11 +3195,11 @@ thead.tablesorter-stickyHeader {
 }
 
 /* Zebra Widget - row alternating colors */
-.tablesorter tr.odd, .sickbeardTable tr.odd {
+.tablesorter tr.odd, .sickchillTable tr.odd {
     background-color: #F5F1E4;
 }
 
-.tablesorter tr.even, .sickbeardTable tr.even {
+.tablesorter tr.even, .sickchillTable tr.even {
     background-color: #DFDACF;
 }
 

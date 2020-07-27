@@ -28,9 +28,10 @@ from requests.exceptions import HTTPError
 
 # First Party Imports
 # from sickbeard import logger
-import sickbeard
+import sickchill.start
 from sickbeard import logger
 from sickbeard.tv import TVEpisode
+from sickchill import settings
 
 # Local Folder Imports
 from .base import Indexer
@@ -46,7 +47,7 @@ class TVDB(Indexer):
         self.show_url = 'https://thetvdb.com/?tab=series&id='
         self.base_url = 'https://thetvdb.com/api/%(apikey)s/series/'
         self.icon = 'images/indexers/thetvdb16.png'
-        tvdbsimple.KEYS.API_KEY = self.api_key
+        tvdbsimple.keys.API_KEY = self.api_key
         self._search = tvdbsimple.search.Search().series
         self._series = tvdbsimple.Series
         self.series_episodes = tvdbsimple.Series_Episodes
@@ -132,7 +133,7 @@ class TVDB(Indexer):
                     if series:
                         result = [series.info(language)]
             except HTTPError:
-                pass
+                logger.exception(traceback.format_exc())
         else:
             # Name as provided (usually from nfo)
             names = [name]
@@ -154,7 +155,7 @@ class TVDB(Indexer):
                     if result:
                         break
                 except HTTPError:
-                    pass
+                    logger.exception(traceback.format_exc())
 
         return result
 
@@ -222,10 +223,10 @@ class TVDB(Indexer):
 
     def get_favorites(self):
         results = []
-        if not (sickbeard.TVDB_USER and sickbeard.TVDB_USER_KEY):
+        if not (settings.TVDB_USER and settings.TVDB_USER_KEY):
             return results
 
-        user = tvdbsimple.User(sickbeard.TVDB_USER, sickbeard.TVDB_USER_KEY)
+        user = tvdbsimple.User(settings.TVDB_USER, settings.TVDB_USER_KEY)
         for tvdbid in user.favorites():
             results.append(self.get_series_by_id(tvdbid))
 
@@ -239,9 +240,9 @@ class TVDB(Indexer):
             logger.exception(traceback.format_exc())
             return False
 
-        sickbeard.TVDB_USER = user
-        sickbeard.TVDB_USER_KEY = key
+        settings.TVDB_USER = user
+        settings.TVDB_USER_KEY = key
 
-        sickbeard.save_config()
+        sickchill.start.save_config()
 
         return True

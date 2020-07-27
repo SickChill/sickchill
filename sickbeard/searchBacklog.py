@@ -21,7 +21,7 @@ import datetime
 import threading
 
 # First Party Imports
-import sickbeard
+from sickchill import settings
 
 # Local Folder Imports
 from . import common, db, logger, scheduler, search_queue, ui
@@ -43,7 +43,7 @@ class BacklogSearcher(object):
     def __init__(self):
 
         self._lastBacklog = self._get_lastBacklog()
-        self.cycleTime = sickbeard.BACKLOG_FREQUENCY / 60 / 24
+        self.cycleTime = settings.BACKLOG_FREQUENCY / 60 / 24
         self.lock = threading.Lock()
         self.amActive = False
         self.amPaused = False
@@ -78,7 +78,7 @@ class BacklogSearcher(object):
         if which_shows:
             show_list = which_shows
         else:
-            show_list = sickbeard.showList
+            show_list = settings.showList
 
         self._get_lastBacklog()
 
@@ -86,8 +86,8 @@ class BacklogSearcher(object):
         fromDate = datetime.date.min
 
         if not (which_shows or curDate - self._lastBacklog >= self.cycleTime):
-            logger.info("Running limited backlog on missed episodes " + str(sickbeard.BACKLOG_DAYS) + " day(s) and older only")
-            fromDate = datetime.date.today() - datetime.timedelta(days=sickbeard.BACKLOG_DAYS)
+            logger.info("Running limited backlog on missed episodes " + str(settings.BACKLOG_DAYS) + " day(s) and older only")
+            fromDate = datetime.date.today() - datetime.timedelta(days=settings.BACKLOG_DAYS)
 
         # go through non air-by-date shows and see if they need any episodes
         for curShow in show_list:
@@ -101,7 +101,7 @@ class BacklogSearcher(object):
                 self.currentSearchInfo = {'title': curShow.name + " Season " + str(season)}
 
                 backlog_queue_item = search_queue.BacklogQueueItem(curShow, segment)
-                sickbeard.searchQueueScheduler.action.add_item(backlog_queue_item)  # @UndefinedVariable
+                settings.searchQueueScheduler.action.add_item(backlog_queue_item)  # @UndefinedVariable
 
             if not segments:
                 logger.debug("Nothing needs to be downloaded for {0}, skipping".format(curShow.name))
@@ -157,7 +157,7 @@ class BacklogSearcher(object):
             if cur_status not in {common.WANTED, common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER}:
                 continue
 
-            if cur_status == common.DOWNLOADED and sickbeard.BACKLOG_MISSING_ONLY:
+            if cur_status == common.DOWNLOADED and settings.BACKLOG_MISSING_ONLY:
                 continue
 
             if cur_status != common.WANTED:

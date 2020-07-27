@@ -21,10 +21,10 @@ import re
 import traceback
 import urllib
 from collections import OrderedDict
+from urllib.parse import urljoin
 
 # Third Party Imports
 import validators
-from requests.compat import urljoin
 
 # First Party Imports
 from sickbeard import logger, tvcache
@@ -33,11 +33,11 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class KatProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "KickAssTorrents")
+        super().__init__("KickAssTorrents")
 
         self.public = True
 
@@ -186,6 +186,3 @@ class KatProvider(TorrentProvider):
         self.urls = {"search": urljoin(self.url, "/usearch/{q}/"), "rss": urljoin(self.url, "/tv/")}
 
         return self.url
-
-
-provider = KatProvider()

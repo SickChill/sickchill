@@ -18,14 +18,14 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 from time import sleep
+from urllib.parse import urljoin
 
 # Third Party Imports
 from requests.auth import HTTPDigestAuth
-from requests.compat import urljoin
 
 # First Party Imports
-import sickbeard
 from sickbeard.clients.generic import GenericClient
+from sickchill import settings
 
 
 class Client(GenericClient):
@@ -45,7 +45,7 @@ class Client(GenericClient):
     def api(self):
         try:
             self.url = urljoin(self.host, 'version/api')
-            response = self.session.get(self.url, verify=sickbeard.TORRENT_VERIFY_CERT)
+            response = self.session.get(self.url, verify=settings.TORRENT_VERIFY_CERT)
             if response.status_code == 401:
                 version = None
             else:
@@ -68,7 +68,7 @@ class Client(GenericClient):
 
         else:
             try:
-                self.response = self.session.get(self.host, verify=sickbeard.TORRENT_VERIFY_CERT)
+                self.response = self.session.get(self.host, verify=settings.TORRENT_VERIFY_CERT)
             except Exception:
                 return None
 
@@ -82,12 +82,12 @@ class Client(GenericClient):
         data = {'urls': result.url}
 
         if self.api > 6:
-            if sickbeard.TORRENT_PATH:
-                data['savepath'] = sickbeard.TORRENT_PATH
+            if settings.TORRENT_PATH:
+                data['savepath'] = settings.TORRENT_PATH
 
-            label = sickbeard.TORRENT_LABEL
+            label = settings.TORRENT_LABEL
             if result.show.is_anime:
-                label = sickbeard.TORRENT_LABEL_ANIME
+                label = settings.TORRENT_LABEL_ANIME
 
             if label:
                 data['category'] = label.replace(' ', '_')
@@ -104,12 +104,12 @@ class Client(GenericClient):
 
         data = {}
         if self.api > 6:
-            if sickbeard.TORRENT_PATH:
-                data['savepath'] = sickbeard.TORRENT_PATH
+            if settings.TORRENT_PATH:
+                data['savepath'] = settings.TORRENT_PATH
 
-            label = sickbeard.TORRENT_LABEL
+            label = settings.TORRENT_LABEL
             if result.show.is_anime:
-                label = sickbeard.TORRENT_LABEL_ANIME
+                label = settings.TORRENT_LABEL_ANIME
 
             if label:
                 data['category'] = label.replace(' ', '_')
@@ -121,9 +121,9 @@ class Client(GenericClient):
 
     def _set_torrent_label(self, result):
 
-        label = sickbeard.TORRENT_LABEL
+        label = settings.TORRENT_LABEL
         if result.show.is_anime:
-            label = sickbeard.TORRENT_LABEL_ANIME
+            label = settings.TORRENT_LABEL_ANIME
 
         if 6 < self.api < 10 and label:
             self.url = urljoin(self.host, 'command/setLabel')
@@ -149,7 +149,7 @@ class Client(GenericClient):
     def _set_torrent_pause(self, result):
 
         self.url = urljoin(self.host, 'command/resume')
-        if sickbeard.TORRENT_PAUSED:
+        if settings.TORRENT_PAUSED:
             self.url = urljoin(self.host, 'command/pause')
 
         data = {'hash': result.hash.lower()}

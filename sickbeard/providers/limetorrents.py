@@ -25,17 +25,17 @@ import traceback
 from bs4 import BeautifulSoup
 
 # First Party Imports
-import sickbeard
 from sickbeard import logger, tvcache
+from sickchill import settings
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class LimeTorrentsProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "LimeTorrents")
+        super().__init__("LimeTorrents")
 
         self.urls = {
             'index': 'https://www.limetorrents.info/',
@@ -88,7 +88,7 @@ class LimeTorrentsProvider(TorrentProvider):
                             download_url = item.enclosure['url']
                             torrent_hash = re.match(r"(.*)([A-F0-9]{40})(.*)", download_url, re.I).group(2)
 
-                            if sickbeard.TORRENT_METHOD != "blackhole" and 'magnet:?' not in download_url:
+                            if settings.TORRENT_METHOD != "blackhole" and 'magnet:?' not in download_url:
                                 download_url = "magnet:?xt=urn:btih:" + torrent_hash + "&dn=" + title + self._custom_trackers
 
                             if not (title and download_url):
@@ -137,6 +137,3 @@ class LimeTorrentsProvider(TorrentProvider):
             results += items
 
         return results
-
-
-provider = LimeTorrentsProvider()

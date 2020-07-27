@@ -17,8 +17,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# Third Party Imports
-from requests.compat import urljoin
+# Stdlib Imports
+from urllib.parse import urljoin
 
 # First Party Imports
 from sickbeard import logger, tvcache
@@ -26,7 +26,7 @@ from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class ShazbatProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
@@ -75,5 +75,3 @@ class ShazbatCache(tvcache.TVCache):
 
     def _check_auth(self, data):
         return self.provider._check_auth_from_data(data)
-
-provider = ShazbatProvider()

@@ -26,7 +26,7 @@ import os
 import unittest
 
 # First Party Imports
-import sickbeard
+from sickchill import settings
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.nzb.NZBProvider import NZBProvider
 
@@ -62,7 +62,7 @@ class NZBProviderTests(GenericProviderTests):
         }
 
         for ((use_nzb, enabled), result) in test_cases.items():
-            sickbeard.USE_NZBS = use_nzb
+            settings.USE_NZBS = use_nzb
 
             provider = NZBProvider('Test Provider')
             provider.enabled = enabled
@@ -137,7 +137,7 @@ class NZBProviderTests(GenericProviderTests):
         ]
 
         for nzb_dir in test_cases:
-            sickbeard.NZB_DIR = nzb_dir
+            settings.NZB_DIR = nzb_dir
 
             self.assertEqual(NZBProvider('Test Provider')._get_storage_dir(), nzb_dir)
 

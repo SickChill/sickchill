@@ -29,6 +29,7 @@ import unittest
 import sickbeard
 from sickbeard import common as common, search as search
 from sickbeard.tv import TVEpisode, TVShow
+from sickchill import settings
 from tests import test_lib as test
 
 TESTS = {
@@ -114,7 +115,7 @@ def generator(tvdb_id, show_name, cur_data, force_search):
         show.name = show_name
         show.quality = cur_data["q"]
         show.saveToDB()
-        sickbeard.showList.append(show)
+        settings.showList.append(show)
         episode = None
 
         for epNumber in cur_data["e"]:

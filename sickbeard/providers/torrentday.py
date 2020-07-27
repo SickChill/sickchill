@@ -19,10 +19,10 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import re
+from urllib.parse import urljoin
 
 # Third Party Imports
 import validators
-from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
 # First Party Imports
@@ -31,12 +31,12 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TorrentDayProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, 'TorrentDay')
+        super().__init__("TorrentDay")
 
         # Credentials
         self.username = None
@@ -145,7 +145,7 @@ class TorrentDayProvider(TorrentProvider):
 
                 for torrent in torrents:
 
-                    title = re.sub(r'\[.*\=.*\].*\[/.*\]', '', torrent['name']) if torrent['name'] else None
+                    title = re.sub(r'\[.*=.*\].*\[/.*\]', '', torrent['name']) if torrent['name'] else None
                     torrent_url = urljoin(download_url, '{0}/{1}.torrent'.format(torrent['t'], torrent['name'])) if torrent['t'] and torrent['name'] else \
                         None
                     if not all([title, torrent_url]):
@@ -176,6 +176,3 @@ class TorrentDayProvider(TorrentProvider):
             results += items
 
         return results
-
-
-provider = TorrentDayProvider()

@@ -1,6 +1,6 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
-    import sickbeard
+    from sickchill import settings
     from sickbeard.filters import hide
     from sickbeard.clients import getClientListDict
 %>
@@ -36,7 +36,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="randomize_providers" id="randomize_providers"
-                                           class="enabler" ${('', 'checked="checked"')[bool(sickbeard.RANDOMIZE_PROVIDERS)]}/>
+                                           class="enabler" ${('', 'checked="checked"')[bool(settings.RANDOMIZE_PROVIDERS)]}/>
                                     <label for="randomize_providers">${_('randomize the provider search order instead of going in order of placement')}</label>
                                 </div>
                             </div>
@@ -47,7 +47,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="download_propers" id="download_propers"
-                                           class="enabler" ${('', 'checked="checked"')[bool(sickbeard.DOWNLOAD_PROPERS)]}/>
+                                           class="enabler" ${('', 'checked="checked"')[bool(settings.DOWNLOAD_PROPERS)]}/>
                                     <label for="download_propers">${_('replace original download with "Proper" or "Repack" if nuked')}</label>
                                 </div>
                             </div>
@@ -62,7 +62,7 @@
                                         <select id="check_propers_interval" name="check_propers_interval" class="form-control input-sm input150">
                                             <% check_propers_interval_text = {'daily': _('24 hours'), '4h': _('4 hours'), '90m': _('90 mins'), '45m': _('45 mins'), '15m': _('15 mins')} %>
                                             % for curInterval in check_propers_interval_text:
-                                                <option value="${curInterval}" ${('', 'selected="selected"')[sickbeard.CHECK_PROPERS_INTERVAL == curInterval]}>${check_propers_interval_text[curInterval]}</option>
+                                                <option value="${curInterval}" ${('', 'selected="selected"')[settings.CHECK_PROPERS_INTERVAL == curInterval]}>${check_propers_interval_text[curInterval]}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -77,7 +77,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="number" min="1" step="1" name="backlog_days"
-                                                   value="${sickbeard.BACKLOG_DAYS}" class="form-control input-sm input75"
+                                                   value="${settings.BACKLOG_DAYS}" class="form-control input-sm input75"
                                                    autocapitalize="off" id="backlog_days"/>
                                         </div>
                                     </div>
@@ -97,13 +97,13 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="number" min="720" step="60" name="backlog_frequency"
-                                                   value="${sickbeard.BACKLOG_FREQUENCY}" class="form-control input-sm input75"
+                                                   value="${settings.BACKLOG_FREQUENCY}" class="form-control input-sm input75"
                                                    id="backlog_frequency" autocapitalize="off"/>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="backlog_frequency">${_('time in minutes between searches (min.')} ${sickbeard.MIN_BACKLOG_FREQUENCY})</label>
+                                            <label for="backlog_frequency">${_('time in minutes between searches (min.')} ${settings.MIN_BACKLOG_FREQUENCY})</label>
                                         </div>
                                     </div>
                                 </div>
@@ -117,13 +117,13 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="number" min="10" step="1" name="dailysearch_frequency"
-                                                   id="dailysearch_frequency" value="${sickbeard.DAILYSEARCH_FREQUENCY}"
+                                                   id="dailysearch_frequency" value="${settings.DAILYSEARCH_FREQUENCY}"
                                                    class="form-control input-sm input75" autocapitalize="off"/>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="dailysearch_frequency">${_('time in minutes between searches (min.')} ${sickbeard.MIN_DAILYSEARCH_FREQUENCY})</label>
+                                            <label for="dailysearch_frequency">${_('time in minutes between searches (min.')} ${settings.MIN_DAILYSEARCH_FREQUENCY})</label>
                                         </div>
                                     </div>
                                 </div>
@@ -135,7 +135,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="ignore_words" value="${sickbeard.IGNORE_WORDS}"
+                                            <input type="text" name="ignore_words" value="${settings.IGNORE_WORDS}"
                                                    id="ignore_words" class="form-control input-sm input350" autocapitalize="off"/>
                                         </div>
                                     </div>
@@ -154,7 +154,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="prefer_words" value="${sickbeard.PREFER_WORDS}"
+                                            <input type="text" name="prefer_words" value="${settings.PREFER_WORDS}"
                                                    id="prefer_words" class="form-control input-sm input350" autocapitalize="off"/>
                                         </div>
                                     </div>
@@ -173,7 +173,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="require_words" value="${sickbeard.REQUIRE_WORDS}"
+                                            <input type="text" name="require_words" value="${settings.REQUIRE_WORDS}"
                                                    id="require_words" class="form-control input-sm input350" autocapitalize="off"/>
                                         </div>
                                     </div>
@@ -192,7 +192,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="ignored_subs_list" value="${sickbeard.IGNORED_SUBS_LIST}"
+                                            <input type="text" name="ignored_subs_list" value="${settings.IGNORED_SUBS_LIST}"
                                                    class="form-control input-sm input350" autocapitalize="off"/>
                                         </div>
                                     </div>
@@ -212,7 +212,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="allow_high_priority"
-                                           id="allow_high_priority" ${('', 'checked="checked"')[bool(sickbeard.ALLOW_HIGH_PRIORITY)]}/>
+                                           id="allow_high_priority" ${('', 'checked="checked"')[bool(settings.ALLOW_HIGH_PRIORITY)]}/>
                                     <label for="allow_high_priority">${_('set downloads of recently aired episodes to high priority')}</label>
                                 </div>
                             </div>
@@ -222,7 +222,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="quality_allow_hevc"
-                                           id="quality_allow_hevc" ${('', 'checked="checked"')[bool(sickbeard.QUALITY_ALLOW_HEVC)]}/>
+                                           id="quality_allow_hevc" ${('', 'checked="checked"')[bool(settings.QUALITY_ALLOW_HEVC)]}/>
                                     <label for="quality_allow_hevc">${_('whether we should download HEVC x265 releases')}</label>
                                 </div>
                             </div>
@@ -234,7 +234,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input id="use_failed_downloads" type="checkbox" class="enabler"
-                                                   name="use_failed_downloads" ${('', 'checked="checked"')[bool(sickbeard.USE_FAILED_DOWNLOADS)]} />
+                                                   name="use_failed_downloads" ${('', 'checked="checked"')[bool(settings.USE_FAILED_DOWNLOADS)]} />
                                             <label for="use_failed_downloads">${_('use Failed Download Handling?')}</label>
                                         </div>
                                     </div>
@@ -256,7 +256,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <input id="delete_failed" type="checkbox"
-                                                       name="delete_failed" ${('', 'checked="checked"')[bool(sickbeard.DELETE_FAILED)]}/>
+                                                       name="delete_failed" ${('', 'checked="checked"')[bool(settings.DELETE_FAILED)]}/>
                                                 <label for="delete_failed">${_('delete files left over from a failed download?')}</label>
                                             </div>
                                         </div>
@@ -280,7 +280,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <input id="backlog_missing_only" type="checkbox"
-                                                       name="backlog_missing_only" ${('', 'checked="checked"')[bool(sickbeard.BACKLOG_MISSING_ONLY)]}/>
+                                                       name="backlog_missing_only" ${('', 'checked="checked"')[bool(settings.BACKLOG_MISSING_ONLY)]}/>
                                                 <label for="backlog_missing_only">${_('restrict backlog searches to missing episodes only?')}</label>
                                             </div>
                                         </div>
@@ -306,7 +306,7 @@
                         <div class="component-group-desc">
                             <h3>${_('NZB Search')}</h3>
                             <p>${_('How to handle NZB search results.')}</p>
-                            <div id="nzb_method_icon" class="add-client-icon-${sickbeard.NZB_METHOD}"></div>
+                            <div id="nzb_method_icon" class="add-client-icon-${settings.NZB_METHOD}"></div>
                         </div>
                     </div>
                     <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
@@ -319,7 +319,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="use_nzbs" class="enabler"
-                                           id="use_nzbs" ${('', 'checked="checked"')[bool(sickbeard.USE_NZBS)]}/>
+                                           id="use_nzbs" ${('', 'checked="checked"')[bool(settings.USE_NZBS)]}/>
                                     <label for="use_nzbs">${_('enable NZB search providers')}</label>
                                 </div>
                             </div>
@@ -333,7 +333,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <input type="number" min="1" step="1" name="usenet_retention"
-                                                       value="${sickbeard.USENET_RETENTION}" class="form-control input-sm input75"
+                                                       value="${settings.USENET_RETENTION}" class="form-control input-sm input75"
                                                        id="usenet_retention" autocapitalize="off"/>
                                             </div>
                                         </div>
@@ -352,7 +352,7 @@
                                         <select name="nzb_method" id="nzb_method" class="form-control input-sm input150" title="nzb_method">
                                             <% nzb_method_text = {'blackhole': "Black hole", 'sabnzbd': "SABnzbd", 'nzbget': "NZBget", 'download_station': "Synology DS"} %>
                                             % for curAction in ('blackhole', 'sabnzbd', 'nzbget', 'download_station'):
-                                                <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.NZB_METHOD == curAction]}>${nzb_method_text[curAction]}</option>
+                                                <option value="${curAction}" ${('', 'selected="selected"')[settings.NZB_METHOD == curAction]}>${nzb_method_text[curAction]}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -366,7 +366,7 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <input type="text" id="sab_host" name="sab_host" value="${sickbeard.SAB_HOST}"
+                                                    <input type="text" id="sab_host" name="sab_host" value="${settings.SAB_HOST}"
                                                            class="form-control input-sm input350" autocapitalize="off"/>
                                                 </div>
                                             </div>
@@ -386,7 +386,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="sab_username" id="sab_username"
-                                                           value="${sickbeard.SAB_USERNAME}" class="form-control input-sm input200"
+                                                           value="${settings.SAB_USERNAME}" class="form-control input-sm input200"
                                                            autocapitalize="off" autocomplete="no"/>
                                                 </div>
                                             </div>
@@ -406,7 +406,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input
-                                                        type="password" name="sab_password" id="sab_password" value="${sickbeard.SAB_PASSWORD|hide}"
+                                                        type="password" name="sab_password" id="sab_password" value="${settings.SAB_PASSWORD|hide}"
                                                         class="form-control input-sm input200" autocomplete="no" autocapitalize="off"
                                                     />
                                                 </div>
@@ -427,7 +427,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input
-                                                        type="password" name="sab_apikey" id="sab_apikey" value="${sickbeard.SAB_APIKEY|hide}"
+                                                        type="password" name="sab_apikey" id="sab_apikey" value="${settings.SAB_APIKEY|hide}"
                                                         class="form-control input-sm input350" autocapitalize="off"
                                                     />
                                                 </div>
@@ -448,7 +448,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="sab_category" id="sab_category"
-                                                           value="${sickbeard.SAB_CATEGORY}" class="form-control input-sm input200"
+                                                           value="${settings.SAB_CATEGORY}" class="form-control input-sm input200"
                                                            autocapitalize="off"/>
                                                 </div>
                                             </div>
@@ -468,7 +468,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="sab_category_backlog" id="sab_category_backlog"
-                                                           value="${sickbeard.SAB_CATEGORY_BACKLOG}"
+                                                           value="${settings.SAB_CATEGORY_BACKLOG}"
                                                            class="form-control input-sm input200" autocapitalize="off"/>
                                                 </div>
                                             </div>
@@ -488,7 +488,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="sab_category_anime" id="sab_category_anime"
-                                                           value="${sickbeard.SAB_CATEGORY_ANIME}"
+                                                           value="${settings.SAB_CATEGORY_ANIME}"
                                                            class="form-control input-sm input200" autocapitalize="off"/>
                                                 </div>
                                             </div>
@@ -510,7 +510,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="sab_category_anime_backlog"
                                                            id="sab_category_anime_backlog"
-                                                           value="${sickbeard.SAB_CATEGORY_ANIME_BACKLOG}"
+                                                           value="${settings.SAB_CATEGORY_ANIME_BACKLOG}"
                                                            class="form-control input-sm input200" autocapitalize="off"/>
                                                 </div>
                                             </div>
@@ -522,14 +522,14 @@
                                         </div>
                                     </div>
 
-                                    % if sickbeard.ALLOW_HIGH_PRIORITY is True:
+                                    % if settings.ALLOW_HIGH_PRIORITY is True:
                                         <div class="field-pair row">
                                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                                 <label class="component-title">${_('Use forced priority')}</label>
                                             </div>
                                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                                 <input type="checkbox" name="sab_forced" class="enabler"
-                                                       id="sab_forced" ${('', 'checked="checked"')[bool(sickbeard.SAB_FORCED)]}/>
+                                                       id="sab_forced" ${('', 'checked="checked"')[bool(settings.SAB_FORCED)]}/>
                                                 <label for="sab_forced">${_('enable to change priority from HIGH to FORCED')}</label>
                                             </div>
                                         </div>
@@ -544,7 +544,7 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <input type="text" name="nzb_dir" id="nzb_dir" value="${sickbeard.NZB_DIR}"
+                                                    <input type="text" name="nzb_dir" id="nzb_dir" value="${settings.NZB_DIR}"
                                                            class="form-control input-sm input350" autocapitalize="off"/>
                                                 </div>
                                             </div>
@@ -567,7 +567,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input id="nzbget_use_https" type="checkbox" class="enabler"
-                                                           name="nzbget_use_https" ${('', 'checked="checked"')[bool(sickbeard.NZBGET_USE_HTTPS)]}/>
+                                                           name="nzbget_use_https" ${('', 'checked="checked"')[bool(settings.NZBGET_USE_HTTPS)]}/>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -586,7 +586,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="nzbget_host" id="nzbget_host"
-                                                           value="${sickbeard.NZBGET_HOST}" class="form-control input-sm input350"
+                                                           value="${settings.NZBGET_HOST}" class="form-control input-sm input350"
                                                            autocapitalize="off"/>
                                                 </div>
                                             </div>
@@ -610,7 +610,7 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <input type="text" name="nzbget_username" value="${sickbeard.NZBGET_USERNAME}"
+                                                    <input type="text" name="nzbget_username" value="${settings.NZBGET_USERNAME}"
                                                            class="form-control input-sm input200" autocapitalize="off"
                                                            id="nzbget_username" autocomplete="no"/>
                                                 </div>
@@ -631,7 +631,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input
-                                                        type="password" name="nzbget_password" id="nzbget_password" value="${sickbeard.NZBGET_PASSWORD|hide}"
+                                                        type="password" name="nzbget_password" id="nzbget_password" value="${settings.NZBGET_PASSWORD|hide}"
                                                         class="form-control input-sm input200" autocomplete="no" autocapitalize="off"
                                                     />
                                                 </div>
@@ -652,7 +652,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="nzbget_category" id="nzbget_category"
-                                                           value="${sickbeard.NZBGET_CATEGORY}"
+                                                           value="${settings.NZBGET_CATEGORY}"
                                                            class="form-control input-sm input200" autocapitalize="off"/>
                                                 </div>
                                             </div>
@@ -672,7 +672,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="nzbget_category_backlog" id="nzbget_category_backlog"
-                                                           value="${sickbeard.NZBGET_CATEGORY_BACKLOG}"
+                                                           value="${settings.NZBGET_CATEGORY_BACKLOG}"
                                                            class="form-control input-sm input200" autocapitalize="off"/>
                                                 </div>
                                             </div>
@@ -692,7 +692,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="nzbget_category_anime" id="nzbget_category_anime"
-                                                           value="${sickbeard.NZBGET_CATEGORY_ANIME}"
+                                                           value="${settings.NZBGET_CATEGORY_ANIME}"
                                                            class="form-control input-sm input200" autocapitalize="off"/>
                                                 </div>
                                             </div>
@@ -713,7 +713,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="nzbget_category_anime_backlog"
                                                            id="nzbget_category_anime_backlog"
-                                                           value="${sickbeard.NZBGET_CATEGORY_ANIME_BACKLOG}"
+                                                           value="${settings.NZBGET_CATEGORY_ANIME_BACKLOG}"
                                                            class="form-control input-sm input200" autocapitalize="off"/>
                                                 </div>
                                             </div>
@@ -733,12 +733,12 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <select name="nzbget_priority" id="nzbget_priority" class="form-control input-sm input200">
-                                                        <option value="-100" ${('', 'selected="selected"')[sickbeard.NZBGET_PRIORITY == -100]}>${_('Very low')}</option>
-                                                        <option value="-50" ${('', 'selected="selected"')[sickbeard.NZBGET_PRIORITY == -50]}>${_('Low')}</option>
-                                                        <option value="0" ${('', 'selected="selected"')[sickbeard.NZBGET_PRIORITY == 0]}>${_('Normal')}</option>
-                                                        <option value="50" ${('', 'selected="selected"')[sickbeard.NZBGET_PRIORITY == 50]}>${_('High')}</option>
-                                                        <option value="100" ${('', 'selected="selected"')[sickbeard.NZBGET_PRIORITY == 100]}>${_('Very high')}</option>
-                                                        <option value="900" ${('', 'selected="selected"')[sickbeard.NZBGET_PRIORITY == 900]}>${_('Force')}</option>
+                                                        <option value="-100" ${('', 'selected="selected"')[settings.NZBGET_PRIORITY == -100]}>${_('Very low')}</option>
+                                                        <option value="-50" ${('', 'selected="selected"')[settings.NZBGET_PRIORITY == -50]}>${_('Low')}</option>
+                                                        <option value="0" ${('', 'selected="selected"')[settings.NZBGET_PRIORITY == 0]}>${_('Normal')}</option>
+                                                        <option value="50" ${('', 'selected="selected"')[settings.NZBGET_PRIORITY == 50]}>${_('High')}</option>
+                                                        <option value="100" ${('', 'selected="selected"')[settings.NZBGET_PRIORITY == 100]}>${_('Very high')}</option>
+                                                        <option value="900" ${('', 'selected="selected"')[settings.NZBGET_PRIORITY == 900]}>${_('Force')}</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -761,7 +761,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="syno_dsm_host" id="syno_dsm_host"
-                                                           value="${sickbeard.SYNOLOGY_DSM_HOST}"
+                                                           value="${settings.SYNOLOGY_DSM_HOST}"
                                                            class="form-control input-sm input350" autocapitalize="off"/>
                                                 </div>
                                             </div>
@@ -781,7 +781,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="syno_dsm_user" id="syno_dsm_user"
-                                                           value="${sickbeard.SYNOLOGY_DSM_USERNAME}"
+                                                           value="${settings.SYNOLOGY_DSM_USERNAME}"
                                                            class="form-control input-sm input200" autocapitalize="off"
                                                            autocomplete="no"/>
                                                 </div>
@@ -802,7 +802,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input
-                                                        type="password" name="syno_dsm_pass" id="syno_dsm_pass" value="${sickbeard.SYNOLOGY_DSM_PASSWORD|hide}"
+                                                        type="password" name="syno_dsm_pass" id="syno_dsm_pass" value="${settings.SYNOLOGY_DSM_PASSWORD|hide}"
                                                         class="form-control input-sm input200" autocomplete="no" autocapitalize="off"
                                                     />
                                                 </div>
@@ -823,7 +823,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="syno_dsm_path" id="syno_dsm_path"
-                                                           value="${sickbeard.SYNOLOGY_DSM_PATH}"
+                                                           value="${settings.SYNOLOGY_DSM_PATH}"
                                                            class="form-control input-sm input350" autocapitalize="off"/>
                                                 </div>
                                             </div>
@@ -870,7 +870,7 @@
                         <div class="component-group-desc">
                             <h3>${_('Torrent Search')}</h3>
                             <p>${_('How to handle Torrent search results.')}</p>
-                            <div id="torrent_method_icon" class="add-client-icon-${sickbeard.TORRENT_METHOD}"></div>
+                            <div id="torrent_method_icon" class="add-client-icon-${settings.TORRENT_METHOD}"></div>
                         </div>
                     </div>
                     <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
@@ -881,7 +881,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="use_torrents" class="enabler"
-                                           id="use_torrents" ${('', 'checked="checked"')[bool(sickbeard.USE_TORRENTS)]}/>
+                                           id="use_torrents" ${('', 'checked="checked"')[bool(settings.USE_TORRENTS)]}/>
                                     <label for="use_torrents">${_('enable torrent search providers')}</label>
                                 </div>
                             </div>
@@ -893,7 +893,7 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="text" name="trackers_list" value="${sickbeard.TRACKERS_LIST}"
+                                                <input type="text" name="trackers_list" value="${settings.TRACKERS_LIST}"
                                                        class="form-control input-sm input350" autocapitalize="off"/>
                                             </div>
                                         </div>
@@ -913,7 +913,7 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <select name="torrent_method" id="torrent_method" class="form-control input-sm input200" title="torrent_method">
                                             % for curAction, curTitle in getClientListDict().items():
-                                                <option value="${curAction}" ${('', 'selected="selected"')[sickbeard.TORRENT_METHOD == curAction]}>${curTitle}</option>
+                                                <option value="${curAction}" ${('', 'selected="selected"')[settings.TORRENT_METHOD == curAction]}>${curTitle}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -927,7 +927,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="torrent_dir" id="torrent_dir"
-                                                           value="${sickbeard.TORRENT_DIR}"
+                                                           value="${settings.TORRENT_DIR}"
                                                            class="form-control input-sm input350" autocapitalize="off"/>
                                                 </div>
                                             </div>
@@ -952,7 +952,7 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <input type="text" name="torrent_host" id="torrent_host" value="${sickbeard.TORRENT_HOST}"
+                                                    <input type="text" name="torrent_host" id="torrent_host" value="${settings.TORRENT_HOST}"
                                                            class="form-control input-sm input350" autocapitalize="off"/>
                                                 </div>
                                             </div>
@@ -971,7 +971,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="torrent_rpcurl" id="torrent_rpcurl"
-                                                           value="${sickbeard.TORRENT_RPCURL}"
+                                                           value="${settings.TORRENT_RPCURL}"
                                                            class="form-control input-sm input350" autocapitalize="off"/>
                                                 </div>
                                             </div>
@@ -991,7 +991,7 @@
                                                 <% http_authtype = {'none': "None", 'basic': "Basic", 'digest': "Digest"} %>
                                                 % for authvalue, authname in http_authtype.items():
                                                     <option id="torrent_auth_type_value"
-                                                            value="${authvalue}" ${('', 'selected="selected"')[sickbeard.TORRENT_AUTH_TYPE == authvalue]}>${authname}</option>
+                                                            value="${authvalue}" ${('', 'selected="selected"')[settings.TORRENT_AUTH_TYPE == authvalue]}>${authname}</option>
                                                 % endfor
                                             </select>
                                         </div>
@@ -1002,7 +1002,7 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="torrent_verify_cert" class="enabler"
-                                                   id="torrent_verify_cert" ${('', 'checked="checked"')[bool(sickbeard.TORRENT_VERIFY_CERT)]}/>
+                                                   id="torrent_verify_cert" ${('', 'checked="checked"')[bool(settings.TORRENT_VERIFY_CERT)]}/>
                                             <label for="torrent_verify_cert"></label>
                                         </div>
                                     </div>
@@ -1014,7 +1014,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="torrent_username" id="torrent_username"
-                                                           value="${sickbeard.TORRENT_USERNAME}"
+                                                           value="${settings.TORRENT_USERNAME}"
                                                            class="form-control input-sm input200" autocapitalize="off"
                                                            autocomplete="no"/>
                                                 </div>
@@ -1034,7 +1034,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input
-                                                        type="password" name="torrent_password" id="torrent_password" value="${sickbeard.TORRENT_PASSWORD|hide}"
+                                                        type="password" name="torrent_password" id="torrent_password" value="${settings.TORRENT_PASSWORD|hide}"
                                                         class="form-control input-sm input200" autocomplete="no" autocapitalize="off"/>
                                                 </div>
                                             </div>
@@ -1054,7 +1054,7 @@
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <input type="text" name="torrent_label" id="torrent_label"
-                                                               value="${sickbeard.TORRENT_LABEL}"
+                                                               value="${settings.TORRENT_LABEL}"
                                                                class="form-control input-sm input200" autocapitalize="off"/>
                                                     </div>
                                                 </div>
@@ -1066,7 +1066,7 @@
                                                         </span>
                                                         <span id="label_warning_qbittorrent" style="display:none">
                                                             <label for="torrent_label">${_('(blank spaces are not allowed)')}</label>
-                                                            <label><b>${_('note')}:</b> ${_('for QBitTorrent 3.3.1 and up')}</>
+                                                            <label><b>${_('note')}:</b> ${_('for QBitTorrent 3.3.1 and up')}</label>
                                                         </span>
                                                     </div>
                                                 </div>
@@ -1080,7 +1080,7 @@
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <input type="text" name="torrent_label_anime" id="torrent_label_anime"
-                                                               value="${sickbeard.TORRENT_LABEL_ANIME}"
+                                                               value="${settings.TORRENT_LABEL_ANIME}"
                                                                class="form-control input-sm input200" autocapitalize="off"/>
                                                     </div>
                                                 </div>
@@ -1106,7 +1106,7 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <input type="text" name="torrent_path" id="torrent_path" value="${sickbeard.TORRENT_PATH}"
+                                                    <input type="text" name="torrent_path" id="torrent_path" value="${settings.TORRENT_PATH}"
                                                            class="form-control input-sm input350" autocapitalize="off"/>
                                                 </div>
                                             </div>
@@ -1131,7 +1131,7 @@
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <input type="text" name="torrent_path_incomplete" id="torrent_path_incomplete"
-                                                               value="${sickbeard.TORRENT_PATH_INCOMPLETE}"
+                                                               value="${settings.TORRENT_PATH_INCOMPLETE}"
                                                                class="form-control input-sm input350" autocapitalize="off"/>
                                                     </div>
                                                 </div>
@@ -1153,7 +1153,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="number" step="1" name="torrent_seed_time" id="torrent_seed_time"
-                                                           value="${sickbeard.TORRENT_SEED_TIME}" class="form-control input-sm input100"/>
+                                                           value="${settings.TORRENT_SEED_TIME}" class="form-control input-sm input100"/>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -1176,7 +1176,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="checkbox" name="torrent_paused" class="enabler"
-                                                           id="torrent_paused" ${('', 'checked="checked"')[bool(sickbeard.TORRENT_PAUSED)]}/>
+                                                           id="torrent_paused" ${('', 'checked="checked"')[bool(settings.TORRENT_PAUSED)]}/>
                                                     <label for="torrent_paused">${_('add torrent to client but do <b style="font-weight:900">not</b> start downloading')}</label>
                                                 </div>
                                             </div>
@@ -1191,7 +1191,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="checkbox" name="torrent_high_bandwidth" class="enabler"
-                                                           id="torrent_high_bandwidth" ${('', 'checked="checked"')[bool(sickbeard.TORRENT_HIGH_BANDWIDTH)]}/>
+                                                           id="torrent_high_bandwidth" ${('', 'checked="checked"')[bool(settings.TORRENT_HIGH_BANDWIDTH)]}/>
                                                     <label for="torrent_high_bandwidth">${_('use high bandwidth allocation if priority is high')}</label>
                                                 </div>
                                             </div>

@@ -1,5 +1,5 @@
 <%!
-    import sickbeard
+    from sickchill import settings
     import calendar
     from sickbeard import sbdatetime
     from sickbeard import network_timezones
@@ -14,7 +14,7 @@
 <%page args="curListType, myShowList"/>
 <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
 
-% if sickbeard.HOME_LAYOUT == 'poster':
+% if settings.HOME_LAYOUT == 'poster':
     <%include file="/inc_home_show_list_poster.mako" args="curListType=curListType, myShowList=myShowList"/>
 % else:
     <div class="horizontal-scroll">
@@ -46,45 +46,44 @@
                 </tr>
             </tfoot>
             <tbody>
-                % for curLoadingShow in sickbeard.showQueueScheduler.action.loading_show_list:
+                % for curLoadingShow in settings.showQueueScheduler.action.loading_show_list:
                     <% loading_show = curLoadingShow.info %>
                     <tr>
                         <td align="center">(${_('loading')})</td>
                         <td align="center"></td>
-                        % if sickbeard.HOME_LAYOUT == 'small':
+                        % if settings.HOME_LAYOUT == 'small':
                             <td class="tvShow">
-                                <div class="imgsmallposter ${sickbeard.HOME_LAYOUT}">
+                                <div class="imgsmallposter ${settings.HOME_LAYOUT}">
                                     % if curLoadingShow.show:
                                         <a href="${srRoot}/home/displayShow?show=${loading_show.id}" title="${loading_show.name}">
-                                    % else:
-                                        <span title="${loading_show.name}">
-                                    % endif
-                                    <img src="${static_url("images/poster.png")}" data-src="${static_url(loading_show.show_image_url('poster_thumb'))}"
-                                         class="${sickbeard.HOME_LAYOUT}" alt="${loading_show.name}"/>
-                                    % if curLoadingShow.show:
+                                            <img src="${static_url("images/poster.png")}" data-src="${static_url(loading_show.show_image_url('poster_thumb'))}"
+                                                 class="${settings.HOME_LAYOUT}" alt="${loading_show.name}"/>
                                         </a>
                                         <a href="${srRoot}/home/displayShow?show=${loading_show.id}" style="vertical-align: middle;">${loading_show.name}</a>
                                     % else:
+                                        <span title="${loading_show.name}">
+                                        <img src="${static_url("images/poster.png")}" data-src="${static_url(loading_show.show_image_url('poster_thumb'))}"
+                                             class="${settings.HOME_LAYOUT}" alt="${loading_show.name}"/>
                                         </span>
                                         <span style="vertical-align: middle;">${_('Loading...')} (${loading_show.name})</span>
                                     % endif
                                 </div>
                             </td>
-                        % elif sickbeard.HOME_LAYOUT == 'banner':
+                        % elif settings.HOME_LAYOUT == 'banner':
                             <td>
                                 <span style="display: none;">${_('Loading...')} (${loading_show.name})</span>
-                                <div class="imgbanner ${sickbeard.HOME_LAYOUT}">
+                                <div class="imgbanner ${settings.HOME_LAYOUT}">
                                     % if curLoadingShow.show:
                                         <a href="${srRoot}/home/displayShow?show=${loading_show.id}">
                                     % endif
                                     <img src="${static_url("images/banner.png")}" data-src="${static_url(loading_show.show_image_url('banner'))}"
-                                         class="${sickbeard.HOME_LAYOUT}" alt="${loading_show.name}" title="${loading_show.name}"/>
+                                         class="${settings.HOME_LAYOUT}" alt="${loading_show.name}" title="${loading_show.name}"/>
                                     % if curLoadingShow.show:
                                         </a>
                                     % endif
                                 </div>
                             </td>
-                        % elif sickbeard.HOME_LAYOUT == 'simple':
+                        % elif settings.HOME_LAYOUT == 'simple':
                             <td class="tvShow">
                                 % if curLoadingShow.show:
                                     <a href="${srRoot}/home/displayShow?show=${loading_show.id}">${loading_show.name}</a>
@@ -103,7 +102,7 @@
                 % endfor
                 % for curShow in myShowList:
                     <%
-                        if sickbeard.showQueueScheduler.action.is_in_remove_queue(curShow) or sickbeard.showQueueScheduler.action.is_being_removed(curShow):
+                        if settings.showQueueScheduler.action.is_in_remove_queue(curShow) or settings.showQueueScheduler.action.is_being_removed(curShow):
                             continue
 
                         cur_airs_next = ''
@@ -176,31 +175,31 @@
                             <td align="center" class="nowrap"></td>
                         % endif
 
-                        % if sickbeard.HOME_LAYOUT == 'small':
+                        % if settings.HOME_LAYOUT == 'small':
                             <td class="tvShow">
-                                <div class="imgsmallposter ${sickbeard.HOME_LAYOUT}">
+                                <div class="imgsmallposter ${settings.HOME_LAYOUT}">
                                     <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}" title="${curShow.name}">
                                         <img src="${static_url("images/poster.png")}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}"
-                                             class="${sickbeard.HOME_LAYOUT}" alt="${curShow.indexerid}"/>
+                                             class="${settings.HOME_LAYOUT}" alt="${curShow.indexerid}"/>
                                     </a>
                                     <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}" style="vertical-align: middle;">${curShow.name}</a>
                                 </div>
                             </td>
-                        % elif sickbeard.HOME_LAYOUT == 'banner':
+                        % elif settings.HOME_LAYOUT == 'banner':
                             <td>
                                 <span style="display: none;">${curShow.name}</span>
-                                <div class="imgbanner ${sickbeard.HOME_LAYOUT}">
+                                <div class="imgbanner ${settings.HOME_LAYOUT}">
                                     <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">
                                         <img src="${static_url("images/banner.png")}" data-src="${static_url(curShow.show_image_url('banner'))}"
-                                             class="${sickbeard.HOME_LAYOUT}" alt="${curShow.indexerid}" title="${curShow.name}"/>
+                                             class="${settings.HOME_LAYOUT}" alt="${curShow.indexerid}" title="${curShow.name}"/>
                                     </a>
                                 </div>
                             </td>
-                        % elif sickbeard.HOME_LAYOUT == 'simple':
+                        % elif settings.HOME_LAYOUT == 'simple':
                             <td class="tvShow"><a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></td>
                         % endif
 
-                        % if sickbeard.HOME_LAYOUT != 'simple':
+                        % if settings.HOME_LAYOUT != 'simple':
                             <td align="center">
                                 % if curShow.network:
                                     <span title="${curShow.network}" class="hidden-print">

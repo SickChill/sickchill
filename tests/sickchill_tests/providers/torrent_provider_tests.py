@@ -26,7 +26,7 @@ import os
 import unittest
 
 # First Party Imports
-import sickbeard
+from sickchill import settings
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -62,7 +62,7 @@ class TorrentProviderTests(GenericProviderTests):
         }
 
         for ((use_torrents, enabled), result) in test_cases.items():
-            sickbeard.USE_TORRENTS = use_torrents
+            settings.USE_TORRENTS = use_torrents
 
             provider = TorrentProvider('Test Provider')
             provider.enabled = enabled
@@ -108,7 +108,7 @@ class TorrentProviderTests(GenericProviderTests):
         ]
 
         for torrent_dir in test_cases:
-            sickbeard.TORRENT_DIR = torrent_dir
+            settings.TORRENT_DIR = torrent_dir
 
             self.assertEqual(TorrentProvider('Test Provider')._get_storage_dir(), torrent_dir)
 

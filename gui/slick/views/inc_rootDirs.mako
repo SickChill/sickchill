@@ -1,8 +1,8 @@
 <%
-    import sickbeard
+    from sickchill import settings
 
-    if sickbeard.ROOT_DIRS:
-        backend_pieces = sickbeard.ROOT_DIRS.split('|')
+    if settings.ROOT_DIRS:
+        backend_pieces = settings.ROOT_DIRS.split('|')
         backend_default = 'rd-' + backend_pieces[0]
         backend_dirs = backend_pieces[1:]
     else:

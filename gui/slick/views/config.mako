@@ -1,6 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    import sickbeard
+    from sickchill import settings
     from sickbeard import db
     from sickbeard.helpers import anon_url
     import sys
@@ -27,16 +27,16 @@
                     <div class="row">
                         <div class="col-md-12">
                             Branch:
-                            <a href="${anon_url('https://github.com/SickChill/SickChill/tree/%s' % sickbeard.BRANCH)}">
-                                ${sickbeard.BRANCH}
+                            <a href="${anon_url('https://github.com/SickChill/SickChill/tree/%s' % settings.BRANCH)}">
+                                ${settings.BRANCH}
                             </a>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12">
                             Commit:
-                            <a href="${anon_url('https://github.com/SickChill/SickChill/commit/%s' % sickbeard.CUR_COMMIT_HASH)}">
-                                ${sickbeard.CUR_COMMIT_HASH}
+                            <a href="${anon_url('https://github.com/SickChill/SickChill/commit/%s' % settings.CUR_COMMIT_HASH)}">
+                                ${settings.CUR_COMMIT_HASH}
                             </a>
                         </div>
                     </div>
@@ -110,7 +110,7 @@
                     <i class="icon16-config-dir"></i>&nbsp;&nbsp;${_('Program Folder')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    ${sickbeard.PROG_DIR}
+                    ${settings.PROG_DIR}
                 </div>
             </div>
             <br/>
@@ -119,7 +119,7 @@
                     <i class="icon16-config-config"></i>&nbsp;&nbsp;${_('Config File')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    ${sickbeard.CONFIG_FILE}
+                    ${settings.CONFIG_FILE}
                 </div>
             </div>
             <br/>
@@ -137,7 +137,7 @@
                     <i class="icon16-config-cache"></i>&nbsp;&nbsp;${_('Cache Folder')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    ${sickbeard.CACHE_DIR}
+                    ${settings.CACHE_DIR}
                 </div>
             </div>
             <br/>
@@ -146,28 +146,28 @@
                     <i class="icon16-config-log"></i>&nbsp;&nbsp;${_('Log Folder')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    ${sickbeard.LOG_DIR}
+                    ${settings.LOG_DIR}
                 </div>
             </div>
             <br/>
-            % if sickbeard.MY_ARGS:
+            % if settings.MY_ARGS:
                 <div class="row">
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                         <i class="icon16-config-arguments"></i>&nbsp;&nbsp;${_('Arguments')}:
                     </div>
                     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                        ${sickbeard.MY_ARGS}
+                        ${settings.MY_ARGS}
                     </div>
                 </div>
                 <br/>
             % endif
-            % if sickbeard.WEB_ROOT:
+            % if settings.WEB_ROOT:
                 <div class="row">
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                         <i class="icon16-config-folder"></i>&nbsp;&nbsp;${_('Web Root')}:
                     </div>
                     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                        ${sickbeard.WEB_ROOT}
+                        ${settings.WEB_ROOT}
                     </div>
                 </div>
                 <br/>

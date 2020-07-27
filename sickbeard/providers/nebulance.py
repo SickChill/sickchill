@@ -19,9 +19,9 @@
 # Stdlib Imports
 import re
 import traceback
+from urllib.parse import urljoin
 
 # Third Party Imports
-from requests.compat import urljoin
 from requests.utils import dict_from_cookiejar
 
 # First Party Imports
@@ -32,12 +32,12 @@ from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class NebulanceProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
         # Provider Init
-        TorrentProvider.__init__(self, "Nebulance")
+        super().__init__("Nebulance")
 
         # Credentials
         self.username = None
@@ -187,6 +187,3 @@ class NebulanceProvider(TorrentProvider):
             results += items
 
         return results
-
-
-provider = NebulanceProvider()

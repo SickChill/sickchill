@@ -23,8 +23,8 @@ import re
 from twilio.rest import Client, TwilioException
 
 # First Party Imports
-import sickbeard
 from sickbeard import common, logger
+from sickchill import settings
 
 
 class Notifier(object):
@@ -35,24 +35,24 @@ class Notifier(object):
     phone_regex = re.compile(r'^PN[a-z0-9]{32}$')
 
     def notify_snatch(self, ep_name):
-        if sickbeard.TWILIO_NOTIFY_ONSNATCH:
+        if settings.TWILIO_NOTIFY_ONSNATCH:
             self._notifyTwilio(common.notifyStrings[common.NOTIFY_SNATCH] + ': ' + ep_name)
 
     def notify_download(self, ep_name):
-        if sickbeard.TWILIO_NOTIFY_ONDOWNLOAD:
+        if settings.TWILIO_NOTIFY_ONDOWNLOAD:
             self._notifyTwilio(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ': ' + ep_name)
 
     def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD:
+        if settings.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyTwilio(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + ep_name + ': ' + lang)
 
     def notify_git_update(self, new_version):
-        if sickbeard.USE_TWILIO:
+        if settings.USE_TWILIO:
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             self._notifyTwilio(update_text + new_version)
 
     def notify_login(self, ipaddress=""):
-        if sickbeard.USE_TWILIO:
+        if settings.USE_TWILIO:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._notifyTwilio(title + " - " + update_text.format(ipaddress))
@@ -68,14 +68,14 @@ class Notifier(object):
 
     @property
     def number(self):
-        return self.client.api.incoming_phone_numbers.get(sickbeard.TWILIO_PHONE_SID).fetch()
+        return self.client.api.incoming_phone_numbers.get(settings.TWILIO_PHONE_SID).fetch()
 
     @property
     def client(self):
-        return Client(sickbeard.TWILIO_ACCOUNT_SID, sickbeard.TWILIO_AUTH_TOKEN)
+        return Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
 
     def _notifyTwilio(self, message='', force=False, allow_raise=False):
-        if not (sickbeard.USE_TWILIO or force or self.number_regex.match(sickbeard.TWILIO_TO_NUMBER)):
+        if not (settings.USE_TWILIO or force or self.number_regex.match(settings.TWILIO_TO_NUMBER)):
             return False
 
         logger.debug('Sending Twilio SMS: ' + message)
@@ -83,7 +83,7 @@ class Notifier(object):
         try:
             self.client.messages.create(
                 body=message,
-                to=sickbeard.TWILIO_TO_NUMBER,
+                to=settings.TWILIO_TO_NUMBER,
                 from_=self.number.phone_number,
             )
         except TwilioException as e:

@@ -20,9 +20,9 @@
 from datetime import date
 
 # First Party Imports
-import sickbeard
 from sickbeard.common import Quality, SKIPPED, WANTED
 from sickbeard.db import DBConnection
+from sickchill import settings
 from sickchill.helper.exceptions import CantRefreshShowException, CantRemoveShowException, MultipleShowObjectsException
 
 
@@ -48,7 +48,7 @@ class Show(object):
 
         if show:
             try:
-                sickbeard.showQueueScheduler.action.remove_show(show, bool(remove_files))
+                settings.showQueueScheduler.action.remove_show(show, bool(remove_files))
             except CantRemoveShowException as exception:
                 return str(exception), show
 
@@ -81,7 +81,7 @@ class Show(object):
     @staticmethod
     def overall_stats():
         db = DBConnection()
-        shows = sickbeard.showList
+        shows = settings.showList
         today = date.today().toordinal()
 
         downloaded_status = Quality.DOWNLOADED + Quality.ARCHIVED
@@ -162,7 +162,7 @@ class Show(object):
             return error, show
 
         try:
-            sickbeard.showQueueScheduler.action.refresh_show(show, force)
+            settings.showQueueScheduler.action.refresh_show(show, force)
         except CantRefreshShowException as exception:
             return str(exception), show
 
@@ -184,7 +184,7 @@ class Show(object):
             return 'Invalid show ID', None
 
         try:
-            show = Show.find(sickbeard.showList, indexer_id)
+            show = Show.find(settings.showList, indexer_id)
         except MultipleShowObjectsException:
             return 'Unable to find the specified show', None
 

@@ -2,10 +2,10 @@
 <%!
     import os
     import datetime
-    import sickbeard
     from sickbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
     from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
     from sickbeard.helpers import anon_url
+    from sickchill import settings
 %>
 
 <%block name="content">
@@ -45,7 +45,7 @@
                     <h6 class="pull-right">
                         <b>
                             <span class="config-path-title">${_('All non-absolute folder locations are relative to ')}&nbsp;</span>
-                            <span class="path pull-right">${sickbeard.DATA_DIR}</span>
+                            <span class="path pull-right">${settings.DATA_DIR}</span>
                         </b>
                     </h6>
                 </div>

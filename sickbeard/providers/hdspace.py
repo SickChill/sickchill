@@ -20,10 +20,10 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import re
+from urllib.parse import quote_plus
 
 # Third Party Imports
 from bs4 import BeautifulSoup
-from requests.compat import quote_plus
 from requests.utils import dict_from_cookiejar
 
 # First Party Imports
@@ -32,11 +32,11 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class HDSpaceProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "HDSpace")
+        super().__init__("HDSpace")
 
         self.username = None
         self.password = None
@@ -171,6 +171,3 @@ class HDSpaceProvider(TorrentProvider):
             results += items
 
         return results
-
-
-provider = HDSpaceProvider()

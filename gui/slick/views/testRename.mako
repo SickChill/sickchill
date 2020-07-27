@@ -1,6 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    import sickbeard
+    from sickchill import settings
 %>
 <%block name="scripts">
     <script type="text/javascript" src="${static_url('js/testRename.js')}" xmlns="http://www.w3.org/1999/html"></script>
@@ -22,14 +22,14 @@
 
             <h3>${_('Preview of the proposed name changes')}</h3>
             <blockquote>
-                % if show.air_by_date and sickbeard.NAMING_CUSTOM_ABD:
-                    ${sickbeard.NAMING_ABD_PATTERN}
-                % elif show.is_sports and sickbeard.NAMING_CUSTOM_SPORTS:
-                    ${sickbeard.NAMING_SPORTS_PATTERN}
-                % elif show.is_anime and sickbeard.NAMING_CUSTOM_ANIME:
-                    ${sickbeard.NAMING_CUSTOM_ANIME}
+                % if show.air_by_date and settings.NAMING_CUSTOM_ABD:
+                    ${settings.NAMING_ABD_PATTERN}
+                % elif show.is_sports and settings.NAMING_CUSTOM_SPORTS:
+                    ${settings.NAMING_SPORTS_PATTERN}
+                % elif show.is_anime and settings.NAMING_CUSTOM_ANIME:
+                    ${settings.NAMING_CUSTOM_ANIME}
                 %else:
-                    ${sickbeard.NAMING_PATTERN}
+                    ${settings.NAMING_PATTERN}
                 % endif
             </blockquote>
             <% odd = False%>
@@ -66,7 +66,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="horizontal-scroll">
-                        <table id="testRenameTable" class="sickbeardTable" cellspacing="1" border="0" cellpadding="0">
+                        <table id="testRenameTable" class="sickchillTable">
                             <thead>
                                 <tr class="seasoncols" id="season-${current_season}-cols">
                                     <th class="col-checkbox"><input type="checkbox" title="check_season" class="seasonCheck" id="${current_season}" /></th>

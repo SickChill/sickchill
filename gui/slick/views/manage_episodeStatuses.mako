@@ -1,6 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    import sickbeard
+    from sickchill import settings
     from sickbeard import common
 %>
 
@@ -71,7 +71,7 @@
                             if int(whichStatus) in statusList:
                                 statusList.remove(int(whichStatus))
 
-                            if int(whichStatus) in [common.SNATCHED, common.SNATCHED_PROPER, common.SNATCHED_BEST] + common.Quality.ARCHIVED + common.Quality.DOWNLOADED and sickbeard.USE_FAILED_DOWNLOADS:
+                            if int(whichStatus) in [common.SNATCHED, common.SNATCHED_PROPER, common.SNATCHED_BEST] + common.Quality.ARCHIVED + common.Quality.DOWNLOADED and settings.USE_FAILED_DOWNLOADS:
                                 statusList.append(common.FAILED)
                         %>
                         % for curStatus in statusList:
@@ -92,7 +92,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="horizontal-scroll">
-                        <table class="sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0">
+                        <table class="sickchillTable manageTable">
                             % for cur_indexer_id in sorted_show_ids:
                                 <tr id="${cur_indexer_id}">
                                     <th>

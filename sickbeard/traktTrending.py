@@ -4,8 +4,8 @@ import os
 import posixpath
 
 # First Party Imports
-import sickbeard
 from sickbeard.trakt_api import TraktAPI, traktException
+from sickchill import settings
 from sickchill.helper.exceptions import MultipleShowObjectsException
 
 # Local Folder Imports
@@ -23,14 +23,14 @@ class traktTrending(object):
 
         trending_shows = []
 
-        trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
+        trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
 
         try:
             not_liked_show = ""
-            if sickbeard.TRAKT_ACCESS_TOKEN != '':
+            if settings.TRAKT_ACCESS_TOKEN != '':
                 library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
-                if sickbeard.TRAKT_BLACKLIST_NAME:
-                    not_liked_show = trakt_api.traktRequest("users/" + sickbeard.TRAKT_USERNAME + "/lists/" + sickbeard.TRAKT_BLACKLIST_NAME + "/items") or []
+                if settings.TRAKT_BLACKLIST_NAME:
+                    not_liked_show = trakt_api.traktRequest("users/" + settings.TRAKT_USERNAME + "/lists/" + settings.TRAKT_BLACKLIST_NAME + "/items") or []
                 else:
                     logger.debug("Trakt blacklist name is empty")
 
@@ -41,7 +41,7 @@ class traktTrending(object):
 
             shows = trakt_api.traktRequest(page_url + limit_show + "extended=full") or []
 
-            if sickbeard.TRAKT_ACCESS_TOKEN != '':
+            if settings.TRAKT_ACCESS_TOKEN != '':
                 library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
 
             for show in shows:
@@ -49,7 +49,7 @@ class traktTrending(object):
                     if 'show' not in show:
                         show['show'] = show
 
-                    if sickbeard.TRAKT_ACCESS_TOKEN != '':
+                    if settings.TRAKT_ACCESS_TOKEN != '':
                         if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
                             if not_liked_show:
                                 if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
@@ -66,7 +66,7 @@ class traktTrending(object):
                 except MultipleShowObjectsException:
                     continue
 
-            if sickbeard.TRAKT_BLACKLIST_NAME != '':
+            if settings.TRAKT_BLACKLIST_NAME != '':
                 black_list = True
             else:
                 black_list = False
@@ -95,7 +95,7 @@ class traktTrending(object):
 
     @staticmethod
     def get_image_path(image_name):
-        path = os.path.abspath(os.path.join(sickbeard.CACHE_DIR, 'images', 'trakt_trending'))
+        path = os.path.abspath(os.path.join(settings.CACHE_DIR, 'images', 'trakt_trending'))
 
         if not os.path.exists(path):
             os.makedirs(path)

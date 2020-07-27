@@ -21,6 +21,7 @@
 # First Party Imports
 import sickbeard
 from sickbeard import common, logger
+from sickchill import settings
 
 
 class Notifier(object):
@@ -49,7 +50,7 @@ class Notifier(object):
             'notification[long_message]': msg,
             'notification[sound]': 'notifier-2',
             'notification[source_name]': 'SickChill',
-            'notification[icon_url]': sickbeard.LOGO_URL
+            'notification[icon_url]': settings.LOGO_URL
         }
 
         response = sickbeard.helpers.getURL(self.url, post_data=post_data, session=self.session, timeout=60, returns='json')
@@ -61,15 +62,15 @@ class Notifier(object):
         return True
 
     def notify_snatch(self, ep_name, title=common.notifyStrings[common.NOTIFY_SNATCH]):
-        if sickbeard.BOXCAR2_NOTIFY_ONSNATCH:
+        if settings.BOXCAR2_NOTIFY_ONSNATCH:
             self._notifyBoxcar2(title, ep_name)
 
     def notify_download(self, ep_name, title=common.notifyStrings[common.NOTIFY_DOWNLOAD]):
-        if sickbeard.BOXCAR2_NOTIFY_ONDOWNLOAD:
+        if settings.BOXCAR2_NOTIFY_ONDOWNLOAD:
             self._notifyBoxcar2(title, ep_name)
 
     def notify_subtitle_download(self, ep_name, lang, title=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD]):
-        if sickbeard.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD:
+        if settings.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyBoxcar2(title, ep_name + ': ' + lang)
 
     def notify_git_update(self, new_version='??'):
@@ -91,11 +92,11 @@ class Notifier(object):
         accesstoken: to send to this device
         '''
 
-        if not sickbeard.USE_BOXCAR2:
+        if not settings.USE_BOXCAR2:
             logger.debug('Notification for Boxcar2 not enabled, skipping this notification')
             return False
 
-        accesstoken = accesstoken or sickbeard.BOXCAR2_ACCESSTOKEN
+        accesstoken = accesstoken or settings.BOXCAR2_ACCESSTOKEN
 
         logger.debug('Sending notification for {0}'.format(message))
 

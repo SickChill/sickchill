@@ -23,8 +23,8 @@ import socket
 import gntp.core
 
 # First Party Imports
-import sickbeard
 from sickbeard import common, logger
+from sickchill import settings
 
 
 class Notifier(object):
@@ -35,15 +35,15 @@ class Notifier(object):
                                force=True)
 
     def notify_snatch(self, ep_name):
-        if sickbeard.GROWL_NOTIFY_ONSNATCH:
+        if settings.GROWL_NOTIFY_ONSNATCH:
             self._sendGrowl(common.notifyStrings[common.NOTIFY_SNATCH], ep_name)
 
     def notify_download(self, ep_name):
-        if sickbeard.GROWL_NOTIFY_ONDOWNLOAD:
+        if settings.GROWL_NOTIFY_ONDOWNLOAD:
             self._sendGrowl(common.notifyStrings[common.NOTIFY_DOWNLOAD], ep_name)
 
     def notify_subtitle_download(self, ep_name, lang):
-        if sickbeard.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD:
+        if settings.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._sendGrowl(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD], ep_name + ": " + lang)
 
     def notify_git_update(self, new_version="??"):
@@ -75,7 +75,7 @@ class Notifier(object):
         if options['priority']:
             notice.add_header('Notification-Priority', options['priority'])
         if options['icon']:
-            notice.add_header('Notification-Icon', sickbeard.LOGO_URL)
+            notice.add_header('Notification-Icon', settings.LOGO_URL)
 
         if message:
             notice.add_header('Notification-Text', message)
@@ -101,14 +101,14 @@ class Notifier(object):
 
     def _sendGrowl(self, title="SickChill Notification", message=None, name=None, host=None, password=None,
                    force=False):
-        if not sickbeard.USE_GROWL and not force:
+        if not settings.USE_GROWL and not force:
             return False
 
         if name is None:
             name = title
 
         if host is None:
-            hostParts = sickbeard.GROWL_HOST.split(':')
+            hostParts = settings.GROWL_HOST.split(':')
         else:
             hostParts = host.split(':')
 
@@ -129,7 +129,7 @@ class Notifier(object):
         }
 
         if password is None:
-            opts['password'] = sickbeard.GROWL_PASSWORD
+            opts['password'] = settings.GROWL_PASSWORD
         else:
             opts['password'] = password
 
@@ -155,7 +155,7 @@ class Notifier(object):
         opts = {}
 
         if host is None:
-            hostParts = sickbeard.GROWL_HOST.split(':')
+            hostParts = settings.GROWL_HOST.split(':')
         else:
             hostParts = host.split(':')
 
@@ -168,7 +168,7 @@ class Notifier(object):
         opts['port'] = port
 
         if password is None:
-            opts['password'] = sickbeard.GROWL_PASSWORD
+            opts['password'] = settings.GROWL_PASSWORD
         else:
             opts['password'] = password
 
@@ -178,7 +178,7 @@ class Notifier(object):
         # Send Registration
         register = gntp.core.GNTPRegister()
         register.add_header('Application-Name', opts['app'])
-        register.add_header('Application-Icon', sickbeard.LOGO_URL)
+        register.add_header('Application-Icon', settings.LOGO_URL)
 
         register.add_notification('Test', True)
         register.add_notification(common.notifyStrings[common.NOTIFY_SNATCH], True)

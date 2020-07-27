@@ -23,7 +23,7 @@ import time
 import traceback
 
 # First Party Imports
-import sickbeard
+from sickchill import settings
 
 # Local Folder Imports
 from . import common, config, generic_queue, logger
@@ -49,7 +49,7 @@ class PostProcessor(object):
         :return: Returns when done without a return state/code
         """
         self.amActive = True
-        sickbeard.postProcessorTaskScheduler.action.add_item(sickbeard.TV_DOWNLOAD_DIR, force=force)
+        settings.postProcessorTaskScheduler.action.add_item(settings.TV_DOWNLOAD_DIR, force=force)
         self.amActive = False
 
     def __del__(self):
@@ -150,7 +150,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
         item = self.find_in_queue(directory, filename, mode)
 
         if not delete:
-            delete = (False, (not sickbeard.NO_DELETE, True)[method == "move"])[mode == "auto"]
+            delete = (False, (not settings.NO_DELETE, True)[method == "move"])[mode == "auto"]
 
         if item:
             if self.currentItem == item:
@@ -256,7 +256,7 @@ class PostProcessorTask(generic_queue.QueueItem):
             logger.info("{mode} post processing task for {info} completed".format(mode=self.mode.title(), info=self.filename or self.directory))
 
             # give the CPU a break
-            time.sleep(common.cpu_presets[sickbeard.CPU_PRESET])
+            time.sleep(common.cpu_presets[settings.CPU_PRESET])
         except Exception:
             logger.debug(traceback.format_exc())
 

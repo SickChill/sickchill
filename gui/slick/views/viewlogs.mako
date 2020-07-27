@@ -1,6 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    import sickbeard
+    from sickchill import settings
     from sickbeard.logger import LOGGING_LEVELS, LOG_FILTERS
 %>
 <%block name="content">
@@ -17,9 +17,9 @@
                     <select name="min_level" id="min_level" class="form-control form-control-inline input-sm" title="Minimum log level">
                         <%
                             levels = sorted(LOGGING_LEVELS)
-                            if not sickbeard.DEBUG:
+                            if not settings.DEBUG:
                                 levels.remove('DEBUG')
-                            if not sickbeard.DBDEBUG:
+                            if not settings.DBDEBUG:
                                 levels.remove('DB')
                         %>
                         % for level in levels:

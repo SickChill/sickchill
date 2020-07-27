@@ -30,6 +30,7 @@ import unittest
 import sickbeard
 from sickbeard import common as common
 from sickbeard.tv import TVEpisode, TVShow
+from sickchill import settings
 from sickchill.providers.GenericProvider import GenericProvider
 from tests import test_lib as test
 
@@ -69,7 +70,7 @@ def generator(cur_data, cur_name, cur_provider):
         show.name = cur_name
         show.quality = common.ANY | common.Quality.UNKNOWN | common.Quality.RAWHDTV
         show.saveToDB()
-        sickbeard.showList.append(show)
+        settings.showList.append(show)
 
         for ep_number in cur_data["e"]:
             episode = TVEpisode(show, cur_data["s"], ep_number)

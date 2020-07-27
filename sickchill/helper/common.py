@@ -29,6 +29,7 @@ from github.GithubException import (BadAttributeException, BadCredentialsExcepti
 
 # First Party Imports
 import sickbeard
+from sickchill import settings
 
 dateFormat = '%Y-%m-%d'
 dateTimeFormat = '%Y-%m-%d %H:%M:%S'
@@ -145,9 +146,9 @@ def is_sync_file(filename):
     if isinstance(filename, str):
         extension = filename.rpartition('.')[2].lower()
 
-        return extension in sickbeard.SYNC_FILES.split(',') or \
-            filename.startswith('.syncthing') or \
-            any(fnmatch(filename, match) for match in sickbeard.SYNC_FILES.split(','))
+        return extension in settings.SYNC_FILES.split(',') or \
+               filename.startswith('.syncthing') or \
+               any(fnmatch(filename, match) for match in settings.SYNC_FILES.split(','))
 
     return False
 
@@ -364,42 +365,42 @@ def setup_github():
     """
 
     try:
-        if sickbeard.GIT_TOKEN:
+        if settings.GIT_TOKEN:
             # Token Auth - allows users with Two-Factor Authorization (2FA) enabled on Github to connect their account.
-            sickbeard.gh = Github(
-                login_or_token=sickbeard.GIT_TOKEN, user_agent="SickChill")
+            settings.gh = Github(
+                login_or_token=settings.GIT_TOKEN, user_agent="SickChill")
             # This will trigger:
             # * BadCredentialsException if token is invalid
             # * TwoFactorException if user has enabled Github-2FA
             #   but didn't set a personal token in the configuration.
-            sickbeard.gh.get_organization(sickbeard.GIT_ORG)
-        if not sickbeard.gh:
-            sickbeard.gh = Github(user_agent="SickChill")
-            sickbeard.gh.get_organization(sickbeard.GIT_ORG)
+            settings.gh.get_organization(settings.GIT_ORG)
+        if not settings.gh:
+            settings.gh = Github(user_agent="SickChill")
+            settings.gh.get_organization(settings.GIT_ORG)
     except BadCredentialsException as error:
-        sickbeard.gh = None
+        settings.gh = None
         sickbeard.logger.warning(_('Unable to setup GitHub properly with your github token. Please check your credentials. Error: {0}').format(error))
     except TwoFactorException as error:
-        sickbeard.gh = None
+        settings.gh = None
         sickbeard.logger.warning(_('Unable to setup GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {0}').format(
             error))
     except RateLimitExceededException as error:
-        sickbeard.gh = None
-        if sickbeard.GIT_TOKEN:
+        settings.gh = None
+        if settings.GIT_TOKEN:
             sickbeard.logger.warning(
                 _('Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests. Error: {0}').format(error))
         else:
             sickbeard.logger.warning(
                 _('Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests - Try adding an access token. Error: {0}').format(error))
     except UnknownObjectException as error:
-        sickbeard.gh = None
+        settings.gh = None
         sickbeard.logger.warning(_('Unable to setup GitHub properly, it seems to be down or your organization/repo is set wrong. Error: {0}').format(error))
     except BadUserAgentException as error:
-        sickbeard.gh = None
+        settings.gh = None
         sickbeard.logger.warning(_('Unable to setup GitHub properly, GitHub doesn\'t like the user-agent. Error: {0}').format(error))
     except BadAttributeException as error:
-        sickbeard.gh = None
+        settings.gh = None
         sickbeard.logger.error(_('Unable to setup GitHub properly, There might be an error with the library. Error: {0}').format(error))
     except (GithubException, Exception) as error:
-            sickbeard.gh = None
+            settings.gh = None
             sickbeard.logger.error(_('Unable to setup GitHub properly. GitHub will not be available. Error: {0}').format(error))

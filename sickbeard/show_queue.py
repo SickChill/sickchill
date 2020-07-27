@@ -25,9 +25,9 @@ from collections import namedtuple
 import dateutil
 
 # First Party Imports
-import sickbeard
 import sickchill
 from sickbeard.trakt_api import TraktAPI
+from sickchill import settings
 from sickchill.helper.common import sanitize_filename
 from sickchill.helper.exceptions import (CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, EpisodeDeletedException,
                                          MultipleShowObjectsException, ShowDirectoryNotFoundException)
@@ -154,10 +154,10 @@ class ShowQueue(generic_queue.GenericQueue):
                  blacklist=None, whitelist=None, default_status_after=None, root_dir=None):
 
         if lang is None:
-            lang = sickbeard.INDEXER_DEFAULT_LANGUAGE
+            lang = settings.INDEXER_DEFAULT_LANGUAGE
 
         if default_status_after is None:
-            default_status_after = sickbeard.STATUS_DEFAULT_AFTER
+            default_status_after = settings.STATUS_DEFAULT_AFTER
 
         queue_item_obj = QueueItemAdd(indexer, indexer_id, showDir, default_status, quality, season_folders, lang,
                                       subtitles, subtitles_sr_metadata, anime, scene, paused, blacklist, whitelist,
@@ -227,8 +227,8 @@ class ShowQueueItem(generic_queue.QueueItem):
         self.show = show
 
     def is_in_queue(self):
-        return self in sickbeard.showQueueScheduler.action.queue + [
-            sickbeard.showQueueScheduler.action.currentItem]
+        return self in settings.showQueueScheduler.action.queue + [
+            settings.showQueueScheduler.action.currentItem]
 
     @property
     def show_name(self):
@@ -284,7 +284,7 @@ class QueueItemAdd(ShowQueueItem):
         Returns True if we've gotten far enough to have a show object, or False
         if we still only know the folder name.
         """
-        return self.show not in sickbeard.showList or not self.show
+        return self.show not in settings.showList or not self.show
 
     @property
     def info(self):
@@ -324,7 +324,7 @@ class QueueItemAdd(ShowQueueItem):
                     return
 
                 show_dir = s.seriesName
-                if sickbeard.ADD_SHOWS_WITH_YEAR and s.firstAired:
+                if settings.ADD_SHOWS_WITH_YEAR and s.firstAired:
                     try:
                         year = '({0})'.format(dateutil.parser.parse(s.firstAired).year)
                         if year not in show_dir:
@@ -334,7 +334,7 @@ class QueueItemAdd(ShowQueueItem):
 
                 self.showDir = os.path.join(self.root_dir, sanitize_filename(show_dir))
 
-                if sickbeard.ADD_SHOWS_WO_DIR:
+                if settings.ADD_SHOWS_WO_DIR:
                     logger.info(_("Skipping initial creation of {0} due to config.ini setting").format(self.showDir))
                 else:
                     dir_exists = makeDir(self.showDir)
@@ -363,8 +363,8 @@ class QueueItemAdd(ShowQueueItem):
             logger.exception('{0}: {1}'.format(error_string, error))
             ui.notifications.error(_('Unable to add show'), error_string)
 
-            if sickbeard.USE_TRAKT:
-                trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
+            if settings.USE_TRAKT:
+                trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
 
                 title = self.showDir.split('/')[-1]
                 data = {
@@ -385,7 +385,7 @@ class QueueItemAdd(ShowQueueItem):
                 newShow = TVShow(self.indexer, self.indexer_id, self.lang)
             except MultipleShowObjectsException as error:
                 # If we have the show in our list, but the location is wrong, lets fix it and refresh!
-                existing_show = Show.find(sickbeard.showList, self.indexer_id)
+                existing_show = Show.find(settings.showList, self.indexer_id)
                 # noinspection PyProtectedMember
                 if existing_show and not os.path.isdir(existing_show._location):
                     newShow = existing_show
@@ -398,12 +398,12 @@ class QueueItemAdd(ShowQueueItem):
 
             # set up initial values
             self.show.location = self.showDir
-            self.show.subtitles = self.subtitles if self.subtitles is not None else sickbeard.SUBTITLES_DEFAULT
+            self.show.subtitles = self.subtitles if self.subtitles is not None else settings.SUBTITLES_DEFAULT
             self.show.subtitles_sr_metadata = self.subtitles_sr_metadata
-            self.show.quality = self.quality if self.quality else sickbeard.QUALITY_DEFAULT
-            self.show.season_folders = self.season_folders if self.season_folders is not None else sickbeard.SEASON_FOLDERS_DEFAULT
-            self.show.anime = self.anime if self.anime is not None else sickbeard.ANIME_DEFAULT
-            self.show.scene = self.scene if self.scene is not None else sickbeard.SCENE_DEFAULT
+            self.show.quality = self.quality if self.quality else settings.QUALITY_DEFAULT
+            self.show.season_folders = self.season_folders if self.season_folders is not None else settings.SEASON_FOLDERS_DEFAULT
+            self.show.anime = self.anime if self.anime is not None else settings.ANIME_DEFAULT
+            self.show.scene = self.scene if self.scene is not None else settings.SCENE_DEFAULT
             self.show.paused = self.paused if self.paused is not None else False
 
             # set up default new/missing episode status
@@ -458,8 +458,8 @@ class QueueItemAdd(ShowQueueItem):
             raise
 
         # add it to the show list
-        if not Show.find(sickbeard.showList, self.indexer_id):
-            sickbeard.showList.append(self.show)
+        if not Show.find(settings.showList, self.indexer_id):
+            settings.showList.append(self.show)
 
         try:
             self.show.loadEpisodesFromIndexer()
@@ -480,7 +480,7 @@ class QueueItemAdd(ShowQueueItem):
         # FIXME: This needs to be a backlog queue item!!!
         if self.show.default_ep_status == WANTED:
             logger.info('Launching backlog for this show since its episodes are WANTED')
-            sickbeard.backlogSearchScheduler.action.searchBacklog([self.show])
+            settings.backlogSearchScheduler.action.searchBacklog([self.show])
 
         self.show.writeMetadata()
         self.show.updateMetadata()
@@ -488,14 +488,14 @@ class QueueItemAdd(ShowQueueItem):
 
         self.show.flushEpisodes()
 
-        if sickbeard.USE_TRAKT:
+        if settings.USE_TRAKT:
             # if there are specific episodes that need to be added by trakt
-            sickbeard.traktCheckerScheduler.action.manageNewShow(self.show)
+            settings.traktCheckerScheduler.action.manageNewShow(self.show)
             # add show to trakt.tv library
-            if sickbeard.TRAKT_SYNC:
-                sickbeard.traktCheckerScheduler.action.addShowToTraktLibrary(self.show)
+            if settings.TRAKT_SYNC:
+                settings.traktCheckerScheduler.action.addShowToTraktLibrary(self.show)
 
-            if sickbeard.TRAKT_SYNC_WATCHLIST:
+            if settings.TRAKT_SYNC_WATCHLIST:
                 logger.info('update watchlist')
                 notifiers.trakt_notifier.update_watchlist(show_obj=self.show)
 
@@ -514,7 +514,7 @@ class QueueItemAdd(ShowQueueItem):
 
     def _finish_early(self):
         if self.show is not None:
-            sickbeard.showQueueScheduler.action.remove_show(self.show)
+            settings.showQueueScheduler.action.remove_show(self.show)
 
         super(QueueItemAdd, self).finish()
         self.finish()
@@ -699,9 +699,9 @@ class QueueItemRemove(ShowQueueItem):
         logger.info('Removing {0}'.format(self.show.name))
         self.show.deleteShow(full=self.full)
 
-        if sickbeard.USE_TRAKT:
+        if settings.USE_TRAKT:
             try:
-                sickbeard.traktCheckerScheduler.action.removeShowFromTraktLibrary(self.show)
+                settings.traktCheckerScheduler.action.removeShowFromTraktLibrary(self.show)
             except Exception as error:
                 logger.warning(_('Unable to delete show from Trakt: {0}. Error: {1}').format(self.show.name, error))
 

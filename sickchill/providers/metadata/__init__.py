@@ -43,6 +43,7 @@ def _getMetadataClass(name):
     if not module:
         return None
 
+    # noinspection PyUnresolvedReferences
     return module.metadata_class()
 
 

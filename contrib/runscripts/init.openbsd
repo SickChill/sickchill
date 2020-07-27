@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+daemon_home="/path/to/sickchill_homedir"
+daemon_user="sickchill"
+daemon="/usr/local/bin/python3 $daemon_home/SickChill/SickChill.py"
+daemon_flags="-q --daemon --nolaunch --datadir=$daemon_home"
+daemon_timeout=5
+
+. /etc/rc.d/rc.subr
+
+rc_reload=NO
+
+rc_cmd $1

@@ -19,9 +19,7 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # Stdlib Imports
 import re
-
-# Third Party Imports
-from requests.compat import urljoin
+from urllib.parse import urljoin
 
 # First Party Imports
 from sickbeard import logger, tvcache
@@ -30,11 +28,11 @@ from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class HorribleSubsProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, 'HorribleSubs')
+        super().__init__("HorribleSubs")
 
         self.public = True
         self.supports_absolute_numbering = True
@@ -206,6 +204,3 @@ class HorribleSubsProvider(TorrentProvider):
                 entries.append(item)
 
         return entries
-
-
-provider = HorribleSubsProvider()

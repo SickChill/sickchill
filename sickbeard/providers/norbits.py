@@ -2,9 +2,7 @@
 """A Norbits (https://norbits.net) provider"""
 # Stdlib Imports
 import json
-
-# Third Party Imports
-from requests.compat import urlencode
+from urllib.parse import urlencode
 
 # First Party Imports
 from sickbeard import logger, tvcache
@@ -34,12 +32,12 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 
-class NorbitsProvider(TorrentProvider):
+class Provider(TorrentProvider):
     """Main provider object"""
 
     def __init__(self):
         """ Initialize the class """
-        TorrentProvider.__init__(self, 'Norbits')
+        super().__init__("Norbits")
 
         self.username = None
         self.passkey = None
@@ -136,6 +134,3 @@ class NorbitsProvider(TorrentProvider):
             results += items
 
         return results
-
-
-provider = NorbitsProvider()

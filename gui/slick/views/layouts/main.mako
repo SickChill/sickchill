@@ -1,11 +1,12 @@
 <%!
     import re
     import datetime
-    from requests.compat import urljoin
-    import sickbeard
+    from urllib.parse import urljoin
+    from sickbeard import logger
     from sickbeard.filters import hide
     from sickchill.helper.common import pretty_file_size
     from sickchill.show.Show import Show
+    from sickchill import settings
     from time import time
 
     # resource module is unix only
@@ -16,7 +17,7 @@
         has_resource_module = False
 %>
 <!DOCTYPE html>
-<html lang="${sickbeard.GUI_LANG}">
+<html lang="${settings.GUI_LANG}">
     <head>
         <meta name="robots" content="noindex, nofollow">
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -25,12 +26,12 @@
 
         <% themeColors = { "dark": "#15528F", "light": "#333333" } %>
         <!-- Android -->
-        <meta name="theme-color" content="${themeColors[sickbeard.THEME_NAME]}">
+        <meta name="theme-color" content="${themeColors[settings.THEME_NAME]}">
 
         <!-- Windows Phone -->
-        <meta name="msapplication-navbutton-color" content="${themeColors[sickbeard.THEME_NAME]}">
+        <meta name="msapplication-navbutton-color" content="${themeColors[settings.THEME_NAME]}">
         <!-- iOS -->
-        <meta name="apple-mobile-web-app-status-bar-style" content="${themeColors[sickbeard.THEME_NAME]}">
+        <meta name="apple-mobile-web-app-status-bar-style" content="${themeColors[settings.THEME_NAME]}">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="mobile-web-app-capable" content="yes">
 
@@ -45,28 +46,28 @@
         <meta name="msapplication-TileImage" content="${static_url('images/ico/mstile-144x144.png')}">
         <meta name="msapplication-config" content="${static_url('images/ico/browserconfig.xml')}">
 
-        <meta data-var="srRoot" data-content="${sickbeard.WEB_ROOT}">
-        <meta data-var="themeSpinner" data-content="${('', '-dark')[sickbeard.THEME_NAME == 'dark']}">
-        <meta data-var="anonURL" data-content="${sickbeard.ANON_REDIRECT}">
+        <meta data-var="srRoot" data-content="${settings.WEB_ROOT}">
+        <meta data-var="themeSpinner" data-content="${('', '-dark')[settings.THEME_NAME == 'dark']}">
+        <meta data-var="anonURL" data-content="${settings.ANON_REDIRECT}">
 
-        <meta data-var="sickbeard.ANIME_SPLIT_HOME" data-content="${sickbeard.ANIME_SPLIT_HOME}">
-        <meta data-var="sickbeard.ANIME_SPLIT_HOME_IN_TABS" data-content="${sickbeard.ANIME_SPLIT_HOME_IN_TABS}">
-        <meta data-var="sickbeard.COMING_EPS_LAYOUT" data-content="${sickbeard.COMING_EPS_LAYOUT}">
-        <meta data-var="sickbeard.COMING_EPS_SORT" data-content="${sickbeard.COMING_EPS_SORT}">
-        <meta data-var="sickbeard.DATE_PRESET" data-content="${sickbeard.DATE_PRESET}">
-        <meta data-var="sickbeard.FUZZY_DATING" data-content="${sickbeard.FUZZY_DATING}">
-        <meta data-var="sickbeard.HISTORY_LAYOUT" data-content="${sickbeard.HISTORY_LAYOUT}">
-        <meta data-var="sickbeard.USE_SUBTITLES" data-content="${sickbeard.USE_SUBTITLES}">
-        <meta data-var="sickbeard.HOME_LAYOUT" data-content="${sickbeard.HOME_LAYOUT}">
-        <meta data-var="sickbeard.POSTER_SORTBY" data-content="${sickbeard.POSTER_SORTBY}">
-        <meta data-var="sickbeard.POSTER_SORTDIR" data-content="${sickbeard.POSTER_SORTDIR}">
-        <meta data-var="sickbeard.ROOT_DIRS" data-content="${sickbeard.ROOT_DIRS}">
-        <meta data-var="sickbeard.SORT_ARTICLE" data-content="${sickbeard.SORT_ARTICLE}">
-        <meta data-var="sickbeard.TIME_PRESET" data-content="${sickbeard.TIME_PRESET}">
-        <meta data-var="sickbeard.TRIM_ZERO" data-content="${sickbeard.TRIM_ZERO}">
-        <meta data-var="sickbeard.SICKCHILL_BACKGROUND" data-content="${sickbeard.SICKCHILL_BACKGROUND}">
-        <meta data-var="sickbeard.FANART_BACKGROUND" data-content="${sickbeard.FANART_BACKGROUND}">
-        <meta data-var="sickbeard.FANART_BACKGROUND_OPACITY" data-content="${sickbeard.FANART_BACKGROUND_OPACITY}">
+        <meta data-var="settings.ANIME_SPLIT_HOME" data-content="${settings.ANIME_SPLIT_HOME}">
+        <meta data-var="settings.ANIME_SPLIT_HOME_IN_TABS" data-content="${settings.ANIME_SPLIT_HOME_IN_TABS}">
+        <meta data-var="settings.COMING_EPS_LAYOUT" data-content="${settings.COMING_EPS_LAYOUT}">
+        <meta data-var="settings.COMING_EPS_SORT" data-content="${settings.COMING_EPS_SORT}">
+        <meta data-var="settings.DATE_PRESET" data-content="${settings.DATE_PRESET}">
+        <meta data-var="settings.FUZZY_DATING" data-content="${settings.FUZZY_DATING}">
+        <meta data-var="settings.HISTORY_LAYOUT" data-content="${settings.HISTORY_LAYOUT}">
+        <meta data-var="settings.USE_SUBTITLES" data-content="${settings.USE_SUBTITLES}">
+        <meta data-var="settings.HOME_LAYOUT" data-content="${settings.HOME_LAYOUT}">
+        <meta data-var="settings.POSTER_SORTBY" data-content="${settings.POSTER_SORTBY}">
+        <meta data-var="settings.POSTER_SORTDIR" data-content="${settings.POSTER_SORTDIR}">
+        <meta data-var="settings.ROOT_DIRS" data-content="${settings.ROOT_DIRS}">
+        <meta data-var="settings.SORT_ARTICLE" data-content="${settings.SORT_ARTICLE}">
+        <meta data-var="settings.TIME_PRESET" data-content="${settings.TIME_PRESET}">
+        <meta data-var="settings.TRIM_ZERO" data-content="${settings.TRIM_ZERO}">
+        <meta data-var="settings.SICKCHILL_BACKGROUND" data-content="${settings.SICKCHILL_BACKGROUND}">
+        <meta data-var="settings.FANART_BACKGROUND" data-content="${settings.FANART_BACKGROUND}">
+        <meta data-var="settings.FANART_BACKGROUND_OPACITY" data-content="${settings.FANART_BACKGROUND_OPACITY}">
         <%block name="metas" />
 
         <link rel="shortcut icon" href="${static_url('images/ico/favicon.ico')}">
@@ -99,13 +100,13 @@
         <link rel="stylesheet" type="text/css" href="${static_url('css/print.css')}" />
         <link rel="stylesheet" type="text/css" href="${static_url('css/country-flags.css')}"/>
 
-        % if sickbeard.THEME_NAME != "light":
-            <link rel="stylesheet" type="text/css" href="${static_url(urljoin('css/', '.'.join((sickbeard.THEME_NAME, 'css'))))}" />
+        % if settings.THEME_NAME != "light":
+            <link rel="stylesheet" type="text/css" href="${static_url(urljoin('css/', '.'.join((settings.THEME_NAME, 'css'))))}" />
         % endif
 
         <%block name="css" />
 
-        % if sickbeard.CUSTOM_CSS:
+        % if settings.CUSTOM_CSS:
             ## TODO: check if this exists first
             <link rel="stylesheet" type="text/css" href="${static_url('ui/custom.css', include_version=False)}" />
         % endif
@@ -114,7 +115,7 @@
         <nav class="navbar navbar-default navbar-fixed-top hidden-print">
             <div class="container-fluid">
                 <%
-                    numCombined = numErrors + numWarnings + sickbeard.NEWS_UNREAD
+                    numCombined = numErrors + numWarnings + settings.NEWS_UNREAD
                     if numCombined:
                         if numErrors:
                             toolsBadgeClass = ' btn-danger'
@@ -148,9 +149,9 @@
                                     <li><a href="${static_url("home/", include_version=False)}"><i class="fa fa-fw fa-home"></i>&nbsp;${_('Show List')}</a></li>
                                     <li><a href="${static_url("addShows/", include_version=False)}"><i class="fa fa-fw fa-television"></i>&nbsp;${_('Add Shows')}</a></li>
                                     <li><a href="${static_url("home/postprocess/", include_version=False)}"><i class="fa fa-fw fa-refresh"></i>&nbsp;${_('Manual Post-Processing')}</a></li>
-                                    % if sickbeard.SHOWS_RECENT:
+                                    % if settings.SHOWS_RECENT:
                                         <li role="separator" class="divider"></li>
-                                        % for recentShow in sickbeard.SHOWS_RECENT:
+                                        % for recentShow in settings.SHOWS_RECENT:
                                             <li><a href="${static_url("home/displayShow?show={}".format(recentShow['indexerid']), include_version=False)}"><i class="fa fa-fw fa-television"></i>&nbsp;${recentShow['name']|trim,h}</a></li>
                                         % endfor
                                     % endif
@@ -175,22 +176,22 @@
                                     <li><a href="${static_url("manage/backlogOverview/", include_version=False)}"><i class="fa fa-fw fa-binoculars"></i>&nbsp;${_('Backlog Overview')}</a></li>
                                     <li><a href="${static_url("manage/manageSearches/", include_version=False)}"><i class="fa fa-fw fa-search"></i>&nbsp;${_('Manage Searches')}</a></li>
                                     <li><a href="${static_url("manage/episodeStatuses/", include_version=False)}"><i class="fa fa-fw fa-gavel"></i>&nbsp;${_('Episode Status Management')}</a></li>
-                                    % if sickbeard.USE_PLEX_SERVER and sickbeard.PLEX_SERVER_HOST != "":
+                                    % if settings.USE_PLEX_SERVER and settings.PLEX_SERVER_HOST != "":
                                         <li><a href="${static_url("home/updatePLEX/", include_version=False)}"><i class="menu-icon-plex"></i>&nbsp;${_('Update PLEX')}</a></li>
                                     % endif
-                                    % if sickbeard.USE_KODI and sickbeard.KODI_HOST != "":
+                                    % if settings.USE_KODI and settings.KODI_HOST != "":
                                         <li><a href="${static_url("home/updateKODI/", include_version=False)}"><i class="menu-icon-kodi"></i>&nbsp;${_('Update KODI')}</a></li>
                                     % endif
-                                    % if sickbeard.USE_EMBY and sickbeard.EMBY_HOST != "" and sickbeard.EMBY_APIKEY != "":
+                                    % if settings.USE_EMBY and settings.EMBY_HOST != "" and settings.EMBY_APIKEY != "":
                                         <li><a href="${static_url("home/updateEMBY/", include_version=False)}"><i class="menu-icon-emby"></i>&nbsp;${_('Update Emby')}</a></li>
                                     % endif
                                     % if manage_torrents_url:
                                         <li><a href="${manage_torrents_url}" target="_blank"><i class="fa fa-fw fa-download"></i>&nbsp;${_('Manage Torrents')}</a></li>
                                     % endif
-                                    % if sickbeard.USE_FAILED_DOWNLOADS:
+                                    % if settings.USE_FAILED_DOWNLOADS:
                                         <li><a href="${static_url("manage/failedDownloads/", include_version=False)}"><i class="fa fa-fw fa-thumbs-o-down"></i>&nbsp;${_('Failed Downloads')}</a></li>
                                     % endif
-                                    % if sickbeard.USE_SUBTITLES:
+                                    % if settings.USE_SUBTITLES:
                                         <li><a href="${static_url("manage/subtitleMissed/", include_version=False)}"><i class="fa fa-fw fa-language"></i>&nbsp;${_('Missed Subtitle Management')}</a></li>
                                     % endif
                                 </ul>
@@ -219,8 +220,8 @@
                             </li>
 
                             <%
-                                if sickbeard.NEWS_UNREAD:
-                                    newsBadge = ' <span class="badge">'+str(sickbeard.NEWS_UNREAD)+'</span>'
+                                if settings.NEWS_UNREAD:
+                                    newsBadge = ' <span class="badge">'+str(settings.NEWS_UNREAD)+'</span>'
                                 else:
                                     newsBadge = ''
 
@@ -239,14 +240,14 @@
                                     <li><a href="${static_url("news/", include_version=False)}"><i class="fa fa-fw fa-newspaper-o"></i>&nbsp;${_('News')}${newsBadge}</a></li>
                                     <li><a href="${static_url("IRC/", include_version=False)}"><i class="fa fa-fw fa-hashtag"></i>&nbsp;${_('IRC')}</a></li>
                                     <li><a href="${static_url("changes/", include_version=False)}"><i class="fa fa-fw fa-globe"></i>&nbsp;${_('Changelog')}</a></li>
-                                    <li><a href="https://github.com/SickChill/SickChill/wiki/Donations" rel="noreferrer" onclick="window.open('${sickbeard.ANON_REDIRECT}' + this.href); return false;"><i class="fa fa-fw fa-life-ring"></i>&nbsp;${_('Support SickChill')}</a></li>
+                                    <li><a href="https://github.com/SickChill/SickChill/wiki/Donations" rel="noreferrer" onclick="window.open('${settings.ANON_REDIRECT}' + this.href); return false;"><i class="fa fa-fw fa-life-ring"></i>&nbsp;${_('Support SickChill')}</a></li>
                                     <li role="separator" class="divider"></li>
                                     %if numErrors:
                                         <li><a href="${static_url("errorlogs/", include_version=False)}"><i class="fa fa-fw fa-exclamation-circle"></i>&nbsp;${_('View Errors')} <span class="badge btn-danger">${numErrors}</span></a></li>
                                     %endif
                                     %if numWarnings:
                                         <li>
-                                          <a href="${static_url("errorlogs/?level={}".format(sickbeard.logger.WARNING), include_version=False)}">
+                                          <a href="${static_url("errorlogs/?level={}".format(logger.WARNING), include_version=False)}">
                                             <i class="fa fa-fw fa-exclamation-triangle"></i>&nbsp;${_('View Warnings')} <span class="badge btn-warning">${numWarnings}</span>
                                           </a>
                                         </li>
@@ -349,18 +350,18 @@
                                 % endif
                                 /&nbsp;<span class="footerhighlight">${ep_total}</span>&nbsp;${_('Episodes Downloaded')}&nbsp;${ep_percentage}
                             </span>&nbsp;|
-                             <span class="footer-item">${_('Daily Search')}: <span class="footerhighlight">${str(sickbeard.dailySearchScheduler.timeLeft()).split('.')[0]}</span></span>&nbsp;|
-                             <span class="footer-item">${_('Backlog Search')}: <span class="footerhighlight">${str(sickbeard.backlogSearchScheduler.timeLeft()).split('.')[0]}</span></span>
+                             <span class="footer-item">${_('Daily Search')}: <span class="footerhighlight">${str(settings.dailySearchScheduler.timeLeft()).split('.')[0]}</span></span>&nbsp;|
+                             <span class="footer-item">${_('Backlog Search')}: <span class="footerhighlight">${str(settings.backlogSearchScheduler.timeLeft()).split('.')[0]}</span></span>
                         </div>
 
                         <div>
                             % if has_resource_module:
-                                <span class="footer-item">${_('Memory used')}: <span class="footerhighlight">${pretty_file_size(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)}</span></span> |
+                                <span class="footer-item">${_('Memory used')}: <span class="footerhighlight">${pretty_file_size(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024)}</span></span> |
                             % endif
-                            <span class="footer-item">${_('Load time')}: <span class="footerhighlight">${"%.4f" % (time() - sbStartTime)}s</span></span> |
-                            <span class="footer-item">Mako: <span class="footerhighlight">${"%.4f" % (time() - makoStartTime)}s</span></span> |
-                            <span class="footer-item">${_('Branch')}: <span class="footerhighlight">${sickbeard.BRANCH}</span></span> |
-                            <span class="footer-item">${_('Now')}: <span class="footerhighlight">${datetime.datetime.now().strftime(sickbeard.DATE_PRESET+" "+sickbeard.TIME_PRESET)}</span></span>
+                            <span class="footer-item">${_('Load time')}: <span class="footerhighlight">${"{:.4f}".format(time() - sbStartTime)}s</span></span> |
+                            <span class="footer-item">Mako: <span class="footerhighlight">${"{:.4f}".format(time() - makoStartTime)}s</span></span> |
+                            <span class="footer-item">${_('Branch')}: <span class="footerhighlight">${settings.BRANCH}</span></span> |
+                            <span class="footer-item">${_('Now')}: <span class="footerhighlight">${datetime.datetime.now().strftime(settings.DATE_PRESET+" "+settings.TIME_PRESET)}</span></span>
                         </div>
                     </div>
                 </div>
@@ -370,8 +371,8 @@
                 <script type="text/javascript" src="${static_url('js/lib/formwizard.js')}"></script><!-- Can't be added to bower -->
                 <script type="text/javascript" src="${static_url('js/parsers.js')}"></script>
                 <script type="text/javascript" src="${static_url('js/rootDirs.js')}"></script>
-                % if sickbeard.DEVELOPER:
-                    <script type="text/javascript" src="${static_url('js/core.js')}"></script>
+                % if settings.DEVELOPER:
+                    <script type="text/javascript" src="/js/core.js"></script>
                 % else:
                     <script type="text/javascript" src="${static_url('js/core.min.js')}"></script>
                 % endif

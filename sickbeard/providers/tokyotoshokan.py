@@ -27,11 +27,11 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
-class TokyoToshokanProvider(TorrentProvider):
+class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "TokyoToshokan")
+        super().__init__("TokyoToshokan")
 
         self.public = True
         self.supports_absolute_numbering = True
@@ -116,5 +116,3 @@ class TokyoToshokanProvider(TorrentProvider):
             results += items
 
         return results
-
-provider = TokyoToshokanProvider()

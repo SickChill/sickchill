@@ -1,6 +1,5 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    import sickbeard
     import os.path
     import datetime
 
@@ -11,6 +10,7 @@
 
     from sickchill.show.History import History
     from sickchill.providers.GenericProvider import GenericProvider
+    from sickchill import settings
 %>
 <%block name="content">
     <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
@@ -35,8 +35,8 @@
                 <label>
                     <span> ${_('Layout')}:</span>
                     <select id="layout" class="form-control form-control-inline input-sm">
-                        <option value="${srRoot}/setHistoryLayout/?layout=compact"  ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'compact']}>${_('Compact')}</option>
-                        <option value="${srRoot}/setHistoryLayout/?layout=detailed" ${('', 'selected="selected"')[sickbeard.HISTORY_LAYOUT == 'detailed']}>${_('Detailed')}</option>
+                        <option value="${srRoot}/setHistoryLayout/?layout=compact"  ${('', 'selected="selected"')[settings.HISTORY_LAYOUT == 'compact']}>${_('Compact')}</option>
+                        <option value="${srRoot}/setHistoryLayout/?layout=detailed" ${('', 'selected="selected"')[settings.HISTORY_LAYOUT == 'detailed']}>${_('Detailed')}</option>
                     </select>
                 </label>
             </div>
@@ -52,8 +52,8 @@
     <div class="row">
         <div class="col-md-12">
             <div class="horizontal-scroll">
-                <table id="historyTable" class="sickbeardTable tablesorter" cellspacing="1" border="0" cellpadding="0">
-                    % if sickbeard.HISTORY_LAYOUT == "detailed":
+                <table id="historyTable" class="sickchillTable tablesorter">
+                    % if settings.HISTORY_LAYOUT == "detailed":
                         <thead>
                             <tr>
                                 <th class="nowrap">${_('Time')}</th>
@@ -76,7 +76,9 @@
                                         %>
                                         <time datetime="${isoDate}" class="date">${airDate}</time>
                                     </td>
-                                    <td class="tvShow" width="35%"><a href="${srRoot}/home/displayShow?show=${hItem["show_id"]}#S${hItem["season"]}E${hItem["episode"]}">${hItem["show_name"]} - ${"S%02i" % int(hItem["season"])}${"E%02i" % int(hItem["episode"])} ${('', '<span class="quality Proper">Proper</span>')["proper" in hItem["resource"].lower() or "repack" in hItem["resource"].lower()]}</a></td>
+                                    <td class="tvShow" width="35%"><a href="${srRoot}/home/displayShow?show=${hItem["show_id"]}#S${hItem["season"]}E${hItem["episode"]}">
+                                        ${"{} - S{:02}E{:02}".format(hItem["show_name"], int(hItem["season"]), int(hItem["episode"]))} ${('', '<span class="quality Proper">Proper</span>')["proper" in hItem["resource"].lower() or "repack" in hItem["resource"].lower()]}
+                                    </a></td>
                                     <td align="center" ${('', 'class="subtitles_column"')[curStatus == SUBTITLED]}>
                                         % if curStatus == SUBTITLED:
                                             <img width="16" height="11" style="vertical-align:middle;" src="${static_url('images/subtitles/flags/' + hItem['resource'] + '.png') }" onError="this.onerror=null;this.src='${ static_url('images/flags/unknown.png')}';">
@@ -91,7 +93,7 @@
                                                 <span style="vertical-align:middle;"><i>${_('Unknown')}</i></span>
                                             % endif
                                         % else:
-                                            % if hItem["provider"] > 0:
+                                            % if hItem["provider"]:
                                                 % if curStatus in [SNATCHED, FAILED]:
                                                     <% provider = providers.getProviderClass(GenericProvider.make_id(hItem["provider"])) %>
                                                     % if provider is not None:
@@ -128,7 +130,7 @@
                                 <th>${_('Episode')}</th>
                                 <th>${_('Snatched')}</th>
                                 <th>${_('Downloaded')}</th>
-                                % if sickbeard.USE_SUBTITLES:
+                                % if settings.USE_SUBTITLES:
                                     <th>${_('Subtitled')}</th>
                                 % endif
                                 <th>${_('Quality')}</th>
@@ -147,7 +149,11 @@
                                         <time datetime="${isoDate}" class="date">${airDate}</time>
                                     </td>
                                     <td class="tvShow" width="25%">
-                                        <span><a href="${srRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">${hItem["show_name"]} - ${"S%02i" % int(hItem["season"])}${"E%02i" % int(hItem["episode"])}${('', ' <span class="quality Proper">Proper</span>')['proper' in hItem["resource"].lower() or 'repack' in hItem["resource"].lower()]}</a></span>
+                                        <span>
+                                            <a href="${srRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">
+                                                ${"{} - S{:02}E{:02}".format(hItem["show_name"], int(hItem["season"]), int(hItem["episode"]))}${('', ' <span class="quality Proper">Proper</span>')['proper' in hItem["resource"].lower() or 'repack' in hItem["resource"].lower()]}
+                                            </a>
+                                        </span>
                                     </td>
                                     <td align="center" provider="${str(sorted(hItem["actions"])[0]["provider"])}">
                                         % for action in sorted(hItem["actions"]):
@@ -175,7 +181,7 @@
                                             % endif
                                         % endfor
                                     </td>
-                                    % if sickbeard.USE_SUBTITLES:
+                                    % if settings.USE_SUBTITLES:
                                         <td align="center">
                                             % for action in sorted(hItem["actions"]):
                                                 <% curStatus, curQuality = Quality.splitCompositeStatus(int(action["action"])) %>
@@ -202,7 +208,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th class="nowrap" colspan="${("6", "7")[sickbeard.USE_SUBTITLES]}">&nbsp;</th>
+                                <th class="nowrap" colspan="${("6", "7")[settings.USE_SUBTITLES]}">&nbsp;</th>
                             </tr>
                         </tfoot>
                     % endif

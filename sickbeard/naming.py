@@ -23,9 +23,11 @@ import os
 
 # First Party Imports
 import sickbeard
+from sickchill import settings
 
 # Local Folder Imports
-from . import common, logger, tv
+# from sickbeard.tv import TVEpisode
+from . import common, logger
 from .common import DOWNLOADED, Quality
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
@@ -88,21 +90,21 @@ class TVShow(object):
         return self.scene > 0
 
 
-class TVEpisode(tv.TVEpisode):
+class TVEpisode(sickbeard.tv.TVEpisode):
     def __init__(self, season, episode, absolute_number, name):
         self.relatedEps = []
-        self._name = name
-        self._season = season
-        self._episode = episode
-        self._absolute_number = absolute_number
+        self.name = name
+        self.season = season
+        self.episode = episode
+        self.absolute_number = absolute_number
         self.scene_season = season
         self.scene_episode = episode
         self.scene_absolute_number = absolute_number
-        self._airdate = datetime.date(2010, 3, 9)
+        self.airdate = datetime.date(2010, 3, 9)
         self.show = TVShow()
-        self._status = Quality.compositeStatus(common.DOWNLOADED, common.Quality.SDTV)
-        self._release_name = 'Show.Name.S02E03.HDTV.XviD-RLSGROUP'
-        self._is_proper = True
+        self.status = Quality.compositeStatus(common.DOWNLOADED, common.Quality.SDTV)
+        self.release_name = 'Show.Name.S02E03.HDTV.XviD-RLSGROUP'
+        self.is_proper = True
 
 
 def check_force_season_folders(pattern=None, multi=None, anime_type=None):
@@ -113,10 +115,10 @@ def check_force_season_folders(pattern=None, multi=None, anime_type=None):
     :return: true if season folders need to be forced on or false otherwise.
     """
     if pattern is None:
-        pattern = sickbeard.NAMING_PATTERN
+        pattern = settings.NAMING_PATTERN
 
     if anime_type is None:
-        anime_type = sickbeard.NAMING_ANIME
+        anime_type = settings.NAMING_ANIME
 
     valid = not validate_name(pattern, None, anime_type, file_only=True)
 
@@ -133,10 +135,10 @@ def check_valid_naming(pattern=None, multi=None, anime_type=None):
     :return: true if the naming is valid, false if not.
     """
     if pattern is None:
-        pattern = sickbeard.NAMING_PATTERN
+        pattern = settings.NAMING_PATTERN
 
     if anime_type is None:
-        anime_type = sickbeard.NAMING_ANIME
+        anime_type = settings.NAMING_ANIME
 
     logger.debug("Checking whether the pattern " + pattern + " is valid for a single episode")
     valid = validate_name(pattern, None, anime_type)
@@ -155,7 +157,7 @@ def check_valid_abd_naming(pattern=None):
     :return: true if the naming is valid, false if not.
     """
     if pattern is None:
-        pattern = sickbeard.NAMING_PATTERN
+        pattern = settings.NAMING_PATTERN
 
     logger.debug("Checking whether the pattern " + pattern + " is valid for an air-by-date episode")
     valid = validate_name(pattern, abd=True)
@@ -170,7 +172,7 @@ def check_valid_sports_naming(pattern=None):
     :return: true if the naming is valid, false if not.
     """
     if pattern is None:
-        pattern = sickbeard.NAMING_PATTERN
+        pattern = settings.NAMING_PATTERN
 
     logger.debug("Checking whether the pattern " + pattern + " is valid for an sports episode")
     valid = validate_name(pattern, sports=True)

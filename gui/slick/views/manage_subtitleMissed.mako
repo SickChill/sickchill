@@ -1,7 +1,7 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     import datetime
-    import sickbeard
+    from sickchill import settings
     from sickbeard import subtitles
 %>
 <%block name="content">
@@ -21,7 +21,7 @@
         % endif
 
         <form action="${srRoot}/manage/subtitleMissed" method="get">
-            % if sickbeard.SUBTITLES_MULTI:
+            % if settings.SUBTITLES_MULTI:
                 ${_('Manage episodes without')} <select name="whichSubs" class="form-control form-control-inline input-sm">
                 <option value="all">${_('All')}</option>
                 % for sub_code in subtitles.wanted_languages():
@@ -38,8 +38,8 @@
                         % endif
                     % endfor
                 % endif
-            </select>
             % endif
+            </select>
             <input class="btn" type="submit" value="${_('Manage')}" />
         </form>
 
@@ -47,7 +47,7 @@
         ##Strange that this is used by js but is an input outside of any form?
         <input type="hidden" id="selectSubLang" name="selectSubLang" value="${whichSubs}" />
         <form action="${srRoot}/manage/downloadSubtitleMissed" method="post">
-            % if sickbeard.SUBTITLES_MULTI:
+            % if settings.SUBTITLES_MULTI:
                 <h2>${_('Episodes without {subsLanguage} subtitles.').format(subsLanguage=subsLanguage)}</h2>
             % else:
                 % for index, sub_code in enumerate(subtitles.wanted_languages()):
@@ -63,7 +63,7 @@
                 <button type="button" class="btn btn-xs deselectAllShows">${_('Clear all')}</button>
             </div>
             <br>
-            <table class="sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0">
+            <table class="sickchillTable manageTable">
             % for cur_indexer_id in sorted_show_ids:
                 <tr id="${cur_indexer_id}">
                     <th style="width: 1%;"><input type="checkbox" class="allCheck" id="allCheck-${cur_indexer_id}" name="${cur_indexer_id}-all"checked="checked" /></th>

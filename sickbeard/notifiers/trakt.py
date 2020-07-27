@@ -17,10 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 # First Party Imports
-import sickbeard
 import sickchill
 from sickbeard import logger
 from sickbeard.trakt_api import TraktAPI, traktAuthException, traktException, traktServerBusy
+from sickchill import settings
 
 
 class Notifier(object):
@@ -51,9 +51,9 @@ class Notifier(object):
         ep_obj: The TVEpisode object to add to trakt
         """
 
-        trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
+        trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
 
-        if sickbeard.USE_TRAKT:
+        if settings.USE_TRAKT:
             try:
                 # URL parameters
                 data = {
@@ -66,7 +66,7 @@ class Notifier(object):
                     ]
                 }
 
-                if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.TRAKT_REMOVE_SERIESLIST:
+                if settings.TRAKT_SYNC_WATCHLIST and settings.TRAKT_REMOVE_SERIESLIST:
                         trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
 
                 # Add Season and Episode + Related Episodes
@@ -75,7 +75,7 @@ class Notifier(object):
                 for relEp_Obj in [ep_obj] + ep_obj.relatedEps:
                     data['shows'][0]['seasons'][0]['episodes'].append({'number': relEp_Obj.episode})
 
-                if sickbeard.TRAKT_SYNC_WATCHLIST and sickbeard.TRAKT_REMOVE_WATCHLIST:
+                if settings.TRAKT_SYNC_WATCHLIST and settings.TRAKT_REMOVE_WATCHLIST:
                     trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
 
                 # update library
@@ -98,9 +98,9 @@ class Notifier(object):
         update: type o action add or remove
         """
 
-        trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
+        trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
 
-        if sickbeard.USE_TRAKT:
+        if settings.USE_TRAKT:
 
             data = {}
             try:
@@ -208,7 +208,7 @@ class Notifier(object):
         Returns: True if the request succeeded, False otherwise
         """
         try:
-            trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
+            trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
             trakt_api.validateAccount()
             if blacklist_name and blacklist_name is not None:
                 trakt_lists = trakt_api.traktRequest("users/" + username + "/lists")
