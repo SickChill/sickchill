@@ -1,0 +1,3 @@
+recursive-include gui *.*
+recursive-include locale *.*
+recursive-include contrib *.*

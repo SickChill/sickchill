@@ -73,7 +73,7 @@ class GenericProvider(object):
         self.enable_backlog = False
         self.enable_daily = False
         self.enabled = False
-        self.headers = {'User-Agent': ua_pool.random}
+        self.headers = {'User-Agent': ua_pool.get_random_user_agent()}
         self.proper_strings = ['PROPER|REPACK|REAL']
         self.provider_type = None
         self.public = False

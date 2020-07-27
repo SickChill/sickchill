@@ -43,6 +43,7 @@ setup_gettext()
 
 # Stdlib Imports
 import mimetypes
+from pathlib import Path
 
 mimetypes.add_type("text/css", ".css")
 mimetypes.add_type("application/sfont", ".otf")
@@ -107,27 +108,18 @@ class SickChill(object):
         except Exception:
             logger.warning('Unable to remove the cache/mako directory!')
 
-    @staticmethod
-    def help_message():
-        """
-        Print help message for commandline options
-        """
-        help_msg = __doc__
-        help_msg = help_msg.replace('SickChill.py', settings.MY_FULLNAME)
-        help_msg = help_msg.replace('SickChill directory', settings.PROG_DIR)
-
-        return help_msg
-
     def start(self):
         """
         Start SickChill
         """
         # do some preliminary stuff
-        settings.MY_FULLNAME = os.path.normpath(os.path.abspath(__file__))
+        settings.MY_FULLNAME = os.path.normpath(os.path.abspath(__file__)).replace('EGG-INFO{sep}scripts{sep}'.format(sep=os.path.sep), '')
         settings.MY_NAME = os.path.basename(settings.MY_FULLNAME)
         settings.PROG_DIR = os.path.dirname(settings.MY_FULLNAME)
         settings.LOCALE_DIR = os.path.join(settings.PROG_DIR, 'locale')
         settings.DATA_DIR = settings.PROG_DIR
+        if 'site-packages' in settings.DATA_DIR:
+            settings.DATA_DIR = str(Path.home().joinpath('sickchill').absolute())
         settings.MY_ARGS = sys.argv[1:]
 
         # Rename the main thread
@@ -216,8 +208,7 @@ class SickChill(object):
         # Build from the DB to start with
         self.load_shows_from_db()
 
-        logger.info('Starting SickChill [{branch}] using \'{config}\''.format
-                   (branch=settings.BRANCH, config=settings.CONFIG_FILE))
+        logger.info('Starting SickChill [{branch}] using \'{config}\''.format(branch=settings.BRANCH, config=settings.CONFIG_FILE))
 
         self.clear_cache()
 

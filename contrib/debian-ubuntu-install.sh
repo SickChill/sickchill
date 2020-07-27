@@ -88,20 +88,20 @@ fi
 if [[ ${distro} = ubuntu ]]; then
     if [[ $(/sbin/init --version 2> /dev/null) =~ upstart ]]; then
     	echo "Copying Startup Script To Upstart"
-        cp /opt/sickchill/runscripts/init.upstart /etc/init/sickchill.conf
+        cp /opt/sickchill/contrib/runscripts/init.upstart /etc/init/sickchill.conf
 	chown root:root /etc/init/sickchill.conf && chmod 644 /etc/init/sickchill.conf
 	echo "Starting SickChill"
         service sickchill start
 
     elif [[ $(systemctl) =~ -\.mount ]]; then
     	echo "Copying Startup Script To systemd"
-        cp /opt/sickchill/runscripts/init.systemd /etc/systemd/system/sickchill.service
+        cp /opt/sickchill/contrib/runscripts/init.systemd /etc/systemd/system/sickchill.service
         chown root:root /etc/systemd/system/sickchill.service && chmod 644 /etc/systemd/system/sickchill.service
 	echo "Starting SickChill"
         systemctl -q enable sickchill && systemctl -q start sickchill
     else
     	echo "Copying Startup Script To init"
-        cp /opt/sickchill/runscripts/init.ubuntu /etc/init.d/sickchill
+        cp /opt/sickchill/contrib/runscripts/init.ubuntu /etc/init.d/sickchill
         chown root:root /etc/init.d/sickchill && chmod 644 /etc/init.d/sickchill
 	echo "Starting SickChill"
         update-rc.d sickchill defaults && service sickchill start
@@ -109,13 +109,13 @@ if [[ ${distro} = ubuntu ]]; then
 elif [[ ${distro} = debian ]]; then
     if [[ $(systemctl) =~ -\.mount ]]; then
     	echo "Copying Startup Script To systemd"
-        cp /opt/sickchill/runscripts/init.systemd /etc/systemd/system/sickchill.service
+        cp /opt/sickchill/contrib/runscripts/init.systemd /etc/systemd/system/sickchill.service
         chown root:root /etc/systemd/system/sickchill.service && chmod 644 /etc/systemd/system/sickchill.service
 	echo "Starting SickChill"
         systemctl -q enable sickchill && systemctl -q start sickchill
     else
     	echo "Copying Startup Script To init"
-        cp /opt/sickchill/runscripts/init.debian /etc/init.d/sickchill
+        cp /opt/sickchill/contrib/runscripts/init.debian /etc/init.d/sickchill
         chown root:root /etc/init.d/sickchill && chmod 755 /etc/init.d/sickchill
 	echo "Starting SickChill"
         update-rc.d sickchill defaults && service sickchill start
