@@ -25,29 +25,6 @@ import sys
 from random_user_agent.params import OperatingSystem, SoftwareName
 from random_user_agent.user_agent import UserAgent
 
-# from pathlib import Path
-
-
-#
-# def setup_lib_path(additional=None):
-#     lib_path = Path('lib3').resolve()
-#     if lib_path.exists() and str(lib_path) not in sys.path:
-#         sys.path.insert(1, str(lib_path))
-#     if additional and additional not in sys.path:
-#         sys.path.insert(1, additional)
-#
-#
-# def setup_gettext(language=None):
-#     languages = [language] if language else None
-#     try:
-#         assert Path('locale').absolute().exists(), str(Path('../locale').absolute())
-#     except AssertionError:
-#         print(str(Path('../locale').absolute()))
-#         raise
-#
-#     gt = gettext.translation('messages', str(Path('../locale').absolute()), languages=languages, codeset='UTF-8')
-#     gt.install(names=["ngettext"])
-
 
 def setup_useragent():
     software_names = [SoftwareName.CHROME.value]
@@ -55,8 +32,9 @@ def setup_useragent():
 
     return UserAgent(software_names=software_names, operating_systems=operating_systems, limit=100)
 
+
 def setup_lib_path(additional=None):
-    lib_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib3'))
+    lib_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'lib3'))
     if lib_path not in sys.path:
         sys.path.insert(1, lib_path)
     if additional and additional not in sys.path:
@@ -65,5 +43,8 @@ def setup_lib_path(additional=None):
 
 def setup_gettext(language=None):
     languages = [language] if language else None
-    gt = gettext.translation('messages', os.path.abspath(os.path.join(os.path.dirname(__file__), '../locale')), languages=languages, codeset='UTF-8')
+    gt = gettext.translation('messages',
+                             os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'locale')),
+                             languages=languages,
+                             codeset='UTF-8')
     gt.install(names=["ngettext"])

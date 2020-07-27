@@ -17,10 +17,6 @@ with open(Path('requirements.txt').absolute(), 'r') as fp:
     info_dict['install_requires'] = [line for line in fp.readlines() if not line.startswith('#') and not line.startswith('git+')]
 
 
-with open(Path('readme.md').absolute(), 'r') as fp:
-    long_description = fp.read()
-
-
 if 'setup.py' in sys.argv[0]:
     setup(
         packages=find_namespace_packages(
