@@ -27,8 +27,8 @@ import sickchill.start
 from sickbeard import config, filters, helpers, logger, ui
 from sickbeard.common import Quality, WANTED
 from sickchill import settings
-from sickchill.init_helpers import setup_gettext
 from sickchill.helper import setup_github, try_int
+from sickchill.init_helpers import setup_gettext
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 

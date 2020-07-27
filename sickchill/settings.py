@@ -20,7 +20,7 @@
 import random
 from threading import Lock
 
-# First Party Imports
+# Local Folder Imports
 from .init_helpers import setup_gettext, setup_lib_path
 
 setup_lib_path()
