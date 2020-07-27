@@ -1,0 +1,61 @@
+# SickChill systemd service unit file
+#
+# Configuration Notes
+#
+#    - Option names (e.g. ExecStart=, Type=) are case-sensitive)
+#
+#    - Adjust User= and Group= to the user/group you want SickChill to run as.
+#
+#    - Optional adjust EnvironmentFile= path to configuration file
+#        Can ONLY be used for configuring extra options used in ExecStart.
+#        Putting a minus (-) in front of file means no error warning if the file doesn't exist
+#
+#    - Adjust ExecStart= to point to your python and SickChill executables.
+#       The FIRST token of the command line must be an ABSOLUTE FILE NAME,
+#       then followed by arguments for the process.
+#       If no --datadir is given, data is stored in same dir as SickChill.py
+#       Arguments can also be set in EnvironmentFile (except python)
+#
+#    - WantedBy= specifies which target (i.e. runlevel) to start SickChill for.
+#        multi-user.target equates to runlevel 3 (multi-user text mode)
+#        graphical.target  equates to runlevel 5 (multi-user X11 graphical mode)
+#
+
+### Example Using SickChill as daemon with pid file
+# Type=forking
+# RuntimeDirectory=sickchill
+# RuntimeDirectoryMode=0750
+# PIDFile=/var/run/sickchill/sickchill.pid
+# ExecStart=/usr/bin/python3 /opt/sickchill/SickChill.py -q --daemon --nolaunch --pidfile=/var/run/sickchill/sickchill.pid --datadir=/opt/sickchill
+
+## Example Using SickChill as daemon without pid file
+# Type=forking
+# GuessMainPID=no
+# ExecStart=/usr/bin/python3 /opt/sickchill/SickChill.py -q --daemon --nolaunch --datadir=/opt/sickchill
+
+### Example Using simple
+# Type=simple
+# ExecStart=/usr/bin/python3 /opt/sickchill/SickChill.py -q --nolaunch
+
+### Example Using simple with EnvironmentFile where SR_DATA=/home/sickchill/.sickchill in /etc/sickchill.conf
+# Type=simple
+# EnvironmentFile=/etc/sickchill.conf
+# ExecStart=/usr/bin/python3 /opt/sickchill/SickChill.py -q --nolaunch --datadir=${SR_DATA}
+
+### Configuration
+
+[Unit]
+Description=SickChill Daemon
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=sickchill
+Group=sickchill
+
+Type=forking
+GuessMainPID=no
+ExecStart=/usr/bin/python3 /opt/sickchill/SickChill.py -q --daemon --nolaunch --datadir=/opt/sickchill
+
+[Install]
+WantedBy=multi-user.target
