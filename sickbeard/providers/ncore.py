@@ -80,7 +80,7 @@ class Provider(TorrentProvider):
                 if mode != "RSS":
                     logger.debug("Search string: {0}".format(search_string))
 
-                url = self.urls['search'] % (search_string)
+                url = self.urls['search'] % search_string
                 data = self.get_url(url, returns="text")
 
                 try:

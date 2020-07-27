@@ -76,7 +76,6 @@ class Client(GenericClient):
             return False
 
         try:
-
             # Send torrent file with params to rTorrent and optionally start download
             torrent = self.auth.load_torrent(result.content, start=not settings.TORRENT_PAUSED, params=self._get_params(result))
 
@@ -89,42 +88,6 @@ class Client(GenericClient):
             logger.warning('Error while sending torrent: {error}'.format
                        (error=str(error)))
             return False
-
-    def _set_torrent_ratio(self, name):
-
-        # if not name:
-        # return False
-        #
-        # if not self.auth:
-        # return False
-        #
-        # views = self.auth.get_views()
-        #
-        # if name not in views:
-        # self.auth.create_group(name)
-
-        # group = self.auth.get_group(name)
-
-        # ratio = int(float(sickbeard.TORRENT_RATIO) * 100)
-        #
-        # try:
-        # if ratio > 0:
-        #
-        # # Explicitly set all group options to ensure it is setup correctly
-        # group.set_upload('1M')
-        # group.set_min(ratio)
-        # group.set_max(ratio)
-        # group.set_command('d.stop')
-        # group.enable()
-        # else:
-        # # Reset group action and disable it
-        # group.set_command()
-        # group.disable()
-        #
-        # except:
-        # return False
-
-        return True
 
     def testAuthentication(self):
         try:

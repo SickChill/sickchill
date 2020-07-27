@@ -47,7 +47,8 @@ class Notifier(object):
     def notify_login(self, ipaddress=""):
         pass
 
-    def update_library(self, ep_obj):
+    @staticmethod
+    def update_library(ep_obj):
 
         # Values from config
 

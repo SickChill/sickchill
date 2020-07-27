@@ -29,7 +29,8 @@ from sickchill import settings
 
 class Notifier(object):
 
-    def _notify_emby(self, message, host=None, emby_apikey=None):
+    @staticmethod
+    def _notify_emby(message, host=None, emby_apikey=None):
         """Handles notifying Emby host via HTTP API
 
         Returns:
@@ -71,7 +72,8 @@ class Notifier(object):
     def test_notify(self, host, emby_apikey):
         return self._notify_emby('This is a test notification from SickChill', host, emby_apikey)
 
-    def update_library(self, show=None):
+    @staticmethod
+    def update_library(show=None):
         """Handles updating the Emby Media Server host via HTTP API
 
         Returns:
@@ -102,7 +104,7 @@ class Notifier(object):
             values = {}
             data = urllib.parse.urlencode(values)
             try:
-                req = urllib.request.Request(url, data)
+                req = urllib.request.Request(url, data.encode('utf-8'))
                 req.add_header('X-MediaBrowser-Token', settings.EMBY_APIKEY)
 
                 response = urllib.request.urlopen(req)

@@ -67,6 +67,7 @@ def _remove_file_failed(file):
     except:
         pass
 
+
 def download_file(url, filename):
     try:
         r = requests.get(url, stream=True, verify=False)
@@ -85,11 +86,14 @@ def download_file(url, filename):
 
     return True
 
+
 def get_anime_titles_xml(path):
     return download_file("https://raw.githubusercontent.com/ScudLee/anime-lists/master/animetitles.xml", path)
 
+
 def get_anime_list_xml(path):
     return download_file("https://raw.githubusercontent.com/ScudLee/anime-lists/master/anime-list.xml", path)
+
 
 def read_anidb_xml(filePath=None):
     if not filePath:

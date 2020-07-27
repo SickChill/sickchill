@@ -18,19 +18,15 @@
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 # Local Folder Imports
-from .aniDBmaper import AniDBMaper
+from .aniDBmapper import AniDBMapper
 
 
 class ResponseResolver:
     def __init__(self, data):
-        restag, rescode, resstr, datalines = self.parse(data)
+        self.restag, self.rescode, self.resstr, self.datalines = self.parse(data)
 
-        self.restag = restag
-        self.rescode = rescode
-        self.resstr = resstr
-        self.datalines = datalines
-
-    def parse(self, data):
+    @staticmethod
+    def parse(data):
         resline = data.split('\n', 1)[0]
         lines = data.split('\n')[1:-1]
 
@@ -58,11 +54,18 @@ class Response:
         self.rescode = rescode
         self.resstr = resstr
         self.rawlines = rawlines
-        self.maper = AniDBMaper()
+        self.maper = AniDBMapper()
+
+        self.attrs = None
+        self.datalines = None
+
+        self.codetail = ()
+        self.codehead = ()
+        self.coderep = ()
 
     def __repr__(self):
         tmp = "%s(%s,%s,%s) %s\n" % (
-        self.__class__.__name__, repr(self.restag), repr(self.rescode), repr(self.resstr), repr(self.attrs))
+            self.__class__.__name__, repr(self.restag), repr(self.rescode), repr(self.resstr), repr(self.attrs))
 
         m = 0
         for line in self.datalines:
@@ -374,8 +377,7 @@ class FileResponse(Response):
         codeListF = self.maper.getFileCodesF(fmask)
         codeListA = self.maper.getFileCodesA(amask)
         # print "File - codelistF: "+str(codeListF)
-        #print "File - codelistA: "+str(codeListA)
-
+        # print "File - codelistA: "+str(codeListA)
 
         self.codetail = tuple(['fid'] + codeListF + codeListA)
 
@@ -433,8 +435,8 @@ class MylistStatsResponse(Response):
         self.codestr = 'MYLIST_STATS'
         self.codehead = ()
         self.codetail = (
-        'animes', 'eps', 'files', 'filesizes', 'animesadded', 'epsadded', 'filesadded', 'groupsadded', 'leechperc',
-        'lameperc', 'viewedofdb', 'mylistofdb', 'viewedofmylist', 'viewedeps', 'votes', 'reviews')
+            'animes', 'eps', 'files', 'filesizes', 'animesadded', 'epsadded', 'filesadded', 'groupsadded', 'leechperc',
+            'lameperc', 'viewedofdb', 'mylistofdb', 'viewedofmylist', 'viewedeps', 'votes', 'reviews')
         self.coderep = ()
 
 
@@ -570,7 +572,7 @@ class GroupResponse(Response):
         self.codestr = 'GROUP'
         self.codehead = ()
         self.codetail = (
-        'gid', 'rating', 'votes', 'animes', 'files', 'name', 'shortname', 'ircchannel', 'ircserver', 'url')
+            'gid', 'rating', 'votes', 'animes', 'files', 'name', 'shortname', 'ircchannel', 'ircserver', 'url')
         self.coderep = ()
 
 
@@ -779,8 +781,9 @@ class NotificationAddedResponse(Response):
         Response.__init__(self, cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFICATION_ITEM_ADDED'
         self.codehead = ()
-        self.codetail = ('nid')
+        self.codetail = ('nid',)
         self.coderep = ()
+
 
 class NotificationDeletedResponse(Response):
     def __init__(self, cmd, restag, rescode, resstr, datalines):
@@ -810,7 +813,7 @@ class NotificationUpdatedResponse(Response):
         Response.__init__(self, cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFICATION_ITEM_UPDATED'
         self.codehead = ()
-        self.codetail = ('nid')
+        self.codetail = ('nid',)
         self.coderep = ()
 
 
@@ -2032,4 +2035,3 @@ responses = {
     '666': ApiViolationResponse,
     '998': VersionResponse
 }
-

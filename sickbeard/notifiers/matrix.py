@@ -74,7 +74,8 @@ class Notifier(object):
     def test_notify(self):
         return self._notify_matrix("This is a test notification from SickChill", force=True)
 
-    def _send_matrix(self, message=None):
+    @staticmethod
+    def _send_matrix(message=None):
         url = 'https://{0}/_matrix/client/r0/rooms/{1}/send/m.room.message/{2}?access_token={3}'.format(settings.MATRIX_SERVER,
                                                                                                         settings.MATRIX_ROOM, time.time(),
                                                                                                         settings.MATRIX_API_TOKEN)

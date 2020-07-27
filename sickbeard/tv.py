@@ -797,7 +797,7 @@ class TVShow(object):
                 logger.info(str(self.indexerid) + ": Unable to find IMDb show info in the database")
                 return
 
-        self._imdb_info = dict(list(zip(list(sql_results[0]), sql_results[0])))
+        self.imdb_info = dict(list(zip(list(sql_results[0]), sql_results[0])))
         self.dirty = False
         return True
 

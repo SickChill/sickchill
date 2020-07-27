@@ -45,7 +45,8 @@ class Notifier(object):
         """
         return self._notify_telegram('Test', 'This is a test notification from SickChill', id, api_key, force=True)
 
-    def _send_telegram_msg(self, title, msg, id=None, api_key=None):
+    @staticmethod
+    def _send_telegram_msg(title, msg, id=None, api_key=None):
         """
         Sends a Telegram notification
 

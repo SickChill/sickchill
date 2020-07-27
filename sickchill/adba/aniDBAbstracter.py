@@ -22,25 +22,29 @@ import string
 
 # Local Folder Imports
 from . import aniDBfileInfo as fileInfo
-from .aniDBerrors import *
+from .aniDBerrors import AniDBIncorrectParameterError
 from .aniDBfileInfo import read_anidb_xml
-from .aniDBmaper import AniDBMaper
+from .aniDBmapper import AniDBMapper
 from .aniDBtvDBmaper import TvDBMap
 
 
-class aniDBabstractObject(object):
+class AniDBabstractObject(object):
     def __init__(self, aniDB, load=False):
         self.laoded = False
         self.set_connection(aniDB)
         if load:
             self.load_data()
 
-    def set_connection(self, aniDB):
-        self.aniDB = aniDB
+        self.aniDB = None
+        self.rawData = None
+        self.log = self._fake_log
+
+    def set_connection(self, anidb):
+        self.aniDB = anidb
         if self.aniDB:
             self.log = self.aniDB.log
         else:
-            self.log = self._fake_log()
+            self.log = self._fake_log
 
     def _fake_log(self, x=None):
         pass
@@ -48,15 +52,15 @@ class aniDBabstractObject(object):
     def _fill(self, dataline):
         for key in dataline:
             try:
-                tmpList = dataline[key].split("'")
-                if len(tmpList) > 1:
-                    newList = []
-                    for i in tmpList:
+                tmp_list = dataline[key].split("'")
+                if len(tmp_list) > 1:
+                    new_list = []
+                    for i in tmp_list:
                         try:
-                            newList.append(int(i))
+                            new_list.append(int(i))
                         except:
-                            newList.append(i)
-                    self.__dict__[key] = newList
+                            new_list.append(i)
+                    self.__dict__[key] = new_list
                     continue
             except:
                 pass
@@ -81,7 +85,8 @@ class aniDBabstractObject(object):
 
         self.allNames = names
 
-    def _easy_extend(self, initialList, item):
+    @staticmethod
+    def _easy_extend(initialList, item):
         if item:
             if isinstance(item, list):
                 initialList.extend(item)
@@ -89,7 +94,6 @@ class aniDBabstractObject(object):
                 initialList.append(item)
 
         return initialList
-
 
     def load_data(self):
         return False
@@ -113,16 +117,17 @@ class aniDBabstractObject(object):
             self.aniDB.notifydel(aid=self.aid, type=1, priority=1)
 
 
-class Anime(aniDBabstractObject):
+class Anime(AniDBabstractObject):
     def __init__(self, aniDB, name=None, aid=None, tvdbid=None, paramsA=None, autoCorrectName=False, load=False):
 
-        self.maper = AniDBMaper()
+        self.mapper = AniDBMapper()
         self.tvDBMap = TvDBMap()
         self.allAnimeXML = None
 
         self.name = name
         self.aid = aid
         self.tvdb_id = tvdbid
+        self.release_groups = []
 
         if self.tvdb_id and not self.aid:
             self.aid = self.tvDBMap.get_anidb_for_tvdb(self.tvdb_id)
@@ -143,10 +148,10 @@ class Anime(aniDBabstractObject):
 
         if not paramsA:
             self.bitCode = "b2f0e0fc000000"
-            self.params = self.maper.getAnimeCodesA(self.bitCode)
+            self.params = self.mapper.getAnimeCodesA(self.bitCode)
         else:
             self.paramsA = paramsA
-            self.bitCode = self.maper.getAnimeBitsA(self.paramsA)
+            self.bitCode = self.mapper.getAnimeBitsA(self.paramsA)
 
         super(Anime, self).__init__(aniDB, load)
 
@@ -166,7 +171,6 @@ class Anime(aniDBabstractObject):
         if not self.aid:
             return []
         self.rawData = self.aniDB.groupstatus(aid=self.aid)
-        self.release_groups = []
         for line in self.rawData.datalines:
             self.release_groups.append({"name": line["name"], "rating": line["rating"], "range": line["episode_range"]})
         return sorted(self.release_groups, key=lambda x: x['name'].lower())
@@ -178,7 +182,7 @@ class Anime(aniDBabstractObject):
 
         regex = re.compile(
             '( \(\d{4}\))|[%s]' % re.escape(string.punctuation))  # remove any punctuation and e.g. ' (2011)'
-        #regex = re.compile('[%s]'  % re.escape(string.punctuation)) # remove any punctuation and e.g. ' (2011)'
+        # regex = re.compile('[%s]'  % re.escape(string.punctuation)) # remove any punctuation and e.g. ' (2011)'
         name = regex.sub('', name.lower())
         lastAid = 0
         for element in self.allAnimeXML.getiterator():
@@ -191,7 +195,7 @@ class Anime(aniDBabstractObject):
                     return lastAid
         return 0
 
-    #TODO: refactor and use the new functions in anidbFileinfo
+    # TODO: refactor and use the new functions in anidbFileinfo
     def _get_name_from_xml(self, aid, onlyMain=True):
         if not self.allAnimeXML:
             self.allAnimeXML = read_anidb_xml()
@@ -220,10 +224,10 @@ class Anime(aniDBabstractObject):
                     self.__dict__["sequal"] = self.related_aid_list
 
 
-class Episode(aniDBabstractObject):
+class Episode(AniDBabstractObject):
     def __init__(self, aniDB, number=None, epid=None, filePath=None, fid=None, epno=None, paramsA=None, paramsF=None,
                  load=False, calculate=False):
-        self.maper = AniDBMaper()
+        self.mapper = AniDBMapper()
         self.epid = epid
         self.filePath = filePath
         self.fid = fid
@@ -233,17 +237,17 @@ class Episode(aniDBabstractObject):
 
         if not paramsA:
             self.bitCodeA = "C000F0C0"
-            self.paramsA = self.maper.getFileCodesA(self.bitCodeA)
+            self.paramsA = self.mapper.getFileCodesA(self.bitCodeA)
         else:
             self.paramsA = paramsA
-            self.bitCodeA = self.maper.getFileBitsA(self.paramsA)
+            self.bitCodeA = self.mapper.getFileBitsA(self.paramsA)
 
         if not paramsF:
             self.bitCodeF = "7FF8FEF8"
-            self.paramsF = self.maper.getFileCodesF(self.bitCodeF)
+            self.paramsF = self.mapper.getFileCodesF(self.bitCodeF)
         else:
             self.paramsF = paramsF
-            self.bitCodeF = self.maper.getFileBitsF(self.paramsF)
+            self.bitCodeF = self.mapper.getFileBitsF(self.paramsF)
 
         super(Episode, self).__init__(aniDB, load)
 
@@ -278,11 +282,10 @@ class Episode(aniDBabstractObject):
             # TODO: add the name or something
             self.log("Added the episode to anidb")
 
-
     def _calculate_file_stuff(self, filePath):
         if not filePath:
-            return (None, None)
+            return None, None
         self.log("Calculating the ed2k. Please wait...")
         ed2k = fileInfo.get_file_hash(filePath)
         size = fileInfo.get_file_size(filePath)
-        return (ed2k, size)
+        return ed2k, size

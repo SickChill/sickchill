@@ -77,6 +77,7 @@ class Provider(TorrentProvider):
                 with BS4Parser(data, "html5lib") as html:
                     torrent_table = html.find("table", class_="download")
                     torrent_body = torrent_table.find('tbody') if torrent_table else []
+                    # noinspection PyCallingNonCallable
                     torrent_rows = torrent_body("tr") if torrent_body else []
 
                     # Continue only if at least one Release is found

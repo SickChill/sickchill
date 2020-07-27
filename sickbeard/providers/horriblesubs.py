@@ -90,7 +90,8 @@ class Provider(TorrentProvider):
 
         return entries
 
-    def __parseRssFeed(self, data):
+    @staticmethod
+    def __parseRssFeed(data):
         entries = []
         with BS4Parser(data, 'html5lib') as soup:
             items = soup.findAll('item')

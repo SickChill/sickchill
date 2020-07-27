@@ -50,5 +50,4 @@ ifaddr
 twilio
 pyaes
 git+https://github.com/SickChill/rtorrent-python@9_plus-py3#egg=new-rtorrent-python
-#mir.anidb
 random_user_agent

@@ -142,7 +142,8 @@ class GenericClient(object):
         """
         return True
 
-    def _set_torrent_path(self, torrent_path):  # pylint:disable=unused-argument, no-self-use
+    @staticmethod
+    def _set_torrent_path(torrent_path):  # pylint:disable=unused-argument, no-self-use
         """
         This should be overridden should return the True/False from the client
         when a torrent is set with path

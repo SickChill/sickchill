@@ -137,6 +137,7 @@ class Provider(TorrentProvider):
                 with BS4Parser(data, 'html5lib') as html:
                     torrent_table = html.find('div', class_='boxContent')
                     torrent_table = torrent_table.find('table') if torrent_table else []
+                    # noinspection PyCallingNonCallable
                     torrent_rows = torrent_table('tr') if torrent_table else []
 
                     # Continue only if at least one Release is found

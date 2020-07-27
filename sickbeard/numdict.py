@@ -34,6 +34,7 @@ class NumDict(MutableMapping):
     def __len__(self):
         return len(self.data)
 
+    # noinspection PyCallingNonCallable
     def __getitem__(self, key):
         key = self.numeric(key)
         if key in self.data:

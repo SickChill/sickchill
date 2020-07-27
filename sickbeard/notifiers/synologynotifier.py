@@ -49,7 +49,8 @@ class Notifier(object):
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._send_synologyNotifier(update_text.format(ipaddress), title)
 
-    def _send_synologyNotifier(self, message, title):
+    @staticmethod
+    def _send_synologyNotifier(message, title):
         synodsmnotify_cmd = ["/usr/syno/bin/synodsmnotify", "@administrators", title, message]
         logger.info("Executing command " + str(synodsmnotify_cmd))
         logger.debug("Absolute path to command: " + os.path.abspath(synodsmnotify_cmd[0]))

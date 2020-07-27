@@ -30,7 +30,8 @@ from sickchill import settings
 
 
 class Notifier(object):
-    def notify_snatch(self, ep_name):
+    @staticmethod
+    def notify_snatch(ep_name):
         return False
         # Not implemented: Start the scanner when snatched does not make any sense
 
@@ -40,17 +41,20 @@ class Notifier(object):
     def notify_subtitle_download(self, ep_name, lang):
         self._notifyNMJ()
 
-    def notify_git_update(self, new_version):
+    @staticmethod
+    def notify_git_update(new_version):
         return False
         # Not implemented, no reason to start scanner.
 
-    def notify_login(self, ipaddress=""):
+    @staticmethod
+    def notify_login(ipaddress=""):
         return False
 
     def test_notify(self, host):
         return self._sendNMJ(host)
 
-    def notify_settings(self, host, dbloc, instance):
+    @staticmethod
+    def notify_settings(host, dbloc, instance):
         """
         Retrieves the NMJv2 database location from Popcorn hour
 
@@ -86,7 +90,8 @@ class Notifier(object):
             return False
         return False
 
-    def _sendNMJ(self, host):
+    @staticmethod
+    def _sendNMJ(host):
         """
         Sends a NMJ update command to the specified machine
 

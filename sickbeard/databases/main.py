@@ -502,7 +502,8 @@ class Add1080pAndRawHDQualities(RenameSeasonFolders):
         (status, quality) = common.Quality.splitCompositeStatus(old_status)
         return common.Quality.compositeStatus(status, self._update_quality(quality))
 
-    def _update_quality(self, old_quality):
+    @staticmethod
+    def _update_quality(old_quality):
         """Update bitwise flags to reflect new quality values
 
         Check flag bits (clear old then set their new locations) starting

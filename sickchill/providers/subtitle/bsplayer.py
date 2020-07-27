@@ -211,7 +211,8 @@ class BSPlayerProvider(Provider):
 
         subtitle.content = fix_line_ending(zlib.decompress(response.content, 47))
 
-    def hash_bsplayer(self, video_path):
+    @staticmethod
+    def hash_bsplayer(video_path):
         """Compute a hash using BSPlayer's algorithm.
         :param str video_path: path of the video.
         :return: the name_hash.

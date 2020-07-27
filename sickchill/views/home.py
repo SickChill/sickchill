@@ -62,7 +62,8 @@ class Home(WebRoot):
         t = PageTemplate(rh=self, filename="genericMessage.mako")
         return t.render(message=message, subject=subject, topmenu="home", title="")
 
-    def _getEpisode(self, show, season=None, episode=None, absolute=None):
+    @staticmethod
+    def _getEpisode(show, season=None, episode=None, absolute=None):
         if not show:
             return None, _("Invalid show parameters")
 

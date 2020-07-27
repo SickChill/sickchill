@@ -29,7 +29,8 @@ from sickchill import settings
 
 
 class Notifier(object):
-    def notify_settings(self, host):
+    @staticmethod
+    def notify_settings(host):
         """
         Retrieves the settings from a NMJ/Popcorn hour
 
@@ -79,7 +80,8 @@ class Notifier(object):
 
         return True
 
-    def notify_snatch(self, ep_name):
+    @staticmethod
+    def notify_snatch(ep_name):
         return False
         # Not implemented: Start the scanner when snatched does not make any sense
 
@@ -91,17 +93,20 @@ class Notifier(object):
         if settings.USE_NMJ:
             self._notifyNMJ()
 
-    def notify_git_update(self, new_version):
+    @staticmethod
+    def notify_git_update(new_version):
         return False
         # Not implemented, no reason to start scanner.
 
-    def notify_login(self, ipaddress=""):
+    @staticmethod
+    def notify_login(ipaddress=""):
         return False
 
     def test_notify(self, host, database, mount):
         return self._sendNMJ(host, database, mount)
 
-    def _sendNMJ(self, host, database, mount=None):
+    @staticmethod
+    def _sendNMJ(host, database, mount=None):
         """
         Sends a NMJ update command to the specified machine
 

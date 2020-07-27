@@ -232,7 +232,8 @@ class TVDB(Indexer):
 
         return results
 
-    def test_user_key(self, user, key):
+    @staticmethod
+    def test_user_key(user, key):
         user_object = tvdbsimple.User(user, key)
         try:
             user_object.info()

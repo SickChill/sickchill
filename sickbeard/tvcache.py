@@ -100,7 +100,8 @@ class TVCache(object):
     def _check_auth(self, data):  # pylint:disable=unused-argument, no-self-use
         return True
 
-    def _check_item_auth(self, title, url):  # pylint:disable=unused-argument, no-self-use
+    @staticmethod
+    def _check_item_auth(title, url):  # pylint:disable=unused-argument, no-self-use
         return True
 
     def update_cache(self):

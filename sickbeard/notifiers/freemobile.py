@@ -33,7 +33,8 @@ class Notifier(object):
     def test_notify(self, cust_id=None, apiKey=None):
         return self._notifyFreeMobile('Test', "This is a test notification from SickChill", cust_id, apiKey, force=True)
 
-    def _sendFreeMobileSMS(self, title, msg, cust_id=None, apiKey=None):
+    @staticmethod
+    def _sendFreeMobileSMS(title, msg, cust_id=None, apiKey=None):
         """
         Sends a SMS notification
 

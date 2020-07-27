@@ -42,7 +42,8 @@ class Notifier(object):
         """
         return self._notify_join('Test', 'This is a test notification from SickChill', id, apikey, force=True)
 
-    def _send_join_msg(self, title, msg, id=None, apikey=None):
+    @staticmethod
+    def _send_join_msg(title, msg, id=None, apikey=None):
         """
         Sends a Join notification
 

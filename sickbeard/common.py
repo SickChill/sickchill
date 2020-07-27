@@ -105,7 +105,7 @@ NAMING_LIMITED_EXTEND_E_PREFIXED = 32
 MULTI_EP_STRINGS = NumDict({
     NAMING_REPEAT: _("Repeat"),
     NAMING_SEPARATED_REPEAT: _("Repeat (Separated)"),
-    NAMING_DUPLICATE: ("Duplicate"),
+    NAMING_DUPLICATE: _("Duplicate"),
     NAMING_EXTEND: _("Extend"),
     NAMING_LIMITED_EXTEND: _("Extend (Limited)"),
     NAMING_LIMITED_EXTEND_E_PREFIXED: _("Extend (Limited, E-prefixed)")

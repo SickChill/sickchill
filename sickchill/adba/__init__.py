@@ -19,44 +19,49 @@
 # Stdlib Imports
 import threading
 from time import localtime, sleep, strftime, time
-from types import *
+from types import FunctionType, MethodType
 
 # Local Folder Imports
 from .aniDBAbstracter import Anime, Episode
-from .aniDBcommands import *
-from .aniDBerrors import *
+from .aniDBcommands import (AnimeCommand, AuthCommand, BuddyAcceptCommand, BuddyAddCommand, BuddyDelCommand, BuddyDenyCommand, BuddyListCommand,
+                            BuddyStateCommand, EncryptCommand, EpisodeCommand, FileCommand, GroupCommand, GroupstatusCommand, LogoutCommand, MyListAddCommand,
+                            MyListCommand, MyListDelCommand, MyListStatsCommand, Notification, NotifyAckCommand, NotifyAddCommand, NotifyCommand,
+                            NotifyDelCommand, NotifyGetCommand, NotifyListCommand, PingCommand, ProducerCommand, PushAckCommand, PushCommand,
+                            RandomAnimeCommand, SendMsgCommand, UptimeCommand, UserCommand, VersionCommand, VoteCommand)
+from .aniDBerrors import AniDBBannedError, AniDBCommandTimeoutError, AniDBError, AniDBIncorrectParameterError, AniDBInternalError
 from .aniDBlink import AniDBLink
 
 version = 100
 
+
 class Connection(threading.Thread):
-    def __init__(self, clientname='adba', server='api.anidb.info', port=9000, myport=9876, user=None, password=None, session=None, log=False, logPrivate=False, keepAlive=False):
+    def __init__(self, client_name='adba', server='api.anidb.info', port=9000, myport=9876, user=None, password=None,
+                 session=None, log=False, log_private=False, keep_alive=False):
         super(Connection, self).__init__()
         # setting the log function
-        self.logPrivate = logPrivate
-        if type(log) in (FunctionType, MethodType):# if we get a function or a method use that.
+        self.log_private = log_private
+        if type(log) in (FunctionType, MethodType):  # if we get a function or a method use that.
             self.log = log
-            self.logPrivate = True # true means sensitive data will not be NOT be logged ... yeah i know oO
-        elif log:# if it something else (like True) use the own print_log
+            self.log_private = True  # true means sensitive data will not be NOT be logged ... yeah i know oO
+        elif log:  # if it something else (like True) use the own print_log
             self.log = self.print_log
-        else:# dont log at all
+        else:  # dont log at all
             self.log = self.print_log_dummy
 
-
-        self.link = AniDBLink(server, port, myport, self.log, logPrivate=self.logPrivate)
+        self.link = AniDBLink(server, port, myport, self.log, log_private=self.log_private)
         self.link.session = session
 
-        self.clientname = clientname
-        self.clientver = version
+        self.client_name = client_name
+        self.client_version = version
 
         # from original lib
-        self.mode = 1    #mode: 0=queue,1=unlock,2=callback
+        self.mode = 1  # mode: 0=queue,1=unlock,2=callback
 
         # to lock other threads out
         self.lock = threading.RLock()
 
         # thread keep alive stuff
-        self.keepAlive = keepAlive
+        self.keepAlive = keep_alive
         self.setDaemon(True)
         self.lastKeepAliveCheck = 0
         self.lastAuth = 0
@@ -68,15 +73,15 @@ class Connection(threading.Thread):
         self.counter = 0
         self.counterAge = 0
 
-    def print_log(self, data):
+    @staticmethod
+    def print_log(data):
         print((strftime("%Y-%m-%d %H:%M:%S", localtime(time())) + ": " + str(data)))
 
     def print_log_dummy(self, data):
         pass
 
     def stop(self):
-        self.logout(cutConnection=True)
-
+        self.logout(disconnect=True)
 
     def cut(self):
         self.link.stop()
@@ -84,72 +89,66 @@ class Connection(threading.Thread):
     def handle_response(self, response):
         if response.rescode in ('501', '506') and response.req.command != 'AUTH':
             self.log("seams like the last command got a not authed error back tring to reconnect now")
-            if self._reAuthenticate():
+            if self._reauthenticate():
                 response.req.resp = None
-                response = self.handle(response.req, response.req.callback)
-
+                self.handle(response.req, response.req.callback)
 
     def handle(self, command, callback):
 
-        self.lock.acquire()
-        if self.counterAge < (time() - 120): # the last request was older then 2 min reset delay and counter
-            self.counter = 0
-            self.link.delay = 2
-        else: # something happend in the last 120 seconds
-            if self.counter < 5:
-                self.link.delay = 2 # short term "A Client MUST NOT send more than 0.5 packets per second (that's one packet every two seconds, not two packets a second!)"
-            elif self.counter >= 5:
-                self.link.delay = 6 # long term "A Client MUST NOT send more than one packet every four seconds over an extended amount of time."
+        with self.lock:
+            if self.counterAge < (time() - 120):  # the last request was older then 2 min reset delay and counter
+                self.counter = 0
+                self.link.delay = 2
+            else:  # something happend in the last 120 seconds
+                if self.counter < 5:
+                    self.link.delay = 2  # short term "A Client MUST NOT send more than 1 packets in 2 seconds"
+                elif self.counter >= 5:
+                    self.link.delay = 6  # long term "A Client MUST NOT send more than one packet every four seconds over an extended amount of time."
 
-        if command.command not in ('AUTH', 'PING', 'ENCRYPT'):
-            self.counterAge = time()
-            self.counter += 1
-            if self.keepAlive:
-                self.authed()
+            if command.command not in ('AUTH', 'PING', 'ENCRYPT'):
+                self.counterAge = time()
+                self.counter += 1
+                if self.keepAlive:
+                    self.authed()
 
-        def callback_wrapper(resp):
-            self.handle_response(resp)
-            if callback:
-                callback(resp)
+            def callback_wrapper(resp):
+                self.handle_response(resp)
+                if callback:
+                    callback(resp)
 
-        self.log("handling(" + str(self.counter) + "-" + str(self.link.delay) + ") command " + str(command.command))
+            self.log("handling(" + str(self.counter) + "-" + str(self.link.delay) + ") command " + str(command.command))
 
-        #make live request
-        command.authorize(self.mode, self.link.new_tag(), self.link.session, callback_wrapper)
-        self.link.request(command)
+            # make live request
+            command.authorize(self.mode, self.link.new_tag(), self.link.session, callback_wrapper)
+            self.link.request(command)
 
-        #handle mode 1 (wait for response)
-        if self.mode == 1:
-            command.wait_response()
-            try:
-                command.resp
-            except:
-                self.lock.release()
-                if self.link.banned:
-                    raise AniDBBannedError("User is banned")
-                else:
-                    raise AniDBCommandTimeoutError("Command has timed out")
+            # handle mode 1 (wait for response)
+            if self.mode == 1:
+                command.wait_response()
+                try:
+                    command.resp
+                except Exception:
+                    if self.link.banned:
+                        raise AniDBBannedError("User is banned")
+                    else:
+                        raise AniDBCommandTimeoutError("Command has timed out")
 
-            self.handle_response(command.resp)
-            self.lock.release()
-            return command.resp
-        else:
-            self.lock.release()
+                self.handle_response(command.resp)
+                return command.resp
 
-    def authed(self, reAuthenticate=False):
-        self.lock.acquire()
-        authed = (self.link.session != None)
-        if not authed and (reAuthenticate or self.keepAlive):
-            self._reAuthenticate()
-            authed = (self.link.session != None)
-        self.lock.release()
+    def authed(self, reauthenticate=False):
+        with self.lock:
+            authed = self.link.session is not None
+            if not authed and (reauthenticate or self.keepAlive):
+                self._reauthenticate()
+                authed = self.link.session is not None
         return authed
 
-    def _reAuthenticate(self):
+    def _reauthenticate(self):
         if self._username and self._password:
             self.log("auto re authenticating !")
             resp = self.auth(self._username, self._password)
-            if resp.rescode not in ('500'):
+            if resp.rescode not in ['500']:
                 return True
         else:
             return False
@@ -161,12 +160,12 @@ class Connection(threading.Thread):
         # if not reauthenticate
         if self.lastAuth and time() - self.lastAuth > 1800:
             self.log("auto uptime !")
-            self.uptime() # this will update the self.link.session and will refresh the session if it is still alive
+            self.uptime()  # this will update the self.link.session and will refresh the session if it is still alive
 
-            if self.authed(): # if we are authed we set the time
+            if self.authed():  # if we are authed we set the time
                 self.lastAuth = time()
-            else: # if we aren't authed and we have the user and pw then reauthenticate
-                self._reAuthenticate()
+            else:  # if we aren't authed and we have the user and pw then reauthenticate
+                self._reauthenticate()
 
         # issue a ping every 20 minutes after the last package
         # this ensures the connection will be kept alive
@@ -174,12 +173,10 @@ class Connection(threading.Thread):
             self.log("auto ping !")
             self.ping()
 
-
     def run(self):
         while self.keepAlive:
             self._keep_alive()
             sleep(120)
-
 
     def auth(self, username, password, nat=None, mtu=None, callback=None):
         """
@@ -197,26 +194,26 @@ class Connection(threading.Thread):
             self.log("ok2")
             self._username = username
             self._password = password
-            if self.is_alive() == False:
+            if not self.is_alive():
                 self.log("You wanted to keep this thing alive!")
-                if self._iamALIVE == False:
+                if not self._iamALIVE:
                     self.log("Starting thread now...")
                     self.start()
                     self._iamALIVE = True
                 else:
                     self.log("not starting thread seams like it is already running. this must be a _reAuthenticate")
 
-
         self.lastAuth = time()
-        return self.handle(AuthCommand(username, password, 3, self.clientname, self.clientver, nat, 1, 'utf8', mtu), callback)
+        return self.handle(AuthCommand(username, password, 3, self.client_name, self.client_version, nat, 1, 'utf8', mtu),
+                           callback)
 
-    def logout(self, cutConnection=False, callback=None):
+    def logout(self, disconnect=False, callback=None):
         """
         Log out from AniDB UDP API
 
         """
         result = self.handle(LogoutCommand(), callback)
-        if(cutConnection):
+        if disconnect:
             self.cut()
         return result
 
@@ -248,7 +245,7 @@ class Connection(threading.Thread):
         """
         return self.handle(PushAckCommand(nid), callback)
 
-    def notification(self, aid=None, gid=None, type=None, priority=None, callback=None):
+    def notification(self, aid=None, gid=None, notification_type=None, priority=None, callback=None):
         """
         Add a notification
 
@@ -263,7 +260,7 @@ class Connection(threading.Thread):
 
         """
 
-        return self.handle(Notification(aid, gid, type, priority), callback)
+        return self.handle(Notification(aid, gid, notification_type, priority), callback)
 
     def notifyadd(self, aid=None, gid=None, type=None, priority=None, callback=None):
         """
@@ -426,7 +423,7 @@ class Connection(threading.Thread):
         """
         return self.handle(BuddyStateCommand(startat), callback)
 
-    def anime(self, aid=None, aname=None, amask= -1, callback=None):
+    def anime(self, aid=None, aname=None, amask=-1, callback=None):
         """
         Get information about an anime
 
@@ -460,7 +457,8 @@ class Connection(threading.Thread):
         """
         return self.handle(EpisodeCommand(eid, aid, aname, epno), callback)
 
-    def file(self, fid=None, size=None, ed2k=None, aid=None, aname=None, gid=None, gname=None, epno=None, fmask= -1, amask=0, callback=None):
+    def file(self, fid=None, size=None, ed2k=None, aid=None, aname=None, gid=None, gname=None, epno=None, fmask=-1,
+             amask=0, callback=None):
         """
         Get information about a file
 
@@ -599,7 +597,8 @@ class Connection(threading.Thread):
 
         return self.handle(ProducerCommand(pid, pname), callback)
 
-    def mylist(self, lid=None, fid=None, size=None, ed2k=None, aid=None, aname=None, gid=None, gname=None, epno=None, callback=None):
+    def mylist(self, lid=None, fid=None, size=None, ed2k=None, aid=None, aname=None, gid=None, gname=None, epno=None,
+               callback=None):
         """
         Get information about your mylist
 
@@ -623,7 +622,8 @@ class Connection(threading.Thread):
         """
         return self.handle(MyListCommand(lid, fid, size, ed2k, aid, aname, gid, gname, epno), callback)
 
-    def mylistadd(self, lid=None, fid=None, size=None, ed2k=None, aid=None, aname=None, gid=None, gname=None, epno=None, edit=None, state=None, viewed=None, source=None, storage=None, other=None, callback=None):
+    def mylistadd(self, lid=None, fid=None, size=None, ed2k=None, aid=None, aname=None, gid=None, gname=None, epno=None,
+                  edit=None, state=None, viewed=None, source=None, storage=None, other=None, callback=None):
         """
         Add/Edit information to/in your mylist
 
@@ -665,7 +665,9 @@ class Connection(threading.Thread):
         -x    target all episodes upto x
 
         """
-        return self.handle(MyListAddCommand(lid, fid, size, ed2k, aid, aname, gid, gname, epno, edit, state, viewed, source, storage, other), callback)
+        return self.handle(
+            MyListAddCommand(lid, fid, size, ed2k, aid, aname, gid, gname, epno, edit, state, viewed, source, storage,
+                             other), callback)
 
     def mylistdel(self, lid=None, fid=None, aid=None, aname=None, gid=None, gname=None, epno=None, callback=None):
         """
@@ -697,7 +699,7 @@ class Connection(threading.Thread):
         """
         return self.handle(MyListStatsCommand(), callback)
 
-    def vote(self, type, id=None, name=None, value=None, epno=None, callback=None):
+    def vote(self, vote_type, aid=None, name=None, value=None, epno=None, callback=None):
         """
         Rate an anime/episode/group
 
@@ -724,7 +726,7 @@ class Connection(threading.Thread):
         100-1000 give vote
 
         """
-        return self.handle(VoteCommand(type, id, name, value, epno), callback)
+        return self.handle(VoteCommand(vote_type, aid, name, value, epno), callback)
 
     def randomanime(self, type, callback=None):
         """
@@ -787,8 +789,9 @@ class Connection(threading.Thread):
         it's better that way, let it go as utf8 to databases etc. because then you've the real data stored
 
         """
-        raise AniDBError("pylibanidb sets the encoding to utf8 as default and it's stupid to use any other encoding. you WILL lose some data if you use other "
-                     "encodings, and now you've been warned. you will need to modify the code yourself if you want to do something as stupid as changing the encoding")
+        raise AniDBError(
+            "pylibanidb sets the encoding to utf8 as default and it's stupid to use any other encoding. you WILL lose some data if you use other "
+            "encodings, and now you've been warned. you will need to modify the code yourself if you want to do something as stupid as changing the encoding")
         return self.handle(EncodingCommand(name), callback)
 
     def sendmsg(self, to, title, body, callback=None):

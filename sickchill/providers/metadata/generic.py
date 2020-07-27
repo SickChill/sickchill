@@ -796,7 +796,8 @@ class GenericMetadata(object):
 
         return indexer_id, name, indexer
 
-    def _retrieve_show_image_urls_from_tmdb(self, show, img_type):
+    @staticmethod
+    def _retrieve_show_image_urls_from_tmdb(show, img_type):
         types = {'poster': 'poster_path',
                  'banner': None,
                  'fanart': 'backdrop_path',
@@ -827,7 +828,8 @@ class GenericMetadata(object):
 
         logger.info("Could not find any " + img_type + " images on TMDB for " + show.name)
 
-    def _retrieve_show_image_urls_from_fanart(self, show, img_type, thumb=False, season=None):
+    @staticmethod
+    def _retrieve_show_image_urls_from_fanart(show, img_type, thumb=False, season=None):
         types = {
             'poster': fanart.TYPE.TV.POSTER,
             'banner': fanart.TYPE.TV.BANNER,

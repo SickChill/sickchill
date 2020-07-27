@@ -25,12 +25,12 @@ import zlib
 from time import sleep, time
 
 # Local Folder Imports
-from .aniDBerrors import *
+from .aniDBerrors import AniDBBannedError, AniDBMustAuthError, AniDBPacketCorruptedError
 from .aniDBresponses import ResponseResolver
 
 
 class AniDBLink(threading.Thread):
-    def __init__(self, server, port, myport, logFunction, delay=2, timeout=20, logPrivate=False):
+    def __init__(self, server, port, myport, logFunction, delay=2, timeout=20, log_private=False):
         super(AniDBLink, self).__init__()
         self.server = server
         self.port = port
@@ -39,6 +39,7 @@ class AniDBLink(threading.Thread):
 
         self.myport = 0
         self.bound = self.connectSocket(myport, self.timeout)
+        self.sock = None
 
         self.cmd_queue = {None:None}
         self.resp_tagged_queue = {}
@@ -51,7 +52,7 @@ class AniDBLink(threading.Thread):
         self.crypt = None
 
         self.log = logFunction
-        self.logPrivate = logPrivate
+        self.log_private = log_private
 
         self._stop = threading.Event()
         self._quiting = False
@@ -85,7 +86,8 @@ class AniDBLink(threading.Thread):
     def stopped (self):
         return self._stop.isSet()
 
-    def print_log(self, data):
+    @staticmethod
+    def print_log(data):
         print(data)
 
     def print_log_dummy(self, data):
@@ -186,7 +188,7 @@ class AniDBLink(threading.Thread):
             return self.cmd_queue.pop(resp.restag)
 
     def _delay(self):
-        return (self.delay < 2.1 and 2.1 or self.delay)
+        return self.delay < 2.1 and 2.1 or self.delay
 
     def _do_delay(self):
         age = time() - self.lastpacket
@@ -204,7 +206,7 @@ class AniDBLink(threading.Thread):
         data = command.raw_data()
 
         self.sock.sendto(data, self.target)
-        if command.command == 'AUTH' and self.logPrivate:
+        if command.command == 'AUTH' and self.log_private:
             self.log("NetIO > sensitive data is not logged!")
         else:
             self.log("NetIO > %s" % repr(data))

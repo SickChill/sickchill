@@ -47,7 +47,8 @@ class Notifier(object):
     def moveFile(self, old_file, new_file):
         self.moveObject(old_file, new_file)
 
-    def moveObject(self, old_path, new_path):
+    @staticmethod
+    def moveObject(old_path, new_path):
         if settings.USE_SYNOINDEX:
             synoindex_cmd = ['/usr/syno/bin/synoindex', '-N', os.path.abspath(new_path),
                              os.path.abspath(old_path)]
@@ -73,7 +74,8 @@ class Notifier(object):
     def addFile(self, cur_file):
         self.makeObject('-a', cur_file)
 
-    def makeObject(self, cmd_arg, cur_path):
+    @staticmethod
+    def makeObject(cmd_arg, cur_path):
         if settings.USE_SYNOINDEX:
             synoindex_cmd = ['/usr/syno/bin/synoindex', cmd_arg, os.path.abspath(cur_path)]
             logger.debug("Executing command " + str(synoindex_cmd))
