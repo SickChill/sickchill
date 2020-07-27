@@ -16,11 +16,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-# Stdlib Imports
-import json
-import urllib.error
-import urllib.parse
-import urllib.request
+# Third Party Imports
+import requests
 
 # First Party Imports
 from sickbeard import logger
@@ -29,41 +26,40 @@ from sickchill import settings
 
 class Notifier(object):
 
-    @staticmethod
-    def _notify_emby(message, host=None, emby_apikey=None):
+    def __init__(self):
+        self.session = None
+
+    def __make_session(self, emby_apikey=None):
+        if self.session:
+            return self.session
+
+        if not emby_apikey:
+            emby_apikey = settings.EMBY_APIKEY
+
+        self.session = requests.Session()
+        self.session.headers.update({'X-MediaBrowser-Token': emby_apikey, 'Content-Type': 'application/json'})
+        return self.session
+
+    def _notify_emby(self, message, host=None, emby_apikey=None):
         """Handles notifying Emby host via HTTP API
 
         Returns:
             Returns True for no issue or False if there was an error
 
         """
-
-        # fill in omitted parameters
-        if not host:
-            host = settings.EMBY_HOST
-        if not emby_apikey:
-            emby_apikey = settings.EMBY_APIKEY
-
-        url = '{0}/emby/Notifications/Admin'.format(host)
-        values = {'Name': 'SickChill', 'Description': message, 'ImageUrl': settings.LOGO_URL}
-        data = json.dumps(values)
+        url = '{0}/emby/Notifications/Admin'.format(host or settings.EMBY_HOST)
+        data = {'Name': 'SickChill', 'Description': message, 'ImageUrl': settings.LOGO_URL}
 
         try:
-            req = urllib.request.Request(url, data)
-            req.add_header('X-MediaBrowser-Token', emby_apikey)
-            req.add_header('Content-Type', 'application/json')
+            session = self.__make_session(emby_apikey)
+            response = session.post(url, data=data)
+            response.raise_for_status()
 
-            response = urllib.request.urlopen(req)
-            result = response.read()
-            response.close()
-
-            logger.debug('EMBY: HTTP response: ' + result.replace('\n', ''))
+            logger.debug('EMBY: HTTP response: {}'.format(response.text.replace('\n', '')))
             return True
-
-        except (urllib.error.URLError, IOError) as e:
-            logger.warning('EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + str(e))
+        except requests.exceptions.HTTPError as e:
+            logger.warning("EMBY: Warning: Couldn't contact Emby at {} {}".format(url, e))
             return False
-
 
 ##############################################################################
 # Public functions
@@ -72,8 +68,7 @@ class Notifier(object):
     def test_notify(self, host, emby_apikey):
         return self._notify_emby('This is a test notification from SickChill', host, emby_apikey)
 
-    @staticmethod
-    def update_library(show=None):
+    def update_library(self, show=None):
         """Handles updating the Emby Media Server host via HTTP API
 
         Returns:
@@ -86,6 +81,7 @@ class Notifier(object):
                 logger.debug('EMBY: No host specified, check your settings')
                 return False
 
+            params = {}
             if show:
                 if show.indexer == 1:
                     provider = 'tvdb'
@@ -95,25 +91,18 @@ class Notifier(object):
                 else:
                     logger.warning('EMBY: Provider unknown')
                     return False
-                query = '?{0}id={1}'.format(provider, show.indexerid)
-            else:
-                query = ''
+                params.update({'{0}id'.format(provider): show.indexerid})
 
-            url = '{0}/emby/Library/Series/Updated{1}'.format(settings.EMBY_HOST, query)
+            url = '{0}/emby/Library/Series/Updated'.format(settings.EMBY_HOST)
 
-            values = {}
-            data = urllib.parse.urlencode(values)
             try:
-                req = urllib.request.Request(url, data.encode('utf-8'))
-                req.add_header('X-MediaBrowser-Token', settings.EMBY_APIKEY)
-
-                response = urllib.request.urlopen(req)
-                result = response.read()
-                response.close()
-
-                logger.debug('EMBY: HTTP response: ' + result.replace('\n', ''))
+                session = self.__make_session()
+                response = session.get(url, params=params)
+                response.raise_for_status()
+                logger.debug('EMBY: HTTP response: {}'.format(response.text.replace('\n', '')))
                 return True
 
-            except (urllib.error.URLError, IOError) as e:
-                logger.warning('EMBY: Warning: Couldn\'t contact Emby at ' + url + ' ' + str(e))
+            except requests.exceptions.HTTPError as error:
+                logger.warning("EMBY: Warning: Couldn't contact Emby at {} {}".format(url, error))
+
                 return False
