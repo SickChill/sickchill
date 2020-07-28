@@ -32,6 +32,7 @@ from functools import wraps
 
 # Third Party Imports
 import mock
+import validators
 from vcr_unittest import VCRTestCase
 
 # First Party Imports
@@ -40,8 +41,6 @@ from sickchill import settings
 
 settings.CPU_PRESET = 'NORMAL'
 
-# Third Party Imports
-import validators
 
 disabled_provider_tests = {
     # ???
@@ -118,16 +117,7 @@ class BaseParser(type):
             def magic(self, *args, **kwargs):
                 if func.__name__ in disabled_provider_tests.get(self.provider.name, []):
                     self.skipTest('Test is programmatically disabled for provider {}'.format(self.provider.name))
-                old = sickbeard.logger.info
-                # sickbeard.logger.info = override_log
-                # sickbeard.logger.debug = override_log
-                # sickbeard.logger.error = override_log
-                # sickbeard.logger.warning = override_log
                 func(self, *args, **kwargs)
-                # sickbeard.logger.info = old
-                # sickbeard.logger.debug = old
-                # sickbeard.logger.error = old
-                # sickbeard.logger.warning = old
             return magic
 
         def _get_vcr_kwargs(self):
@@ -235,6 +225,7 @@ def generate_test_cases():
             generated_class = type(str(provider.name), (BaseParser.TestCase,), {'provider': provider})
             globals()[generated_class.__name__] = generated_class
             del generated_class
+
 
 generate_test_cases()
 
