@@ -117,7 +117,8 @@ class SickChill(object):
         settings.MY_NAME = os.path.basename(settings.MY_FULLNAME)
         settings.PROG_DIR = os.path.dirname(settings.MY_FULLNAME).replace('EGG-INFO{sep}scripts{sep}'.format(sep=os.path.sep), '').replace('Scripts{sep}'.format(sep=os.path.sep), '')
         if os.name == 'nt':
-            settings.PROG_DIR += 'site-packages'
+            settings.PROG_DIR = os.path.join(settings.PROG_DIR, 'site-packages')
+
         settings.DATA_DIR = settings.PROG_DIR
         if 'site-packages' in settings.DATA_DIR:
             settings.DATA_DIR = str(Path.home().joinpath('sickchill').absolute())
