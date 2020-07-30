@@ -41,10 +41,13 @@ def setup_lib_path(additional=None):
         sys.path.insert(1, additional)
 
 
+def locale_dir():
+    return os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'locale'))
+
+
 def setup_gettext(language=None):
     languages = [language] if language else None
-    gt = gettext.translation('messages',
-                             os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'locale')),
-                             languages=languages,
-                             codeset='UTF-8')
+    if not [key for key in ('LANGUAGE', 'LC_ALL', 'LC_MESSAGES', 'LANG') if key in os.environ]:
+        os.environ['LC_MESSAGES'] = 'en_US.UTF-8'
+    gt = gettext.translation('messages', locale_dir(), languages=languages)
     gt.install(names=["ngettext"])

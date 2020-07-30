@@ -40,6 +40,7 @@ from tornado.web import authenticated, HTTPError, RequestHandler
 import sickchill.start
 from sickbeard import db, helpers, logger, network_timezones, ui
 from sickchill import settings
+from sickchill.init_helpers import locale_dir
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.views.routes import Route
 
@@ -352,11 +353,11 @@ class UI(WebRoot):
     def locale_json(self):
         """ Get /locale/{lang_code}/LC_MESSAGES/messages.json """
         locale_file = os.path.normpath('{locale_dir}/{lang}/LC_MESSAGES/messages.json'.format(
-            locale_dir=settings.LOCALE_DIR, lang=settings.GUI_LANG))
+            locale_dir=locale_dir(), lang=settings.GUI_LANG))
 
         if os.path.isfile(locale_file):
             self.set_header('Content-Type', 'application/json')
-            with open(locale_file, 'r') as content:
+            with open(locale_file) as content:
                 return content.read()
         else:
             self.set_status(204)  # "No Content"

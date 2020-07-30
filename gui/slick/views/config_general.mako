@@ -9,6 +9,7 @@
     from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
     from sickbeard.helpers import anon_url, LOCALE_NAMES
     import sickchill
+    import sickchill.init_helpers
 
     def lang_name(code):
         return LOCALE_NAMES.get(code, {}).get("name", "Unknown")
@@ -338,7 +339,7 @@
                                     <div class="col-md-12">
                                         <select id="gui_language" name="gui_language" class="form-control input-sm input250">
                                             <option value="" ${('', 'selected="selected"')[settings.GUI_LANG == ""]}>${_('System Language')}</option>
-                                            % for lang in [language for language in os.listdir(settings.LOCALE_DIR) if '_' in language]:
+                                            % for lang in [language for language in os.listdir(sickchill.init_helpers.locale_dir()) if '_' in language]:
                                                 <option value="${lang}" ${('', 'selected="selected"')[settings.GUI_LANG == lang]}>${lang_name(lang)}</option>
                                             % endfor
                                         </select>

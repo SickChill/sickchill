@@ -50,7 +50,7 @@ from sickchill import settings, show_updater
 
 # Local Folder Imports
 from .helper import setup_github
-from .init_helpers import setup_gettext, setup_lib_path
+from .init_helpers import locale_dir, setup_gettext
 from .providers import metadata
 from .system.Shutdown import Shutdown
 
@@ -147,7 +147,7 @@ def initialize(consoleLogging=True):
 
         setup_gettext(settings.GUI_LANG)
 
-        load_gettext_translations(settings.LOCALE_DIR, 'messages')
+        load_gettext_translations(locale_dir(), 'messages')
 
         settings.CACHE_DIR = os.path.normpath(os.path.join(settings.PROG_DIR, "gui", settings.GUI_NAME, "cache"))
         if platform.system() != 'Windows':  # Not sure if this will work on windows yet, but it works on linux

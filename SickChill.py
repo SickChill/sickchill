@@ -113,10 +113,10 @@ class SickChill(object):
         Start SickChill
         """
         # do some preliminary stuff
-        settings.MY_FULLNAME = os.path.normpath(os.path.abspath(__file__)).replace('EGG-INFO{sep}scripts{sep}'.format(sep=os.path.sep), '')
+        settings.MY_FULLNAME = os.path.normpath(os.path.abspath(__file__))
         settings.MY_NAME = os.path.basename(settings.MY_FULLNAME)
-        settings.PROG_DIR = os.path.dirname(settings.MY_FULLNAME)
-        settings.LOCALE_DIR = os.path.join(settings.PROG_DIR, 'locale')
+        settings.PROG_DIR = os.path.dirname(settings.MY_FULLNAME).replace('EGG-INFO{sep}scripts{sep}'.format(sep=os.path.sep), '').replace('Scripts{sep}'.format(sep=os.path.sep), '')
+
         settings.DATA_DIR = settings.PROG_DIR
         if 'site-packages' in settings.DATA_DIR:
             settings.DATA_DIR = str(Path.home().joinpath('sickchill').absolute())
