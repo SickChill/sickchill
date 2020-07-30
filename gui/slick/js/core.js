@@ -1969,7 +1969,7 @@ const SICKCHILL = {
                                                         'or https://localhost/rutorrent/plugins/httprpc/action.php)'));
                         $('#torrent_verify_cert_option').show();
                         $('#torrent_auth_type_option').show();
-                    } else if (selectedProvider.toLowerCase() === 'qbittorrent' || selectedProvider.toLowerCase() === 'new_qbittorrent') {
+                    } else if (selectedProvider.toLowerCase() === 'qbittorrent') {
                         client = 'qBittorrent';
                         $('#torrent_path_option').hide();
                         $('#label_warning_qbittorrent').show();

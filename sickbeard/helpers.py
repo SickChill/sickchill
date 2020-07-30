@@ -50,7 +50,7 @@ import rarfile
 import requests
 from cachecontrol import CacheControl
 from cloudscraper.exceptions import CloudflareException
-from requests.utils import urlparse
+from urllib.parse import urlparse
 from tornado._locale_data import LOCALE_NAMES
 from unidecode import unidecode
 

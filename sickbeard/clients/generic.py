@@ -25,7 +25,7 @@ from urllib.parse import urlencode
 
 # Third Party Imports
 import bencodepy
-from requests.models import HTTPError
+from requests.exceptions import HTTPError
 
 # First Party Imports
 from sickbeard import helpers, logger
