@@ -1,7 +1,7 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     from sickchill import settings
-    from sickbeard import common
+    from sickchill.sickbeard import common
 %>
 
 <%block name="scripts">

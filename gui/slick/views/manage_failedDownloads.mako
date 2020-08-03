@@ -1,6 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    from sickbeard import providers
+    from sickchill.sickbeard import providers
     from sickchill.providers.GenericProvider import GenericProvider
 %>
 <%block name="content">

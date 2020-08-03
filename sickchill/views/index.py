@@ -1,21 +1,8 @@
-# coding=utf-8
-# Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+
+
+
+
+
 # Stdlib Imports
 import base64
 import datetime
@@ -38,13 +25,13 @@ from tornado.web import authenticated, HTTPError, RequestHandler
 
 # First Party Imports
 import sickchill.start
-from sickbeard import db, helpers, logger, network_timezones, ui
 from sickchill import settings
 from sickchill.init_helpers import locale_dir
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.views.routes import Route
 
 # Local Folder Imports
+from ..sickbeard import db, helpers, logger, network_timezones, ui
 from .api.webapi import function_mapper
 from .common import PageTemplate
 

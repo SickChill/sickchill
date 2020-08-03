@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
-# coding=utf-8
+
+
+
+
 # Stdlib Imports
 import unittest
 
 # First Party Imports
-from sickbeard.show_name_helpers import hasPreferredWords
 from sickchill import settings
+from sickchill.sickbeard.show_name_helpers import hasPreferredWords
 
 
 class PreferWordFilterTest(unittest.TestCase):

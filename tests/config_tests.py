@@ -1,4 +1,3 @@
-# coding=utf-8
 """
 Test sickbeard.config's classes and methods
 
@@ -50,6 +49,10 @@ Methods
     check_setting_bool
 """
 
+
+
+
+
 # Stdlib Imports
 import logging
 import os.path
@@ -61,8 +64,8 @@ from collections import namedtuple
 from configobj import ConfigObj
 
 # First Party Imports
-from sickbeard import config, scheduler
 from sickchill import settings
+from sickchill.sickbeard import config, scheduler
 
 
 class ConfigTestBasic(unittest.TestCase):

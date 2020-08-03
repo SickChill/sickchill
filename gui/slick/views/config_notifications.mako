@@ -2,8 +2,8 @@
 <%!
     import re
     from sickchill import settings
-    from sickbeard.filters import hide
-    from sickbeard.helpers import anon_url
+    from sickchill.sickbeard.filters import hide
+    from sickchill.sickbeard.helpers import anon_url
     import sickchill
 %>
 

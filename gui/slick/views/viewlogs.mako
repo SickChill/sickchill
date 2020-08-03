@@ -1,7 +1,7 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     from sickchill import settings
-    from sickbeard.logger import LOGGING_LEVELS, LOG_FILTERS
+    from sickchill.sickbeard.logger import LOGGING_LEVELS, LOG_FILTERS
 %>
 <%block name="content">
     <div class="row">

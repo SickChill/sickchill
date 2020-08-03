@@ -1,4 +1,7 @@
-# coding=utf-8
+
+
+
+
 # Stdlib Imports
 import asyncio
 import errno
@@ -13,13 +16,13 @@ from tornado.web import Application, RedirectHandler, StaticFileHandler, url
 
 # First Party Imports
 import sickchill.start
-from sickbeard import logger
-from sickbeard.helpers import create_https_certificates, generateApiKey
 from sickchill import settings
+from sickchill.sickbeard.helpers import create_https_certificates, generateApiKey
 from sickchill.views import CalendarHandler, LoginHandler, LogoutHandler
 from sickchill.views.api import ApiHandler, KeyHandler
 
 # Local Folder Imports
+from ..sickbeard import logger
 from .routes import Route
 
 # class Custom404Handler(RequestHandler):

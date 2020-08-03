@@ -1,4 +1,3 @@
-# coding=utf-8
 """
 Episode tagger to extract information from episodes
 """

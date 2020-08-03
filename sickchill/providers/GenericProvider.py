@@ -1,21 +1,4 @@
-# coding=utf-8
-# This file is part of SickChill.
-#
-# URL: https://sickchill.github.io
-# Git: https://github.com/SickChill/SickChill.git
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+
 # Stdlib Imports
 import re
 from base64 import b16encode, b32decode
@@ -28,16 +11,16 @@ from random import shuffle
 from requests.utils import add_dict_to_cookiejar
 
 # First Party Imports
-import sickbeard
-from sickbeard import logger
-from sickbeard.classes import Proper, SearchResult
-from sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, ua_pool
-from sickbeard.db import DBConnection
-from sickbeard.helpers import download_file, getURL, make_session, remove_file_failed
-from sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickbeard.show_name_helpers import allPossibleShowNames
-from sickbeard.tvcache import TVCache
+import sickchill.sickbeard
 from sickchill.helper.common import sanitize_filename
+from sickchill.sickbeard import logger
+from sickchill.sickbeard.classes import Proper, SearchResult
+from sickchill.sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, ua_pool
+from sickchill.sickbeard.db import DBConnection
+from sickchill.sickbeard.helpers import download_file, getURL, make_session, remove_file_failed
+from sickchill.sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickchill.sickbeard.show_name_helpers import allPossibleShowNames
+from sickchill.sickbeard.tvcache import TVCache
 
 
 class GenericProvider(object):
@@ -449,7 +432,7 @@ class GenericProvider(object):
                 episode_string_fallback = episode_string + '{0:02d}'.format(int(episode.scene_absolute_number))
                 episode_string += '{0:03d}'.format(int(episode.scene_absolute_number))
             else:
-                episode_string += sickbeard.config.naming_ep_type[2] % {
+                episode_string += sickchill.sickbeard.config.naming_ep_type[2] % {
                     'seasonnumber': episode.scene_season,
                     'episodenumber': episode.scene_episode,
                 }

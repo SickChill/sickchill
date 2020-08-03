@@ -1,7 +1,12 @@
-# coding=utf-8
 """
 Test scene helpers
 """
+
+
+
+
+
+
 
 
 # Stdlib Imports
@@ -9,9 +14,9 @@ import sys
 import unittest
 
 # First Party Imports
-from sickbeard import common, db, name_cache, scene_exceptions, show_name_helpers
-from sickbeard.tv import TVShow as Show
 from sickchill import settings
+from sickchill.sickbeard import common, db, name_cache, scene_exceptions, show_name_helpers
+from sickchill.sickbeard.tv import TVShow as Show
 from tests import test_lib as test
 
 

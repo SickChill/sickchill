@@ -1,10 +1,13 @@
-# # coding=utf-8
+#
+
+
+
 # # Third Party Imports
 # from anidbhttp import anidbquery
 # from anidbhttp.query import QUERY_HOT
 #
 # # First Party Imports
-# from sickbeard import helpers
+# from sickchill.sickbeard import helpers
 # from sickchill.helper.common import try_int
 #
 # # Local Folder Imports

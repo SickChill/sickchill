@@ -1,21 +1,8 @@
-# coding=utf-8
-# Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+
+
+
+
+
 # Stdlib Imports
 import os
 
@@ -23,10 +10,9 @@ import os
 from tornado.web import addslash
 
 # First Party Imports
-import sickbeard
 import sickchill.start
-from sickbeard import config, filters, subtitles as subtitle_module, ui
 from sickchill import settings
+from sickchill.sickbeard import config, filters, subtitles as subtitle_module, ui
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
@@ -52,7 +38,7 @@ class ConfigSubtitles(Config):
             subtitles_perfect_match=None, service_order=None, subtitles_history=None, subtitles_finder_frequency=None, subtitles_multi=None,
             embedded_subtitles_all=None, subtitles_extra_scripts=None, subtitles_hearing_impaired=None, addic7ed_user=None, addic7ed_pass=None, itasa_user=None,
             itasa_pass=None, legendastv_user=None, legendastv_pass=None, opensubtitles_user=None, opensubtitles_pass=None, subscenter_user=None,
-            subscenter_pass=None, subtitles_download_in_pp=None, subtitles_keep_only_wanted=None):
+            subscenter_pass=None, subtitles_keep_only_wanted=None):
 
         config.change_subtitle_finder_frequency(subtitles_finder_frequency)
         config.change_use_subtitles(use_subtitles)
@@ -68,7 +54,6 @@ class ConfigSubtitles(Config):
         settings.EMBEDDED_SUBTITLES_ALL = config.checkbox_to_value(embedded_subtitles_all)
         settings.SUBTITLES_HEARING_IMPAIRED = config.checkbox_to_value(subtitles_hearing_impaired)
         settings.SUBTITLES_MULTI = config.checkbox_to_value(subtitles_multi)
-        sickbeard.SUBTITLES_DOWNLOAD_IN_PP = config.checkbox_to_value(subtitles_download_in_pp)
         settings.SUBTITLES_KEEP_ONLY_WANTED = config.checkbox_to_value(subtitles_keep_only_wanted)
         settings.SUBTITLES_EXTRA_SCRIPTS = [x.strip() for x in subtitles_extra_scripts.split('|') if x.strip()]
 

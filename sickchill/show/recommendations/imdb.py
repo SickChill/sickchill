@@ -1,4 +1,7 @@
-# coding=utf-8
+
+
+
+
 # Stdlib Imports
 import os
 import posixpath
@@ -10,8 +13,8 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
 # First Party Imports
-from sickbeard import helpers
 from sickchill import settings
+from sickchill.sickbeard import helpers
 
 
 class imdbPopular(object):

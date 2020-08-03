@@ -1,25 +1,4 @@
-# coding=utf-8
-# Author: Nic Wolfe <nic@wolfeden.ca>
-# 2019-11-29 : Updated by Benj to comply with Tvdb API V3
-# 2019-12-01 : Made sure update will be done when the cache is empty
-#    or the last update is more then a week old.
-#    Also remove the hardcoded api key and use the one from indexer_config
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+
 # Stdlib Imports
 import datetime
 import threading
@@ -27,9 +6,9 @@ import time
 
 # First Party Imports
 import sickchill
-from sickbeard import db, logger, network_timezones, ui
 from sickchill import settings
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException
+from sickchill.sickbeard import db, logger, network_timezones, ui
 
 
 class ShowUpdater(object):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) AB Strakt
 # Copyright (C) Jean-Paul Calderone

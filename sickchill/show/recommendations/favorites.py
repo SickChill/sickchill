@@ -1,12 +1,15 @@
-# coding=utf-8
+
+
+
+
 # Stdlib Imports
 import os
 
 # First Party Imports
 import sickchill
-from sickbeard import helpers
 from sickchill import settings
 from sickchill.show.Show import Show
+from sickchill.sickbeard import helpers
 
 
 class IndexerFavorites(object):

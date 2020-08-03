@@ -1,33 +1,16 @@
-# coding=utf-8
-# This file is part of SickChill.
-#
-# URL: https://sickchill.github.io
-# Git: https://github.com/SickChill/SickChill.git
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+
 # Stdlib Imports
 from datetime import date, timedelta
 from operator import itemgetter
 
 # First Party Imports
-from sickbeard.common import Quality, UNAIRED, WANTED
-from sickbeard.db import DBConnection
-from sickbeard.network_timezones import parse_date_time
-from sickbeard.sbdatetime import sbdatetime
 from sickchill import settings
 from sickchill.helper.common import dateFormat, timeFormat
 from sickchill.helper.quality import get_quality_string
+from sickchill.sickbeard.common import Quality, UNAIRED, WANTED
+from sickchill.sickbeard.db import DBConnection
+from sickchill.sickbeard.network_timezones import parse_date_time
+from sickchill.sickbeard.sbdatetime import sbdatetime
 
 SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list
 

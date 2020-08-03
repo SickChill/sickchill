@@ -1,4 +1,3 @@
-# coding=utf-8
 """
 Test sickbeard.browser's methods
 
@@ -8,6 +7,10 @@ Methods
     foldersAtPath
 """
 
+
+
+
+
 # Stdlib Imports
 import logging
 import os
@@ -15,7 +18,7 @@ import sys
 import unittest
 
 # First Party Imports
-from sickbeard import browser
+from sickchill.sickbeard import browser
 
 
 class BrowserTestAll(unittest.TestCase):

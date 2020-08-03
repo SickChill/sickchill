@@ -1,24 +1,12 @@
-# coding=utf-8
-# Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+
+
+
+
+
 # Stdlib Imports
 import os
 import re
+from typing import Union
 from xml.etree import ElementTree
 
 # Third Party Imports
@@ -28,10 +16,10 @@ from fanart.core import Request as fanartRequest
 
 # First Party Imports
 import sickchill
-from sickbeard import helpers, logger
-from sickbeard.show_name_helpers import allPossibleShowNames
 from sickchill import settings
 from sickchill.helper.common import replace_extension, try_int
+from sickchill.sickbeard import helpers, logger
+from sickchill.sickbeard.show_name_helpers import allPossibleShowNames
 
 # Local Folder Imports
 from . import helpers as metadata_helpers
@@ -223,14 +211,14 @@ class GenericMetadata(object):
     def get_season_all_banner_path(self, show_obj):
         return os.path.join(show_obj.location, self.season_all_banner_name)
 
-    def _show_data(self, show_obj):
+    def _show_data(self, show_obj) -> Union[ElementTree.ElementTree, None]:
         """
         This should be overridden by the implementing class. It should
         provide the content of the show metadata file.
         """
         return None
 
-    def _ep_data(self, ep_obj):
+    def _ep_data(self, ep_obj) -> Union[ElementTree.ElementTree, None]:
         """
         This should be overridden by the implementing class. It should
         provide the content of the episode metadata file.
@@ -763,7 +751,7 @@ class GenericMetadata(object):
 
             if not (show_xml.findtext('title') or (show_xml.findtext('tvdbid') and show_xml.findtext('id'))):
                 logger.info(_("Invalid info in tvshow.nfo (missing name or id): {0} {1} {2}").format(show_xml.findtext('title'), show_xml.findtext('tvdbid'),
-                                                                                                    show_xml.findtext('id')))
+                                                                                                     show_xml.findtext('id')))
                 return empty_return
 
             name = show_xml.findtext('title')

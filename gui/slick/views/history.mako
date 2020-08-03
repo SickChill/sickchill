@@ -3,10 +3,10 @@
     import os.path
     import datetime
 
-    from sickbeard import providers, sbdatetime
+    from sickchill.sickbeard import sbdatetime, providers
 
-    from sickbeard.common import ARCHIVED, SNATCHED, FAILED, DOWNLOADED, SUBTITLED
-    from sickbeard.common import Quality, statusStrings
+    from sickchill.sickbeard.common import ARCHIVED, SNATCHED, FAILED, DOWNLOADED, SUBTITLED
+    from sickchill.sickbeard.common import Quality, statusStrings
 
     from sickchill.show.History import History
     from sickchill.providers.GenericProvider import GenericProvider

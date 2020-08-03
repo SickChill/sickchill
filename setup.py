@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*
-"""
-Use setup tools to install sickchill
-"""
 # Stdlib Imports
 import sys
 from pathlib import Path
@@ -40,9 +36,6 @@ if 'setup.py' in sys.argv[0]:
                 ('**/js/*.js', 'javascript', {'input_encoding': 'utf-8'})
             ],
             'sickchill': [('**.py', 'python', None)],
-            'sickbeard': [('**.py', 'python', None)],
         },
         include_package_data=True,
     )
-
-

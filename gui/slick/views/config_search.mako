@@ -1,8 +1,8 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
     from sickchill import settings
-    from sickbeard.filters import hide
-    from sickbeard.clients import getClientListDict
+    from sickchill.sickbeard.filters import hide
+    from sickchill.sickbeard.clients import getClientListDict
 %>
 
 <%block name="tabs">

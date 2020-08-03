@@ -1,22 +1,3 @@
-# coding=UTF-8
-# Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
 """
 Test the post processor queue
 """
@@ -27,9 +8,9 @@ import time
 import unittest
 
 # First Party Imports
-import sickbeard
-from sickbeard.post_processing_queue import PostProcessorTask, ProcessingQueue
+import sickchill.sickbeard
 from sickchill import settings
+from sickchill.sickbeard.post_processing_queue import PostProcessorTask, ProcessingQueue
 from tests import test_lib as test
 
 CHECK_CLEARS = False
@@ -46,7 +27,7 @@ class PostProcessorQueueTests(test.SickbeardTestPostProcessorCase):
 
     def setUp(self):
         super(PostProcessorQueueTests, self).setUp()
-        self.queue = sickbeard.scheduler.Scheduler(
+        self.queue = sickchill.sickbeard.scheduler.Scheduler(
             ProcessingQueue(),
             run_delay=datetime.timedelta(seconds=0),
             cycleTime=datetime.timedelta(seconds=1),

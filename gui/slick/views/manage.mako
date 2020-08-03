@@ -2,7 +2,7 @@
 <%!
     from operator import attrgetter
     from sickchill import settings
-    from sickbeard.common import statusStrings
+    from sickchill.sickbeard.common import statusStrings
 %>
 
 <%block name="content">

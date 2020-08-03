@@ -1,21 +1,8 @@
-# coding=utf-8
-# Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+
+
+
+
+
 # Stdlib Imports
 import datetime
 import json
@@ -25,23 +12,22 @@ import traceback
 from urllib.parse import unquote_plus
 
 # Third Party Imports
-import dateutil
+import dateutil.parser
 from tornado.escape import xhtml_unescape
 from tornado.web import HTTPError
 
 # First Party Imports
-import sickbeard
 import sickchill
-from sickbeard import config, db, filters, helpers, logger, ui
-from sickbeard.blackandwhitelist import short_group_names
-from sickbeard.common import Quality
-from sickbeard.trakt_api import TraktAPI
-from sickbeard.traktTrending import trakt_trending
 from sickchill import settings
 from sickchill.helper import sanitize_filename, try_int
 from sickchill.show.recommendations.favorites import favorites
 from sickchill.show.recommendations.imdb import imdb_popular
 from sickchill.show.Show import Show
+from sickchill.sickbeard import config, db, filters, helpers, logger, ui
+from sickchill.sickbeard.blackandwhitelist import short_group_names
+from sickchill.sickbeard.common import Quality
+from sickchill.sickbeard.trakt_api import TraktAPI
+from sickchill.sickbeard.traktTrending import trakt_trending
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home
 from sickchill.views.routes import Route
@@ -102,7 +88,7 @@ class AddShows(Home):
         for i, shows in results.items():
             # noinspection PyUnresolvedReferences
             final_results.extend({(sickchill.indexer.name(i), i, sickchill.indexer[i].show_url, show['id'],
-                                   show['seriesName'], show['firstAired'], sickbeard.tv.Show.find(settings.showList, show['id']) is not None
+                                   show['seriesName'], show['firstAired'], sickchill.sickbeard.tv.Show.find(settings.showList, show['id']) is not None
                                    ) for show in shows})
 
         lang_id = sickchill.indexer.lang_dict()[lang]

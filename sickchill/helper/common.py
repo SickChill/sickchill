@@ -1,24 +1,5 @@
-# coding=utf-8
-# This file is part of SickChill.
-#
-# URL: https://sickchill.github.io
-# Git: https://github.com/SickChill/SickChill.git
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+
 # Stdlib Imports
-import glob
-import os
 import re
 from fnmatch import fnmatch
 
@@ -28,8 +9,7 @@ from github.GithubException import (BadAttributeException, BadCredentialsExcepti
                                     TwoFactorException, UnknownObjectException)
 
 # First Party Imports
-import sickbeard
-from sickchill import settings
+from sickchill import settings, sickbeard
 
 dateFormat = '%Y-%m-%d'
 dateTimeFormat = '%Y-%m-%d %H:%M:%S'
@@ -336,29 +316,6 @@ def episode_num(season=None, episode=None, **kwargs):
             return '{0:0>3}'.format(season or episode)
 
 
-# Backport glob.escape from python 3.4
-# https://hg.python.org/cpython/file/3.4/Lib/glob.py#l87
-MAGIC_CHECK = re.compile('([*?[])')
-MAGIC_CHECK_BYTES = re.compile('([*?[])')
-
-
-# https://hg.python.org/cpython/file/3.4/Lib/glob.py#l100
-def glob_escape(pathname):
-    """Escape all special characters.
-    """
-    # Escaping is done by wrapping any of "*?[" between square brackets.
-    # Metacharacters do not work in the drive part and shouldn't be escaped.
-    drive, pathname = os.path.splitdrive(pathname)
-    if isinstance(pathname, bytes):
-        pathname = MAGIC_CHECK_BYTES.sub(br'[\1]', pathname)
-    else:
-        pathname = MAGIC_CHECK.sub(r'[\1]', pathname)
-    return drive + pathname
-
-CUSTOM_GLOB = glob
-CUSTOM_GLOB.escape = glob_escape
-
-
 def setup_github():
     """
     Instantiate the global github connection, for checking for updates and submitting issues
@@ -402,5 +359,5 @@ def setup_github():
         settings.gh = None
         sickbeard.logger.error(_('Unable to setup GitHub properly, There might be an error with the library. Error: {0}').format(error))
     except (GithubException, Exception) as error:
-            settings.gh = None
-            sickbeard.logger.error(_('Unable to setup GitHub properly. GitHub will not be available. Error: {0}').format(error))
+        settings.gh = None
+        sickbeard.logger.error(_('Unable to setup GitHub properly. GitHub will not be available. Error: {0}').format(error))

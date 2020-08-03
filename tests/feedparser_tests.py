@@ -1,5 +1,8 @@
+
+
+
+
 # Disabled until a new feed provider is available
-# # coding=utf-8
 #
 # """
 # Test Feed Parser
@@ -9,7 +12,7 @@
 # import sys
 # import unittest
 #
-# from sickbeard.providers.binsearch import provider as binsearch
+# from sickchill.sickbeard.providers.binsearch import provider as binsearch
 # import requests
 #
 #

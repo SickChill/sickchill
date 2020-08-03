@@ -1,12 +1,12 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    from sickbeard.helpers import is_ip_local
-    import sickbeard
+    from sickchill.sickbeard.helpers import is_ip_local
+    from sickchill import sickbeard
 %>
 <%block name="content">
     <div class="row">
         % if not (is_ip_local(remote_ip) or (settings.WEB_PASSWORD and settings.WEB_USERNAME)):
-            <% sickbeard.logger.warning('Remote access was attempted by {}'.format(remote_ip)) %>
+            <% sickchill.sickbeard.logger.warning('Remote access was attempted by {}'.format(remote_ip)) %>
             <div class="nicetry col-md-10">
                 <div class="row">
                     <div class="col-md-12">

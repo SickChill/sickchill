@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
-# coding=utf-8
+
+
+
+
 # Stdlib Imports
 import unittest
 
 # First Party Imports
-from sickbeard.show_name_helpers import filter_bad_releases
-from sickbeard.tv import TVShow as Show
 from sickchill import settings
+from sickchill.sickbeard.show_name_helpers import filter_bad_releases
+from sickchill.sickbeard.tv import TVShow as Show
 
 
 class ReleaseWordFilterTests(unittest.TestCase):

@@ -1,21 +1,4 @@
-# coding=utf-8
-# Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+
 # Stdlib Imports
 from functools import wraps
 
@@ -24,13 +7,13 @@ from requests.exceptions import HTTPError as RHTTPError, RequestException, Reque
 from urllib3.exceptions import HTTPError, HTTPWarning
 
 # First Party Imports
-from sickbeard import logger
+from sickchill.sickbeard import logger
 
 
 class ExceptionDecorator(object):
 
-    def __init__(self, default_return=list(), catch=(HTTPError, HTTPWarning, RequestException, RequestsWarning), image_api=False):
-        self.default_return = default_return
+    def __init__(self, default_return=None, catch=(HTTPError, HTTPWarning, RequestException, RequestsWarning), image_api=False):
+        self.default_return = default_return or []
         self.catch = catch
         self.image_api = image_api
 

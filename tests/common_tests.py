@@ -1,4 +1,3 @@
-# coding=utf-8
 """
 Unit Tests for sickbeard/common.py
 
@@ -23,14 +22,18 @@ Classes:
 
 """
 
+
+
+
+
 # TODO: Implement skipped tests
 
 # Stdlib Imports
 import unittest
 
 # First Party Imports
-from sickbeard import common
 from sickchill import settings
+from sickchill.sickbeard import common
 
 
 class QualityStringTests(unittest.TestCase):

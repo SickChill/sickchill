@@ -3,11 +3,11 @@
     import datetime
     import urllib
     from sickchill import settings
-    from sickbeard import subtitles, sbdatetime, network_timezones, helpers, notifiers
+    from sickchill.sickbeard import subtitles, notifiers, sbdatetime, network_timezones, helpers
 
-    from sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, FAILED, DOWNLOADED
-    from sickbeard.common import Quality, qualityPresets, statusStrings, Overview
-    from sickbeard.helpers import anon_url
+    from sickchill.sickbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, FAILED, DOWNLOADED
+    from sickchill.sickbeard.common import Quality, qualityPresets, statusStrings, Overview
+    from sickchill.sickbeard.helpers import anon_url
     from sickchill.helper.common import pretty_file_size, try_int
 %>
 

@@ -1,30 +1,17 @@
-# coding=utf-8
-# Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+
+
+
+
+
 # Third Party Imports
 from tornado.web import addslash
 
 # First Party Imports
-import sickbeard
-from sickbeard import classes, logger, ui
+import sickchill.sickbeard
 from sickchill.helper import try_int
 
 # Local Folder Imports
+from ..sickbeard import classes, logger, ui
 from .common import PageTemplate
 from .index import WebRoot
 from .routes import Route
@@ -92,7 +79,7 @@ class ErrorLogs(WebRoot):
         log_filter = self.get_body_argument('log_filter', "<NONE>")
         log_search = self.get_body_argument('log_search', '')
         max_lines = try_int(self.get_body_argument('max_lines', 500), 500)
-        data = sickbeard.logger.log_data(min_level, log_filter, log_search, max_lines)
+        data = sickchill.sickbeard.logger.log_data(min_level, log_filter, log_search, max_lines)
 
         t = PageTemplate(rh=self, filename="viewlogs.mako")
         return t.render(

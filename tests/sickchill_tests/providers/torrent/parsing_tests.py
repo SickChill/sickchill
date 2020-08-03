@@ -1,22 +1,3 @@
-# coding=utf-8
-# This file is part of SickChill.
-#
-# URL: https://sickchill.github.io
-# Git: https://github.com/SickChill/SickChill.git
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
 """
 Test Provider Result Parsing
 When recording new cassettes:
@@ -36,7 +17,7 @@ import validators
 from vcr_unittest import VCRTestCase
 
 # First Party Imports
-import sickbeard
+import sickchill.sickbeard.providers
 from sickchill import settings
 
 settings.CPU_PRESET = 'NORMAL'
@@ -219,8 +200,8 @@ def generate_test_cases():
     """
     Auto Generate TestCases from providers and add them to globals()
     """
-    for p in sickbeard.providers.__all__:
-        provider = sickbeard.providers.getProviderModule(p).Provider()
+    for p in sickchill.sickbeard.providers.__all__:
+        provider = sickchill.sickbeard.providers.getProviderModule(p).Provider()
         if provider.can_backlog and provider.provider_type == 'torrent' and provider.public:
             generated_class = type(str(provider.name), (BaseParser.TestCase,), {'provider': provider})
             globals()[generated_class.__name__] = generated_class
@@ -239,10 +220,10 @@ if __name__ == '__main__':
         _ = args, kwargs
         print(msg)
 
-    sickbeard.logger.info = override_log
-    sickbeard.logger.debug = override_log
-    sickbeard.logger.error = override_log
-    sickbeard.logger.warning = override_log
+    sickchill.sickbeard.logger.info = override_log
+    sickchill.sickbeard.logger.debug = override_log
+    sickchill.sickbeard.logger.error = override_log
+    sickchill.sickbeard.logger.warning = override_log
 
     suite = unittest.TestSuite()
     members = inspect.getmembers(sys.modules[__name__], inspect.isclass)

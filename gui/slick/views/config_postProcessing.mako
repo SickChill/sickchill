@@ -3,10 +3,10 @@
     import os.path
     import datetime
     import platform
-    from sickbeard.common import MULTI_EP_STRINGS
+    from sickchill.sickbeard.common import MULTI_EP_STRINGS
     from sickhill.settings import unpackStrings
     from sickchill import settings
-    from sickbeard import naming
+    from sickchill.sickbeard import naming
 %>
 
 <%block name="tabs">

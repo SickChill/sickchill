@@ -4,10 +4,10 @@
     import datetime
 
     from sickchill import settings
-    from sickbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
-    from sickbeard.filters import hide
-    from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
-    from sickbeard.helpers import anon_url, LOCALE_NAMES
+    from sickchill.sickbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
+    from sickchill.sickbeard.filters import hide
+    from sickchill.sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
+    from sickchill.sickbeard.helpers import anon_url, LOCALE_NAMES
     import sickchill
     import sickchill.init_helpers
 

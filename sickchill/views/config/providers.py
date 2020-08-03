@@ -1,21 +1,8 @@
-# coding=utf-8
-# Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+
+
+
+
+
 # Stdlib Imports
 import json
 import os
@@ -24,13 +11,12 @@ import os
 from tornado.web import addslash
 
 # First Party Imports
-import sickbeard
 import sickchill.start
-from sickbeard import config, filters, ui
-from sickbeard.providers import newznab, rsstorrent
 from sickchill import settings
 from sickchill.helper import try_int
 from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.sickbeard import config, filters, ui
+from sickchill.sickbeard.providers import newznab, rsstorrent
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
@@ -235,7 +221,7 @@ class ConfigProviders(Config):
         for cur_id, cur_enabled in (cur_provider_str.split(':') for cur_provider_str in provider_order.split()):
             cur_enabled = bool(try_int(cur_enabled))
 
-            cur_provider_obj = [x for x in sickbeard.providers.sortedProviderList() if x.get_id() == cur_id and hasattr(x, 'enabled')]
+            cur_provider_obj = [x for x in sickchill.sickbeard.providers.sortedProviderList() if x.get_id() == cur_id and hasattr(x, 'enabled')]
 
             if cur_provider_obj:
                 cur_provider_obj[0].enabled = cur_enabled
@@ -251,7 +237,7 @@ class ConfigProviders(Config):
                 torrentRssProviderDict[cur_id].enabled = cur_enabled
 
         # dynamically load provider settings
-        for curProvider in sickbeard.providers.sortedProviderList():
+        for curProvider in sickchill.sickbeard.providers.sortedProviderList():
             if hasattr(curProvider, 'custom_url'):
                 curProvider.custom_url = str(kwargs.get(curProvider.get_id('_custom_url'), '')).strip()
 
@@ -338,7 +324,7 @@ class ConfigProviders(Config):
         sickchill.start.save_config()
 
         # Add a site_message if no providers are enabled for daily and/or backlog
-        sickbeard.providers.check_enabled_providers()
+        sickchill.sickbeard.providers.check_enabled_providers()
 
         ui.notifications.message(_('Configuration Saved'), os.path.join(settings.CONFIG_FILE))
 

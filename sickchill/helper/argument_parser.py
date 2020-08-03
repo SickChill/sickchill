@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*
 # Stdlib Imports
 import os
 import sys

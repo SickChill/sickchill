@@ -1,25 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*
-# Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: http://code.google.com/p/sickbeard/
-#
-# Rewrite Author: miigotu <miigotu@gmail.com>
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
 
 # Stdlib Imports
 import datetime
@@ -57,12 +36,11 @@ mimetypes.add_type("application/font-woff", ".woff")
 from configobj import ConfigObj
 
 # First Party Imports
-import sickbeard
-from sickbeard import db, failed_history, logger, name_cache, network_timezones
-from sickbeard.event_queue import Events
-from sickbeard.tv import TVShow
-from sickbeard.versionChecker import GitUpdateManager, SourceUpdateManager
 from sickchill.helper.argument_parser import SickChillArgumentParser
+from sickchill.sickbeard import db, failed_history, logger, name_cache, network_timezones
+from sickchill.sickbeard.event_queue import Events
+from sickchill.sickbeard.tv import TVShow
+from sickchill.sickbeard.versionChecker import GitUpdateManager, SourceUpdateManager
 from sickchill.views.server_settings import SRWebServer
 
 # http://bugs.python.org/issue7980#msg221094
@@ -400,7 +378,7 @@ class SickChill(object):
             if self.run_as_daemon and self.create_pid:
                 self.remove_pid_file(self.pid_file)
 
-            if event == sickbeard.event_queue.Events.SystemEvent.RESTART:
+            if event == sickchill.sickbeard.event_queue.Events.SystemEvent.RESTART:
                 install_type = settings.versionCheckScheduler.action.install_type
 
                 popen_list = []

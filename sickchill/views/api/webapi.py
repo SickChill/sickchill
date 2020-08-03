@@ -1,23 +1,10 @@
-# coding=utf-8
-# Author: Dennis Lutter <lad1337@gmail.com>
-# Author: Jonathon Saine <thezoggy@gmail.com>
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+
+
+
+
+
 # Stdlib Imports
+# Author: Dennis Lutter <lad1337@gmail.com>
 import abc
 import datetime
 import json
@@ -31,13 +18,7 @@ import urllib.parse
 from tornado.web import RequestHandler
 
 # First Party Imports
-import sickbeard
 import sickchill
-from sickbeard import classes, db, helpers, logger, network_timezones, sbdatetime, search_queue, ui
-from sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN,
-                              WANTED)
-from sickbeard.postProcessor import PROCESS_METHODS
-from sickbeard.versionChecker import CheckVersion
 from sickchill import settings
 from sickchill.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
 from sickchill.helper.exceptions import CantUpdateShowException, ShowDirectoryNotFoundException
@@ -45,6 +26,11 @@ from sickchill.helper.quality import get_quality_string
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.show.History import History
 from sickchill.show.Show import Show
+from sickchill.sickbeard import classes, db, helpers, logger, network_timezones, sbdatetime, search_queue, ui
+from sickchill.sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED,
+                                        UNKNOWN, WANTED)
+from sickchill.sickbeard.postProcessor import PROCESS_METHODS
+from sickchill.sickbeard.versionChecker import CheckVersion
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
 
@@ -846,7 +832,7 @@ class AbstractStartScheduler(ApiCall):
 
     def run(self):
         error_str = 'Start scheduler failed'
-        if not isinstance(self.scheduler, sickbeard.scheduler.Scheduler):
+        if not isinstance(self.scheduler, sickchill.sickbeard.scheduler.Scheduler):
             error_str = '{0}: {1} is not initialized as a static variable'.format(error_str, self.scheduler_class_str)
             return _responds(RESULT_FAILURE, msg=error_str)
 
@@ -1075,7 +1061,7 @@ class CMDSubtitleSearch(ApiCall):
             return _responds(RESULT_FAILURE, msg='Unable to find subtitles')
 
         if new_subtitles:
-            new_languages = [sickbeard.subtitles.name_from_code(code) for code in new_subtitles]
+            new_languages = [sickchill.sickbeard.subtitles.name_from_code(code) for code in new_subtitles]
             status = 'New subtitles downloaded: {0}'.format(', '.join(new_languages))
             response = _responds(RESULT_SUCCESS, msg='New subtitles found')
         else:
@@ -1732,7 +1718,7 @@ class CMDSickChillSearchIndexers(ApiCall):
                 for result in indexer_results:
                     # Skip it if it's in our show list already, and we only want new shows
                     # noinspection PyUnresolvedReferences
-                    in_show_list = sickbeard.tv.Show.find(settings.showList, int(result['id']))
+                    in_show_list = sickchill.sickbeard.tv.Show.find(settings.showList, int(result['id']))
                     if in_show_list and self.only_new:
                         continue
 

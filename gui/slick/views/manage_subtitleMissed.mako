@@ -2,7 +2,7 @@
 <%!
     import datetime
     from sickchill import settings
-    from sickbeard import subtitles
+    from sickchill.sickbeard import subtitles
 %>
 <%block name="content">
     <div id="content960">

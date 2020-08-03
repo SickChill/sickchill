@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Created by Nyaran, based on https://github.com/realgam3/service.subtitles.bsplayer
 """

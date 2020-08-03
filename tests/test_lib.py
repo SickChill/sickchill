@@ -1,24 +1,3 @@
-# coding=UTF-8
-# Author: Dennis Lutter <lad1337@gmail.com>
-
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
-
 """
 Create a test database for testing.
 
@@ -47,16 +26,16 @@ import unittest
 from configobj import ConfigObj
 
 # First Party Imports
-import sickbeard.config
-import sickbeard.logger
-import sickbeard.tvcache
+import sickchill.sickbeard.config
+import sickchill.sickbeard.logger
+import sickchill.sickbeard.tvcache
 import sickchill.start
-from sickbeard import db, providers
-from sickbeard.databases import cache, failed, main
-from sickbeard.providers.newznab import NewznabProvider
-from sickbeard.tv import TVEpisode, TVShow
 from sickchill import settings
 from sickchill.show.indexers import ShowIndexer
+from sickchill.sickbeard import db, providers
+from sickchill.sickbeard.databases import cache, failed, main
+from sickchill.sickbeard.providers.newznab import NewznabProvider
+from sickchill.sickbeard.tv import TVEpisode, TVShow
 
 # =================
 #  test globals
@@ -100,7 +79,7 @@ def create_test_cache_folder():
 # =================
 #  SickChill globals
 # =================
-sickbeard.SYS_ENCODING = 'UTF-8'
+
 
 settings.showList = []
 settings.QUALITY_DEFAULT = 4  # hdtv
@@ -123,19 +102,19 @@ settings.CONFIG_FILE = os.path.join(settings.DATA_DIR, "config.ini")
 settings.CFG = ConfigObj(settings.CONFIG_FILE, encoding='UTF-8', indent_type='  ')
 settings.GUI_NAME = 'slick'
 
-settings.BRANCH = sickbeard.config.check_setting_str(settings.CFG, 'General', 'branch')
-settings.CUR_COMMIT_HASH = sickbeard.config.check_setting_str(settings.CFG, 'General', 'cur_commit_hash')
-settings.GIT_USERNAME = sickbeard.config.check_setting_str(settings.CFG, 'General', 'git_username')
-settings.GIT_TOKEN = sickbeard.config.check_setting_str(settings.CFG, 'General', 'git_token_password', censor_log=True)
+settings.BRANCH = sickchill.sickbeard.config.check_setting_str(settings.CFG, 'General', 'branch')
+settings.CUR_COMMIT_HASH = sickchill.sickbeard.config.check_setting_str(settings.CFG, 'General', 'cur_commit_hash')
+settings.GIT_USERNAME = sickchill.sickbeard.config.check_setting_str(settings.CFG, 'General', 'git_username')
+settings.GIT_TOKEN = sickchill.sickbeard.config.check_setting_str(settings.CFG, 'General', 'git_token_password', censor_log=True)
 
 settings.LOG_DIR = os.path.join(TEST_DIR, 'Logs')
-sickbeard.logger.log_file = os.path.join(settings.LOG_DIR, 'test_sickbeard.log')
+sickchill.sickbeard.logger.log_file = os.path.join(settings.LOG_DIR, 'test_sickbeard.log')
 create_test_log_folder()
 
 settings.CACHE_DIR = os.path.join(TEST_DIR, 'cache')
 create_test_cache_folder()
 
-sickbeard.logger.init_logging(False, True)
+sickchill.sickbeard.logger.init_logging(False, True)
 
 sickchill.indexer = ShowIndexer()
 
@@ -284,8 +263,8 @@ class TestCacheDBConnection(TestDBConnection, object):
                 raise
 
 # this will override the normal db connection
-sickbeard.db.DBConnection = TestDBConnection
-sickbeard.tvcache.CacheDBConnection = TestCacheDBConnection
+sickchill.sickbeard.db.DBConnection = TestDBConnection
+sickchill.sickbeard.tvcache.CacheDBConnection = TestCacheDBConnection
 
 
 # =================
@@ -314,7 +293,7 @@ def teardown_test_db():
     Tear down the test database.
     """
     # First Party Imports
-    from sickbeard.db import db_cons
+    from sickchill.sickbeard.db import db_cons
     for connection in db_cons:
         db_cons[connection].commit()
     #     db_cons[connection].close()

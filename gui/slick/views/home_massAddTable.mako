@@ -1,6 +1,6 @@
 <%!
     from sickchill import settings
-    from sickbeard.helpers import anon_url
+    from sickchill.sickbeard.helpers import anon_url
     import sickchill
 %>
 

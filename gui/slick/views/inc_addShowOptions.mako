@@ -1,7 +1,7 @@
 <%
     from sickchill import settings
-    from sickbeard.common import SKIPPED, WANTED, IGNORED
-    from sickbeard.common import Quality, statusStrings
+    from sickchill.sickbeard.common import SKIPPED, WANTED, IGNORED
+    from sickchill.sickbeard.common import Quality, statusStrings
 %>
     <div class="field-pair row">
         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -108,7 +108,7 @@
     </div>
 
     % if enable_anime_options:
-        <% import sickbeard.blackandwhitelist %>
+        <% import sickchill.sickbeard.blackandwhitelist %>
         <%include file="/inc_blackwhitelist.mako"/>
     % else:
         <input type="hidden" name="anime" id="anime" value="0" />

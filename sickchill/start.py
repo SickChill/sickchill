@@ -1,21 +1,4 @@
-# coding=utf-8
-# Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+
 # Stdlib Imports
 import datetime
 import os
@@ -39,19 +22,20 @@ from tornado.locale import load_gettext_translations
 
 # First Party Imports
 import sickchill
-from sickbeard import (clients, config, dailysearcher, db, helpers, image_cache, logger, naming, notifications_queue, post_processing_queue, properFinder,
-                       providers, scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker, versionChecker)
-from sickbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
-from sickbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
-from sickbeard.databases import cache, failed, main
-from sickbeard.providers.newznab import NewznabProvider
-from sickbeard.providers.rsstorrent import TorrentRssProvider
 from sickchill import settings, show_updater
+from sickchill.sickbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
+from sickchill.sickbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
+from sickchill.sickbeard.databases import failed, main
+from sickchill.sickbeard.providers.newznab import NewznabProvider
+from sickchill.sickbeard.providers.rsstorrent import TorrentRssProvider
 
 # Local Folder Imports
 from .helper import setup_github
 from .init_helpers import locale_dir, setup_gettext
 from .providers import metadata
+from .sickbeard import (clients, config, dailysearcher, db, helpers, image_cache, logger, naming, notifications_queue, post_processing_queue, properFinder,
+                        providers, scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker, versionChecker)
+from .sickbeard.databases import cache
 from .system.Shutdown import Shutdown
 
 

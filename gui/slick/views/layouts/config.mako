@@ -2,9 +2,9 @@
 <%!
     import os
     import datetime
-    from sickbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
-    from sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
-    from sickbeard.helpers import anon_url
+    from sickchill.sickbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
+    from sickchill.sickbeard.sbdatetime import sbdatetime, date_presets, time_presets
+    from sickchill.sickbeard.helpers import anon_url
     from sickchill import settings
 %>
 

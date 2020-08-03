@@ -1,29 +1,3 @@
-# coding=UTF-8
-# URL: https://github.com/SickChill/SickChill
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
-
-###
-# As a test case, there are instances in which it is necessary to call protected members of
-# classes in order to test those classes.  Therefore we will be pylint disable protected-access
-###
-
-
 """
 Test notifiers
 """
@@ -33,10 +7,10 @@ Test notifiers
 import unittest
 
 # First Party Imports
-from sickbeard import db
-from sickbeard.notifiers.emailnotify import Notifier as EmailNotifier
-from sickbeard.notifiers.prowl import Notifier as ProwlNotifier
-from sickbeard.tv import TVEpisode, TVShow
+from sickchill.sickbeard import db
+from sickchill.sickbeard.notifiers.emailnotify import Notifier as EmailNotifier
+from sickchill.sickbeard.notifiers.prowl import Notifier as ProwlNotifier
+from sickchill.sickbeard.tv import TVEpisode, TVShow
 from sickchill.views.home import Home
 from tests import test_lib as test
 

@@ -1,7 +1,12 @@
-# coding=utf-8
 """
 Unit Tests for sickbeard/numdict.py
 """
+
+
+
+
+
+
 
 
 # Stdlib Imports
@@ -9,7 +14,7 @@ import unittest
 from collections import UserDict
 
 # First Party Imports
-from sickbeard.numdict import NumDict
+from sickchill.sickbeard.numdict import NumDict
 
 
 class NumDictTest(unittest.TestCase):

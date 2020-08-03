@@ -1,7 +1,12 @@
-# coding=utf-8
 """
 Test name parsing
 """
+
+
+
+
+
+
 
 
 # Stdlib Imports
@@ -11,11 +16,9 @@ import sys
 import unittest
 
 # First Party Imports
-from sickbeard import tv
-from sickbeard.name_parser import parser
+from sickchill.sickbeard import tv
+from sickchill.sickbeard.name_parser import parser
 from tests import test_lib as test
-
-SYS_ENCODING = 'UTF-8'
 
 DEBUG = VERBOSE = False
 

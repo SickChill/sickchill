@@ -1,5 +1,5 @@
 <%!
-    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
+    from sickchill.sickbeard.common import Quality, qualityPresets, qualityPresetStrings
 %>
 <%def name="renderQualityPill(quality, showTitle=False, overrideClass=None)">
 <%

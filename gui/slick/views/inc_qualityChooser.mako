@@ -1,6 +1,6 @@
 <%!
     from sickchill import settings
-    from sickbeard.common import Quality, qualityPresets, qualityPresetStrings
+    from sickchill.sickbeard.common import Quality, qualityPresets, qualityPresetStrings
 %>
 
 <%
