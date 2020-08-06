@@ -13,12 +13,14 @@ class Client(GenericClient):
         self.api = qbittorrentapi.Client(host=self.host, port=self.port or 8080, username=self.username, password=self.password)
 
     def _get_auth(self):
+        return self.api.auth_log_in()
+
+    def testAuthentication(self):
         try:
-            self.api.auth_log_in()
+            self._get_auth()
         except qbittorrentapi.LoginFailed as error:
-            sickbeard.logger.info(error)
-            return None
-        return True
+            return False, 'Failed to authenticate with {0}, {1}'.format(self.name, error)
+        return True, 'Success: Connected and Authenticated'
 
     @staticmethod
     def __torrent_args(result):
