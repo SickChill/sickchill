@@ -2,7 +2,7 @@ from urllib.parse import splitport
 
 import qbittorrentapi
 
-from sickchill import settings, sickbeard
+from sickchill import settings
 from sickchill.sickbeard.clients.generic import GenericClient
 
 
@@ -18,7 +18,7 @@ class Client(GenericClient):
     def testAuthentication(self):
         try:
             self._get_auth()
-        except qbittorrentapi.LoginFailed as error:
+        except (qbittorrentapi.LoginFailed, qbittorrentapi.APIConnectionError) as error:
             return False, 'Failed to authenticate with {0}, {1}'.format(self.name, error)
         return True, 'Success: Connected and Authenticated'
 
@@ -37,6 +37,6 @@ class Client(GenericClient):
         return self.api.torrents_add(torrent_files=[result.content], **self.__torrent_args(result))
 
     def _set_torrent_priority(self, result):
-        if not self.api.app_preferences.queueing_enabled:
+        if not self.api.app_preferences().get('queueing_enabled'):
             return True
         return (self.api.torrents_decrease_priority, self.api.torrents_increase_priority)[result.priority == 1](result.hash.lower)
