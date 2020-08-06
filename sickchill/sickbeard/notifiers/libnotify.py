@@ -92,7 +92,7 @@ class Notifier(object):
 
     def _notify(self, title, message, force=False):
         if self.notify_initialized and settings.USE_LIBNOTIFY | force:
-            icon = os.path.join(settings.PROG_DIR, 'gui', 'slick', 'images', 'ico', 'favicon-120.png')
+            icon = os.path.join(settings.PROG_DIR, 'gui', settings.GUI_NAME, 'images', 'ico', 'favicon-120.png')
             # noinspection PyBroadException
             try:
                 n = Notify.Notification.new(title, message, icon)

@@ -45,7 +45,7 @@ class Notifier(object):
             "deviceId": id,
             "title": title,
             "text": message,
-            "icon": "https://raw.githubusercontent.com/SickChill/SickChill/master/gui/slick/images/sickchill.png"
+            "icon": "https://raw.githubusercontent.com/SickChill/SickChill/master/sickchill/gui/slick/images/sickchill.png"
         }
         payload = urllib.parse.urlencode(params)
         join_api = 'https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush?' + payload

@@ -1,7 +1,7 @@
 import random
 from threading import Lock
 
-from .init_helpers import setup_gettext, setup_lib_path
+from .init_helpers import setup_gettext, setup_lib_path, sickchill_dir
 
 setup_lib_path()
 
@@ -92,7 +92,7 @@ DELETE_FAILED = False
 DELETE_NON_ASSOCIATED_FILES = False
 DELRARCONTENTS = False
 DEVELOPER = False
-DISCORD_AVATAR_URL = 'https://raw.githubusercontent.com/SickChill/SickChill/master/gui/slick/images/sickchill-sc.png'
+DISCORD_AVATAR_URL = 'https://raw.githubusercontent.com/SickChill/SickChill/master/sickchill/gui/slick/images/sickchill-sc.png'
 DISCORD_NAME = 'SickChill'
 DISCORD_NOTIFY_DOWNLOAD = None
 DISCORD_NOTIFY_SNATCH = None
@@ -299,7 +299,7 @@ PREFER_WORDS = ""
 PROCESS_AUTOMATICALLY = False
 PROCESS_METHOD = None
 PROCESSOR_FOLLOW_SYMLINKS = False
-PROG_DIR = '.'
+PROG_DIR = sickchill_dir()
 properFinderScheduler = None
 PROVIDER_ORDER = []
 providerList = []

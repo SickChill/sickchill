@@ -1,3 +1,2 @@
-recursive-include gui *.*
-recursive-include locale *.*
-recursive-include contrib *.*
+recursive-include sickchill/gui *.*
+recursive-include sickchill/locale *.*

@@ -21,8 +21,11 @@ def setup_lib_path(additional=None):
         sys.path.insert(1, additional)
 
 
+def sickchill_dir():
+    return os.path.abspath(os.path.dirname(__file__))
+
 def locale_dir():
-    return os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'locale'))
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), 'locale'))
 
 
 def setup_gettext(language=None):

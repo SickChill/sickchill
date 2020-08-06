@@ -8,7 +8,7 @@ from sickchill.sickbeard import common, logger
 
 class Notifier(object):
 
-    ROCKETCHAT_ICON_URL = 'https://github.com/SickChill/SickChill/raw/master/gui/slick/images/sickchill-sc.png'
+    ROCKETCHAT_ICON_URL = 'https://github.com/SickChill/SickChill/raw/master/sickchill/gui/slick/images/sickchill-sc.png'
 
     def notify_snatch(self, ep_name):
         if settings.ROCKETCHAT_NOTIFY_SNATCH:

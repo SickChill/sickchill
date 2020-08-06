@@ -9,7 +9,7 @@ from sickchill.sickbeard import common, logger
 class Notifier(object):
 
     SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/'
-    SLACK_ICON_URL = 'https://github.com/SickChill/SickChill/raw/master/gui/slick/images/sickchill-sc.png'
+    SLACK_ICON_URL = 'https://github.com/SickChill/SickChill/raw/master/sickchill/gui/slick/images/sickchill-sc.png'
 
     def notify_snatch(self, ep_name):
         if settings.SLACK_NOTIFY_SNATCH:

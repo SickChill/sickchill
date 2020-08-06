@@ -6,7 +6,7 @@ ENV PYTHONIOENCODING="UTF-8"
 # -v ShowPath:/ShowPath \
 # -v DownloadPath:/DownloadPath \
 # -v /docker/sickchill/data:/data \
-# -v /docker/sickchill/cache/gui:/app/sickchill/gui/slick/cache \
+# -v /docker/sickchill/cache/gui:/app/sickchill/sickchill/gui/slick/cache \
 # -v /etc/localtime:/etc/localtime:ro
 # -p 8080:8081 sickchill/sickchill
 

@@ -20,6 +20,7 @@ setup_gettext()
 
 import mimetypes
 from pathlib import Path
+import re
 
 mimetypes.add_type("text/css", ".css")
 mimetypes.add_type("application/sfont", ".otf")
@@ -88,13 +89,11 @@ class SickChill(object):
         # do some preliminary stuff
         settings.MY_FULLNAME = os.path.normpath(os.path.abspath(__file__))
         settings.MY_NAME = os.path.basename(settings.MY_FULLNAME)
-        settings.PROG_DIR = os.path.dirname(settings.MY_FULLNAME).replace('EGG-INFO{sep}scripts{sep}'.format(sep=os.path.sep), '').replace('Scripts{sep}'.format(sep=os.path.sep), '')
-        if os.name == 'nt':
-            settings.PROG_DIR = os.path.join(settings.PROG_DIR, 'site-packages')
-
-        settings.DATA_DIR = settings.PROG_DIR
-        if 'site-packages' in settings.DATA_DIR:
+        if re.match(r'(site-packages|scripts)', settings.PROG_DIR, re.I):
             settings.DATA_DIR = str(Path.home().joinpath('sickchill').absolute())
+        else:
+            settings.DATA_DIR = os.path.dirname(settings.PROG_DIR)
+
         settings.MY_ARGS = sys.argv[1:]
 
         # Rename the main thread

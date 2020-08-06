@@ -2,6 +2,7 @@
 ######################
 /cache/
 /gui/slick/cache
+/sickchill/gui/slick/cache
 /Logs/
 /data/
 restore/
