@@ -4,7 +4,7 @@
     import datetime
     import platform
     from sickchill.sickbeard.common import MULTI_EP_STRINGS
-    from sickhill.settings import unpackStrings
+    from sickchill.settings import unpackStrings
     from sickchill import settings
     from sickchill.sickbeard import naming
 %>
