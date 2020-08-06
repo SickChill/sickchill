@@ -1,7 +1,5 @@
-# Third Party Imports
 from putiopy import Client as PutioClient, ClientError
 
-# First Party Imports
 from sickchill.sickbeard import helpers
 from sickchill.sickbeard.clients.generic import GenericClient
 

@@ -1,14 +1,10 @@
-
-# Stdlib Imports
 import re
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper.common import try_int
 from sickchill.sickbeard import logger
 from sickchill.sickbeard.tv import Show, TVEpisode
 
-# Local Folder Imports
 from .tvdb import TVDB
 
 

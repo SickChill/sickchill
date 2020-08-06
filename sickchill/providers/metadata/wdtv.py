@@ -1,19 +1,11 @@
-
-
-
-
-
-# Stdlib Imports
 import datetime
 import os
 import re
 from xml.etree import ElementTree
 
-# First Party Imports
 from sickchill.helper.common import dateFormat, replace_extension
 from sickchill.sickbeard import helpers, logger
 
-# Local Folder Imports
 from . import generic
 
 

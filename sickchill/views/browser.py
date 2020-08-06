@@ -1,19 +1,10 @@
-
-
-
-
-
-# Stdlib Imports
 import json
 import os
 
-# Third Party Imports
 from tornado.escape import xhtml_unescape
 
-# First Party Imports
 from sickchill.sickbeard.browser import foldersAtPath
 
-# Local Folder Imports
 from .index import WebRoot
 from .routes import Route
 

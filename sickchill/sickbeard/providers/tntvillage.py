@@ -1,9 +1,6 @@
-
-# Stdlib Imports
 import re
 import traceback
 
-# First Party Imports
 from sickchill.helper.common import convert_size, try_int
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider

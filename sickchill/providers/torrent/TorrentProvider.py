@@ -1,12 +1,8 @@
-
-# Stdlib Imports
 from datetime import datetime
 
-# Third Party Imports
 import bencodepy
 from feedparser import FeedParserDict
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper.common import try_int
 from sickchill.providers.GenericProvider import GenericProvider

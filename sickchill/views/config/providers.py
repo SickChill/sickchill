@@ -1,16 +1,8 @@
-
-
-
-
-
-# Stdlib Imports
 import json
 import os
 
-# Third Party Imports
 from tornado.web import addslash
 
-# First Party Imports
 import sickchill.start
 from sickchill import settings
 from sickchill.helper import try_int
@@ -20,7 +12,6 @@ from sickchill.sickbeard.providers import newznab, rsstorrent
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
-# Local Folder Imports
 from . import Config
 
 

@@ -3,14 +3,11 @@
 Test SNI and SSL
 """
 
-# Stdlib Imports
 import unittest
 
-# Third Party Imports
 import certifi
 import requests
 
-# First Party Imports
 from sickchill.sickbeard import providers as providers
 
 

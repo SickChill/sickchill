@@ -1,13 +1,9 @@
-
-# Stdlib Imports
 import datetime
 import time
 from urllib.parse import urljoin
 
-# Third Party Imports
 import js2py
 
-# First Party Imports
 from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 from sickchill.sickbeard import db, logger, tvcache

@@ -1,11 +1,8 @@
-
-# Stdlib Imports
 import datetime
 import threading
 import time
 import traceback
 
-# Local Folder Imports
 from . import logger
 
 

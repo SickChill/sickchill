@@ -2,7 +2,6 @@
 Test the SR API
 """
 
-# Stdlib Imports
 import unittest
 
 

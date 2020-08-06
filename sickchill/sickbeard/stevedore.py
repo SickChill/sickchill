@@ -1,6 +1,3 @@
-
-
-# Third Party Imports
 from subliminal.extensions import RegistrableExtensionManager
 
 clients = RegistrableExtensionManager('sickbeard.clients', [

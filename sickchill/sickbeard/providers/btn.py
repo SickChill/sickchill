@@ -1,14 +1,10 @@
-
-# Stdlib Imports
 import math
 import socket
 import time
 from datetime import datetime
 
-# Third Party Imports
 import jsonrpclib
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper.common import episode_num
 from sickchill.helper.exceptions import AuthException

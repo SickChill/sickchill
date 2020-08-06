@@ -1,13 +1,6 @@
-
-
-
-
-
-# Third Party Imports
 from tornado.escape import xhtml_unescape
 from tornado.web import addslash
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import config
 from sickchill.views.common import PageTemplate

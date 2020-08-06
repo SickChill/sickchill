@@ -1,6 +1,3 @@
-
-
-
 class traktException(Exception):
     pass
 

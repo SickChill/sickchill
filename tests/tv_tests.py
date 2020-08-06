@@ -2,10 +2,8 @@
 Test tv
 """
 
-# Stdlib Imports
 import unittest
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard.tv import TVEpisode, TVShow
 from tests import test_lib as test

@@ -1,15 +1,7 @@
-
-
-
-
-
-# Stdlib Imports
 import traceback
 
-# Third Party Imports
 from tornado.web import RequestHandler
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import helpers, logger
 

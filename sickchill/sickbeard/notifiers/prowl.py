@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-# Stdlib Imports
 #
 ##############################################################################
 import ast
@@ -15,7 +7,6 @@ from http.client import HTTPException, HTTPSConnection
 from ssl import SSLError
 from urllib.parse import urlencode
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import common, db, logger
 

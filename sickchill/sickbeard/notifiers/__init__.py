@@ -1,5 +1,3 @@
-
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import helpers
 from sickchill.sickbeard.notifiers import (boxcar2, discord, emailnotify, emby, freemobile, growl, join, kodi, libnotify, matrix, nmj, nmjv2, plex, prowl,

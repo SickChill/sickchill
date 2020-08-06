@@ -1,12 +1,5 @@
-
-
-
-
-
-# Third Party Imports
 import markdown2
 
-# Local Folder Imports
 from ..sickbeard import helpers, logger
 from .common import PageTemplate
 from .home import Home

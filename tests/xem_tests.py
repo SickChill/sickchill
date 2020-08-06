@@ -2,10 +2,8 @@
 Test XEM
 """
 
-# Stdlib Imports
 import unittest
 
-# First Party Imports
 import sickchill.sickbeard.db
 from sickchill import settings
 from sickchill.sickbeard.tv import TVShow

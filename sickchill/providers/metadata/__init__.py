@@ -1,8 +1,5 @@
-
-# Stdlib Imports
 import sys
 
-# Local Folder Imports
 from . import generic, helpers, kodi, kodi_12plus, mede8er, mediabrowser, ps3, tivo, wdtv
 
 __all__ = ['generic', 'helpers', 'kodi', 'kodi_12plus', 'mede8er', 'mediabrowser', 'ps3', 'tivo', 'wdtv']

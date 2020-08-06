@@ -1,21 +1,13 @@
-
-
-
-
-
-# Stdlib Imports
 import os
 import re
 import time
 
-# Third Party Imports
 from mako.exceptions import RichTraceback
 from mako.lookup import TemplateLookup
 from mako.runtime import UNDEFINED
 from mako.template import Template
 from tornado.escape import linkify
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import classes, helpers
 

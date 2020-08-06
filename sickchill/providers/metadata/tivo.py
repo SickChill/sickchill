@@ -1,12 +1,8 @@
-
-# Stdlib Imports
 import datetime
 import os
 
-# First Party Imports
 from sickchill.sickbeard import helpers, logger
 
-# Local Folder Imports
 from . import generic
 
 

@@ -1,5 +1,3 @@
-
-# Stdlib Imports
 import locale
 import logging
 import logging.handlers
@@ -11,15 +9,12 @@ import traceback
 from logging import NullHandler
 from urllib.parse import quote
 
-# Third Party Imports
 from github import InputFileContent
 from github.GithubException import RateLimitExceededException, TwoFactorException
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper.common import dateTimeFormat
 
-# Local Folder Imports
 from . import classes
 
 # log levels
@@ -197,7 +192,6 @@ class Logger(object):
             return submitter_result, issue_id
 
         try:
-            # Local Folder Imports
             from .versionChecker import CheckVersion
             checkversion = CheckVersion()
             checkversion.check_for_new_version()

@@ -1,19 +1,11 @@
-
-
-
-
-
-# Stdlib Imports
 import datetime
 import itertools
 import time
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper.exceptions import AuthException
 from sickchill.show.Show import Show
 
-# Local Folder Imports
 from . import db, logger, show_name_helpers
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from .rssfeeds import getFeed

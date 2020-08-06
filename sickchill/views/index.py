@@ -1,9 +1,3 @@
-
-
-
-
-
-# Stdlib Imports
 import base64
 import datetime
 import json
@@ -15,7 +9,6 @@ from mimetypes import guess_type
 from operator import attrgetter
 from urllib.parse import urljoin
 
-# Third Party Imports
 from mako.lookup import Template
 from tornado.concurrent import run_on_executor
 from tornado.escape import utf8, xhtml_escape
@@ -23,20 +16,17 @@ from tornado.gen import coroutine
 from tornado.process import cpu_count
 from tornado.web import authenticated, HTTPError, RequestHandler
 
-# First Party Imports
 import sickchill.start
 from sickchill import settings
 from sickchill.init_helpers import locale_dir
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.views.routes import Route
 
-# Local Folder Imports
 from ..sickbeard import db, helpers, logger, network_timezones, ui
 from .api.webapi import function_mapper
 from .common import PageTemplate
 
 try:
-    # Third Party Imports
     import jwt
     from jwt.algorithms import RSAAlgorithm as jwt_algorithms_RSAAlgorithm
     has_cryptography = True

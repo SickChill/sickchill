@@ -1,5 +1,3 @@
-
-# Third Party Imports
 from bs4 import BeautifulSoup
 
 

@@ -1,10 +1,7 @@
-
-# Stdlib Imports
 import datetime
 import threading
 import time
 
-# First Party Imports
 import sickchill
 from sickchill import settings
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException

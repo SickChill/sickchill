@@ -1,12 +1,9 @@
-
-# Stdlib Imports
 import hashlib
 import os
 import time
 from functools import reduce
 from xml.etree import ElementTree
 
-# Third Party Imports
 # http://www.radicand.org/blog/orz/2010/2/21/edonkey2000-hash-in-python/
 import requests
 

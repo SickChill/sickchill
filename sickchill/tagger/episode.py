@@ -1,10 +1,8 @@
 """
 Episode tagger to extract information from episodes
 """
-# Stdlib Imports
 import re
 
-# First Party Imports
 from sickchill.helper.common import try_int
 from sickchill.recompiled import tags
 

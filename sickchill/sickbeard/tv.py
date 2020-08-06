@@ -1,9 +1,3 @@
-
-
-
-
-
-# Stdlib Imports
 import datetime
 import glob
 import os.path
@@ -17,14 +11,12 @@ from sqlite3 import OperationalError
 from weakref import WeakKeyDictionary
 from xml.etree import ElementTree
 
-# Third Party Imports
 import babelfish
 from imdbpie import Imdb, ImdbFacade
 from imdbpie.exceptions import ImdbAPIError
 from unidecode import unidecode
 from urllib3.exceptions import MaxRetryError, NewConnectionError
 
-# First Party Imports
 import sickchill
 import sickchill.sickbeard.providers
 import sickchill.sickbeard.scene_numbering
@@ -34,7 +26,6 @@ from sickchill.helper.exceptions import (EpisodeDeletedException, EpisodeNotFoun
                                          MultipleShowsInDatabaseException, NoNFOException, ShowDirectoryNotFoundException, ShowNotFoundException)
 from sickchill.show.Show import Show
 
-# Local Folder Imports
 from . import db, helpers, logger, network_timezones, notifiers, postProcessor, subtitles
 from .blackandwhitelist import BlackAndWhiteList
 from .common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
@@ -42,7 +33,6 @@ from .common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NA
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 try:
-    # Third Party Imports
     from send2trash import send2trash
 except ImportError:
     def send2trash(path):

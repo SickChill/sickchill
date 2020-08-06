@@ -6,11 +6,9 @@ Tests:
     DBMultiTests
 """
 
-# Stdlib Imports
 import threading
 import unittest
 
-# First Party Imports
 import sickchill.sickbeard
 from tests import test_lib as test
 

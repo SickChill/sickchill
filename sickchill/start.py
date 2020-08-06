@@ -1,5 +1,3 @@
-
-# Stdlib Imports
 import datetime
 import os
 import platform
@@ -8,19 +6,15 @@ import shutil
 import socket
 import sys
 
-# Third Party Imports
 from configobj import ConfigObj
 
-# Local Folder Imports
 from .init_helpers import setup_lib_path
 
 setup_lib_path()
 
-# Third Party Imports
 import rarfile
 from tornado.locale import load_gettext_translations
 
-# First Party Imports
 import sickchill
 from sickchill import settings, show_updater
 from sickchill.sickbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
@@ -29,7 +23,6 @@ from sickchill.sickbeard.databases import failed, main
 from sickchill.sickbeard.providers.newznab import NewznabProvider
 from sickchill.sickbeard.providers.rsstorrent import TorrentRssProvider
 
-# Local Folder Imports
 from .helper import setup_github
 from .init_helpers import locale_dir, setup_gettext
 from .providers import metadata
@@ -1721,7 +1714,6 @@ def save_config():
 def launchBrowser(protocol='http', startPort=None, web_root='/'):
 
     try:
-        # Stdlib Imports
         import webbrowser
     except ImportError:
         logger.warning("Unable to load the webbrowser module, cannot launch the browser.")

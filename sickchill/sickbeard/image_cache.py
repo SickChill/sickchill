@@ -1,19 +1,14 @@
-
-# Stdlib Imports
 import os.path
 from mimetypes import guess_type
 
-# Third Party Imports
 import imagesize
 
-# First Party Imports
 import sickchill
 from sickchill import settings
 from sickchill.helper.exceptions import ShowDirectoryNotFoundException
 from sickchill.providers.metadata.generic import GenericMetadata
 from sickchill.providers.metadata.helpers import getShowImage
 
-# Local Folder Imports
 from . import helpers, logger
 
 

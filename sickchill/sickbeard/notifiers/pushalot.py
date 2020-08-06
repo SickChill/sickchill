@@ -1,5 +1,3 @@
-
-# First Party Imports
 import sickchill
 from sickchill import settings
 from sickchill.sickbeard import common, logger

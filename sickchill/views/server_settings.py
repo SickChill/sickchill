@@ -1,27 +1,19 @@
-
-
-
-
-# Stdlib Imports
 import asyncio
 import errno
 import os
 import threading
 from socket import error as socket_error
 
-# Third Party Imports
 from tornado.ioloop import IOLoop
 from tornado.platform.asyncio import AnyThreadEventLoopPolicy
 from tornado.web import Application, RedirectHandler, StaticFileHandler, url
 
-# First Party Imports
 import sickchill.start
 from sickchill import settings
 from sickchill.sickbeard.helpers import create_https_certificates, generateApiKey
 from sickchill.views import CalendarHandler, LoginHandler, LogoutHandler
 from sickchill.views.api import ApiHandler, KeyHandler
 
-# Local Folder Imports
 from ..sickbeard import logger
 from .routes import Route
 

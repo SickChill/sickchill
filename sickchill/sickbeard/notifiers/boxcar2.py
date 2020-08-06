@@ -1,10 +1,3 @@
-
-
-
-
-
-
-# First Party Imports
 # Author: Rafael Silva <rpluto@gmail.com>
 # Author: Marvin Pinto <me@marvinp.ca>
 from sickchill import settings

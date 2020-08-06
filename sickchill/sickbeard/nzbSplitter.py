@@ -1,9 +1,6 @@
-
-# Stdlib Imports
 import re
 from xml.etree import ElementTree
 
-# Local Folder Imports
 from . import classes, helpers, logger
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 

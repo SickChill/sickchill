@@ -1,16 +1,8 @@
-
-
-
-
-
-# Stdlib Imports
 import datetime
 import threading
 
-# First Party Imports
 from sickchill import settings
 
-# Local Folder Imports
 from . import common, db, logger, scheduler, search_queue, ui
 
 

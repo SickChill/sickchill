@@ -1,9 +1,6 @@
-
-# Stdlib Imports
 from datetime import date, timedelta
 from operator import itemgetter
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper.common import dateFormat, timeFormat
 from sickchill.helper.quality import get_quality_string

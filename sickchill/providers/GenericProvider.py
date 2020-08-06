@@ -1,5 +1,3 @@
-
-# Stdlib Imports
 import re
 from base64 import b16encode, b32decode
 from datetime import datetime
@@ -7,10 +5,8 @@ from itertools import chain
 from os.path import join
 from random import shuffle
 
-# Third Party Imports
 from requests.utils import add_dict_to_cookiejar
 
-# First Party Imports
 import sickchill.sickbeard
 from sickchill.helper.common import sanitize_filename
 from sickchill.sickbeard import logger

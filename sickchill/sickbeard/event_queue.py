@@ -1,14 +1,8 @@
-
-
-
-
-# Stdlib Imports
 import threading
 import traceback
 # noinspection PyUnresolvedReferences
 from queue import Empty, Queue
 
-# Local Folder Imports
 from . import logger
 
 

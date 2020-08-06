@@ -1,4 +1,3 @@
-# Stdlib Imports
 import copy
 import io
 import logging
@@ -6,7 +5,6 @@ import re
 from xml.etree import ElementTree
 from zipfile import is_zipfile, ZipFile
 
-# Third Party Imports
 from babelfish import Language
 from guessit import guessit
 from requests import Session

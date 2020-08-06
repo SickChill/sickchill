@@ -1,14 +1,7 @@
-
-
-
-
-
-# Stdlib Imports
 import cgi
 import os
 import warnings
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import common
 
@@ -16,12 +9,10 @@ from sickchill.sickbeard import common
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     try:
-        # Third Party Imports
         # noinspection PyUnresolvedReferences
         from pgi.repository import Notify
     except (ImportError, Exception):
         try:
-            # Third Party Imports
             # noinspection PyUnresolvedReferences
             from gi.repository import Notify
         except (ImportError, Exception):
@@ -53,7 +44,6 @@ class Notifier(object):
                     "from a desktop login.")
 
         try:
-            # Third Party Imports
             import dbus
         except (ImportError, Exception):
             dbus = None

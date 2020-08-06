@@ -1,17 +1,12 @@
-
-# Stdlib Imports
 import json
 import time
 import traceback
 
-# Third Party Imports
 import requests
 from requests.exceptions import HTTPError
 
-# First Party Imports
 from sickchill import settings
 
-# Local Folder Imports
 from . import common, generic_queue, logger
 
 DISCORD = 600

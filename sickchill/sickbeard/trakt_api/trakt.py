@@ -1,16 +1,11 @@
-
-# Stdlib Imports
 import json
 import time
 
-# Third Party Imports
 import certifi
 import requests
 
-# First Party Imports
 from sickchill import settings
 
-# Local Folder Imports
 from .. import logger
 from .exceptions import traktException
 

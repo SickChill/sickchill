@@ -1,9 +1,6 @@
-
-# Stdlib Imports
 import re
 from urllib.parse import quote_plus, urljoin
 
-# First Party Imports
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 from sickchill.sickbeard import db, logger, tvcache

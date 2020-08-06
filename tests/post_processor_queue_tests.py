@@ -1,13 +1,11 @@
 """
 Test the post processor queue
 """
-# Stdlib Imports
 import datetime
 import os.path
 import time
 import unittest
 
-# First Party Imports
 import sickchill.sickbeard
 from sickchill import settings
 from sickchill.sickbeard.post_processing_queue import PostProcessorTask, ProcessingQueue
@@ -68,7 +66,6 @@ class PostProcessorQueueTests(test.SickbeardTestPostProcessorCase):
                 print(task.last_result)
 
             self.assertTrue(cleared, 'The queue did not empty after {timeout} seconds'.format(timeout=timeout))
-
 
 
 if __name__ == "__main__":

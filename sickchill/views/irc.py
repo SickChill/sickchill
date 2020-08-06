@@ -1,5 +1,3 @@
-
-# Local Folder Imports
 from .common import PageTemplate
 from .home import Home
 from .routes import Route

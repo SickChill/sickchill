@@ -1,16 +1,8 @@
-
-
-
-
-
-
-# Stdlib Imports
 # Author: Marvin Pinto <me@marvinp.ca>
 # Author: Dennis Lutter <lad1337@gmail.com>
 import urllib.parse
 import urllib.request
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper import HTTP_STATUS_CODES
 from sickchill.sickbeard import logger

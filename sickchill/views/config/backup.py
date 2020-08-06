@@ -1,22 +1,13 @@
-
-
-
-
-
-# Stdlib Imports
 import os
 import time
 
-# Third Party Imports
 from tornado.web import addslash
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import helpers
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
-# Local Folder Imports
 from .index import Config
 
 

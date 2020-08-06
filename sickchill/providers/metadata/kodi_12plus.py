@@ -1,18 +1,13 @@
-
-# Stdlib Imports
 import datetime
 import re
 from xml.etree import ElementTree
 
-# Third Party Imports
 from babelfish import Country
 
-# First Party Imports
 import sickchill
 from sickchill.helper.common import dateFormat
 from sickchill.sickbeard import helpers, logger
 
-# Local Folder Imports
 from . import generic
 
 

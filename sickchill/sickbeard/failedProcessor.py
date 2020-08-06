@@ -1,8 +1,5 @@
-
-# Stdlib Imports
 import logging
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper.exceptions import FailedPostProcessingFailedException
 from sickchill.sickbeard import logger, search_queue, show_name_helpers

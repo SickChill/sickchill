@@ -1,13 +1,9 @@
-
-
 """
 Recommend shows based on lists from indexers
 """
-# Stdlib Imports
 import os
 import posixpath
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import helpers
 

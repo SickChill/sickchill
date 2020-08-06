@@ -1,10 +1,7 @@
-
-# Stdlib Imports
 import re
 from collections import OrderedDict
 from urllib.parse import urljoin
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import helpers
 from sickchill.sickbeard.clients.generic import GenericClient

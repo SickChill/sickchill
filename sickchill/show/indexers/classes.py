@@ -1,6 +1,3 @@
-
-
-
 class ShowResult(object):
     def __init__(self, title, first_aired, next_airs, last_aired, status, language, indexer, description):
         self.title = title

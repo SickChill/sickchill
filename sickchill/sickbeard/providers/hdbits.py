@@ -1,10 +1,7 @@
-
-# Stdlib Imports
 import datetime
 import json
 from urllib.parse import urlencode, urljoin
 
-# First Party Imports
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 from sickchill.sickbeard import classes, logger, tvcache

@@ -1,11 +1,5 @@
-
-
-
-
-# Stdlib Imports
 import os
 
-# First Party Imports
 import sickchill
 from sickchill import settings
 from sickchill.show.Show import Show

@@ -1,13 +1,9 @@
-
-
-# Stdlib Imports
 import socket
 import sys
 import threading
 import zlib
 from time import sleep, time
 
-# Local Folder Imports
 from .aniDBerrors import AniDBBannedError, AniDBMustAuthError, AniDBPacketCorruptedError
 from .aniDBresponses import ResponseResolver
 

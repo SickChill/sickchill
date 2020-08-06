@@ -2,10 +2,8 @@
 Test exception logging
 """
 
-# Stdlib Imports
 import unittest
 
-# First Party Imports
 from sickchill.sickbeard import logger
 
 

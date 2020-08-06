@@ -1,15 +1,7 @@
-
-
-
-
-
-# Stdlib Imports
 import socket
 
-# Third Party Imports
 import gntp.core
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import common, logger
 

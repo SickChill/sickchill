@@ -1,15 +1,8 @@
-
-
-
-
-
-# First Party Imports
 import sickchill.start
 from sickchill import settings
 from sickchill.helper import try_int
 from sickchill.show.History import History as HistoryTool
 
-# Local Folder Imports
 from ..sickbeard import ui
 from .common import PageTemplate
 from .index import WebRoot

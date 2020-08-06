@@ -1,6 +1,4 @@
-
 # pylint:disable=too-many-lines
-# Stdlib Imports
 import base64
 import ctypes
 import datetime
@@ -24,7 +22,6 @@ from itertools import cycle
 from urllib.parse import urljoin, urlparse
 from xml.etree import ElementTree
 
-# Third Party Imports
 import certifi
 import cloudscraper
 import ifaddr
@@ -35,14 +32,12 @@ from cloudscraper.exceptions import CloudflareException
 from tornado._locale_data import LOCALE_NAMES
 from unidecode import unidecode
 
-# First Party Imports
 import sickchill
 from sickchill import adba, settings
 from sickchill.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS
 from sickchill.helper.common import replace_extension
 from sickchill.show.Show import Show
 
-# Local Folder Imports
 from . import db, logger
 
 # Add some missing languages
@@ -702,10 +697,8 @@ def create_https_certificates(ssl_cert, ssl_key):
 
     # noinspection PyBroadException
     try:
-        # Third Party Imports
         from OpenSSL import crypto
 
-        # First Party Imports
         from sickchill.certgen import createCertificate, createCertRequest, createKeyPair, TYPE_RSA
     except Exception:
         logger.info(traceback.format_exc())
@@ -1404,7 +1397,6 @@ def disk_usage(path):
     elif hasattr(os, 'statvfs'):  # POSIX
         if platform.system() == 'Darwin':
             try:
-                # Stdlib Imports
                 import subprocess
                 call = subprocess.Popen(["df", "-k", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 output = call.communicate()[0]

@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
-# Stdlib Imports
 import sys
 from pathlib import Path
 
-# Third Party Imports
 from setuptools import find_namespace_packages, setup
 
 info_dict = {'commands': {}}

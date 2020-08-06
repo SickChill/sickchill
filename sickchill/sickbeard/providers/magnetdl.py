@@ -1,12 +1,8 @@
-
-# Stdlib Imports
 from urllib.parse import urljoin
 
-# Third Party Imports
 import validators
 from slugify import slugify
 
-# First Party Imports
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 from sickchill.sickbeard import logger, tvcache

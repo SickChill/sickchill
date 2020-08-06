@@ -1,9 +1,3 @@
-
-
-
-
-
-# Stdlib Imports
 import datetime
 import json
 import os
@@ -11,12 +5,10 @@ import re
 import traceback
 from urllib.parse import unquote_plus
 
-# Third Party Imports
 import dateutil.parser
 from tornado.escape import xhtml_unescape
 from tornado.web import HTTPError
 
-# First Party Imports
 import sickchill
 from sickchill import settings
 from sickchill.helper import sanitize_filename, try_int

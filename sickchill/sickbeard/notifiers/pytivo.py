@@ -1,18 +1,10 @@
-
-
-
-
-
-# Stdlib Imports
 import os
 from urllib.parse import urlencode
 # noinspection PyUnresolvedReferences
 from urllib.request import Request, urlopen
 
-# Third Party Imports
 from requests.exceptions import HTTPError
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import logger
 

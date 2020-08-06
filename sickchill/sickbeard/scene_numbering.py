@@ -1,20 +1,16 @@
-
 #
 # Created on Sep 20, 2012
 # @author: Dermot Buckley <dermot@buckley.ie>
 # @copyright: Dermot Buckley
 #
-# Stdlib Imports
 import datetime
 import time
 import traceback
 
-# First Party Imports
 import sickchill
 from sickchill import settings
 from sickchill.show.Show import Show
 
-# Local Folder Imports
 from . import db, logger
 from .scene_exceptions import xem_session
 

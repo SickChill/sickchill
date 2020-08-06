@@ -1,8 +1,5 @@
-
-# Stdlib Imports
 from urllib.parse import urljoin
 
-# First Party Imports
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 from sickchill.sickbeard import logger, tvcache

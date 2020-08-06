@@ -1,37 +1,7 @@
-"""
-Unit Tests for sickbeard/common.py
-
-Classes:
-    Quality
-        _getStatusStrings
-        combineQualities
-        splitQuality
-        nameQuality
-        scene_quality
-        qualityFromFileMeta
-        compositeStatus
-        qualityDownloaded
-        splitCompositeStatus
-        sceneQualityFromName
-        statusFromName
-    StatusStrings
-        statusStrings
-        __missing__
-        __contains__
-    OverView
-
-"""
-
-
-
-
-
 # TODO: Implement skipped tests
 
-# Stdlib Imports
 import unittest
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import common
 

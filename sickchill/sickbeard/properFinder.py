@@ -1,5 +1,3 @@
-
-# Stdlib Imports
 import datetime
 import operator
 import re
@@ -7,12 +5,10 @@ import threading
 import time
 import traceback
 
-# First Party Imports
 from sickchill import settings, sickbeard
 from sickchill.helper.exceptions import AuthException
 from sickchill.show.History import History
 
-# Local Folder Imports
 from . import db, helpers, logger
 from .common import cpu_presets, DOWNLOADED, Quality, SNATCHED, SNATCHED_PROPER
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser

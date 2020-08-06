@@ -1,17 +1,10 @@
-#
-
-
-
-# # Third Party Imports
-# from anidbhttp import anidbquery
+# # from anidbhttp import anidbquery
 # from anidbhttp.query import QUERY_HOT
 #
-# # First Party Imports
-# from sickchill.sickbeard import helpers
+# # from sickchill.sickbeard import helpers
 # from sickchill.helper.common import try_int
 #
-# # Local Folder Imports
-# from .recommended import RecommendedShow
+# # from .recommended import RecommendedShow
 #
 #
 # class AnidbPopular(object):

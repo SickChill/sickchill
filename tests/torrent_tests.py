@@ -1,7 +1,5 @@
-# Stdlib Imports
 import unittest
 
-# First Party Imports
 import sickchill.sickbeard.logger
 from sickchill import settings
 from sickchill.sickbeard.providers import bitcannon, rarbg

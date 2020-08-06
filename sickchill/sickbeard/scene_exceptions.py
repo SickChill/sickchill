@@ -1,14 +1,10 @@
-
-# Stdlib Imports
 import datetime
 import threading
 import time
 
-# First Party Imports
 import sickchill
 from sickchill import adba, settings
 
-# Local Folder Imports
 from . import db, helpers, logger
 
 exception_dict = {}

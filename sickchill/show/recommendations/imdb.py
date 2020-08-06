@@ -1,18 +1,11 @@
-
-
-
-
-# Stdlib Imports
 import os
 import posixpath
 import re
 from datetime import date
 from urllib.parse import urljoin
 
-# Third Party Imports
 from bs4 import BeautifulSoup
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import helpers
 

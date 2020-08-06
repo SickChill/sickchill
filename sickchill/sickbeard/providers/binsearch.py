@@ -1,9 +1,6 @@
-
-# Stdlib Imports
 import re
 from urllib.parse import urljoin
 
-# First Party Imports
 from sickchill.providers.nzb.NZBProvider import NZBProvider
 from sickchill.sickbeard import logger, tvcache
 

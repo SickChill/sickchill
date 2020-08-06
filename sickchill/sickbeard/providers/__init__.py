@@ -1,9 +1,6 @@
-
-# Stdlib Imports
 import sys
 from random import shuffle
 
-# First Party Imports
 import sickchill.sickbeard.helpers
 from sickchill import settings
 from sickchill.sickbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, bitcannon, bjshare, btn, cpasbien, danishbits, demonoid, elitetorrent,

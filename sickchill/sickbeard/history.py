@@ -1,11 +1,7 @@
-
-# Stdlib Imports
 import datetime
 
-# First Party Imports
 from sickchill.show.History import History
 
-# Local Folder Imports
 from . import db
 from .common import FAILED, Quality, SNATCHED, SUBTITLED
 

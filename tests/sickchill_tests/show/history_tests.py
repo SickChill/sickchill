@@ -4,10 +4,8 @@
 Test history
 """
 
-# Stdlib Imports
 import unittest
 
-# First Party Imports
 from sickchill.show.History import History
 from sickchill.sickbeard.common import Quality
 

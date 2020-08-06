@@ -1,8 +1,5 @@
-
-# Stdlib Imports
 import abc
 
-# First Party Imports
 from sickchill import settings
 
 

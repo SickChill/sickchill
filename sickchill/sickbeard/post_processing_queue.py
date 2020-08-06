@@ -1,14 +1,10 @@
-
-# Stdlib Imports
 import os
 import threading
 import time
 import traceback
 
-# First Party Imports
 from sickchill import settings
 
-# Local Folder Imports
 from . import common, config, generic_queue, logger
 from .processTV import log_helper, process_dir
 

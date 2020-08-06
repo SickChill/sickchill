@@ -1,14 +1,10 @@
-
-# Stdlib Imports
 import datetime
 import sys
 
-# First Party Imports
 import sickchill
 from sickchill import settings
 from sickchill.helper.common import dateTimeFormat
 
-# Local Folder Imports
 from .common import Quality
 
 

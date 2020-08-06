@@ -1,69 +1,11 @@
-"""
-Test sickbeard.config's classes and methods
-
-Classes:
-    ConfigMigrator
-        migrate_config
-        _migrate_v1
-        _name_to_pattern
-        _migrate_v2
-        _migrate_v3
-        _migrate_v4
-        _migrate_v5
-        _migrate_v6
-        _migrate_v7
-        _migrate_v8
-        _migrate_v9
-        _migrate_v10
-
-Methods
-    change_https_cert
-    change_https_key
-    change_unrar_tool
-    change_sickchill_background
-    change_custom_css
-    change_nzb_dir
-    change_torrent_dir
-    change_tv_download_dir
-    change_unpack_dir
-    change_postprocessor_frequency
-    change_daily_search_frequency
-    change_backlog_frequency
-    change_update_frequency
-    change_showupdate_hour
-    change_subtitle_finder_frequency
-    change_version_notify
-    change_download_propers
-    change_use_trakt
-    change_use_subtitles
-    change_process_automatically
-    check_section
-    checkbox_to_value
-    clean_host
-    clean_hosts
-    clean_url
-    min_max
-    check_setting_int
-    check_setting_float
-    check_setting_str
-    check_setting_bool
-"""
-
-
-
-
-
-# Stdlib Imports
 import logging
 import os.path
 import sys
 import unittest
 from collections import namedtuple
 
-# Third Party Imports
 from configobj import ConfigObj
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import config, scheduler
 

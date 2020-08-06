@@ -1,9 +1,3 @@
-
-
-
-
-
-# Stdlib Imports
 import os
 import os.path
 import re
@@ -11,10 +5,8 @@ import time
 from collections import OrderedDict
 from threading import Lock
 
-# Third Party Imports
 import dateutil.parser
 
-# First Party Imports
 import sickchill
 from sickchill.helper.common import remove_extension
 from sickchill.sickbeard import common, db, helpers, logger, scene_exceptions, scene_numbering

@@ -1,20 +1,11 @@
-
-
-
-
-
-# Stdlib Imports
 import datetime
 
-# Third Party Imports
 from dateutil import tz
 from tornado.web import authenticated
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper import try_int
 
-# Local Folder Imports
 from ..sickbeard import db, logger, network_timezones
 from .index import BaseHandler
 

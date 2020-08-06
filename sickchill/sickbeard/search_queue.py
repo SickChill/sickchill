@@ -1,16 +1,8 @@
-
-
-
-
-
-# Stdlib Imports
 import time
 import traceback
 
-# First Party Imports
 from sickchill import settings
 
-# Local Folder Imports
 from . import common, failed_history, generic_queue, history, logger, search, ui
 
 BACKLOG_SEARCH = 10

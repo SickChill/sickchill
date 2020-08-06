@@ -1,17 +1,12 @@
-
-# Stdlib Imports
 import binascii
 
-# Third Party Imports
 from enzyme import MKV
 from pkg_resources import DistributionNotFound, get_distribution
 
-# First Party Imports
 import sickchill.sickbeard
 
 try:
     get_distribution('pymediainfo')
-    # Third Party Imports
     from pymediainfo import MediaInfo as mediainfo
 except (ImportError, DistributionNotFound):
     mediainfo = None

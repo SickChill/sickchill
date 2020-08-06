@@ -1,7 +1,3 @@
-
-
-
-
 # Disabled until a new feed provider is available
 #
 # """

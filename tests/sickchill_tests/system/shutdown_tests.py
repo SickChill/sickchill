@@ -4,10 +4,8 @@
 Test shutdown
 """
 
-# Stdlib Imports
 import unittest
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard.event_queue import Events
 from sickchill.system.Shutdown import Shutdown

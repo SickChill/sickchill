@@ -1,19 +1,6 @@
-"""
-Unit Tests for sickbeard/numdict.py
-"""
-
-
-
-
-
-
-
-
-# Stdlib Imports
 import unittest
 from collections import UserDict
 
-# First Party Imports
 from sickchill.sickbeard.numdict import NumDict
 
 
@@ -491,7 +478,6 @@ def test_main():
     """
     Run tests when run as main
     """
-    # Stdlib Imports
     import logging
     log = logging.getLogger(__name__)
     logging.basicConfig(level=logging.DEBUG)

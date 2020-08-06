@@ -1,5 +1,3 @@
-
-# Stdlib Imports
 import operator
 import platform
 import re
@@ -7,14 +5,12 @@ import uuid
 from functools import reduce
 from os import path
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper import video_screen_size
 from sickchill.init_helpers import setup_gettext, setup_useragent
 from sickchill.recompiled import tags
 from sickchill.tagger.episode import EpisodeTags
 
-# Local Folder Imports
 from .numdict import NumDict
 
 setup_gettext()

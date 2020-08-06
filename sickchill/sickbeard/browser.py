@@ -1,12 +1,8 @@
-
-# Stdlib Imports
 import os
 import string
 
-# First Party Imports
 from sickchill import settings
 
-# Local Folder Imports
 from . import logger
 
 
@@ -14,7 +10,6 @@ from . import logger
 def getWinDrives():
     """ Return list of detected drives """
     assert os.name == 'nt'
-    # Stdlib Imports
     from ctypes import windll
 
     drives = []

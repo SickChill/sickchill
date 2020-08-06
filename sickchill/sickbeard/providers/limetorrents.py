@@ -1,12 +1,8 @@
-
-# Stdlib Imports
 import re
 import traceback
 
-# Third Party Imports
 from bs4 import BeautifulSoup
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider

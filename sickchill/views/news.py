@@ -1,16 +1,8 @@
-
-
-
-
-
-# Third Party Imports
 import markdown2
 
-# First Party Imports
 import sickchill.start
 from sickchill import settings
 
-# Local Folder Imports
 from ..sickbeard import logger
 from .common import PageTemplate
 from .home import Home

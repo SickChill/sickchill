@@ -4,16 +4,13 @@
 Test TorrentProvider
 """
 
-# Stdlib Imports
 import os
 import unittest
 
-# First Party Imports
 from sickchill import settings
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
-# Local Folder Imports
 from .generic_provider_tests import GenericProviderTests
 
 

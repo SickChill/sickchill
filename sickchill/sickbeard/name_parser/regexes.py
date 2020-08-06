@@ -1,9 +1,3 @@
-
-
-
-
-
-
 # all regexes are case insensitive
 
 

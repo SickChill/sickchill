@@ -1,15 +1,8 @@
-
-
-
-
-
-# Stdlib Imports
 import json
 import ntpath
 import os
 import posixpath
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper import episode_num, try_int
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException

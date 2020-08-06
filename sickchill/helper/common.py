@@ -1,14 +1,10 @@
-
-# Stdlib Imports
 import re
 from fnmatch import fnmatch
 
-# Third Party Imports
 from github import Github
 from github.GithubException import (BadAttributeException, BadCredentialsException, BadUserAgentException, GithubException, RateLimitExceededException,
                                     TwoFactorException, UnknownObjectException)
 
-# First Party Imports
 from sickchill import settings, sickbeard
 
 dateFormat = '%Y-%m-%d'

@@ -1,15 +1,7 @@
-
-
-
-
-
-# Stdlib Imports
 import os
 
-# Third Party Imports
 from tornado.web import addslash
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard.versionChecker import CheckVersion
 from sickchill.views.common import PageTemplate
@@ -42,27 +34,23 @@ class Config(WebRoot):
         t = PageTemplate(rh=self, filename="config.mako")
 
         try:
-            # Stdlib Imports
             # noinspection PyUnresolvedReferences
             import pwd
             sr_user = pwd.getpwuid(os.getuid()).pw_name
         except ImportError:
             try:
-                # Stdlib Imports
                 import getpass
                 sr_user = getpass.getuser()
             except Exception:
                 sr_user = 'Unknown'
 
         try:
-            # Stdlib Imports
             import locale
             sr_locale = locale.getdefaultlocale()
         except Exception:
             sr_locale = 'Unknown', 'Unknown'
 
         try:
-            # Stdlib Imports
             import ssl
             ssl_version = ssl.OPENSSL_VERSION
         except Exception:

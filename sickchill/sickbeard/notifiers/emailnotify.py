@@ -1,12 +1,9 @@
-
-# Stdlib Imports
 import ast
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formatdate
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import db, logger
 

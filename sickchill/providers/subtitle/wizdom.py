@@ -1,11 +1,9 @@
-# Stdlib Imports
 import bisect
 import io
 import logging
 import os
 import zipfile
 
-# Third Party Imports
 from babelfish import Language
 from guessit import guessit
 from requests import Session
@@ -17,7 +15,6 @@ from subliminal.subtitle import fix_line_ending, Subtitle
 from subliminal.utils import sanitize
 from subliminal.video import Episode, Movie
 
-# First Party Imports
 from sickchill import settings
 
 logger = logging.getLogger(__name__)

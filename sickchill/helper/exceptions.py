@@ -1,6 +1,3 @@
-
-
-
 class SickChillException(Exception):
     """
     Generic SickChill Exception - should never be thrown, only sub-classed

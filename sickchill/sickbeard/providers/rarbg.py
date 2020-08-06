@@ -1,10 +1,7 @@
-
-# Stdlib Imports
 import datetime
 import re
 import time
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider

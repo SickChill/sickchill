@@ -1,5 +1,3 @@
-
-# Stdlib Imports
 import os.path
 import re
 import sqlite3
@@ -8,11 +6,9 @@ import time
 import warnings
 from sqlite3 import OperationalError
 
-# First Party Imports
 import sickchill.sickbeard.helpers
 from sickchill import settings
 
-# Local Folder Imports
 from . import logger
 
 db_cons = {}

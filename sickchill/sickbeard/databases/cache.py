@@ -1,9 +1,3 @@
-
-
-
-
-
-# First Party Imports
 from sickchill.sickbeard import db
 
 

@@ -64,12 +64,10 @@ Private Methods:
     _setUpSession
 """
 
-# Stdlib Imports
 import os
 import unittest
 from shutil import rmtree
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
 from sickchill.sickbeard import helpers
@@ -482,7 +480,6 @@ class HelpersEncryptionTests(unittest.TestCase):
         Test that create_https_certificates successfully generates certificate and private key
         """
         try:
-            # Third Party Imports
             import OpenSSL
         except ImportError:
             self.skipTest('pyOpenSSL is not installed')

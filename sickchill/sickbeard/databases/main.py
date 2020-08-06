@@ -1,14 +1,7 @@
-
-
-
-
-
-# Stdlib Imports
 import datetime
 import os.path
 import warnings
 
-# First Party Imports
 import sickchill.start
 from sickchill import settings
 from sickchill.helper.common import dateTimeFormat, episode_num

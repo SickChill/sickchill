@@ -1,12 +1,8 @@
-
-# Stdlib Imports
 import threading
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import helpers, scene_exceptions
 
-# Local Folder Imports
 from . import db
 
 # from . import logger

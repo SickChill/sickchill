@@ -1,19 +1,6 @@
-"""
-Test scene helpers
-"""
-
-
-
-
-
-
-
-
-# Stdlib Imports
 import sys
 import unittest
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import common, db, name_cache, scene_exceptions, show_name_helpers
 from sickchill.sickbeard.tv import TVShow as Show

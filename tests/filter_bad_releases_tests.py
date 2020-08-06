@@ -1,12 +1,5 @@
-#!/usr/bin/env python3
-
-
-
-
-# Stdlib Imports
 import unittest
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard.show_name_helpers import filter_bad_releases
 from sickchill.sickbeard.tv import TVShow as Show

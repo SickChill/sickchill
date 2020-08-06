@@ -1,17 +1,9 @@
-
-
-
-
-
-# Stdlib Imports
 import fnmatch
 import os
 import re
 
-# First Party Imports
 from sickchill import settings
 
-# Local Folder Imports
 from . import common, logger
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from .scene_exceptions import get_scene_exceptions

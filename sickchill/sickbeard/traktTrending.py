@@ -1,17 +1,10 @@
-
-
-
-
-# Stdlib Imports
 import os
 import posixpath
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper.exceptions import MultipleShowObjectsException
 from sickchill.sickbeard.trakt_api import TraktAPI, traktException
 
-# Local Folder Imports
 from . import helpers, logger
 
 

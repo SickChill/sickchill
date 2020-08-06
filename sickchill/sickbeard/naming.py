@@ -1,13 +1,9 @@
-
-# Stdlib Imports
 import datetime
 import os
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import tv
 
-# Local Folder Imports
 # from sickchill.sickbeard.tv import TVEpisode
 from . import common, logger
 from .common import DOWNLOADED, Quality

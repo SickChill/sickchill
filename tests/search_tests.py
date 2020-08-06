@@ -1,12 +1,5 @@
-#!/usr/bin/env python3
-"""
-Test searches
-"""
-
-# Stdlib Imports
 import unittest
 
-# First Party Imports
 import sickchill.sickbeard.providers
 from sickchill import settings
 from sickchill.providers.GenericProvider import GenericProvider

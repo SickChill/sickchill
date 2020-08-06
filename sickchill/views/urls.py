@@ -1,18 +1,9 @@
-
-
-
-
-
-# Stdlib Imports
 import os
 
-# Third Party Imports
 from tornado.web import RedirectHandler, StaticFileHandler, url
 
-# First Party Imports
 from sickchill import settings
 
-# Local Folder Imports
 from . import CalendarHandler, LoginHandler, LogoutHandler
 from .api import ApiHandler, KeyHandler
 from .routes import Route

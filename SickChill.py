@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-# Stdlib Imports
 import datetime
 import os
 import platform
@@ -12,7 +11,6 @@ import threading
 import time
 import traceback
 
-# First Party Imports
 import sickchill.start
 from sickchill import settings
 from sickchill.init_helpers import setup_gettext, setup_lib_path
@@ -20,7 +18,6 @@ from sickchill.init_helpers import setup_gettext, setup_lib_path
 setup_lib_path()
 setup_gettext()
 
-# Stdlib Imports
 import mimetypes
 from pathlib import Path
 
@@ -32,10 +29,8 @@ mimetypes.add_type("application/font-woff", ".woff")
 # Not sure about this one, but we also have halflings in .woff so I think it wont matter
 # mimetypes.add_type("application/font-woff2", ".woff2")
 
-# Third Party Imports
 from configobj import ConfigObj
 
-# First Party Imports
 from sickchill.helper.argument_parser import SickChillArgumentParser
 from sickchill.sickbeard import db, failed_history, logger, name_cache, network_timezones
 from sickchill.sickbeard.event_queue import Events

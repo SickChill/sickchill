@@ -1,14 +1,7 @@
-
-
-
-
-
-# Third Party Imports
 import twitter
 from requests.exceptions import RequestException
 from requests_oauthlib import OAuth1Session
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import common, logger
 

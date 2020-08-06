@@ -1,6 +1,3 @@
-
-
-# Local Folder Imports
 from . import aniDBfileInfo as fileInfo
 
 

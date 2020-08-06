@@ -1,5 +1,3 @@
-
-# Stdlib Imports
 import datetime
 import os
 import re
@@ -7,19 +5,16 @@ import subprocess
 import threading
 import traceback
 
-# Third Party Imports
 import subliminal
 from babelfish import Language, language_converters
 from guessit import guessit
 from subliminal import Episode, provider_manager, ProviderPool
 
-# First Party Imports
 import sickchill.sickbeard.helpers
 from sickchill import settings
 from sickchill.helper.common import dateTimeFormat, episode_num
 from sickchill.show.Show import Show
 
-# Local Folder Imports
 from . import db, history, logger
 from .common import Quality
 from .helpers import is_media_file

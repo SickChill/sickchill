@@ -1,12 +1,5 @@
-
-
-
-
-
-# Stdlib Imports
 import datetime
 
-# First Party Imports
 from sickchill import settings
 
 MESSAGE = 'notice'

@@ -1,5 +1,3 @@
-
-# First Party Imports
 from sickchill.sickbeard.clients.generic import GenericClient
 
 

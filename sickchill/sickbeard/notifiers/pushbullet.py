@@ -1,7 +1,5 @@
-# Stdlib Imports
 from urllib.parse import urljoin
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import common, helpers, logger
 

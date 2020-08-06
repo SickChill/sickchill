@@ -2,12 +2,10 @@
 Test post processing
 """
 
-# Stdlib Imports
 import os.path
 import shutil
 import unittest
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard.helpers import make_dirs
 from sickchill.sickbeard.name_cache import addNameToCache

@@ -5,10 +5,8 @@ Test shows
 """
 
 
-# Stdlib Imports
 import unittest
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper.exceptions import MultipleShowObjectsException
 from sickchill.show.Show import Show

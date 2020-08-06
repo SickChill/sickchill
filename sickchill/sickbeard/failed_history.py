@@ -1,15 +1,11 @@
-
-# Stdlib Imports
 import datetime
 import re
 # noinspection PyUnresolvedReferences
 import urllib.parse
 
-# First Party Imports
 from sickchill.helper.exceptions import EpisodeNotFoundException
 from sickchill.show.History import History
 
-# Local Folder Imports
 from . import db, logger
 from .common import FAILED, Quality, WANTED
 

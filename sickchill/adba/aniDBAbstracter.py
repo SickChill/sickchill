@@ -1,9 +1,6 @@
-
-# Stdlib Imports
 import re
 import string
 
-# Local Folder Imports
 from . import aniDBfileInfo as fileInfo
 from .aniDBerrors import AniDBIncorrectParameterError
 from .aniDBfileInfo import read_anidb_xml

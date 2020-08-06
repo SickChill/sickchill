@@ -1,12 +1,8 @@
-
-# Stdlib Imports
 from functools import wraps
 
-# Third Party Imports
 from requests.exceptions import HTTPError as RHTTPError, RequestException, RequestsWarning
 from urllib3.exceptions import HTTPError, HTTPWarning
 
-# First Party Imports
 from sickchill.sickbeard import logger
 
 

@@ -1,5 +1,3 @@
-
-# First Party Imports
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 from sickchill.sickbeard import logger, tvcache

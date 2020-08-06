@@ -1,10 +1,7 @@
-
-# Stdlib Imports
 import gettext
 import os
 import sys
 
-# Third Party Imports
 from random_user_agent.params import OperatingSystem, SoftwareName
 from random_user_agent.user_agent import UserAgent
 

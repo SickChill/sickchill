@@ -1,9 +1,6 @@
-
-# First Party Imports
 from sickchill import settings
 from sickchill.adba.aniDBerrors import AniDBCommandTimeoutError
 
-# Local Folder Imports
 from . import db, helpers, logger
 
 

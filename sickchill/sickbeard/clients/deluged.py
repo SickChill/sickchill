@@ -1,17 +1,12 @@
-
-# Stdlib Imports
 import time
 from base64 import b64encode
 from urllib.parse import urlparse
 
-# Third Party Imports
 from deluge_client import DelugeRPCClient, FailedToReconnectException
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard.clients.generic import GenericClient
 
-# Local Folder Imports
 from .. import logger
 from .__deluge_base import DelugeBase
 

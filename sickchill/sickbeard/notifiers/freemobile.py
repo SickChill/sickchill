@@ -1,16 +1,8 @@
-
-
-
-
-
-
-# Stdlib Imports
 # Author: Marvin Pinto <me@marvinp.ca>
 # Author: Dennis Lutter <lad1337@gmail.com>
 import urllib.parse
 import urllib.request
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import logger
 from sickchill.sickbeard.common import (NOTIFY_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, NOTIFY_SNATCH,

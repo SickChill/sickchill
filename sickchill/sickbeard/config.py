@@ -1,21 +1,16 @@
-
-# Stdlib Imports
 import datetime
 import os.path
 import platform
 import re
 from urllib import parse
 
-# Third Party Imports
 import rarfile
 from tornado.escape import xhtml_unescape
 
-# First Party Imports
 import sickchill.start
 from sickchill import settings
 from sickchill.helper.common import try_int
 
-# Local Folder Imports
 from . import db, helpers, logger, naming
 
 # Address poor support for scgi over unix domain sockets

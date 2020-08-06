@@ -1,5 +1,3 @@
-
-# Stdlib Imports
 import re
 import time
 from base64 import b16encode, b32decode
@@ -7,11 +5,9 @@ from hashlib import sha1
 from typing import Dict, Iterable, Union
 from urllib.parse import urlencode
 
-# Third Party Imports
 import bencodepy
 from requests.exceptions import HTTPError
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import helpers, logger
 

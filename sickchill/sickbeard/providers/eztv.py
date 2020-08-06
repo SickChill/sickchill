@@ -1,8 +1,5 @@
-
-# Stdlib Imports
 from urllib.parse import urljoin
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider

@@ -1,13 +1,9 @@
-
-# Stdlib Imports
 from urllib.error import URLError
 from urllib.parse import unquote_plus
 
-# Third Party Imports
 from beekeeper.exceptions import RequestTimeout
 from kodipydent import Kodi
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper import try_int
 from sickchill.sickbeard import common, logger

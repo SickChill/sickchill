@@ -1,11 +1,5 @@
-
-
-
-
-# Third Party Imports
 from feedparser import parse
 
-# Local Folder Imports
 from . import logger
 
 

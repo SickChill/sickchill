@@ -1,22 +1,17 @@
-
-# Stdlib Imports
 import cgi
 import json
 import re
 import traceback
 
-# Third Party Imports
 import tvdbsimple
 from requests.exceptions import HTTPError
 
-# First Party Imports
 # from sickchill.sickbeard import logger
 import sickchill.start
 from sickchill import settings
 from sickchill.sickbeard import logger
 from sickchill.sickbeard.tv import TVEpisode
 
-# Local Folder Imports
 from .base import Indexer
 from .wrappers import ExceptionDecorator
 

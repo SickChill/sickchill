@@ -1,15 +1,11 @@
-
-# Stdlib Imports
 import datetime
 import threading
 
-# First Party Imports
 import sickchill.sickbeard.search_queue
 from sickchill import settings
 from sickchill.helper.exceptions import MultipleShowObjectsException
 from sickchill.show.Show import Show
 
-# Local Folder Imports
 from . import common, db, logger, network_timezones
 
 

@@ -1,5 +1,3 @@
-
-# First Party Imports
 from sickchill import settings
 from sickchill.helper.common import try_int
 from sickchill.providers.nzb.NZBProvider import NZBProvider

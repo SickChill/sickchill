@@ -1,8 +1,5 @@
-
-# Stdlib Imports
 from datetime import date
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper.exceptions import CantRefreshShowException, CantRemoveShowException, MultipleShowObjectsException
 from sickchill.sickbeard.common import Quality, SKIPPED, WANTED

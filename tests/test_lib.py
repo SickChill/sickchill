@@ -17,15 +17,12 @@ Classes:
     TestCacheDBConnection
 """
 
-# Stdlib Imports
 import os.path
 import shutil
 import unittest
 
-# Third Party Imports
 from configobj import ConfigObj
 
-# First Party Imports
 import sickchill.sickbeard.config
 import sickchill.sickbeard.logger
 import sickchill.sickbeard.tvcache
@@ -292,7 +289,6 @@ def teardown_test_db():
     """
     Tear down the test database.
     """
-    # First Party Imports
     from sickchill.sickbeard.db import db_cons
     for connection in db_cons:
         db_cons[connection].commit()

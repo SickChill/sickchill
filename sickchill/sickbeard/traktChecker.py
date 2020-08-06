@@ -1,17 +1,13 @@
-
-# Stdlib Imports
 import datetime
 import os
 import traceback
 
-# First Party Imports
 import sickchill
 from sickchill import settings
 from sickchill.helper.common import episode_num, sanitize_filename
 from sickchill.show.Show import Show
 from sickchill.sickbeard.trakt_api import TraktAPI, traktException
 
-# Local Folder Imports
 from . import db, helpers, logger, search_queue
 from .common import Quality, SKIPPED, UNKNOWN, WANTED
 

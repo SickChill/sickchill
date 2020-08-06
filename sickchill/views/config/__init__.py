@@ -1,5 +1,3 @@
-
-# Local Folder Imports
 from .anime import ConfigAnime
 from .backup import ConfigBackupRestore
 from .general import ConfigGeneral

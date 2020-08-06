@@ -1,15 +1,7 @@
-
-
-
-
-
-# Stdlib Imports
 import re
 
-# Third Party Imports
 from twilio.rest import Client, TwilioException
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import common, logger
 

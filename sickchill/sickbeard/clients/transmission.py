@@ -1,9 +1,6 @@
-
-# Stdlib Imports
 import json
 from base64 import b64encode
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard.clients.generic import GenericClient
 

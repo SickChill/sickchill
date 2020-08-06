@@ -8,7 +8,6 @@ Certificate generation module.
 https://raw.githubusercontent.com/msabramo/pyOpenSSL/master/examples/certgen.py
 """
 
-# Third Party Imports
 from OpenSSL import crypto
 
 TYPE_RSA = crypto.TYPE_RSA

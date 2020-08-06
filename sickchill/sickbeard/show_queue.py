@@ -1,17 +1,9 @@
-
-
-
-
-
-# Stdlib Imports
 import os
 import traceback
 from collections import namedtuple
 
-# Third Party Imports
 import dateutil.parser
 
-# First Party Imports
 import sickchill
 from sickchill import settings
 from sickchill.helper.common import sanitize_filename
@@ -20,7 +12,6 @@ from sickchill.helper.exceptions import (CantRefreshShowException, CantRemoveSho
 from sickchill.show.Show import Show
 from sickchill.sickbeard.trakt_api import TraktAPI
 
-# Local Folder Imports
 from . import generic_queue, logger, name_cache, notifiers, scene_numbering, ui
 from .blackandwhitelist import BlackAndWhiteList
 from .common import WANTED

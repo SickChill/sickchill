@@ -1,17 +1,12 @@
-
-# Stdlib Imports
 import random
 from threading import Lock
 
-# Local Folder Imports
 from .init_helpers import setup_gettext, setup_lib_path
 
 setup_lib_path()
 
-# Third Party Imports
 import rarfile
 
-# First Party Imports
 from sickchill.sickbeard.common import SD
 from sickchill.sickbeard.numdict import NumDict
 

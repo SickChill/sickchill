@@ -1,5 +1,3 @@
-
-# Stdlib Imports
 from random import shuffle
 
 

@@ -1,13 +1,6 @@
-"""A Norbits (https://norbits.net) provider"""
-
-
-
-
-# Stdlib Imports
 import json
 from urllib.parse import urlencode
 
-# First Party Imports
 from sickchill.helper.common import convert_size, try_int
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider

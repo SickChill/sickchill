@@ -1,23 +1,8 @@
-"""
-Test sickbeard.browser's methods
-
-Methods
-    getWinDrives
-    getFileList
-    foldersAtPath
-"""
-
-
-
-
-
-# Stdlib Imports
 import logging
 import os
 import sys
 import unittest
 
-# First Party Imports
 from sickchill.sickbeard import browser
 
 

@@ -1,9 +1,5 @@
-
-
-# Stdlib Imports
 from threading import Lock
 
-# Local Folder Imports
 from .aniDBerrors import AniDBIncorrectParameterError, AniDBInternalError
 from .aniDBresponses import MylistResponse, NoSuchFileResponse, NoSuchMylistEntryResponse, ProducerResponse
 

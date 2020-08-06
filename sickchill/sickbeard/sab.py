@@ -1,12 +1,8 @@
-
-# Stdlib Imports
 import datetime
 from urllib.parse import urljoin
 
-# First Party Imports
 from sickchill import settings
 
-# Local Folder Imports
 from . import helpers, logger
 
 session = helpers.make_session()

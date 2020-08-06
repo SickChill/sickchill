@@ -1,15 +1,11 @@
-
-# Stdlib Imports
 import datetime
 import http.client
 import xmlrpc.client
 from base64 import standard_b64encode
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper.common import try_int
 
-# Local Folder Imports
 from . import logger
 from .common import Quality
 

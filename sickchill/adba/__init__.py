@@ -1,10 +1,7 @@
-
-# Stdlib Imports
 import threading
 from time import localtime, sleep, strftime, time
 from types import FunctionType, MethodType
 
-# Local Folder Imports
 from .aniDBAbstracter import Anime, Episode
 from .aniDBcommands import (AnimeCommand, AuthCommand, BuddyAcceptCommand, BuddyAddCommand, BuddyDelCommand, BuddyDenyCommand, BuddyListCommand,
                             BuddyStateCommand, EncryptCommand, EpisodeCommand, FileCommand, GroupCommand, GroupstatusCommand, LogoutCommand, MyListAddCommand,

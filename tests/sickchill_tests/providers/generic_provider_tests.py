@@ -4,13 +4,10 @@
 Test GenericProvider
 """
 
-# Stdlib Imports
 import unittest
 
-# Third Party Imports
 from mock import MagicMock, patch
 
-# First Party Imports
 from sickchill.providers.GenericProvider import GenericProvider
 
 

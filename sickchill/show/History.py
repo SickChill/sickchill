@@ -1,8 +1,5 @@
-
-# Stdlib Imports
 from datetime import datetime, timedelta
 
-# First Party Imports
 from sickchill.helper.common import try_int
 from sickchill.sickbeard.common import Quality
 from sickchill.sickbeard.db import DBConnection

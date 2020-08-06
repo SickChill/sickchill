@@ -1,27 +1,18 @@
-
-
-
-
-
-# Stdlib Imports
 import os
 import re
 from typing import Union
 from xml.etree import ElementTree
 
-# Third Party Imports
 import fanart
 import tmdbsimple
 from fanart.core import Request as fanartRequest
 
-# First Party Imports
 import sickchill
 from sickchill import settings
 from sickchill.helper.common import replace_extension, try_int
 from sickchill.sickbeard import helpers, logger
 from sickchill.sickbeard.show_name_helpers import allPossibleShowNames
 
-# Local Folder Imports
 from . import helpers as metadata_helpers
 
 

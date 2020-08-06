@@ -1,12 +1,8 @@
-
-# Stdlib Imports
 import re
 from urllib.parse import urljoin
 
-# Third Party Imports
 from requests.utils import add_dict_to_cookiejar, dict_from_cookiejar
 
-# First Party Imports
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 from sickchill.sickbeard import logger, tvcache

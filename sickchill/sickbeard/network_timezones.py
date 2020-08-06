@@ -1,15 +1,10 @@
-
-# Stdlib Imports
 import datetime
 import re
 
-# Third Party Imports
 from dateutil import tz
 
-# First Party Imports
 from sickchill.helper.common import try_int
 
-# Local Folder Imports
 from . import db, helpers, logger
 
 # regex to parse time (12/24 hour format)

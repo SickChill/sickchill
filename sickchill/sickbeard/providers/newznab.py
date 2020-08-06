@@ -1,14 +1,10 @@
-
-# Stdlib Imports
 import os
 import re
 import time
 from urllib.parse import urljoin
 
-# Third Party Imports
 import validators
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.nzb.NZBProvider import NZBProvider

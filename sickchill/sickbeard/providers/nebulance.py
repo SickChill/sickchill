@@ -1,13 +1,9 @@
-
-# Stdlib Imports
 import re
 import traceback
 from urllib.parse import urljoin
 
-# Third Party Imports
 from requests.utils import dict_from_cookiejar
 
-# First Party Imports
 from sickchill.helper.common import try_int
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider

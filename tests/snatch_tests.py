@@ -2,10 +2,8 @@
 Test snatching
 """
 
-# Stdlib Imports
 import unittest
 
-# First Party Imports
 import sickchill.sickbeard.providers
 from sickchill import settings
 from sickchill.sickbeard import common as common, search as search

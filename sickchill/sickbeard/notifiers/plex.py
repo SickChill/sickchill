@@ -1,9 +1,6 @@
-
-# Stdlib Imports
 import re
 from xml.etree import ElementTree
 
-# First Party Imports
 import sickchill.sickbeard.common
 from sickchill import settings
 from sickchill.sickbeard import common, logger

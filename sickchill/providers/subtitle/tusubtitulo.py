@@ -1,8 +1,6 @@
-# Stdlib Imports
 import logging
 import re
 
-# Third Party Imports
 from babelfish import Language, language_converters, LanguageReverseConverter
 from guessit import guessit
 from requests import Session

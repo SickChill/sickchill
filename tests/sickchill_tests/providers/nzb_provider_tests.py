@@ -4,16 +4,13 @@
 Test NZBProvider
 """
 
-# Stdlib Imports
 import os
 import unittest
 
-# First Party Imports
 from sickchill import settings
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.nzb.NZBProvider import NZBProvider
 
-# Local Folder Imports
 from .generic_provider_tests import GenericProviderTests
 
 

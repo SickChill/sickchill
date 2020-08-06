@@ -1,12 +1,9 @@
-
-# Stdlib Imports
 import datetime
 import os
 import re
 import threading
 import traceback
 
-# First Party Imports
 import sickchill.sickbeard.name_cache
 import sickchill.sickbeard.providers
 from sickchill import settings
@@ -14,7 +11,6 @@ from sickchill.helper.common import try_int
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.GenericProvider import GenericProvider
 
-# Local Folder Imports
 from . import clients, common, db, failed_history, helpers, history, logger, notifiers, nzbget, nzbSplitter, sab, show_name_helpers, ui
 from .common import MULTI_EP_RESULT, Quality, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser

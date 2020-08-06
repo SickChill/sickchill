@@ -4,10 +4,8 @@
 Tests for SickChill
 """
 
-# Stdlib Imports
 import unittest
 
-# Local Folder Imports
 from . import helper, providers, show, system
 
 if __name__ == '__main__':

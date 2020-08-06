@@ -1,13 +1,9 @@
-
-# Stdlib Imports
 import datetime
 import functools
 import locale
 
-# First Party Imports
 from sickchill import settings
 
-# Local Folder Imports
 from .network_timezones import sb_timezone
 
 date_presets = (

@@ -1,16 +1,8 @@
-
-
-
-
-
-# Third Party Imports
 from tornado.web import addslash
 
-# First Party Imports
 import sickchill.sickbeard
 from sickchill.helper import try_int
 
-# Local Folder Imports
 from ..sickbeard import classes, logger, ui
 from .common import PageTemplate
 from .index import WebRoot

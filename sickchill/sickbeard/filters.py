@@ -1,6 +1,3 @@
-
-
-
 def hide(value):
     return 'hidden_value' if value else ''
 

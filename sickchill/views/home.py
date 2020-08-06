@@ -1,9 +1,3 @@
-
-
-
-
-
-# Stdlib Imports
 import ast
 import datetime
 import json
@@ -13,11 +7,9 @@ import urllib.parse
 from operator import attrgetter
 from urllib.parse import unquote_plus
 
-# Third Party Imports
 from github.GithubException import GithubException
 from tornado.escape import xhtml_unescape
 
-# First Party Imports
 import sickchill.sickbeard
 from sickchill import adba, settings
 from sickchill.helper import try_int
@@ -34,7 +26,6 @@ from sickchill.sickbeard.versionChecker import CheckVersion
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
 
-# Local Folder Imports
 from ..sickbeard import clients, config, db, filters, helpers, logger, notifiers, sab, search_queue, subtitles as subtitle_module, ui
 from .common import PageTemplate
 from .index import WebRoot

@@ -1,21 +1,8 @@
-"""
-Test name parsing
-"""
-
-
-
-
-
-
-
-
-# Stdlib Imports
 import datetime
 import os.path
 import sys
 import unittest
 
-# First Party Imports
 from sickchill.sickbeard import tv
 from sickchill.sickbeard.name_parser import parser
 from tests import test_lib as test

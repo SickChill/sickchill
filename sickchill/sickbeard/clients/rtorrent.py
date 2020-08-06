@@ -1,8 +1,5 @@
-
-# Third Party Imports
 from rtorrent import RTorrent
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import logger
 from sickchill.sickbeard.clients.generic import GenericClient

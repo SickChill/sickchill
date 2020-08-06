@@ -1,14 +1,10 @@
-
-# Stdlib Imports
 import json
 from base64 import b64encode
 from urllib.parse import urljoin
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard.clients.generic import GenericClient
 
-# Local Folder Imports
 from .. import logger
 from .__deluge_base import DelugeBase
 

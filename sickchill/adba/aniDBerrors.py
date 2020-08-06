@@ -1,6 +1,3 @@
-
-
-
 class AniDBError(Exception):
     pass
 

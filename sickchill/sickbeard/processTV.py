@@ -1,20 +1,15 @@
-
-# Stdlib Imports
 import logging
 import os
 import shutil
 import stat
 import traceback
 
-# Third Party Imports
 from rarfile import BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRCError, RarExecError, RarFile, RarOpenError, RarWrongPassword
 
-# First Party Imports
 from sickchill import settings
 from sickchill.helper.common import is_sync_file, is_torrent_or_nzb_file
 from sickchill.helper.exceptions import EpisodePostProcessingFailedException, FailedPostProcessingFailedException
 
-# Local Folder Imports
 from . import common, db, failedProcessor, helpers, logger, postProcessor
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 

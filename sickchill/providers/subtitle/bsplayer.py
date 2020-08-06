@@ -1,7 +1,6 @@
 """
 Created by Nyaran, based on https://github.com/realgam3/service.subtitles.bsplayer
 """
-# Stdlib Imports
 import logging
 import os
 import random
@@ -12,7 +11,6 @@ from time import sleep
 from xml.etree import ElementTree
 from xmlrpc.client import ServerProxy
 
-# Third Party Imports
 from babelfish import Language, language_converters
 from requests import Session
 from subliminal import __short_version__

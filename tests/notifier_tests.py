@@ -3,10 +3,8 @@ Test notifiers
 """
 
 
-# Stdlib Imports
 import unittest
 
-# First Party Imports
 from sickchill.sickbeard import db
 from sickchill.sickbeard.notifiers.emailnotify import Notifier as EmailNotifier
 from sickchill.sickbeard.notifiers.prowl import Notifier as ProwlNotifier

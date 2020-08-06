@@ -1,15 +1,7 @@
-
-
-
-
-
-# Stdlib Imports
 import os
 
-# First Party Imports
 from sickchill.helper.common import replace_extension
 
-# Local Folder Imports
 from . import generic, kodi_12plus
 
 

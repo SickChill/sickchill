@@ -1,9 +1,6 @@
-
-# Stdlib Imports
 import os
 import subprocess
 
-# First Party Imports
 from sickchill import settings
 from sickchill.sickbeard import logger
 

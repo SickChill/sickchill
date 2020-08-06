@@ -1,12 +1,9 @@
-# Stdlib Imports
 import os
 import re
 
-# Third Party Imports
 import bencodepy
 from requests.utils import add_dict_to_cookiejar
 
-# First Party Imports
 from sickchill import settings
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 from sickchill.sickbeard import helpers, logger, tvcache

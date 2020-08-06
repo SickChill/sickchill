@@ -1,4 +1,3 @@
-# Stdlib Imports
 import re
 
 # Resolutions

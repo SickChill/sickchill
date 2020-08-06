@@ -1,12 +1,9 @@
-# Stdlib Imports
 import re
 from urllib.parse import quote_plus
 
-# Third Party Imports
 from bs4 import BeautifulSoup
 from requests.utils import dict_from_cookiejar
 
-# First Party Imports
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 from sickchill.sickbeard import logger, tvcache

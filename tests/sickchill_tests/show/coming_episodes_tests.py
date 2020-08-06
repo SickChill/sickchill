@@ -5,10 +5,8 @@ Test coming episodes
 """
 
 
-# Stdlib Imports
 import unittest
 
-# First Party Imports
 from sickchill.show.ComingEpisodes import ComingEpisodes
 
 
