@@ -19,8 +19,8 @@ setup_lib_path()
 setup_gettext()
 
 import mimetypes
-from pathlib import Path
 import re
+from pathlib import Path
 
 mimetypes.add_type("text/css", ".css")
 mimetypes.add_type("application/sfont", ".otf")
