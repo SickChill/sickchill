@@ -899,7 +899,8 @@ class ConfigMigrator(object):
             8: 'Convert Plex setting keys',
             9: 'Rename autopostprocesser (typo) to autopostprocessor',
             10: 'Refactor flatten_folders_default to season_folders_default',
-            11: 'Remove old Kodi notifier, and move Kodi 12+ settings under the correct variables'
+            11: 'Remove old Kodi notifier, and move Kodi 12+ settings under the correct variables',
+            12: 'Convert new_qbittorrent and rtorrent9 setting to qbittorent and rtorrent'
         }
 
     def migrate_config(self):
@@ -1208,4 +1209,8 @@ class ConfigMigrator(object):
     # Migration v11: Remove old kodi and only use Kodi 12+
     def _migrate_v11(self):
         settings.METADATA_KODI = check_setting_str(settings.CFG, 'General', 'metadata_kodi_12plus', '0|0|0|0|0|0|0|0|0|0')
+
+    # Migration v12: Fix selected provider, since there is only one qbittorrent and one rtorrent provider
+    def _migrate_v12(self):
+        settings.TORRENT_METHOD = re.sub(r'^new_|9$', '', check_setting_str(settings.CFG, 'General', 'torrent_method', 'blackhole'))
 

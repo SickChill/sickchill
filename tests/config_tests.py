@@ -456,7 +456,7 @@ class ConfigTestMigrator(unittest.TestCase):
     """
     Test the sickbeard.config.ConfigMigrator class
     """
-    @unittest.expectedFailure # Not fully implemented
+    @unittest.expectedFailure  # Not fully implemented
     def test_config_migrator(self):
         """
         Test migrate_config
@@ -466,7 +466,7 @@ class ConfigTestMigrator(unittest.TestCase):
         CFG = ConfigObj('config.ini', encoding='UTF-8', indent_type='  ')
         config.check_section(CFG, 'General')
         CFG['General']['config_version'] = 0
-        settings.CONFIG_VERSION = 11
+        settings.CONFIG_VERSION = 13
         settings.CONFIG_FILE = 'config.ini'
 
         migrator = config.ConfigMigrator(CFG)
