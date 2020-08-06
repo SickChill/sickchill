@@ -20,7 +20,9 @@ if 'setup.py' in sys.argv[0]:
                 "build", "build.*",
                 "dist", "dist.*",
                 "cache", "cache.*",
-                "Logs", "Logs.*"
+                "Logs", "Logs.*",
+                "node_modules", "node_modules.*",
+                "bower_components", "bower_componenets.*"
             ]
         ),
         install_requires=info_dict['install_requires'],
