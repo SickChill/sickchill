@@ -898,7 +898,8 @@ class ConfigMigrator(object):
             7: 'Use version 2 for password encryption',
             8: 'Convert Plex setting keys',
             9: 'Rename autopostprocesser (typo) to autopostprocessor',
-            10: 'Refactor flatten_folders_default to season_folders_default'
+            10: 'Refactor flatten_folders_default to season_folders_default',
+            11: 'Remove old Kodi notifier, and move Kodi 12+ settings under the correct variables'
         }
 
     def migrate_config(self):
@@ -1203,3 +1204,8 @@ class ConfigMigrator(object):
     # Migration v10: Change flatten_folders_default to season_folders_default (inverted)
     def _migrate_v10(self):
         settings.SEASON_FOLDERS_DEFAULT = not check_setting_str(self.config_obj, 'General', 'flatten_folders_default')
+
+    # Migration v11: Remove old kodi and only use Kodi 12+
+    def _migrate_v11(self):
+        settings.METADATA_KODI = check_setting_str(settings.CFG, 'General', 'metadata_kodi_12plus', '0|0|0|0|0|0|0|0|0|0')
+

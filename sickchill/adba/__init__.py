@@ -772,7 +772,7 @@ class Connection(threading.Thread):
         raise AniDBError(
             "pylibanidb sets the encoding to utf8 as default and it's stupid to use any other encoding. you WILL lose some data if you use other "
             "encodings, and now you've been warned. you will need to modify the code yourself if you want to do something as stupid as changing the encoding")
-        return self.handle(EncodingCommand(name), callback)
+        # return self.handle(EncodingCommand(name), callback)
 
     def sendmsg(self, to, title, body, callback=None):
         """

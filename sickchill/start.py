@@ -719,7 +719,6 @@ def initialize(consoleLogging=True):
         settings.ANIME_SPLIT_HOME_IN_TABS = check_setting_bool(settings.CFG, 'ANIME', 'anime_split_home_in_tabs')
 
         settings.METADATA_KODI = check_setting_str(settings.CFG, 'General', 'metadata_kodi', '0|0|0|0|0|0|0|0|0|0')
-        settings.METADATA_KODI_12PLUS = check_setting_str(settings.CFG, 'General', 'metadata_kodi_12plus', '0|0|0|0|0|0|0|0|0|0')
         settings.METADATA_MEDIABROWSER = check_setting_str(settings.CFG, 'General', 'metadata_mediabrowser', '0|0|0|0|0|0|0|0|0|0')
         settings.METADATA_PS3 = check_setting_str(settings.CFG, 'General', 'metadata_ps3', '0|0|0|0|0|0|0|0|0|0')
         settings.METADATA_WDTV = check_setting_str(settings.CFG, 'General', 'metadata_wdtv', '0|0|0|0|0|0|0|0|0|0')
@@ -845,7 +844,6 @@ def initialize(consoleLogging=True):
         # initialize metadata_providers
         settings.metadata_provider_dict = {}
         for cur_metadata_tuple in [(settings.METADATA_KODI, metadata.kodi),
-                                   (settings.METADATA_KODI_12PLUS, metadata.kodi_12plus),
                                    (settings.METADATA_MEDIABROWSER, metadata.mediabrowser),
                                    (settings.METADATA_PS3, metadata.ps3),
                                    (settings.METADATA_WDTV, metadata.wdtv),
@@ -1234,7 +1232,6 @@ def save_config():
             'use_listview': int(settings.USE_LISTVIEW),
 
             'metadata_kodi': settings.METADATA_KODI,
-            'metadata_kodi_12plus': settings.METADATA_KODI_12PLUS,
             'metadata_mediabrowser': settings.METADATA_MEDIABROWSER,
             'metadata_ps3': settings.METADATA_PS3,
             'metadata_wdtv': settings.METADATA_WDTV,

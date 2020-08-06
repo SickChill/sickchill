@@ -26,7 +26,7 @@ class ConfigPostProcessing(Config):
                         header=_('Post Processing'), topmenu='config',
                         controller="config", action="postProcessing")
 
-    def savePostProcessing(self, kodi_data=None, kodi_12plus_data=None,
+    def savePostProcessing(self, kodi_data=None,
                            mediabrowser_data=None, sony_ps3_data=None,
                            wdtv_data=None, tivo_data=None, mede8er_data=None,
                            keep_processed_dir=None, process_method=None, processor_follow_symlinks=None,
@@ -93,7 +93,6 @@ class ConfigPostProcessing(Config):
         settings.NFO_RENAME = config.checkbox_to_value(nfo_rename)
 
         settings.METADATA_KODI = kodi_data
-        settings.METADATA_KODI_12PLUS = kodi_12plus_data
         settings.METADATA_MEDIABROWSER = mediabrowser_data
         settings.METADATA_PS3 = sony_ps3_data
         settings.METADATA_WDTV = wdtv_data
@@ -101,7 +100,6 @@ class ConfigPostProcessing(Config):
         settings.METADATA_MEDE8ER = mede8er_data
 
         settings.metadata_provider_dict['KODI'].set_config(settings.METADATA_KODI)
-        settings.metadata_provider_dict['KODI 12+'].set_config(settings.METADATA_KODI_12PLUS)
         settings.metadata_provider_dict['MediaBrowser'].set_config(settings.METADATA_MEDIABROWSER)
         settings.metadata_provider_dict['Sony PS3'].set_config(settings.METADATA_PS3)
         settings.metadata_provider_dict['WDTV'].set_config(settings.METADATA_WDTV)

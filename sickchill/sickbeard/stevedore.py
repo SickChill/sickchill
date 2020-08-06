@@ -136,8 +136,6 @@ metadata = RegistrableExtensionManager('sickchill.providers.metadata', [
     "kodi = sickchill.providers.metadata.kodi:KODIMetadata",
     "wdtv = sickchill.providers.metadata.wdtv:WDTVMetadata",
     "kodi = sickchill.providers.metadata.kodi:KODIMetadata",
-    "kodi_12plus = sickchill.providers.metadata.kodi_12plus:KODI_12PlusMetadata",
     "mediabrowser = sickchill.providers.metadata.mediabrowser:MediaBrowserMetadata",
     "ps3 = sickchill.providers.metadata.ps3:PS3Metadata",
-    "kodi_12plus = sickchill.providers.metadata.kodi_12plus:KODI_12PlusMetadata",
 ])
