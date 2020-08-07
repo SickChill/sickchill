@@ -90,7 +90,7 @@ def filter_bad_releases(name, parse=True, show=None):
 
     if require_words and not containsAtLeastOneWord(name, require_words):
         logger.info("Release: " + name + " doesn't contain any of " + ', '.join(set(require_words)) +
-                   ", ignoring it")
+                    ", ignoring it")
         return False
 
     return True
@@ -197,13 +197,13 @@ def hasPreferredWords(name, show=None):
 
     prefer_words = []
 
-    ## Because we weigh values, we can not union global and show based values, so we don't do that
+    # Because we weigh values, we can not union global and show based values, so we don't do that
     if settings.PREFER_WORDS:
         prefer_words = clean_set(settings.PREFER_WORDS)
     if show and show.rls_prefer_words:
         prefer_words = clean_set(show.rls_prefer_words or '')
 
-    ## if nothing set, return position 0
+    # if nothing set, return position 0
     if len(prefer_words) <= 0:
         return 0
 

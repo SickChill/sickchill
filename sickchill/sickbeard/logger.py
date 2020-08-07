@@ -39,6 +39,7 @@ class DispatchFormatter(logging.Formatter, object):
     """
     Censor information such as API keys, user names, and passwords from the Log
     """
+
     def __init__(self, fmt=None, datefmt=None, style="{"):
         super(DispatchFormatter, self).__init__(fmt, datefmt, style=style)
 
@@ -81,6 +82,7 @@ class Logger(object):
     """
     Logger to create log entries
     """
+
     def __init__(self):
         self.logger = logging.getLogger('sickchill')
 

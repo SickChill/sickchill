@@ -81,7 +81,7 @@ class BlackAndWhiteList(object):
             groups.append(result['keyword'])
 
         logger.debug('BWL: {id} loaded keywords from {table}: {groups}'.format
-                   (id=self.show_id, table=table, groups=groups))
+                     (id=self.show_id, table=table, groups=groups))
 
         return groups
 
@@ -110,7 +110,7 @@ class BlackAndWhiteList(object):
                 black_result = True
 
             logger.debug('Whitelist check passed: {white}. Blacklist check passed: {black}'.format
-                       (white=white_result, black=black_result))
+                         (white=white_result, black=black_result))
 
             if white_result and black_result:
                 return True

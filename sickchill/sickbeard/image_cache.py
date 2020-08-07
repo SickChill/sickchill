@@ -329,7 +329,7 @@ class ImageCache(object):
 
                             if cur_file_type in need_images and need_images[cur_file_type]:
                                 logger.debug("[{}] Found a {} in the show dir that doesn't exist in the cache, caching it".format(
-                                        show_obj.indexerid, self.image_str[cur_file_type]))
+                                    show_obj.indexerid, self.image_str[cur_file_type]))
                                 self._cache_image_from_file(cur_file_name, cur_file_type, show_obj.indexerid)
                                 need_images[cur_file_type] = False
 

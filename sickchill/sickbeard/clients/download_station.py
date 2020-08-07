@@ -13,6 +13,7 @@ class Client(GenericClient):
     """
     Class to send torrents/NZBs or links to them to DownloadStation
     """
+
     def __init__(self, host=None, username=None, password=None):
         """
         Initializes the DownloadStation client

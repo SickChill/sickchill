@@ -13,7 +13,7 @@ class ShowUpdater(object):
         self.lock = threading.Lock()
         self.amActive = False
 
-        self.seven_days = 7*24*60*60
+        self.seven_days = 7 * 24 * 60 * 60
 
     def run(self, force=False):
         if self.amActive:
@@ -85,7 +85,7 @@ class ShowUpdater(object):
     @staticmethod
     def request_hook(response, **kwargs):
         logger.info('{0} URL: {1} [Status: {2}]'.format
-                   (response.request.method, response.request.url, response.status_code))
+                    (response.request.method, response.request.url, response.status_code))
 
     def __del__(self):
         pass

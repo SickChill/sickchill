@@ -24,6 +24,7 @@ def setup_lib_path(additional=None):
 def sickchill_dir():
     return os.path.abspath(os.path.dirname(__file__))
 
+
 def locale_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), 'locale'))
 

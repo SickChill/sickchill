@@ -16,6 +16,7 @@ class Notifier(object):
 
     https://telegram.org/
     """
+
     def test_notify(self, id=None, api_key=None):
         """
         Send a test notification

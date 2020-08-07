@@ -39,6 +39,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
     """
     Queue to handle multiple post processing tasks
     """
+
     def __init__(self):
         """
 
@@ -138,7 +139,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
 
             item.set_params(directory, filename, method, force, is_priority, delete, failed, mode)
             message = log_helper("A task for {info} was already in the processing queue, updating the settings for that task".format(**replacements))
-            return message + "<br\><span class='hidden'>Processing succeeded</span>"
+            return message + r"<br\><span class='hidden'>Processing succeeded</span>"
         else:
             item = PostProcessorTask(directory, filename, method, force, is_priority, delete, failed, mode)
             if force_next:
@@ -149,13 +150,14 @@ class ProcessingQueue(generic_queue.GenericQueue):
             else:
                 super(ProcessingQueue, self).add_item(item)
                 message = log_helper("{mode} post processing task for {info} was added to the queue".format(**replacements))
-                return message + "<br\><span class='hidden'>Processing succeeded</span>"
+                return message + r"<br\><span class='hidden'>Processing succeeded</span>"
 
 
 class PostProcessorTask(generic_queue.QueueItem):
     """
     Processing task
     """
+
     def __init__(self, directory, filename=None, method=None, force=False, is_priority=None, delete=False, failed=False, mode="auto"):
         """
         :param directory: directory to process

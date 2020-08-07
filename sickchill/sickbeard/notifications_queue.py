@@ -16,6 +16,7 @@ class NotificationsQueue(generic_queue.GenericQueue):
     """
     Queue to handle multiple post processing tasks
     """
+
     def __init__(self):
         """
 
@@ -79,6 +80,7 @@ class DiscordTask(generic_queue.QueueItem):
     """
     Processing task
     """
+
     def __init__(self, message):
         super(DiscordTask, self).__init__('Discord', DISCORD)
 
@@ -119,8 +121,8 @@ class DiscordTask(generic_queue.QueueItem):
 
     def append(self, message):
         self.embed['fields'] += [
-                {'name': 'Notification', 'value': message}
-            ]
+            {'name': 'Notification', 'value': message}
+        ]
 
     def __len__(self):
         return len(self.embed['fields'])

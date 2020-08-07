@@ -52,7 +52,7 @@ class DirtySetter(object):
     def __get__(self, instance, owner):
         try:
             return self.data.get(instance, self.default)
-        except:
+        except Exception:
             logger.info(traceback.format_exc())
 
     def __set__(self, instance, value):
@@ -1207,8 +1207,8 @@ class TVShow(object):
 
         # if we are re-downloading then we only want it if it's in our preferred_qualities list and better than what we have,
         # or we only have one bestQuality and we do not have that quality yet
-        if (epStatus in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER and quality in preferred_qualities
-            and (quality > curQuality or curQuality not in preferred_qualities)):
+        if (epStatus in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER and quality in preferred_qualities and
+                (quality > curQuality or curQuality not in preferred_qualities)):
             logger.debug("Episode already exists with quality {existing_quality} but the found result"
                          " quality {new_quality} is wanted more, getting found result for {name} {ep}".format
                          (existing_quality=Quality.qualityStrings[curQuality],
@@ -1692,7 +1692,7 @@ class TVEpisode(object):
 
                 for epDetails in showXML.iter('episodedetails'):
                     if epDetails.findtext('season') is None or int(epDetails.findtext('season')) != self.season or \
-                        epDetails.findtext('episode') is None or int(epDetails.findtext('episode')) != self.episode:
+                            epDetails.findtext('episode') is None or int(epDetails.findtext('episode')) != self.episode:
                         logger.debug("{id}: NFO has an <episodedetails> block for a different episode - wanted {ep_wanted} but got {ep_found}".format
                                      (id=self.show.indexerid, ep_wanted=episode_num(self.season, self.episode),
                                       ep_found=episode_num(epDetails.findtext('season'), epDetails.findtext('episode'))))

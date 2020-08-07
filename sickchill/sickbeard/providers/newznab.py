@@ -20,7 +20,6 @@ class NewznabProvider(NZBProvider):
     Tested with: newznab, nzedb, spotweb, torznab
     """
 
-
     def __init__(self, name, url, key='0', catIDs='5030,5040', search_mode='eponly',
                  search_fallback=False, enable_daily=True, enable_backlog=False):
 
@@ -105,7 +104,7 @@ class NewznabProvider(NZBProvider):
         Returns found image or the default newznab image
         """
         if os.path.isfile(os.path.join(settings.PROG_DIR, 'gui', settings.GUI_NAME, 'images', 'providers',
-                 self.get_id() + '.png')):
+                                       self.get_id() + '.png')):
             return self.get_id() + '.png'
         return 'newznab.png'
 
@@ -343,7 +342,7 @@ class NewznabProvider(NZBProvider):
                                 item_size = size_regex.group() if size_regex else -1
                             else:
                                 item_size = item.size.get_text(strip=True) if item.size else -1
-                                for attr in item.find_all(['newznab:attr','torznab:attr']):
+                                for attr in item.find_all(['newznab:attr', 'torznab:attr']):
                                     item_size = attr['value'] if attr['name'] == 'size' else item_size
                                     seeders = try_int(attr['value']) if attr['name'] == 'seeders' else seeders
                                     leechers = try_int(attr['value']) if attr['name'] == 'peers' else leechers

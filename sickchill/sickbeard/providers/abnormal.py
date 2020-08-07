@@ -80,7 +80,7 @@ class Provider(TorrentProvider):
 
                 if mode != 'RSS':
                     logger.debug('Search string: {0}'.format
-                               (search_string))
+                                 (search_string))
 
                 # Sorting: Available parameters: ReleaseName, Seeders, Leechers, Snatched, Size
                 search_params['order'] = ('Seeders', 'Time')[mode == 'RSS']
@@ -120,7 +120,7 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.debug('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
-                                               (title, seeders, leechers))
+                                                 (title, seeders, leechers))
                                 continue
 
                             size_index = labels.index('Size') if 'Size' in labels else labels.index('Taille')

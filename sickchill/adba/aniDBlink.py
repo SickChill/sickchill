@@ -20,7 +20,7 @@ class AniDBLink(threading.Thread):
         self.bound = self.connectSocket(myport, self.timeout)
         self.sock = None
 
-        self.cmd_queue = {None:None}
+        self.cmd_queue = {None: None}
         self.resp_tagged_queue = {}
         self.resp_untagged_queue = []
         self.tags = []
@@ -56,13 +56,13 @@ class AniDBLink(threading.Thread):
     def disconnectSocket(self):
         self.sock.close()
 
-    def stop (self):
+    def stop(self):
         self.log("Releasing socket and stopping link thread")
         self._quiting = True
         self.disconnectSocket()
         self._stop.set()
 
-    def stopped (self):
+    def stopped(self):
         return self._stop.isSet()
 
     @staticmethod
@@ -106,7 +106,7 @@ class AniDBLink(threading.Thread):
                 if resp.rescode in ('209',):
                     print("sorry encryption is not supported")
                     raise Exception
-                    #self.crypt=aes(md5(resp.req.apipassword+resp.attrs['salt']).digest())
+                    # self.crypt=aes(md5(resp.req.apipassword+resp.attrs['salt']).digest())
                 if resp.rescode in ('203', '403', '500', '501', '503', '506'):
                     self.session = None
                     self.crypt = None
@@ -123,10 +123,10 @@ class AniDBLink(threading.Thread):
                 print("Avoiding flood by paranoidly panicing: Aborting link thread, killing connection, releasing waiters and quiting")
                 self.sock.close()
                 try: cmd.waiter.release()
-                except Exception:pass
+                except Exception: pass
                 for tag, cmd in self.cmd_queue.items():
                     try: cmd.waiter.release()
-                    except Exception:pass
+                    except Exception: pass
                 sys.exit()
 
     def _handle_timeouts(self):

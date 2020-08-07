@@ -156,7 +156,7 @@ class ApiHandler(RequestHandler):
 
                 logger.debug("API :: " + cmd + ": cur_kwargs " + str(cur_kwargs))
                 if not (cmd in ('show.getbanner', 'show.getfanart', 'show.getnetworklogo', 'show.getposter') and
-                            multi_commands):  # skip these cmd while chaining
+                        multi_commands):  # skip these cmd while chaining
                     try:
                         if cmd in function_mapper:
                             func = function_mapper.get(cmd)  # map function
@@ -289,7 +289,6 @@ class ApiCall(ApiHandler):
         return _responds(RESULT_ERROR, msg=msg)
 
     def check_params(self, args, kwargs, key=None, default=None, required=None, arg_type=None, allowed_values=None):
-
         """ function to check passed params for the shorthand wrapper
             and to detect missing/required params
         """
@@ -463,7 +462,7 @@ def _responds(result_type, data=None, msg=""):
         "result": result_type_map[result_type],
         "message": msg,
         "data": {} if not data else data
-        }
+    }
 
 
 def _get_status_strings(s):
@@ -948,7 +947,7 @@ class CMDEpisodeSetStatus(ApiCall):
             return {
                 'season': ep.season, 'episode': ep.episode, 'status': _get_status_strings(ep.status),
                 'result': result_type_map[result_code], 'message': msg
-                }
+            }
 
         ep_results = []
         failure = False
@@ -1405,7 +1404,7 @@ class CMDSickChill(ApiCall):
         data = {
             "sr_version": settings.BRANCH, "api_version": self.version,
             "api_commands": sorted(function_mapper)
-            }
+        }
         return _responds(RESULT_SUCCESS, data)
 
 
@@ -1518,7 +1517,7 @@ class CMDSickChillCheckScheduler(ApiCall):
             "backlog_is_paused": int(backlog_paused), "backlog_is_running": int(backlog_running),
             "last_backlog": _ordinal_to_date_form(sql_results[0]["last_backlog"]),
             "next_backlog": next_backlog
-            }
+        }
         return _responds(RESULT_SUCCESS, data)
 
 
@@ -1588,7 +1587,7 @@ class CMDSickChillGetDefaults(ApiCall):
             "season_folders": int(settings.SEASON_FOLDERS_DEFAULT),
             "initial": any_qualities, "archive": best_qualities,
             "future_show_paused": int(settings.COMING_EPS_DISPLAY_PAUSED)
-            }
+        }
         return _responds(RESULT_SUCCESS, data)
 
 
@@ -1603,10 +1602,10 @@ class CMDSickChillGetMessages(ApiCall):
         messages = []
         for cur_notification in ui.notifications.get_notifications(self.rh.request.remote_ip):
             messages.append({
-                                "title": cur_notification.title,
-                                "message": cur_notification.message,
-                                "type": cur_notification.type
-                                })
+                "title": cur_notification.title,
+                "message": cur_notification.message,
+                "type": cur_notification.type
+            })
         return _responds(RESULT_SUCCESS, messages)
 
 
@@ -1715,10 +1714,10 @@ class CMDSickChillSearchIndexers(ApiCall):
 
                     results.append({
                         indexer_ids[indexer]: result['id'],
-                         "name": result['seriesName'],
-                         "first_aired": result['firstAired'],
-                         "indexer": indexer,
-                         "in_show_list": in_show_list
+                        "name": result['seriesName'],
+                        "first_aired": result['firstAired'],
+                        "indexer": indexer,
+                        "in_show_list": in_show_list
                     })
 
                 return _responds(RESULT_SUCCESS, {"results": results, "langid": lang_id})

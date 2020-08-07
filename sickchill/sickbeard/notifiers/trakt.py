@@ -48,7 +48,7 @@ class Notifier(object):
                 }
 
                 if settings.TRAKT_SYNC_WATCHLIST and settings.TRAKT_REMOVE_SERIESLIST:
-                        trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
+                    trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
 
                 # Add Season and Episode + Related Episodes
                 data['shows'][0]['seasons'] = [{'number': ep_obj.season, 'episodes': []}]
@@ -67,7 +67,6 @@ class Notifier(object):
 
     @staticmethod
     def update_watchlist(show_obj=None, s=None, e=None, data_show=None, data_episode=None, update="add"):
-
         """
         Sends a request to trakt indicating that the given episode is part of our library.
 

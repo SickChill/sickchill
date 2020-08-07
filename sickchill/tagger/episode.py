@@ -11,6 +11,7 @@ class EpisodeTags(object):
     """
     Quality tags
     """
+
     def __init__(self, name):
         self.name = name
         self.rex = {
@@ -34,7 +35,7 @@ class EpisodeTags(object):
             return getattr(self, match_obj)
         except (KeyError, AttributeError):
             regexes = regex or self.rex[attr]
-            if type(regexes) is not list:
+            if not isinstance(regexes, list):
                 regexes = [regexes]
             for regexItem in regexes:
                 result = regexItem.search(self.name, flags)
@@ -268,7 +269,6 @@ class EpisodeTags(object):
             regex = re.compile(r'(RawHD)', re.I)
             match = self._get_match_obj(attr, regex)
         return '' if not match else match.group()
-
 
     @property
     def netflix(self):

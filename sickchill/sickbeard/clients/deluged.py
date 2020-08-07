@@ -83,7 +83,7 @@ class Client(GenericClient, DelugeBase):
                     logger.debug(self.name + ': ' + label + " label added to Deluge")
 
                 self.client.label.set_torrent(result.hash, label)
-            except:
+            except Exception:
                 logger.debug(self.name + ': ' + "label plugin not detected")
                 return False
 

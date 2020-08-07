@@ -241,7 +241,7 @@ class ConfigProviders(Config):
             if hasattr(curProvider, 'ratio'):
                 if curProvider.get_id('_ratio') in kwargs:
                     ratio = str(kwargs.get(curProvider.get_id('_ratio'))).strip()
-                    print (ratio)
+                    print(ratio)
                     if ratio in ('None', None, ''):
                         curProvider.ratio = None
                     else:

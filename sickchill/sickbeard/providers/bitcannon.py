@@ -45,7 +45,7 @@ class Provider(TorrentProvider):
                 search_params["q"] = search_string
                 if mode != "RSS":
                     logger.debug("Search string: {0}".format
-                               (search_string))
+                                 (search_string))
 
                 search_url = urljoin(url, "api/search")
                 parsed_json = self.get_url(search_url, params=search_params, returns="json")
@@ -75,15 +75,15 @@ class Provider(TorrentProvider):
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != "RSS":
                                 logger.debug("Discarding torrent because it doesn't meet the "
-                                           "minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                           (title, seeders, leechers))
+                                             "minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                             (title, seeders, leechers))
                             continue
 
                         size = convert_size(result.pop("size", -1)) or -1
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                         if mode != "RSS":
                             logger.debug("Found result: {0} with {1} seeders and {2} leechers".format
-                                       (title, seeders, leechers))
+                                         (title, seeders, leechers))
 
                         items.append(item)
                     except (AttributeError, TypeError, KeyError, ValueError):

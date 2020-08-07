@@ -41,7 +41,7 @@ class GenericProvider(object):
 
         self.anime_only = False
         self.bt_cache_urls = [
-            #'http://torcache.net/torrent/{torrent_hash}.torrent',
+            # 'http://torcache.net/torrent/{torrent_hash}.torrent',
             'http://torrentproject.se/torrent/{torrent_hash}.torrent',
             'http://thetorrent.org/torrent/{torrent_hash}.torrent',
             'http://btdig.com/torrent/{torrent_hash}.torrent',
@@ -209,14 +209,14 @@ class GenericProvider(object):
                         parse_result.season_number is not None,
                         parse_result.episode_numbers,
                         [ep for ep in episodes if (ep.season, ep.scene_season)[ep.show.is_scene] ==
-                        (parse_result.season_number, parse_result.scene_season)[ep.show.is_scene] and
-                        (ep.episode, ep.scene_episode)[ep.show.is_scene] in parse_result.episode_numbers]
+                         (parse_result.season_number, parse_result.scene_season)[ep.show.is_scene] and
+                         (ep.episode, ep.scene_episode)[ep.show.is_scene] in parse_result.episode_numbers]
                     ]) and not all([
                         # fallback for anime on absolute numbering
                         parse_result.is_anime,
                         parse_result.ab_episode_numbers is not None,
                         [ep for ep in episodes if ep.show.is_anime and
-                        ep.absolute_number in parse_result.ab_episode_numbers]
+                         ep.absolute_number in parse_result.ab_episode_numbers]
                     ]):
 
                         logger.info('The result {0} doesn\'t seem to match an episode that we are currently trying to snatch, skipping it'.format(title))
@@ -338,7 +338,7 @@ class GenericProvider(object):
     def get_url_hook(response, **kwargs_):
         if response:
             logger.debug('{0} URL: {1} [Status: {2}]'.format
-                       (response.request.method, response.request.url, response.status_code))
+                         (response.request.method, response.request.url, response.status_code))
 
             if response.request.method == 'POST':
                 logger.debug('With post data: {0}'.format(response.request.body))

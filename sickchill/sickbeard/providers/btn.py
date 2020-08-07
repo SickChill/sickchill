@@ -64,7 +64,7 @@ class Provider(TorrentProvider):
         if search_params:
             params.update(search_params)
             logger.debug("Search string: {0}".format
-                       (search_params))
+                         (search_params))
 
         parsed_json = self._api_call(apikey, params)
         if not parsed_json:

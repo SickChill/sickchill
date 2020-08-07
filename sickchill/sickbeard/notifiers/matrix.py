@@ -63,7 +63,7 @@ class Notifier(object):
         logger.info("Sending matrix message: " + message)
         logger.info("Sending matrix message to url: " + url)
 
-        jsonMessage={
+        jsonMessage = {
             "msgtype": "m.text",
             "format": "org.matrix.custom.html",
             "body": message,
@@ -72,7 +72,7 @@ class Notifier(object):
 
         headers = {"Content-Type": "application/json"}
         try:
-            r = requests.put(url , data=json.dumps(jsonMessage), headers=headers)
+            r = requests.put(url, data=json.dumps(jsonMessage), headers=headers)
             r.raise_for_status()
 
         except Exception as e:

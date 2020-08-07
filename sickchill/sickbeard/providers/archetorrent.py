@@ -74,18 +74,18 @@ class Provider(TorrentProvider):
         # Search Params
         # c59=1&c73=1&c5=1&c41=1&c60=1&c66=1&c65=1&c67=1&c62=1&c64=1&c61=1&search=Good+Behavior+S01E01&cat=0&incldead=0&freeleech=0&lang=0
         search_params = {
-            'c5': '1', # Category: Series - DVDRip
-            'c41': '1', # Category: Series - HD
-            'c60': '1', # Category: Series - Pack TV
-            'c62': '1', # Category: Series - BDRip
-            'c64': '1', # Category: Series - VOSTFR
-            'c65': '1', # Category: Series - TV 720p
-            'c66': '1', # Category: Series - TV 1080p
-            'c67': '1', # Category: Series - Pack TV HD
-            'c73': '1', # Category: Anime
+            'c5': '1',  # Category: Series - DVDRip
+            'c41': '1',  # Category: Series - HD
+            'c60': '1',  # Category: Series - Pack TV
+            'c62': '1',  # Category: Series - BDRip
+            'c64': '1',  # Category: Series - VOSTFR
+            'c65': '1',  # Category: Series - TV 720p
+            'c66': '1',  # Category: Series - TV 1080p
+            'c67': '1',  # Category: Series - Pack TV HD
+            'c73': '1',  # Category: Anime
             'incldead': '0',  # Include dead torrent - 0: off 1: yes 2: only dead
-            'freeleech': freeleech, # Only freeleech torrent - 0: off 1: no freeleech 2: Only freeleech
-            'lang': '0' # Langugage - 0: off 1: English 2: French ....
+            'freeleech': freeleech,  # Only freeleech torrent - 0: off 1: no freeleech 2: Only freeleech
+            'lang': '0'  # Langugage - 0: off 1: English 2: French ....
         }
 
         # Units
@@ -99,7 +99,7 @@ class Provider(TorrentProvider):
                 logger.debug('Search String: {0} for mode {1}'.format(search_strings[mode], mode))
                 if mode != 'RSS':
                     logger.debug('Search string: {0}'.format
-                               (search_string))
+                                 (search_string))
 
                 search_params['search'] = re.sub(r'[()]', '', search_string)
                 data = self.get_url(self.urls['search'], params=search_params, returns='text')
@@ -138,7 +138,7 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.debug('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
-                                               (title, seeders, leechers))
+                                                 (title, seeders, leechers))
                                 continue
 
                             size_index = labels.index('Size') if 'Size' in labels else labels.index('Taille')
@@ -148,7 +148,7 @@ class Provider(TorrentProvider):
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
                                 logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format
-                                           (title, seeders, leechers))
+                                             (title, seeders, leechers))
 
                             items.append(item)
                         except Exception:

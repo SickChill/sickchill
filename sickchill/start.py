@@ -108,7 +108,7 @@ def initialize(consoleLogging=True):
         # git_remote
         settings.GIT_REMOTE = check_setting_str(settings.CFG, 'General', 'git_remote', 'origin')
         settings.GIT_REMOTE_URL = check_setting_str(settings.CFG, 'General', 'git_remote_url',
-                                           'https://github.com/{0}/{1}.git'.format(settings.GIT_ORG, settings.GIT_REPO))
+                                                    'https://github.com/{0}/{1}.git'.format(settings.GIT_ORG, settings.GIT_REPO))
 
         if 'rage' in settings.GIT_REMOTE_URL.lower():
             settings.GIT_REMOTE_URL = 'https://github.com/{0}/{1}.git'.format(settings.GIT_ORG, settings.GIT_REPO)
@@ -402,7 +402,7 @@ def initialize(consoleLogging=True):
         settings.NZBGET_CATEGORY_BACKLOG = check_setting_str(settings.CFG, 'NZBget', 'nzbget_category_backlog', settings.NZBGET_CATEGORY)
         settings.NZBGET_CATEGORY_ANIME = check_setting_str(settings.CFG, 'NZBget', 'nzbget_category_anime', 'anime')
         settings.NZBGET_CATEGORY_ANIME_BACKLOG = check_setting_str(settings.CFG, 'NZBget', 'nzbget_category_anime_backlog',
-                                                                             settings.NZBGET_CATEGORY_ANIME)
+                                                                   settings.NZBGET_CATEGORY_ANIME)
         settings.NZBGET_HOST = check_setting_str(settings.CFG, 'NZBget', 'nzbget_host')
         settings.NZBGET_USE_HTTPS = check_setting_bool(settings.CFG, 'NZBget', 'nzbget_use_https')
         settings.NZBGET_PRIORITY = check_setting_int(settings.CFG, 'NZBget', 'nzbget_priority', 100)
@@ -759,7 +759,7 @@ def initialize(consoleLogging=True):
         # dynamically load provider settings
         for curProvider in providers.sortedProviderList():
             curProvider.enabled = (curProvider.can_daily or curProvider.can_backlog) and \
-                                  check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id())
+                check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id())
             if hasattr(curProvider, 'custom_url'):
                 curProvider.custom_url = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id('_custom_url'), '', censor_log=True)
             if hasattr(curProvider, 'api_key'):

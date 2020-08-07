@@ -626,7 +626,7 @@ class QueueItemUpdate(ShowQueueItem):
             IndexerEpList = self.show.loadEpisodesFromIndexer()
         except Exception as error:
             logger.exception('Unable to get info from {0}, the show info will not be refreshed: {1}'.format
-                       (self.show.idxr.name, error))
+                             (self.show.idxr.name, error))
             IndexerEpList = None
 
         if IndexerEpList:
@@ -642,7 +642,7 @@ class QueueItemUpdate(ShowQueueItem):
             for curSeason in DBEpList:
                 for curEpisode in DBEpList[curSeason]:
                     logger.info('Permanently deleting episode {0:02d}E{1:02d} from the database'.format
-                               (curSeason, curEpisode))
+                                (curSeason, curEpisode))
                     curEp = self.show.getEpisode(curSeason, curEpisode)
                     try:
                         curEp.deleteEpisode()

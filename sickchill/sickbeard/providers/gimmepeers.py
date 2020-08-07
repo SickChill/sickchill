@@ -33,7 +33,7 @@ class Provider(TorrentProvider):
         self.cache = tvcache.TVCache(self)
 
         self.search_params = {
-            #c20=1&c21=1&c25=1&c24=1&c23=1&c22=1&c1=1
+            # c20=1&c21=1&c25=1&c24=1&c23=1&c22=1&c1=1
             "c20": 1, "c21": 1, "c25": 1, "c24": 1, "c23": 1, "c22": 1, "c1": 1
         }
 
@@ -75,7 +75,7 @@ class Provider(TorrentProvider):
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     logger.debug("Search string: {0}".format
-                               (search_string))
+                                 (search_string))
 
                 self.search_params['search'] = search_string
 
@@ -126,7 +126,7 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                               (title, seeders, leechers))
+                                                 (title, seeders, leechers))
                                 continue
 
                             if seeders >= 32768 or leechers >= 32768:

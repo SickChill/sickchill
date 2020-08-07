@@ -70,7 +70,7 @@ class GenericClient(object):
             return False
 
         logger.debug('{0}: Response to the {1} request is {2}'.format
-                   (self.name, method.upper(), self.response.text))
+                     (self.name, method.upper(), self.response.text))
 
         return True
 

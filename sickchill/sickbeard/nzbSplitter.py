@@ -21,8 +21,8 @@ def get_season_nzbs(name, url_data, season):
         # Example:  nzbElement.getchildren()[1].tag == '{http://www.newzbin.com/DTD/2003/nzb}file'
         #           regex match returns  'http://www.newzbin.com/DTD/2003/nzb'
         'nzb_xmlns': r"{(http://[\w_\./]+nzb)}file",
-        'scene_name': '([\w\._\ ]+)[\. ]S%02d[\. ]([\w\._\-\ ]+)[\- ]([\w_\-\ ]+?)',
-        'episode': '\.S%02d(?:[E0-9]+)\.[\w\._]+\-\w+',
+        'scene_name': r'([\w\._\ ]+)[\. ]S%02d[\. ]([\w\._\-\ ]+)[\- ]([\w_\-\ ]+?)',
+        'episode': r'\.S%02d(?:[E0-9]+)\.[\w\._]+\-\w+',
     }
 
     try:

@@ -155,17 +155,16 @@ class Home(WebRoot):
         return show_stat, max_download_count
 
     def is_alive(self):
-            callback = self.get_query_arguments('callback')[0]
-            self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-            self.set_header('Content-Type', 'text/javascript')
-            self.set_header('Access-Control-Allow-Origin', '*')
-            self.set_header('Access-Control-Allow-Headers', 'x-requested-with')
+        callback = self.get_query_arguments('callback')[0]
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header('Content-Type', 'text/javascript')
+        self.set_header('Access-Control-Allow-Origin', '*')
+        self.set_header('Access-Control-Allow-Headers', 'x-requested-with')
 
-            if settings.started:
-                return callback + '(' + json.dumps(
-                    {"msg": str(settings.PID)}) + ');'
-            else:
-                return callback + '(' + json.dumps({"msg": "nope"}) + ');'
+        if settings.started:
+            return callback + '(' + json.dumps({"msg": str(settings.PID)}) + ');'
+        else:
+            return callback + '(' + json.dumps({"msg": "nope"}) + ');'
 
     @staticmethod
     def haveKODI():
@@ -783,47 +782,47 @@ class Home(WebRoot):
 
                 # noinspection PyPep8
                 submenu.append({
-                                   'title': _('Remove'),
-                                   'path': 'home/deleteShow?show={0:d}'.format(show_obj.indexerid),
-                                   'class': 'removeshow',
-                                   'confirm': True,
-                                   'icon': 'fa fa-trash'
-                                   })
+                    'title': _('Remove'),
+                    'path': 'home/deleteShow?show={0:d}'.format(show_obj.indexerid),
+                    'class': 'removeshow',
+                    'confirm': True,
+                    'icon': 'fa fa-trash'
+                })
                 submenu.append({'title': _('Re-scan files'), 'path': 'home/refreshShow?show={0:d}&amp;force=1'.format(show_obj.indexerid), 'icon': 'fa fa-refresh'})
                 # noinspection PyPep8
                 submenu.append(
                     {'title': _('Force Full Update'), 'path': 'home/updateShow?show={0:d}&amp;force=1'.format(show_obj.indexerid), 'icon': 'fa fa-exchange'})
                 # noinspection PyPep8
                 submenu.append({
-                                   'title': _('Update show in KODI'),
-                                   'path': 'home/updateKODI?show={0:d}'.format(show_obj.indexerid),
-                                   'requires': self.haveKODI(),
-                                   'icon': 'menu-icon-kodi'
-                                   })
+                    'title': _('Update show in KODI'),
+                    'path': 'home/updateKODI?show={0:d}'.format(show_obj.indexerid),
+                    'requires': self.haveKODI(),
+                    'icon': 'menu-icon-kodi'
+                })
                 # noinspection PyPep8
                 submenu.append({
-                                   'title': _('Update show in Emby'),
-                                   'path': 'home/updateEMBY?show={0:d}'.format(show_obj.indexerid),
-                                   'requires': self.haveEMBY(),
-                                   'icon': 'menu-icon-emby'
-                                   })
+                    'title': _('Update show in Emby'),
+                    'path': 'home/updateEMBY?show={0:d}'.format(show_obj.indexerid),
+                    'requires': self.haveEMBY(),
+                    'icon': 'menu-icon-emby'
+                })
                 if seasonResults and int(seasonResults[-1]["season"]) == 0:
                     if settings.DISPLAY_SHOW_SPECIALS:
                         # noinspection PyPep8
                         submenu.append({
-                                           'title': _('Hide specials'),
-                                           'path': 'home/toggleDisplayShowSpecials/?show={0:d}'.format(show_obj.indexerid),
-                                           'confirm': True,
-                                           'icon': 'fa fa-times'
-                                           })
+                            'title': _('Hide specials'),
+                            'path': 'home/toggleDisplayShowSpecials/?show={0:d}'.format(show_obj.indexerid),
+                            'confirm': True,
+                            'icon': 'fa fa-times'
+                        })
                     else:
                         # noinspection PyPep8
                         submenu.append({
-                                           'title': _('Show specials'),
-                                           'path': 'home/toggleDisplayShowSpecials/?show={0:d}'.format(show_obj.indexerid),
-                                           'confirm': True,
-                                           'icon': 'fa fa-check'
-                                           })
+                            'title': _('Show specials'),
+                            'path': 'home/toggleDisplayShowSpecials/?show={0:d}'.format(show_obj.indexerid),
+                            'confirm': True,
+                            'icon': 'fa fa-check'
+                        })
 
                 submenu.append({'title': _('Preview Rename'), 'path': 'home/testRename?show={0:d}'.format(show_obj.indexerid), 'icon': 'fa fa-tag'})
 
@@ -1264,7 +1263,7 @@ class Home(WebRoot):
             return self.redirect('/home/')
 
     def updatePLEX(self):
-        if None is notifiers.plex_notifier.update_library():
+        if notifiers.plex_notifier.update_library() is None:
             ui.notifications.message(_("Library update command sent to Plex Media Server host: {plex_server}").format
                                      (plex_server=settings.PLEX_SERVER_HOST))
         else:
@@ -1354,12 +1353,12 @@ class Home(WebRoot):
                         continue
 
                     if int(status) in Quality.DOWNLOADED and ep_obj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + \
-                        Quality.DOWNLOADED + [IGNORED] and not os.path.isfile(ep_obj.location):
+                            Quality.DOWNLOADED + [IGNORED] and not os.path.isfile(ep_obj.location):
                         logger.warning("Refusing to change status of " + cur_ep + " to DOWNLOADED because it's not SNATCHED/DOWNLOADED")
                         continue
 
                     if int(status) == FAILED and ep_obj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + \
-                        Quality.DOWNLOADED + Quality.ARCHIVED:
+                            Quality.DOWNLOADED + Quality.ARCHIVED:
                         logger.warning("Refusing to change status of " + cur_ep + " to FAILED because it's not SNATCHED/DOWNLOADED")
                         continue
 

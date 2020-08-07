@@ -24,7 +24,7 @@ def setEpisodeToWanted(show, s, e):
                 return
 
             logger.info("Setting episode {show} {ep} to wanted".format
-                       (show=show.name, ep=episode_num(s, e)))
+                        (show=show.name, ep=episode_num(s, e)))
             # figure out what segment the episode is in and remember it so we can backlog it
 
             epObj.status = WANTED
@@ -34,7 +34,7 @@ def setEpisodeToWanted(show, s, e):
         settings.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
 
         logger.info("Starting backlog search for {show} {ep} because some episodes were set to wanted".format
-                   (show=show.name, ep=episode_num(s, e)))
+                    (show=show.name, ep=episode_num(s, e)))
 
 
 class TraktChecker(object):
@@ -188,8 +188,8 @@ class TraktChecker(object):
                     if not self._checkInList(sickchill.indexer.slug(cur_episode["indexer"]), str(cur_episode["showid"]), str(cur_episode["season"]), str(cur_episode["episode"]),
                                              List='Collection'):
                         logger.debug("Adding Episode {show} {ep} to collection".format
-                                   (show=cur_episode["show_name"],
-                                    ep=episode_num(cur_episode["season"], cur_episode["episode"])))
+                                     (show=cur_episode["show_name"],
+                                      ep=episode_num(cur_episode["season"], cur_episode["episode"])))
                         trakt_data.append((cur_episode["showid"], cur_episode["indexer"], cur_episode["show_name"], cur_episode["startyear"], cur_episode["season"], cur_episode["episode"]))
 
                 if trakt_data:
@@ -232,8 +232,8 @@ class TraktChecker(object):
                     if self._checkInList(sickchill.indexer.slug(cur_episode["indexer"]), str(cur_episode["showid"]), str(cur_episode["season"]), str(cur_episode["episode"])):
                         if cur_episode["status"] not in Quality.SNATCHED + Quality.SNATCHED_PROPER + [UNKNOWN] + [WANTED]:
                             logger.debug("Removing Episode {show} {ep} from watchlist".format
-                                       (show=cur_episode["show_name"],
-                                        ep=episode_num(cur_episode["season"], cur_episode["episode"])))
+                                         (show=cur_episode["show_name"],
+                                          ep=episode_num(cur_episode["season"], cur_episode["episode"])))
                             trakt_data.append((cur_episode["showid"], cur_episode["indexer"], cur_episode["show_name"], cur_episode["startyear"], cur_episode["season"], cur_episode["episode"]))
 
                 if trakt_data:
@@ -260,8 +260,8 @@ class TraktChecker(object):
                 for cur_episode in episodes:
                     if not self._checkInList(sickchill.indexer.slug(cur_episode["indexer"]), str(cur_episode["showid"]), str(cur_episode["season"]), str(cur_episode["episode"])):
                         logger.debug("Adding Episode {show} {ep} to watchlist".format
-                                   (show=cur_episode["show_name"],
-                                    ep=episode_num(cur_episode["season"], cur_episode["episode"])))
+                                     (show=cur_episode["show_name"],
+                                      ep=episode_num(cur_episode["season"], cur_episode["episode"])))
                         trakt_data.append((cur_episode["showid"], cur_episode["indexer"], cur_episode["show_name"], cur_episode["startyear"], cur_episode["season"],
                                            cur_episode["episode"]))
 
@@ -424,11 +424,11 @@ class TraktChecker(object):
                     helpers.chmodAsParent(showPath)
 
                 settings.showQueueScheduler.action.add_show(int(indexer), int(indexer_id), showPath,
-                                                                      default_status=status,
-                                                                      quality=int(settings.QUALITY_DEFAULT),
-                                                                      season_folders=int(settings.SEASON_FOLDERS_DEFAULT),
-                                                                      paused=settings.TRAKT_START_PAUSED,
-                                                                      default_status_after=status)
+                                                            default_status=status,
+                                                            quality=int(settings.QUALITY_DEFAULT),
+                                                            season_folders=int(settings.SEASON_FOLDERS_DEFAULT),
+                                                            paused=settings.TRAKT_START_PAUSED,
+                                                            default_status_after=status)
             else:
                 logger.warning("There was an error creating the show, no root directory setting found")
                 return

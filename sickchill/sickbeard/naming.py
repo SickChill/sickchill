@@ -215,7 +215,6 @@ def generate_sample_ep(multi=None, abd=False, sports=False, anime_type=None):
     # make a fake episode object
     ep = TVEpisode(2, 3, 3, "Ep Name")
 
-
     ep._status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)
     ep._airdate = datetime.date(2011, 3, 9)
 

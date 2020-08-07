@@ -723,7 +723,7 @@ class GenericMetadata(object):
 
         def fix_xml():
             logger.info(_("There was an error loading {0}, trying to repair it by fixing & symbols. If it still has problems, please check the file "
-                         "manually").format(metadata_path))
+                          "manually").format(metadata_path))
             with open(metadata_path, 'rb') as __xml_file:
                 output = __xml_file.read()
 

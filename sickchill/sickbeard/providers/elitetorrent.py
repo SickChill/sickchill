@@ -64,7 +64,7 @@ class Provider(TorrentProvider):
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     logger.debug("Search string: {0}".format
-                               (search_string))
+                                 (search_string))
 
                 search_string = re.sub(r'S0*(\d*)E(\d*)', r'\1x\2', search_string)
                 search_params['buscar'] = search_string.strip() if mode != 'RSS' else ''
@@ -114,7 +114,7 @@ class Provider(TorrentProvider):
                                 seeders = try_int(row.find('td', class_='semillas').get_text(strip=True))
                                 leechers = try_int(row.find('td', class_='clientes').get_text(strip=True))
 
-                                #seeders are not well reported. Set 1 in case of 0
+                                # seeders are not well reported. Set 1 in case of 0
                                 seeders = max(1, seeders)
 
                                 # Provider does not provide size
@@ -130,7 +130,7 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                               (title, seeders, leechers))
+                                                 (title, seeders, leechers))
                                 continue
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}

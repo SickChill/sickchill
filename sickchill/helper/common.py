@@ -123,8 +123,8 @@ def is_sync_file(filename):
         extension = filename.rpartition('.')[2].lower()
 
         return extension in settings.SYNC_FILES.split(',') or \
-               filename.startswith('.syncthing') or \
-               any(fnmatch(filename, match) for match in settings.SYNC_FILES.split(','))
+            filename.startswith('.syncthing') or \
+            any(fnmatch(filename, match) for match in settings.SYNC_FILES.split(','))
 
     return False
 

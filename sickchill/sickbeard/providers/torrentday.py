@@ -145,7 +145,7 @@ class Provider(TorrentProvider):
 
                     if mode != 'RSS':
                         logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format
-                                   (title, seeders, leechers))
+                                     (title, seeders, leechers))
 
                     items.append(item)
 

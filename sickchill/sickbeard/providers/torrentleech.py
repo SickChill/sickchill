@@ -73,7 +73,7 @@ class Provider(TorrentProvider):
 
                 if mode != "RSS":
                     logger.debug("Search string: {0}".format
-                               (search_string))
+                                 (search_string))
 
                     categories = ["2", "7", "35"]
                     categories += ["26", "32"] if mode == "Episode" else ["27"]
@@ -111,8 +111,8 @@ class Provider(TorrentProvider):
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != "RSS":
                                 logger.debug("Discarding torrent because it doesn't meet the"
-                                            " minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                            (title, seeders, leechers))
+                                             " minimum seeders or leechers: {0} (S:{1} L:{2})".format
+                                             (title, seeders, leechers))
                                 continue
 
                         size = torrent['size']
@@ -121,12 +121,11 @@ class Provider(TorrentProvider):
 
                         if mode != "RSS":
                             logger.debug("Found result: {0} with {1} seeders and {2} leechers".format
-                                       (title, seeders, leechers))
+                                         (title, seeders, leechers))
 
                         items.append(item)
                     except Exception:
                         continue
-
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)

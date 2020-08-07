@@ -393,6 +393,7 @@ def change_showupdate_hour(freq):
     settings.showUpdateScheduler.start_time = datetime.time(hour=settings.SHOWUPDATE_HOUR)
     return True
 
+
 def change_subtitle_finder_frequency(subtitles_finder_frequency):
     """
     Change frequency of subtitle thread
@@ -843,7 +844,7 @@ def check_setting_bool(config, cfg_name, item_name, def_val=False, silent=True):
     try:
         if not isinstance(def_val, bool):
             logger.error("{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(
-                    dom=cfg_name, key=item_name, t='bool', dt=type(def_val)))
+                dom=cfg_name, key=item_name, t='bool', dt=type(def_val)))
 
         if not (check_section(config, cfg_name) and item_name in config[cfg_name]):
             raise ValueError
@@ -1205,4 +1206,3 @@ class ConfigMigrator(object):
     # Migration v12: Fix selected provider, since there is only one qbittorrent and one rtorrent provider
     def _migrate_v12(self):
         settings.TORRENT_METHOD = re.sub(r'^new_|9$', '', check_setting_str(settings.CFG, 'General', 'torrent_method', 'blackhole'))
-

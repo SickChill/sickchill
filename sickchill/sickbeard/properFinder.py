@@ -37,7 +37,7 @@ class ProperFinder(object):
         self._set_lastProperSearch(datetime.datetime.today().toordinal())
 
         run_at = ""
-        if None is settings.properFinderScheduler.start_time:
+        if settings.properFinderScheduler.start_time is None:
             run_in = settings.properFinderScheduler.lastRun + settings.properFinderScheduler.cycleTime - datetime.datetime.now()
             hours, remainder = divmod(run_in.seconds, 3600)
             minutes, seconds = divmod(remainder, 60)

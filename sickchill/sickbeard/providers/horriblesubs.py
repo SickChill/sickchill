@@ -121,7 +121,7 @@ class Provider(TorrentProvider):
                 return []
 
             for list_item in list_items:
-                title = '{0}{1}'.format(str(list_item.find('span').next_sibling),str(list_item.find('strong').text))
+                title = '{0}{1}'.format(str(list_item.find('span').next_sibling), str(list_item.find('strong').text))
                 logger.debug('Found title {0}'.format(title))
                 episode_url = '/#'.join(list_item.find('a')['href'].rsplit('#', 1))
                 episode = episode_url.split('#', 1)[1]

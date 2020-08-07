@@ -128,7 +128,7 @@ class NameParser(object):
                 ep_ab_num = self._convert_number(match.group('ep_ab_num'))
                 if 'extra_ab_ep_num' in named_groups and match.group('extra_ab_ep_num'):
                     result.ab_episode_numbers = list(range(ep_ab_num,
-                                                      self._convert_number(match.group('extra_ab_ep_num')) + 1))
+                                                           self._convert_number(match.group('extra_ab_ep_num')) + 1))
                     result.score += 1
                 else:
                     result.ab_episode_numbers = [ep_ab_num]
@@ -147,7 +147,7 @@ class NameParser(object):
                     # Make sure a 20th century date isn't returned as a 21st century date
                     # 1 Year into the future (No releases should be coming out a year ahead of time, that's just insane)
                     if check > check.today() and (check - check.today()).days // 365 > 1:
-                            check = check.replace(year=check.year-100)
+                        check = check.replace(year=check.year - 100)
 
                     result.air_date = check
                     result.score += 1
@@ -291,8 +291,7 @@ class NameParser(object):
 
             # I guess it's possible that we'd have duplicate episodes too, so lets
             # eliminate them
-            new_episode_numbers = list(set(new_episode_numbers))
-            new_episode_numbers.sort()
+            new_episode_numbers = sorted(set(new_episode_numbers))
 
             # maybe even duplicate absolute numbers so why not do them as well
             new_absolute_numbers = list(set(new_absolute_numbers))
@@ -568,6 +567,7 @@ class NameParserCache(object):
             self.data.update({key: value})
             while len(self.data) > self.max_size:
                 self.data.pop(list(self.data)[0], None)
+
 
 name_parser_cache = NameParserCache()
 

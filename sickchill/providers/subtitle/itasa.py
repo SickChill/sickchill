@@ -292,7 +292,7 @@ class ItaSAProvider(Provider):
                         raise ConfigurationError('Not a zip file: %r' % content)
 
                 with ZipFile(io.BytesIO(content)) as zf:
-                    episode_re = re.compile('s(\d{1,2})e(\d{1,2})')
+                    episode_re = re.compile(r's(\d{1,2})e(\d{1,2})')
                     for index, name in enumerate(zf.namelist()):
                         match = episode_re.search(name)
                         if not match:  # pragma: no cover
@@ -358,7 +358,7 @@ class ItaSAProvider(Provider):
             'show_id': show_id,
             'q': '%dx%02d' % (season, episode),
             'version': sub_source
-            }
+        }
         r = self.session.get(self.server_url + 'subtitles/search', params=params, timeout=30)
         r.raise_for_status()
         root = ElementTree.fromstring(r.content)
@@ -395,14 +395,14 @@ class ItaSAProvider(Provider):
                              subtitle.find('version').text)
 
                 sub = ItaSASubtitle(
-                        int(subtitle.find('id').text),
-                        subtitle.find('show_name').text,
-                        season,
-                        episode,
-                        source,
-                        year,
-                        tvdb_id,
-                        subtitle.find('name').text)
+                    int(subtitle.find('id').text),
+                    subtitle.find('show_name').text,
+                    season,
+                    episode,
+                    source,
+                    year,
+                    tvdb_id,
+                    subtitle.find('name').text)
 
                 subtitles.append(sub)
 

@@ -93,7 +93,7 @@ class Provider(TorrentProvider):
                             # Provider does not provide seeders/leechers
                             seeders = 1
                             leechers = 0
-                            #2 is the 'Tamaño' column.
+                            # 2 is the 'Tamaño' column.
                             torrent_size = cells[2].get_text(strip=True)
 
                             size = convert_size(torrent_size) or -1
@@ -123,7 +123,7 @@ class Provider(TorrentProvider):
 
         kwargs['returns'] = trickery
         return super().get_url(url, post_data=post_data, params=params,
-                                                   timeout=timeout, **kwargs)
+                               timeout=timeout, **kwargs)
 
     def download_result(self, result):
         """
@@ -180,11 +180,11 @@ class Provider(TorrentProvider):
         title = re.sub(r'\[BRrip[^\[]*]', '720p BluRay x264', title, flags=re.I)
         title = re.sub(r'\[BDrip[^\[]*]', '720p BluRay x264', title, flags=re.I)
 
-        #detect hdtv/bluray by url
-        #hdtv 1080p example url: http://www.newpct.com/descargar-seriehd/foo/capitulo-610/hdtv-1080p-ac3-5-1/
-        #hdtv 720p example url: http://www.newpct.com/descargar-seriehd/foo/capitulo-26/hdtv-720p-ac3-5-1/
-        #hdtv example url: http://www.newpct.com/descargar-serie/foo/capitulo-214/hdtv/
-        #bluray compilation example url: http://www.newpct.com/descargar-seriehd/foo/capitulo-11/bluray-1080p/
+        # detect hdtv/bluray by url
+        # hdtv 1080p example url: http://www.newpct.com/descargar-seriehd/foo/capitulo-610/hdtv-1080p-ac3-5-1/
+        # hdtv 720p example url: http://www.newpct.com/descargar-seriehd/foo/capitulo-26/hdtv-720p-ac3-5-1/
+        # hdtv example url: http://www.newpct.com/descargar-serie/foo/capitulo-214/hdtv/
+        # bluray compilation example url: http://www.newpct.com/descargar-seriehd/foo/capitulo-11/bluray-1080p/
         title_hdtv = re.search(r'HDTV', title, flags=re.I)
         title_720p = re.search(r'720p', title, flags=re.I)
         title_1080p = re.search(r'1080p', title, flags=re.I)

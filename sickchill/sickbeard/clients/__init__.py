@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-_clients = [
+_clients = sorted([
     'utorrent',
     'transmission',
     'deluge',
@@ -10,9 +10,8 @@ _clients = [
     'qbittorrent',
     'mlnet',
     'putio'
-]
+])
 
-_clients.sort()
 
 default_host = {
     'utorrent': 'http://localhost:8000',

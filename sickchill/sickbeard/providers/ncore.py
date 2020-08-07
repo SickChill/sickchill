@@ -69,9 +69,9 @@ class Provider(TorrentProvider):
                 data = self.get_url(url, returns="text")
 
                 try:
-                  parsed_json = json.loads(data)
+                    parsed_json = json.loads(data)
                 except ValueError as e:
-                  continue
+                    continue
 
                 if not isinstance(parsed_json, dict):
                     logger.debug("No data returned from provider")

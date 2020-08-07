@@ -338,7 +338,7 @@ def hardlinkFile(srcFile, destFile):
         fixSetGroupID(destFile)
     except Exception as error:
         logger.warning(_("Failed to create hardlink of {0} at {1}. Error: {2}. Copying instead").format
-                   (srcFile, destFile, error))
+                       (srcFile, destFile, error))
         copyFile(srcFile, destFile)
 
 
@@ -356,7 +356,7 @@ def moveAndSymlinkFile(srcFile, destFile):
         os.symlink(destFile, srcFile)
     except Exception as error:
         logger.warning(_("Failed to create symlink of {0} at {1}. Error: {2}. Copying instead").format
-                   (srcFile, destFile, error))
+                       (srcFile, destFile, error))
         copyFile(srcFile, destFile)
 
 
@@ -625,11 +625,11 @@ def get_absolute_number_from_season_and_episode(show, season, episode):
         if len(sql_results) == 1:
             absolute_number = int(sql_results[0]["absolute_number"])
             logger.debug(_("Found absolute number {absolute} for show {show} {ep}").format
-                       (absolute=absolute_number, show=show.name,
-                        ep=episode_num(season, episode)))
+                         (absolute=absolute_number, show=show.name,
+                          ep=episode_num(season, episode)))
         else:
             logger.debug(_("No entries for absolute number for show {show} {ep}").format
-                       (show=show.name, ep=episode_num(season, episode)))
+                         (show=show.name, ep=episode_num(season, episode)))
 
     return absolute_number
 
@@ -795,12 +795,12 @@ def restoreVersionedFile(backup_file, version):
 
     try:
         logger.debug(_("Trying to backup {0} to {1}.r{2} before restoring backup").format
-                   (new_file, new_file, version))
+                     (new_file, new_file, version))
 
         shutil.move(new_file, new_file + '.' + 'r' + str(version))
     except Exception as error:
         logger.warning(_("Error while trying to backup DB file {0} before proceeding with restore: {1}").format
-                   (restore_file, error))
+                       (restore_file, error))
         return False
 
     while not os.path.isfile(new_file):
@@ -1468,7 +1468,7 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
         return True
     else:
         logger.warning(_("Not enough free space: Needed: {0} bytes ( {1} ), found: {2} bytes ( {3} )").format
-                   (needed_space, pretty_file_size(needed_space), disk_free, pretty_file_size(disk_free)))
+                       (needed_space, pretty_file_size(needed_space), disk_free, pretty_file_size(disk_free)))
         return False
 
 

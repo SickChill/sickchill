@@ -12,6 +12,7 @@ class RecommendedShow(object):
     """
     Base class for show recommendations
     """
+
     def __init__(self, show_id, title, indexer, indexer_id, cache_subfolder='recommended',
                  rating=None, votes=None, image_href=None, image_src=None):
         """

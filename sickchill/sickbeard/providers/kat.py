@@ -115,7 +115,7 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                               (title, seeders, leechers))
+                                                 (title, seeders, leechers))
                                 continue
 
                             if self.confirmed and not result.find(class_="ka-green"):
@@ -160,7 +160,7 @@ class Provider(TorrentProvider):
             logger.info("Setting mirror to use to {url}".format(url=self.url))
         else:
             logger.warning("Unable to get a working mirror for kickasstorrents, you might need to enable another provider and disable KAT until KAT starts working "
-                       "again.")
+                           "again.")
 
         self.urls = {"search": urljoin(self.url, "/usearch/{q}/"), "rss": urljoin(self.url, "/tv/")}
 

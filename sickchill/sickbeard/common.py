@@ -498,6 +498,7 @@ class Quality(object):
     SNATCHED_BEST = None
     ARCHIVED = None
 
+
 Quality.DOWNLOADED = [Quality.compositeStatus(DOWNLOADED, x) for x in Quality.qualityStrings if x is not None]
 Quality.SNATCHED = [Quality.compositeStatus(SNATCHED, x) for x in Quality.qualityStrings if x is not None]
 Quality.SNATCHED_BEST = [Quality.compositeStatus(SNATCHED_BEST, x) for x in Quality.qualityStrings if x is not None]
@@ -573,6 +574,7 @@ class StatusStrings(NumDict):
         except KeyError:
             return False
 
+
 # Assign strings to statuses
 statusStrings = StatusStrings({
 
@@ -615,6 +617,7 @@ class Overview(object):
         SNATCHED_BEST: "snatched",
         SNATCHED_PROPER: "snatched"
     })
+
 
 countryList = {
     'Australia': 'AU',

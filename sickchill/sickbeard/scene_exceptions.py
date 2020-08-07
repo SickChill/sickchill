@@ -154,7 +154,7 @@ def get_scene_exception_by_name_multiple(show_name):
                 sickchill.sickbeard.helpers.sanitizeSceneName(cur_exception_name).lower().replace('.', ' ')):
 
             logger.debug("Scene exception lookup got indexer id {0}, using that".format
-                       (cur_indexer_id))
+                         (cur_indexer_id))
 
             out.append((cur_indexer_id, int(cur_exception["season"])))
 
@@ -286,6 +286,7 @@ def _anidb_exceptions_fetcher():
         setLastRefresh('anidb')
     return anidb_exception_dict
 
+
 xem_session = helpers.make_session()
 
 
@@ -299,7 +300,7 @@ def _xem_exceptions_fetcher():
             parsed_json = helpers.getURL(url, session=xem_session, timeout=90, returns='json')
             if not parsed_json:
                 logger.debug("Check scene exceptions update failed for {0}, Unable to get URL: {1}".format
-                           ('theTVDB', url))
+                             ('theTVDB', url))
                 continue
 
             if parsed_json['result'] == 'failure':

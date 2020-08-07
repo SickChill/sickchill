@@ -30,7 +30,7 @@ try:
     import jwt
     from jwt.algorithms import RSAAlgorithm as jwt_algorithms_RSAAlgorithm
     has_cryptography = True
-except:
+except Exception:
     has_cryptography = False
 
 

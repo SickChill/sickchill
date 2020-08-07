@@ -208,7 +208,7 @@ class KODIMetadata(generic.GenericMetadata):
             if not myEp:
                 logger.info("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
                             "has it been removed? Should I delete from db?".format(
-                    curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.idxr.name))
+                                curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.idxr.name))
 
                 return None
 

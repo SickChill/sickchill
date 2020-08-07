@@ -18,9 +18,9 @@ class TraktAPI:
         self.auth_url = settings.TRAKT_OAUTH_URL
         self.api_url = settings.TRAKT_API_URL
         self.headers = {
-          'Content-Type': 'application/json',
-          'trakt-api-version': '2',
-          'trakt-api-key': settings.TRAKT_API_KEY
+            'Content-Type': 'application/json',
+            'trakt-api-version': '2',
+            'trakt-api-key': settings.TRAKT_API_KEY
         }
 
     def traktToken(self, trakt_pin=None, refresh=False, count=0):
@@ -42,14 +42,14 @@ class TraktAPI:
             data['refresh_token'] = settings.TRAKT_REFRESH_TOKEN
         else:
             data['grant_type'] = 'authorization_code'
-            if not None == trakt_pin:
+            if trakt_pin:
                 data['code'] = trakt_pin
 
         headers = {
             'Content-Type': 'application/json'
         }
 
-        resp = self.traktRequest('oauth/token', data=data,  headers=headers, url=self.auth_url , method='POST', count=count)
+        resp = self.traktRequest('oauth/token', data=data, headers=headers, url=self.auth_url, method='POST', count=count)
 
         if 'access_token' in resp:
             settings.TRAKT_ACCESS_TOKEN = resp['access_token']
@@ -84,7 +84,7 @@ class TraktAPI:
 
         try:
             resp = self.session.request(method, url + path, headers=headers, timeout=self.timeout,
-                data=json.dumps(data) if data else [], verify=self.verify)
+                                        data=json.dumps(data) if data else [], verify=self.verify)
 
             # check for http errors and raise if any are present
             resp.raise_for_status()
@@ -109,7 +109,7 @@ class TraktAPI:
                     return self.traktRequest(path, data, headers, url, method)
                 else:
                     logger.warning('Unauthorized. Please check your Trakt settings')
-            elif code in (500,501,503,504,520,521,522):
+            elif code in (500, 501, 503, 504, 520, 521, 522):
                 # http://docs.trakt.apiary.io/#introduction/status-codes
                 logger.debug('Trakt may have some issues and it\'s unavailable. Try again later please')
             elif code == 404:

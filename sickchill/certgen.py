@@ -47,7 +47,7 @@ def createCertRequest(pkey, digest="md5", **name):
     req = crypto.X509Req()
     subj = req.get_subject()
 
-    for (key,value) in name.items():
+    for (key, value) in name.items():
         setattr(subj, key, value)
 
     req.set_pubkey(pkey)
@@ -79,4 +79,3 @@ def createCertificate(req, issuerCert, issuerKey, serial, notBefore, notAfter, d
     cert.set_pubkey(req.get_pubkey())
     cert.sign(issuerKey, digest)
     return cert
-

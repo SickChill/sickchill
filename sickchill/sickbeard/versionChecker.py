@@ -549,7 +549,7 @@ class GitUpdateManager(UpdateManager):
                 return
 
         logger.debug("cur_commit = {0}, newest_commit = {1}, num_commits_behind = {2}, num_commits_ahead = {3}".format
-                   (self._cur_commit_hash, self._newest_commit_hash, self._num_commits_behind, self._num_commits_ahead))
+                     (self._cur_commit_hash, self._newest_commit_hash, self._num_commits_behind, self._num_commits_ahead))
 
     def set_newest_text(self):
         if self._num_commits_ahead:
@@ -762,7 +762,7 @@ class SourceUpdateManager(UpdateManager):
                 self._num_commits_behind += 1
 
         logger.debug("cur_commit = {0}, newest_commit = {1}, num_commits_behind = {2}".format
-                   (self._cur_commit_hash, self._newest_commit_hash, self._num_commits_behind))
+                     (self._cur_commit_hash, self._newest_commit_hash, self._num_commits_behind))
 
     def set_newest_text(self):
         if not self._cur_commit_hash:

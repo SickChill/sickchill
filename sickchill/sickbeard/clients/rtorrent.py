@@ -47,7 +47,7 @@ class Client(GenericClient):
 
         except Exception as error:
             logger.warning('Error while sending torrent: {error}'.format
-                       (error=str(error)))
+                           (error=str(error)))
             return False
 
     def _add_torrent_file(self, result):
@@ -66,7 +66,7 @@ class Client(GenericClient):
 
         except Exception as error:
             logger.warning('Error while sending torrent: {error}'.format
-                       (error=str(error)))
+                           (error=str(error)))
             return False
 
     def testAuthentication(self):

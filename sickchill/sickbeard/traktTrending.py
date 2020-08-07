@@ -87,7 +87,7 @@ class traktTrending(object):
 
     @staticmethod
     def get_image_name(indexer_id):
-         return str(indexer_id) + ".jpg"
+        return str(indexer_id) + ".jpg"
 
     @staticmethod
     def get_image_path(image_name):
@@ -102,5 +102,6 @@ class traktTrending(object):
         # Only cache if the file does not exist yet
         if not os.path.isfile(image_path):
             helpers.download_file(image_url, image_path, session=self.session)
+
 
 trakt_trending = traktTrending()

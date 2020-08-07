@@ -13,6 +13,7 @@ class Notifier(object):
 
     http://joaoapps.com/join/
     """
+
     def test_notify(self, id=None, apikey=None):
         """
         Send a test notification

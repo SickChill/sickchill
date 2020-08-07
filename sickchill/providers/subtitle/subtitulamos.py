@@ -23,9 +23,9 @@ class SubtitulamosConverter(LanguageReverseConverter):
         self.name_converter = language_converters['name']
         self.from_subtitulamos = {
             'Español': ('spa',), 'Español (España)': ('spa',),
-                                  'Español (Latinoamérica)': ('spa', 'MX'), 'Català': ('cat',), 'English': ('eng',),
-                                  'Galego': ('glg',), 'Portuguese': ('por',), 'English (US)': ('eng', 'US'),
-                                  'English (UK)': ('eng', 'GB'), 'Brazilian': ('por', 'BR')}
+            'Español (Latinoamérica)': ('spa', 'MX'), 'Català': ('cat',), 'English': ('eng',),
+            'Galego': ('glg',), 'Portuguese': ('por',), 'English (US)': ('eng', 'US'),
+            'English (UK)': ('eng', 'GB'), 'Brazilian': ('por', 'BR')}
 
         self.to_subtitulamos = {('cat',): 'Català', ('glg',): 'Galego', ('por', 'BR'): 'Brazilian'}
 

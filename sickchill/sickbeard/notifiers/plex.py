@@ -86,7 +86,6 @@ class Notifier(object):
     def update_library(self, ep_obj=None, host=None,
                        username=None, password=None,
                        plex_server_token=None, force=False):
-
         """Handles updating the Plex Media Server host via HTTP API
 
         Plex Media Server currently only supports updating the whole video library and not a specific path.
@@ -121,14 +120,14 @@ class Notifier(object):
                                       allow_proxy=False)
                 if not xml_response:
                     logger.warning('PLEX: Error while trying to contact Plex Media Server: {0}'.format
-                               (cur_host))
+                                   (cur_host))
                     hosts_failed.add(cur_host)
                     continue
 
                 media_container = ElementTree.fromstring(xml_response)
             except IOError as error:
                 logger.warning('PLEX: Error while trying to contact Plex Media Server: {0}'.format
-                           (str(error)))
+                               (str(error)))
                 hosts_failed.add(cur_host)
                 continue
             except Exception as error:
@@ -136,14 +135,14 @@ class Notifier(object):
                     logger.warning('PLEX: Please set TOKEN in Plex settings: ')
                 else:
                     logger.warning('PLEX: Error while trying to contact Plex Media Server: {0}'.format
-                               (str(error)))
+                                   (str(error)))
                 hosts_failed.add(cur_host)
                 continue
 
             sections = media_container.findall('.//Directory')
             if not sections:
                 logger.debug('PLEX: Plex Media Server not running on: {0}'.format
-                           (cur_host))
+                             (cur_host))
                 hosts_failed.add(cur_host)
                 continue
 
@@ -180,7 +179,7 @@ class Notifier(object):
                 getURL(url, headers=self.headers, session=self.session, returns='text', verify=False, allow_proxy=False)
             except Exception as error:
                 logger.warning('PLEX: Error updating library section for Plex Media Server: {0}'.format
-                           (str(error)))
+                               (str(error)))
                 hosts_failed.add(cur_host)
 
         return (', '.join(set(hosts_failed)), None)[not len(hosts_failed)]
@@ -219,6 +218,6 @@ class Notifier(object):
         except Exception as error:
             self.headers.pop('X-Plex-Token', '')
             logger.debug('PLEX: Error fetching credentials from from plex.tv for user {0}: {1}'.format
-                       (username, error))
+                         (username, error))
 
         return 'X-Plex-Token' in self.headers

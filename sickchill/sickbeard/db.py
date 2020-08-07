@@ -68,8 +68,8 @@ class DBConnection(object):
             # noinspection PyUnresolvedReferences
             logger.log(severity,
                        _("{exception_severity} error executing query with {method} in database {db_location}: ").format(
-                    db_location=self.full_path, method=called_method, exception_severity=prefix
-                ) + str(exception)
+                           db_location=self.full_path, method=called_method, exception_severity=prefix
+                       ) + str(exception)
                        )
 
             # Lets print out all of the arguments so we can debug this better
@@ -86,7 +86,7 @@ class DBConnection(object):
     def _is_locked_or_denied(exception):
         # noinspection PyUnresolvedReferences
         return _("unable to open database file") in exception.args[0] or _("database is locked") in exception.args[0] or \
-                "unable to open database file" in exception.args[0] or "database is locked" in exception.args[0]
+            "unable to open database file" in exception.args[0] or "database is locked" in exception.args[0]
 
     def _set_row_factory(self):
         """

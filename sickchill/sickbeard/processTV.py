@@ -216,7 +216,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             # Delete rar file only if the extracted dir was successfully processed
             if mode == 'auto' and method_fallback == 'move' or mode == 'manual' and delete_on:
                 this_rar = [rar_file for rar_file in rar_files if os.path.basename(directory_from_rar) == rar_file.rpartition('.')[0]]
-                delete_files(current_directory, this_rar, result) # Deletes only if result.result == True
+                delete_files(current_directory, this_rar, result)  # Deletes only if result.result == True
 
         result.output += log_helper(("Processing Failed", "Successfully processed")[result.aggresult], (logger.WARNING, logger.INFO)[result.aggresult])
         if result.missed_files:
@@ -244,13 +244,13 @@ def validate_dir(process_path, release_name, failed, result):
     result.output += log_helper("Processing folder " + process_path, logger.DEBUG)
 
     upper_name = os.path.basename(process_path).upper()
-    if upper_name.startswith('_FAILED_') or upper_name.endswith('_FAILED_') or (os.sep + '_FAILED_') in upper_name or ('_FAILED_' + os.sep ) in upper_name:
+    if upper_name.startswith('_FAILED_') or upper_name.endswith('_FAILED_') or (os.sep + '_FAILED_') in upper_name or ('_FAILED_' + os.sep) in upper_name:
         result.output += log_helper("The directory name indicates it failed to extract.", logger.DEBUG)
         failed = True
-    elif upper_name.startswith('_UNDERSIZED_') or upper_name.endswith('_UNDERSIZED_') or (os.sep + '_UNDERSIZED_') in upper_name or ('_UNDERSIZED_' + os.sep ) in upper_name:
+    elif upper_name.startswith('_UNDERSIZED_') or upper_name.endswith('_UNDERSIZED_') or (os.sep + '_UNDERSIZED_') in upper_name or ('_UNDERSIZED_' + os.sep) in upper_name:
         result.output += log_helper("The directory name indicates that it was previously rejected for being undersized.", logger.DEBUG)
         failed = True
-    elif upper_name.startswith('_UNPACK') or upper_name.endswith('_UNPACK') or (os.sep + '_UNPACK') in upper_name or ('_UNPACK' + os.sep ) in upper_name:
+    elif upper_name.startswith('_UNPACK') or upper_name.endswith('_UNPACK') or (os.sep + '_UNPACK') in upper_name or ('_UNPACK' + os.sep) in upper_name:
         result.output += log_helper("The directory name indicates that this release is in the process of being unpacked.", logger.DEBUG)
         result.missed_files.append("{0} : Being unpacked".format(process_path))
         return False
@@ -351,11 +351,11 @@ def unrar(path, rar_files, force, result):
                 rar_release_name = archive.rpartition('.')[0]
 
                 # Choose the directory we'll unpack to:
-                if settings.UNPACK_DIR and os.path.isdir(settings.UNPACK_DIR): # verify the unpack dir exists
+                if settings.UNPACK_DIR and os.path.isdir(settings.UNPACK_DIR):  # verify the unpack dir exists
                     unpack_base_dir = settings.UNPACK_DIR
                 else:
                     unpack_base_dir = path
-                    if settings.UNPACK_DIR: # Let user know if we can't unpack there
+                    if settings.UNPACK_DIR:  # Let user know if we can't unpack there
                         result.output += log_helper('Unpack directory cannot be verified. Using {0}'.format(path), logger.DEBUG)
 
                 # Fix up the list for checking if already processed
@@ -436,7 +436,7 @@ def already_processed(process_path, video_file, force, result):
     except (InvalidNameException, InvalidShowException):  # ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
         parse_result = False
 
-    search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid" # This part is always the same
+    search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid"  # This part is always the same
     search_sql += " WHERE history.season=tv_episodes.season AND history.episode=tv_episodes.episode"
 
     # If we find a showid, a season number, and one or more episode numbers then we need to use those in the query

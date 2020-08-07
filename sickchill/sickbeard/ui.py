@@ -10,6 +10,7 @@ class Notifications(object):
     """
     A queue of Notification objects.
     """
+
     def __init__(self):
         self._messages = []
         self._errors = []
@@ -47,6 +48,7 @@ class Notifications(object):
         # return any notifications that haven't been shown to the client already
         return [x.see(remote_ip) for x in self._errors + self._messages if x.is_new(remote_ip)]
 
+
 # static notification queue object
 notifications = Notifications()
 
@@ -56,6 +58,7 @@ class Notification(object):
     Represents a single notification. Tracks its own timeout and a list of which clients have
     seen it before.
     """
+
     def __init__(self, title, message='', type=None, timeout=None):
         self.title = title
         self.message = message
@@ -128,6 +131,7 @@ class QueueProgressIndicator(object):
     """
     A class used by the UI to show the progress of the queue or a part of it.
     """
+
     def __init__(self, name, queueItemList):
         self.queueItemList = queueItemList
         self.name = name

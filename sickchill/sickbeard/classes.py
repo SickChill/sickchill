@@ -61,7 +61,6 @@ class SearchResult(object):
         self.quality = result_dict.get('quality')
         # self.provider = sickbeard.providers.getProviderModule(result_dict.get('provider')).provider
 
-
     @classmethod
     def make_result(cls, result_dict):
         show = sickchill.show.Show.find(settings.showList, int(result_dict.get('show')))
@@ -96,6 +95,7 @@ class NZBSearchResult(SearchResult):
     """
     Regular NZB result with an URL to the NZB
     """
+
     def __init__(self, episodes):
         super(NZBSearchResult, self).__init__(episodes)
         self.resultType = 'nzb'
@@ -105,6 +105,7 @@ class NZBDataSearchResult(SearchResult):
     """
     NZB result where the actual NZB XML data is stored in the extraInfo
     """
+
     def __init__(self, episodes):
         super(NZBDataSearchResult, self).__init__(episodes)
         self.resultType = 'nzbdata'
@@ -114,6 +115,7 @@ class TorrentSearchResult(SearchResult):
     """
     Torrent result with an URL to the torrent
     """
+
     def __init__(self, episodes):
         super(TorrentSearchResult, self).__init__(episodes)
         self.resultType = 'torrent'

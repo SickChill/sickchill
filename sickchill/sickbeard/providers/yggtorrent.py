@@ -107,8 +107,8 @@ class Provider(TorrentProvider):
                 # search string needs to be normalized, single quotes are apparently not allowed on the site
                 # ç should also be replaced, people tend to use c instead
                 replace_chars = {
-                                "'": '',
-                                "ç": 'c'
+                    "'": '',
+                    "ç": 'c'
                 }
 
                 for k, v in replace_chars.items():
@@ -119,7 +119,7 @@ class Provider(TorrentProvider):
                 try:
                     search_params = {
                         'category': '2145',
-                        'sub_category' : 'all',
+                        'sub_category': 'all',
                         'name': re.sub(r'[()]', '', search_string),
                         'do': 'search'
                     }
@@ -164,13 +164,13 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != 'RSS':
                                     logger.debug('Discarding torrent because it doesn\'t meet the minimum seeders or leechers: {0} (S:{1} L:{2})'.format
-                                               (title, seeders, leechers))
+                                                 (title, seeders, leechers))
                                 continue
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
                                 logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format
-                                           (title, seeders, leechers))
+                                             (title, seeders, leechers))
 
                             items.append(item)
 

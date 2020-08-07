@@ -68,8 +68,8 @@ class Provider(TorrentProvider):
                 if mode != 'RSS':
                     logger.debug("Search string: {0}".format(search_string))
 
-                query = { 'sec': 'jax', 'cata': 'yes', 'search': search_string }
-                query.update({"c"+str(i): 1 for i in self.categories})
+                query = {'sec': 'jax', 'cata': 'yes', 'search': search_string}
+                query.update({"c" + str(i): 1 for i in self.categories})
 
                 data = self.get_url(self.urls['apisearch'], returns='text', post_data=query)
 
@@ -119,7 +119,7 @@ class Provider(TorrentProvider):
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != 'RSS':
                                 logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                           (title, seeders, leechers))
+                                             (title, seeders, leechers))
                             continue
 
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}

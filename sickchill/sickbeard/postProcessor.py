@@ -447,7 +447,6 @@ class PostProcessor(object):
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files,
                                       action=_int_sym_link, subtitles=subtitles)
 
-
     def _history_lookup(self):
         """
         Look up the NZB name in the history and see if it contains a record for self.nzb_name
@@ -1141,7 +1140,7 @@ class PostProcessor(object):
                 cur_ep.location = os.path.join(dest_path, new_file_name)
                 # download subtitles
                 if settings.USE_SUBTITLES and ep_obj.show.subtitles \
-                    and (cur_ep.season != 0 or settings.SUBTITLES_INCLUDE_SPECIALS):
+                        and (cur_ep.season != 0 or settings.SUBTITLES_INCLUDE_SPECIALS):
                     cur_ep.refreshSubtitles()
                     cur_ep.download_subtitles(force=True)
                 sql_l.append(cur_ep.get_sql())

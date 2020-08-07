@@ -532,13 +532,14 @@ WEB_USE_GZIP = True
 WEB_USERNAME = None
 WINDOWS_SHARES = {}
 
+
 def get_backlog_cycle_time():
     cycletime = DAILYSEARCH_FREQUENCY * 2 + 7
     return max([cycletime, 720])
 
 
 unpackStrings = NumDict({
-        UNPACK_DISABLED: _('Ignore (do not process contents)'),
-        UNPACK_PROCESS_CONTENTS: _('Unpack (process contents)'),
-        UNPACK_PROCESS_INTACT: _('Treat as video (process archive as-is)')
+    UNPACK_DISABLED: _('Ignore (do not process contents)'),
+    UNPACK_PROCESS_CONTENTS: _('Unpack (process contents)'),
+    UNPACK_PROCESS_INTACT: _('Treat as video (process archive as-is)')
 })

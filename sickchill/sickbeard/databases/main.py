@@ -45,10 +45,10 @@ class MainSanityCheck(db.DBSanityCheck):
                 fixedStatus = common.Quality.compositeStatus(common.ARCHIVED, quality)
 
             logger.info('Changing status from {old_status} to {new_status} for {id}: {ep} at {location} (File {result})'.format
-                       (old_status=common.statusStrings[common.ARCHIVED], new_status=common.statusStrings[fixedStatus],
-                        id=archivedEp['showid'], ep=episode_num(archivedEp['season'], archivedEp['episode']),
-                        location=archivedEp['location'] if archivedEp['location'] else 'unknown location',
-                        result=('NOT FOUND', 'EXISTS')[bool(existing)]))
+                        (old_status=common.statusStrings[common.ARCHIVED], new_status=common.statusStrings[fixedStatus],
+                         id=archivedEp['showid'], ep=episode_num(archivedEp['season'], archivedEp['episode']),
+                         location=archivedEp['location'] if archivedEp['location'] else 'unknown location',
+                         result=('NOT FOUND', 'EXISTS')[bool(existing)]))
 
             self.connection.action("UPDATE tv_episodes SET status = {0:d} WHERE episode_id = {1:d}".format(fixedStatus, archivedEp['episode_id']))
 
@@ -69,7 +69,7 @@ class MainSanityCheck(db.DBSanityCheck):
 
             if len(mapping) != 1:
                 logger.warning("Error mapping show from tvrage to tvdb for {0} ({1}), found {2:d} mapping results. Cannot convert automatically!".format
-                           (tvrage_show['show_name'], tvrage_show['location'], len(mapping)))
+                               (tvrage_show['show_name'], tvrage_show['location'], len(mapping)))
 
                 logger.warning("Removing the TVRage show and it's episodes from the DB, use 'addExistingShow'")
                 self.connection.action("DELETE FROM tv_shows WHERE indexer_id = {0:d} AND indexer = {1:d}".format(tvrage_show['indexer_id'], INDEXER_TVRAGE))
@@ -141,8 +141,8 @@ class MainSanityCheck(db.DBSanityCheck):
         for cur_duplicate in sql_results:
 
             logger.debug("Duplicate episode detected! showid: {dupe_id} season: {dupe_season} episode {dupe_episode} count: {dupe_count}".format
-                       (dupe_id=str(cur_duplicate["showid"]), dupe_season=str(cur_duplicate["season"]), dupe_episode=str(cur_duplicate["episode"]),
-                        dupe_count=str(cur_duplicate["count"])))
+                         (dupe_id=str(cur_duplicate["showid"]), dupe_season=str(cur_duplicate["season"]), dupe_episode=str(cur_duplicate["episode"]),
+                          dupe_count=str(cur_duplicate["count"])))
 
             cur_dupe_results = self.connection.select(
                 "SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? and episode = ? ORDER BY episode_id DESC LIMIT ?",
@@ -1116,6 +1116,7 @@ class UseSickChillMetadataForSubtitle(AlterTVShowsFieldTypes):
     """
     Add a minor version for adding a show setting to use SR metadata for subtitles
     """
+
     def test(self):
         return self.has_column('tv_shows', 'sub_use_sr_metadata')
 
