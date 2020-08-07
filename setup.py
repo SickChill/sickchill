@@ -38,4 +38,9 @@ if 'setup.py' in sys.argv[0]:
             'sickchill': [('**.py', 'python', None)],
         },
         include_package_data=True,
+        use_scm_version={
+            'write_to': 'sickchill/version.py',
+            'write_to_template': '__version__ = "{version}"',
+            'tag_regex': r'^(?P<prefix>v)?(?P<version>[^\+]+)(?P<suffix>.*)?$'
+        }
     )
