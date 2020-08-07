@@ -43,7 +43,10 @@ class Find(TMDB):
             Social IDs: Facebook, Insagram, Twitter
 
         Args:
-            external_source: See lists above.
+            language: (optional) ISO 639-1 code.
+            external_source: Allowed Values: imdb_id, freebase_mid,
+                freebase_id, tvdb_id, tvrage_id, facebook_id, twitter_id,
+                instagram_id 
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -90,6 +93,7 @@ class Trending(TMDB):
             'week': View the trending list for the week.
 
         Args:
+            None
 
         Returns:
             A dict respresentation of the JSON returned from the API.

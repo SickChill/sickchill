@@ -379,24 +379,6 @@
                                 </div>
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                                        <label class="component-title">${_('Lsar Tool')}</label>
-                                    </div>
-                                    <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <input type="text" name="lsar_tool" id="lsar_tool" value="${settings.LSAR_TOOL}" class="form-control
-                                                input-sm input350" autocapitalize="off" />
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <label for="lsar_tool">${_('add the path to an lsar tool if it is not in the system path')}</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="field-pair row">
-                                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
                                         <label class="component-title">${_('Delete RAR contents')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">

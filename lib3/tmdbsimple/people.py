@@ -47,7 +47,9 @@ class People(TMDB):
         https://developers.themoviedb.org/3/getting-started/append-to-response.
 
         Args:
-            append_to_response: (optional) Comma separated, any person method.
+            language: (optional) ISO 639-1 code.
+            append_to_response: (optional) Append requests within the same
+                namespace to the response.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -66,8 +68,11 @@ class People(TMDB):
         and end_date query parameters.
 
         Args:
-            start_date: (optional) Expected format is 'YYYY-MM-DD'.
-            end_date: (optional) Expected format is 'YYYY-MM-DD'.
+            start_date: (optional) Filter the results with a start date.
+                Expected format is 'YYYY-MM-DD'.
+            end_date: (optional) Filter the results with a end date.
+                Expected format is 'YYYY-MM-DD'.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -84,7 +89,6 @@ class People(TMDB):
 
         Args:
             language: (optional) ISO 639-1 code.
-            append_to_response: (optional) Comma separated, any person method.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -104,7 +108,6 @@ class People(TMDB):
 
         Args:
             language: (optional) ISO 639-1 code.
-            append_to_response: (optional) Comma separated, any person method.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -121,7 +124,6 @@ class People(TMDB):
 
         Args:
             language: (optional) ISO 639-1 code.
-            append_to_response: (optional) Comma separated, any person method.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -145,6 +147,9 @@ class People(TMDB):
             - TVRage ID
             - Twitter
 
+        Args:
+            language: (optional) ISO 639-1 code.
+
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
@@ -157,6 +162,9 @@ class People(TMDB):
     def images(self, **kwargs):
         """
         Get the images for a person.
+
+        Args:
+            None
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -171,6 +179,10 @@ class People(TMDB):
         """
         Get the images that this person has been tagged in.
 
+        Args:
+            language: (optional) ISO 639-1 code.
+            page: (optional) Minimum 1, maximum 1000, default 1.
+
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
@@ -183,6 +195,9 @@ class People(TMDB):
     def translations(self, **kwargs):
         """
         Get a list of translations that have been created for a person.
+
+        Args:
+            language: (optional) ISO 639-1 code.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -198,6 +213,9 @@ class People(TMDB):
         Get the most newly created person. This is a live response and will
         continuously change.
 
+        Args:
+            language: (optional) ISO 639-1 code.
+
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
@@ -212,7 +230,8 @@ class People(TMDB):
         Get the list of popular people on TMDb. This list updates daily.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
+            language: (optional) ISO 639-1 code.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -244,7 +263,7 @@ class Credits(TMDB):
         Get a movie or TV credit details by id.
 
         Args:
-            language: (optional) ISO 639-1 code.
+            None
 
         Returns:
             A dict respresentation of the JSON returned from the API.

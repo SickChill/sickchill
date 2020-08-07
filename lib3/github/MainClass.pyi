@@ -1,13 +1,13 @@
 from datetime import datetime
 from io import BytesIO
-from typing import Any, Dict, List, Optional, Tuple, Type, Union
+from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar, Union, overload
 
 from github.AuthenticatedUser import AuthenticatedUser
 from github.Commit import Commit
 from github.ContentFile import ContentFile
 from github.Event import Event
 from github.Gist import Gist
-from github.GithubObject import _NotSetType
+from github.GithubObject import GithubObject, _NotSetType
 from github.GitignoreTemplate import GitignoreTemplate
 from github.HookDescription import HookDescription
 from github.Installation import Installation
@@ -24,6 +24,8 @@ from github.Topic import Topic
 
 # from urllib3.util.retry import Retry
 
+TGithubObject = TypeVar('TGithubObject', bound=GithubObject)
+
 class Github:
     def __init__(
         self,
@@ -36,7 +38,6 @@ class Github:
         client_secret: Optional[str] = ...,
         user_agent: str = ...,
         per_page: int = ...,
-        api_preview: bool = ...,
         verify: bool = ...,
         retry: Any = ...,
     ) -> None: ...
@@ -46,11 +47,11 @@ class Github:
     def __set_per_page(self, value: int) -> None: ...
     def create_from_raw_data(
         self,
-        klass: Union[Type[Repository], Type[NamedUser]],
+        klass: Type[TGithubObject],
         raw_data: Dict[str, Any],
         headers: Dict[str, Union[str, int]] = ...,
-    ) -> Union[Repository, NamedUser]: ...
-    def dump(self, obj: Repository, file: BytesIO, protocol: int = ...) -> None: ...
+    ) -> TGithubObject: ...
+    def dump(self, obj: GithubObject, file: BytesIO, protocol: int = ...) -> None: ...
     def get_emojis(self) -> Dict[str, str]: ...
     def get_events(self) -> PaginatedList[Event]: ...
     def get_gist(self, id: str) -> Gist: ...
@@ -78,9 +79,10 @@ class Github:
         since: Union[int, _NotSetType] = ...,
         visibility: Union[str, _NotSetType] = ...,
     ) -> PaginatedList[Repository]: ...
-    def get_user(
-        self, login: Union[str, _NotSetType] = ...
-    ) -> Union[AuthenticatedUser, NamedUser]: ...
+    @overload
+    def get_user(self, login: _NotSetType) -> AuthenticatedUser: ...
+    @overload
+    def get_user(self, login: str) -> NamedUser: ...
     def get_users(
         self, since: Union[int, _NotSetType] = ...
     ) -> PaginatedList[NamedUser]: ...
@@ -100,36 +102,40 @@ class Github:
         sort: Union[str, _NotSetType] = ...,
         order: Union[str, _NotSetType] = ...,
         highlight: bool = ...,
-        **qualifiers
+        **qualifiers: Dict[str, Any]
     ) -> PaginatedList[ContentFile]: ...
     def search_commits(
         self,
         query: str,
         sort: Union[str, _NotSetType] = ...,
         order: Union[str, _NotSetType] = ...,
-        **qualifiers
+        **qualifiers: Dict[str, Any]
     ) -> PaginatedList[Commit]: ...
     def search_issues(
         self,
         query: str,
         sort: Union[str, _NotSetType] = ...,
         order: Union[str, _NotSetType] = ...,
-        **qualifiers
+        **qualifiers: Dict[str, Any]
     ) -> PaginatedList[Issue]: ...
     def search_repositories(
         self,
         query: str,
         sort: Union[str, _NotSetType] = ...,
         order: Union[str, _NotSetType] = ...,
-        **qualifiers
+        **qualifiers: Dict[str, Any]
     ) -> PaginatedList[Repository]: ...
-    def search_topics(self, query: str, **qualifiers) -> PaginatedList[Topic]: ...
+    def search_topics(
+        self,
+        query: str,
+        **qualifiers: Dict[str, Any]
+    ) -> PaginatedList[Topic]: ...
     def search_users(
         self,
         query: str,
         sort: Union[str, _NotSetType] = ...,
         order: Union[str, _NotSetType] = ...,
-        **qualifiers
+        **qualifiers: Dict[str, Any]
     ) -> PaginatedList[NamedUser]: ...
 
 class GithubIntegration:

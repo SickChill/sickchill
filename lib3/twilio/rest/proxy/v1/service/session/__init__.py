@@ -267,13 +267,14 @@ class SessionContext(InstanceContext):
         return self._version.delete(method='DELETE', uri=self._uri, )
 
     def update(self, date_expiry=values.unset, ttl=values.unset,
-               status=values.unset):
+               status=values.unset, fail_on_participant_conflict=values.unset):
         """
         Update the SessionInstance
 
         :param datetime date_expiry: The ISO 8601 date when the Session should expire
         :param unicode ttl: When the session will expire
         :param SessionInstance.Status status: The new status of the resource
+        :param bool fail_on_participant_conflict: Opt-in to enable Proxy to return 400 on detected conflict on re-open request.
 
         :returns: The updated SessionInstance
         :rtype: twilio.rest.proxy.v1.service.session.SessionInstance
@@ -282,6 +283,7 @@ class SessionContext(InstanceContext):
             'DateExpiry': serialize.iso8601_datetime(date_expiry),
             'Ttl': ttl,
             'Status': status,
+            'FailOnParticipantConflict': fail_on_participant_conflict,
         })
 
         payload = self._version.update(method='POST', uri=self._uri, data=data, )
@@ -549,18 +551,24 @@ class SessionInstance(InstanceResource):
         return self._proxy.delete()
 
     def update(self, date_expiry=values.unset, ttl=values.unset,
-               status=values.unset):
+               status=values.unset, fail_on_participant_conflict=values.unset):
         """
         Update the SessionInstance
 
         :param datetime date_expiry: The ISO 8601 date when the Session should expire
         :param unicode ttl: When the session will expire
         :param SessionInstance.Status status: The new status of the resource
+        :param bool fail_on_participant_conflict: Opt-in to enable Proxy to return 400 on detected conflict on re-open request.
 
         :returns: The updated SessionInstance
         :rtype: twilio.rest.proxy.v1.service.session.SessionInstance
         """
-        return self._proxy.update(date_expiry=date_expiry, ttl=ttl, status=status, )
+        return self._proxy.update(
+            date_expiry=date_expiry,
+            ttl=ttl,
+            status=status,
+            fail_on_participant_conflict=fail_on_participant_conflict,
+        )
 
     @property
     def interactions(self):

@@ -135,6 +135,8 @@ import github.StatsPunchCard
 import github.Tag
 import github.Team
 import github.View
+import github.Workflow
+import github.WorkflowRun
 
 from . import Consts
 
@@ -758,14 +760,6 @@ class Repository(github.GithubObject.CompletableGithubObject):
         return self._teams_url.value
 
     @property
-    def topics(self):
-        """
-        :type: list of strings
-        """
-        self._completeIfNotSet(self._topics)
-        return self._topics.value
-
-    @property
     def trees_url(self):
         """
         :type: string
@@ -988,6 +982,7 @@ class Repository(github.GithubObject.CompletableGithubObject):
         """
         Convenience function that calls :meth:`Repository.create_git_tag` and
         :meth:`Repository.create_git_release`.
+
         :param tag: string
         :param tag_message: string
         :param release_name: string
@@ -1945,7 +1940,7 @@ class Repository(github.GithubObject.CompletableGithubObject):
         """
         :calls: `GET /repos/:owner/:repo/traffic/clones <https://developer.github.com/v3/repos/traffic/>`_
         :param per: string, must be one of day or week, day by default
-        :rtype: None or list of :class:`github.Clone.Clone`
+        :rtype: None or list of :class:`github.Clones.Clones`
         """
         assert per is github.GithubObject.NotSet or (
             isinstance(per, str) and (per == "day" or per == "week")
@@ -2930,7 +2925,7 @@ class Repository(github.GithubObject.CompletableGithubObject):
 
     def get_releases(self):
         """
-        :calls: `GET /repos/:owner/:repo/releases <http://developer.github.com/v3/repos>`_
+        :calls: `GET /repos/:owner/:repo/releases <https://developer.github.com/v3/repos/releases/#list-releases-for-a-repository>`_
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.GitRelease.GitRelease`
         """
         return github.PaginatedList.PaginatedList(
@@ -2998,6 +2993,60 @@ class Repository(github.GithubObject.CompletableGithubObject):
         """
         return github.PaginatedList.PaginatedList(
             github.NamedUser.NamedUser, self._requester, self.url + "/watchers", None
+        )
+
+    def get_workflows(self):
+        """
+        :calls: `GET /repos/:owner/:repo/actions/workflows <https://developer.github.com/v3/actions/workflows>`_
+        :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Workflow.Workflow`
+        """
+        return github.PaginatedList.PaginatedList(
+            github.Workflow.Workflow,
+            self._requester,
+            self.url + "/actions/workflows",
+            None,
+            list_item="workflows",
+        )
+
+    def get_workflow_runs(self):
+        """
+        :calls: `GET /repos/:owner/:repo/actions/runs <https://developer.github.com/v3/actions/workflow-runs>`_
+        :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.WorkflowRun.WorkflowRun`
+        """
+        return github.PaginatedList.PaginatedList(
+            github.WorkflowRun.WorkflowRun,
+            self._requester,
+            self.url + "/actions/runs",
+            None,
+            list_item="workflow_runs",
+        )
+
+    def get_workflow(self, id_or_name):
+        """
+        :calls: `GET /repos/:owner/:repo/actions/workflows/:workflow_id <https://developer.github.com/v3/actions/workflows>`_
+        :param id_or_name: int or string
+
+        :rtype: :class:`github.Workflow.Workflow`
+        """
+        assert isinstance(id_or_name, int) or isinstance(id_or_name, str), id_or_name
+        headers, data = self._requester.requestJsonAndCheck(
+            "GET", self.url + "/actions/workflows/" + id_or_name
+        )
+        return github.Workflow.Workflow(self._requester, headers, data, completed=True)
+
+    def get_workflow_run(self, id_):
+        """
+        :calls: `GET /repos/:owner/:repo/actions/runs/:run_id <https://developer.github.com/v3/actions/workflow-runs>`_
+        :param id_: int
+
+        :rtype: :class:`github.WorkflowRun.WorkflowRun`
+        """
+        assert isinstance(id_, int)
+        headers, data = self._requester.requestJsonAndCheck(
+            "GET", self.url + "/actions/runs/" + str(id_)
+        )
+        return github.WorkflowRun.WorkflowRun(
+            self._requester, headers, data, completed=True
         )
 
     def has_in_assignees(self, assignee):
@@ -3388,7 +3437,6 @@ class Repository(github.GithubObject.CompletableGithubObject):
         self._svn_url = github.GithubObject.NotSet
         self._tags_url = github.GithubObject.NotSet
         self._teams_url = github.GithubObject.NotSet
-        self._topics = github.GithubObject.NotSet
         self._trees_url = github.GithubObject.NotSet
         self._updated_at = github.GithubObject.NotSet
         self._url = github.GithubObject.NotSet
@@ -3594,8 +3642,6 @@ class Repository(github.GithubObject.CompletableGithubObject):
             self._teams_url = self._makeStringAttribute(attributes["teams_url"])
         if "trees_url" in attributes:  # pragma no branch
             self._trees_url = self._makeStringAttribute(attributes["trees_url"])
-        if "topics" in attributes:  # pragma no branch
-            self._topics = self._makeListOfStringsAttribute(attributes["topics"])
         if "updated_at" in attributes:  # pragma no branch
             self._updated_at = self._makeDatetimeAttribute(attributes["updated_at"])
         if "url" in attributes:  # pragma no branch

@@ -34,16 +34,17 @@ class VerificationList(ListResource):
         self._solution = {'service_sid': service_sid, }
         self._uri = '/Services/{service_sid}/Verifications'.format(**self._solution)
 
-    def create(self, to, channel, custom_message=values.unset,
-               send_digits=values.unset, locale=values.unset,
-               custom_code=values.unset, amount=values.unset, payee=values.unset,
-               rate_limits=values.unset, channel_configuration=values.unset,
-               app_hash=values.unset):
+    def create(self, to, channel, custom_friendly_name=values.unset,
+               custom_message=values.unset, send_digits=values.unset,
+               locale=values.unset, custom_code=values.unset, amount=values.unset,
+               payee=values.unset, rate_limits=values.unset,
+               channel_configuration=values.unset, app_hash=values.unset):
         """
         Create the VerificationInstance
 
         :param unicode to: The phone number or email to verify
         :param unicode channel: The verification method to use
+        :param unicode custom_friendly_name: A custom user defined friendly name
         :param unicode custom_message: The text of a custom message to use for the verification
         :param unicode send_digits: The digits to send after a phone call is answered
         :param unicode locale: The locale to use for the verification SMS or call
@@ -60,6 +61,7 @@ class VerificationList(ListResource):
         data = values.of({
             'To': to,
             'Channel': channel,
+            'CustomFriendlyName': custom_friendly_name,
             'CustomMessage': custom_message,
             'SendDigits': send_digits,
             'Locale': locale,

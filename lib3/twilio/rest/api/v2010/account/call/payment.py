@@ -48,22 +48,22 @@ class PaymentList(ListResource):
         """
         Create the PaymentInstance
 
-        :param unicode idempotency_key: A unique token for each payment session that should be provided to maintain idempotency of the session.
-        :param unicode status_callback: The URL we should call to send status of payment session.
-        :param PaymentInstance.BankAccountType bank_account_type: If Payment source is ACH, type of bank account.
-        :param unicode charge_amount: If this field is present and greater than `0.0` payment source will be charged.
-        :param unicode currency: Currency `charge_amount` is in.
-        :param unicode description: Decription of the charge.
-        :param unicode input: Kind of medium customer would enter payment source information in.
-        :param unicode min_postal_code_length: If postal code is expected, minimum length of the postal code.
-        :param dict parameter: Additonal data to be sent over to payment provider.
-        :param unicode payment_connector: Payment connector that you would like Twilio to use for processing payments.
-        :param PaymentInstance.PaymentMethod payment_method: Payment source type.
-        :param bool postal_code: Whether to expect postal code during payment source data gathering.
-        :param bool security_code: Whether to expect security code during payment source data gathering.
-        :param unicode timeout: The number of seconds that we should allow customer to enter payment information
-        :param PaymentInstance.TokenType token_type: If tokenization of payment source is desired, this represents type of token.
-        :param unicode valid_card_types: List of card types accepted with each card types separated by space.
+        :param unicode idempotency_key: A unique token that will be used to ensure that multiple API calls with the same information do not result in multiple transactions.
+        :param unicode status_callback: Provide an absolute or relative URL to receive status updates regarding your Pay session..
+        :param PaymentInstance.BankAccountType bank_account_type: Type of bank account if payment source is ACH.
+        :param unicode charge_amount: A positive decimal value less than 1,000,000 to charge against the credit card or bank account.
+        :param unicode currency: The currency of the `charge_amount`.
+        :param unicode description: The description can be used to provide more details regarding the transaction.
+        :param unicode input: A list of inputs that should be accepted. Currently only `dtmf` is supported.
+        :param unicode min_postal_code_length: A positive integer that is used to validate the length of the `PostalCode` inputted by the user.
+        :param dict parameter: A single level JSON string that is required when accepting certain information specific only to ACH payments.
+        :param unicode payment_connector: This is the unique name corresponding to the Payment Gateway Connector installed in the Twilio Add-ons.
+        :param PaymentInstance.PaymentMethod payment_method: Type of payment being captured.
+        :param bool postal_code: Indicates whether the credit card PostalCode (zip code) is a required piece of payment information that must be provided by the caller.
+        :param bool security_code: Indicates whether the credit card security code is a required piece of payment information that must be provided by the caller.
+        :param unicode timeout: The number of seconds that <Pay> should wait for the caller to press a digit between each subsequent digit, after the first one, before moving on to validate the digits captured.
+        :param PaymentInstance.TokenType token_type: Indicates whether the payment method should be tokenized as a `one-time` or `reusable` token.
+        :param unicode valid_card_types: Credit card types separated by space that Pay should accept.
 
         :returns: The created PaymentInstance
         :rtype: twilio.rest.api.v2010.account.call.payment.PaymentInstance
@@ -214,10 +214,10 @@ class PaymentContext(InstanceContext):
         """
         Update the PaymentInstance
 
-        :param unicode idempotency_key: A unique token for each payment session that should be provided to maintain idempotency of the session.
-        :param unicode status_callback: The URL we should call to send status of payment session.
-        :param PaymentInstance.Capture capture: Specific payment source information to expect.
-        :param PaymentInstance.Status status: Instruction to complete or cancel the transaction.
+        :param unicode idempotency_key: A unique token that will be used to ensure that multiple API calls with the same information do not result in multiple transactions.
+        :param unicode status_callback: Provide an absolute or relative URL to receive status updates regarding your Pay session.
+        :param PaymentInstance.Capture capture: The piece of payment information that you wish the caller to enter.
+        :param PaymentInstance.Status status: Indicates whether the current payment session should be cancelled or completed.
 
         :returns: The updated PaymentInstance
         :rtype: twilio.rest.api.v2010.account.call.payment.PaymentInstance
@@ -378,10 +378,10 @@ class PaymentInstance(InstanceResource):
         """
         Update the PaymentInstance
 
-        :param unicode idempotency_key: A unique token for each payment session that should be provided to maintain idempotency of the session.
-        :param unicode status_callback: The URL we should call to send status of payment session.
-        :param PaymentInstance.Capture capture: Specific payment source information to expect.
-        :param PaymentInstance.Status status: Instruction to complete or cancel the transaction.
+        :param unicode idempotency_key: A unique token that will be used to ensure that multiple API calls with the same information do not result in multiple transactions.
+        :param unicode status_callback: Provide an absolute or relative URL to receive status updates regarding your Pay session.
+        :param PaymentInstance.Capture capture: The piece of payment information that you wish the caller to enter.
+        :param PaymentInstance.Status status: Indicates whether the current payment session should be cancelled or completed.
 
         :returns: The updated PaymentInstance
         :rtype: twilio.rest.api.v2010.account.call.payment.PaymentInstance

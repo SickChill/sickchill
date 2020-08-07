@@ -55,48 +55,87 @@ class Discover(TMDB):
         https://www.themoviedb.org/documentation/api/discover.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
             language: (optional) ISO 639-1 code.
-            sort_by: (optional) Available options are 'vote_average.desc',
-                     'vote_average.asc', 'release_date.desc', 'release_date.asc'
-                     'popularity.desc', 'popularity.asc'.
-            include_adult: (optional) Toggle the inclusion of adult titles.
-                           Expected value is a boolean, True or False.
-            year: (optional) Filter the results release dates to matches that
-                  include this value. Expected value is a year.
-            primary_release_year: (optional) Filter the results so that
-                                  only the primary release date year has
-                                  this value.  Expected value is a year.
-            vote_count.gte or vote_count_gte: (optional) Only include movies
-                            that are equal to, or have a vote count higher
-                            than this value.  Expected value is an integer.
-            vote_average.gte or vote_average_gte: (optional) Only include
-                              movies that are equal to, or have a higher
-                              average rating than this value.  Expected value
-                              is a float.
-            with_genres: (optional) Only include movies with the specified
-                         genres.  Expected value is an integer (the id of
-                         a genre).  Multiple values can be specified.
-                         Comma separated indicates an 'AND' query, while
-                         a pipe (|) separated value indicates an 'OR'.
-            release_date.gte or release_date_gte: (optional) The minimum
-                              release to include.  Expected format is
-                              'YYYY-MM-DD'.
-            releaste_date.lte or release_date_lte: (optional) The maximum
-                              release to include.  Expected format is
-                              'YYYY-MM-DD'.
-            certification_country: (optional) Only include movies with
-                                   certifications for a specific country. When
-                                   this value is specified, 'certification.lte'
-                                   is required. An ISO 3166-1 is expected.
-            certification.lte or certification_lte: (optional) Only include
-                               movies with this certification and lower.
-                               Expected value is a valid certification for
-                               the specified 'certification_country'.
-            with_companies: (optional) Filter movies to include a specific
-                            company.  Expected value is an integer (the id
-                            of a company).  They can be comma separated
-                            to indicate an 'AND' query.
+            region: (optional) Specify a ISO 3166-1 code.
+            sort_by: (optional) Allowed values: popularity.asc,
+                popularity.desc, release_date.asc, release_date.desc,
+                revenue.asc, revenue.desc, primary_release_date.asc,
+                primary_release_date.desc, original_title.asc,
+                original_title.desc, vote_average.asc, vote_average.desc,
+                vote_count.asc, vote_count.desc
+                Default: popularity.desc
+            certification_country: (optional) Used in conjunction with the
+                certification filter, use this to specify a country with a
+                valid certification.
+            certification: Filter results with a valid certification from the
+                'certification_country' field.
+            certification.gte: Filter and only include movies that have a
+                certification that is greater than or equal to the specified
+                value.
+            certification.lte: Filter and only include movies that have a
+                certification that is less than or equal to the specified
+                value.
+            include_adult: (optional) A filter and include or exclude adult
+                movies.
+            include_video: (optional) A filter to include or exclude videos.
+            page: (optional) Minimum 1, maximum 1000, default 1.
+            primary_release_year: (optional) A filter to limit the results to a
+                specific primary release year.
+            primary_release_date.gte: (optional) Filter and only include movies
+                that have a primary release date that is greater or equal to
+                the specified value.
+            primary_release_date.lte: (optional) Filter and only include movies
+                that have a primary release date that is less than or equal to
+                the specified value.
+            release_date.gte: (optional) Filter and only include movies that
+                have a primary release date that is greater or equal to the
+                specified value.
+            releaste_date.lte: (optional) Filter and only include movies that
+                have a primary release date that is less than or equal to the
+                specified value.
+            with_release_type: (optional) Specify a comma (AND) or pipe (OR)
+                separated value to filter release types by. These release types
+                map to the same values found on the movie release date method.
+                Minimum 1, maximum 6.
+            year: (optional) A filter to limit the results to a specific year
+                (looking at all release dates).
+            vote_count.gte: (optional) Filter and only include movies that have
+                a vote count that is greater or equal to the specified value.
+                Minimum 0.
+            vote_count.lte: (optional) Filter and only include movies that have
+                a vote count that is less than or equal to the specified value.
+                Minimum 1.
+            vote_average.gte: (optional) Filter and only include movies that
+                have a rating that is greater or equal to the specified value.
+                Minimum 0.
+            vote_average.lte: (optional) Filter and only include movies that
+                have a rating that is less than or equal to the specified value.
+                Minimum 0.
+            with_cast: (optional) A comma separated list of person ID's. Only
+                include movies that have one of the ID's added as an actor. 
+            with_crew: (optional) A comma separated list of person ID's. Only
+                include movies that have one of the ID's added as a crew member.
+            with_people: (optional) A comma separated list of person ID's. Only
+                include movies that have one of the ID's added as a either a
+                actor or a crew member.
+            with_companies: (optional) A comma separated list of production
+                company ID's. Only include movies that have one of the ID's
+                added as a production company.
+            with_genres: (optional) Comma separated value of genre ids that you
+                want to include in the results.
+            without_genres: (optional) Comma separated value of genre ids that
+                you want to exclude from the results.
+            with_keywords: (optional) A comma separated list of keyword ID's.
+                Only includes movies that have one of the ID's added as a
+                keyword.
+            without_keywords: (optional) Exclude items with certain keywords.
+                You can comma and pipe seperate these values to create an 'AND' or 'OR' logic.
+            with_runtime.gte: (optional) Filter and only include movies that
+                have a runtime that is greater or equal to a value.
+            with_runtime.lte: (optional) Filter and only include movies that
+                have a runtime that is less than or equal to a value.
+            with_original_language: (optional) Specify an ISO 639-1 string to
+                filter results by their original language value.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -131,37 +170,71 @@ class Discover(TMDB):
         https://www.themoviedb.org/documentation/api/discover.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
             language: (optional) ISO 639-1 code.
             sort_by: (optional) Available options are 'vote_average.desc',
                      'vote_average.asc', 'first_air_date.desc',
                      'first_air_date.asc', 'popularity.desc', 'popularity.asc'
-            first_air_year: (optional) Filter the results release dates to
-                            matches that include this value. Expected value
-                            is a year.
-            vote_count.gte or vote_count_gte: (optional) Only include TV shows
-                            that are equal to,
-                            or have vote count higher than this value. Expected
-                            value is an integer.
-            vote_average.gte or vote_average_gte: (optional) Only include TV
-                              shows that are equal
-                              to, or have a higher average rating than this
-                              value.  Expected value is a float.
-            with_genres: (optional) Only include TV shows with the specified
-                         genres. Expected value is an integer (the id of a
-                         genre).  Multiple valued can be specified. Comma
-                         separated indicates an 'AND' query, while a
-                         pipe (|) separated value indicates an 'OR'.
-            with_networks: (optional) Filter TV shows to include a specific
-                           network. Expected value is an integer (the id of a
-                           network).  They can be comma separated to indicate an
-                           'AND' query.
-            first_air_date.gte or first_air_date_gte: (optional) The minimum
-                                release to include.
-                                Expected format is 'YYYY-MM-DD'.
-            first_air_date.lte or first_air_date_lte: (optional) The maximum
-                                release to include.
-                                Expected format is 'YYYY-MM-DD'.
+            sort_by: (optional) Allowed values: vote_average.desc,
+                vote_average.asc, first_air_date.desc, first_air_date.asc,
+                popularity.desc, popularity.asc
+                Default: popularity.desc
+            air_date.gte: (optional) Filter and only include TV shows that have
+                a air date (by looking at all episodes) that is greater or
+                equal to the specified value.
+            air_date.lte: (optional) Filter and only include TV shows that have
+                a air date (by looking at all episodes) that is less than or
+                equal to the specified value.
+            first_air_date.gte: (optional) Filter and only include TV shows
+                that have a original air date that is greater or equal to the
+                specified value. Can be used in conjunction with the
+                "include_null_first_air_dates" filter if you want to include
+                items with no air date.
+            first_air_date.lte: (optional) Filter and only include TV shows
+                that have a original air date that is less than or equal to the
+                specified value. Can be used in conjunction with the
+                "include_null_first_air_dates" filter if you want to include
+                items with no air date.
+            first_air_date_year: (optional) Filter and only include TV shows
+                that have a original air date year that equal to the specified
+                value. Can be used in conjunction with the
+                "include_null_first_air_dates" filter if you want to include
+                items with no air date.
+            page: (optional) Specify the page of results to query. Default 1.
+            timezone: (optional) Used in conjunction with the air_date.gte/lte
+                filter to calculate the proper UTC offset. Default
+                America/New_York.
+            vote_average.gte: (optional) Filter and only include movies that
+                have a rating that is greater or equal to the specified value.
+                Minimum 0.
+            vote_count.gte: (optional) Filter and only include movies that have
+                a rating that is less than or equal to the specified value.
+                Minimum 0.
+            with_genres: (optional) Comma separated value of genre ids that you
+                want to include in the results.
+            with_networks: (optional) Comma separated value of network ids that
+                you want to include in the results.
+            without_genres: (optional) Comma separated value of genre ids that
+                you want to exclude from the results.
+            with_runtime.gte: (optional) Filter and only include TV shows with
+                an episode runtime that is greater than or equal to a value.
+            with_runtime.lte: (optional) Filter and only include TV shows with
+                an episode runtime that is less than or equal to a value.
+            include_null_first_air_dates: (optional) Use this filter to include
+                TV shows that don't have an air date while using any of the
+                "first_air_date" filters. 
+            with_original_language: (optional) Specify an ISO 639-1 string to
+                filter results by their original language value. 
+            without_keywords: (optional) Exclude items with certain keywords.
+                You can comma and pipe seperate these values to create an 'AND'
+                or 'OR' logic. 
+            screened_theatrically: (optional) Filter results to include items
+                that have been screened theatrically. 
+            with_companies: (optional) A comma separated list of production
+                company ID's. Only include movies that have one of the ID's
+                added as a production company. 
+            with_keywords: (optional) A comma separated list of keyword ID's.
+                Only includes TV shows that have one of the ID's added as a
+                keyword. 
 
         Returns:
             A dict respresentation of the JSON returned from the API.

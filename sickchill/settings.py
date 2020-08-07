@@ -195,7 +195,6 @@ LOG_DIR = None
 LOG_NR = 5
 LOG_SIZE = 10.0
 LOGO_URL = 'https://sickchill.github.io/images/ico/favicon-64.png'
-LSAR_TOOL = rarfile.LSAR_TOOL
 MATRIX_API_TOKEN = None
 MATRIX_NOTIFY_DOWNLOAD = None
 MATRIX_NOTIFY_SNATCH = None

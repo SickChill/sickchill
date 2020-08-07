@@ -33,7 +33,7 @@ class ConfigPostProcessing(Config):
                            del_rar_contents=None, process_automatically=None,
                            no_delete=None, rename_episodes=None, airdate_episodes=None,
                            file_timestamp_timezone=None,
-                           unpack=None, unpack_dir=None, unrar_tool=None, unar_tool=None, bsdtar_tool=None, lsar_tool=None,
+                           unpack=None, unpack_dir=None, unrar_tool=None, unar_tool=None, bsdtar_tool=None,
                            move_associated_files=None, delete_non_associated_files=None, sync_files=None,
                            postpone_if_sync_files=None,
                            allowed_extensions=None, tv_download_dir=None,
@@ -56,7 +56,7 @@ class ConfigPostProcessing(Config):
         config.change_process_automatically(process_automatically)
         settings.USE_ICACLS = config.checkbox_to_value(use_icacls)
 
-        config.change_unrar_tool(unrar_tool, unar_tool, bsdtar_tool, lsar_tool)
+        config.change_unrar_tool(unrar_tool, unar_tool, bsdtar_tool)
 
         unpack = try_int(unpack)
         if unpack == settings.UNPACK_PROCESS_CONTENTS:
@@ -183,7 +183,7 @@ class ConfigPostProcessing(Config):
         """
         Test Unpacking Support: - checks if unrar is installed and accesible
         """
-        check = config.change_unrar_tool(settings.UNRAR_TOOL, settings.UNAR_TOOL, settings.BSDTAR_TOOL, settings.LSAR_TOOL)
+        check = config.change_unrar_tool(settings.UNRAR_TOOL, settings.UNAR_TOOL, settings.BSDTAR_TOOL)
         if not check:
             logger.warning('Looks like unrar is not installed, check failed')
         return ('not supported', 'supported')[check]

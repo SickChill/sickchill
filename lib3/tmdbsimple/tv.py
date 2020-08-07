@@ -951,6 +951,9 @@ class Networks(TMDB):
         """
         Get the details of a network.
 
+        Args:
+            None
+
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
@@ -965,6 +968,7 @@ class Networks(TMDB):
         Get the alternative names of a network.
 
         Args:
+            None
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -990,6 +994,7 @@ class Networks(TMDB):
         through https://developers.themoviedb.org/3/getting-started/images.
 
         Args:
+            None
 
         Returns:
             A dict representation of the JSON returned from the API.

@@ -81,7 +81,7 @@ def change_https_key(https_key):
     return True
 
 
-def change_unrar_tool(unrar_tool, unar_tool, bsdtar_tool, lsar_tool):
+def change_unrar_tool(unrar_tool, unar_tool, bsdtar_tool):
     try:
         rarfile.tool_setup()
     except rarfile.RarCannotExec:
@@ -90,13 +90,11 @@ def change_unrar_tool(unrar_tool, unar_tool, bsdtar_tool, lsar_tool):
         settings.UNAR_TOOL = rarfile.UNRAR_TOOL
         settings.UNAR_TOOL = rarfile.UNAR_TOOL
         settings.BSDTAR_TOOL = rarfile.BSDTAR_TOOL
-        settings.LSAR_TOOL = rarfile.LSAR_TOOL
         return True
 
     _unrar_tool = rarfile.UNRAR_TOOL
     _unar_tool = rarfile.UNAR_TOOL
     _bsdtar_tool = rarfile.BSDTAR_TOOL
-    _lsar_tool = rarfile.LSAR_TOOL
 
     if unrar_tool and unrar_tool != rarfile.UNRAR_TOOL:
         rarfile.UNRAR_TOOL = unrar_tool
@@ -107,9 +105,6 @@ def change_unrar_tool(unrar_tool, unar_tool, bsdtar_tool, lsar_tool):
     if bsdtar_tool and bsdtar_tool != rarfile.BSDTAR_TOOL:
         rarfile.BSDTAR_TOOL = bsdtar_tool
 
-    if lsar_tool and lsar_tool != rarfile.LSAR_TOOL:
-        rarfile.LSAR_TOOL = lsar_tool
-
     try:
         rarfile.tool_setup()
     except rarfile.RarCannotExec:
@@ -118,13 +113,11 @@ def change_unrar_tool(unrar_tool, unar_tool, bsdtar_tool, lsar_tool):
         settings.UNAR_TOOL = rarfile.UNRAR_TOOL
         settings.UNAR_TOOL = rarfile.UNAR_TOOL
         settings.BSDTAR_TOOL = rarfile.BSDTAR_TOOL
-        settings.LSAR_TOOL = rarfile.LSAR_TOOL
         return True
 
     rarfile.UNRAR_TOOL = _unar_tool
     rarfile.UNAR_TOOL = _unar_tool
     rarfile.BSDTAR_TOOL = _bsdtar_tool
-    rarfile.LSAR_TOOL = _lsar_tool
 
     if platform.system() == 'Windows':
         # Look for WinRAR installations
@@ -177,14 +170,13 @@ def change_unrar_tool(unrar_tool, unar_tool, bsdtar_tool, lsar_tool):
     settings.UNRAR_TOOL = rarfile.UNRAR_TOOL = _unrar_tool
     settings.UNAR_TOOL = rarfile.UNAR_TOOL = _unar_tool
     settings.BSDTAR_TOOL = rarfile.BSDTAR_TOOL = _bsdtar_tool
-    settings.LSAR_TOOL = rarfile.LSAR_TOOL = _lsar_tool
 
     try:
         rarfile.tool_setup()
         return True
     except rarfile.RarCannotExec:
         if settings.UNPACK == settings.UNPACK_PROCESS_CONTENTS:
-            logger.info(_('Disabling UNPACK setting because no unrar/unar/bsdtar/lsar is found and accessible in the path or setting.'))
+            logger.info(_('Disabling UNPACK setting because no unrar/unar/bsdtar is found and accessible in the path or setting.'))
             settings.UNPACK = settings.UNPACK_DISABLED
         return False
 

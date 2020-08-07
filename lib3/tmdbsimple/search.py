@@ -36,8 +36,9 @@ class Search(TMDB):
         Search for companies.
 
         Args:
-            query: CGI escpaed string.
-            page: (optional) Minimum value of 1. Expected value is an integer.
+            query: (required) Pass a text query to search. This value should be
+                URI encoded.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -53,9 +54,10 @@ class Search(TMDB):
         Search for collections.
 
         Args:
-            query: CGI escpaed string.
-            page: (optional) Minimum value of 1. Expected value is an integer.
-            language: (optional) ISO 639-1 code.
+            language: (optional) (optional) ISO 639-1 code.
+            query: (required) Pass a text query to search. This value should be
+                URI encoded.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -71,8 +73,9 @@ class Search(TMDB):
         Search for keywords.
 
         Args:
-            query: CGI escpaed string.
-            page: (optional) Minimum value of 1. Expected value is an integer.
+            query: (required) Pass a text query to search. This value should be
+                URI encoded.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -88,21 +91,18 @@ class Search(TMDB):
         Search for movies.
 
         Args:
-            query: CGI escpaed string.
-            page: (optional) Minimum value of 1. Expected value is an integer.
-            language: (optional) ISO 639-1 code.
-            include_adult: (optional) Toggle the inclusion of adult titles.
-                           Expected value is True or False.
-            year: (optional) Filter the results release dates to matches that
-                  include this value.
-            primary_release_year: (optional) Filter the results so that only
-                                  the primary release dates have this value.
-            search_type: (optional) By default, the search type is 'phrase'.
-                         This is almost guaranteed the option you will want.
-                         It's a great all purpose search type and by far the
-                         most tuned for every day querying. For those wanting
-                         more of an "autocomplete" type search, set this
-                         option to 'ngram'.
+            language: (optional) (optional) ISO 639-1 code.
+            query: (required) Pass a text query to search. This value should be
+                URI encoded.
+            page: (optional) Minimum 1, maximum 1000, default 1.
+            include_adult: (optional) Choose whether to inlcude adult
+                (pornography) content in the results.
+            region: (optional) Specify a ISO 3166-1 code to filter release
+                dates. Must be uppercase.
+            year: (optional) A filter to limit the results to a specific year
+                (looking at all release dates).
+            primary_release_year: (optional) A filter to limit the results to a
+                specific primary release year.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -119,11 +119,14 @@ class Search(TMDB):
         supports searching for movies, tv shows and people in a single request.
 
         Args:
-            query: CGI escpaed string.
-            page: (optional) Minimum value of 1. Expected value is an integer.
-            language: (optional) ISO 639-1 code.
-            include_adult: (optional) Toggle the inclusion of adult titles.
-                           Expected value is True or False.
+            language: (optional) (optional) ISO 639-1 code.
+            query: (required) Pass a text query to search. This value should be
+                URI encoded.
+            page: (optional) Minimum 1, maximum 1000, default 1.
+            include_adult: (optional) Choose whether to inlcude adult
+                (pornography) content in the results.
+            region: (optional) Specify a ISO 3166-1 code to filter release
+                dates. Must be uppercase.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -139,16 +142,14 @@ class Search(TMDB):
         Search for people.
 
         Args:
-            query: CGI escpaed string.
-            page: (optional) Minimum value of 1. Expected value is an integer.
-            include_adult: (optional) Toggle the inclusion of adult titles.
-                           Expected value is True or False.
-            search_type: (optional) By default, the search type is 'phrase'.
-                         This is almost guaranteed the option you will want.
-                         It's a great all purpose search type and by far the
-                         most tuned for every day querying. For those wanting
-                         more of an "autocomplete" type search, set this
-                         option to 'ngram'.
+            language: (optional) (optional) ISO 639-1 code.
+            query: (required) Pass a text query to search. This value should be
+                URI encoded.
+            page: (optional) Minimum 1, maximum 1000, default 1.
+            include_adult: (optional) Choose whether to inlcude adult
+                (pornography) content in the results.
+            region: (optional) Specify a ISO 3166-1 code to filter release
+                dates. Must be uppercase.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -164,17 +165,14 @@ class Search(TMDB):
         Search for a TV show.
 
         Args:
-            query: CGI escpaed string.
-            page: (optional) Minimum value of 1. Expected value is an integer.
-            language: (optional) ISO 639-1 code.
+            language: (optional) (optional) ISO 639-1 code.
+            query: (required) Pass a text query to search. This value should be
+                URI encoded.
+            page: (optional) Minimum 1, maximum 1000, default 1.
+            include_adult: (optional) Choose whether to inlcude adult
+                (pornography) content in the results.
             first_air_date_year: (optional) Filter the results to only match
-                                 shows that have a air date with with value.
-            search_type: (optional) By default, the search type is 'phrase'.
-                         This is almost guaranteed the option you will want.
-                         It's a great all purpose search type and by far the
-                         most tuned for every day querying. For those wanting
-                         more of an "autocomplete" type search, set this
-                         option to 'ngram'.
+                shows that have an air date with with value.
 
         Returns:
             A dict respresentation of the JSON returned from the API.

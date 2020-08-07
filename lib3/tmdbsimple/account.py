@@ -83,7 +83,7 @@ class Account(TMDB):
 
         Args:
             language: (optional) ISO 639-1 code.
-            sort_by: (optional) 'created_at.asc' | 'created_at.desc'
+            sort_by: (optional) Allowed Values: created_at.asc, created_at.desc
             page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
@@ -102,7 +102,7 @@ class Account(TMDB):
 
         Args:
             language: (optional) ISO 639-1 code.
-            sort_by: (optional) 'created_at.asc' | 'created_at.desc'
+            sort_by: (optional) Allowed Values: created_at.asc, created_at.desc
             page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
@@ -146,7 +146,7 @@ class Account(TMDB):
 
         Args:
             language: (optional) ISO 639-1 value.
-            sort_by: (optional) 'created_at.asc' | 'created_at.desc'
+            sort_by: (optional) Allowed Values: created_at.asc, created_at.desc
             page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
@@ -165,7 +165,7 @@ class Account(TMDB):
 
         Args:
             language: (optional) ISO 639-1 value.
-            sort_by: (optional) 'created_at.asc' | 'created_at.desc'
+            sort_by: (optional) Allowed Values: created_at.asc, created_at.desc
             page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
@@ -184,7 +184,7 @@ class Account(TMDB):
 
         Args:
             language: (optional) ISO 639-1 value.
-            sort_by: (optional) 'created_at.asc' | 'created_at.desc'
+            sort_by: (optional) Allowed Values: created_at.asc, created_at.desc
             page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
@@ -203,7 +203,7 @@ class Account(TMDB):
 
         Args:
             language: (optional) ISO 639-1 value.
-            sort_by: (optional) 'created_at.asc' | 'created_at.desc'
+            sort_by: (optional) Allowed Values: created_at.asc, created_at.desc
             page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
@@ -222,7 +222,7 @@ class Account(TMDB):
 
         Args:
             language: (optional) ISO 639-1 value.
-            sort_by: (optional) 'created_at.asc' | 'created_at.desc'
+            sort_by: (optional) Allowed Values: created_at.asc, created_at.desc
             page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
@@ -415,9 +415,8 @@ class GuestSessions(TMDB):
         Get the rated movies for a guest session.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
-            sort_by: (optional) 'created_at.asc' | 'created_at.desc'
             language: (optional) ISO 639-1 code.
+            sort_by: (optional) Allowed Values: created_at.asc, created_at.desc
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -433,9 +432,8 @@ class GuestSessions(TMDB):
         Get the rated TV shows for a guest session.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
-            sort_by: (optional) 'created_at.asc' | 'created_at.desc'
             language: (optional) ISO 639-1 code.
+            sort_by: (optional) Allowed Values: created_at.asc, created_at.desc
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -451,9 +449,8 @@ class GuestSessions(TMDB):
         Get the rated TV episodes for a guest session.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
-            sort_by: (optional) 'created_at.asc' | 'created_at.desc'
             language: (optional) ISO 639-1 code.
+            sort_by: (optional) Allowed Values: created_at.asc, created_at.desc
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -491,6 +488,9 @@ class Lists(TMDB):
         """
         Get the details of a list.
 
+        Args:
+            language: (optional) ISO 639-1 code.
+
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
@@ -506,7 +506,7 @@ class Lists(TMDB):
         the list.
 
         Args:
-            movie_id: The id of the movie.
+            movie_id: The id of the movie.  Minimum 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -548,7 +548,7 @@ class Lists(TMDB):
         Add a movie to a list.
 
         Args:
-            media_id: A movie id.
+            media_id: A movie id.  Minimum 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -569,7 +569,7 @@ class Lists(TMDB):
         Remove a movie from a list.
 
         Args:
-            media_id: A movie id.
+            media_id: A movie id.  Minimum 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -609,6 +609,7 @@ class Lists(TMDB):
         Delete a list.
 
         Args:
+            None
 
         Returns:
             A dict respresentation of the JSON returned from the API.

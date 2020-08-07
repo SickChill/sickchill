@@ -61,7 +61,8 @@ class Movies(TMDB):
 
         Args:
             language: (optional) ISO 639-1 code.
-            append_to_response: (optional) Comma separated, any movie method.
+            append_to_response: (optional) Append requests within the same
+                namespace to the response.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -80,7 +81,8 @@ class Movies(TMDB):
             - If it belongs to your favourite list
 
         Args:
-            session_id: see Authentication.
+            session_id: (required) See Authentication.
+            guest_session_id: (optional) See Authentication.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -97,7 +99,6 @@ class Movies(TMDB):
 
         Args:
             country: (optional) ISO 3166-1 code.
-            append_to_response: (optional) Comma separated, any movie method.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -116,8 +117,11 @@ class Movies(TMDB):
         and end_date query parameters.
 
         Args:
-            start_date: (optional) Expected format is 'YYYY-MM-DD'.
-            end_date: (optional) Expected format is 'YYYY-MM-DD'.
+            start_date: (optional) Filter the results with a start date.
+                Expected format is 'YYYY-MM-DD'.
+            end_date: (optional) Filter the results with a end date.
+                Expected format is 'YYYY-MM-DD'.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -133,7 +137,7 @@ class Movies(TMDB):
         Get the cast and crew for a movie.
 
         Args:
-            append_to_response: (optional) Comma separated, any movie method.
+            None
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -153,8 +157,7 @@ class Movies(TMDB):
         Social IDs - Facebok, Instagram, Twitter
 
         Args:
-            language: (optional) ISO 639-1 code.
-            append_to_response: (optional) Comma separated, any movie method.
+            None
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -177,7 +180,6 @@ class Movies(TMDB):
 
         Args:
             language: (optional) ISO 639-1 code.
-            append_to_response: (optional) Comma separated, any movie method.
             include_image_language: (optional) Comma separated, a valid
                                     ISO 69-1.
 
@@ -193,6 +195,9 @@ class Movies(TMDB):
     def keywords(self):
         """
         Get the keywords that have been added to a movie.
+
+        Args:
+            None
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -217,7 +222,7 @@ class Movies(TMDB):
             6. TV
 
         Args:
-            append_to_response: (optional) Comma separated, any movie method.
+            None
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -233,7 +238,7 @@ class Movies(TMDB):
         Get the videos that have been added to a movie.
 
         Args:
-            append_to_response: (optional) Comma separated, any movie method.
+            language: (optional) ISO 639-1 code.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -249,7 +254,7 @@ class Movies(TMDB):
         Get a list of translations that have been created for a movie.
 
         Args:
-            append_to_response: (optional) Comma separated, any movie method.
+            None
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -266,7 +271,7 @@ class Movies(TMDB):
 
         Args:
             language: (optional) ISO 639-1 code.
-            page: (optional) Minimum value of 1.  Expected value is an integer.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -285,9 +290,8 @@ class Movies(TMDB):
         These items are assembled by looking at keywords and genres.
 
         Args:
-            page: (optional) Minimum value of 1.  Expected value is an integer.
             language: (optional) ISO 639-1 code.
-            append_to_response: (optional) Comma separated, any movie method.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -303,9 +307,8 @@ class Movies(TMDB):
         Get the user reviews for a movie.
 
         Args:
-            page: (optional) Minimum value of 1.  Expected value is an integer.
             language: (optional) ISO 639-1 code.
-            append_to_response: (optional) Comma separated, any movie method.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -321,9 +324,8 @@ class Movies(TMDB):
         Get a list of lists that this movie belongs to.
 
         Args:
-            page: (optional) Minimum value of 1.  Expected value is an integer.
             language: (optional) ISO 639-1 code.
-            append_to_response: (optional) Comma separated, any movie method.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -343,9 +345,10 @@ class Movies(TMDB):
         https://developers.themoviedb.org/3/authentication/how-do-i-generate-a-session-id.
 
         Args:
-            session_id: see Authentication.
-            guest_session_id: see Authentication.
-            value: Rating value.
+            session_id: (optional) See Authentication.
+            guest_session_id: (optional) See Authentication.
+            value: (required) This is the value of the rating you want to
+                submit. The value is expected to be between 0.5 and 10.0.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -369,8 +372,8 @@ class Movies(TMDB):
         https://developers.themoviedb.org/3/authentication/how-do-i-generate-a-session-id.
 
         Args:
-            session_id: see Authentication.
-            guest_session_id: see Authentication.
+            session_id: (optional) See Authentication.
+            guest_session_id: (optional) See Authentication.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -389,6 +392,9 @@ class Movies(TMDB):
         """
         Get the most newly created movie. This is a live response and will
         continuously change.
+
+        Args:
+            language: (optional) ISO 639-1 code.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -410,8 +416,10 @@ class Movies(TMDB):
         country.
 
         Args:
-            page: (optional) Minimum value of 1.  Expected value is an integer.
             language: (optional) ISO 639-1 code.
+            page: (optional) Minimum 1, maximum 1000, default 1.
+            region: (optional) Specify a ISO 3166-1 code to filter release
+                dates. Must be uppercase.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -428,8 +436,10 @@ class Movies(TMDB):
         daily.
 
         Args:
-            page: (optional) Minimum value of 1.  Expected value is an integer.
             language: (optional) ISO 639-1 code.
+            page: (optional) Minimum 1, maximum 1000, default 1.
+            region: (optional) Specify a ISO 3166-1 code to filter release
+                dates. Must be uppercase.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -445,8 +455,10 @@ class Movies(TMDB):
         Get the top rated movies on TMDb.
 
         Args:
-            page: (optional) Minimum value of 1.  Expected value is an integer.
             language: (optional) ISO 639-1 code.
+            page: (optional) Minimum 1, maximum 1000, default 1.
+            region: (optional) Specify a ISO 3166-1 code to filter release
+                dates. Must be uppercase.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -468,8 +480,10 @@ class Movies(TMDB):
         country.
 
         Args:
-            page: (optional) Minimum value of 1.  Expected value is an integer.
             language: (optional) ISO 639-1 code.
+            page: (optional) Minimum 1, maximum 1000, default 1.
+            region: (optional) Specify a ISO 3166-1 code to filter release
+                dates. Must be uppercase.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -487,7 +501,7 @@ class Movies(TMDB):
         specific movie id.
 
         Args:
-            append_to_response: (optional) Comma separated, any movie method.
+            None
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -677,6 +691,9 @@ class Keywords(TMDB):
         """
         Get the details of a keyword.
 
+        Args:
+           None
+
         Returns:
             A dict representation of the JSON returned from the API.
         """
@@ -694,8 +711,9 @@ class Keywords(TMDB):
         is much more flexible.
 
         Args:
-            page: (optional) Minimum value of 1.  Expected value is an integer.
             language: (optional) ISO 639-1 code.
+            include_adult: Choose whether to inlcude adult (pornography)
+                content in the results.
 
         Returns:
             A dict representation of the JSON returned from the API.
@@ -725,6 +743,9 @@ class Reviews(TMDB):
     def info(self, **kwargs):
         """
         Get the review details by id.
+
+        Args:
+            None
 
         Returns:
             A dict representation of the JSON returned from the API.
