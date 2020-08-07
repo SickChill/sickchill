@@ -82,6 +82,8 @@ jobs:
     - name: Test with XO
       run: xo
     - name: Test with tox
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       run: tox -v --recreate -e "py37-{flake8,linux}"
   deploy:
     needs: test
