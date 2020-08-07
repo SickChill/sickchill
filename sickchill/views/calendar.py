@@ -36,10 +36,10 @@ class CalendarHandler(BaseHandler):
         ical += 'VERSION:2.0\r\n'
         ical += 'X-WR-CALNAME:SickChill\r\n'
         ical += 'X-WR-CALDESC:SickChill\r\n'
-        ical += 'PRODID://Sick-Beard Upcoming Episodes//\r\n'
+        ical += 'PRODID://SickChill Upcoming Episodes//\r\n'
 
-        future_weeks = try_int(self.get_argument('future', 52), 52)
-        past_weeks = try_int(self.get_argument('past', 52), 52)
+        future_weeks = try_int(self.get_argument('future', '52'), 52)
+        past_weeks = try_int(self.get_argument('past', '52'), 52)
 
         # Limit dates
         past_date = (datetime.date.today() + datetime.timedelta(weeks=-past_weeks)).toordinal()
@@ -49,7 +49,8 @@ class CalendarHandler(BaseHandler):
         main_db_con = db.DBConnection()
         # noinspection PyPep8
         calendar_shows = main_db_con.select(
-            "SELECT show_name, indexer_id, network, airs, runtime FROM tv_shows WHERE ( status = 'Continuing' OR status = 'Returning Series' ) AND paused != '1'")
+            "SELECT show_name, indexer_id, network, airs, runtime FROM tv_shows WHERE "
+            "( status = 'Continuing' OR status = 'Returning Series' ) AND paused != '1'")
         for show in calendar_shows:
             # Get all episodes of this show airing between today and next month
             episode_list = main_db_con.select(
@@ -59,37 +60,26 @@ class CalendarHandler(BaseHandler):
             utc = tz.gettz('GMT')
 
             for episode in episode_list:
-
-                air_date_time = network_timezones.parse_date_time(episode['airdate'], show["airs"],
-                                                                  show['network']).astimezone(utc)
-                air_date_time_end = air_date_time + datetime.timedelta(
-                    minutes=try_int(show["runtime"], 60))
+                air_date_time = network_timezones.parse_date_time(episode['airdate'], show["airs"], show['network']).astimezone(utc)
+                air_date_time_end = air_date_time + datetime.timedelta(minutes=try_int(show["runtime"], 60))
 
                 # Create event for episode
                 ical += 'BEGIN:VEVENT\r\n'
-                ical += 'DTSTART:' + air_date_time.strftime("%Y%m%d") + 'T' + air_date_time.strftime(
-                    "%H%M%S") + 'Z\r\n'
-                ical += 'DTEND:' + air_date_time_end.strftime(
-                    "%Y%m%d") + 'T' + air_date_time_end.strftime(
-                        "%H%M%S") + 'Z\r\n'
+                ical += 'DTSTART:{}T{}Z\r\n'.format(air_date_time.strftime("%Y%m%d"), air_date_time.strftime("%H%M%S"))
+                ical += 'DTEND:{}T{}Z\r\n'.format(air_date_time_end.strftime("%Y%m%d"), air_date_time_end.strftime("%H%M%S"))
                 if settings.CALENDAR_ICONS:
-                    # noinspection PyPep8
-                    ical += 'X-GOOGLE-CALENDAR-CONTENT-ICON:https://lh3.googleusercontent.com/-Vp_3ZosvTgg/VjiFu5BzQqI/AAAAAAAA_TY/3ZL_1bC0Pgw/s16-Ic42/SickChill.png\r\n'
+                    ical += 'X-GOOGLE-CALENDAR-CONTENT-ICON:https://sickchill.github.io/images/ico/favicon-16.png\r\n'
                     ical += 'X-GOOGLE-CALENDAR-CONTENT-DISPLAY:CHIP\r\n'
-                ical += 'SUMMARY: {0} - {1}x{2} - {3}\r\n'.format(
-                    show['show_name'], episode['season'], episode['episode'], episode['name']
+                ical += 'SUMMARY: {0} - {1}x{2} - {3}\r\n'.format(show['show_name'], episode['season'], episode['episode'], episode['name'])
+                ical += 'UID:SickChill-{0}-{1}-S{2}E{3}\r\n'.format(
+                    datetime.date.today().isoformat(), show['show_name'].replace(" ", "-"), episode['season'], episode['episode']
                 )
-                ical += 'UID:SickChill-' + str(datetime.date.today().isoformat()) + '-' + \
-                    show['show_name'].replace(" ", "-") + '-E' + str(episode['episode']) + \
-                    'S' + str(episode['season']) + '\r\n'
                 if episode['description']:
                     ical += 'DESCRIPTION: {0} on {1} \\n\\n {2}\r\n'.format(
-                        (show['airs'] or '(Unknown airs)'),
-                        (show['network'] or 'Unknown network'),
-                        episode['description'].splitlines()[0])
+                        show['airs'] or '(Unknown airs)', show['network'] or 'Unknown network', episode['description'].splitlines()[0]
+                    )
                 else:
-                    ical += 'DESCRIPTION:' + (show['airs'] or '(Unknown airs)') + ' on ' + (
-                        show['network'] or 'Unknown network') + '\r\n'
+                    ical += 'DESCRIPTION:{0} on {1}\r\n'.format(show['airs'] or '(Unknown airs)', show['network'] or 'Unknown network')
 
                 ical += 'END:VEVENT\r\n'
 
