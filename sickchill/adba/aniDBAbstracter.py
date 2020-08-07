@@ -38,22 +38,22 @@ class AniDBabstractObject(object):
                     for i in tmp_list:
                         try:
                             new_list.append(int(i))
-                        except:
+                        except Exception:
                             new_list.append(i)
                     self.__dict__[key] = new_list
                     continue
-            except:
+            except Exception:
                 pass
             try:
                 self.__dict__[key] = int(dataline[key])
-            except:
+            except Exception:
                 self.__dict__[key] = dataline[key]
             key = property(lambda x: dataline[key])
 
     def __getattr__(self, name):
         try:
             return object.__getattribute__(self, name)
-        except:
+        except Exception:
             return None
 
     def _build_names(self):
@@ -197,7 +197,7 @@ class Anime(AniDBabstractObject):
                         self.__dict__["prequal"] = self.related_aid_list[i]
                     elif self.related_aid_type[i] == 1:
                         self.__dict__["sequal"] = self.related_aid_list[i]
-            except:
+            except Exception:
                 if self.related_aid_type == 2:
                     self.__dict__["prequal"] = self.related_aid_list
                 elif self.str_related_aid_type == 1:

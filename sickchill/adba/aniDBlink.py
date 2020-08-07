@@ -45,7 +45,7 @@ class AniDBLink(threading.Thread):
         for port in portlist:
             try:
                 self.sock.bind(('', port))
-            except:
+            except Exception:
                 continue
             else:
                 self.myport = port
@@ -90,7 +90,7 @@ class AniDBLink(threading.Thread):
                             tmp = zlib.decompressobj().decompress(tmp[2:])
                             self.log("UnZip | %s" % repr(tmp))
                         resp = ResponseResolver(tmp)
-                    except:
+                    except Exception:
                         sys.excepthook(*sys.exc_info())
                         self.crypt = None
                         self.session = None
@@ -118,15 +118,15 @@ class AniDBLink(threading.Thread):
                     self._resp_queue(resp)
                 else:
                     self.tags.remove(resp.restag)
-            except:
+            except Exception:
                 sys.excepthook(*sys.exc_info())
                 print("Avoiding flood by paranoidly panicing: Aborting link thread, killing connection, releasing waiters and quiting")
                 self.sock.close()
                 try: cmd.waiter.release()
-                except:pass
+                except Exception:pass
                 for tag, cmd in self.cmd_queue.items():
                     try: cmd.waiter.release()
-                    except:pass
+                    except Exception:pass
                 sys.exit()
 
     def _handle_timeouts(self):

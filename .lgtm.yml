@@ -13,3 +13,6 @@ extraction:
         - lib
         - lib3
         - lib2
+
+queries:
+  - exclude: py/import-and-import-from

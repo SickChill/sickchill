@@ -44,7 +44,7 @@ def get_file_size(path):
 def _remove_file_failed(file):
     try:
         os.remove(file)
-    except:
+    except Exception:
         pass
 
 
