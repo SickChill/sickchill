@@ -1,38 +1,14 @@
-# coding=utf-8
-# Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-from __future__ import absolute_import, print_function, unicode_literals
-
-# Stdlib Imports
 import os
 
-# Third Party Imports
 from tornado.web import addslash
 
-# First Party Imports
-import sickbeard
-from sickbeard import config, filters, helpers, logger, ui
+import sickchill.start
+from sickchill import settings
 from sickchill.helper import try_int
-from sickchill.helper.encoding import ek
+from sickchill.sickbeard import config, filters, helpers, logger, ui
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
-# Local Folder Imports
 from . import Config
 
 
@@ -65,115 +41,115 @@ class ConfigSearch(Config):
         results = []
 
         if not config.change_nzb_dir(nzb_dir):
-            results += ["Unable to create directory " + ek(os.path.normpath, nzb_dir) + ", dir not changed."]
+            results += ["Unable to create directory " + os.path.normpath(nzb_dir) + ", dir not changed."]
 
         if not config.change_torrent_dir(torrent_dir):
-            results += ["Unable to create directory " + ek(os.path.normpath, torrent_dir) + ", dir not changed."]
+            results += ["Unable to create directory " + os.path.normpath(torrent_dir) + ", dir not changed."]
 
         config.change_daily_search_frequency(dailysearch_frequency)
 
         config.change_backlog_frequency(backlog_frequency)
-        sickbeard.BACKLOG_DAYS = try_int(backlog_days, 7)
+        settings.BACKLOG_DAYS = try_int(backlog_days, 7)
 
-        sickbeard.USE_NZBS = config.checkbox_to_value(use_nzbs)
-        sickbeard.USE_TORRENTS = config.checkbox_to_value(use_torrents)
+        settings.USE_NZBS = config.checkbox_to_value(use_nzbs)
+        settings.USE_TORRENTS = config.checkbox_to_value(use_torrents)
 
-        sickbeard.NZB_METHOD = nzb_method
-        sickbeard.TORRENT_METHOD = torrent_method
-        sickbeard.USENET_RETENTION = try_int(usenet_retention, 500)
+        settings.NZB_METHOD = nzb_method
+        settings.TORRENT_METHOD = torrent_method
+        settings.USENET_RETENTION = try_int(usenet_retention, 500)
 
-        sickbeard.IGNORE_WORDS = ignore_words if ignore_words else ""
-        sickbeard.TRACKERS_LIST = trackers_list if trackers_list else ""
-        sickbeard.REQUIRE_WORDS = require_words if require_words else ""
-        sickbeard.PREFER_WORDS = prefer_words if prefer_words else ""
-        sickbeard.IGNORED_SUBS_LIST = ignored_subs_list if ignored_subs_list else ""
+        settings.IGNORE_WORDS = ignore_words if ignore_words else ""
+        settings.TRACKERS_LIST = trackers_list if trackers_list else ""
+        settings.REQUIRE_WORDS = require_words if require_words else ""
+        settings.PREFER_WORDS = prefer_words if prefer_words else ""
+        settings.IGNORED_SUBS_LIST = ignored_subs_list if ignored_subs_list else ""
 
-        sickbeard.RANDOMIZE_PROVIDERS = config.checkbox_to_value(randomize_providers)
+        settings.RANDOMIZE_PROVIDERS = config.checkbox_to_value(randomize_providers)
 
         config.change_download_propers(download_propers)
 
-        sickbeard.CHECK_PROPERS_INTERVAL = check_propers_interval
+        settings.CHECK_PROPERS_INTERVAL = check_propers_interval
 
-        sickbeard.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(allow_high_priority)
-        sickbeard.QUALITY_ALLOW_HEVC = config.checkbox_to_value(quality_allow_hevc)
+        settings.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(allow_high_priority)
+        settings.QUALITY_ALLOW_HEVC = config.checkbox_to_value(quality_allow_hevc)
 
-        sickbeard.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
-        sickbeard.DELETE_FAILED = config.checkbox_to_value(delete_failed)
+        settings.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
+        settings.DELETE_FAILED = config.checkbox_to_value(delete_failed)
 
-        sickbeard.BACKLOG_MISSING_ONLY = config.checkbox_to_value(backlog_missing_only)
+        settings.BACKLOG_MISSING_ONLY = config.checkbox_to_value(backlog_missing_only)
 
-        sickbeard.SAB_USERNAME = sab_username
-        sickbeard.SAB_PASSWORD = filters.unhide(sickbeard.SAB_PASSWORD, sab_password)
-        sickbeard.SAB_APIKEY = filters.unhide(sickbeard.SAB_APIKEY, sab_apikey.strip())
-        sickbeard.SAB_CATEGORY = sab_category
-        sickbeard.SAB_CATEGORY_BACKLOG = sab_category_backlog
-        sickbeard.SAB_CATEGORY_ANIME = sab_category_anime
-        sickbeard.SAB_CATEGORY_ANIME_BACKLOG = sab_category_anime_backlog
-        sickbeard.SAB_HOST = config.clean_url(sab_host)
-        sickbeard.SAB_FORCED = config.checkbox_to_value(sab_forced)
+        settings.SAB_USERNAME = sab_username
+        settings.SAB_PASSWORD = filters.unhide(settings.SAB_PASSWORD, sab_password)
+        settings.SAB_APIKEY = filters.unhide(settings.SAB_APIKEY, sab_apikey.strip())
+        settings.SAB_CATEGORY = sab_category
+        settings.SAB_CATEGORY_BACKLOG = sab_category_backlog
+        settings.SAB_CATEGORY_ANIME = sab_category_anime
+        settings.SAB_CATEGORY_ANIME_BACKLOG = sab_category_anime_backlog
+        settings.SAB_HOST = config.clean_url(sab_host)
+        settings.SAB_FORCED = config.checkbox_to_value(sab_forced)
 
-        sickbeard.NZBGET_USERNAME = nzbget_username
-        sickbeard.NZBGET_PASSWORD = filters.unhide(sickbeard.NZBGET_PASSWORD, nzbget_password)
-        sickbeard.NZBGET_CATEGORY = nzbget_category
-        sickbeard.NZBGET_CATEGORY_BACKLOG = nzbget_category_backlog
-        sickbeard.NZBGET_CATEGORY_ANIME = nzbget_category_anime
-        sickbeard.NZBGET_CATEGORY_ANIME_BACKLOG = nzbget_category_anime_backlog
-        sickbeard.NZBGET_HOST = config.clean_host(nzbget_host)
-        sickbeard.NZBGET_USE_HTTPS = config.checkbox_to_value(nzbget_use_https)
-        sickbeard.NZBGET_PRIORITY = try_int(nzbget_priority, 100)
+        settings.NZBGET_USERNAME = nzbget_username
+        settings.NZBGET_PASSWORD = filters.unhide(settings.NZBGET_PASSWORD, nzbget_password)
+        settings.NZBGET_CATEGORY = nzbget_category
+        settings.NZBGET_CATEGORY_BACKLOG = nzbget_category_backlog
+        settings.NZBGET_CATEGORY_ANIME = nzbget_category_anime
+        settings.NZBGET_CATEGORY_ANIME_BACKLOG = nzbget_category_anime_backlog
+        settings.NZBGET_HOST = config.clean_host(nzbget_host)
+        settings.NZBGET_USE_HTTPS = config.checkbox_to_value(nzbget_use_https)
+        settings.NZBGET_PRIORITY = try_int(nzbget_priority, 100)
 
-        sickbeard.TORRENT_USERNAME = torrent_username
-        sickbeard.TORRENT_PASSWORD = filters.unhide(sickbeard.TORRENT_PASSWORD, torrent_password)
-        sickbeard.TORRENT_LABEL = torrent_label
-        sickbeard.TORRENT_LABEL_ANIME = torrent_label_anime
-        sickbeard.TORRENT_VERIFY_CERT = config.checkbox_to_value(torrent_verify_cert)
+        settings.TORRENT_USERNAME = torrent_username
+        settings.TORRENT_PASSWORD = filters.unhide(settings.TORRENT_PASSWORD, torrent_password)
+        settings.TORRENT_LABEL = torrent_label
+        settings.TORRENT_LABEL_ANIME = torrent_label_anime
+        settings.TORRENT_VERIFY_CERT = config.checkbox_to_value(torrent_verify_cert)
 
-        sickbeard.TORRENT_PATH = torrent_path.rstrip('/\\')
-        sickbeard.TORRENT_PATH_INCOMPLETE = torrent_path_incomplete.rstrip('/\\')
+        settings.TORRENT_PATH = torrent_path.rstrip('/\\')
+        settings.TORRENT_PATH_INCOMPLETE = torrent_path_incomplete.rstrip('/\\')
 
-        sickbeard.TORRENT_SEED_TIME = torrent_seed_time
-        sickbeard.TORRENT_PAUSED = config.checkbox_to_value(torrent_paused)
-        sickbeard.TORRENT_HIGH_BANDWIDTH = config.checkbox_to_value(torrent_high_bandwidth)
-        sickbeard.TORRENT_HOST = config.clean_url(torrent_host)
-        sickbeard.TORRENT_RPCURL = torrent_rpcurl
-        sickbeard.TORRENT_AUTH_TYPE = torrent_auth_type
+        settings.TORRENT_SEED_TIME = torrent_seed_time
+        settings.TORRENT_PAUSED = config.checkbox_to_value(torrent_paused)
+        settings.TORRENT_HIGH_BANDWIDTH = config.checkbox_to_value(torrent_high_bandwidth)
+        settings.TORRENT_HOST = config.clean_url(torrent_host)
+        settings.TORRENT_RPCURL = torrent_rpcurl
+        settings.TORRENT_AUTH_TYPE = torrent_auth_type
 
-        sickbeard.SYNOLOGY_DSM_HOST = config.clean_url(syno_dsm_host)
-        sickbeard.SYNOLOGY_DSM_USERNAME = syno_dsm_user
-        sickbeard.SYNOLOGY_DSM_PASSWORD = filters.unhide(sickbeard.SYNOLOGY_DSM_PASSWORD, syno_dsm_pass)
-        sickbeard.SYNOLOGY_DSM_PATH = syno_dsm_path.rstrip('/\\')
+        settings.SYNOLOGY_DSM_HOST = config.clean_url(syno_dsm_host)
+        settings.SYNOLOGY_DSM_USERNAME = syno_dsm_user
+        settings.SYNOLOGY_DSM_PASSWORD = filters.unhide(settings.SYNOLOGY_DSM_PASSWORD, syno_dsm_pass)
+        settings.SYNOLOGY_DSM_PATH = syno_dsm_path.rstrip('/\\')
 
         # This is a PITA, but lets merge the settings if they only set DSM up in one section to save them some time
-        if sickbeard.TORRENT_METHOD == 'download_station':
-            if not sickbeard.SYNOLOGY_DSM_HOST:
-                sickbeard.SYNOLOGY_DSM_HOST = sickbeard.TORRENT_HOST
-            if not sickbeard.SYNOLOGY_DSM_USERNAME:
-                sickbeard.SYNOLOGY_DSM_USERNAME = sickbeard.TORRENT_USERNAME
-            if not sickbeard.SYNOLOGY_DSM_PASSWORD:
-                sickbeard.SYNOLOGY_DSM_PASSWORD = sickbeard.TORRENT_PASSWORD
-            if not sickbeard.SYNOLOGY_DSM_PATH:
-                sickbeard.SYNOLOGY_DSM_PATH = sickbeard.TORRENT_PATH
+        if settings.TORRENT_METHOD == 'download_station':
+            if not settings.SYNOLOGY_DSM_HOST:
+                settings.SYNOLOGY_DSM_HOST = settings.TORRENT_HOST
+            if not settings.SYNOLOGY_DSM_USERNAME:
+                settings.SYNOLOGY_DSM_USERNAME = settings.TORRENT_USERNAME
+            if not settings.SYNOLOGY_DSM_PASSWORD:
+                settings.SYNOLOGY_DSM_PASSWORD = settings.TORRENT_PASSWORD
+            if not settings.SYNOLOGY_DSM_PATH:
+                settings.SYNOLOGY_DSM_PATH = settings.TORRENT_PATH
 
-        if sickbeard.NZB_METHOD == 'download_station':
-            if not sickbeard.TORRENT_HOST:
-                sickbeard.TORRENT_HOST = sickbeard.SYNOLOGY_DSM_HOST
-            if not sickbeard.TORRENT_USERNAME:
-                sickbeard.TORRENT_USERNAME = sickbeard.SYNOLOGY_DSM_USERNAME
-            if not sickbeard.TORRENT_PASSWORD:
-                sickbeard.TORRENT_PASSWORD = sickbeard.SYNOLOGY_DSM_PASSWORD
-            if not sickbeard.TORRENT_PATH:
-                sickbeard.TORRENT_PATH = sickbeard.SYNOLOGY_DSM_PATH
+        if settings.NZB_METHOD == 'download_station':
+            if not settings.TORRENT_HOST:
+                settings.TORRENT_HOST = settings.SYNOLOGY_DSM_HOST
+            if not settings.TORRENT_USERNAME:
+                settings.TORRENT_USERNAME = settings.SYNOLOGY_DSM_USERNAME
+            if not settings.TORRENT_PASSWORD:
+                settings.TORRENT_PASSWORD = settings.SYNOLOGY_DSM_PASSWORD
+            if not settings.TORRENT_PATH:
+                settings.TORRENT_PATH = settings.SYNOLOGY_DSM_PATH
 
         helpers.manage_torrents_url(reset=True)
 
-        sickbeard.save_config()
+        sickchill.start.save_config()
 
         if len(results) > 0:
             for x in results:
-                logger.log(x, logger.ERROR)
+                logger.exception(x)
             ui.notifications.error(_('Error(s) Saving Configuration'),
                                    '<br>\n'.join(results))
         else:
-            ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message(_('Configuration Saved'), os.path.join(settings.CONFIG_FILE))
 
         return self.redirect("/config/search/")

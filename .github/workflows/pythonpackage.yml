@@ -15,7 +15,7 @@ jobs:
   test:
     strategy:
       matrix:
-        python-version: [2.7]
+        python-version: [3.7]
         os: [ubuntu-latest]
       fail-fast: false
     runs-on: ${{ matrix.os }}
@@ -82,7 +82,7 @@ jobs:
     - name: Test with XO
       run: xo
     - name: Test with tox
-      run: tox -v --recreate -e "py27-{flake8,linux}"
+      run: tox -v --recreate -e "py37-{flake8,linux}"
   deploy:
     needs: test
     runs-on: ubuntu-latest

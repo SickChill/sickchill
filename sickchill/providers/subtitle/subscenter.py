@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
-# Stdlib Imports
 import bisect
 import io
 import json
@@ -9,7 +5,6 @@ import logging
 import zipfile
 from collections import defaultdict
 
-# Third Party Imports
 from babelfish import Language
 from guessit import guessit
 from requests import Session
@@ -212,9 +207,9 @@ class SubsCenterProvider(Provider):
                         logger.debug('Found subtitle %r', subtitle)
                         subtitles[subtitle_id] = subtitle
 
-        return subtitles.values()
+        return list(subtitles.values())
 
-    def list_subtitles(self, video, languages):
+    def list_subtitles(self, video: Episode, languages):
         season = episode = None
         title = video.title
 
@@ -225,7 +220,7 @@ class SubsCenterProvider(Provider):
 
         return [s for s in self.query(title, season, episode) if s.language in languages]
 
-    def download_subtitle(self, subtitle):
+    def download_subtitle(self, subtitle: SubsCenterSubtitle):
         # download
         url = self.server_url + 'subtitle/download/{}/{}/'.format(subtitle.language.alpha2, subtitle.subtitle_id)
         params = {'v': subtitle.subtitle_version, 'key': subtitle.subtitle_key}

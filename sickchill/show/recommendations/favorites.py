@@ -1,15 +1,9 @@
-# coding=utf-8
-from __future__ import absolute_import, print_function, unicode_literals
-
-# Stdlib Imports
 import os
 
-# First Party Imports
-import sickbeard
 import sickchill
-from sickbeard import helpers
-from sickbeard.helpers import ek
+from sickchill import settings
 from sickchill.show.Show import Show
+from sickchill.sickbeard import helpers
 
 
 class IndexerFavorites(object):
@@ -23,7 +17,7 @@ class IndexerFavorites(object):
         indexer_favorites = sickchill.indexer.get_indexer_favorites()
         results = []
         for series in indexer_favorites:
-            if Show().find(sickbeard.showList, series.id):
+            if Show().find(settings.showList, series.id):
                 continue
             results.append(series)
             self.cache_image(series.id)
@@ -35,14 +29,14 @@ class IndexerFavorites(object):
         Store cache of image in cache dir
         :param indexerid: Source indexer id
         """
-        path = ek(os.path.abspath, ek(os.path.join, sickbeard.CACHE_DIR, 'images', 'favorites'))
+        path = os.path.abspath(os.path.join(settings.CACHE_DIR, 'images', 'favorites'))
 
-        if not ek(os.path.exists, path):
-            ek(os.makedirs, path)
+        if not os.path.exists(path):
+            os.makedirs(path)
 
-        full_path = ek(os.path.join, path, str(indexerid))
+        full_path = os.path.join(path, str(indexerid))
 
-        if not ek(os.path.isfile, full_path):
+        if not os.path.isfile(full_path):
             helpers.download_file(sickchill.indexer.series_poster_url_by_id(indexerid), full_path, session=self.session)
 
     @staticmethod

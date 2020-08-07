@@ -1,34 +1,9 @@
-# coding=utf-8
-# This file is part of SickChill.
-#
-# Author: Dustyn Gibson (miigotu) <miigotu@gmail.com>
-# URL: https://sickchill.github.io
-# Git: https://github.com/SickChill/SickChill.git
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-from __future__ import absolute_import, print_function, unicode_literals
-
-# Stdlib Imports
 import binascii
-import io
 
-# Third Party Imports
 from enzyme import MKV
 from pkg_resources import DistributionNotFound, get_distribution
 
-# First Party Imports
-import sickbeard
+import sickchill.sickbeard
 
 try:
     get_distribution('pymediainfo')
@@ -41,12 +16,12 @@ def _avi_screen_size(filename):
     """
     Parses avi file header for width and height
     :param filename: full path and filename to a video file
-    :type: six.text_type
+    :type: str
     :returns tuple: (width, height)
     """
     try:
         if not filename.endswith('.avi'):
-            with io.open(filename, 'rb') as f:
+            with open(filename, 'rb') as f:
                 header = f.read(72)
 
             x = binascii.hexlify(header[68:72])
@@ -68,12 +43,12 @@ def _mkv_screen_size(filename):
     """
     Parses mkv file for width and height
     :param filename: full path and filename to a video file
-    :type: six.text_type
+    :type: str
     :returns tuple: (width, height)
     """
     try:
         if filename.endswith('.mkv'):
-            with io.open(filename, 'rb') as f:
+            with open(filename, 'rb') as f:
                 mkv = MKV(f)
 
             return mkv.video_tracks[0].width, mkv.video_tracks[0].height
@@ -87,7 +62,7 @@ def _mediainfo_screen_size(filename):
     """
     Attempts to read the width and height of a video file, using mediainfo
     :param filename: full path and filename to a video file
-    :type: six.text_type
+    :type: str
     :returns tuple: (width, height)
     """
     try:
@@ -112,11 +87,11 @@ def video_screen_size(filename):
     first using mediainfo and then enzyme, and then a custom avi reader
 
     :param filename: full path and filename to a video file
-    :type: six.text_type
+    :type: str
     :returns tuple: (width, height)
     """
 
-    if filename in bad_files or not sickbeard.helpers.is_media_file(filename):
+    if filename in bad_files or not sickchill.sickbeard.helpers.is_media_file(filename):
         return None, None
 
     # Need to implement mediainfo another way, pymediainfo 2.0 causes segfaults

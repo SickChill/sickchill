@@ -1,31 +1,9 @@
-# coding=utf-8
-# This file is part of SickChill.
-#
-# URL: https://sickchill.github.io
-# Git: https://github.com/SickChill/SickChill.git
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-from __future__ import absolute_import, print_function, unicode_literals
-
-# Stdlib Imports
 from datetime import date
 
-# First Party Imports
-import sickbeard
-from sickbeard.common import Quality, SKIPPED, WANTED
-from sickbeard.db import DBConnection
-from sickchill.helper.exceptions import CantRefreshShowException, CantRemoveShowException, ex, MultipleShowObjectsException
+from sickchill import settings
+from sickchill.helper.exceptions import CantRefreshShowException, CantRemoveShowException, MultipleShowObjectsException
+from sickchill.sickbeard.common import Quality, SKIPPED, WANTED
+from sickchill.sickbeard.db import DBConnection
 
 
 class Show(object):
@@ -50,9 +28,9 @@ class Show(object):
 
         if show:
             try:
-                sickbeard.showQueueScheduler.action.remove_show(show, bool(remove_files))
+                settings.showQueueScheduler.action.remove_show(show, bool(remove_files))
             except CantRemoveShowException as exception:
-                return ex(exception), show
+                return str(exception), show
 
         return None, show
 
@@ -83,8 +61,8 @@ class Show(object):
     @staticmethod
     def overall_stats():
         db = DBConnection()
-        shows = sickbeard.showList
-        today = str(date.today().toordinal())
+        shows = settings.showList
+        today = date.today().toordinal()
 
         downloaded_status = Quality.DOWNLOADED + Quality.ARCHIVED
         snatched_status = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
@@ -111,13 +89,13 @@ class Show(object):
         }
 
         for result in results:
-            if result[b'status'] in downloaded_status:
+            if result['status'] in downloaded_status:
                 stats['episodes']['downloaded'] += 1
                 stats['episodes']['total'] += 1
-            elif result[b'status'] in snatched_status:
+            elif result['status'] in snatched_status:
                 stats['episodes']['snatched'] += 1
                 stats['episodes']['total'] += 1
-            elif result[b'airdate'] <= today and result[b'status'] in total_status:
+            elif result['airdate'] <= today and result['status'] in total_status:
                 stats['episodes']['total'] += 1
 
         return stats
@@ -164,9 +142,9 @@ class Show(object):
             return error, show
 
         try:
-            sickbeard.showQueueScheduler.action.refresh_show(show, force)
+            settings.showQueueScheduler.action.refresh_show(show, force)
         except CantRefreshShowException as exception:
-            return ex(exception), show
+            return str(exception), show
 
         return None, show
 
@@ -186,7 +164,7 @@ class Show(object):
             return 'Invalid show ID', None
 
         try:
-            show = Show.find(sickbeard.showList, indexer_id)
+            show = Show.find(settings.showList, indexer_id)
         except MultipleShowObjectsException:
             return 'Unable to find the specified show', None
 

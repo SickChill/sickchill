@@ -1,36 +1,12 @@
-# coding=UTF-8
-# Author: Dennis Lutter <lad1337@gmail.com>
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
 """
 Test tv
 """
 
-import os.path
-import sys
 import unittest
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from sickbeard.tv import TVEpisode, TVShow
-import sickbeard
-import tests.test_lib as test
+from sickchill import settings
+from sickchill.sickbeard.tv import TVEpisode, TVShow
+from tests import test_lib as test
 
 
 class TVShowTests(test.SickbeardTestDBCase):
@@ -42,7 +18,7 @@ class TVShowTests(test.SickbeardTestDBCase):
         Set up tests
         """
         super(TVShowTests, self).setUp()
-        sickbeard.showList = []
+        settings.showList = []
 
     def test_init_indexerid(self):
         """
@@ -94,7 +70,7 @@ class TVEpisodeTests(test.SickbeardTestDBCase):
         Set up
         """
         super(TVEpisodeTests, self).setUp()
-        sickbeard.showList = []
+        settings.showList = []
 
     def test_init_empty_db(self):
         """
@@ -117,7 +93,7 @@ class TVTests(test.SickbeardTestDBCase):
         Set up
         """
         super(TVTests, self).setUp()
-        sickbeard.showList = []
+        settings.showList = []
 
     @staticmethod
     def test_get_episode():
@@ -134,7 +110,7 @@ class TVTests(test.SickbeardTestDBCase):
         show.airs = "monday"
         show.startyear = 1987
         show.saveToDB()
-        sickbeard.showList = [show]
+        settings.showList = [show]
         # TODO: implement
 
 

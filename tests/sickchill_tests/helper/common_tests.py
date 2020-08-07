@@ -1,43 +1,16 @@
-# coding=utf-8
-# This file is part of SickChill.
-#
-# URL: https://sickchill.github.io
-# Git: https://github.com/SickChill/SickChill.git
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+
 
 
 """
 Test sickchill.common
 """
 
-from __future__ import print_function, unicode_literals
-
+import glob
 import unittest
-import os
-import sys
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
-
-import sickbeard
-from sickchill.helper import glob
-from sickchill.helper.common import http_code_description, is_sync_file, is_torrent_or_nzb_file, pretty_file_size
-from sickchill.helper.common import remove_extension, replace_extension, sanitize_filename, try_int, convert_size, episode_num
-
-
-import six
+from sickchill import settings
+from sickchill.helper.common import (convert_size, episode_num, http_code_description, is_sync_file, is_torrent_or_nzb_file, pretty_file_size, remove_extension,
+                                     replace_extension, sanitize_filename, try_int)
 
 
 class CommonTests(unittest.TestCase):
@@ -76,14 +49,14 @@ class CommonTests(unittest.TestCase):
         }
 
         for test in test_cases, unicode_test_cases:
-            for (http_code, result) in six.iteritems(test):
+            for (http_code, result) in test.items():
                 self.assertEqual(http_code_description(http_code), result)
 
     def test_is_sync_file(self):
         """
         Test is sync file
         """
-        sickbeard.SYNC_FILES = '!sync,lftp-pget-status'
+        settings.SYNC_FILES = '!sync,lftp-pget-status'
 
         test_cases = {
             None: False,
@@ -122,7 +95,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (filename, result) in six.iteritems(tests):
+            for (filename, result) in tests.items():
                 self.assertEqual(is_sync_file(filename), result)
 
     def test_is_torrent_or_nzb_file(self):
@@ -154,7 +127,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (filename, result) in six.iteritems(tests):
+            for (filename, result) in tests.items():
                 self.assertEqual(is_torrent_or_nzb_file(filename), result)
 
     def test_pretty_file_size(self):
@@ -191,7 +164,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (size, result) in six.iteritems(tests):
+            for (size, result) in tests.items():
                 self.assertEqual(pretty_file_size(size), result)
 
     def test_remove_extension(self):
@@ -232,7 +205,7 @@ class CommonTests(unittest.TestCase):
             'file.name.avi': 'file.name',
         }
         for tests in test_cases, unicode_test_cases:
-            for (extension, result) in six.iteritems(tests):
+            for (extension, result) in tests.items():
                 self.assertEqual(remove_extension(extension), result)
 
     def test_replace_extension(self):
@@ -308,7 +281,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for ((filename, extension), result) in six.iteritems(tests):
+            for ((filename, extension), result) in tests.items():
                 self.assertEqual(replace_extension(filename, extension), result)
 
     def test_sanitize_filename(self):
@@ -337,7 +310,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (filename, result) in six.iteritems(tests):
+            for (filename, result) in tests.items():
                 self.assertEqual(sanitize_filename(filename), result)
 
     def test_try_int(self):
@@ -367,7 +340,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for test in test_cases, unicode_test_cases:
-            for (candidate, result) in six.iteritems(test):
+            for (candidate, result) in test.items():
                 self.assertEqual(try_int(candidate), result)
 
     def test_try_int_with_default(self):
@@ -398,7 +371,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for test in test_cases, unicode_test_cases:
-            for (candidate, result) in six.iteritems(test):
+            for (candidate, result) in test.items():
                 self.assertEqual(try_int(candidate, default_value), result)
 
     def test_convert_size(self):

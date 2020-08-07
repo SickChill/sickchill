@@ -1,35 +1,13 @@
-# coding=utf-8
-# This file is part of SickChill.
-#
-# URL: https://sickchill.github.io
-# Git: https://github.com/SickChill/SickChill.git
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-from __future__ import absolute_import, print_function, unicode_literals
-
-# Stdlib Imports
 from datetime import date, timedelta
 from operator import itemgetter
 
-# First Party Imports
-import sickbeard
-from sickbeard.common import Quality, UNAIRED, WANTED
-from sickbeard.db import DBConnection
-from sickbeard.network_timezones import parse_date_time
-from sickbeard.sbdatetime import sbdatetime
+from sickchill import settings
 from sickchill.helper.common import dateFormat, timeFormat
 from sickchill.helper.quality import get_quality_string
+from sickchill.sickbeard.common import Quality, UNAIRED, WANTED
+from sickchill.sickbeard.db import DBConnection
+from sickchill.sickbeard.network_timezones import parse_date_time
+from sickchill.sickbeard.sbdatetime import sbdatetime
 
 SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list
 
@@ -44,16 +22,16 @@ class ComingEpisodes(object):
     """
     categories = ['snatched', 'missed', 'today', 'soon', 'later']
     sorts = {
-        'date': itemgetter(b'snatchedsort', b'localtime', b'episode'),
-        'network': itemgetter(b'network', b'localtime', b'episode'),
-        'show': itemgetter(b'show_name', b'localtime', b'episode'),
+        'date': itemgetter('snatchedsort', 'localtime', 'episode'),
+        'network': itemgetter('network', 'localtime', 'episode'),
+        'show': itemgetter('show_name', 'localtime', 'episode'),
     }
 
     def __init__(self):
         pass
 
     @staticmethod
-    def get_coming_episodes(categories, sort, group, paused=sickbeard.COMING_EPS_DISPLAY_PAUSED):
+    def get_coming_episodes(categories, sort, group, paused=settings.COMING_EPS_DISPLAY_PAUSED):
         """
         :param categories: The categories of coming episodes. See ``ComingEpisodes.categories``
         :param sort: The sort to apply to the coming episodes. See ``ComingEpisodes.sorts``
@@ -66,7 +44,7 @@ class ComingEpisodes(object):
         sort = ComingEpisodes._get_sort(sort)
 
         today = date.today().toordinal()
-        recently = (date.today() - timedelta(days=sickbeard.COMING_EPS_MISSED_RANGE)).toordinal()
+        recently = (date.today() - timedelta(days=settings.COMING_EPS_MISSED_RANGE)).toordinal()
         next_week = (date.today() + timedelta(days=7)).toordinal()
 
         db = DBConnection(row_type='dict')
@@ -79,7 +57,7 @@ class ComingEpisodes(object):
         status_list = [WANTED, UNAIRED] + SNATCHED
 
         sql_l = []
-        for show_obj in sickbeard.showList:
+        for show_obj in settings.showList:
             next_air_date = show_obj.nextEpisode()
             sql_l.append(
                 [
@@ -102,9 +80,9 @@ class ComingEpisodes(object):
                 results = db.select(*sql_i)
 
         for index, item in enumerate(results):
-            results[index][b'localtime'] = sbdatetime.convert_to_setting(
-                parse_date_time(item[b'airdate'], item[b'airs'], item[b'network']))
-            results[index][b'snatchedsort'] = int(not results[index][b'epstatus'] in SNATCHED)
+            results[index]['localtime'] = sbdatetime.convert_to_setting(
+                parse_date_time(item['airdate'], item['airs'], item['network']))
+            results[index]['snatchedsort'] = int(not results[index]['epstatus'] in SNATCHED)
 
         results.sort(key=ComingEpisodes.sorts[sort])
 
@@ -114,22 +92,22 @@ class ComingEpisodes(object):
         grouped_results = ComingEpisodes._get_categories_map(categories)
 
         for result in results:
-            if result[b'paused'] and not paused:
+            if result['paused'] and not paused:
                 continue
 
-            result[b'airs'] = str(result[b'airs']).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
-            result[b'airdate'] = result[b'localtime'].toordinal()
+            result['airs'] = str(result['airs']).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
+            result['airdate'] = result['localtime'].toordinal()
 
-            if result[b'epstatus'] in SNATCHED:
-                if result[b'location']:
+            if result['epstatus'] in SNATCHED:
+                if result['location']:
                     continue
                 else:
                     category = 'snatched'
-            elif result[b'airdate'] < today:
+            elif result['airdate'] < today:
                 category = 'missed'
-            elif result[b'airdate'] >= next_week:
+            elif result['airdate'] >= next_week:
                 category = 'later'
-            elif result[b'airdate'] == today:
+            elif result['airdate'] == today:
                 category = 'today'
             else:
                 category = 'soon'
@@ -137,15 +115,15 @@ class ComingEpisodes(object):
             if len(categories) > 0 and category not in categories:
                 continue
 
-            if not result[b'network']:
-                result[b'network'] = ''
+            if not result['network']:
+                result['network'] = ''
 
-            result[b'quality'] = get_quality_string(result[b'quality'])
-            result[b'airs'] = sbdatetime.sbftime(result[b'localtime'], t_preset=timeFormat).lstrip('0').replace(' 0', ' ')
-            result[b'weekday'] = 1 + result[b'localtime'].weekday()
-            result[b'tvdbid'] = result[b'indexer_id']
-            result[b'airdate'] = sbdatetime.sbfdate(result[b'localtime'], d_preset=dateFormat)
-            result[b'localtime'] = result[b'localtime'].toordinal()
+            result['quality'] = get_quality_string(result['quality'])
+            result['airs'] = sbdatetime.sbftime(result['localtime'], t_preset=timeFormat).lstrip('0').replace(' 0', ' ')
+            result['weekday'] = 1 + result['localtime'].weekday()
+            result['tvdbid'] = result['indexer_id']
+            result['airdate'] = sbdatetime.sbfdate(result['localtime'], d_preset=dateFormat)
+            result['localtime'] = result['localtime'].toordinal()
 
             grouped_results[category].append(result)
 
@@ -172,7 +150,7 @@ class ComingEpisodes(object):
     def _get_sort(sort):
         sort = sort.lower() if sort else ''
 
-        if sort not in ComingEpisodes.sorts.keys():
+        if sort not in list(ComingEpisodes.sorts):
             return 'date'
 
         return sort

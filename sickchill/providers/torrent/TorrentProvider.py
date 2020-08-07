@@ -1,40 +1,16 @@
-# coding=utf-8
-# This file is part of SickChill.
-#
-# URL: https://sickchill.github.io
-# Git: https://github.com/SickChill/SickChill.git
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-from __future__ import absolute_import, print_function, unicode_literals
-
-# Stdlib Imports
 from datetime import datetime
 
-# Third Party Imports
+import bencodepy
 from feedparser import FeedParserDict
-from rtorrent9.lib.torrentparser import TorrentParser
 
-# First Party Imports
-import sickbeard
-from sickbeard import logger
-from sickbeard.classes import Proper, TorrentSearchResult
-from sickbeard.common import Quality
-from sickbeard.db import DBConnection
+from sickchill import settings
 from sickchill.helper.common import try_int
-from sickchill.helper.exceptions import ex
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.show.Show import Show
+from sickchill.sickbeard import logger
+from sickchill.sickbeard.classes import Proper, TorrentSearchResult
+from sickchill.sickbeard.common import Quality
+from sickchill.sickbeard.db import DBConnection
 
 
 class TorrentProvider(GenericProvider):
@@ -47,6 +23,7 @@ class TorrentProvider(GenericProvider):
         results = []
         db = DBConnection()
         placeholder = ','.join([str(x) for x in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST])
+        # language TEXT
         sql_results = db.select(
             'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate'
             ' FROM tv_episodes AS e'
@@ -56,10 +33,10 @@ class TorrentProvider(GenericProvider):
         )
 
         for result in sql_results or []:
-            show = Show.find(sickbeard.showList, int(result[b'showid']))
+            show = Show.find(settings.showList, int(result['showid']))
 
             if show:
-                episode = show.getEpisode(result[b'season'], result[b'episode'])
+                episode = show.getEpisode(result['season'], result['episode'])
 
                 for term in self.proper_strings:
                     search_strings = self.get_episode_search_strings(episode, add_string=term)
@@ -74,14 +51,14 @@ class TorrentProvider(GenericProvider):
 
     @property
     def is_active(self):
-        return bool(sickbeard.USE_TORRENTS) and self.is_enabled
+        return bool(settings.USE_TORRENTS) and self.is_enabled
 
     @property
     def _custom_trackers(self):
-        if not (sickbeard.TRACKERS_LIST and self.public):
+        if not (settings.TRACKERS_LIST and self.public):
             return ''
 
-        return '&tr=' + '&tr='.join({x.strip() for x in sickbeard.TRACKERS_LIST.split(',') if x.strip()})
+        return '&tr=' + '&tr='.join({x.strip() for x in settings.TRACKERS_LIST.split(',') if x.strip()})
 
     def _get_result(self, episodes):
         return TorrentSearchResult(episodes)
@@ -94,14 +71,16 @@ class TorrentProvider(GenericProvider):
         else:
             size = -1
 
+        size = try_int(size, -1)
+
         # Make sure we didn't select seeds/leechers by accident
         if not size or size < 1024 * 1024:
             size = -1
 
-        return try_int(size, -1)
+        return size
 
     def _get_storage_dir(self):
-        return sickbeard.TORRENT_DIR
+        return settings.TORRENT_DIR
 
     def _get_title_and_url(self, item):
         if isinstance(item, (dict, FeedParserDict)):
@@ -118,7 +97,7 @@ class TorrentProvider(GenericProvider):
             title = ''
 
         if title.endswith('DIAMOND'):
-            logger.log('Skipping DIAMOND release for mass fake releases.')
+            logger.info('Skipping DIAMOND release for mass fake releases.')
             download_url = title = 'FAKERELEASE'
 
         if download_url:
@@ -131,13 +110,12 @@ class TorrentProvider(GenericProvider):
 
     def _verify_download(self, file_name):
         try:
-            tp = TorrentParser(file_name)
-            return tp.info_hash is not None
-        except AssertionError as e:
-            logger.log('Failed to validate torrent file: {0}'.format(ex(e)), logger.DEBUG)
-
-        logger.log('Result is not a valid torrent file', logger.DEBUG)
-        return False
+            bencodepy.decode_from_file(file_name)
+        except bencodepy.DecodingError as e:
+            logger.debug('Failed to validate torrent file: {0}'.format(str(e)))
+            logger.debug('Result is not a valid torrent file')
+            return False
+        return True
 
     def seed_ratio(self):
         return self.ratio

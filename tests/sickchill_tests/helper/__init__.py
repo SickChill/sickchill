@@ -1,12 +1,11 @@
-# coding=utf-8
 """
 Tests for SickChill helpers
 """
 
 import unittest
 
-from common_tests import CommonTests
-from quality_tests import QualityTests
+from .common_tests import CommonTests
+from .quality_tests import QualityTests
 
 if __name__ == '__main__':
     print('=====> Running all test in "sickchill_tests.helper" <=====')

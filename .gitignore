@@ -2,6 +2,7 @@
 ######################
 /cache/
 /gui/slick/cache
+/sickchill/gui/slick/cache
 /Logs/
 /data/
 restore/
@@ -94,5 +95,9 @@ venv
 /Downloads
 
 **/*.so
-lib/bin
-lib/.libs_cffi_backend
+lib[23]/bin
+lib[23]/.libs_cffi_backend
+lib[23]/bin
+lib[23]/.libs_cffi_backend
+lib[23]/cffi.libs
+atlassian-ide-plugin.xml

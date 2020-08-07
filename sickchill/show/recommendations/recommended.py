@@ -1,41 +1,18 @@
-# coding=utf-8
-#
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
 """
 Recommend shows based on lists from indexers
 """
-from __future__ import absolute_import, print_function, unicode_literals
-
-# Stdlib Imports
 import os
 import posixpath
 
-# First Party Imports
-import sickbeard
-from sickbeard import helpers
-from sickchill.helper.encoding import ek
+from sickchill import settings
+from sickchill.sickbeard import helpers
 
 
 class RecommendedShow(object):
     """
     Base class for show recommendations
     """
+
     def __init__(self, show_id, title, indexer, indexer_id, cache_subfolder='recommended',
                  rating=None, votes=None, image_href=None, image_src=None):
         """
@@ -62,7 +39,7 @@ class RecommendedShow(object):
         self.image_src = image_src
 
         # Check if the show is currently already in the db
-        self.show_in_list = self.indexer_id in {show.indexerid for show in sickbeard.showList if show.indexerid}
+        self.show_in_list = self.indexer_id in {show.indexerid for show in settings.showList if show.indexerid}
         self.session = helpers.make_indexer_session()
 
     def cache_image(self, image_url):
@@ -74,14 +51,14 @@ class RecommendedShow(object):
         if not self.cache_subfolder:
             return
 
-        self.image_src = ek(posixpath.join, 'images', self.cache_subfolder, ek(os.path.basename, image_url))
+        self.image_src = posixpath.join('images', self.cache_subfolder, os.path.basename(image_url))
 
-        path = ek(os.path.abspath, ek(os.path.join, sickbeard.CACHE_DIR, 'images', self.cache_subfolder))
+        path = os.path.abspath(os.path.join(settings.CACHE_DIR, 'images', self.cache_subfolder))
 
-        if not ek(os.path.exists, path):
-            ek(os.makedirs, path)
+        if not os.path.exists(path):
+            os.makedirs(path)
 
-        full_path = ek(os.path.join, path, ek(os.path.basename, image_url))
+        full_path = os.path.join(path, os.path.basename(image_url))
 
-        if not ek(os.path.isfile, full_path):
+        if not os.path.isfile(full_path):
             helpers.download_file(image_url, full_path, session=self.session)

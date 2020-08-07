@@ -1,4 +1,4 @@
-FROM python:2.7-alpine
+FROM python:3.7-alpine
 LABEL maintainer="miigotu@gmail.com"
 ENV PYTHONIOENCODING="UTF-8"
 
@@ -6,7 +6,7 @@ ENV PYTHONIOENCODING="UTF-8"
 # -v ShowPath:/ShowPath \
 # -v DownloadPath:/DownloadPath \
 # -v /docker/sickchill/data:/data \
-# -v /docker/sickchill/cache/gui:/app/sickchill/gui/slick/cache \
+# -v /docker/sickchill/cache/gui:/app/sickchill/sickchill/gui/slick/cache \
 # -v /etc/localtime:/etc/localtime:ro
 # -p 8080:8081 sickchill/sickchill
 
@@ -22,5 +22,5 @@ WORKDIR /app/sickchill
 VOLUME /data /downloads /tv
 COPY . /app/sickchill
 RUN chmod -R 777 /app/sickchill
-CMD /usr/local/bin/python SickBeard.py -q --nolaunch --datadir=/data --port 8081
+CMD /usr/local/bin/python SickChill.py -q --nolaunch --datadir=/data --port 8081
 EXPOSE 8081

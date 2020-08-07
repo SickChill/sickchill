@@ -1,40 +1,16 @@
-# coding=utf-8
-# Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-from __future__ import absolute_import, print_function, unicode_literals
-
-# Stdlib Imports
-import gettext
 import os
 
-# Third Party Imports
 from tornado.web import addslash
 
-# First Party Imports
-import sickbeard
-from sickbeard import config, filters, helpers, logger, ui
-from sickbeard.common import Quality, WANTED
+import sickchill.start
+from sickchill import settings
 from sickchill.helper import setup_github, try_int
-from sickchill.helper.encoding import ek
+from sickchill.init_helpers import setup_gettext
+from sickchill.sickbeard import config, filters, helpers, logger, ui
+from sickchill.sickbeard.common import Quality, WANTED
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
-# Local Folder Imports
 from .index import Config
 
 
@@ -57,7 +33,7 @@ class ConfigGeneral(Config):
 
     @staticmethod
     def saveRootDirs(rootDirString=None):
-        sickbeard.ROOT_DIRS = rootDirString
+        settings.ROOT_DIRS = rootDirString
 
     @staticmethod
     def saveAddShowDefaults(defaultStatus, anyQualities, bestQualities, defaultSeasonFolders, subtitles=False,
@@ -75,17 +51,17 @@ class ConfigGeneral(Config):
 
         newQuality = Quality.combineQualities([int(quality) for quality in anyQualities], [int(quality) for quality in bestQualities])
 
-        sickbeard.STATUS_DEFAULT = int(defaultStatus)
-        sickbeard.STATUS_DEFAULT_AFTER = int(defaultStatusAfter)
-        sickbeard.QUALITY_DEFAULT = int(newQuality)
+        settings.STATUS_DEFAULT = int(defaultStatus)
+        settings.STATUS_DEFAULT_AFTER = int(defaultStatusAfter)
+        settings.QUALITY_DEFAULT = int(newQuality)
 
-        sickbeard.SEASON_FOLDERS_DEFAULT = config.checkbox_to_value(defaultSeasonFolders)
-        sickbeard.SUBTITLES_DEFAULT = config.checkbox_to_value(subtitles)
+        settings.SEASON_FOLDERS_DEFAULT = config.checkbox_to_value(defaultSeasonFolders)
+        settings.SUBTITLES_DEFAULT = config.checkbox_to_value(subtitles)
 
-        sickbeard.ANIME_DEFAULT = config.checkbox_to_value(anime)
+        settings.ANIME_DEFAULT = config.checkbox_to_value(anime)
 
-        sickbeard.SCENE_DEFAULT = config.checkbox_to_value(scene)
-        sickbeard.save_config()
+        settings.SCENE_DEFAULT = config.checkbox_to_value(scene)
+        sickchill.start.save_config()
 
         ui.notifications.message(_('Saved Defaults'), _('Your "add show" defaults have been set to your current selections.'))
 
@@ -106,124 +82,118 @@ class ConfigGeneral(Config):
 
         results = []
 
-        if gui_language != sickbeard.GUI_LANG:
-            if gui_language:
-                # Selected language
-                gettext.translation('messages', sickbeard.LOCALE_DIR, languages=[gui_language], codeset='UTF-8').install(unicode=1, names=["ngettext"])
-            else:
-                # System default language
-                gettext.install('messages', sickbeard.LOCALE_DIR, unicode=1, codeset='UTF-8', names=["ngettext"])
-
-            sickbeard.GUI_LANG = gui_language
+        if gui_language != settings.GUI_LANG:
+            setup_gettext(gui_language)
+            settings.GUI_LANG = gui_language
 
         # Misc
-        sickbeard.DOWNLOAD_URL = download_url
-        sickbeard.INDEXER_DEFAULT_LANGUAGE = indexerDefaultLang
-        sickbeard.EP_DEFAULT_DELETED_STATUS = ep_default_deleted_status
-        sickbeard.SKIP_REMOVED_FILES = config.checkbox_to_value(skip_removed_files)
-        sickbeard.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
+        settings.DOWNLOAD_URL = download_url
+        settings.INDEXER_DEFAULT_LANGUAGE = indexerDefaultLang
+        settings.EP_DEFAULT_DELETED_STATUS = ep_default_deleted_status
+        settings.SKIP_REMOVED_FILES = config.checkbox_to_value(skip_removed_files)
+        settings.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
         config.change_showupdate_hour(showupdate_hour)
         config.change_version_notify(version_notify)
-        sickbeard.AUTO_UPDATE = config.checkbox_to_value(auto_update)
-        sickbeard.NOTIFY_ON_UPDATE = config.checkbox_to_value(notify_on_update)
-        sickbeard.LOG_NR = log_nr
-        sickbeard.LOG_SIZE = float(log_size)
-        sickbeard.WEB_LOG = config.checkbox_to_value(web_log)
+        settings.AUTO_UPDATE = config.checkbox_to_value(auto_update)
+        settings.NOTIFY_ON_UPDATE = config.checkbox_to_value(notify_on_update)
+        settings.LOG_NR = log_nr
+        settings.LOG_SIZE = float(log_size)
+        settings.WEB_LOG = config.checkbox_to_value(web_log)
 
-        sickbeard.TRASH_REMOVE_SHOW = config.checkbox_to_value(trash_remove_show)
-        sickbeard.TRASH_ROTATE_LOGS = config.checkbox_to_value(trash_rotate_logs)
-        sickbeard.IGNORE_BROKEN_SYMLINKS = config.checkbox_to_value(ignore_broken_symlinks)
+        settings.TRASH_REMOVE_SHOW = config.checkbox_to_value(trash_remove_show)
+        settings.TRASH_ROTATE_LOGS = config.checkbox_to_value(trash_rotate_logs)
+        settings.IGNORE_BROKEN_SYMLINKS = config.checkbox_to_value(ignore_broken_symlinks)
         config.change_update_frequency(update_frequency)
-        sickbeard.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
-        sickbeard.SORT_ARTICLE = config.checkbox_to_value(sort_article)
-        sickbeard.CPU_PRESET = cpu_preset
-        sickbeard.ANON_REDIRECT = anon_redirect
-        sickbeard.PROXY_SETTING = proxy_setting
-        sickbeard.PROXY_INDEXERS = config.checkbox_to_value(proxy_indexers)
+        settings.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
+        settings.SORT_ARTICLE = config.checkbox_to_value(sort_article)
+        settings.CPU_PRESET = cpu_preset
+        settings.ANON_REDIRECT = anon_redirect
+        settings.PROXY_SETTING = proxy_setting
+        settings.PROXY_INDEXERS = config.checkbox_to_value(proxy_indexers)
 
-        sickbeard.GIT_USERNAME = git_username
+        settings.GIT_USERNAME = git_username
 
-        tmp_git_token = filters.unhide(sickbeard.GIT_TOKEN, git_token)
-        if sickbeard.GIT_TOKEN != tmp_git_token:
+        tmp_git_token = filters.unhide(settings.GIT_TOKEN, git_token)
+        if settings.GIT_TOKEN != tmp_git_token:
             # Re-Initializes sickbeard.gh, so a restart isn't necessary
-            sickbeard.GIT_TOKEN = tmp_git_token
+            settings.GIT_TOKEN = tmp_git_token
             setup_github()
 
         # sickbeard.GIT_RESET = config.checkbox_to_value(git_reset)
         # Force GIT_RESET
-        sickbeard.GIT_RESET = 1
-        sickbeard.GIT_PATH = git_path
-        sickbeard.GIT_REMOTE = git_remote
-        sickbeard.CALENDAR_UNPROTECTED = config.checkbox_to_value(calendar_unprotected)
-        sickbeard.CALENDAR_ICONS = config.checkbox_to_value(calendar_icons)
-        sickbeard.NO_RESTART = config.checkbox_to_value(no_restart)
-        sickbeard.DEBUG = config.checkbox_to_value(debug)
+        settings.GIT_RESET = 1
+        settings.GIT_PATH = git_path
+        settings.GIT_REMOTE = git_remote
+        settings.CALENDAR_UNPROTECTED = config.checkbox_to_value(calendar_unprotected)
+        settings.CALENDAR_ICONS = config.checkbox_to_value(calendar_icons)
+        settings.NO_RESTART = config.checkbox_to_value(no_restart)
+        settings.DEBUG = config.checkbox_to_value(debug)
         logger.set_level()
 
-        sickbeard.SSL_VERIFY = config.checkbox_to_value(ssl_verify)
+        settings.SSL_VERIFY = config.checkbox_to_value(ssl_verify)
 
-        sickbeard.COMING_EPS_MISSED_RANGE = config.min_max(coming_eps_missed_range, 7, 0, 42810)
+        settings.COMING_EPS_MISSED_RANGE = config.min_max(coming_eps_missed_range, 7, 0, 42810)
 
-        sickbeard.DISPLAY_ALL_SEASONS = config.checkbox_to_value(display_all_seasons)
-        sickbeard.NOTIFY_ON_LOGIN = config.checkbox_to_value(notify_on_login)
-        sickbeard.WEB_PORT = try_int(web_port)
-        sickbeard.WEB_IPV6 = config.checkbox_to_value(web_ipv6)
-        sickbeard.ENCRYPTION_VERSION = config.checkbox_to_value(encryption_version, value_on=2, value_off=0)
-        sickbeard.WEB_USERNAME = web_username
-        sickbeard.WEB_PASSWORD = filters.unhide(sickbeard.WEB_PASSWORD, web_password)
+        settings.DISPLAY_ALL_SEASONS = config.checkbox_to_value(display_all_seasons)
+        settings.NOTIFY_ON_LOGIN = config.checkbox_to_value(notify_on_login)
+        settings.WEB_PORT = try_int(web_port)
+        settings.WEB_IPV6 = config.checkbox_to_value(web_ipv6)
+        settings.ENCRYPTION_VERSION = config.checkbox_to_value(encryption_version, value_on=2, value_off=0)
+        settings.WEB_USERNAME = web_username
+        settings.WEB_PASSWORD = filters.unhide(settings.WEB_PASSWORD, web_password)
 
-        sickbeard.FUZZY_DATING = config.checkbox_to_value(fuzzy_dating)
-        sickbeard.TRIM_ZERO = config.checkbox_to_value(trim_zero)
+        settings.FUZZY_DATING = config.checkbox_to_value(fuzzy_dating)
+        settings.TRIM_ZERO = config.checkbox_to_value(trim_zero)
 
         if date_preset:
-            sickbeard.DATE_PRESET = date_preset
+            settings.DATE_PRESET = date_preset
 
         if indexer_default:
-            sickbeard.INDEXER_DEFAULT = try_int(indexer_default)
+            settings.INDEXER_DEFAULT = try_int(indexer_default)
 
         if indexer_timeout:
-            sickbeard.INDEXER_TIMEOUT = try_int(indexer_timeout)
+            settings.INDEXER_TIMEOUT = try_int(indexer_timeout)
 
         if time_preset:
-            sickbeard.TIME_PRESET_W_SECONDS = time_preset
-            sickbeard.TIME_PRESET = time_preset.replace(":%S", "")
+            settings.TIME_PRESET_W_SECONDS = time_preset
+            settings.TIME_PRESET = time_preset.replace(":%S", "")
 
-        sickbeard.TIMEZONE_DISPLAY = timezone_display
+        settings.TIMEZONE_DISPLAY = timezone_display
 
-        sickbeard.API_KEY = api_key
+        settings.API_KEY = api_key
 
-        sickbeard.ENABLE_HTTPS = config.checkbox_to_value(enable_https)
+        settings.ENABLE_HTTPS = config.checkbox_to_value(enable_https)
 
         if not config.change_https_cert(https_cert):
             results += [
-                _("Unable to create directory {directory}, https cert directory not changed.").format(directory=ek(os.path.normpath, https_cert))]
+                _("Unable to create directory {directory}, https cert directory not changed.").format(directory=os.path.normpath(https_cert))]
 
         if not config.change_https_key(https_key):
             results += [
-                _("Unable to create directory {directory}, https key directory not changed.").format(directory=ek(os.path.normpath, https_key))]
+                _("Unable to create directory {directory}, https key directory not changed.").format(directory=os.path.normpath(https_key))]
 
-        sickbeard.HANDLE_REVERSE_PROXY = config.checkbox_to_value(handle_reverse_proxy)
+        settings.HANDLE_REVERSE_PROXY = config.checkbox_to_value(handle_reverse_proxy)
 
-        sickbeard.THEME_NAME = theme_name
-        sickbeard.SICKCHILL_BACKGROUND = config.checkbox_to_value(sickchill_background)
+        settings.THEME_NAME = theme_name
+        settings.SICKCHILL_BACKGROUND = config.checkbox_to_value(sickchill_background)
         config.change_sickchill_background(sickchill_background_path)
-        sickbeard.FANART_BACKGROUND = config.checkbox_to_value(fanart_background)
-        sickbeard.FANART_BACKGROUND_OPACITY = fanart_background_opacity
-        sickbeard.CUSTOM_CSS = config.checkbox_to_value(custom_css)
+        settings.FANART_BACKGROUND = config.checkbox_to_value(fanart_background)
+        settings.FANART_BACKGROUND_OPACITY = fanart_background_opacity
+        settings.CUSTOM_CSS = config.checkbox_to_value(custom_css)
         config.change_custom_css(custom_css_path)
 
-        sickbeard.ENDED_SHOWS_UPDATE_INTERVAL = int(ended_shows_update_interval)
+        settings.ENDED_SHOWS_UPDATE_INTERVAL = int(ended_shows_update_interval)
 
-        sickbeard.DEFAULT_PAGE = default_page
+        settings.DEFAULT_PAGE = default_page
 
-        sickbeard.save_config()
+        sickchill.start.save_config()
 
         if len(results) > 0:
             for x in results:
-                logger.log(x, logger.ERROR)
+                logger.exception(x)
             ui.notifications.error(_('Error(s) Saving Configuration'),
                                    '<br>\n'.join(results))
         else:
-            ui.notifications.message(_('Configuration Saved'), ek(os.path.join, sickbeard.CONFIG_FILE))
+            ui.notifications.message(_('Configuration Saved'), os.path.join(settings.CONFIG_FILE))
 
         return self.redirect("/config/general/")

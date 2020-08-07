@@ -1,41 +1,17 @@
-# coding=utf-8
-# This file is part of SickChill.
-#
-# URL: https://sickchill.github.io
-# Git: https://github.com/SickChill/SickChill.git
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+
 
 """
 Test NZBProvider
 """
 
-from __future__ import print_function, unicode_literals
-
 import os
-import sys
 import unittest
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
-
-import sickbeard
-import six
-
-from generic_provider_tests import GenericProviderTests
+from sickchill import settings
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.nzb.NZBProvider import NZBProvider
+
+from .generic_provider_tests import GenericProviderTests
 
 
 class NZBProviderTests(GenericProviderTests):
@@ -65,8 +41,8 @@ class NZBProviderTests(GenericProviderTests):
             (True, True): True,
         }
 
-        for ((use_nzb, enabled), result) in six.iteritems(test_cases):
-            sickbeard.USE_NZBS = use_nzb
+        for ((use_nzb, enabled), result) in test_cases.items():
+            settings.USE_NZBS = use_nzb
 
             provider = NZBProvider('Test Provider')
             provider.enabled = enabled
@@ -141,7 +117,7 @@ class NZBProviderTests(GenericProviderTests):
         ]
 
         for nzb_dir in test_cases:
-            sickbeard.NZB_DIR = nzb_dir
+            settings.NZB_DIR = nzb_dir
 
             self.assertEqual(NZBProvider('Test Provider')._get_storage_dir(), nzb_dir)
 

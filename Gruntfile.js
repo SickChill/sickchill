@@ -89,7 +89,7 @@ module.exports = function(grunt) {
         clean: {
             dist: './dist/',
             'bower_components': './bower_components',
-            fonts: './gui/slick/css/fonts',
+            fonts: './sickchill/gui/slick/css/fonts',
             options: {
                 force: true
             }
@@ -151,7 +151,7 @@ module.exports = function(grunt) {
                     src: [
                         'fonts/**/*'
                     ],
-                    dest: './gui/slick/css/'
+                    dest: './sickchill/gui/slick/css/'
                 }]
             },
             glyphicon: {
@@ -166,19 +166,19 @@ module.exports = function(grunt) {
                         '*.woff',
                         '*.woff2'
                     ],
-                    dest: './gui/slick/fonts/'
+                    dest: './sickchill/gui/slick/fonts/'
                 }]
             }
         },
         uglify: {
             bower: {
                 files: {
-                    './gui/slick/js/vendor.min.js': ['./dist/bower.js']
+                    './sickchill/gui/slick/js/vendor.min.js': ['./dist/bower.js']
                 }
             },
             core: {
                 files: {
-                    './gui/slick/js/core.min.js': ['./gui/slick/js/core.js']
+                    './sickchill/gui/slick/js/core.min.js': ['./sickchill/gui/slick/js/core.js']
                 }
             }
         },
@@ -189,12 +189,12 @@ module.exports = function(grunt) {
             },
             bower: {
                 files: {
-                    './gui/slick/css/vendor.min.css': ['./dist/bower.css']
+                    './sickchill/gui/slick/css/vendor.min.css': ['./dist/bower.css']
                 }
             },
             core: {
                 files: {
-                    './gui/slick/css/core.min.css': ['./dist/core.css']
+                    './sickchill/gui/slick/css/core.min.css': ['./dist/core.css']
                 }
             }
         },
@@ -206,7 +206,7 @@ module.exports = function(grunt) {
                 },
                 files: [{
                     expand: true,
-                    src: './locale/*/LC_MESSAGES/messages.po',
+                    src: 'sickchill/locale/*/LC_MESSAGES/messages.po',
                     dest: '',
                     ext: '' // workaround for relative files
                 }]
@@ -233,7 +233,7 @@ module.exports = function(grunt) {
             'commit_changed_files': { // Choose what to commit.
                 cmd: function(travis) {
                     grunt.config('stop_no_changes', Boolean(travis));
-                    return 'git status -s -- locale/ gui/';
+                    return 'git status -s -- sickchill/locale/ sickchill/gui/';
                 },
                 stdout: false,
                 callback: function(err, stdout) {
@@ -244,14 +244,14 @@ module.exports = function(grunt) {
 
                     var commitMsg = [];
                     var commitPaths = [];
-                    if (stdout.match(/gui\/.*(vendor|core)\.min\.(js|css)$/gm)) {
+                    if (stdout.match(/sickchill\/gui\/.*(vendor|core)\.min\.(js|css)$/gm)) {
                         commitMsg.push('Grunt');
-                        commitPaths.push('gui/**/vendor.min.*');
-                        commitPaths.push('gui/**/core.min.*');
+                        commitPaths.push('sickchill/gui/**/vendor.min.*');
+                        commitPaths.push('sickchill/gui/**/core.min.*');
                     }
-                    if (stdout.match(/locale\/.*(pot|po|mo|json)$/gm)) {
+                    if (stdout.match(/sickchill\/locale\/.*(pot|po|mo|json)$/gm)) {
                         commitMsg.push('Update translations');
-                        commitPaths.push('locale/');
+                        commitPaths.push('sickchill/locale/');
                     }
 
                     if (!commitMsg.length || !commitPaths.length) {

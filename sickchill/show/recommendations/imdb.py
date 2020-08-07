@@ -1,21 +1,13 @@
-# coding=utf-8
-
-from __future__ import absolute_import, print_function, unicode_literals
-
-# Stdlib Imports
 import os
 import posixpath
 import re
 from datetime import date
+from urllib.parse import urljoin
 
-# Third Party Imports
 from bs4 import BeautifulSoup
-from requests.compat import urljoin
 
-# First Party Imports
-import sickbeard
-from sickbeard import helpers
-from sickchill.helper.encoding import ek
+from sickchill import settings
+from sickchill.sickbeard import helpers
 
 
 class imdbPopular(object):
@@ -53,7 +45,7 @@ class imdbPopular(object):
                 image = image_div.find("img")
                 show['image_url_large'] = self.change_size(image['loadlate'], 3)
                 show['imdb_tt'] = image['data-tconst']
-                show['image_path'] = ek(posixpath.join, 'images', 'imdb_popular', ek(os.path.basename, show['image_url_large']))
+                show['image_path'] = posixpath.join('images', 'imdb_popular', os.path.basename(show['image_url_large']))
                 self.cache_image(show['image_url_large'])
 
             content = row.find("div", {"class": "lister-item-content"})
@@ -84,11 +76,11 @@ class imdbPopular(object):
 
     @staticmethod
     def change_size(image_url, factor=3):
-        match = re.search("^(.*)V1_(.{2})(.*?)_(.{2})(.*?),(.*?),(.*?),(.\d?)_(.*?)_.jpg$", image_url)
+        match = re.search(r"^(.*)V1_(.{2})(.*?)_(.{2})(.*?),(.*?),(.*?),(.\d?)_(.*?)_.jpg$", image_url)
 
         if match:
             matches = match.groups()
-            ek(os.path.basename, image_url)
+            os.path.basename(image_url)
             matches = list(matches)
             matches[2] = int(matches[2]) * factor
             matches[4] = int(matches[4]) * factor
@@ -97,7 +89,7 @@ class imdbPopular(object):
             matches[7] = int(matches[7]) * factor
 
             return "{0}V1._{1}{2}_{3}{4},{5},{6},{7}_.jpg".format(matches[0], matches[1], matches[2], matches[3], matches[4],
-                                                      matches[5], matches[6], matches[7])
+                                                                  matches[5], matches[6], matches[7])
         else:
             return image_url
 
@@ -106,14 +98,15 @@ class imdbPopular(object):
         Store cache of image in cache dir
         :param image_url: Source URL
         """
-        path = ek(os.path.abspath, ek(os.path.join, sickbeard.CACHE_DIR, 'images', 'imdb_popular'))
+        path = os.path.abspath(os.path.join(settings.CACHE_DIR, 'images', 'imdb_popular'))
 
-        if not ek(os.path.exists, path):
-            ek(os.makedirs, path)
+        if not os.path.exists(path):
+            os.makedirs(path)
 
-        full_path = ek(os.path.join, path, ek(os.path.basename, image_url))
+        full_path = os.path.join(path, os.path.basename(image_url))
 
-        if not ek(os.path.isfile, full_path):
+        if not os.path.isfile(full_path):
             helpers.download_file(image_url, full_path, session=self.session)
+
 
 imdb_popular = imdbPopular()

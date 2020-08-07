@@ -1,41 +1,14 @@
-# coding=utf-8
-# This file is part of SickChill.
-#
-# URL: https://sickchill.github.io
-# Git: https://github.com/SickChill/SickChill.git
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+
 
 """
 Test restart
 """
 
-from __future__ import print_function, unicode_literals
-
-import os
-import sys
 import unittest
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
-
-import sickbeard
-from sickbeard.event_queue import Events
+from sickchill import settings
+from sickchill.sickbeard.event_queue import Events
 from sickchill.system.Restart import Restart
-
-
-import six
 
 
 class RestartTests(unittest.TestCase):
@@ -46,8 +19,8 @@ class RestartTests(unittest.TestCase):
         """
         Test restart
         """
-        sickbeard.PID = 123456
-        sickbeard.events = Events(None)
+        settings.PID = 123456
+        settings.events = Events(None)
 
         test_cases = {
             0: False,
@@ -65,7 +38,7 @@ class RestartTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (pid, result) in six.iteritems(tests):
+            for (pid, result) in tests.items():
                 self.assertEqual(Restart.restart(pid), result)
 
 

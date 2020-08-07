@@ -1,23 +1,3 @@
-#!/usr/bin/env python2.7
-# coding=utf-8
-# Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: https://github.com/SickChill/SickChill
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
 """
 Test sickbeard.helpers
 
@@ -84,24 +64,13 @@ Private Methods:
     _setUpSession
 """
 
-from __future__ import print_function
-
 import os
-import sys
 import unittest
-
 from shutil import rmtree
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-import sickbeard
-from bencode.BTL import BTFailure
-from sickbeard import helpers
+from sickchill import settings
 from sickchill.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
-
-import six
-
+from sickchill.sickbeard import helpers
 
 TEST_RESULT = 'Show.Name.S01E01.HDTV.x264-RLSGROUP'
 TEST_CASES = {
@@ -360,7 +329,7 @@ class HelpersFileTests(unittest.TestCase):
         }
 
         for cur_test in extension_tests, sample_tests, edge_cases:
-            for cur_name, expected_result in six.iteritems(cur_test):
+            for cur_name, expected_result in cur_test.items():
                 self.assertEqual(helpers.is_media_file(cur_name), expected_result, cur_name)
 
     @unittest.skip('Not yet implemented')
@@ -757,7 +726,7 @@ class HelpersMiscTests(unittest.TestCase):
             ('An Unexpected Journey', True, 'an unexpected journey'),
         ]
         for raw_name, option, expected in cases:
-            sickbeard.SORT_ARTICLE = option
+            settings.SORT_ARTICLE = option
             self.assertEqual(helpers.sortable_name(raw_name), expected)
 
     @unittest.skip('Not yet implemented')
@@ -767,22 +736,13 @@ class HelpersMiscTests(unittest.TestCase):
         """
         pass
 
-    def test_bdecode(self):
-        """
-        Test the custom bdecode function
-        """
-        bencoded_data = b'd5:hello5:world7:numbersli1ei2eeeEXTRA_DATA_HERE'
-        self.assertEqual(helpers.bdecode(bencoded_data, True), {'hello': b'world', 'numbers': [1, 2]})
-        self.assertRaisesRegexp(BTFailure, 'data after valid prefix', helpers.bdecode, bencoded_data, False)
-        self.assertRaisesRegexp(BTFailure, 'not a valid bencoded string', helpers.bdecode, b'Heythere', False)
-
 
 if __name__ == '__main__':
     print("==================")
     print("STARTING - Helpers TESTS")
     print("==================")
     print("######################################################################")
-    for name, test_data in six.iteritems(TEST_CASES):
+    for name, test_data in TEST_CASES.items():
         test_name = 'test_{0}'.format(name)
         test = generator(test_data)
         setattr(HelpersTests, test_name, test)

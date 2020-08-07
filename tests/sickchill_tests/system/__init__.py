@@ -1,12 +1,11 @@
-# coding=utf-8
 """
 Tests for SickChill system
 """
 
 import unittest
 
-from restart_tests import RestartTests
-from shutdown_tests import ShutdownTests
+from .restart_tests import RestartTests
+from .shutdown_tests import ShutdownTests
 
 if __name__ == '__main__':
     print('=====> Running all test in "sickchill_tests.system" <=====')

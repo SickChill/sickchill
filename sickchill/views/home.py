@@ -1,66 +1,35 @@
-# coding=utf-8
-# Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-from __future__ import absolute_import, print_function, unicode_literals
-
-# Stdlib Imports
 import ast
 import datetime
+import json
 import os
 import time
+import urllib.parse
 from operator import attrgetter
+from urllib.parse import unquote_plus
 
-# Third Party Imports
-import adba
-import six
 from github.GithubException import GithubException
-from requests.compat import unquote_plus
-# noinspection PyUnresolvedReferences
-from six.moves import urllib
 from tornado.escape import xhtml_unescape
-from trakt import TraktAPI
 
-# First Party Imports
-import sickbeard
-from sickbeard import clients, config, db, filters, helpers, logger, notifiers, sab, search_queue, subtitles as subtitle_module, ui
-from sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
-from sickbeard.common import cpu_presets, FAILED, IGNORED, Overview, Quality, SKIPPED, statusStrings, UNAIRED, WANTED
-from sickbeard.scene_numbering import (get_scene_absolute_numbering, get_scene_absolute_numbering_for_show, get_scene_numbering, get_scene_numbering_for_show,
-                                       get_xem_absolute_numbering_for_show, get_xem_numbering_for_show, set_scene_numbering)
-from sickbeard.versionChecker import CheckVersion
+import sickchill.sickbeard
+from sickchill import adba, settings
 from sickchill.helper import try_int
 from sickchill.helper.common import pretty_file_size
-from sickchill.helper.encoding import ek
-from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, ex, NoNFOException, ShowDirectoryNotFoundException
+from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException
 from sickchill.show.Show import Show
+from sickchill.sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
+from sickchill.sickbeard.common import cpu_presets, FAILED, IGNORED, Overview, Quality, SKIPPED, statusStrings, UNAIRED, WANTED
+from sickchill.sickbeard.scene_numbering import (get_scene_absolute_numbering, get_scene_absolute_numbering_for_show, get_scene_numbering,
+                                                 get_scene_numbering_for_show, get_xem_absolute_numbering_for_show, get_xem_numbering_for_show,
+                                                 set_scene_numbering)
+from sickchill.sickbeard.trakt_api import TraktAPI
+from sickchill.sickbeard.versionChecker import CheckVersion
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
 
-# Local Folder Imports
+from ..sickbeard import clients, config, db, filters, helpers, logger, notifiers, sab, search_queue, subtitles as subtitle_module, ui
 from .common import PageTemplate
 from .index import WebRoot
 from .routes import Route
-
-try:
-    import json
-except ImportError:
-    # noinspection PyPackageRequirements,PyUnresolvedReferences
-    import simplejson as json
 
 
 @Route('/home(/?.*)', name='home')
@@ -72,11 +41,12 @@ class Home(WebRoot):
         t = PageTemplate(rh=self, filename="genericMessage.mako")
         return t.render(message=message, subject=subject, topmenu="home", title="")
 
-    def _getEpisode(self, show, season=None, episode=None, absolute=None):
+    @staticmethod
+    def _getEpisode(show, season=None, episode=None, absolute=None):
         if not show:
             return None, _("Invalid show parameters")
 
-        show_obj = Show.find(sickbeard.showList, int(show))
+        show_obj = Show.find(settings.showList, int(show))
 
         if not show_obj:
             return None, _("Invalid show parameters")
@@ -97,8 +67,8 @@ class Home(WebRoot):
         t = PageTemplate(rh=self, filename="home.mako")
 
         selected_root = self.get_body_argument('root', None)
-        if selected_root and sickbeard.ROOT_DIRS:
-            backend_pieces = sickbeard.ROOT_DIRS.split('|')
+        if selected_root and settings.ROOT_DIRS:
+            backend_pieces = settings.ROOT_DIRS.split('|')
             backend_dirs = backend_pieces[1:]
             try:
                 assert selected_root != '-1'
@@ -110,10 +80,10 @@ class Home(WebRoot):
         else:
             selected_root_dir = ''
 
-        if sickbeard.ANIME_SPLIT_HOME:
+        if settings.ANIME_SPLIT_HOME:
             shows = []
             anime = []
-            for show in sickbeard.showList:
+            for show in settings.showList:
                 # noinspection PyProtectedMember
                 if selected_root_dir in show._location:
                     if show.is_anime:
@@ -127,7 +97,7 @@ class Home(WebRoot):
             ]
         else:
             shows = []
-            for show in sickbeard.showList:
+            for show in settings.showList:
                 # noinspection PyProtectedMember
                 if selected_root_dir in show._location:
                     shows.append(show)
@@ -160,11 +130,11 @@ class Home(WebRoot):
         sql_statement += ' OR (status IN ' + status_quality + ') OR (status IN ' + status_download + '))) AS ep_total,'
 
         sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate >= ' + today
-        sql_statement += (' AND season > 0', '')[sickbeard.DISPLAY_SHOW_SPECIALS] + ' AND status IN (' + ','.join([str(UNAIRED), str(WANTED)]) + ')'
+        sql_statement += (' AND season > 0', '')[settings.DISPLAY_SHOW_SPECIALS] + ' AND status IN (' + ','.join([str(UNAIRED), str(WANTED)]) + ')'
         sql_statement += ' ORDER BY airdate ASC LIMIT 1) AS ep_airs_next,'
 
         sql_statement += ' (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1'
-        sql_statement += (' AND season > 0', '')[sickbeard.DISPLAY_SHOW_SPECIALS] + ' AND status <> ' + str(UNAIRED)
+        sql_statement += (' AND season > 0', '')[settings.DISPLAY_SHOW_SPECIALS] + ' AND status <> ' + str(UNAIRED)
         sql_statement += ' ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev,'
 
         # @TODO: Store each show_size in tv_shows. also change in displayShow.mako:250, where we use helpers.get_size()
@@ -176,52 +146,51 @@ class Home(WebRoot):
         show_stat = {}
         max_download_count = 1000
         for cur_result in sql_result:
-            show_stat[cur_result[b'showid']] = cur_result
-            if cur_result[b'ep_total'] > max_download_count:
-                max_download_count = cur_result[b'ep_total']
+            show_stat[cur_result['showid']] = cur_result
+            if cur_result['ep_total'] > max_download_count:
+                max_download_count = cur_result['ep_total']
 
         max_download_count *= 100
 
         return show_stat, max_download_count
 
     def is_alive(self):
-            callback = self.get_query_arguments('callback')[0]
-            self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
-            self.set_header(b'Content-Type', 'text/javascript')
-            self.set_header(b'Access-Control-Allow-Origin', '*')
-            self.set_header(b'Access-Control-Allow-Headers', 'x-requested-with')
+        callback = self.get_query_arguments('callback')[0]
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header('Content-Type', 'text/javascript')
+        self.set_header('Access-Control-Allow-Origin', '*')
+        self.set_header('Access-Control-Allow-Headers', 'x-requested-with')
 
-            if sickbeard.started:
-                return callback + '(' + json.dumps(
-                    {"msg": str(sickbeard.PID)}) + ');'
-            else:
-                return callback + '(' + json.dumps({"msg": "nope"}) + ');'
+        if settings.started:
+            return callback + '(' + json.dumps({"msg": str(settings.PID)}) + ');'
+        else:
+            return callback + '(' + json.dumps({"msg": "nope"}) + ');'
 
     @staticmethod
     def haveKODI():
-        return sickbeard.USE_KODI and sickbeard.KODI_UPDATE_LIBRARY
+        return settings.USE_KODI and settings.KODI_UPDATE_LIBRARY
 
     @staticmethod
     def havePLEX():
-        return sickbeard.USE_PLEX_SERVER and sickbeard.PLEX_UPDATE_LIBRARY
+        return settings.USE_PLEX_SERVER and settings.PLEX_UPDATE_LIBRARY
 
     @staticmethod
     def haveEMBY():
-        return sickbeard.USE_EMBY
+        return settings.USE_EMBY
 
     @staticmethod
     def haveTORRENT():
-        host_good = (sickbeard.TORRENT_HOST[:5] == 'http:', sickbeard.TORRENT_HOST[:5] == 'https')[sickbeard.ENABLE_HTTPS]
-        if sickbeard.USE_TORRENTS and sickbeard.TORRENT_METHOD != 'blackhole' and host_good:
+        host_good = (settings.TORRENT_HOST[:5] == 'http:', settings.TORRENT_HOST[:5] == 'https')[settings.ENABLE_HTTPS]
+        if settings.USE_TORRENTS and settings.TORRENT_METHOD != 'blackhole' and host_good:
             return True
         else:
             return False
 
     def testSABnzbd(self):
-        # self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+        # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         username = self.get_body_argument('username')
-        password = filters.unhide(sickbeard.SAB_PASSWORD, self.get_body_argument('password'))
-        apikey = filters.unhide(sickbeard.SAB_APIKEY, self.get_body_argument('apikey'))
+        password = filters.unhide(settings.SAB_PASSWORD, self.get_body_argument('password'))
+        apikey = filters.unhide(settings.SAB_APIKEY, self.get_body_argument('apikey'))
 
         host = config.clean_url(self.get_body_argument('host'))
         connection, accesMsg = sab.getSabAccesMethod(host)
@@ -243,19 +212,19 @@ class Home(WebRoot):
     def testDSM(self):
         host = config.clean_url(self.get_body_argument('host'))
         username = self.get_body_argument('username')
-        password = filters.unhide(sickbeard.SYNOLOGY_DSM_PASSWORD, self.get_body_argument('password'))
+        password = filters.unhide(settings.SYNOLOGY_DSM_PASSWORD, self.get_body_argument('password'))
         return self.__torrent_test(host, username, password, 'download_station')
 
     def testTorrent(self):
         torrent_method = self.get_body_argument('torrent_method')
         host = config.clean_url(self.get_body_argument('host'))
         username = self.get_body_argument('username')
-        password = filters.unhide(sickbeard.TORRENT_PASSWORD, self.get_body_argument('password'))
+        password = filters.unhide(settings.TORRENT_PASSWORD, self.get_body_argument('password'))
         return self.__torrent_test(host, username, password, torrent_method)
 
     def testFreeMobile(self):
         freemobile_id = self.get_body_argument('freemobile_id')
-        freemobile_apikey = filters.unhide(sickbeard.FREEMOBILE_APIKEY, self.get_body_argument('freemobile_apikey'))
+        freemobile_apikey = filters.unhide(settings.FREEMOBILE_APIKEY, self.get_body_argument('freemobile_apikey'))
 
         result, message = notifiers.freemobile_notifier.test_notify(freemobile_id, freemobile_apikey)
         if result:
@@ -265,7 +234,7 @@ class Home(WebRoot):
 
     def testTelegram(self):
         telegram_id = self.get_body_argument('telegram_id')
-        telegram_apikey = filters.unhide(sickbeard.TELEGRAM_APIKEY, self.get_body_argument('telegram_apikey'))
+        telegram_apikey = filters.unhide(settings.TELEGRAM_APIKEY, self.get_body_argument('telegram_apikey'))
         result, message = notifiers.telegram_notifier.test_notify(telegram_id, telegram_apikey)
         if result:
             return _("Telegram notification succeeded. Check your Telegram clients to make sure it worked")
@@ -274,7 +243,7 @@ class Home(WebRoot):
 
     def testJoin(self):
         join_id = self.get_body_argument('join_id')
-        join_apikey = filters.unhide(sickbeard.JOIN_APIKEY, self.get_body_argument('join_apikey'))
+        join_apikey = filters.unhide(settings.JOIN_APIKEY, self.get_body_argument('join_apikey'))
 
         result, message = notifiers.join_notifier.test_notify(join_id, join_apikey)
         if result:
@@ -284,8 +253,8 @@ class Home(WebRoot):
 
     def testGrowl(self):
         host = self.get_query_argument('host')
-        password = filters.unhide(sickbeard.GROWL_PASSWORD, self.get_query_argument('password'))
-        # self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+        password = filters.unhide(settings.GROWL_PASSWORD, self.get_query_argument('password'))
+        # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         host = config.clean_host(host, default_port=23053)
         result = notifiers.growl_notifier.test_notify(host, password)
@@ -333,7 +302,7 @@ class Home(WebRoot):
         key = self.get_query_argument('key')
         # noinspection PyProtectedMember
         result = notifiers.twitter_notifier._get_credentials(key)
-        logger.log("result: " + str(result))
+        logger.info("result: " + str(result))
         if result:
             return _("Key verification successful")
         else:
@@ -350,16 +319,16 @@ class Home(WebRoot):
 
     @staticmethod
     def testTwilio():
-        if not notifiers.twilio_notifier.account_regex.match(sickbeard.TWILIO_ACCOUNT_SID):
+        if not notifiers.twilio_notifier.account_regex.match(settings.TWILIO_ACCOUNT_SID):
             return _('Please enter a valid account sid')
 
-        if not notifiers.twilio_notifier.auth_regex.match(sickbeard.TWILIO_AUTH_TOKEN):
+        if not notifiers.twilio_notifier.auth_regex.match(settings.TWILIO_AUTH_TOKEN):
             return _('Please enter a valid auth token')
 
-        if not notifiers.twilio_notifier.phone_regex.match(sickbeard.TWILIO_PHONE_SID):
+        if not notifiers.twilio_notifier.phone_regex.match(settings.TWILIO_PHONE_SID):
             return _('Please enter a valid phone sid')
 
-        if not notifiers.twilio_notifier.number_regex.match(sickbeard.TWILIO_TO_NUMBER):
+        if not notifiers.twilio_notifier.number_regex.match(settings.TWILIO_TO_NUMBER):
             return _('Please format the phone number as "+1-###-###-####"')
 
         result = notifiers.twilio_notifier.test_notify()
@@ -403,7 +372,7 @@ class Home(WebRoot):
     def testKODI(self):
         username = self.get_query_argument('username')
         host = config.clean_hosts(self.get_query_argument('host'))
-        password = filters.unhide(sickbeard.KODI_PASSWORD, self.get_query_argument('password'))
+        password = filters.unhide(settings.KODI_PASSWORD, self.get_query_argument('password'))
 
         results = notifiers.kodi_notifier.test_notify(unquote_plus(host), username, password)
         final_results = [
@@ -412,11 +381,11 @@ class Home(WebRoot):
         return "<br>\n".join(final_results)
 
     def testPHT(self):
-        self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         username = self.get_query_argument('username')
         host = config.clean_hosts(self.get_query_argument('host'))
-        password = filters.unhide(sickbeard.PLEX_CLIENT_PASSWORD, self.get_query_argument('password'))
+        password = filters.unhide(settings.PLEX_CLIENT_PASSWORD, self.get_query_argument('password'))
 
         finalResult = ''
         for curHost in [x.strip() for x in host.split(',')]:
@@ -432,11 +401,11 @@ class Home(WebRoot):
         return finalResult
 
     def testPMS(self):
-        self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         username = self.get_query_argument('username')
         host = config.clean_hosts(self.get_query_argument('host'))
-        password = filters.unhide(sickbeard.PLEX_SERVER_PASSWORD, self.get_query_argument('password'))
+        password = filters.unhide(settings.PLEX_SERVER_PASSWORD, self.get_query_argument('password'))
         plex_server_token = self.get_query_argument('plex_server_token')
 
         finalResult = ''
@@ -462,7 +431,7 @@ class Home(WebRoot):
 
     def testEMBY(self):
         host = config.clean_url(self.get_query_argument('host'))
-        emby_apikey = filters.unhide(sickbeard.EMBY_APIKEY, self.get_query_argument('emby_apikey'))
+        emby_apikey = filters.unhide(settings.EMBY_APIKEY, self.get_query_argument('emby_apikey'))
         result = notifiers.emby_notifier.test_notify(host, emby_apikey)
         if result:
             return _("Test notice sent successfully to {emby_host}").format(emby_host=unquote_plus(host))
@@ -485,7 +454,7 @@ class Home(WebRoot):
         result = notifiers.nmj_notifier.notify_settings(unquote_plus(host))
         if result:
             return '{{"message": _("Got settings from {host}"), "database": "{database}", "mount": "{mount}"}}'.format(**{
-                "host": host, "database": sickbeard.NMJ_DATABASE, "mount": sickbeard.NMJ_MOUNT
+                "host": host, "database": settings.NMJ_DATABASE, "mount": settings.NMJ_MOUNT
             })
         else:
             # noinspection PyPep8
@@ -506,7 +475,7 @@ class Home(WebRoot):
         result = notifiers.nmjv2_notifier.notify_settings(unquote_plus(host), dbloc, instance)
         if result:
             return '{{"message": _("NMJ Database found at: {host}"), "database": "{database}"}}'.format(
-                **{"host": host, "database": sickbeard.NMJv2_DATABASE})
+                **{"host": host, "database": settings.NMJv2_DATABASE})
         else:
             # noinspection PyPep8
             return '{{"message": _("Unable to find NMJ Database at location: {dbloc}. Is the right location selected and PCH running?"), "database": ""}}'.format(
@@ -516,7 +485,7 @@ class Home(WebRoot):
 
     def getTraktToken(self):
         trakt_pin = self.get_body_argument('trakt_pin')
-        trakt_api = TraktAPI(sickbeard.SSL_VERIFY, sickbeard.TRAKT_TIMEOUT)
+        trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
         response = trakt_api.traktToken(trakt_pin)
         if response:
             return _("Trakt Authorized")
@@ -537,16 +506,16 @@ class Home(WebRoot):
         size = 0
         for r in rows:
             NotifyList = {'emails': '', 'prowlAPIs': ''}
-            if r[b'notify_list'] and len(r[b'notify_list']) > 0:
+            if r['notify_list'] and len(r['notify_list']) > 0:
                 # First, handle legacy format (emails only)
-                if not r[b'notify_list'][0] == '{':
-                    NotifyList['emails'] = r[b'notify_list']
+                if not r['notify_list'][0] == '{':
+                    NotifyList['emails'] = r['notify_list']
                 else:
-                    NotifyList = dict(ast.literal_eval(r[b'notify_list']))
+                    NotifyList = dict(ast.literal_eval(r['notify_list']))
 
-            data[r[b'show_id']] = {
-                'id': r[b'show_id'],
-                'name': r[b'show_name'],
+            data[r['show_id']] = {
+                'id': r['show_id'],
+                'name': r['show_name'],
                 'list': NotifyList['emails'],
                 'prowl_notify_list': NotifyList['prowlAPIs']
             }
@@ -564,12 +533,12 @@ class Home(WebRoot):
 
         # Get current data
         for subs in main_db_con.select("SELECT notify_list FROM tv_shows WHERE show_id = ?", [show]):
-            if subs[b'notify_list'] and len(subs[b'notify_list']) > 0:
+            if subs['notify_list'] and len(subs['notify_list']) > 0:
                 # First, handle legacy format (emails only)
-                if not subs[b'notify_list'][0] == '{':
-                    entries['emails'] = subs[b'notify_list']
+                if not subs['notify_list'][0] == '{':
+                    entries['emails'] = subs['notify_list']
                 else:
-                    entries = dict(ast.literal_eval(subs[b'notify_list']))
+                    entries = dict(ast.literal_eval(subs['notify_list']))
 
         if emails or prowlAPIs:
             if not main_db_con.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
@@ -582,7 +551,7 @@ class Home(WebRoot):
         smtp_from = self.get_body_argument('smtp_from')
         use_tls = self.get_body_argument('use_tls')
         user = self.get_body_argument('user')
-        pwd = filters.unhide(sickbeard.EMAIL_PASSWORD, self.get_body_argument('pwd'))
+        pwd = filters.unhide(settings.EMAIL_PASSWORD, self.get_body_argument('pwd'))
         to = self.get_body_argument('to')
 
         host = config.clean_host(self.get_body_argument('host'))
@@ -610,7 +579,7 @@ class Home(WebRoot):
 
     def getPushbulletDevices(self):
         api = self.get_body_argument('api')
-        # self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
+        # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         result = notifiers.pushbullet_notifier.get_devices(api)
         if result:
@@ -627,11 +596,11 @@ class Home(WebRoot):
             return _("Error sending Pushbullet notification")
 
     def status(self):
-        tvdirFree = helpers.disk_usage_hr(sickbeard.TV_DOWNLOAD_DIR)
+        tvdirFree = helpers.disk_usage_hr(settings.TV_DOWNLOAD_DIR)
         rootDir = {}
 
-        if sickbeard.ROOT_DIRS:
-            backend_pieces = sickbeard.ROOT_DIRS.split('|')
+        if settings.ROOT_DIRS:
+            backend_pieces = settings.ROOT_DIRS.split('|')
             backend_dirs = backend_pieces[1:]
         else:
             backend_dirs = []
@@ -648,7 +617,7 @@ class Home(WebRoot):
     def shutdown(self):
         pid = self.get_query_argument('pid')
         if not Shutdown.stop(pid):
-            return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
+            return self.redirect('/' + settings.DEFAULT_PAGE + '/')
 
         title = "Shutting down"
         message = "SickChill is shutting down..."
@@ -658,7 +627,7 @@ class Home(WebRoot):
     def restart(self):
         pid = self.get_query_argument('pid')
         if not Restart.restart(pid):
-            return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
+            return self.redirect('/' + settings.DEFAULT_PAGE + '/')
 
         t = PageTemplate(rh=self, filename="restart.mako")
 
@@ -667,16 +636,16 @@ class Home(WebRoot):
 
     def updateCheck(self):
         pid = self.get_query_argument('pid')
-        if str(pid) != str(sickbeard.PID):
+        if str(pid) != str(settings.PID):
             return self.redirect('/home/')
 
-        sickbeard.versionCheckScheduler.action.check_for_new_version(force=True)
-        sickbeard.versionCheckScheduler.action.check_for_new_news()
+        settings.versionCheckScheduler.action.check_for_new_version(force=True)
+        settings.versionCheckScheduler.action.check_for_new_news()
 
-        return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
+        return self.redirect('/' + settings.DEFAULT_PAGE + '/')
 
     def update(self, pid, branch=None):
-        if str(pid) != str(sickbeard.PID):
+        if str(pid) != str(settings.PID):
             return self.redirect('/home/')
 
         checkversion = CheckVersion()
@@ -689,7 +658,7 @@ class Home(WebRoot):
 
             if checkversion.updater.need_update() and checkversion.updater.update():
                 # do a hard restart
-                sickbeard.events.put(sickbeard.events.SystemEvent.RESTART)
+                settings.events.put(settings.events.SystemEvent.RESTART)
 
                 t = PageTemplate(rh=self, filename="restart.mako")
                 return t.render(title=_("Home"), header=_("Restarting SickChill"), topmenu="home",
@@ -698,36 +667,36 @@ class Home(WebRoot):
                 return self._genericMessage(_("Update Failed"),
                                             _("Update wasn't successful, not restarting. Check your log for more information."))
         else:
-            return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
+            return self.redirect('/' + settings.DEFAULT_PAGE + '/')
 
     @staticmethod
     def fetchRemoteBranches():
         response = []
         try:
-            gh_branches = sickbeard.versionCheckScheduler.action.list_remote_branches()
+            gh_branches = settings.versionCheckScheduler.action.list_remote_branches()
         except GithubException:
             gh_branches = None
 
         if gh_branches:
             for cur_branch in gh_branches:
                 branch_obj = {'name': cur_branch}
-                if cur_branch == sickbeard.BRANCH:
+                if cur_branch == settings.BRANCH:
                     branch_obj['current'] = True
 
-                if cur_branch == 'master' or (sickbeard.GIT_TOKEN and (sickbeard.DEVELOPER == 1 or cur_branch == 'develop')):
+                if cur_branch == 'master' or (settings.GIT_TOKEN and (settings.DEVELOPER == 1 or cur_branch == 'develop')):
                     response.append(branch_obj)
 
         return json.dumps(response)
 
     def branchCheckout(self):
         branch = self.get_query_argument('branch')
-        if sickbeard.BRANCH != branch:
-            sickbeard.BRANCH = branch
+        if settings.BRANCH != branch:
+            settings.BRANCH = branch
             ui.notifications.message(_('Checking out branch') + ': ', branch)
-            return self.redirect('/update/?pid={}&branch={}'.format(sickbeard.PID, branch))
+            return self.redirect('/update/?pid={}&branch={}'.format(settings.PID, branch))
         else:
             ui.notifications.message(_('Already on branch') + ': ', branch)
-            return self.redirect('/' + sickbeard.DEFAULT_PAGE + '/')
+            return self.redirect('/' + settings.DEFAULT_PAGE + '/')
 
     @staticmethod
     def getDBcompare():
@@ -736,23 +705,23 @@ class Home(WebRoot):
         db_status = checkversion.getDBcompare()
 
         if db_status == 'upgrade':
-            logger.log("Checkout branch has a new DB version - Upgrade", logger.DEBUG)
+            logger.debug("Checkout branch has a new DB version - Upgrade")
             return json.dumps({"status": "success", 'message': 'upgrade'})
         elif db_status == 'equal':
-            logger.log("Checkout branch has the same DB version - Equal", logger.DEBUG)
+            logger.debug("Checkout branch has the same DB version - Equal")
             return json.dumps({"status": "success", 'message': 'equal'})
         elif db_status == 'downgrade':
-            logger.log("Checkout branch has an old DB version - Downgrade", logger.DEBUG)
+            logger.debug("Checkout branch has an old DB version - Downgrade")
             return json.dumps({"status": "success", 'message': 'downgrade'})
         else:
-            logger.log("Checkout branch couldn't compare DB version.", logger.ERROR)
+            logger.exception("Checkout branch couldn't compare DB version.")
             return json.dumps({"status": "error", 'message': 'General exception'})
 
     def displayShow(self):
         show = self.get_query_argument('show')
         # todo: add more comprehensive show validation
         try:
-            show_obj = Show.find(sickbeard.showList, int(show))
+            show_obj = Show.find(settings.showList, int(show))
         except (ValueError, TypeError):
             return self._genericMessage(_("Error"), _("Invalid show ID: {show}").format(show=str(show)))
 
@@ -765,7 +734,7 @@ class Home(WebRoot):
             [show_obj.indexerid]
         )
 
-        min_season = (1, 0)[sickbeard.DISPLAY_SHOW_SPECIALS]
+        min_season = (1, 0)[settings.DISPLAY_SHOW_SPECIALS]
 
         sql_results = main_db_con.select(
             "SELECT * FROM tv_episodes WHERE showid = ? AND season >= ? ORDER BY season DESC, episode DESC",
@@ -783,29 +752,29 @@ class Home(WebRoot):
 
         show_message = ''
 
-        if sickbeard.showQueueScheduler.action.is_being_added(show_obj):
+        if settings.showQueueScheduler.action.is_being_added(show_obj):
             show_message = _('This show is in the process of being downloaded - the info below is incomplete.')
 
-        elif sickbeard.showQueueScheduler.action.is_being_updated(show_obj):
+        elif settings.showQueueScheduler.action.is_being_updated(show_obj):
             show_message = _('The information on this page is in the process of being updated.')
 
-        elif sickbeard.showQueueScheduler.action.is_being_refreshed(show_obj):
+        elif settings.showQueueScheduler.action.is_being_refreshed(show_obj):
             show_message = _('The episodes below are currently being refreshed from disk')
 
-        elif sickbeard.showQueueScheduler.action.is_being_subtitled(show_obj):
+        elif settings.showQueueScheduler.action.is_being_subtitled(show_obj):
             show_message = _('Currently downloading subtitles for this show')
 
-        elif sickbeard.showQueueScheduler.action.is_in_refresh_queue(show_obj):
+        elif settings.showQueueScheduler.action.is_in_refresh_queue(show_obj):
             show_message = _('This show is queued to be refreshed.')
 
-        elif sickbeard.showQueueScheduler.action.is_in_update_queue(show_obj):
+        elif settings.showQueueScheduler.action.is_in_update_queue(show_obj):
             show_message = _('This show is queued and awaiting an update.')
 
-        elif sickbeard.showQueueScheduler.action.is_in_subtitle_queue(show_obj):
+        elif settings.showQueueScheduler.action.is_in_subtitle_queue(show_obj):
             show_message = _('This show is queued and awaiting subtitles download.')
 
-        if not sickbeard.showQueueScheduler.action.is_being_added(show_obj):
-            if not sickbeard.showQueueScheduler.action.is_being_updated(show_obj):
+        if not settings.showQueueScheduler.action.is_being_added(show_obj):
+            if not settings.showQueueScheduler.action.is_being_updated(show_obj):
                 if show_obj.paused:
                     submenu.append({'title': _('Resume'), 'path': 'home/togglePause?show={0:d}'.format(show_obj.indexerid), 'icon': 'fa fa-play'})
                 else:
@@ -813,51 +782,51 @@ class Home(WebRoot):
 
                 # noinspection PyPep8
                 submenu.append({
-                                   'title': _('Remove'),
-                                   'path': 'home/deleteShow?show={0:d}'.format(show_obj.indexerid),
-                                   'class': 'removeshow',
-                                   'confirm': True,
-                                   'icon': 'fa fa-trash'
-                                   })
+                    'title': _('Remove'),
+                    'path': 'home/deleteShow?show={0:d}'.format(show_obj.indexerid),
+                    'class': 'removeshow',
+                    'confirm': True,
+                    'icon': 'fa fa-trash'
+                })
                 submenu.append({'title': _('Re-scan files'), 'path': 'home/refreshShow?show={0:d}&amp;force=1'.format(show_obj.indexerid), 'icon': 'fa fa-refresh'})
                 # noinspection PyPep8
                 submenu.append(
                     {'title': _('Force Full Update'), 'path': 'home/updateShow?show={0:d}&amp;force=1'.format(show_obj.indexerid), 'icon': 'fa fa-exchange'})
                 # noinspection PyPep8
                 submenu.append({
-                                   'title': _('Update show in KODI'),
-                                   'path': 'home/updateKODI?show={0:d}'.format(show_obj.indexerid),
-                                   'requires': self.haveKODI(),
-                                   'icon': 'menu-icon-kodi'
-                                   })
+                    'title': _('Update show in KODI'),
+                    'path': 'home/updateKODI?show={0:d}'.format(show_obj.indexerid),
+                    'requires': self.haveKODI(),
+                    'icon': 'menu-icon-kodi'
+                })
                 # noinspection PyPep8
                 submenu.append({
-                                   'title': _('Update show in Emby'),
-                                   'path': 'home/updateEMBY?show={0:d}'.format(show_obj.indexerid),
-                                   'requires': self.haveEMBY(),
-                                   'icon': 'menu-icon-emby'
-                                   })
-                if seasonResults and int(seasonResults[-1][b"season"]) == 0:
-                    if sickbeard.DISPLAY_SHOW_SPECIALS:
+                    'title': _('Update show in Emby'),
+                    'path': 'home/updateEMBY?show={0:d}'.format(show_obj.indexerid),
+                    'requires': self.haveEMBY(),
+                    'icon': 'menu-icon-emby'
+                })
+                if seasonResults and int(seasonResults[-1]["season"]) == 0:
+                    if settings.DISPLAY_SHOW_SPECIALS:
                         # noinspection PyPep8
                         submenu.append({
-                                           'title': _('Hide specials'),
-                                           'path': 'home/toggleDisplayShowSpecials/?show={0:d}'.format(show_obj.indexerid),
-                                           'confirm': True,
-                                           'icon': 'fa fa-times'
-                                           })
+                            'title': _('Hide specials'),
+                            'path': 'home/toggleDisplayShowSpecials/?show={0:d}'.format(show_obj.indexerid),
+                            'confirm': True,
+                            'icon': 'fa fa-times'
+                        })
                     else:
                         # noinspection PyPep8
                         submenu.append({
-                                           'title': _('Show specials'),
-                                           'path': 'home/toggleDisplayShowSpecials/?show={0:d}'.format(show_obj.indexerid),
-                                           'confirm': True,
-                                           'icon': 'fa fa-check'
-                                           })
+                            'title': _('Show specials'),
+                            'path': 'home/toggleDisplayShowSpecials/?show={0:d}'.format(show_obj.indexerid),
+                            'confirm': True,
+                            'icon': 'fa fa-check'
+                        })
 
                 submenu.append({'title': _('Preview Rename'), 'path': 'home/testRename?show={0:d}'.format(show_obj.indexerid), 'icon': 'fa fa-tag'})
 
-                if sickbeard.USE_SUBTITLES and show_obj.subtitles and not sickbeard.showQueueScheduler.action.is_being_subtitled(show_obj):
+                if settings.USE_SUBTITLES and show_obj.subtitles and not settings.showQueueScheduler.action.is_being_subtitled(show_obj):
                     # noinspection PyPep8
                     submenu.append(
                         {'title': _('Download Subtitles'), 'path': 'home/subtitleShow?show={0:d}'.format(show_obj.indexerid), 'icon': 'fa fa-language'})
@@ -875,15 +844,15 @@ class Home(WebRoot):
         epCats = {}
 
         for curResult in sql_results:
-            curEpCat = show_obj.getOverview(curResult[b"status"])
+            curEpCat = show_obj.getOverview(curResult["status"])
             if curEpCat:
-                epCats[str(curResult[b"season"]) + "x" + str(curResult[b"episode"])] = curEpCat
+                epCats[str(curResult["season"]) + "x" + str(curResult["episode"])] = curEpCat
                 epCounts[curEpCat] += 1
 
-        if sickbeard.ANIME_SPLIT_HOME:
+        if settings.ANIME_SPLIT_HOME:
             shows = []
             anime = []
-            for show in sickbeard.showList:
+            for show in settings.showList:
                 if show.is_anime:
                     anime.append(show)
                 else:
@@ -894,28 +863,28 @@ class Home(WebRoot):
             ]
         else:
             sortedShowLists = [
-                ["Shows", sorted(sickbeard.showList, key=lambda mbr: attrgetter('sort_name')(mbr))]
+                ["Shows", sorted(settings.showList, key=lambda mbr: attrgetter('sort_name')(mbr))]
             ]
 
         bwl = None
         if show_obj.is_anime:
             bwl = show_obj.release_groups
 
-        show_obj.exceptions = sickbeard.scene_exceptions.get_scene_exceptions(show_obj.indexerid)
+        show_obj.exceptions = sickchill.sickbeard.scene_exceptions.get_scene_exceptions(show_obj.indexerid)
 
         indexerid = int(show_obj.indexerid)
         indexer = int(show_obj.indexer)
 
         # Delete any previous occurrences
-        for index, recentShow in enumerate(sickbeard.SHOWS_RECENT):
+        for index, recentShow in enumerate(settings.SHOWS_RECENT):
             if recentShow['indexerid'] == indexerid:
-                del sickbeard.SHOWS_RECENT[index]
+                del settings.SHOWS_RECENT[index]
 
         # Only track 5 most recent shows
-        del sickbeard.SHOWS_RECENT[4:]
+        del settings.SHOWS_RECENT[4:]
 
         # Insert most recent show
-        sickbeard.SHOWS_RECENT.insert(0, {
+        settings.SHOWS_RECENT.insert(0, {
             'indexerid': indexerid,
             'name': show_obj.name,
         })
@@ -941,16 +910,16 @@ class Home(WebRoot):
         main_db_con = db.DBConnection()
         result = main_db_con.select_one(
             "SELECT description FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?", (int(show), int(season), int(episode)))
-        return result[b'description'] if result else 'Episode not found.'
+        return result['description'] if result else 'Episode not found.'
 
     def sceneExceptions(self):
         show = self.get_query_argument('show')
-        exceptionsList = sickbeard.scene_exceptions.get_all_scene_exceptions(show)
+        exceptionsList = sickchill.sickbeard.scene_exceptions.get_all_scene_exceptions(show)
         if not exceptionsList:
             return _("No scene exceptions")
 
         out = []
-        for season, exceptions in iter(sorted(six.iteritems(exceptionsList))):
+        for season, exceptions in iter(sorted(exceptionsList.items())):
             if season == -1:
                 season = "*"
             out.append("S" + str(season) + ": " + ", ".join(exceptions.names))
@@ -966,7 +935,7 @@ class Home(WebRoot):
         anidb_failed = False
 
         try:
-            show_obj = Show.find(sickbeard.showList, int(show))
+            show_obj = Show.find(settings.showList, int(show))
         except (ValueError, TypeError):
             errString = _("Invalid show ID") + ": {show}".format(show=str(show))
             if directCall:
@@ -981,7 +950,7 @@ class Home(WebRoot):
             else:
                 return self._genericMessage(_("Error"), errString)
 
-        show_obj.exceptions = sickbeard.scene_exceptions.get_all_scene_exceptions(show_obj.indexerid)
+        show_obj.exceptions = sickchill.sickbeard.scene_exceptions.get_all_scene_exceptions(show_obj.indexerid)
 
         main_db_con = db.DBConnection()
         seasonResults = main_db_con.select(
@@ -1002,11 +971,11 @@ class Home(WebRoot):
 
                 if helpers.set_up_anidb_connection() and not anidb_failed:
                     try:
-                        anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=show_obj.name)
+                        anime = adba.Anime(settings.ADBA_CONNECTION, name=show_obj.name)
                         groups = anime.get_groups()
                     except Exception as e:
                         ui.notifications.error(_('Unable to retreive Fansub Groups from AniDB.'))
-                        logger.log('Unable to retreive Fansub Groups from AniDB. Error is {0}'.format(e), logger.DEBUG)
+                        logger.debug('Unable to retreive Fansub Groups from AniDB. Error is {0}'.format(e))
 
             with show_obj.lock:
                 show = show_obj
@@ -1101,7 +1070,7 @@ class Home(WebRoot):
             if bool(show_obj.season_folders) != season_folders:
                 show_obj.season_folders = season_folders
                 try:
-                    sickbeard.showQueueScheduler.action.refresh_show(show_obj)
+                    settings.showQueueScheduler.action.refresh_show(show_obj)
                 except CantRefreshShowException as e:
                     errors.append(_("Unable to refresh this show: {error}").format(error=e))
 
@@ -1121,23 +1090,20 @@ class Home(WebRoot):
                 show_obj.rls_require_words = rls_require_words.strip()
                 show_obj.rls_prefer_words = rls_prefer_words.strip()
 
-            if not isinstance(location, six.text_type):
-                location = ek(six.text_type, location, 'utf-8')
-
-            location = ek(os.path.normpath, xhtml_unescape(location))
+            location = os.path.normpath(xhtml_unescape(location))
             # noinspection PyProtectedMember
-            old_location = ek(os.path.normpath, show_obj._location)
+            old_location = os.path.normpath(show_obj._location)
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if old_location != location:
-                logger.log(old_location + " != " + location, logger.DEBUG)
-                if not (ek(os.path.isdir, location) or sickbeard.CREATE_MISSING_SHOW_DIRS or sickbeard.ADD_SHOWS_WO_DIR):
+                logger.debug(old_location + " != " + location)
+                if not (os.path.isdir(location) or settings.CREATE_MISSING_SHOW_DIRS or settings.ADD_SHOWS_WO_DIR):
                     errors.append(_("New location <tt>{location}</tt> does not exist").format(location=location))
                 else:
                     # change it
                     try:
                         show_obj.location = location
                         try:
-                            sickbeard.showQueueScheduler.action.refresh_show(show_obj, True)
+                            settings.showQueueScheduler.action.refresh_show(show_obj, True)
                         except CantRefreshShowException as e:
                             errors.append(_("Unable to refresh this show: {error}").format(error=e))
                             # grab updated info from TVDB
@@ -1155,21 +1121,21 @@ class Home(WebRoot):
         # force the update
         if do_update:
             try:
-                sickbeard.showQueueScheduler.action.update_show(show_obj, True)
-                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+                settings.showQueueScheduler.action.update_show(show_obj, True)
+                time.sleep(cpu_presets[settings.CPU_PRESET])
             except CantUpdateShowException as e:
                 errors.append(_("Unable to update show: {error}").format(error=e))
 
         try:
-            sickbeard.scene_exceptions.update_scene_exceptions(show_obj.indexerid, exceptions)  # @UndefinedVdexerid)
-            time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+            sickchill.sickbeard.scene_exceptions.update_scene_exceptions(show_obj.indexerid, exceptions)  # @UndefinedVdexerid)
+            time.sleep(cpu_presets[settings.CPU_PRESET])
         except CantUpdateShowException:
             errors.append(_("Unable to force an update on scene exceptions of the show."))
 
         if do_update_scene_numbering:
             try:
-                sickbeard.scene_numbering.xem_refresh(show_obj.indexerid, show_obj.indexer)
-                time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+                sickchill.sickbeard.scene_numbering.xem_refresh(show_obj.indexerid, show_obj.indexer)
+                time.sleep(cpu_presets[settings.CPU_PRESET])
             except CantUpdateShowException:
                 errors.append(_("Unable to force an update on scene numbering of the show."))
 
@@ -1206,15 +1172,15 @@ class Home(WebRoot):
             ui.notifications.message(
                 _('{show_name} has been {deleted_trashed} {was_deleted}').format(
                     show_name=show.name,
-                    deleted_trashed=(_('deleted'), _('trashed'))[sickbeard.TRASH_REMOVE_SHOW],
+                    deleted_trashed=(_('deleted'), _('trashed'))[settings.TRASH_REMOVE_SHOW],
                     was_deleted=(_('(media untouched)'), _('(with all related media)'))[bool(full)]
                 )
             )
 
-            time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+            time.sleep(cpu_presets[settings.CPU_PRESET])
 
         # Remove show from 'RECENT SHOWS' in 'Shows' menu
-        sickbeard.SHOWS_RECENT = [x for x in sickbeard.SHOWS_RECENT if x['indexerid'] != show.indexerid]
+        settings.SHOWS_RECENT = [x for x in settings.SHOWS_RECENT if x['indexerid'] != show.indexerid]
 
         # Don't redirect to the default page, so the user can confirm that the show was deleted
         return self.redirect('/home/')
@@ -1230,7 +1196,7 @@ class Home(WebRoot):
         if error:
             ui.notifications.error(_('Unable to refresh this show.'), error)
 
-        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+        time.sleep(cpu_presets[settings.CPU_PRESET])
 
         return self.redirect("/home/displayShow?show=" + str(show.indexerid))
 
@@ -1239,19 +1205,19 @@ class Home(WebRoot):
         if not show:
             return self._genericMessage(_("Error"), _("Invalid show ID"))
 
-        show_obj = Show.find(sickbeard.showList, int(show))
+        show_obj = Show.find(settings.showList, int(show))
 
         if not show_obj:
             return self._genericMessage(_("Error"), _("Unable to find the specified show"))
 
         # force the update
         try:
-            sickbeard.showQueueScheduler.action.update_show(show_obj, bool(force))
+            settings.showQueueScheduler.action.update_show(show_obj, bool(force))
         except CantUpdateShowException as e:
-            ui.notifications.error(_("Unable to update this show."), ex(e))
+            ui.notifications.error(_("Unable to update this show."), str(e))
 
         # just give it some time
-        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+        time.sleep(cpu_presets[settings.CPU_PRESET])
 
         return self.redirect("/home/displayShow?show=" + str(show_obj.indexerid))
 
@@ -1260,15 +1226,15 @@ class Home(WebRoot):
         if not show:
             return self._genericMessage(_("Error"), _("Invalid show ID"))
 
-        show_obj = Show.find(sickbeard.showList, int(show))
+        show_obj = Show.find(settings.showList, int(show))
 
         if not show_obj:
             return self._genericMessage(_("Error"), _("Unable to find the specified show"))
 
         # search and download subtitles
-        sickbeard.showQueueScheduler.action.download_subtitles(show_obj, bool(force))
+        settings.showQueueScheduler.action.download_subtitles(show_obj, bool(force))
 
-        time.sleep(cpu_presets[sickbeard.CPU_PRESET])
+        time.sleep(cpu_presets[settings.CPU_PRESET])
 
         return self.redirect("/home/displayShow?show=" + str(show_obj.indexerid))
 
@@ -1277,14 +1243,14 @@ class Home(WebRoot):
         show_obj = None
 
         if show:
-            show_obj = Show.find(sickbeard.showList, int(show))
+            show_obj = Show.find(settings.showList, int(show))
             if show_obj:
-                showName = urllib.parse.quote_plus(show_obj.name.encode('utf-8'))
+                showName = urllib.parse.quote_plus(show_obj.name)
 
-        if sickbeard.KODI_UPDATE_ONLYFIRST:
-            host = sickbeard.KODI_HOST.split(",")[0].strip()
+        if settings.KODI_UPDATE_ONLYFIRST:
+            host = settings.KODI_HOST.split(",")[0].strip()
         else:
-            host = sickbeard.KODI_HOST
+            host = settings.KODI_HOST
 
         if notifiers.kodi_notifier.update_library(show_name=showName):
             ui.notifications.message(_("Library update command sent to KODI host(s)): {kodi_hosts}").format(kodi_hosts=host))
@@ -1297,25 +1263,25 @@ class Home(WebRoot):
             return self.redirect('/home/')
 
     def updatePLEX(self):
-        if None is notifiers.plex_notifier.update_library():
+        if notifiers.plex_notifier.update_library() is None:
             ui.notifications.message(_("Library update command sent to Plex Media Server host: {plex_server}").format
-                                     (plex_server=sickbeard.PLEX_SERVER_HOST))
+                                     (plex_server=settings.PLEX_SERVER_HOST))
         else:
             ui.notifications.error(_("Unable to contact Plex Media Server host: {plex_server}").format
-                                   (plex_server=sickbeard.PLEX_SERVER_HOST))
+                                   (plex_server=settings.PLEX_SERVER_HOST))
         return self.redirect('/home/')
 
     def updateEMBY(self, show=None):
         show_obj = None
 
         if show:
-            show_obj = Show.find(sickbeard.showList, int(show))
+            show_obj = Show.find(settings.showList, int(show))
 
         if notifiers.emby_notifier.update_library(show_obj):
             ui.notifications.message(
-                _("Library update command sent to Emby host: {emby_host}").format(emby_host=sickbeard.EMBY_HOST))
+                _("Library update command sent to Emby host: {emby_host}").format(emby_host=settings.EMBY_HOST))
         else:
-            ui.notifications.error(_("Unable to contact Emby host: {emby_host}").format(emby_host=sickbeard.EMBY_HOST))
+            ui.notifications.error(_("Unable to contact Emby host: {emby_host}").format(emby_host=settings.EMBY_HOST))
 
         if show_obj:
             return self.redirect('/home/displayShow?show=' + str(show_obj.indexerid))
@@ -1341,7 +1307,7 @@ class Home(WebRoot):
             else:
                 return self._genericMessage(_("Error"), errMsg)
 
-        show_obj = Show.find(sickbeard.showList, int(show))
+        show_obj = Show.find(settings.showList, int(show))
 
         if not show_obj:
             errMsg = _("Show not in show list")
@@ -1358,14 +1324,14 @@ class Home(WebRoot):
             for cur_ep in eps.split('|'):
 
                 if not cur_ep:
-                    logger.log("cur_ep was empty when trying to setStatus", logger.DEBUG)
+                    logger.debug("cur_ep was empty when trying to setStatus")
 
-                logger.log("Attempting to set status on episode " + cur_ep + " to " + status, logger.DEBUG)
+                logger.debug("Attempting to set status on episode " + cur_ep + " to " + status)
 
                 epInfo = cur_ep.split('x')
 
                 if not all(epInfo):
-                    logger.log("Something went wrong when trying to setStatus, epInfo[0]: {0}, epInfo[1]: {1}".format(epInfo[0], epInfo[1]), logger.DEBUG)
+                    logger.debug("Something went wrong when trying to setStatus, epInfo[0]: {0}, epInfo[1]: {1}".format(epInfo[0], epInfo[1]))
                     continue
 
                 ep_obj = show_obj.getEpisode(epInfo[0], epInfo[1])
@@ -1383,21 +1349,21 @@ class Home(WebRoot):
                 with ep_obj.lock:
                     # don't let them mess up UNAIRED episodes
                     if ep_obj.status == UNAIRED:
-                        logger.log("Refusing to change status of " + cur_ep + " because it is UNAIRED", logger.WARNING)
+                        logger.warning("Refusing to change status of " + cur_ep + " because it is UNAIRED")
                         continue
 
                     if int(status) in Quality.DOWNLOADED and ep_obj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + \
-                        Quality.DOWNLOADED + [IGNORED] and not ek(os.path.isfile, ep_obj.location):
-                        logger.log("Refusing to change status of " + cur_ep + " to DOWNLOADED because it's not SNATCHED/DOWNLOADED", logger.WARNING)
+                            Quality.DOWNLOADED + [IGNORED] and not os.path.isfile(ep_obj.location):
+                        logger.warning("Refusing to change status of " + cur_ep + " to DOWNLOADED because it's not SNATCHED/DOWNLOADED")
                         continue
 
                     if int(status) == FAILED and ep_obj.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + \
-                        Quality.DOWNLOADED + Quality.ARCHIVED:
-                        logger.log("Refusing to change status of " + cur_ep + " to FAILED because it's not SNATCHED/DOWNLOADED", logger.WARNING)
+                            Quality.DOWNLOADED + Quality.ARCHIVED:
+                        logger.warning("Refusing to change status of " + cur_ep + " to FAILED because it's not SNATCHED/DOWNLOADED")
                         continue
 
                     if ep_obj.status in Quality.DOWNLOADED + Quality.ARCHIVED and int(status) == WANTED:
-                        logger.log(
+                        logger.info(
                             "Removing release_name for episode as you want to set a downloaded episode back to wanted, so obviously you want it replaced")
                         ep_obj.release_name = ""
 
@@ -1406,22 +1372,22 @@ class Home(WebRoot):
                     # mass add to database
                     sql_l.append(ep_obj.get_sql())
 
-                    if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+                    if settings.USE_TRAKT and settings.TRAKT_SYNC_WATCHLIST:
                         trakt_data.append((ep_obj.season, ep_obj.episode))
 
-            if sickbeard.USE_TRAKT and sickbeard.TRAKT_SYNC_WATCHLIST:
+            if settings.USE_TRAKT and settings.TRAKT_SYNC_WATCHLIST:
                 data = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)
                 if data['seasons']:
                     upd = ""
                     if int(status) in [WANTED, FAILED]:
-                        logger.log(
-                            "Add episodes, showid: indexerid " + str(show_obj.indexerid) + ", Title " + str(show_obj.name) + " to Watchlist", logger.DEBUG
+                        logger.debug(
+                            "Add episodes, showid: indexerid " + str(show_obj.indexerid) + ", Title " + str(show_obj.name) + " to Watchlist"
                         )
                         upd = "add"
                     elif int(status) in [IGNORED, SKIPPED] + Quality.DOWNLOADED + Quality.ARCHIVED:
                         # noinspection PyPep8
-                        logger.log(
-                            "Remove episodes, showid: indexerid " + str(show_obj.indexerid) + ", Title " + str(show_obj.name) + " from Watchlist", logger.DEBUG
+                        logger.debug(
+                            "Remove episodes, showid: indexerid " + str(show_obj.indexerid) + ", Title " + str(show_obj.name) + " from Watchlist"
                         )
                         upd = "remove"
 
@@ -1436,12 +1402,12 @@ class Home(WebRoot):
             msg = _("Backlog was automatically started for the following seasons of <b>{show_name}</b>").format(show_name=show_obj.name)
             msg += ':<br><ul>'
 
-            for season, segment in six.iteritems(segments):
+            for season, segment in segments.items():
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(show_obj, segment)
-                sickbeard.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
+                settings.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
 
                 msg += "<li>" + _("Season") + " " + str(season) + "</li>"
-                logger.log("Sending backlog for " + show_obj.name + " season " + str(
+                logger.info("Sending backlog for " + show_obj.name + " season " + str(
                     season) + " because some eps were set to wanted")
 
             msg += "</ul>"
@@ -1449,18 +1415,18 @@ class Home(WebRoot):
             if segments:
                 ui.notifications.message(_("Backlog started"), msg)
         elif int(status) == WANTED and show_obj.paused:
-            logger.log("Some episodes were set to wanted, but " + show_obj.name + " is paused. Not adding to Backlog until show is unpaused")
+            logger.info("Some episodes were set to wanted, but " + show_obj.name + " is paused. Not adding to Backlog until show is unpaused")
 
         if int(status) == FAILED:
             msg = _("Retrying Search was automatically started for the following season of <b>{show_name}</b>").format(show_name=show_obj.name)
             msg += ':<br><ul>'
 
-            for season, segment in six.iteritems(segments):
+            for season, segment in segments.items():
                 cur_failed_queue_item = search_queue.FailedQueueItem(show_obj, segment)
-                sickbeard.searchQueueScheduler.action.add_item(cur_failed_queue_item)
+                settings.searchQueueScheduler.action.add_item(cur_failed_queue_item)
 
                 msg += "<li>" + _("Season") + " " + str(season) + "</li>"
-                logger.log("Retrying Search for " + show_obj.name + " season " + str(
+                logger.info("Retrying Search for " + show_obj.name + " season " + str(
                     season) + " because some eps were set to failed")
 
             msg += "</ul>"
@@ -1478,7 +1444,7 @@ class Home(WebRoot):
         if not show:
             return self._genericMessage(_("Error"), _("You must specify a show"))
 
-        show_obj = Show.find(sickbeard.showList, int(show))
+        show_obj = Show.find(settings.showList, int(show))
 
         if not show_obj:
             return self._genericMessage(_("Error"), _("Show not in show list"))
@@ -1501,7 +1467,7 @@ class Home(WebRoot):
         if not (show and eps):
             return self._genericMessage(_("Error"), _("You must specify a show and at least one episode"))
 
-        show_obj = Show.find(sickbeard.showList, int(show))
+        show_obj = Show.find(settings.showList, int(show))
         if not show_obj:
             return self._genericMessage(_("Error"), _("Show not in show list"))
 
@@ -1523,18 +1489,18 @@ class Home(WebRoot):
                 "SELECT location FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ? AND 5=5",
                 [show, epInfo[0], epInfo[1]])
             if not ep_result:
-                logger.log("Unable to find an episode for " + cur_ep + ", skipping", logger.WARNING)
+                logger.warning("Unable to find an episode for " + cur_ep + ", skipping")
                 continue
             related_eps_result = main_db_con.select(
                 "SELECT season, episode FROM tv_episodes WHERE location = ? AND episode != ?",
-                [ep_result[0][b"location"], epInfo[1]]
+                [ep_result[0]["location"], epInfo[1]]
             )
 
             root_ep_obj = show_obj.getEpisode(epInfo[0], epInfo[1])
             root_ep_obj.relatedEps = []
 
             for cur_related_ep in related_eps_result:
-                related_ep_obj = show_obj.getEpisode(cur_related_ep[b"season"], cur_related_ep[b"episode"])
+                related_ep_obj = show_obj.getEpisode(cur_related_ep["season"], cur_related_ep["episode"])
                 if related_ep_obj not in root_ep_obj.relatedEps:
                     root_ep_obj.relatedEps.append(related_ep_obj)
 
@@ -1544,8 +1510,8 @@ class Home(WebRoot):
 
     # def searchEpisodeListManual(self, show=None, season=None, episode=None, search_mode='eponly'):
     #     # retrieve the episode object and fail if we can't get one
-    #     self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
-    #     self.set_header(b'Content-Type', 'application/json')
+    #     self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+    #     self.set_header('Content-Type', 'application/json')
     #     ep_obj, error_msg = self._getEpisode(show, season, episode)
     #     if error_msg or not ep_obj:
     #         return json.dumps({'result': 'failure', 'errorMessage': error_msg})
@@ -1553,8 +1519,8 @@ class Home(WebRoot):
     #     return search.searchProvidersList(ep_obj.show, ep_obj, search_mode)
     #
     # def snatchEpisodeManual(self, result_dict):
-    #     self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
-    #     self.set_header(b'Content-Type', 'application/json')
+    #     self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+    #     self.set_header('Content-Type', 'application/json')
     #     result = sickbeard.classes.TorrentSearchResult.make_result(result_dict)
     #     return search.snatchEpisode(result, SNATCHED_BEST)
     #
@@ -1572,7 +1538,7 @@ class Home(WebRoot):
         # make a queue item for it and put it on the queue
         ep_queue_item = search_queue.ManualSearchQueueItem(ep_obj.show, ep_obj, bool(int(downCurQuality)))
 
-        sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)
+        settings.searchQueueScheduler.action.add_item(ep_queue_item)
 
         if not ep_queue_item.started and ep_queue_item.success is None:
             return json.dumps(
@@ -1588,10 +1554,10 @@ class Home(WebRoot):
     def getManualSearchStatus(self, show=None):
         def getEpisodes(search_thread, search_status):
             results = []
-            show_obj = Show.find(sickbeard.showList, int(search_thread.show.indexerid))
+            show_obj = Show.find(settings.showList, int(search_thread.show.indexerid))
 
             if not show_obj:
-                logger.log('No Show Object found for show with indexerID: ' + str(search_thread.show.indexerid), logger.WARNING)
+                logger.warning('No Show Object found for show with indexerID: ' + str(search_thread.show.indexerid))
                 return results
 
             # noinspection PyProtectedMember
@@ -1602,7 +1568,7 @@ class Home(WebRoot):
                 else:
                     return ep_loc
 
-            if isinstance(search_thread, sickbeard.search_queue.ManualSearchQueueItem):
+            if isinstance(search_thread, sickchill.sickbeard.search_queue.ManualSearchQueueItem):
                 # noinspection PyProtectedMember
                 results.append({
                     'show': search_thread.show.indexerid,
@@ -1638,13 +1604,13 @@ class Home(WebRoot):
 
         # Queued Searches
         searchstatus = 'Queued'
-        for searchThread in sickbeard.searchQueueScheduler.action.get_all_ep_from_queue(show):
+        for searchThread in settings.searchQueueScheduler.action.get_all_ep_from_queue(show):
             episodes += getEpisodes(searchThread, searchstatus)
 
         # Running Searches
         searchstatus = 'Searching'
-        if sickbeard.searchQueueScheduler.action.is_manualsearch_in_progress():
-            searchThread = sickbeard.searchQueueScheduler.action.currentItem
+        if settings.searchQueueScheduler.action.is_manualsearch_in_progress():
+            searchThread = settings.searchQueueScheduler.action.currentItem
 
             if searchThread.success:
                 searchstatus = 'Finished'
@@ -1653,11 +1619,11 @@ class Home(WebRoot):
 
         # Finished Searches
         searchstatus = 'Finished'
-        for searchThread in sickbeard.search_queue.MANUAL_SEARCH_HISTORY:
+        for searchThread in sickchill.sickbeard.search_queue.MANUAL_SEARCH_HISTORY:
             if show and str(searchThread.show.indexerid) != show:
                 continue
 
-            if isinstance(searchThread, sickbeard.search_queue.ManualSearchQueueItem):
+            if isinstance(searchThread, sickchill.sickbeard.search_queue.ManualSearchQueueItem):
                 # noinspection PyTypeChecker
                 if not [x for x in episodes if x['episodeindexid'] == searchThread.segment.indexerid]:
                     episodes += getEpisodes(searchThread, searchstatus)
@@ -1667,8 +1633,8 @@ class Home(WebRoot):
                 if not [i for i, j in zip(searchThread.segment, episodes) if i.indexerid == j['episodeindexid']]:
                     episodes += getEpisodes(searchThread, searchstatus)
 
-        self.set_header(b'Cache-Control', 'max-age=0,no-cache,no-store')
-        self.set_header(b'Content-Type', 'application/json')
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header('Content-Type', 'application/json')
         return json.dumps({'episodes': episodes})
 
     @staticmethod
@@ -1712,7 +1678,7 @@ class Home(WebRoot):
             print('error')
             return json.dumps({'result': 'failure', 'errorMessage': error_msg})
 
-        sickbeard.notifiers.kodi_notifier.play_episode(ep_obj, host)
+        sickchill.sickbeard.notifiers.kodi_notifier.play_episode(ep_obj, host)
         return json.dumps({'result': 'success'})
 
     def retrySearchSubtitles(self, show, season, episode, lang):
@@ -1724,7 +1690,7 @@ class Home(WebRoot):
         try:
             new_subtitles = ep_obj.download_subtitles(force_lang=lang)
         except Exception as error:
-            return json.dumps({'result': 'failure', 'errorMessage': error.message})
+            return json.dumps({'result': 'failure', 'errorMessage': error})
 
         if new_subtitles:
             new_languages = [subtitle_module.name_from_code(code) for code in new_subtitles]
@@ -1753,7 +1719,7 @@ class Home(WebRoot):
         if sceneAbsolute in ('null', ''):
             sceneAbsolute = None
 
-        show_obj = Show.find(sickbeard.showList, int(show))
+        show_obj = Show.find(settings.showList, int(show))
 
         if show_obj.is_anime:
             result = {
@@ -1774,10 +1740,10 @@ class Home(WebRoot):
             ep_obj, error_msg = self._getEpisode(show, forSeason, forEpisode)
 
         if error_msg or not ep_obj:
-            result[b'success'] = False
-            result[b'errorMessage'] = error_msg
+            result['success'] = False
+            result['errorMessage'] = error_msg
         elif show_obj.is_anime:
-            logger.log("setAbsoluteSceneNumbering for {0} from {1} to {2}".format(show, forAbsolute, sceneAbsolute), logger.DEBUG)
+            logger.debug("setAbsoluteSceneNumbering for {0} from {1} to {2}".format(show, forAbsolute, sceneAbsolute))
 
             show = int(show)
             indexer = int(indexer)
@@ -1787,7 +1753,7 @@ class Home(WebRoot):
 
             set_scene_numbering(show, indexer, absolute_number=forAbsolute, sceneAbsolute=sceneAbsolute)
         else:
-            logger.log("setEpisodeSceneNumbering for {0} from {1}x{2} to {3}x{4}".format(show, forSeason, forEpisode, sceneSeason, sceneEpisode), logger.DEBUG)
+            logger.debug("setEpisodeSceneNumbering for {0} from {1}x{2} to {3}x{4}".format(show, forSeason, forEpisode, sceneSeason, sceneEpisode))
 
             show = int(show)
             indexer = int(indexer)
@@ -1804,15 +1770,15 @@ class Home(WebRoot):
         if show_obj.is_anime:
             sn = get_scene_absolute_numbering(show, indexer, forAbsolute)
             if sn:
-                result[b'sceneAbsolute'] = sn
+                result['sceneAbsolute'] = sn
             else:
-                result[b'sceneAbsolute'] = None
+                result['sceneAbsolute'] = None
         else:
             sn = get_scene_numbering(show, indexer, forSeason, forEpisode)
             if sn:
-                (result[b'sceneSeason'], result[b'sceneEpisode']) = sn
+                (result['sceneSeason'], result['sceneEpisode']) = sn
             else:
-                (result[b'sceneSeason'], result[b'sceneEpisode']) = (None, None)
+                (result['sceneSeason'], result['sceneEpisode']) = (None, None)
 
         return json.dumps(result)
 
@@ -1824,7 +1790,7 @@ class Home(WebRoot):
 
         # make a queue item for it and put it on the queue
         ep_queue_item = search_queue.FailedQueueItem(ep_obj.show, [ep_obj], bool(int(downCurQuality)))
-        sickbeard.searchQueueScheduler.action.add_item(ep_queue_item)
+        settings.searchQueueScheduler.action.add_item(ep_queue_item)
 
         if not ep_queue_item.started and ep_queue_item.success is None:
             return json.dumps(
@@ -1836,14 +1802,14 @@ class Home(WebRoot):
 
     @staticmethod
     def fetch_releasegroups(show_name):
-        logger.log('ReleaseGroups: {0}'.format(show_name), logger.INFO)
+        logger.info('ReleaseGroups: {0}'.format(show_name))
         if helpers.set_up_anidb_connection():
             try:
-                anime = adba.Anime(sickbeard.ADBA_CONNECTION, name=show_name)
+                anime = adba.Anime(settings.ADBA_CONNECTION, name=show_name)
                 groups = anime.get_groups()
-                logger.log('ReleaseGroups: {0}'.format(groups), logger.INFO)
+                logger.info('ReleaseGroups: {0}'.format(groups))
                 return json.dumps({'result': 'success', 'groups': groups})
             except AttributeError as error:
-                logger.log('Unable to get ReleaseGroups: {0}'.format(error), logger.DEBUG)
+                logger.debug('Unable to get ReleaseGroups: {0}'.format(error))
 
         return json.dumps({'result': 'failure'})

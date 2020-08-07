@@ -6,18 +6,18 @@ environment:
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
 
   matrix:
-    - PYTHON: "C:\\Python27"
-      PYTHON_VERSION: "2.7.x" # currently 2.7.13
+    - PYTHON: "C:\\Python37"
+      PYTHON_VERSION: "3.7.x"
       PYTHON_ARCH: "32"
 
-    - PYTHON: "C:\\Python27-x64"
-      PYTHON_VERSION: "2.7.x" # currently 2.7.13
+    - PYTHON: "C:\\Python37-x64"
+      PYTHON_VERSION: "3.7.x"
       PYTHON_ARCH: "64"
 
-  nodejs_version: "14"
+  nodejs_version: ""
 
 cache:
-  # - c:\python27\lib\site-packages
+  # - c:\python37\lib\site-packages
   - "%APPDATA%\\npm"
   - .tox
   - node_modules
@@ -58,18 +58,10 @@ install:
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
 
   - python -m pip install --disable-pip-version-check -U pip
-  - pip install --disable-pip-version-check "zipp<0.6.0" "tox"
-
-  # Install node/npm
-  - ps: Install-Product node $env:nodejs_version
-  - set PATH=%APPDATA%\npm;%PATH%
-  - npm -g install xo webpack grunt-cli bower
-  - yarn --silent
+  - pip install -U tox
 
 test_script:
-  - xo
-  - ps: if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) } # Stop if the previous test failed
-  - tox -v --recreate -e "py27-windows"
+  - tox -v --recreate -e "py37-windows"
 
 before_test:
   - echo Starting Tests
@@ -77,5 +69,3 @@ before_test:
 after_test:
   - echo Finished Tests
 
-on_failure:
-  - type .\\tests\\Logs\\sickchill.log

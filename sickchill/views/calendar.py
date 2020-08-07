@@ -1,42 +1,18 @@
-# coding=utf-8
-# Author: Nic Wolfe <nic@wolfeden.ca>
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-from __future__ import absolute_import, print_function, unicode_literals
-
-# Stdlib Imports
 import datetime
 
-# Third Party Imports
 from dateutil import tz
 from tornado.web import authenticated
 
-# First Party Imports
-import sickbeard
-from sickbeard import db, logger, network_timezones
+from sickchill import settings
 from sickchill.helper import try_int
 
-# Local Folder Imports
+from ..sickbeard import db, logger, network_timezones
 from .index import BaseHandler
 
 
 class CalendarHandler(BaseHandler):
     def get(self):
-        if sickbeard.CALENDAR_UNPROTECTED:
+        if settings.CALENDAR_UNPROTECTED:
             self.write(self.calendar())
         else:
             self.calendar_auth()
@@ -53,7 +29,7 @@ class CalendarHandler(BaseHandler):
         """ Provides a subscribeable URL for iCal subscriptions
         """
 
-        logger.log("Receiving iCal request from {0}".format(self.request.remote_ip))
+        logger.info("Receiving iCal request from {0}".format(self.request.remote_ip))
 
         # Create a iCal string
         ical = 'BEGIN:VCALENDAR\r\n'
@@ -78,16 +54,16 @@ class CalendarHandler(BaseHandler):
             # Get all episodes of this show airing between today and next month
             episode_list = main_db_con.select(
                 "SELECT indexerid, name, season, episode, description, airdate FROM tv_episodes WHERE airdate >= ? AND airdate < ? AND showid = ?",
-                (past_date, future_date, int(show[b"indexer_id"])))
+                (past_date, future_date, int(show["indexer_id"])))
 
             utc = tz.gettz('GMT')
 
             for episode in episode_list:
 
-                air_date_time = network_timezones.parse_date_time(episode[b'airdate'], show[b"airs"],
-                                                                  show[b'network']).astimezone(utc)
+                air_date_time = network_timezones.parse_date_time(episode['airdate'], show["airs"],
+                                                                  show['network']).astimezone(utc)
                 air_date_time_end = air_date_time + datetime.timedelta(
-                    minutes=try_int(show[b"runtime"], 60))
+                    minutes=try_int(show["runtime"], 60))
 
                 # Create event for episode
                 ical += 'BEGIN:VEVENT\r\n'
@@ -96,24 +72,24 @@ class CalendarHandler(BaseHandler):
                 ical += 'DTEND:' + air_date_time_end.strftime(
                     "%Y%m%d") + 'T' + air_date_time_end.strftime(
                         "%H%M%S") + 'Z\r\n'
-                if sickbeard.CALENDAR_ICONS:
+                if settings.CALENDAR_ICONS:
                     # noinspection PyPep8
                     ical += 'X-GOOGLE-CALENDAR-CONTENT-ICON:https://lh3.googleusercontent.com/-Vp_3ZosvTgg/VjiFu5BzQqI/AAAAAAAA_TY/3ZL_1bC0Pgw/s16-Ic42/SickChill.png\r\n'
                     ical += 'X-GOOGLE-CALENDAR-CONTENT-DISPLAY:CHIP\r\n'
                 ical += 'SUMMARY: {0} - {1}x{2} - {3}\r\n'.format(
-                    show[b'show_name'], episode[b'season'], episode[b'episode'], episode[b'name']
+                    show['show_name'], episode['season'], episode['episode'], episode['name']
                 )
                 ical += 'UID:SickChill-' + str(datetime.date.today().isoformat()) + '-' + \
-                    show[b'show_name'].replace(" ", "-") + '-E' + str(episode[b'episode']) + \
-                    'S' + str(episode[b'season']) + '\r\n'
-                if episode[b'description']:
+                    show['show_name'].replace(" ", "-") + '-E' + str(episode['episode']) + \
+                    'S' + str(episode['season']) + '\r\n'
+                if episode['description']:
                     ical += 'DESCRIPTION: {0} on {1} \\n\\n {2}\r\n'.format(
-                        (show[b'airs'] or '(Unknown airs)'),
-                        (show[b'network'] or 'Unknown network'),
-                        episode[b'description'].splitlines()[0])
+                        (show['airs'] or '(Unknown airs)'),
+                        (show['network'] or 'Unknown network'),
+                        episode['description'].splitlines()[0])
                 else:
-                    ical += 'DESCRIPTION:' + (show[b'airs'] or '(Unknown airs)') + ' on ' + (
-                        show[b'network'] or 'Unknown network') + '\r\n'
+                    ical += 'DESCRIPTION:' + (show['airs'] or '(Unknown airs)') + ' on ' + (
+                        show['network'] or 'Unknown network') + '\r\n'
 
                 ical += 'END:VEVENT\r\n'
 

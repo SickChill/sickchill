@@ -1,40 +1,17 @@
-# coding=utf-8
-# Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-from __future__ import absolute_import, print_function, unicode_literals
-
-# Stdlib Imports
 import cgi
 import json
 import re
 import traceback
 
-# Third Party Imports
 import tvdbsimple
 from requests.exceptions import HTTPError
 
-# First Party Imports
-# from sickbeard import logger
-import sickbeard
-from sickbeard import logger
-from sickbeard.tv import TVEpisode
+# from sickchill.sickbeard import logger
+import sickchill.start
+from sickchill import settings
+from sickchill.sickbeard import logger
+from sickchill.sickbeard.tv import TVEpisode
 
-# Local Folder Imports
 from .base import Indexer
 from .wrappers import ExceptionDecorator
 
@@ -48,7 +25,7 @@ class TVDB(Indexer):
         self.show_url = 'https://thetvdb.com/?tab=series&id='
         self.base_url = 'https://thetvdb.com/api/%(apikey)s/series/'
         self.icon = 'images/indexers/thetvdb16.png'
-        tvdbsimple.KEYS.API_KEY = self.api_key
+        tvdbsimple.keys.API_KEY = self.api_key
         self._search = tvdbsimple.search.Search().series
         self._series = tvdbsimple.Series
         self.series_episodes = tvdbsimple.Series_Episodes
@@ -134,7 +111,7 @@ class TVDB(Indexer):
                     if series:
                         result = [series.info(language)]
             except HTTPError:
-                pass
+                logger.exception(traceback.format_exc())
         else:
             # Name as provided (usually from nfo)
             names = [name]
@@ -156,7 +133,7 @@ class TVDB(Indexer):
                     if result:
                         break
                 except HTTPError:
-                    pass
+                    logger.exception(traceback.format_exc())
 
         return result
 
@@ -224,26 +201,27 @@ class TVDB(Indexer):
 
     def get_favorites(self):
         results = []
-        if not (sickbeard.TVDB_USER and sickbeard.TVDB_USER_KEY):
+        if not (settings.TVDB_USER and settings.TVDB_USER_KEY):
             return results
 
-        user = tvdbsimple.User(sickbeard.TVDB_USER, sickbeard.TVDB_USER_KEY)
+        user = tvdbsimple.User(settings.TVDB_USER, settings.TVDB_USER_KEY)
         for tvdbid in user.favorites():
             results.append(self.get_series_by_id(tvdbid))
 
         return results
 
-    def test_user_key(self, user, key):
+    @staticmethod
+    def test_user_key(user, key):
         user_object = tvdbsimple.User(user, key)
         try:
             user_object.info()
         except Exception:
-            logger.log(traceback.format_exc(), logger.ERROR)
+            logger.exception(traceback.format_exc())
             return False
 
-        sickbeard.TVDB_USER = user
-        sickbeard.TVDB_USER_KEY = key
+        settings.TVDB_USER = user
+        settings.TVDB_USER_KEY = key
 
-        sickbeard.save_config()
+        sickchill.start.save_config()
 
         return True

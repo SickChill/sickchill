@@ -1,17 +1,12 @@
-#!/usr/bin/env python2.7
-# coding=utf-8
-
-from __future__ import print_function, unicode_literals
-
 import unittest
 
-import sickbeard
-from sickbeard.show_name_helpers import hasPreferredWords
+from sickchill import settings
+from sickchill.sickbeard.show_name_helpers import hasPreferredWords
 
 
 class PreferWordFilterTest(unittest.TestCase):
     def setUp(self):
-        sickbeard.PREFER_WORDS = 'atmos,7.1,5.1,ddp,dd'
+        settings.PREFER_WORDS = 'atmos,7.1,5.1,ddp,dd'
 
         # prefer words only works on names, so we don't need complete shows
         self.results_names_only_source = [

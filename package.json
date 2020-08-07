@@ -49,7 +49,7 @@
       "tests/js/**/*.js"
     ],
     "source": [
-      "gui/slick/js/**/*.{js,jsx}",
+      "sickchill/gui/slick/js/**/*.{js,jsx}",
       "!dist/**/*",
       "!lib/**/*",
       "!**/*.min.js"
@@ -85,7 +85,7 @@
       "vendor.min.js",
       "lib/**/*",
       "Gruntfile.js",
-      "gui/slick/js/lib/*"
+      "sickchill/gui/slick/js/lib/*"
     ]
   }
 }

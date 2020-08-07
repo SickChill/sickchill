@@ -1,48 +1,16 @@
-# coding=UTF-8
-# URL: https://github.com/SickChill/SickChill
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
-
-###
-# As a test case, there are instances in which it is necessary to call protected members of
-# classes in order to test those classes.  Therefore we will be pylint disable protected-access
-###
-
-
 """
 Test notifiers
 """
 
 
-import os.path
-import sys
 import unittest
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from sickbeard import db
-from sickbeard.tv import TVEpisode, TVShow
+from sickchill.sickbeard import db
+from sickchill.sickbeard.notifiers.emailnotify import Notifier as EmailNotifier
+from sickchill.sickbeard.notifiers.prowl import Notifier as ProwlNotifier
+from sickchill.sickbeard.tv import TVEpisode, TVShow
 from sickchill.views.home import Home
-from sickbeard.notifiers.emailnotify import Notifier as EmailNotifier
-from sickbeard.notifiers.prowl import Notifier as ProwlNotifier
-from sickchill.helper.encoding import ss
-import tests.test_lib as test
+from tests import test_lib as test
 
 
 # noinspection PyProtectedMember
@@ -126,7 +94,7 @@ class NotifierTests(test.SickbeardTestDBCase):
         shows = self.legacy_shows + self.shows
         for show in shows:
             for episode in show.episodes:
-                ep_name = ss(episode._format_pattern('%SN - %Sx%0E - %EN - ') + episode.quality)
+                ep_name = episode._format_pattern('%SN - %Sx%0E - %EN - ') + episode.quality
                 show_name = email_notifier._parseEp(ep_name)
                 recipients = email_notifier._generate_recipients(show_name)
                 self._debug_spew("- Email Notifications for " + show.name + " (episode: " + episode.name + ") will be sent to:")
@@ -217,7 +185,7 @@ class NotifierTests(test.SickbeardTestDBCase):
         # Now, iterate through all shows using the Prowl API generation routines that are used in the notifier proper
         for show in self.shows:
             for episode in show.episodes:
-                ep_name = ss(episode._format_pattern('%SN - %Sx%0E - %EN - ') + episode.quality)
+                ep_name = episode._format_pattern('%SN - %Sx%0E - %EN - ') + episode.quality
                 show_name = prowl_notifier._parse_episode(ep_name)
                 recipients = prowl_notifier._generate_recipients(show_name)
                 self._debug_spew("- Prowl Notifications for " + show.name + " (episode: " + episode.name + ") will be sent to:")
@@ -311,7 +279,7 @@ class NotifierTests(test.SickbeardTestDBCase):
         if showname is not None:
             rows = self.mydb.select("SELECT show_id FROM tv_shows WHERE show_name = ?", [showname])
             if len(rows) == 1:
-                return rows[0][b'show_id']
+                return rows[0]['show_id']
         return -1
 
 if __name__ == '__main__':

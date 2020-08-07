@@ -1,24 +1,3 @@
-# coding=UTF-8
-# Author: Dennis Lutter <lad1337@gmail.com>
-
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
-
 """
 Create a test database for testing.
 
@@ -38,27 +17,22 @@ Classes:
     TestCacheDBConnection
 """
 
-from __future__ import print_function, unicode_literals
-
 import os.path
 import shutil
-import sys
 import unittest
 
-import sickchill
-
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 from configobj import ConfigObj
-from sickbeard import db, providers
-from sickbeard.databases import cache_db, failed_db, mainDB
-from sickbeard.providers.newznab import NewznabProvider
-from sickbeard.tv import TVEpisode, TVShow
-import sickbeard
+
+import sickchill.sickbeard.config
+import sickchill.sickbeard.logger
+import sickchill.sickbeard.tvcache
+import sickchill.start
+from sickchill import settings
 from sickchill.show.indexers import ShowIndexer
-
-
+from sickchill.sickbeard import db, providers
+from sickchill.sickbeard.databases import cache, failed, main
+from sickchill.sickbeard.providers.newznab import NewznabProvider
+from sickchill.sickbeard.tv import TVEpisode, TVShow
 
 # =================
 #  test globals
@@ -86,58 +60,57 @@ def create_test_log_folder():
     """
     Create a log folder for test logs.
     """
-    if not os.path.isdir(sickbeard.LOG_DIR):
-        os.mkdir(sickbeard.LOG_DIR)
+    if not os.path.isdir(settings.LOG_DIR):
+        os.mkdir(settings.LOG_DIR)
 
 
 def create_test_cache_folder():
     """
     Create a cache folder for caching tests.
     """
-    if not os.path.isdir(sickbeard.CACHE_DIR):
-        os.mkdir(sickbeard.CACHE_DIR)
+    if not os.path.isdir(settings.CACHE_DIR):
+        os.mkdir(settings.CACHE_DIR)
 
-# call env functions at appropriate time during SickBeard var setup
+# call env functions at appropriate time during SickChill var setup
 
 # =================
-#  SickBeard globals
+#  SickChill globals
 # =================
-sickbeard.SYS_ENCODING = 'UTF-8'
 
-sickbeard.showList = []
-sickbeard.QUALITY_DEFAULT = 4  # hdtv
-sickbeard.SEASON_FOLDERS_DEFAULT = 0
 
-sickbeard.NAMING_PATTERN = ''
-sickbeard.NAMING_ABD_PATTERN = ''
-sickbeard.NAMING_SPORTS_PATTERN = ''
-sickbeard.NAMING_MULTI_EP = 1
+settings.showList = []
+settings.QUALITY_DEFAULT = 4  # hdtv
+settings.SEASON_FOLDERS_DEFAULT = 0
 
-sickbeard.TV_DOWNLOAD_DIR = PROCESSING_DIR
+settings.NAMING_PATTERN = ''
+settings.NAMING_ABD_PATTERN = ''
+settings.NAMING_SPORTS_PATTERN = ''
+settings.NAMING_MULTI_EP = 1
 
-sickbeard.PROVIDER_ORDER = ["sick_beard_index"]
-sickbeard.newznabProviderList = NewznabProvider.providers_list("'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0|eponly|0|0|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0|eponly|0|0|0'")
-sickbeard.providerList = providers.makeProviderList()
+settings.TV_DOWNLOAD_DIR = PROCESSING_DIR
 
-sickbeard.PROG_DIR = os.path.abspath(os.path.join(TEST_DIR, '..'))
-sickbeard.DATA_DIR = TEST_DIR
-sickbeard.CONFIG_FILE = os.path.join(sickbeard.DATA_DIR, "config.ini")
-sickbeard.CFG = ConfigObj(sickbeard.CONFIG_FILE, encoding='UTF-8', options={'indent_type': '  '})
-sickbeard.GUI_NAME = 'slick'
+settings.PROVIDER_ORDER = ["sick_beard_index"]
+settings.newznabProviderList = NewznabProvider.providers_list("'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0|eponly|0|0|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0|eponly|0|0|0'")
+settings.providerList = providers.makeProviderList()
 
-sickbeard.BRANCH = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'branch')
-sickbeard.CUR_COMMIT_HASH = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'cur_commit_hash')
-sickbeard.GIT_USERNAME = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'git_username')
-sickbeard.GIT_TOKEN = sickbeard.config.check_setting_str(sickbeard.CFG, 'General', 'git_token_password', censor_log=True)
+settings.DATA_DIR = TEST_DIR
+settings.CONFIG_FILE = os.path.join(settings.DATA_DIR, "config.ini")
+settings.CFG = ConfigObj(settings.CONFIG_FILE, encoding='UTF-8', indent_type='  ')
+settings.GUI_NAME = 'slick'
 
-sickbeard.LOG_DIR = os.path.join(TEST_DIR, 'Logs')
-sickbeard.logger.log_file = os.path.join(sickbeard.LOG_DIR, 'test_sickbeard.log')
+settings.BRANCH = sickchill.sickbeard.config.check_setting_str(settings.CFG, 'General', 'branch')
+settings.CUR_COMMIT_HASH = sickchill.sickbeard.config.check_setting_str(settings.CFG, 'General', 'cur_commit_hash')
+settings.GIT_USERNAME = sickchill.sickbeard.config.check_setting_str(settings.CFG, 'General', 'git_username')
+settings.GIT_TOKEN = sickchill.sickbeard.config.check_setting_str(settings.CFG, 'General', 'git_token_password', censor_log=True)
+
+settings.LOG_DIR = os.path.join(TEST_DIR, 'Logs')
+sickchill.sickbeard.logger.log_file = os.path.join(settings.LOG_DIR, 'test_sickbeard.log')
 create_test_log_folder()
 
-sickbeard.CACHE_DIR = os.path.join(TEST_DIR, 'cache')
+settings.CACHE_DIR = os.path.join(TEST_DIR, 'cache')
 create_test_cache_folder()
 
-sickbeard.logger.init_logging(False, True)
+sickchill.sickbeard.logger.init_logging(False, True)
 
 sickchill.indexer = ShowIndexer()
 
@@ -147,15 +120,16 @@ sickchill.indexer = ShowIndexer()
 # =================
 def _dummy_save_config():
     """
-    Override the SickBeard save_config which gets called during a db upgrade.
+    Override the SickChill save_config which gets called during a db upgrade.
 
     :return: True
     """
     return True
 
-# this overrides the SickBeard save_config which gets called during a db upgrade
+
+# this overrides the SickChill save_config which gets called during a db upgrade
 # this might be considered a hack
-mainDB.sickbeard.save_config = _dummy_save_config
+sickchill.start.save_config = _dummy_save_config
 
 
 def _fake_specify_ep(self, season, episode):
@@ -185,13 +159,13 @@ class SickbeardTestDBCase(unittest.TestCase):
         tearDown
     """
     def setUp(self):
-        sickbeard.showList = []
+        settings.showList = []
         setup_test_db()
         setup_test_episode_file()
         setup_test_show_dir()
 
     def tearDown(self):
-        sickbeard.showList = []
+        settings.showList = []
         teardown_test_db()
         teardown_test_episode_file()
         teardown_test_show_dir()
@@ -206,7 +180,7 @@ class SickbeardTestPostProcessorCase(unittest.TestCase):
         tearDown
     """
     def setUp(self):
-        sickbeard.showList = []
+        settings.showList = []
         setup_test_db()
         setup_test_episode_file()
         setup_test_show_dir()
@@ -228,10 +202,10 @@ class SickbeardTestPostProcessorCase(unittest.TestCase):
                 episode.saveToDB()
 
         show.saveToDB()
-        sickbeard.showList = [show]
+        settings.showList = [show]
 
     def tearDown(self):
-        sickbeard.showList = []
+        settings.showList = []
         teardown_test_db()
         teardown_test_episode_file()
         teardown_test_show_dir()
@@ -285,8 +259,8 @@ class TestCacheDBConnection(TestDBConnection, object):
                 raise
 
 # this will override the normal db connection
-sickbeard.db.DBConnection = TestDBConnection
-sickbeard.tvcache.CacheDBConnection = TestCacheDBConnection
+sickchill.sickbeard.db.DBConnection = TestDBConnection
+sickchill.sickbeard.tvcache.CacheDBConnection = TestCacheDBConnection
 
 
 # =================
@@ -298,23 +272,23 @@ def setup_test_db():
     """
     # Upgrade the db to the latest version.
     # upgrading the db
-    db.upgrade_database(db.DBConnection(), mainDB.InitialSchema)
+    db.upgrade_database(db.DBConnection(), main.InitialSchema)
 
     # fix up any db problems
-    db.sanity_check_database(db.DBConnection(), mainDB.MainSanityCheck)
+    db.sanity_check_database(db.DBConnection(), main.MainSanityCheck)
 
     # and for cache.db too
-    db.upgrade_database(db.DBConnection('cache.db'), cache_db.InitialSchema)
+    db.upgrade_database(db.DBConnection('cache.db'), cache.InitialSchema)
 
     # and for failed.db too
-    db.upgrade_database(db.DBConnection('failed.db'), failed_db.InitialSchema)
+    db.upgrade_database(db.DBConnection('failed.db'), failed.InitialSchema)
 
 
 def teardown_test_db():
     """
     Tear down the test database.
     """
-    from sickbeard.db import db_cons
+    from sickchill.sickbeard.db import db_cons
     for connection in db_cons:
         db_cons[connection].commit()
     #     db_cons[connection].close()
@@ -337,7 +311,7 @@ def setup_test_episode_file():
         os.makedirs(FILE_DIR)
 
     try:
-        with open(FILE_PATH, 'wb') as ep_file:
+        with open(FILE_PATH, 'w') as ep_file:
             ep_file.write("foo bar")
             ep_file.flush()
 
@@ -355,7 +329,7 @@ def setup_test_processing_dir():
         for episode in range(11, EPISODES_PER_SEASON):
             path = os.path.join(PROCESSING_DIR, '{show_name}.S0{season}E{episode}.HDTV.x264.[SickChill].mkv'.format(
                 show_name=SHOW_NAME, season=season, episode=episode))
-            with open(path, 'wb') as ep_file:
+            with open(path, 'w') as ep_file:
                 ep_file.write("foo bar")
                 ep_file.flush()
 

@@ -11,5 +11,5 @@ services:
       - /docker/sickchill/data:/data
       - /docker/sickchill/downloads:/downloads
       - /docker/sickchill/tv:/tv
-      - /docker/sickchill/cache:/app/sickchill/gui/slick/cache
+      - /docker/sickchill/cache:/app/sickchill/sickchill/gui/slick/cache
       - /etc/localtime:/etc/localtime:ro

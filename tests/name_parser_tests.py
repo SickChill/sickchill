@@ -1,27 +1,11 @@
-# coding=utf-8
-"""
-Test name parsing
-"""
-
-
-from __future__ import print_function, unicode_literals
-
 import datetime
 import os.path
 import sys
 import unittest
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from sickbeard import tv
-from sickbeard.name_parser import parser
-import tests.test_lib as test
-
-import six
-
-
-SYS_ENCODING = 'UTF-8'
+from sickchill.sickbeard import tv
+from sickchill.sickbeard.name_parser import parser
+from tests import test_lib as test
 
 DEBUG = VERBOSE = False
 
@@ -182,7 +166,7 @@ FAILURE_CASES = ['7sins-jfcs01e09-720p-bluray-x264']
 
 class UnicodeTests(test.SickbeardTestDBCase):
     """
-    Test six.text_type
+    Test str
     """
     def __init__(self, something):
         super(UnicodeTests, self).__init__(something)
@@ -192,7 +176,7 @@ class UnicodeTests(test.SickbeardTestDBCase):
 
     def _test_unicode(self, name, result):
         """
-        Test six.text_type
+        Test str
 
         :param name:
         :param result:
@@ -202,12 +186,12 @@ class UnicodeTests(test.SickbeardTestDBCase):
         parse_result = name_parser.parse(name)
 
         # this shouldn't raise an exception
-        repr(six.text_type(parse_result))
+        repr(str(parse_result))
         self.assertEqual(parse_result.extra_info, result.extra_info)
 
     def test_unicode(self):
         """
-        Test six.text_type
+        Test str
         """
         for (name, result) in UNICODE_TEST_CASES:
             self._test_unicode(name, result)
@@ -337,7 +321,7 @@ class BasicTests(test.SickbeardTestDBCase):
                 print(test_result)
                 print(result)
             self.assertEqual(test_result.which_regex, [section], '{0} : {1} != {2}'.format(cur_test, test_result.which_regex, [section]))
-            self.assertEqual(six.text_type(test_result), six.text_type(result), '{0} : {1} != {2}'.format(cur_test, six.text_type(test_result), six.text_type(result)))
+            self.assertEqual(str(test_result), str(result), '{0} : {1} != {2}'.format(cur_test, str(test_result), str(result)))
 
     def test_standard_names(self):
         """
@@ -500,7 +484,7 @@ class AnimeTests(test.SickbeardTestDBCase):
                 print(test_result)
                 print(result)
             self.assertEqual(test_result.which_regex, [section], '{0} : {1} != {2}'.format(cur_test, test_result.which_regex, [section]))
-            self.assertEqual(six.text_type(test_result), six.text_type(result), '{0} : {1} != {2}'.format(cur_test, six.text_type(test_result), six.text_type(result)))
+            self.assertEqual(str(test_result), str(result), '{0} : {1} != {2}'.format(cur_test, str(test_result), str(result)))
 
     def test_anime_sxxexx_file_names(self):
         """
@@ -559,7 +543,7 @@ class BasicFailedTests(test.SickbeardTestDBCase):
                 print(test_result)
                 print(result)
             self.assertEqual(test_result.which_regex, [section], '{0} : {1} != {2}'.format(cur_test, test_result.which_regex, [section]))
-            self.assertEqual(six.text_type(test_result), six.text_type(result), '{0} : {1} != {2}'.format(cur_test, six.text_type(test_result), six.text_type(result)))
+            self.assertEqual(str(test_result), str(result), '{0} : {1} != {2}'.format(cur_test, str(test_result), str(result)))
 
     def test_no_s_names(self):
         """

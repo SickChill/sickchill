@@ -1,53 +1,26 @@
-# coding=UTF-8
-# Author: Dustyn Gibson <miigotu@gmail.com>
-# URL: https://github.com/SickChill/SickChill
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
 
 """
 Test SNI and SSL
 """
 
-from __future__ import print_function, unicode_literals
-
-import os.path
-import sys
 import unittest
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from sickbeard import ex
 import certifi
 import requests
-import sickbeard.providers as providers
+
+from sickchill.sickbeard import providers as providers
 
 
 def generator(_provider):
     """
     Generate tests for each provider
 
-    :param test_strings: to generate tests from
+    :param _provider: to generate tests from
     :return: test
     """
     def _connectivity_test():
         """
         Generate tests
-        :param self:
         :return: test to run
         """
         if not _provider.url:
@@ -60,7 +33,7 @@ def generator(_provider):
             if 'certificate verify failed' in str(error):
                 print('Cannot verify certificate for {0}'.format(_provider.name))
             else:
-                print('SSLError on {0}: {1}'.format(_provider.name, ex(error.message)))
+                print('SSLError on {0}: {1}'.format(_provider.name, str(error)))
                 raise
         except requests.exceptions.Timeout:
             print('Provider timed out')

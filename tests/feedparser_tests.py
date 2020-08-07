@@ -1,5 +1,4 @@
 # Disabled until a new feed provider is available
-# # coding=utf-8
 #
 # """
 # Test Feed Parser
@@ -9,10 +8,7 @@
 # import sys
 # import unittest
 #
-# sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-# sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-#
-# from sickbeard.providers.binsearch import provider as binsearch
+# from sickchill.sickbeard.providers.binsearch import provider as binsearch
 # import requests
 #
 #
@@ -28,7 +24,7 @@
 #         result = binsearch.cache.get_rss_feed(binsearch.urls['rss'], params={'max': 50, 'g': 'alt.binaries.hdtv'})
 #         self.assertTrue('entries' in result)
 #         self.assertTrue('feed' in result)
-#         for item in result[b'entries'] or []:
+#         for item in result['entries'] or []:
 #             title, url = binsearch._get_title_and_url(item)
 #             self.assertTrue(title and url)
 #

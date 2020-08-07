@@ -30,7 +30,7 @@ intip=$(ip r g 8.8.8.8 | awk 'NR==1{print $7};')
 apt-get -qq install whiptail -y
 
 # Check to see what SickChill Dependencies are missing
-packages=$(dpkg -l unrar git-core openssl libssl-dev python2.7 2>1 | grep "no packages" | \
+packages=$(dpkg -l unrar git-core openssl libssl-dev python3.7 2>1 | grep "no packages" | \
            awk '{ print $6 }' | tr '\n' ' ')
 if [[ ${packages} ]]; then
 # Show Whiptail and install required files
@@ -44,10 +44,10 @@ if [[ ${packages} ]]; then
 fi
 # Check to see if all prior packages were installed successfully. if not exit 1 and display whiptail issues
 
-if [[ $(dpkg -l unrar git-core openssl libssl-dev python2.7 2>&1 | grep "no packages" | \
+if [[ $(dpkg -l unrar git-core openssl libssl-dev python3.7 2>&1 | grep "no packages" | \
         awk '{print $6 }') ]]; then
     whiptail --title "Package Installation Failed" --msgbox "               These Packages have failed:
-               $(dpkg -l unrar git-core openssl libssl-dev python2.7 2>&1 | grep "no packages" | awk '{print $6 }')
+               $(dpkg -l unrar git-core openssl libssl-dev python3.7 2>&1 | grep "no packages" | awk '{print $6 }')
 Please resolve these issues and restart the install script" 15 66
 exit 1
 fi
@@ -88,20 +88,20 @@ fi
 if [[ ${distro} = ubuntu ]]; then
     if [[ $(/sbin/init --version 2> /dev/null) =~ upstart ]]; then
     	echo "Copying Startup Script To Upstart"
-        cp /opt/sickchill/runscripts/init.upstart /etc/init/sickchill.conf
+        cp /opt/sickchill/contrib/runscripts/init.upstart /etc/init/sickchill.conf
 	chown root:root /etc/init/sickchill.conf && chmod 644 /etc/init/sickchill.conf
 	echo "Starting SickChill"
         service sickchill start
 
     elif [[ $(systemctl) =~ -\.mount ]]; then
     	echo "Copying Startup Script To systemd"
-        cp /opt/sickchill/runscripts/init.systemd /etc/systemd/system/sickchill.service
+        cp /opt/sickchill/contrib/runscripts/init.systemd /etc/systemd/system/sickchill.service
         chown root:root /etc/systemd/system/sickchill.service && chmod 644 /etc/systemd/system/sickchill.service
 	echo "Starting SickChill"
         systemctl -q enable sickchill && systemctl -q start sickchill
     else
     	echo "Copying Startup Script To init"
-        cp /opt/sickchill/runscripts/init.ubuntu /etc/init.d/sickchill
+        cp /opt/sickchill/contrib/runscripts/init.ubuntu /etc/init.d/sickchill
         chown root:root /etc/init.d/sickchill && chmod 644 /etc/init.d/sickchill
 	echo "Starting SickChill"
         update-rc.d sickchill defaults && service sickchill start
@@ -109,13 +109,13 @@ if [[ ${distro} = ubuntu ]]; then
 elif [[ ${distro} = debian ]]; then
     if [[ $(systemctl) =~ -\.mount ]]; then
     	echo "Copying Startup Script To systemd"
-        cp /opt/sickchill/runscripts/init.systemd /etc/systemd/system/sickchill.service
+        cp /opt/sickchill/contrib/runscripts/init.systemd /etc/systemd/system/sickchill.service
         chown root:root /etc/systemd/system/sickchill.service && chmod 644 /etc/systemd/system/sickchill.service
 	echo "Starting SickChill"
         systemctl -q enable sickchill && systemctl -q start sickchill
     else
     	echo "Copying Startup Script To init"
-        cp /opt/sickchill/runscripts/init.debian /etc/init.d/sickchill
+        cp /opt/sickchill/contrib/runscripts/init.debian /etc/init.d/sickchill
         chown root:root /etc/init.d/sickchill && chmod 755 /etc/init.d/sickchill
 	echo "Starting SickChill"
         update-rc.d sickchill defaults && service sickchill start

@@ -1,0 +1,15 @@
+deluge_client-1.9.0.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+deluge_client-1.9.0.dist-info/LICENSE,sha256=M3c-Uj5QHflB4vGrbPZinaq_j1vRgiFRcwh6QfDbmpM,1056
+deluge_client-1.9.0.dist-info/METADATA,sha256=IWErhuLyNrrAoFdYTqA1hJB5nLFYRTQWLJwxL7ex7zw,4153
+deluge_client-1.9.0.dist-info/RECORD,,
+deluge_client-1.9.0.dist-info/REQUESTED,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+deluge_client-1.9.0.dist-info/WHEEL,sha256=8zNYZbwQSXoB9IfXOjPfeNwvAsALAjffgk27FqvCWbo,110
+deluge_client-1.9.0.dist-info/top_level.txt,sha256=6xFEV_X9jTFjGpzr3kFK_D6xL3irmTmNXus05ETiJmM,14
+deluge_client/__init__.py,sha256=THmAxt75239dZprb4J1PI7YDjZwu-akp5HkHNlIwEZg,94
+deluge_client/__pycache__/__init__.cpython-37.pyc,,
+deluge_client/__pycache__/client.cpython-37.pyc,,
+deluge_client/__pycache__/rencode.cpython-37.pyc,,
+deluge_client/__pycache__/tests.cpython-37.pyc,,
+deluge_client/client.py,sha256=lCKtB7g-cLEFhVBxXFL5pR41WrUOIImRQLG37ZC_By8,12557
+deluge_client/rencode.py,sha256=obI7FSsD3KLF71qbs5Gv_WW7OOuDtSFKRDtQ4vB1BhI,13391
+deluge_client/tests.py,sha256=4sYlgy29ZafLQoPy7wIMXzK6K8IosTLgyCeVbcthaOk,2387

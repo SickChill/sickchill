@@ -1,22 +1,3 @@
-# coding=UTF-8
-# Author: Dennis Lutter <lad1337@gmail.com>
-# URL: https://sickchill.github.io
-#
-# This file is part of SickChill.
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
-
 """
 Test show database functionality.
 
@@ -25,15 +6,11 @@ Tests:
     DBMultiTests
 """
 
-import os.path
-import sys
 import threading
 import unittest
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-import tests.test_lib as test
+import sickchill.sickbeard
+from tests import test_lib as test
 
 
 class DBBasicTests(test.SickbeardTestDBCase):
@@ -49,7 +26,7 @@ class DBBasicTests(test.SickbeardTestDBCase):
         Set up test.
         """
         super(DBBasicTests, self).setUp()
-        self.sr_db = test.db.DBConnection()
+        self.sr_db = sickchill.sickbeard.db.DBConnection()
 
     def test_select(self):
         """
@@ -70,7 +47,7 @@ class DBMultiTests(test.SickbeardTestDBCase):
         Set up test.
         """
         super(DBMultiTests, self).setUp()
-        self.sr_db = test.db.DBConnection()
+        self.sr_db = sickchill.sickbeard.db.DBConnection()
 
     def select(self):
         """

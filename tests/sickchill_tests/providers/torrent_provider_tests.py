@@ -1,41 +1,17 @@
-# coding=utf-8
-# This file is part of SickChill.
-#
-# URL: https://sickchill.github.io
-# Git: https://github.com/SickChill/SickChill.git
-#
-# SickChill is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# SickChill is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with SickChill. If not, see <http://www.gnu.org/licenses/>.
+
 
 """
 Test TorrentProvider
 """
 
-from __future__ import print_function, unicode_literals
-
 import os
-import sys
 import unittest
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
-
-import sickbeard
-import six
-
-from generic_provider_tests import GenericProviderTests
+from sickchill import settings
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+
+from .generic_provider_tests import GenericProviderTests
 
 
 class TorrentProviderTests(GenericProviderTests):
@@ -65,8 +41,8 @@ class TorrentProviderTests(GenericProviderTests):
             (True, True): True,
         }
 
-        for ((use_torrents, enabled), result) in six.iteritems(test_cases):
-            sickbeard.USE_TORRENTS = use_torrents
+        for ((use_torrents, enabled), result) in test_cases.items():
+            settings.USE_TORRENTS = use_torrents
 
             provider = TorrentProvider('Test Provider')
             provider.enabled = enabled
@@ -89,22 +65,9 @@ class TorrentProviderTests(GenericProviderTests):
             1100000
         ]
         results_list = [
-            -1, -1, -1, -1, 0, 123, -1, -123, -1, 1100000, -1, -1, -1, -1, -1, 1100000, -1, -1, -1, -1, -1, 0, 123, -1,
-            -123, -1, 1100000, -1, -1, -1, -1, -1, 1100000, -1, -1, -1, 0, 123, -1, -123, -1, 1100000, -1, -1, -1, -1,
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, 1100000, -1, -1, -1, -1, -1, 1100000, -1, -1, -1, -1, -1, -1, -1, -1,
+            -1, -1, 1100000, -1, -1, -1, -1, -1, 1100000, -1, -1, -1, -1, -1, -1, -1, -1, 1100000, -1, -1, -1, -1,
             -1, -1, -1, -1, -1, -1, -1, -1, -1
-        ]
-
-        unicode_items_list = [
-            {'size': None}, {'size': ''}, {'size': '0'}, {'size': '123'}, {'size': '12.3'}, {'size': '-123'},
-            {'size': '-12.3'}, {'size': '1100000'}, {'size': 0}, {'size': 123}, {'size': 12.3}, {'size': -123},
-            {'size': -12.3}, {'size': 1100000}, [None, None, ''], [None, None, '0'], [None, None, '123'],
-            [None, None, '12.3'], [None, None, '-123'], [None, None, '-12.3'], [None, None, '1100000'],
-            (None, None, ''), (None, None, '0'), (None, None, '123'), (None, None, '12.3'), (None, None, '-123'),
-            (None, None, '-12.3'), (None, None, '1100000'), '', '0', '123', '12.3', '-123', '-12.3', '1100000'
-        ]
-        unicode_results_list = [
-            -1, -1, 0, 123, -1, -123, -1, 1100000, -1, -1, -1, -1, -1, 1100000, -1, 0, 123, -1, -123, -1, 1100000, -1,
-            0, 123, -1, -123, -1, 1100000, -1, -1, -1, -1, -1, -1, -1
         ]
 
         self.assertEqual(
@@ -112,17 +75,9 @@ class TorrentProviderTests(GenericProviderTests):
             'Number of parameters ({0:d}) and results ({1:d}) does not match'.format(len(items_list), len(results_list))
         )
 
-        self.assertEqual(
-            len(unicode_items_list), len(unicode_results_list),
-            'Number of parameters ({0:d}) and results ({1:d}) does not match'.format(
-                len(unicode_items_list), len(unicode_results_list))
-        )
-
         for (index, item) in enumerate(items_list):
             self.assertEqual(TorrentProvider('Test Provider')._get_size(item), results_list[index])
 
-        for (index, item) in enumerate(unicode_items_list):
-            self.assertEqual(TorrentProvider('Test Provider')._get_size(item), unicode_results_list[index])
 
     def test__get_storage_dir(self):
         """
@@ -133,7 +88,7 @@ class TorrentProviderTests(GenericProviderTests):
         ]
 
         for torrent_dir in test_cases:
-            sickbeard.TORRENT_DIR = torrent_dir
+            settings.TORRENT_DIR = torrent_dir
 
             self.assertEqual(TorrentProvider('Test Provider')._get_storage_dir(), torrent_dir)
 

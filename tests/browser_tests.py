@@ -1,22 +1,9 @@
-# coding=utf-8
-"""
-Test sickbeard.browser's methods
-
-Methods
-    getWinDrives
-    getFileList
-    foldersAtPath
-"""
-
 import logging
 import os
 import sys
 import unittest
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib')))
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from sickbeard import browser
+from sickchill.sickbeard import browser
 
 
 class BrowserTestAll(unittest.TestCase):

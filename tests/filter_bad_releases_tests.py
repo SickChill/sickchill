@@ -1,21 +1,16 @@
-#!/usr/bin/env python2.7
-# coding=utf-8
-
-from __future__ import print_function, unicode_literals
-
 import unittest
 
-import sickbeard
-from sickbeard.show_name_helpers import filter_bad_releases
-from sickbeard.tv import TVShow as Show
+from sickchill import settings
+from sickchill.sickbeard.show_name_helpers import filter_bad_releases
+from sickchill.sickbeard.tv import TVShow as Show
 
 
 class ReleaseWordFilterTests(unittest.TestCase):
     def setUp(self):
-        sickbeard.QUALITY_DEFAULT = 2
+        settings.QUALITY_DEFAULT = 2
         self.show = Show(1, 1)
-        sickbeard.REQUIRE_WORDS = 'REQUIRED'
-        sickbeard.IGNORE_WORDS = 'IGNORED'
+        settings.REQUIRE_WORDS = 'REQUIRED'
+        settings.IGNORE_WORDS = 'IGNORED'
 
         # These are opposite of global, to prove they override
         self.show.rls_ignore_words = 'REQUIRED'
