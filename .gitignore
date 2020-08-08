@@ -9,7 +9,7 @@ restore/
 backup*/
 cache.db*
 config.ini*
-sickbeard.db*
+sickchill.db*
 failed.db*
 autoProcessTV.cfg
 server.crt
@@ -19,7 +19,7 @@ server.key
 ######################
 /tests/Logs/
 /tests/cache/
-/tests/sickbeard.db*
+/tests/sickchill.db*
 /tests/cache.db*
 /tests/failed.db
 /tests/data/

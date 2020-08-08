@@ -38,7 +38,7 @@ from sickchill.sickbeard.tv import TVEpisode, TVShow
 #  test globals
 # =================
 TEST_DIR = os.path.abspath(os.path.dirname(__file__))
-TEST_DB_NAME = "sickbeard.db"
+TEST_DB_NAME = "sickchill.db"
 TEST_CACHE_DB_NAME = "cache.db"
 TEST_FAILED_DB_NAME = "failed.db"
 

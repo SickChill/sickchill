@@ -30,7 +30,7 @@ class ConfigBackupRestore(Config):
         finalResult = ''
 
         if backupDir:
-            source = [os.path.join(settings.DATA_DIR, 'sickbeard.db'), settings.CONFIG_FILE,
+            source = [os.path.join(settings.DATA_DIR, 'sickchill.db'), settings.CONFIG_FILE,
                       os.path.join(settings.DATA_DIR, 'failed.db'),
                       os.path.join(settings.DATA_DIR, 'cache.db')]
             target = os.path.join(backupDir, 'sickchill-' + time.strftime('%Y%m%d%H%M%S') + '.zip')

@@ -130,7 +130,7 @@ def change_unrar_tool(unrar_tool, unar_tool, bsdtar_tool):
                 os.environ.get("ProgramFiles"), re.sub(r'\s?\(x86\)', '', os.environ["ProgramFiles"])
             ) if location
         }
-        check_locations.add(os.path.join(settings.PROG_DIR, 'unrar\\unrar.exe'))
+        check_locations.add(os.path.join(settings.DATA_DIR, 'unrar\\unrar.exe'))
 
         for check in check_locations:
             if os.path.isfile(check):
@@ -143,8 +143,8 @@ def change_unrar_tool(unrar_tool, unar_tool, bsdtar_tool):
                     pass
 
         logger.info('Trying to download unrar.exe and set the path')
-        unrar_store = os.path.join(settings.PROG_DIR, 'unrar')  # ./unrar (folder)
-        unrar_zip = os.path.join(settings.PROG_DIR, 'unrar_win.zip')  # file download
+        unrar_store = os.path.join(settings.DATA_DIR, 'unrar')  # ./unrar (folder)
+        unrar_zip = os.path.join(settings.DATA_DIR, 'unrar_win.zip')  # file download
 
         if (helpers.download_file(
             "https://sickchill.github.io/unrar/unrar_win.zip", filename=unrar_zip, session=helpers.make_session()

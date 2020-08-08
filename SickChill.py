@@ -13,13 +13,12 @@ import traceback
 
 import sickchill.start
 from sickchill import settings
-from sickchill.init_helpers import setup_gettext, setup_lib_path
+from sickchill.init_helpers import check_installed, setup_gettext, setup_lib_path
 
 setup_lib_path()
 setup_gettext()
 
 import mimetypes
-import re
 from pathlib import Path
 
 mimetypes.add_type("text/css", ".css")
@@ -89,17 +88,27 @@ class SickChill(object):
         # do some preliminary stuff
         settings.MY_FULLNAME = os.path.normpath(os.path.abspath(__file__))
         settings.MY_NAME = os.path.basename(settings.MY_FULLNAME)
-        if re.match(r'(site-packages|scripts)', settings.PROG_DIR, re.I):
-            settings.DATA_DIR = str(Path.home().joinpath('sickchill').absolute())
-        else:
-            settings.DATA_DIR = os.path.dirname(settings.PROG_DIR)
+
+        settings.DATA_DIR = os.path.dirname(settings.PROG_DIR)
+        profile_path = str(Path.home().joinpath('sickchill').absolute())
+        if check_installed():
+            settings.DATA_DIR = profile_path
+
+        if settings.DATA_DIR != profile_path:
+            checks = [
+                'sickbeard.db',
+                'sickchill.db',
+                'config.ini'
+            ]
+            if not any([os.path.isfile(os.path.join(settings.DATA_DIR, check)) for check in checks]):
+                settings.DATA_DIR = profile_path
 
         settings.MY_ARGS = sys.argv[1:]
 
         # Rename the main thread
         threading.currentThread().name = 'MAIN'
 
-        args = SickChillArgumentParser(settings.PROG_DIR).parse_args()
+        args = SickChillArgumentParser(settings.DATA_DIR).parse_args()
 
         if args.force_update:
             result = self.force_update()
@@ -333,7 +342,7 @@ class SickChill(object):
         :return:
         """
         try:
-            files_list = ['sickbeard.db', 'config.ini', 'failed.db', 'cache.db']
+            files_list = ['sickbeard.db', 'sickchill.db', 'config.ini', 'failed.db', 'cache.db']
 
             for filename in files_list:
                 src_file = os.path.join(src_dir, filename)
@@ -342,6 +351,12 @@ class SickChill(object):
                 if os.path.isfile(dst_file):
                     shutil.move(dst_file, bak_file)
                 shutil.move(src_file, dst_file)
+
+            sickbeard_db = os.path.join(dst_dir, 'sickbeard.db')
+            sickchill_db = os.path.join(dst_dir, 'sickchill.db')
+            if os.path.isfile(sickbeard_db) and not os.path.isfile(sickchill_db):
+                shutil.move(sickbeard_db, sickchill_db)
+
             return True
         except Exception:
             return False
@@ -425,7 +440,7 @@ class SickChill(object):
 
             return True
 
-        if os.path.isdir(os.path.join(settings.PROG_DIR, '.git')):  # update with git
+        if os.path.isdir(os.path.join(os.path.dirname(settings.PROG_DIR), '.git')):  # update with git
             print('Forcing SickChill to update using git...')
             result = update_with_git()
             if result:

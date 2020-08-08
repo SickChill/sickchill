@@ -15,10 +15,10 @@ db_cons = {}
 db_locks = {}
 
 
-def db_full_path(filename="sickbeard.db", suffix=None):
+def db_full_path(filename="sickchill.db", suffix=None):
     """
     @param filename: The sqlite database filename to use. If not specified,
-                     will be made to be sickbeard.db
+                     will be made to be sickchill.db
     @param suffix: The suffix to append to the filename. A "." will be added
                    automatically, i.e. suffix="v0" will make filename.db.v0
     @return: the correct location of the database file.
@@ -31,12 +31,18 @@ def db_full_path(filename="sickbeard.db", suffix=None):
 class DBConnection(object):
     MAX_ATTEMPTS = 5
 
-    def __init__(self, filename="sickbeard.db", suffix=None, row_type=None):
+    def __init__(self, filename="sickchill.db", suffix=None, row_type=None):
 
         self.filename = filename
         self.suffix = suffix
         self.row_type = row_type
         self.full_path = db_full_path(self.filename, self.suffix)
+
+        if filename == "sickchill.db" and not os.path.isfile(self.full_path):
+            sickbeard_db = db_full_path('sickbeard.db', suffix)
+            if os.path.isfile(sickbeard_db):
+                os.rename(sickbeard_db, self.full_path)
+
         try:
             if self.filename not in db_cons or not db_cons[self.filename]:
                 db_locks[self.filename] = threading.Lock()

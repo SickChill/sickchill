@@ -508,7 +508,7 @@ def run_subs_extra_scripts(episode, subtitle, video, single=False):
         logger.info('Executing command: {0}'.format(inner_cmd))
         try:
             process = subprocess.Popen(inner_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                       stderr=subprocess.STDOUT, cwd=settings.PROG_DIR)
+                                       stderr=subprocess.STDOUT, cwd=settings.DATA_DIR)
 
             stdout, stderr_ = process.communicate()
             logger.debug('Script result: {0}'.format(stdout))

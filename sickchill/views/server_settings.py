@@ -83,13 +83,13 @@ class SRWebServer(threading.Thread):
         if settings.HTTPS_CERT:
             self.https_cert = os.path.realpath(settings.HTTPS_CERT)
             if not os.path.exists(self.https_cert) and not os.path.isabs(self.https_cert):
-                self.https_cert = os.path.realpath(os.path.join(settings.PROG_DIR, settings.HTTPS_CERT))
+                self.https_cert = os.path.realpath(os.path.join(settings.DATA_DIR, settings.HTTPS_CERT))
 
         self.https_key = None
         if settings.HTTPS_KEY:
             self.https_key = os.path.realpath(settings.HTTPS_KEY)
             if not os.path.exists(self.https_key) and not os.path.isabs(self.https_key):
-                self.https_key = os.path.realpath(os.path.join(settings.PROG_DIR, settings.HTTPS_KEY))
+                self.https_key = os.path.realpath(os.path.join(settings.DATA_DIR, settings.HTTPS_KEY))
 
         if self.enable_https:
             # If either the HTTPS certificate or key do not exist, make some self-signed ones.
