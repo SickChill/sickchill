@@ -33,7 +33,7 @@ fi
 ## SR_USER=         #$RUN_AS, username to run sickchill under, the default is sickchill
 ## SR_GROUP=        #$RUN_GROUP, group to run sickchill under, the default is sickchill
 ## SR_HOME=         #$APP_PATH, the location of SickChill.py, the default is /opt/sickchill
-## SR_DATA=         #$DATA_DIR, the location of sickbeard.db, cache, logs, the default is /opt/sickchill
+## SR_DATA=         #$DATA_DIR, the location of sickchill.db, cache, logs, the default is /opt/sickchill
 ## SR_PIDFILE=      #$PID_FILE, the location of sickchill.pid, the default is /var/run/sickchill/sickchill.pid
 ## PYTHON_BIN=      #$DAEMON, the location of the python binary, the default is /usr/bin/python3
 ## SR_OPTS=         #$EXTRA_DAEMON_OPTS, extra cli option for sickchill, i.e. " --config=/home/sickchill/config.ini"
@@ -59,7 +59,7 @@ RUN_GROUP=${SR_GROUP-sickchill}
 # Path to app SR_HOME=path_to_app_SickChill.py
 APP_PATH=${SR_HOME-/opt/sickchill}
 
-# Data directory where sickbeard.db, cache and logs are stored
+# Data directory where sickchill.db, cache and logs are stored
 DATA_DIR=${SR_DATA-/opt/sickchill}
 
 # Path to store PID file

@@ -1,6 +1,7 @@
 import gettext
 import os
 import sys
+import sysconfig
 
 from random_user_agent.params import OperatingSystem, SoftwareName
 from random_user_agent.user_agent import UserAgent
@@ -35,3 +36,10 @@ def setup_gettext(language=None):
         os.environ['LC_MESSAGES'] = 'en_US.UTF-8'
     gt = gettext.translation('messages', locale_dir(), languages=languages)
     gt.install(names=["ngettext"])
+
+
+def check_installed():
+    for location in sysconfig.get_paths():
+        if sickchill_dir().startswith(location):
+            return True
+    return False

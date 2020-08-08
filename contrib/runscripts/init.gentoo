@@ -13,7 +13,7 @@
 # SICKCHILL_GROUP=<group you want sickchill to run under>
 # SICKCHILL_DIR=<path to SickChill.py>
 # PATH_TO_PYTHON_2=/usr/bin/python3
-# SICKCHILL_DATADIR=<directory that contains sickbeard.db file>
+# SICKCHILL_DATADIR=<directory that contains sickchill.db file>
 # SICKCHILL_CONFDIR=<directory that contains SickChill's config.ini file>
 #
 

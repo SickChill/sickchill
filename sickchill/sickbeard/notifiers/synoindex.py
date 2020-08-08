@@ -36,7 +36,7 @@ class Notifier(object):
             logger.debug("Absolute path to command: " + os.path.abspath(synoindex_cmd[0]))
             try:
                 p = subprocess.Popen(synoindex_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                     cwd=settings.PROG_DIR)
+                                     cwd=settings.DATA_DIR)
                 out, err = p.communicate()  # @UnusedVariable
                 logger.debug("Script result: " + str(out))
             except OSError as e:
@@ -62,7 +62,7 @@ class Notifier(object):
             logger.debug("Absolute path to command: " + os.path.abspath(synoindex_cmd[0]))
             try:
                 p = subprocess.Popen(synoindex_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                     cwd=settings.PROG_DIR)
+                                     cwd=settings.DATA_DIR)
                 out, err = p.communicate()  # @UnusedVariable
                 logger.debug("Script result: " + str(out))
             except OSError as e:

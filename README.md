@@ -52,7 +52,7 @@ We HIGHLY recommend starting out with no database files at all to make this a fr
 
 #### Supported providers
 
-A full list can be found here: [Link](https://github.com/SickChill/SickChill/wiki/SickChill-Search-Providers) 
+A full list can be found here: [Link](https://github.com/SickChill/SickChill/wiki/SickChill-Search-Providers)
 
 #### News and Changelog
 [news.md and CHANGES.md have moved to a separate repo, click here](https://github.com/SickChill/SickChill.github.io)

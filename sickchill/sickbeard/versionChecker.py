@@ -10,6 +10,7 @@ import time
 import traceback
 
 from sickchill import settings
+from sickchill.init_helpers import check_installed
 
 from . import db, helpers, logger, notifiers, ui
 
@@ -53,7 +54,7 @@ class CheckVersion(object):
                             logger.info("Update failed!")
                             ui.notifications.message(_('Update failed!'))
 
-            self.check_for_new_news()
+        self.check_for_new_news()
 
         self.amActive = False
 
@@ -110,7 +111,7 @@ class CheckVersion(object):
         if not backupDir:
             return False
         source = [
-            os.path.join(settings.DATA_DIR, 'sickbeard.db'),
+            os.path.join(settings.DATA_DIR, 'sickchill.db'),
             settings.CONFIG_FILE,
             os.path.join(settings.DATA_DIR, 'failed.db'),
             os.path.join(settings.DATA_DIR, 'cache.db')
@@ -221,9 +222,11 @@ class CheckVersion(object):
         """
 
         # check if we're a windows build
-        if settings.BRANCH.startswith('build '):
+        if check_installed():
+            install_type = 'pip'
+        elif settings.BRANCH.startswith('build '):
             install_type = 'win'
-        elif os.path.isdir(os.path.join(settings.PROG_DIR, '.git')):
+        elif os.path.isdir(os.path.join(os.path.dirname(settings.PROG_DIR), '.git')):
             install_type = 'git'
         else:
             install_type = 'source'
@@ -324,7 +327,7 @@ class UpdateManager(object):
 
     @staticmethod
     def remove_pyc(path):
-        path_parts = [settings.PROG_DIR, path, '*.pyc']
+        path_parts = [os.path.dirname(settings.PROG_DIR), path, '*.pyc']
         for f in glob.iglob(os.path.join(*path_parts)):
             os.remove(f)
 
@@ -645,7 +648,7 @@ class GitUpdateManager(UpdateManager):
         if exit_status == 0:
             return True
 
-        self.remove_pyc('lib')
+        self.remove_pyc('lib3')
 
     def reset(self):
         """
@@ -800,7 +803,7 @@ class SourceUpdateManager(UpdateManager):
 
         try:
             # prepare the update dir
-            sr_update_dir = os.path.join(settings.PROG_DIR, 'sr-update')
+            sr_update_dir = os.path.join(settings.DATA_DIR, 'sr-update')
 
             if os.path.isdir(sr_update_dir):
                 logger.info("Clearing out update folder " + sr_update_dir + " before extracting")
@@ -842,12 +845,12 @@ class SourceUpdateManager(UpdateManager):
 
             # walk temp folder and move files to main folder
             content_dir = os.path.join(sr_update_dir, update_dir_contents[0])
-            logger.info("Moving files from " + content_dir + " to " + settings.PROG_DIR)
+            logger.info("Moving files from " + content_dir + " to " + os.path.dirname(settings.PROG_DIR))
             for dirname, stderr_, filenames in os.walk(content_dir):  # @UnusedVariable
                 dirname = dirname[len(content_dir) + 1:]
                 for curfile in filenames:
                     old_path = os.path.join(content_dir, dirname, curfile)
-                    new_path = os.path.join(settings.PROG_DIR, dirname, curfile)
+                    new_path = os.path.join(os.path.dirname(settings.PROG_DIR), dirname, curfile)
 
                     if os.path.isfile(new_path):
                         os.remove(new_path)
@@ -868,7 +871,7 @@ class SourceUpdateManager(UpdateManager):
         return True
 
     def clean_libs(self):
-        lib_path = os.path.join(settings.PROG_DIR, 'lib')
+        lib_path = os.path.join(os.path.dirname(settings.PROG_DIR), 'lib3')
 
         def removeEmptyFolders(path):
             if not os.path.isdir(path):
@@ -884,7 +887,7 @@ class SourceUpdateManager(UpdateManager):
             if len(files) == 0 and path != lib_path:
                 os.rmdir(path)
 
-        self.remove_pyc('lib')
+        self.remove_pyc('lib3')
         removeEmptyFolders(lib_path)
 
     @staticmethod
