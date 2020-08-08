@@ -9,18 +9,6 @@
 <%block name="content">
     <div class="row">
         <div class="col-lg-8 col-md-7 col-sm-6 col-xs-12 pull-right">
-            <%
-                showQualSnatched = lambda x: Quality.splitQuality(x.quality)[1]
-
-                totalWanted = totalQual = totalQualSnatched = 0
-                backLogShows = sorted([x for x in settings.showList if showCounts[x.indexerid][Overview.QUAL] + showCounts[x.indexerid][Overview.WANTED] + (0, showCounts[x.indexerid][Overview.SNATCHED])[len(showQualSnatched(x)) > 0]], key=lambda x: x.sort_name)
-                for curShow in backLogShows:
-                    totalWanted += showCounts[curShow.indexerid][Overview.WANTED]
-                    totalQual += showCounts[curShow.indexerid][Overview.QUAL]
-                    if showQualSnatched(curShow):
-                        totalQualSnatched += showCounts[x.indexerid][Overview.SNATCHED]
-            %>
-
             <div class="pull-right">
                 % if totalWanted > 0:
                     <span class="listing-key wanted">${_('Wanted')}: <b>${totalWanted}</b></span>

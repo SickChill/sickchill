@@ -275,8 +275,20 @@ class Manage(Home, WebRoot):
             showCats[curShow.indexerid] = epCats
             showSQLResults[curShow.indexerid] = sql_results
 
+        def showQualSnatched(show):
+            return Quality.splitQuality(show.quality)[1]
+
+        totalWanted = totalQual = totalQualSnatched = 0
+        backLogShows = sorted([x for x in settings.showList if showCounts[x.indexerid][Overview.QUAL] + showCounts[x.indexerid][Overview.WANTED] + (0, showCounts[x.indexerid][Overview.SNATCHED])[len(showQualSnatched(x)) > 0]], key=lambda x: x.sort_name)
+        for curShow in backLogShows:
+            totalWanted += showCounts[curShow.indexerid][Overview.WANTED]
+            totalQual += showCounts[curShow.indexerid][Overview.QUAL]
+            if showQualSnatched(curShow):
+                totalQualSnatched += showCounts[curShow.indexerid][Overview.SNATCHED]
+
         return t.render(
-            showCounts=showCounts, showCats=showCats,
+            showCounts=showCounts, showCats=showCats, totalQual=totalQual, showQualSnatched=showQualSnatched,
+            totalWanted=totalWanted, totalQualSnatched=totalQualSnatched, backLogShows=backLogShows,
             showSQLResults=showSQLResults, controller='manage',
             action='backlogOverview', title=_('Backlog Overview'),
             header=_('Backlog Overview'), topmenu='manage')

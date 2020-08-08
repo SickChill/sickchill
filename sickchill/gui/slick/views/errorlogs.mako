@@ -4,11 +4,11 @@
 %>
 <%block name="content">
     <%
-        if logLevel == sickchill.sickbeard.logger.WARNING:
-            errors = sickchill.sickbeard.classes.WarningViewer.errors
+        if logLevel == sickbeard.logger.WARNING:
+            errors = sickbeard.classes.WarningViewer.errors
             title = _('WARNING logs')
         else:
-            errors = sickchill.sickbeard.classes.ErrorViewer.errors
+            errors = sickbeard.classes.ErrorViewer.errors
             title = _('ERROR logs')
     %>
     <div class="row">
