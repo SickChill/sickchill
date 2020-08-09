@@ -6,7 +6,8 @@ from babelfish import Country
 
 import sickchill
 from sickchill.helper.common import dateFormat
-from sickchill.sickbeard import helpers, logger
+from sickchill.sickbeard import helpers
+from ... import logger
 
 from . import generic
 

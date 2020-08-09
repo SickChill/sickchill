@@ -8,10 +8,10 @@ import rarfile
 from tornado.escape import xhtml_unescape
 
 import sickchill.start
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.common import try_int
 
-from . import db, helpers, logger, naming
+from . import db, helpers, naming
 
 # Address poor support for scgi over unix domain sockets
 # this is not nicely handled by python currently

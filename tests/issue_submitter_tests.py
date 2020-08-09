@@ -4,7 +4,7 @@ Test exception logging
 
 import unittest
 
-from sickchill.sickbeard import logger
+from sickchill import logger
 
 
 def exception_generator():

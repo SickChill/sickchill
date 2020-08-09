@@ -3,11 +3,10 @@ from datetime import datetime
 import bencodepy
 from feedparser import FeedParserDict
 
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.common import try_int
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.show.Show import Show
-from sickchill.sickbeard import logger
 from sickchill.sickbeard.classes import Proper, TorrentSearchResult
 from sickchill.sickbeard.common import Quality
 from sickchill.sickbeard.db import DBConnection

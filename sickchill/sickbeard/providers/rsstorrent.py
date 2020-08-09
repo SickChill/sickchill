@@ -4,9 +4,9 @@ import re
 import bencodepy
 from requests.utils import add_dict_to_cookiejar
 
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
-from sickchill.sickbeard import helpers, logger, tvcache
+from sickchill.sickbeard import helpers, tvcache
 
 
 class TorrentRssProvider(TorrentProvider):

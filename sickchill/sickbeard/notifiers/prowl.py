@@ -7,8 +7,8 @@ from http.client import HTTPException, HTTPSConnection
 from ssl import SSLError
 from urllib.parse import urlencode
 
-from sickchill import settings
-from sickchill.sickbeard import common, db, logger
+from sickchill import settings, logger
+from sickchill.sickbeard import common, db
 
 
 class Notifier(object):

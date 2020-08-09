@@ -4,8 +4,7 @@ import urllib.parse
 import urllib.request
 from xml.etree import ElementTree
 
-from sickchill import settings
-from sickchill.sickbeard import logger
+from sickchill import settings, logger
 
 
 class Notifier(object):

@@ -8,10 +8,10 @@ import time
 import traceback
 
 import sickchill
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.show.Show import Show
 
-from . import db, logger
+from . import db
 from .scene_exceptions import xem_session
 
 

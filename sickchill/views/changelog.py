@@ -1,6 +1,7 @@
 import markdown2
 
-from ..sickbeard import helpers, logger
+from ..sickbeard import helpers
+from .. import logger
 from .common import PageTemplate
 from .home import Home
 from .routes import Route

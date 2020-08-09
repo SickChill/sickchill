@@ -1,7 +1,6 @@
 from rtorrent import RTorrent
 
-from sickchill import settings
-from sickchill.sickbeard import logger
+from sickchill import settings, logger
 from sickchill.sickbeard.clients.generic import GenericClient
 
 

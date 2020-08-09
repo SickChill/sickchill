@@ -9,7 +9,7 @@ from requests.utils import add_dict_to_cookiejar
 
 import sickchill.sickbeard
 from sickchill.helper.common import sanitize_filename
-from sickchill.sickbeard import logger
+from sickchill import logger
 from sickchill.sickbeard.classes import Proper, SearchResult
 from sickchill.sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, ua_pool
 from sickchill.sickbeard.db import DBConnection

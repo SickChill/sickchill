@@ -1,7 +1,7 @@
 import datetime
 import threading
 
-from . import logger
+from .. import logger
 
 
 class QueuePriorities(object):

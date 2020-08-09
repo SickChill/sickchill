@@ -5,9 +5,9 @@ import traceback
 import requests
 from requests.exceptions import HTTPError
 
-from sickchill import settings
+from sickchill import settings, logger
 
-from . import common, generic_queue, logger
+from . import common, generic_queue
 
 DISCORD = 600
 

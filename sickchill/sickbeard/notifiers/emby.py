@@ -1,7 +1,6 @@
 import requests
 
-from sickchill import settings
-from sickchill.sickbeard import logger
+from sickchill import settings, logger
 
 
 class Notifier(object):

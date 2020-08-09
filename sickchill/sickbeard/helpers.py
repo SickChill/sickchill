@@ -33,12 +33,12 @@ from tornado._locale_data import LOCALE_NAMES
 from unidecode import unidecode
 
 import sickchill
-from sickchill import adba, settings
+from sickchill import adba, settings, logger
 from sickchill.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS
 from sickchill.helper.common import replace_extension
 from sickchill.show.Show import Show
 
-from . import db, logger
+from . import db
 
 # Add some missing languages
 LOCALE_NAMES.update({

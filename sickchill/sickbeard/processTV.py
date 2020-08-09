@@ -6,11 +6,11 @@ import traceback
 
 from rarfile import BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRCError, RarExecError, RarFile, RarOpenError, RarWrongPassword
 
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.common import is_sync_file, is_torrent_or_nzb_file
 from sickchill.helper.exceptions import EpisodePostProcessingFailedException, FailedPostProcessingFailedException
 
-from . import common, db, failedProcessor, helpers, logger, postProcessor
+from . import common, db, failedProcessor, helpers, postProcessor
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 

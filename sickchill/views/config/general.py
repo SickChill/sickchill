@@ -3,10 +3,10 @@ import os
 from tornado.web import addslash
 
 import sickchill.start
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper import setup_github, try_int
 from sickchill.init_helpers import setup_gettext
-from sickchill.sickbeard import config, filters, helpers, logger, ui
+from sickchill.sickbeard import config, filters, helpers, ui
 from sickchill.sickbeard.common import Quality, WANTED
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route

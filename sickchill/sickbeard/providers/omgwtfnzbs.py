@@ -1,7 +1,7 @@
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.common import try_int
 from sickchill.providers.nzb.NZBProvider import NZBProvider
-from sickchill.sickbeard import logger, tvcache
+from sickchill.sickbeard import tvcache
 
 
 class Provider(NZBProvider):

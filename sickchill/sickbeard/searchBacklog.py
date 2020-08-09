@@ -1,9 +1,9 @@
 import datetime
 import threading
 
-from sickchill import settings
+from sickchill import settings, logger
 
-from . import common, db, logger, scheduler, search_queue, ui
+from . import common, db, scheduler, search_queue, ui
 
 
 class BacklogSearchScheduler(scheduler.Scheduler):

@@ -3,7 +3,8 @@ from tornado.web import addslash
 import sickchill.sickbeard
 from sickchill.helper import try_int
 
-from ..sickbeard import classes, logger, ui
+from ..sickbeard import classes, ui
+from .. import logger
 from .common import PageTemplate
 from .index import WebRoot
 from .routes import Route
@@ -71,7 +72,7 @@ class ErrorLogs(WebRoot):
         log_filter = self.get_body_argument('log_filter', "<NONE>")
         log_search = self.get_body_argument('log_search', '')
         max_lines = try_int(self.get_body_argument('max_lines', 500), 500)
-        data = sickchill.sickbeard.logger.log_data(min_level, log_filter, log_search, max_lines)
+        data = sickchill.logger.log_data(min_level, log_filter, log_search, max_lines)
 
         t = PageTemplate(rh=self, filename="viewlogs.mako")
         return t.render(

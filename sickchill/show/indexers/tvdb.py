@@ -6,10 +6,9 @@ import traceback
 import tvdbsimple
 from requests.exceptions import HTTPError
 
-# from sickchill.sickbeard import logger
+# from sickchill import logger
 import sickchill.start
-from sickchill import settings
-from sickchill.sickbeard import logger
+from sickchill import settings, logger
 from sickchill.sickbeard.tv import TVEpisode
 
 from .base import Indexer

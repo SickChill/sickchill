@@ -6,7 +6,8 @@ import js2py
 
 from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
-from sickchill.sickbeard import db, logger, tvcache
+from sickchill.sickbeard import db, tvcache
+from sickchill import logger
 
 
 class Provider(TorrentProvider):

@@ -11,14 +11,14 @@ import urllib.parse
 from tornado.web import RequestHandler
 
 import sickchill
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
 from sickchill.helper.exceptions import CantUpdateShowException, ShowDirectoryNotFoundException
 from sickchill.helper.quality import get_quality_string
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.show.History import History
 from sickchill.show.Show import Show
-from sickchill.sickbeard import classes, db, helpers, logger, network_timezones, sbdatetime, search_queue, ui
+from sickchill.sickbeard import classes, db, helpers, network_timezones, sbdatetime, search_queue, ui
 from sickchill.sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED,
                                         UNKNOWN, WANTED)
 from sickchill.sickbeard.postProcessor import PROCESS_METHODS

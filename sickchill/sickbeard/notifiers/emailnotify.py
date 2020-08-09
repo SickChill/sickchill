@@ -4,8 +4,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formatdate
 
-from sickchill import settings
-from sickchill.sickbeard import db, logger
+from sickchill import settings, logger
+from sickchill.sickbeard import db
 
 
 class Notifier(object):

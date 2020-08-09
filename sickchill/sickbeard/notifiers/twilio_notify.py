@@ -2,8 +2,8 @@ import re
 
 from twilio.rest import Client, TwilioException
 
-from sickchill import settings
-from sickchill.sickbeard import common, logger
+from sickchill import settings, logger
+from sickchill.sickbeard import common
 
 
 class Notifier(object):

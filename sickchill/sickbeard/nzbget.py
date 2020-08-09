@@ -3,10 +3,9 @@ import http.client
 import xmlrpc.client
 from base64 import standard_b64encode
 
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.common import try_int
 
-from . import logger
 from .common import Quality
 
 

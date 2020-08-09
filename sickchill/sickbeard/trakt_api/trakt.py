@@ -4,9 +4,8 @@ import time
 import certifi
 import requests
 
-from sickchill import settings
+from sickchill import settings, logger
 
-from .. import logger
 from .exceptions import traktException
 
 

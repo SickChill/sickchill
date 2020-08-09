@@ -10,12 +10,12 @@ from tornado.escape import xhtml_unescape
 from tornado.web import HTTPError
 
 import sickchill
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper import sanitize_filename, try_int
 from sickchill.show.recommendations.favorites import favorites
 from sickchill.show.recommendations.imdb import imdb_popular
 from sickchill.show.Show import Show
-from sickchill.sickbeard import config, db, filters, helpers, logger, ui
+from sickchill.sickbeard import config, db, filters, helpers, ui
 from sickchill.sickbeard.blackandwhitelist import short_group_names
 from sickchill.sickbeard.common import Quality
 from sickchill.sickbeard.trakt_api import TraktAPI

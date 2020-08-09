@@ -1,8 +1,8 @@
 import logging
 
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.exceptions import FailedPostProcessingFailedException
-from sickchill.sickbeard import logger, search_queue, show_name_helpers
+from sickchill.sickbeard import search_queue, show_name_helpers
 from sickchill.sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 

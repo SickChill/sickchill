@@ -1,7 +1,6 @@
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.common import try_int
 from sickchill.providers.GenericProvider import GenericProvider
-from sickchill.sickbeard import logger
 from sickchill.sickbeard.classes import NZBSearchResult
 
 

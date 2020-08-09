@@ -5,10 +5,10 @@ from urllib.parse import urljoin
 
 import validators
 
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.nzb.NZBProvider import NZBProvider
-from sickchill.sickbeard import logger, tvcache
+from sickchill.sickbeard import tvcache
 from sickchill.sickbeard.bs4_parser import BS4Parser
 from sickchill.sickbeard.common import cpu_presets
 

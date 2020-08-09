@@ -3,10 +3,10 @@ import traceback
 
 from bs4 import BeautifulSoup
 
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
-from sickchill.sickbeard import logger, tvcache
+from sickchill.sickbeard import tvcache
 
 
 class Provider(TorrentProvider):

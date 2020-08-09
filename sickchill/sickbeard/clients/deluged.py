@@ -4,10 +4,9 @@ from urllib.parse import urlparse
 
 from deluge_client import DelugeRPCClient, FailedToReconnectException
 
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.sickbeard.clients.generic import GenericClient
 
-from .. import logger
 from .__deluge_base import DelugeBase
 
 

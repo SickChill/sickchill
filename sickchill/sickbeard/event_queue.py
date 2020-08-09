@@ -3,7 +3,7 @@ import traceback
 # noinspection PyUnresolvedReferences
 from queue import Empty, Queue
 
-from . import logger
+from .. import logger
 
 
 class Event(object):

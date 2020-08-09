@@ -12,7 +12,7 @@ import time
 import traceback
 
 import sickchill.start
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.init_helpers import check_installed, setup_gettext, setup_lib_path
 
 setup_lib_path()
@@ -32,7 +32,7 @@ mimetypes.add_type("application/font-woff", ".woff")
 from configobj import ConfigObj
 
 from sickchill.helper.argument_parser import SickChillArgumentParser
-from sickchill.sickbeard import db, failed_history, logger, name_cache, network_timezones
+from sickchill.sickbeard import db, failed_history, name_cache, network_timezones
 from sickchill.sickbeard.event_queue import Events
 from sickchill.sickbeard.tv import TVShow
 from sickchill.update_manager import GitUpdateManager, SourceUpdateManager

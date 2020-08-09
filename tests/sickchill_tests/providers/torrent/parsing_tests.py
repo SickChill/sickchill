@@ -216,10 +216,10 @@ if __name__ == '__main__':
         _ = args, kwargs
         print(msg)
 
-    sickchill.sickbeard.logger.info = override_log
-    sickchill.sickbeard.logger.debug = override_log
-    sickchill.sickbeard.logger.error = override_log
-    sickchill.sickbeard.logger.warning = override_log
+    sickchill.logger.info = override_log
+    sickchill.logger.debug = override_log
+    sickchill.logger.error = override_log
+    sickchill.logger.warning = override_log
 
     suite = unittest.TestSuite()
     members = inspect.getmembers(sys.modules[__name__], inspect.isclass)

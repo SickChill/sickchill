@@ -2,10 +2,10 @@ import datetime
 import re
 import time
 
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
-from sickchill.sickbeard import logger, tvcache
+from sickchill.sickbeard import tvcache
 from sickchill.sickbeard.common import cpu_presets
 
 

@@ -1,11 +1,11 @@
 import os
 import posixpath
 
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.exceptions import MultipleShowObjectsException
 from sickchill.sickbeard.trakt_api import TraktAPI, traktException
 
-from . import helpers, logger
+from . import helpers
 
 
 class traktTrending(object):

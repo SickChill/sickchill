@@ -3,9 +3,9 @@ import os.path
 import warnings
 
 import sickchill.start
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.common import dateTimeFormat, episode_num
-from sickchill.sickbeard import common, db, helpers, logger, subtitles
+from sickchill.sickbeard import common, db, helpers, subtitles
 from sickchill.sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 MIN_DB_VERSION = 9  # oldest db version we support migrating from

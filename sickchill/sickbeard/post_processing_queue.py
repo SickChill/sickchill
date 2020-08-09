@@ -3,9 +3,9 @@ import threading
 import time
 import traceback
 
-from sickchill import settings
+from sickchill import settings, logger
 
-from . import common, config, generic_queue, logger
+from . import common, config, generic_queue
 from .processTV import log_helper, process_dir
 
 MANUAL_POST_PROCESS = 120

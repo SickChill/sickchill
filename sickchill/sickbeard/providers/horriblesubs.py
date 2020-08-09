@@ -3,7 +3,8 @@ from urllib.parse import urljoin
 
 from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
-from sickchill.sickbeard import logger, tvcache
+from sickchill.sickbeard import tvcache
+from sickchill import logger
 from sickchill.sickbeard.bs4_parser import BS4Parser
 
 

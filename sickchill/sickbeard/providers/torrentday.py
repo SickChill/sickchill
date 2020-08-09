@@ -6,7 +6,8 @@ from requests.utils import dict_from_cookiejar
 
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
-from sickchill.sickbeard import logger, tvcache
+from sickchill.sickbeard import tvcache
+from sickchill import logger
 
 
 class Provider(TorrentProvider):
