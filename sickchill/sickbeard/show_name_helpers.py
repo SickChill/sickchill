@@ -2,9 +2,9 @@ import fnmatch
 import os
 import re
 
-from sickchill import settings
+from sickchill import settings, logger
 
-from . import common, logger
+from . import common
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from .scene_exceptions import get_scene_exceptions
 

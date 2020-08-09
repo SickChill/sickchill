@@ -1,7 +1,8 @@
 import datetime
 import os
 
-from sickchill.sickbeard import helpers, logger
+from sickchill.sickbeard import helpers
+from ... import logger
 
 from . import generic
 

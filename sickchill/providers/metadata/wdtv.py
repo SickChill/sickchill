@@ -4,7 +4,8 @@ import re
 from xml.etree import ElementTree
 
 from sickchill.helper.common import dateFormat, replace_extension
-from sickchill.sickbeard import helpers, logger
+from sickchill.sickbeard import helpers
+from ... import logger
 
 from . import generic
 

@@ -1,6 +1,6 @@
 import unittest
 
-import sickchill.sickbeard.logger
+import sickchill.logger
 from sickchill import settings
 from sickchill.sickbeard.providers import bitcannon, rarbg
 from sickchill.sickbeard.tv import TVEpisode, TVShow
@@ -67,10 +67,10 @@ if __name__ == "__main__":
         _ = args, kwargs
         print(msg)
 
-    sickchill.sickbeard.logger.info = override_log
-    sickchill.sickbeard.logger.debug = override_log
-    sickchill.sickbeard.logger.error = override_log
-    sickchill.sickbeard.logger.warning = override_log
+    sickchill.logger.info = override_log
+    sickchill.logger.debug = override_log
+    sickchill.logger.error = override_log
+    sickchill.logger.warning = override_log
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(TorrentBasicTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

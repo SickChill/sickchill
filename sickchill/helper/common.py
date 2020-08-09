@@ -5,10 +5,13 @@ from github import Github
 from github.GithubException import (BadAttributeException, BadCredentialsException, BadUserAgentException, GithubException, RateLimitExceededException,
                                     TwoFactorException, UnknownObjectException)
 
-from sickchill import settings, sickbeard
+import sickchill
+from sickchill import settings
+
 
 dateFormat = '%Y-%m-%d'
 dateTimeFormat = '%Y-%m-%d %H:%M:%S'
+
 # Mapping HTTP status codes to official W3C names
 HTTP_STATUS_CODES = {
     300: 'Multiple Choices',
@@ -268,7 +271,7 @@ def sanitize_filename(filename):
         filename = filename.decode()
 
     if isinstance(filename, str):
-        filename = re.sub(r'[\\/\*]', '-', filename)
+        filename = re.sub(r'[\\/*]', '-', filename)
         filename = re.sub(r'[:"<>|?]', '', filename)
         filename = re.sub(r'™|-u2122', '', filename)  # Trade Mark Sign unicode: \u2122
         filename = filename.strip(' .')
@@ -332,28 +335,28 @@ def setup_github():
             settings.gh.get_organization(settings.GIT_ORG)
     except BadCredentialsException as error:
         settings.gh = None
-        sickbeard.logger.warning(_('Unable to setup GitHub properly with your github token. Please check your credentials. Error: {0}').format(error))
+        sickchill.logger.warning(_('Unable to setup GitHub properly with your github token. Please check your credentials. Error: {0}').format(error))
     except TwoFactorException as error:
         settings.gh = None
-        sickbeard.logger.warning(_('Unable to setup GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {0}').format(
+        sickchill.logger.warning(_('Unable to setup GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {0}').format(
             error))
     except RateLimitExceededException as error:
         settings.gh = None
         if settings.GIT_TOKEN:
-            sickbeard.logger.warning(
+            sickchill.logger.warning(
                 _('Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests. Error: {0}').format(error))
         else:
-            sickbeard.logger.warning(
+            sickchill.logger.warning(
                 _('Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests - Try adding an access token. Error: {0}').format(error))
     except UnknownObjectException as error:
         settings.gh = None
-        sickbeard.logger.warning(_('Unable to setup GitHub properly, it seems to be down or your organization/repo is set wrong. Error: {0}').format(error))
+        sickchill.logger.warning(_('Unable to setup GitHub properly, it seems to be down or your organization/repo is set wrong. Error: {0}').format(error))
     except BadUserAgentException as error:
         settings.gh = None
-        sickbeard.logger.warning(_('Unable to setup GitHub properly, GitHub doesn\'t like the user-agent. Error: {0}').format(error))
+        sickchill.logger.warning(_('Unable to setup GitHub properly, GitHub doesn\'t like the user-agent. Error: {0}').format(error))
     except BadAttributeException as error:
         settings.gh = None
-        sickbeard.logger.error(_('Unable to setup GitHub properly, There might be an error with the library. Error: {0}').format(error))
+        sickchill.logger.error(_('Unable to setup GitHub properly, There might be an error with the library. Error: {0}').format(error))
     except (GithubException, Exception) as error:
         settings.gh = None
-        sickbeard.logger.error(_('Unable to setup GitHub properly. GitHub will not be available. Error: {0}').format(error))
+        sickchill.logger.error(_('Unable to setup GitHub properly. GitHub will not be available. Error: {0}').format(error))

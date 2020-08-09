@@ -2,11 +2,11 @@ import datetime
 import threading
 
 import sickchill.sickbeard.search_queue
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.exceptions import MultipleShowObjectsException
 from sickchill.show.Show import Show
 
-from . import common, db, logger, network_timezones
+from . import common, db, network_timezones
 
 
 class DailySearcher(object):  # pylint:disable=too-few-public-methods

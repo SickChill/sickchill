@@ -5,11 +5,11 @@ from datetime import datetime
 
 import jsonrpclib
 
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.common import episode_num
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
-from sickchill.sickbeard import classes, logger, scene_exceptions, tvcache
+from sickchill.sickbeard import classes, scene_exceptions, tvcache
 from sickchill.sickbeard.common import cpu_presets
 from sickchill.sickbeard.helpers import sanitizeSceneName
 

@@ -1,9 +1,9 @@
 import datetime
 from urllib.parse import urljoin
 
-from sickchill import settings
+from sickchill import settings, logger
 
-from . import helpers, logger
+from . import helpers
 
 session = helpers.make_session()
 

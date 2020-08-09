@@ -1,5 +1,5 @@
 from sickchill import version, settings
-from sickchill.sickbeard import helpers, logger
+from sickchill.sickbeard import helpers
 from packaging import version as packaging_version
 from .abstract import UpdateManagerBase
 

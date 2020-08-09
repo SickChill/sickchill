@@ -4,9 +4,9 @@ import os
 import re
 import time
 
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.init_helpers import check_installed
-from sickchill.sickbeard import db, helpers, logger, ui
+from sickchill.sickbeard import db, helpers, ui
 
 from .git import GitUpdateManager
 from .pip import PipUpdateManager

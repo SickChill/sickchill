@@ -2,8 +2,8 @@ import platform
 import re
 import subprocess
 
-from sickchill import settings
-from sickchill.sickbeard import helpers, logger, notifiers
+from sickchill import settings, logger
+from sickchill.sickbeard import helpers, notifiers
 
 from .abstract import UpdateManagerBase
 

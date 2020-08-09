@@ -1,9 +1,7 @@
 import os
 import string
 
-from sickchill import settings
-
-from . import logger
+from sickchill import settings, logger
 
 
 # adapted from http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490

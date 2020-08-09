@@ -2,8 +2,8 @@ import twitter
 from requests.exceptions import RequestException
 from requests_oauthlib import OAuth1Session
 
-from sickchill import settings
-from sickchill.sickbeard import common, logger
+from sickchill import settings, logger
+from sickchill.sickbeard import common
 
 
 class Notifier(object):

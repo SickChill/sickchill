@@ -4,9 +4,9 @@ from urllib.parse import unquote_plus
 from beekeeper.exceptions import RequestTimeout
 from kodipydent import Kodi
 
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper import try_int
-from sickchill.sickbeard import common, logger
+from sickchill.sickbeard import common
 
 
 class Notifier(object):

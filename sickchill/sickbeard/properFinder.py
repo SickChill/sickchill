@@ -5,11 +5,11 @@ import threading
 import time
 import traceback
 
-from sickchill import settings, sickbeard
+from sickchill import settings, sickbeard, logger
 from sickchill.helper.exceptions import AuthException
 from sickchill.show.History import History
 
-from . import db, helpers, logger
+from . import db, helpers
 from .common import cpu_presets, DOWNLOADED, Quality, SNATCHED, SNATCHED_PROPER
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from .search import pickBestResult, snatchEpisode

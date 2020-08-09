@@ -1,6 +1,5 @@
 import sickchill
-from sickchill import settings
-from sickchill.sickbeard import logger
+from sickchill import settings, logger
 from sickchill.sickbeard.trakt_api import TraktAPI, traktAuthException, traktException, traktServerBusy
 
 

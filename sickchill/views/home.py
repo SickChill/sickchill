@@ -11,7 +11,7 @@ from github.GithubException import GithubException
 from tornado.escape import xhtml_unescape
 
 import sickchill.sickbeard
-from sickchill import adba, settings
+from sickchill import adba, settings, logger
 from sickchill.helper import try_int
 from sickchill.helper.common import pretty_file_size
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException
@@ -26,7 +26,7 @@ from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
 from sickchill.update_manager import UpdateManager
 
-from ..sickbeard import clients, config, db, filters, helpers, logger, notifiers, sab, search_queue, subtitles as subtitle_module, ui
+from ..sickbeard import clients, config, db, filters, helpers, notifiers, sab, search_queue, subtitles as subtitle_module, ui
 from .common import PageTemplate
 from .index import WebRoot
 from .routes import Route

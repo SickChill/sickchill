@@ -2,8 +2,8 @@ import re
 from xml.etree import ElementTree
 
 import sickchill.sickbeard.common
-from sickchill import settings
-from sickchill.sickbeard import common, logger
+from sickchill import settings, logger
+from sickchill.sickbeard import common
 from sickchill.sickbeard.helpers import getURL, make_session
 
 

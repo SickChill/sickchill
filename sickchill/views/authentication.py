@@ -1,6 +1,6 @@
-from sickchill import settings
+from sickchill import settings, logger
 
-from ..sickbeard import config, logger, notifiers
+from ..sickbeard import config, notifiers
 from .common import PageTemplate
 from .index import BaseHandler
 

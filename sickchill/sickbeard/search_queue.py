@@ -1,9 +1,9 @@
 import time
 import traceback
 
-from sickchill import settings
+from sickchill import settings, logger
 
-from . import common, failed_history, generic_queue, history, logger, search, ui
+from . import common, failed_history, generic_queue, history, search, ui
 
 BACKLOG_SEARCH = 10
 DAILY_SEARCH = 20

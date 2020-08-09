@@ -3,7 +3,7 @@ from functools import wraps
 from requests.exceptions import HTTPError as RHTTPError, RequestException, RequestsWarning
 from urllib3.exceptions import HTTPError, HTTPWarning
 
-from sickchill.sickbeard import logger
+from sickchill import logger
 
 
 class ExceptionDecorator(object):

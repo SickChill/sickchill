@@ -1,7 +1,7 @@
 from urllib.parse import urljoin
 
-from sickchill import settings
-from sickchill.sickbeard import common, helpers, logger
+from sickchill import settings, logger
+from sickchill.sickbeard import common, helpers
 
 
 class Notifier(object):

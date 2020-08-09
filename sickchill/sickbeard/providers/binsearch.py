@@ -2,7 +2,8 @@ import re
 from urllib.parse import urljoin
 
 from sickchill.providers.nzb.NZBProvider import NZBProvider
-from sickchill.sickbeard import logger, tvcache
+from sickchill.sickbeard import tvcache
+from sickchill import logger
 
 
 class Provider(NZBProvider):

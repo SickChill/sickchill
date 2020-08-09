@@ -3,8 +3,8 @@ import shutil
 import tarfile
 import traceback
 
-from sickchill import settings
-from sickchill.sickbeard import helpers, logger, notifiers
+from sickchill import settings, logger
+from sickchill.sickbeard import helpers, notifiers
 
 from .abstract import UpdateManagerBase
 

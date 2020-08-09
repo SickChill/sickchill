@@ -8,9 +8,9 @@ import tmdbsimple
 from fanart.core import Request as fanartRequest
 
 import sickchill
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.common import replace_extension, try_int
-from sickchill.sickbeard import helpers, logger
+from sickchill.sickbeard import helpers
 from sickchill.sickbeard.show_name_helpers import allPossibleShowNames
 
 from . import helpers as metadata_helpers

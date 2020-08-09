@@ -4,7 +4,7 @@
 %>
 <%block name="content">
     <%
-        if logLevel == sickbeard.logger.WARNING:
+        if logLevel == sickchill.logger.WARNING:
             errors = sickbeard.classes.WarningViewer.errors
             title = _('WARNING logs')
         else:

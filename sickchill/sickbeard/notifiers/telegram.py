@@ -3,9 +3,8 @@
 import urllib.parse
 import urllib.request
 
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper import HTTP_STATUS_CODES
-from sickchill.sickbeard import logger
 from sickchill.sickbeard.common import (NOTIFY_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, NOTIFY_SNATCH,
                                         NOTIFY_SUBTITLE_DOWNLOAD, notifyStrings)
 

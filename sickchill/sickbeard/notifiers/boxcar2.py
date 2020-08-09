@@ -1,7 +1,7 @@
 # Author: Rafael Silva <rpluto@gmail.com>
 # Author: Marvin Pinto <me@marvinp.ca>
-from sickchill import settings
-from sickchill.sickbeard import common, helpers, logger
+from sickchill import settings, logger
+from sickchill.sickbeard import common, helpers
 
 
 class Notifier(object):

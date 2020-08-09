@@ -10,11 +10,11 @@ from babelfish import Language, language_converters
 from guessit import guessit
 
 import sickchill.sickbeard.helpers
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.common import dateTimeFormat, episode_num
 from sickchill.show.Show import Show
 
-from . import db, history, logger
+from . import db, history
 from .common import Quality
 from .helpers import is_media_file
 

@@ -1,7 +1,8 @@
 import re
 from xml.etree import ElementTree
 
-from . import classes, helpers, logger
+from . import classes, helpers
+from .. import logger
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 

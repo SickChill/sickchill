@@ -1,6 +1,6 @@
 import sickchill
-from sickchill import settings
-from sickchill.sickbeard import common, logger
+from sickchill import settings, logger
+from sickchill.sickbeard import common
 
 
 class Notifier(object):

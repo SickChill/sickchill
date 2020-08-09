@@ -5,14 +5,14 @@ from collections import namedtuple
 import dateutil.parser
 
 import sickchill
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.common import sanitize_filename
 from sickchill.helper.exceptions import (CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, EpisodeDeletedException,
                                          MultipleShowObjectsException, ShowDirectoryNotFoundException)
 from sickchill.show.Show import Show
 from sickchill.sickbeard.trakt_api import TraktAPI
 
-from . import generic_queue, logger, name_cache, notifiers, scene_numbering, ui
+from . import generic_queue, name_cache, notifiers, scene_numbering, ui
 from .blackandwhitelist import BlackAndWhiteList
 from .common import WANTED
 from .helpers import chmodAsParent, makeDir, sortable_name

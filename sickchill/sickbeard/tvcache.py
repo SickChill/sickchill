@@ -2,11 +2,11 @@ import datetime
 import itertools
 import time
 
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.exceptions import AuthException
 from sickchill.show.Show import Show
 
-from . import db, logger, show_name_helpers
+from . import db, show_name_helpers
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from .rssfeeds import getFeed
 

@@ -24,7 +24,7 @@ import unittest
 from configobj import ConfigObj
 
 import sickchill.sickbeard.config
-import sickchill.sickbeard.logger
+import sickchill.logger
 import sickchill.sickbeard.tvcache
 import sickchill.start
 from sickchill import settings
@@ -104,13 +104,13 @@ settings.GIT_USERNAME = sickchill.sickbeard.config.check_setting_str(settings.CF
 settings.GIT_TOKEN = sickchill.sickbeard.config.check_setting_str(settings.CFG, 'General', 'git_token_password', censor_log=True)
 
 settings.LOG_DIR = os.path.join(TEST_DIR, 'Logs')
-sickchill.sickbeard.logger.log_file = os.path.join(settings.LOG_DIR, 'test_sickbeard.log')
+sickchill.logger.log_file = os.path.join(settings.LOG_DIR, 'test_sickbeard.log')
 create_test_log_folder()
 
 settings.CACHE_DIR = os.path.join(TEST_DIR, 'cache')
 create_test_cache_folder()
 
-sickchill.sickbeard.logger.init_logging(False, True)
+sickchill.logger.init_logging(False, True)
 
 sickchill.indexer = ShowIndexer()
 

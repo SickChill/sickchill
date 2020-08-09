@@ -3,9 +3,9 @@ import threading
 import time
 
 import sickchill
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException
-from sickchill.sickbeard import db, logger, network_timezones, ui
+from sickchill.sickbeard import db, network_timezones, ui
 
 
 class ShowUpdater(object):

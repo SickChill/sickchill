@@ -3,9 +3,9 @@ import threading
 import time
 
 import sickchill
-from sickchill import adba, settings
+from sickchill import adba, settings, logger
 
-from . import db, helpers, logger
+from . import db, helpers
 
 exception_dict = {}
 anidb_exception_dict = {}

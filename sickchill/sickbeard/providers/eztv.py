@@ -1,9 +1,9 @@
 from urllib.parse import urljoin
 
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.common import try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
-from sickchill.sickbeard import logger, tvcache
+from sickchill.sickbeard import tvcache
 
 
 class Provider(TorrentProvider):

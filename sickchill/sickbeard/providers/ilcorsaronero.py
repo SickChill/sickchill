@@ -3,7 +3,8 @@ from urllib.parse import quote_plus, urljoin
 
 from sickchill.helper.common import convert_size, try_int
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
-from sickchill.sickbeard import db, logger, tvcache
+from sickchill.sickbeard import db, tvcache
+from sickchill import logger
 from sickchill.sickbeard.bs4_parser import BS4Parser
 from sickchill.sickbeard.common import Quality
 from sickchill.sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser

@@ -3,12 +3,12 @@ import os
 import traceback
 
 import sickchill
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.common import episode_num, sanitize_filename
 from sickchill.show.Show import Show
 from sickchill.sickbeard.trakt_api import TraktAPI, traktException
 
-from . import db, helpers, logger, search_queue
+from . import db, helpers, search_queue
 from .common import Quality, SKIPPED, UNKNOWN, WANTED
 
 

@@ -1,6 +1,6 @@
 from feedparser import parse
 
-from . import logger
+from .. import logger
 
 
 def getFeed(url, params=None, request_hook=None):

@@ -9,7 +9,8 @@ import dateutil.parser
 
 import sickchill
 from sickchill.helper.common import remove_extension
-from sickchill.sickbeard import common, db, helpers, logger, scene_exceptions, scene_numbering
+from sickchill.sickbeard import common, db, helpers, scene_exceptions, scene_numbering
+from sickchill import logger
 from sickchill.sickbeard.name_parser import regexes
 
 

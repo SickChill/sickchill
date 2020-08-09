@@ -20,13 +20,13 @@ from urllib3.exceptions import MaxRetryError, NewConnectionError
 import sickchill
 import sickchill.sickbeard.providers
 import sickchill.sickbeard.scene_numbering
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.helper.common import dateTimeFormat, episode_num, remove_extension, replace_extension, sanitize_filename, try_int
 from sickchill.helper.exceptions import (EpisodeDeletedException, EpisodeNotFoundException, MultipleEpisodesInDatabaseException, MultipleShowObjectsException,
                                          MultipleShowsInDatabaseException, NoNFOException, ShowDirectoryNotFoundException, ShowNotFoundException)
 from sickchill.show.Show import Show
 
-from . import db, helpers, logger, network_timezones, notifiers, postProcessor, subtitles
+from . import db, helpers, network_timezones, notifiers, postProcessor, subtitles
 from .blackandwhitelist import BlackAndWhiteList
 from .common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
                      NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN, WANTED)

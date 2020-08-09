@@ -9,12 +9,11 @@ from tornado.platform.asyncio import AnyThreadEventLoopPolicy
 from tornado.web import Application, RedirectHandler, StaticFileHandler, url
 
 import sickchill.start
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.sickbeard.helpers import create_https_certificates, generateApiKey
 from sickchill.views import CalendarHandler, LoginHandler, LogoutHandler
 from sickchill.views.api import ApiHandler, KeyHandler
 
-from ..sickbeard import logger
 from .routes import Route
 
 # class Custom404Handler(RequestHandler):

@@ -3,7 +3,7 @@ import threading
 import time
 import traceback
 
-from . import logger
+from .. import logger
 
 
 class Scheduler(threading.Thread):

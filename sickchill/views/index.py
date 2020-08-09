@@ -17,12 +17,12 @@ from tornado.process import cpu_count
 from tornado.web import authenticated, HTTPError, RequestHandler
 
 import sickchill.start
-from sickchill import settings
+from sickchill import settings, logger
 from sickchill.init_helpers import locale_dir
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.views.routes import Route
 
-from ..sickbeard import db, helpers, logger, network_timezones, ui
+from ..sickbeard import db, helpers, network_timezones, ui
 from .api.webapi import function_mapper
 from .common import PageTemplate
 

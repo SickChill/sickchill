@@ -7,9 +7,7 @@ import warnings
 from sqlite3 import OperationalError
 
 import sickchill.sickbeard.helpers
-from sickchill import settings
-
-from . import logger
+from sickchill import settings, logger
 
 db_cons = {}
 db_locks = {}

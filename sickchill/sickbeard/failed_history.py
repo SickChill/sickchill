@@ -6,7 +6,8 @@ import urllib.parse
 from sickchill.helper.exceptions import EpisodeNotFoundException
 from sickchill.show.History import History
 
-from . import db, logger
+from . import db
+from .. import logger
 from .common import FAILED, Quality, WANTED
 
 
