@@ -22,9 +22,9 @@ from sickchill.sickbeard import classes, db, helpers, logger, network_timezones,
 from sickchill.sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED,
                                         UNKNOWN, WANTED)
 from sickchill.sickbeard.postProcessor import PROCESS_METHODS
-from sickchill.sickbeard.versionChecker import CheckVersion
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
+from sickchill.update_manager import UpdateManager
 
 indexer_ids = ["indexerid", "tvdbid"]
 
@@ -1402,7 +1402,7 @@ class CMDSickChill(ApiCall):
     def run(self):
         """ dGet miscellaneous information about SickChill """
         data = {
-            "sr_version": settings.BRANCH, "api_version": self.version,
+            "sc_version": settings.BRANCH, "api_version": self.version,
             "api_commands": sorted(function_mapper)
         }
         return _responds(RESULT_SUCCESS, data)
@@ -1476,21 +1476,21 @@ class CMDSickChillCheckVersion(ApiCall):
         super(CMDSickChillCheckVersion, self).__init__(args, kwargs)
 
     def run(self):
-        check_version = CheckVersion()
-        needs_update = check_version.check_for_new_version()
+        update_manager = UpdateManager()
+        needs_update = update_manager.check_for_new_version()
 
         data = {
             "current_version": {
-                "branch": check_version.get_branch(),
-                "commit": check_version.updater.get_cur_commit_hash(),
-                "version": check_version.updater.get_cur_version(),
+                "branch": update_manager.branch,
+                "commit": update_manager.get_current_commit_hash(),
+                "version": update_manager.get_current_version(),
             },
             "latest_version": {
-                "branch": check_version.get_branch(),
-                "commit": check_version.updater.get_newest_commit_hash(),
-                "version": check_version.updater.get_newest_version(),
+                "branch": update_manager.branch,
+                "commit": update_manager.get_newest_commit_hash(),
+                "version": update_manager.get_newest_version(),
             },
-            "commits_offset": check_version.updater.get_num_commits_behind(),
+            "commits_offset": update_manager.get_num_commits_behind(),
             "needs_update": needs_update,
         }
 
@@ -1872,11 +1872,11 @@ class CMDSickChillUpdate(ApiCall):
         super(CMDSickChillUpdate, self).__init__(args, kwargs)
 
     def run(self):
-        check_version = CheckVersion()
+        update_manager = UpdateManager()
 
-        if check_version.check_for_new_version():
-            if check_version.run_backup_if_safe():
-                check_version.update()
+        if update_manager.check_for_new_version():
+            if update_manager.run_backup_if_safe():
+                update_manager.update()
                 return _responds(RESULT_SUCCESS, msg="SickChill is updating ...")
             return _responds(RESULT_FAILURE, msg="SickChill could not backup config ...")
         return _responds(RESULT_FAILURE, msg="SickChill is already up to date")

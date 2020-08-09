@@ -53,9 +53,9 @@
                     <label>
                         <span>${_('Sort By')}:</span>
                         <select id="sort" class="form-control form-control-inline input-sm" title="Sort">
-                            <option value="${srRoot}/setScheduleSort/?sort=date" ${('', 'selected="selected"')[settings.COMING_EPS_SORT == 'date']} >${_('Date')}</option>
-                            <option value="${srRoot}/setScheduleSort/?sort=network" ${('', 'selected="selected"')[settings.COMING_EPS_SORT == 'network']} >${_('Network')}</option>
-                            <option value="${srRoot}/setScheduleSort/?sort=show" ${('', 'selected="selected"')[settings.COMING_EPS_SORT == 'show']} >${_('Show')}</option>
+                            <option value="${scRoot}/setScheduleSort/?sort=date" ${('', 'selected="selected"')[settings.COMING_EPS_SORT == 'date']} >${_('Date')}</option>
+                            <option value="${scRoot}/setScheduleSort/?sort=network" ${('', 'selected="selected"')[settings.COMING_EPS_SORT == 'network']} >${_('Network')}</option>
+                            <option value="${scRoot}/setScheduleSort/?sort=show" ${('', 'selected="selected"')[settings.COMING_EPS_SORT == 'show']} >${_('Show')}</option>
                         </select>
                         &nbsp;
                     </label>
@@ -63,8 +63,8 @@
                 <label>
                     <span>${_('View Paused')}:</span>
                     <select id="viewpaused" class="form-control form-control-inline input-sm" title="View paused">
-                        <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[not bool(settings.COMING_EPS_DISPLAY_PAUSED)]}>${_('Hidden')}</option>
-                        <option value="${srRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[bool(settings.COMING_EPS_DISPLAY_PAUSED)]}>${_('Shown')}</option>
+                        <option value="${scRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[not bool(settings.COMING_EPS_DISPLAY_PAUSED)]}>${_('Hidden')}</option>
+                        <option value="${scRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[bool(settings.COMING_EPS_DISPLAY_PAUSED)]}>${_('Shown')}</option>
                     </select>
                     &nbsp;
                 </label>
@@ -72,8 +72,8 @@
                 <label>
                     <span>${_('View Snatched')}:</span>
                     <select id="viewsnatched" class="form-control form-control-inline input-sm" title="View snatched">
-                        <option value="${srRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[not bool(settings.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Hidden')}</option>
-                        <option value="${srRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[bool(settings.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Shown')}</option>
+                        <option value="${scRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[not bool(settings.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Hidden')}</option>
+                        <option value="${scRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[bool(settings.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Shown')}</option>
                     </select>
                     &nbsp;
                 </label>
@@ -81,10 +81,10 @@
                 <label>
                     <span>${_('Layout')}:</span>
                     <select id="layout" class="form-control form-control-inline input-sm" title="Layout">
-                        <option value="${srRoot}/setScheduleLayout/?layout=poster" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'poster']} >${_('Poster')}</option>
-                        <option value="${srRoot}/setScheduleLayout/?layout=calendar" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'calendar']} >${_('Calendar')}</option>
-                        <option value="${srRoot}/setScheduleLayout/?layout=banner" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'banner']} >${_('Banner')}</option>
-                        <option value="${srRoot}/setScheduleLayout/?layout=list" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'list']} >${_('List')}</option>
+                        <option value="${scRoot}/setScheduleLayout/?layout=poster" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'poster']} >${_('Poster')}</option>
+                        <option value="${scRoot}/setScheduleLayout/?layout=calendar" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'calendar']} >${_('Calendar')}</option>
+                        <option value="${scRoot}/setScheduleLayout/?layout=banner" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'banner']} >${_('Banner')}</option>
+                        <option value="${scRoot}/setScheduleLayout/?layout=list" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'list']} >${_('List')}</option>
                     </select>
                 </label>
             </div>
@@ -162,13 +162,13 @@
                                               class="date">${sbdatetime.sbdatetime.sbfdatetime(ends)}</time>
                                     </td>
                                     <td class="tvShow">
-                                        <a href="${srRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}</a>
+                                        <a href="${scRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}</a>
                                         % if int(cur_result['paused']):
                                             <span class="pause">[paused]</span>
                                         % endif
                                     </td>
                                     <td class="banner">
-                                        <a href="${srRoot}/home/displayShow?show=${cur_result['showid']}">
+                                        <a href="${scRoot}/home/displayShow?show=${cur_result['showid']}">
                                             <img alt="" class="bannerThumb"
                                                  src="${static_url("images/banner.png")}"
                                                  data-src="${static_url(settings.IMAGE_CACHE.image_url(cur_result['showid'], 'banner_thumb'))}"
@@ -217,7 +217,7 @@
                                         </a>
                                     </td>
                                     <td align="center">
-                                        <a href="${srRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}"
+                                        <a href="${scRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}"
                                            title="Manual Search" class="forceUpdate epSearch"
                                            id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}">
                                             <span id="forceUpdateImage-${cur_result['showid']}"
@@ -278,7 +278,7 @@
                                             <tr>
                                                 <td class="calendarShow">
                                                     <div class="poster">
-                                                        <a title="${cur_result['show_name']}" href="${srRoot}/home/displayShow?show=${cur_result['showid']}">
+                                                        <a title="${cur_result['show_name']}" href="${scRoot}/home/displayShow?show=${cur_result['showid']}">
                                                             <img alt=""
                                                                  src="${static_url(settings.IMAGE_CACHE.image_url(cur_result['showid'], 'poster_thumb'))}"
                                                             />
@@ -425,7 +425,7 @@
                             <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <th ${('class="nobg"', 'rowspan="3"')[layout == 'poster']} valign="top">
-                                        <a href="${srRoot}/home/displayShow?show=${cur_result['showid']}">
+                                        <a href="${scRoot}/home/displayShow?show=${cur_result['showid']}">
                                             <img alt="" class="${('posterThumb', 'bannerThumb')[layout == 'banner']}"
                                                  src="${static_url(settings.IMAGE_CACHE.image_url(cur_result['showid'], (layout, 'poster_thumb')[layout == 'poster']))}"
                                             />
@@ -436,7 +436,7 @@
                                     <td class="next_episode">
                                         <div class="clearfix"></div>
                                         <span class="tvshowTitle">
-                                            <a href="${srRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}
+                                            <a href="${scRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}
                                                 ${('', '<span class="pause">[paused]</span>')[int(cur_result['paused'])]}
                                             </a>
                                         </span>
@@ -459,7 +459,7 @@
                                                     src="${static_url(show_indexer.icon(cur_indexer))}"/>
                                             </a>
                                             <span>
-                                                <a href="${srRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}"
+                                                <a href="${scRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}"
                                                    title="Manual Search" id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}"
                                                    class="epSearch forceUpdate">
                                                     <span id="forceUpdateImage-${cur_result['showid']}"

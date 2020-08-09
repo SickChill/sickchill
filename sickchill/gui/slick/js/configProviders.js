@@ -42,8 +42,8 @@ $(document).ready(function () {
 
         const parameters = {url, name, key};
 
-        $('.updating_categories').wrapInner('<span><img src="' + srRoot + '/images/loading16' + themeSpinner + '.gif"> Updating Categories ...</span>');
-        const jqxhr = $.getJSON(srRoot + '/config/providers/getNewznabCategories', parameters, function (data) {
+        $('.updating_categories').wrapInner('<span><img src="' + scRoot + '/images/loading16' + themeSpinner + '.gif"> Updating Categories ...</span>');
+        const jqxhr = $.getJSON(scRoot + '/config/providers/getNewznabCategories', parameters, function (data) {
             $(this).updateNewznabCaps(data, selectedProvider);
             console.debug(data.tv_categories);
         });
@@ -78,7 +78,7 @@ $(document).ready(function () {
 
         if ($('#provider_order_list > #' + id).length === 0) {
             const providerOrderList = $('#provider_order_list');
-            providerOrderList.append('<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + srRoot + '/images/providers/newznab.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>');
+            providerOrderList.append('<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + scRoot + '/images/providers/newznab.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>');
             providerOrderList.sortable('refresh');
         }
 
@@ -93,7 +93,7 @@ $(document).ready(function () {
 
         if ($('#provider_order_list > #' + id).length === 0) {
             const providerOrderList = $('#provider_order_list');
-            providerOrderList.append('<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + srRoot + '/images/providers/torrentrss.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>');
+            providerOrderList.append('<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + scRoot + '/images/providers/torrentrss.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>');
             providerOrderList.sortable('refresh');
         }
 
@@ -446,7 +446,7 @@ $(document).ready(function () {
         const parameters = {name};
 
         // Send to the form with ajax, get a return value
-        $.getJSON(srRoot + '/config/providers/canAddNewznabProvider', parameters, function (data) {
+        $.getJSON(scRoot + '/config/providers/canAddNewznabProvider', parameters, function (data) {
             if (data.error !== undefined) {
                 alert(data.error); // eslint-disable-line no-alert
                 return;
@@ -469,7 +469,7 @@ $(document).ready(function () {
         const parameters = {name, url, cookies, titleTAG};
 
         // Send to the form with ajax, get a return value
-        $.getJSON(srRoot + '/config/providers/canAddTorrentRssProvider', parameters, function (data) {
+        $.getJSON(scRoot + '/config/providers/canAddTorrentRssProvider', parameters, function (data) {
             if (data.error !== undefined) {
                 alert(data.error); // eslint-disable-line no-alert
                 return;

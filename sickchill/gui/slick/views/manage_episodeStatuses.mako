@@ -19,7 +19,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <form action="${srRoot}/manage/episodeStatuses" method="get">
+            <form action="${scRoot}/manage/episodeStatuses" method="get">
                 <label for="whichStatus">${_('Manage episodes with status')}</label>
                 <select name="whichStatus" class="form-control form-control-inline input-sm" title="whichStatus">
                     % for curStatus in [common.SKIPPED, common.SNATCHED, common.WANTED, common.IGNORED] + common.Quality.DOWNLOADED + common.Quality.ARCHIVED:
@@ -43,7 +43,7 @@
             </div>
         % endif
     % else:
-        <form action="${srRoot}/manage/changeEpisodeStatuses" method="post">
+        <form action="${scRoot}/manage/changeEpisodeStatuses" method="post">
             <input type="hidden" id="oldStatus" name="oldStatus" value="${whichStatus}" />
             <br/>
             <div class="row">
@@ -99,7 +99,7 @@
                                         <input type="checkbox" class="allCheck" id="allCheck-${cur_indexer_id}" name="${cur_indexer_id}-all" checked="checked"  title="allCheck"/>
                                     </th>
                                     <th colspan="2" style="width: 100%; text-align: left;">
-                                        <a class="whitelink" href="${srRoot}/home/displayShow?show=${cur_indexer_id}">${show_names[cur_indexer_id]}</a>
+                                        <a class="whitelink" href="${scRoot}/home/displayShow?show=${cur_indexer_id}">${show_names[cur_indexer_id]}</a>
                                         (${ep_counts[cur_indexer_id]}) <input type="button" class="pull-right get_more_eps btn" id="${cur_indexer_id}" value="Expand"/>
                                     </th>
                                 </tr>

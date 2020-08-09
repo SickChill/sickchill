@@ -5,7 +5,7 @@ $(document).ready(() => {
         const profile = $('#option-profile').is(':checked');
         const targetId = $(this).data('target');
         const timeId = $(this).data('time');
-        let url = srRoot + $('#' + $(this).data('base-url')).text();
+        let url = scRoot + $('#' + $(this).data('base-url')).text();
         const urlId = $(this).data('url');
 
         $.each(parameters, (index, item) => {

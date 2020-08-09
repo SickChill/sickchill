@@ -35,7 +35,7 @@ from sickchill.helper.argument_parser import SickChillArgumentParser
 from sickchill.sickbeard import db, failed_history, logger, name_cache, network_timezones
 from sickchill.sickbeard.event_queue import Events
 from sickchill.sickbeard.tv import TVShow
-from sickchill.sickbeard.versionChecker import GitUpdateManager, SourceUpdateManager
+from sickchill.update_manager import GitUpdateManager, SourceUpdateManager
 from sickchill.views.server_settings import SRWebServer
 
 # http://bugs.python.org/issue7980#msg221094

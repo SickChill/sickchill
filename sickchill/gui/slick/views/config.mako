@@ -40,12 +40,12 @@
                             </a>
                         </div>
                     </div>
-                    % if sr_version:
+                    % if sc_version:
                         <div class="row">
                             <div class="col-md-12">
                                 Version:
-                                <a href="${anon_url('https://github.com/SickChill/SickChill/releases/tag/%s' % sr_version)}">
-                                    ${sr_version}
+                                <a href="${anon_url('https://github.com/SickChill/SickChill/releases/tag/%s' % sc_version)}">
+                                    ${sc_version}
                                 </a>
                             </div>
                         </div>
@@ -90,7 +90,7 @@
                     <i class="icon16-config-locale"></i>&nbsp;&nbsp;${_('Locale')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    ${'.'.join([str(loc) for loc in sr_locale])}
+                    ${'.'.join([str(loc) for loc in sc_locale])}
                 </div>
             </div>
             <br/>
@@ -101,7 +101,7 @@
                     <i class="icon16-config-user"></i>&nbsp;&nbsp;${_('User')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    ${sr_user}
+                    ${sc_user}
                 </div>
             </div>
             <br/>
@@ -179,8 +179,8 @@
                     <i class="icon16-config-web"></i>&nbsp;&nbsp;${_('Website')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    <a href="${anon_url('http://sickchill.github.io/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
-                        http://sickchill.github.io/
+                    <a href="${anon_url('https://sickchill.github.io/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
+                        https://sickchill.github.io/
                     </a>
                 </div>
             </div>

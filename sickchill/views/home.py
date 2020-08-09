@@ -22,9 +22,9 @@ from sickchill.sickbeard.scene_numbering import (get_scene_absolute_numbering, g
                                                  get_scene_numbering_for_show, get_xem_absolute_numbering_for_show, get_xem_numbering_for_show,
                                                  set_scene_numbering)
 from sickchill.sickbeard.trakt_api import TraktAPI
-from sickchill.sickbeard.versionChecker import CheckVersion
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
+from sickchill.update_manager import UpdateManager
 
 from ..sickbeard import clients, config, db, filters, helpers, logger, notifiers, sab, search_queue, subtitles as subtitle_module, ui
 from .common import PageTemplate
@@ -648,15 +648,12 @@ class Home(WebRoot):
         if str(pid) != str(settings.PID):
             return self.redirect('/home/')
 
-        checkversion = CheckVersion()
-        # noinspection PyProtectedMember
-        backup = checkversion.updater and checkversion._runbackup()
-
-        if backup is True:
+        updater = UpdateManager()
+        if updater.backup():
             if branch:
-                checkversion.updater.branch = branch
+                settings.BRANCH = branch
 
-            if checkversion.updater.need_update() and checkversion.updater.update():
+            if updater.update():
                 # do a hard restart
                 settings.events.put(settings.events.SystemEvent.RESTART)
 
@@ -699,10 +696,10 @@ class Home(WebRoot):
             return self.redirect('/' + settings.DEFAULT_PAGE + '/')
 
     @staticmethod
-    def getDBcompare():
+    def compare_db_version():
 
-        checkversion = CheckVersion()
-        db_status = checkversion.getDBcompare()
+        update_manager = UpdateManager()
+        db_status = update_manager.compare_db_version()
 
         if db_status == 'upgrade':
             logger.debug("Checkout branch has a new DB version - Upgrade")

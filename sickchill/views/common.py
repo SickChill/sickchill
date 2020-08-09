@@ -32,7 +32,7 @@ class PageTemplate(Template):
         lookup = get_lookup()
         self.template = lookup.get_template(filename)
 
-        self.context['srRoot'] = settings.WEB_ROOT
+        self.context['scRoot'] = settings.WEB_ROOT
         self.context['sbHttpPort'] = settings.WEB_PORT
         self.context['sbHttpsPort'] = settings.WEB_PORT
         self.context['sbHttpsEnabled'] = settings.ENABLE_HTTPS

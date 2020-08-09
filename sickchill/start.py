@@ -16,7 +16,7 @@ import rarfile
 from tornado.locale import load_gettext_translations
 
 import sickchill
-from sickchill import settings, show_updater
+from sickchill import settings, show_updater, update_manager
 from sickchill.sickbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
 from sickchill.sickbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
 from sickchill.sickbeard.databases import failed, main
@@ -27,7 +27,7 @@ from .helper import setup_github
 from .init_helpers import locale_dir, setup_gettext
 from .providers import metadata
 from .sickbeard import (clients, config, dailysearcher, db, helpers, image_cache, logger, naming, notifications_queue, post_processing_queue, properFinder,
-                        providers, scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker, versionChecker)
+                        providers, scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker)
 from .sickbeard.databases import cache
 from .system.Shutdown import Shutdown
 
@@ -857,7 +857,7 @@ def initialize(consoleLogging=True):
         # initialize schedulers
         # updaters
         settings.versionCheckScheduler = scheduler.Scheduler(
-            versionChecker.CheckVersion(),
+            update_manager.UpdateManager(),
             cycleTime=datetime.timedelta(hours=settings.UPDATE_FREQUENCY),
             threadName="CHECKVERSION",
             silent=False

@@ -62,11 +62,11 @@
                         <span class="listing-key qual">${_('Allowed')}: <b>${showCounts[curShow.indexerid][Overview.QUAL]}</b></span>
                     % endif
 
-                    <a class="btn btn-inline forceBacklog" href="${srRoot}/manage/backlogShow?indexer_id=${curShow.indexerid}"><i class="icon-play-circle icon-white"></i> ${_('Force Backlog')}</a>
+                    <a class="btn btn-inline forceBacklog" href="${scRoot}/manage/backlogShow?indexer_id=${curShow.indexerid}"><i class="icon-play-circle icon-white"></i> ${_('Force Backlog')}</a>
                 </div>
 
                 <h2 style="display: inline-block;">
-                    <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a>
+                    <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a>
                 </h2>
             </div>
         </div>

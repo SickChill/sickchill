@@ -50,7 +50,7 @@
     <div class="row">
         <div class="col-md-12">
             <input type="submit" value="${_('Rename Selected')}" class="btn btn-success"/>
-            <a href="${srRoot}/home/displayShow?show=${show.indexerid}" class="btn btn-danger">
+            <a href="${scRoot}/home/displayShow?show=${show.indexerid}" class="btn btn-danger">
                 ${_('Cancel Rename')}
             </a>
         </div>
@@ -120,7 +120,7 @@
     <div class="row">
         <div class="col-md-12">
             <input type="submit" value="${_('Rename Selected')}" class="btn btn-success"/>
-            <a href="${srRoot}/home/displayShow?show=${show.indexerid}" class="btn btn-danger">
+            <a href="${scRoot}/home/displayShow?show=${show.indexerid}" class="btn btn-danger">
                 ${_('Cancel Rename')}
             </a>
         </div>

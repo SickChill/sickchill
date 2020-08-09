@@ -54,11 +54,11 @@
                             <td class="tvShow">
                                 <div class="imgsmallposter ${settings.HOME_LAYOUT}">
                                     % if curLoadingShow.show:
-                                        <a href="${srRoot}/home/displayShow?show=${loading_show.id}" title="${loading_show.name}">
+                                        <a href="${scRoot}/home/displayShow?show=${loading_show.id}" title="${loading_show.name}">
                                             <img src="${static_url("images/poster.png")}" data-src="${static_url(loading_show.show_image_url('poster_thumb'))}"
                                                  class="${settings.HOME_LAYOUT}" alt="${loading_show.name}"/>
                                         </a>
-                                        <a href="${srRoot}/home/displayShow?show=${loading_show.id}" style="vertical-align: middle;">${loading_show.name}</a>
+                                        <a href="${scRoot}/home/displayShow?show=${loading_show.id}" style="vertical-align: middle;">${loading_show.name}</a>
                                     % else:
                                         <span title="${loading_show.name}">
                                         <img src="${static_url("images/poster.png")}" data-src="${static_url(loading_show.show_image_url('poster_thumb'))}"
@@ -73,7 +73,7 @@
                                 <span style="display: none;">${_('Loading...')} (${loading_show.name})</span>
                                 <div class="imgbanner ${settings.HOME_LAYOUT}">
                                     % if curLoadingShow.show:
-                                        <a href="${srRoot}/home/displayShow?show=${loading_show.id}">
+                                        <a href="${scRoot}/home/displayShow?show=${loading_show.id}">
                                     % endif
                                     <img src="${static_url("images/banner.png")}" data-src="${static_url(loading_show.show_image_url('banner'))}"
                                          class="${settings.HOME_LAYOUT}" alt="${loading_show.name}" title="${loading_show.name}"/>
@@ -85,7 +85,7 @@
                         % elif settings.HOME_LAYOUT == 'simple':
                             <td class="tvShow">
                                 % if curLoadingShow.show:
-                                    <a href="${srRoot}/home/displayShow?show=${loading_show.id}">${loading_show.name}</a>
+                                    <a href="${scRoot}/home/displayShow?show=${loading_show.id}">${loading_show.name}</a>
                                 % else:
                                     <span title="">${_('Loading...')} (${loading_show.name})</span>
                                 % endif
@@ -177,25 +177,25 @@
                         % if settings.HOME_LAYOUT == 'small':
                             <td class="tvShow">
                                 <div class="imgsmallposter ${settings.HOME_LAYOUT}">
-                                    <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}" title="${curShow.name}">
+                                    <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}" title="${curShow.name}">
                                         <img src="${static_url("images/poster.png")}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}"
                                              class="${settings.HOME_LAYOUT}" alt="${curShow.indexerid}"/>
                                     </a>
-                                    <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}" style="vertical-align: middle;">${curShow.name}</a>
+                                    <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}" style="vertical-align: middle;">${curShow.name}</a>
                                 </div>
                             </td>
                         % elif settings.HOME_LAYOUT == 'banner':
                             <td>
                                 <span style="display: none;">${curShow.name}</span>
                                 <div class="imgbanner ${settings.HOME_LAYOUT}">
-                                    <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">
+                                    <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}">
                                         <img src="${static_url("images/banner.png")}" data-src="${static_url(curShow.show_image_url('banner'))}"
                                              class="${settings.HOME_LAYOUT}" alt="${curShow.indexerid}" title="${curShow.name}"/>
                                     </a>
                                 </div>
                             </td>
                         % elif settings.HOME_LAYOUT == 'simple':
-                            <td class="tvShow"><a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></td>
+                            <td class="tvShow"><a href="${scRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></td>
                         % endif
 
                         % if settings.HOME_LAYOUT != 'simple':

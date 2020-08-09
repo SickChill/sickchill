@@ -194,10 +194,10 @@ class Logger(object):
             return submitter_result, issue_id
 
         try:
-            from .versionChecker import CheckVersion
-            checkversion = CheckVersion()
-            checkversion.check_for_new_version()
-            commits_behind = checkversion.updater.get_num_commits_behind()
+            from sickchill.update_manager import UpdateManager
+            update_manager = UpdateManager()
+            update_manager.check_for_new_version()
+            commits_behind = update_manager.get_num_commits_behind()
         except Exception:
             submitter_result = 'Could not check if your SickChill is updated, unable to submit issue ticket to GitHub!'
             return submitter_result, issue_id
