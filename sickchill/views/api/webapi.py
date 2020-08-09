@@ -11,17 +11,17 @@ import urllib.parse
 from tornado.web import RequestHandler
 
 import sickchill
-from sickchill import settings, logger
+from sickchill import logger, settings
 from sickchill.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
 from sickchill.helper.exceptions import CantUpdateShowException, ShowDirectoryNotFoundException
 from sickchill.helper.quality import get_quality_string
+from sickchill.oldbeard import classes, db, helpers, network_timezones, sbdatetime, search_queue, ui
+from sickchill.oldbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED,
+                                       UNKNOWN, WANTED)
+from sickchill.oldbeard.postProcessor import PROCESS_METHODS
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.show.History import History
 from sickchill.show.Show import Show
-from sickchill.sickbeard import classes, db, helpers, network_timezones, sbdatetime, search_queue, ui
-from sickchill.sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED,
-                                        UNKNOWN, WANTED)
-from sickchill.sickbeard.postProcessor import PROCESS_METHODS
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
 from sickchill.update_manager import UpdateManager
@@ -822,7 +822,7 @@ class AbstractStartScheduler(ApiCall):
 
     def run(self):
         error_str = 'Start scheduler failed'
-        if not isinstance(self.scheduler, sickchill.sickbeard.scheduler.Scheduler):
+        if not isinstance(self.scheduler, sickchill.oldbeard.scheduler.Scheduler):
             error_str = '{0}: {1} is not initialized as a static variable'.format(error_str, self.scheduler_class_str)
             return _responds(RESULT_FAILURE, msg=error_str)
 
@@ -861,7 +861,7 @@ class CMDFullSubtitleSearch(AbstractStartScheduler):
 
     @property
     def scheduler_class_str(self):
-        return 'sickbeard.subtitlesFinderScheduler'
+        return 'oldbeard.subtitlesFinderScheduler'
 
 
 class CMDProperSearch(AbstractStartScheduler):
@@ -876,7 +876,7 @@ class CMDProperSearch(AbstractStartScheduler):
 
     @property
     def scheduler_class_str(self):
-        return 'sickbeard.properFinderScheduler'
+        return 'oldbeard.properFinderScheduler'
 
 
 class CMDDailySearch(AbstractStartScheduler):
@@ -891,7 +891,7 @@ class CMDDailySearch(AbstractStartScheduler):
 
     @property
     def scheduler_class_str(self):
-        return 'sickbeard.dailySearchScheduler'
+        return 'oldbeard.dailySearchScheduler'
 
 
 # noinspection PyAbstractClass
@@ -1051,7 +1051,7 @@ class CMDSubtitleSearch(ApiCall):
             return _responds(RESULT_FAILURE, msg='Unable to find subtitles')
 
         if new_subtitles:
-            new_languages = [sickchill.sickbeard.subtitles.name_from_code(code) for code in new_subtitles]
+            new_languages = [sickchill.oldbeard.subtitles.name_from_code(code) for code in new_subtitles]
             status = 'New subtitles downloaded: {0}'.format(', '.join(new_languages))
             response = _responds(RESULT_SUCCESS, msg='New subtitles found')
         else:
@@ -1708,7 +1708,7 @@ class CMDSickChillSearchIndexers(ApiCall):
                 for result in indexer_results:
                     # Skip it if it's in our show list already, and we only want new shows
                     # noinspection PyUnresolvedReferences
-                    in_show_list = sickchill.sickbeard.tv.Show.find(settings.showList, int(result['id']))
+                    in_show_list = sickchill.oldbeard.tv.Show.find(settings.showList, int(result['id']))
                     if in_show_list and self.only_new:
                         continue
 

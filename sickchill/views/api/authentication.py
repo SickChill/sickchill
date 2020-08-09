@@ -2,8 +2,8 @@ import traceback
 
 from tornado.web import RequestHandler
 
-from sickchill import settings, logger
-from sickchill.sickbeard import helpers
+from sickchill import logger, settings
+from sickchill.oldbeard import helpers
 
 
 class KeyHandler(RequestHandler):

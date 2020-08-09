@@ -5,7 +5,7 @@ import os
 import posixpath
 
 from sickchill import settings
-from sickchill.sickbeard import helpers
+from sickchill.oldbeard import helpers
 
 
 class RecommendedShow(object):

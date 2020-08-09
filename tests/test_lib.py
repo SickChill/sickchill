@@ -12,7 +12,7 @@ Methods:
     teardown_test_show_dir
 
 Classes:
-    SickbeardTestDBCase
+    SickChillTestDBCase
     TestDBConnection
     TestCacheDBConnection
 """
@@ -23,16 +23,16 @@ import unittest
 
 from configobj import ConfigObj
 
-import sickchill.sickbeard.config
 import sickchill.logger
-import sickchill.sickbeard.tvcache
+import sickchill.oldbeard.config
+import sickchill.oldbeard.tvcache
 import sickchill.start
 from sickchill import settings
+from sickchill.oldbeard import db, providers
+from sickchill.oldbeard.databases import cache, failed, main
+from sickchill.oldbeard.providers.newznab import NewznabProvider
+from sickchill.oldbeard.tv import TVEpisode, TVShow
 from sickchill.show.indexers import ShowIndexer
-from sickchill.sickbeard import db, providers
-from sickchill.sickbeard.databases import cache, failed, main
-from sickchill.sickbeard.providers.newznab import NewznabProvider
-from sickchill.sickbeard.tv import TVEpisode, TVShow
 
 # =================
 #  test globals
@@ -89,8 +89,8 @@ settings.NAMING_MULTI_EP = 1
 
 settings.TV_DOWNLOAD_DIR = PROCESSING_DIR
 
-settings.PROVIDER_ORDER = ["sick_beard_index"]
-settings.newznabProviderList = NewznabProvider.providers_list("'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0|eponly|0|0|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0|eponly|0|0|0'")
+# settings.PROVIDER_ORDER = ["sick_beard_index"]
+# settings.newznabProviderList = NewznabProvider.providers_list("'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0|eponly|0|0|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0|eponly|0|0|0'")
 settings.providerList = providers.makeProviderList()
 
 settings.DATA_DIR = TEST_DIR
@@ -98,13 +98,13 @@ settings.CONFIG_FILE = os.path.join(settings.DATA_DIR, "config.ini")
 settings.CFG = ConfigObj(settings.CONFIG_FILE, encoding='UTF-8', indent_type='  ')
 settings.GUI_NAME = 'slick'
 
-settings.BRANCH = sickchill.sickbeard.config.check_setting_str(settings.CFG, 'General', 'branch')
-settings.CUR_COMMIT_HASH = sickchill.sickbeard.config.check_setting_str(settings.CFG, 'General', 'cur_commit_hash')
-settings.GIT_USERNAME = sickchill.sickbeard.config.check_setting_str(settings.CFG, 'General', 'git_username')
-settings.GIT_TOKEN = sickchill.sickbeard.config.check_setting_str(settings.CFG, 'General', 'git_token_password', censor_log=True)
+settings.BRANCH = sickchill.oldbeard.config.check_setting_str(settings.CFG, 'General', 'branch')
+settings.CUR_COMMIT_HASH = sickchill.oldbeard.config.check_setting_str(settings.CFG, 'General', 'cur_commit_hash')
+settings.GIT_USERNAME = sickchill.oldbeard.config.check_setting_str(settings.CFG, 'General', 'git_username')
+settings.GIT_TOKEN = sickchill.oldbeard.config.check_setting_str(settings.CFG, 'General', 'git_token_password', censor_log=True)
 
 settings.LOG_DIR = os.path.join(TEST_DIR, 'Logs')
-sickchill.logger.log_file = os.path.join(settings.LOG_DIR, 'test_sickbeard.log')
+sickchill.logger.log_file = os.path.join(settings.LOG_DIR, 'test_sickchill.log')
 create_test_log_folder()
 
 settings.CACHE_DIR = os.path.join(TEST_DIR, 'cache')
@@ -150,7 +150,7 @@ TVEpisode.specifyEpisode = _fake_specify_ep
 # =================
 #  test classes
 # =================
-class SickbeardTestDBCase(unittest.TestCase):
+class SickChillTestDBCase(unittest.TestCase):
     """
     Superclass for testing the database.
 
@@ -171,7 +171,7 @@ class SickbeardTestDBCase(unittest.TestCase):
         teardown_test_show_dir()
 
 
-class SickbeardTestPostProcessorCase(unittest.TestCase):
+class SickChillTestPostProcessorCase(unittest.TestCase):
     """
     Superclass for testing the database.
 
@@ -259,8 +259,8 @@ class TestCacheDBConnection(TestDBConnection, object):
                 raise
 
 # this will override the normal db connection
-sickchill.sickbeard.db.DBConnection = TestDBConnection
-sickchill.sickbeard.tvcache.CacheDBConnection = TestCacheDBConnection
+sickchill.oldbeard.db.DBConnection = TestDBConnection
+sickchill.oldbeard.tvcache.CacheDBConnection = TestCacheDBConnection
 
 
 # =================
@@ -288,7 +288,7 @@ def teardown_test_db():
     """
     Tear down the test database.
     """
-    from sickchill.sickbeard.db import db_cons
+    from sickchill.oldbeard.db import db_cons
     for connection in db_cons:
         db_cons[connection].commit()
     #     db_cons[connection].close()

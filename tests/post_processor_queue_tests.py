@@ -6,15 +6,15 @@ import os.path
 import time
 import unittest
 
-import sickchill.sickbeard
+import sickchill.oldbeard
 from sickchill import settings
-from sickchill.sickbeard.post_processing_queue import PostProcessorTask, ProcessingQueue
+from sickchill.oldbeard.post_processing_queue import PostProcessorTask, ProcessingQueue
 from tests import test_lib as test
 
 CHECK_CLEARS = False
 
 
-class PostProcessorQueueTests(test.SickbeardTestPostProcessorCase):
+class PostProcessorQueueTests(test.SickChillTestPostProcessorCase):
     """
     Test the post processor queue
     """
@@ -25,7 +25,7 @@ class PostProcessorQueueTests(test.SickbeardTestPostProcessorCase):
 
     def setUp(self):
         super(PostProcessorQueueTests, self).setUp()
-        self.queue = sickchill.sickbeard.scheduler.Scheduler(
+        self.queue = sickchill.oldbeard.scheduler.Scheduler(
             ProcessingQueue(),
             run_delay=datetime.timedelta(seconds=0),
             cycleTime=datetime.timedelta(seconds=1),

@@ -4,7 +4,7 @@ from tornado.web import addslash
 
 import sickchill.start
 from sickchill import settings
-from sickchill.sickbeard import config, filters, ui
+from sickchill.oldbeard import config, filters, ui
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 

@@ -4,7 +4,7 @@ import time
 from tornado.web import addslash
 
 from sickchill import settings
-from sickchill.sickbeard import helpers
+from sickchill.oldbeard import helpers
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 

@@ -9,7 +9,7 @@ from mako.template import Template
 from tornado.escape import linkify
 
 from sickchill import settings
-from sickchill.sickbeard import classes, helpers
+from sickchill.oldbeard import classes, helpers
 
 mako_lookup = {}
 

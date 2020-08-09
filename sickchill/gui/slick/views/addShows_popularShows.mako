@@ -1,6 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    from sickchill.sickbeard.helpers import anon_url
+    from sickchill.oldbeard.helpers import anon_url
     from sickchill import settings
 %>
 <%block name="metas">

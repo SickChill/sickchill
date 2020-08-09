@@ -2,8 +2,8 @@
 <%!
     import collections
     from sickchill import settings
-    from sickchill.sickbeard import helpers
-    from sickchill.sickbeard.show_queue import ShowQueueActions
+    from sickchill.oldbeard import helpers
+    from sickchill.oldbeard.show_queue import ShowQueueActions
     from sickchill.helper.common import dateTimeFormat
 %>
 <%block name="content">

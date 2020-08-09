@@ -1,5 +1,5 @@
 from sickchill import settings
-from sickchill.sickbeard.event_queue import Events
+from sickchill.oldbeard.event_queue import Events
 
 
 class Shutdown(object):

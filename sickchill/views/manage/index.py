@@ -3,12 +3,12 @@ import ntpath
 import os
 import posixpath
 
-from sickchill import settings, logger
+from sickchill import logger, settings
 from sickchill.helper import episode_num, try_int
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException
+from sickchill.oldbeard import db, subtitles as subtitle_module, ui
+from sickchill.oldbeard.common import Overview, Quality, SNATCHED
 from sickchill.show.Show import Show
-from sickchill.sickbeard import db, subtitles as subtitle_module, ui
-from sickchill.sickbeard.common import Overview, Quality, SNATCHED
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home, WebRoot
 from sickchill.views.routes import Route

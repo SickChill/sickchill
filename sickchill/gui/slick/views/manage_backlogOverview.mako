@@ -2,8 +2,8 @@
 <%!
     import datetime
     from sickchill import settings
-    from sickchill.sickbeard import sbdatetime, network_timezones
-    from sickchill.sickbeard.common import WANTED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, Overview, Quality
+    from sickchill.oldbeard import sbdatetime, network_timezones
+    from sickchill.oldbeard.common import WANTED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, Overview, Quality
     from sickchill.helper.common import episode_num
 %>
 <%block name="content">

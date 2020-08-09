@@ -14,7 +14,7 @@ import mock
 import validators
 from vcr_unittest import VCRTestCase
 
-import sickchill.sickbeard.providers
+import sickchill.oldbeard.providers
 from sickchill import settings
 
 settings.CPU_PRESET = 'NORMAL'
@@ -197,8 +197,8 @@ def generate_test_cases():
     """
     Auto Generate TestCases from providers and add them to globals()
     """
-    for p in sickchill.sickbeard.providers.__all__:
-        provider = sickchill.sickbeard.providers.getProviderModule(p).Provider()
+    for p in sickchill.oldbeard.providers.__all__:
+        provider = sickchill.oldbeard.providers.getProviderModule(p).Provider()
         if provider.can_backlog and provider.provider_type == 'torrent' and provider.public:
             generated_class = type(str(provider.name), (BaseParser.TestCase,), {'provider': provider})
             globals()[generated_class.__name__] = generated_class

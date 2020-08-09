@@ -3,11 +3,11 @@ import os
 from tornado.web import addslash
 
 import sickchill.start
-from sickchill import settings, logger
+from sickchill import logger, settings
 from sickchill.helper import setup_github, try_int
 from sickchill.init_helpers import setup_gettext
-from sickchill.sickbeard import config, filters, helpers, ui
-from sickchill.sickbeard.common import Quality, WANTED
+from sickchill.oldbeard import config, filters, helpers, ui
+from sickchill.oldbeard.common import Quality, WANTED
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
@@ -115,11 +115,11 @@ class ConfigGeneral(Config):
 
         tmp_git_token = filters.unhide(settings.GIT_TOKEN, git_token)
         if settings.GIT_TOKEN != tmp_git_token:
-            # Re-Initializes sickbeard.gh, so a restart isn't necessary
+            # Re-Initializes oldbeard.gh, so a restart isn't necessary
             settings.GIT_TOKEN = tmp_git_token
             setup_github()
 
-        # sickbeard.GIT_RESET = config.checkbox_to_value(git_reset)
+        # oldbeard.GIT_RESET = config.checkbox_to_value(git_reset)
         # Force GIT_RESET
         settings.GIT_RESET = 1
         settings.GIT_PATH = git_path

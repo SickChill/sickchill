@@ -3,12 +3,12 @@ import os
 import sys
 import unittest
 
-from sickchill.sickbeard import browser
+from sickchill.oldbeard import browser
 
 
 class BrowserTestAll(unittest.TestCase):
     """
-    Test methods in sickbeard.browser
+    Test methods in oldbeard.browser
     """
     def setUp(self):
         self.here = os.path.normpath(os.path.dirname(__file__))

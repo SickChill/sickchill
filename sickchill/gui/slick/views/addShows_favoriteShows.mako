@@ -1,8 +1,8 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    from sickchill.sickbeard.helpers import anon_url
+    from sickchill.oldbeard.helpers import anon_url
     from sickchill import settings
-    from sickchill.sickbeard.filters import hide
+    from sickchill.oldbeard.filters import hide
 %>
 <%block name="metas">
     <meta data-var="settings.SORT_ARTICLE" data-content="${settings.SORT_ARTICLE}">

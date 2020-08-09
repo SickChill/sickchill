@@ -3,7 +3,7 @@ from sickchill import settings
 from sickchill.helper import try_int
 from sickchill.show.History import History as HistoryTool
 
-from ..sickbeard import ui
+from ..oldbeard import ui
 from .common import PageTemplate
 from .index import WebRoot
 from .routes import Route

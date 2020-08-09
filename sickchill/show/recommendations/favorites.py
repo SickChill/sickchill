@@ -2,8 +2,8 @@ import os
 
 import sickchill
 from sickchill import settings
+from sickchill.oldbeard import helpers
 from sickchill.show.Show import Show
-from sickchill.sickbeard import helpers
 
 
 class IndexerFavorites(object):

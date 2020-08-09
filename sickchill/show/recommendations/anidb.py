@@ -1,7 +1,7 @@
 # # from anidbhttp import anidbquery
 # from anidbhttp.query import QUERY_HOT
 #
-# # from sickchill.sickbeard import helpers
+# # from sickchill.oldbeard import helpers
 # from sickchill.helper.common import try_int
 #
 # # from .recommended import RecommendedShow
