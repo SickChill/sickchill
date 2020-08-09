@@ -9,8 +9,8 @@ from tornado.platform.asyncio import AnyThreadEventLoopPolicy
 from tornado.web import Application, RedirectHandler, StaticFileHandler, url
 
 import sickchill.start
-from sickchill import settings, logger
-from sickchill.sickbeard.helpers import create_https_certificates, generateApiKey
+from sickchill import logger, settings
+from sickchill.oldbeard.helpers import create_https_certificates, generateApiKey
 from sickchill.views import CalendarHandler, LoginHandler, LogoutHandler
 from sickchill.views.api import ApiHandler, KeyHandler
 
@@ -48,8 +48,8 @@ class SRWebServer(threading.Thread):
             'enable_https': settings.ENABLE_HTTPS,
             'handle_reverse_proxy': settings.HANDLE_REVERSE_PROXY,
             'log_dir': (None, settings.LOG_DIR)[settings.WEB_LOG],
-            # 'username': sickbeard.WEB_USERNAME or '',
-            # 'password': sickbeard.WEB_PASSWORD or '',
+            # 'username': oldbeard.WEB_USERNAME or '',
+            # 'password': oldbeard.WEB_PASSWORD or '',
         })
 
         self.options.setdefault('port', settings.WEB_PORT or 8081)

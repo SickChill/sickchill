@@ -1,5 +1,5 @@
 """
-Test sickbeard.helpers
+Test oldbeard.helpers
 
 Public Methods:
     indentXML
@@ -70,7 +70,7 @@ from shutil import rmtree
 
 from sickchill import settings
 from sickchill.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
-from sickchill.sickbeard import helpers
+from sickchill.oldbeard import helpers
 
 TEST_RESULT = 'Show.Name.S01E01.HDTV.x264-RLSGROUP'
 TEST_CASES = {

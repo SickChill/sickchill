@@ -14,8 +14,7 @@ from github.GithubException import RateLimitExceededException, TwoFactorExceptio
 
 from sickchill import settings
 from sickchill.helper.common import dateTimeFormat
-
-from sickchill.sickbeard import classes
+from sickchill.oldbeard import classes
 
 # log levels
 ERROR = logging.ERROR

@@ -7,16 +7,16 @@ from random import shuffle
 
 from requests.utils import add_dict_to_cookiejar
 
-import sickchill.sickbeard
-from sickchill.helper.common import sanitize_filename
+import sickchill.oldbeard
 from sickchill import logger
-from sickchill.sickbeard.classes import Proper, SearchResult
-from sickchill.sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, ua_pool
-from sickchill.sickbeard.db import DBConnection
-from sickchill.sickbeard.helpers import download_file, getURL, make_session, remove_file_failed
-from sickchill.sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickchill.sickbeard.show_name_helpers import allPossibleShowNames
-from sickchill.sickbeard.tvcache import TVCache
+from sickchill.helper.common import sanitize_filename
+from sickchill.oldbeard.classes import Proper, SearchResult
+from sickchill.oldbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, ua_pool
+from sickchill.oldbeard.db import DBConnection
+from sickchill.oldbeard.helpers import download_file, getURL, make_session, remove_file_failed
+from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickchill.oldbeard.show_name_helpers import allPossibleShowNames
+from sickchill.oldbeard.tvcache import TVCache
 
 
 class GenericProvider(object):
@@ -428,7 +428,7 @@ class GenericProvider(object):
                 episode_string_fallback = episode_string + '{0:02d}'.format(int(episode.scene_absolute_number))
                 episode_string += '{0:03d}'.format(int(episode.scene_absolute_number))
             else:
-                episode_string += sickchill.sickbeard.config.naming_ep_type[2] % {
+                episode_string += sickchill.oldbeard.config.naming_ep_type[2] % {
                     'seasonnumber': episode.scene_season,
                     'episodenumber': episode.scene_episode,
                 }

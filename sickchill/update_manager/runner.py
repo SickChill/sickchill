@@ -4,9 +4,9 @@ import os
 import re
 import time
 
-from sickchill import settings, logger
+from sickchill import logger, settings
 from sickchill.init_helpers import check_installed
-from sickchill.sickbeard import db, helpers, ui
+from sickchill.oldbeard import db, helpers, ui
 
 from .git import GitUpdateManager
 from .pip import PipUpdateManager
@@ -187,7 +187,7 @@ class UpdateManager(object):
             cur_hash = self.get_newest_commit_hash()
             assert len(cur_hash) == 40, "Commit hash wrong length: {0} hash: {1}".format(len(cur_hash), cur_hash)
 
-            check_url = "https://raw.githubusercontent.com/{0}/{1}/{2}/sickbeard/databases/main.py"
+            check_url = "https://raw.githubusercontent.com/{0}/{1}/{2}/oldbeard/databases/main.py"
             for attempt in (cur_hash, "master"):
                 response = helpers.getURL(check_url.format(settings.GIT_ORG, settings.GIT_REPO, attempt), session=self.session, returns='text')
                 if response:

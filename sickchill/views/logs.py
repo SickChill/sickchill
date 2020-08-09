@@ -1,10 +1,10 @@
 from tornado.web import addslash
 
-import sickchill.sickbeard
+import sickchill.oldbeard
 from sickchill.helper import try_int
 
-from ..sickbeard import classes, ui
 from .. import logger
+from ..oldbeard import classes, ui
 from .common import PageTemplate
 from .index import WebRoot
 from .routes import Route

@@ -1,7 +1,7 @@
 <%!
     from sickchill import settings
     import calendar
-    from sickchill.sickbeard import sbdatetime, network_timezones
+    from sickchill.oldbeard import sbdatetime, network_timezones
     from sickchill.helper.common import pretty_file_size
     import os
     import re

@@ -9,11 +9,11 @@ Tests:
 import threading
 import unittest
 
-import sickchill.sickbeard
+import sickchill.oldbeard
 from tests import test_lib as test
 
 
-class DBBasicTests(test.SickbeardTestDBCase):
+class DBBasicTests(test.SickChillTestDBCase):
     """
     Perform basic database tests.
 
@@ -26,7 +26,7 @@ class DBBasicTests(test.SickbeardTestDBCase):
         Set up test.
         """
         super(DBBasicTests, self).setUp()
-        self.sr_db = sickchill.sickbeard.db.DBConnection()
+        self.sr_db = sickchill.oldbeard.db.DBConnection()
 
     def test_select(self):
         """
@@ -35,7 +35,7 @@ class DBBasicTests(test.SickbeardTestDBCase):
         self.sr_db.select("SELECT * FROM tv_episodes WHERE showid = ? AND location != ''", [0000])
 
 
-class DBMultiTests(test.SickbeardTestDBCase):
+class DBMultiTests(test.SickChillTestDBCase):
     """
     Perform multi-threaded test of the database
 
@@ -47,7 +47,7 @@ class DBMultiTests(test.SickbeardTestDBCase):
         Set up test.
         """
         super(DBMultiTests, self).setUp()
-        self.sr_db = sickchill.sickbeard.db.DBConnection()
+        self.sr_db = sickchill.oldbeard.db.DBConnection()
 
     def select(self):
         """

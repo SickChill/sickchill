@@ -4,10 +4,10 @@ Test snatching
 
 import unittest
 
-import sickchill.sickbeard.providers
+import sickchill.oldbeard.providers
 from sickchill import settings
-from sickchill.sickbeard import common as common, search as search
-from sickchill.sickbeard.tv import TVEpisode, TVShow
+from sickchill.oldbeard import common as common, search as search
+from sickchill.oldbeard.tv import TVEpisode, TVShow
 from tests import test_lib as test
 
 TESTS = {
@@ -34,7 +34,7 @@ def _create_fake_xml(items):
 search_items = []
 
 
-class SearchTest(test.SickbeardTestDBCase):
+class SearchTest(test.SickChillTestDBCase):
     """
     Perform search tests
     """
@@ -66,7 +66,7 @@ class SearchTest(test.SickbeardTestDBCase):
         :return:
         """
 
-        for provider in sickchill.sickbeard.providers.sortedProviderList():
+        for provider in sickchill.oldbeard.providers.sortedProviderList():
             provider.get_url = self._fake_get_url
             provider.is_active = self._fake_is_active
 

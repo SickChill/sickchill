@@ -12,7 +12,7 @@ import time
 import traceback
 
 import sickchill.start
-from sickchill import settings, logger
+from sickchill import logger, settings
 from sickchill.init_helpers import check_installed, setup_gettext, setup_lib_path
 
 setup_lib_path()
@@ -32,9 +32,9 @@ mimetypes.add_type("application/font-woff", ".woff")
 from configobj import ConfigObj
 
 from sickchill.helper.argument_parser import SickChillArgumentParser
-from sickchill.sickbeard import db, failed_history, name_cache, network_timezones
-from sickchill.sickbeard.event_queue import Events
-from sickchill.sickbeard.tv import TVShow
+from sickchill.oldbeard import db, failed_history, name_cache, network_timezones
+from sickchill.oldbeard.event_queue import Events
+from sickchill.oldbeard.tv import TVShow
 from sickchill.update_manager import GitUpdateManager, SourceUpdateManager
 from sickchill.views.server_settings import SRWebServer
 
@@ -173,7 +173,7 @@ class SickChill(object):
             if self.console_logging:
                 sys.stdout.write('Restore: restoring DB and config.ini {0}!\n'.format(('FAILED', 'SUCCESSFUL')[success]))
 
-        # Load the config and publish it to the sickbeard package
+        # Load the config and publish it to the oldbeard package
         if self.console_logging and not os.path.isfile(settings.CONFIG_FILE):
             sys.stdout.write('Unable to find {0}, all settings will be default!\n'.format(settings.CONFIG_FILE))
 
@@ -223,7 +223,7 @@ class SickChill(object):
             failed_history.trimHistory()
 
         # Check for metadata indexer updates for shows (sets the next aired ep!)
-        # sickbeard.showUpdateScheduler.forceRun()
+        # oldbeard.showUpdateScheduler.forceRun()
 
         # Launch browser
         if settings.LAUNCH_BROWSER and not (self.no_launch or self.run_as_daemon):
@@ -387,7 +387,7 @@ class SickChill(object):
             if self.run_as_daemon and self.create_pid:
                 self.remove_pid_file(self.pid_file)
 
-            if event == sickchill.sickbeard.event_queue.Events.SystemEvent.RESTART:
+            if event == sickchill.oldbeard.event_queue.Events.SystemEvent.RESTART:
                 install_type = settings.versionCheckScheduler.action.install_type
 
                 popen_list = []

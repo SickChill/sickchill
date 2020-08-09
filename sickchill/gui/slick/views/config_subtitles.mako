@@ -1,8 +1,8 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
-    from sickchill.sickbeard import subtitles
-    from sickchill.sickbeard.filters import hide
-    from sickchill.sickbeard.helpers import anon_url
+    from sickchill.oldbeard import subtitles
+    from sickchill.oldbeard.filters import hide
+    from sickchill.oldbeard.helpers import anon_url
     from sickchill import settings
 %>
 

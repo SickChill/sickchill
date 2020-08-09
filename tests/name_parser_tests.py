@@ -3,8 +3,8 @@ import os.path
 import sys
 import unittest
 
-from sickchill.sickbeard import tv
-from sickchill.sickbeard.name_parser import parser
+from sickchill.oldbeard import tv
+from sickchill.oldbeard.name_parser import parser
 from tests import test_lib as test
 
 DEBUG = VERBOSE = False
@@ -164,7 +164,7 @@ UNICODE_TEST_CASES = [
 FAILURE_CASES = ['7sins-jfcs01e09-720p-bluray-x264']
 
 
-class UnicodeTests(test.SickbeardTestDBCase):
+class UnicodeTests(test.SickChillTestDBCase):
     """
     Test str
     """
@@ -197,7 +197,7 @@ class UnicodeTests(test.SickbeardTestDBCase):
             self._test_unicode(name, result)
 
 
-class FailureCaseTests(test.SickbeardTestDBCase):
+class FailureCaseTests(test.SickChillTestDBCase):
     """
     Test cases that should fail
     """
@@ -227,7 +227,7 @@ class FailureCaseTests(test.SickbeardTestDBCase):
             self.assertTrue(self._test_name(name))
 
 
-class ComboTests(test.SickbeardTestDBCase):
+class ComboTests(test.SickChillTestDBCase):
     """
     Perform combination tests
     """
@@ -272,7 +272,7 @@ class ComboTests(test.SickbeardTestDBCase):
             self._test_combo(os.path.normpath(name), result, which_regexes)
 
 
-class BasicTests(test.SickbeardTestDBCase):
+class BasicTests(test.SickChillTestDBCase):
     """
     Basic name parsing tests
     """
@@ -436,7 +436,7 @@ class BasicTests(test.SickbeardTestDBCase):
         self._test_names(name_parser, 'season_only', lambda x: x + '.avi')
 
 
-class AnimeTests(test.SickbeardTestDBCase):
+class AnimeTests(test.SickChillTestDBCase):
     """
     Basic tests for anime
     """
@@ -495,7 +495,7 @@ class AnimeTests(test.SickbeardTestDBCase):
 
 
 # TODO: Make these work or document why they shouldn't
-class BasicFailedTests(test.SickbeardTestDBCase):
+class BasicFailedTests(test.SickChillTestDBCase):
     """
     Basic tests that currently fail
     """

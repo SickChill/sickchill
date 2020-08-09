@@ -6,9 +6,9 @@ from tornado.web import addslash
 import sickchill.start
 from sickchill import settings
 from sickchill.helper import try_int
+from sickchill.oldbeard import config, filters, ui
+from sickchill.oldbeard.providers import newznab, rsstorrent
 from sickchill.providers.GenericProvider import GenericProvider
-from sickchill.sickbeard import config, filters, ui
-from sickchill.sickbeard.providers import newznab, rsstorrent
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
@@ -212,7 +212,7 @@ class ConfigProviders(Config):
         for cur_id, cur_enabled in (cur_provider_str.split(':') for cur_provider_str in provider_order.split()):
             cur_enabled = bool(try_int(cur_enabled))
 
-            cur_provider_obj = [x for x in sickchill.sickbeard.providers.sortedProviderList() if x.get_id() == cur_id and hasattr(x, 'enabled')]
+            cur_provider_obj = [x for x in sickchill.oldbeard.providers.sortedProviderList() if x.get_id() == cur_id and hasattr(x, 'enabled')]
 
             if cur_provider_obj:
                 cur_provider_obj[0].enabled = cur_enabled
@@ -228,7 +228,7 @@ class ConfigProviders(Config):
                 torrentRssProviderDict[cur_id].enabled = cur_enabled
 
         # dynamically load provider settings
-        for curProvider in sickchill.sickbeard.providers.sortedProviderList():
+        for curProvider in sickchill.oldbeard.providers.sortedProviderList():
             if hasattr(curProvider, 'custom_url'):
                 curProvider.custom_url = str(kwargs.get(curProvider.get_id('_custom_url'), '')).strip()
 
@@ -315,7 +315,7 @@ class ConfigProviders(Config):
         sickchill.start.save_config()
 
         # Add a site_message if no providers are enabled for daily and/or backlog
-        sickchill.sickbeard.providers.check_enabled_providers()
+        sickchill.oldbeard.providers.check_enabled_providers()
 
         ui.notifications.message(_('Configuration Saved'), os.path.join(settings.CONFIG_FILE))
 

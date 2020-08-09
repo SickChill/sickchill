@@ -1,9 +1,9 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     from sickchill import settings
-    from sickchill.sickbeard import common
-    from sickchill.sickbeard.common import SKIPPED, WANTED, IGNORED
-    from sickchill.sickbeard.common import statusStrings
+    from sickchill.oldbeard import common
+    from sickchill.oldbeard.common import SKIPPED, WANTED, IGNORED
+    from sickchill.oldbeard.common import statusStrings
     from sickchill import indexer as show_indexer
 %>
 

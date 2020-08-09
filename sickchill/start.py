@@ -16,19 +16,19 @@ import rarfile
 from tornado.locale import load_gettext_translations
 
 import sickchill
-from sickchill import settings, show_updater, update_manager, logger
-from sickchill.sickbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
-from sickchill.sickbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
-from sickchill.sickbeard.databases import failed, main
-from sickchill.sickbeard.providers.newznab import NewznabProvider
-from sickchill.sickbeard.providers.rsstorrent import TorrentRssProvider
+from sickchill import logger, settings, show_updater, update_manager
+from sickchill.oldbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
+from sickchill.oldbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
+from sickchill.oldbeard.databases import failed, main
+from sickchill.oldbeard.providers.newznab import NewznabProvider
+from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
 
 from .helper import setup_github
 from .init_helpers import locale_dir, setup_gettext
+from .oldbeard import (clients, config, dailysearcher, db, helpers, image_cache, naming, notifications_queue, post_processing_queue, properFinder, providers,
+                       scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker)
+from .oldbeard.databases import cache
 from .providers import metadata
-from .sickbeard import (clients, config, dailysearcher, db, helpers, image_cache, naming, notifications_queue, post_processing_queue, properFinder,
-                        providers, scheduler, search_queue, searchBacklog, show_queue, subtitles, traktChecker)
-from .sickbeard.databases import cache
 from .system.Shutdown import Shutdown
 
 
@@ -96,7 +96,7 @@ def initialize(consoleLogging=True):
         # init logging
         logger.init_logging(console_logging=consoleLogging, file_logging=fileLogging, debug_logging=settings.DEBUG, database_logging=settings.DBDEBUG)
 
-        # Initializes sickbeard.gh
+        # Initializes oldbeard.gh
         setup_github()
 
         # git reset on update

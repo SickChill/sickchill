@@ -3,7 +3,7 @@
 import unittest
 
 from sickchill import settings
-from sickchill.sickbeard import common
+from sickchill.oldbeard import common
 
 
 class QualityStringTests(unittest.TestCase):
@@ -121,7 +121,7 @@ class QualityStringTests(unittest.TestCase):
             "Test.Show.S01E02.1080p.HDDVD.x264-GROUP"
         ],
         'unknown': [
-            "Test.Show.S01E02-SiCKBEARD",
+            "Test.Show.S01E02-SiCKCHILL",
             "Test.Show.S01E01-20.1080i.[Mux.-.1080i.-.H264.-.Ac3.].HDTVMux.GROUP",
         ],
     }
@@ -322,7 +322,7 @@ class QualityTests(unittest.TestCase):
             (common.Quality.FULLHDWEBDL, "Test Show - S01E02 - 1080p WEB-DL - GROUP"),
             (common.Quality.HDBLURAY, "Test Show - S01E02 - 720p BluRay - GROUP"),
             (common.Quality.FULLHDBLURAY, "Test Show - S01E02 - 1080p BluRay - GROUP"),
-            (common.Quality.UNKNOWN, "Test Show - S01E02 - Unknown - SiCKBEARD"),
+            (common.Quality.UNKNOWN, "Test Show - S01E02 - Unknown - SiCKCHILL"),
         ]
         for test in tests:
             quality, test = test

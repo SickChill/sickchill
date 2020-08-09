@@ -7,12 +7,12 @@ from collections import namedtuple
 from configobj import ConfigObj
 
 from sickchill import settings
-from sickchill.sickbeard import config, scheduler
+from sickchill.oldbeard import config, scheduler
 
 
 class ConfigTestBasic(unittest.TestCase):
     """
-    Test basic methods in sickbeard.config
+    Test basic methods in oldbeard.config
     """
 
     def test_check_section(self):
@@ -213,7 +213,7 @@ class ConfigTestBasic(unittest.TestCase):
 
 class ConfigTestChanges(unittest.TestCase):
     """
-    Test change methods in sickbeard.config
+    Test change methods in oldbeard.config
     """
 
     def test_change_https_cert(self):
@@ -454,7 +454,7 @@ class ConfigTestChanges(unittest.TestCase):
 
 class ConfigTestMigrator(unittest.TestCase):
     """
-    Test the sickbeard.config.ConfigMigrator class
+    Test the oldbeard.config.ConfigMigrator class
     """
     @unittest.expectedFailure  # Not fully implemented
     def test_config_migrator(self):

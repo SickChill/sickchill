@@ -7,10 +7,10 @@ import shutil
 import unittest
 
 from sickchill import settings
-from sickchill.sickbeard.helpers import make_dirs
-from sickchill.sickbeard.name_cache import addNameToCache
-from sickchill.sickbeard.postProcessor import PostProcessor
-from sickchill.sickbeard.tv import TVEpisode, TVShow
+from sickchill.oldbeard.helpers import make_dirs
+from sickchill.oldbeard.name_cache import addNameToCache
+from sickchill.oldbeard.postProcessor import PostProcessor
+from sickchill.oldbeard.tv import TVEpisode, TVShow
 from tests import test_lib as test
 
 
@@ -37,7 +37,7 @@ class PPInitTests(unittest.TestCase):
         self.assertEqual(self.post_processor.folder_name, test.SHOW_NAME)
 
 
-class PPBasicTests(test.SickbeardTestDBCase):
+class PPBasicTests(test.SickChillTestDBCase):
     """
     Basic tests
     """

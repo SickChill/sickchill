@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 
 from sickchill.helper.common import try_int
-from sickchill.sickbeard.common import Quality
-from sickchill.sickbeard.db import DBConnection
+from sickchill.oldbeard.common import Quality
+from sickchill.oldbeard.db import DBConnection
 
 
 class History(object):

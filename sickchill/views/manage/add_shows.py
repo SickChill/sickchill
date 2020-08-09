@@ -10,16 +10,16 @@ from tornado.escape import xhtml_unescape
 from tornado.web import HTTPError
 
 import sickchill
-from sickchill import settings, logger
+from sickchill import logger, settings
 from sickchill.helper import sanitize_filename, try_int
+from sickchill.oldbeard import config, db, filters, helpers, ui
+from sickchill.oldbeard.blackandwhitelist import short_group_names
+from sickchill.oldbeard.common import Quality
+from sickchill.oldbeard.trakt_api import TraktAPI
+from sickchill.oldbeard.traktTrending import trakt_trending
 from sickchill.show.recommendations.favorites import favorites
 from sickchill.show.recommendations.imdb import imdb_popular
 from sickchill.show.Show import Show
-from sickchill.sickbeard import config, db, filters, helpers, ui
-from sickchill.sickbeard.blackandwhitelist import short_group_names
-from sickchill.sickbeard.common import Quality
-from sickchill.sickbeard.trakt_api import TraktAPI
-from sickchill.sickbeard.traktTrending import trakt_trending
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home
 from sickchill.views.routes import Route
@@ -80,7 +80,7 @@ class AddShows(Home):
         for i, shows in results.items():
             # noinspection PyUnresolvedReferences
             final_results.extend({(sickchill.indexer.name(i), i, sickchill.indexer[i].show_url, show['id'],
-                                   show['seriesName'], show['firstAired'], sickchill.sickbeard.tv.Show.find(settings.showList, show['id']) is not None
+                                   show['seriesName'], show['firstAired'], sickchill.oldbeard.tv.Show.find(settings.showList, show['id']) is not None
                                    ) for show in shows})
 
         lang_id = sickchill.indexer.lang_dict()[lang]

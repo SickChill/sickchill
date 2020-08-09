@@ -1,7 +1,7 @@
 import unittest
 from collections import UserDict
 
-from sickchill.sickbeard.numdict import NumDict
+from sickchill.oldbeard.numdict import NumDict
 
 
 class NumDictTest(unittest.TestCase):

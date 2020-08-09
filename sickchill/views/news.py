@@ -1,7 +1,7 @@
 import markdown2
 
 import sickchill.start
-from sickchill import settings, logger
+from sickchill import logger, settings
 
 from .common import PageTemplate
 from .home import Home

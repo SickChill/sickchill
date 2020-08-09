@@ -12,7 +12,7 @@ $(document).ready(() => {
             getSortData: {
                 name(itemElement) {
                     const name = $(itemElement).attr('data-name') || '';
-                    return (metaToBool('sickbeard.SORT_ARTICLE') ? name : name.replace(/^(the|a|an)\s/i, '')).toLowerCase();
+                    return (metaToBool('oldbeard.SORT_ARTICLE') ? name : name.replace(/^(the|a|an)\s/i, '')).toLowerCase();
                 },
                 rating: '[data-rating] parseInt',
                 votes: '[data-votes] parseInt'

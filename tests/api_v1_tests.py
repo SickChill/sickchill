@@ -126,7 +126,7 @@ class APITestShow(unittest.TestCase):
 
 class APITestSickChill(unittest.TestCase):
     @unittest.skip('Not yet implemented')
-    def test_sickbeard(self):
+    def test_sickchill(self):
         pass
 
     @unittest.skip('Not yet implemented')

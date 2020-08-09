@@ -2,7 +2,7 @@
     import re
     import datetime
     from urllib.parse import urljoin
-    from sickchill.sickbeard.filters import hide
+    from sickchill.oldbeard.filters import hide
     from sickchill.helper.common import pretty_file_size
     from sickchill.show.Show import Show
     from sickchill import settings, logger

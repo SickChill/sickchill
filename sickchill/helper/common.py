@@ -8,7 +8,6 @@ from github.GithubException import (BadAttributeException, BadCredentialsExcepti
 import sickchill
 from sickchill import settings
 
-
 dateFormat = '%Y-%m-%d'
 dateTimeFormat = '%Y-%m-%d %H:%M:%S'
 

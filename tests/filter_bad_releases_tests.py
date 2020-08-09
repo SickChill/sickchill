@@ -1,8 +1,8 @@
 import unittest
 
 from sickchill import settings
-from sickchill.sickbeard.show_name_helpers import filter_bad_releases
-from sickchill.sickbeard.tv import TVShow as Show
+from sickchill.oldbeard.show_name_helpers import filter_bad_releases
+from sickchill.oldbeard.tv import TVShow as Show
 
 
 class ReleaseWordFilterTests(unittest.TestCase):
