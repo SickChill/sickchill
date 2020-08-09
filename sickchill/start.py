@@ -180,7 +180,7 @@ def initialize(consoleLogging=True):
                         shutil.rmtree(os.path.join(settings.CACHE_DIR, cleanupDir))
                     except Exception as e:
                         if cleanupDir not in ['rss', 'sessions', 'indexers']:
-                            logger.warning("Restore: settings.Unable to remove the cache/{0} directory: {1}".format(cleanupDir, str(e)))
+                            logger.info("Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, str(e)))
 
         settings.IMAGE_CACHE = image_cache.ImageCache()
         settings.THEME_NAME = check_setting_str(settings.CFG, 'GUI', 'theme_name', 'dark')

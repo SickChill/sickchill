@@ -348,9 +348,10 @@ class SickChill(object):
                 src_file = os.path.join(src_dir, filename)
                 dst_file = os.path.join(dst_dir, filename)
                 bak_file = os.path.join(dst_dir, '{0}.bak-{1}'.format(filename, datetime.datetime.now().strftime('%Y%m%d_%H%M%S')))
-                if os.path.isfile(dst_file):
-                    shutil.move(dst_file, bak_file)
-                shutil.move(src_file, dst_file)
+                if os.path.isfile(src_file):
+                    if os.path.isfile(dst_file):
+                        shutil.move(dst_file, bak_file)
+                    shutil.move(src_file, dst_file)
 
             sickbeard_db = os.path.join(dst_dir, 'sickbeard.db')
             sickchill_db = os.path.join(dst_dir, 'sickchill.db')
