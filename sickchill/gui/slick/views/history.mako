@@ -35,8 +35,8 @@
                 <label>
                     <span> ${_('Layout')}:</span>
                     <select id="layout" class="form-control form-control-inline input-sm">
-                        <option value="${srRoot}/setHistoryLayout/?layout=compact"  ${('', 'selected="selected"')[settings.HISTORY_LAYOUT == 'compact']}>${_('Compact')}</option>
-                        <option value="${srRoot}/setHistoryLayout/?layout=detailed" ${('', 'selected="selected"')[settings.HISTORY_LAYOUT == 'detailed']}>${_('Detailed')}</option>
+                        <option value="${scRoot}/setHistoryLayout/?layout=compact"  ${('', 'selected="selected"')[settings.HISTORY_LAYOUT == 'compact']}>${_('Compact')}</option>
+                        <option value="${scRoot}/setHistoryLayout/?layout=detailed" ${('', 'selected="selected"')[settings.HISTORY_LAYOUT == 'detailed']}>${_('Detailed')}</option>
                     </select>
                 </label>
             </div>
@@ -76,7 +76,7 @@
                                         %>
                                         <time datetime="${isoDate}" class="date">${airDate}</time>
                                     </td>
-                                    <td class="tvShow" width="35%"><a href="${srRoot}/home/displayShow?show=${hItem["show_id"]}#S${hItem["season"]}E${hItem["episode"]}">
+                                    <td class="tvShow" width="35%"><a href="${scRoot}/home/displayShow?show=${hItem["show_id"]}#S${hItem["season"]}E${hItem["episode"]}">
                                         ${"{} - S{:02}E{:02}".format(hItem["show_name"], int(hItem["season"]), int(hItem["episode"]))} ${('', '<span class="quality Proper">Proper</span>')["proper" in hItem["resource"].lower() or "repack" in hItem["resource"].lower()]}
                                     </a></td>
                                     <td align="center" ${('', 'class="subtitles_column"')[curStatus == SUBTITLED]}>
@@ -150,7 +150,7 @@
                                     </td>
                                     <td class="tvShow" width="25%">
                                         <span>
-                                            <a href="${srRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">
+                                            <a href="${scRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">
                                                 ${"{} - S{:02}E{:02}".format(hItem["show_name"], int(hItem["season"]), int(hItem["episode"]))}${('', ' <span class="quality Proper">Proper</span>')['proper' in hItem["resource"].lower() or 'repack' in hItem["resource"].lower()]}
                                             </a>
                                         </span>

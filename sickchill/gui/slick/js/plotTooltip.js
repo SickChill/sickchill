@@ -5,7 +5,7 @@ $(() => {
             content: {
                 text: _('Loading...'),
                 ajax: {
-                    url: srRoot + '/home/plotDetails',
+                    url: scRoot + '/home/plotDetails',
                     type: 'GET',
                     data: {
                         show: match[1],

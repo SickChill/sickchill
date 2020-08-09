@@ -31,7 +31,7 @@
         <meta name="msapplication-TileImage" content="${static_url('images/ico/favicon-144.png')}">
         <meta name="msapplication-config" content="${static_url('css/browserconfig.xml')}">
 
-        <meta data-var="srRoot" data-content="${srRoot}">
+        <meta data-var="scRoot" data-content="${scRoot}">
         <meta data-var="themeSpinner" data-content="${('', '-dark')[settings.THEME_NAME == 'dark']}">
         <meta data-var="anonURL" data-content="${settings.ANON_REDIRECT}">
 

@@ -33,29 +33,29 @@
             <label>
                 <span class="show-option">${_('Layout')}:</span>
                 <select id="layout" class="form-control form-control-inline input-sm" title="Layout">
-                    <option value="${srRoot}/setHomeLayout/?layout=poster" ${('', 'selected="selected"')[settings.HOME_LAYOUT == 'poster']}>${_('Poster')}</option>
-                    <option value="${srRoot}/setHomeLayout/?layout=small" ${('', 'selected="selected"')[settings.HOME_LAYOUT == 'small']}>${_('Small Poster')}</option>
-                    <option value="${srRoot}/setHomeLayout/?layout=banner" ${('', 'selected="selected"')[settings.HOME_LAYOUT == 'banner']}>${_('Banner')}</option>
-                    <option value="${srRoot}/setHomeLayout/?layout=simple" ${('', 'selected="selected"')[settings.HOME_LAYOUT == 'simple']}>${_('Simple')}</option>
+                    <option value="${scRoot}/setHomeLayout/?layout=poster" ${('', 'selected="selected"')[settings.HOME_LAYOUT == 'poster']}>${_('Poster')}</option>
+                    <option value="${scRoot}/setHomeLayout/?layout=small" ${('', 'selected="selected"')[settings.HOME_LAYOUT == 'small']}>${_('Small Poster')}</option>
+                    <option value="${scRoot}/setHomeLayout/?layout=banner" ${('', 'selected="selected"')[settings.HOME_LAYOUT == 'banner']}>${_('Banner')}</option>
+                    <option value="${scRoot}/setHomeLayout/?layout=simple" ${('', 'selected="selected"')[settings.HOME_LAYOUT == 'simple']}>${_('Simple')}</option>
                 </select>
             </label>
             % if settings.HOME_LAYOUT == 'poster':
                 <label>
                     <span class="show-option">${_('Sort By')}:</span>
                     <select id="postersort" class="form-control form-control-inline input-sm" title="Poster Sort">
-                        <option value="name" data-sort="${srRoot}/setPosterSortBy/?sort=name" ${('', 'selected="selected"')[settings.POSTER_SORTBY == 'name']}>${_('Name')}</option>
-                        <option value="date" data-sort="${srRoot}/setPosterSortBy/?sort=date" ${('', 'selected="selected"')[settings.POSTER_SORTBY == 'date']}>${_('Next Episode')}</option>
-                        <option value="network" data-sort="${srRoot}/setPosterSortBy/?sort=network" ${('', 'selected="selected"')[settings.POSTER_SORTBY == 'network']}>${_('Network')}</option>
-                        <option value="progress" data-sort="${srRoot}/setPosterSortBy/?sort=progress" ${('', 'selected="selected"')[settings.POSTER_SORTBY == 'progress']}>${_('Progress')}</option>
-                        <option value="status" data-sort="${srRoot}/setPosterSortBy/?sort=status" ${('', 'selected="selected"')[settings.POSTER_SORTBY == 'status']}>${_('Status')}</option>
+                        <option value="name" data-sort="${scRoot}/setPosterSortBy/?sort=name" ${('', 'selected="selected"')[settings.POSTER_SORTBY == 'name']}>${_('Name')}</option>
+                        <option value="date" data-sort="${scRoot}/setPosterSortBy/?sort=date" ${('', 'selected="selected"')[settings.POSTER_SORTBY == 'date']}>${_('Next Episode')}</option>
+                        <option value="network" data-sort="${scRoot}/setPosterSortBy/?sort=network" ${('', 'selected="selected"')[settings.POSTER_SORTBY == 'network']}>${_('Network')}</option>
+                        <option value="progress" data-sort="${scRoot}/setPosterSortBy/?sort=progress" ${('', 'selected="selected"')[settings.POSTER_SORTBY == 'progress']}>${_('Progress')}</option>
+                        <option value="status" data-sort="${scRoot}/setPosterSortBy/?sort=status" ${('', 'selected="selected"')[settings.POSTER_SORTBY == 'status']}>${_('Status')}</option>
                     </select>
                 </label>
 
                 <label>
                     <span class="show-option">${_('Direction')}:</span>
                     <select id="postersortdirection" class="form-control form-control-inline input-sm" title="Sort">
-                        <option value="true" data-sort="${srRoot}/setPosterSortDir/?direction=1" ${('', 'selected="selected"')[settings.POSTER_SORTDIR == 1]}>${_('Ascending')} </option>
-                        <option value="false" data-sort="${srRoot}/setPosterSortDir/?direction=0" ${('', 'selected="selected"')[settings.POSTER_SORTDIR == 0]}>${_('Descending')}</option>
+                        <option value="true" data-sort="${scRoot}/setPosterSortDir/?direction=1" ${('', 'selected="selected"')[settings.POSTER_SORTDIR == 1]}>${_('Ascending')} </option>
+                        <option value="false" data-sort="${scRoot}/setPosterSortDir/?direction=0" ${('', 'selected="selected"')[settings.POSTER_SORTDIR == 0]}>${_('Descending')}</option>
                     </select>
                 </label>
                 <label>

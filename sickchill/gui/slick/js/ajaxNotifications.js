@@ -10,7 +10,7 @@ PNotify.prototype.options.stack = {dir1: 'up', dir2: 'left', firstpos1: 25, firs
 PNotify.prototype.options.styling = 'bootstrap3';
 PNotify.prototype.options.width = '340px';
 PNotify.desktop.permission();
-PNotify.prototype.options.desktop = {desktop: !0, icon: srRoot + '/images/ico/favicon-196.png'};
+PNotify.prototype.options.desktop = {desktop: !0, icon: scRoot + '/images/ico/favicon-196.png'};
 
 function displayPNotify(type, title, message, id) {
     new PNotify({ // eslint-disable-line no-new
@@ -27,7 +27,7 @@ function displayPNotify(type, title, message, id) {
 }
 
 function checkNotifications() {
-    $.getJSON(srRoot + '/ui/get_messages', data => {
+    $.getJSON(scRoot + '/ui/get_messages', data => {
         $.each(data, (name, data) => {
             displayPNotify(data.type, data.title, data.message, data.hash);
         });

@@ -46,7 +46,7 @@
         <meta name="msapplication-TileImage" content="${static_url('images/ico/mstile-144x144.png')}">
         <meta name="msapplication-config" content="${static_url('images/ico/browserconfig.xml')}">
 
-        <meta data-var="srRoot" data-content="${settings.WEB_ROOT}">
+        <meta data-var="scRoot" data-content="${settings.WEB_ROOT}">
         <meta data-var="themeSpinner" data-content="${('', '-dark')[settings.THEME_NAME == 'dark']}">
         <meta data-var="anonURL" data-content="${settings.ANON_REDIRECT}">
 

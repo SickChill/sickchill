@@ -68,7 +68,7 @@
                                 <div class="traktContainer">
                                     <div class="trakt-image">
                                         <a class="trakt-image" href="${anon_url(cur_result['imdb_url'])}" target="_blank">
-                                            <img alt="" class="trakt-image" src="${srRoot}/cache/${cur_result['image_path']}"
+                                            <img alt="" class="trakt-image" src="${scRoot}/cache/${cur_result['image_path']}"
                                                  height="273px" width="186px"/>
                                         </a>
                                     </div>
@@ -81,7 +81,7 @@
                                         <p>${int(float(cur_rating)*10)}%&nbsp;<span class="displayshow-icon-heart"></span></p>
                                         <i>${cur_votes}</i>
                                         <div class="traktShowTitleIcons">
-                                            <a href="${srRoot}/addShows/addShowByID?indexer_id=${cur_result['imdb_tt']}&amp;show_name=${cur_result['name'] | u}&amp;indexer=IMDB"
+                                            <a href="${scRoot}/addShows/addShowByID?indexer_id=${cur_result['imdb_tt']}&amp;show_name=${cur_result['name'] | u}&amp;indexer=IMDB"
                                                class="btn btn-xs" data-no-redirect>${_('Add Show')}</a>
                                         </div>
                                     </div>
