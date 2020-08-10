@@ -99,7 +99,6 @@ def check_force_season_folders(pattern=None, multi=None, anime_type=None):
         anime_type = settings.NAMING_ANIME
 
     valid = not validate_name(pattern, None, anime_type, file_only=True)
-    valid = not validate_name(pattern, None, anime_type, file_only=True)
 
     if multi is not None:
         valid = valid or not validate_name(pattern, multi, anime_type, file_only=True)
