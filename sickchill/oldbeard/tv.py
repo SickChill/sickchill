@@ -2144,7 +2144,7 @@ class TVEpisode(object):
         result_name = pattern
 
         # if there's no release group in the db, let the user know we replaced it
-        if replace_map['%RG'] and replace_map['%RG'] != 'SickChill':
+        if replace_map['%RG'] and replace_map['%RG'] != 'SICKCHILL':
             if not hasattr(self, '_release_group'):
                 logger.debug("Episode has no release group, replacing it with '" + replace_map['%RG'] + "'")
                 self._release_group = replace_map['%RG']  # if release_group is not in the db, put it there

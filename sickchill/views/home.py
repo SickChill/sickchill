@@ -13,7 +13,7 @@ from tornado.escape import xhtml_unescape
 import sickchill.oldbeard
 from sickchill import adba, logger, settings
 from sickchill.helper import try_int
-from sickchill.helper.common import pretty_file_size
+from sickchill.helper.common import pretty_file_size, episode_num
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException
 from sickchill.oldbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickchill.oldbeard.common import cpu_presets, FAILED, IGNORED, Overview, Quality, SKIPPED, statusStrings, UNAIRED, WANTED
@@ -1505,16 +1505,31 @@ class Home(WebRoot):
 
         return self.redirect("/home/displayShow?show=" + show)
 
-    # def searchEpisodeListManual(self, show=None, season=None, episode=None, search_mode='eponly'):
-    #     # retrieve the episode object and fail if we can't get one
-    #     self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-    #     self.set_header('Content-Type', 'application/json')
-    #     ep_obj, error_msg = self._getEpisode(show, season, episode)
-    #     if error_msg or not ep_obj:
-    #         return json.dumps({'result': 'failure', 'errorMessage': error_msg})
-    #
-    #     return search.searchProvidersList(ep_obj.show, ep_obj, search_mode)
-    #
+    def searchEpisodeListManual(self):
+        show = self.get_body_arguments('show')
+        season = self.get_body_arguments('season')
+        episode = self.get_body_arguments('episode')
+
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+
+        cache_db_con = db.DBConnection('cache.db', row_type="dict")
+        results = cache_db_con.select(
+            'SELECT * FROM results WHERE indexerid = ? AND season = ? AND episodes LIKE ? AND status != ? ORDER BY seeders DESC',
+            [show, season, '%|{}|%'.format(episode), FAILED])
+
+        for result in results:
+            episodes_list = [int(ep) for ep in result['episodes'].split('|') if ep]
+            if len(episodes_list) > 1:
+                result['ep_string'] = 'S{:02}E{}-{}'.format(result['season'], min(episodes_list), max(episodes_list))
+            else:
+                result['ep_string'] = episode_num(result['season'], episodes_list[0])
+
+        # TODO: If no cache results do a search on indexers and post back to this method.
+
+        t = PageTemplate(rh=self, filename="searchEpisodeListManual.mako")
+        submenu = [{'title': _('Edit'), 'path': 'home/editShow?show={0}'.format(show), 'icon': 'fa fa-pencil'}]
+        return t.render(submenu=submenu, title=_('Manual Snatch'), header=_('Manual Snatch'),  controller="home", action="searchEpisodeListManual", results=results)
+
     # def snatchEpisodeManual(self, result_dict):
     #     self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
     #     self.set_header('Content-Type', 'application/json')

@@ -16,11 +16,6 @@ class CacheDBConnection(db.DBConnection):
     def __init__(self, provider_name):
         super(CacheDBConnection, self).__init__('cache.db')
         db.upgrade_database(self, cache.InitialSchema)
-        # TODO: This deletes all of the results with a matching URL, not just the duplicates.
-        # sql_results = self.select("SELECT url, COUNT(url) AS count FROM results WHERE provider = ? GROUP BY url HAVING count > 1", [provider_name])
-        # for cur_dupe in sql_results:
-        #     self.action("DELETE FROM results WHERE provider= ? AND url = ?", [provider_name, cur_dupe["url"]])
-
         self.action("DELETE from results WHERE added < datetime('now','-30 days')")
 
 
@@ -219,7 +214,7 @@ class TVCache(object):
 
         if season and episodes:
             # store episodes as a separated string
-            episode_text = "|" + "|".join({str(episode) for episode in episodes if episode}) + "|"
+            episode_text = "|" + "|".join({str(episode) for episode in sorted(episodes) if episode}) + "|"
 
             # get the current timestamp
             cur_timestamp = int(time.mktime(datetime.datetime.today().timetuple()))
@@ -234,13 +229,14 @@ class TVCache(object):
             version = parse_result.version
 
             logger.debug(_("Added RSS item: [{}] to cache: {}").format(name, self.provider_id))
-
             return [
-                "INSERT OR IGNORE INTO results ("
-                "provider, name, season, episodes, indexerid, url, time, quality, release_group, version, seeders, leechers, size, status, failed) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0)",
+                "INSERT INTO results ("
+                "provider, name, season, episodes, indexerid, url, time, quality, release_group, version, seeders, leechers, size) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (url, name, provider) DO UPDATE SET "
+                "seeders=excluded.seeders, leechers=excluded.leechers, time=excluded.time",
                 [self.provider_id, name, season, episode_text, parse_result.show.indexerid, url,
-                 cur_timestamp, quality, release_group, version, seeders, leechers, size]]
+                 cur_timestamp, quality, release_group, version, seeders, leechers, size]
+            ]
 
     def search_cache(self, episode, manual_search=False, down_cur_quality=False):
         needed_eps = self.find_needed_episodes(episode, manual_search, down_cur_quality)
