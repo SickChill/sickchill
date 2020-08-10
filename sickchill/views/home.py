@@ -13,7 +13,7 @@ from tornado.escape import xhtml_unescape
 import sickchill.oldbeard
 from sickchill import adba, logger, settings
 from sickchill.helper import try_int
-from sickchill.helper.common import pretty_file_size, episode_num
+from sickchill.helper.common import episode_num, pretty_file_size
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException
 from sickchill.oldbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickchill.oldbeard.common import cpu_presets, FAILED, IGNORED, Overview, Quality, SKIPPED, statusStrings, UNAIRED, WANTED

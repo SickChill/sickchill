@@ -12,6 +12,7 @@ import shutil
 import socket
 import ssl
 import stat
+import string
 import time
 import traceback
 import urllib.request
@@ -27,6 +28,7 @@ import cloudscraper
 import ifaddr
 import rarfile
 import requests
+import urllib3.exceptions
 from cachecontrol import CacheControl
 from cloudscraper.exceptions import CloudflareException
 from tornado._locale_data import LOCALE_NAMES
@@ -1164,13 +1166,8 @@ def make_indexer_session():
     session = make_session()
     session.verify = (False, certifi.where())[settings.SSL_VERIFY]
     if settings.PROXY_SETTING and settings.PROXY_INDEXERS:
-        logger.debug(_("Using global proxy: {}").format(settings.PROXY_SETTING))
-        parsed_url = urlparse(settings.PROXY_SETTING)
-        address = settings.PROXY_SETTING if parsed_url.scheme else 'http://' + settings.PROXY_SETTING
-        session.proxies = {
-            "http": address,
-            "https": address,
-        }
+        logger.debug(_("Using global proxy for indexers: {}").format(settings.PROXY_SETTING))
+        session.proxies = {"http": settings.PROXY_SETTING, "https": settings.PROXY_SETTING}
     return session
 
 
@@ -1181,24 +1178,16 @@ def make_session():
 
 
 def request_defaults(kwargs):
-    hooks = kwargs.pop('hooks', None)
-    cookies = kwargs.pop('cookies', None)
-    allow_proxy = kwargs.pop('allow_proxy', True)
     verify = certifi.where() if all([settings.SSL_VERIFY, kwargs.pop('verify', True)]) else False
 
     # request session proxies
-    if allow_proxy and settings.PROXY_SETTING:
+    if kwargs.pop('allow_proxy', True) and settings.PROXY_SETTING:
         logger.debug(_("Using global proxy: {}").format(settings.PROXY_SETTING))
-        parsed_url = urlparse(settings.PROXY_SETTING)
-        address = settings.PROXY_SETTING if parsed_url.scheme else 'http://' + settings.PROXY_SETTING
-        proxies = {
-            "http": address,
-            "https": address,
-        }
+        proxies = {"http": settings.PROXY_SETTING, "https": settings.PROXY_SETTING}
     else:
         proxies = None
 
-    return hooks, cookies, verify, proxies
+    return kwargs.pop('hooks', None), kwargs.pop('cookies', None), verify, proxies
 
 
 def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too-many-arguments, too-many-return-statements, too-many-branches, too-many-locals
@@ -1278,7 +1267,7 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
 
 def handle_requests_exception(requests_exception):
     def get_level(exception):
-        return (logger.ERROR, logger.WARNING)[exception and 's,t,o,p,b,r,e,a,k,i,n,g,f' in exception]
+        return (logger.ERROR, logger.WARNING)[exception and 's,t,o,p,b,r,e,a,k,i,n,g,f' in str(exception)]
 
     default = _("Request failed: {0} ({1})")
     try:
@@ -1325,6 +1314,8 @@ def handle_requests_exception(requests_exception):
         logger.info(default.format(error, type(error.__class__.__name__)))
     except CloudflareException as error:
         logger.info(default.format(error, type(error.__class__.__name__)))
+    except urllib3.exceptions.ProxySchemeUnknown as error:
+        logger.info(default.format('You must prefix your proxy setting with a scheme (http/https/etc)', error))
     except (TypeError, ValueError) as error:
         level = get_level(error)
         logger.info(default.format(error, type(error.__class__.__name__)), level)
