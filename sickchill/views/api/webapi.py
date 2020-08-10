@@ -92,6 +92,7 @@ class ApiHandler(RequestHandler):
         try:
             out_dict = _call_dispatcher(args, kwargs)
         except Exception as e:  # real internal error oohhh nooo :(
+            logger.info(traceback.format_exc())
             logger.exception("API :: " + str(e))
             error_data = {
                 "error_msg": str(e),
@@ -144,7 +145,7 @@ class ApiHandler(RequestHandler):
 
         out_dict = {}
         if commands:
-            commands = commands.split("|")
+            commands = commands.decode().split("|")
             multi_commands = len(commands) > 1
             for cmd in commands:
                 cur_args, cur_kwargs = self.filter_params(cmd, args, kwargs)
@@ -170,6 +171,7 @@ class ApiHandler(RequestHandler):
                         else:
                             cur_out_dict = _responds(RESULT_ERROR, "No such cmd: '" + cmd + "'")
                     except ApiError as error:  # Api errors that we raised, they are harmless
+                        logger.info(traceback.format_exc())
                         cur_out_dict = _responds(RESULT_ERROR, msg=str(error))
                 else:  # if someone chained one of the forbidden commands they will get an error for this one cmd
                     cur_out_dict = _responds(RESULT_ERROR, msg="The cmd '" + cmd + "' is not supported while chaining")
