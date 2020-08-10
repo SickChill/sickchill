@@ -234,6 +234,9 @@ def initialize(consoleLogging=True):
             settings.ANON_REDIRECT = ''
 
         settings.PROXY_SETTING = check_setting_str(settings.CFG, 'General', 'proxy_setting')
+        if settings.PROXY_SETTING:
+            settings.PROXY_SETTING = config.clean_url(settings.PROXY_SETTING).rstrip('/')
+
         settings.PROXY_INDEXERS = check_setting_bool(settings.CFG, 'General', 'proxy_indexers', True)
 
         settings.INDEXER_DEFAULT_LANGUAGE = check_setting_str(settings.CFG, 'General', 'indexerDefaultLang', 'en')

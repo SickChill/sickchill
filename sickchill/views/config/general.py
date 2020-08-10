@@ -109,6 +109,8 @@ class ConfigGeneral(Config):
         settings.CPU_PRESET = cpu_preset
         settings.ANON_REDIRECT = anon_redirect
         settings.PROXY_SETTING = proxy_setting
+        if settings.PROXY_SETTING:
+            settings.PROXY_SETTING = config.clean_url(settings.PROXY_SETTING).rstrip('/')
         settings.PROXY_INDEXERS = config.checkbox_to_value(proxy_indexers)
 
         settings.GIT_USERNAME = git_username
