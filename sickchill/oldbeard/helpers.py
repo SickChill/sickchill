@@ -1,4 +1,3 @@
-# pylint:disable=too-many-lines
 import base64
 import ctypes
 import datetime
@@ -12,7 +11,6 @@ import shutil
 import socket
 import ssl
 import stat
-import string
 import time
 import traceback
 import urllib.request
@@ -20,7 +18,7 @@ import uuid
 import zipfile
 from contextlib import closing
 from itertools import cycle
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin
 from xml.etree import ElementTree
 
 import certifi
