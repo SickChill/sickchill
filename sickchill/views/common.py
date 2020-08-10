@@ -79,7 +79,8 @@ class PageTemplate(Template):
         # noinspection PyBroadException
         try:
             return self.template.render_unicode(*args, **context)
-        except Exception:
+        except Exception as error:
+            print(error)
             context['title'] = '500'
             context['header'] = _('Mako Error')
             context['backtrace'] = RichTraceback()
