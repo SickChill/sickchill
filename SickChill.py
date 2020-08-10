@@ -343,12 +343,16 @@ class SickChill(object):
         """
         try:
             files_list = ['sickbeard.db', 'sickchill.db', 'config.ini', 'failed.db', 'cache.db']
-
             for filename in files_list:
                 src_file = os.path.join(src_dir, filename)
                 dst_file = os.path.join(dst_dir, filename)
                 bak_file = os.path.join(dst_dir, '{0}.bak-{1}'.format(filename, datetime.datetime.now().strftime('%Y%m%d_%H%M%S')))
+                sickchill_db = os.path.join(dst_dir, 'sickchill.db')
+                sickbeard_db = os.path.join(src_dir, 'sickbeard.db')
                 if os.path.isfile(src_file):
+                    if src_file == sickbeard_db:
+                        dst_file = sickchill_db
+
                     if os.path.isfile(dst_file):
                         shutil.move(dst_file, bak_file)
                     shutil.move(src_file, dst_file)
