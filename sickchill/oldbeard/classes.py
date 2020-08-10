@@ -52,14 +52,13 @@ class SearchResult(object):
         self.resultType = ''
 
     def from_json(self, result_dict):
-        self.name = result_dict.get('title')
-        self.hash = result_dict.get('hash')
-        self.url = result_dict.get('link')
+        self.name = result_dict.get('name')
+        self.url = result_dict.get('url')
         self.size = result_dict.get('size')
         self.version = result_dict.get('version')
         self.release_group = result_dict.get('release_group')
         self.quality = result_dict.get('quality')
-        # self.provider = oldbeard.providers.getProviderModule(result_dict.get('provider')).provider
+        self.provider = sickchill.oldbeard.providers.getProviderModule(result_dict.get('provider')).provider
 
     @classmethod
     def make_result(cls, result_dict):

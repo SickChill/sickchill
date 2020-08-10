@@ -20,6 +20,7 @@ class InitialSchema(db.SchemaUpgrade):
             ("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON results (url);",),
             ("CREATE UNIQUE INDEX IF NOT EXISTS provider ON results (provider);",),
             ("CREATE UNIQUE INDEX IF NOT EXISTS seeders ON results (seeders);",)
+            ("CREATE UNIQUE INDEX IF NOT EXISTS url_name_provider ON results (url, name, provider);",)
         )
         for query in queries:
             if len(query) == 1:
@@ -147,3 +148,11 @@ class LastUpdate(ResultsTable):
 
     def execute(self):
         self.connection.action("CREATE TABLE lastUpdate (provider TEXT, time NUMERIC)")
+
+
+class AddIndex(LastUpdate):
+    def test(self):
+        return False
+
+    def execute(self):
+        self.connection.action("CREATE UNIQUE INDEX IF NOT EXISTS url_name_provider ON results (url, name, provider);")
