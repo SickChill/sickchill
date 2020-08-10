@@ -27,7 +27,7 @@ default_host = {
 
 
 def getClientInstance(name):
-    return __import__('oldbeard.clients.' + name.lower(), fromlist=_clients).Client
+    return __import__('sickchill.oldbeard.clients.' + name.lower(), fromlist=_clients).Client
 
 
 def getClientListDict(keys_only=False):
