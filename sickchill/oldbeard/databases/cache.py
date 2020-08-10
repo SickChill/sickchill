@@ -19,7 +19,7 @@ class InitialSchema(db.SchemaUpgrade):
             ("INSERT INTO db_version(db_version) VALUES (1);",),
             ("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON results (url);",),
             ("CREATE UNIQUE INDEX IF NOT EXISTS provider ON results (provider);",),
-            ("CREATE UNIQUE INDEX IF NOT EXISTS seeders ON results (seeders);",)
+            ("CREATE UNIQUE INDEX IF NOT EXISTS seeders ON results (seeders);",),
             ("CREATE UNIQUE INDEX IF NOT EXISTS url_name_provider ON results (url, name, provider);",)
         )
         for query in queries:
