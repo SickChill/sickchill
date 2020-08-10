@@ -176,7 +176,9 @@ class GenericProvider(object):
         cl = []
 
         for item in items_list:
-            (title, url) = self._get_title_and_url(item)
+            title, url = self._get_title_and_url(item)
+            seeders, leechers = self._get_seeders_and_leechers(item)
+            size = self._get_size(item)
 
             try:
                 parse_result = NameParser(parse_method=('normal', 'anime')[show.is_anime]).parse(title)
@@ -259,8 +261,7 @@ class GenericProvider(object):
             if add_cache_entry:
                 logger.debug('Adding item from search to cache: {0}'.format(title))
 
-                # Access to a protected member of a client class
-                ci = self.cache._add_cache_entry(title, url, parse_result=parse_result)
+                ci = self.cache._add_cache_entry(title, url, size, seeders, leechers, parse_result=parse_result)
 
                 if ci is not None:
                     cl.append(ci)
@@ -470,6 +471,12 @@ class GenericProvider(object):
             return item.get('size', -1)
         except AttributeError:
             return -1
+
+    def _get_seeders_and_leechers(self, item):
+        try:
+            return item.get('seeders', -1), item.get('leechers', -1)
+        except AttributeError:
+            return -1, -1
 
     def _get_storage_dir(self):
         return ''

@@ -72,45 +72,45 @@ from sickchill import settings
 from sickchill.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
 from sickchill.oldbeard import helpers
 
-TEST_RESULT = 'Show.Name.S01E01.HDTV.x264-RLSGROUP'
+TEST_RESULT = 'Show.Name.S01E01.HDTV.x264-SICKCHILL'
 TEST_CASES = {
     'removewords': [
         TEST_RESULT,
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[cttv]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP.RiPSaLoT',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[GloDLS]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[EtHD]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP-20-40',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[NO-RAR] - [ www.torrentday.com ]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[rarbg]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[Seedbox]',
-        '{ www.SceneTime.com } - Show.Name.S01E01.HDTV.x264-RLSGROUP',
-        '].[www.tensiontorrent.com] - Show.Name.S01E01.HDTV.x264-RLSGROUP',
-        '[ www.TorrentDay.com ] - Show.Name.S01E01.HDTV.x264-RLSGROUP',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[silv4]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[AndroidTwoU]',
-        '[www.newpct1.com]Show.Name.S01E01.HDTV.x264-RLSGROUP',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP-NZBGEEK',
-        '.www.Cpasbien.pwShow.Name.S01E01.HDTV.x264-RLSGROUP',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP [1044]',
-        '[ www.Cpasbien.pw ] Show.Name.S01E01.HDTV.x264-RLSGROUP',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP.[BT]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[vtv]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP.[www.usabit.com]',
-        '[www.Cpasbien.com] Show.Name.S01E01.HDTV.x264-RLSGROUP',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[ettv]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[rartv]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP-Siklopentan',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP-RP',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[PublicHD]',
-        '[www.Cpasbien.pe] Show.Name.S01E01.HDTV.x264-RLSGROUP',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[eztv]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP-[SpastikusTV]',
-        '].[ www.tensiontorrent.com ] - Show.Name.S01E01.HDTV.x264-RLSGROUP',
-        '[ www.Cpasbien.com ] Show.Name.S01E01.HDTV.x264-RLSGROUP',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP- { www.SceneTime.com }',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP- [ www.torrentday.com ]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP.Renc'
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[cttv]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL.RiPSaLoT',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[GloDLS]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[EtHD]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL-20-40',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[NO-RAR] - [ www.torrentday.com ]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[rarbg]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[Seedbox]',
+        '{ www.SceneTime.com } - Show.Name.S01E01.HDTV.x264-SICKCHILL',
+        '].[www.tensiontorrent.com] - Show.Name.S01E01.HDTV.x264-SICKCHILL',
+        '[ www.TorrentDay.com ] - Show.Name.S01E01.HDTV.x264-SICKCHILL',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[silv4]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[AndroidTwoU]',
+        '[www.newpct1.com]Show.Name.S01E01.HDTV.x264-SICKCHILL',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL-NZBGEEK',
+        '.www.Cpasbien.pwShow.Name.S01E01.HDTV.x264-SICKCHILL',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL [1044]',
+        '[ www.Cpasbien.pw ] Show.Name.S01E01.HDTV.x264-SICKCHILL',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL.[BT]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[vtv]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL.[www.usabit.com]',
+        '[www.Cpasbien.com] Show.Name.S01E01.HDTV.x264-SICKCHILL',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[ettv]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[rartv]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL-Siklopentan',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL-RP',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[PublicHD]',
+        '[www.Cpasbien.pe] Show.Name.S01E01.HDTV.x264-SICKCHILL',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[eztv]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL-[SpastikusTV]',
+        '].[ www.tensiontorrent.com ] - Show.Name.S01E01.HDTV.x264-SICKCHILL',
+        '[ www.Cpasbien.com ] Show.Name.S01E01.HDTV.x264-SICKCHILL',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL- { www.SceneTime.com }',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL- [ www.torrentday.com ]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL.Renc'
     ]
 }
 
@@ -295,7 +295,7 @@ class HelpersFileTests(unittest.TestCase):
         # and the file extension should be in the list of media extensions
 
         # Test all valid media extensions
-        temp_name = 'Show.Name.S01E01.HDTV.x264-RLSGROUP'
+        temp_name = 'Show.Name.S01E01.HDTV.x264-SICKCHILL'
         extension_tests = {'.'.join((temp_name, ext)): True for ext in MEDIA_EXTENSIONS}
         # ...and some invalid ones
         other_extensions = ['txt', 'sfv', 'srr', 'rar', 'nfo', 'zip']
