@@ -1,7 +1,7 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     from sickchill.oldbeard.helpers import is_ip_local
-    from sickchill import oldbeard, logger
+    from sickchill import oldbeard, logger, settings
 %>
 <%block name="content">
     <div class="row">
