@@ -7,6 +7,7 @@ from sickchill.helper.exceptions import AuthException
 from sickchill.show.Show import Show
 
 from . import db, show_name_helpers
+from .databases import cache
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from .rssfeeds import getFeed
 
@@ -14,40 +15,13 @@ from .rssfeeds import getFeed
 class CacheDBConnection(db.DBConnection):
     def __init__(self, provider_name):
         super(CacheDBConnection, self).__init__('cache.db')
+        db.upgrade_database(self, cache.InitialSchema)
+        # TODO: This deletes all of the results with a matching URL, not just the duplicates.
+        # sql_results = self.select("SELECT url, COUNT(url) AS count FROM results WHERE provider = ? GROUP BY url HAVING count > 1", [provider_name])
+        # for cur_dupe in sql_results:
+        #     self.action("DELETE FROM results WHERE provider= ? AND url = ?", [provider_name, cur_dupe["url"]])
 
-        # Create the table if it's not already there
-        try:
-            if not self.has_table(provider_name):
-                self.action(
-                    "CREATE TABLE [" + provider_name + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT, release_group TEXT)")
-            else:
-                sql_results = self.select("SELECT url, COUNT(url) AS count FROM [" + provider_name + "] GROUP BY url HAVING count > 1")
-
-                for cur_dupe in sql_results:
-                    self.action("DELETE FROM [" + provider_name + "] WHERE url = ?", [cur_dupe["url"]])
-
-            # add unique index to prevent further dupes from happening if one does not exist
-            self.action("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON [" + provider_name + "] (url)")
-
-            # add release_group column to table if missing
-            if not self.has_column(provider_name, 'release_group'):
-                self.add_column(provider_name, 'release_group', "TEXT", "")
-
-            # add version column to table if missing
-            if not self.has_column(provider_name, 'version'):
-                self.add_column(provider_name, 'version', "NUMERIC", "-1")
-
-        except Exception as e:
-            if str(e) != "table [" + provider_name + "] already exists":
-                raise
-
-        # Create the table if it's not already there
-        try:
-            if not self.has_table('lastUpdate'):
-                self.action("CREATE TABLE lastUpdate (provider TEXT, time NUMERIC)")
-        except Exception as e:
-            if str(e) != "table lastUpdate already exists":
-                raise
+        self.action("DELETE from results WHERE added < datetime('now','-30 days')")
 
 
 class TVCache(object):
@@ -68,19 +42,21 @@ class TVCache(object):
     def _clear_cache(self):
         if self.should_clear_cache():
             cache_db_con = self._get_db()
-            cache_db_con.action("DELETE FROM [" + self.provider_id + "] WHERE 1")
+            cache_db_con.action("DELETE FROM results WHERE provider = ? AND added < datetime('now', '-30 days')", [self.provider_id])
+
+    def _get_seeders_and_leechers(self, item):
+        return self.provider._get_seeders_and_leechers(item)
+
+    def _get_size(self, item):
+        return self.provider._get_size(item)
 
     def _get_title_and_url(self, item):
-        return self.provider._get_title_and_url(item)  # pylint:disable=protected-access
+        return self.provider._get_title_and_url(item)
 
     def _get_rss_data(self):
         return {'entries': self.provider.search(self.search_params)} if self.search_params else None
 
-    def _check_auth(self, data):  # pylint:disable=unused-argument, no-self-use
-        return True
-
-    @staticmethod
-    def _check_item_auth(title, url):  # pylint:disable=unused-argument, no-self-use
+    def _check_auth(self, data):
         return True
 
     def update_cache(self):
@@ -127,15 +103,15 @@ class TVCache(object):
 
     def _parse_item(self, item):
         title, url = self._get_title_and_url(item)
-
-        self._check_item_auth(title, url)
+        size = self._get_size(item)
+        seeders, leechers = self._get_seeders_and_leechers(item)
 
         if title and url:
             title = self._translate_title(title)
             url = self._translate_link_url(url)
 
             # logger.debug("Attempting to add item to cache: " + title)
-            return self._add_cache_entry(title, url)
+            return self._add_cache_entry(title, url, size, seeders, leechers)
 
         else:
             logger.debug(
@@ -218,7 +194,7 @@ class TVCache(object):
 
         return True
 
-    def _add_cache_entry(self, name, url, parse_result=None, indexer_id=0):
+    def _add_cache_entry(self, name, url, size, seeders, leechers, parse_result=None, indexer_id=0):
 
         # check if we passed in a parsed result or should we try and create one
         if not parse_result:
@@ -257,11 +233,14 @@ class TVCache(object):
             # get version
             version = parse_result.version
 
-            logger.debug("Added RSS item: [" + name + "] to cache: [" + self.provider_id + "]")
+            logger.debug(_("Added RSS item: [{}] to cache: {}").format(name, self.provider_id))
 
             return [
-                "INSERT OR IGNORE INTO [" + self.provider_id + "] (name, season, episodes, indexerid, url, time, quality, release_group, version) VALUES (?,?,?,?,?,?,?,?,?)",
-                [name, season, episode_text, parse_result.show.indexerid, url, cur_timestamp, quality, release_group, version]]
+                "INSERT OR IGNORE INTO results ("
+                "provider, name, season, episodes, indexerid, url, time, quality, release_group, version, seeders, leechers, size, status, failed) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0)",
+                [self.provider_id, name, season, episode_text, parse_result.show.indexerid, url,
+                 cur_timestamp, quality, release_group, version, seeders, leechers, size]]
 
     def search_cache(self, episode, manual_search=False, down_cur_quality=False):
         needed_eps = self.find_needed_episodes(episode, manual_search, down_cur_quality)
@@ -269,31 +248,42 @@ class TVCache(object):
 
     def list_propers(self, date=None):
         cache_db_con = self._get_db()
-        sql = "SELECT * FROM [" + self.provider_id + "] WHERE name LIKE '%.PROPER.%' OR name LIKE '%.REPACK.%'"
+        sql = "SELECT * FROM results WHERE provider = ? AND name LIKE '%.PROPER.%' OR name LIKE '%.REPACK.%'"
+        # Add specific provider proper_strings also, like REAL, RERIP, etc.
+        if hasattr(self.provider, 'proper_strings'):
+            if self.provider.proper_strings:
+                for item in self.provider.proper_strings:
+                    if '|' in item:
+                        items = item.split('|')
+                        for _item in items:
+                            if _item.upper() not in sql:
+                                sql += " OR name LIKE '%.{}.%".format(_item)
+                    elif item.upper() not in sql:
+                        sql += " OR name LIKE '%.{}.%".format(item)
 
         if date is not None:
             sql += " AND time >= " + str(int(time.mktime(date.timetuple())))
 
-        propers_results = cache_db_con.select(sql)
+        propers_results = cache_db_con.select(sql, [self.provider_id])
         return [x for x in propers_results if x['indexerid']]
 
-    def find_needed_episodes(self, episode, manualSearch=False, downCurQuality=False):  # pylint:disable=too-many-locals, too-many-branches
+    def find_needed_episodes(self, episode, manualSearch=False, downCurQuality=False):
         needed_eps = {}
         cl = []
 
         cache_db_con = self._get_db()
         if not episode:
-            sql_results = cache_db_con.select("SELECT * FROM [" + self.provider_id + "]")
+            sql_results = cache_db_con.select("SELECT * FROM results WHERE provider = ?", [self.provider_id])
         elif not isinstance(episode, list):
             sql_results = cache_db_con.select(
-                "SELECT * FROM [" + self.provider_id + "] WHERE indexerid = ? AND season = ? AND episodes LIKE ?",
-                [episode.show.indexerid, episode.season, "%|" + str(episode.episode) + "|%"])
+                "SELECT * FROM results WHERE provider = ? AND indexerid = ? AND season = ? AND episodes LIKE ?",
+                [self.provider_id, episode.show.indexerid, episode.season, "%|" + str(episode.episode) + "|%"])
         else:
             for ep_obj in episode:
                 cl.append([
-                    "SELECT * FROM [" + self.provider_id + "] WHERE indexerid = ? AND season = ? AND episodes LIKE ? AND quality IN (" + ",".join(
+                    "SELECT * FROM results WHERE provider = ? AND indexerid = ? AND season = ? AND episodes LIKE ? AND quality IN (" + ",".join(
                         [str(x) for x in ep_obj.wantedQuality]) + ")",
-                    [ep_obj.show.indexerid, ep_obj.season, "%|" + str(ep_obj.episode) + "|%"]])
+                    [self.provider_id, ep_obj.show.indexerid, ep_obj.season, "%|" + str(ep_obj.episode) + "|%"]])
 
             sql_results = cache_db_con.mass_action(cl, fetchall=True)
             sql_results = list(itertools.chain(*sql_results))

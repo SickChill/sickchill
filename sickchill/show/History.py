@@ -88,6 +88,7 @@ class History(object):
         Remove all elements older than 30 days from the history
         """
 
+        # self.db.action("DELETE FROM history WHERE date < datetime('now', '-30 days')")
         self.db.action(
             'DELETE '
             'FROM history '

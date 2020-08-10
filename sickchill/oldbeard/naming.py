@@ -81,7 +81,7 @@ class TVEpisode(tv.TVEpisode):
         self.airdate = datetime.date(2010, 3, 9)
         self.show = TVShow()
         self.status = Quality.compositeStatus(common.DOWNLOADED, common.Quality.SDTV)
-        self.release_name = 'Show.Name.S02E03.HDTV.XviD-RLSGROUP'
+        self.release_name = 'Show.Name.S02E03.HDTV.XviD-SICKCHILL'
         self.is_proper = True
 
 
@@ -98,6 +98,7 @@ def check_force_season_folders(pattern=None, multi=None, anime_type=None):
     if anime_type is None:
         anime_type = settings.NAMING_ANIME
 
+    valid = not validate_name(pattern, None, anime_type, file_only=True)
     valid = not validate_name(pattern, None, anime_type, file_only=True)
 
     if multi is not None:
@@ -219,17 +220,17 @@ def generate_sample_ep(multi=None, abd=False, sports=False, anime_type=None):
     ep._airdate = datetime.date(2011, 3, 9)
 
     if abd:
-        ep._release_name = 'Show.Name.2011.03.09.HDTV.XviD-RLSGROUP'
+        ep._release_name = 'Show.Name.2011.03.09.HDTV.XviD-SICKCHILL'
         ep.show.air_by_date = 1
     elif sports:
-        ep._release_name = 'Show.Name.2011.03.09.HDTV.XviD-RLSGROUP'
+        ep._release_name = 'Show.Name.2011.03.09.HDTV.XviD-SICKCHILL'
         ep.show.sports = 1
     else:
         if anime_type != 3:
             ep.show.anime = 1
-            ep._release_name = 'Show.Name.003.HDTV.XviD-RLSGROUP'
+            ep._release_name = 'Show.Name.003.HDTV.XviD-SICKCHILL'
         else:
-            ep._release_name = 'Show.Name.S02E03.HDTV.XviD-RLSGROUP'
+            ep._release_name = 'Show.Name.S02E03.HDTV.XviD-SICKCHILL'
 
     if multi is not None:
         ep._name = "Ep Name (1)"
@@ -237,7 +238,7 @@ def generate_sample_ep(multi=None, abd=False, sports=False, anime_type=None):
         if anime_type != 3:
             ep.show.anime = 1
 
-            ep._release_name = 'Show.Name.003-004.HDTV.XviD-RLSGROUP'
+            ep._release_name = 'Show.Name.003-004.HDTV.XviD-SICKCHILL'
 
             secondEp = TVEpisode(2, 4, 4, "Ep Name (2)")
             secondEp._status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)
@@ -245,7 +246,7 @@ def generate_sample_ep(multi=None, abd=False, sports=False, anime_type=None):
 
             ep.relatedEps.append(secondEp)
         else:
-            ep._release_name = 'Show.Name.S02E03E04E05.HDTV.XviD-RLSGROUP'
+            ep._release_name = 'Show.Name.S02E03E04E05.HDTV.XviD-SICKCHILL'
 
             secondEp = TVEpisode(2, 4, 4, "Ep Name (2)")
             secondEp._status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)

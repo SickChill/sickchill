@@ -2035,7 +2035,7 @@ class TVEpisode(object):
 
         # try to get the release group
         rel_grp = {
-            "SickChill": 'SickChill'
+            "SICKCHILL": 'SICKCHILL'
         }
         if hasattr(self, 'location'):  # from the location name
             rel_grp['location'] = release_group(self.show, self.location)
@@ -2058,7 +2058,7 @@ class TVEpisode(object):
         elif 'location' in rel_grp:
             relgrp = 'location'
         else:
-            relgrp = 'SickChill'
+            relgrp = 'SICKCHILL'
 
         # try to get the release encoder to comply with scene naming standards
         encoder = Quality.sceneQualityFromName(self.release_name.replace(rel_grp[relgrp], ""), epQual)
