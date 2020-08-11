@@ -46,7 +46,7 @@ class Notifier(object):
         payload = urllib.parse.urlencode({'chat_id': id, 'text': message})
         telegram_api = 'https://api.telegram.org/bot%s/%s'
 
-        req = urllib.request.Request(telegram_api % (api_key, 'sendMessage'), payload)
+        req = urllib.request.Request(telegram_api % (api_key, 'sendMessage'), payload.encode())
 
         success = False
         try:
@@ -65,7 +65,7 @@ class Notifier(object):
                 if e.code in error_message:
                     message = error_message.get(e.code)
                 else:
-                    HTTP_STATUS_CODES.get(e.code, message)
+                    message = HTTP_STATUS_CODES.get(e.code, message)
         except Exception as e:
             message = 'Error while sending Telegram message: {0} '.format(e)
         finally:

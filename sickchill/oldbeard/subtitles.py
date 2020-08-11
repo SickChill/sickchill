@@ -520,7 +520,7 @@ def run_subs_extra_scripts(episode, subtitle, video, single=False):
 def refine_video(video, episode):
     # try to enrich video object using information in original filename
     if episode.release_name:
-        guess_ep = subliminal.Episode.fromguess(None, guessit(episode.release_name))
+        guess_ep = subliminal.Episode.fromguess(episode.release_name, guessit(episode.release_name))
         for name in vars(guess_ep):
             if getattr(guess_ep, name) and not getattr(video, name):
                 setattr(video, name, getattr(guess_ep, name))
