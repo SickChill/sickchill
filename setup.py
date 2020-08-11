@@ -7,7 +7,7 @@ from setuptools import find_namespace_packages, setup
 info_dict = {'commands': {}}
 
 
-with open(Path('requirements.txt').absolute(), 'r') as fp:
+with open(Path('requirements.txt').absolute()) as fp:
     info_dict['install_requires'] = [line for line in fp.readlines() if not line.startswith('#') and not line.startswith('git+')]
 
 
@@ -17,9 +17,6 @@ if 'setup.py' in sys.argv[0]:
             exclude=[
                 "*.tests", "*.tests.*", "tests.*", "tests",
                 "lib3.*", "lib3",
-                "build", "build.*",
-                "dist", "dist.*",
-                "cache", "cache.*",
                 "Logs", "Logs.*",
                 "node_modules", "node_modules.*",
                 "bower_components", "bower_componenets.*"

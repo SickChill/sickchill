@@ -15,7 +15,7 @@ SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  #
 class ComingEpisodes(object):
     """
     Snatched: snatched but not yet processed (no re-downloads)
-    Missed:   yesterday...(less than oldbeard.COMING_EPS_MISSED_RANGE)
+    Missed:   yesterday...(less than settings.COMING_EPS_MISSED_RANGE)
     Today:    today
     Soon:     tomorrow till next week
     Later:    later than next week
