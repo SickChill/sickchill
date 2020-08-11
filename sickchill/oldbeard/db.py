@@ -334,7 +334,7 @@ class DBConnection(object):
         assert None not in list(key_dict.values()), _("Control dict to upsert cannot have values of None!")
         if key_dict:
             def make_string(my_dict, separator):
-                return separator.join([x + " = ?" for x in my_dict.keys()])
+                return separator.join(["{} = ?".format(x) for x in my_dict])
 
             # language=TEXT
             query = "UPDATE [{table}] SET {pairs} WHERE {control}".format(
