@@ -152,7 +152,7 @@ class LastUpdate(ResultsTable):
 
 class AddIndex(LastUpdate):
     def test(self):
-        return False
+        return self.has_index('url_name_provider')
 
     def execute(self):
         self.connection.action("CREATE UNIQUE INDEX IF NOT EXISTS url_name_provider ON results (url, name, provider);")

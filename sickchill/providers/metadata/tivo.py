@@ -272,10 +272,7 @@ class TIVOMetadata(generic.GenericMetadata):
 
             logger.debug("Writing episode nfo file to " + nfo_file_path)
 
-            with open(nfo_file_path, 'w', encodeing='utf-8') as nfo_file:
-                # Calling encode directly, b/c often descriptions have wonky characters.
-                nfo_file.write(data)
-
+            data.write(nfo_file_path)
             helpers.chmodAsParent(nfo_file_path)
 
         except EnvironmentError as e:

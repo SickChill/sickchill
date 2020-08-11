@@ -503,14 +503,14 @@ class HelpersEncryptionTests(unittest.TestCase):
 
         FILETYPE_PEM = OpenSSL.crypto.FILETYPE_PEM
         try:
-            with open(cert_path, 'rt') as f:
+            with open(cert_path, 'rb') as f:
                 cert = OpenSSL.crypto.load_certificate(FILETYPE_PEM, f.read())
         except Exception as error:
             removeTestFiles()
             self.fail('Unable to load certificate')
 
         try:
-            with open(pkey_path, 'rt') as f:
+            with open(pkey_path, 'rb') as f:
                 pkey = OpenSSL.crypto.load_privatekey(FILETYPE_PEM, f.read())
         except Exception as error:
             removeTestFiles()

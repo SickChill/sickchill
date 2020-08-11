@@ -105,7 +105,7 @@ class ItaSAProvider(Provider):
             self.auth_code = root.find('data/user/authcode').text
 
             r = self.session.get('https://www.italiansubs.net/', allow_redirects=True, timeout=30)
-            form = re.search('<form.*?id="form-login".*?>.*?</form>', r.content, re.DOTALL)
+            form = re.search(r'<form.*?id="form-login".*?>.*?</form>', r.text, re.DOTALL)
             input_matcher = re.finditer('<input.*?name="(.*?)".*?value="(.*?)".*?/>', form.group())
 
             data = {}

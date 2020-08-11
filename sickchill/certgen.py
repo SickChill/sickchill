@@ -51,7 +51,7 @@ def createCertRequest(pkey, digest="md5", **name):
         setattr(subj, key, value)
 
     req.set_pubkey(pkey)
-    req.sign(pkey, digest)
+    req.sign(pkey, digest.encode())
     return req
 
 
@@ -77,5 +77,5 @@ def createCertificate(req, issuerCert, issuerKey, serial, notBefore, notAfter, d
     cert.set_issuer(issuerCert.get_subject())
     cert.set_subject(req.get_subject())
     cert.set_pubkey(req.get_pubkey())
-    cert.sign(issuerKey, digest)
+    cert.sign(issuerKey, digest.encode())
     return cert

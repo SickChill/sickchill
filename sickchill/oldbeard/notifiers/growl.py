@@ -70,7 +70,7 @@ class Notifier(object):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((host, port))
         s.send(data)
-        response = gntp.core.parse_gntp(s.recv(1024))
+        response = gntp.core.parse_gntp(s.recv(1024).decode())
         s.close()
 
         if debug:

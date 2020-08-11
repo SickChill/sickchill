@@ -77,7 +77,7 @@ def filter_bad_releases(name, parse=True, show=None):
 
     word = containsAtLeastOneWord(name, ignore_words)
     if word:
-        logger.info("Release: " + name + " contains " + word + ", ignoring it")
+        logger.info("Release: {} contains {}, ignoring it".format(name, word))
         return False
 
     # if any of the good strings aren't in the name then say no

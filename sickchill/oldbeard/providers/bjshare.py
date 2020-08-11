@@ -257,7 +257,7 @@ class Provider(TorrentProvider):
             return True
 
         if self.cookies:
-            add_dict_to_cookiejar(self.session.cookies, dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
+            self.add_cookies_from_ui()
 
         cookie_dict = dict_from_cookiejar(self.session.cookies)
         if cookie_dict.get('session'):

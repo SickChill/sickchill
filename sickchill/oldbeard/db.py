@@ -3,6 +3,7 @@ import re
 import sqlite3
 import threading
 import time
+from typing import List
 import warnings
 from sqlite3 import OperationalError
 
@@ -173,7 +174,7 @@ class DBConnection(object):
         return self.get_db_major_version(), self.get_db_minor_version()
 
     def mass_action(self, query_list=None, log_transaction=False, fetchall=False):
-        # type: (list, bool, bool) -> sqlite3.Row
+        # type: (list, bool, bool) -> List[sqlite3.Row]
         """
         Execute multiple queries
 
@@ -386,6 +387,15 @@ class DBConnection(object):
         """
         return column in self.table_info(table_name)
 
+    def has_index(self, index_name):
+        """
+        Check if a table has an index
+
+        :param index_name: Index to check
+        :return: True if column exists, False if it does not
+        """
+        return len(self.select('SELECT 1 FROM sqlite_master WHERE type = "index" AND name = ?', [index_name])) > 0
+
     def add_column(self, table, column, col_type="NUMERIC", default=0):
         """
         Adds a column to a table, default column type is NUMERIC
@@ -478,6 +488,9 @@ class SchemaUpgrade(object):
 
     def has_column(self, table_name, column):
         return self.connection.has_column(table_name=table_name, column=column)
+
+    def has_index(self, index_name):
+        return self.connection.has_index(index_name=index_name)
 
     def add_column(self, table, column, col_type="NUMERIC", default=0):
         self.connection.add_column(table=table, column=column, col_type=col_type, default=default)

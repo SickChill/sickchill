@@ -18,7 +18,7 @@ class LoginHandler(BaseHandler):
         notifiers.notify_login(self.request.remote_ip)
 
         if self.get_body_argument('username', None) == settings.WEB_USERNAME and self.get_body_argument('password', None) == settings.WEB_PASSWORD:
-            remember_me = config.checkbox_to_value(self.get_body_argument('remember_me', 0))
+            remember_me = config.checkbox_to_value(self.get_body_argument('remember_me', '0'))
             self.set_secure_cookie('sickchill_user', settings.API_KEY, expires_days=(None, 30)[remember_me])
             logger.info('User logged into the SickChill web interface')
         else:

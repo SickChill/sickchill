@@ -564,7 +564,13 @@ class GenericProvider(object):
             cookie_validator = re.compile(r'^(\w+=\w+)(;\w+=\w+)*$')
             if not cookie_validator.match(self.cookies):
                 return False, 'Cookie is not correctly formatted: {0}'.format(self.cookies)
-            add_dict_to_cookiejar(self.session.cookies, dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
+
+            new_cookies = {}
+            for cookie in self.cookies.split(';'):
+                key, value = cookie.rsplit('=', 1)
+                new_cookies[key] = value
+
+            add_dict_to_cookiejar(self.session.cookies, new_cookies)
             return True, 'torrent cookie'
 
         return False, 'No Cookies added from ui for provider: {0}'.format(self.name)
