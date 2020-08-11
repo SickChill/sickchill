@@ -18,6 +18,7 @@
                         <th align="center" class="text-nowrap tablesorter-header">${_('Size')}</th>
                         <th align="center" class="text-nowrap tablesorter-header">${_('Seeders')}</th>
                         <th align="center" class="text-nowrap tablesorter-header">${_('Leechers')}</th>
+                        <th align="center" class="text-nowrap tablesorter-header">${_('Download')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -33,6 +34,13 @@
                             <td align="center" class="text-nowrap">${pretty_file_size(result['size'])}</td>
                             <td align="center" class="text-nowrap">${result['seeders']}</td>
                             <td align="center" class="text-nowrap">${result['leechers']}</td>
+                            <td align="center" class="text-nowrap">
+                                <form action="snatchEpisodeManual" method="post">
+                                    <input type="hidden" name="url" value="${result['url']}">
+                                    <input type="hidden" name="show" value="${result['indexerid']}">
+                                    <input type="submit" value="${result['url'].split(':', 1)[0].title()}" class="btn btn-link">
+                                </form>
+                            </td>
                         </tr>
                     % endfor
                 </tbody>
