@@ -16,7 +16,7 @@ from sickchill.helper import try_int
 from sickchill.helper.common import episode_num, pretty_file_size
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException
 from sickchill.oldbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
-from sickchill.oldbeard.common import cpu_presets, FAILED, IGNORED, Overview, Quality, SKIPPED, statusStrings, UNAIRED, WANTED
+from sickchill.oldbeard.common import cpu_presets, FAILED, IGNORED, Overview, Quality, SKIPPED, statusStrings, UNAIRED, WANTED, SNATCHED_BEST
 from sickchill.oldbeard.scene_numbering import (get_scene_absolute_numbering, get_scene_absolute_numbering_for_show, get_scene_numbering,
                                                 get_scene_numbering_for_show, get_xem_absolute_numbering_for_show, get_xem_numbering_for_show,
                                                 set_scene_numbering)
@@ -1506,9 +1506,9 @@ class Home(WebRoot):
         return self.redirect("/home/displayShow?show=" + show)
 
     def searchEpisodeListManual(self):
-        show = self.get_body_arguments('show')
-        season = self.get_body_arguments('season')
-        episode = self.get_body_arguments('episode')
+        show = self.get_query_argument('show')
+        season = self.get_query_argument('season')
+        episode = self.get_query_argument('episode')
 
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
@@ -1530,15 +1530,25 @@ class Home(WebRoot):
         submenu = [{'title': _('Edit'), 'path': 'home/editShow?show={0}'.format(show), 'icon': 'fa fa-pencil'}]
         return t.render(submenu=submenu, title=_('Manual Snatch'), header=_('Manual Snatch'),  controller="home", action="searchEpisodeListManual", results=results)
 
-    # def snatchEpisodeManual(self, result_dict):
-    #     self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-    #     self.set_header('Content-Type', 'application/json')
-    #     result = oldbeard.classes.TorrentSearchResult.make_result(result_dict)
-    #     return search.snatchEpisode(result, SNATCHED_BEST)
-    #
-    # def testSearchEpisodeListManual(self, show=None, season=None, episode=None, search_mode='eponly'):
-    #     r = self.searchEpisodeListManual(show, season, episode, search_mode)
-    #     self.snatchEpisodeManual(r.get('results')[0])
+    def snatchEpisodeManual(self):
+        url = self.get_body_argument('url')
+        show = self.get_body_argument('show')
+
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header('Content-Type', 'application/json')
+
+        cache_db_con = db.DBConnection('cache.db', row_type="dict")
+        result = cache_db_con.select_one('SELECT * FROM results WHERE url = ?', [url])
+        if not result:
+            json.dumps({'result': 'failure', 'message': _('Result not found in the cache')})
+
+        result = sickchill.oldbeard.classes.TorrentSearchResult.make_result(result)
+        if isinstance(result, str):
+            sickchill.oldbeard.logger.info(_('Could not snatch manually selected result: {}').format(result))
+        elif result:
+            sickchill.oldbeard.search.snatchEpisode(result, SNATCHED_BEST)
+
+        return self.redirect("/home/displayShow?show=" + show)
 
     def searchEpisode(self, show=None, season=None, episode=None, downCurQuality=0):
 

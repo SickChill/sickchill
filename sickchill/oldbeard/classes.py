@@ -57,14 +57,18 @@ class SearchResult(object):
         self.size = result_dict.get('size')
         self.version = result_dict.get('version')
         self.release_group = result_dict.get('release_group')
-        self.quality = result_dict.get('quality')
-        self.provider = sickchill.oldbeard.providers.getProviderModule(result_dict.get('provider')).provider
+        self.quality = int(result_dict.get('quality'))
+        self.provider = sickchill.oldbeard.providers.getProviderClass(result_dict.get('provider'))
 
     @classmethod
     def make_result(cls, result_dict):
-        show = sickchill.show.Show.find(settings.showList, int(result_dict.get('show')))
-        episode = show.getEpisode(result_dict.get('season'), result_dict.get('episode'))
-        result = cls([episode])
+        show = sickchill.show.Show.Show._validate_indexer_id(result_dict.get('indexerid'))
+        if not show[1]:
+            return show[0]
+
+        show = show[1]
+        episode_objects = [show.getEpisode(result_dict.get('season'), ep) for ep in result_dict.get('episodes').split('|') if ep]
+        result = cls(episode_objects)
         result.from_json(result_dict)
         return result
 

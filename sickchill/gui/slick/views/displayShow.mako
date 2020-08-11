@@ -581,6 +581,9 @@
                                                         <span class="displayshow-icon-search" title="Manual Search" />
                                                     </a>
                                                 % endif
+                                                <a class="manualSnatch" href="searchEpisodeListManual?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}">
+                                                    <span class="displayshow-icon-plus" title="Manual Snatch" />
+                                                </a>
                                             % endif
                                             % if int(epResult["status"]) not in Quality.SNATCHED + Quality.SNATCHED_PROPER and settings.USE_SUBTITLES and show.subtitles and epResult["location"] and subtitles.needs_subtitles(epResult['subtitles']):
                                                 % if int(epResult["season"]) != 0 or settings.SUBTITLES_INCLUDE_SPECIALS:

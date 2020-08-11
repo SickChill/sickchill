@@ -21,7 +21,7 @@ class Provider(TorrentProvider):
         self.minleech = 0
 
         # URLs
-        self.url = 'https://torrentproject.se/'
+        self.url = 'https://torrentproject.to/'
 
         self.custom_url = None
 
