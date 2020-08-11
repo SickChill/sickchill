@@ -16,7 +16,7 @@ from sickchill.helper import try_int
 from sickchill.helper.common import episode_num, pretty_file_size
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException
 from sickchill.oldbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
-from sickchill.oldbeard.common import cpu_presets, FAILED, IGNORED, Overview, Quality, SKIPPED, statusStrings, UNAIRED, WANTED, SNATCHED_BEST
+from sickchill.oldbeard.common import cpu_presets, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED_BEST, statusStrings, UNAIRED, WANTED
 from sickchill.oldbeard.scene_numbering import (get_scene_absolute_numbering, get_scene_absolute_numbering_for_show, get_scene_numbering,
                                                 get_scene_numbering_for_show, get_xem_absolute_numbering_for_show, get_xem_numbering_for_show,
                                                 set_scene_numbering)
