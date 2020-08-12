@@ -187,7 +187,7 @@ class UpdateManager(object):
             cur_hash = self.get_newest_commit_hash()
             assert len(cur_hash) == 40, "Commit hash wrong length: {0} hash: {1}".format(len(cur_hash), cur_hash)
 
-            check_url = "https://raw.githubusercontent.com/{0}/{1}/{2}/oldbeard/databases/main.py"
+            check_url = "https://raw.githubusercontent.com/{0}/{1}/{2}/sickchill/oldbeard/databases/main.py"
             for attempt in (cur_hash, "master"):
                 response = helpers.getURL(check_url.format(settings.GIT_ORG, settings.GIT_REPO, attempt), session=self.session, returns='text')
                 if response:
