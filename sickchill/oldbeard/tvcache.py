@@ -12,8 +12,11 @@ from .name_parser.parser import InvalidNameException, InvalidShowException, Name
 from .rssfeeds import getFeed
 
 
+provider_cache_db = {}
+
+
 class CacheDBConnection(db.DBConnection):
-    def __init__(self, provider_name):
+    def __init__(self):
         super(CacheDBConnection, self).__init__('cache.db')
         db.upgrade_database(self, cache.InitialSchema)
         self.action("DELETE from results WHERE added < datetime('now','-30 days')")
@@ -29,10 +32,10 @@ class TVCache(object):
 
     def _get_db(self):
         # init provider database if not done already
-        if not self.provider_db:
-            self.provider_db = CacheDBConnection(self.provider_id)
+        if not provider_cache_db.get('instance'):
+            provider_cache_db['instance'] = CacheDBConnection()
 
-        return self.provider_db
+        return provider_cache_db.get('instance')
 
     def _clear_cache(self):
         if self.should_clear_cache():
@@ -233,7 +236,8 @@ class TVCache(object):
                 "INSERT INTO results ("
                 "provider, name, season, episodes, indexerid, url, time, quality, release_group, version, seeders, leechers, size) "
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (url, name, provider) DO UPDATE SET "
-                "seeders=excluded.seeders, leechers=excluded.leechers, time=excluded.time",
+                "seeders=excluded.seeders, leechers=excluded.leechers, time=excluded.time, provider=excluded.provider, "
+                "size=excluded.size WHERE url=excluded.url",
                 [self.provider_id, name, season, episode_text, parse_result.show.indexerid, url,
                  cur_timestamp, quality, release_group, version, seeders, leechers, size]
             ]
@@ -253,9 +257,9 @@ class TVCache(object):
                         items = item.split('|')
                         for _item in items:
                             if _item.upper() not in sql:
-                                sql += " OR name LIKE '%.{}.%".format(_item)
+                                sql += " OR name LIKE '%.{}.%'".format(_item)
                     elif item.upper() not in sql:
-                        sql += " OR name LIKE '%.{}.%".format(item)
+                        sql += " OR name LIKE '%.{}.%'".format(item)
 
         if date is not None:
             sql += " AND time >= " + str(int(time.mktime(date.timetuple())))

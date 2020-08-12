@@ -2,7 +2,7 @@
 import sys
 from pathlib import Path
 
-from setuptools import find_namespace_packages, setup
+from setuptools import setup
 
 info_dict = {'commands': {}}
 

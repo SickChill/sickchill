@@ -189,7 +189,7 @@ class HelpersZipTests(unittest.TestCase):
         Test backup_config_zip
         """
         here = os.path.dirname(__file__)
-        files = [f for f in os.listdir(here) if f[-3:] in [".db", ".py"]]
+        files = [os.path.join(here, f) for f in os.listdir(here) if f[-3:] in [".db", ".py"]]
         zip_path = os.path.join(here, '_backup_test.zip')
 
         self.assertTrue(helpers.backup_config_zip(files, zip_path, here))
@@ -203,14 +203,14 @@ class HelpersZipTests(unittest.TestCase):
         Test restore_config_zip
         """
         here = os.path.dirname(__file__)
-        files = [f for f in os.listdir(here) if f[-3:] in [".db", ".py"]]
-        zip_path = os.path.join(here, '_restore_test.zip')
+        files = [os.path.join(here, f) for f in os.listdir(here) if f[-3:] in [".db", ".py"]]
+        zip_path = os.path.join(here, '_backup_test.zip')
 
         helpers.backup_config_zip(files, zip_path, here)
         restore_container = os.path.join(here, '_restore_tests')
         os.mkdir(restore_container)
         restore_path = os.path.join(restore_container, 'test')
-        self.assertFalse(helpers.restore_config_zip(os.path.abspath(files[1]), restore_path))  # test invalid zip
+        self.assertFalse(helpers.restore_config_zip(files[1], restore_path))  # test invalid zip
         self.assertTrue(helpers.restore_config_zip(zip_path, restore_path))
         self.assertTrue(helpers.restore_config_zip(zip_path, restore_path)) # test extractDir exists
 
