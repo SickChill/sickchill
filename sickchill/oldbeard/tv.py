@@ -2026,7 +2026,7 @@ class TVEpisode(object):
             # return guess_result.get('release_group', '').strip('.- []{}')
             return parse_result.release_group.strip('.- []{}')
 
-        epStatus_, epQual = Quality.splitCompositeStatus(self.status)  # @UnusedVariable
+        epStatus_, epQual = Quality.splitCompositeStatus(self.status)
 
         if settings.NAMING_STRIP_YEAR:
             show_name = re.sub(r"\(\d+\)$", "", self.show.name).strip()

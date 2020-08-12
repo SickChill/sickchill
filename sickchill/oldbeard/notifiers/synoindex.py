@@ -34,10 +34,9 @@ class Notifier(object):
             logger.debug("Executing command " + str(synoindex_cmd))
             logger.debug("Absolute path to command: " + os.path.abspath(synoindex_cmd[0]))
             try:
-                p = subprocess.Popen(synoindex_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                     cwd=settings.DATA_DIR)
-                out, err = p.communicate()  # @UnusedVariable
-                logger.debug("Script result: " + str(out))
+                p = subprocess.Popen(synoindex_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=settings.DATA_DIR, text=True)
+                out, err = p.communicate()
+                logger.debug(_("Script result: {0}").format(str(out or err).strip()))
             except OSError as e:
                 logger.exception("Unable to run synoindex: " + str(e))
 
@@ -60,9 +59,8 @@ class Notifier(object):
             logger.debug("Executing command " + str(synoindex_cmd))
             logger.debug("Absolute path to command: " + os.path.abspath(synoindex_cmd[0]))
             try:
-                p = subprocess.Popen(synoindex_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                     cwd=settings.DATA_DIR)
-                out, err = p.communicate()  # @UnusedVariable
-                logger.debug("Script result: " + str(out))
+                p = subprocess.Popen(synoindex_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=settings.DATA_DIR, text=True)
+                out, err = p.communicate()
+                logger.debug(_("Script result: {0}").format(str(out or err).strip()))
             except OSError as e:
                 logger.exception("Unable to run synoindex: " + str(e))

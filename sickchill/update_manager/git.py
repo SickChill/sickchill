@@ -102,13 +102,11 @@ class GitUpdateManager(UpdateManagerBase):
 
         try:
             logger.debug("Executing {0} with your shell in {1}".format(cmd, settings.PROG_DIR))
-            p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                 shell=True, cwd=settings.PROG_DIR)
+            p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, text=True, cwd=settings.PROG_DIR)
             output, err = p.communicate()
             exit_status = p.returncode
-
             if output:
-                output = output.decode().strip()
+                output = output.strip()
 
         except OSError:
             logger.info("Command {} didn't work".format(cmd))
@@ -141,7 +139,7 @@ class GitUpdateManager(UpdateManagerBase):
         Returns: True for success or False for failure
         """
 
-        output, errors_, exit_status = self._run_git(self._git_path, 'rev-parse HEAD')  # @UnusedVariable
+        output, errors_, exit_status = self._run_git(self._git_path, 'rev-parse HEAD')
 
         if exit_status == 0 and output:
             cur_commit_hash = output.strip()
@@ -154,7 +152,7 @@ class GitUpdateManager(UpdateManagerBase):
             return False
 
     def _find_installed_branch(self):
-        branch_info, errors_, exit_status = self._run_git(self._git_path, 'symbolic-ref -q HEAD')  # @UnusedVariable
+        branch_info, errors_, exit_status = self._run_git(self._git_path, 'symbolic-ref -q HEAD')
         if exit_status == 0 and branch_info:
             branch = branch_info.strip().replace('refs/heads/', '', 1)
             if branch:
@@ -201,7 +199,7 @@ class GitUpdateManager(UpdateManagerBase):
         if exit_status == 0 and output:
             cur_commit_hash = output.strip()
 
-            if not re.match('^[a-z0-9]+$', cur_commit_hash):
+            if not re.match(r'^[a-z0-9]+$', cur_commit_hash):
                 logger.debug("Output doesn't look like a hash, not using it")
                 return
 
@@ -262,9 +260,11 @@ class GitUpdateManager(UpdateManagerBase):
         if not self._cur_commit_hash:
             return True
         else:
+            import traceback
             try:
                 self._check_github_for_update()
             except Exception as e:
+                logger.debug(traceback.format_exc())
                 logger.warning("Unable to contact github, can't check for update: " + repr(e))
                 return False
 
@@ -307,7 +307,7 @@ class GitUpdateManager(UpdateManagerBase):
         Calls git clean to remove all untracked files. Returns a bool depending
         on the call's success.
         """
-        stdout_, stderr_, exit_status = self._run_git(self._git_path, 'clean -df ""')  # @UnusedVariable
+        stdout_, stderr_, exit_status = self._run_git(self._git_path, 'clean -df ""')
         if exit_status == 0:
             return True
 
@@ -316,7 +316,7 @@ class GitUpdateManager(UpdateManagerBase):
         Calls git clean to remove all untracked files in the lib dir before restart. Returns a bool depending
         on the call's success.
         """
-        stdout_, stderr_, exit_status = self._run_git(self._git_path, 'clean -df lib')  # @UnusedVariable
+        stdout_, stderr_, exit_status = self._run_git(self._git_path, 'clean -df lib')
         if exit_status == 0:
             return True
 
@@ -327,7 +327,7 @@ class GitUpdateManager(UpdateManagerBase):
         Calls git reset --hard to perform a hard reset. Returns a bool depending
         on the call's success.
         """
-        stdout_, stderr_, exit_status = self._run_git(self._git_path, 'reset --hard')  # @UnusedVariable
+        stdout_, stderr_, exit_status = self._run_git(self._git_path, 'reset --hard')
         if exit_status == 0:
             return True
 
@@ -336,7 +336,7 @@ class GitUpdateManager(UpdateManagerBase):
         self._update_remote_origin()
         settings.BRANCH = self._find_installed_branch()
 
-        branches, stderr_, exit_status = self._run_git(self._git_path, 'ls-remote --heads {0}'.format(settings.GIT_REMOTE))  # @UnusedVariable
+        branches, stderr_, exit_status = self._run_git(self._git_path, 'ls-remote --heads {0}'.format(settings.GIT_REMOTE))
         if exit_status == 0 and branches:
             if branches:
                 return re.findall(r'refs/heads/(.*)', branches)

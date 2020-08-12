@@ -34,7 +34,7 @@ class ConfigProviders(Config):
         if not name:
             return json.dumps({'error': 'No Provider Name specified'})
 
-        providerDict = dict(list(zip((x.get_id() for x in settings.newznabProviderList), settings.newznabProviderList)))
+        providerDict = {x.get_id(): x for x in settings.newznabProviderList}
 
         cur_id = GenericProvider.make_id(name)
 
@@ -72,8 +72,7 @@ class ConfigProviders(Config):
     @staticmethod
     def deleteNewznabProvider(nnid):
 
-        providerDict = dict(list(zip((x.get_id() for x in settings.newznabProviderList), settings.newznabProviderList)))
-
+        providerDict = {x.get_id(): x for x in settings.newznabProviderList}
         if nnid not in providerDict or providerDict[nnid].default:
             return '0'
 
@@ -106,8 +105,7 @@ class ConfigProviders(Config):
     @staticmethod
     def deleteTorrentRssProvider(provider_id):
 
-        providerDict = dict(
-            list(zip((x.get_id() for x in settings.torrentRssProviderList), settings.torrentRssProviderList)))
+        providerDict = {x.get_id(): x for x in settings.torrentRssProviderList}
 
         if provider_id not in providerDict:
             return '0'
@@ -121,8 +119,7 @@ class ConfigProviders(Config):
         return '1'
 
     def saveProviders(self, newznab_string='', torrentrss_string='', provider_order=None, **kwargs):
-        newznabProviderDict = dict(
-            list(zip((x.get_id() for x in settings.newznabProviderList), settings.newznabProviderList)))
+        newznabProviderDict = {x.get_id(): x for x in settings.newznabProviderList}
 
         finished_names = []
 
@@ -169,8 +166,7 @@ class ConfigProviders(Config):
         # if not torrentrss_string:
         #     logger.debug('No torrentrss_string passed to saveProviders')
 
-        torrentRssProviderDict = dict(
-            list(zip((x.get_id() for x in settings.torrentRssProviderList), settings.torrentRssProviderList)))
+        torrentRssProviderDict = {x.get_id(): x for x in settings.torrentRssProviderList}
 
         finished_names = []
 

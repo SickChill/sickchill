@@ -73,7 +73,7 @@ class NewznabProvider(NZBProvider):
                 seen_values.add(value)
 
         providers_list = providers_set
-        providers_dict = dict(list(zip([x.name for x in providers_list], providers_list)))
+        providers_dict = {x.name: x for x in providers_list}
 
         for default in default_list:
             if not default:

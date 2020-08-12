@@ -330,7 +330,6 @@ class DBConnection(object):
 
         changesBefore = self.connection.total_changes
 
-        # noinspection PyUnresolvedReferences
         assert None not in list(key_dict.values()), _("Control dict to upsert cannot have values of None!")
         if key_dict:
             def make_string(my_dict, separator):

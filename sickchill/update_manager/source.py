@@ -178,7 +178,7 @@ class SourceUpdateManager(UpdateManagerBase):
             # walk temp folder and move files to main folder
             content_dir = os.path.join(sr_update_dir, update_dir_contents[0])
             logger.info("Moving files from " + content_dir + " to " + os.path.dirname(settings.PROG_DIR))
-            for dirname, stderr_, filenames in os.walk(content_dir):  # @UnusedVariable
+            for dirname, stderr_, filenames in os.walk(content_dir):
                 dirname = dirname[len(content_dir) + 1:]
                 for curfile in filenames:
                     old_path = os.path.join(content_dir, dirname, curfile)

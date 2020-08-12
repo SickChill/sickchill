@@ -335,7 +335,7 @@
                         %>
                         % for curService in subtitles.sorted_service_list():
                             <%
-                                if curService['name'] not in providerLoginDict.keys():
+                                if curService['name'] not in providerLoginDict:
                                     continue
                             %>
                             <div class="field-pair row">

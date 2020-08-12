@@ -415,11 +415,11 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
     :param old_path_length: The length of media file path (old name) WITHOUT THE EXTENSION
     """
 
-    # new_dest_dir, new_dest_name = os.path.split(new_path)  # @UnusedVariable
+    # new_dest_dir, new_dest_name = os.path.split(new_path)
 
     if old_path_length == 0 or old_path_length > len(cur_path):
         # approach from the right
-        cur_file_name, cur_file_ext = os.path.splitext(cur_path)  # @UnusedVariable
+        cur_file_name, cur_file_ext = os.path.splitext(cur_path)
     else:
         # approach from the left
         cur_file_ext = cur_path[old_path_length:]
@@ -1387,9 +1387,9 @@ def disk_usage(path):
         if platform.system() == 'Darwin':
             try:
                 import subprocess
-                call = subprocess.Popen(["df", "-k", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                call = subprocess.Popen(["df", "-k", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
                 output = call.communicate()[0]
-                return int(output.decode().split("\n")[1].split()[3]) * 1024
+                return int(output.split("\n")[1].split()[3]) * 1024
             except Exception:
                 pass
 

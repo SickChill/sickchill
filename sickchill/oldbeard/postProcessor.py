@@ -759,7 +759,7 @@ class PostProcessor(object):
 
         # if there is a quality available in the status then we don't need to bother guessing from the filename
         if ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
-            ep_status_, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)  # @UnusedVariable
+            ep_status_, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
             if ep_quality != common.Quality.UNKNOWN:
                 self._log(
                     "The old status had a quality in it, using that: " + common.Quality.qualityStrings[ep_quality],
@@ -789,7 +789,7 @@ class PostProcessor(object):
 
         # Try getting quality from the episode (snatched) status
         if ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
-            ep_status_, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)  # @UnusedVariable
+            ep_status_, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
             if ep_quality != common.Quality.UNKNOWN:
                 self._log(
                     "The old status had a quality in it, using that: " + common.Quality.qualityStrings[ep_quality],
@@ -834,11 +834,11 @@ class PostProcessor(object):
             try:
                 p = subprocess.Popen(
                     script_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT, cwd=settings.DATA_DIR
+                    stderr=subprocess.STDOUT, cwd=settings.DATA_DIR, text=True
                 )
-                out, err_ = p.communicate()
+                out, err = p.communicate()
 
-                self._log("Script result: {0}".format(out), logger.DEBUG)
+                self._log(_("Script result: {0}").format(str(out or err).strip()), logger.DEBUG)
 
             except Exception as e:
                 self._log("Unable to run extra_script: {0}".format(str(e)))

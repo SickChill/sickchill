@@ -410,7 +410,7 @@ class SickChill(object):
                     logger.info('Restarting SickChill with {options}'.format(options=popen_list))
                     # shutdown the logger to make sure it's released the logfile BEFORE it restarts SR.
                     logger.shutdown()
-                    subprocess.Popen(popen_list, cwd=os.getcwd())
+                    subprocess.Popen(popen_list, cwd=os.getcwd(), text=True)
 
         # Make sure the logger has stopped, just in case
         logger.shutdown()
