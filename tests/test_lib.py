@@ -227,36 +227,11 @@ class TestCacheDBConnection(TestDBConnection, object):
     """
     Test connecting to the cache database.
     """
-    def __init__(self, provider_name):
+    def __init__(self, filename=TEST_CACHE_DB_NAME, suffix=None, row_type='dict'):
+        if TEST_DIR not in filename:
+            filename = os.path.join(TEST_DIR, filename)
+        super().__init__(filename=filename, suffix=suffix, row_type=row_type)
 
-        db.DBConnection.__init__(self, os.path.join(TEST_DIR, TEST_CACHE_DB_NAME), row_type='dict')
-
-        # Create the table if it's not already there
-        try:
-            if not self.has_table(provider_name):
-                sql = "CREATE TABLE [" + provider_name + "] (name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT, release_group TEXT)"
-                self.connection.execute(sql)
-                self.connection.commit()
-
-        # Catching too general exception
-        except Exception as error:
-            if str(error) != "table [" + provider_name + "] already exists":
-                raise
-
-            # add version column to table if missing
-            if not self.has_column(provider_name, 'version'):
-                self.add_column(provider_name, 'version', "NUMERIC", "-1")
-
-        # Create the table if it's not already there
-        try:
-            sql = "CREATE TABLE lastUpdate (provider TEXT, time NUMERIC);"
-            self.connection.execute(sql)
-            self.connection.commit()
-
-        # Catching too general exception
-        except Exception as error:
-            if str(error) != "table lastUpdate already exists":
-                raise
 
 # this will override the normal db connection
 sickchill.oldbeard.db.DBConnection = TestDBConnection
