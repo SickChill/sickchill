@@ -15,7 +15,6 @@ if 'setup.py' in sys.argv[0]:
     setup(
         packages=['sickchill'],
         install_requires=info_dict['install_requires'],
-        test_suite="tests",
         cmdclass=info_dict['commands'],
         message_extractors={
             'gui': [

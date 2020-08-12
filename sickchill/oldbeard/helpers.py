@@ -1104,7 +1104,7 @@ def backup_config_zip(fileList, archive, arcname=None):
     """
 
     try:
-        a = zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, allowZip64=True)
+        a = zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED)
         for f in fileList:
             a.write(f, os.path.relpath(f, arcname))
         a.close()
