@@ -116,7 +116,7 @@ def allPossibleShowNames(show, season=-1):
     if not show.is_anime:
         newShowNames = []
         country_list = common.countryList
-        country_list.update(dict(zip(common.countryList.values(), common.countryList)))
+        country_list.update({common.countryList[k]: k for k in common.countryList})
         for curName in set(showNames):
             if not curName:
                 continue
