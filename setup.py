@@ -13,19 +13,10 @@ with open(Path('requirements.txt').absolute()) as fp:
 
 if 'setup.py' in sys.argv[0]:
     setup(
-        packages=find_namespace_packages(
-            exclude=[
-                "*.tests", "*.tests.*", "tests.*", "tests",
-                "lib3.*", "lib3",
-                "Logs", "Logs.*",
-                "node_modules", "node_modules.*",
-                "bower_components", "bower_componenets.*"
-            ]
-        ),
+        packages=['sickchill'],
         install_requires=info_dict['install_requires'],
         test_suite="tests",
         cmdclass=info_dict['commands'],
-
         message_extractors={
             'gui': [
                 ('**/views/**.mako', 'mako', {'input_encoding': 'utf-8'}),
