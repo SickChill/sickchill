@@ -26,7 +26,7 @@ broken_providers = [
 
 def sortedProviderList(randomize=False):
     initialList = settings.providerList + settings.newznabProviderList + settings.torrentRssProviderList
-    providerDict = dict(list(zip([x.get_id() for x in initialList], initialList)))
+    providerDict = dict(zip((x.get_id() for x in initialList), initialList))
 
     newList = []
 

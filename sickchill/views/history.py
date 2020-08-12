@@ -31,7 +31,6 @@ class History(WebRoot):
                 'time': row['date']
             }
 
-            # noinspection PyTypeChecker
             if not any((history['show_id'] == row['show_id'] and
                         history['season'] == row['season'] and
                         history['episode'] == row['episode'] and

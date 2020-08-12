@@ -64,7 +64,7 @@ class BaseHandler(RequestHandler):
             exc_info = kwargs["exc_info"]
             trace_info = ''.join(["{0}<br>".format(line) for line in traceback.format_exception(*exc_info)])
             request_info = ''.join(["<strong>{0}</strong>: {1}<br>".format(k, self.request.__dict__[k]) for k in
-                                    self.request.__dict__.keys()])
+                                    self.request.__dict__])
             error = exc_info[1]
 
             self.set_header('Content-Type', 'text/html')

@@ -736,8 +736,8 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <select name="${curTorrentProvider.get_id("_cat")}"
                                                     id="${curTorrentProvider.get_id("_cat")}" class="form-control input-sm input200">
-                                                % for i in curTorrentProvider.category_dict.keys():
-                                                    <option value="${curTorrentProvider.category_dict[i]}" ${('', 'selected="selected"')[curTorrentProvider.category_dict[i] == curTorrentProvider.cat]}>${i}</option>
+                                                % for i in curTorrentProvider.category_dict.values():
+                                                    <option value="${i}" ${('', 'selected="selected"')[i == curTorrentProvider.cat]}>${i}</option>
                                                 % endfor
                                             </select>
                                         </div>

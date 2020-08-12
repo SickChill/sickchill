@@ -195,7 +195,7 @@ class Home(WebRoot):
         host = config.clean_url(self.get_body_argument('host'))
         connection, accesMsg = sab.getSabAccesMethod(host)
         if connection:
-            authed, authMsg = sab.testAuthentication(host, username, password, apikey)  # @UnusedVariable
+            authed, authMsg = sab.testAuthentication(host, username, password, apikey)
             if authed:
                 return _("Success. Connected and authenticated")
             else:
@@ -1447,7 +1447,7 @@ class Home(WebRoot):
             return self._genericMessage(_("Error"), _("Show not in show list"))
 
         try:
-            show_obj.location  # @UnusedVariable
+            show_obj.location
         except ShowDirectoryNotFoundException:
             return self._genericMessage(_("Error"), _("Can't rename episodes when the show dir is missing."))
 
@@ -1469,7 +1469,7 @@ class Home(WebRoot):
             return self._genericMessage(_("Error"), _("Show not in show list"))
 
         try:
-            show_obj.location  # @UnusedVariable
+            show_obj.location
         except ShowDirectoryNotFoundException:
             return self._genericMessage(_("Error"), _("Can't rename episodes when the show dir is missing."))
 

@@ -337,7 +337,7 @@ class ImageCache(object):
                 logger.debug("[{}] Unable to search for images in show dir because it doesn't exist".format(show_obj.indexerid))
 
         # download from indexer for missing ones
-        for cur_image_type in need_images.keys():
+        for cur_image_type in need_images:
             logger.debug("[{}] Seeing if we still need a {}: {}".format(show_obj.indexerid, self.image_str[cur_image_type], need_images[cur_image_type]))
             if cur_image_type in need_images and need_images[cur_image_type]:
                 self._cache_image_from_indexer(show_obj, cur_image_type)

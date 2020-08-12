@@ -507,11 +507,10 @@ def run_subs_extra_scripts(episode, subtitle, video, single=False):
         # use subprocess to run the command and capture output
         logger.info('Executing command: {0}'.format(inner_cmd))
         try:
-            process = subprocess.Popen(inner_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                       stderr=subprocess.STDOUT, cwd=settings.DATA_DIR)
+            process = subprocess.Popen(inner_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=settings.DATA_DIR, text=True)
 
-            stdout, stderr_ = process.communicate()
-            logger.debug('Script result: {0}'.format(stdout))
+            stdout, stderr = process.communicate()
+            logger.debug('Script result: {0}'.format(str(stdout or stderr).strip()))
 
         except Exception as error:
             logger.info('Unable to run subs_extra_script: {0}'.format(str(error)))

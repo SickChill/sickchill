@@ -315,7 +315,7 @@ class NumDictTest(unittest.TestCase):
         self.assertNotEqual(my_num_dict_a, my_num_dict)
 
         # Test keys, items, values
-        self.assertEqual(sorted(num_dict_2.keys()), sorted(dict_2.keys()))
+        self.assertEqual(sorted(num_dict_2), sorted(dict_2))
         self.assertEqual(sorted(num_dict_2.items()), sorted(dict_2.items()))
         self.assertEqual(sorted(num_dict_2.values()), sorted(dict_2.values()))
 
@@ -363,7 +363,7 @@ class NumDictTest(unittest.TestCase):
         ikeys = []
         for k in num_dict_2:
             ikeys.append(k)
-        self.assertEqual(set(ikeys), set(num_dict_2.keys()))
+        self.assertEqual(set(ikeys), set(num_dict_2))
 
         # Test setdefault
         val = 1
@@ -414,7 +414,7 @@ class NumDictTest(unittest.TestCase):
         self.assertEqual(num_dict_d[1], 2)
         self.assertEqual(num_dict_d[3], 4)
         self.assertNotIn(2, num_dict_d)
-        self.assertNotIn(2, num_dict_d.keys())
+        self.assertNotIn(2, num_dict_d)
         self.assertEqual(num_dict_d[2], 42)
 
         class NumDictE(NumDict):
