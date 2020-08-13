@@ -160,23 +160,23 @@ class ShowIndexer(object):
                 self.lang = __language or settings.INDEXER_DEFAULT_LANGUAGE
         return self.series_poster_url(__TVShow(indexerid, language, indexer), thumb)
 
-    def series_poster_url(self, show, thumb=False):
-        return self.indexers[show.indexer].series_poster_url(show, thumb)
+    def series_poster_url(self, show, thumb=False, multiple=False):
+        return self.indexers[show.indexer].series_poster_url(show, thumb, multiple)
 
-    def series_banner_url(self, show, thumb=False):
-        return self.indexers[show.indexer].series_banner_url(show, thumb)
+    def series_banner_url(self, show, thumb=False, multiple=False):
+        return self.indexers[show.indexer].series_banner_url(show, thumb, multiple)
 
-    def series_fanart_url(self, show, thumb=False):
-        return self.indexers[show.indexer].series_fanart_url(show, thumb)
+    def series_fanart_url(self, show, thumb=False, multiple=False):
+        return self.indexers[show.indexer].series_fanart_url(show, thumb, multiple)
 
-    def season_poster_url(self, show, season, thumb=False):
-        return self.indexers[show.indexer].season_poster_url(show, season, thumb)
+    def season_poster_url(self, show, season, thumb=False, multiple=False):
+        return self.indexers[show.indexer].season_poster_url(show, season, thumb, multiple)
 
-    def season_banner_url(self, show, season, thumb=False):
-        return self.indexers[show.indexer].season_banner_url(show, season, thumb)
+    def season_banner_url(self, show, season, thumb=False, multiple=False):
+        return self.indexers[show.indexer].season_banner_url(show, season, thumb, multiple)
 
-    def episode_image_url(self, episode):
-        return self.indexers[episode.show.indexer].episode_image_url(episode)
+    def episode_image_url(self, episode, multiple=False):
+        return self.indexers[episode.show.indexer].episode_image_url(episode, multiple)
 
     def get_indexer_favorites(self):
         results = []

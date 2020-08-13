@@ -8,6 +8,7 @@ from .config import (Config, ConfigAnime, ConfigBackupRestore, ConfigNotificatio
                      ConfigSubtitles)
 from .history import History
 from .home import Home
+from .imageSelector import ImageSelector
 from .index import BaseHandler, WebHandler, WebRoot
 from .irc import HomeIRC
 from .logs import ErrorLogs

@@ -30,6 +30,8 @@ from ..oldbeard import clients, config, db, filters, helpers, notifiers, sab, se
 from .common import PageTemplate
 from .index import WebRoot
 from .routes import Route
+from ..providers.metadata.generic import GenericMetadata
+from ..providers.metadata.helpers import getShowImage
 
 
 @Route('/home(/?.*)', name='home')
@@ -927,7 +929,9 @@ class Home(WebRoot):
                  air_by_date=None, sports=None, dvdorder=None, indexerLang=None,
                  subtitles=None, subtitles_sr_metadata=None, rls_ignore_words=None, rls_require_words=None, rls_prefer_words=None,
                  anime=None, blacklist=None, whitelist=None, scene=None,
-                 defaultEpStatus=None, quality_preset=None):
+                 defaultEpStatus=None, quality_preset=None,
+                 custom_name='',
+                 poster=None, banner=None, fanart=None):
 
         anidb_failed = False
 
@@ -1039,6 +1043,36 @@ class Home(WebRoot):
                     show_list.append({'show_name': unquote_plus(cur_show), 'custom': True})
 
                 exceptions[int(season)] = show_list
+
+        show_obj.custom_name = custom_name
+
+        metadata_generator = GenericMetadata()
+        if poster:
+            poster_parts = poster.split('|')
+            img_url = poster_parts[0]
+            img_thumb_url = poster_parts[1]
+            img_data = getShowImage(img_url)
+            img_thumb_data = getShowImage(img_thumb_url)
+            dest_path = settings.IMAGE_CACHE.poster_path(show_obj.indexerid)
+            dest_thumb_path = settings.IMAGE_CACHE.poster_thumb_path(show_obj.indexerid)
+            metadata_generator._write_image(img_data, dest_path, overwrite=True)
+            metadata_generator._write_image(img_thumb_data, dest_thumb_path, overwrite=True)
+        if banner:
+            banner_parts = banner.split('|')
+            img_url = banner_parts[0]
+            img_thumb_url = banner_parts[1]
+            img_data = getShowImage(img_url)
+            img_thumb_data = getShowImage(img_thumb_url)
+            dest_path = settings.IMAGE_CACHE.banner_path(show_obj.indexerid)
+            dest_thumb_path = settings.IMAGE_CACHE.banner_thumb_path(show_obj.indexerid)
+            metadata_generator._write_image(img_data, dest_path, overwrite=True)
+            metadata_generator._write_image(img_thumb_data, dest_thumb_path, overwrite=True)
+        if fanart:
+            fanart_parts = fanart.split('|')
+            img_url = fanart_parts[0]
+            img_data = getShowImage(img_url)
+            dest_path = settings.IMAGE_CACHE.fanart_path(show_obj.indexerid)
+            metadata_generator._write_image(img_data, dest_path, overwrite=True)
 
         # If directCall from mass_edit_update no scene exceptions handling or blackandwhite list handling
         if not directCall:

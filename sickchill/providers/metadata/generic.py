@@ -662,7 +662,7 @@ class GenericMetadata(object):
         return self._write_image(image_data, season_banner_file_path)
 
     @staticmethod
-    def _write_image(image_data, image_path):
+    def _write_image(image_data, image_path, overwrite=False):
         """
         Saves the data in image_data to the location image_path. Returns True/False
         to represent success or failure.
@@ -672,7 +672,7 @@ class GenericMetadata(object):
         """
 
         # don't bother overwriting it
-        if os.path.isfile(image_path):
+        if not overwrite and os.path.isfile(image_path):
             logger.debug("Image already exists, not downloading")
             return False
 
@@ -808,7 +808,7 @@ class GenericMetadata(object):
         logger.info("Could not find any " + img_type + " images on TMDB for " + show.name)
 
     @staticmethod
-    def _retrieve_show_image_urls_from_fanart(show, img_type, thumb=False, season=None):
+    def _retrieve_show_image_urls_from_fanart(show, img_type, thumb=False, season=None, multiple=False):
         types = {
             'poster': fanart.TYPE.TV.POSTER,
             'banner': fanart.TYPE.TV.BANNER,
@@ -835,10 +835,19 @@ class GenericMetadata(object):
                 if season:
                     results = [x for x in results if try_int(x['season'], default_value=None) == season]
 
-                url = results[0]['url']
-                if thumb:
-                    url = re.sub('/fanart/', '/preview/', url)
-                return url
+                def _to_preview_url(url):
+                    return re.sub('/fanart/', '/preview/', url)
+
+                if multiple:
+                    urls = list(map(lambda result: result['url'], results))
+                    if thumb:
+                        urls = list(map(lambda url: _to_preview_url(url), urls))
+                    return urls
+                else:
+                    url = results[0]['url']
+                    if thumb:
+                        url = _to_preview_url(url)
+                    return url
         except Exception as error:
             logger.debug(error)
 

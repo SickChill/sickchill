@@ -15,6 +15,7 @@
     % if show.is_anime:
         <script type="text/javascript" src="${static_url('js/blackwhite.js')}"></script>
     % endif
+    <script type="text/javascript" src="${static_url('js/imageSelector.js')}"></script>
 </%block>
 
 <%block name="content">
@@ -38,6 +39,7 @@
                             <li><a href="#main">${_('Main')}</a></li>
                             <li><a href="#format">${_('Format')}</a></li>
                             <li><a href="#advanced">${_('Advanced')}</a></li>
+                            <li><a href="#customize">${_('Customize')}</a></li>
                         </ul>
 
                         <!-- Main -->
@@ -54,7 +56,7 @@
                                         <span class="component-title">${_('Show Location')}</span>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="hidden" name="show" value="${show.indexerid}"/>
+                                        <input type="hidden" name="show" id="showID" value="${show.indexerid}"/>
                                         <input type="text" name="location" id="location" value="${show._location}"
                                                class="form-control input-sm input350"
                                                autocapitalize="off" title="Location"/>
@@ -419,6 +421,99 @@
                             </fieldset>
                         </div>
 
+                        <!-- Customize -->
+                        <div id="customize">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h3>${_('Customize Settings')}</h3>
+                                </div>
+                            </div>
+
+                            <fieldset class="component-group-list">
+
+                                <!-- Name -->
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <span class="component-title">${_('Name')}</span>
+                                    </div>
+                                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                        <input type="text" name="custom_name" id="custom_name" placeholder="${show.show_name}" value="${show.custom_name}"
+                                               list="scene_exceptions"
+                                               class="form-control input-sm input350"
+                                               autocapitalize="off" title="Name"/>
+                                    </div>
+
+                                    %if -1 in scene_exceptions:
+                                    <datalist id="scene_exceptions">
+                                       %for exception in scene_exceptions[-1]:
+                                        <option>${exception["show_name"]}</option>
+                                        %endfor
+                                    </datalist>
+                                    %endif
+                                </div>
+
+                                <!-- Poster -->
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <span class="component-title">${_('Poster')}</span>
+                                    </div>
+                                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="poster-container">
+                                                    <input type="hidden" name="poster"/>
+                                                    <img src="${static_url(show.show_image_url('poster_thumb', include_date=True), include_version=False)}"
+                                                         data-image-type="poster"
+                                                         class="custom-image tvshowImg" alt="${_('Poster for')} ${show.name}"
+                                                         onclick="location.href='${static_url(show.show_image_url('poster', include_date=True), include_version=False)}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Banner -->
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <span class="component-title">${_('Banner')}</span>
+                                    </div>
+                                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="banner-container">
+                                                    <input type="hidden" name="banner"/>
+                                                    <img src="${static_url(show.show_image_url('banner_thumb', include_date=True), include_version=False)}"
+                                                         data-image-type="banner"
+                                                         class="custom-image banner" alt="${_('Banner for')} ${show.name}"
+                                                         onclick="location.href='${static_url(show.show_image_url('banner', include_date=True), include_version=False)}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Fanart -->
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <span class="component-title">${_('Background')}</span>
+                                    </div>
+                                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="fanart-container">
+                                                    <input type="hidden" name="fanart"/>
+                                                    <img src="${static_url(show.show_image_url('fanart', include_date=True), include_version=False)}"
+                                                         data-image-type="fanart"
+                                                         class="custom-image tvshowImg" alt="${_('Fanart for')} ${show.name}"
+                                                         onclick="location.href='${static_url(show.show_image_url('fanart', include_date=True), include_version=False)}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </fieldset>
+                        </div>
                     </div>
 
                     <br/>

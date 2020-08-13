@@ -64,7 +64,7 @@ class DirtySetter(object):
 class TVShow(object):
     indexerid = DirtySetter(0)
     indexer = DirtySetter(0)
-    name = DirtySetter("")
+    show_name = DirtySetter("")
     imdbid = DirtySetter("")
     network = DirtySetter("")
     genre: list = DirtySetter([])
@@ -90,6 +90,7 @@ class TVShow(object):
     rls_require_words = DirtySetter("")
     rls_prefer_words = DirtySetter("")
     default_ep_status = DirtySetter(SKIPPED)
+    custom_name = DirtySetter("")
 
     # location = DirtySetter("")
 
@@ -142,6 +143,10 @@ class TVShow(object):
     # subtitles_sr_metadata = property(lambda self: self._subtitles_sr_metadata, dirty_setter("_subtitles_sr_metadata"))
 
     @property
+    def name(self):
+        return self.custom_name or self.show_name
+
+    @property
     def is_anime(self):
         return int(self.anime) > 0
 
@@ -173,8 +178,8 @@ class TVShow(object):
     def network_image_url(self):
         return 'images/network/{0}.png'.format(unidecode(self.network or 'nonetwork').lower())
 
-    def show_image_url(self, which):
-        return settings.IMAGE_CACHE.image_url(self.indexerid, which)
+    def show_image_url(self, which, include_date=False):
+        return settings.IMAGE_CACHE.image_url(self.indexerid, which, include_date)
 
     def _getLocation(self):
         # no dir check needed if missing show dirs are created during post-processing
@@ -709,8 +714,10 @@ class TVShow(object):
         else:
             self.indexer = int(sql_results[0]["indexer"] or 0)
 
-            if not self.name:
-                self.name = sql_results[0]["show_name"]
+            if not self.show_name:
+                self.show_name = sql_results[0]["show_name"]
+            if not self.custom_name:
+                self.custom_name = sql_results[0]["custom_name"]
             if not self.network:
                 self.network = sql_results[0]["network"]
             if not self.genre:
@@ -784,7 +791,7 @@ class TVShow(object):
         if not myShow or not getattr(myShow, 'seriesName'):
             raise AttributeError("Found {0}, but attribute 'seriesName' was empty.".format(self.indexerid))
 
-        self.name = myShow.seriesName.strip()
+        self.show_name = myShow.seriesName.strip()
         self.classification = getattr(myShow, 'classification', 'Scripted')
         self.genre = getattr(myShow, 'genre', [])
         self.network = getattr(myShow, 'network', '')
@@ -1119,7 +1126,8 @@ class TVShow(object):
             "rls_require_words": self.rls_require_words,
             "rls_prefer_words": self.rls_prefer_words,
             "default_ep_status": self.default_ep_status,
-            "sub_use_sr_metadata": self.subtitles_sr_metadata
+            "sub_use_sr_metadata": self.subtitles_sr_metadata,
+            "custom_name": self.custom_name
         }
 
         main_db_con = db.DBConnection()

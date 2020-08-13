@@ -160,12 +160,12 @@ class TVDB(Indexer):
         return 'https://artworks.thetvdb.com/banners/{path}'.format(path=location)
 
     @ExceptionDecorator(default_return='', catch=(HTTPError, KeyError), image_api=True)
-    def __call_images_api(self, show, thumb, keyType, subKey=None, lang=None):
+    def __call_images_api(self, show, thumb, keyType, subKey=None, lang=None, multiple=False):
         api_results = self.series_images(show.indexerid, lang or show.lang, keyType=keyType, subKey=subKey)
         images = getattr(api_results, keyType)(lang or show.lang)
         images = sorted(images, key=lambda img: img['ratingsInfo']['average'], reverse=True)
         # return self.complete_image_url(images[0][('fileName', 'thumbnail')[thumb]])
-        return self.complete_image_url(images[0]['fileName'])
+        return list(map(lambda image: self.complete_image_url(image['fileName']), images)) if multiple else self.complete_image_url(images[0]['fileName'])
 
     @staticmethod
     @ExceptionDecorator()
@@ -174,20 +174,20 @@ class TVDB(Indexer):
             series.actors(series.language)
         return series.actors
 
-    def series_poster_url(self, show, thumb=False):
-        return self.__call_images_api(show, thumb, 'poster')
+    def series_poster_url(self, show, thumb=False, multiple=False):
+        return self.__call_images_api(show, thumb, 'poster', multiple)
 
-    def series_banner_url(self, show, thumb=False):
-        return self.__call_images_api(show, thumb, 'series')
+    def series_banner_url(self, show, thumb=False, multiple=False):
+        return self.__call_images_api(show, thumb, 'series', multiple)
 
-    def series_fanart_url(self, show, thumb=False):
-        return self.__call_images_api(show, thumb, 'fanart')
+    def series_fanart_url(self, show, thumb=False, multiple=False):
+        return self.__call_images_api(show, thumb, 'fanart', multiple)
 
-    def season_poster_url(self, show, season, thumb=False):
-        return self.__call_images_api(show, thumb, 'season', season)
+    def season_poster_url(self, show, season, thumb=False, multiple=False):
+        return self.__call_images_api(show, thumb, 'season', season, multiple)
 
-    def season_banner_url(self, show, season, thumb=False):
-        return self.__call_images_api(show, thumb, 'seasonwide', season)
+    def season_banner_url(self, show, season, thumb=False, multiple=False):
+        return self.__call_images_api(show, thumb, 'seasonwide', season, multiple)
 
     @ExceptionDecorator(default_return='', catch=(HTTPError, KeyError, TypeError))
     def episode_image_url(self, episode):
