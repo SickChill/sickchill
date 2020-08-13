@@ -1,6 +1,7 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     from sickchill import settings
+    from sickchill.helper.common import try_int
 %>
 <%block name="scripts">
     <script type="text/javascript" src="${static_url('js/testRename.js')}" xmlns="http://www.w3.org/1999/html"></script>
@@ -32,8 +33,6 @@
                     ${settings.NAMING_PATTERN}
                 % endif
             </blockquote>
-            <% odd = False%>
-
         </div>
     </div>
     <div class="row">
@@ -60,7 +59,7 @@
         % for current_season in sorted(show.episodes, reverse=True):
             <div class="row">
                 <div class="col-md-12">
-                    <h2>${('Season '+ str(current_season), 'Specials')[int(current_season) == 0]}</h2>
+                    <h2>${('Season '+ str(current_season), 'Specials')[try_int(current_season, None) == 0]}</h2>
                 </div>
             </div>
             <div class="row">
@@ -82,7 +81,6 @@
                                     if not (ep_obj and ep_obj._location):
                                         continue
 
-                                    odd = not odd
                                     epStr = str(ep_obj.season) + "x" + str(ep_obj.episode)
 
                                     epList = sorted([ep_obj.episode] + [x.episode for x in ep_obj.relatedEps])

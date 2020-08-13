@@ -318,6 +318,21 @@ class DBConnection(object):
 
         return sql_results
 
+    def mass_upsert(self, table_name, query_list, log_transaction=False):
+        # type: (str, List[tuple, list], bool) -> None
+        """
+        Execute multiple queries
+
+        :param table_name: name of table to upsert
+        :param query_list: list of queries
+        :param log_transaction: Boolean to wrap all in one transaction
+        :return: None
+        """
+        log_level = (logger.DB, logger.DEBUG)[log_transaction]
+        for values, control in query_list:
+            logger.log(log_level, _("{filename}: {query} [{control}]").format(filename=self.filename, query=values, control=control))
+            self.upsert(table_name, values, control)
+
     def upsert(self, table_name, value_dict, key_dict):
         """
         Update values, or if no updates done, insert values

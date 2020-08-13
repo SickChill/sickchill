@@ -1,6 +1,7 @@
 import datetime
 import itertools
 import time
+import traceback
 
 from sickchill import logger, settings
 from sickchill.helper.exceptions import AuthException
@@ -10,7 +11,6 @@ from . import db, show_name_helpers
 from .databases import cache
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from .rssfeeds import getFeed
-
 
 provider_cache_db = {}
 
@@ -79,12 +79,13 @@ class TVCache(object):
 
                 if cl:
                     cache_db_con = self._get_db()
-                    cache_db_con.mass_action(cl)
+                    cache_db_con.mass_upsert('results', cl)
 
         except AuthException as e:
             logger.warning("Authentication error: " + str(e))
         except Exception as e:
             logger.debug("Error while searching " + self.provider.name + ", skipping: " + repr(e))
+            logger.debug(traceback.format_exc())
 
     def get_rss_feed(self, url, params=None):
         if self.provider.login():
@@ -232,15 +233,24 @@ class TVCache(object):
             version = parse_result.version
 
             logger.debug(_("Added RSS item: [{}] to cache: {}").format(name, self.provider_id))
-            return [
-                "INSERT INTO results ("
-                "provider, name, season, episodes, indexerid, url, time, quality, release_group, version, seeders, leechers, size) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (url, name, provider) DO UPDATE SET "
-                "seeders=excluded.seeders, leechers=excluded.leechers, time=excluded.time, provider=excluded.provider, "
-                "size=excluded.size WHERE url=excluded.url",
-                [self.provider_id, name, season, episode_text, parse_result.show.indexerid, url,
-                 cur_timestamp, quality, release_group, version, seeders, leechers, size]
-            ]
+            return (
+                {
+                    'provider': self.provider_id,
+                    'name': name,
+                    'season': season,
+                    'episodes': episode_text,
+                    'indexerid': parse_result.show.indexerid,
+                    'url': url,
+                    'time': cur_timestamp,
+                    'quality': quality,
+                    'release_group': release_group,
+                    'version': version,
+                    'seeders': seeders,
+                    'leechers': leechers,
+                    'size': size
+                },
+                {'url': url}
+            )
 
     def search_cache(self, episode, manual_search=False, down_cur_quality=False):
         needed_eps = self.find_needed_episodes(episode, manual_search, down_cur_quality)

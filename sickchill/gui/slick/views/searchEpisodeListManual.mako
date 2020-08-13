@@ -23,7 +23,7 @@
                 </thead>
                 <tbody>
                     % for result in results:
-                        <tr>
+                        <tr class="${('odd', 'even')[loop.index % 2]}">
                             <% provider = getProviderClass(result["provider"]) %>
                             <td align="center" class="text-nowrap" title="${provider.name}">
                                 <img src="${static_url('images/providers/' + provider.image_name())}" width="16" height="16" alt="${provider.name}"/>
