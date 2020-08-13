@@ -89,10 +89,8 @@ class Logger(object):
             logging.getLogger('sickchill'),
             logging.getLogger('tornado.general'),
             logging.getLogger('tornado.application'),
-            # logging.getLogger('subliminal'),
-            # logging.getLogger('tornado.access'),
-            # logging.getLogger('tvdb_api'),
-            # logging.getLogger("requests.packages.urllib3")
+            logging.getLogger('subliminal'),
+            logging.getLogger('tornado.access'),
         ]
 
         self.console_logging = False
@@ -137,7 +135,8 @@ class Logger(object):
         for logger in self.loggers:
             logger.setLevel(log_level)
 
-        logging.getLogger("tornado.general").setLevel('ERROR')
+        for logger in ('subliminal', 'tornado.access', 'tornado.general'):
+            logging.getLogger(logger).setLevel('CRITICAL')
 
         log_format = '{asctime} {levelname} :: {threadName} :: {message}'
         # console log handler
