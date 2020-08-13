@@ -33,7 +33,7 @@ class Scheduler(threading.Thread):
         Check how long we have until we run again
         :return: timedelta
         """
-        if self.isAlive():
+        if self.is_alive():
             if self.start_time is None:
                 delta = datetime.datetime.now() - self.lastRun
                 return (self.cycleTime - delta, self.cycleTime)[delta > self.cycleTime]

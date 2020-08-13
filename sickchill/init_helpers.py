@@ -3,11 +3,11 @@ import os
 import sys
 import sysconfig
 
-from random_user_agent.params import OperatingSystem, SoftwareName
-from random_user_agent.user_agent import UserAgent
-
 
 def setup_useragent():
+    from random_user_agent.params import OperatingSystem, SoftwareName
+    from random_user_agent.user_agent import UserAgent
+
     software_names = [SoftwareName.CHROME.value]
     operating_systems = [OperatingSystem.WINDOWS.value, OperatingSystem.LINUX.value]
 

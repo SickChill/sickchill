@@ -7,6 +7,7 @@ import traceback
 from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
 from operator import attrgetter
+from secrets import compare_digest
 from urllib.parse import urljoin
 
 from mako.lookup import Template
@@ -127,9 +128,9 @@ class BaseHandler(RequestHandler):
             # Basic Auth at a minimum
             auth_header = self.request.headers.get('Authorization')
             if auth_header and auth_header.startswith('Basic '):
-                auth_decoded = base64.decodestring(auth_header[6:])
+                auth_decoded = base64.decodebytes(auth_header[6:].encode()).decode()
                 username, password = auth_decoded.split(':', 2)
-                if username == settings.WEB_USERNAME and password == settings.WEB_PASSWORD:
+                if compare_digest(username, settings.WEB_USERNAME) and compare_digest(password, settings.WEB_PASSWORD):
                     return True
                 return False
 

@@ -48,7 +48,7 @@ def get_season_nzbs(name, url_data, season):
     ep_files = {}
     xmlns = None
 
-    for cur_file in nzb_element.getchildren():
+    for cur_file in nzb_element.iter():
         xmlns_match = re.match(regex_string['nzb_xmlns'], cur_file.tag)
         if not xmlns_match:
             continue

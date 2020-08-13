@@ -120,7 +120,7 @@ class Provider(TorrentProvider):
                     # Skip column headers
                     for result in torrent_rows[1:]:
                         try:
-                            cells = result.findChildren('td')[:len(labels)]
+                            cells = result.find_all('td')[:len(labels)]
                             if len(cells) < len(labels):
                                 continue
 

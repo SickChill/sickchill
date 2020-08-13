@@ -53,7 +53,7 @@ class DirtySetter(object):
         try:
             return self.data.get(instance, self.default)
         except Exception:
-            pass
+            return None
 
     def __set__(self, instance, value):
         if value != self.data.get(instance):
