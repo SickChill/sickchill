@@ -361,7 +361,6 @@
     <div class="row">
         <div class="col-md-12">
             <% curSeason = -1 %>
-            <% odd = 0 %>
             % for epResult in sql_results:
                 <%
                     epStr = str(epResult["season"]) + "x" + str(epResult["episode"])
