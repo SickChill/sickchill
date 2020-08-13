@@ -23,7 +23,6 @@ pyOpenSSL
 python-dateutil
 python-twitter
 rarfile
-slugify
 subliminal
 tmdbsimple
 tornado
