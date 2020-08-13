@@ -5,7 +5,7 @@ from urllib.request import Request, urlopen
 
 from requests.exceptions import HTTPError
 
-from sickchill import logger, settings
+from sickchill import logger, settings, tv
 
 
 class Notifier(object):
@@ -50,7 +50,7 @@ class Notifier(object):
 
         # Calculated values
         # noinspection PyUnresolvedReferences
-        if isinstance(ep_obj, sickchill.oldbeard.tv.TVEpisode):
+        if isinstance(ep_obj, tv.TVEpisode):
             showPath = ep_obj.show.location
             showName = ep_obj.show.name
             rootShowAndSeason = os.path.dirname(ep_obj.location)

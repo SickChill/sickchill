@@ -1709,8 +1709,7 @@ class CMDSickChillSearchIndexers(ApiCall):
             for indexer, indexer_results in search_results.items():
                 for result in indexer_results:
                     # Skip it if it's in our show list already, and we only want new shows
-                    # noinspection PyUnresolvedReferences
-                    in_show_list = sickchill.oldbeard.tv.Show.find(settings.showList, int(result['id']))
+                    in_show_list = sickchill.show.Show.Show.find(settings.showList, int(result['id']))
                     if in_show_list and self.only_new:
                         continue
 

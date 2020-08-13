@@ -24,13 +24,13 @@ from sickchill import logger, settings
 from sickchill.helper.common import dateTimeFormat, episode_num, remove_extension, replace_extension, sanitize_filename, try_int
 from sickchill.helper.exceptions import (EpisodeDeletedException, EpisodeNotFoundException, MultipleEpisodesInDatabaseException, MultipleShowObjectsException,
                                          MultipleShowsInDatabaseException, NoNFOException, ShowDirectoryNotFoundException, ShowNotFoundException)
+from sickchill.oldbeard import db, helpers, network_timezones, notifiers, postProcessor, subtitles
+from sickchill.oldbeard.blackandwhitelist import BlackAndWhiteList
+from sickchill.oldbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND,
+                                       NAMING_LIMITED_EXTEND_E_PREFIXED, NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER,
+                                       statusStrings, UNAIRED, UNKNOWN, WANTED)
+from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.show.Show import Show
-
-from . import db, helpers, network_timezones, notifiers, postProcessor, subtitles
-from .blackandwhitelist import BlackAndWhiteList
-from .common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, NAMING_DUPLICATE, NAMING_EXTEND, NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED,
-                     NAMING_SEPARATED_REPEAT, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED, UNKNOWN, WANTED)
-from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 try:
     from send2trash import send2trash

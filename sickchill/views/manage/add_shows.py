@@ -80,7 +80,7 @@ class AddShows(Home):
         for i, shows in results.items():
             # noinspection PyUnresolvedReferences
             final_results.extend({(sickchill.indexer.name(i), i, sickchill.indexer[i].show_url, show['id'],
-                                   show['seriesName'], show['firstAired'], sickchill.oldbeard.tv.Show.find(settings.showList, show['id']) is not None
+                                   show['seriesName'], show['firstAired'], sickchill.tv.Show.find(settings.showList, show['id']) is not None
                                    ) for show in shows})
 
         lang_id = sickchill.indexer.lang_dict()[lang]

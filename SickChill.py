@@ -34,7 +34,7 @@ from configobj import ConfigObj
 from sickchill.helper.argument_parser import SickChillArgumentParser
 from sickchill.oldbeard import db, failed_history, name_cache, network_timezones
 from sickchill.oldbeard.event_queue import Events
-from sickchill.oldbeard.tv import TVShow
+from sickchill.tv import TVShow
 from sickchill.update_manager import GitUpdateManager, SourceUpdateManager
 from sickchill.views.server_settings import SRWebServer
 

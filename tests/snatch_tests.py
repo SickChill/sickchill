@@ -7,7 +7,7 @@ import unittest
 import sickchill.oldbeard.providers
 from sickchill import settings
 from sickchill.oldbeard import common as common, search as search
-from sickchill.oldbeard.tv import TVEpisode, TVShow
+from sickchill.tv import TVEpisode, TVShow
 from tests import test_lib as test
 
 TESTS = {

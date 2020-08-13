@@ -10,8 +10,8 @@ import unittest
 from sickchill import settings
 from sickchill.helper.exceptions import MultipleShowObjectsException
 from sickchill.oldbeard.common import Quality
-from sickchill.oldbeard.tv import TVShow
 from sickchill.show.Show import Show
+from sickchill.tv import TVShow
 
 
 class ShowTests(unittest.TestCase):

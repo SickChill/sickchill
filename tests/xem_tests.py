@@ -6,7 +6,7 @@ import unittest
 
 import sickchill.oldbeard.db
 from sickchill import settings
-from sickchill.oldbeard.tv import TVShow
+from sickchill.tv import TVShow
 from tests import test_lib as test
 
 
