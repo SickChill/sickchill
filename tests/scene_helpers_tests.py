@@ -3,7 +3,7 @@ import unittest
 
 from sickchill import settings
 from sickchill.oldbeard import common, db, name_cache, scene_exceptions, show_name_helpers
-from sickchill.oldbeard.tv import TVShow as Show
+from sickchill.tv import TVShow as Show
 from tests import test_lib as test
 
 

@@ -11,12 +11,12 @@ from sickchill.helper.exceptions import (CantRefreshShowException, CantRemoveSho
                                          MultipleShowObjectsException, ShowDirectoryNotFoundException)
 from sickchill.oldbeard.trakt_api import TraktAPI
 from sickchill.show.Show import Show
+from sickchill.tv import TVShow
 
 from . import generic_queue, name_cache, notifiers, scene_numbering, ui
 from .blackandwhitelist import BlackAndWhiteList
 from .common import WANTED
 from .helpers import chmodAsParent, makeDir, sortable_name
-from .tv import TVShow
 
 
 class ShowQueue(generic_queue.GenericQueue):

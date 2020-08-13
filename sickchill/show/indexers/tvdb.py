@@ -9,7 +9,7 @@ from requests.exceptions import HTTPError
 # from sickchill import logger
 import sickchill.start
 from sickchill import logger, settings
-from sickchill.oldbeard.tv import TVEpisode
+from sickchill.tv import TVEpisode
 
 from .base import Indexer
 from .wrappers import ExceptionDecorator

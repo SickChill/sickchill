@@ -1,10 +1,8 @@
 import datetime
 import os
 
-from sickchill import logger, settings
-from sickchill.oldbeard import tv
+from sickchill import logger, settings, tv
 
-# from sickchill.oldbeard.tv import TVEpisode
 from . import common
 from .common import DOWNLOADED, Quality
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
