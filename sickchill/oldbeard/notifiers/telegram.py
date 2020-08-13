@@ -42,7 +42,7 @@ class Notifier(object):
 
         logger.debug('Telegram in use with API KEY: {0}'.format(api_key))
 
-        message = '{0} : {1}'.format(title.encode(), msg.encode())
+        message = '{0} : {1}'.format(title, msg)
         payload = urllib.parse.urlencode({'chat_id': id, 'text': message})
         telegram_api = 'https://api.telegram.org/bot%s/%s'
 
