@@ -1,7 +1,7 @@
 from urllib.parse import urljoin
 
 import validators
-from slugify import slugify
+from markdown2 import _slugify as slugify
 
 from sickchill import logger
 from sickchill.helper.common import convert_size, try_int
