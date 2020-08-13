@@ -172,10 +172,10 @@
 
     <tr>
         <td>${schedulerName}</td>
-        % if service.isAlive():
-            <td style="background-color:green">${service.isAlive()}</td>
+        % if service.is_alive():
+            <td style="background-color:green">${service.is_alive()}</td>
         % else:
-            <td style="background-color:red">${service.isAlive()}</td>
+            <td style="background-color:red">${service.is_alive()}</td>
         % endif
         % if scheduler == 'backlogSearchScheduler':
             <% searchQueue = getattr(settings, 'searchQueueScheduler') %>

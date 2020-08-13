@@ -1,4 +1,4 @@
-import cgi
+import html
 import os
 import warnings
 
@@ -53,13 +53,13 @@ class Notifier(object):
                 bus = dbus.SessionBus()
             except dbus.DBusException as e:
                 return ("<p>Error: unable to connect to D-Bus session bus: <code>{}</code>."
-                        "<p>Are you running SickChill in a desktop session?").format(cgi.escape(e))
+                        "<p>Are you running SickChill in a desktop session?").format(html.escape(e))
             try:
                 bus.get_object('org.freedesktop.Notifications',
                                '/org/freedesktop/Notifications')
             except dbus.DBusException as e:
                 return ("<p>Error: there doesn't seem to be a notification daemon available: <code>{}</code> "
-                        "<p>Try installing notification-daemon or notify-osd.").format(cgi.escape(e))
+                        "<p>Try installing notification-daemon or notify-osd.").format(html.escape(e))
 
         return "<p>Error: Unable to send notification."
 

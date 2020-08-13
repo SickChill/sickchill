@@ -64,7 +64,7 @@ class GenericQueue(object):
 
         with self.lock:
             # only start a new task if one isn't already going
-            if self.currentItem is None or not self.currentItem.isAlive():
+            if self.currentItem is None or not self.currentItem.is_alive():
 
                 # if the thread is dead then the current item should be finished
                 if self.currentItem:
