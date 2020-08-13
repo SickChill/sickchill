@@ -240,11 +240,9 @@
             <div class="col-md-12">
                 <div class="horizontal-scroll">
                     <% dates = [today.date() + datetime.timedelta(days = i) for i in range(7)] %>
-                    <% tbl_day = 0 %>
                     <div class="calendarWrapper">
                         % for day in dates:
-                        <% tbl_day += 1 %>
-                            <table class="sickchillTable tablesorter calendarTable ${'cal-{}'.format(('even', 'odd')[bool(tbl_day % 2)])}">
+                            <table class="sickchillTable tablesorter calendarTable ${'cal-{}'.format(('even', 'odd')[loop.index % 2])}">
                                 <thead>
                                     <tr>
                                         <th>${day.strftime('%A').capitalize()}</th>

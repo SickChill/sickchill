@@ -316,7 +316,7 @@ class GenericProvider(object):
 
             # Access to a protected member of a client class
             cache_db = self.cache._get_db()
-            cache_db.mass_action(cl)
+            cache_db.mass_upsert('results', cl)
 
         return results
 

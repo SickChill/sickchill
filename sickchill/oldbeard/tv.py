@@ -53,11 +53,12 @@ class DirtySetter(object):
         try:
             return self.data.get(instance, self.default)
         except Exception:
-            logger.info(traceback.format_exc())
+            pass
 
     def __set__(self, instance, value):
-        if value != self.default:
+        if value != self.data.get(instance):
             instance.dirty = True
+
         self.data[instance] = value
 
 
