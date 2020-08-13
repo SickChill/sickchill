@@ -30,6 +30,7 @@
                     $(ev.target).addClass('image-selector-item-selected')
                 }).attr('src', thumbPath)
                     .attr('data-image', imagePath)
+                    .attr('data-image-type', type)
                     .addClass('image-selector-item');
 
                 image.appendTo(container);
@@ -43,30 +44,20 @@
         const field = $(this)
         const type = field.data('image-type');
 
-        if (imageSelectorDialog) {
-            imageSelectorDialog.data('image-type', type);
-        } else {
-            imageSelectorDialog = $('<div class="image-selector-dialog" style="display:none" data-image-type="' + type + '"></div>').appendTo('body').dialog({
-                dialogClass: 'image-selector-dialog',
-                title: _('Choose Image'),
-                position: {my: 'center top', at: 'center top+60', of: window},
-                minWidth: Math.min($(document).width() - 80, 650),
-                height: Math.min($(document).height() - 80, $(window).height() - 80),
-                maxHeight: Math.min($(document).height() - 80, $(window).height() - 80),
-                maxWidth: $(document).width() - 80,
-                modal: true,
-                autoOpen: false
-            });
+        imageSelectorDialog = $('.image-selector-dialog');
+        imageSelectorDialog.data('image-type', type);
 
-            const select = $('<select id="images-provider" name="provider"></select>')
-                    .append('<option value="fanart" selected>Fanart</option>')
-                .on('change', function() {
-                    fetchImages();
-                });
-
-            imageSelectorDialog.append(select);
-            imageSelectorDialog.append('<div class="images"></div>');
-        }
+        imageSelectorDialog.dialog({
+            dialogClass: 'image-selector-dialog',
+            title: _('Choose Image'),
+            position: {my: 'center top', at: 'center top+60', of: window},
+            minWidth: Math.min($(document).width() - 80, 650),
+            height: Math.min($(document).height() - 80, $(window).height() - 80),
+            maxHeight: Math.min($(document).height() - 80, $(window).height() - 80),
+            maxWidth: $(document).width() - 80,
+            modal: true,
+            autoOpen: false
+        });
 
         imageSelectorDialog.dialog('option', 'buttons', [{
             text: 'Ok',

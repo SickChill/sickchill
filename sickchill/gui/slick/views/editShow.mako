@@ -19,6 +19,19 @@
 </%block>
 
 <%block name="content">
+    <div class="image-selector-dialog" style="display:none">
+        <select id="images-provider" name="provider">
+            <option value="-1">Fanart</option>
+            % for index, indexer in show_indexer:
+            <option value="${index}" ${('', 'selected="selected"')[show.indexer == index]}>
+                ${indexer.name}
+            </option>
+            % endfor
+        </select>
+
+        <div class="images"></div>
+    </div>
+
     <div id="config">
         <div class="row">
             <div class="col-md-12">

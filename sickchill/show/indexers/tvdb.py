@@ -175,19 +175,19 @@ class TVDB(Indexer):
         return series.actors
 
     def series_poster_url(self, show, thumb=False, multiple=False):
-        return self.__call_images_api(show, thumb, 'poster', multiple)
+        return self.__call_images_api(show, thumb, 'poster', multiple=multiple)
 
     def series_banner_url(self, show, thumb=False, multiple=False):
-        return self.__call_images_api(show, thumb, 'series', multiple)
+        return self.__call_images_api(show, thumb, 'series', multiple=multiple)
 
     def series_fanart_url(self, show, thumb=False, multiple=False):
-        return self.__call_images_api(show, thumb, 'fanart', multiple)
+        return self.__call_images_api(show, thumb, 'fanart', multiple=multiple)
 
     def season_poster_url(self, show, season, thumb=False, multiple=False):
-        return self.__call_images_api(show, thumb, 'season', season, multiple)
+        return self.__call_images_api(show, thumb, 'season', season, multiple=multiple)
 
     def season_banner_url(self, show, season, thumb=False, multiple=False):
-        return self.__call_images_api(show, thumb, 'seasonwide', season, multiple)
+        return self.__call_images_api(show, thumb, 'seasonwide', season, multiple=multiple)
 
     @ExceptionDecorator(default_return='', catch=(HTTPError, KeyError, TypeError))
     def episode_image_url(self, episode):

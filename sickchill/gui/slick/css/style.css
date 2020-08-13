@@ -3755,6 +3755,7 @@ Image Selector
      -5px -5px yellow;
 }
 
-#images-provider .image-selector-item {
+.image-selector-dialog .image-selector-item {
     cursor: pointer;
+    max-width: 250px;
 }
