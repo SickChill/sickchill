@@ -68,13 +68,8 @@
                     <fieldset class="component-group-list">
 
                         <ul id="provider_order_list">
-                            % for curProvider in providers.sortedProviderList():
+                            % for curProvider in providers.sorted_provider_list(skip=True):
                             <%
-                                if curProvider.provider_type == GenericProvider.NZB and not settings.USE_NZBS:
-                                    continue
-                                elif curProvider.provider_type == GenericProvider.TORRENT and not settings.USE_TORRENTS:
-                                    continue
-
                                 curName = curProvider.get_id()
                                 if hasattr(curProvider, 'custom_url'):
                                     curURL = curProvider.custom_url or curProvider.url
@@ -97,7 +92,7 @@
                                 </li>
                             % endfor
                         </ul>
-                        <input type="hidden" name="provider_order" id="provider_order" value="${" ".join([x.get_id(':'+str(int(x.is_enabled))) for x in providers.sortedProviderList()])}" />
+                        <input type="hidden" name="provider_order" id="provider_order" value="${providers.enabled_provider_order()}" />
                     </fieldset>
                 </div>
             </div>
@@ -123,13 +118,7 @@
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <%
-                                    provider_config_list = []
-                                    for curProvider in providers.sortedProviderList():
-                                        if curProvider.provider_type == GenericProvider.NZB and not (settings.USE_NZBS and curProvider.is_enabled):
-                                            continue
-                                        elif curProvider.provider_type == GenericProvider.TORRENT and not (settings.USE_TORRENTS and curProvider.is_enabled):
-                                            continue
-                                        provider_config_list.append(curProvider)
+                                    provider_config_list = list(providers.sorted_provider_list(active=True))
                                 %>
                                 % if provider_config_list:
                                     <select id="editAProvider" class="form-control input-sm input250">
@@ -258,7 +247,7 @@
                             </div>
                         % endfor
 
-                        % for curNzbProvider in [curProvider for curProvider in providers.sortedProviderList() if curProvider.provider_type == GenericProvider.NZB and curProvider not in settings.newznabProviderList]:
+                        % for curNzbProvider in (curProvider for curProvider in providers.sorted_nzb_provider_list(no_newznab=True)):
                             <div class="providerDiv" id="${curNzbProvider.get_id("Div")}">
                                 % if hasattr(curNzbProvider, 'username'):
                                     <div class="field-pair row">
@@ -371,7 +360,7 @@
                             </div>
                         % endfor
 
-                        % for curTorrentProvider in [curProvider for curProvider in providers.sortedProviderList() if curProvider.provider_type == GenericProvider.TORRENT]:
+                        % for curTorrentProvider in providers.sorted_torrent_provider_list():
                             <div class="providerDiv" id="${curTorrentProvider.get_id("Div")}">
 
                                 % if hasattr(curTorrentProvider, 'custom_url'):

@@ -361,7 +361,7 @@ def searchForNeededEpisodes():
 
     origThreadName = threading.currentThread().name
 
-    providers = [x for x in sickchill.oldbeard.providers.sortedProviderList(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.enable_daily and x.can_daily]
+    providers = sickchill.oldbeard.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS, active=True, daily=True)
     for curProvider in providers:
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
         curProvider.cache.update_cache()
@@ -427,7 +427,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
 
     origThreadName = threading.currentThread().name
 
-    providers = [x for x in sickchill.oldbeard.providers.sortedProviderList(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog]
+    providers = sickchill.oldbeard.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS, active=True, backlog=True)
     for curProvider in providers:
         threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
         curProvider.cache.update_cache()
@@ -700,7 +700,7 @@ def searchProvidersList(show, episodes, search_mode='eponly'):
     # build name cache for show
     sickchill.oldbeard.name_cache.buildNameCache(show)
 
-    providers = [x for x in sickchill.oldbeard.providers.sortedProviderList(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog]
+    providers = sickchill.oldbeard.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS, active=True, backlog=True)
     if not providers:
         logger.info("No NZB/Torrent providers found or enabled in the sickchill config for backlog searches. Please check your settings.")
         return foundResults

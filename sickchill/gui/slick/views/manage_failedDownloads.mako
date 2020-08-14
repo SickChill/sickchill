@@ -50,7 +50,7 @@
                         % for hItem in failedResults:
                             <tr>
                                 <td>
-                                    <% provider = providers.getProviderClass(GenericProvider.make_id(hItem["provider"])) %>
+                                    <% provider = providers.manager[GenericProvider.make_id(hItem["provider"])].obj %>
                                     % if provider is not None:
                                         <img src="${static_url('images/providers/' + provider.image_name())}" width="16" height="16" alt="${provider.name}" title="${provider.name}"/>
                                     % else:

@@ -97,7 +97,7 @@
                                         % else:
                                             % if hItem["provider"]:
                                                 % if curStatus in [SNATCHED, FAILED]:
-                                                    <% provider = providers.getProviderClass(GenericProvider.make_id(hItem["provider"])) %>
+                                                    <% provider = providers.manager[GenericProvider.make_id(hItem["provider"])].obj %>
                                                     % if provider is not None:
                                                         <img src="${static_url('images/providers/' + provider.image_name())}" width="16" height="16" style="vertical-align:middle;" /> <span style="vertical-align:middle;">${provider.name}</span>
                                                     % else:
@@ -161,7 +161,7 @@
                                         % for action in sorted(hItem["actions"], key=itemgetter('provider')):
                                             <% curStatus, curQuality = Quality.splitCompositeStatus(int(action["action"])) %>
                                             % if curStatus in [SNATCHED, FAILED]:
-                                                <% provider = providers.getProviderClass(GenericProvider.make_id(action["provider"])) %>
+                                                <% provider = providers.manager[GenericProvider.make_id(action["provider"])].obj %>
                                                 % if provider is not None:
                                                     <img src="${static_url('images/providers/' + provider.image_name())}" width="16" height="16"
                                                          style="vertical-align:middle;" alt="${provider.name}" style="cursor: help;" title="${provider.name}: ${os.path.basename(action["resource"])}"/>

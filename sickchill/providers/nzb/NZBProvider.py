@@ -15,6 +15,10 @@ class NZBProvider(GenericProvider):
     def is_active(self):
         return bool(settings.USE_NZBS) and self.is_enabled
 
+    @property
+    def is_skipped(self):
+        return not settings.USE_NZBS
+
     def _get_result(self, episodes):
         result = NZBSearchResult(episodes)
         if self.torznab or result.url.startswith('magnet'):

@@ -37,7 +37,7 @@
 
             <h2 class="header">${_('Scheduler')}</h2>
             <div class="horizontal-scroll">
-                <table id="schedulerStatusTable" class="tablesorter" width="100%">
+                <table id="schedulerStatusTable" class="tablesorter">
                     <thead>
                         <tr>
                             <th>${_('Scheduler')}</th>
@@ -178,17 +178,12 @@
             <td style="background-color:red">${service.is_alive()}</td>
         % endif
         % if scheduler == 'backlogSearchScheduler':
-            <% searchQueue = getattr(settings, 'searchQueueScheduler') %>
-            <% BLSpaused = searchQueue.action.is_backlog_paused() %>
-            <% BLSinProgress = searchQueue.action.is_backlog_in_progress() %>
-
-            <% del searchQueue %>
-            % if BLSpaused:
+            % if settings.searchQueueScheduler.action.is_backlog_paused():
                 <td>${_('Paused')}</td>
             % else:
                 <td>${service.enable}</td>
             % endif
-            % if BLSinProgress:
+            % if settings.searchQueueScheduler.action.is_backlog_in_progress():
                 <td>${_('True')}</td>
             % else:
                 % try:

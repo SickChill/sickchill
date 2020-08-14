@@ -15,7 +15,7 @@ import validators
 from vcr_unittest import VCRTestCase
 
 import sickchill.oldbeard.providers
-from sickchill import settings
+from sickchill import settings, logger
 
 settings.CPU_PRESET = 'NORMAL'
 
@@ -197,12 +197,10 @@ def generate_test_cases():
     """
     Auto Generate TestCases from providers and add them to globals()
     """
-    for p in sickchill.oldbeard.providers.__all__:
-        provider = sickchill.oldbeard.providers.getProviderModule(p).Provider()
-        if provider.can_backlog and provider.provider_type == 'torrent' and provider.public:
-            generated_class = type(str(provider.name), (BaseParser.TestCase,), {'provider': provider})
-            globals()[generated_class.__name__] = generated_class
-            del generated_class
+    for provider in sickchill.oldbeard.providers.sorted_torrent_provider_list(backlog=True, public=True):
+        generated_class = type(str(provider.name), (BaseParser.TestCase,), {'provider': provider})
+        globals()[generated_class.__name__] = generated_class
+        del generated_class
 
 
 generate_test_cases()
@@ -216,10 +214,10 @@ if __name__ == '__main__':
         _ = args, kwargs
         print(msg)
 
-    sickchill.logger.info = override_log
-    sickchill.logger.debug = override_log
-    sickchill.logger.error = override_log
-    sickchill.logger.warning = override_log
+    logger.info = override_log
+    logger.debug = override_log
+    logger.error = override_log
+    logger.warning = override_log
 
     suite = unittest.TestSuite()
     members = inspect.getmembers(sys.modules[__name__], inspect.isclass)

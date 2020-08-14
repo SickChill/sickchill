@@ -58,7 +58,7 @@ class SearchResult(object):
         self.version = result_dict.get('version')
         self.release_group = result_dict.get('release_group')
         self.quality = int(result_dict.get('quality'))
-        self.provider = sickchill.oldbeard.providers.getProviderClass(result_dict.get('provider'))
+        self.provider = sickchill.oldbeard.providers.manager[result_dict.get('provider')].obj
 
     @classmethod
     def make_result(cls, result_dict):

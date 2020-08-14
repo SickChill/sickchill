@@ -14,7 +14,7 @@ from sickchill.show.Show import Show
 
 class TorrentProvider(GenericProvider):
     def __init__(self, name):
-        GenericProvider.__init__(self, name)
+        super().__init__(name)
         self.ratio = None
         self.provider_type = GenericProvider.TORRENT
 
@@ -51,6 +51,10 @@ class TorrentProvider(GenericProvider):
     @property
     def is_active(self):
         return bool(settings.USE_TORRENTS) and self.is_enabled
+
+    @property
+    def is_skipped(self):
+        return not settings.USE_TORRENTS
 
     @property
     def _custom_trackers(self):

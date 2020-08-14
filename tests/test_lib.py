@@ -90,7 +90,7 @@ settings.TV_DOWNLOAD_DIR = PROCESSING_DIR
 
 # settings.PROVIDER_ORDER = ["sick_beard_index"]
 # settings.newznabProviderList = NewznabProvider.providers_list("'Sick Beard Index|http://lolo.sickbeard.com/|0|5030,5040|0|eponly|0|0|0!!!Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040,5060|0|eponly|0|0|0'")
-settings.providerList = providers.makeProviderList()
+settings.providerList = providers.provider_list()
 
 settings.DATA_DIR = TEST_DIR
 settings.CONFIG_FILE = os.path.join(settings.DATA_DIR, "config.ini")

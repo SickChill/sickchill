@@ -751,16 +751,17 @@ def initialize(consoleLogging=True):
             settings.WINDOWS_SHARES.update(settings.CFG['Shares'])
 
         # initialize NZB and TORRENT providers
-        settings.providerList = providers.makeProviderList()
+        settings.providerList = providers.provider_list()
 
         settings.NEWZNAB_DATA = check_setting_str(settings.CFG, 'Newznab', 'newznab_data')
+        providers.manager.register('')
         settings.newznabProviderList = NewznabProvider.providers_list(settings.NEWZNAB_DATA)
 
         TORRENTRSS_DATA = check_setting_str(settings.CFG, 'TorrentRss', 'torrentrss_data')
         settings.torrentRssProviderList = TorrentRssProvider.providers_list(TORRENTRSS_DATA)
 
         # dynamically load provider settings
-        for curProvider in providers.sortedProviderList():
+        for curProvider in providers.sorted_provider_list():
             curProvider.enabled = (curProvider.can_daily or curProvider.can_backlog) and \
                 check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id())
             if hasattr(curProvider, 'custom_url'):
@@ -1087,7 +1088,7 @@ def save_config():
 
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(settings.ITEM_NAME, settings.ENCRYPTION_VERSION)` in save_config()
     # dynamically save provider settings
-    for curProvider in providers.sortedProviderList():
+    for curProvider in providers.sorted_provider_list():
         new_config[curProvider.get_id().upper()] = {}
         new_config[curProvider.get_id().upper()][curProvider.get_id()] = int(curProvider.enabled)
         if hasattr(curProvider, 'custom_url'):

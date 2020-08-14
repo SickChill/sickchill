@@ -208,10 +208,14 @@ class ConfigProviders(Config):
         for cur_id, cur_enabled in (cur_provider_str.split(':') for cur_provider_str in provider_order.split()):
             cur_enabled = bool(try_int(cur_enabled))
 
-            cur_provider_obj = [x for x in sickchill.oldbeard.providers.sortedProviderList() if x.get_id() == cur_id and hasattr(x, 'enabled')]
+            try:
+                cur_provider_obj = sickchill.oldbeard.providers.manager[cur_id].obj
+            except Exception:
+                print('Ignoring provider {}, not found in the provider manager')
+                continue
 
             if cur_provider_obj:
-                cur_provider_obj[0].enabled = cur_enabled
+                cur_provider_obj.enabled = cur_enabled
 
             if cur_enabled:
                 enabled_provider_list.append(cur_id)
@@ -224,7 +228,7 @@ class ConfigProviders(Config):
                 torrentRssProviderDict[cur_id].enabled = cur_enabled
 
         # dynamically load provider settings
-        for curProvider in sickchill.oldbeard.providers.sortedProviderList():
+        for curProvider in sickchill.oldbeard.providers.sorted_provider_list():
             if hasattr(curProvider, 'custom_url'):
                 curProvider.custom_url = str(kwargs.get(curProvider.get_id('_custom_url'), '')).strip()
 

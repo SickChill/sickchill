@@ -65,11 +65,11 @@ class SearchTest(test.SickChillTestDBCase):
         :param something:
         :return:
         """
+        def set_attribute(extension, attribute, value):
+            setattr(extension.obj, attribute, value)
 
-        for provider in sickchill.oldbeard.providers.sortedProviderList():
-            provider.get_url = self._fake_get_url
-            provider.is_active = self._fake_is_active
-
+        sickchill.oldbeard.providers.manager.map(set_attribute, 'get_url', self._fake_get_url)
+        sickchill.oldbeard.providers.manager.map(set_attribute, 'is_active', self._fake_is_active)
         super(SearchTest, self).__init__(something)
 
 

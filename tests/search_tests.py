@@ -121,15 +121,13 @@ if __name__ == '__main__':
     for forceSearch in (True, False):
         for name, data in TESTS.items():
             filename = name.replace(' ', '_')
-
-            for provider in sickchill.oldbeard.providers.sortedProviderList():
-                if provider.provider_type == GenericProvider.TORRENT:
-                    if forceSearch:
-                        test_name = 'test_manual_{0}_{1}_{2}'.format(filename, data["tvdbid"], provider.name)
-                    else:
-                        test_name = 'test_{0}_{1}_{2}'.format(filename, data["tvdbid"], provider.name)
-                    test = generator(data, name, provider)
-                    setattr(SearchTest, test_name, test)
+            for provider in sickchill.oldbeard.providers.sorted_torrent_provider_list():
+                if forceSearch:
+                    test_name = 'test_manual_{0}_{1}_{2}'.format(filename, data["tvdbid"], provider.name)
+                else:
+                    test_name = 'test_{0}_{1}_{2}'.format(filename, data["tvdbid"], provider.name)
+                test = generator(data, name, provider)
+                setattr(SearchTest, test_name, test)
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(SearchTest)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

@@ -2,7 +2,7 @@
 <%!
     from sickchill.helper.common import dateTimeFormat, pretty_file_size
     from sickchill.oldbeard.common import Quality
-    from sickchill.oldbeard.providers import getProviderClass
+    from sickchill.oldbeard.providers import manager
     quality = Quality.qualityStrings
 %>
 <%block name="content">
@@ -24,7 +24,7 @@
                 <tbody>
                     % for result in results:
                         <tr class="${('odd', 'even')[loop.index % 2]}">
-                            <% provider = getProviderClass(result["provider"]) %>
+                            <% provider = manager[result["provider"]].obj %>
                             <td align="center" class="text-nowrap" title="${provider.name}">
                                 <img src="${static_url('images/providers/' + provider.image_name())}" width="16" height="16" alt="${provider.name}"/>
                             </td>
