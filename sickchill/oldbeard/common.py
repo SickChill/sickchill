@@ -5,7 +5,7 @@ import uuid
 from functools import reduce
 from os import path
 
-from sickchill import settings
+from sickchill import settings, version
 from sickchill.helper import video_screen_size
 from sickchill.init_helpers import setup_gettext, setup_useragent
 from sickchill.recompiled import tags
@@ -18,14 +18,20 @@ setup_gettext()
 # If some provider has an issue with functionality of SR, other than user agents, it's best to come talk to us rather than block.
 # It is no different than us going to a provider if we have questions or issues. Be a team player here.
 # This is disabled, was only added for testing, and has no config.ini or web ui setting. To enable, set SPOOF_USER_AGENT = True
-SPOOF_USER_AGENT = True
-ua_pool = setup_useragent()
+INSTANCE_ID = str(uuid.uuid1())
+REAL_USER_AGENT = 'SickChill/{version} ({os} {architecture} {os_version}; {instance})'.format(
+    version=version.__version__,
+    os=platform.system(),
+    architecture=platform.machine(),
+    os_version=platform.release(),
+    instance=INSTANCE_ID)
 
+SPOOF_USER_AGENT = False
 if SPOOF_USER_AGENT:
-    USER_AGENT = ua_pool.get_random_user_agent()
+    USER_AGENT = setup_useragent() or REAL_USER_AGENT
 else:
-    INSTANCE_ID = str(uuid.uuid1())
-    USER_AGENT = ('SickChill.CE.1/(' + platform.system() + '; ' + platform.release() + '; ' + INSTANCE_ID + ')')
+    USER_AGENT = REAL_USER_AGENT
+
 
 cpu_presets = {
     'HIGH': 5,

@@ -1,17 +1,22 @@
 import gettext
 import os
+import platform
 import sys
 import sysconfig
 
 
 def setup_useragent():
-    from random_user_agent.params import OperatingSystem, SoftwareName
+    from random_user_agent.params import HardwareType, SoftwareEngine, SoftwareName, SoftwareType
     from random_user_agent.user_agent import UserAgent
-
     software_names = [SoftwareName.CHROME.value]
-    operating_systems = [OperatingSystem.WINDOWS.value, OperatingSystem.LINUX.value]
-
-    return UserAgent(software_names=software_names, operating_systems=operating_systems, limit=100)
+    software_types = [SoftwareType.WEB_BROWSER.value]
+    operating_systems = [sys.platform]
+    software_engines = [SoftwareEngine.WEBKIT.value]
+    hardware_types = [HardwareType.COMPUTER.value]
+    user_agent = UserAgent(operating_systems=operating_systems, software_types=software_types, hardware_types=hardware_types, software_names=software_names, software_engines=software_engines, limit=100)
+    user_agents = [x['user_agent'] for x in user_agent.user_agents if platform.machine() in x]
+    if user_agents:
+        return user_agents[0]
 
 
 def setup_lib_path(additional=None):
