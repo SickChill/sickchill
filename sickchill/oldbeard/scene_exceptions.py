@@ -6,6 +6,7 @@ import sickchill
 from sickchill import adba, logger, settings
 
 from . import db, helpers
+from .common import REAL_USER_AGENT
 
 exception_dict = {}
 anidb_exception_dict = {}
@@ -285,6 +286,7 @@ def _anidb_exceptions_fetcher():
 
 
 xem_session = helpers.make_session()
+xem_session.headers.update({'User-Agent': REAL_USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
 
 
 def _xem_exceptions_fetcher():
