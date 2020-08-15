@@ -20,7 +20,7 @@ __all__ = [
 ]
 
 broken_providers = [
-    'torrentz', 'yggtorrent'
+    # 'torrentz', 'yggtorrent'
 ]
 
 

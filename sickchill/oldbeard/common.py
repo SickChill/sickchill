@@ -7,7 +7,7 @@ from os import path
 
 from sickchill import settings, version
 from sickchill.helper import video_screen_size
-from sickchill.init_helpers import setup_gettext, setup_useragent
+from sickchill.init_helpers import setup_gettext
 from sickchill.recompiled import tags
 from sickchill.tagger.episode import EpisodeTags
 
@@ -19,19 +19,12 @@ setup_gettext()
 # It is no different than us going to a provider if we have questions or issues. Be a team player here.
 # This is disabled, was only added for testing, and has no config.ini or web ui setting. To enable, set SPOOF_USER_AGENT = True
 INSTANCE_ID = str(uuid.uuid1())
-REAL_USER_AGENT = 'SickChill/{version} ({os} {architecture} {os_version}; {instance})'.format(
+USER_AGENT = 'SickChill/{version} ({os} {architecture} {os_version}; {instance})'.format(
     version=version.__version__,
     os=platform.system(),
     architecture=platform.machine(),
     os_version=platform.release(),
     instance=INSTANCE_ID)
-
-SPOOF_USER_AGENT = False
-if SPOOF_USER_AGENT:
-    USER_AGENT = setup_useragent() or REAL_USER_AGENT
-else:
-    USER_AGENT = REAL_USER_AGENT
-
 
 cpu_presets = {
     'HIGH': 5,

@@ -10,9 +10,8 @@ from requests.utils import add_dict_to_cookiejar
 import sickchill.oldbeard
 from sickchill import logger
 from sickchill.helper.common import sanitize_filename
-from sickchill.init_helpers import setup_useragent
 from sickchill.oldbeard.classes import Proper, SearchResult
-from sickchill.oldbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, USER_AGENT
+from sickchill.oldbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT
 from sickchill.oldbeard.db import DBConnection
 from sickchill.oldbeard.helpers import download_file, getURL, make_session, remove_file_failed
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
@@ -53,7 +52,7 @@ class GenericProvider(object):
         self.enable_backlog = False
         self.enable_daily = False
         self.enabled = False
-        self.headers = {'User-Agent': setup_useragent() or USER_AGENT}
+        self.headers = dict()
         self.proper_strings = ['PROPER|REPACK|REAL']
         self.provider_type = None
         self.public = False
