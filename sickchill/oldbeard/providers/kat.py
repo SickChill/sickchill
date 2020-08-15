@@ -145,7 +145,7 @@ class Provider(TorrentProvider):
         return results
 
     def find_domain(self):
-        data = self.get_url("https://kickass.help")
+        data = self.get_url("https://kickass2.help")
         if data:
             with BS4Parser(data, "html5lib") as html:
                 mirrors = html(class_='domainLink')
