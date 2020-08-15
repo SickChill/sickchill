@@ -15,7 +15,7 @@ class ImageSelector(WebRoot):
     def __init__(self, *args, **kwargs):
         super(ImageSelector, self).__init__(*args, **kwargs)
 
-    def index(self, show=None, image_type='', provider: int=None):
+    def index(self, show=None, imageType='', provider: int=None):
         if not show:
             return self._genericMessage(_("Error"), _("You must specify a show"))
 
@@ -29,14 +29,14 @@ class ImageSelector(WebRoot):
         provider = int(provider)
         if provider == 0:  # Fanart
             metadata_generator = GenericMetadata()
-            images = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, image_type, multiple=True)
+            images = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, imageType, multiple=True)
             images = list(map(lambda image: {'image': image, 'thumb': re.sub('/fanart/', '/preview/', image)}, images))
         else:
-            if 'poster' == image_type:
+            if 'poster' == imageType:
                 images = sickchill.indexer[provider].series_poster_url(show_obj, multiple=True)
-            elif 'banner' == image_type:
+            elif 'banner' == imageType:
                 images = sickchill.indexer[provider].series_banner_url(show_obj, multiple=True)
-            elif 'fanart' == image_type:
+            elif 'fanart' == imageType:
                 images = sickchill.indexer[provider].series_fanart_url(show_obj, multiple=True)
             else:
                 return self._genericMessage(_("Error"), _("Invalid image provider"))
