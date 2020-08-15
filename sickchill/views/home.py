@@ -1,4 +1,5 @@
 import ast
+import base64
 import datetime
 import json
 import os
@@ -1047,30 +1048,37 @@ class Home(WebRoot):
         show_obj.custom_name = custom_name
 
         metadata_generator = GenericMetadata()
+
+        def get_images(image):
+            if image.startswith('data:image'):
+                start = image.index('base64,') + 7
+                img_data = base64.b64decode(image[start:])
+                return img_data, img_data
+            else:
+                image_parts = image.split('|')
+                img_url = image_parts[0]
+                img_data = getShowImage(img_url)
+                if len(image_parts) > 1:
+                    img_thumb_url = image_parts[1]
+                    img_thumb_data = getShowImage(img_thumb_url)
+                    return img_data, img_thumb_data
+                else:
+                    return img_data, img_data
+
         if poster:
-            poster_parts = poster.split('|')
-            img_url = poster_parts[0]
-            img_thumb_url = poster_parts[1]
-            img_data = getShowImage(img_url)
-            img_thumb_data = getShowImage(img_thumb_url)
+            img_data, img_thumb_data = get_images(poster)
             dest_path = settings.IMAGE_CACHE.poster_path(show_obj.indexerid)
             dest_thumb_path = settings.IMAGE_CACHE.poster_thumb_path(show_obj.indexerid)
             metadata_generator._write_image(img_data, dest_path, overwrite=True)
             metadata_generator._write_image(img_thumb_data, dest_thumb_path, overwrite=True)
         if banner:
-            banner_parts = banner.split('|')
-            img_url = banner_parts[0]
-            img_thumb_url = banner_parts[1]
-            img_data = getShowImage(img_url)
-            img_thumb_data = getShowImage(img_thumb_url)
+            img_data, img_thumb_data = get_images(banner)
             dest_path = settings.IMAGE_CACHE.banner_path(show_obj.indexerid)
             dest_thumb_path = settings.IMAGE_CACHE.banner_thumb_path(show_obj.indexerid)
             metadata_generator._write_image(img_data, dest_path, overwrite=True)
             metadata_generator._write_image(img_thumb_data, dest_thumb_path, overwrite=True)
         if fanart:
-            fanart_parts = fanart.split('|')
-            img_url = fanart_parts[0]
-            img_data = getShowImage(img_url)
+            img_data, img_thumb_data = get_images(fanart)
             dest_path = settings.IMAGE_CACHE.fanart_path(show_obj.indexerid)
             metadata_generator._write_image(img_data, dest_path, overwrite=True)
 

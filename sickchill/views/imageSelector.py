@@ -27,7 +27,7 @@ class ImageSelector(WebRoot):
         self.set_header('Content-Type', 'application/json')
 
         provider = int(provider)
-        if provider == -1:  # Fanart
+        if provider == 0:  # Fanart
             metadata_generator = GenericMetadata()
             images = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, image_type, multiple=True)
             images = list(map(lambda image: {'image': image, 'thumb': re.sub('/fanart/', '/preview/', image)}, images))
@@ -38,5 +38,7 @@ class ImageSelector(WebRoot):
                 images = sickchill.indexer[provider].series_banner_url(show_obj, multiple=True)
             elif 'fanart' == image_type:
                 images = sickchill.indexer[provider].series_fanart_url(show_obj, multiple=True)
+            else:
+                return self._genericMessage(_("Error"), _("Invalid image provider"))
 
         return json.dumps(images)

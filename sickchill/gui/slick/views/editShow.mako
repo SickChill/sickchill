@@ -20,8 +20,9 @@
 
 <%block name="content">
     <div class="image-selector-dialog" style="display:none">
-        <select id="images-provider" name="provider">
-            <option value="-1">Fanart</option>
+        <select id="images-provider" name="provider" data-default="${show.indexer}">
+            <option value="-1">Upload</option>
+            <option value="0">Fanart</option>
             % for index, indexer in show_indexer:
             <option value="${index}" ${('', 'selected="selected"')[show.indexer == index]}>
                 ${indexer.name}
@@ -29,6 +30,10 @@
             % endfor
         </select>
 
+        <div class="upload" hidden>
+            <input type="file" id="upload-image-input" accept="image/*" multiple/>
+        </div>
+        <div class="error ui-state-error" hidden></div>
         <div class="images"></div>
     </div>
 
