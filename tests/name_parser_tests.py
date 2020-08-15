@@ -3,7 +3,7 @@ import os.path
 import sys
 import unittest
 
-from sickchill.oldbeard import tv
+from sickchill import tv
 from sickchill.oldbeard.name_parser import parser
 from tests import test_lib as test
 

@@ -2,7 +2,7 @@ import re
 
 from sickchill import logger, settings
 from sickchill.helper.common import try_int
-from sickchill.oldbeard.tv import Show, TVEpisode
+from sickchill.tv import Show, TVEpisode
 
 from .tvdb import TVDB
 

@@ -60,7 +60,7 @@ class Provider(TorrentProvider):
                     for item in html('tr', attrs={'data-size': True}):
                         try:
                             size = try_int(item['data-size'])
-                            cells = item.findChildren('td')
+                            cells = item.find_all('td')
 
                             title_block_links = cells[labels.index('Name')].find_all('a')
                             title = title_block_links[0].get_text(strip=True)

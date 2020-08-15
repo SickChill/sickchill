@@ -30,9 +30,8 @@ import sickchill.start
 from sickchill import settings
 from sickchill.oldbeard import db, providers
 from sickchill.oldbeard.databases import cache, failed, main
-from sickchill.oldbeard.providers.newznab import NewznabProvider
-from sickchill.oldbeard.tv import TVEpisode, TVShow
 from sickchill.show.indexers import ShowIndexer
+from sickchill.tv import TVEpisode, TVShow
 
 # =================
 #  test globals

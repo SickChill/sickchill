@@ -11,7 +11,7 @@ import sickchill.oldbeard
 from sickchill import logger
 from sickchill.helper.common import sanitize_filename
 from sickchill.oldbeard.classes import Proper, SearchResult
-from sickchill.oldbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, ua_pool
+from sickchill.oldbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT
 from sickchill.oldbeard.db import DBConnection
 from sickchill.oldbeard.helpers import download_file, getURL, make_session, remove_file_failed
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
@@ -52,7 +52,7 @@ class GenericProvider(object):
         self.enable_backlog = False
         self.enable_daily = False
         self.enabled = False
-        self.headers = {'User-Agent': ua_pool.get_random_user_agent()}
+        self.headers = dict()
         self.proper_strings = ['PROPER|REPACK|REAL']
         self.provider_type = None
         self.public = False

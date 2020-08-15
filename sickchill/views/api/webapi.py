@@ -62,8 +62,8 @@ class ApiHandler(RequestHandler):
         # self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
 
     def get(self, *args, **kwargs):
-        kwargs = self.request.arguments
-        # noinspection PyCompatibility
+        # kwargs = self.request.arguments
+        kwargs = urllib.parse.parse_qs(self.request.query)
         for arg, value in kwargs.items():
             if len(value) == 1:
                 kwargs[arg] = value[0]
@@ -145,7 +145,7 @@ class ApiHandler(RequestHandler):
 
         out_dict = {}
         if commands:
-            commands = commands.decode().split("|")
+            commands = commands.split("|")
             multi_commands = len(commands) > 1
             for cmd in commands:
                 cur_args, cur_kwargs = self.filter_params(cmd, args, kwargs)
@@ -1709,8 +1709,7 @@ class CMDSickChillSearchIndexers(ApiCall):
             for indexer, indexer_results in search_results.items():
                 for result in indexer_results:
                     # Skip it if it's in our show list already, and we only want new shows
-                    # noinspection PyUnresolvedReferences
-                    in_show_list = sickchill.oldbeard.tv.Show.find(settings.showList, int(result['id']))
+                    in_show_list = sickchill.show.Show.Show.find(settings.showList, int(result['id']))
                     if in_show_list and self.only_new:
                         continue
 

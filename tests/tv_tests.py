@@ -5,7 +5,7 @@ Test tv
 import unittest
 
 from sickchill import settings
-from sickchill.oldbeard.tv import TVEpisode, TVShow
+from sickchill.tv import TVEpisode, TVShow
 from tests import test_lib as test
 
 

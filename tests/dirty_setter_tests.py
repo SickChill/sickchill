@@ -1,6 +1,6 @@
 import unittest
 
-from sickchill.oldbeard.tv import DirtySetter
+from sickchill.tv import DirtySetter
 
 
 class DirtySetterTests(unittest.TestCase):

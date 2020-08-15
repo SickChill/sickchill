@@ -1,5 +1,6 @@
 import re
 import traceback
+from urllib.parse import urljoin
 
 from sickchill import logger
 from sickchill.helper.common import convert_size, try_int
@@ -26,10 +27,10 @@ class Provider(TorrentProvider):
         self.minleech = 0
 
         # URLs
-        self.url = 'https://torrentz2.eu/'
+        self.url = 'https://www2.torrentz2.si/'
         self.urls = {
-            'verified': 'https://torrentz2.eu/feed_verified',
-            'feed': 'https://torrentz2.eu/feed',
+            'verified': urljoin(self.url, 'feed_verified'),
+            'feed': urljoin(self.url, 'feed'),
             'base': self.url,
         }
 

@@ -36,6 +36,7 @@ import sickchill
 from sickchill import adba, logger, settings
 from sickchill.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS
 from sickchill.helper.common import replace_extension
+from sickchill.oldbeard.common import USER_AGENT
 from sickchill.show.Show import Show
 
 from . import db
@@ -1170,8 +1171,9 @@ def make_indexer_session():
 
 
 def make_session():
-    session = cloudscraper.create_scraper()
-    # session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
+    session = requests.Session()
+    session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
+    session = cloudscraper.create_scraper(sess=session)
     return CacheControl(sess=session, cache_etags=True)
 
 

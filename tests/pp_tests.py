@@ -10,7 +10,7 @@ from sickchill import settings
 from sickchill.oldbeard.helpers import make_dirs
 from sickchill.oldbeard.name_cache import addNameToCache
 from sickchill.oldbeard.postProcessor import PostProcessor
-from sickchill.oldbeard.tv import TVEpisode, TVShow
+from sickchill.tv import TVEpisode, TVShow
 from tests import test_lib as test
 
 

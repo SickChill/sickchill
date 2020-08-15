@@ -119,10 +119,8 @@ class SRWebServer(threading.Thread):
 
         # Static File Handlers
         self.app.add_handlers(".*$", [
-            url(r'{0}/favicon.ico'.format(self.options['web_root']), StaticFileHandler,
-                {"path": os.path.join(self.options['data_root'], 'images/ico/favicon.ico')}, name='favicon'),
-            url(r'/favicon.ico', StaticFileHandler,
-                {"path": os.path.join(self.options['data_root'], 'images/ico/favicon.ico')}, name='favicon2'),
+            url(r'{0}/(favicon\.ico)'.format(self.options['web_root']), StaticFileHandler,
+                {"path": os.path.join(self.options['data_root'], 'images/ico')}, name='favicon'),
 
             url(r'{0}/images/(.*)'.format(self.options['web_root']), StaticFileHandler,
                 {"path": os.path.join(self.options['data_root'], 'images')}, name='images'),

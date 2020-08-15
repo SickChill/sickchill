@@ -3,7 +3,7 @@ import unittest
 import sickchill.logger
 from sickchill import settings
 from sickchill.oldbeard.providers import bitcannon, rarbg
-from sickchill.oldbeard.tv import TVEpisode, TVShow
+from sickchill.tv import TVEpisode, TVShow
 from tests import test_lib as test
 
 

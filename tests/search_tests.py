@@ -3,8 +3,8 @@ import unittest
 import sickchill.oldbeard.providers
 from sickchill import settings
 from sickchill.oldbeard import common as common
-from sickchill.oldbeard.tv import TVEpisode, TVShow
 from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.tv import TVEpisode, TVShow
 from tests import test_lib as test
 
 TESTS = {
