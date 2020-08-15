@@ -62,8 +62,8 @@ class ApiHandler(RequestHandler):
         # self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
 
     def get(self, *args, **kwargs):
-        kwargs = self.request.arguments
-        # noinspection PyCompatibility
+        # kwargs = self.request.arguments
+        kwargs = urllib.parse.parse_qs(self.request.query)
         for arg, value in kwargs.items():
             if len(value) == 1:
                 kwargs[arg] = value[0]
@@ -145,7 +145,7 @@ class ApiHandler(RequestHandler):
 
         out_dict = {}
         if commands:
-            commands = commands.decode().split("|")
+            commands = commands.split("|")
             multi_commands = len(commands) > 1
             for cmd in commands:
                 cur_args, cur_kwargs = self.filter_params(cmd, args, kwargs)
