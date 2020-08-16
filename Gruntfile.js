@@ -154,6 +154,18 @@ module.exports = function(grunt) {
                     dest: './sickchill/gui/slick/css/'
                 }]
             },
+            'fork-awesome': {
+                files: [{
+                    expand: true,
+                    dot: true,
+                    cwd: 'bower_components/fork-awesome',
+                    src: [
+                        'fonts/**/*',
+                        'css/**/*.css'
+                    ],
+                    dest: './sickchill/gui/slick/'
+                }]
+            },
             glyphicon: {
                 files: [{
                     expand: true,

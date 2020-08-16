@@ -217,6 +217,17 @@
                     </a>
                 </div>
             </div>
+            <br/>
+            <div class="row">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                    <i class="fa fa-discord-alt" style="color:#6B8ADB"></i>&nbsp;&nbsp;${_('Discord')}:
+                </div>
+                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
+                    <a href="https://discord.gg/U8WPBdf" rel="noreferrer">
+                        https://discord.gg/U8WPBdf
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </%block>
