@@ -2,7 +2,6 @@ import json
 import re
 
 import sickchill
-from sickchill import settings
 from sickchill.providers.metadata.generic import GenericMetadata
 from sickchill.show.Show import Show
 
@@ -19,7 +18,7 @@ class ImageSelector(WebRoot):
         if not show:
             return self._genericMessage(_("Error"), _("You must specify a show"))
 
-        show_obj = Show.find(settings.showList, int(show))
+        show_obj = Show.find(sickchill.settings.showList, int(show))
         if not show_obj:
             return self._genericMessage(_("Error"), _("Show not in show list"))
 
