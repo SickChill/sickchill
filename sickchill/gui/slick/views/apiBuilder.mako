@@ -305,14 +305,13 @@
                         <option value="${show.indexerid}">${show.name}</option>
                     % endfor
                 </select>
-
-                % if 'season' in parameters:
+                % if 'season' in parameters['requiredParameters'] or 'season' in parameters['optionalParameters']:
                     <select class="form-control hidden" name="season" data-action="update-episodes" data-command="${command}">
                         <option>${_('season')}</option>
                     </select>
                 % endif
 
-                % if 'episode' in parameters:
+                % if 'episode' in parameters['requiredParameters'] or 'episode' in parameters['optionalParameters']:
                     <select class="form-control hidden" name="episode" data-command="${command}">
                         <option>${_('episode')}</option>
                     </select>
