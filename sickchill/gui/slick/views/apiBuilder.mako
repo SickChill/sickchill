@@ -223,9 +223,9 @@
 
         <script type="text/javascript">
             //noinspection JSUnusedLocalSymbols
-            var episodes = ${ json.dumps(episodes) };
+            let episodes = ${ json.dumps(episodes) };
             //noinspection JSUnusedLocalSymbols
-            var commands = ${ json.dumps(sorted(commands)) };
+            let commands = ${ json.dumps(sorted(commands)) };
         </script>
         <script type="text/javascript" src="${static_url('js/vendor.min.js')}"></script>
         <script type="text/javascript" src="${static_url('js/core.min.js')}"></script>
