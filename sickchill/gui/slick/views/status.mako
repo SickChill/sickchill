@@ -1,10 +1,11 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    import collections
+    import timeago
+    from datetime import datetime
+
     from sickchill import settings
     from sickchill.oldbeard import helpers
     from sickchill.oldbeard.show_queue import ShowQueueActions
-    from sickchill.helper.common import dateTimeFormat
 %>
 <%block name="content">
     <%
@@ -66,7 +67,7 @@
         <div class="col-md-12">
             <h2 class="header">${_('Show Queue')}</h2>
             <div class="horizontal-scroll">
-                <table id="queueStatusTable" class="tablesorter" width="100%">
+                <table id="queueStatusTable" class="tablesorter">
                     <thead>
                         <tr>
                             <th>${_('Show id')}</th>
@@ -96,7 +97,7 @@
         <div class="col-md-12">
             <h2 class="header">${_('Post Processing Queue')}</h2>
             <div class="horizontal-scroll">
-                <table id="queueStatusTable" class="tablesorter" width="100%">
+                <table id="queueStatusTable" class="tablesorter">
                     <thead>
                         <tr>
                             <th>${_('Added')}</th>
@@ -129,7 +130,7 @@
         <div class="col-md-12">
             <h2 class="header">${_('Disk Space')}</h2>
             <div class="horizontal-scroll">
-                <table id="DFStatusTable" class="tablesorter" width="50%">
+                <table id="DFStatusTable" class="tablesorter">
                     <thead>
                         <tr>
                             <th>${_('Type')}</th>
@@ -143,9 +144,9 @@
                                 <td>${_('TV Download Directory')}</td>
                                 <td>${settings.TV_DOWNLOAD_DIR}</td>
                                 % if tvdirFree is not False:
-                                    <td align="middle">${tvdirFree}</td>
+                                    <td>${tvdirFree}</td>
                                 % else:
-                                    <td align="middle"><i>${_('Missing')}</i></td>
+                                    <td><i>${_('Missing')}</i></td>
                                 % endif
                             </tr>
                         % endif
@@ -154,9 +155,9 @@
                         % for cur_dir in rootDir:
                             <td>${cur_dir}</td>
                         % if rootDir[cur_dir] is not False:
-                            <td align="middle">${rootDir[cur_dir]}</td>
+                            <td>${rootDir[cur_dir]}</td>
                         % else:
-                            <td align="middle"><i>${_('Missing')}</i></td>
+                            <td><i>${_('Missing')}</i></td>
                         % endif
                         </tr>
                         % endfor
@@ -170,8 +171,8 @@
 <%def name="scheduler_row(schedulerName, scheduler)">
     <% service = getattr(settings, scheduler) %>
 
-    <tr>
-        <td>${schedulerName}</td>
+    <tr class="text-center">
+        <td class="text-left">${schedulerName}</td>
         % if service.is_alive():
             <td style="background-color:green">${service.is_alive()}</td>
         % else:
@@ -204,21 +205,18 @@
             % endtry
         % endif
         % if service.start_time:
-            <td align="right">${service.start_time}</td>
-        % else:
-            <td align="right"></td>
-        % endif
-        <% cycleTime = (service.cycleTime.microseconds + (service.cycleTime.seconds + service.cycleTime.days * 24 * 3600) * 10**6) / 10**6 %>
-        <td align="right"
-            data-seconds="${cycleTime}">${helpers.pretty_time_delta(cycleTime)}</td>
-        % if service.enable:
-            <% timeLeft = (service.timeLeft().microseconds + (service.timeLeft().seconds + service.timeLeft().days * 24 * 3600) * 10**6) / 10**6 %>
-            <td align="right"
-                data-seconds="${timeLeft}">${helpers.pretty_time_delta(timeLeft)}</td>
+            <td>${service.start_time}</td>
         % else:
             <td></td>
         % endif
-        <td>${service.lastRun.strftime(dateTimeFormat)}</td>
+        <% cycleTime = (service.cycleTime.microseconds + (service.cycleTime.seconds + service.cycleTime.days * 24 * 3600) * 10**6) / 10**6 %>
+        <td data-seconds="${cycleTime}">${helpers.pretty_time_delta(cycleTime)}</td>
+        % if service.enable:
+            <td>${timeago.format(datetime.now() + service.timeLeft())}</td>
+        % else:
+            <td></td>
+        % endif
+        <td>${timeago.format(service.lastRun)}</td>
         <td style="background-color:${('red', 'green')[service.silent]}">${service.silent}</td>
     </tr>
 
@@ -226,17 +224,17 @@
 </%def>
 
 <%def name="show_queue_row(item)">
-    <tr>
+    <tr class="text-center">
         % try:
             <td>${item.show.indexerid}</td>
         % except Exception:
             <td></td>
         % endtry
         % try:
-            <td>${item.show.name}</td>
+            <td class="text-left">${item.show.name}</td>
         % except Exception:
             % if item.action_id == ShowQueueActions.ADD:
-                <td>${item.showDir}</td>
+                <td class="text-left">${item.showDir}</td>
             % else:
                 <td></td>
             % endif
@@ -251,17 +249,17 @@
         % else:
             <td>${item.priority}</td>
         % endif
-        <td>${item.added.strftime(dateTimeFormat)}</td>
+        <td>${timeago.format(item.added.strftime)}</td>
         <td>${ShowQueueActions.names[item.action_id]}</td>
     </tr>
 </%def>
 
 <%def name="post_processor_task_row(item)">
-    <tr>
-        <td>${item.added.strftime(dateTimeFormat)}</td>
+    <tr class="text-center">
+        <td>${timeago.format(item.added)}</td>
         <td>${item.mode}</td>
-        <td>${item.directory}</td>
-        <td>${item.filename}</td>
+        <td class="text-left">${item.directory}</td>
+        <td class="text-left">${item.filename}</td>
         <td>${item.method}</td>
         % if item.priority == 10:
             <td>${_('LOW')}</td>
