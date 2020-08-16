@@ -59,12 +59,12 @@ SIMPLE_TEST_CASES = {
 
     'bare': {
         'Show.Name.102.Source.Quality.Etc-Group': parser.ParseResult(None, 'Show Name', 1, [2], 'Source.Quality.Etc', 'Group'),
-        'show.name.2010.123.source.quality.etc-group': parser.ParseResult(None, 'show name 2010', 1, [23], 'source.quality.etc', 'group'),
-        'show.name.2010.222.123.source.quality.etc-group': parser.ParseResult(None, 'show name 2010.222', 1, [23], 'source.quality.etc', 'group'),
+        'show.show_name.2010.123.source.quality.etc-group': parser.ParseResult(None, 'show name 2010', 1, [23], 'source.quality.etc', 'group'),
+        'show.show_name.2010.222.123.source.quality.etc-group': parser.ParseResult(None, 'show name 2010.222', 1, [23], 'source.quality.etc', 'group'),
         'Show.Name.102': parser.ParseResult(None, 'Show Name', 1, [2]),
         'Show.Name.01e02': parser.ParseResult(None, 'Show Name', 1, [2]),
         'the.event.401.hdtv-group': parser.ParseResult(None, 'the event', 4, [1], 'hdtv', 'group'),
-        'show.name.2010.special.hdtv-blah': None,
+        'show.show_name.2010.special.hdtv-blah': None,
         'show.ex-name.102.hdtv-group': parser.ParseResult(None, 'show ex-name', 1, [2], 'hdtv', 'group'),
     },
 
@@ -172,7 +172,7 @@ class UnicodeTests(test.SickChillTestDBCase):
         super(UnicodeTests, self).__init__(something)
         super(UnicodeTests, self).setUp()
         self.show = tv.TVShow(1, 1, 'en')
-        self.show.name = "The Big Bang Theory"
+        self.show.show_name = "The Big Bang Theory"
 
     def _test_unicode(self, name, result):
         """
@@ -306,7 +306,7 @@ class BasicTests(test.SickChillTestDBCase):
 
             result = SIMPLE_TEST_CASES[section][cur_test_base]
 
-            self.show.name = result.series_name if result else None
+            self.show.show_name = result.series_name if result else None
             name_parser.showObj = self.show
             if not result:
                 self.assertRaises(parser.InvalidNameException, name_parser.parse, cur_test)
@@ -469,7 +469,7 @@ class AnimeTests(test.SickChillTestDBCase):
 
             result = ANIME_TEST_CASES[section][cur_test_base]
 
-            self.show.name = result.series_name if result else None
+            self.show.show_name = result.series_name if result else None
             name_parser.showObj = self.show
             if not result:
                 self.assertRaises(parser.InvalidNameException, name_parser.parse, cur_test)
@@ -528,7 +528,7 @@ class BasicFailedTests(test.SickChillTestDBCase):
 
             result = SIMPLE_TEST_CASES[section][cur_test_base]
 
-            self.show.name = result.series_name if result else None
+            self.show.show_name = result.series_name if result else None
             name_parser.showObj = self.show
             if not result:
                 self.assertRaises(parser.InvalidNameException, name_parser.parse, cur_test)

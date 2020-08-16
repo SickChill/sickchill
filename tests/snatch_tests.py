@@ -90,7 +90,7 @@ def generator(tvdb_id, show_name, cur_data, force_search):
         global search_items
         search_items = cur_data["i"]
         show = TVShow(1, tvdb_id)
-        show.name = show_name
+        show.show_name = show_name
         show.quality = cur_data["q"]
         show.saveToDB()
         settings.showList.append(show)

@@ -32,7 +32,7 @@ class TVShowTests(test.SickChillTestDBCase):
         test change indexer id
         """
         show = TVShow(1, 257655, "en")
-        show.name = "show name"
+        show.show_name = "show name"
         show.network = "cbs"
         show.genre = ["crime"]
         show.runtime = 40
@@ -55,9 +55,33 @@ class TVShowTests(test.SickChillTestDBCase):
         test set name
         """
         show = TVShow(1, 1, "en")
-        show.name = "newName"
+        show.show_name = "newName"
         show.saveToDB()
         show.loadFromDB()
+        self.assertEqual(show.show_name, "newName")
+
+    def test_show_without_custom_name(self):
+        """
+        test set name
+        """
+        show = TVShow(1, 1, "en")
+        show.show_name = "show name"
+        show.saveToDB()
+        show.loadFromDB()
+        self.assertEqual(show.show_name, "show name")
+        self.assertEqual(show.name, "show name")
+
+    def test_show_with_custom_name(self):
+        """
+        test set name
+        """
+        show = TVShow(1, 1, "en")
+        show.show_name = "show name"
+        show.custom_name = "newName"
+        show.saveToDB()
+        show.loadFromDB()
+        self.assertEqual(show.show_name, "show name")
+        self.assertEqual(show.custom_name, "newName")
         self.assertEqual(show.name, "newName")
 
 
@@ -101,7 +125,7 @@ class TVTests(test.SickChillTestDBCase):
         Test get episodes
         """
         show = TVShow(1, 1, "en")
-        show.name = "show name"
+        show.show_name = "show name"
         show.network = "cbs"
         show.genre = ["crime"]
         show.runtime = 40
