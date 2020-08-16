@@ -71,7 +71,6 @@
 
         <link rel="stylesheet" type="text/css" href="${static_url('css/vendor.min.css')}"/>
         <link rel="stylesheet" type="text/css" href="${static_url('css/browser.css')}" />
-        <link rel="stylesheet" type="text/css" href="${static_url('css/imageSelector.css')}" />
         <link rel="stylesheet" type="text/css" href="${static_url('css/lib/jquery-ui-1.10.4.custom.min.css')}" />
         <link rel="stylesheet" type="text/css" href="${static_url('css/lib/jquery.qtip-2.2.1.min.css')}"/>
         <link rel="stylesheet" type="text/css" href="${static_url('css/style.css')}"/>
