@@ -8,19 +8,19 @@
 %>
 <%block name="content">
     <%
-        schedulerList = collections.OrderedDict(sorted({
-        _('Daily Search'): 'dailySearchScheduler',
-        _('Backlog'): 'backlogSearchScheduler',
-        _('Show Update'): 'showUpdateScheduler',
-        _('Version Check'): 'versionCheckScheduler',
-        _('Show Queue'): 'showQueueScheduler',
-        _('Search Queue'): 'searchQueueScheduler',
-        _('Proper Finder'): 'properFinderScheduler',
-        _('Post Process - Auto'): 'autoPostProcessorScheduler',
-        _('Post Process'): 'postProcessorTaskScheduler',
-        _('Subtitles Finder'): 'subtitlesFinderScheduler',
-        _('Trakt Checker'): 'traktCheckerScheduler',
-    }.items()))
+        schedulerList = dict(sorted({
+            _('Daily Search'): 'dailySearchScheduler',
+            _('Backlog'): 'backlogSearchScheduler',
+            _('Show Update'): 'showUpdateScheduler',
+            _('Version Check'): 'versionCheckScheduler',
+            _('Show Queue'): 'showQueueScheduler',
+            _('Search Queue'): 'searchQueueScheduler',
+            _('Proper Finder'): 'properFinderScheduler',
+            _('Post Process - Auto'): 'autoPostProcessorScheduler',
+            _('Post Process'): 'postProcessorTaskScheduler',
+            _('Subtitles Finder'): 'subtitlesFinderScheduler',
+            _('Trakt Checker'): 'traktCheckerScheduler',
+        }.items(), key=lambda item: item[0]))
     %>
     <div class="row">
         <div class="col-md-12">
@@ -37,7 +37,7 @@
 
             <h2 class="header">${_('Scheduler')}</h2>
             <div class="horizontal-scroll">
-                <table id="schedulerStatusTable" class="tablesorter" width="100%">
+                <table id="schedulerStatusTable" class="tablesorter">
                     <thead>
                         <tr>
                             <th>${_('Scheduler')}</th>
@@ -177,32 +177,30 @@
         % else:
             <td style="background-color:red">${service.is_alive()}</td>
         % endif
+        <% enabled = service.enable %>
+        <% active = service.action.amActive %>
         % if scheduler == 'backlogSearchScheduler':
             <% searchQueue = getattr(settings, 'searchQueueScheduler') %>
-            <% BLSpaused = searchQueue.action.is_backlog_paused() %>
-            <% BLSinProgress = searchQueue.action.is_backlog_in_progress() %>
-
-            <% del searchQueue %>
-            % if BLSpaused:
-                <td>${_('Paused')}</td>
+            % if searchQueue.action.is_backlog_paused():
+                <td style="background-color:red">${_('Paused')}</td>
             % else:
-                <td>${service.enable}</td>
+                <td style="background-color:${('red', 'green')[enabled]}">${enabled}</td>
             % endif
-            % if BLSinProgress:
-                <td>${_('True')}</td>
+            % if searchQueue.action.is_backlog_in_progress():
+                <td style="background-color:green">${_('True')}</td>
             % else:
                 % try:
-                    <td>${service.action.amActive}</td>
+                    <td style="background-color:${('red', 'green')[active]}">${active}</td>
                 % except Exception:
-                    <td>${_('N/A')}</td>
+                    <td style="background-color:red">${_('N/A')}</td>
                 % endtry
             % endif
         % else:
-            <td>${service.enable}</td>
+            <td style="background-color:${('red', 'green')[enabled]}">${enabled}</td>
              % try:
-                <td>${service.action.amActive}</td>
+                <td style="background-color:${('red', 'green')[active]}">${active}</td>
             % except Exception:
-                <td>${_('N/A')}</td>
+                <td style="background-color:red">${_('N/A')}</td>
             % endtry
         % endif
         % if service.start_time:
@@ -221,7 +219,7 @@
             <td></td>
         % endif
         <td>${service.lastRun.strftime(dateTimeFormat)}</td>
-        <td>${service.silent}</td>
+        <td style="background-color:${('red', 'green')[service.silent]}">${service.silent}</td>
     </tr>
 
     <% del service %>
