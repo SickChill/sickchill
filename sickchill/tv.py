@@ -1102,7 +1102,7 @@ class TVShow(object):
         controlValueDict = {"indexer_id": self.indexerid}
         newValueDict = {
             "indexer": self.indexer,
-            "show_name": self.name,
+            "show_name": self.show_name,
             "location": self._location,
             "network": self.network,
             "genre": '|'.join(self.genre) if isinstance(self.genre, list) else self.genre,
