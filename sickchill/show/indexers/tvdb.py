@@ -1,4 +1,4 @@
-import cgi
+import html
 import json
 import re
 import traceback
@@ -6,11 +6,10 @@ import traceback
 import tvdbsimple
 from requests.exceptions import HTTPError
 
-# from sickchill.sickbeard import logger
+# from sickchill import logger
 import sickchill.start
-from sickchill import settings
-from sickchill.sickbeard import logger
-from sickchill.sickbeard.tv import TVEpisode
+from sickchill import logger, settings
+from sickchill.tv import TVEpisode
 
 from .base import Indexer
 from .wrappers import ExceptionDecorator
@@ -196,7 +195,7 @@ class TVDB(Indexer):
 
     def episode_guide_url(self, show):
         # https://forum.kodi.tv/showthread.php?tid=323588
-        data = cgi.escape(json.dumps({'apikey': self.api_key, 'id': show.indexerid}), True).replace(' ', '')
+        data = html.escape(json.dumps({'apikey': self.api_key, 'id': show.indexerid}), True).replace(' ', '')
         return tvdbsimple.base.TVDB(key=self.api_key)._get_complete_url('login') + '?' + data + '|Content-Type=application/json'
 
     def get_favorites(self):

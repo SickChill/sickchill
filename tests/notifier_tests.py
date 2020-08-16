@@ -5,16 +5,16 @@ Test notifiers
 
 import unittest
 
-from sickchill.sickbeard import db
-from sickchill.sickbeard.notifiers.emailnotify import Notifier as EmailNotifier
-from sickchill.sickbeard.notifiers.prowl import Notifier as ProwlNotifier
-from sickchill.sickbeard.tv import TVEpisode, TVShow
+from sickchill.oldbeard import db
+from sickchill.oldbeard.notifiers.emailnotify import Notifier as EmailNotifier
+from sickchill.oldbeard.notifiers.prowl import Notifier as ProwlNotifier
+from sickchill.tv import TVEpisode, TVShow
 from sickchill.views.home import Home
 from tests import test_lib as test
 
 
 # noinspection PyProtectedMember
-class NotifierTests(test.SickbeardTestDBCase):
+class NotifierTests(test.SickChillTestDBCase):
     """
     Test notifiers
     """

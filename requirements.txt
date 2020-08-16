@@ -23,7 +23,6 @@ pyOpenSSL
 python-dateutil
 python-twitter
 rarfile
-slugify
 subliminal
 tmdbsimple
 tornado
@@ -50,5 +49,6 @@ ifaddr
 twilio
 pyaes
 new-rtorrent-python
-random_user_agent
 qbittorrent-api
+packaging
+timeago

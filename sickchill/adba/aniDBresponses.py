@@ -61,17 +61,17 @@ class Response:
 
     def parse(self):
         tmp = self.resstr.split(' ', len(self.codehead))
-        self.attrs = dict(list(zip(self.codehead, tmp[:-1])))
+        self.attrs = dict(zip(self.codehead, tmp[:-1]))
         self.resstr = tmp[-1]
 
         self.datalines = []
         for rawline in self.rawlines:
-            normal = dict(list(zip(self.codetail, rawline)))
+            normal = dict(zip(self.codetail, rawline))
             rawline = rawline[len(self.codetail):]
             rep = []
             if len(self.coderep):
                 while rawline:
-                    tmp = dict(list(zip(self.coderep, rawline)))
+                    tmp = dict(zip(self.coderep, rawline))
                     rawline = rawline[len(self.coderep):]
                     rep.append(tmp)
             # normal['rep']=rep

@@ -2,8 +2,8 @@
 <%!
     import datetime
     from sickchill import settings
-    from sickchill.sickbeard import sbdatetime, network_timezones
-    from sickchill.sickbeard.common import WANTED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, Overview, Quality
+    from sickchill.oldbeard import sbdatetime, network_timezones
+    from sickchill.oldbeard.common import WANTED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, Overview, Quality
     from sickchill.helper.common import episode_num
 %>
 <%block name="content">
@@ -62,11 +62,11 @@
                         <span class="listing-key qual">${_('Allowed')}: <b>${showCounts[curShow.indexerid][Overview.QUAL]}</b></span>
                     % endif
 
-                    <a class="btn btn-inline forceBacklog" href="${srRoot}/manage/backlogShow?indexer_id=${curShow.indexerid}"><i class="icon-play-circle icon-white"></i> ${_('Force Backlog')}</a>
+                    <a class="btn btn-inline forceBacklog" href="${scRoot}/manage/backlogShow?indexer_id=${curShow.indexerid}"><i class="icon-play-circle icon-white"></i> ${_('Force Backlog')}</a>
                 </div>
 
                 <h2 style="display: inline-block;">
-                    <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a>
+                    <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a>
                 </h2>
             </div>
         </div>

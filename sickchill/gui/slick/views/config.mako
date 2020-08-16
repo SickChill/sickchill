@@ -1,8 +1,8 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     from sickchill import settings
-    from sickchill.sickbeard import db
-    from sickchill.sickbeard.helpers import anon_url
+    from sickchill.oldbeard import db
+    from sickchill.oldbeard.helpers import anon_url
     import sys
     import platform
 %>
@@ -40,12 +40,12 @@
                             </a>
                         </div>
                     </div>
-                    % if sr_version:
+                    % if sc_version:
                         <div class="row">
                             <div class="col-md-12">
                                 Version:
-                                <a href="${anon_url('https://github.com/SickChill/SickChill/releases/tag/%s' % sr_version)}">
-                                    ${sr_version}
+                                <a href="${anon_url('https://github.com/SickChill/SickChill/releases/tag/%s' % sc_version)}">
+                                    ${sc_version}
                                 </a>
                             </div>
                         </div>
@@ -90,7 +90,7 @@
                     <i class="icon16-config-locale"></i>&nbsp;&nbsp;${_('Locale')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    ${'.'.join([str(loc) for loc in sr_locale])}
+                    ${'.'.join([str(loc) for loc in sc_locale])}
                 </div>
             </div>
             <br/>
@@ -101,7 +101,7 @@
                     <i class="icon16-config-user"></i>&nbsp;&nbsp;${_('User')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    ${sr_user}
+                    ${sc_user}
                 </div>
             </div>
             <br/>
@@ -179,8 +179,8 @@
                     <i class="icon16-config-web"></i>&nbsp;&nbsp;${_('Website')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    <a href="${anon_url('http://sickchill.github.io/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
-                        http://sickchill.github.io/
+                    <a href="${anon_url('https://sickchill.github.io/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
+                        https://sickchill.github.io/
                     </a>
                 </div>
             </div>
@@ -214,6 +214,42 @@
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                     <a href="irc://irc.freenode.net/#sickchill" rel="noreferrer">
                         <i>#sickchill</i> on <i>irc.freenode.net</i>
+                    </a>
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                    <i class="fa fa-fw fa-discord" style="color: #6B8ADB"></i>${_('Discord')}:
+                </div>
+                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
+                    <a href="https://discord.gg/U8WPBdf" rel="noreferrer">
+                        https://discord.gg/U8WPBdf
+                    </a>
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                    <i class="fa fa-fw fa-slack" style="color: #3A0B36"></i>${_('Slack')}:
+                </div>
+                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
+                    <a href="https://sickchill.slack.com" rel="noreferrer">
+                        Workspace
+                    </a>
+                    <a href="https://join.slack.com/t/sickchill/shared_invite/zt-60hql14k-u7eJ3Dbl91Cb2LZgtqKpUw" rel="noreferrer">
+                        (Invite)
+                    </a>
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                    <i class="fa fa-fw fa-telegram" style="color: #38789A"></i>${_('Telegram')}:
+                </div>
+                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
+                    <a href="https://t.me/sickchill" rel="noreferrer">
+                        https://t.me/sickchill
                     </a>
                 </div>
             </div>

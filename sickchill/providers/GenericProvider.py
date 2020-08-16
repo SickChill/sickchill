@@ -7,16 +7,16 @@ from random import shuffle
 
 from requests.utils import add_dict_to_cookiejar
 
-import sickchill.sickbeard
+import sickchill.oldbeard
+from sickchill import logger
 from sickchill.helper.common import sanitize_filename
-from sickchill.sickbeard import logger
-from sickchill.sickbeard.classes import Proper, SearchResult
-from sickchill.sickbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, ua_pool
-from sickchill.sickbeard.db import DBConnection
-from sickchill.sickbeard.helpers import download_file, getURL, make_session, remove_file_failed
-from sickchill.sickbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickchill.sickbeard.show_name_helpers import allPossibleShowNames
-from sickchill.sickbeard.tvcache import TVCache
+from sickchill.oldbeard.classes import Proper, SearchResult
+from sickchill.oldbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT
+from sickchill.oldbeard.db import DBConnection
+from sickchill.oldbeard.helpers import download_file, getURL, make_session, remove_file_failed
+from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickchill.oldbeard.show_name_helpers import allPossibleShowNames
+from sickchill.oldbeard.tvcache import TVCache
 
 
 class GenericProvider(object):
@@ -42,17 +42,17 @@ class GenericProvider(object):
         self.anime_only = False
         self.bt_cache_urls = [
             # 'http://torcache.net/torrent/{torrent_hash}.torrent',
-            'http://torrentproject.se/torrent/{torrent_hash}.torrent',
+            # 'http://torrentproject.se/torrent/{torrent_hash}.torrent',
             'http://thetorrent.org/torrent/{torrent_hash}.torrent',
-            'http://btdig.com/torrent/{torrent_hash}.torrent',
-            ('https://t.torrage.info/download?h={torrent_hash}', 'https://torrage.info/torrent.php?h={torrent_hash}'),
+            # 'http://btdig.com/torrent/{torrent_hash}.torrent',
+            ('https://torrage.info/download?h={torrent_hash}', 'https://torrage.info/torrent.php?h={torrent_hash}'),
             'https://itorrents.org/torrent/{torrent_hash}.torrent?title={torrent_name}'
         ]
         self.cache = TVCache(self)
         self.enable_backlog = False
         self.enable_daily = False
         self.enabled = False
-        self.headers = {'User-Agent': ua_pool.get_random_user_agent()}
+        self.headers = dict()
         self.proper_strings = ['PROPER|REPACK|REAL']
         self.provider_type = None
         self.public = False
@@ -176,7 +176,9 @@ class GenericProvider(object):
         cl = []
 
         for item in items_list:
-            (title, url) = self._get_title_and_url(item)
+            title, url = self._get_title_and_url(item)
+            seeders, leechers = self._get_seeders_and_leechers(item)
+            size = self._get_size(item)
 
             try:
                 parse_result = NameParser(parse_method=('normal', 'anime')[show.is_anime]).parse(title)
@@ -259,8 +261,7 @@ class GenericProvider(object):
             if add_cache_entry:
                 logger.debug('Adding item from search to cache: {0}'.format(title))
 
-                # Access to a protected member of a client class
-                ci = self.cache._add_cache_entry(title, url, parse_result=parse_result)
+                ci = self.cache._add_cache_entry(title, url, size, seeders, leechers, parse_result=parse_result)
 
                 if ci is not None:
                     cl.append(ci)
@@ -315,7 +316,7 @@ class GenericProvider(object):
 
             # Access to a protected member of a client class
             cache_db = self.cache._get_db()
-            cache_db.mass_action(cl)
+            cache_db.mass_upsert('results', cl)
 
         return results
 
@@ -428,7 +429,7 @@ class GenericProvider(object):
                 episode_string_fallback = episode_string + '{0:02d}'.format(int(episode.scene_absolute_number))
                 episode_string += '{0:03d}'.format(int(episode.scene_absolute_number))
             else:
-                episode_string += sickchill.sickbeard.config.naming_ep_type[2] % {
+                episode_string += sickchill.oldbeard.config.naming_ep_type[2] % {
                     'seasonnumber': episode.scene_season,
                     'episodenumber': episode.scene_episode,
                 }
@@ -470,6 +471,12 @@ class GenericProvider(object):
             return item.get('size', -1)
         except AttributeError:
             return -1
+
+    def _get_seeders_and_leechers(self, item):
+        try:
+            return item.get('seeders', -1), item.get('leechers', -1)
+        except AttributeError:
+            return -1, -1
 
     def _get_storage_dir(self):
         return ''
@@ -557,7 +564,13 @@ class GenericProvider(object):
             cookie_validator = re.compile(r'^(\w+=\w+)(;\w+=\w+)*$')
             if not cookie_validator.match(self.cookies):
                 return False, 'Cookie is not correctly formatted: {0}'.format(self.cookies)
-            add_dict_to_cookiejar(self.session.cookies, dict(x.rsplit('=', 1) for x in self.cookies.split(';')))
+
+            new_cookies = {}
+            for cookie in self.cookies.split(';'):
+                key, value = cookie.rsplit('=', 1)
+                new_cookies[key] = value
+
+            add_dict_to_cookiejar(self.session.cookies, new_cookies)
             return True, 'torrent cookie'
 
         return False, 'No Cookies added from ui for provider: {0}'.format(self.name)

@@ -3,7 +3,7 @@ from sickchill import settings
 from sickchill.helper import try_int
 from sickchill.show.History import History as HistoryTool
 
-from ..sickbeard import ui
+from ..oldbeard import ui
 from .common import PageTemplate
 from .index import WebRoot
 from .routes import Route
@@ -31,7 +31,6 @@ class History(WebRoot):
                 'time': row['date']
             }
 
-            # noinspection PyTypeChecker
             if not any((history['show_id'] == row['show_id'] and
                         history['season'] == row['season'] and
                         history['episode'] == row['episode'] and

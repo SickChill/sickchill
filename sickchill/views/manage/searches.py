@@ -1,5 +1,5 @@
-from sickchill import settings
-from sickchill.sickbeard import logger, ui
+from sickchill import logger, settings
+from sickchill.oldbeard import ui
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
@@ -13,7 +13,7 @@ class ManageSearches(Manage):
 
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="manage_manageSearches.mako")
-        # t.backlogPI = sickbeard.backlogSearchScheduler.action.getProgressIndicator()
+        # t.backlogPI = oldbeard.backlogSearchScheduler.action.getProgressIndicator()
 
         return t.render(backlogPaused=settings.searchQueueScheduler.action.is_backlog_paused(),
                         backlogRunning=settings.searchQueueScheduler.action.is_backlog_in_progress(),

@@ -1,8 +1,8 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
-    from sickchill.sickbeard.helpers import anon_url
+    from sickchill.oldbeard.helpers import anon_url
     from sickchill import settings
-    from sickchill.sickbeard.filters import hide
+    from sickchill.oldbeard.filters import hide
 %>
 <%block name="metas">
     <meta data-var="settings.SORT_ARTICLE" data-content="${settings.SORT_ARTICLE}">
@@ -81,7 +81,7 @@
                                 <div class="traktContainer">
                                     <div class="trakt-image">
                                         <a class="trakt-image" href="${anon_url('https://thetvdb.com/series/' + cur_result.slug)}" target="_blank">
-                                            <img alt="" class="trakt-image" src="${srRoot}/cache/images/favorites/${cur_result.id}"
+                                            <img alt="" class="trakt-image" src="${scRoot}/cache/images/favorites/${cur_result.id}"
                                                  height="273px" width="186px"/>
                                         </a>
                                     </div>
@@ -94,7 +94,7 @@
                                         <p>${cur_result.siteRating*10}%&nbsp;<span class="displayshow-icon-heart"></span></p>
                                         <i>${cur_result.siteRatingCount}</i>
                                         <div class="traktShowTitleIcons">
-                                            <a href="${srRoot}/addShows/addShowByID?indexer_id=${cur_result.id}&amp;show_name=${cur_result.seriesName | u}&amp;indexer=TVDB"
+                                            <a href="${scRoot}/addShows/addShowByID?indexer_id=${cur_result.id}&amp;show_name=${cur_result.seriesName | u}&amp;indexer=TVDB"
                                                class="btn btn-xs" data-no-redirect>${_('Add Show')}</a>
                                         </div>
                                     </div>

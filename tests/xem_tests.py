@@ -4,13 +4,13 @@ Test XEM
 
 import unittest
 
-import sickchill.sickbeard.db
+import sickchill.oldbeard.db
 from sickchill import settings
-from sickchill.sickbeard.tv import TVShow
+from sickchill.tv import TVShow
 from tests import test_lib as test
 
 
-class XEMBasicTests(test.SickbeardTestDBCase):
+class XEMBasicTests(test.SickChillTestDBCase):
     """
     Perform basic xem tests
     """
@@ -21,7 +21,7 @@ class XEMBasicTests(test.SickbeardTestDBCase):
         Populates the showList with shows from the database
         """
 
-        test_main_db_con = sickchill.sickbeard.db.DBConnection()
+        test_main_db_con = sickchill.oldbeard.db.DBConnection()
         sql_results = test_main_db_con.select("SELECT * FROM tv_shows")
 
         for sql_show in sql_results:
@@ -36,7 +36,7 @@ class XEMBasicTests(test.SickbeardTestDBCase):
         """
         Populates the showList with shows from the database
         """
-        test_main_db_con = sickchill.sickbeard.db.DBConnection()
+        test_main_db_con = sickchill.oldbeard.db.DBConnection()
         sql_results = test_main_db_con.select("SELECT * FROM tv_shows")
 
         for sql_show in sql_results:

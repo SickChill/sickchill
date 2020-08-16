@@ -1,6 +1,6 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
-    from sickchill import sickbeard
+    from sickchill import oldbeard
 %>
 
 <%block name="tabs">

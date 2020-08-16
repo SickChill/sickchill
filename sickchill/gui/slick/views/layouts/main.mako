@@ -2,11 +2,10 @@
     import re
     import datetime
     from urllib.parse import urljoin
-    from sickchill.sickbeard import logger
-    from sickchill.sickbeard.filters import hide
+    from sickchill.oldbeard.filters import hide
     from sickchill.helper.common import pretty_file_size
     from sickchill.show.Show import Show
-    from sickchill import settings
+    from sickchill import settings, logger
     from time import time
 
     # resource module is unix only
@@ -46,7 +45,7 @@
         <meta name="msapplication-TileImage" content="${static_url('images/ico/mstile-144x144.png')}">
         <meta name="msapplication-config" content="${static_url('images/ico/browserconfig.xml')}">
 
-        <meta data-var="srRoot" data-content="${settings.WEB_ROOT}">
+        <meta data-var="scRoot" data-content="${settings.WEB_ROOT}">
         <meta data-var="themeSpinner" data-content="${('', '-dark')[settings.THEME_NAME == 'dark']}">
         <meta data-var="anonURL" data-content="${settings.ANON_REDIRECT}">
 
@@ -94,6 +93,7 @@
         <link rel="stylesheet" type="text/css" href="${static_url('css/vendor.min.css')}"/>
         <link rel="stylesheet" type="text/css" href="${static_url('css/browser.css')}" />
         <link rel="stylesheet" type="text/css" href="${static_url('css/font-awesome.min.css')}" />
+        <link rel="stylesheet" type="text/css" href="${static_url('css/fork-awesome.min.css')}" />
         <link rel="stylesheet" type="text/css" href="${static_url('css/lib/jquery-ui-1.10.4.custom.min.css')}" />
         <link rel="stylesheet" type="text/css" href="${static_url('css/lib/jquery.qtip-2.2.1.min.css')}"/>
         <link rel="stylesheet" type="text/css" href="${static_url('css/style.css')}"/>
@@ -141,6 +141,7 @@
                 % if srLogin:
                     <div class="collapse navbar-collapse" id="collapsible-navbar">
                         <ul class="nav navbar-nav navbar-right">
+                            <%block name="navbar" />
                             <li id="NAVhome" class="navbar-split dropdown${('', ' active')[topmenu == 'home']}">
                                 <a href="${static_url("home/", include_version=False)}" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span>${_('Shows')}</span>
                                     <b class="caret"></b>
@@ -215,6 +216,8 @@
                                     <li><a href="${static_url("config/postProcessing/", include_version=False)}"><i class="fa fa-fw fa-refresh"></i>&nbsp;${_('Post Processing')}</a></li>
                                     <li><a href="${static_url("config/notifications/", include_version=False)}"><i class="fa fa-fw fa-bell-o"></i>&nbsp;${_('Notifications')}</a></li>
                                     <li><a href="${static_url("config/anime/", include_version=False)}"><i class="fa fa-fw fa-eye"></i>&nbsp;${_('Anime')}</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="${static_url("apibuilder", include_version=False)}"><i class="fa fa-fw fa-info-circle"></i>&nbsp;${_('API Builder')}</a></li>
                                 </ul>
                                 <div style="clear:both;"></div>
                             </li>
@@ -239,6 +242,9 @@
                                 <ul class="dropdown-menu">
                                     <li><a href="${static_url("news/", include_version=False)}"><i class="fa fa-fw fa-newspaper-o"></i>&nbsp;${_('News')}${newsBadge}</a></li>
                                     <li><a href="${static_url("IRC/", include_version=False)}"><i class="fa fa-fw fa-hashtag"></i>&nbsp;${_('IRC')}</a></li>
+                                    <li><a href="https://discord.gg/U8WPBdf"><i class="fa fa-fw fa-discord-alt"></i>&nbsp;${_('Discord')}</a></li>
+                                    <li><a href="https://sickchill.slack.com"><i class="fa fa-fw fa-slack"></i>&nbsp;${_('Slack')}</a></li>
+                                    <li><a href="https://t.me/sickchill"><i class="fa fa-fw fa-telegram"></i>&nbsp;${_('Telegram')}</a></li>
                                     <li><a href="${static_url("changes/", include_version=False)}"><i class="fa fa-fw fa-globe"></i>&nbsp;${_('Changelog')}</a></li>
                                     <li><a href="https://github.com/SickChill/SickChill/wiki/Donations" rel="noreferrer" onclick="window.open('${settings.ANON_REDIRECT}' + this.href); return false;"><i class="fa fa-fw fa-life-ring"></i>&nbsp;${_('Support SickChill')}</a></li>
                                     <li role="separator" class="divider"></li>

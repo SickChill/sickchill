@@ -4,8 +4,9 @@ from xml.etree import ElementTree
 
 import sickchill
 from sickchill.helper.common import dateFormat, replace_extension
-from sickchill.sickbeard import helpers, logger
+from sickchill.oldbeard import helpers
 
+from ... import logger
 from . import mediabrowser
 
 

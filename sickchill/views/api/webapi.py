@@ -11,20 +11,20 @@ import urllib.parse
 from tornado.web import RequestHandler
 
 import sickchill
-from sickchill import settings
+from sickchill import logger, settings
 from sickchill.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
 from sickchill.helper.exceptions import CantUpdateShowException, ShowDirectoryNotFoundException
 from sickchill.helper.quality import get_quality_string
+from sickchill.oldbeard import classes, db, helpers, network_timezones, sbdatetime, search_queue, ui
+from sickchill.oldbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED,
+                                       UNKNOWN, WANTED)
+from sickchill.oldbeard.postProcessor import PROCESS_METHODS
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.show.History import History
 from sickchill.show.Show import Show
-from sickchill.sickbeard import classes, db, helpers, logger, network_timezones, sbdatetime, search_queue, ui
-from sickchill.sickbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED,
-                                        UNKNOWN, WANTED)
-from sickchill.sickbeard.postProcessor import PROCESS_METHODS
-from sickchill.sickbeard.versionChecker import CheckVersion
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
+from sickchill.update_manager import UpdateManager
 
 indexer_ids = ["indexerid", "tvdbid"]
 
@@ -62,8 +62,8 @@ class ApiHandler(RequestHandler):
         # self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
 
     def get(self, *args, **kwargs):
-        kwargs = self.request.arguments
-        # noinspection PyCompatibility
+        # kwargs = self.request.arguments
+        kwargs = urllib.parse.parse_qs(self.request.query)
         for arg, value in kwargs.items():
             if len(value) == 1:
                 kwargs[arg] = value[0]
@@ -92,6 +92,7 @@ class ApiHandler(RequestHandler):
         try:
             out_dict = _call_dispatcher(args, kwargs)
         except Exception as e:  # real internal error oohhh nooo :(
+            logger.info(traceback.format_exc())
             logger.exception("API :: " + str(e))
             error_data = {
                 "error_msg": str(e),
@@ -170,6 +171,7 @@ class ApiHandler(RequestHandler):
                         else:
                             cur_out_dict = _responds(RESULT_ERROR, "No such cmd: '" + cmd + "'")
                     except ApiError as error:  # Api errors that we raised, they are harmless
+                        logger.info(traceback.format_exc())
                         cur_out_dict = _responds(RESULT_ERROR, msg=str(error))
                 else:  # if someone chained one of the forbidden commands they will get an error for this one cmd
                     cur_out_dict = _responds(RESULT_ERROR, msg="The cmd '" + cmd + "' is not supported while chaining")
@@ -801,7 +803,7 @@ class CMDEpisodeSearch(ApiCall):
 
         # return the correct json value
         if ep_queue_item.success:
-            status, quality = Quality.splitCompositeStatus(ep_obj.status)  # @UnusedVariable
+            status, quality = Quality.splitCompositeStatus(ep_obj.status)
             # TODO: split quality and status?
             return _responds(RESULT_SUCCESS, {"quality": get_quality_string(quality)},
                              "Snatched (" + get_quality_string(quality) + ")")
@@ -822,7 +824,7 @@ class AbstractStartScheduler(ApiCall):
 
     def run(self):
         error_str = 'Start scheduler failed'
-        if not isinstance(self.scheduler, sickchill.sickbeard.scheduler.Scheduler):
+        if not isinstance(self.scheduler, sickchill.oldbeard.scheduler.Scheduler):
             error_str = '{0}: {1} is not initialized as a static variable'.format(error_str, self.scheduler_class_str)
             return _responds(RESULT_FAILURE, msg=error_str)
 
@@ -861,7 +863,7 @@ class CMDFullSubtitleSearch(AbstractStartScheduler):
 
     @property
     def scheduler_class_str(self):
-        return 'sickbeard.subtitlesFinderScheduler'
+        return 'oldbeard.subtitlesFinderScheduler'
 
 
 class CMDProperSearch(AbstractStartScheduler):
@@ -876,7 +878,7 @@ class CMDProperSearch(AbstractStartScheduler):
 
     @property
     def scheduler_class_str(self):
-        return 'sickbeard.properFinderScheduler'
+        return 'oldbeard.properFinderScheduler'
 
 
 class CMDDailySearch(AbstractStartScheduler):
@@ -891,7 +893,7 @@ class CMDDailySearch(AbstractStartScheduler):
 
     @property
     def scheduler_class_str(self):
-        return 'sickbeard.dailySearchScheduler'
+        return 'oldbeard.dailySearchScheduler'
 
 
 # noinspection PyAbstractClass
@@ -1051,7 +1053,7 @@ class CMDSubtitleSearch(ApiCall):
             return _responds(RESULT_FAILURE, msg='Unable to find subtitles')
 
         if new_subtitles:
-            new_languages = [sickchill.sickbeard.subtitles.name_from_code(code) for code in new_subtitles]
+            new_languages = [sickchill.oldbeard.subtitles.name_from_code(code) for code in new_subtitles]
             status = 'New subtitles downloaded: {0}'.format(', '.join(new_languages))
             response = _responds(RESULT_SUCCESS, msg='New subtitles found')
         else:
@@ -1402,7 +1404,7 @@ class CMDSickChill(ApiCall):
     def run(self):
         """ dGet miscellaneous information about SickChill """
         data = {
-            "sr_version": settings.BRANCH, "api_version": self.version,
+            "sc_version": settings.BRANCH, "api_version": self.version,
             "api_commands": sorted(function_mapper)
         }
         return _responds(RESULT_SUCCESS, data)
@@ -1476,21 +1478,21 @@ class CMDSickChillCheckVersion(ApiCall):
         super(CMDSickChillCheckVersion, self).__init__(args, kwargs)
 
     def run(self):
-        check_version = CheckVersion()
-        needs_update = check_version.check_for_new_version()
+        update_manager = UpdateManager()
+        needs_update = update_manager.check_for_new_version()
 
         data = {
             "current_version": {
-                "branch": check_version.get_branch(),
-                "commit": check_version.updater.get_cur_commit_hash(),
-                "version": check_version.updater.get_cur_version(),
+                "branch": update_manager.branch,
+                "commit": update_manager.get_current_commit_hash(),
+                "version": update_manager.get_current_version(),
             },
             "latest_version": {
-                "branch": check_version.get_branch(),
-                "commit": check_version.updater.get_newest_commit_hash(),
-                "version": check_version.updater.get_newest_version(),
+                "branch": update_manager.branch,
+                "commit": update_manager.get_newest_commit_hash(),
+                "version": update_manager.get_newest_version(),
             },
-            "commits_offset": check_version.updater.get_num_commits_behind(),
+            "commits_offset": update_manager.get_num_commits_behind(),
             "needs_update": needs_update,
         }
 
@@ -1707,8 +1709,7 @@ class CMDSickChillSearchIndexers(ApiCall):
             for indexer, indexer_results in search_results.items():
                 for result in indexer_results:
                     # Skip it if it's in our show list already, and we only want new shows
-                    # noinspection PyUnresolvedReferences
-                    in_show_list = sickchill.sickbeard.tv.Show.find(settings.showList, int(result['id']))
+                    in_show_list = sickchill.show.Show.Show.find(settings.showList, int(result['id']))
                     if in_show_list and self.only_new:
                         continue
 
@@ -1872,11 +1873,11 @@ class CMDSickChillUpdate(ApiCall):
         super(CMDSickChillUpdate, self).__init__(args, kwargs)
 
     def run(self):
-        check_version = CheckVersion()
+        update_manager = UpdateManager()
 
-        if check_version.check_for_new_version():
-            if check_version.run_backup_if_safe():
-                check_version.update()
+        if update_manager.check_for_new_version():
+            if update_manager.run_backup_if_safe():
+                update_manager.update()
                 return _responds(RESULT_SUCCESS, msg="SickChill is updating ...")
             return _responds(RESULT_FAILURE, msg="SickChill could not backup config ...")
         return _responds(RESULT_FAILURE, msg="SickChill is already up to date")
@@ -2011,7 +2012,7 @@ class CMDShowAddExisting(ApiCall):
             return _responds(RESULT_FAILURE, msg='Not a valid location')
 
         indexer_name = None
-        indexer_result = CMDSickChillSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid}).run()
+        indexer_result = CMDSickChillSearchIndexers(tuple(), {indexer_ids[self.indexer]: self.indexerid}).run()
 
         if indexer_result['result'] == result_type_map[RESULT_SUCCESS]:
             if not indexer_result['data']['results']:
@@ -2170,7 +2171,7 @@ class CMDShowAddNew(ApiCall):
             default_ep_status_after = self.future_status
 
         indexer_name = None
-        indexer_result = CMDSickChillSearchIndexers([], {indexer_ids[self.indexer]: self.indexerid, 'lang': self.lang}).run()
+        indexer_result = CMDSickChillSearchIndexers(tuple(), {indexer_ids[self.indexer]: self.indexerid, 'lang': self.lang}).run()
 
         if indexer_result['result'] == result_type_map[RESULT_SUCCESS]:
             if not indexer_result['data']['results']:

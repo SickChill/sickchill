@@ -2,8 +2,8 @@ from datetime import date
 
 from sickchill import settings
 from sickchill.helper.exceptions import CantRefreshShowException, CantRemoveShowException, MultipleShowObjectsException
-from sickchill.sickbeard.common import Quality, SKIPPED, WANTED
-from sickchill.sickbeard.db import DBConnection
+from sickchill.oldbeard.common import Quality, SKIPPED, WANTED
+from sickchill.oldbeard.db import DBConnection
 
 
 class Show(object):

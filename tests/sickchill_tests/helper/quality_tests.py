@@ -7,7 +7,7 @@ Test qualities
 import unittest
 
 from sickchill.helper.quality import get_quality_string
-from sickchill.sickbeard.common import ANY, HD, HD720p, HD1080p, Quality, SD
+from sickchill.oldbeard.common import ANY, HD, HD720p, HD1080p, Quality, SD
 
 
 class QualityTests(unittest.TestCase):

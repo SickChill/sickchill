@@ -1,7 +1,7 @@
 from tornado.web import addslash
 
-from sickchill import settings
-from sickchill.sickbeard import logger, ui
+from sickchill import logger, settings
+from sickchill.oldbeard import ui
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 

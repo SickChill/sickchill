@@ -6,8 +6,8 @@ Test history
 
 import unittest
 
+from sickchill.oldbeard.common import Quality
 from sickchill.show.History import History
-from sickchill.sickbeard.common import Quality
 
 
 class HistoryTests(unittest.TestCase):

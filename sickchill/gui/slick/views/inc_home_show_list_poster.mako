@@ -1,7 +1,7 @@
 <%!
     from sickchill import settings
     import calendar
-    from sickchill.sickbeard import sbdatetime, network_timezones
+    from sickchill.oldbeard import sbdatetime, network_timezones
     from sickchill.helper.common import pretty_file_size
     import os
     import re
@@ -102,7 +102,7 @@
             <div class="show-container" id="show${curShow.indexerid}" data-name="${curShow.sort_name}" data-date="${data_date}" data-network="${curShow.network}"
                  data-progress="${int(progressbar_percent)}" data-progress-sort="${progressbar_percent + (cur_total/1000000.0)}" data-status="${curShow.status}">
                 <div class="show-image">
-                    <a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">
+                    <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}">
                         <img alt="" class="show-image" src="${static_url("images/poster.png")}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}" />
                     </a>
                 </div>

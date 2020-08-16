@@ -1,9 +1,8 @@
 import re
 
-from sickchill import settings
+from sickchill import logger, settings
 from sickchill.helper.common import try_int
-from sickchill.sickbeard import logger
-from sickchill.sickbeard.tv import Show, TVEpisode
+from sickchill.tv import Show, TVEpisode
 
 from .tvdb import TVDB
 

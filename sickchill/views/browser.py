@@ -3,7 +3,7 @@ import os
 
 from tornado.escape import xhtml_unescape
 
-from sickchill.sickbeard.browser import foldersAtPath
+from sickchill.oldbeard.browser import foldersAtPath
 
 from .index import WebRoot
 from .routes import Route

@@ -2,7 +2,7 @@ from tornado.escape import xhtml_unescape
 from tornado.web import addslash
 
 from sickchill import settings
-from sickchill.sickbeard import config
+from sickchill.oldbeard import config
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home
 from sickchill.views.routes import Route

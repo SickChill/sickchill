@@ -1,4 +1,4 @@
-const searchStatusUrl = srRoot + '/home/getManualSearchStatus';
+const searchStatusUrl = scRoot + '/home/getManualSearchStatus';
 let failedDownload = false;
 let qualityDownload = false;
 let selectedEpisode = '';

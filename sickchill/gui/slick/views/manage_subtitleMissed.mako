@@ -2,7 +2,7 @@
 <%!
     import datetime
     from sickchill import settings
-    from sickchill.sickbeard import subtitles
+    from sickchill.oldbeard import subtitles
 %>
 <%block name="content">
     <div id="content960">
@@ -20,7 +20,7 @@
         <br>
         % endif
 
-        <form action="${srRoot}/manage/subtitleMissed" method="get">
+        <form action="${scRoot}/manage/subtitleMissed" method="get">
             % if settings.SUBTITLES_MULTI:
                 ${_('Manage episodes without')} <select name="whichSubs" class="form-control form-control-inline input-sm">
                 <option value="all">${_('All')}</option>
@@ -46,7 +46,7 @@
     % else:
         ##Strange that this is used by js but is an input outside of any form?
         <input type="hidden" id="selectSubLang" name="selectSubLang" value="${whichSubs}" />
-        <form action="${srRoot}/manage/downloadSubtitleMissed" method="post">
+        <form action="${scRoot}/manage/downloadSubtitleMissed" method="post">
             % if settings.SUBTITLES_MULTI:
                 <h2>${_('Episodes without {subsLanguage} subtitles.').format(subsLanguage=subsLanguage)}</h2>
             % else:
@@ -67,7 +67,7 @@
             % for cur_indexer_id in sorted_show_ids:
                 <tr id="${cur_indexer_id}">
                     <th style="width: 1%;"><input type="checkbox" class="allCheck" id="allCheck-${cur_indexer_id}" name="${cur_indexer_id}-all"checked="checked" /></th>
-                    <th colspan="3" style="text-align: left;"><a class="whitelink" href="${srRoot}/home/displayShow?show=${cur_indexer_id}">${show_names[cur_indexer_id]}</a> (${ep_counts[cur_indexer_id]}) <input type="button" class="pull-right get_more_eps btn" id="${cur_indexer_id}" value="Expand" /></th>
+                    <th colspan="3" style="text-align: left;"><a class="whitelink" href="${scRoot}/home/displayShow?show=${cur_indexer_id}">${show_names[cur_indexer_id]}</a> (${ep_counts[cur_indexer_id]}) <input type="button" class="pull-right get_more_eps btn" id="${cur_indexer_id}" value="Expand" /></th>
                 </tr>
             % endfor
             </table>

@@ -1,8 +1,8 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
     from sickchill import settings
-    from sickchill.sickbeard.filters import hide
-    from sickchill.sickbeard.helpers import anon_url
+    from sickchill.oldbeard.filters import hide
+    from sickchill.oldbeard.helpers import anon_url
 %>
 
 <%block name="tabs">

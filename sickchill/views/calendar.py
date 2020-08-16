@@ -3,10 +3,10 @@ import datetime
 from dateutil import tz
 from tornado.web import authenticated
 
-from sickchill import settings
+from sickchill import logger, settings
 from sickchill.helper import try_int
 
-from ..sickbeard import db, logger, network_timezones
+from ..oldbeard import db, network_timezones
 from .index import BaseHandler
 
 

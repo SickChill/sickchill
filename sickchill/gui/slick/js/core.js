@@ -2,12 +2,12 @@ function getMeta(pyVar) {
     return $('meta[data-var="' + pyVar + '"]').data('content');
 }
 
-const srRoot = getMeta('srRoot');
+const scRoot = getMeta('scRoot');
 const srDefaultPage = getMeta('srDefaultPage');
 const themeSpinner = getMeta('themeSpinner');
 const anonURL = getMeta('anonURL');
-const topImageHtml = '<img src="' + srRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />'; // eslint-disable-line no-unused-vars
-const loading = '<img src="' + srRoot + '/images/loading16' + themeSpinner + '.gif" height="16" width="16" />';
+const topImageHtml = '<img src="' + scRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />'; // eslint-disable-line no-unused-vars
+const loading = '<img src="' + scRoot + '/images/loading16' + themeSpinner + '.gif" height="16" width="16" />';
 
 let srPID = getMeta('srPID');
 
@@ -21,7 +21,7 @@ function configSuccess() {
         $(this).removeAttr('disabled');
         $(this).next().remove();
         $(this).show();
-        window.location.href = srRoot + '/config/providers/';
+        window.location.href = scRoot + '/config/providers/';
     });
     $('#email_show').trigger('notify');
     $('#prowl_show').trigger('notify');
@@ -54,7 +54,7 @@ function addSiteMessage(level, tag, message) {
     level = level || 'danger';
     tag = tag || '';
     message = message || '';
-    $.post(srRoot + '/ui/set_site_message', {level, tag, message}, siteMessages => {
+    $.post(scRoot + '/ui/set_site_message', {level, tag, message}, siteMessages => {
         const messagesDiv = $('#site-messages');
         if (messagesDiv !== undefined) {
             messagesDiv.empty();
@@ -71,7 +71,7 @@ function addSiteMessage(level, tag, message) {
     $('#site-messages').on('click', '.site-message-dismiss', function () {
         const messageID = $(this).data('id');
         $('#site-message-' + messageID).hide();
-        $.post(srRoot + '/ui/dismiss-site-message', {index: messageID});
+        $.post(scRoot + '/ui/dismiss-site-message', {index: messageID});
     });
 }
 
@@ -104,7 +104,7 @@ const SICKCHILL = {
                 }
 
                 if (metaToBool('settings.SICKCHILL_BACKGROUND')) {
-                    $.backstretch(srRoot + '/ui/sickchill_background');
+                    $.backstretch(scRoot + '/ui/sickchill_background');
                     $('.backstretch').css('opacity', getMeta('settings.FANART_BACKGROUND_OPACITY')).fadeIn('500');
                 }
             })();
@@ -297,7 +297,7 @@ const SICKCHILL = {
             if ($('#anime').is(':checked')) {
                 $('#blackwhitelist').show();
                 if (showName) {
-                    $.getJSON(srRoot + '/home/fetch_releasegroups', {
+                    $.getJSON(scRoot + '/home/fetch_releasegroups', {
                         show_name: showName // eslint-disable-line camelcase
                     }, data => {
                         if (data.result === 'success') {
@@ -357,7 +357,7 @@ const SICKCHILL = {
                 beforeSubmit() {
                     $('.config_submitter .config_submitter_refresh').each(function () {
                         $(this).attr('disabled', 'disabled');
-                        $(this).after('<span><img src="' + srRoot + '/images/loading16' + themeSpinner + '.gif"> Saving...</span>');
+                        $(this).after('<span><img src="' + scRoot + '/images/loading16' + themeSpinner + '.gif"> Saving...</span>');
                         $(this).hide();
                     });
                 },
@@ -371,7 +371,7 @@ const SICKCHILL = {
             });
 
             $('#generate_new_apikey').on('click', () => {
-                $.get(srRoot + '/config/general/generateApiKey', data => {
+                $.get(scRoot + '/config/general/generateApiKey', data => {
                     if (data.error !== undefined) {
                         notifyModal(data.error);
                         return;
@@ -382,8 +382,8 @@ const SICKCHILL = {
             });
 
             $('#branchCheckout').on('click', () => {
-                const url = srRoot + '/home/branchCheckout?branch=' + $('#branchVersion').val();
-                const checkDBversion = srRoot + '/home/getDBcompare';
+                const url = scRoot + '/home/branchCheckout?branch=' + $('#branchVersion').val();
+                const checkDBversion = scRoot + '/home/compare_db_version';
                 $.getJSON(checkDBversion, data => {
                     if (data.status === 'success') {
                         if (data.message === 'downgrade') {
@@ -426,7 +426,7 @@ const SICKCHILL = {
             const branchVersion = $('#branchVersion');
             const branchVersionLabel = $('#branchVersionLabel');
             const branchCheckout = $('#branchCheckout');
-            $.getJSON(srRoot + '/home/fetchRemoteBranches', branches => {
+            $.getJSON(scRoot + '/home/fetchRemoteBranches', branches => {
                 if (branches.length > 0) {
                     const baseOptionElement = $('<option></option>');
                     let optionElement = null;
@@ -449,7 +449,7 @@ const SICKCHILL = {
                 $('#Backup').attr('disabled', true);
                 $('#Backup-result').html(loading);
                 const backupDir = $('#backupDir').val();
-                $.get(srRoot + '/config/backuprestore/backup', {backupDir})
+                $.get(scRoot + '/config/backuprestore/backup', {backupDir})
                     .done(data => {
                         $('#Backup-result').html(data);
                         $('#Backup').attr('disabled', false);
@@ -459,7 +459,7 @@ const SICKCHILL = {
                 $('#Restore').attr('disabled', true);
                 $('#Restore-result').html(loading);
                 const backupFile = $('#backupFile').val();
-                $.post(srRoot + '/config/backuprestore/restore', {backupFile})
+                $.post(scRoot + '/config/backuprestore/restore', {backupFile})
                     .done(data => {
                         $('#Restore-result').html(data);
                         $('#Restore').attr('disabled', false);
@@ -484,7 +484,7 @@ const SICKCHILL = {
                 $('#growl_host').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testGrowl-result').html(loading);
-                $.get(srRoot + '/home/testGrowl', {
+                $.get(scRoot + '/home/testGrowl', {
                     host: growl.host,
                     password: growl.password
                 }).done(data => {
@@ -506,7 +506,7 @@ const SICKCHILL = {
                 $('#prowl_api').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testProwl-result').html(loading);
-                $.get(srRoot + '/home/testProwl', {
+                $.get(scRoot + '/home/testProwl', {
                     prowl_api: prowl.api, // eslint-disable-line camelcase
                     prowl_priority: prowl.priority // eslint-disable-line camelcase
                 }).done(data => {
@@ -529,7 +529,7 @@ const SICKCHILL = {
                 $('#kodi_host').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testKODI-result').html(loading);
-                $.get(srRoot + '/home/testKODI', {
+                $.get(scRoot + '/home/testKODI', {
                     host: kodi.host,
                     username: kodi.username,
                     password: kodi.password
@@ -554,7 +554,7 @@ const SICKCHILL = {
                 $('#plex_client_host').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testPHT-result').html(loading);
-                $.get(srRoot + '/home/testPHT', {
+                $.get(scRoot + '/home/testPHT', {
                     host: plex.client.host,
                     username: plex.client.username,
                     password: plex.client.password
@@ -580,7 +580,7 @@ const SICKCHILL = {
                 $('#plex_server_host').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testPMS-result').html(loading);
-                $.get(srRoot + '/home/testPMS', {
+                $.get(scRoot + '/home/testPMS', {
                     host: plex.server.host,
                     username: plex.server.username,
                     password: plex.server.password,
@@ -615,7 +615,7 @@ const SICKCHILL = {
                 $('#emby_host,#emby_apikey').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testEMBY-result').html(loading);
-                $.get(srRoot + '/home/testEMBY', {
+                $.get(scRoot + '/home/testEMBY', {
                     host: emby.host,
                     emby_apikey: emby.apikey // eslint-disable-line camelcase
                 }).done(data => {
@@ -636,7 +636,7 @@ const SICKCHILL = {
                 $('#boxcar2_accesstoken').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testBoxcar2-result').html(loading);
-                $.get(srRoot + '/home/testBoxcar2', {
+                $.get(scRoot + '/home/testBoxcar2', {
                     accesstoken: boxcar2.accesstoken
                 }).done(data => {
                     $('#testBoxcar2-result').html(data);
@@ -668,7 +668,7 @@ const SICKCHILL = {
                 $('#pushover_userkey,#pushover_apikey').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testPushover-result').html(loading);
-                $.get(srRoot + '/home/testPushover', {
+                $.get(scRoot + '/home/testPushover', {
                     userKey: pushover.userkey,
                     apiKey: pushover.apikey
                 }).done(data => {
@@ -679,14 +679,14 @@ const SICKCHILL = {
 
             $('#testLibnotify').on('click', () => {
                 $('#testLibnotify-result').html(loading);
-                $.get(srRoot + '/home/testLibnotify', data => {
+                $.get(scRoot + '/home/testLibnotify', data => {
                     $('#testLibnotify-result').html(data);
                 });
             });
 
             $('#twitterStep1').on('click', () => {
                 $('#testTwitter-result').html(loading);
-                $.get(srRoot + '/home/twitterStep1', data => {
+                $.get(scRoot + '/home/twitterStep1', data => {
                     window.open(data);
                 }).done(() => {
                     $('#testTwitter-result').html(_('<b>Step 1:</b> Confirm Authorization'));
@@ -704,7 +704,7 @@ const SICKCHILL = {
 
                 $('#twitter_key').removeClass('warning');
                 $('#testTwitter-result').html(loading);
-                $.get(srRoot + '/home/twitterStep2', {
+                $.get(scRoot + '/home/twitterStep2', {
                     key: twitter.key
                 }, data => {
                     $('#testTwitter-result').html(data);
@@ -712,14 +712,14 @@ const SICKCHILL = {
             });
 
             $('#testTwitter').on('click', () => {
-                $.post(srRoot + '/home/testTwitter', data => {
+                $.post(scRoot + '/home/testTwitter', data => {
                     $('#testTwitter-result').html(data);
                 });
             });
 
             $('#testTwilio').on('click', () => {
                 $('#testTwilio').addClass('disabled');
-                $.post(srRoot + '/home/testTwilio', data => {
+                $.post(scRoot + '/home/testTwilio', data => {
                     $('#testTwilio-result').html(data);
                 }).always(() => {
                     $('#testTwilio').removeClass('disabled');
@@ -727,25 +727,25 @@ const SICKCHILL = {
             });
 
             $('#testSlack').on('click', () => {
-                $.post(srRoot + '/home/testSlack', data => {
+                $.post(scRoot + '/home/testSlack', data => {
                     $('#testSlack-result').html(data);
                 });
             });
 
             $('#testRocketChat').on('click', () => {
-                $.post(srRoot + '/home/testRocketChat', data => {
+                $.post(scRoot + '/home/testRocketChat', data => {
                     $('#testRocketChat-result').html(data);
                 });
             });
 
             $('#testMatrix').on('click', () => {
-                $.post(srRoot + '/home/testMatrix', data => {
+                $.post(scRoot + '/home/testMatrix', data => {
                     $('#testMatrix-result').html(data);
                 });
             });
 
             $('#testDiscord').on('click', () => {
-                $.get(srRoot + '/home/testDiscord', data => {
+                $.get(scRoot + '/home/testDiscord', data => {
                     $('#testDiscord-result').html(data);
                 });
             });
@@ -761,7 +761,7 @@ const SICKCHILL = {
                 $('#testNMJ-result').html(loading);
                 nmj.host = $('#nmj_host').val();
 
-                $.post(srRoot + '/home/settingsNMJ', {host: nmj.host}, data => {
+                $.post(scRoot + '/home/settingsNMJ', {host: nmj.host}, data => {
                     if (data === null) {
                         $('#nmj_database').removeAttr('readonly');
                         $('#nmj_mount').removeAttr('readonly');
@@ -800,7 +800,7 @@ const SICKCHILL = {
                 $('#nmj_host').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testNMJ-result').html(loading);
-                $.post(srRoot + '/home/testNMJ', {
+                $.post(scRoot + '/home/testNMJ', {
                     host: nmj.host,
                     database: nmj.database,
                     mount: nmj.mount
@@ -830,7 +830,7 @@ const SICKCHILL = {
                 }
 
                 nmjv2.dbinstance = $('#NMJv2db_instance').val();
-                $.post(srRoot + '/home/settingsNMJv2', {
+                $.post(scRoot + '/home/settingsNMJv2', {
                     host: nmjv2.host,
                     dbloc: nmjv2.dbloc,
                     instance: nmjv2.dbinstance
@@ -863,7 +863,7 @@ const SICKCHILL = {
                 $('#nmjv2_host').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testNMJv2-result').html(loading);
-                $.post(srRoot + '/home/testNMJv2', {
+                $.post(scRoot + '/home/testNMJv2', {
                     host: nmjv2.host
                 }).done(data => {
                     $('#testNMJv2-result').html(data);
@@ -895,7 +895,7 @@ const SICKCHILL = {
                 $('#freemobile_id,#freemobile_apikey').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testFreeMobile-result').html(loading);
-                $.post(srRoot + '/home/testFreeMobile', {
+                $.post(scRoot + '/home/testFreeMobile', {
                     freemobile_id: freemobile.id, // eslint-disable-line camelcase
                     freemobile_apikey: freemobile.apikey // eslint-disable-line camelcase
                 }).done(data => {
@@ -928,7 +928,7 @@ const SICKCHILL = {
                 $('#telegram_id,#telegram_apikey').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testTelegram-result').html(loading);
-                $.post(srRoot + '/home/testTelegram', {
+                $.post(scRoot + '/home/testTelegram', {
                     telegram_id: telegram.id, // eslint-disable-line camelcase
                     telegram_apikey: telegram.apikey // eslint-disable-line camelcase
                 }).done(data => {
@@ -961,7 +961,7 @@ const SICKCHILL = {
                 $('#join_id,#join_apikey').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testJoin-result').html(loading);
-                $.post(srRoot + '/home/testJoin', {
+                $.post(scRoot + '/home/testJoin', {
                     join_id: join.id, // eslint-disable-line camelcase
                     join_apikey: join.apikey // eslint-disable-line camelcase
                 }).done(data => {
@@ -989,7 +989,7 @@ const SICKCHILL = {
                 const trakt = {};
                 trakt.pin = $('#trakt_pin').val();
                 if (trakt.pin.length !== 0) {
-                    $.post(srRoot + '/home/getTraktToken', {
+                    $.post(scRoot + '/home/getTraktToken', {
                         trakt_pin: trakt.pin // eslint-disable-line camelcase
                     }).done(data => {
                         $('#testTrakt-result').html(data);
@@ -1025,7 +1025,7 @@ const SICKCHILL = {
                 $('#trakt_blacklist_name').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testTrakt-result').html(loading);
-                $.post(srRoot + '/home/testTrakt', {
+                $.post(scRoot + '/home/testTrakt', {
                     username: trakt.username,
                     blacklist_name: trakt.trendingBlacklist // eslint-disable-line camelcase
                 }).done(data => {
@@ -1063,7 +1063,7 @@ const SICKCHILL = {
                     if (to === null || to.length === 0 || to.match(/.*@.*/) === null) {
                         status.html('<p style="color: red;">' + _('You must provide a recipient email address!') + '</p>');
                     } else {
-                        $.post(srRoot + '/home/testEmail', {
+                        $.post(scRoot + '/home/testEmail', {
                             host,
                             port,
                             smtp_from: from, // eslint-disable-line camelcase
@@ -1090,7 +1090,7 @@ const SICKCHILL = {
                 $('#pushalot_authorizationtoken').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testPushalot-result').html(loading);
-                $.post(srRoot + '/home/testPushalot', {
+                $.post(scRoot + '/home/testPushalot', {
                     authorizationToken: pushalot.authToken
                 }).done(data => {
                     $('#testPushalot-result').html(data);
@@ -1110,7 +1110,7 @@ const SICKCHILL = {
                 $('#pushbullet_api').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testPushbullet-result').html(loading);
-                $.post(srRoot + '/home/testPushbullet', {
+                $.post(scRoot + '/home/testPushbullet', {
                     api: pushbullet.api
                 }).done(data => {
                     $('#testPushbullet-result').html(data);
@@ -1132,7 +1132,7 @@ const SICKCHILL = {
                     return false;
                 }
 
-                $.post(srRoot + '/home/getPushbulletDevices', {
+                $.post(scRoot + '/home/getPushbulletDevices', {
                     api: pushbullet.api
                 }, data => {
                     pushbullet.devices = $.parseJSON(data).devices;
@@ -1159,7 +1159,7 @@ const SICKCHILL = {
                     $('#testPushbullet-result').html(_('Don\'t forget to save your new pushbullet settings.'));
                 });
 
-                $.post(srRoot + '/home/getPushbulletChannels', {
+                $.post(scRoot + '/home/getPushbulletChannels', {
                     api: pushbullet.api
                 }, data => {
                     pushbullet.channels = $.parseJSON(data).channels;
@@ -1201,7 +1201,7 @@ const SICKCHILL = {
 
             $('#email_show').on('change', () => {
                 const key = Number.parseInt($('#email_show').val(), 10);
-                $.getJSON(srRoot + '/home/loadShowNotifyLists', notifyData => {
+                $.getJSON(scRoot + '/home/loadShowNotifyLists', notifyData => {
                     if (notifyData._size > 0) {
                         $('#email_show_list').val(key >= 0 ? notifyData[key.toString()].list : '');
                     }
@@ -1209,7 +1209,7 @@ const SICKCHILL = {
             });
             $('#prowl_show').on('change', () => {
                 const key = Number.parseInt($('#prowl_show').val(), 10);
-                $.getJSON(srRoot + '/home/loadShowNotifyLists', notifyData => {
+                $.getJSON(scRoot + '/home/loadShowNotifyLists', notifyData => {
                     if (notifyData._size > 0) {
                         $('#prowl_show_list').val(key >= 0 ? notifyData[key.toString()].prowl_notify_list : '');
                     }
@@ -1217,7 +1217,7 @@ const SICKCHILL = {
             });
 
             function loadShowNotifyLists() {
-                $.getJSON(srRoot + '/home/loadShowNotifyLists', list => {
+                $.getJSON(scRoot + '/home/loadShowNotifyLists', list => {
                     if (list._size === 0) {
                         return;
                     }
@@ -1272,7 +1272,7 @@ const SICKCHILL = {
             });
 
             $('#email_show_save').on('click', () => {
-                $.post(srRoot + '/home/saveShowNotifyList', {
+                $.post(scRoot + '/home/saveShowNotifyList', {
                     show: $('#email_show').val(),
                     emails: $('#email_show_list').val()
                 }, () => {
@@ -1281,7 +1281,7 @@ const SICKCHILL = {
                 });
             });
             $('#prowl_show_save').on('click', () => {
-                $.post(srRoot + '/home/saveShowNotifyList', {
+                $.post(scRoot + '/home/saveShowNotifyList', {
                     show: $('#prowl_show').val(),
                     prowlAPIs: $('#prowl_show_list').val()
                 }, () => {
@@ -1314,7 +1314,7 @@ const SICKCHILL = {
             })();
 
             function isRarSupported() {
-                $.post(srRoot + '/config/postProcessing/isRarSupported', data => {
+                $.post(scRoot + '/config/postProcessing/isRarSupported', data => {
                     if (data !== 'supported') {
                         $('#unpack').qtip('option', {
                             'content.text': 'Unrar Executable not found.',
@@ -1333,7 +1333,7 @@ const SICKCHILL = {
                 example.multi = $('#naming_multi_ep :selected').val();
                 example.animeType = $('input[name="naming_anime"]:checked').val();
 
-                $.post(srRoot + '/config/postProcessing/testNaming', {
+                $.post(scRoot + '/config/postProcessing/testNaming', {
                     pattern: example.pattern,
                     anime_type: 3 // eslint-disable-line camelcase
                 }, data => {
@@ -1345,7 +1345,7 @@ const SICKCHILL = {
                     }
                 });
 
-                $.post(srRoot + '/config/postProcessing/testNaming', {
+                $.post(scRoot + '/config/postProcessing/testNaming', {
                     pattern: example.pattern,
                     multi: example.multi,
                     anime_type: 3 // eslint-disable-line camelcase
@@ -1358,7 +1358,7 @@ const SICKCHILL = {
                     }
                 });
 
-                $.post(srRoot + '/config/postProcessing/isNamingValid', {
+                $.post(scRoot + '/config/postProcessing/isNamingValid', {
                     pattern: example.pattern,
                     multi: example.multi,
                     anime_type: example.animeType // eslint-disable-line camelcase
@@ -1397,7 +1397,7 @@ const SICKCHILL = {
             function fillAbdExamples() {
                 const pattern = $('#naming_abd_pattern').val();
 
-                $.post(srRoot + '/config/postProcessing/testNaming', {
+                $.post(scRoot + '/config/postProcessing/testNaming', {
                     pattern,
                     abd: 'True'
                 }, data => {
@@ -1409,7 +1409,7 @@ const SICKCHILL = {
                     }
                 });
 
-                $.post(srRoot + '/config/postProcessing/isNamingValid', {
+                $.post(scRoot + '/config/postProcessing/isNamingValid', {
                     pattern,
                     abd: 'True'
                 }, data => {
@@ -1447,7 +1447,7 @@ const SICKCHILL = {
             function fillSportsExamples() {
                 const pattern = $('#naming_sports_pattern').val();
 
-                $.post(srRoot + '/config/postProcessing/testNaming', {
+                $.post(scRoot + '/config/postProcessing/testNaming', {
                     pattern,
                     sports: 'True' // @TODO does this actually need to be a string or can it be a boolean?
                 }, data => {
@@ -1459,7 +1459,7 @@ const SICKCHILL = {
                     }
                 });
 
-                $.post(srRoot + '/config/postProcessing/isNamingValid', {
+                $.post(scRoot + '/config/postProcessing/isNamingValid', {
                     pattern,
                     sports: 'True' // @TODO does this actually need to be a string or can it be a boolean?
                 }, data => {
@@ -1500,7 +1500,7 @@ const SICKCHILL = {
                 example.multi = $('#naming_anime_multi_ep :selected').val();
                 example.animeType = $('input[name="naming_anime"]:checked').val();
 
-                $.post(srRoot + '/config/postProcessing/testNaming', {
+                $.post(scRoot + '/config/postProcessing/testNaming', {
                     pattern: example.pattern,
                     anime_type: example.animeType // eslint-disable-line camelcase
                 }, data => {
@@ -1512,7 +1512,7 @@ const SICKCHILL = {
                     }
                 });
 
-                $.post(srRoot + '/config/postProcessing/testNaming', {
+                $.post(scRoot + '/config/postProcessing/testNaming', {
                     pattern: example.pattern,
                     multi: example.multi,
                     anime_type: example.animeType // eslint-disable-line camelcase
@@ -1525,7 +1525,7 @@ const SICKCHILL = {
                     }
                 });
 
-                $.post(srRoot + '/config/postProcessing/isNamingValid', {
+                $.post(scRoot + '/config/postProcessing/isNamingValid', {
                     pattern: example.pattern,
                     multi: example.multi,
                     anime_type: example.animeType // eslint-disable-line camelcase
@@ -2040,7 +2040,7 @@ const SICKCHILL = {
                 sab.password = $('#sab_password').val();
                 sab.apiKey = $('#sab_apikey').val();
 
-                $.post(srRoot + '/home/testSABnzbd', {
+                $.post(scRoot + '/home/testSABnzbd', {
                     host: sab.host,
                     username: sab.username,
                     password: sab.password,
@@ -2057,7 +2057,7 @@ const SICKCHILL = {
                 dsm.username = $('#syno_dsm_user').val();
                 dsm.password = $('#syno_dsm_pass').val();
 
-                $.post(srRoot + '/home/testDSM', {
+                $.post(scRoot + '/home/testDSM', {
                     host: dsm.host,
                     username: dsm.username,
                     password: dsm.password
@@ -2077,7 +2077,7 @@ const SICKCHILL = {
                 torrent.host = $('#torrent_host').val();
                 torrent.username = $('#torrent_username').val();
                 torrent.password = $('#torrent_password').val();
-                $.post(srRoot + '/home/testTorrent', {
+                $.post(scRoot + '/home/testTorrent', {
                     torrent_method: torrent.method, // eslint-disable-line camelcase
                     host: torrent.host,
                     username: torrent.username,
@@ -2111,7 +2111,7 @@ const SICKCHILL = {
                     toAdd += '<li class="ui-state-default" id="' + id + '"> ';
                     toAdd += '<input type="checkbox" id="enable_' + id + '" class="service_enabler" CHECKED> ';
                     toAdd += '<a href="' + anonURL + url + '" class="imgLink" target="_new">';
-                    toAdd += '<img src="' + srRoot + '/images/services/newznab.gif" alt="' + name + '" width="16" height="16"></a> ';
+                    toAdd += '<img src="' + scRoot + '/images/services/newznab.gif" alt="' + name + '" width="16" height="16"></a> ';
                     toAdd += name + '</li>';
 
                     $('#service_order_list').append(toAdd);
@@ -2517,7 +2517,7 @@ const SICKCHILL = {
         },
         displayShow() {
             if (metaToBool('settings.FANART_BACKGROUND')) {
-                $.backstretch(srRoot + '/cache/images/' + $('#showID').attr('value') + '.fanart.jpg');
+                $.backstretch(scRoot + '/cache/images/' + $('#showID').attr('value') + '.fanart.jpg');
                 $('.backstretch').css('opacity', getMeta('settings.FANART_BACKGROUND_OPACITY')).fadeIn('500');
             }
 
@@ -2604,7 +2604,7 @@ const SICKCHILL = {
                         subtitlesTd.empty();
                         $.each(subtitles, (index, language) => {
                             if (language !== '') {
-                                subtitlesTd.append($('<img/>', {src: srRoot + '/images/subtitles/flags/' + language + '.png', alt: language, width: 16, height: 11}));
+                                subtitlesTd.append($('<img/>', {src: scRoot + '/images/subtitles/flags/' + language + '.png', alt: language, width: 16, height: 11}));
                             }
                         });
                         icon.prop('class', 'displayshow-icon-sub');
@@ -2689,7 +2689,7 @@ const SICKCHILL = {
                     return false;
                 }
 
-                const url = srRoot + '/home/setStatus';
+                const url = scRoot + '/home/setStatus';
                 const parameters = 'show=' + $('#showID').attr('value') + '&eps=' + epArray.join('|') + '&status=' + $('#statusSelect').val();
                 $.post(url, parameters, () => {
                     location.reload(true);
@@ -2757,7 +2757,7 @@ const SICKCHILL = {
                     return;
                 }
 
-                window.location.href = srRoot + '/home/displayShow?show=' + value;
+                window.location.href = scRoot + '/home/displayShow?show=' + value;
             });
 
             // Show/hide different types of rows when the checkboxes are changed
@@ -2817,7 +2817,7 @@ const SICKCHILL = {
                     sceneEpisode = null;
                 }
 
-                $.getJSON(srRoot + '/home/setSceneNumbering', {
+                $.getJSON(scRoot + '/home/setSceneNumbering', {
                     show: showId,
                     indexer,
                     forSeason,
@@ -2850,7 +2850,7 @@ const SICKCHILL = {
                     sceneAbsolute = null;
                 }
 
-                $.getJSON(srRoot + '/home/setSceneNumbering', {
+                $.getJSON(scRoot + '/home/setSceneNumbering', {
                     show: showId,
                     indexer,
                     forAbsolute,
@@ -3076,7 +3076,7 @@ const SICKCHILL = {
             let currentPid = srPID;
             let checkIsAlive = setTimeout(() => {
                 setInterval(() => {
-                    $.post(srRoot + '/home/is-alive/', data => {
+                    $.post(scRoot + '/home/is-alive/', data => {
                         if (data === undefined || data.msg !== currentPid) {
                             $('#restart_message').show();
                             $('#shut_down_loading').hide();
@@ -3091,10 +3091,10 @@ const SICKCHILL = {
                             srPID = data.msg;
                             currentPid = data.msg;
                             checkIsAlive = setInterval(() => {
-                                $.post(srRoot + '/home/is-alive/', () => { // eslint-disable-line max-nested-callbacks
+                                $.post(scRoot + '/home/is-alive/', () => { // eslint-disable-line max-nested-callbacks
                                     clearInterval(checkIsAlive);
                                     setTimeout(() => { // eslint-disable-line max-nested-callbacks
-                                        window.location = srRoot + '/' + srDefaultPage + '/';
+                                        window.location = scRoot + '/' + srDefaultPage + '/';
                                     }, 2000);
                                 }, 'jsonp');
                             }, 100);
@@ -3131,7 +3131,7 @@ const SICKCHILL = {
                     subtitles = subtitles.split(',');
                     for (const i in subtitles) {
                         if ({}.hasOwnProperty.call(subtitles, i)) {
-                            row += '<img src="' + srRoot + '/images/subtitles/flags/' + subtitles[i] + '.png" width="16" height="11" alt="' + subtitles[i] + '" />&nbsp;';
+                            row += '<img src="' + scRoot + '/images/subtitles/flags/' + subtitles[i] + '.png" width="16" height="11" alt="' + subtitles[i] + '" />&nbsp;';
                         }
                     }
 
@@ -3233,7 +3233,7 @@ const SICKCHILL = {
                 }
 
                 const submitForm = $(
-                    '<form method=\'post\' action=\'' + srRoot + '/manage/massEdit\'>' +
+                    '<form method=\'post\' action=\'' + scRoot + '/manage/massEdit\'>' +
                         '<input type=\'hidden\' name=\'toEdit\' value=\'' + editArray.join('|') + '\'/>' +
                     '</form>'
                 );
@@ -3307,7 +3307,7 @@ const SICKCHILL = {
                                 return false;
                             }
 
-                            const url = srRoot + '/manage/massUpdate';
+                            const url = scRoot + '/manage/massUpdate';
                             const parameters = 'toUpdate=' + updateArray.join('|') + '&toRefresh=' + refreshArray.join('|') + '&toRename=' + renameArray.join('|') + '&toSubtitle=' + subtitleArray.join('|') + '&toDelete=' + deleteArray.join('|') + '&toRemove=' + removeArray.join('|') + '&toMetadata=' + metadataArray.join('|');
                             $.post(url, parameters, () => {
                                 location.reload(true);
@@ -3320,7 +3320,7 @@ const SICKCHILL = {
                     return false;
                 }
 
-                const url = srRoot + '/manage/massUpdate';
+                const url = scRoot + '/manage/massUpdate';
                 const parameters = 'toUpdate=' + updateArray.join('|') + '&toRefresh=' + refreshArray.join('|') + '&toRename=' + renameArray.join('|') + '&toSubtitle=' + subtitleArray.join('|') + '&toDelete=' + deleteArray.join('|') + '&toRemove=' + removeArray.join('|') + '&toMetadata=' + metadataArray.join('|');
                 $.post(url, parameters, () => {
                     location.reload(true);
@@ -3370,7 +3370,7 @@ const SICKCHILL = {
                 headers: {3: {sorter: false}}
             });
             $('#limit').on('change', event => {
-                window.location.href = srRoot + '/manage/failedDownloads/?limit=' + $(event.currentTarget).val();
+                window.location.href = scRoot + '/manage/failedDownloads/?limit=' + $(event.currentTarget).val();
             });
 
             $('#submitMassRemove').on('click', () => {
@@ -3386,7 +3386,7 @@ const SICKCHILL = {
                     return false;
                 }
 
-                $.post(srRoot + '/manage/failedDownloads', 'toRemove=' + removeArray.join('|'), () => {
+                $.post(scRoot + '/manage/failedDownloads', 'toRemove=' + removeArray.join('|'), () => {
                     location.reload(true);
                 });
             });
@@ -3464,7 +3464,7 @@ const SICKCHILL = {
                 const action = $(this).attr('value');
 
                 if (!clicked) {
-                    $.getJSON(srRoot + '/manage/showEpisodeStatuses', {
+                    $.getJSON(scRoot + '/manage/showEpisodeStatuses', {
                         indexer_id: curIndexerId, // eslint-disable-line camelcase
                         whichStatus: $('#oldStatus').val()
                     }, data => {
@@ -3519,7 +3519,7 @@ const SICKCHILL = {
                 const action = $(this).attr('value');
 
                 if (!clicked) {
-                    $.getJSON(srRoot + '/manage/showSubtitleMissed', {
+                    $.getJSON(scRoot + '/manage/showSubtitleMissed', {
                         indexer_id: indexerId, // eslint-disable-line camelcase
                         whichSubs: $('#selectSubLang').val()
                     }, data => {
@@ -3642,7 +3642,7 @@ const SICKCHILL = {
             });
 
             $('#history_limit').on('change', function () {
-                window.location.href = srRoot + '/history/?limit=' + $(this).val();
+                window.location.href = scRoot + '/history/?limit=' + $(this).val();
             });
 
             $('a.removehistory').on('click', () => {
@@ -3668,7 +3668,7 @@ const SICKCHILL = {
                     dialogClass: 'modal-dialog',
                     post: false,
                     confirm() {
-                        const url = srRoot + '/history/removeHistory';
+                        const url = scRoot + '/history/removeHistory';
                         const parameters = 'toRemove=' + removeArray.join('|');
                         $.post(url, parameters, () => {
                             location.reload(true);
@@ -3723,7 +3723,7 @@ const SICKCHILL = {
                 $('#min_level').prop('disabled', true);
                 $('#log_filter').prop('disabled', true);
                 document.body.style.cursor = 'wait';
-                const url = srRoot + '/errorlogs/viewlog/';
+                const url = scRoot + '/errorlogs/viewlog/';
                 const postData = 'min_level=' + $('select[name=min_level]').val() + '&log_filter=' + $('select[name=log_filter]').val() + '&log_search=' + $('#log_search').val();
                 $.post(url, postData, data => {
                     history.pushState('data', '', url);
@@ -3737,7 +3737,7 @@ const SICKCHILL = {
             function updateLogData() {
                 if ($('#log_update_toggle').data('state') === 'active') {
                     const postData = 'min_level=' + $('select[name=min_level]').val() + '&log_filter=' + $('select[name=log_filter]').val() + '&log_search=' + $('#log_search').val();
-                    const url = srRoot + '/errorlogs/viewlog/';
+                    const url = scRoot + '/errorlogs/viewlog/';
                     $.post(url, postData, data => {
                         $('pre').html($(data).find('pre').html());
                     });
@@ -3899,7 +3899,7 @@ const SICKCHILL = {
             };
 
             $.loadTraktImages = function () {
-                const url = srRoot + '/addShows/getTrendingShowImage';
+                const url = scRoot + '/addShows/getTrendingShowImage';
                 let ajaxCount = 0;
                 $('img.trakt-image').each(function () {
                     // Only load image from indexer when there is a indexer_id present in data-src-indexer-id
@@ -3925,8 +3925,8 @@ const SICKCHILL = {
             };
 
             $.fn.loadRemoteShows = function (path, loadingTxt, errorTxt) {
-                $(this).html('<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" />&nbsp;' + loadingTxt);
-                $(this).load(srRoot + path + ' #container', function (response, status) {
+                $(this).html('<img id="searchingAnim" src="' + scRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" />&nbsp;' + loadingTxt);
+                $(this).load(scRoot + path + ' #container', function (response, status) {
                     if (status === 'error') {
                         $(this).empty().html(errorTxt);
                     } else {
@@ -3946,7 +3946,7 @@ const SICKCHILL = {
                     bestQualArray.push($(d).val());
                 });
 
-                $.post(srRoot + '/config/general/saveAddShowDefaults', {
+                $.post(scRoot + '/config/general/saveAddShowDefaults', {
                     defaultStatus: $('#statusSelect').val(),
                     anyQualities: anyQualArray.join(','),
                     bestQualities: bestQualArray.join(','),
@@ -4006,7 +4006,7 @@ const SICKCHILL = {
 
                 // If we have a show name then sanitize and use it for the dir name
                 if (object.showName.length > 0) {
-                    $.post(srRoot + '/addShows/sanitizeFileName', {name: object.showName}, data => {
+                    $.post(scRoot + '/addShows/sanitizeFileName', {name: object.showName}, data => {
                         $('#desc-show-name').text(object.showName);
                         if (object.dir === $('#fullShowPath').val()) {
                             $('#desc-directory-name').html(object.dir);
@@ -4104,12 +4104,12 @@ const SICKCHILL = {
 
                 const searchingFor = _($('#show-name').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect option:selected').text());
                 $('#searchResults').empty().html(
-                    '<img id="searchingAnim" src="' + srRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> ' +
+                    '<img id="searchingAnim" src="' + scRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> ' +
                     _('searching {searchingFor}...').replace(/{searchingFor}/, searchingFor)
                 );
 
                 searchRequestXhr = $.ajax({
-                    url: srRoot + '/addShows/searchIndexersForShowName',
+                    url: scRoot + '/addShows/searchIndexersForShowName',
                     data: {
                         search_term: $('#show-name').val().trim(), // eslint-disable-line camelcase
                         lang: $('#indexerLangSelect').val(),
@@ -4254,8 +4254,8 @@ const SICKCHILL = {
                     }
                 });
 
-                $('#tableDiv').html('<img id="searchingAnim" src="' + srRoot + '/images/loading32.gif" height="32" width="32" /> ' + _('loading folders...'));
-                $.post(srRoot + '/addShows/massAddTable/', url, data => {
+                $('#tableDiv').html('<img id="searchingAnim" src="' + scRoot + '/images/loading32.gif" height="32" width="32" /> ' + _('loading folders...'));
+                $.post(scRoot + '/addShows/massAddTable/', url, data => {
                     $('#tableDiv').html(data);
                     $('#addRootDirTable').tablesorter({
                         // SortList: [[1,0]],
@@ -4347,7 +4347,7 @@ const UTIL = {
 };
 
 // Handle js-gettext + load javascript functions
-$.getJSON(srRoot + '/ui/locale.json', data => {
+$.getJSON(scRoot + '/ui/locale.json', data => {
     if (data === undefined) {
         window.gt = new Gettext();
     } else {

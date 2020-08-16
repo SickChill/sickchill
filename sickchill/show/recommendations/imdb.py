@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
 from sickchill import settings
-from sickchill.sickbeard import helpers
+from sickchill.oldbeard import helpers
 
 
 class imdbPopular(object):

@@ -1,7 +1,7 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     from sickchill import settings
-    from settings.helpers import anon_url
+    from sickchill.oldbeard.helpers import anon_url
 %>
 <%block name="metas">
     <meta data-var="settings.SORT_ARTICLE" data-content="${settings.SORT_ARTICLE}">
@@ -24,7 +24,7 @@
                     <div class="traktContainer">
                         <div class="trakt-image">
                             <a class="trakt-image" href="${anon_url(show_url)}" target="_blank">
-                                <img alt="" class="trakt-image" src="" data-src-indexer-id="${cur_show['indexer_id']}" data-src-cache="${srRoot}/cache/${cur_show['image_path']}"
+                                <img alt="" class="trakt-image" src="" data-src-indexer-id="${cur_show['indexer_id']}" data-src-cache="${scRoot}/cache/${cur_show['image_path']}"
                                      height="273px" width="186px"/>
                             </a>
                         </div>
@@ -37,10 +37,10 @@
                             <p>${int(cur_show['show']['rating']*10)}% <span class="displayshow-icon-heart"></span></p>
                             <i>${cur_show['show']['votes']} ${_('votes')}</i>
                             <div class="traktShowTitleIcons">
-                                <a href="${srRoot}/addShows/addShowByID?indexer_id=${cur_show['show']['ids']['tvdb']}&amp;show_name=${cur_show['show']['title'] | u}"
+                                <a href="${scRoot}/addShows/addShowByID?indexer_id=${cur_show['show']['ids']['tvdb']}&amp;show_name=${cur_show['show']['title'] | u}"
                                    class="btn btn-xs" data-no-redirect>${_('Add Show')}</a>
                                 % if black_list:
-                                    <a href="${srRoot}/addShows/addShowToBlacklist?indexer_id=${cur_show['show']['ids']['tvdb'] or cur_show['show']['ids']['tvrage']}"
+                                    <a href="${scRoot}/addShows/addShowToBlacklist?indexer_id=${cur_show['show']['ids']['tvdb'] or cur_show['show']['ids']['tvrage']}"
                                        class="btn btn-xs">${_('Remove Show')}</a>
                                 % endif
                             </div>

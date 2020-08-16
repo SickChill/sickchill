@@ -1,10 +1,10 @@
 import unittest
 
-import sickchill.sickbeard.providers
+import sickchill.oldbeard.providers
 from sickchill import settings
+from sickchill.oldbeard import common as common
 from sickchill.providers.GenericProvider import GenericProvider
-from sickchill.sickbeard import common as common
-from sickchill.sickbeard.tv import TVEpisode, TVShow
+from sickchill.tv import TVEpisode, TVShow
 from tests import test_lib as test
 
 TESTS = {
@@ -16,7 +16,7 @@ TESTS = {
 }
 
 
-class SearchTest(test.SickbeardTestDBCase):
+class SearchTest(test.SickChillTestDBCase):
     """
     Test search
     """
@@ -122,7 +122,7 @@ if __name__ == '__main__':
         for name, data in TESTS.items():
             filename = name.replace(' ', '_')
 
-            for provider in sickchill.sickbeard.providers.sortedProviderList():
+            for provider in sickchill.oldbeard.providers.sortedProviderList():
                 if provider.provider_type == GenericProvider.TORRENT:
                     if forceSearch:
                         test_name = 'test_manual_{0}_{1}_{2}'.format(filename, data["tvdbid"], provider.name)

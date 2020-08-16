@@ -10,23 +10,23 @@ from urllib.parse import unquote_plus
 from github.GithubException import GithubException
 from tornado.escape import xhtml_unescape
 
-import sickchill.sickbeard
-from sickchill import adba, settings
+import sickchill.oldbeard
+from sickchill import adba, logger, settings
 from sickchill.helper import try_int
-from sickchill.helper.common import pretty_file_size
+from sickchill.helper.common import episode_num, pretty_file_size
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException
+from sickchill.oldbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
+from sickchill.oldbeard.common import cpu_presets, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED_BEST, statusStrings, UNAIRED, WANTED
+from sickchill.oldbeard.scene_numbering import (get_scene_absolute_numbering, get_scene_absolute_numbering_for_show, get_scene_numbering,
+                                                get_scene_numbering_for_show, get_xem_absolute_numbering_for_show, get_xem_numbering_for_show,
+                                                set_scene_numbering)
+from sickchill.oldbeard.trakt_api import TraktAPI
 from sickchill.show.Show import Show
-from sickchill.sickbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
-from sickchill.sickbeard.common import cpu_presets, FAILED, IGNORED, Overview, Quality, SKIPPED, statusStrings, UNAIRED, WANTED
-from sickchill.sickbeard.scene_numbering import (get_scene_absolute_numbering, get_scene_absolute_numbering_for_show, get_scene_numbering,
-                                                 get_scene_numbering_for_show, get_xem_absolute_numbering_for_show, get_xem_numbering_for_show,
-                                                 set_scene_numbering)
-from sickchill.sickbeard.trakt_api import TraktAPI
-from sickchill.sickbeard.versionChecker import CheckVersion
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
+from sickchill.update_manager import UpdateManager
 
-from ..sickbeard import clients, config, db, filters, helpers, logger, notifiers, sab, search_queue, subtitles as subtitle_module, ui
+from ..oldbeard import clients, config, db, filters, helpers, notifiers, sab, search_queue, subtitles as subtitle_module, ui
 from .common import PageTemplate
 from .index import WebRoot
 from .routes import Route
@@ -195,7 +195,7 @@ class Home(WebRoot):
         host = config.clean_url(self.get_body_argument('host'))
         connection, accesMsg = sab.getSabAccesMethod(host)
         if connection:
-            authed, authMsg = sab.testAuthentication(host, username, password, apikey)  # @UnusedVariable
+            authed, authMsg = sab.testAuthentication(host, username, password, apikey)
             if authed:
                 return _("Success. Connected and authenticated")
             else:
@@ -648,15 +648,12 @@ class Home(WebRoot):
         if str(pid) != str(settings.PID):
             return self.redirect('/home/')
 
-        checkversion = CheckVersion()
-        # noinspection PyProtectedMember
-        backup = checkversion.updater and checkversion._runbackup()
-
-        if backup is True:
+        updater = UpdateManager()
+        if updater.backup():
             if branch:
-                checkversion.updater.branch = branch
+                settings.BRANCH = branch
 
-            if checkversion.updater.need_update() and checkversion.updater.update():
+            if updater.update():
                 # do a hard restart
                 settings.events.put(settings.events.SystemEvent.RESTART)
 
@@ -699,10 +696,10 @@ class Home(WebRoot):
             return self.redirect('/' + settings.DEFAULT_PAGE + '/')
 
     @staticmethod
-    def getDBcompare():
+    def compare_db_version():
 
-        checkversion = CheckVersion()
-        db_status = checkversion.getDBcompare()
+        update_manager = UpdateManager()
+        db_status = update_manager.compare_db_version()
 
         if db_status == 'upgrade':
             logger.debug("Checkout branch has a new DB version - Upgrade")
@@ -870,7 +867,7 @@ class Home(WebRoot):
         if show_obj.is_anime:
             bwl = show_obj.release_groups
 
-        show_obj.exceptions = sickchill.sickbeard.scene_exceptions.get_scene_exceptions(show_obj.indexerid)
+        show_obj.exceptions = sickchill.oldbeard.scene_exceptions.get_scene_exceptions(show_obj.indexerid)
 
         indexerid = int(show_obj.indexerid)
         indexer = int(show_obj.indexer)
@@ -914,7 +911,7 @@ class Home(WebRoot):
 
     def sceneExceptions(self):
         show = self.get_query_argument('show')
-        exceptionsList = sickchill.sickbeard.scene_exceptions.get_all_scene_exceptions(show)
+        exceptionsList = sickchill.oldbeard.scene_exceptions.get_all_scene_exceptions(show)
         if not exceptionsList:
             return _("No scene exceptions")
 
@@ -950,7 +947,7 @@ class Home(WebRoot):
             else:
                 return self._genericMessage(_("Error"), errString)
 
-        show_obj.exceptions = sickchill.sickbeard.scene_exceptions.get_all_scene_exceptions(show_obj.indexerid)
+        show_obj.exceptions = sickchill.oldbeard.scene_exceptions.get_all_scene_exceptions(show_obj.indexerid)
 
         main_db_con = db.DBConnection()
         seasonResults = main_db_con.select(
@@ -1127,14 +1124,14 @@ class Home(WebRoot):
                 errors.append(_("Unable to update show: {error}").format(error=e))
 
         try:
-            sickchill.sickbeard.scene_exceptions.update_scene_exceptions(show_obj.indexerid, exceptions)  # @UndefinedVdexerid)
+            sickchill.oldbeard.scene_exceptions.update_scene_exceptions(show_obj.indexerid, exceptions)  # @UndefinedVdexerid)
             time.sleep(cpu_presets[settings.CPU_PRESET])
         except CantUpdateShowException:
             errors.append(_("Unable to force an update on scene exceptions of the show."))
 
         if do_update_scene_numbering:
             try:
-                sickchill.sickbeard.scene_numbering.xem_refresh(show_obj.indexerid, show_obj.indexer)
+                sickchill.oldbeard.scene_numbering.xem_refresh(show_obj.indexerid, show_obj.indexer)
                 time.sleep(cpu_presets[settings.CPU_PRESET])
             except CantUpdateShowException:
                 errors.append(_("Unable to force an update on scene numbering of the show."))
@@ -1450,7 +1447,7 @@ class Home(WebRoot):
             return self._genericMessage(_("Error"), _("Show not in show list"))
 
         try:
-            show_obj.location  # @UnusedVariable
+            show_obj.location
         except ShowDirectoryNotFoundException:
             return self._genericMessage(_("Error"), _("Can't rename episodes when the show dir is missing."))
 
@@ -1472,7 +1469,7 @@ class Home(WebRoot):
             return self._genericMessage(_("Error"), _("Show not in show list"))
 
         try:
-            show_obj.location  # @UnusedVariable
+            show_obj.location
         except ShowDirectoryNotFoundException:
             return self._genericMessage(_("Error"), _("Can't rename episodes when the show dir is missing."))
 
@@ -1508,25 +1505,50 @@ class Home(WebRoot):
 
         return self.redirect("/home/displayShow?show=" + show)
 
-    # def searchEpisodeListManual(self, show=None, season=None, episode=None, search_mode='eponly'):
-    #     # retrieve the episode object and fail if we can't get one
-    #     self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-    #     self.set_header('Content-Type', 'application/json')
-    #     ep_obj, error_msg = self._getEpisode(show, season, episode)
-    #     if error_msg or not ep_obj:
-    #         return json.dumps({'result': 'failure', 'errorMessage': error_msg})
-    #
-    #     return search.searchProvidersList(ep_obj.show, ep_obj, search_mode)
-    #
-    # def snatchEpisodeManual(self, result_dict):
-    #     self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-    #     self.set_header('Content-Type', 'application/json')
-    #     result = sickbeard.classes.TorrentSearchResult.make_result(result_dict)
-    #     return search.snatchEpisode(result, SNATCHED_BEST)
-    #
-    # def testSearchEpisodeListManual(self, show=None, season=None, episode=None, search_mode='eponly'):
-    #     r = self.searchEpisodeListManual(show, season, episode, search_mode)
-    #     self.snatchEpisodeManual(r.get('results')[0])
+    def searchEpisodeListManual(self):
+        show = self.get_query_argument('show')
+        season = self.get_query_argument('season')
+        episode = self.get_query_argument('episode')
+
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+
+        cache_db_con = db.DBConnection('cache.db', row_type="dict")
+        results = cache_db_con.select(
+            'SELECT * FROM results WHERE indexerid = ? AND season = ? AND episodes LIKE ? AND status != ? ORDER BY seeders DESC',
+            [show, season, '%|{}|%'.format(episode), FAILED])
+
+        for result in results:
+            episodes_list = [int(ep) for ep in result['episodes'].split('|') if ep]
+            if len(episodes_list) > 1:
+                result['ep_string'] = 'S{:02}E{}-{}'.format(result['season'], min(episodes_list), max(episodes_list))
+            else:
+                result['ep_string'] = episode_num(result['season'], episodes_list[0])
+
+        # TODO: If no cache results do a search on indexers and post back to this method.
+
+        t = PageTemplate(rh=self, filename="searchEpisodeListManual.mako")
+        submenu = [{'title': _('Edit'), 'path': 'home/editShow?show={0}'.format(show), 'icon': 'fa fa-pencil'}]
+        return t.render(submenu=submenu, title=_('Manual Snatch'), header=_('Manual Snatch'),  controller="home", action="searchEpisodeListManual", results=results)
+
+    def snatchEpisodeManual(self):
+        url = self.get_body_argument('url')
+        show = self.get_body_argument('show')
+
+        self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
+        self.set_header('Content-Type', 'application/json')
+
+        cache_db_con = db.DBConnection('cache.db', row_type="dict")
+        result = cache_db_con.select_one('SELECT * FROM results WHERE url = ?', [url])
+        if not result:
+            json.dumps({'result': 'failure', 'message': _('Result not found in the cache')})
+
+        result = sickchill.oldbeard.classes.TorrentSearchResult.make_result(result)
+        if isinstance(result, str):
+            sickchill.oldbeard.logger.info(_('Could not snatch manually selected result: {}').format(result))
+        elif result:
+            sickchill.oldbeard.search.snatchEpisode(result, SNATCHED_BEST)
+
+        return self.redirect("/home/displayShow?show=" + show)
 
     def searchEpisode(self, show=None, season=None, episode=None, downCurQuality=0):
 
@@ -1568,7 +1590,7 @@ class Home(WebRoot):
                 else:
                     return ep_loc
 
-            if isinstance(search_thread, sickchill.sickbeard.search_queue.ManualSearchQueueItem):
+            if isinstance(search_thread, sickchill.oldbeard.search_queue.ManualSearchQueueItem):
                 # noinspection PyProtectedMember
                 results.append({
                     'show': search_thread.show.indexerid,
@@ -1619,11 +1641,11 @@ class Home(WebRoot):
 
         # Finished Searches
         searchstatus = 'Finished'
-        for searchThread in sickchill.sickbeard.search_queue.MANUAL_SEARCH_HISTORY:
+        for searchThread in sickchill.oldbeard.search_queue.MANUAL_SEARCH_HISTORY:
             if show and str(searchThread.show.indexerid) != show:
                 continue
 
-            if isinstance(searchThread, sickchill.sickbeard.search_queue.ManualSearchQueueItem):
+            if isinstance(searchThread, sickchill.oldbeard.search_queue.ManualSearchQueueItem):
                 # noinspection PyTypeChecker
                 if not [x for x in episodes if x['episodeindexid'] == searchThread.segment.indexerid]:
                     episodes += getEpisodes(searchThread, searchstatus)
@@ -1678,7 +1700,7 @@ class Home(WebRoot):
             print('error')
             return json.dumps({'result': 'failure', 'errorMessage': error_msg})
 
-        sickchill.sickbeard.notifiers.kodi_notifier.play_episode(ep_obj, host)
+        sickchill.oldbeard.notifiers.kodi_notifier.play_episode(ep_obj, host)
         return json.dumps({'result': 'success'})
 
     def retrySearchSubtitles(self, show, season, episode, lang):

@@ -4,10 +4,10 @@ from operator import itemgetter
 from sickchill import settings
 from sickchill.helper.common import dateFormat, timeFormat
 from sickchill.helper.quality import get_quality_string
-from sickchill.sickbeard.common import Quality, UNAIRED, WANTED
-from sickchill.sickbeard.db import DBConnection
-from sickchill.sickbeard.network_timezones import parse_date_time
-from sickchill.sickbeard.sbdatetime import sbdatetime
+from sickchill.oldbeard.common import Quality, UNAIRED, WANTED
+from sickchill.oldbeard.db import DBConnection
+from sickchill.oldbeard.network_timezones import parse_date_time
+from sickchill.oldbeard.sbdatetime import sbdatetime
 
 SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list
 
@@ -15,7 +15,7 @@ SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  #
 class ComingEpisodes(object):
     """
     Snatched: snatched but not yet processed (no re-downloads)
-    Missed:   yesterday...(less than sickbeard.COMING_EPS_MISSED_RANGE)
+    Missed:   yesterday...(less than settings.COMING_EPS_MISSED_RANGE)
     Today:    today
     Soon:     tomorrow till next week
     Later:    later than next week

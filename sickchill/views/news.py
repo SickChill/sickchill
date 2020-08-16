@@ -1,9 +1,8 @@
 import markdown2
 
 import sickchill.start
-from sickchill import settings
+from sickchill import logger, settings
 
-from ..sickbeard import logger
 from .common import PageTemplate
 from .home import Home
 from .routes import Route

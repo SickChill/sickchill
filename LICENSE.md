@@ -1,8 +1,4 @@
-URL: https://sickchill.github.io
-GIT: https://github.com/Sickchill/SickChill
-PYPI: https://pypi.org/project/sickchill/
-
-This file is part of SickChill.
+This file is part of [SickChill](https://sickchill.github.io) on [GitHub](https://github.com/Sickchill/SickChill) and [PyPi](https://pypi.org/project/sickchill/).
 
 SickChill is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

@@ -28,7 +28,7 @@ class TuSubtituloConverter(LanguageReverseConverter):
 
         self.to_tusubtitulo = {('cat',): 'Català', ('glg',): 'Galego', ('por', 'BR'): 'Brazilian'}
 
-        self.codes = set(self.from_tusubtitulo.keys())
+        self.codes = set(self.from_tusubtitulo)
 
     def convert(self, alpha3, country=None, script=None):
         if (alpha3, country) in self.to_tusubtitulo:

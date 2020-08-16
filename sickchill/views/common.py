@@ -9,7 +9,7 @@ from mako.template import Template
 from tornado.escape import linkify
 
 from sickchill import settings
-from sickchill.sickbeard import classes, helpers
+from sickchill.oldbeard import classes, helpers
 
 mako_lookup = {}
 
@@ -32,7 +32,7 @@ class PageTemplate(Template):
         lookup = get_lookup()
         self.template = lookup.get_template(filename)
 
-        self.context['srRoot'] = settings.WEB_ROOT
+        self.context['scRoot'] = settings.WEB_ROOT
         self.context['sbHttpPort'] = settings.WEB_PORT
         self.context['sbHttpsPort'] = settings.WEB_PORT
         self.context['sbHttpsEnabled'] = settings.ENABLE_HTTPS
@@ -79,7 +79,8 @@ class PageTemplate(Template):
         # noinspection PyBroadException
         try:
             return self.template.render_unicode(*args, **context)
-        except Exception:
+        except Exception as error:
+            print(error)
             context['title'] = '500'
             context['header'] = _('Mako Error')
             context['backtrace'] = RichTraceback()

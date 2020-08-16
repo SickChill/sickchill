@@ -67,7 +67,7 @@
     ],
     "globals": [
       "_",
-      "srRoot",
+      "scRoot",
       "jQuery",
       "$",
       "metaToBool",

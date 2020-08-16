@@ -1,8 +1,8 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
-    from sickchill.sickbeard import subtitles
-    from sickchill.sickbeard.filters import hide
-    from sickchill.sickbeard.helpers import anon_url
+    from sickchill.oldbeard import subtitles
+    from sickchill.oldbeard.filters import hide
+    from sickchill.oldbeard.helpers import anon_url
     from sickchill import settings
 %>
 
@@ -15,10 +15,10 @@
                 preventDuplicates: true,
                 prePopulate: [${','.join("{\"id\": \"" + code + "\", name: \"" + subtitles.name_from_code(code) + "\"}" for code in subtitles.wanted_languages())}],
                 resultsFormatter: function(item) {
-                    return "<li><img src='${srRoot}/images/subtitles/flags/" + item.id + ".png' onError='this.onerror=null;this.src=\"${static_url('images/flags/unknown.png')}\";' style='vertical-align: middle !important;' /> " + item.name + "</li>"
+                    return "<li><img src='${scRoot}/images/subtitles/flags/" + item.id + ".png' onError='this.onerror=null;this.src=\"${static_url('images/flags/unknown.png')}\";' style='vertical-align: middle !important;' /> " + item.name + "</li>"
                 },
                 tokenFormatter: function(item) {
-                    return "<li><img src='${srRoot}/images/subtitles/flags/" + item.id + ".png' onError='this.onerror=null;this.src=\"${static_url('images/flags/unknown.png')}\";' style='vertical-align: middle !important;' /> " + item.name + "</li>"
+                    return "<li><img src='${scRoot}/images/subtitles/flags/" + item.id + ".png' onError='this.onerror=null;this.src=\"${static_url('images/flags/unknown.png')}\";' style='vertical-align: middle !important;' /> " + item.name + "</li>"
                 }
             });
         });
@@ -335,7 +335,7 @@
                         %>
                         % for curService in subtitles.sorted_service_list():
                             <%
-                                if curService['name'] not in providerLoginDict.keys():
+                                if curService['name'] not in providerLoginDict:
                                     continue
                             %>
                             <div class="field-pair row">

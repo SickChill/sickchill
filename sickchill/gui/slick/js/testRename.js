@@ -37,6 +37,6 @@ $(document).ready(() => {
             return false;
         }
 
-        $.redirect(srRoot + '/home/doRename', {show: $('#showID').attr('value'), eps: epArray.join('|')}, 'POST');
+        $.redirect(scRoot + '/home/doRename', {show: $('#showID').attr('value'), eps: epArray.join('|')}, 'POST');
     });
 });

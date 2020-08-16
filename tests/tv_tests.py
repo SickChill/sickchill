@@ -5,11 +5,11 @@ Test tv
 import unittest
 
 from sickchill import settings
-from sickchill.sickbeard.tv import TVEpisode, TVShow
+from sickchill.tv import TVEpisode, TVShow
 from tests import test_lib as test
 
 
-class TVShowTests(test.SickbeardTestDBCase):
+class TVShowTests(test.SickChillTestDBCase):
     """
     Test tv shows
     """
@@ -61,7 +61,7 @@ class TVShowTests(test.SickbeardTestDBCase):
         self.assertEqual(show.name, "newName")
 
 
-class TVEpisodeTests(test.SickbeardTestDBCase):
+class TVEpisodeTests(test.SickChillTestDBCase):
     """
     Test tv episode
     """
@@ -84,7 +84,7 @@ class TVEpisodeTests(test.SickbeardTestDBCase):
         self.assertEqual(episode.name, "asdasdasdajkaj")
 
 
-class TVTests(test.SickbeardTestDBCase):
+class TVTests(test.SickChillTestDBCase):
     """
     Test tv
     """

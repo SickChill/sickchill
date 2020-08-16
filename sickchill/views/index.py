@@ -7,6 +7,7 @@ import traceback
 from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
 from operator import attrgetter
+from secrets import compare_digest
 from urllib.parse import urljoin
 
 from mako.lookup import Template
@@ -17,12 +18,12 @@ from tornado.process import cpu_count
 from tornado.web import authenticated, HTTPError, RequestHandler
 
 import sickchill.start
-from sickchill import settings
+from sickchill import logger, settings
 from sickchill.init_helpers import locale_dir
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.views.routes import Route
 
-from ..sickbeard import db, helpers, logger, network_timezones, ui
+from ..oldbeard import db, helpers, network_timezones, ui
 from .api.webapi import function_mapper
 from .common import PageTemplate
 
@@ -64,7 +65,7 @@ class BaseHandler(RequestHandler):
             exc_info = kwargs["exc_info"]
             trace_info = ''.join(["{0}<br>".format(line) for line in traceback.format_exception(*exc_info)])
             request_info = ''.join(["<strong>{0}</strong>: {1}<br>".format(k, self.request.__dict__[k]) for k in
-                                    self.request.__dict__.keys()])
+                                    self.request.__dict__])
             error = exc_info[1]
 
             self.set_header('Content-Type', 'text/html')
@@ -127,9 +128,9 @@ class BaseHandler(RequestHandler):
             # Basic Auth at a minimum
             auth_header = self.request.headers.get('Authorization')
             if auth_header and auth_header.startswith('Basic '):
-                auth_decoded = base64.decodestring(auth_header[6:])
+                auth_decoded = base64.decodebytes(auth_header[6:].encode()).decode()
                 username, password = auth_decoded.split(':', 2)
-                if username == settings.WEB_USERNAME and password == settings.WEB_PASSWORD:
+                if compare_digest(username, settings.WEB_USERNAME) and compare_digest(password, settings.WEB_PASSWORD):
                     return True
                 return False
 

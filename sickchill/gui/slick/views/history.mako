@@ -3,14 +3,16 @@
     import os.path
     import datetime
 
-    from sickchill.sickbeard import sbdatetime, providers
+    from sickchill.oldbeard import sbdatetime, providers
 
-    from sickchill.sickbeard.common import ARCHIVED, SNATCHED, FAILED, DOWNLOADED, SUBTITLED
-    from sickchill.sickbeard.common import Quality, statusStrings
+    from sickchill.oldbeard.common import ARCHIVED, SNATCHED, FAILED, DOWNLOADED, SUBTITLED
+    from sickchill.oldbeard.common import Quality, statusStrings
 
     from sickchill.show.History import History
     from sickchill.providers.GenericProvider import GenericProvider
     from sickchill import settings
+
+    from operator import itemgetter
 %>
 <%block name="content">
     <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
@@ -35,8 +37,8 @@
                 <label>
                     <span> ${_('Layout')}:</span>
                     <select id="layout" class="form-control form-control-inline input-sm">
-                        <option value="${srRoot}/setHistoryLayout/?layout=compact"  ${('', 'selected="selected"')[settings.HISTORY_LAYOUT == 'compact']}>${_('Compact')}</option>
-                        <option value="${srRoot}/setHistoryLayout/?layout=detailed" ${('', 'selected="selected"')[settings.HISTORY_LAYOUT == 'detailed']}>${_('Detailed')}</option>
+                        <option value="${scRoot}/setHistoryLayout/?layout=compact"  ${('', 'selected="selected"')[settings.HISTORY_LAYOUT == 'compact']}>${_('Compact')}</option>
+                        <option value="${scRoot}/setHistoryLayout/?layout=detailed" ${('', 'selected="selected"')[settings.HISTORY_LAYOUT == 'detailed']}>${_('Detailed')}</option>
                     </select>
                 </label>
             </div>
@@ -72,11 +74,11 @@
                                         <%
                                             # noinspection PyCallByClass
                                             airDate = sbdatetime.sbdatetime.sbfdatetime(datetime.datetime.strptime(str(hItem["date"]), History.date_format), show_seconds=True)
-                                            isoDate = datetime.datetime.strptime(str(hItem["date"]), History.date_format).isoformat('T')
+                                            isoDate = datetime.datetime.strptime(str(hItem["date"]), History.date_format).isoformat()
                                         %>
                                         <time datetime="${isoDate}" class="date">${airDate}</time>
                                     </td>
-                                    <td class="tvShow" width="35%"><a href="${srRoot}/home/displayShow?show=${hItem["show_id"]}#S${hItem["season"]}E${hItem["episode"]}">
+                                    <td class="tvShow" width="35%"><a href="${scRoot}/home/displayShow?show=${hItem["show_id"]}#S${hItem["season"]}E${hItem["episode"]}">
                                         ${"{} - S{:02}E{:02}".format(hItem["show_name"], int(hItem["season"]), int(hItem["episode"]))} ${('', '<span class="quality Proper">Proper</span>')["proper" in hItem["resource"].lower() or "repack" in hItem["resource"].lower()]}
                                     </a></td>
                                     <td align="center" ${('', 'class="subtitles_column"')[curStatus == SUBTITLED]}>
@@ -150,13 +152,13 @@
                                     </td>
                                     <td class="tvShow" width="25%">
                                         <span>
-                                            <a href="${srRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">
+                                            <a href="${scRoot}/home/displayShow?show=${hItem["show_id"]}#season-${hItem["season"]}">
                                                 ${"{} - S{:02}E{:02}".format(hItem["show_name"], int(hItem["season"]), int(hItem["episode"]))}${('', ' <span class="quality Proper">Proper</span>')['proper' in hItem["resource"].lower() or 'repack' in hItem["resource"].lower()]}
                                             </a>
                                         </span>
                                     </td>
-                                    <td align="center" provider="${str(sorted(hItem["actions"])[0]["provider"])}">
-                                        % for action in sorted(hItem["actions"]):
+                                    <td align="center" provider="${str(sorted(hItem["actions"], key=itemgetter('provider'))[0]["provider"])}">
+                                        % for action in sorted(hItem["actions"], key=itemgetter('provider')):
                                             <% curStatus, curQuality = Quality.splitCompositeStatus(int(action["action"])) %>
                                             % if curStatus in [SNATCHED, FAILED]:
                                                 <% provider = providers.getProviderClass(GenericProvider.make_id(action["provider"])) %>
@@ -170,7 +172,7 @@
                                         % endfor
                                     </td>
                                     <td align="center">
-                                        % for action in sorted(hItem["actions"]):
+                                        % for action in sorted(hItem["actions"], key=itemgetter('provider')):
                                             <% curStatus, curQuality = Quality.splitCompositeStatus(int(action["action"])) %>
                                             % if curStatus in [DOWNLOADED, ARCHIVED]:
                                                 % if action["provider"] != "-1":
@@ -183,7 +185,7 @@
                                     </td>
                                     % if settings.USE_SUBTITLES:
                                         <td align="center">
-                                            % for action in sorted(hItem["actions"]):
+                                            % for action in sorted(hItem["actions"], key=itemgetter('provider')):
                                                 <% curStatus, curQuality = Quality.splitCompositeStatus(int(action["action"])) %>
                                                 % if curStatus == SUBTITLED:
                                                     <img src="${static_url('images/subtitles/' + action['provider'] + '.png')}" width="16" height="16"

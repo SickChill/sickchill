@@ -1,5 +1,5 @@
 """
-Test sickbeard.helpers
+Test oldbeard.helpers
 
 Public Methods:
     indentXML
@@ -70,47 +70,47 @@ from shutil import rmtree
 
 from sickchill import settings
 from sickchill.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
-from sickchill.sickbeard import helpers
+from sickchill.oldbeard import helpers
 
-TEST_RESULT = 'Show.Name.S01E01.HDTV.x264-RLSGROUP'
+TEST_RESULT = 'Show.Name.S01E01.HDTV.x264-SICKCHILL'
 TEST_CASES = {
     'removewords': [
         TEST_RESULT,
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[cttv]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP.RiPSaLoT',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[GloDLS]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[EtHD]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP-20-40',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[NO-RAR] - [ www.torrentday.com ]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[rarbg]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[Seedbox]',
-        '{ www.SceneTime.com } - Show.Name.S01E01.HDTV.x264-RLSGROUP',
-        '].[www.tensiontorrent.com] - Show.Name.S01E01.HDTV.x264-RLSGROUP',
-        '[ www.TorrentDay.com ] - Show.Name.S01E01.HDTV.x264-RLSGROUP',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[silv4]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[AndroidTwoU]',
-        '[www.newpct1.com]Show.Name.S01E01.HDTV.x264-RLSGROUP',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP-NZBGEEK',
-        '.www.Cpasbien.pwShow.Name.S01E01.HDTV.x264-RLSGROUP',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP [1044]',
-        '[ www.Cpasbien.pw ] Show.Name.S01E01.HDTV.x264-RLSGROUP',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP.[BT]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[vtv]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP.[www.usabit.com]',
-        '[www.Cpasbien.com] Show.Name.S01E01.HDTV.x264-RLSGROUP',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[ettv]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[rartv]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP-Siklopentan',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP-RP',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[PublicHD]',
-        '[www.Cpasbien.pe] Show.Name.S01E01.HDTV.x264-RLSGROUP',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP[eztv]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP-[SpastikusTV]',
-        '].[ www.tensiontorrent.com ] - Show.Name.S01E01.HDTV.x264-RLSGROUP',
-        '[ www.Cpasbien.com ] Show.Name.S01E01.HDTV.x264-RLSGROUP',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP- { www.SceneTime.com }',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP- [ www.torrentday.com ]',
-        'Show.Name.S01E01.HDTV.x264-RLSGROUP.Renc'
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[cttv]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL.RiPSaLoT',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[GloDLS]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[EtHD]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL-20-40',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[NO-RAR] - [ www.torrentday.com ]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[rarbg]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[Seedbox]',
+        '{ www.SceneTime.com } - Show.Name.S01E01.HDTV.x264-SICKCHILL',
+        '].[www.tensiontorrent.com] - Show.Name.S01E01.HDTV.x264-SICKCHILL',
+        '[ www.TorrentDay.com ] - Show.Name.S01E01.HDTV.x264-SICKCHILL',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[silv4]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[AndroidTwoU]',
+        '[www.newpct1.com]Show.Name.S01E01.HDTV.x264-SICKCHILL',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL-NZBGEEK',
+        '.www.Cpasbien.pwShow.Name.S01E01.HDTV.x264-SICKCHILL',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL [1044]',
+        '[ www.Cpasbien.pw ] Show.Name.S01E01.HDTV.x264-SICKCHILL',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL.[BT]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[vtv]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL.[www.usabit.com]',
+        '[www.Cpasbien.com] Show.Name.S01E01.HDTV.x264-SICKCHILL',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[ettv]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[rartv]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL-Siklopentan',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL-RP',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[PublicHD]',
+        '[www.Cpasbien.pe] Show.Name.S01E01.HDTV.x264-SICKCHILL',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL[eztv]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL-[SpastikusTV]',
+        '].[ www.tensiontorrent.com ] - Show.Name.S01E01.HDTV.x264-SICKCHILL',
+        '[ www.Cpasbien.com ] Show.Name.S01E01.HDTV.x264-SICKCHILL',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL- { www.SceneTime.com }',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL- [ www.torrentday.com ]',
+        'Show.Name.S01E01.HDTV.x264-SICKCHILL.Renc'
     ]
 }
 
@@ -189,7 +189,7 @@ class HelpersZipTests(unittest.TestCase):
         Test backup_config_zip
         """
         here = os.path.dirname(__file__)
-        files = [f for f in os.listdir(here) if f[-3:] in [".db", ".py"]]
+        files = [os.path.join(here, f) for f in os.listdir(here) if f[-3:] in [".db", ".py"]]
         zip_path = os.path.join(here, '_backup_test.zip')
 
         self.assertTrue(helpers.backup_config_zip(files, zip_path, here))
@@ -203,14 +203,14 @@ class HelpersZipTests(unittest.TestCase):
         Test restore_config_zip
         """
         here = os.path.dirname(__file__)
-        files = [f for f in os.listdir(here) if f[-3:] in [".db", ".py"]]
-        zip_path = os.path.join(here, '_restore_test.zip')
+        files = [os.path.join(here, f) for f in os.listdir(here) if f[-3:] in [".db", ".py"]]
+        zip_path = os.path.join(here, '_backup_test.zip')
 
         helpers.backup_config_zip(files, zip_path, here)
         restore_container = os.path.join(here, '_restore_tests')
         os.mkdir(restore_container)
         restore_path = os.path.join(restore_container, 'test')
-        self.assertFalse(helpers.restore_config_zip(os.path.abspath(files[1]), restore_path))  # test invalid zip
+        self.assertFalse(helpers.restore_config_zip(files[1], restore_path))  # test invalid zip
         self.assertTrue(helpers.restore_config_zip(zip_path, restore_path))
         self.assertTrue(helpers.restore_config_zip(zip_path, restore_path)) # test extractDir exists
 
@@ -295,7 +295,7 @@ class HelpersFileTests(unittest.TestCase):
         # and the file extension should be in the list of media extensions
 
         # Test all valid media extensions
-        temp_name = 'Show.Name.S01E01.HDTV.x264-RLSGROUP'
+        temp_name = 'Show.Name.S01E01.HDTV.x264-SICKCHILL'
         extension_tests = {'.'.join((temp_name, ext)): True for ext in MEDIA_EXTENSIONS}
         # ...and some invalid ones
         other_extensions = ['txt', 'sfv', 'srr', 'rar', 'nfo', 'zip']
@@ -503,14 +503,14 @@ class HelpersEncryptionTests(unittest.TestCase):
 
         FILETYPE_PEM = OpenSSL.crypto.FILETYPE_PEM
         try:
-            with open(cert_path, 'rt') as f:
+            with open(cert_path, 'rb') as f:
                 cert = OpenSSL.crypto.load_certificate(FILETYPE_PEM, f.read())
         except Exception as error:
             removeTestFiles()
             self.fail('Unable to load certificate')
 
         try:
-            with open(pkey_path, 'rt') as f:
+            with open(pkey_path, 'rb') as f:
                 pkey = OpenSSL.crypto.load_privatekey(FILETYPE_PEM, f.read())
         except Exception as error:
             removeTestFiles()

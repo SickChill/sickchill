@@ -1,7 +1,7 @@
 from requests.exceptions import HTTPError
 
-from sickchill import settings
-from sickchill.sickbeard import helpers, logger
+from sickchill import logger, settings
+from sickchill.oldbeard import helpers
 
 meta_session = helpers.make_session()
 

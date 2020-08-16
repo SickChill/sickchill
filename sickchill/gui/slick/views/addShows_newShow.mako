@@ -1,7 +1,7 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
     from sickchill import settings
-    from sickchill.sickbeard.helpers import anon_url
+    from sickchill.oldbeard.helpers import anon_url
     from sickchill import indexer as show_indexer
 %>
 <%block name="scripts">
@@ -19,7 +19,7 @@
     <div id="core-component-group1" class="tab-pane active component-group">
         <div class="row">
             <div class="col-md-12">
-                <form id="addShowForm" method="post" action="${srRoot}/addShows/addNewShow" accept-charset="utf-8">
+                <form id="addShowForm" method="post" action="${scRoot}/addShows/addNewShow" accept-charset="utf-8">
 
                     <legend class="legendStep">#1 ${_('Search for a Show')}</legend>
                     <div class="row stepDiv">

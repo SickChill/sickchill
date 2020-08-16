@@ -8,10 +8,10 @@ import tmdbsimple
 from fanart.core import Request as fanartRequest
 
 import sickchill
-from sickchill import settings
+from sickchill import logger, settings
 from sickchill.helper.common import replace_extension, try_int
-from sickchill.sickbeard import helpers, logger
-from sickchill.sickbeard.show_name_helpers import allPossibleShowNames
+from sickchill.oldbeard import helpers
+from sickchill.oldbeard.show_name_helpers import allPossibleShowNames
 
 from . import helpers as metadata_helpers
 
@@ -724,7 +724,7 @@ class GenericMetadata(object):
         def fix_xml():
             logger.info(_("There was an error loading {0}, trying to repair it by fixing & symbols. If it still has problems, please check the file "
                           "manually").format(metadata_path))
-            with open(metadata_path, 'rb') as __xml_file:
+            with open(metadata_path) as __xml_file:
                 output = __xml_file.read()
 
             regex = re.compile(r"&(?!amp;|lt;|gt;)")

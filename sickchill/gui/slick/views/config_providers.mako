@@ -1,9 +1,9 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
-    from sickchill.sickbeard import providers
+    from sickchill.oldbeard import providers
     from sickchill import settings
-    from sickchill.sickbeard.filters import hide
-    from sickchill.sickbeard.helpers import anon_url
+    from sickchill.oldbeard.filters import hide
+    from sickchill.oldbeard.helpers import anon_url
     from sickchill.providers.GenericProvider import GenericProvider
 %>
 
@@ -736,8 +736,8 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <select name="${curTorrentProvider.get_id("_cat")}"
                                                     id="${curTorrentProvider.get_id("_cat")}" class="form-control input-sm input200">
-                                                % for i in curTorrentProvider.category_dict.keys():
-                                                    <option value="${curTorrentProvider.category_dict[i]}" ${('', 'selected="selected"')[curTorrentProvider.category_dict[i] == curTorrentProvider.cat]}>${i}</option>
+                                                % for i in curTorrentProvider.category_dict.values():
+                                                    <option value="${i}" ${('', 'selected="selected"')[i == curTorrentProvider.cat]}>${i}</option>
                                                 % endfor
                                             </select>
                                         </div>

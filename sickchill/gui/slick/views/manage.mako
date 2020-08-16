@@ -2,7 +2,7 @@
 <%!
     from operator import attrgetter
     from sickchill import settings
-    from sickchill.sickbeard.common import statusStrings
+    from sickchill.oldbeard.common import statusStrings
 %>
 
 <%block name="content">
@@ -84,7 +84,7 @@
                             %>
                                 <tr>
                                     <td align="center"><input type="checkbox" class="editCheck" id="edit-${curShow.indexerid}" /></td>
-                                    <td class="tvShow"><a href="${srRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></td>
+                                    <td class="tvShow"><a href="${scRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></td>
                                     <td align="center">
                                         % if curShow.network:
                                             <span title="${curShow.network}">

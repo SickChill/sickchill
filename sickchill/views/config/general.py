@@ -3,11 +3,11 @@ import os
 from tornado.web import addslash
 
 import sickchill.start
-from sickchill import settings
+from sickchill import logger, settings
 from sickchill.helper import setup_github, try_int
 from sickchill.init_helpers import setup_gettext
-from sickchill.sickbeard import config, filters, helpers, logger, ui
-from sickchill.sickbeard.common import Quality, WANTED
+from sickchill.oldbeard import config, filters, helpers, ui
+from sickchill.oldbeard.common import Quality, WANTED
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
@@ -109,17 +109,19 @@ class ConfigGeneral(Config):
         settings.CPU_PRESET = cpu_preset
         settings.ANON_REDIRECT = anon_redirect
         settings.PROXY_SETTING = proxy_setting
+        if settings.PROXY_SETTING:
+            settings.PROXY_SETTING = config.clean_url(settings.PROXY_SETTING).rstrip('/')
         settings.PROXY_INDEXERS = config.checkbox_to_value(proxy_indexers)
 
         settings.GIT_USERNAME = git_username
 
         tmp_git_token = filters.unhide(settings.GIT_TOKEN, git_token)
         if settings.GIT_TOKEN != tmp_git_token:
-            # Re-Initializes sickbeard.gh, so a restart isn't necessary
+            # Re-Initializes oldbeard.gh, so a restart isn't necessary
             settings.GIT_TOKEN = tmp_git_token
             setup_github()
 
-        # sickbeard.GIT_RESET = config.checkbox_to_value(git_reset)
+        # oldbeard.GIT_RESET = config.checkbox_to_value(git_reset)
         # Force GIT_RESET
         settings.GIT_RESET = 1
         settings.GIT_PATH = git_path

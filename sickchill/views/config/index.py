@@ -3,7 +3,7 @@ import os
 from tornado.web import addslash
 
 from sickchill import settings
-from sickchill.sickbeard.versionChecker import CheckVersion
+from sickchill.update_manager import UpdateManager
 from sickchill.views.common import PageTemplate
 from sickchill.views.index import WebRoot
 from sickchill.views.routes import Route
@@ -36,19 +36,19 @@ class Config(WebRoot):
         try:
             # noinspection PyUnresolvedReferences
             import pwd
-            sr_user = pwd.getpwuid(os.getuid()).pw_name
+            sc_user = pwd.getpwuid(os.getuid()).pw_name
         except ImportError:
             try:
                 import getpass
-                sr_user = getpass.getuser()
+                sc_user = getpass.getuser()
             except Exception:
-                sr_user = 'Unknown'
+                sc_user = 'Unknown'
 
         try:
             import locale
-            sr_locale = locale.getdefaultlocale()
+            sc_locale = locale.getdefaultlocale()
         except Exception:
-            sr_locale = 'Unknown', 'Unknown'
+            sc_locale = 'Unknown', 'Unknown'
 
         try:
             import ssl
@@ -56,16 +56,16 @@ class Config(WebRoot):
         except Exception:
             ssl_version = 'Unknown'
 
-        sr_version = ''
+        sc_version = ''
         if settings.VERSION_NOTIFY:
-            updater = CheckVersion().updater
+            updater = UpdateManager()
             if updater:
                 updater.need_update()
-                sr_version = updater.get_cur_version()
+                sc_version = updater.get_current_version()
 
         return t.render(
             submenu=self.ConfigMenu(), title=_('SickChill Configuration'),
             header=_('SickChill Configuration'), topmenu="config",
-            sr_user=sr_user, sr_locale=sr_locale, ssl_version=ssl_version,
-            sr_version=sr_version
+            sc_user=sc_user, sc_locale=sc_locale, ssl_version=ssl_version,
+            sc_version=sc_version
         )

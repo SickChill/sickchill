@@ -231,7 +231,7 @@ class Addic7edProvider(Provider):
     def query(self, show_id, series, season, year=None, country=None):
         # get the page of the season of the show
         logger.info('Getting the page of show id %d, season %d', show_id, season)
-            r = self.session.get(self.server_url + 'show/%d' % show_id, params={'season': season}, timeout=10)
+        r = self.session.get(self.server_url + 'show/%d' % show_id, params={'season': season}, timeout=10)
         r.raise_for_status()
 
         if not r.content:

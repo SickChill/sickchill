@@ -1,9 +1,10 @@
 from tornado.web import addslash
 
-import sickchill.sickbeard
+import sickchill.oldbeard
 from sickchill.helper import try_int
 
-from ..sickbeard import classes, logger, ui
+from .. import logger
+from ..oldbeard import classes, ui
 from .common import PageTemplate
 from .index import WebRoot
 from .routes import Route
@@ -42,7 +43,7 @@ class ErrorLogs(WebRoot):
 
     @addslash
     def index(self):
-        level = try_int(self.get_query_argument('level', logger.ERROR), logger.ERROR)
+        level = try_int(self.get_query_argument('level', str(logger.ERROR)), logger.ERROR)
 
         t = PageTemplate(rh=self, filename="errorlogs.mako")
         return t.render(header=_("Logs &amp; Errors"), title=_("Logs &amp; Errors"),
@@ -58,7 +59,7 @@ class ErrorLogs(WebRoot):
         return len(classes.WarningViewer.errors) > 0
 
     def clearerrors(self):
-        level = try_int(self.get_query_argument('level', logger.ERROR), logger.ERROR)
+        level = try_int(self.get_query_argument('level', str(logger.ERROR)), logger.ERROR)
         if int(level) == logger.WARNING:
             classes.WarningViewer.clear()
         else:
@@ -67,11 +68,11 @@ class ErrorLogs(WebRoot):
         return self.redirect("/errorlogs/viewlog/")
 
     def viewlog(self):
-        min_level = try_int(self.get_body_argument('min_level', logger.INFO), logger.INFO)
+        min_level = try_int(self.get_body_argument('min_level', str(logger.INFO)), logger.INFO)
         log_filter = self.get_body_argument('log_filter', "<NONE>")
         log_search = self.get_body_argument('log_search', '')
-        max_lines = try_int(self.get_body_argument('max_lines', 500), 500)
-        data = sickchill.sickbeard.logger.log_data(min_level, log_filter, log_search, max_lines)
+        max_lines = try_int(self.get_body_argument('max_lines', str(500)), 500)
+        data = sickchill.logger.log_data(min_level, log_filter, log_search, max_lines)
 
         t = PageTemplate(rh=self, filename="viewlogs.mako")
         return t.render(

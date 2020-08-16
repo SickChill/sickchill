@@ -4,8 +4,8 @@
     $.Browser = {
         defaults: {
             title: _('Choose Directory'),
-            url: srRoot + '/browser/',
-            autocompleteURL: srRoot + '/browser/complete',
+            url: scRoot + '/browser/',
+            autocompleteURL: scRoot + '/browser/complete',
             includeFiles: 0,
             fileTypes: [], // File extensions to include, 'images' is an alias for image types
             showBrowseButton: true

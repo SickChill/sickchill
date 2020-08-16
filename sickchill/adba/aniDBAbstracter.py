@@ -165,7 +165,7 @@ class Anime(AniDBabstractObject):
         # regex = re.compile('[%s]'  % re.escape(string.punctuation)) # remove any punctuation and e.g. ' (2011)'
         name = regex.sub('', name.lower())
         lastAid = 0
-        for element in self.allAnimeXML.getiterator():
+        for element in self.allAnimeXML.iter():
             if element.get("aid", False):
                 lastAid = int(element.get("aid"))
             if element.text:
@@ -182,7 +182,7 @@ class Anime(AniDBabstractObject):
 
         for anime in self.allAnimeXML.findall("anime"):
             if int(anime.get("aid", False)) == aid:
-                for title in anime.getiterator():
+                for title in anime.iter():
                     currentLang = title.get("{http://www.w3.org/XML/1998/namespace}lang", False)
                     currentType = title.get("type", False)
                     if (currentLang == "en" and not onlyMain) or currentType == "main":

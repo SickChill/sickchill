@@ -7,8 +7,8 @@ setup_lib_path()
 
 import rarfile
 
-from sickchill.sickbeard.common import SD
-from sickchill.sickbeard.numdict import NumDict
+from sickchill.oldbeard.common import SD
+from sickchill.oldbeard.numdict import NumDict
 
 setup_gettext()
 

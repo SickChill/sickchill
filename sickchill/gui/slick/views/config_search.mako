@@ -1,8 +1,8 @@
 <%inherit file="/layouts/config.mako"/>
 <%!
     from sickchill import settings
-    from sickchill.sickbeard.filters import hide
-    from sickchill.sickbeard.clients import getClientListDict
+    from sickchill.oldbeard.filters import hide
+    from sickchill.oldbeard.clients import getClientListDict
 %>
 
 <%block name="tabs">
@@ -23,7 +23,7 @@
                     <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                         <div class="component-group-desc">
                             <h3>${_('Episode Search')}</h3>
-                            <p>${_('How to manage searching with')} <a href="${srRoot}/config/providers">providers</a>.</p>
+                            <p>${_('How to manage searching with')} <a href="${scRoot}/config/providers">providers</a>.</p>
                         </div>
                     </div>
                     <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
