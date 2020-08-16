@@ -526,7 +526,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="text" name="naming_pattern" id="naming_pattern" value="${settings.NAMING_PATTERN}" class="form-control input-sm input350" autocapitalize="off" title="naming_pattern"/>
-                                            <span class="displayshow-icon-legend" id="show_naming_key" title="${_('Toggle Naming Legend')}" class="legend" />
+                                            <span class="displayshow-icon-legend" id="show_naming_key" title="${_('Toggle Naming Legend')}" class="legend"></span>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -544,7 +544,7 @@
                                             <tr>
                                                 <th class="align-right">${_('Meaning')}</th>
                                                 <th>${_('Pattern')}</th>
-                                                <th width="60%">${_('Result')}</th>
+                                                <th>${_('Result')}</th>
                                             </tr>
                                         </thead>
                                         <tfoot>
@@ -798,7 +798,7 @@
                                     <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                         <input type="text" name="naming_abd_pattern" id="naming_abd_pattern" value="${settings.NAMING_ABD_PATTERN}"
                                                class="form-control input-sm input350" autocapitalize="off" title="naming_abd_pattern"/>
-                                        <span class="displayshow-icon-legend" id="show_naming_abd_key" title="${_('Toggle ABD Naming Legend')}" class="legend" />
+                                        <span class="displayshow-icon-legend" id="show_naming_abd_key" title="${_('Toggle ABD Naming Legend')}" class="legend"></span>
                                     </div>
                                 </div>
 
@@ -809,7 +809,7 @@
                                                 <tr>
                                                     <th class="align-right">${_('Meaning')}</th>
                                                     <th>${_('Pattern')}</th>
-                                                    <th width="60%">${_('Result')}</th>
+                                                    <th>${_('Result')}</th>
                                                 </tr>
                                             </thead>
                                             <tfoot>
@@ -983,7 +983,7 @@
                                     <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                         <input type="text" name="naming_sports_pattern" id="naming_sports_pattern" value="${settings.NAMING_SPORTS_PATTERN}"
                                                class="form-control input-sm input350" autocapitalize="off" title="naming_sports_pattern" />
-                                        <span class="displayshow-icon-legend" id="show_naming_sports_key" title="${_('Toggle Sports Naming Legend')}" class="legend" />
+                                        <span class="displayshow-icon-legend" id="show_naming_sports_key" title="${_('Toggle Sports Naming Legend')}" class="legend"></span>
                                     </div>
                                 </div>
 
@@ -994,7 +994,7 @@
                                                 <tr>
                                                     <th class="align-right">${_('Meaning')}</th>
                                                     <th>${_('Pattern')}</th>
-                                                    <th width="60%">${_('Result')}</th>
+                                                    <th>${_('Result')}</th>
                                                 </tr>
                                             </thead>
                                             <tfoot>
@@ -1169,7 +1169,7 @@
                                     <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                         <input type="text" name="naming_anime_pattern" id="naming_anime_pattern" value="${settings.NAMING_ANIME_PATTERN}"
                                                class="form-control input-sm input350" autocapitalize="off" title="naming_anime_pattern" />
-                                        <span class="displayshow-icon-legend" id="show_naming_anime_key" title="${_('Toggle Anime Naming Legend')}" class="legend"/>
+                                        <span class="displayshow-icon-legend" id="show_naming_anime_key" title="${_('Toggle Anime Naming Legend')}" class="legend"></span>
                                     </div>
                                 </div>
 
@@ -1180,7 +1180,7 @@
                                                 <tr>
                                                     <th class="align-right">${_('Meaning')}</th>
                                                     <th>Pattern</th>
-                                                    <th width="60%">${_('Result')}</th>
+                                                    <th>${_('Result')}</th>
                                                 </tr>
                                             </thead>
                                             <tfoot>
