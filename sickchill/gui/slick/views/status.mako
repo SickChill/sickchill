@@ -191,19 +191,23 @@
             % if BLSinProgress:
                 <td>${_('True')}</td>
             % else:
+                <td>
                 % try:
-                    <td>${service.action.amActive}</td>
+                    ${service.action.amActive}
                 % except Exception:
-                    <td>${_('N/A')}</td>
+                    ${_('N/A')}
                 % endtry
+                </td>
             % endif
         % else:
             <td>${service.enable}</td>
+            <td>
              % try:
-                <td>${service.action.amActive}</td>
+                ${service.action.amActive}
             % except Exception:
-                <td>${_('N/A')}</td>
+                ${_('N/A')}
             % endtry
+            </td>
         % endif
         % if service.start_time:
             <td align="right">${service.start_time}</td>
@@ -229,20 +233,21 @@
 
 <%def name="show_queue_row(item)">
     <tr>
+        <td>
         % try:
-            <td>${item.show.indexerid}</td>
+            ${item.show.indexerid}
         % except Exception:
-            <td></td>
         % endtry
+        </td>
+        <td>
         % try:
-            <td>${item.show.name}</td>
+            ${item.show.name}
         % except Exception:
             % if item.action_id == ShowQueueActions.ADD:
-                <td>${item.showDir}</td>
-            % else:
-                <td></td>
+                ${item.showDir}
             % endif
         % endtry
+        </td>
         <td>${item.inProgress}</td>
         % if item.priority == 10:
             <td>${_('LOW')}</td>
