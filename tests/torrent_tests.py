@@ -16,7 +16,7 @@ class TorrentBasicTests(test.SickChillTestDBCase):
         cls.shows = []
 
         show = TVShow(1, 121361)
-        show.show_name = "Italian Works"
+        show.name = "Italian Works"
         show.episodes = []
         episode = TVEpisode(show, 5, 10)
         episode.name = "Pines of Rome"

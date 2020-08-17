@@ -22,7 +22,7 @@ class SceneTests(test.SickChillTestDBCase):
         """
         expected = expected or []
         show = Show(1, indexerid)
-        show.show_name = name
+        show.name = name
 
         result = show_name_helpers.allPossibleShowNames(show)
         self.assertTrue(len(set(expected).intersection(set(result))) == len(expected))

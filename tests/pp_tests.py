@@ -46,7 +46,7 @@ class PPBasicTests(test.SickChillTestDBCase):
         Test process
         """
         show = TVShow(1, 3)
-        show.show_name = test.SHOW_NAME
+        show.name = test.SHOW_NAME
         show.location = test.SHOW_DIR
         show.saveToDB()
 

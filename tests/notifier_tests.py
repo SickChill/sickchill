@@ -34,7 +34,7 @@ class NotifierTests(test.SickChillTestDBCase):
         # the new method.
         for show_counter in range(100, 100 + num_legacy_shows):
             show = TVShow(1, show_counter)
-            show.show_name = "Show " + str(show_counter)
+            show.name = "Show " + str(show_counter)
             show.episodes = []
             for episode_counter in range(0, num_episodes_per_show):
                 episode = TVEpisode(show, test.SEASON, episode_counter)
@@ -46,7 +46,7 @@ class NotifierTests(test.SickChillTestDBCase):
 
         for show_counter in range(200, 200 + num_shows):
             show = TVShow(1, show_counter)
-            show.show_name = "Show " + str(show_counter)
+            show.name = "Show " + str(show_counter)
             show.episodes = []
             for episode_counter in range(0, num_episodes_per_show):
                 episode = TVEpisode(show, test.SEASON, episode_counter)
@@ -97,7 +97,7 @@ class NotifierTests(test.SickChillTestDBCase):
                 ep_name = episode._format_pattern('%SN - %Sx%0E - %EN - ') + episode.quality
                 show_name = email_notifier._parseEp(ep_name)
                 recipients = email_notifier._generate_recipients(show_name)
-                self._debug_spew("- Email Notifications for " + show.show_name + " (episode: " + episode.name + ") will be sent to:")
+                self._debug_spew("- Email Notifications for " + show.name + " (episode: " + episode.name + ") will be sent to:")
                 for email in recipients:
                     self._debug_spew("-- " + email.strip())
                 self._debug_spew("\n\r")
@@ -188,7 +188,7 @@ class NotifierTests(test.SickChillTestDBCase):
                 ep_name = episode._format_pattern('%SN - %Sx%0E - %EN - ') + episode.quality
                 show_name = prowl_notifier._parse_episode(ep_name)
                 recipients = prowl_notifier._generate_recipients(show_name)
-                self._debug_spew("- Prowl Notifications for " + show.show_name + " (episode: " + episode.name + ") will be sent to:")
+                self._debug_spew("- Prowl Notifications for " + show.name + " (episode: " + episode.name + ") will be sent to:")
                 for api in recipients:
                     self._debug_spew("-- " + api.strip())
                 self._debug_spew("\n\r")

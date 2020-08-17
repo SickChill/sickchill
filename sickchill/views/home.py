@@ -28,11 +28,11 @@ from sickchill.system.Shutdown import Shutdown
 from sickchill.update_manager import UpdateManager
 
 from ..oldbeard import clients, config, db, filters, helpers, notifiers, sab, search_queue, subtitles as subtitle_module, ui
+from ..providers.metadata.generic import GenericMetadata
+from ..providers.metadata.helpers import getShowImage
 from .common import PageTemplate
 from .index import WebRoot
 from .routes import Route
-from ..providers.metadata.generic import GenericMetadata
-from ..providers.metadata.helpers import getShowImage
 
 
 @Route('/home(/?.*)', name='home')

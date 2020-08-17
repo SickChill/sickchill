@@ -185,26 +185,28 @@ class SickChillTestPostProcessorCase(unittest.TestCase):
         setup_test_show_dir()
         setup_test_processing_dir()
 
-        show = TVShow(1, 1, 'en')
-        show.show_name = SHOW_NAME
-        show.location = FILE_DIR
+        self.show = TVShow(1, 1, 'en')
+        self.show.name = SHOW_NAME
+        self.show.location = FILE_DIR
+        self.show.imdb_info = {'indexer_id': self.show.indexerid, 'imdb_id': 'tt000000'}
 
-        show.episodes = {}
+        self.show.episodes = {}
         for season in range(1, NUM_SEASONS):
-            show.episodes[season] = {}
+            self.show.episodes[season] = {}
             for episode in range(1, EPISODES_PER_SEASON):
                 if season == SEASON and episode == EPISODE:
-                    episode = TVEpisode(show, season, episode, ep_file=FILE_PATH)
+                    episode = TVEpisode(self.show, season, episode, ep_file=FILE_PATH)
                 else:
-                    episode = TVEpisode(show, season, episode)
-                show.episodes[season][episode] = episode
+                    episode = TVEpisode(self.show, season, episode)
+                self.show.episodes[season][episode] = episode
                 episode.saveToDB()
 
-        show.saveToDB()
-        settings.showList = [show]
+        self.show.saveToDB()
+        settings.showList = [self.show]
 
     def tearDown(self):
         settings.showList = []
+        self.show.deleteShow(True)
         teardown_test_db()
         teardown_test_episode_file()
         teardown_test_show_dir()

@@ -9,7 +9,7 @@ from sickchill.tv import TVEpisode, TVShow
 from tests import test_lib as test
 
 
-class TVShowTests(test.SickChillTestDBCase):
+class TVShowTests(test.SickChillTestPostProcessorCase):
     """
     Test tv shows
     """
@@ -17,72 +17,59 @@ class TVShowTests(test.SickChillTestDBCase):
         """
         Set up tests
         """
-        super(TVShowTests, self).setUp()
-        settings.showList = []
+        super().setUp()
 
     def test_init_indexerid(self):
         """
         test init indexer id
         """
-        show = TVShow(1, 1, "en")
-        self.assertEqual(show.indexerid, 1)
+        self.show.loadFromDB()
+        self.assertEqual(self.show.indexerid, 1)
 
     def test_change_indexerid(self):
         """
         test change indexer id
         """
-        show = TVShow(1, 257655, "en")
-        show.show_name = "show name"
-        show.network = "cbs"
-        show.genre = ["crime"]
-        show.runtime = 40
-        show.status = "Ended"
-        show.default_ep_status = "5"
-        show.airs = "monday"
-        show.startyear = 1987
+        self.show.loadFromDB()
+        self.assertEqual(self.show.indexerid, 1)
 
-        show.saveToDB()
-        show.loadFromDB()
+        self.show.indexerid = 295759
+        self.show.saveToDB()
+        self.show.loadFromDB()
 
-        show.indexerid = 295759
-        show.saveToDB()
-        show.loadFromDB()
-
-        self.assertEqual(show.indexerid, 295759)
+        self.assertEqual(self.show.indexerid, 295759)
 
     def test_set_name(self):
         """
         test set name
         """
-        show = TVShow(1, 1, "en")
-        show.show_name = "newName"
-        show.saveToDB()
-        show.loadFromDB()
-        self.assertEqual(show.show_name, "newName")
+        self.show.name = "newName"
 
-    def test_show_without_custom_name(self):
-        """
-        test set name
-        """
-        show = TVShow(1, 1, "en")
-        show.show_name = "show name"
-        show.saveToDB()
-        show.loadFromDB()
-        self.assertEqual(show.show_name, "show name")
-        self.assertEqual(show.name, "show name")
+        self.show.saveToDB()
+        self.show.loadFromDB()
+        self.assertEqual(self.show.name, "newName")
+        self.assertEqual(self.show.show_name, "newName")
+
+        self.show.show_name = "show_name"
+
+        self.show.saveToDB()
+        self.show.loadFromDB()
+        self.assertEqual(self.show.name, "show_name")
 
     def test_show_with_custom_name(self):
         """
-        test set name
+        test set custom name
         """
-        show = TVShow(1, 1, "en")
-        show.show_name = "show name"
-        show.custom_name = "newName"
-        show.saveToDB()
-        show.loadFromDB()
-        self.assertEqual(show.show_name, "show name")
-        self.assertEqual(show.custom_name, "newName")
-        self.assertEqual(show.name, "newName")
+        self.show.name = "show name"
+        self.show.show_name = "show name"
+        self.show.custom_name = "newName"
+        self.show.saveToDB()
+        self.show.loadFromDB()
+
+        self.assertEqual(self.show.show_name, "show name")
+
+        self.assertEqual(self.show.custom_name, "newName")
+        self.assertEqual(self.show.name, "newName")
 
 
 class TVEpisodeTests(test.SickChillTestDBCase):
@@ -125,7 +112,7 @@ class TVTests(test.SickChillTestDBCase):
         Test get episodes
         """
         show = TVShow(1, 1, "en")
-        show.show_name = "show name"
+        show.name = "show name"
         show.network = "cbs"
         show.genre = ["crime"]
         show.runtime = 40

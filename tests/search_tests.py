@@ -40,7 +40,7 @@ def generator(cur_data, cur_name, cur_provider):
         Test to perform
         """
         show = TVShow(1, int(cur_data["tvdbid"]))
-        show.show_name = cur_name
+        show.name = cur_name
         show.quality = common.ANY | common.Quality.UNKNOWN | common.Quality.RAWHDTV
         show.saveToDB()
         settings.showList.append(show)
@@ -94,7 +94,7 @@ def generator(cur_data, cur_name, cur_provider):
                 continue
 
             title, url = cur_provider._get_title_and_url(items[0])
-            for word in show.show_name.split(" "):
+            for word in show.name.split(" "):
                 if not word.lower() in title.lower():
                     print("Show cur_name not in title: {0}. URL: {1}".format(title, url))
                     continue
