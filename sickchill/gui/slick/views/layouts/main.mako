@@ -99,6 +99,7 @@
         <link rel="stylesheet" type="text/css" href="${static_url('css/style.css')}"/>
         <link rel="stylesheet" type="text/css" href="${static_url('css/print.css')}" />
         <link rel="stylesheet" type="text/css" href="${static_url('css/country-flags.css')}"/>
+        <link rel="stylesheet" type="text/css" href="${static_url('css/jquery-ui-custom.css')}" />
 
         % if settings.THEME_NAME != "light":
             <link rel="stylesheet" type="text/css" href="${static_url(urljoin('css/', '.'.join((settings.THEME_NAME, 'css'))))}" />
