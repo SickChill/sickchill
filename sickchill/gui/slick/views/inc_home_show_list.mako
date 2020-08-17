@@ -203,7 +203,7 @@
                                 % if curShow.network:
                                     <span title="${curShow.network}" class="hidden-print">
                                         <img id="network" width="54" height="27" src="${static_url('images/network/nonetwork.png')}"
-                                             data-src="${static_url(curShow.networknetwork_image_url)}"
+                                             data-src="${static_url(curShow.network_image_url)}"
                                              alt="${curShow.network}" title="${curShow.network}" />
                                     </span>
                                     <span class="visible-print-inline">${curShow.network}</span>
