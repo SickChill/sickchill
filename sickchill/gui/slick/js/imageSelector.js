@@ -69,13 +69,13 @@
         }).attr('data-image-type', imageSelectorDialog.data('image-type'))
             .addClass('image-selector-item');
 
-        const wrap_url = new URL(scRoot + '/imageSelector/url_wrap/', location.href);
+        const wrapUrl = new URL(scRoot + '/imageSelector/url_wrap/', location.href);
         if (thumbSrc) {
-            wrap_url.searchParams.append('url', thumbSrc);
-            image.attr('src', wrap_url.href).attr('data-image', imageSrc);
+            wrapUrl.searchParams.append('url', thumbSrc);
+            image.attr('src', wrapUrl.href).attr('data-image', imageSrc);
         } else {
-            wrap_url.searchParams.append('url', imageSrc);
-            image.attr('src', wrap_url.href);
+            wrapUrl.searchParams.append('url', imageSrc);
+            image.attr('src', wrapUrl.href);
         }
 
         image.appendTo(imagesContainer);
