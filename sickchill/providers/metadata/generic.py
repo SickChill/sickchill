@@ -662,7 +662,7 @@ class GenericMetadata(object):
         return self._write_image(image_data, season_banner_file_path)
 
     @staticmethod
-    def _write_image(image_data, image_path):
+    def _write_image(image_data, image_path, overwrite=False):
         """
         Saves the data in image_data to the location image_path. Returns True/False
         to represent success or failure.
@@ -672,7 +672,7 @@ class GenericMetadata(object):
         """
 
         # don't bother overwriting it
-        if os.path.isfile(image_path):
+        if not overwrite and os.path.isfile(image_path):
             logger.debug("Image already exists, not downloading")
             return False
 
@@ -776,12 +776,15 @@ class GenericMetadata(object):
         return indexer_id, name, indexer
 
     @staticmethod
-    def _retrieve_show_image_urls_from_tmdb(show, img_type):
-        types = {'poster': 'poster_path',
+    def _retrieve_show_image_urls_from_tmdb(show, img_type, multiple=False):
+        types = {'poster': 'posters',
                  'banner': None,
-                 'fanart': 'backdrop_path',
-                 'poster_thumb': 'poster_path',
+                 'fanart': 'backdrops',
+                 'poster_thumb': 'posters',
                  'banner_thumb': None}
+
+        if not types[img_type]:
+            return [] if multiple else ""
 
         # get TMDB configuration info
         tmdbsimple.API_KEY = settings.TMDB_API_KEY
@@ -796,19 +799,25 @@ class GenericMetadata(object):
         max_size = max(sizes, key=size_str_to_int)
 
         try:
-            search = tmdbsimple.Search()
-            for show_name in allPossibleShowNames(show):
-                for result in search.collection(query=show_name)['results'] + search.tv(query=show_name)['results']:
-                    if types[img_type] and getattr(result, types[img_type]):
-                        return "{0}{1}{2}".format(base_url, max_size, result[types[img_type]])
-
+            results = []
+            find = tmdbsimple.Find(show.indexerid)
+            found = find.info(external_source='tvdb_id')
+            if found['tv_results']:
+                tmdb_show = tmdbsimple.TV(found['tv_results'][0]['id'])
+                images = tmdb_show.images()
+                if types[img_type] in images:
+                    for result in images[types[img_type]]:
+                        results.append("{0}{1}{2}".format(base_url, max_size, result['file_path']))
+                        if not multiple:
+                            return results[0]
+                    return results
         except Exception as error:
             logger.debug(error)
 
         logger.info("Could not find any " + img_type + " images on TMDB for " + show.name)
 
     @staticmethod
-    def _retrieve_show_image_urls_from_fanart(show, img_type, thumb=False, season=None):
+    def _retrieve_show_image_urls_from_fanart(show, img_type, thumb=False, season=None, multiple=False):
         types = {
             'poster': fanart.TYPE.TV.POSTER,
             'banner': fanart.TYPE.TV.BANNER,
@@ -835,10 +844,19 @@ class GenericMetadata(object):
                 if season:
                     results = [x for x in results if try_int(x['season'], default_value=None) == season]
 
-                url = results[0]['url']
-                if thumb:
-                    url = re.sub('/fanart/', '/preview/', url)
-                return url
+                def _to_preview_url(url):
+                    return re.sub('/fanart/', '/preview/', url)
+
+                if multiple:
+                    urls = list(map(lambda result: result['url'], results))
+                    if thumb:
+                        urls = list(map(lambda url: _to_preview_url(url), urls))
+                    return urls
+                else:
+                    url = results[0]['url']
+                    if thumb:
+                        url = _to_preview_url(url)
+                    return url
         except Exception as error:
             logger.debug(error)
 

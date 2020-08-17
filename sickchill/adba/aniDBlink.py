@@ -10,7 +10,7 @@ from .aniDBresponses import ResponseResolver
 
 class AniDBLink(threading.Thread):
     def __init__(self, server, port, myport, logFunction, delay=2, timeout=20, log_private=False):
-        super(AniDBLink, self).__init__()
+        super().__init__()
         self.server = server
         self.port = port
         self.target = (server, port)

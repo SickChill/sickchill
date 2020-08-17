@@ -23,7 +23,7 @@ class NewznabProvider(NZBProvider):
     def __init__(self, name, url, key='0', catIDs='5030,5040', search_mode='eponly',
                  search_fallback=False, enable_daily=True, enable_backlog=False):
 
-        NZBProvider.__init__(self, name)
+        super().__init__(name)
 
         self.url = url
         self.key = key

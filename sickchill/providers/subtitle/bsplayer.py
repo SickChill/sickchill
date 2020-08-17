@@ -38,7 +38,7 @@ class BSPlayerSubtitle(Subtitle):
     def __init__(self, subtitle_id, size, page_link, language, filename, subtitle_source, subtitle_hash, rating,
                  season, episode, encoding, imdb_id, imdb_rating, movie_year, movie_name, movie_hash, movie_size,
                  movie_fps):
-        super(BSPlayerSubtitle, self).__init__(language, page_link=page_link, encoding=encoding)
+        super().__init__(language, page_link=page_link, encoding=encoding)
         self.subtitle_id = subtitle_id
         self.size = size
         self.page_link = page_link

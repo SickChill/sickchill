@@ -14,7 +14,7 @@ from sickchill.show.Show import Show
 
 class TorrentProvider(GenericProvider):
     def __init__(self, name):
-        GenericProvider.__init__(self, name)
+        super().__init__(name)
         self.ratio = None
         self.provider_type = GenericProvider.TORRENT
 
@@ -24,7 +24,7 @@ class TorrentProvider(GenericProvider):
         placeholder = ','.join([str(x) for x in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST])
         # language TEXT
         sql_results = db.select(
-            'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate'
+            'SELECT s.name, e.showid, e.season, e.episode, e.status, e.airdate'
             ' FROM tv_episodes AS e'
             ' INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id)'
             ' WHERE e.airdate >= ' + str(search_date.toordinal()) +

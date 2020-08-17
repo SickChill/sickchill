@@ -178,8 +178,17 @@
         % else:
             <td style="background-color:red">${service.is_alive()}</td>
         % endif
-        <% enabled = service.enable %>
-        <% active = service.action.amActive %>
+        <%
+            try:
+                enabled = service.enable
+            except Exception:
+                enabled = False
+
+            try:
+                active = service.action.amActive
+            except Exception:
+                active = False
+        %>
         % if scheduler == 'backlogSearchScheduler':
             <% searchQueue = getattr(settings, 'searchQueueScheduler') %>
             % if searchQueue.action.is_backlog_paused():
@@ -190,19 +199,11 @@
             % if searchQueue.action.is_backlog_in_progress():
                 <td style="background-color:green">${_('True')}</td>
             % else:
-                % try:
-                    <td style="background-color:${('red', 'green')[active]}">${active}</td>
-                % except Exception:
-                    <td style="background-color:red">${_('N/A')}</td>
-                % endtry
+                <td style="background-color:${('red', 'green')[active]}">${active}</td>
             % endif
         % else:
             <td style="background-color:${('red', 'green')[enabled]}">${enabled}</td>
-             % try:
-                <td style="background-color:${('red', 'green')[active]}">${active}</td>
-            % except Exception:
-                <td style="background-color:red">${_('N/A')}</td>
-            % endtry
+            <td style="background-color:${('red', 'green')[active]}">${active}</td>
         % endif
         % if service.start_time:
             <td>${service.start_time}</td>
@@ -225,11 +226,13 @@
 
 <%def name="show_queue_row(item)">
     <tr class="text-center">
-        % try:
-            <td>${item.show.indexerid}</td>
-        % except Exception:
-            <td></td>
-        % endtry
+        <%
+            try:
+                indexerid = item.show.indexerid
+            except Exception:
+                indexerid = ''
+        %>
+        <td>${indexerid}</td>
         % try:
             <td class="text-left">${item.show.name}</td>
         % except Exception:

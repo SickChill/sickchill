@@ -1142,3 +1142,18 @@ class AddPreferWords(UseSickChillMetadataForSubtitle):
         self.add_column("tv_shows", "rls_prefer_words", "TEXT", "")
         self.inc_minor_version()
         logger.info('Updated to: {0:d}.{1:d}'.format(*self.connection.version))
+
+
+class AddCustomNameToShow(AddPreferWords):
+    """ Adding column rls_prefer_words to tv_shows """
+
+    def test(self):
+        return self.has_column("tv_shows", "custom_name")
+
+    def execute(self):
+        backupDatabase(self.get_db_version())
+
+        logger.info("Adding column custom_name to tvshows")
+        self.add_column("tv_shows", "custom_name", "TEXT", "")
+        self.inc_minor_version()
+        logger.info('Updated to: {0:d}.{1:d}'.format(*self.connection.version))

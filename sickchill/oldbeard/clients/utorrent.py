@@ -12,7 +12,7 @@ class Client(GenericClient):
         """
         Initializes the utorrent client class and sets the url, username, and password
         """
-        super(Client, self).__init__('uTorrent', host, username, password)
+        super().__init__('uTorrent', host, username, password)
         self.url = urljoin(self.host, 'gui/')
 
     def _request(self, method='get', params=None, data=None, files=None, cookies=None):
@@ -23,7 +23,7 @@ class Client(GenericClient):
         for k, v in params.items() or {}:
             ordered_params.update({k: v})
 
-        return super(Client, self)._request(method=method, params=ordered_params, data=data, files=files, cookies=cookies)
+        return super()._request(method=method, params=ordered_params, data=data, files=files, cookies=cookies)
 
     def _get_auth(self):
         """

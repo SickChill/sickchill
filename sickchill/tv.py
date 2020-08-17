@@ -65,7 +65,7 @@ class DirtySetter(object):
 class TVShow(object):
     indexerid = DirtySetter(0)
     indexer = DirtySetter(0)
-    name = DirtySetter("")
+    show_name = DirtySetter("")
     imdbid = DirtySetter("")
     network = DirtySetter("")
     genre: list = DirtySetter([])
@@ -91,6 +91,7 @@ class TVShow(object):
     rls_require_words = DirtySetter("")
     rls_prefer_words = DirtySetter("")
     default_ep_status = DirtySetter(SKIPPED)
+    custom_name = DirtySetter("")
 
     # location = DirtySetter("")
 
@@ -112,35 +113,14 @@ class TVShow(object):
 
         self.loadFromDB()
 
-    # name = property(lambda self: self._name, dirty_setter("_name"))
-    # indexerid = property(lambda self: self._indexerid, dirty_setter("_indexerid"))
-    # indexer = property(lambda self: self._indexer, dirty_setter("_indexer"))
-    # # location = property(lambda self: self._location, dirty_setter("_location"))
-    # imdbid = property(lambda self: self._imdbid, dirty_setter("_imdbid"))
-    # network = property(lambda self: self._network, dirty_setter("_network"))
-    # genre = property(lambda self: self._genre, dirty_setter("_genre"))
-    # classification = property(lambda self: self._classification, dirty_setter("_classification"))
-    # runtime = property(lambda self: self._runtime, dirty_setter("_runtime"))
-    # # imdb_info = property(lambda self: self._imdb_info, dirty_setter("_imdb_info"))
-    # quality = property(lambda self: self._quality, dirty_setter("_quality"))
-    # season_folders = property(lambda self: self._season_folders, dirty_setter("_season_folders"))
-    # status = property(lambda self: self._status, dirty_setter("_status"))
-    # airs = property(lambda self: self._airs, dirty_setter("_airs"))
-    # startyear = property(lambda self: self._startyear, dirty_setter("_startyear"))
-    # paused = property(lambda self: self._paused, dirty_setter("_paused"))
-    # air_by_date = property(lambda self: self._air_by_date, dirty_setter("_air_by_date"))
-    # subtitles = property(lambda self: self._subtitles, dirty_setter("_subtitles"))
-    # dvdorder = property(lambda self: self._dvdorder, dirty_setter("_dvdorder"))
-    # lang = property(lambda self: self._lang, dirty_setter("_lang"))
-    # last_update_indexer = property(lambda self: self._last_update_indexer, dirty_setter("_last_update_indexer"))
-    # sports = property(lambda self: self._sports, dirty_setter("_sports"))
-    # anime = property(lambda self: self._anime, dirty_setter("_anime"))
-    # scene = property(lambda self: self._scene, dirty_setter("_scene"))
-    # rls_ignore_words = property(lambda self: self._rls_ignore_words, dirty_setter("_rls_ignore_words"))
-    # rls_require_words = property(lambda self: self._rls_require_words, dirty_setter("_rls_require_words"))
-    # rls_prefer_words = property(lambda self: self._rls_prefer_words, dirty_setter("_rls_prefer_words"))
-    # default_ep_status = property(lambda self: self._default_ep_status, dirty_setter("_default_ep_status"))
-    # subtitles_sr_metadata = property(lambda self: self._subtitles_sr_metadata, dirty_setter("_subtitles_sr_metadata"))
+
+    @property
+    def name(self):
+        return self.custom_name or self.show_name
+
+    @name.setter
+    def name(self, name):
+        self.show_name = name
 
     @property
     def is_anime(self):
@@ -174,8 +154,8 @@ class TVShow(object):
     def network_image_url(self):
         return 'images/network/{0}.png'.format(unidecode(self.network or 'nonetwork').lower())
 
-    def show_image_url(self, which):
-        return settings.IMAGE_CACHE.image_url(self.indexerid, which)
+    def show_image_url(self, which, include_date=False):
+        return settings.IMAGE_CACHE.image_url(self.indexerid, which, include_date)
 
     def _getLocation(self):
         # no dir check needed if missing show dirs are created during post-processing
@@ -710,8 +690,10 @@ class TVShow(object):
         else:
             self.indexer = int(sql_results[0]["indexer"] or 0)
 
-            if not self.name:
+            if not self.show_name:
                 self.name = sql_results[0]["show_name"]
+            if not self.custom_name:
+                self.custom_name = sql_results[0]["custom_name"]
             if not self.network:
                 self.network = sql_results[0]["network"]
             if not self.genre:
@@ -828,7 +810,25 @@ class TVShow(object):
             self.check_imdbid()
 
             if self.name and not self.imdbid:
-                for attempt in (self.name, '{} ({})'.format(self.name, self.startyear), '"{}" ({})'.format(self.name, self.startyear)):
+                # Add regular name and custom name to be searched first
+                attempts = {self.show_name}
+                if self.custom_name:
+                    attempts.add(self.custom_name)
+
+                # Now the generated name/year search string types for normal name
+                attempts.update({
+                    '{} ({})'.format(self.show_name, self.startyear),
+                    '"{}" ({})'.format(self.show_name, self.startyear)
+                })
+
+                if self.custom_name:
+                    # Now the generated name/year search string types for custom name
+                    attempts.update({
+                        '{} ({})'.format(self.custom_name, self.startyear),
+                        '"{}" ({})'.format(self.custom_name, self.startyear)
+                    })
+
+                for attempt in attempts:
                     results = [x for x in i.search_for_title(attempt) if x.type == 'TV series' and x.title == attempt]
                     if self.startyear:
                         results = [x for x in results if x.year == self.startyear]
@@ -1095,7 +1095,8 @@ class TVShow(object):
         controlValueDict = {"indexer_id": self.indexerid}
         newValueDict = {
             "indexer": self.indexer,
-            "show_name": self.name,
+            "show_name": self.show_name,
+            "custom_name": self.custom_name,
             "location": self._location,
             "network": self.network,
             "genre": '|'.join(self.genre) if isinstance(self.genre, list) else self.genre,

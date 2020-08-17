@@ -21,7 +21,7 @@ class SearchTest(test.SickChillTestDBCase):
     Test search
     """
     def __init__(self, something):
-        super(SearchTest, self).__init__(something)
+        super().__init__(something)
 
 
 def generator(cur_data, cur_name, cur_provider):

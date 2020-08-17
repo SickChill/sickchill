@@ -83,11 +83,11 @@ class NotifierTests(test.SickChillTestDBCase):
         test_emails = "email-4@address.com,email5@address.org,email_6@address.tv"
 
         for show in self.legacy_shows:
-            showid = self._get_showid_by_showname(show.name)
+            showid = self._get_showid_by_showname(show.show_name)
             self.mydb.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [legacy_test_emails, showid])
 
         for show in self.shows:
-            showid = self._get_showid_by_showname(show.name)
+            showid = self._get_showid_by_showname(show.show_name)
             Home.saveShowNotifyList(show=showid, emails=test_emails)
 
         # Now, iterate through all shows using the email list generation routines that are used in the notifier proper
@@ -179,7 +179,7 @@ class NotifierTests(test.SickChillTestDBCase):
         test_prowl_apis = "11111111111111111111,22222222222222222222"
 
         for show in self.shows:
-            showid = self._get_showid_by_showname(show.name)
+            showid = self._get_showid_by_showname(show.show_name)
             Home.saveShowNotifyList(show=showid, prowlAPIs=test_prowl_apis)
 
         # Now, iterate through all shows using the Prowl API generation routines that are used in the notifier proper

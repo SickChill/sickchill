@@ -44,7 +44,7 @@ class DispatchFormatter(logging.Formatter, object):
     """
 
     def __init__(self, fmt=None, datefmt=None, style="{"):
-        super(DispatchFormatter, self).__init__(fmt, datefmt, style=style)
+        super().__init__(fmt, datefmt, style=style)
 
     def format(self, record):
         """
@@ -78,7 +78,7 @@ class DispatchFormatter(logging.Formatter, object):
         elif record.levelno == WARNING:
             classes.WarningViewer.add(classes.UIError(msg))
 
-        return super(DispatchFormatter, self).format(record)
+        return super().format(record)
 
 
 class Logger(object):

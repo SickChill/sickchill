@@ -100,7 +100,7 @@ class NZBSearchResult(SearchResult):
     """
 
     def __init__(self, episodes):
-        super(NZBSearchResult, self).__init__(episodes)
+        super().__init__(episodes)
         self.resultType = 'nzb'
 
 
@@ -110,7 +110,7 @@ class NZBDataSearchResult(SearchResult):
     """
 
     def __init__(self, episodes):
-        super(NZBDataSearchResult, self).__init__(episodes)
+        super().__init__(episodes)
         self.resultType = 'nzbdata'
 
 
@@ -120,7 +120,7 @@ class TorrentSearchResult(SearchResult):
     """
 
     def __init__(self, episodes):
-        super(TorrentSearchResult, self).__init__(episodes)
+        super().__init__(episodes)
         self.resultType = 'torrent'
 
 

@@ -11,7 +11,7 @@ from . import Config
 @Route('/config/shares(/?.*)', name='config:shares')
 class ConfigShares(Config):
     def __init__(self, *args, **kwargs):
-        super(ConfigShares, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @addslash
     def index(self):

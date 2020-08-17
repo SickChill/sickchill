@@ -133,7 +133,7 @@ class Anime(AniDBabstractObject):
             self.paramsA = paramsA
             self.bitCode = self.mapper.getAnimeBitsA(self.paramsA)
 
-        super(Anime, self).__init__(aniDB, load)
+        super().__init__(aniDB, load)
 
     def load_data(self):
         """load the data from anidb"""
@@ -229,7 +229,7 @@ class Episode(AniDBabstractObject):
             self.paramsF = paramsF
             self.bitCodeF = self.mapper.getFileBitsF(self.paramsF)
 
-        super(Episode, self).__init__(aniDB, load)
+        super().__init__(aniDB, load)
 
     def load_data(self):
         """load the data from anidb"""

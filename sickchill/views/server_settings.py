@@ -29,7 +29,7 @@ from .routes import Route
 
 class SRWebServer(threading.Thread):
     def __init__(self, options=None):
-        threading.Thread.__init__(self)
+        super().__init__()
         self.daemon = True
         self.alive = True
         self.name = "WEBSERVER"

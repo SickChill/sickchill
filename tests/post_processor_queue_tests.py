@@ -20,11 +20,11 @@ class PostProcessorQueueTests(test.SickChillTestPostProcessorCase):
     """
 
     def __init__(self, testCaseNames):
-        super(PostProcessorQueueTests, self).__init__(testCaseNames)
+        super().__init__(testCaseNames)
         self.queue = None
 
     def setUp(self):
-        super(PostProcessorQueueTests, self).setUp()
+        super().setUp()
         self.queue = sickchill.oldbeard.scheduler.Scheduler(
             ProcessingQueue(),
             run_delay=datetime.timedelta(seconds=0),
@@ -36,7 +36,7 @@ class PostProcessorQueueTests(test.SickChillTestPostProcessorCase):
 
     def tearDown(self):
         self.queue.stop.set()
-        super(PostProcessorQueueTests, self).tearDown()
+        super().tearDown()
 
     def test_post_processor_queue_spam(self):
         settings.TV_DOWNLOAD_DIR = os.path.abspath('.')

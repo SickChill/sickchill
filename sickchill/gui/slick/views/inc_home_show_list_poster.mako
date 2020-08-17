@@ -17,7 +17,7 @@
                  data-date="1" data-network="0" data-progress="0" data-progress-sort="0" data-status="Loading">
                 <div class="show-image">
                     <img alt="" title="${loading_show.name}" class="show-image" style="border-bottom: 1px solid #111;" src="${static_url("images/poster.png")}"
-                         data-src="${static_url(loading_show.show_image_url('poster_thumb'))}" />
+                         data-src="${static_url(loading_show.show_image_url('poster_thumb', include_date=True), include_version=False)}" />
                 </div>
                 <div class="show-information">
                     <div class="progressbar hidden-print" style="position:relative;" data-show-id="${loading_show.id}" data-progress-percentage="0"></div>
@@ -103,7 +103,7 @@
                  data-progress="${int(progressbar_percent)}" data-progress-sort="${progressbar_percent + (cur_total/1000000.0)}" data-status="${curShow.status}">
                 <div class="show-image">
                     <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}">
-                        <img alt="" class="show-image" src="${static_url("images/poster.png")}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}" />
+                        <img alt="" class="show-image" src="${static_url("images/poster.png")}" data-src="${static_url(curShow.show_image_url('poster_thumb', include_date=True), include_version=False)}" />
                     </a>
                 </div>
 

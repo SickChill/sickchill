@@ -17,7 +17,7 @@ from .index import Config
 @Route('/config/general(/?.*)', name='config:general')
 class ConfigGeneral(Config):
     def __init__(self, *args, **kwargs):
-        super(ConfigGeneral, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @addslash
     def index(self):

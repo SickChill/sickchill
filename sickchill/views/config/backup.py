@@ -14,7 +14,7 @@ from .index import Config
 @Route('/config/backuprestore(/?.*)', name='config:backup')
 class ConfigBackupRestore(Config):
     def __init__(self, *args, **kwargs):
-        super(ConfigBackupRestore, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @addslash
     def index(self, *args_, **kwargs_):

@@ -11,7 +11,7 @@ class KeyHandler(RequestHandler):
         pass
 
     def __init__(self, *args, **kwargs):
-        super(KeyHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get(self):
         if self.get_query_argument('u', None) == settings.WEB_USERNAME and self.get_query_argument('p', None) == settings.WEB_PASSWORD:

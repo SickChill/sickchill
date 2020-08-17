@@ -6,7 +6,7 @@ from .routes import Route
 @Route('/IRC(/?.*)', name='irc')
 class HomeIRC(Home):
     def __init__(self, *args, **kwargs):
-        super(HomeIRC, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def index(self):
         t = PageTemplate(rh=self, filename="IRC.mako")

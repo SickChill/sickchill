@@ -20,7 +20,7 @@ class Client(GenericClient):
                 :username: Username to use for authentication
                 :password: Password to use for authentication
         """
-        super(Client, self).__init__('DownloadStation', host, username, password)
+        super().__init__('DownloadStation', host, username, password)
 
         self.urls = {
             'login': urljoin(self.host, 'webapi/auth.cgi'),

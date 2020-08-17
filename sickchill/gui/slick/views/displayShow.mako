@@ -108,14 +108,14 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="poster-container">
-                        <img src="${static_url(show.show_image_url('poster_thumb'))}"
+                        <img src="${static_url(show.show_image_url('poster_thumb', include_date=True), include_version=False)}"
                              class="tvshowImg" alt="${_('Poster for')} ${show.name}"
-                             onclick="location.href='${static_url(show.show_image_url('poster'))}"/>
+                             onclick="location.href='${static_url(show.show_image_url('poster', include_date=True), include_version=False)}"/>
                     </div>
                     <div class="info-container">
                         <div class="row">
                             <div class="pull-right col-lg-4 col-md-4 hidden-sm hidden-xs">
-                                <img src="${static_url(show.show_image_url('banner'))}"
+                                <img src="${static_url(show.show_image_url('banner', include_date=True), include_version=False)}"
                                      style="max-height:50px;border:1px solid black;" class="pull-right">
                             </div>
                             <div class="pull-left col-lg-8 col-md-8 col-sm-12 col-xs-12">

@@ -468,7 +468,7 @@ class NumDictTest(unittest.TestCase):
             """
 
             def __missing__(self, key):
-                return super(NumDictH, self).__missing__(key) + 1
+                return super().__missing__(key) + 1
 
         num_dict_h = NumDictH()
         self.assertEqual(num_dict_h[None], num_dict_d[None] + 1)
