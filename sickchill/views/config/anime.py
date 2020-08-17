@@ -14,7 +14,7 @@ from .index import Config
 @Route('/config/anime(/?.*)', name='config:anime')
 class ConfigAnime(Config):
     def __init__(self, *args, **kwargs):
-        super(ConfigAnime, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @addslash
     def index(self, *args_, **kwargs_):

@@ -26,7 +26,7 @@ def get_lookup():
 
 class PageTemplate(Template):
     def __init__(self, rh, filename):
-        super(PageTemplate, self).__init__(filename)
+        super().__init__(filename)
         self.context = {}
 
         lookup = get_lookup()

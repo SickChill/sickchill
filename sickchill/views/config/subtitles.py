@@ -14,7 +14,7 @@ from . import Config
 @Route('/config/subtitles(/?.*)', name='config:subtitles')
 class ConfigSubtitles(Config):
     def __init__(self, *args, **kwargs):
-        super(ConfigSubtitles, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @addslash
     def index(self, *args_, **kwargs_):

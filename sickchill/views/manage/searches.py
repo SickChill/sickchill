@@ -9,7 +9,7 @@ from . import Manage
 @Route('/manage/manageSearches(/?.*)', name='manage:searches')
 class ManageSearches(Manage):
     def __init__(self, *args, **kwargs):
-        super(ManageSearches, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="manage_manageSearches.mako")

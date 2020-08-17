@@ -14,7 +14,7 @@ from .routes import Route
 @Route('/imageSelector(/?.*)', name='imageselector')
 class ImageSelector(Home):
     def __init__(self, *args, **kwargs):
-        super(ImageSelector, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def index(self, show=None, imageType='', provider: int = None):
         if not show:

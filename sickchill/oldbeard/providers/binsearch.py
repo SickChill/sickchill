@@ -26,7 +26,7 @@ class BinSearchCache(tvcache.TVCache):
     def __init__(self, provider_obj, **kwargs):
         kwargs.pop('search_params', None)  # does not use _getRSSData so strip param from kwargs...
         search_params = None  # ...and pass None instead
-        tvcache.TVCache.__init__(self, provider_obj, search_params=search_params, **kwargs)
+        super().__init__(provider_obj, search_params=search_params, **kwargs)
 
         # compile and save our regular expressions
 

@@ -221,7 +221,7 @@ class TestDBConnection(db.DBConnection, object):
     def __init__(self, filename=TEST_DB_NAME, suffix=None, row_type=None):
         if TEST_DIR not in filename:
             filename = os.path.join(TEST_DIR, filename)
-        super(TestDBConnection, self).__init__(filename=filename, suffix=suffix, row_type=row_type)
+        super().__init__(filename=filename, suffix=suffix, row_type=row_type)
 
 
 class TestCacheDBConnection(TestDBConnection, object):

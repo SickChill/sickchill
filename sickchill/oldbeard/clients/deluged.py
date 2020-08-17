@@ -12,7 +12,7 @@ from .__deluge_base import DelugeBase
 
 class Client(GenericClient, DelugeBase):
     def __init__(self, host=None, username=None, password=None):
-        super(Client, self).__init__('DelugeD', host, username, password)
+        super().__init__('DelugeD', host, username, password)
         self.client = None
 
     def setup(self):

@@ -70,7 +70,7 @@ class SearchTest(test.SickChillTestDBCase):
             provider.get_url = self._fake_get_url
             provider.is_active = self._fake_is_active
 
-        super(SearchTest, self).__init__(something)
+        super().__init__(something)
 
 
 def generator(tvdb_id, show_name, cur_data, force_search):

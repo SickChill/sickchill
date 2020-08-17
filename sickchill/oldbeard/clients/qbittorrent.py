@@ -8,7 +8,7 @@ from sickchill.oldbeard.clients.generic import GenericClient
 
 class Client(GenericClient):
     def __init__(self, host=None, username=None, password=None):
-        super(Client, self).__init__('qBittorrent', host, username, password)
+        super().__init__('qBittorrent', host, username, password)
         self.host, self.port = splitport(self.host)
         self.api = qbittorrentapi.Client(host=self.host, port=self.port or 8080, username=self.username, password=self.password)
 

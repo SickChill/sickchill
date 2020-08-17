@@ -80,7 +80,7 @@ class TVEpisodeTests(test.SickChillTestDBCase):
         """
         Set up
         """
-        super(TVEpisodeTests, self).setUp()
+        super().setUp()
         settings.showList = []
 
     def test_init_empty_db(self):
@@ -103,7 +103,7 @@ class TVTests(test.SickChillTestDBCase):
         """
         Set up
         """
-        super(TVTests, self).setUp()
+        super().setUp()
         settings.showList = []
 
     @staticmethod

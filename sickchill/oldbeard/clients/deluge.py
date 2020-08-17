@@ -10,7 +10,7 @@ from .__deluge_base import DelugeBase
 
 class Client(GenericClient, DelugeBase):
     def __init__(self, host=None, username=None, password=None):
-        super(Client, self).__init__('Deluge', host, username, password)
+        super().__init__('Deluge', host, username, password)
 
         self.url = urljoin(self.host, 'json')
         self.session.headers.update({'Content-Type': 'application/json'})

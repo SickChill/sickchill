@@ -17,7 +17,7 @@ class Event(object):
 
 class Events(threading.Thread):
     def __init__(self, callback):
-        super(Events, self).__init__()
+        super().__init__()
         self.queue = Queue()
         self.daemon = True
         self.callback = callback

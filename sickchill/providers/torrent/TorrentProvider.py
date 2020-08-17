@@ -14,7 +14,7 @@ from sickchill.show.Show import Show
 
 class TorrentProvider(GenericProvider):
     def __init__(self, name):
-        GenericProvider.__init__(self, name)
+        super().__init__(name)
         self.ratio = None
         self.provider_type = GenericProvider.TORRENT
 

@@ -109,7 +109,7 @@ class TestTVShow(TVShow):
     """
 
     def __init__(self, indexer, indexer_id):
-        super(TestTVShow, self).__init__(indexer, indexer_id)
+        super().__init__(indexer, indexer_id)
 
     def loadFromDB(self):
         """

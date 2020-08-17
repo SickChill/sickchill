@@ -23,7 +23,7 @@ class ItaSASubtitle(Subtitle):
     provider_name = 'itasa'
 
     def __init__(self, sub_id, series, season, episode, source, year, tvdb_id, full_data):
-        super(ItaSASubtitle, self).__init__(Language('ita'))
+        super().__init__(Language('ita'))
         self.sub_id = sub_id
         self.series = series
         self.season = season

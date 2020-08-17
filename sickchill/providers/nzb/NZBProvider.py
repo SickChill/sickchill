@@ -6,7 +6,7 @@ from sickchill.providers.GenericProvider import GenericProvider
 
 class NZBProvider(GenericProvider):
     def __init__(self, name):
-        GenericProvider.__init__(self, name)
+        super().__init__(name)
 
         self.provider_type = GenericProvider.NZB
         self.torznab = False

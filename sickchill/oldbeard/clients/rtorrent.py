@@ -6,7 +6,7 @@ from sickchill.oldbeard.clients.generic import GenericClient
 
 class Client(GenericClient):
     def __init__(self, host=None, username=None, password=None):
-        super(Client, self).__init__('rTorrent', host, username, password)
+        super().__init__('rTorrent', host, username, password)
 
     def _get_auth(self):
 

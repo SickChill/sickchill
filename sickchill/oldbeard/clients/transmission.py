@@ -8,7 +8,7 @@ from sickchill.oldbeard.clients.generic import GenericClient
 class Client(GenericClient):
     def __init__(self, host=None, username=None, password=None):
 
-        super(Client, self).__init__('Transmission', host, username, password)
+        super().__init__('Transmission', host, username, password)
         self.url = '/'.join((self.host.rstrip('/'), settings.TORRENT_RPCURL.strip('/'), 'rpc'))
 
     def _get_auth(self):

@@ -13,7 +13,7 @@ from .routes import Route
 @Route('/errorlogs(/?.*)', name='logs:error')
 class ErrorLogs(WebRoot):
     def __init__(self, *args, **kwargs):
-        super(ErrorLogs, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def __ErrorLogsMenu(self, level):
         menu = [

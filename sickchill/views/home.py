@@ -38,7 +38,7 @@ from .routes import Route
 @Route('/home(/?.*)', name='home')
 class Home(WebRoot):
     def __init__(self, *args, **kwargs):
-        super(Home, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def _genericMessage(self, subject=None, message=None):
         t = PageTemplate(rh=self, filename="genericMessage.mako")

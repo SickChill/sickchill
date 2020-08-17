@@ -14,7 +14,7 @@ class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "HDTorrents.it")
+        super().__init__("HDTorrents.it")
 
         self.username = None
         self.password = None

@@ -22,7 +22,7 @@ class NotificationsQueue(generic_queue.GenericQueue):
 
         :rtype: object
         """
-        generic_queue.GenericQueue.__init__(self)
+        super().__init__()
         self.queue_name = "NOTIFICATIONS"
 
     @property
@@ -72,7 +72,7 @@ class NotificationsQueue(generic_queue.GenericQueue):
                     item.run()
                     return item.last_result
         if not added:
-            added = super(NotificationsQueue, self).add_item(item)
+            added = super().add_item(item)
         return added
 
 
@@ -82,7 +82,7 @@ class DiscordTask(generic_queue.QueueItem):
     """
 
     def __init__(self, message):
-        super(DiscordTask, self).__init__('Discord', DISCORD)
+        super().__init__('Discord', DISCORD)
 
         self.embed = {
             'author': {
@@ -103,7 +103,7 @@ class DiscordTask(generic_queue.QueueItem):
         Runs the task
         :return: None
         """
-        super(DiscordTask, self).run()
+        super().run()
 
         # noinspection PyBroadException
         try:
@@ -116,7 +116,7 @@ class DiscordTask(generic_queue.QueueItem):
         except Exception:
             logger.debug(traceback.format_exc())
 
-        super(DiscordTask, self).finish()
+        super().finish()
         self.finish()
 
     def append(self, message):
