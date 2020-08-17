@@ -10,7 +10,9 @@
 <%block name="metas">
     <meta data-var="show.is_anime" data-content="${show.is_anime}">
 </%block>
-
+<%block name='css'>
+    <link rel="stylesheet" type="text/css" href="${static_url('css/imageSelector.css')}" />
+</%block>
 <%block name="scripts">
     % if show.is_anime:
         <script type="text/javascript" src="${static_url('js/blackwhite.js')}"></script>
@@ -22,7 +24,8 @@
     <div class="image-selector-dialog" style="display:none">
         <select id="images-provider" name="provider" data-default="${show.indexer}">
             <option value="-1">Upload</option>
-            <option value="0">Fanart</option>
+            <option value="${show_indexer.FANART}">Fanart</option>
+            <option value="${show_indexer.TMDB}">TMDB</option>
             % for index, indexer in show_indexer:
             <option value="${index}" ${('', 'selected="selected"')[show.indexer == index]}>
                 ${indexer.name}
@@ -483,7 +486,7 @@
                                                     <img src="${static_url(show.show_image_url('poster_thumb', include_date=True), include_version=False)}"
                                                          data-image-type="poster"
                                                          class="custom-image tvshowImg" alt="${_('Poster for')} ${show.name}"
-                                                         onclick="location.href='${static_url(show.show_image_url('poster', include_date=True), include_version=False)}"/>
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
@@ -503,7 +506,7 @@
                                                     <img src="${static_url(show.show_image_url('banner_thumb', include_date=True), include_version=False)}"
                                                          data-image-type="banner"
                                                          class="custom-image banner" alt="${_('Banner for')} ${show.name}"
-                                                         onclick="location.href='${static_url(show.show_image_url('banner', include_date=True), include_version=False)}"/>
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
@@ -523,13 +526,12 @@
                                                     <img src="${static_url(show.show_image_url('fanart', include_date=True), include_version=False)}"
                                                          data-image-type="fanart"
                                                          class="custom-image tvshowImg" alt="${_('Fanart for')} ${show.name}"
-                                                         onclick="location.href='${static_url(show.show_image_url('fanart', include_date=True), include_version=False)}"/>
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
                             </fieldset>
                         </div>
                     </div>

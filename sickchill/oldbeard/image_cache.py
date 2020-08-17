@@ -257,6 +257,8 @@ class ImageCache(object):
             img_url = sickchill.indexer.series_poster_url(show_obj)
             if not img_url:
                 img_url = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, 'poster')
+            if not img_url:
+                img_url = metadata_generator._retrieve_show_image_urls_from_tmdb(show_obj, 'poster')
             dest_path = self.poster_path(show_obj.indexerid)
         elif img_type == self.BANNER:
             img_url = sickchill.indexer.series_banner_url(show_obj)
@@ -267,6 +269,8 @@ class ImageCache(object):
             img_url = sickchill.indexer.series_poster_url(show_obj, thumb=True)
             if not img_url:
                 img_url = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, 'poster', thumb=True)
+            if not img_url:
+                img_url = metadata_generator._retrieve_show_image_urls_from_tmdb(show_obj, 'poster')
             dest_path = self.poster_thumb_path(show_obj.indexerid)
         elif img_type == self.BANNER_THUMB:
             img_url = sickchill.indexer.series_banner_url(show_obj, thumb=True)
@@ -277,6 +281,8 @@ class ImageCache(object):
             img_url = sickchill.indexer.series_fanart_url(show_obj)
             if not img_url:
                 img_url = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, 'fanart')
+            if not img_url:
+                img_url = metadata_generator._retrieve_show_image_urls_from_tmdb(show_obj, 'fanart')
             dest_path = self.fanart_path(show_obj.indexerid)
         else:
             logger.exception("Invalid cache image type: " + str(img_type))

@@ -92,7 +92,6 @@
 
         <link rel="stylesheet" type="text/css" href="${static_url('css/vendor.min.css')}"/>
         <link rel="stylesheet" type="text/css" href="${static_url('css/browser.css')}" />
-        <link rel="stylesheet" type="text/css" href="${static_url('css/imageSelector.css')}" />
         <link rel="stylesheet" type="text/css" href="${static_url('css/font-awesome.min.css')}" />
         <link rel="stylesheet" type="text/css" href="${static_url('css/fork-awesome.min.css')}" />
         <link rel="stylesheet" type="text/css" href="${static_url('css/lib/jquery-ui-1.10.4.custom.min.css')}" />

@@ -776,12 +776,15 @@ class GenericMetadata(object):
         return indexer_id, name, indexer
 
     @staticmethod
-    def _retrieve_show_image_urls_from_tmdb(show, img_type):
-        types = {'poster': 'poster_path',
+    def _retrieve_show_image_urls_from_tmdb(show, img_type, multiple=False):
+        types = {'poster': 'posters',
                  'banner': None,
-                 'fanart': 'backdrop_path',
-                 'poster_thumb': 'poster_path',
+                 'fanart': 'backdrops',
+                 'poster_thumb': 'posters',
                  'banner_thumb': None}
+
+        if not types[img_type]:
+            return [] if multiple else ""
 
         # get TMDB configuration info
         tmdbsimple.API_KEY = settings.TMDB_API_KEY
@@ -796,12 +799,18 @@ class GenericMetadata(object):
         max_size = max(sizes, key=size_str_to_int)
 
         try:
-            search = tmdbsimple.Search()
-            for show_name in allPossibleShowNames(show):
-                for result in search.collection(query=show_name)['results'] + search.tv(query=show_name)['results']:
-                    if types[img_type] and getattr(result, types[img_type]):
-                        return "{0}{1}{2}".format(base_url, max_size, result[types[img_type]])
-
+            results = []
+            find = tmdbsimple.Find(show.indexerid)
+            found = find.info(external_source='tvdb_id')
+            if found['tv_results']:
+                tmdb_show = tmdbsimple.TV(found['tv_results'][0]['id'])
+                images = tmdb_show.images()
+                if types[img_type] in images:
+                    for result in images[types[img_type]]:
+                        results.append("{0}{1}{2}".format(base_url, max_size, result['file_path']))
+                        if not multiple:
+                            return results[0]
+                    return results
         except Exception as error:
             logger.debug(error)
 

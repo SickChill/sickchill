@@ -10,6 +10,8 @@ from .tvdb import TVDB
 class ShowIndexer(object):
     TVDB = 1
     TVRAGE = 2
+    FANART = 13
+    TMDB = 14
 
     def __init__(self):
         if settings.INDEXER_DEFAULT is None:
