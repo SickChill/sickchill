@@ -51,3 +51,4 @@ pyaes
 new-rtorrent-python
 qbittorrent-api
 packaging
+timeago

@@ -142,6 +142,7 @@
                 % if srLogin:
                     <div class="collapse navbar-collapse" id="collapsible-navbar">
                         <ul class="nav navbar-nav navbar-right">
+                            <%block name="navbar" />
                             <li id="NAVhome" class="navbar-split dropdown${('', ' active')[topmenu == 'home']}">
                                 <a href="${static_url("home/", include_version=False)}" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span>${_('Shows')}</span>
                                     <b class="caret"></b>
@@ -216,6 +217,8 @@
                                     <li><a href="${static_url("config/postProcessing/", include_version=False)}"><i class="fa fa-fw fa-refresh"></i>&nbsp;${_('Post Processing')}</a></li>
                                     <li><a href="${static_url("config/notifications/", include_version=False)}"><i class="fa fa-fw fa-bell-o"></i>&nbsp;${_('Notifications')}</a></li>
                                     <li><a href="${static_url("config/anime/", include_version=False)}"><i class="fa fa-fw fa-eye"></i>&nbsp;${_('Anime')}</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="${static_url("apibuilder", include_version=False)}"><i class="fa fa-fw fa-info-circle"></i>&nbsp;${_('API Builder')}</a></li>
                                 </ul>
                                 <div style="clear:both;"></div>
                             </li>
