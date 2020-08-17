@@ -6,6 +6,8 @@ from sickchill import settings
 from sickchill.providers.metadata.generic import GenericMetadata
 from sickchill.show.indexers.handler import ShowIndexer
 from sickchill.show.Show import Show
+from sickchill.oldbeard.helpers import make_indexer_session
+
 
 from .home import Home
 from .routes import Route
@@ -15,6 +17,7 @@ from .routes import Route
 class ImageSelector(Home):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.indexer_session = make_indexer_session()
 
     def index(self, show=None, imageType='', provider: int = None):
         if not show:
@@ -49,3 +52,17 @@ class ImageSelector(Home):
             images = list({'image': image, 'thumb': image} for image in images)
 
         return json.dumps(images)
+
+    def url_wrap(self):
+        """
+        Wrap Image URL so it has our host and does not trigger ADBlock.
+        @return: redirect
+        """
+        url = self.get_query_argument('url')
+        regex = r'^https?://(artworks.thetvdb.com|assets.fanart.tv|image.tmdb.org)/.*'
+        if not re.match(regex, url) or 'editShow?show=' not in self.request.headers.get('Referer', ''):
+            return self.write_error(404)
+
+        request = self.indexer_session.get(url, stream=True)
+        return request.content
+

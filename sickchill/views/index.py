@@ -57,9 +57,9 @@ class BaseHandler(RequestHandler):
 
             if url[:3] != 'api':
                 t = PageTemplate(rh=self, filename="404.mako")
-                return self.finish(t.render(title='404', header=_('Oops: 404 Not Found')))
+                return t.render(title='404', header=_('Oops: 404 Not Found'))
             else:
-                self.finish(_('Wrong API key used'))
+                return self.finish(_('Wrong API key used'))
 
         elif self.settings.get("debug") and "exc_info" in kwargs:
             exc_info = kwargs["exc_info"]
@@ -69,7 +69,7 @@ class BaseHandler(RequestHandler):
             error = exc_info[1]
 
             self.set_header('Content-Type', 'text/html')
-            self.finish("""<html>
+            return self.finish("""<html>
                                  <title>{0}</title>
                                  <body>
                                     <h2>Error</h2>

@@ -69,10 +69,13 @@
         }).attr('data-image-type', imageSelectorDialog.data('image-type'))
             .addClass('image-selector-item');
 
+        const wrap_url = new URL(scRoot + '/imageSelector/url_wrap/', location.href);
         if (thumbSrc) {
-            image.attr('src', thumbSrc).attr('data-image', imageSrc);
+            wrap_url.searchParams.append('url', thumbSrc);
+            image.attr('src', wrap_url.href).attr('data-image', imageSrc);
         } else {
-            image.attr('src', imageSrc);
+            wrap_url.searchParams.append('url', imageSrc);
+            image.attr('src', wrap_url.href);
         }
 
         image.appendTo(imagesContainer);
