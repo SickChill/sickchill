@@ -3,11 +3,10 @@ import re
 
 import sickchill
 from sickchill import settings
+from sickchill.oldbeard.helpers import make_indexer_session
 from sickchill.providers.metadata.generic import GenericMetadata
 from sickchill.show.indexers.handler import ShowIndexer
 from sickchill.show.Show import Show
-from sickchill.oldbeard.helpers import make_indexer_session
-
 
 from .home import Home
 from .routes import Route
