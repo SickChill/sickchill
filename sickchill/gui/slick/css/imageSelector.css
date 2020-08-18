@@ -14,3 +14,7 @@
     cursor: pointer;
     max-width: 250px;
 }
+
+.image-selector-dialog .images {
+  margin-top: 0.5em;
+}
