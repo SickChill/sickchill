@@ -37,7 +37,7 @@
             <input type="file" id="upload-image-input" accept="image/*" multiple/>
         </div>
         <div class="error ui-state-error" hidden></div>
-        <div class="images"></div>
+        <div class="images ui-dialog-scrollable-child"></div>
     </div>
 
     <div id="config">

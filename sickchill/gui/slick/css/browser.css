@@ -3,6 +3,10 @@
     overflow-y: auto;
 }
 
+.fileBrowserDialog .fileBrowserFieldContainer {
+  padding-bottom: 0.5em;
+}
+
 .fileBrowserDialog ul {
     margin: 0;
     padding: 0;
