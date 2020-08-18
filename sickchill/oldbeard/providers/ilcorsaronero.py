@@ -184,13 +184,13 @@ class Provider(TorrentProvider):
 
         for mode in search_params:
             items = []
-            logger.debug('Search Mode: {0}'.format(mode))
+            logger.debug(_(f'Search Mode: {mode}'))
             for search_string in search_params[mode]:
                 if search_string == '':
                     continue
 
                 search_string = str(search_string).replace('.', ' ')
-                logger.debug('Search string: {0}'.format(search_string))
+                logger.debug(_(f'Search String: {search_string}'))
 
                 last_page = False
                 for page in range(0, self.max_pages):
@@ -202,7 +202,7 @@ class Provider(TorrentProvider):
 
                     data = self.get_url(search_url, returns='text')
                     if not data:
-                        logger.debug('No data returned from provider')
+                        logger.debug(_('No data returned from provider'))
                         continue
 
                     try:
@@ -284,8 +284,7 @@ class Provider(TorrentProvider):
                                 item = {'title': title, 'link': download_url, 'size': size,
                                         'seeders': seeders, 'leechers': leechers, 'hash': info_hash}
                                 if mode != 'RSS':
-                                    logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format(
-                                        title, seeders, leechers))
+                                    logger.debug(_(f'Found result: {title} with {seeders} seeders and {leechers} leechers'))
 
                                 items.append(item)
 

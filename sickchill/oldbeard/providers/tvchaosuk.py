@@ -78,7 +78,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug('Search Mode: {0}'.format(mode))
+            logger.debug(_(f'Search Mode: {mode}'))
 
             for search_string in search_strings[mode]:
 
@@ -86,12 +86,12 @@ class Provider(TorrentProvider):
                     search_string = re.sub(r'(.*)S0?', r'\1Series ', search_string)
 
                 if mode != 'RSS':
-                    logger.debug('Search string: {0}'.format(search_string))
+                    logger.debug(_(f'Search String: {search_string}'))
 
                 search_params['keywords'] = search_string
                 data = self.get_url(self.urls['search'], post_data=search_params, returns='text')
                 if not data:
-                    logger.debug('No data returned from provider')
+                    logger.debug(_('No data returned from provider'))
                     continue
 
                 with BS4Parser(data, 'html5lib') as html:
@@ -143,8 +143,7 @@ class Provider(TorrentProvider):
                             size = convert_size(torrent_size, units=units) or -1
 
                             if mode != 'RSS':
-                                logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format
-                                             (title, seeders, leechers))
+                                logger.debug(_(f'Found result: {title} with {seeders} seeders and {leechers} leechers'))
 
                             item = {'title': title + '.hdtv.x264', 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
                             items.append(item)

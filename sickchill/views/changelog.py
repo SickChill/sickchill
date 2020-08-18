@@ -18,9 +18,8 @@ class HomeChangeLog(Home):
             changes = helpers.getURL('https://sickchill.github.io/sickchill-news/CHANGES.md', session=helpers.make_session(), returns='text')
         except Exception:
             logger.debug('Could not load changes from repo, giving a link!')
-            changes = _('Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})').format(
-                changes_url='https://sickchill.github.io/sickchill-news/CHANGES.md'
-            )
+            changes_url = 'https://sickchill.github.io/sickchill-news/CHANGES.md'
+            changes = _(f'Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})')
 
         t = PageTemplate(rh=self, filename="markdown.mako")
         data = markdown2.markdown(changes if changes else _("The was a problem connecting to github, please refresh and try again"), extras=['header-ids'])

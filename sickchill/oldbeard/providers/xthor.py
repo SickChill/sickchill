@@ -40,7 +40,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug('Search Mode: {0}'.format(mode))
+            logger.debug(_(f'Search Mode: {mode}'))
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
                     logger.debug('Search string: ' + search_string.strip())
@@ -51,7 +51,7 @@ class Provider(TorrentProvider):
                 jdata = self.get_url(self.urls['search'], params=search_params, returns='json')
                 time.sleep(3)
                 if not jdata:
-                    logger.debug('No data returned from provider')
+                    logger.debug(_('No data returned from provider'))
                     continue
 
                 error_code = jdata.pop('error', {})
@@ -89,7 +89,7 @@ class Provider(TorrentProvider):
                         item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
 
                         if mode != 'RSS':
-                            logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format(title, seeders, leechers))
+                            logger.debug(_(f'Found result: {title} with {seeders} seeders and {leechers} leechers'))
 
                         items.append(item)
                     except Exception:
