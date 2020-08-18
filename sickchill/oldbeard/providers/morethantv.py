@@ -100,12 +100,12 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug("Search Mode: {0}".format(mode))
+            logger.debug(_(f"Search Mode: {mode}"))
 
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
-                    logger.debug("Search string: {0}".format(search_string))
+                    logger.debug(_(f"Search String: {search_string}"))
 
                 if mode == 'Season':
                     searchedSeason = re.match(r'.*\s(Season\s\d+|S\d+)', search_string).group(1)

@@ -49,14 +49,14 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug("Search Mode: {0}".format(mode))
+            logger.debug(_(f"Search Mode: {mode}"))
             for search_string in search_strings[mode]:
 
                 # Feed verified does not exist on this clone
                 # search_url = self.urls['verified'] if self.confirmed else self.urls['feed']
                 search_url = self.urls['feed']
                 if mode != 'RSS':
-                    logger.debug("Search string: {0}".format(search_string))
+                    logger.debug(_(f"Search String: {search_string}"))
 
                 data = self.get_url(search_url, params={'f': search_string}, returns='text')
                 if not data:

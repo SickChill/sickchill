@@ -26,7 +26,7 @@ class Provider(TorrentProvider):
         results = []
         for mode in search_strings:
             items = []
-            logger.debug("Search Mode: {0}".format(mode))
+            logger.debug(_(f"Search Mode: {mode}"))
             for search_string in search_strings[mode]:
 
                 if mode == 'Season':

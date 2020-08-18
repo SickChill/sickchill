@@ -29,7 +29,7 @@ class CalendarHandler(BaseHandler):
         """ Provides a subscribeable URL for iCal subscriptions
         """
 
-        logger.info("Receiving iCal request from {0}".format(self.request.remote_ip))
+        logger.info(f"Receiving iCal request from {self.request.remote_ip}")
 
         # Create a iCal string
         ical = 'BEGIN:VCALENDAR\r\n'
@@ -65,23 +65,17 @@ class CalendarHandler(BaseHandler):
 
                 # Create event for episode
                 ical += 'BEGIN:VEVENT\r\n'
-                ical += 'DTSTART:{}T{}Z\r\n'.format(air_date_time.strftime("%Y%m%d"), air_date_time.strftime("%H%M%S"))
-                ical += 'DTEND:{}T{}Z\r\n'.format(air_date_time_end.strftime("%Y%m%d"), air_date_time_end.strftime("%H%M%S"))
+                ical += f'DTSTART:{air_date_time.strftime("%Y%m%d")}T{air_date_time.strftime("%H%M%S")}Z\r\n'
+                ical += f'DTEND:{air_date_time_end.strftime("%Y%m%d")}T{air_date_time_end.strftime("%H%M%S")}Z\r\n'
                 if settings.CALENDAR_ICONS:
                     ical += 'X-GOOGLE-CALENDAR-CONTENT-ICON:https://sickchill.github.io/images/ico/favicon-16.png\r\n'
                     ical += 'X-GOOGLE-CALENDAR-CONTENT-DISPLAY:CHIP\r\n'
-                ical += 'SUMMARY: {0} - {1}x{2} - {3}\r\n'.format(show['show_name'], episode['season'], episode['episode'], episode['name'])
-                ical += 'UID:SickChill-{0}-{1}-S{2}E{3}\r\n'.format(
-                    datetime.date.today().isoformat(), show['show_name'].replace(" ", "-"), episode['season'], episode['episode']
-                )
+                ical += f'SUMMARY: {show["show_name"]} - {episode["season"]}x{episode["episode"]} - {episode["name"]}\r\n'
+                ical += f'UID:SickChill-{datetime.date.today().isoformat()}-{show["show_name"].replace(" ", "-")}-S{episode["season"]}E{episode["episode"]}\r\n'
+                ical += f'DESCRIPTION:{show["airs"] or "(Unknown airs)"} on {show["network"] or "Unknown network"}'
                 if episode['description']:
-                    ical += 'DESCRIPTION: {0} on {1} \\n\\n {2}\r\n'.format(
-                        show['airs'] or '(Unknown airs)', show['network'] or 'Unknown network', episode['description'].splitlines()[0]
-                    )
-                else:
-                    ical += 'DESCRIPTION:{0} on {1}\r\n'.format(show['airs'] or '(Unknown airs)', show['network'] or 'Unknown network')
-
-                ical += 'END:VEVENT\r\n'
+                    ical += f' \\n\\n {episode["description"].splitlines()[0]}'
+                ical += '\r\nEND:VEVENT\r\n'
 
         # Ending the iCal
         ical += 'END:VCALENDAR'

@@ -94,7 +94,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug('Search Mode: {0}'.format(mode))
+            logger.debug(_(f'Search Mode: {mode}'))
 
             for search_string in search_strings[mode]:
                 logger.debug('Search String: {0} for mode {1}'.format(search_strings[mode], mode))
@@ -148,8 +148,7 @@ class Provider(TorrentProvider):
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
                             if mode != 'RSS':
-                                logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format
-                                             (title, seeders, leechers))
+                                logger.debug(_(f'Found result: {title} with {seeders} seeders and {leechers} leechers'))
 
                             items.append(item)
                         except Exception:

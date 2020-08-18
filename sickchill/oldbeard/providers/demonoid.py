@@ -47,7 +47,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug("Search Mode: {0}".format(mode))
+            logger.debug(_(f"Search Mode: {mode}"))
             if mode == "RSS":
                 logger.info("Demonoid RSS search is not working through this provider yet, only string searches will work. Continuing")
                 continue

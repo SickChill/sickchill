@@ -37,7 +37,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug('Search Mode: {0}'.format(mode))
+            logger.debug(_(f'Search Mode: {mode}'))
 
             for search_string in search_strings[mode]:
                 if mode == 'RSS':
@@ -81,7 +81,7 @@ class Provider(TorrentProvider):
                 download_url = item.find('link').text
 
                 entry = {'title': title, 'link': download_url, 'size': 333, 'seeders': 1, 'leechers': 1, 'hash': ''}
-                logger.debug('Found result: {0}'.format(title))
+                logger.debug(_(f'Found result: {title}'))
 
                 entries.append(entry)
 
@@ -95,7 +95,7 @@ class Provider(TorrentProvider):
             'value': search_string
         }
 
-        logger.debug('Search string: {0}'.format(search_string))
+        logger.debug(_(f'Search String: {search_string}'))
         target_url = self.urls['search']
 
         data = self.get_url(target_url, params=search_params, returns='text')
@@ -180,7 +180,7 @@ class Provider(TorrentProvider):
 
                 release_title = '[HorribleSubs] {0}.[{1}]'.format(title, quality)
                 item = {'title': release_title, 'link': download_url, 'size': 333, 'seeders': 1, 'leechers': 1, 'hash': ''}
-                logger.debug('Found result: {0}'.format(release_title))
+                logger.debug(_(f'Found result: {release_title}'))
 
                 entries.append(item)
 
