@@ -47,13 +47,13 @@
                 if (event_.which === 13) {
                     browse(event_.target.value, endpoint, includeFiles, fileTypes);
                 }
-            }).appendTo(fileBrowserDialog).fileBrowser({
+            }).appendTo($('<div class="fileBrowserFieldContainer">').appendTo(fileBrowserDialog)).fileBrowser({
                 showBrowseButton: false
             }).on('autocompleteselect', (event_, ui) => {
                 browse(ui.item.value, endpoint, includeFiles, fileTypes);
             });
 
-            list = $('<ul>').appendTo(fileBrowserDialog);
+            list = $('<ul>').appendTo($('<div class="ui-dialog-scrollable-child">').appendTo(fileBrowserDialog));
             $.each(data, (i, entry) => {
                 if (entry.isFile && fileTypes && (!entry.isAllowed || fileTypes.includes('images') && !entry.isImage)) { // eslint-disable-line no-mixed-operators
                     return true;
@@ -99,6 +99,9 @@
             // Set up the jquery dialog
             fileBrowserDialog = $('<div class="fileBrowserDialog" style="display:none"></div>').appendTo('body').dialog({
                 dialogClass: 'browserDialog',
+                classes: {
+                  "ui-dialog": "ui-dialog-scrollable-by-child",
+                },
                 title: options.title,
                 position: {my: 'center top', at: 'center top+60', of: window},
                 minWidth: Math.min($(document).width() - 80, 650),
