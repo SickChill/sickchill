@@ -414,7 +414,7 @@ class SickChill(object):
 
         # Make sure the logger has stopped, just in case
         logger.shutdown()
-        os._exit(0)
+        sys.exit(0)
 
     @staticmethod
     def force_update():
