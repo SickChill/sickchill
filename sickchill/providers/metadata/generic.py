@@ -848,9 +848,9 @@ class GenericMetadata(object):
                     return re.sub('/fanart/', '/preview/', url)
 
                 if multiple:
-                    urls = list(map(lambda result: result['url'], results))
+                    urls = [result['url'] for result in results]
                     if thumb:
-                        urls = list(map(lambda url: _to_preview_url(url), urls))
+                        urls = [_to_preview_url(url) for url in urls]
                     return urls
                 else:
                     url = results[0]['url']

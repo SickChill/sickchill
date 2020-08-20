@@ -164,8 +164,7 @@ class TVDB(Indexer):
         api_results = self.series_images(show.indexerid, lang or show.lang, keyType=keyType, subKey=subKey)
         images = getattr(api_results, keyType)(lang or show.lang)
         images = sorted(images, key=lambda img: img['ratingsInfo']['average'], reverse=True)
-        # return self.complete_image_url(images[0][('fileName', 'thumbnail')[thumb]])
-        return list(map(lambda image: self.complete_image_url(image['fileName']), images)) if multiple else self.complete_image_url(images[0]['fileName'])
+        return [self.complete_image_url(image['fileName']) for image in images] if multiple else self.complete_image_url(images[0]['fileName'])
 
     @staticmethod
     @ExceptionDecorator()

@@ -1961,8 +1961,6 @@ class TVEpisode(object):
         if not self.relatedEps:
             goodName = self.name
         else:
-            goodName = ''
-
             singleName = True
             curGoodName = None
 
@@ -2179,9 +2177,6 @@ class TVEpisode(object):
 
         # figure out the double-ep numbering style for each group, if applicable
         for cur_name_group in name_groups:
-
-            season_format = sep = ep_sep = ep_format = None
-
             season_ep_regex = r'''
                                 (?P<pre_sep>[ _.-]*)
                                 ((?:s(?:eason|eries)?\s*)?%0?S(?![._]?N))
