@@ -88,7 +88,7 @@
         imageSelectorDialog.dialog({
             dialogClass: 'image-selector-dialog',
             classes: {
-                  "ui-dialog": "ui-dialog-scrollable-by-child",
+                'ui-dialog': 'ui-dialog-scrollable-by-child'
             },
             title: _('Choose Image'),
             position: {my: 'center top', at: 'center top+60', of: window},

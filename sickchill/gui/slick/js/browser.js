@@ -100,7 +100,7 @@
             fileBrowserDialog = $('<div class="fileBrowserDialog" style="display:none"></div>').appendTo('body').dialog({
                 dialogClass: 'browserDialog',
                 classes: {
-                  "ui-dialog": "ui-dialog-scrollable-by-child",
+                    'ui-dialog': 'ui-dialog-scrollable-by-child'
                 },
                 title: options.title,
                 position: {my: 'center top', at: 'center top+60', of: window},
