@@ -1,6 +1,5 @@
 import gettext
 import os
-import platform
 import sys
 import sysconfig
 

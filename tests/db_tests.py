@@ -8,7 +8,6 @@ Tests:
 import threading
 import time
 import unittest
-from copy import deepcopy
 from datetime import datetime
 
 import sickchill.oldbeard

@@ -1,12 +1,9 @@
 import datetime
 import os.path
-import warnings
 
-import sickchill.start
-from sickchill import logger, settings
-from sickchill.helper.common import dateTimeFormat, episode_num
-from sickchill.oldbeard import common, db, helpers, subtitles
-from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickchill import logger
+from sickchill.helper.common import episode_num
+from sickchill.oldbeard import common, db, helpers
 
 MIN_DB_VERSION = 44
 MAX_DB_VERSION = 44
@@ -51,7 +48,6 @@ class MainSanityCheck(db.DBSanityCheck):
             logger.info(_(f'Changing status from {old_status} to {new_status} for {archived_episode}: {ep} at {location} (File {result})'))
 
             self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?", [fixed_status, episode_id])
-
 
     def fix_duplicate_shows(self, column='indexer_id'):
 

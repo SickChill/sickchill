@@ -1,7 +1,7 @@
 import re
 from urllib.parse import urljoin
 
-from requests.utils import add_dict_to_cookiejar, dict_from_cookiejar
+from requests.utils import dict_from_cookiejar
 
 from sickchill import logger
 from sickchill.helper.common import convert_size, try_int

@@ -2,7 +2,6 @@ import datetime
 import sys
 
 import sickchill
-from sickchill import settings
 from sickchill.helper.common import dateTimeFormat
 
 from .common import Quality

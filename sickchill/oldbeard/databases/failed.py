@@ -1,5 +1,4 @@
 from sickchill.oldbeard import db
-from sickchill.oldbeard.common import Quality
 
 
 # Add new migrations at the bottom of the list; subclass the previous migration.

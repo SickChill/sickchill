@@ -11,7 +11,6 @@ import sickchill
 from sickchill import logger, settings
 from sickchill.helper.common import replace_extension, try_int
 from sickchill.oldbeard import helpers
-from sickchill.oldbeard.show_name_helpers import allPossibleShowNames
 
 from . import helpers as metadata_helpers
 
