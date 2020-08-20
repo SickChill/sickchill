@@ -74,7 +74,7 @@ class TVCache(object):
                 cl = []
                 for item in data['entries'] or []:
                     ci = self._parse_item(item)
-                    if ci is not None:
+                    if ci:
                         cl.append(ci)
 
                 if cl:
