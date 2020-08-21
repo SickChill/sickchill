@@ -13,7 +13,7 @@ class Client(GenericClient):
         self.api = qbittorrentapi.Client(host=self.host, port=self.port or 8080, username=self.username, password=self.password)
 
     def _get_auth(self):
-        return self.api.auth_log_in()
+        return self.api.is_logged_in or self.api.auth_log_in()
 
     def testAuthentication(self):
         try:

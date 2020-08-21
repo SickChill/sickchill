@@ -55,7 +55,7 @@ class GenericClient(object):
 
         logger.debug(log_string)
 
-        if not self.auth:
+        if not (self.auth or self._get_auth()):
             logger.warning('{0}: Authentication Failed'.format(self.name))
             return False
 
