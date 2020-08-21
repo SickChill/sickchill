@@ -11,7 +11,6 @@ from sickchill import adba, logger, settings
 from sickchill.helper.common import remove_extension, replace_extension, SUBTITLE_EXTENSIONS
 from sickchill.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ShowDirectoryNotFoundException
 from sickchill.show.Show import Show
-
 from . import common, db, failed_history, helpers, history, notifiers, show_name_helpers
 from .helpers import verify_freespace
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
@@ -834,7 +833,7 @@ class PostProcessor(object):
             try:
                 p = subprocess.Popen(
                     script_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT, cwd=settings.DATA_DIR, text=True
+                    stderr=subprocess.STDOUT, cwd=settings.DATA_DIR, universal_newlines=True
                 )
                 out, err = p.communicate()
 

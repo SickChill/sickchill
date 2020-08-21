@@ -13,7 +13,6 @@ import sickchill.oldbeard.helpers
 from sickchill import logger, settings
 from sickchill.helper.common import dateTimeFormat, episode_num
 from sickchill.show.Show import Show
-
 from . import db, history
 from .common import Quality
 from .helpers import is_media_file
@@ -502,7 +501,7 @@ def run_subs_extra_scripts(episode, subtitle, video, single=False):
         # use subprocess to run the command and capture output
         logger.info('Executing command: {0}'.format(inner_cmd))
         try:
-            process = subprocess.Popen(inner_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=settings.DATA_DIR, text=True)
+            process = subprocess.Popen(inner_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=settings.DATA_DIR, universal_newlines=True)
 
             stdout, stderr = process.communicate()
             logger.debug('Script result: {0}'.format(str(stdout or stderr).strip()))

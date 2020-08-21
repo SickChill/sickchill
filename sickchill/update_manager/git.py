@@ -4,7 +4,6 @@ import subprocess
 
 from sickchill import logger, settings
 from sickchill.oldbeard import helpers, notifiers
-
 from .abstract import UpdateManagerBase
 
 
@@ -102,7 +101,7 @@ class GitUpdateManager(UpdateManagerBase):
 
         try:
             logger.debug("Executing {0} with your shell in {1}".format(cmd, settings.PROG_DIR))
-            p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, text=True, cwd=settings.PROG_DIR)
+            p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, universal_newlines=True, cwd=settings.PROG_DIR)
             output, err = p.communicate()
             exit_status = p.returncode
             if output:
