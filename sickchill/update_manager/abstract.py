@@ -8,7 +8,7 @@ from sickchill import settings
 class UpdateManagerBase(ABC):
     @staticmethod
     def get_update_url():
-        return settings.WEB_ROOT + "/home/update/?pid=".format(settings.PID)
+        return f"{settings.WEB_ROOT}/home/update/?pid={settings.PID}"
 
     @staticmethod
     def _clean_pyc(path):
