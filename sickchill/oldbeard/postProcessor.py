@@ -834,7 +834,7 @@ class PostProcessor(object):
             try:
                 p = subprocess.Popen(
                     script_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT, cwd=settings.DATA_DIR, text=True
+                    stderr=subprocess.STDOUT, cwd=settings.DATA_DIR, universal_newlines=True
                 )
                 out, err = p.communicate()
 

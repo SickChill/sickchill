@@ -3044,6 +3044,8 @@ const SICKCHILL = {
 
                 option.remove();
             });
+
+            $('.custom-image').imageSelector();
         },
         postProcess() {
             $('#episodeDir').fileBrowser({

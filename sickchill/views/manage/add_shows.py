@@ -28,7 +28,7 @@ from sickchill.views.routes import Route
 @Route('/addShows(/?.*)', name='addShows')
 class AddShows(Home):
     def __init__(self, *args, **kwargs):
-        super(AddShows, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="addShows.mako")

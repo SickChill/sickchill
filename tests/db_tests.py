@@ -8,7 +8,6 @@ Tests:
 import threading
 import time
 import unittest
-from copy import deepcopy
 from datetime import datetime
 
 import sickchill.oldbeard
@@ -27,7 +26,7 @@ class DBBasicTests(test.SickChillTestDBCase):
         """
         Set up test.
         """
-        super(DBBasicTests, self).setUp()
+        super().setUp()
         self.sr_db = sickchill.oldbeard.db.DBConnection()
 
     def test_select(self):
@@ -48,7 +47,7 @@ class DBMultiTests(test.SickChillTestDBCase):
         """
         Set up test.
         """
-        super(DBMultiTests, self).setUp()
+        super().setUp()
         self.sr_db = sickchill.oldbeard.db.DBConnection()
 
     def select(self):

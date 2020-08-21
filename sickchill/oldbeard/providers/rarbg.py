@@ -75,7 +75,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug("Search Mode: {0}".format(mode))
+            logger.debug(_(f"Search Mode: {mode}"))
             if mode == "RSS":
                 search_params["sort"] = "last"
                 search_params["mode"] = "list"
@@ -94,7 +94,7 @@ class Provider(TorrentProvider):
                 if mode != "RSS":
                     search_string = re.sub(r"\((\d{4})\)", r'\1', search_string).replace(' ', '.')
                     search_params["search_string"] = search_string
-                    logger.debug("Search string: {0}".format(search_string))
+                    logger.debug(_(f"Search String: {search_string}"))
 
                 time.sleep(cpu_presets[settings.CPU_PRESET])
                 data = self.get_url(self.urls["api"], params=search_params, returns="json")

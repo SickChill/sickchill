@@ -15,7 +15,7 @@ from . import Config
 @Route('/config/search(/?.*)', name='config:search')
 class ConfigSearch(Config):
     def __init__(self, *args, **kwargs):
-        super(ConfigSearch, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @addslash
     def index(self, *args_, **kwargs_):

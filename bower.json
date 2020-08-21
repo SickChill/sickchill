@@ -28,7 +28,9 @@
     "isotope": "isotope#~3.0.6",
     "jquery-tokeninput": "https://github.com/timint/jquery-tokeninput.git#^1.7.0",
     "jqueryui-touch-punch": "https://github.com/RWAP/jquery-ui-touch-punch.git",
-    "latinize": "^0.4.1"
+    "latinize": "^0.4.1",
+    "fork-awesome": "^1.1.7",
+    "font-awesome": "4.7.0"
   },
   "resolutions": {
     "bootstrap": "~3.3.6",

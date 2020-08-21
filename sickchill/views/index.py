@@ -42,7 +42,7 @@ class BaseHandler(RequestHandler):
     def __init__(self, *args, **kwargs):
         self.startTime = time.time()
 
-        super(BaseHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # self.include_host = True
 
     # def set_default_headers(self):
@@ -57,9 +57,9 @@ class BaseHandler(RequestHandler):
 
             if url[:3] != 'api':
                 t = PageTemplate(rh=self, filename="404.mako")
-                return self.finish(t.render(title='404', header=_('Oops: 404 Not Found')))
+                return t.render(title='404', header=_('Oops: 404 Not Found'))
             else:
-                self.finish(_('Wrong API key used'))
+                return self.finish(_('Wrong API key used'))
 
         elif self.settings.get("debug") and "exc_info" in kwargs:
             exc_info = kwargs["exc_info"]
@@ -69,7 +69,7 @@ class BaseHandler(RequestHandler):
             error = exc_info[1]
 
             self.set_header('Content-Type', 'text/html')
-            self.finish("""<html>
+            return self.finish("""<html>
                                  <title>{0}</title>
                                  <body>
                                     <h2>Error</h2>
@@ -145,7 +145,7 @@ class BaseHandler(RequestHandler):
 
 class WebHandler(BaseHandler):
     def __init__(self, *args, **kwargs):
-        super(WebHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.executor = ThreadPoolExecutor(cpu_count(), thread_name_prefix='WEBSERVER-' + self.__class__.__name__.upper())
 
@@ -196,7 +196,7 @@ class WebHandler(BaseHandler):
 @Route('(.*)(/?)', name='index')
 class WebRoot(WebHandler):
     def __init__(self, *args, **kwargs):
-        super(WebRoot, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def index(self):
         return self.redirect('/' + settings.DEFAULT_PAGE + '/')
@@ -326,7 +326,7 @@ class WebRoot(WebHandler):
 @Route('/ui(/?.*)', name='ui')
 class UI(WebRoot):
     def __init__(self, *args, **kwargs):
-        super(UI, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def locale_json(self):
         """ Get /locale/{lang_code}/LC_MESSAGES/messages.json """

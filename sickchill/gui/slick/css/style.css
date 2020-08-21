@@ -1289,6 +1289,17 @@ td.col-search {
     margin-left: auto;
 }
 
+#customize .custom-image {
+    cursor: pointer;
+}
+
+#customize .custom-image.modified {
+    box-shadow: 3px 3px green,
+         3px -3px green,
+         -3px 3px green,
+         -3px -3px green;
+}
+
 [class^="displayshow-icon-"], [class*=" displayshow-icon-"] {
     background: url("../images/16px_sprite_colored_show.png");
     height: 16px;

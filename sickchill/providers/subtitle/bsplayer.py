@@ -38,7 +38,7 @@ class BSPlayerSubtitle(Subtitle):
     def __init__(self, subtitle_id, size, page_link, language, filename, subtitle_source, subtitle_hash, rating,
                  season, episode, encoding, imdb_id, imdb_rating, movie_year, movie_name, movie_hash, movie_size,
                  movie_fps):
-        super(BSPlayerSubtitle, self).__init__(language, page_link=page_link, encoding=encoding)
+        super().__init__(language, page_link=page_link, encoding=encoding)
         self.subtitle_id = subtitle_id
         self.size = size
         self.page_link = page_link
@@ -108,10 +108,10 @@ class BSPlayerProvider(Provider):
             '<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" '
             'xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" '
             'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
-            'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns1="{search_url}">'
+            f'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns1="{self.search_url}">'
             '<SOAP-ENV:Body SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">'
-            '<ns1:{func_name}>{params}</ns1:{func_name}></SOAP-ENV:Body></SOAP-ENV:Envelope>'
-        ).format(search_url=self.search_url, func_name=func_name, params=params)
+            f'<ns1:{func_name}>{params}</ns1:{func_name}></SOAP-ENV:Body></SOAP-ENV:Envelope>'
+        )
 
         for i in range(tries):
             try:
@@ -138,7 +138,7 @@ class BSPlayerProvider(Provider):
     def terminate(self):
         root = self._api_request(
             func_name='logOut',
-            params='<handle>{token}</handle>'.format(token=self.token)
+            params=f'<handle>{self.token}</handle>'
         )
         res = root.find('.//return')
         if res.find('status').text != 'OK':

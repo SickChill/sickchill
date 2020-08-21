@@ -164,7 +164,7 @@ class Provider(TorrentProvider):
 
 class TrackerCacheDBConnection(db.DBConnection):
     def __init__(self, provider_instance=None, update_frequency=datetime.timedelta(hours=8)):
-        super(TrackerCacheDBConnection, self).__init__('cache.db')
+        super().__init__('cache.db')
         if not self.has_table('trackers'):
             self.action("CREATE TABLE trackers (provider TEXT, time NUMERIC, trackers TEXT)")
 

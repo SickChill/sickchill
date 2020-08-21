@@ -17,7 +17,7 @@ provider_cache_db = {}
 
 class CacheDBConnection(db.DBConnection):
     def __init__(self):
-        super(CacheDBConnection, self).__init__('cache.db')
+        super().__init__('cache.db')
         db.upgrade_database(self, cache.InitialSchema)
         self.action("DELETE from results WHERE added < datetime('now','-30 days')")
 
@@ -74,7 +74,7 @@ class TVCache(object):
                 cl = []
                 for item in data['entries'] or []:
                     ci = self._parse_item(item)
-                    if ci is not None:
+                    if ci:
                         cl.append(ci)
 
                 if cl:

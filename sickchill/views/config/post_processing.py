@@ -16,7 +16,7 @@ from . import Config
 @Route('/config/postProcessing(/?.*)', name='config:postprocessing')
 class ConfigPostProcessing(Config):
     def __init__(self, *args, **kwargs):
-        super(ConfigPostProcessing, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @addslash
     def index(self, *args_, **kwargs_):

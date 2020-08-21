@@ -123,7 +123,7 @@ class HelpersTests(unittest.TestCase):
         """
         Initialize test
         """
-        super(HelpersTests, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 def generator(test_strings):

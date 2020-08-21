@@ -63,7 +63,7 @@ class BaseParser(type):
 
         def __init__(self, test):
             """Initialize the test suite"""
-            VCRTestCase.__init__(self, test)
+            super().__init__(test)
 
             self.provider.session.verify = False
 

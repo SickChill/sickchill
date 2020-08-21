@@ -13,7 +13,7 @@ from .routes import Route
 @Route('/errorlogs(/?.*)', name='logs:error')
 class ErrorLogs(WebRoot):
     def __init__(self, *args, **kwargs):
-        super(ErrorLogs, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def __ErrorLogsMenu(self, level):
         menu = [
@@ -25,7 +25,7 @@ class ErrorLogs(WebRoot):
             },
             {
                 'title': _('Clear Warnings'),
-                'path': 'errorlogs/clearerrors/?level='.format(logger.WARNING),
+                'path': f'errorlogs/clearerrors/?level={logger.WARNING}',
                 'requires': self.haveWarnings() and level == logger.WARNING,
                 'icon': 'ui-icon ui-icon-trash'
             },

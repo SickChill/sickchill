@@ -63,11 +63,11 @@ class Provider(TorrentProvider):
 
         for mode in search_params:
             items = []
-            logger.debug("Search Mode: {0}".format(mode))
+            logger.debug(_(f"Search Mode: {mode}"))
             for search_string in search_params[mode]:
 
                 if mode != 'RSS':
-                    logger.debug("Search string: {0}".format(search_string))
+                    logger.debug(_(f"Search String: {search_string}"))
 
                 query = {'sec': 'jax', 'cata': 'yes', 'search': search_string}
                 query.update({"c" + str(i): 1 for i in self.categories})

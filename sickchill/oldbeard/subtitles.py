@@ -401,13 +401,8 @@ class SubtitlesFinder(object):
         logger.info('Checking for missed subtitles')
 
         database = db.DBConnection()
-        # language=TEXT
         sql_results = database.select(
-            "SELECT s.show_name, e.showid, e.season, e.episode, "
-            "e.status, e.subtitles, e.subtitles_searchcount AS searchcount, "
-            "e.subtitles_lastsearch AS lastsearch, e.location, (? - e.airdate) as age "
-            "FROM tv_episodes AS e INNER JOIN tv_shows AS s "
-            "ON (e.showid = s.indexer_id) "
+            "SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.subtitles, e.subtitles_searchcount AS searchcount, e.subtitles_lastsearch AS lastsearch, e.location, (? - e.airdate) as age FROM tv_episodes AS e INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id) "
             "WHERE s.subtitles = 1 AND e.subtitles NOT LIKE ? " +
             ("AND e.season != 0 ", "")[settings.SUBTITLES_INCLUDE_SPECIALS] +
             "AND e.location != '' AND e.status IN ({}) ORDER BY age ASC".format(','.join(['?'] * len(Quality.DOWNLOADED))),
@@ -507,7 +502,7 @@ def run_subs_extra_scripts(episode, subtitle, video, single=False):
         # use subprocess to run the command and capture output
         logger.info('Executing command: {0}'.format(inner_cmd))
         try:
-            process = subprocess.Popen(inner_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=settings.DATA_DIR, text=True)
+            process = subprocess.Popen(inner_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=settings.DATA_DIR, universal_newlines=True)
 
             stdout, stderr = process.communicate()
             logger.debug('Script result: {0}'.format(str(stdout or stderr).strip()))

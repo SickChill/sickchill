@@ -1,0 +1,20 @@
+.image-selector-dialog .image-selector-item {
+  display: inline-block;
+  margin: 15px;
+}
+
+.image-selector-dialog .image-selector-item.image-selector-item-selected {
+  box-shadow: 5px 5px yellow,
+     5px -5px yellow,
+     -5px 5px yellow,
+     -5px -5px yellow;
+}
+
+.image-selector-dialog .image-selector-item {
+    cursor: pointer;
+    max-width: 250px;
+}
+
+.image-selector-dialog .images {
+  margin-top: 0.5em;
+}

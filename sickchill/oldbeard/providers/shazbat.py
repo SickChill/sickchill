@@ -10,7 +10,7 @@ class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, 'Shazbat.tv')
+        super().__init__('Shazbat.tv')
 
         self.supports_backlog = False
 

@@ -55,7 +55,7 @@ class SubtitulamosSubtitle(Subtitle):
 
     def __init__(self, language, hearing_impaired, page_link, series, season, episode, title, year, version,
                  download_link):
-        super(SubtitulamosSubtitle, self).__init__(language, hearing_impaired, page_link)
+        super().__init__(language, hearing_impaired, page_link)
         self.page_link = page_link
         self.series = series
         self.season = season

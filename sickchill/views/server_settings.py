@@ -29,7 +29,7 @@ from .routes import Route
 
 class SRWebServer(threading.Thread):
     def __init__(self, options=None):
-        threading.Thread.__init__(self)
+        super().__init__()
         self.daemon = True
         self.alive = True
         self.name = "WEBSERVER"
@@ -73,7 +73,7 @@ class SRWebServer(threading.Thread):
         # api root
         if not settings.API_KEY:
             settings.API_KEY = generateApiKey()
-        self.options['api_root'] = r'{0}/api/{1}'.format(settings.WEB_ROOT, settings.API_KEY)
+        self.options['api_root'] = f'{settings.WEB_ROOT}/api/{settings.API_KEY}'
 
         # tornado setup
         self.enable_https = self.options['enable_https']
@@ -111,49 +111,47 @@ class SRWebServer(threading.Thread):
             autoreload=False,
             gzip=settings.WEB_USE_GZIP,
             cookie_secret=settings.WEB_COOKIE_SECRET,
-            login_url='{0}/login/'.format(self.options['web_root']),
+            login_url=f'{self.options["web_root"]}/login/',
             static_path=self.options['data_root'],
-            static_url_prefix='{0}/'.format(self.options['web_root'])
+            static_url_prefix=f'{self.options["web_root"]}/'
             # default_handler_class=Custom404Handler
         )
 
         # Static File Handlers
         self.app.add_handlers(".*$", [
-            url(r'{0}/favicon.ico'.format(self.options['web_root']), StaticFileHandler,
-                {"path": os.path.join(self.options['data_root'], 'images/ico/favicon.ico')}, name='favicon'),
-            url(r'/favicon.ico', StaticFileHandler,
-                {"path": os.path.join(self.options['data_root'], 'images/ico/favicon.ico')}, name='favicon2'),
+            url(rf'{self.options["web_root"]}/(favicon\.ico)', StaticFileHandler,
+                {"path": os.path.join(self.options['data_root'], 'images/ico')}, name='favicon'),
 
-            url(r'{0}/images/(.*)'.format(self.options['web_root']), StaticFileHandler,
+            url(rf'{self.options["web_root"]}/images/(.*)', StaticFileHandler,
                 {"path": os.path.join(self.options['data_root'], 'images')}, name='images'),
 
-            url(r'{0}/cache/images/(.*)'.format(self.options['web_root']), StaticFileHandler,
+            url(rf'{self.options["web_root"]}/cache/images/(.*)', StaticFileHandler,
                 {"path": os.path.join(settings.CACHE_DIR, 'images')}, name='image_cache'),
 
-            url(r'{0}/css/(.*)'.format(self.options['web_root']), StaticFileHandler,
+            url(rf'{self.options["web_root"]}/css/(.*)', StaticFileHandler,
                 {"path": os.path.join(self.options['data_root'], 'css')}, name='css'),
 
-            url(r'{0}/js/(.*)'.format(self.options['web_root']), StaticFileHandler,
+            url(rf'{self.options["web_root"]}/js/(.*)', StaticFileHandler,
                 {"path": os.path.join(self.options['data_root'], 'js')}, name='js'),
 
-            url(r'{0}/fonts/(.*)'.format(self.options['web_root']), StaticFileHandler,
+            url(rf'{self.options["web_root"]}/fonts/(.*)', StaticFileHandler,
                 {"path": os.path.join(self.options['data_root'], 'fonts')}, name='fonts')
 
             # TODO: WTF is this?
-            # url(r'{0}/videos/(.*)'.format(self.options['web_root']), StaticFileHandler,
+            # url(rf'{self.options["web_root"]}/videos/(.*)', StaticFileHandler,
             #     {"path": self.video_root}, name='videos')
         ])
 
         # Main Handlers
         self.app.add_handlers('.*$', [
-            url(r'{0}(/?.*)'.format(self.options['api_root']), ApiHandler, name='api'),
-            url(r'{0}/getkey(/?.*)'.format(self.options['web_root']), KeyHandler, name='get_api_key'),
+            url(rf'{self.options["api_root"]}(/?.*)', ApiHandler, name='api'),
+            url(rf'{self.options["web_root"]}/getkey(/?.*)', KeyHandler, name='get_api_key'),
 
-            url(r'{0}/api/builder'.format(self.options['web_root']), RedirectHandler, {"url": self.options['web_root'] + '/apibuilder/'}, name='apibuilder'),
-            url(r'{0}/login(/?)'.format(self.options['web_root']), LoginHandler, name='login'),
-            url(r'{0}/logout(/?)'.format(self.options['web_root']), LogoutHandler, name='logout'),
+            url(rf'{self.options["web_root"]}/api/builder', RedirectHandler, {"url": self.options['web_root'] + '/apibuilder/'}, name='apibuilder'),
+            url(rf'{self.options["web_root"]}/login(/?)', LoginHandler, name='login'),
+            url(rf'{self.options["web_root"]}/logout(/?)', LogoutHandler, name='logout'),
 
-            url(r'{0}/calendar/?'.format(self.options['web_root']), CalendarHandler, name='calendar'),
+            url(rf'{self.options["web_root"]}/calendar/?', CalendarHandler, name='calendar'),
 
             # routes added by @route decorator
             # Plus naked index with missing web_root prefix
@@ -181,11 +179,11 @@ class SRWebServer(threading.Thread):
                     logger.info("Launching browser and exiting")
                 err_msg = "already in use!"
 
-            logger.info("Could not start webserver on port {0}: {1}".format(self.options['port'], err_msg or ex))
+            logger.info(f"Could not start webserver on port {self.options['port']}: {err_msg or ex}")
             # noinspection PyProtectedMember
             os._exit(1)
         except Exception as ex:
-            logger.info("Could not start webserver on port {0}: {1}".format(self.options['port'], ex))
+            logger.info(f"Could not start webserver on port {self.options['port']}: {ex}")
 
             # noinspection PyProtectedMember
             os._exit(1)
@@ -193,7 +191,7 @@ class SRWebServer(threading.Thread):
         try:
             IOLoop.current().start()
             IOLoop.current().close(True)
-        except (IOError, ValueError) as e:
+        except (IOError, ValueError):
             # Ignore errors like "ValueError: I/O operation on closed kqueue fd". These might be thrown during a reload.
             pass
 

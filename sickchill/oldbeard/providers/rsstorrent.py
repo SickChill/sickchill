@@ -15,7 +15,7 @@ class TorrentRssProvider(TorrentProvider):
                  titleTAG='title', search_mode='eponly', search_fallback=False,
                  enable_daily=False, enable_backlog=False):
 
-        TorrentProvider.__init__(self, name)
+        super().__init__(name)
 
         self.cache = TorrentRssCache(self, min_time=15)
         self.url = url.rstrip('/')

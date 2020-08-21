@@ -19,29 +19,14 @@ class TIVOMetadata(generic.GenericMetadata):
     This class only generates episode specific metadata files, it does NOT generate a default.txt file.
     """
 
-    def __init__(self,
-                 show_metadata=False,
-                 episode_metadata=False,
-                 fanart=False,
-                 poster=False,
-                 banner=False,
-                 episode_thumbnails=False,
-                 season_posters=False,
-                 season_banners=False,
-                 season_all_poster=False,
-                 season_all_banner=False):
+    def __init__(
+        self, show_metadata=False, episode_metadata=False, fanart=False, poster=False, banner=False, episode_thumbnails=False,
+        season_posters=False, season_banners=False, season_all_poster=False, season_all_banner=False
+    ):
 
-        generic.GenericMetadata.__init__(self,
-                                         show_metadata,
-                                         episode_metadata,
-                                         fanart,
-                                         poster,
-                                         banner,
-                                         episode_thumbnails,
-                                         season_posters,
-                                         season_banners,
-                                         season_all_poster,
-                                         season_all_banner)
+        super().__init__(
+            show_metadata, episode_metadata, fanart, poster, banner, episode_thumbnails, season_posters, season_banners, season_all_poster, season_all_banner
+        )
 
         self.name = 'TIVO'
 

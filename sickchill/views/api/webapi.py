@@ -52,7 +52,7 @@ class ApiHandler(RequestHandler):
     version = 5  # use an int since float-point is unpredictable
 
     def __init__(self, *args, **kwargs):
-        super(ApiHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def set_default_headers(self):
         self.set_header("Content-Type", "application/json")
@@ -62,8 +62,8 @@ class ApiHandler(RequestHandler):
         # self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
 
     def get(self, *args, **kwargs):
-        kwargs = self.request.arguments
-        # noinspection PyCompatibility
+        # kwargs = self.request.arguments
+        kwargs = urllib.parse.parse_qs(self.request.query)
         for arg, value in kwargs.items():
             if len(value) == 1:
                 kwargs[arg] = value[0]
@@ -125,8 +125,8 @@ class ApiHandler(RequestHandler):
             if callback:
                 out = callback + '(' + out + ');'  # wrap with JSONP call if requested
         except Exception as e:  # if we fail to generate the output fake an error
-            logger.debug("API :: " + traceback.format_exc())
-            out = '{{"result": "{0}", "message": "error while composing output: {1}"}}'.format(result_type_map[RESULT_ERROR], str(e))
+            logger.debug(f"API :: {traceback.format_exc()}")
+            out = f'{{"result": "{result_type_map[RESULT_ERROR]}", "message": "error while composing output: {e}"}}'
         return out
 
     def call_dispatcher(self, args, kwargs):  # pylint:disable=too-many-branches
@@ -145,7 +145,7 @@ class ApiHandler(RequestHandler):
 
         out_dict = {}
         if commands:
-            commands = commands.decode().split("|")
+            commands = commands.split("|")
             multi_commands = len(commands) > 1
             for cmd in commands:
                 cur_args, cur_kwargs = self.filter_params(cmd, args, kwargs)
@@ -238,7 +238,7 @@ class ApiCall(ApiHandler):
     # noinspection PyMissingConstructor
     def __init__(self, args, kwargs):
         # TODO: Find out why this buggers up RequestHandler init if called
-        # super(ApiCall, self).__init__(args, kwargs)
+        # super().__init__(args, kwargs)
         self.rh = None
         self.indexer = 1
         self._missing = []
@@ -411,7 +411,7 @@ class TVDBShorthandWrapper(ApiCall):
     _help = {"desc": "This is an internal function wrapper. Call the help command directly for more information."}
 
     def __init__(self, args, kwargs, sid):
-        super(TVDBShorthandWrapper, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
 
         self.origArgs = args
         self.kwargs = kwargs
@@ -633,7 +633,7 @@ class CMDHelp(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDHelp, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.subject, args = self.check_params(args, kwargs, "subject", "help", False, "string", list(function_mapper))
 
     def run(self):
@@ -659,7 +659,7 @@ class CMDComingEpisodes(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDComingEpisodes, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.sort, args = self.check_params(args, kwargs, "sort", "date", False, "string", list(ComingEpisodes.sorts))
         self.type, args = self.check_params(args, kwargs, "type", '|'.join(ComingEpisodes.categories), False, "list",
                                             ComingEpisodes.categories)
@@ -712,7 +712,7 @@ class CMDEpisode(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDEpisode, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.s, args = self.check_params(args, kwargs, "season", None, True, "int", [])
         self.e, args = self.check_params(args, kwargs, "episode", None, True, "int", [])
@@ -777,7 +777,7 @@ class CMDEpisodeSearch(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDEpisodeSearch, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.s, args = self.check_params(args, kwargs, "season", None, True, "int", [])
         self.e, args = self.check_params(args, kwargs, "episode", None, True, "int", [])
@@ -913,7 +913,7 @@ class CMDEpisodeSetStatus(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDEpisodeSetStatus, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.s, args = self.check_params(args, kwargs, "season", None, True, "int", [])
         self.status, args = self.check_params(args, kwargs, "status", None, True, "string",
@@ -1030,7 +1030,7 @@ class CMDSubtitleSearch(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDSubtitleSearch, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.s, args = self.check_params(args, kwargs, "season", None, True, "int", [])
         self.e, args = self.check_params(args, kwargs, "episode", None, True, "int", [])
@@ -1076,7 +1076,7 @@ class CMDExceptions(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDExceptions, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, False, "int", [])
         self.tvdbid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
 
@@ -1119,7 +1119,7 @@ class CMDHistory(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDHistory, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.limit, args = self.check_params(args, kwargs, "limit", 100, False, "int", [])
         self.type, args = self.check_params(args, kwargs, "type", None, False, "string", ["downloaded", "snatched"])
         self.type = self.type.lower() if isinstance(self.type, str) else ''
@@ -1158,7 +1158,7 @@ class CMDHistoryClear(ApiCall):
     _help = {"desc": "Clear the entire history"}
 
     def __init__(self, args, kwargs):
-        super(CMDHistoryClear, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
 
     def run(self):
         """ Clear the entire history """
@@ -1172,7 +1172,7 @@ class CMDHistoryTrim(ApiCall):
     _help = {"desc": "Trim history entries older than 30 days"}
 
     def __init__(self, args, kwargs):
-        super(CMDHistoryTrim, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
 
     def run(self):
         """ Trim history entries older than 30 days """
@@ -1191,7 +1191,7 @@ class CMDFailed(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDFailed, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.limit, args = self.check_params(args, kwargs, "limit", 100, False, "int", [])
 
     def run(self):
@@ -1213,7 +1213,7 @@ class CMDBacklog(ApiCall):
     _help = {"desc": "Get the backlogged episodes"}
 
     def __init__(self, args, kwargs):
-        super(CMDBacklog, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
 
     def run(self):
         """ Get the backlogged episodes """
@@ -1261,7 +1261,7 @@ class CMDLogs(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDLogs, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.min_level, args = self.check_params(args, kwargs, "min_level", "error", False, "string",
                                                  ["error", "warning", "info", "debug"])
 
@@ -1321,7 +1321,7 @@ class CMDLogsClear(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDLogsClear, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.level, args = self.check_params(args, kwargs, "level", "warning", False, "string", ["warning", "error"])
 
     def run(self):
@@ -1358,7 +1358,7 @@ class CMDPostProcess(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDPostProcess, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.path, args = self.check_params(args, kwargs, "path", None, False, "string", [])
         self.release_name, args = self.check_params(args, kwargs, "release_name", None, False, "string", [])
         self.force_replace, args = self.check_params(args, kwargs, "force_replace", False, False, "bool", [])
@@ -1399,7 +1399,7 @@ class CMDSickChill(ApiCall):
     _help = {"desc": "Get miscellaneous information about SickChill"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickChill, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
 
     def run(self):
         """ dGet miscellaneous information about SickChill """
@@ -1423,7 +1423,7 @@ class CMDSickChillAddRootDir(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDSickChillAddRootDir, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
         self.default, args = self.check_params(args, kwargs, "default", False, False, "bool", [])
 
@@ -1475,7 +1475,7 @@ class CMDSickChillCheckVersion(ApiCall):
     _help = {"desc": "Check if a new version of SickChill is available"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickChillCheckVersion, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
 
     def run(self):
         update_manager = UpdateManager()
@@ -1504,7 +1504,7 @@ class CMDSickChillCheckScheduler(ApiCall):
     _help = {"desc": "Get information about the scheduler"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickChillCheckScheduler, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
 
     def run(self):
         """ Get information about the scheduler """
@@ -1533,7 +1533,7 @@ class CMDSickChillDeleteRootDir(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDSickChillDeleteRootDir, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
 
     def run(self):
@@ -1576,7 +1576,7 @@ class CMDSickChillGetDefaults(ApiCall):
     _help = {"desc": "Get SickChill's user default configuration value"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickChillGetDefaults, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
 
     def run(self):
         """ Get SickChill's user default configuration value """
@@ -1598,7 +1598,7 @@ class CMDSickChillGetMessages(ApiCall):
     _help = {"desc": "Get all messages"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickChillGetMessages, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
 
     def run(self):
         messages = []
@@ -1616,7 +1616,7 @@ class CMDSickChillGetRootDirs(ApiCall):
     _help = {"desc": "Get all root (parent) directories"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickChillGetRootDirs, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
 
     def run(self):
         """ Get all root (parent) directories """
@@ -1634,7 +1634,7 @@ class CMDSickChillPauseBacklog(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDSickChillPauseBacklog, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.pause, args = self.check_params(args, kwargs, "pause", False, False, "bool", [])
 
     def run(self):
@@ -1652,7 +1652,7 @@ class CMDSickChillPing(ApiCall):
     _help = {"desc": "Ping SickChill to check if it is running"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickChillPing, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
 
     def run(self):
         """ Ping SickChill to check if it is running """
@@ -1667,7 +1667,7 @@ class CMDSickChillRestart(ApiCall):
     _help = {"desc": "Restart SickChill"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickChillRestart, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
 
     def run(self):
         """ Restart SickChill """
@@ -1690,7 +1690,7 @@ class CMDSickChillSearchIndexers(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDSickChillSearchIndexers, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.valid_languages = sickchill.indexer.lang_dict()
         self.name, args = self.check_params(args, kwargs, "name", None, False, "string", [])
         self.lang, args = self.check_params(args, kwargs, "lang", settings.INDEXER_DEFAULT_LANGUAGE, False, "string",
@@ -1758,7 +1758,7 @@ class CMDSickChillSearchTVDB(CMDSickChillSearchIndexers):
     }
 
     def __init__(self, args, kwargs):
-        CMDSickChillSearchIndexers.__init__(self, args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
 
 
@@ -1779,7 +1779,7 @@ class CMDSickChillSearchTVRAGE(CMDSickChillSearchIndexers):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDSickChillSearchTVRAGE, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
 
     def run(self):
         return _responds(RESULT_FAILURE, msg="TVRage is no more, invalid result")
@@ -1799,7 +1799,7 @@ class CMDSickChillSetDefaults(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDSickChillSetDefaults, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.initial, args = self.check_params(args, kwargs, "initial", [], False, "list", ALLOWED_QUALITY_LIST)
         self.archive, args = self.check_params(args, kwargs, "archive", [], False, "list", PREFERRED_QUALITY_LIST)
 
@@ -1855,7 +1855,7 @@ class CMDSickChillShutdown(ApiCall):
     _help = {"desc": "Shutdown SickChill"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickChillShutdown, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
 
     def run(self):
         """ Shutdown SickChill """
@@ -1870,7 +1870,7 @@ class CMDSickChillUpdate(ApiCall):
     _help = {"desc": "Update SickChill to the latest version available"}
 
     def __init__(self, args, kwargs):
-        super(CMDSickChillUpdate, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
 
     def run(self):
         update_manager = UpdateManager()
@@ -1896,7 +1896,7 @@ class CMDShow(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDShow, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
 
     def run(self):
@@ -1989,7 +1989,7 @@ class CMDShowAddExisting(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDShowAddExisting, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "", [])
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
 
@@ -2076,7 +2076,7 @@ class CMDShowAddNew(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDShowAddNew, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.valid_languages = sickchill.indexer.lang_dict()
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.location, args = self.check_params(args, kwargs, "location", None, False, "string", [])
@@ -2223,7 +2223,7 @@ class CMDShowCache(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDShowCache, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
 
     def run(self):
@@ -2272,7 +2272,7 @@ class CMDShowDelete(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDShowDelete, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.removefiles, args = self.check_params(args, kwargs, "removefiles", False, False, "bool", [])
 
@@ -2299,7 +2299,7 @@ class CMDShowGetQuality(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDShowGetQuality, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
 
     def run(self):
@@ -2327,7 +2327,7 @@ class CMDShowGetPoster(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDShowGetPoster, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.tvdbid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
         self.media_format, args = self.check_params(args, kwargs, "media_format", "normal", False, "string", ["normal", "thumb"])
@@ -2355,7 +2355,7 @@ class CMDShowGetBanner(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDShowGetBanner, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.tvdbid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
         self.media_format, args = self.check_params(args, kwargs, "media_format", "normal", False, "string", ["normal", "thumb"])
@@ -2382,7 +2382,7 @@ class CMDShowGetNetworkLogo(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDShowGetNetworkLogo, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.tvdbid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
 
@@ -2410,7 +2410,7 @@ class CMDShowGetFanArt(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDShowGetFanArt, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.tvdbid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
 
@@ -2436,7 +2436,7 @@ class CMDShowPause(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDShowPause, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.pause, args = self.check_params(args, kwargs, "pause", False, False, "bool", [])
 
@@ -2463,7 +2463,7 @@ class CMDShowRefresh(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDShowRefresh, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
 
     def run(self):
@@ -2490,7 +2490,7 @@ class CMDShowSeasonList(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDShowSeasonList, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.sort, args = self.check_params(args, kwargs, "sort", "desc", False, "string", ["asc", "desc"])
 
@@ -2528,7 +2528,7 @@ class CMDShowSeasons(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDShowSeasons, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.season, args = self.check_params(args, kwargs, "season", None, False, "int", [])
 
@@ -2604,7 +2604,7 @@ class CMDShowSetQuality(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDShowSetQuality, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
         self.initial, args = self.check_params(args, kwargs, "initial", [], False, "list", ALLOWED_QUALITY_LIST)
         self.archive, args = self.check_params(args, kwargs, "archive", [], False, "list", PREFERRED_QUALITY_LIST)
@@ -2650,7 +2650,7 @@ class CMDShowStats(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDShowStats, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
 
     def run(self):
@@ -2752,7 +2752,7 @@ class CMDShowUpdate(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDShowUpdate, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
 
     def run(self):
@@ -2780,7 +2780,7 @@ class CMDShows(ApiCall):
     }
 
     def __init__(self, args, kwargs):
-        super(CMDShows, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
         self.sort, args = self.check_params(args, kwargs, "sort", "id", False, "string", ["id", "name"])
         self.paused, args = self.check_params(args, kwargs, "paused", None, False, "bool", [])
 
@@ -2830,7 +2830,7 @@ class CMDShowsStats(ApiCall):
     _help = {"desc": "Get the global shows and episodes statistics"}
 
     def __init__(self, args, kwargs):
-        super(CMDShowsStats, self).__init__(args, kwargs)
+        super().__init__(args, kwargs)
 
     def run(self):
         """ Get the global shows and episodes statistics """

@@ -45,7 +45,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
 
         :rtype: object
         """
-        generic_queue.GenericQueue.__init__(self)
+        super().__init__()
         self.queue_name = "POSTPROCESSOR"
 
     def find_in_queue(self, directory, filename, mode):
@@ -148,7 +148,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
                     message = item.last_result
                 return message
             else:
-                super(ProcessingQueue, self).add_item(item)
+                super().add_item(item)
                 message = log_helper("{mode} post processing task for {info} was added to the queue".format(**replacements))
                 return message + r"<br\><span class='hidden'>Processing succeeded</span>"
 
@@ -170,7 +170,7 @@ class PostProcessorTask(generic_queue.QueueItem):
         :param mode: processing type: auto/manual
         :return: None
         """
-        super(PostProcessorTask, self).__init__('{mode}'.format(mode=mode.title()), (MANUAL_POST_PROCESS, AUTO_POST_PROCESS)[mode == "auto"])
+        super().__init__('{mode}'.format(mode=mode.title()), (MANUAL_POST_PROCESS, AUTO_POST_PROCESS)[mode == "auto"])
 
         self.directory = directory
         self.filename = filename
@@ -219,7 +219,7 @@ class PostProcessorTask(generic_queue.QueueItem):
         Runs the task
         :return: None
         """
-        super(PostProcessorTask, self).run()
+        super().run()
 
         # noinspection PyBroadException
         try:
@@ -241,5 +241,5 @@ class PostProcessorTask(generic_queue.QueueItem):
         except Exception:
             logger.debug(traceback.format_exc())
 
-        super(PostProcessorTask, self).finish()
+        super().finish()
         self.finish()

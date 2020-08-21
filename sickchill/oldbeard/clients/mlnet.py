@@ -4,7 +4,7 @@ from sickchill.oldbeard.clients.generic import GenericClient
 class Client(GenericClient):
     def __init__(self, host=None, username=None, password=None):
 
-        super(Client, self).__init__('mlnet', host, username, password)
+        super().__init__('mlnet', host, username, password)
 
         self.url = self.host
         # self.session.auth = HTTPDigestAuth(self.username, self.password);

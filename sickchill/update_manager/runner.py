@@ -301,7 +301,7 @@ class UpdateManager(object):
     def update(self):
         self.branch = settings.BRANCH
         if self.need_update():
-            return self.update()
+            return self.updater.update()
 
     def list_remote_branches(self):
         if self.updater:

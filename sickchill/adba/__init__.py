@@ -17,7 +17,7 @@ version = 100
 class Connection(threading.Thread):
     def __init__(self, client_name='adba', server='api.anidb.info', port=9000, myport=9876, user=None, password=None,
                  session=None, log=False, log_private=False, keep_alive=False):
-        super(Connection, self).__init__()
+        super().__init__()
         # setting the log function
         self.log_private = log_private
         if type(log) in (FunctionType, MethodType):  # if we get a function or a method use that.

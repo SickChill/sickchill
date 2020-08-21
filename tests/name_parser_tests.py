@@ -169,8 +169,8 @@ class UnicodeTests(test.SickChillTestDBCase):
     Test str
     """
     def __init__(self, something):
-        super(UnicodeTests, self).__init__(something)
-        super(UnicodeTests, self).setUp()
+        super().__init__(something)
+        super().setUp()
         self.show = tv.TVShow(1, 1, 'en')
         self.show.name = "The Big Bang Theory"
 
@@ -277,8 +277,8 @@ class BasicTests(test.SickChillTestDBCase):
     Basic name parsing tests
     """
     def __init__(self, something):
-        super(BasicTests, self).__init__(something)
-        super(BasicTests, self).setUp()
+        super().__init__(something)
+        super().setUp()
         self.show = tv.TVShow(1, 1, 'en')
 
     def _test_names(self, name_parser, section, transform=None, verbose=False):
@@ -441,8 +441,8 @@ class AnimeTests(test.SickChillTestDBCase):
     Basic tests for anime
     """
     def __init__(self, something):
-        super(AnimeTests, self).__init__(something)
-        super(AnimeTests, self).setUp()
+        super().__init__(something)
+        super().setUp()
         self.show = tv.TVShow(1, 1, 'en')
 
     def _test_names(self, name_parser, section, transform=None, verbose=False):
@@ -500,8 +500,8 @@ class BasicFailedTests(test.SickChillTestDBCase):
     Basic tests that currently fail
     """
     def __init__(self, something):
-        super(BasicFailedTests, self).__init__(something)
-        super(BasicFailedTests, self).setUp()
+        super().__init__(something)
+        super().setUp()
         self.show = tv.TVShow(1, 1, 'en')
 
     def _test_names(self, name_parser, section, transform=None, verbose=False):

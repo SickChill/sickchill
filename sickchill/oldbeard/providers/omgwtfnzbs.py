@@ -69,15 +69,15 @@ class Provider(NZBProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug('Search Mode: {0}'.format(mode))
+            logger.debug(_(f'Search Mode: {mode}'))
             for search_string in search_strings[mode]:
                 search_params['search'] = search_string
                 if mode != 'RSS':
-                    logger.debug('Search string: {0}'.format(search_string))
+                    logger.debug(_(f'Search String: {search_string}'))
 
                 data = self.get_url(self.urls['api'], params=search_params, returns='json')
                 if not data:
-                    logger.debug('No data returned from provider')
+                    logger.debug(_('No data returned from provider'))
                     continue
 
                 if not self._check_auth_from_data(data, is_XML=False):
@@ -87,7 +87,7 @@ class Provider(NZBProvider):
                     if not self._get_title_and_url(item):
                         continue
 
-                    logger.debug('Found result: {0}'.format(item.get('release')))
+                    logger.debug(_(f'Found result: {item.get("release")}'))
                     items.append(item)
 
             results += items

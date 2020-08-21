@@ -55,13 +55,13 @@
                                 <div class="imgsmallposter ${settings.HOME_LAYOUT}">
                                     % if curLoadingShow.show:
                                         <a href="${scRoot}/home/displayShow?show=${loading_show.id}" title="${loading_show.name}">
-                                            <img src="${static_url("images/poster.png")}" data-src="${static_url(loading_show.show_image_url('poster_thumb'))}"
+                                            <img src="${static_url("images/poster.png")}" data-src="${static_url(loading_show.show_image_url('poster_thumb', include_date=True), include_version=False)}"
                                                  class="${settings.HOME_LAYOUT}" alt="${loading_show.name}"/>
                                         </a>
                                         <a href="${scRoot}/home/displayShow?show=${loading_show.id}" style="vertical-align: middle;">${loading_show.name}</a>
                                     % else:
                                         <span title="${loading_show.name}">
-                                        <img src="${static_url("images/poster.png")}" data-src="${static_url(loading_show.show_image_url('poster_thumb'))}"
+                                        <img src="${static_url("images/poster.png")}" data-src="${static_url(loading_show.show_image_url('poster_thumb', include_date=True), include_version=False)}"
                                              class="${settings.HOME_LAYOUT}" alt="${loading_show.name}"/>
                                         </span>
                                         <span style="vertical-align: middle;">${_('Loading...')} (${loading_show.name})</span>
@@ -75,7 +75,7 @@
                                     % if curLoadingShow.show:
                                         <a href="${scRoot}/home/displayShow?show=${loading_show.id}">
                                     % endif
-                                    <img src="${static_url("images/banner.png")}" data-src="${static_url(loading_show.show_image_url('banner'))}"
+                                    <img src="${static_url("images/banner.png")}" data-src="${static_url(loading_show.show_image_url('banner', include_date=True), include_version=False)}"
                                          class="${settings.HOME_LAYOUT}" alt="${loading_show.name}" title="${loading_show.name}"/>
                                     % if curLoadingShow.show:
                                         </a>
@@ -178,7 +178,7 @@
                             <td class="tvShow">
                                 <div class="imgsmallposter ${settings.HOME_LAYOUT}">
                                     <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}" title="${curShow.name}">
-                                        <img src="${static_url("images/poster.png")}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}"
+                                        <img src="${static_url("images/poster.png")}" data-src="${static_url(curShow.show_image_url('poster_thumb', include_date=True), include_version=False)}"
                                              class="${settings.HOME_LAYOUT}" alt="${curShow.indexerid}"/>
                                     </a>
                                     <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}" style="vertical-align: middle;">${curShow.name}</a>
@@ -189,7 +189,7 @@
                                 <span style="display: none;">${curShow.name}</span>
                                 <div class="imgbanner ${settings.HOME_LAYOUT}">
                                     <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}">
-                                        <img src="${static_url("images/banner.png")}" data-src="${static_url(curShow.show_image_url('banner'))}"
+                                        <img src="${static_url("images/banner.png")}" data-src="${static_url(curShow.show_image_url('banner', include_date=True), include_version=False)}"
                                              class="${settings.HOME_LAYOUT}" alt="${curShow.indexerid}" title="${curShow.name}"/>
                                     </a>
                                 </div>
@@ -203,7 +203,7 @@
                                 % if curShow.network:
                                     <span title="${curShow.network}" class="hidden-print">
                                         <img id="network" width="54" height="27" src="${static_url('images/network/nonetwork.png')}"
-                                             data-src="${static_url('images/network/{0}.png'.format(curShow.network.lower()))}"
+                                             data-src="${static_url(curShow.network_image_url)}"
                                              alt="${curShow.network}" title="${curShow.network}" />
                                     </span>
                                     <span class="visible-print-inline">${curShow.network}</span>

@@ -23,7 +23,7 @@ class NewznabProvider(NZBProvider):
     def __init__(self, name, url, key='0', catIDs='5030,5040', search_mode='eponly',
                  search_fallback=False, enable_daily=True, enable_backlog=False):
 
-        NZBProvider.__init__(self, name)
+        super().__init__(name)
 
         self.url = url
         self.key = key
@@ -300,7 +300,7 @@ class NewznabProvider(NZBProvider):
             logger.debug('Search Mode: {0}'.format(mode))
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.debug('Search string: {0}'.format(search_string))
+                    logger.debug(_(f'Search String: {search_string}'))
 
                     if 'tvdbid' not in search_params:
                         search_params['q'] = search_string

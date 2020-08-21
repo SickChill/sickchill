@@ -11,7 +11,7 @@ from sickchill.views.routes import Route
 @Route('/home/postprocess(/?.*)', name='home:postprocess')
 class PostProcess(Home):
     def __init__(self, *args, **kwargs):
-        super(PostProcess, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @addslash
     def index(self, *args_, **kwargs_):

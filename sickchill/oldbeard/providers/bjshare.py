@@ -1,7 +1,7 @@
 import re
 from urllib.parse import urljoin
 
-from requests.utils import add_dict_to_cookiejar, dict_from_cookiejar
+from requests.utils import dict_from_cookiejar
 
 from sickchill import logger
 from sickchill.helper.common import convert_size, try_int
@@ -95,7 +95,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug('Search Mode: {0}'.format(mode))
+            logger.debug(_(f'Search Mode: {mode}'))
 
             # if looking for season, look for more pages
             if mode == 'Season':
@@ -103,7 +103,7 @@ class Provider(TorrentProvider):
 
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.debug('Search string: {0}'.format(search_string))
+                    logger.debug(_(f'Search String: {search_string}'))
 
                 # Remove season / episode from search (not supported by tracker)
                 search_str = re.sub(r'\d+$' if anime else r'[S|E]\d\d', '', search_string).strip()
@@ -118,7 +118,7 @@ class Provider(TorrentProvider):
 
                     response = self.session.get(self.urls['search'], params=search_params)
                     if not response:
-                        logger.debug('No data returned from provider')
+                        logger.debug(_('No data returned from provider'))
                         continue
 
                     result = self._parse(response.content, mode)
@@ -242,8 +242,7 @@ class Provider(TorrentProvider):
                     })
 
                     if mode != 'RSS':
-                        logger.debug('Found result: {0} with {1} seeders and {2} leechers'.format
-                                     (torrent_name, seeders, leechers))
+                        logger.debug(_(f'Found result: {torrent_name} with {seeders} seeders and {leechers} leechers'))
 
                 except (AttributeError, TypeError, KeyError, ValueError, IndexError):
                     logger.exception('Failed parsing provider.')

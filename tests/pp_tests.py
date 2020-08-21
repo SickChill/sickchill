@@ -64,7 +64,7 @@ class PPBasicTests(test.SickChillTestDBCase):
 
 class ListAssociatedFiles(unittest.TestCase):
     def __init__(self, test_case):
-        super(ListAssociatedFiles, self).__init__(test_case)
+        super().__init__(test_case)
         self.test_tree = os.path.join('Show Name', 'associated_files', 'random', 'recursive', 'subdir')
 
         file_names = [

@@ -92,7 +92,7 @@ class LoginAcceptedResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'LOGIN_ACCEPTED'
         self.codetail = ()
         self.coderep = ()
@@ -115,7 +115,7 @@ class LoginAcceptedNewVerResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'LOGIN_ACCEPTED_NEW_VER'
         self.codetail = ()
         self.coderep = ()
@@ -136,7 +136,7 @@ class LoggedOutResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'LOGGED_OUT'
         self.codehead = ()
         self.codetail = ()
@@ -151,7 +151,7 @@ class ResourceResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'RESOURCE'
         self.codehead = ()
         self.codetail = ()
@@ -166,7 +166,7 @@ class StatsResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'STATS'
         self.codehead = ()
         self.codetail = ()
@@ -181,7 +181,7 @@ class TopResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'TOP'
         self.codehead = ()
         self.codetail = ()
@@ -197,7 +197,7 @@ class UptimeResponse(Response):
         uptime	- udpserver uptime in milliseconds
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'UPTIME'
         self.codehead = ()
         self.codetail = ('uptime',)
@@ -213,7 +213,7 @@ class EncryptionEnabledResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'ENCRYPTION_ENABLED'
         self.codehead = ('salt',)
         self.codetail = ()
@@ -229,7 +229,7 @@ class MylistEntryAddedResponse(Response):
         entrycnt - number of entries added
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'MYLIST_ENTRY_ADDED'
         self.codehead = ()
         self.codetail = ('entrycnt',)
@@ -245,7 +245,7 @@ class MylistEntryDeletedResponse(Response):
         entrycnt - number of entries
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'MYLIST_ENTRY_DELETED'
         self.codehead = ()
         self.codetail = ('entrycnt',)
@@ -260,7 +260,7 @@ class AddedFileResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'ADDED_FILE'
         self.codehead = ()
         self.codetail = ()
@@ -275,7 +275,7 @@ class AddedStreamResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'ADDED_STREAM'
         self.codehead = ()
         self.codetail = ()
@@ -289,7 +289,7 @@ class EncodingChangedResponse(Response):
 
         data:
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'ENCODING_CHANGED'
         self.codehead = ()
         self.codetail = ()
@@ -346,7 +346,7 @@ class FileResponse(Response):
         producerids	producer id list
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'FILE'
         self.codehead = ()
         self.coderep = ()
@@ -380,7 +380,7 @@ class MylistResponse(Response):
         source	 - where you got the file (bittorrent,dc++,ed2k,...)
         other	 - other data regarding this file
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'MYLIST'
         self.codehead = ()
         self.codetail = ('lid', 'fid', 'eid', 'aid', 'gid', 'date', 'state', 'viewdate', 'storage', 'source', 'other')
@@ -411,7 +411,7 @@ class MylistStatsResponse(Response):
         reviews		- reviews
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'MYLIST_STATS'
         self.codehead = ()
         self.codetail = (
@@ -434,7 +434,7 @@ class NotificationResponse(Response):
         date        - date notification subscribed to
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFICATION'
         self.codehead = ()
         self.codetail = ('nid', 'unknown', 'type', 'aid', 'priority', 'date')
@@ -443,7 +443,7 @@ class NotificationResponse(Response):
 
 class AnimeResponse(Response):
     def __init__(self, cmd, restag, rescode, resstr, datalines):
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'ANIME'
         self.codehead = ()
         self.coderep = ()
@@ -462,7 +462,7 @@ class AnimeBestMatchResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'ANIME_BEST_MATCH'
         self.codehead = ()
         self.codetail = ()
@@ -477,7 +477,7 @@ class RandomanimeResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'RANDOMANIME'
         self.codehead = ()
         self.codetail = ()
@@ -501,7 +501,7 @@ class EpisodeResponse(Response):
         kanji	- kanji name of episode
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'EPISODE'
         self.codehead = ()
         self.codetail = ('eid', 'aid', 'length', 'rating', 'votes', 'epno', 'name', 'romaji', 'kanji')
@@ -523,7 +523,7 @@ class ProducerResponse(Response):
         url	  - home page url
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'PRODUCER'
         self.codehead = ()
         self.codetail = ('pid', 'name', 'shortname', 'othername', 'type', 'pic', 'url')
@@ -548,7 +548,7 @@ class GroupResponse(Response):
         url	   - url
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'GROUP'
         self.codehead = ()
         self.codetail = (
@@ -574,7 +574,7 @@ class GroupstatusResponse(Response):
         url	   - url
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'GROUPSTATUS'
         self.codehead = ()
         self.codetail = ('gid', 'name', 'state', ' last_episode_number', 'rating', 'votes', 'episode_range')
@@ -595,7 +595,7 @@ class BuddyListResponse(Response):
         state	- state
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'BUDDY_LIST'
         self.codehead = ('start', 'end', 'total')
         self.codetail = ('uid', 'username', 'state')
@@ -615,7 +615,7 @@ class BuddyStateResponse(Response):
         state	- online state
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'BUDDY_STATE'
         self.codehead = ('start', 'end', 'total')
         self.codetail = ('uid', 'state')
@@ -630,7 +630,7 @@ class BuddyAddedResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'BUDDY_ADDED'
         self.codehead = ()
         self.codetail = ()
@@ -645,7 +645,7 @@ class BuddyDeletedResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'BUDDY_DELETED'
         self.codehead = ()
         self.codetail = ()
@@ -660,7 +660,7 @@ class BuddyAcceptedResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'BUDDY_ACCEPTED'
         self.codehead = ()
         self.codetail = ()
@@ -675,7 +675,7 @@ class BuddyDeniedResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'BUDDY_DENIED'
         self.codehead = ()
         self.codetail = ()
@@ -691,7 +691,7 @@ class VotedResponse(Response):
         name	- aname/ename/gname
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'VOTED'
         self.codehead = ()
         self.codetail = ('name',)
@@ -708,7 +708,7 @@ class VoteFoundResponse(Response):
         value	- vote value
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'VOTE_FOUND'
         self.codehead = ()
         self.codetail = ('name', 'value')
@@ -725,7 +725,7 @@ class VoteUpdatedResponse(Response):
         value	- vote value
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'VOTE_UPDATED'
         self.codehead = ()
         self.codetail = ('name', 'value')
@@ -742,7 +742,7 @@ class VoteRevokedResponse(Response):
         value	- vote value
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'VOTE_REVOKED'
         self.codehead = ()
         self.codetail = ('name', 'value')
@@ -758,7 +758,7 @@ class NotificationAddedResponse(Response):
         nid - notofication id
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFICATION_ITEM_ADDED'
         self.codehead = ()
         self.codetail = ('nid',)
@@ -774,7 +774,7 @@ class NotificationDeletedResponse(Response):
         nid - notofication id
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFICATION_ITEM_DELETED'
         self.codehead = ()
         self.codetail = ()
@@ -790,7 +790,7 @@ class NotificationUpdatedResponse(Response):
         nid - notofication id
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFICATION_ITEM_UPDATED'
         self.codehead = ()
         self.codetail = ('nid',)
@@ -809,7 +809,7 @@ class MultipleNotificationResponse(Response):
 
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'MULTIPLE NOTIFICATION ITEMS'
         self.codehead = ()
         self.codetail = ()
@@ -824,7 +824,7 @@ class NotificationEnabledResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFICATION_ENABLED'
         self.codehead = ()
         self.codetail = ()
@@ -844,7 +844,7 @@ class NotificationNotifyResponse(Response):
         name	- name of the anime
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFICATION_NOTIFY'
         self.codehead = ('nid',)
         self.codetail = ('aid', 'date', 'count', 'name')
@@ -865,7 +865,7 @@ class NotificationMessageResponse(Response):
         subject	- subject
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFICATION_MESSAGE'
         self.codehead = ('nid',)
         self.codetail = ('type', 'date', 'uid', 'name', 'subject')
@@ -883,7 +883,7 @@ class NotificationBuddyResponse(Response):
         type	- event type
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFICATION_BUDDY'
         self.codehead = ('notify_packet_id',)
         self.codetail = ('uid', 'type')
@@ -901,7 +901,7 @@ class NotificationShutdownResponse(Response):
         comment	- comment
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFICATION_SHUTDOWN'
         self.codehead = ('nid',)
         self.codetail = ('time', 'comment')
@@ -916,7 +916,7 @@ class PushackConfirmedResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'PUSHACK_CONFIRMED'
         self.codehead = ()
         self.codetail = ()
@@ -931,7 +931,7 @@ class NotifyackSuccessfulMResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFYACK_SUCCESSFUL_M'
         self.codehead = ()
         self.codetail = ()
@@ -946,7 +946,7 @@ class NotifyackSuccessfulNResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFYACK_SUCCESSFUL_N'
         self.codehead = ()
         self.codetail = ()
@@ -964,7 +964,7 @@ class NotificationStateResponse(Response):
         buddys	 - number of online buddys
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFICATION'
         self.codehead = ()
         self.coderep = ()
@@ -987,7 +987,7 @@ class NotifylistResponse(Response):
         nid	- notify id
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFYLIST'
         self.codehead = ()
         self.codetail = ('type', 'nid')
@@ -1009,7 +1009,7 @@ class NotifygetMessageResponse(Response):
         body	- body
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFYGET_MESSAGE'
         self.codehead = ()
         self.codetail = ('nid', 'uid', 'uname', 'date', 'type', 'title', 'body')
@@ -1029,7 +1029,7 @@ class NotifygetNotifyResponse(Response):
         name	- anime name
         fid     - comma separated list of fids
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFYGET_NOTIFY'
         self.codehead = ()
         self.codetail = ('aid', 'type', 'count', 'date', 'name', 'fid')
@@ -1044,7 +1044,7 @@ class SendmsgSuccessfulResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'SENDMSG_SUCCESSFUL'
         self.codehead = ()
         self.codetail = ()
@@ -1060,7 +1060,7 @@ class UserResponse(Response):
         uid	- user id
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'USER'
         self.codehead = ()
         self.codetail = ('uid',)
@@ -1075,7 +1075,7 @@ class PongResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'PONG'
         self.codehead = ()
         self.codetail = ()
@@ -1090,7 +1090,7 @@ class AuthpongResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'AUTHPONG'
         self.codehead = ()
         self.codetail = ()
@@ -1105,7 +1105,7 @@ class NoSuchResourceResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_RESOURCE'
         self.codehead = ()
         self.codetail = ()
@@ -1120,7 +1120,7 @@ class ApiPasswordNotDefinedResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'API_PASSWORD_NOT_DEFINED'
         self.codehead = ()
         self.codetail = ()
@@ -1135,7 +1135,7 @@ class FileAlreadyInMylistResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'FILE_ALREADY_IN_MYLIST'
         self.codehead = ()
         self.codetail = ()
@@ -1151,7 +1151,7 @@ class MylistEntryEditedResponse(Response):
         entries	- number of entries edited
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'MYLIST_ENTRY_EDITED'
         self.codehead = ()
         self.codetail = ('entries',)
@@ -1175,7 +1175,7 @@ class MultipleMylistEntriesResponse(Response):
         geps	   - eps for group
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'MULTIPLE_MYLIST_ENTRIES'
         self.codehead = ()
         self.codetail = ('name', 'eps', 'unknowneps', 'hddeps', 'cdeps', 'deletedeps', 'watchedeps')
@@ -1190,7 +1190,7 @@ class SizeHashExistsResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'SIZE_HASH_EXISTS'
         self.codehead = ()
         self.codetail = ()
@@ -1205,7 +1205,7 @@ class InvalidDataResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'INVALID_DATA'
         self.codehead = ()
         self.codetail = ()
@@ -1220,7 +1220,7 @@ class StreamnoidUsedResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'STREAMNOID_USED'
         self.codehead = ()
         self.codetail = ()
@@ -1235,7 +1235,7 @@ class NoSuchFileResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_FILE'
         self.codehead = ()
         self.codetail = ()
@@ -1250,7 +1250,7 @@ class NoSuchEntryResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_ENTRY'
         self.codehead = ()
         self.codetail = ()
@@ -1266,7 +1266,7 @@ class MultipleFilesFoundResponse(Response):
         fid	- file id
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'MULTIPLE_FILES_FOUND'
         self.codehead = ()
         self.codetail = ()
@@ -1281,7 +1281,7 @@ class NoSuchNotificationResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_NOTIFICATION'
         self.codehead = ()
         self.codetail = ()
@@ -1296,7 +1296,7 @@ class NoGroupsFoundResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO GROUPS FOUND'
         self.codehead = ()
         self.codetail = ()
@@ -1311,7 +1311,7 @@ class NoSuchAnimeResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_ANIME'
         self.codehead = ()
         self.codetail = ()
@@ -1326,7 +1326,7 @@ class NoSuchEpisodeResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_EPISODE'
         self.codehead = ()
         self.codetail = ()
@@ -1341,7 +1341,7 @@ class NoSuchProducerResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_PRODUCER'
         self.codehead = ()
         self.codetail = ()
@@ -1356,7 +1356,7 @@ class NoSuchGroupResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_GROUP'
         self.codehead = ()
         self.codetail = ()
@@ -1371,7 +1371,7 @@ class BuddyAlreadyAddedResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'BUDDY_ALREADY_ADDED'
         self.codehead = ()
         self.codetail = ()
@@ -1386,7 +1386,7 @@ class NoSuchBuddyResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_BUDDY'
         self.codehead = ()
         self.codetail = ()
@@ -1401,7 +1401,7 @@ class BuddyAlreadyAcceptedResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'BUDDY_ALREADY_ACCEPTED'
         self.codehead = ()
         self.codetail = ()
@@ -1416,7 +1416,7 @@ class BuddyAlreadyDeniedResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'BUDDY_ALREADY_DENIED'
         self.codehead = ()
         self.codetail = ()
@@ -1431,7 +1431,7 @@ class NoSuchVoteResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_VOTE'
         self.codehead = ()
         self.codetail = ()
@@ -1446,7 +1446,7 @@ class InvalidVoteTypeResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'INVALID_VOTE_TYPE'
         self.codehead = ()
         self.codetail = ()
@@ -1461,7 +1461,7 @@ class InvalidVoteValueResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'INVALID_VOTE_VALUE'
         self.codehead = ()
         self.codetail = ()
@@ -1477,7 +1477,7 @@ class PermvoteNotAllowedResponse(Response):
         aname	- name of the anime
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'PERMVOTE_NOT_ALLOWED'
         self.codehead = ()
         self.codetail = ('aname',)
@@ -1493,7 +1493,7 @@ class AlreadyPermvotedResponse(Response):
         name	- aname/ename/gname
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'ALREADY_PERMVOTED'
         self.codehead = ()
         self.codetail = ('name',)
@@ -1508,7 +1508,7 @@ class NotificationDisabledResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOTIFICATION_DISABLED'
         self.codehead = ()
         self.codetail = ()
@@ -1523,7 +1523,7 @@ class NoSuchPacketPendingResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_PACKET_PENDING'
         self.codehead = ()
         self.codetail = ()
@@ -1538,7 +1538,7 @@ class NoSuchEntryMResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_ENTRY_M'
         self.codehead = ()
         self.codetail = ()
@@ -1553,7 +1553,7 @@ class NoSuchEntryNResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_ENTRY_N'
         self.codehead = ()
         self.codetail = ()
@@ -1568,7 +1568,7 @@ class NoSuchMessageResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_MESSAGE'
         self.codehead = ()
         self.codetail = ()
@@ -1583,7 +1583,7 @@ class NoSuchNotifyResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_NOTIFY'
         self.codehead = ()
         self.codetail = ()
@@ -1598,7 +1598,7 @@ class NoSuchUserResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_USER'
         self.codehead = ()
         self.codetail = ()
@@ -1613,7 +1613,7 @@ class NoChanges(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_CHANGES'
         self.codehead = ()
         self.codetail = ()
@@ -1628,7 +1628,7 @@ class NotLoggedInResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NOT_LOGGED_IN'
         self.codehead = ()
         self.codetail = ()
@@ -1643,7 +1643,7 @@ class NoSuchMylistFileResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_MYLIST_FILE'
         self.codehead = ()
         self.codetail = ()
@@ -1658,7 +1658,7 @@ class NoSuchMylistEntryResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_MYLIST_ENTRY'
         self.codehead = ()
         self.codetail = ()
@@ -1673,7 +1673,7 @@ class LoginFailedResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'LOGIN_FAILED'
         self.codehead = ()
         self.codetail = ()
@@ -1688,7 +1688,7 @@ class LoginFirstResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'LOGIN_FIRST'
         self.codehead = ()
         self.codetail = ()
@@ -1703,7 +1703,7 @@ class AccessDeniedResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'ACCESS_DENIED'
         self.codehead = ()
         self.codetail = ()
@@ -1718,7 +1718,7 @@ class ClientVersionOutdatedResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'CLIENT_VERSION_OUTDATED'
         self.codehead = ()
         self.codetail = ()
@@ -1733,7 +1733,7 @@ class ClientBannedResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'CLIENT_BANNED'
         self.codehead = ()
         self.codetail = ()
@@ -1748,7 +1748,7 @@ class IllegalInputOrAccessDeniedResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'ILLEGAL_INPUT_OR_ACCESS_DENIED'
         self.codehead = ()
         self.codetail = ()
@@ -1763,7 +1763,7 @@ class InvalidSessionResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'INVALID_SESSION'
         self.codehead = ()
         self.codetail = ()
@@ -1778,7 +1778,7 @@ class NoSuchEncryptionTypeResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'NO_SUCH_ENCRYPTION_TYPE'
         self.codehead = ()
         self.codetail = ()
@@ -1793,7 +1793,7 @@ class EncodingNotSupportedResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'ENCODING_NOT_SUPPORTED'
         self.codehead = ()
         self.codetail = ()
@@ -1808,7 +1808,7 @@ class BannedResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'BANNED'
         self.codehead = ()
         self.codetail = ()
@@ -1823,7 +1823,7 @@ class UnknownCommandResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'UNKNOWN_COMMAND'
         self.codehead = ()
         self.codetail = ()
@@ -1838,7 +1838,7 @@ class InternalServerErrorResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'INTERNAL_SERVER_ERROR'
         self.codehead = ()
         self.codetail = ()
@@ -1853,7 +1853,7 @@ class AnidbOutOfServiceResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'ANIDB_OUT_OF_SERVICE'
         self.codehead = ()
         self.codetail = ()
@@ -1868,7 +1868,7 @@ class ServerBusyResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'SERVER_BUSY'
         self.codehead = ()
         self.codetail = ()
@@ -1883,7 +1883,7 @@ class ApiViolationResponse(Response):
         data:
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'API_VIOLATION'
         self.codehead = ()
         self.codetail = ()
@@ -1899,7 +1899,7 @@ class VersionResponse(Response):
         version	- server version
 
         """
-        Response.__init__(self, cmd, restag, rescode, resstr, datalines)
+        super().__init__(cmd, restag, rescode, resstr, datalines)
         self.codestr = 'VERSION'
         self.codehead = ()
         self.codetail = ('version',)

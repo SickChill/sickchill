@@ -44,7 +44,7 @@ class DispatchFormatter(logging.Formatter, object):
     """
 
     def __init__(self, fmt=None, datefmt=None, style="{"):
-        super(DispatchFormatter, self).__init__(fmt, datefmt, style=style)
+        super().__init__(fmt, datefmt, style=style)
 
     def format(self, record):
         """
@@ -66,7 +66,7 @@ class DispatchFormatter(logging.Formatter, object):
         for item in censored:
             try:
                 # passwords that include ++ for example will error. Cannot escape or it wont match at all.
-                msg = re.sub(r'\b({item})\b'.format(item=item), '*' * 8, msg)
+                msg = re.sub(fr'\b({item})\b', '*' * 8, msg)
             except re.error:
                 msg = msg.replace(item, '*' * 8)
 
@@ -78,14 +78,13 @@ class DispatchFormatter(logging.Formatter, object):
         elif record.levelno == WARNING:
             classes.WarningViewer.add(classes.UIError(msg))
 
-        return super(DispatchFormatter, self).format(record)
+        return super().format(record)
 
 
 class Logger(object):
     """
     Logger to create log entries
     """
-
     def __init__(self):
         self.logger = logging.getLogger('sickchill')
 
@@ -162,6 +161,9 @@ class Logger(object):
                 logger.addHandler(rfh)
 
     def set_level(self):
+        """
+        Sets the logging level for root and all of our loggers
+        """
         self.debug_logging = settings.DEBUG
         self.database_logging = settings.DBDEBUG
 
@@ -223,7 +225,7 @@ class Logger(object):
                     __log_data = log_f.readlines()
 
             for i in range(1, int(settings.LOG_NR)):
-                f_name = '{0}.{1:d}'.format(self.log_file, i)
+                f_name = f'{self.log_file}.{i}'
                 if os.path.isfile(f_name) and (len(__log_data) <= 500):
                     with open(f_name) as log_f:
                         __log_data += log_f.readlines()
@@ -241,11 +243,11 @@ class Logger(object):
                         title_error = title_error[0:1000]
 
                 except Exception as err_msg:
-                    self.logger.log(ERROR, 'Unable to get error title : {0}'.format(str(err_msg)))
+                    self.logger.log(ERROR, f'Unable to get error title : {err_msg}')
                     title_error = 'UNKNOWN'
 
                 gist = None
-                regex = r'^(?P<time>{time})\s+(?P<level>[A-Z]+)\s+[A-Za-z0-9\-\[\] :]+::.*$'.format(time=re.escape(cur_error.time))
+                regex = fr'^(?P<time>{re.escape(cur_error.time)})\s+(?P<level>[A-Z]+)\s+[A-Za-z0-9\-\[\] :]+::.*$'
                 for i, data in enumerate(__log_data):
                     match = re.match(regex, data)
                     if match:
@@ -264,17 +266,17 @@ class Logger(object):
                     locale_name = 'unknown'
 
                 if gist and gist != 'No ERROR found':
-                    log_link = 'Link to Log: {0}'.format(gist.html_url)
+                    log_link = f'Link to Log: {gist.html_url}'
                 else:
                     log_link = 'No Log available with ERRORS:'
 
                 msg = [
                     '### INFO',
-                    'Python Version: **{0}**'.format(sys.version[:120].replace('\n', '')),
-                    'Operating System: **{0}**'.format(platform.platform()),
-                    'Locale: {0}'.format(locale_name),
-                    'Branch: **{0}**'.format(settings.BRANCH),
-                    'Commit: SickChill/SickChill@{0}'.format(settings.CUR_COMMIT_HASH),
+                    f'Python Version: **{sys.version[:120]}**'.replace('\n', ''),
+                    f'Operating System: **{platform.platform()}**',
+                    f'Locale: {locale_name}',
+                    f'Branch: **{settings.BRANCH}**',
+                    f'Commit: SickChill/SickChill@{settings.CUR_COMMIT_HASH}',
                     log_link,
                     '### ERROR',
                     '```',
@@ -285,7 +287,7 @@ class Logger(object):
                 ]
 
                 message = '\n'.join(msg)
-                title_error = '[APP SUBMITTED]: {0}'.format(title_error)
+                title_error = f'[APP SUBMITTED]: {title_error}'
 
                 repo = settings.gh.get_organization(settings.GIT_ORG).get_repo(settings.GIT_REPO)
                 reports = repo.get_issues(state='all')
@@ -311,11 +313,11 @@ class Logger(object):
                         issue_id = report.number
                         if not report.raw_data['locked']:
                             if report.create_comment(message):
-                                submitter_result = 'Commented on existing issue #{0} successfully!'.format(issue_id)
+                                submitter_result = f'Commented on existing issue #{issue_id} successfully!'
                             else:
-                                submitter_result = 'Failed to comment on found issue #{0}!'.format(issue_id)
+                                submitter_result = f'Failed to comment on found issue #{issue_id}!'
                         else:
-                            submitter_result = 'Issue #{0} is locked, check GitHub to find info about the error.'.format(issue_id)
+                            submitter_result = f'Issue #{issue_id} is locked, check GitHub to find info about the error.'
 
                         issue_found = True
                         break
@@ -324,7 +326,7 @@ class Logger(object):
                     issue = repo.create_issue(title_error, message)
                     if issue:
                         issue_id = issue.number
-                        submitter_result = 'Your issue ticket #{0} was submitted successfully!'.format(issue_id)
+                        submitter_result = f'Your issue ticket #{issue_id} was submitted successfully!'
                     else:
                         submitter_result = 'Failed to create a new issue!'
 
@@ -461,6 +463,12 @@ critical = Wrapper.instance.logger.critical
 
 
 def database(msg, *args, **kwargs):
+    """
+    Handler to add database sql logging
+    @param msg: message to be logged
+    @param args: arguments to logger
+    @param kwargs:  kwargs to logger
+    """
     if settings.DBDEBUG:
         debug(msg, args, kwargs)
 

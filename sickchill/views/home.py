@@ -1,4 +1,5 @@
 import ast
+import base64
 import datetime
 import json
 import os
@@ -27,6 +28,8 @@ from sickchill.system.Shutdown import Shutdown
 from sickchill.update_manager import UpdateManager
 
 from ..oldbeard import clients, config, db, filters, helpers, notifiers, sab, search_queue, subtitles as subtitle_module, ui
+from ..providers.metadata.generic import GenericMetadata
+from ..providers.metadata.helpers import getShowImage
 from .common import PageTemplate
 from .index import WebRoot
 from .routes import Route
@@ -35,7 +38,7 @@ from .routes import Route
 @Route('/home(/?.*)', name='home')
 class Home(WebRoot):
     def __init__(self, *args, **kwargs):
-        super(Home, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def _genericMessage(self, subject=None, message=None):
         t = PageTemplate(rh=self, filename="genericMessage.mako")
@@ -230,7 +233,7 @@ class Home(WebRoot):
         if result:
             return _("SMS sent successfully")
         else:
-            return _("Problem sending SMS: {message}").format(message=message)
+            return _(f"Problem sending SMS: {message}")
 
     def testTelegram(self):
         telegram_id = self.get_body_argument('telegram_id')
@@ -239,7 +242,7 @@ class Home(WebRoot):
         if result:
             return _("Telegram notification succeeded. Check your Telegram clients to make sure it worked")
         else:
-            return _("Error sending Telegram notification: {message}").format(message=message)
+            return _(f"Error sending Telegram notification: {message}")
 
     def testJoin(self):
         join_id = self.get_body_argument('join_id')
@@ -249,7 +252,7 @@ class Home(WebRoot):
         if result:
             return _("join notification succeeded. Check your join clients to make sure it worked")
         else:
-            return _("Error sending join notification: {message}").format(message=message)
+            return _(f"Error sending join notification: {message}")
 
     def testGrowl(self):
         host = self.get_query_argument('host')
@@ -927,7 +930,9 @@ class Home(WebRoot):
                  air_by_date=None, sports=None, dvdorder=None, indexerLang=None,
                  subtitles=None, subtitles_sr_metadata=None, rls_ignore_words=None, rls_require_words=None, rls_prefer_words=None,
                  anime=None, blacklist=None, whitelist=None, scene=None,
-                 defaultEpStatus=None, quality_preset=None):
+                 defaultEpStatus=None, quality_preset=None,
+                 custom_name='',
+                 poster=None, banner=None, fanart=None):
 
         anidb_failed = False
 
@@ -1039,6 +1044,43 @@ class Home(WebRoot):
                     show_list.append({'show_name': unquote_plus(cur_show), 'custom': True})
 
                 exceptions[int(season)] = show_list
+
+        show_obj.custom_name = custom_name
+
+        metadata_generator = GenericMetadata()
+
+        def get_images(image):
+            if image.startswith('data:image'):
+                start = image.index('base64,') + 7
+                img_data = base64.b64decode(image[start:])
+                return img_data, img_data
+            else:
+                image_parts = image.split('|')
+                img_url = image_parts[0]
+                img_data = getShowImage(img_url)
+                if len(image_parts) > 1:
+                    img_thumb_url = image_parts[1]
+                    img_thumb_data = getShowImage(img_thumb_url)
+                    return img_data, img_thumb_data
+                else:
+                    return img_data, img_data
+
+        if poster:
+            img_data, img_thumb_data = get_images(poster)
+            dest_path = settings.IMAGE_CACHE.poster_path(show_obj.indexerid)
+            dest_thumb_path = settings.IMAGE_CACHE.poster_thumb_path(show_obj.indexerid)
+            metadata_generator._write_image(img_data, dest_path, overwrite=True)
+            metadata_generator._write_image(img_thumb_data, dest_thumb_path, overwrite=True)
+        if banner:
+            img_data, img_thumb_data = get_images(banner)
+            dest_path = settings.IMAGE_CACHE.banner_path(show_obj.indexerid)
+            dest_thumb_path = settings.IMAGE_CACHE.banner_thumb_path(show_obj.indexerid)
+            metadata_generator._write_image(img_data, dest_path, overwrite=True)
+            metadata_generator._write_image(img_thumb_data, dest_thumb_path, overwrite=True)
+        if fanart:
+            img_data, img_thumb_data = get_images(fanart)
+            dest_path = settings.IMAGE_CACHE.fanart_path(show_obj.indexerid)
+            metadata_generator._write_image(img_data, dest_path, overwrite=True)
 
         # If directCall from mass_edit_update no scene exceptions handling or blackandwhite list handling
         if not directCall:

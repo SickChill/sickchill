@@ -1,5 +1,6 @@
 import re
 import traceback
+from urllib.parse import urljoin
 
 from sickchill import logger
 from sickchill.helper.common import convert_size, try_int
@@ -26,10 +27,10 @@ class Provider(TorrentProvider):
         self.minleech = 0
 
         # URLs
-        self.url = 'https://torrentz2.eu/'
+        self.url = 'https://www2.torrentz2.si/'
         self.urls = {
-            'verified': 'https://torrentz2.eu/feed_verified',
-            'feed': 'https://torrentz2.eu/feed',
+            'verified': urljoin(self.url, 'feed_verified'),
+            'feed': urljoin(self.url, 'feed'),
             'base': self.url,
         }
 
@@ -48,14 +49,14 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug("Search Mode: {0}".format(mode))
+            logger.debug(_(f"Search Mode: {mode}"))
             for search_string in search_strings[mode]:
 
                 # Feed verified does not exist on this clone
                 # search_url = self.urls['verified'] if self.confirmed else self.urls['feed']
                 search_url = self.urls['feed']
                 if mode != 'RSS':
-                    logger.debug("Search string: {0}".format(search_string))
+                    logger.debug(_(f"Search String: {search_string}"))
 
                 data = self.get_url(search_url, params={'f': search_string}, returns='text')
                 if not data:

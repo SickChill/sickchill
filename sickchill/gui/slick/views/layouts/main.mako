@@ -93,11 +93,13 @@
         <link rel="stylesheet" type="text/css" href="${static_url('css/vendor.min.css')}"/>
         <link rel="stylesheet" type="text/css" href="${static_url('css/browser.css')}" />
         <link rel="stylesheet" type="text/css" href="${static_url('css/font-awesome.min.css')}" />
+        <link rel="stylesheet" type="text/css" href="${static_url('css/fork-awesome.min.css')}" />
         <link rel="stylesheet" type="text/css" href="${static_url('css/lib/jquery-ui-1.10.4.custom.min.css')}" />
         <link rel="stylesheet" type="text/css" href="${static_url('css/lib/jquery.qtip-2.2.1.min.css')}"/>
         <link rel="stylesheet" type="text/css" href="${static_url('css/style.css')}"/>
         <link rel="stylesheet" type="text/css" href="${static_url('css/print.css')}" />
         <link rel="stylesheet" type="text/css" href="${static_url('css/country-flags.css')}"/>
+        <link rel="stylesheet" type="text/css" href="${static_url('css/jquery-ui-custom.css')}" />
 
         % if settings.THEME_NAME != "light":
             <link rel="stylesheet" type="text/css" href="${static_url(urljoin('css/', '.'.join((settings.THEME_NAME, 'css'))))}" />
@@ -140,6 +142,7 @@
                 % if srLogin:
                     <div class="collapse navbar-collapse" id="collapsible-navbar">
                         <ul class="nav navbar-nav navbar-right">
+                            <%block name="navbar" />
                             <li id="NAVhome" class="navbar-split dropdown${('', ' active')[topmenu == 'home']}">
                                 <a href="${static_url("home/", include_version=False)}" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span>${_('Shows')}</span>
                                     <b class="caret"></b>
@@ -214,6 +217,8 @@
                                     <li><a href="${static_url("config/postProcessing/", include_version=False)}"><i class="fa fa-fw fa-refresh"></i>&nbsp;${_('Post Processing')}</a></li>
                                     <li><a href="${static_url("config/notifications/", include_version=False)}"><i class="fa fa-fw fa-bell-o"></i>&nbsp;${_('Notifications')}</a></li>
                                     <li><a href="${static_url("config/anime/", include_version=False)}"><i class="fa fa-fw fa-eye"></i>&nbsp;${_('Anime')}</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="${static_url("apibuilder", include_version=False)}"><i class="fa fa-fw fa-info-circle"></i>&nbsp;${_('API Builder')}</a></li>
                                 </ul>
                                 <div style="clear:both;"></div>
                             </li>
@@ -238,6 +243,9 @@
                                 <ul class="dropdown-menu">
                                     <li><a href="${static_url("news/", include_version=False)}"><i class="fa fa-fw fa-newspaper-o"></i>&nbsp;${_('News')}${newsBadge}</a></li>
                                     <li><a href="${static_url("IRC/", include_version=False)}"><i class="fa fa-fw fa-hashtag"></i>&nbsp;${_('IRC')}</a></li>
+                                    <li><a href="https://discord.gg/U8WPBdf"><i class="fa fa-fw fa-discord-alt"></i>&nbsp;${_('Discord')}</a></li>
+                                    <li><a href="https://sickchill.slack.com"><i class="fa fa-fw fa-slack"></i>&nbsp;${_('Slack')}</a></li>
+                                    <li><a href="https://t.me/sickchill"><i class="fa fa-fw fa-telegram"></i>&nbsp;${_('Telegram')}</a></li>
                                     <li><a href="${static_url("changes/", include_version=False)}"><i class="fa fa-fw fa-globe"></i>&nbsp;${_('Changelog')}</a></li>
                                     <li><a href="https://github.com/SickChill/SickChill/wiki/Donations" rel="noreferrer" onclick="window.open('${settings.ANON_REDIRECT}' + this.href); return false;"><i class="fa fa-fw fa-life-ring"></i>&nbsp;${_('Support SickChill')}</a></li>
                                     <li role="separator" class="divider"></li>

@@ -11,7 +11,7 @@ class Provider(TorrentProvider):
 
     def __init__(self):
 
-        TorrentProvider.__init__(self, "ncore.cc")
+        super().__init__("ncore.cc")
         self.username = None
         self.password = None
         self.minseed = 0
@@ -64,7 +64,7 @@ class Provider(TorrentProvider):
 
             for search_string in search_strings[mode]:
                 if mode != "RSS":
-                    logger.debug("Search string: {0}".format(search_string))
+                    logger.debug(_(f"Search String: {search_string}"))
 
                 url = self.urls['search'] % search_string
                 data = self.get_url(url, returns="text")

@@ -10,7 +10,7 @@ class SickChillArgumentParser(ArgumentParser):
         sys.exit(2)
 
     def __init__(self, data_dir):
-        super(SickChillArgumentParser, self).__init__()
+        super().__init__()
         self.data_dir = data_dir
 
         self.description = """SickChill is an automatic tv library manager. It handles searching, sending to your download client, organizing, renaming,

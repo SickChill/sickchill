@@ -9,7 +9,7 @@ from .. import logger
 class Scheduler(threading.Thread):
     def __init__(self, action, cycleTime=datetime.timedelta(minutes=10), run_delay=datetime.timedelta(minutes=0),
                  start_time=None, threadName="ScheduledThread", silent=True):
-        super(Scheduler, self).__init__()
+        super().__init__()
 
         self.run_delay = run_delay
         if start_time is None:

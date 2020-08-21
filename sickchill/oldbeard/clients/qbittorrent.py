@@ -8,12 +8,12 @@ from sickchill.oldbeard.clients.generic import GenericClient
 
 class Client(GenericClient):
     def __init__(self, host=None, username=None, password=None):
-        super(Client, self).__init__('qBittorrent', host, username, password)
+        super().__init__('qBittorrent', host, username, password)
         self.host, self.port = splitport(self.host)
         self.api = qbittorrentapi.Client(host=self.host, port=self.port or 8080, username=self.username, password=self.password)
 
     def _get_auth(self):
-        return self.api.auth_log_in()
+        return self.api.is_logged_in or self.api.auth_log_in()
 
     def testAuthentication(self):
         try:

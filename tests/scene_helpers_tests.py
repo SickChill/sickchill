@@ -64,7 +64,7 @@ class SceneExceptionTestCase(test.SickChillTestDBCase):
         """
         Set up tests
         """
-        super(SceneExceptionTestCase, self).setUp()
+        super().setUp()
         scene_exceptions.retrieve_exceptions()
 
     def test_scene_ex_empty(self):

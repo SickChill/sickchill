@@ -16,7 +16,7 @@ MANUAL_SEARCH_HISTORY_SIZE = 100
 
 class SearchQueue(generic_queue.GenericQueue):
     def __init__(self):
-        generic_queue.GenericQueue.__init__(self)
+        super().__init__()
         self.queue_name = "SEARCHQUEUE"
 
     def is_in_queue(self, show, segment):
@@ -101,16 +101,16 @@ class SearchQueue(generic_queue.GenericQueue):
             logger.debug("Not adding item, it's already in the queue")
 
         if add_item:
-            super(SearchQueue, self).add_item(item)
+            super().add_item(item)
 
 
 class DailySearchQueueItem(generic_queue.QueueItem):
     def __init__(self):
-        super(DailySearchQueueItem, self).__init__('Daily Search', DAILY_SEARCH)
+        super().__init__('Daily Search', DAILY_SEARCH)
         self.success = None
 
     def run(self):
-        super(DailySearchQueueItem, self).run()
+        super().run()
 
         try:
             logger.info("Beginning daily search for new episodes")
@@ -132,13 +132,13 @@ class DailySearchQueueItem(generic_queue.QueueItem):
         if self.success is None:
             self.success = False
 
-        super(DailySearchQueueItem, self).finish()
+        super().finish()
         self.finish()
 
 
 class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment, downCurQuality=False):
-        super(ManualSearchQueueItem, self).__init__('Manual Search', MANUAL_SEARCH)
+        super().__init__('Manual Search', MANUAL_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
         self.name = 'MANUAL-' + str(show.indexerid)
         self.success = None
@@ -148,7 +148,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         self.downCurQuality = downCurQuality
 
     def run(self):
-        super(ManualSearchQueueItem, self).run()
+        super().run()
 
         try:
             logger.info("Beginning manual search for: [" + self.segment.pretty_name() + "]")
@@ -179,13 +179,13 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         if self.success is None:
             self.success = False
 
-        super(ManualSearchQueueItem, self).finish()
+        super().finish()
         self.finish()
 
 
 class BacklogQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
-        super(BacklogQueueItem, self).__init__('Backlog', BACKLOG_SEARCH)
+        super().__init__('Backlog', BACKLOG_SEARCH)
         self.priority = generic_queue.QueuePriorities.LOW
         self.name = 'BACKLOG-' + str(show.indexerid)
         self.success = None
@@ -193,7 +193,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
         self.segment = segment
 
     def run(self):
-        super(BacklogQueueItem, self).run()
+        super().run()
 
         if not self.show.paused:
             try:
@@ -213,13 +213,13 @@ class BacklogQueueItem(generic_queue.QueueItem):
             except Exception:
                 logger.debug(traceback.format_exc())
 
-        super(BacklogQueueItem, self).finish()
+        super().finish()
         self.finish()
 
 
 class FailedQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment, downCurQuality=False):
-        super(FailedQueueItem, self).__init__('Retry', FAILED_SEARCH)
+        super().__init__('Retry', FAILED_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
         self.name = 'RETRY-' + str(show.indexerid)
         self.show = show
@@ -229,7 +229,7 @@ class FailedQueueItem(generic_queue.QueueItem):
         self.downCurQuality = downCurQuality
 
     def run(self):
-        super(FailedQueueItem, self).run()
+        super().run()
         self.started = True
 
         try:
@@ -271,7 +271,7 @@ class FailedQueueItem(generic_queue.QueueItem):
         if self.success is None:
             self.success = False
 
-        super(FailedQueueItem, self).finish()
+        super().finish()
         self.finish()
 
 

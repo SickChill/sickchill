@@ -122,11 +122,13 @@ class ImageCache(object):
         logger.debug("Checking if file " + str(banner_thumb_path) + " exists")
         return os.path.isfile(banner_thumb_path)
 
-    def image_url(self, indexer_id, which):
+    def image_url(self, indexer_id, which, include_date=False):
         path = self.__getattribute__(which + "_path")(indexer_id)
         if os.path.isfile(path):
             try:
-                return 'cache' + path.split(settings.CACHE_DIR)[1].replace('\\', '/')
+                image_path = 'cache' + path.split(settings.CACHE_DIR)[1].replace('\\', '/')
+                return f"{image_path}?updated={int(os.path.getctime(path))}" if include_date else image_path
+
             except (AttributeError, ValueError, IndexError):
                 logger.info('Error with cache path, path={}, cache={}, split={}'.format(
                     path, settings.CACHE_DIR, str(path.split(settings.CACHE_DIR))))
@@ -255,6 +257,8 @@ class ImageCache(object):
             img_url = sickchill.indexer.series_poster_url(show_obj)
             if not img_url:
                 img_url = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, 'poster')
+            if not img_url:
+                img_url = metadata_generator._retrieve_show_image_urls_from_tmdb(show_obj, 'poster')
             dest_path = self.poster_path(show_obj.indexerid)
         elif img_type == self.BANNER:
             img_url = sickchill.indexer.series_banner_url(show_obj)
@@ -265,6 +269,8 @@ class ImageCache(object):
             img_url = sickchill.indexer.series_poster_url(show_obj, thumb=True)
             if not img_url:
                 img_url = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, 'poster', thumb=True)
+            if not img_url:
+                img_url = metadata_generator._retrieve_show_image_urls_from_tmdb(show_obj, 'poster')
             dest_path = self.poster_thumb_path(show_obj.indexerid)
         elif img_type == self.BANNER_THUMB:
             img_url = sickchill.indexer.series_banner_url(show_obj, thumb=True)
@@ -275,6 +281,8 @@ class ImageCache(object):
             img_url = sickchill.indexer.series_fanart_url(show_obj)
             if not img_url:
                 img_url = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, 'fanart')
+            if not img_url:
+                img_url = metadata_generator._retrieve_show_image_urls_from_tmdb(show_obj, 'fanart')
             dest_path = self.fanart_path(show_obj.indexerid)
         else:
             logger.exception("Invalid cache image type: " + str(img_type))
