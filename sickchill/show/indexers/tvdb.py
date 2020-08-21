@@ -90,7 +90,7 @@ class TVDB(Indexer):
 
         return result
 
-    @ExceptionDecorator()
+    @ExceptionDecorator(default_return=list())
     def search(self, name, language=None, exact=False, indexer_id=False):
         """
         :param name: Show name to search for
@@ -101,7 +101,7 @@ class TVDB(Indexer):
         """
         language = language or self.language
         result = []
-        if re.match(r'^t?t?\d{7,8}$', str(name)) or re.match(r'^\d{6}$', str(name)):
+        if re.match(r'^t?t?\d{7,8}$', str(name)) or re.match(r'^\d{6}$', name):
             try:
                 if re.match(r'^t?t?\d{7,8}$', str(name)):
                     result = self._search(imdbId='tt{}'.format(name.strip('t')), language=language)

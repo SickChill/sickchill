@@ -8,7 +8,7 @@ from sickchill import logger
 
 class ExceptionDecorator(object):
 
-    def __init__(self, default_return=None, catch=(HTTPError, HTTPWarning, RequestException, RequestsWarning), image_api=False):
+    def __init__(self, default_return=None, catch=(HTTPError, HTTPWarning, RequestException, RequestsWarning, TypeError), image_api=False):
         self.default_return = default_return or []
         self.catch = catch
         self.image_api = image_api
