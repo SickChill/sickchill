@@ -4,6 +4,7 @@ import subprocess
 
 from sickchill import logger, settings
 from sickchill.oldbeard import helpers, notifiers
+
 from .abstract import UpdateManagerBase
 
 

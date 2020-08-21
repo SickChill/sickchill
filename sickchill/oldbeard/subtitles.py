@@ -13,6 +13,7 @@ import sickchill.oldbeard.helpers
 from sickchill import logger, settings
 from sickchill.helper.common import dateTimeFormat, episode_num
 from sickchill.show.Show import Show
+
 from . import db, history
 from .common import Quality
 from .helpers import is_media_file
