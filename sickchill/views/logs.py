@@ -25,7 +25,7 @@ class ErrorLogs(WebRoot):
             },
             {
                 'title': _('Clear Warnings'),
-                'path': 'errorlogs/clearerrors/?level='.format(logger.WARNING),
+                'path': f'errorlogs/clearerrors/?level={logger.WARNING}',
                 'requires': self.haveWarnings() and level == logger.WARNING,
                 'icon': 'ui-icon ui-icon-trash'
             },

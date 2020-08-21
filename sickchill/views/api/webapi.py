@@ -125,8 +125,8 @@ class ApiHandler(RequestHandler):
             if callback:
                 out = callback + '(' + out + ');'  # wrap with JSONP call if requested
         except Exception as e:  # if we fail to generate the output fake an error
-            logger.debug("API :: " + traceback.format_exc())
-            out = '{{"result": "{0}", "message": "error while composing output: {1}"}}'.format(result_type_map[RESULT_ERROR], str(e))
+            logger.debug(f"API :: {traceback.format_exc()}")
+            out = f'{{"result": "{result_type_map[RESULT_ERROR]}", "message": "error while composing output: {e}"}}'
         return out
 
     def call_dispatcher(self, args, kwargs):  # pylint:disable=too-many-branches

@@ -233,7 +233,7 @@ class Home(WebRoot):
         if result:
             return _("SMS sent successfully")
         else:
-            return _("Problem sending SMS: {message}").format(message=message)
+            return _(f"Problem sending SMS: {message}")
 
     def testTelegram(self):
         telegram_id = self.get_body_argument('telegram_id')
@@ -242,7 +242,7 @@ class Home(WebRoot):
         if result:
             return _("Telegram notification succeeded. Check your Telegram clients to make sure it worked")
         else:
-            return _("Error sending Telegram notification: {message}").format(message=message)
+            return _(f"Error sending Telegram notification: {message}")
 
     def testJoin(self):
         join_id = self.get_body_argument('join_id')
@@ -252,7 +252,7 @@ class Home(WebRoot):
         if result:
             return _("join notification succeeded. Check your join clients to make sure it worked")
         else:
-            return _("Error sending join notification: {message}").format(message=message)
+            return _(f"Error sending join notification: {message}")
 
     def testGrowl(self):
         host = self.get_query_argument('host')

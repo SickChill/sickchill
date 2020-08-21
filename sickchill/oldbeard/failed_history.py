@@ -57,7 +57,7 @@ def logFailed(release):
 
     if not hasFailed(release, size, provider):
         failed_db_con = db.DBConnection('failed.db')
-        failed_db_con.action("INSERT INTO failed (release, size, provider) VALUES (?, ?, ?)", [release, size, provider])
+        failed_db_con.action("INSERT INTO failed ('release', size, provider) VALUES (?, ?, ?)", [release, size, provider])
 
     deleteLoggedSnatch(release, size, provider)
 
@@ -159,7 +159,7 @@ def logSnatch(searchResult):
     failed_db_con = db.DBConnection('failed.db')
     for episode in searchResult.episodes:
         failed_db_con.action(
-            "INSERT INTO history (date, size, release, provider, showid, season, episode, old_status)"
+            "INSERT INTO history (date, size, 'release', provider, showid, season, episode, old_status)"
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             [logDate, searchResult.size, release, provider, show_obj.indexerid, episode.season, episode.episode,
              episode.status])
