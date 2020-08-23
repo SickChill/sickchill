@@ -22,17 +22,18 @@
 
 <%block name="content">
     <div class="image-selector-dialog" style="display:none">
-        <select id="images-provider" name="provider" data-default="${show.indexer}">
-            <option value="-1">Upload</option>
-            <option value="${show_indexer.FANART}">Fanart</option>
-            <option value="${show_indexer.TMDB}">TMDB</option>
-            % for index, indexer in show_indexer:
-            <option value="${index}" ${('', 'selected="selected"')[show.indexer == index]}>
-                ${indexer.name}
-            </option>
-            % endfor
-        </select>
-
+        <div class="image-provider-container">
+            <select id="images-provider" name="provider" data-default="${show.indexer}">
+                <option value="-1">Upload</option>
+                <option value="${show_indexer.FANART}">Fanart</option>
+                <option value="${show_indexer.TMDB}">TMDB</option>
+                % for index, indexer in show_indexer:
+                <option value="${index}" ${('', 'selected="selected"')[show.indexer == index]}>
+                    ${indexer.name}
+                </option>
+                % endfor
+            </select>
+        </div>
         <div class="upload" hidden>
             <input type="file" id="upload-image-input" accept="image/*" multiple/>
         </div>
