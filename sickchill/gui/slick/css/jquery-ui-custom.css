@@ -18,7 +18,5 @@
 
 .ui-dialog.ui-dialog-scrollable-by-child .ui-dialog-content .ui-dialog-scrollable-child {
   overflow: auto;
-  max-height: inherit;
-  height: inherit;
   padding-right: 0.5em;
 }

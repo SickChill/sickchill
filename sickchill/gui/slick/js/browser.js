@@ -43,17 +43,19 @@
                 return i++ !== 0;
             });
 
+            const inputContainer = $('<div class="fileBrowserFieldContainer"></div>');
             $('<input type="text" class="form-control input-sm">').val(firstValue.currentPath).on('keypress', event_ => {
                 if (event_.which === 13) {
                     browse(event_.target.value, endpoint, includeFiles, fileTypes);
                 }
-            }).appendTo($('<div class="fileBrowserFieldContainer">').appendTo(fileBrowserDialog)).fileBrowser({
+            }).appendTo(inputContainer.appendTo(fileBrowserDialog)).fileBrowser({
                 showBrowseButton: false
             }).on('autocompleteselect', (event_, ui) => {
                 browse(ui.item.value, endpoint, includeFiles, fileTypes);
             });
 
-            list = $('<ul>').appendTo($('<div class="ui-dialog-scrollable-child">').appendTo(fileBrowserDialog));
+            const listContainer = $('<div class="ui-dialog-scrollable-child">');
+            list = $('<ul>').appendTo(listContainer.appendTo(fileBrowserDialog));
             $.each(data, (i, entry) => {
                 if (entry.isFile && fileTypes && (!entry.isAllowed || fileTypes.includes('images') && !entry.isImage)) { // eslint-disable-line no-mixed-operators
                     return true;
@@ -85,6 +87,11 @@
             });
             $('a', list).wrap('<li class="ui-state-default ui-corner-all">');
             fileBrowserDialog.dialog('option', 'dialogClass', 'browserDialog');
+
+            const scrollableHeight = fileBrowserDialog.height()
+                - inputContainer.outerHeight();
+
+            listContainer.height(scrollableHeight).css('maxHeight', scrollableHeight);
         });
     }
 
