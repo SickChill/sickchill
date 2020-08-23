@@ -179,11 +179,11 @@ class SickChill(object):
 
         settings.CFG = ConfigObj(settings.CONFIG_FILE, encoding='UTF-8', indent_type='  ')
 
-        # Initialize the config and our threads
-        sickchill.start.initialize(consoleLogging=self.console_logging)
-
         if self.run_as_daemon:
             self.daemonize()
+
+        # Initialize the config and our threads
+        sickchill.start.initialize(consoleLogging=self.console_logging)
 
         # Get PID
         settings.PID = os.getpid()
