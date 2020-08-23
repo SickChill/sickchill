@@ -61,9 +61,9 @@
             imageSelectorDialog.dialog('option', 'dialogClass', 'browserDialog');
         });
 
-        const scrollableHeight = imageSelectorDialog.outerHeight()
-            - imageSelectorDialog.find('.image-provider-container').outerHeight()
-            - 15;
+        const scrollableHeight = imageSelectorDialog.outerHeight() -
+            imageSelectorDialog.find('.image-provider-container').outerHeight() -
+            15;
 
         imagesContainer.height(scrollableHeight).css('maxHeight', scrollableHeight);
     }
@@ -133,8 +133,6 @@
         dropdown.val(dropdown.data('default'));
         imageSelectorDialog.children('.upload').hide();
         imageSelectorDialog.children('.error').hide();
-
-
 
         imageSelectorDialog.dialog('open');
         fetchImages();
