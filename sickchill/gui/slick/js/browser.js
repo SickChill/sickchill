@@ -88,8 +88,7 @@
             $('a', list).wrap('<li class="ui-state-default ui-corner-all">');
             fileBrowserDialog.dialog('option', 'dialogClass', 'browserDialog');
 
-            const scrollableHeight = fileBrowserDialog.height()
-                - inputContainer.outerHeight();
+            const scrollableHeight = fileBrowserDialog.height() - inputContainer.outerHeight();
 
             listContainer.height(scrollableHeight).css('maxHeight', scrollableHeight);
         });
