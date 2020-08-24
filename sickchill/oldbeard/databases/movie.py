@@ -1,17 +1,16 @@
 import datetime
-import guessit
 import logging
+
+import guessit
+
 logger = logging.getLogger(__file__)
 
-from sqlalchemy import Integer, String, Column, create_engine, DateTime, ForeignKey, Boolean, Interval, SmallInteger, Date
-from sqlalchemy.orm import relationship
+from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, Interval, SmallInteger, String
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import relationship, sessionmaker
 
 Base = declarative_base()
-
-engine = create_engine("sqlite:///movies.db", echo=True)
-Session = sessionmaker(bind=engine)
+Session = sessionmaker()
 
 
 class Movie(Base):
@@ -22,6 +21,7 @@ class Movie(Base):
     year = Column(SmallInteger)
     status = Column(Integer)
     paused = Column(Boolean, default=False)
+    location = Column(String)
     start = Column(Interval, default=datetime.timedelta(days=-7))
     interval = Column(Interval, default=datetime.timedelta(days=1))
     added = Column(DateTime, default=datetime.datetime.now)
@@ -103,6 +103,3 @@ class ExternalID(Base):
 
     movie_id = Column(Integer, ForeignKey('movie.id'))
     movie = relationship("Movie", back_populates="external_ids")
-
-
-Base.metadata.create_all(engine, checkfirst=True)
