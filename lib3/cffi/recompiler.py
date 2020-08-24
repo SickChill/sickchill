@@ -7,6 +7,9 @@ VERSION_BASE = 0x2601
 VERSION_EMBEDDED = 0x2701
 VERSION_CHAR16CHAR32 = 0x2801
 
+USE_LIMITED_API = (sys.platform != 'win32' or sys.version_info < (3, 0) or
+                   sys.version_info >= (3, 5))
+
 
 class GlobalExpr:
     def __init__(self, name, address, type_op, size=0, check_value=0):
@@ -283,6 +286,8 @@ class Recompiler:
         prnt = self._prnt
         if self.ffi._embedding is not None:
             prnt('#define _CFFI_USE_EMBEDDING')
+        if not USE_LIMITED_API:
+            prnt('#define _CFFI_NO_LIMITED_API')
         #
         # first the '#include' (actually done by inlining the file's content)
         lines = self._rel_readlines('_cffi_include.h')

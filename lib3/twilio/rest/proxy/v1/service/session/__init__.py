@@ -116,7 +116,8 @@ class SessionList(ListResource):
 
     def create(self, unique_name=values.unset, date_expiry=values.unset,
                ttl=values.unset, mode=values.unset, status=values.unset,
-               participants=values.unset):
+               participants=values.unset,
+               fail_on_participant_conflict=values.unset):
         """
         Create the SessionInstance
 
@@ -126,6 +127,7 @@ class SessionList(ListResource):
         :param SessionInstance.Mode mode: The Mode of the Session
         :param SessionInstance.Status status: Session status
         :param dict participants: The Participant objects to include in the new session
+        :param bool fail_on_participant_conflict: An experimental flag that instructs Proxy to reject a Session create request when it detects a Participant conflict.
 
         :returns: The created SessionInstance
         :rtype: twilio.rest.proxy.v1.service.session.SessionInstance
@@ -137,6 +139,7 @@ class SessionList(ListResource):
             'Mode': mode,
             'Status': status,
             'Participants': serialize.map(participants, lambda e: serialize.object(e)),
+            'FailOnParticipantConflict': fail_on_participant_conflict,
         })
 
         payload = self._version.create(method='POST', uri=self._uri, data=data, )
@@ -274,7 +277,7 @@ class SessionContext(InstanceContext):
         :param datetime date_expiry: The ISO 8601 date when the Session should expire
         :param unicode ttl: When the session will expire
         :param SessionInstance.Status status: The new status of the resource
-        :param bool fail_on_participant_conflict: Opt-in to enable Proxy to return 400 on detected conflict on re-open request.
+        :param bool fail_on_participant_conflict: An experimental flag that instructs Proxy to return 400 instead of 200 when it detects that conflicts would result from re-open requests.
 
         :returns: The updated SessionInstance
         :rtype: twilio.rest.proxy.v1.service.session.SessionInstance
@@ -558,7 +561,7 @@ class SessionInstance(InstanceResource):
         :param datetime date_expiry: The ISO 8601 date when the Session should expire
         :param unicode ttl: When the session will expire
         :param SessionInstance.Status status: The new status of the resource
-        :param bool fail_on_participant_conflict: Opt-in to enable Proxy to return 400 on detected conflict on re-open request.
+        :param bool fail_on_participant_conflict: An experimental flag that instructs Proxy to return 400 instead of 200 when it detects that conflicts would result from re-open requests.
 
         :returns: The updated SessionInstance
         :rtype: twilio.rest.proxy.v1.service.session.SessionInstance

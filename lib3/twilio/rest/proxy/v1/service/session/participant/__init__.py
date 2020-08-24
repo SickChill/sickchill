@@ -114,7 +114,8 @@ class ParticipantList(ListResource):
         return ParticipantPage(self._version, response, self._solution)
 
     def create(self, identifier, friendly_name=values.unset,
-               proxy_identifier=values.unset, proxy_identifier_sid=values.unset):
+               proxy_identifier=values.unset, proxy_identifier_sid=values.unset,
+               fail_on_participant_conflict=values.unset):
         """
         Create the ParticipantInstance
 
@@ -122,6 +123,7 @@ class ParticipantList(ListResource):
         :param unicode friendly_name: The string that you assigned to describe the participant
         :param unicode proxy_identifier: The proxy phone number to use for the Participant
         :param unicode proxy_identifier_sid: The Proxy Identifier Sid
+        :param bool fail_on_participant_conflict: An experimental flag that instructs Proxy to reject a Participant create request when it detects a conflict.
 
         :returns: The created ParticipantInstance
         :rtype: twilio.rest.proxy.v1.service.session.participant.ParticipantInstance
@@ -131,6 +133,7 @@ class ParticipantList(ListResource):
             'FriendlyName': friendly_name,
             'ProxyIdentifier': proxy_identifier,
             'ProxyIdentifierSid': proxy_identifier_sid,
+            'FailOnParticipantConflict': fail_on_participant_conflict,
         })
 
         payload = self._version.create(method='POST', uri=self._uri, data=data, )

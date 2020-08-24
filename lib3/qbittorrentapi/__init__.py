@@ -1,4 +1,5 @@
 from qbittorrentapi.client import Client
+from qbittorrentapi.definitions import *
 from qbittorrentapi.exceptions import *
 
 from qbittorrentapi.request import *
