@@ -20,16 +20,19 @@ class MoviesHandler(WebRoot):
         t = PageTemplate(rh=self, filename="movies/index.mako")
         return t.render(title=_("Movies"), header=_("Movie List"), topmenu="movies", movies=settings.movie_list, controller="movies", action="index")
 
-    def search(self):
-        t = PageTemplate(rh=self, filename="movies/search.mako")
-        return t.render(title=_("Movies"), header=_("Movie Search"), topmenu="movies", movies=settings.movie_list, controller="movies", action="search")
-
     def add(self):
         if self.request.method == 'GET':
-            return self.redirect(self.reverse_url('movies-search'))
+            t = PageTemplate(rh=self, filename="movies/search.mako")
+            return t.render(title=_("Movies"), header=_("Movie Search"), topmenu="movies", movies=settings.movie_list, controller="movies", action="search")
 
-        t = PageTemplate(rh=self, filename="movies/add.mako")
-        return t.render(title=_("Movies"), header=_("Movie Add"), topmenu="movies", movies=settings.movie_list, controller="movies", action="add")
+        imdbid = self.get_body_argument('imdbid', None)
+        tmdbid = self.get_body_argument('tmdbid', None)
+        if imdbid:
+            movie = settings.movie_list.add(imdbid=imdbid)
+        else:
+            movie = settings.movie_list.add(tmdbid=tmdbid)
+
+        return self.redirect(self.reverse_url('movies-details', movie.slug))
 
     def remove(self):
         pk = self.path_kwargs.get('pk')

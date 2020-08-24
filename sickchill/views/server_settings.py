@@ -153,10 +153,9 @@ class SRWebServer(threading.Thread):
 
             url(rf'{self.options["web_root"]}/calendar/?', CalendarHandler, name='calendar'),
 
-            url(rf'{self.options["web_root"]}/movies/(?P<route>details)/(?P<slug>.*)/', MoviesHandler, name='movies-details'),
-            url(rf'{self.options["web_root"]}/movies/(?P<route>remove)/(?P<pk>.*)/', MoviesHandler, name='movies-remove'),
-            url(rf'{self.options["web_root"]}/movies/add/', MoviesHandler, name='movies-add'),
-            url(rf'{self.options["web_root"]}/movies/search/', MoviesHandler, name='movies-search'),
+            url(rf'{self.options["web_root"]}/movies/(?P<route>details)/(?P<slug>.*)/?', MoviesHandler, name='movies-details'),
+            url(rf'{self.options["web_root"]}/movies/(?P<route>remove)/(?P<pk>.*)/?', MoviesHandler, name='movies-remove'),
+            url(rf'{self.options["web_root"]}/movies/(?P<route>add)/?', MoviesHandler, name='movies-add'),
             url(rf'{self.options["web_root"]}/movies(/?.*)', MoviesHandler, name='movies'),
 
             # routes added by @route decorator

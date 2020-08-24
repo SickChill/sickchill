@@ -43,21 +43,15 @@ class MovieList:
 
         return results
 
-    def __discover_tmdb(self, language=None, type='latest'):
-        tmdb_kwargs = dict(language=language) if language else dict()
-        return getattr(movies.Movies(), type)(**tmdb_kwargs)['results']
-
     def popular_tmdb(self, language=None):
-        return self.__discover_tmdb(language, 'popular')
-
-    def recommended_tmdb(self, language=None):
-        return self.__discover_tmdb(language, 'recommendations')
+        tmdb_kwargs = dict(language=language) if language else dict()
+        return movies.Movies().popular(**tmdb_kwargs)['results']
 
     def search_imdb(self, query: str = ''):
         return self.imdb.search_for_title(title=query)
 
     def popular_imdb(self):
-        return self.imdb.get_popular_movies()
+        return self.imdb.get_popular_movies()['ranks']
 
     def add(self, **kwargs):
         # instance = movie.Movie()
