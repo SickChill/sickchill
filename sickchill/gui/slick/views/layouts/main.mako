@@ -390,7 +390,7 @@
                 <script type="text/javascript" src="${static_url('js/parsers.js')}"></script>
                 <script type="text/javascript" src="${static_url('js/rootDirs.js')}"></script>
                 % if settings.DEVELOPER:
-                    <script type="text/javascript" src="/js/core.js"></script>
+                    <script type="text/javascript" src="${static_url('js/core.js')}"></script>
                 % else:
                     <script type="text/javascript" src="${static_url('js/core.min.js')}"></script>
                 % endif
