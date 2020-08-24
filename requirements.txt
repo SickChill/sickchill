@@ -53,3 +53,6 @@ qbittorrent-api
 packaging
 timeago
 sqlalchemy
+python-slugify
+guessit
+requests

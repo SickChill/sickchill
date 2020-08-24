@@ -2,9 +2,11 @@ import datetime
 import logging
 
 import guessit
+from slugify import slugify
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger('sickchill.movie')
 
+from sqlalchemy.event import listen
 from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, Interval, SmallInteger, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
@@ -29,6 +31,8 @@ class Movie(Base):
     completed = Column(DateTime)
     searched = Column(DateTime)
 
+    slug = Column(String)
+
     result = relationship("Result", uselist=False, back_populates="movie")
     results = relationship("Result", back_populates="movie")
 
@@ -38,8 +42,16 @@ class Movie(Base):
         self.name = name
         self.date = date
 
+    @staticmethod
+    def slugify(target, value, oldvalue, initiator):
+        if value and (not target.slug or value != oldvalue):
+            target.slug = slugify(value)
+
     def __repr__(self):
         return f"{self.name}"
+
+
+listen(Movie.name, 'set', Movie.slugify, retval=False)
 
 
 class Result(Base):

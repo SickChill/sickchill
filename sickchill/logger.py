@@ -90,6 +90,7 @@ class Logger(object):
 
         self.loggers = [
             logging.getLogger('sickchill'),
+            logging.getLogger('sickchill.movie'),
             logging.getLogger('tornado.general'),
             logging.getLogger('tornado.application'),
             logging.getLogger('subliminal'),

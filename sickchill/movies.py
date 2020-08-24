@@ -28,6 +28,8 @@ class MovieList:
         else:
             self.session: Session = db_cons[self.filename]
 
+        self.imdb = Imdb(exclude_episodes=True)
+
     @staticmethod
     def search_tmdb(query=None, tmdbid=None, year=None, language=None, adult=False):
         if tmdbid:
@@ -41,9 +43,21 @@ class MovieList:
 
         return results
 
-    @staticmethod
-    def search_imdb(query: str = ''):
-        return Imdb().search_for_title(title=query)
+    def __discover_tmdb(self, language=None, type='latest'):
+        tmdb_kwargs = dict(language=language) if language else dict()
+        return getattr(movies.Movies(), type)(**tmdb_kwargs)['results']
+
+    def popular_tmdb(self, language=None):
+        return self.__discover_tmdb(language, 'popular')
+
+    def recommended_tmdb(self, language=None):
+        return self.__discover_tmdb(language, 'recommendations')
+
+    def search_imdb(self, query: str = ''):
+        return self.imdb.search_for_title(title=query)
+
+    def popular_imdb(self):
+        return self.imdb.get_popular_movies()
 
     def add(self, **kwargs):
         # instance = movie.Movie()

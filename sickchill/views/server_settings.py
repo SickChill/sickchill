@@ -11,7 +11,7 @@ from tornado.web import Application, RedirectHandler, StaticFileHandler, url
 import sickchill.start
 from sickchill import logger, settings
 from sickchill.oldbeard.helpers import create_https_certificates, generateApiKey
-from sickchill.views import CalendarHandler, LoginHandler, LogoutHandler
+from sickchill.views import CalendarHandler, LoginHandler, LogoutHandler, Movies
 from sickchill.views.api import ApiHandler, KeyHandler
 
 from .routes import Route
@@ -152,6 +152,7 @@ class SRWebServer(threading.Thread):
             url(rf'{self.options["web_root"]}/logout(/?)', LogoutHandler, name='logout'),
 
             url(rf'{self.options["web_root"]}/calendar/?', CalendarHandler, name='calendar'),
+            url(rf'{self.options["web_root"]}/movies(/?.*)', Movies, name='movies'),
 
             # routes added by @route decorator
             # Plus naked index with missing web_root prefix
