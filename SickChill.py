@@ -196,8 +196,8 @@ class SickChill(object):
 
         self.clear_cache()
 
-        # Experimental
-        settings.movie_list = MovieList()
+        if settings.DEVELOPER:
+            settings.movie_list = MovieList()
 
         web_options = {}
         if self.forced_port:

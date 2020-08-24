@@ -160,6 +160,7 @@
                                 </ul>
                                 <div style="clear:both;"></div>
                             </li>
+                            % if settings.DEVELOPER:
                             <li id="NAVmovies" class="navbar-split dropdown${('', ' active')[topmenu == 'movies']}">
                                 <a href="${reverse_url("movies", "")}" class="dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" data-hover="dropdown"><span>${_('Movies')}</span>
                                     <b class="caret"></b>
@@ -170,6 +171,7 @@
                                 </ul>
                                 <div style="clear:both;"></div>
                             </li>
+                            % endif
                             <li id="NAVschedule"${('', ' class="active"')[topmenu == 'schedule']}>
                                 <a href="${static_url("schedule/", include_version=False)}">${_('Schedule')}</a>
                             </li>

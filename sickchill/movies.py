@@ -19,7 +19,7 @@ class MovieList:
         self.full_path = db_full_path(self.filename)
 
         if self.filename not in db_cons or not db_cons[self.filename]:
-            movie.Session.configure(bind=create_engine(f"sqlite:///{self.full_path}", echo=True))
+            movie.Session.configure(bind=create_engine(f"sqlite:///{self.full_path}", echo=True, connect_args={"check_same_thread": False}))
             self.session: Session = movie.Session()
             movie.Base.metadata.create_all(self.session.bind, checkfirst=True)
 
@@ -65,6 +65,13 @@ class MovieList:
         pass
 
     def delete(self, pk):
-        instance = self.session.query(movie.Movie).get(pk)
+        instance = self.query.get(pk)
         if instance:
             self.session.delete(instance)
+
+    @property
+    def query(self):
+        return self.session.query(movie.Movie)
+
+    def by_slug(self, slug):
+        return self.query.filter_by(slug=slug).first()

@@ -6,8 +6,8 @@ from slugify import slugify
 
 logger = logging.getLogger('sickchill.movie')
 
-from sqlalchemy.event import listen
 from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, Interval, SmallInteger, String
+from sqlalchemy.event import listen
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 
@@ -30,7 +30,6 @@ class Movie(Base):
     updated = Column(DateTime, onupdate=datetime.datetime.now)
     completed = Column(DateTime)
     searched = Column(DateTime)
-
     slug = Column(String)
 
     result = relationship("Result", uselist=False, back_populates="movie")
