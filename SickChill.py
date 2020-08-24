@@ -14,6 +14,7 @@ import traceback
 import sickchill.start
 from sickchill import logger, settings
 from sickchill.init_helpers import check_installed, setup_gettext, setup_lib_path
+from sickchill.movies import MovieList
 
 setup_lib_path()
 setup_gettext()
@@ -194,6 +195,9 @@ class SickChill(object):
         logger.info('Starting SickChill [{branch}] using \'{config}\''.format(branch=settings.BRANCH, config=settings.CONFIG_FILE))
 
         self.clear_cache()
+
+        if settings.DEVELOPER:
+            settings.movie_list = MovieList()
 
         web_options = {}
         if self.forced_port:

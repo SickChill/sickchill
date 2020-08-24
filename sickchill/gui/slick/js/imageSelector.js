@@ -60,6 +60,12 @@
 
             imageSelectorDialog.dialog('option', 'dialogClass', 'browserDialog');
         });
+
+        const scrollableHeight = imageSelectorDialog.outerHeight() -
+            imageSelectorDialog.find('.image-provider-container').outerHeight() -
+            15;
+
+        imagesContainer.height(scrollableHeight).css('maxHeight', scrollableHeight);
     }
 
     function createImage(imageSrc, thumbSrc) {
@@ -81,11 +87,11 @@
         image.appendTo(imagesContainer);
     }
 
-    $.fn.nImageSelector = function () {
+    $.fn.nImageSelector = function (imageSelectorElement) {
         const field = $(this);
         imageType = field.data('image-type');
 
-        imageSelectorDialog.dialog({
+        imageSelectorDialog = imageSelectorElement.dialog({
             dialogClass: 'image-selector-dialog',
             classes: {
                 'ui-dialog': 'ui-dialog-scrollable-by-child'
@@ -93,6 +99,7 @@
             title: _('Choose Image'),
             position: {my: 'center top', at: 'center top+60', of: window},
             minWidth: Math.min($(document).width() - 80, 650),
+            height: Math.min($(document).height() - 80, $(window).height() - 80),
             maxHeight: Math.min($(document).height() - 80, $(window).height() - 80),
             maxWidth: $(document).width() - 80,
             modal: true,
@@ -127,9 +134,8 @@
         imageSelectorDialog.children('.upload').hide();
         imageSelectorDialog.children('.error').hide();
 
-        fetchImages();
-
         imageSelectorDialog.dialog('open');
+        fetchImages();
 
         return false;
     };
@@ -137,11 +143,11 @@
     $.fn.imageSelector = function () {
         const $this = $(this);
 
-        imageSelectorDialog = $('.image-selector-dialog');
-        imagesContainer = imageSelectorDialog.children('.images');
+        const imageSelectorElement = $('.image-selector-dialog');
+        imagesContainer = imageSelectorElement.children('.images');
 
-        imageSelectorDialog.children('#images-provider').on('change', function () {
-            const uploadContainer = imageSelectorDialog.children('.upload');
+        imageSelectorElement.children('#images-provider').on('change', function () {
+            const uploadContainer = imageSelectorElement.children('.upload');
 
             if ($(this).children('option:selected').val() === '-1') {
                 imagesContainer.empty();
@@ -153,7 +159,7 @@
         });
 
         $('.upload #upload-image-input').on('change', function () {
-            imageSelectorDialog.children('.error').hide();
+            imageSelectorElement.children('.error').hide();
 
             if (this.files) {
                 const loadFunction = ev => {
@@ -162,8 +168,8 @@
                         if (SIZES_BY_TYPE[imageType].validate(img)) {
                             createImage(img.src);
                         } else {
-                            imageSelectorDialog.children('.error').text(SIZES_BY_TYPE[imageType].errorMsg);
-                            imageSelectorDialog.children('.error').show();
+                            imageSelectorElement.children('.error').text(SIZES_BY_TYPE[imageType].errorMsg);
+                            imageSelectorElement.children('.error').show();
                         }
                     });
                     img.src = ev.target.result;
@@ -178,7 +184,7 @@
         });
 
         $this.on('click', function () {
-            $(this).nImageSelector();
+            $(this).nImageSelector(imageSelectorElement);
             return false;
         });
 

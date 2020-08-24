@@ -532,6 +532,8 @@ WEB_USE_GZIP = True
 WEB_USERNAME = None
 WINDOWS_SHARES = {}
 
+movie_list = None
+
 
 def get_backlog_cycle_time():
     cycletime = DAILYSEARCH_FREQUENCY * 2 + 7
