@@ -93,7 +93,6 @@ jobs:
       with:
         fetch-depth: 1
         persist-credentials: false
-        ref: ${{ github.head_ref }}
     - name: Set up Docker Buildx
       if: success()
       id: buildx
