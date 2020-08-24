@@ -15,8 +15,7 @@ from twilio.base.page import Page
 
 
 class SubscribeRulesList(ListResource):
-    """ PLEASE NOTE that this class contains beta products that are subject to
-    change. Use them with caution. """
+    """  """
 
     def __init__(self, version, room_sid, participant_sid):
         """
@@ -82,8 +81,7 @@ class SubscribeRulesList(ListResource):
 
 
 class SubscribeRulesPage(Page):
-    """ PLEASE NOTE that this class contains beta products that are subject to
-    change. Use them with caution. """
+    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -129,8 +127,7 @@ class SubscribeRulesPage(Page):
 
 
 class SubscribeRulesInstance(InstanceResource):
-    """ PLEASE NOTE that this class contains beta products that are subject to
-    change. Use them with caution. """
+    """  """
 
     def __init__(self, version, payload, room_sid, participant_sid):
         """

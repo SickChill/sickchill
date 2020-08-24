@@ -8,20 +8,49 @@
    the same works for the other two macros.  Py_DEBUG implies them,
    but not the other way around.
 
-   Issue #350 is still open: on Windows, the code here causes it to link
-   with PYTHON36.DLL (for example) instead of PYTHON3.DLL.  A fix was
-   attempted in 164e526a5515 and 14ce6985e1c3, but reverted: virtualenv
-   does not make PYTHON3.DLL available, and so the "correctly" compiled
-   version would not run inside a virtualenv.  We will re-apply the fix
-   after virtualenv has been fixed for some time.  For explanation, see
-   issue #355.  For a workaround if you want PYTHON3.DLL and don't worry
-   about virtualenv, see issue #350.  See also 'py_limited_api' in
-   setuptools_ext.py.
+   The implementation is messy (issue #350): on Windows, with _MSC_VER,
+   we have to define Py_LIMITED_API even before including pyconfig.h.
+   In that case, we guess what pyconfig.h will do to the macros above,
+   and check our guess after the #include.
+
+   Note that on Windows, with CPython 3.x, you need >= 3.5 and virtualenv
+   version >= 16.0.0.  With older versions of either, you don't get a
+   copy of PYTHON3.DLL in the virtualenv.  We can't check the version of
+   CPython *before* we even include pyconfig.h.  ffi.set_source() puts
+   a ``#define _CFFI_NO_LIMITED_API'' at the start of this file if it is
+   running on Windows < 3.5, as an attempt at fixing it, but that's
+   arguably wrong because it may not be the target version of Python.
+   Still better than nothing I guess.  As another workaround, you can
+   remove the definition of Py_LIMITED_API here.
+
+   See also 'py_limited_api' in cffi/setuptools_ext.py.
 */
 #if !defined(_CFFI_USE_EMBEDDING) && !defined(Py_LIMITED_API)
-#  include <pyconfig.h>
-#  if !defined(Py_DEBUG) && !defined(Py_TRACE_REFS) && !defined(Py_REF_DEBUG)
-#    define Py_LIMITED_API
+#  ifdef _MSC_VER
+#    if !defined(_DEBUG) && !defined(Py_DEBUG) && !defined(Py_TRACE_REFS) && !defined(Py_REF_DEBUG) && !defined(_CFFI_NO_LIMITED_API)
+#      define Py_LIMITED_API
+#    endif
+#    include <pyconfig.h>
+     /* sanity-check: Py_LIMITED_API will cause crashes if any of these
+        are also defined.  Normally, the Python file PC/pyconfig.h does not
+        cause any of these to be defined, with the exception that _DEBUG
+        causes Py_DEBUG.  Double-check that. */
+#    ifdef Py_LIMITED_API
+#      if defined(Py_DEBUG)
+#        error "pyconfig.h unexpectedly defines Py_DEBUG, but Py_LIMITED_API is set"
+#      endif
+#      if defined(Py_TRACE_REFS)
+#        error "pyconfig.h unexpectedly defines Py_TRACE_REFS, but Py_LIMITED_API is set"
+#      endif
+#      if defined(Py_REF_DEBUG)
+#        error "pyconfig.h unexpectedly defines Py_REF_DEBUG, but Py_LIMITED_API is set"
+#      endif
+#    endif
+#  else
+#    include <pyconfig.h>
+#    if !defined(Py_DEBUG) && !defined(Py_TRACE_REFS) && !defined(Py_REF_DEBUG) && !defined(_CFFI_NO_LIMITED_API)
+#      define Py_LIMITED_API
+#    endif
 #  endif
 #endif
 

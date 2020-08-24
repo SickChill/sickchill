@@ -91,10 +91,11 @@ from __future__ import print_function
 __author__ = "Marius Gedminas <marius@gedmin.as>"
 __copyright__ = "Copyright 2004-2020 Marius Gedminas and contributors"
 __license__ = "MIT"
-__version__ = '1.11.2'
-__date__ = "2020-03-03"
+__version__ = '1.12.0'
+__date__ = "2020-08-20"
 
 import atexit
+
 import functools
 import inspect
 import logging
@@ -133,7 +134,6 @@ try:
 except ImportError:
     cProfile = None
 
-
 # registry of available profilers
 AVAILABLE_PROFILERS = {}
 
@@ -162,6 +162,10 @@ def _identify(fn):
     return (funcname, filename, lineno)
 
 
+def _is_file_like(o):
+    return hasattr(o, 'write')
+
+
 def profile(fn=None, skip=0, filename=None, immediate=False, dirs=False,
             sort=None, entries=40,
             profiler=('cProfile', 'profile', 'hotshot'),
@@ -170,8 +174,13 @@ def profile(fn=None, skip=0, filename=None, immediate=False, dirs=False,
 
     If `skip` is > 0, first `skip` calls to `fn` will not be profiled.
 
+    If `stdout` is not file-like and truthy, output will be printed to
+    sys.stdout. If it is a file-like object, output will be printed to it
+    instead. `stdout` must be writable in text mode (as opposed to binary)
+    if it is file-like.
+
     If `immediate` is False, profiling results will be printed to
-    sys.stdout on program termination.  Otherwise results will be printed
+    self.stdout on program termination.  Otherwise results will be printed
     after each call.  (If you don't want this, set stdout=False and specify a
     `filename` to store profile data.)
 
@@ -322,6 +331,7 @@ class FuncProfile(object):
         self.filename = filename
         self._immediate = immediate
         self.stdout = stdout
+        self._stdout_is_fp = self.stdout and _is_file_like(self.stdout)
         self.dirs = dirs
         self.sort = sort or ('cumulative', 'time', 'calls')
         if isinstance(self.sort, str):
@@ -365,15 +375,19 @@ class FuncProfile(object):
             stats.dump_stats(self.filename)
         if self.stdout:
             funcname, filename, lineno = _identify(self.fn)
-            print("")
-            print("*** PROFILER RESULTS ***")
-            print("%s (%s:%s)" % (funcname, filename, lineno))
+            print_f = print
+            if self._stdout_is_fp:
+                print_f = functools.partial(print, file=self.stdout)
+
+            print_f("")
+            print_f("*** PROFILER RESULTS ***")
+            print_f("%s (%s:%s)" % (funcname, filename, lineno))
             if self.skipped:
                 skipped = " (%d calls not profiled)" % self.skipped
             else:
                 skipped = ""
-            print("function called %d times%s" % (self.ncalls, skipped))
-            print("")
+            print_f("function called %d times%s" % (self.ncalls, skipped))
+            print_f("")
             if not self.dirs:
                 stats.strip_dirs()
             stats.sort_stats(*self.sort)
@@ -381,13 +395,16 @@ class FuncProfile(object):
 
     def reset_stats(self):
         """Reset accumulated profiler statistics."""
+        # send stats printing to specified stdout if it's file-like
+        stream = self.stdout if self._stdout_is_fp else sys.stdout
+
         # Note: not using self.Profile, since pstats.Stats() fails then
-        self.stats = pstats.Stats(Profile())
+        self.stats = pstats.Stats(Profile(), stream=stream)
         self.ncalls = 0
         self.skipped = 0
 
     def atexit(self):
-        """Stop profiling and print profile information to sys.stdout.
+        """Stop profiling and print profile information to sys.stdout or self.stdout.
 
         This function is registered as an atexit hook.
         """

@@ -6,40 +6,38 @@ from qbittorrentapi.torrents import TorrentsAPIMixIn
 from qbittorrentapi.rss import RSSAPIMixIn
 from qbittorrentapi.search import SearchAPIMixIn
 
-'''
-NOTES
-Implementation
-    Required API parameters
-        - To avoid runtime errors, required API parameters are not explicitly
-          enforced in the code. Instead, I found if qBittorent returns HTTP400
-          without am error message, at least one required parameter is missing.
-          This raises a MissingRequiredParameters400 error.
-        - Alternatively, if a parameter is malformatted, HTTP400 is returned
-          with an error message.
-          This raises a InvalidRequest400 error.
-
-    Unauthorized HTTP 401
-        - This is only raised if XSS is detected or host header validation fails.
-
-API Peculiarities
-    app/setPreferences
-        - This was endlessly frustrating since it requires data in the 
-          form of {'json': dumps({'dht': True})}...
-        - Sending an empty string for 'banned_ips' drops the useless message
-          below in to the log file (same for WebUI):
-            ' is not a valid IP address and was rejected while applying the list of banned addresses.'
-            - [Resolved] https://github.com/qbittorrent/qBittorrent/issues/10745
-    
-    torrents/downloadLimit and uploadLimit
-        - Hashes handling is non-standard. 404 is not returned for bad hashes and 'all' doesn't work.
-        - https://github.com/qbittorrent/qBittorrent/blob/6de02b0f2a79eeb4d7fb624c39a9f65ffe181d68/src/webui/api/torrentscontroller.cpp#L754
-        - https://github.com/qbittorrent/qBittorrent/issues/10744
-    
-    torrents/info
-        - when using a GET request, the params (such as category) seemingly can't
-          contain spaces; however, POST does work with spaces.
-        - [Resolved] https://github.com/qbittorrent/qBittorrent/issues/10606
-'''
+# NOTES
+# Implementation
+#     Required API parameters
+#         - To avoid runtime errors, required API parameters are not explicitly
+#           enforced in the code. Instead, I found if qBittorent returns HTTP400
+#           without am error message, at least one required parameter is missing.
+#           This raises a MissingRequiredParameters400 error.
+#         - Alternatively, if a parameter is malformatted, HTTP400 is returned
+#           with an error message.
+#           This raises a InvalidRequest400 error.
+#
+#     Unauthorized HTTP 401
+#         - This is only raised if XSS is detected or host header validation fails.
+#
+# API Peculiarities
+#     app/setPreferences
+#         - This was endlessly frustrating since it requires data in the
+#           form of {'json': dumps({'dht': True})}...
+#         - Sending an empty string for 'banned_ips' drops the useless message
+#           below in to the log file (same for WebUI):
+#             ' is not a valid IP address and was rejected while applying the list of banned addresses.'
+#             - [Resolved] https://github.com/qbittorrent/qBittorrent/issues/10745
+#
+#     torrents/downloadLimit and uploadLimit
+#         - Hashes handling is non-standard. 404 is not returned for bad hashes and 'all' doesn't work.
+#         - https://github.com/qbittorrent/qBittorrent/blob/6de02b0f2a79eeb4d7fb624c39a9f65ffe181d68/src/webui/api/torrentscontroller.cpp#L754
+#         - https://github.com/qbittorrent/qBittorrent/issues/10744
+#
+#     torrents/info
+#         - when using a GET request, the params (such as category) seemingly can't
+#           contain spaces; however, POST does work with spaces.
+#         - [Resolved] https://github.com/qbittorrent/qBittorrent/issues/10606
 
 
 class Client(AppAPIMixIn,

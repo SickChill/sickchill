@@ -3,12 +3,11 @@ from qbittorrentapi.decorators import aliased
 from qbittorrentapi.decorators import login_required
 from qbittorrentapi.decorators import response_json
 from qbittorrentapi.decorators import version_implemented
-from qbittorrentapi.helpers import APINames
-from qbittorrentapi.helpers import ClientCache
-from qbittorrentapi.helpers import Dictionary
-from qbittorrentapi.helpers import List
-from qbittorrentapi.helpers import ListEntry
-from qbittorrentapi.helpers import list2string
+from qbittorrentapi.definitions import APINames
+from qbittorrentapi.definitions import ClientCache
+from qbittorrentapi.definitions import Dictionary
+from qbittorrentapi.definitions import List
+from qbittorrentapi.definitions import ListEntry
 from qbittorrentapi.request import Request
 
 
@@ -63,11 +62,10 @@ class SearchPlugin(ListEntry):
 
 @aliased
 class Search(ClientCache):
-
     """
     Allows interaction with "Search" API endpoints.
 
-    Usage:
+    :Usage:
         >>> from qbittorrentapi import Client
         >>> client = Client(host='localhost:8080', username='admin', password='adminadmin')
         >>> # this is all the same attributes that are available as named in the
@@ -125,8 +123,7 @@ class Search(ClientCache):
 
 @aliased
 class SearchAPIMixIn(Request):
-
-    """ Implementation for all Search API methods """
+    """Implementation for all Search API methods."""
 
     @property
     def search(self):
@@ -147,8 +144,7 @@ class SearchAPIMixIn(Request):
         """
         Start a search. Python must be installed. Host may limit number of concurrent searches.
 
-        Exceptions:
-            Conflict409Error
+        :raises Conflict409Error:
 
         :param pattern: term to search for
         :param plugins: list of plugins to use for searching (supports 'all' and 'enabled')
@@ -156,7 +152,7 @@ class SearchAPIMixIn(Request):
         :return: search job
         """
         data = {'pattern': pattern,
-                'plugins': list2string(plugins, '|'),
+                'plugins': self._list2string(plugins, '|'),
                 'category': category}
         return self._post(_name=APINames.Search, _method='start', data=data, **kwargs)
 
@@ -166,8 +162,7 @@ class SearchAPIMixIn(Request):
         """
         Stop a running search.
 
-        Exceptions:
-            NotFound404Error
+        :raises NotFound404Error:
 
         :param search_id: ID of search job to stop
         :return: None
@@ -182,12 +177,11 @@ class SearchAPIMixIn(Request):
         """
         Retrieve status of one or all searches.
 
-        Exceptions:
-            NotFound404Error
+        :raises NotFound404Error:
 
         :param search_id: ID of search to get status; leave emtpy for status of all jobs
         :return: dictionary of searches
-            Properties: https://github.com/qbittorrent/qBittorrent/wiki/Web-API-Documentation#get-search-status
+            Properties: https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-search-status
         """
         params = {'id': search_id}
         return self._get(_name=APINames.Search, _method='status', params=params, **kwargs)
@@ -199,15 +193,14 @@ class SearchAPIMixIn(Request):
         """
         Retrieve the results for the search.
 
-        Exceptions
-            NotFound404Error
-            Conflict409Error
+        :raises NotFound404Error:
+        :raises Conflict409Error:
 
         :param search_id: ID of search job
         :param limit: number of results to return
         :param offset: where to start returning results
         :return: Dictionary of results
-            Properties: https://github.com/qbittorrent/qBittorrent/wiki/Web-API-Documentation#get-search-results
+            Properties: https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-search-results
         """
         data = {'id': search_id,
                 'limit': limit,
@@ -220,8 +213,7 @@ class SearchAPIMixIn(Request):
         """
         Delete a search job.
 
-        ExceptionsL
-            NotFound404Error
+        :raises NotFound404Error:
 
         :param search_id: ID of search to delete
         :return: None
@@ -250,7 +242,7 @@ class SearchAPIMixIn(Request):
         Retrieve details of search plugins.
 
         :return: List of plugins.
-            Properties: https://github.com/qbittorrent/qBittorrent/wiki/Web-API-Documentation#get-search-plugins
+            Properties: https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-search-plugins
         """
         return self._get(_name=APINames.Search, _method='plugins', **kwargs)
 
@@ -264,7 +256,7 @@ class SearchAPIMixIn(Request):
         :param sources: list of URLs or filepaths
         :return: None
         """
-        data = {'sources': list2string(sources, '|')}
+        data = {'sources': self._list2string(sources, '|')}
         self._post(_name=APINames.Search, _method='installPlugin', data=data, **kwargs)
 
     @version_implemented('2.1.1', 'search/uninstallPlugin')
@@ -277,7 +269,7 @@ class SearchAPIMixIn(Request):
         :param names: names of plugins to uninstall
         :return: None
         """
-        data = {'names': list2string(names, '|')}
+        data = {'names': self._list2string(names, '|')}
         self._post(_name=APINames.Search, _method='uninstallPlugin', data=data, **kwargs)
 
     @version_implemented('2.1.1', 'search/enablePlugin')
@@ -291,7 +283,7 @@ class SearchAPIMixIn(Request):
         :param enable: True or False
         :return: None
         """
-        data = {'names': list2string(plugins, '|'),
+        data = {'names': self._list2string(plugins, '|'),
                 'enable': enable}
         self._post(_name=APINames.Search, _method='enablePlugin', data=data, **kwargs)
 

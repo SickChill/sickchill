@@ -311,7 +311,7 @@ class ApplicationContext(InstanceContext):
         :param unicode sms_method: The HTTP method to use with sms_url
         :param unicode sms_fallback_url: The URL to call when an error occurs while retrieving or executing the TwiML
         :param unicode sms_fallback_method: The HTTP method to use with sms_fallback_url
-        :param unicode sms_status_callback: The URL to send status information to your application
+        :param unicode sms_status_callback: Same as message_status_callback. Deprecated, included for backwards compatibility.
         :param unicode message_status_callback: The URL to send message status information to your application
 
         :returns: The updated ApplicationInstance
@@ -614,7 +614,7 @@ class ApplicationInstance(InstanceResource):
         :param unicode sms_method: The HTTP method to use with sms_url
         :param unicode sms_fallback_url: The URL to call when an error occurs while retrieving or executing the TwiML
         :param unicode sms_fallback_method: The HTTP method to use with sms_fallback_url
-        :param unicode sms_status_callback: The URL to send status information to your application
+        :param unicode sms_status_callback: Same as message_status_callback. Deprecated, included for backwards compatibility.
         :param unicode message_status_callback: The URL to send message status information to your application
 
         :returns: The updated ApplicationInstance

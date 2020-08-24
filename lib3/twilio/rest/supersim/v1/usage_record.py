@@ -34,16 +34,21 @@ class UsageRecordList(ListResource):
         self._solution = {}
         self._uri = '/UsageRecords'.format(**self._solution)
 
-    def stream(self, sim=values.unset, granularity=values.unset,
-               start_time=values.unset, end_time=values.unset, limit=None,
-               page_size=None):
+    def stream(self, sim=values.unset, fleet=values.unset, network=values.unset,
+               iso_country=values.unset, group=values.unset,
+               granularity=values.unset, start_time=values.unset,
+               end_time=values.unset, limit=None, page_size=None):
         """
         Streams UsageRecordInstance records from the API as a generator stream.
         This operation lazily loads records as efficiently as possible until the limit
         is reached.
         The results are returned as a generator, so this operation is memory efficient.
 
-        :param unicode sim: SID of a Sim resource. Only show UsageRecords representing usage incurred by this Super SIM.
+        :param unicode sim: SID or unique name of a Sim resource. Only show UsageRecords representing usage incurred by this Super SIM.
+        :param unicode fleet: SID or unique name of a Fleet resource. Only show UsageRecords representing usage for Super SIMs belonging to this Fleet resource at the time the usage occurred.
+        :param unicode network: SID of a Network resource. Only show UsageRecords representing usage on this network.
+        :param unicode iso_country: Alpha-2 ISO Country Code. Only show UsageRecords representing usage in this country.
+        :param UsageRecordInstance.Group group: Dimension over which to aggregate usage records.
         :param UsageRecordInstance.Granularity granularity: Time-based grouping that UsageRecords should be aggregated by. Can be: `hour`, `day`, or `all`. Default is `all`.
         :param datetime start_time: Only include usage that occurred at or after this time.
         :param datetime end_time: Only include usage that occurred before this time.
@@ -61,6 +66,10 @@ class UsageRecordList(ListResource):
 
         page = self.page(
             sim=sim,
+            fleet=fleet,
+            network=network,
+            iso_country=iso_country,
+            group=group,
             granularity=granularity,
             start_time=start_time,
             end_time=end_time,
@@ -69,7 +78,8 @@ class UsageRecordList(ListResource):
 
         return self._version.stream(page, limits['limit'])
 
-    def list(self, sim=values.unset, granularity=values.unset,
+    def list(self, sim=values.unset, fleet=values.unset, network=values.unset,
+             iso_country=values.unset, group=values.unset, granularity=values.unset,
              start_time=values.unset, end_time=values.unset, limit=None,
              page_size=None):
         """
@@ -77,7 +87,11 @@ class UsageRecordList(ListResource):
         Unlike stream(), this operation is eager and will load `limit` records into
         memory before returning.
 
-        :param unicode sim: SID of a Sim resource. Only show UsageRecords representing usage incurred by this Super SIM.
+        :param unicode sim: SID or unique name of a Sim resource. Only show UsageRecords representing usage incurred by this Super SIM.
+        :param unicode fleet: SID or unique name of a Fleet resource. Only show UsageRecords representing usage for Super SIMs belonging to this Fleet resource at the time the usage occurred.
+        :param unicode network: SID of a Network resource. Only show UsageRecords representing usage on this network.
+        :param unicode iso_country: Alpha-2 ISO Country Code. Only show UsageRecords representing usage in this country.
+        :param UsageRecordInstance.Group group: Dimension over which to aggregate usage records.
         :param UsageRecordInstance.Granularity granularity: Time-based grouping that UsageRecords should be aggregated by. Can be: `hour`, `day`, or `all`. Default is `all`.
         :param datetime start_time: Only include usage that occurred at or after this time.
         :param datetime end_time: Only include usage that occurred before this time.
@@ -93,6 +107,10 @@ class UsageRecordList(ListResource):
         """
         return list(self.stream(
             sim=sim,
+            fleet=fleet,
+            network=network,
+            iso_country=iso_country,
+            group=group,
             granularity=granularity,
             start_time=start_time,
             end_time=end_time,
@@ -100,7 +118,8 @@ class UsageRecordList(ListResource):
             page_size=page_size,
         ))
 
-    def page(self, sim=values.unset, granularity=values.unset,
+    def page(self, sim=values.unset, fleet=values.unset, network=values.unset,
+             iso_country=values.unset, group=values.unset, granularity=values.unset,
              start_time=values.unset, end_time=values.unset,
              page_token=values.unset, page_number=values.unset,
              page_size=values.unset):
@@ -108,7 +127,11 @@ class UsageRecordList(ListResource):
         Retrieve a single page of UsageRecordInstance records from the API.
         Request is executed immediately
 
-        :param unicode sim: SID of a Sim resource. Only show UsageRecords representing usage incurred by this Super SIM.
+        :param unicode sim: SID or unique name of a Sim resource. Only show UsageRecords representing usage incurred by this Super SIM.
+        :param unicode fleet: SID or unique name of a Fleet resource. Only show UsageRecords representing usage for Super SIMs belonging to this Fleet resource at the time the usage occurred.
+        :param unicode network: SID of a Network resource. Only show UsageRecords representing usage on this network.
+        :param unicode iso_country: Alpha-2 ISO Country Code. Only show UsageRecords representing usage in this country.
+        :param UsageRecordInstance.Group group: Dimension over which to aggregate usage records.
         :param UsageRecordInstance.Granularity granularity: Time-based grouping that UsageRecords should be aggregated by. Can be: `hour`, `day`, or `all`. Default is `all`.
         :param datetime start_time: Only include usage that occurred at or after this time.
         :param datetime end_time: Only include usage that occurred before this time.
@@ -121,6 +144,10 @@ class UsageRecordList(ListResource):
         """
         data = values.of({
             'Sim': sim,
+            'Fleet': fleet,
+            'Network': network,
+            'IsoCountry': iso_country,
+            'Group': group,
             'Granularity': granularity,
             'StartTime': serialize.iso8601_datetime(start_time),
             'EndTime': serialize.iso8601_datetime(end_time),
@@ -213,13 +240,12 @@ class UsageRecordInstance(InstanceResource):
 
     class Group(object):
         SIM = "sim"
+        FLEET = "fleet"
+        NETWORK = "network"
+        ISOCOUNTRY = "isoCountry"
 
     class SortBy(object):
         TIME = "time"
-
-    class SortOrder(object):
-        DESC = "desc"
-        ASC = "asc"
 
     def __init__(self, version, payload):
         """
@@ -234,6 +260,9 @@ class UsageRecordInstance(InstanceResource):
         self._properties = {
             'account_sid': payload.get('account_sid'),
             'sim_sid': payload.get('sim_sid'),
+            'network_sid': payload.get('network_sid'),
+            'fleet_sid': payload.get('fleet_sid'),
+            'iso_country': payload.get('iso_country'),
             'period': payload.get('period'),
             'data_upload': deserialize.integer(payload.get('data_upload')),
             'data_download': deserialize.integer(payload.get('data_download')),
@@ -259,6 +288,30 @@ class UsageRecordInstance(InstanceResource):
         :rtype: unicode
         """
         return self._properties['sim_sid']
+
+    @property
+    def network_sid(self):
+        """
+        :returns: SID of the Network resource on which the usage occurred.
+        :rtype: unicode
+        """
+        return self._properties['network_sid']
+
+    @property
+    def fleet_sid(self):
+        """
+        :returns: SID of the Fleet resource on which the usage occurred.
+        :rtype: unicode
+        """
+        return self._properties['fleet_sid']
+
+    @property
+    def iso_country(self):
+        """
+        :returns: Alpha-2 ISO Country Code of the country the usage occurred in.
+        :rtype: unicode
+        """
+        return self._properties['iso_country']
 
     @property
     def period(self):

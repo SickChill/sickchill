@@ -264,7 +264,7 @@ class ParticipantContext(InstanceContext):
                attributes=values.unset, role_sid=values.unset,
                messaging_binding_proxy_address=values.unset,
                messaging_binding_projected_address=values.unset,
-               x_twilio_webhook_enabled=values.unset):
+               identity=values.unset, x_twilio_webhook_enabled=values.unset):
         """
         Update the ParticipantInstance
 
@@ -274,6 +274,7 @@ class ParticipantContext(InstanceContext):
         :param unicode role_sid: The SID of the Role to assign to the participant
         :param unicode messaging_binding_proxy_address: The address of the Twilio phone number that the participant is in contact with.
         :param unicode messaging_binding_projected_address: The address of the Twilio phone number that is used in Group MMS.
+        :param unicode identity: A unique string identifier for the conversation participant as Chat User.
         :param ParticipantInstance.WebhookEnabledType x_twilio_webhook_enabled: The X-Twilio-Webhook-Enabled HTTP request header
 
         :returns: The updated ParticipantInstance
@@ -286,6 +287,7 @@ class ParticipantContext(InstanceContext):
             'RoleSid': role_sid,
             'MessagingBinding.ProxyAddress': messaging_binding_proxy_address,
             'MessagingBinding.ProjectedAddress': messaging_binding_projected_address,
+            'Identity': identity,
         })
         headers = values.of({'X-Twilio-Webhook-Enabled': x_twilio_webhook_enabled, })
 
@@ -474,7 +476,7 @@ class ParticipantInstance(InstanceResource):
                attributes=values.unset, role_sid=values.unset,
                messaging_binding_proxy_address=values.unset,
                messaging_binding_projected_address=values.unset,
-               x_twilio_webhook_enabled=values.unset):
+               identity=values.unset, x_twilio_webhook_enabled=values.unset):
         """
         Update the ParticipantInstance
 
@@ -484,6 +486,7 @@ class ParticipantInstance(InstanceResource):
         :param unicode role_sid: The SID of the Role to assign to the participant
         :param unicode messaging_binding_proxy_address: The address of the Twilio phone number that the participant is in contact with.
         :param unicode messaging_binding_projected_address: The address of the Twilio phone number that is used in Group MMS.
+        :param unicode identity: A unique string identifier for the conversation participant as Chat User.
         :param ParticipantInstance.WebhookEnabledType x_twilio_webhook_enabled: The X-Twilio-Webhook-Enabled HTTP request header
 
         :returns: The updated ParticipantInstance
@@ -496,6 +499,7 @@ class ParticipantInstance(InstanceResource):
             role_sid=role_sid,
             messaging_binding_proxy_address=messaging_binding_proxy_address,
             messaging_binding_projected_address=messaging_binding_projected_address,
+            identity=identity,
             x_twilio_webhook_enabled=x_twilio_webhook_enabled,
         )
 

@@ -2,9 +2,9 @@ from qbittorrentapi.decorators import Alias
 from qbittorrentapi.decorators import aliased
 from qbittorrentapi.decorators import login_required
 from qbittorrentapi.decorators import response_json
-from qbittorrentapi.helpers import APINames
-from qbittorrentapi.helpers import ClientCache
-from qbittorrentapi.helpers import Dictionary
+from qbittorrentapi.definitions import APINames
+from qbittorrentapi.definitions import ClientCache
+from qbittorrentapi.definitions import Dictionary
 from qbittorrentapi.request import Request
 
 
@@ -17,7 +17,6 @@ class SyncTorrentPeersDictionary(Dictionary):
 
 
 class Sync(ClientCache):
-
     """
     Alows interaction with the "Sync" API endpoints.
 
@@ -76,8 +75,7 @@ class Sync(ClientCache):
 
 @aliased
 class SyncAPIMixIn(Request):
-
-    """Implementation of all Sync API Methods"""
+    """Implementation of all Sync API Methods."""
 
     @property
     def sync(self):
@@ -99,7 +97,7 @@ class SyncAPIMixIn(Request):
 
         :param rid: response ID
         :return: dictionary response
-            Properties: https://github.com/qbittorrent/qBittorrent/wiki/Web-API-Documentation#get-main-data
+            Properties: https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-main-data
         """
         data = {'rid': rid}
         return self._post(_name=APINames.Sync, _method='maindata', data=data, **kwargs)
@@ -111,13 +109,12 @@ class SyncAPIMixIn(Request):
         """
         Retrieves torrent sync data. (alias: sync_torrentPeers)
 
-        Exceptions:
-            NotFound404Error
+        :raises NotFound404Error:
 
         :param torrent_hash: hash for torrent
         :param rid: response ID
         :return: Dictionary of torrent sync data.
-            Properties: https://github.com/qbittorrent/qBittorrent/wiki/Web-API-Documentation#get-torrent-peers-data
+            Properties: https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-torrent-peers-data
         """
         data = {'hash': torrent_hash or kwargs.pop('hash'),
                 'rid': rid}

@@ -5,9 +5,9 @@ from qbittorrentapi.decorators import aliased
 from qbittorrentapi.decorators import login_required
 from qbittorrentapi.decorators import response_json
 from qbittorrentapi.decorators import version_implemented
-from qbittorrentapi.helpers import APINames
-from qbittorrentapi.helpers import ClientCache
-from qbittorrentapi.helpers import Dictionary
+from qbittorrentapi.definitions import APINames
+from qbittorrentapi.definitions import ClientCache
+from qbittorrentapi.definitions import Dictionary
 from qbittorrentapi.request import Request
 
 
@@ -21,11 +21,10 @@ class RSSRulesDictionary(Dictionary):
 
 @aliased
 class RSS(ClientCache):
-
     """
     Allows interaction with "RSS" API endpoints.
 
-    Usage:
+    :Usage:
         >>> from qbittorrentapi import Client
         >>> client = Client(host='localhost:8080', username='admin', password='adminadmin')
         >>> # this is all the same attributes that are available as named in the
@@ -102,8 +101,7 @@ class RSS(ClientCache):
 
 @aliased
 class RSSAPIMixIn(Request):
-
-    """Implementation of all RSS API methods"""
+    """Implementation of all RSS API methods."""
 
     @property
     def rss(self):
@@ -123,8 +121,7 @@ class RSSAPIMixIn(Request):
         """
         Add a RSS folder. Any intermediate folders in path must already exist. (alias: rss_addFolder)
 
-        Exceptions:
-            Conflict409Error
+        :raises Conflict409Error:
 
         :param folder_path: path to new folder (e.g. Linux\ISOs)
         :return: None
@@ -138,8 +135,7 @@ class RSSAPIMixIn(Request):
         """
         Add new RSS feed. Folders in path must already exist. (alias: rss_addFeed)
 
-        Exceptions:
-            Conflict409Error
+        :raises Conflict409Error:
 
         :param url: URL of RSS feed (e.g http://thepiratebay.org/rss/top100/200)
         :param item_path: Name and/or path for new feed (e.g. Folder\Subfolder\FeedName)
@@ -157,8 +153,7 @@ class RSSAPIMixIn(Request):
 
         NOTE: Removing a folder also removes everything in it.
 
-        Exceptions:
-            Conflict409Error
+        :raises Conflict409Error:
 
         :param item_path: path to item to be removed (e.g. Folder\Subfolder\ItemName)
         :return: None
@@ -172,8 +167,7 @@ class RSSAPIMixIn(Request):
         """
         Move/rename a RSS item (folder, feed, etc). (alias: rss_moveItem)
 
-        Exceptions:
-            Conflict409Error
+        :raises Conflict409Error:
 
         :param orig_item_path: path to item to be removed (e.g. Folder\Subfolder\ItemName)
         :param new_item_path: path to item to be removed (e.g. Folder\Subfolder\ItemName)
@@ -206,8 +200,7 @@ class RSSAPIMixIn(Request):
         :return: None
         """
         # HACK: v4.1.7 and v4.1.8 both use api v2.2; however, refreshItem was introduced in v4.1.8
-        from qbittorrentapi.helpers import is_version_less_than
-        if is_version_less_than('v4.1.7', self.app_version(), False):
+        if self._is_version_less_than('v4.1.7', self.app_version(), False):
             data = {"itemPath": item_path}
             self._post(_name=APINames.RSS, _method='refreshItem', data=data, **kwargs)
 
@@ -218,8 +211,7 @@ class RSSAPIMixIn(Request):
         """
         Mark RSS article as read. If article ID is not provider, the entire feed is marked as read. (alias: rss_markAsRead)
 
-        Exceptions:
-            NotFound404Error
+        :raises NotFound404Error:
 
         :param item_path: path to item to be refreshed (e.g. Folder\Subfolder\ItemName)
         :param article_id: article ID from rss_items()
@@ -237,7 +229,7 @@ class RSSAPIMixIn(Request):
 
         :param rule_name: name for new rule
         :param rule_def: dictionary with rule fields
-            Properties: https://github.com/qbittorrent/qBittorrent/wiki/Web-API-Documentation#set-auto-downloading-rule
+            Properties: https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#set-auto-downloading-rule
         :return: None
         """
         data = {'ruleName': rule_name,
@@ -288,10 +280,8 @@ class RSSAPIMixIn(Request):
         """
         Fetch all articles matching a rule. (alias: rss_matchingArticles)
 
-        Exceptions:
-
         :param rule_name: Name of rule to return matching articles
-        :return
+        :return: RSSitemsDictionary of articles
         """
         data = {'ruleName': rule_name}
         return self._post(_name=APINames.RSS, _method='matchingArticles', data=data, **kwargs)

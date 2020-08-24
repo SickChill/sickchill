@@ -1,27 +1,41 @@
 from os import environ
 import logging
+from pkg_resources import parse_version
 from time import sleep
-import requests
 from urllib3 import disable_warnings
 from urllib3.exceptions import InsecureRequestWarning
 
-from qbittorrentapi.decorators import login_required
-from qbittorrentapi.exceptions import *
-from qbittorrentapi.helpers import APINames
-from qbittorrentapi.helpers import suppress_context
-
 try:  # python 3
-    # noinspection PyCompatibility,PyUnresolvedReferences
+    from collections.abc import Iterable
     from urllib.parse import urlparse
 except ImportError:  # python 2
-    # noinspection PyCompatibility,PyUnresolvedReferences
+    from collections import Iterable
     from urlparse import urlparse
+
+import requests
+import six
+
+from qbittorrentapi.decorators import login_required
+from qbittorrentapi.exceptions import APIConnectionError
+from qbittorrentapi.exceptions import HTTPError
+from qbittorrentapi.exceptions import HTTP5XXError
+from qbittorrentapi.exceptions import LoginFailed
+from qbittorrentapi.exceptions import MissingRequiredParameters400Error
+from qbittorrentapi.exceptions import InvalidRequest400Error
+from qbittorrentapi.exceptions import Unauthorized401Error
+from qbittorrentapi.exceptions import Forbidden403Error
+from qbittorrentapi.exceptions import NotFound404Error
+from qbittorrentapi.exceptions import Conflict409Error
+from qbittorrentapi.exceptions import UnsupportedMediaType415Error
+from qbittorrentapi.exceptions import InternalServerError500Error
+from qbittorrentapi.definitions import APINames
 
 logger = logging.getLogger(__name__)
 
 
 class Request(object):
-    """Facilitates HTTP requests to qBittorrent"""
+    """Facilitates HTTP requests to qBittorrent."""
+
     def __init__(self, host='', port=None, username=None, password=None, **kwargs):
         self.host = host
         self.port = port
@@ -81,6 +95,99 @@ class Request(object):
         # Mocking variables until better unit testing exists
         self._MOCK_WEB_API_VERSION = kwargs.pop('MOCK_WEB_API_VERSION', None)
 
+    ########################################
+    # Authorization Endpoints
+    ########################################
+    @property
+    def is_logged_in(self):
+        return bool(self._SID)
+
+    def auth_log_in(self, username=None, password=None):
+        """
+        Log in to qBittorrent host.
+
+        :raises LoginFailed: if credentials failed to log in
+        :raises Forbidden403Error: if user user is banned...or not logged in
+
+        :param username: user name for qBittorrent client
+        :param password: password for qBittorrent client
+        :return: None
+        """
+        if username:
+            self.username = username or ''
+            self._password = password or ''
+
+        try:
+            self._initialize_context()
+            response = self._post(_name=APINames.Authorization,
+                                  _method='login',
+                                  data={'username': self.username, 'password': self._password})
+            self._SID = response.cookies['SID']
+        except KeyError:
+            logger.debug('Login failed for user "%s"' % self.username)
+            raise self._suppress_context(LoginFailed('Login authorization failed for user "%s"' % self.username))
+        else:
+            logger.debug('Login successful for user "%s"' % self.username)
+            logger.debug('SID: %s' % self._SID)
+
+    @login_required
+    def auth_log_out(self, **kwargs):
+        """End session with qBittorrent."""
+        self._get(_name=APINames.Authorization, _method='logout', **kwargs)
+
+    ########################################
+    # Helpers
+    ########################################
+    @classmethod
+    def _list2string(cls, input_list=None, delimiter="|"):
+        """
+        Convert entries in a list to a concatenated string
+
+        :param input_list: list to convert
+        :param delimiter: delimiter for concatenation
+        :return: if input is a list, concatenated string...else whatever the input was
+        """
+        if not isinstance(input_list, six.string_types) and isinstance(input_list, Iterable):
+            return delimiter.join(map(str, input_list))
+        return input_list
+
+    @classmethod
+    def _suppress_context(cls, exc):
+        """
+        This is used to mask an exception with another one.
+
+        For instance, below, the divide by zero error is masked by the CustomException.
+            try:
+                1/0
+            except ZeroDivisionError:
+                raise suppress_context(CustomException())
+
+        Note: In python 3, the last line would simply be raise CustomException() from None
+        :param exc: new Exception that will be raised
+        :return: Exception to be raised
+        """
+        exc.__cause__ = None
+        return exc
+
+    @classmethod
+    def _is_version_less_than(cls, ver1, ver2, lteq=True):
+        """
+        Determine if ver1 is equal to or later than ver2.
+
+        Note: changes need to be reflected in decorators._is_version_less_than as well
+
+        :param ver1: version to check
+        :param ver2: current version of application
+        :param lteq: True for Less Than or Equals; False for just Less Than
+        :return: True or False
+        """
+        if lteq:
+            return parse_version(ver1) <= parse_version(ver2)
+        return parse_version(ver1) < parse_version(ver2)
+
+    ########################################
+    # HTTP Requests
+    ########################################
     def _initialize_context(self):
         """Reset context. This is necessary when the auth cookie needs to be replaced."""
         # cache to avoid perf hit from version checking certain endpoints
@@ -100,54 +207,18 @@ class Request(object):
         self._rss = None
         self._search = None
 
-    @property
-    def is_logged_in(self):
-        return bool(self._SID)
-
-    def auth_log_in(self, username=None, password=None):
-        """
-        Log in to qBittorrent host.
-
-        Exceptions:
-            LoginFailed if credentials failed to log in
-            Forbidden403Error if user user is banned...or not logged in
-
-        :param username: user name for qBittorrent client
-        :param password: password for qBittorrent client
-        :return: None
-        """
-        if username:
-            self.username = username or ''
-            self._password = password or ''
-
-        try:
-            self._initialize_context()
-            response = self._post(_name=APINames.Authorization,
-                                  _method='login',
-                                  data={'username': self.username, 'password': self._password})
-            self._SID = response.cookies['SID']
-        except KeyError:
-            logger.debug('Login failed for user "%s"' % self.username)
-            raise suppress_context(LoginFailed('Login authorization failed for user "%s"' % self.username))
-        else:
-            logger.debug('Login successful for user "%s"' % self.username)
-            logger.debug('SID: %s' % self._SID)
-
-    @login_required
-    def auth_log_out(self, **kwargs):
-        """End session with qBittorrent"""
-        self._get(_name=APINames.Authorization, _method='logout', **kwargs)
-
-    def _get(self, _name='', _method='', **kwargs):
+    def _get(self, _name=APINames.EMPTY, _method='', **kwargs):
         return self._request_wrapper(http_method='get', api_name=_name, api_method=_method, **kwargs)
 
-    def _post(self, _name='', _method='', **kwargs):
+    def _post(self, _name=APINames.EMPTY, _method='', **kwargs):
         return self._request_wrapper(http_method='post', api_name=_name, api_method=_method, **kwargs)
 
     def _request_wrapper(self, _retries=2, _retry_backoff_factor=.3, **kwargs):
-        """ Wrapper to manage requests retries """
-        # This should retry at least twice to account for the Web API switching from HTTP to HTTPS.
-        # During the second attempt, the URL is rebuilt using HTTP or HTTPS as appropriate.
+        """
+        Wrapper to manage requests retries.
+        This should retry at least twice to account for the Web API switching from HTTP to HTTPS.
+        During the second attempt, the URL is rebuilt using HTTP or HTTPS as appropriate.
+        """
         max_retries = _retries if _retries > 1 else 2
         for retry in range(0, (max_retries + 1)):
             try:
@@ -190,6 +261,8 @@ class Request(object):
                  data=None, params=None, files=None, headers=None, requests_params=None, **kwargs):
         _ = kwargs.pop('SIMPLE_RESPONSES', kwargs.pop('SIMPLE_RESPONSE', False))  # ensure SIMPLE_RESPONSE(S) isn't sent
 
+        if isinstance(api_name, APINames):
+            api_name = api_name.value
         api_path_list = (self._API_URL_BASE_PATH, self._API_URL_API_VERSION, api_name, api_method)
         url = self._build_url(base_url=self._API_URL_BASE,
                               host=self.host,
@@ -243,39 +316,31 @@ class Request(object):
 
     @staticmethod
     def handle_error_responses(data, params, response):
-        """Raise proper exception if qBittorrent returns Error HTTP Status"""
+        """Raise proper exception if qBittorrent returns Error HTTP Status."""
         if response.status_code < 400:
             # short circuit for non-error statuses
             return
         elif response.status_code == 400:
-            """
-            Returned for malformed requests such as missing or invalid parameters.
-
-            If an error_message isn't returned, qBittorrent didn't receive all required parameters.
-            APIErrorType::BadParams
-            """
+            # Returned for malformed requests such as missing or invalid parameters.
+            #
+            # If an error_message isn't returned, qBittorrent didn't receive all required parameters.
+            # APIErrorType::BadParams
             if response.text == '':
                 raise MissingRequiredParameters400Error()
             raise InvalidRequest400Error(response.text)
 
         elif response.status_code == 401:
-            """
-            Primarily reserved for XSS and host header issues. Is also
-            """
+            # Primarily reserved for XSS and host header issues. Is also
             raise Unauthorized401Error(response.text)
 
         elif response.status_code == 403:
-            """
-            Not logged in or calling an API method that isn't public
-            APIErrorType::AccessDenied
-            """
+            # Not logged in or calling an API method that isn't public
+            # APIErrorType::AccessDenied
             raise Forbidden403Error(response.text)
 
         elif response.status_code == 404:
-            """
-            API method doesn't exist or more likely, torrent not found
-            APIErrorType::NotFound
-            """
+            # API method doesn't exist or more likely, torrent not found
+            # APIErrorType::NotFound
             error_message = response.text
             if error_message == '':
                 error_torrent_hash = ''
@@ -290,28 +355,22 @@ class Request(object):
             raise NotFound404Error(error_message)
 
         elif response.status_code == 409:
-            """
-            APIErrorType::Conflict
-            """
+            # APIErrorType::Conflict
             raise Conflict409Error(response.text)
 
         elif response.status_code == 415:
-            """
-            APIErrorType::BadData
-            """
+            # APIErrorType::BadData
             raise UnsupportedMediaType415Error(response.text)
 
         elif response.status_code >= 500:
             raise InternalServerError500Error(response.text)
 
         elif response.status_code >= 400:
-            """
-            Unaccounted for errors from API
-            """
+            # Unaccounted for errors from API
             raise HTTPError(response.text)
 
     def verbose_logging(self, http_method, response, url):
-        """Log verbose information about request. Can be useful during development"""
+        """Log verbose information about request. Can be useful during development."""
         if self._VERBOSE_RESPONSE_LOGGING:
             resp_logger = logger.debug
             max_text_length_to_log = 254
