@@ -3,6 +3,7 @@ import os.path
 import re
 import time
 from collections import OrderedDict
+from operator import attrgetter
 from threading import Lock
 
 import dateutil.parser
@@ -182,7 +183,7 @@ class NameParser(object):
             matches.append(result)
 
         # only get matches with series_name
-        matches = list(filter(lambda x: x.series_name, matches))
+        matches = [x for x in matches if x.series_name]
 
         if matches:
             # pick best match with highest score based on placement
@@ -201,12 +202,12 @@ class NameParser(object):
                 # if show is an anime, try to use an anime expression first
                 if show.is_anime:
                     bestResult_anime = max(
-                        sorted(filter(lambda x: x.is_anime, matches), reverse=True, key=lambda x: x.which_regex),
+                        sorted([x for x in matches if x.is_anime], reverse=True, key=attrgetter('which_regex')),
                         key=lambda x: x.score)
 
                     if bestResult_anime:
-                        show_anime = helpers.get_show(bestResult.series_name, self.tryIndexers)
-                        if show_anime.indexerid == show.indexerid:
+                        show_anime = helpers.get_show(bestResult.series_name)
+                        if show_anime and show_anime.indexerid == show.indexerid:
                             bestResult = bestResult_anime
 
                 bestResult.show = show
