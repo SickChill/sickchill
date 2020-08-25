@@ -181,6 +181,9 @@ class NameParser(object):
 
             matches.append(result)
 
+        # only get matches with series_name
+        matches = list(filter(lambda x: x.series_name, matches))
+
         if matches:
             # pick best match with highest score based on placement
             bestResult = max(sorted(matches, reverse=True, key=lambda x: x.which_regex), key=lambda x: x.score)
@@ -189,6 +192,16 @@ class NameParser(object):
             if not self.naming_pattern:
                 # try and create a show object for this result
                 show = helpers.get_show(bestResult.series_name, self.tryIndexers)
+
+                # if show is an anime, try to use an anime expression first
+                if show.is_anime:
+                    bestResult_anime = max(
+                        sorted(filter(lambda x: x.is_anime, matches), reverse=True, key=lambda x: x.which_regex),
+                        key=lambda x: x.score)
+                    show_anime = helpers.get_show(bestResult.series_name, self.tryIndexers)
+
+                    if show_anime.indexerid == show.indexerid:
+                        bestResult = bestResult_anime
 
             # confirm passed in show object indexer id matches result show object indexer id
             if show:
