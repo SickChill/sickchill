@@ -193,20 +193,22 @@ class NameParser(object):
                 # try and create a show object for this result
                 show = helpers.get_show(bestResult.series_name, self.tryIndexers)
 
+            # confirm passed in show object indexer id matches result show object indexer id
+            if show:
+                if self.showObj and show.indexerid != self.showObj.indexerid:
+                    show = None
+
                 # if show is an anime, try to use an anime expression first
                 if show.is_anime:
                     bestResult_anime = max(
                         sorted(filter(lambda x: x.is_anime, matches), reverse=True, key=lambda x: x.which_regex),
                         key=lambda x: x.score)
-                    show_anime = helpers.get_show(bestResult.series_name, self.tryIndexers)
 
-                    if show_anime.indexerid == show.indexerid:
-                        bestResult = bestResult_anime
+                    if bestResult_anime:
+                        show_anime = helpers.get_show(bestResult.series_name, self.tryIndexers)
+                        if show_anime.indexerid == show.indexerid:
+                            bestResult = bestResult_anime
 
-            # confirm passed in show object indexer id matches result show object indexer id
-            if show:
-                if self.showObj and show.indexerid != self.showObj.indexerid:
-                    show = None
                 bestResult.show = show
             elif not show and self.showObj:
                 bestResult.show = self.showObj
