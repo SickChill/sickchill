@@ -4,6 +4,7 @@ import sys
 import unittest
 
 from sickchill import tv
+from sickchill.oldbeard import common
 from sickchill.oldbeard.name_parser import parser
 from tests import test_lib as test
 
@@ -118,6 +119,11 @@ ANIME_TEST_CASES = {
         'Show Name - S01E02': parser.ParseResult(None, 'Show Name', 1, [2]),
         'Show Name - S01E02-03': parser.ParseResult(None, 'Show Name', 1, [2, 3]),
     },
+    'anime_bare': {
+        'Show Name - 102': parser.ParseResult(None, 'Show Name', ab_episode_numbers=[102], version=1),
+        '[SC]_Show_Name_123': parser.ParseResult(None, 'Show Name', release_group='SC', ab_episode_numbers=[123], version=1),
+        'Show.Name.-.134.-.1080p.BluRay.x264.DHD':  parser.ParseResult(None, 'Show Name', ab_episode_numbers=[134], quality=common.Quality.FULLHDBLURAY, version=1),
+    }
 }
 
 COMBINATION_TEST_CASES = [
@@ -444,6 +450,7 @@ class AnimeTests(test.SickChillTestDBCase):
         super().__init__(something)
         super().setUp()
         self.show = tv.TVShow(1, 1, 'en')
+        self.show.anime = True
 
     def _test_names(self, name_parser, section, transform=None, verbose=False):
         """
@@ -492,6 +499,20 @@ class AnimeTests(test.SickChillTestDBCase):
         """
         name_parser = parser.NameParser(parse_method='anime')
         self._test_names(name_parser, 'anime_SxxExx', lambda x: x + '.avi')
+
+    def test_anime_bare_file_names(self):
+        """
+        Test anime SxxExx file names
+        """
+        name_parser = parser.NameParser(parse_method='anime')
+        self._test_names(name_parser, 'anime_bare', lambda x: x + '.avi')
+
+    def test_anime_bare_file_names_indirect(self):
+        """
+        Test anime SxxExx file names without defining parse method
+        """
+        name_parser = parser.NameParser()
+        self._test_names(name_parser, 'anime_bare', lambda x: x + '.avi')
 
 
 # TODO: Make these work or document why they shouldn't
