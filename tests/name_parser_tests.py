@@ -452,6 +452,9 @@ class AnimeTests(test.SickChillTestDBCase):
         self.show = tv.TVShow(1, 1, 'en')
         self.show.anime = True
 
+    def tearDown(self):
+        parser.name_parser_cache.data.clear()
+
     def _test_names(self, name_parser, section, transform=None, verbose=False):
         """
         Performs a test
