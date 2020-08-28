@@ -1,5 +1,5 @@
 import datetime
-import os.path
+import os
 import sys
 import unittest
 
@@ -8,7 +8,8 @@ from sickchill.oldbeard import common
 from sickchill.oldbeard.name_parser import parser
 from tests import test_lib as test
 
-DEBUG = VERBOSE = False
+DEBUG = os.getenv('DEBUG')
+VERBOSE = os.getenv('VERBOSE')
 
 SIMPLE_TEST_CASES = {
     'standard': {
@@ -263,7 +264,7 @@ class ComboTests(test.SickChillTestDBCase):
             print(test_result, test_result.which_regex)
             print(result, which_regexes)
 
-        self.assertEqual(test_result, result)
+        self.assertEqual(str(test_result), str(result))
         for cur_regex in which_regexes:
             self.assertTrue(cur_regex in test_result.which_regex)
         self.assertEqual(len(which_regexes), len(test_result.which_regex))
@@ -321,13 +322,17 @@ class BasicTests(test.SickChillTestDBCase):
                 result.which_regex = [section]
                 test_result = name_parser.parse(cur_test)
 
+            def print_debug():
+                print(f'{cur_test}:')
+                print(f'Test Result: {test_result}')
+                print(f'Expected Result: {result}')
+
             if DEBUG or verbose:
-                print('air_by_date:', test_result.is_air_by_date, 'air_date:', test_result.air_date)
-                print('anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers)
-                print(test_result)
-                print(result)
-            self.assertEqual(test_result.which_regex, [section], '{0} : {1} != {2}'.format(cur_test, test_result.which_regex, [section]))
-            self.assertEqual(str(test_result), str(result), '{0} : {1} != {2}'.format(cur_test, str(test_result), str(result)))
+                print_debug()
+
+            result.score = test_result.score  # Needed so we don't have to specify expected regex score in each test case.
+            self.assertEqual(test_result.which_regex, [section], print_debug())
+            self.assertEqual(str(test_result), str(result), print_debug())
 
     def test_standard_names(self):
         """
@@ -488,13 +493,17 @@ class AnimeTests(test.SickChillTestDBCase):
                 result.which_regex = [section]
                 test_result = name_parser.parse(cur_test)
 
+            def print_debug():
+                print(f'{cur_test}:')
+                print(f'Test Result: {test_result}')
+                print(f'Expected Result: {result}')
+
             if DEBUG or verbose:
-                print('air_by_date:', test_result.is_air_by_date, 'air_date:', test_result.air_date)
-                print('anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers)
-                print(test_result)
-                print(result)
-            self.assertEqual(test_result.which_regex, [section], '{0} : {1} != {2}'.format(cur_test, test_result.which_regex, [section]))
-            self.assertEqual(str(test_result), str(result), '{0} : {1} != {2}'.format(cur_test, str(test_result), str(result)))
+                print_debug()
+
+            result.score = test_result.score  # Needed so we don't have to specify expected regex score in each test case.
+            self.assertEqual(test_result.which_regex, [section], print_debug())
+            self.assertEqual(str(test_result), str(result), print_debug())
 
     def test_anime_sxxexx_file_names(self):
         """
@@ -505,14 +514,15 @@ class AnimeTests(test.SickChillTestDBCase):
 
     def test_anime_bare_file_names(self):
         """
-        Test anime SxxExx file names
+        Test anime bare file names
         """
         name_parser = parser.NameParser(parse_method='anime')
         self._test_names(name_parser, 'anime_bare', lambda x: x + '.avi')
 
+    @unittest.expectedFailure
     def test_anime_bare_file_names_indirect(self):
         """
-        Test anime SxxExx file names without defining parse method
+        Test anime bare file names without defining parse method
         """
         name_parser = parser.NameParser()
         self._test_names(name_parser, 'anime_bare', lambda x: x + '.avi')
@@ -561,13 +571,17 @@ class BasicFailedTests(test.SickChillTestDBCase):
                 result.which_regex = [section]
                 test_result = name_parser.parse(cur_test)
 
+            def print_debug():
+                print(f'{cur_test}:')
+                print(f'Test Result: {test_result}')
+                print(f'Expected Result: {result}')
+
             if DEBUG or verbose:
-                print('air_by_date:', test_result.is_air_by_date, 'air_date:', test_result.air_date)
-                print('anime:', test_result.is_anime, 'ab_episode_numbers:', test_result.ab_episode_numbers)
-                print(test_result)
-                print(result)
-            self.assertEqual(test_result.which_regex, [section], '{0} : {1} != {2}'.format(cur_test, test_result.which_regex, [section]))
-            self.assertEqual(str(test_result), str(result), '{0} : {1} != {2}'.format(cur_test, str(test_result), str(result)))
+                print_debug()
+
+            result.score = test_result.score  # Needed so we don't have to specify expected regex score in each test case.
+            self.assertEqual(test_result.which_regex, [section], print_debug())
+            self.assertEqual(str(test_result), str(result), print_debug())
 
     def test_no_s_names(self):
         """

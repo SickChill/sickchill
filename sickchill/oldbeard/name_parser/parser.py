@@ -443,13 +443,18 @@ class NameParser(object):
         final_result.which_regex = []
         if final_result == file_name_result:
             final_result.which_regex = file_name_result.which_regex
+            final_result.score = file_name_result.score
         elif final_result == dir_name_result:
             final_result.which_regex = dir_name_result.which_regex
+            final_result.score = dir_name_result.score
         else:
+            final_result.score = 0
             if file_name_result:
                 final_result.which_regex += file_name_result.which_regex
+                final_result.score += file_name_result.score
             if dir_name_result:
                 final_result.which_regex += dir_name_result.which_regex
+                final_result.score += dir_name_result.score
 
         final_result.show = self._combine_results(file_name_result, dir_name_result, 'show')
         final_result.quality = self._combine_results(file_name_result, dir_name_result, 'quality')
@@ -472,7 +477,7 @@ class ParseResult(object):
     def __init__(self, original_name, series_name=None, season_number=None,
                  episode_numbers=None, extra_info=None, release_group=None,
                  air_date=None, ab_episode_numbers=None, show=None,
-                 score=None, quality=None, version=None):
+                 score=0, quality=None, version=None):
 
         self.original_name = original_name
 
@@ -530,7 +535,8 @@ class ParseResult(object):
             to_return += f'S{self.season_number:02}'
         if self.episode_numbers:
             for e in self.episode_numbers:
-                to_return += f'E{e:02}'
+                if e is not None:
+                    to_return += f'E{e:02}'
 
         if self.is_air_by_date:
             to_return += f' {self.air_date}'
@@ -542,7 +548,7 @@ class ParseResult(object):
         if self.release_group:
             to_return += f' [GROUP: {self.release_group}]'
 
-        to_return += f' [ABD: {self.is_air_by_date}] [ANIME: {self.is_anime}] [whichReg: {self.which_regex}]'
+        to_return += f' [ABD: {self.is_air_by_date}] [ANIME: {self.is_anime}] [whichReg: {self.which_regex}] Score: {self.score}'
 
         return to_return
 
