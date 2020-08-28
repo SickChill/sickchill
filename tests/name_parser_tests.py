@@ -636,3 +636,6 @@ if __name__ == '__main__':
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(FailureCaseTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(AnimeTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
