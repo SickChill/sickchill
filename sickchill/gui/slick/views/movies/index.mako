@@ -5,6 +5,8 @@
 </%block>
 <%block name="content">
     <div id="movie-list">
-        <span class="h1">Coming Soon</span>
+        % for movie in movies:
+            <div class="show-container">${movie.name}</div>
+        % endfor
     </div>
 </%block>

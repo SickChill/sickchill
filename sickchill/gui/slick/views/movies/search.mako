@@ -35,6 +35,7 @@
                                             ${_('Enter a title or id')}:
                                         </label>
                                         <div class="col-md-10">
+                                            <input type="hidden" name="imdb" id="imdb" value="1"/>
                                             <input type="text" name="query" id="query" class="form-control input-sm input350" autocapitalize="off"  title="Search"/>
                                             <input class="btn btn-inline" type="button" value="Search" id="Search" />
                                         </div>
@@ -77,6 +78,7 @@
                                             ${_('Enter a title or id')}:
                                         </label>
                                         <div class="col-md-10">
+                                            <input type="hidden" name="tmdb" id="tmdb" value="1"/>
                                             <input type="text" name="query" id="query" class="form-control input-sm input350" autocapitalize="off"  title="Search"/>
                                             <input class="btn btn-inline" type="button" value="Search" id="Search" />
                                         </div>

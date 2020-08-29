@@ -3,13 +3,12 @@ import logging
 
 import guessit
 from slugify import slugify
-
-logger = logging.getLogger('sickchill.movie')
-
-from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, Interval, SmallInteger, String
+from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, Interval, SmallInteger, String, JSON
 from sqlalchemy.event import listen
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
+
+logger = logging.getLogger('sickchill.movie')
 
 Base = declarative_base()
 Session = sessionmaker()
@@ -17,7 +16,7 @@ Session = sessionmaker()
 
 class Movie(Base):
     __tablename__ = "movie"
-    id = Column(Integer, primary_key=True)
+    pk = Column(Integer, primary_key=True)
     name = Column(String)
     date = Column(Date)
     year = Column(SmallInteger)
@@ -31,15 +30,20 @@ class Movie(Base):
     completed = Column(DateTime)
     searched = Column(DateTime)
     slug = Column(String)
+    imdb_data = Column(JSON)
+    tmdb_data = Column(JSON)
+    omdb_data = Column(JSON)
+
+    language = Column(String)
 
     result = relationship("Result", uselist=False, back_populates="movie")
     results = relationship("Result", back_populates="movie")
 
     external_ids = relationship("ExternalID", back_populates="movie")
 
-    def __init__(self, name: str, date: datetime.date):
+    def __init__(self, name: str, year: int):
         self.name = name
-        self.date = date
+        self.year = year
 
     @staticmethod
     def slugify(target, value, oldvalue, initiator):
@@ -55,7 +59,7 @@ listen(Movie.name, 'set', Movie.slugify, retval=False)
 
 class Result(Base):
     __tablename__ = "result"
-    id = Column(Integer, primary_key=True)
+    pk = Column(Integer, primary_key=True)
     name = Column(String)
     title = Column(String)
     url = Column(String)
@@ -69,7 +73,7 @@ class Result(Base):
     found = Column(DateTime, default=datetime.datetime.now)
     updated = Column(DateTime, onupdate=datetime.datetime.now)
 
-    movie_id = Column(Integer, ForeignKey('movie.id'))
+    movie_pk = Column(Integer, ForeignKey('movie.pk'))
     movie = relationship("Movie", back_populates="result")
 
     session = Session()
@@ -109,8 +113,13 @@ class Result(Base):
 
 class ExternalID(Base):
     __tablename__ = "external_id"
-    id = Column(Integer, primary_key=True)
+    pk = Column(String, primary_key=True)
     site = Column(String)
 
-    movie_id = Column(Integer, ForeignKey('movie.id'))
+    movie_pk = Column(Integer, ForeignKey('movie.pk'))
     movie = relationship("Movie", back_populates="external_ids")
+
+    def __init__(self, site: str, movie_pk: int, pk: str):
+        self.pk = pk
+        self.site = site
+        self.movie_pk = pk
