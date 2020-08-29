@@ -13,7 +13,6 @@ from . import settings
 from .oldbeard.databases import movie
 from .oldbeard.db import db_cons, db_full_path, db_locks
 
-
 logger = logging.getLogger('sickchill.movie')
 
 

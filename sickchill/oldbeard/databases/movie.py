@@ -3,7 +3,7 @@ import logging
 
 import guessit
 from slugify import slugify
-from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, Interval, SmallInteger, String, JSON
+from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, Interval, JSON, SmallInteger, String
 from sqlalchemy.event import listen
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
