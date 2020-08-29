@@ -167,7 +167,7 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a href="${reverse_url("movies", "")}"><i class="fa fa-fw fa-home"></i>&nbsp;${_('Movie List')}</a></li>
-                                    <li><a href="${reverse_url("movies", "/add")}"><i class="fa fa-fw fa-television"></i>&nbsp;${_('Add Movies')}</a></li>
+                                    <li><a href="${reverse_url("movies-search", "search")}"><i class="fa fa-fw fa-television"></i>&nbsp;${_('Add Movies')}</a></li>
                                 </ul>
                                 <div style="clear:both;"></div>
                             </li>

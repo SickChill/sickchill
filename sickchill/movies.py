@@ -1,4 +1,6 @@
+import datetime
 import json
+import logging
 import threading
 
 import tmdbsimple
@@ -10,6 +12,9 @@ from tmdbsimple import movies, search
 from . import settings
 from .oldbeard.databases import movie
 from .oldbeard.db import db_cons, db_full_path, db_locks
+
+
+logger = logging.getLogger('sickchill.movie')
 
 
 class MovieList:
@@ -49,9 +54,9 @@ class MovieList:
         return bool(self.get(pk, False))
 
     @staticmethod
-    def search_tmdb(query=None, tmdbid=None, year=None, language=None, adult=False):
-        if tmdbid:
-            results = [movies.Movies(id=tmdbid)]
+    def search_tmdb(query=None, tmdb_id=None, year=None, language=None, adult=False):
+        if tmdb_id:
+            results = [movies.Movies(id=tmdb_id)]
         elif query:
             tmdb_kwargs = dict(query=query, year=year, language=language, adult=adult)
             tmdb_kwargs = {key: value for key, value in tmdb_kwargs.items() if value}
@@ -71,9 +76,33 @@ class MovieList:
     def popular_imdb(self):
         return self.imdb.get_popular_movies()['ranks']
 
+    def add_from_tmdb(self, tmdb_id: str, language: str = settings.INDEXER_DEFAULT_LANGUAGE):
+        logger.debug(f'Adding movie from tmdb with id: {tmdb_id}')
+        existing = self.session.query(movie.ExternalID).filter_by(pk=tmdb_id).first()
+        if existing:
+            logger.debug(f'Movie already existed as {existing.movie.name}')
+            return existing
+
+        tmdb_object = tmdbsimple.movies.Movies(id=tmdb_id).info()
+        instance = movie.Movie(tmdb_object['title'], year=tmdb_object['release_date'].split('-')[0])
+        instance.date = datetime.datetime.strptime(tmdb_object['release_date'], '%Y-%m-%d').date()
+        instance.tmdb_data = tmdb_object
+        instance.language = language
+
+        self.session.add(instance)
+        external_id = movie.ExternalID(pk=tmdb_id, movie_pk=instance.pk, site='tmdb')
+        self.session.add(external_id)
+
+        self.commit()
+
+        logger.debug(f'Returning instance for {instance.name}')
+        return instance
+
     def add_from_imdb(self, imdb_id: str, language: str = settings.INDEXER_DEFAULT_LANGUAGE):
+        logger.debug(f'Adding movie from imdb id: {imdb_id}')
         existing = self.session.query(movie.ExternalID).filter_by(pk=imdb_id).first()
         if existing:
+            logger.debug(f'Movie already existed as {existing.name}')
             return existing
 
         imdb_object = self.imdb.get_title(imdb_id)
@@ -87,9 +116,11 @@ class MovieList:
 
         self.commit()
 
-        return movie
+        logger.debug(f'Returning instance for {instance.name}')
+        return instance
 
     def commit(self):
+        logger.debug('Committing')
         self.session.flush()
         self.session.commit()
 

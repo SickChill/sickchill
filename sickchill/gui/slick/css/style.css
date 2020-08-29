@@ -1270,7 +1270,7 @@ td.col-search {
     width: 46px;
 }
 
-.showLegend {
+.showLegend , .movieLegend {
     padding-right: 6px;
     padding-bottom: 1px;
     width: 150px;

@@ -40,14 +40,25 @@ class Movie(Base):
     results = relationship("Result", back_populates="movie")
 
     external_ids = relationship("ExternalID", back_populates="movie")
+    images = relationship("Images", back_populates="movie")
 
     def __init__(self, name: str, year: int):
         self.name = name
         self.year = year
 
+    @property
+    def poster(self):
+        return ''
+
+    @property
+    def imdb_id(self):
+        if self.external_ids:
+            return self.external_ids['imdb']
+        return ''
+
     @staticmethod
-    def slugify(target, value, oldvalue, initiator):
-        if value and (not target.slug or value != oldvalue):
+    def slugify(target, value, old_value, initiator):
+        if value and (not target.slug or value != old_value):
             target.slug = slugify(value)
 
     def __repr__(self):
@@ -122,4 +133,23 @@ class ExternalID(Base):
     def __init__(self, site: str, movie_pk: int, pk: str):
         self.pk = pk
         self.site = site
-        self.movie_pk = pk
+        self.movie_pk = movie_pk
+
+
+class Images(Base):
+    __tablename__ = 'images'
+
+    url = Column(String, primary_key=True)
+    path = Column(String)
+    site = Column(String)
+    style = Column(Integer)
+
+    movie_pk = Column(Integer, ForeignKey('movie.pk'))
+    movie = relationship("Movie", back_populates="images")
+
+    def __init__(self, site: str, movie_pk: int, url: str, path: str, style: int):
+        self.url = url
+        self.path = path
+        self.site = site
+        self.style = style
+        self.movie_pk = movie_pk
