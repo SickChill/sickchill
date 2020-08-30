@@ -4437,14 +4437,14 @@ const SICKCHILL = {
             });
         },
         details() {
-            $('.addQTip').each(function() {
+            $('.addQTip').each(function () {
                 $(this).css({cursor: 'help', 'text-shadow': '0px 0px 0.5px #666'});
                 $(this).qtip({
                     show: {solo: true},
                     position: {viewport: $(window), my: 'left center', adjust: {y: -10, x: 2}},
                     style: {tip: {corner: true, method: 'polygon'}, classes: 'qtip-rounded qtip-shadow ui-tooltip-sb'}
                 });
-            })
+            });
 
             $.fn.generateStars = function () {
                 return this.each((i, element) => {
@@ -4459,13 +4459,13 @@ const SICKCHILL = {
                 html: true, // Required if content has HTML
                 content: '<div id="popover-target"></div>'
             })
-            // Bootstrap popover event triggered when the popover opens
-            .on('shown.bs.popover', () => {
-                $('.displayShowTable').each((index, item) => {
-                    $.tablesorter.columnSelector.attachTo(item, '#popover-target');
+                // Bootstrap popover event triggered when the popover opens
+                .on('shown.bs.popover', () => {
+                    $('.displayShowTable').each((index, item) => {
+                        $.tablesorter.columnSelector.attachTo(item, '#popover-target');
+                    });
                 });
-            });
-        },
+        }
     }
 };
 
