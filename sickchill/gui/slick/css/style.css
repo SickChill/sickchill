@@ -1018,7 +1018,7 @@ ul.tags li a {
     color: #FFFFFF;
 }
 
-.tvshowImg {
+.tvshowImg, .movieImg {
     border: 1px solid #CCCCCC;
     border-radius: 5px;
     max-height: 311px;
@@ -3634,7 +3634,7 @@ input.tablesorter-filter.disabled {
         padding-left: 0 !important;
     }
 
-    .tvshowImg {
+    .tvshowImg, .movieImg {
         margin-bottom: 10px;
     }
 
@@ -3676,7 +3676,7 @@ input.tablesorter-filter.disabled {
         padding: 0;
     }
 
-    .tvshowImg {
+    .tvshowImg, .movieImg {
         max-height: 245px;
     }
 
@@ -3711,7 +3711,7 @@ input.tablesorter-filter.disabled {
         float: right;
     }
 
-    .tvshowImg {
+    .tvshowImg, .movieImg {
         max-height: 269px;
     }
 }
@@ -3725,7 +3725,7 @@ input.tablesorter-filter.disabled {
         float: right;
     }
 
-    .tvshowImg {
+    .tvshowImg, .movieImg {
         max-height: 269px;
     }
 }

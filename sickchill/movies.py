@@ -111,8 +111,14 @@ class MovieList:
 
         self.session.add(instance)
 
-        imdb_data = movie.IndexerData(site='imdb', data=imdb_object,  movie=instance, pk=imdb_id)
+        imdb_data = movie.IndexerData(site='imdb', data=imdb_object, movie=instance, pk=imdb_id)
         self.session.add(imdb_data)
+
+        genres = self.imdb.get_title_genres(imdb_id)
+        if genres:
+            for genre in genres['genres']:
+                genre_instance = movie.Genres(pk=genre, indexer_data=imdb_data)
+                self.session.add(genre_instance)
 
         self.commit()
 

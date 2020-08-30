@@ -253,7 +253,7 @@ ul.tags li {
     background: url(../images/tag.png) no-repeat scroll 5px 4px #15528F;
 }
 
-.tvshowImg {
+.tvshowImg, .movieImg {
     border: 1px solid #111111;
 }
 

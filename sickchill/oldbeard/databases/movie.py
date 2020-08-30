@@ -33,11 +33,11 @@ class Movie(Base):
 
     language = Column(String)
 
-    result = relationship("Result", uselist=False, back_populates="movie")
-    results = relationship("Result", back_populates="movie")
+    result = relationship("Result", uselist=False, backref="downloaded")
+    results = relationship("Result", backref="movie")
 
-    images = relationship("Images", back_populates="movie")
-    indexer_data = relationship("IndexerData", back_populates="movie")
+    images = relationship("Images", backref="movie")
+    indexer_data: list = relationship("IndexerData", backref="movie")
 
     def __init__(self, name: str, year: int):
         self.name = name
@@ -66,6 +66,13 @@ class Movie(Base):
         if data:
             return data.pk
         return ''
+
+    @property
+    def imdb_genres(self):
+        data = self.__get_named_indexer_data('imdb')
+        if data:
+            return data.genres
+        return []
 
     def __get_indexer_values(self, name, keys: list):
         try:
@@ -127,7 +134,6 @@ class Result(Base):
     updated = Column(DateTime, onupdate=datetime.datetime.now)
 
     movie_pk = Column(Integer, ForeignKey('movie.pk'))
-    movie = relationship("Movie", back_populates="result")
 
     session = Session()
 
@@ -173,7 +179,6 @@ class Images(Base):
     style = Column(Integer)
 
     movie_pk = Column(Integer, ForeignKey('movie.pk'))
-    movie = relationship("Movie", back_populates="images")
 
     def __init__(self, site: str, movie_pk: int, url: str, path: str, style: int):
         self.url = url
@@ -190,7 +195,15 @@ class IndexerData(Base):
     data = Column(JSON)
 
     movie_pk = Column(Integer, ForeignKey('movie.pk'))
-    movie = relationship("Movie", back_populates="indexer_data")
+
+    genres = relationship('Genres', backref='indexer_data')
 
     def __repr__(self):
         return f"[{self.__tablename__.replace('_', ' ').title()}] {self.site}: {self.pk} - {self.movie.name}"
+
+
+class Genres(Base):
+    __tablename__ = 'genres'
+    pk = Column(String, primary_key=True)
+    indexer_data_pk = Column(Integer, ForeignKey('indexer_data.pk'))
+

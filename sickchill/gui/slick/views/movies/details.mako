@@ -16,6 +16,11 @@
 </%block>
 <%block name="content">
     <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="movie-title" data-moviename="${movie.name}">
+            <h1 class="title" id="scene_exception_${movie.imdb_id}">${movie.name}</h1>
+        </div>
+    </div>
     <!-- Alert -->
     % if movie_message:
         <div class="row">
@@ -31,7 +36,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="poster-container">
-                    <img class="tvshowImg" src="${static_url("images/poster.png")}" alt="${_('Poster for')} ${movie.name}"/>
+                    <img class="movieImg" src="${static_url("images/poster.png")}" alt="${_('Poster for')} ${movie.name}"/>
                 </div>
                 <div class="info-container">
                     <div class="row">
@@ -46,12 +51,8 @@
                                     % endfor
                                 % endif
                                 <span>
-                                    % if movie.year:
-                                        (${movie.year})
-                                    % endif
-                                    % if movie.runtime:
-                                        ${movie.runtime} ${_('minutes')}
-                                    % endif
+                                    ${movie.year or _('Unknown')}
+                                    ${movie.runtime or _('Unknown')} ${_('minutes')}
                                 </span>
                                 % if movie.imdb_id:
                                     <a href="${anon_url('http://www.imdb.com/title/', movie.imdb_id)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${movie.imdb_id}"><span class="displaymovie-icon-imdb"></span></a>
@@ -60,11 +61,9 @@
                             </div>
                             <div class="pull-left col-lg-8 col-md-8 col-sm-12 col-xs-12">
                                 <ul class="tags">
-                                    % if movie.imdb_data.get('genres'):
-                                        % for imdbgenre in movie.imdb_data['genres'].replace('Sci-Fi','Science-Fiction').split('|'):
-                                            <a href="${anon_url('http://www.imdb.com/search/title?count=100&title_type=tv_series&genres=', imdbgenre.lower())}" target="_blank" title="${_('View other popular {imdbgenre} movies on IMDB.').format(imdbgenre=_(imdbgenre))}"><li>${_(imdbgenre)}</li></a>
-                                        % endfor
-                                    % endif
+                                    % for imdbgenre in movie.imdb_genres:
+                                        <a href="${anon_url('http://www.imdb.com/search/title?count=100&title_type=tv_series&genres=', imdbgenre.pk.lower())}" target="_blank" title="${_('View other popular {imdbgenre} movies on IMDB.').format(imdbgenre=_(imdbgenre.pk))}"><li>${_(imdbgenre.pk)}</li></a>
+                                    % endfor
                                 </ul>
                             </div>
                         % endif
