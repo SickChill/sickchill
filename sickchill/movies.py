@@ -77,7 +77,7 @@ class MovieList:
 
     def add_from_tmdb(self, tmdb_id: str, language: str = settings.INDEXER_DEFAULT_LANGUAGE):
         logger.debug(f'Adding movie from tmdb with id: {tmdb_id}')
-        existing = self.session.query(movie.ExternalID).filter_by(pk=tmdb_id).first()
+        existing = self.session.query(movie.IndexerData).filter_by(pk=tmdb_id).first()
         if existing:
             logger.debug(f'Movie already existed as {existing.movie.name}')
             return existing
@@ -89,8 +89,9 @@ class MovieList:
         instance.language = language
 
         self.session.add(instance)
-        external_id = movie.ExternalID(pk=tmdb_id, movie_pk=instance.pk, site='tmdb')
-        self.session.add(external_id)
+
+        tmdb_data = movie.IndexerData(site='tmdb', data=tmdb_object,  movie=instance, pk=tmdb_id)
+        self.session.add(tmdb_data)
 
         self.commit()
 
@@ -99,19 +100,19 @@ class MovieList:
 
     def add_from_imdb(self, imdb_id: str, language: str = settings.INDEXER_DEFAULT_LANGUAGE):
         logger.debug(f'Adding movie from imdb id: {imdb_id}')
-        existing = self.session.query(movie.ExternalID).filter_by(pk=imdb_id).first()
+        existing = self.session.query(movie.IndexerData).filter_by(pk=imdb_id).first()
         if existing:
             logger.debug(f'Movie already existed as {existing.name}')
             return existing
 
         imdb_object = self.imdb.get_title(imdb_id)
         instance = movie.Movie(imdb_object['base']['title'], year=imdb_object['base']['year'])
-        instance.imdb_data = imdb_object
         instance.language = language
 
         self.session.add(instance)
-        external_id = movie.ExternalID(pk=imdb_id, movie_pk=instance.pk, site='imdb')
-        self.session.add(external_id)
+
+        imdb_data = movie.IndexerData(site='imdb', data=imdb_object,  movie=instance, pk=imdb_id)
+        self.session.add(imdb_data)
 
         self.commit()
 

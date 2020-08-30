@@ -26,30 +26,30 @@
                 </div>
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
                     <form method="post" class="form-horizontal">
-                        <fieldset class="component-group-list">
-                            <div class="field-pair row">
-                                <div class="col-md-12">
-                                    <div class="row">
-                                        <label for="query" class="col-md-2 control-label">
-                                            ${_('Enter a title or id')}:
-                                        </label>
-                                        <label for="year" class="col-md-2 control-label">
-                                            ${'Year'}
-                                        </label>
-                                        <div class="col-md-10">
-                                            <input type="text" name="query" id="query" class="form-control input-sm input350" autocapitalize="off"  title="Search"/>
-                                            <input type="text" name="year" id="year" class="form-control input-sm input75" title="Year">
-                                            <input class="btn btn-inline" type="button" value="Search" id="Search" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </fieldset>
+                        <div class="form-group">
+                            <label for="query">${_('Query')}</label>
+                            <input type="text" name="query" id="query" class="form-control input-sm input350" aria-describedby="queryHelp" autocapitalize="off" title="${_('Query')}" value="${query}"/>
+                            <small id="queryHelp" class="form-text text-muted">${_('This can be a search string or a movie id from tmdb or imdb')}</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="year">${'Year'}</label>
+                            <input type="text" name="year" id="year" class="form-control input-sm input75" aria-describedby="yearHelp" title="${'Year'}" value="${year}">
+                            <small id="yearHelp" class="form-text text-muted">${_('This can be blank or the year for the movie')}</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="language">${'Language'}</label>
+                            <input disabled type="text" name="language" id="language" class="form-control input-sm input75" aria-describedby="languageHelp" title="${'Language'}" value="${language}">
+                            <small id="languageHelp" class="form-text text-muted">${_('This field is not yet implemented')}</small>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
                     </form>
                     % for result in search_results:
                         <div class="poster-container">
                             <div class="well well-sm">
-                                <img src="${f'https://image.tmdb.org/t/p/w300_and_h450_bestv2{result["poster_path"]}'}" class="tvshowImg" alt="${_('Poster for')} ${result['title']} - ${result['release_date']}"/>
+                                <img src="${f'https://image.tmdb.org/t/p/w300_and_h450_bestv2{result["poster_path"]}'}" class="tvshowImg" alt="${_('Poster for')} ${result['title']} - ${result['release_date']}"
+                                     onerror="this.onerror=null;this.src='${static_url('images/poster.png')}';" />
                                 <form method="post" action="${reverse_url('movies-add', 'add')}" class="form-horizontal">
                                     <input type="hidden" name="tmdb" value="${result['id']}">
                                     <button type="submit" class="btn btn-primary">Add</button>

@@ -30,17 +30,14 @@ class Movie(Base):
     completed = Column(DateTime)
     searched = Column(DateTime)
     slug = Column(String)
-    imdb_data = Column(JSON)
-    tmdb_data = Column(JSON)
-    omdb_data = Column(JSON)
 
     language = Column(String)
 
     result = relationship("Result", uselist=False, back_populates="movie")
     results = relationship("Result", back_populates="movie")
 
-    external_ids = relationship("ExternalID", back_populates="movie")
     images = relationship("Images", back_populates="movie")
+    indexer_data = relationship("IndexerData", back_populates="movie")
 
     def __init__(self, name: str, year: int):
         self.name = name
@@ -50,11 +47,56 @@ class Movie(Base):
     def poster(self):
         return ''
 
+    def __get_named_indexer_data(self, name):
+        if self.indexer_data:
+            for data in self.indexer_data:
+                if data.site == name:
+                    return data
+
+    @property
+    def imdb_data(self):
+        data = self.__get_named_indexer_data('imdb')
+        if data:
+            return data.data
+        return dict()
+
     @property
     def imdb_id(self):
-        if self.external_ids:
-            return self.external_ids['imdb']
+        data = self.__get_named_indexer_data('imdb')
+        if data:
+            return data.pk
         return ''
+
+    def __get_indexer_values(self, name, keys: list):
+        try:
+            data = getattr(self, f"{name}_data")
+            for key in keys:
+                data = data[key]
+            return data
+        except AttributeError:
+            logger.debug(f'We do not have data for {name}')
+        except (IndexError, KeyError):
+            logger.debug(f"KeyError: {name}{''.join([f'[{k}]' for k in keys])}")
+
+    @property
+    def runtime(self):
+        return self.__get_indexer_values('imdb', ['base', 'runningTimeInMinutes'])
+
+    @property
+    def imdb_votes(self):
+        return self.__get_indexer_values('imdb', ['ratings', 'ratingCount'])
+
+    @property
+    def imdb_rating(self):
+        return self.__get_indexer_values('imdb', ['ratings', 'rating'])
+
+    @property
+    def imdb_outline(self):
+        return self.__get_indexer_values('imdb', ['plot', 'outline', 'text'])
+
+    @property
+    def imdb_summary(self):
+        return self.__get_indexer_values('imdb', ['plot', 'summaries', 0, 'text'])
 
     @staticmethod
     def slugify(target, value, old_value, initiator):
@@ -122,20 +164,6 @@ class Result(Base):
         return f"{self.name}"
 
 
-class ExternalID(Base):
-    __tablename__ = "external_id"
-    pk = Column(String, primary_key=True)
-    site = Column(String)
-
-    movie_pk = Column(Integer, ForeignKey('movie.pk'))
-    movie = relationship("Movie", back_populates="external_ids")
-
-    def __init__(self, site: str, movie_pk: int, pk: str):
-        self.pk = pk
-        self.site = site
-        self.movie_pk = movie_pk
-
-
 class Images(Base):
     __tablename__ = 'images'
 
@@ -153,3 +181,16 @@ class Images(Base):
         self.site = site
         self.style = style
         self.movie_pk = movie_pk
+
+
+class IndexerData(Base):
+    __tablename__ = 'indexer_data'
+    pk = Column(String, primary_key=True)
+    site = Column(String)
+    data = Column(JSON)
+
+    movie_pk = Column(Integer, ForeignKey('movie.pk'))
+    movie = relationship("Movie", back_populates="indexer_data")
+
+    def __repr__(self):
+        return f"[{self.__tablename__.replace('_', ' ').title()}] {self.site}: {self.pk} - {self.movie.name}"

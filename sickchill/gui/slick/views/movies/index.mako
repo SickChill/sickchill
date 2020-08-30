@@ -7,24 +7,24 @@
     <div id="movie-list">
         % for movie in movies:
         <div class="poster-container col-md-3">
-            <div class="show-container">
-                <div class="show-image">
+            <div class="movie-container">
+                <div class="movie-image">
                     <a href="${reverse_url('movies-details', 'details', movie.slug)}">
-                        <img alt="" class="show-image" src="${static_url("images/poster.png")}" />
+                        <img alt="" class="movie-image" src="${static_url("images/poster.png")}" />
                     </a>
                 </div>
 
-                <div class="show-information">
-                    <div class="show-title">
+                <div class="movie-information">
+                    <div class="movie-title">
                         ${movie.name}
                     </div>
 
-                    <div class="show-date">
+                    <div class="movie-date">
                         ${movie.date}
                     </div>
 
-                    <div class="show-details">
-                        <table class="show-details">
+                    <div class="movie-details">
+                        <table class="movie-details">
                         </table>
                     </div>
                 </div>

@@ -21,15 +21,15 @@ class MoviesHandler(WebRoot):
         return t.render(title=_("Movies"), header=_("Movie List"), topmenu="movies", movies=settings.movie_list, controller="movies", action="index")
 
     def search(self):
-        query = self.get_body_argument('query', None)
-        year = self.get_body_argument('year', None)
-        language = self.get_body_argument('language', None)
+        query = self.get_body_argument('query', '')
+        year = self.get_body_argument('year', '')
+        language = self.get_body_argument('language', '')
         search_results = []
         if query:
             search_results = settings.movie_list.search_tmdb(query=query, year=year, language=language)
         t = PageTemplate(rh=self, filename="movies/search.mako")
         return t.render(title=_("Movies"), header=_("Movie Search"), topmenu="movies", controller="movies", action="search",
-                        search_results=search_results, movies=settings.movie_list)
+                        search_results=search_results, movies=settings.movie_list, query=query, year=year, language=language)
 
     def add(self):
         movie = None
@@ -62,5 +62,5 @@ class MoviesHandler(WebRoot):
             return self._genericMessage(_('Error'), _('Movie not found'))
 
         t = PageTemplate(rh=self, filename="movies/details.mako")
-        return t.render(title=_("Movies"), header=_("Movie Remove"), topmenu="movies", controller="movies", action="remove",
+        return t.render(title=_("Movies"), header=_("Movie Remove"), topmenu="movies", controller="movies", action="details",
                         movie=movie, movie_message=None)
