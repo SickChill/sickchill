@@ -196,7 +196,7 @@ class IndexerData(Base):
 
     movie_pk = Column(Integer, ForeignKey('movie.pk'))
 
-    genres = relationship('Genres', backref='indexer_data')
+    genres: list = relationship('Genres', backref='indexer_data')
 
     def __repr__(self):
         return f"[{self.__tablename__.replace('_', ' ').title()}] {self.site}: {self.pk} - {self.movie.name}"

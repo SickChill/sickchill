@@ -50,7 +50,11 @@ class MovieList:
         return self.query.get(pk)
 
     def __contains__(self, pk):
-        return bool(self.get(pk, False))
+        try:
+            self.__getitem__(pk)
+            return True
+        except KeyError:
+            return False
 
     @staticmethod
     def search_tmdb(query=None, tmdb_id=None, year=None, language=None, adult=False):
@@ -65,7 +69,8 @@ class MovieList:
 
         return results
 
-    def popular_tmdb(self, language=None):
+    @staticmethod
+    def popular_tmdb(language=None):
         tmdb_kwargs = dict(language=language) if language else dict()
         return movies.Movies().popular(**tmdb_kwargs)['results']
 
@@ -80,62 +85,74 @@ class MovieList:
         existing = self.session.query(movie.IndexerData).filter_by(pk=tmdb_id).first()
         if existing:
             logger.debug(f'Movie already existed as {existing.movie.name}')
-            return existing
+            return existing.movie
 
         tmdb_object = tmdbsimple.movies.Movies(id=tmdb_id).info()
-        instance = movie.Movie(tmdb_object['title'], year=tmdb_object['release_date'].split('-')[0])
-        instance.date = datetime.datetime.strptime(tmdb_object['release_date'], '%Y-%m-%d').date()
-        instance.language = language
+        return self.add_from_imdb(tmdb_object['imdb_id'], language, tmdb_primary=True)
 
-        self.session.add(instance)
+    def add_from_imdb(self, imdb_id: str, language: str = settings.INDEXER_DEFAULT_LANGUAGE, tmdb_primary=False):
+        if not tmdb_primary:
+            logger.debug(f'Adding movie from imdb id: {imdb_id}')
 
-        tmdb_data = movie.IndexerData(site='tmdb', data=tmdb_object,  movie=instance, pk=tmdb_id)
-        self.session.add(tmdb_data)
-
-        imdb_id = tmdb_object['imdb_id']
-        imdb_object = self.imdb.get_title(imdb_id)
-        imdb_data = movie.IndexerData(site='imdb', data=imdb_object, movie=instance, pk=imdb_id)
-        self.session.add(imdb_data)
-
-        self.commit()
-
-        logger.debug(f'Returning instance for {instance.name}')
-        return instance
-
-    def add_from_imdb(self, imdb_id: str, language: str = settings.INDEXER_DEFAULT_LANGUAGE):
-        logger.debug(f'Adding movie from imdb id: {imdb_id}')
         existing = self.session.query(movie.IndexerData).filter_by(pk=imdb_id).first()
         if existing:
-            logger.debug(f'Movie already existed as {existing.name}')
-            return existing
+            logger.debug(f'Movie already existed as {existing.movie.name}')
+            return existing.movie
 
         imdb_object = self.imdb.get_title(imdb_id)
-        instance = movie.Movie(imdb_object['base']['title'], year=imdb_object['base']['year'])
-        instance.language = language
-
-        self.session.add(instance)
-
-        imdb_data = movie.IndexerData(site='imdb', data=imdb_object, movie=instance, pk=imdb_id)
-        self.session.add(imdb_data)
-
-        genres = self.imdb.get_title_genres(imdb_id)
-        if genres:
-            for genre in genres['genres']:
-                genre_instance = movie.Genres(pk=genre, indexer_data=imdb_data)
-                self.session.add(genre_instance)
-
         tmdb_id = tmdbsimple.find.Find(id=imdb_id).info(external_source='imdb_id')['movie_results'][0]['id']
         tmdb_object = tmdbsimple.movies.Movies(id=tmdb_id).info()
-        tmdb_data = movie.IndexerData(site='tmdb', data=tmdb_object, movie=instance, pk=tmdb_id)
-        self.session.add(tmdb_data)
 
-        self.commit()
+        if tmdb_primary:
+            instance = movie.Movie(tmdb_object['title'], year=tmdb_object['release_date'].split('-')[0])
+            if imdb_object['base']['title'] and not instance.name:
+                instance.name = imdb_object['base']['title']
+        else:
+            instance = movie.Movie(imdb_object['base']['title'], year=imdb_object['base']['year'] or tmdb_object)
+            if tmdb_object['release_date'] and not instance.year:
+                instance.year = tmdb_object['release_date'].split('-')[0]
+            if tmdb_object['title'] and not instance.name:
+                instance.name = tmdb_object['title']
+
+        if tmdb_object['release_date']:
+            instance.date = datetime.datetime.strptime(tmdb_object['release_date'], '%Y-%m-%d').date()
+
+        instance.language = tmdb_object['original_language'] or language
+
+        tmdb_data = movie.IndexerData(site='tmdb', data=tmdb_object, pk=tmdb_id)
+        imdb_data = movie.IndexerData(site='imdb', data=imdb_object, pk=imdb_id)
+
+        imdb_genres = self.imdb.get_title_genres(imdb_id)['genres']
+
+        def add_imdb_genres():
+            for genre in imdb_genres:
+                logger.debug(f'Adding imdb genre {genre}')
+                imdb_data.genres.append(movie.Genres(pk=genre))
+            instance.indexer_data.append(imdb_data)
+
+        def add_tmdb_genres():
+            for genre in tmdb_object['genres']:
+                if genre['name'] not in imdb_genres:
+                    logger.debug(f'Adding tmdb genre {genre["name"]}')
+                    tmdb_data.genres.append(movie.Genres(pk=genre['name']))
+            instance.indexer_data.append(tmdb_data)
+
+        if tmdb_primary:
+            add_tmdb_genres()
+            add_imdb_genres()
+        else:
+            add_imdb_genres()
+            add_tmdb_genres()
+
+        self.commit(instance)
 
         logger.debug(f'Returning instance for {instance.name}')
         return instance
 
-    def commit(self):
+    def commit(self, instance=None):
         logger.debug('Committing')
+        if instance:
+            self.session.add(instance)
         self.session.flush()
         self.session.commit()
 
