@@ -22,6 +22,7 @@ class Provider(TorrentProvider):
         self.minleech = 0
         self.token = None
         self.token_expires = None
+        self.supports_movies = True
 
         # Spec: https://torrentapi.org/apidocs_v2.txt
         self.url = "https://rarbg.to"
