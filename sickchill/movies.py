@@ -85,13 +85,17 @@ class MovieList:
         tmdb_object = tmdbsimple.movies.Movies(id=tmdb_id).info()
         instance = movie.Movie(tmdb_object['title'], year=tmdb_object['release_date'].split('-')[0])
         instance.date = datetime.datetime.strptime(tmdb_object['release_date'], '%Y-%m-%d').date()
-        instance.tmdb_data = tmdb_object
         instance.language = language
 
         self.session.add(instance)
 
         tmdb_data = movie.IndexerData(site='tmdb', data=tmdb_object,  movie=instance, pk=tmdb_id)
         self.session.add(tmdb_data)
+
+        imdb_id = tmdb_object['imdb_id']
+        imdb_object = self.imdb.get_title(imdb_id)
+        imdb_data = movie.IndexerData(site='imdb', data=imdb_object, movie=instance, pk=imdb_id)
+        self.session.add(imdb_data)
 
         self.commit()
 
@@ -119,6 +123,11 @@ class MovieList:
             for genre in genres['genres']:
                 genre_instance = movie.Genres(pk=genre, indexer_data=imdb_data)
                 self.session.add(genre_instance)
+
+        tmdb_id = tmdbsimple.find.Find(id=imdb_id).info(external_source='imdb_id')['movie_results'][0]['id']
+        tmdb_object = tmdbsimple.movies.Movies(id=tmdb_id).info()
+        tmdb_data = movie.IndexerData(site='tmdb', data=tmdb_object, movie=instance, pk=tmdb_id)
+        self.session.add(tmdb_data)
 
         self.commit()
 

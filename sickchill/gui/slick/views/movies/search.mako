@@ -40,6 +40,11 @@
                             <small id="languageHelp" class="form-text text-muted">${_('This field is not yet implemented')}</small>
                         </div>
                         <div class="form-group">
+                            <label for="language">${'Adult'}</label>
+                            <input type="checkbox" name="adult" id="adult"aria-describedby="adultHelp" title="${'Adult'}" value="${adult}">
+                            <small id="adultHelp" class="form-text text-muted">${_('Check if you want to include adult movies in the results')}</small>
+                        </div>
+                        <div class="form-group">
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
                     </form>

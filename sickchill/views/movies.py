@@ -1,6 +1,7 @@
 import logging
 
 from sickchill import settings
+from sickchill.oldbeard import config
 
 from .common import PageTemplate
 from .index import WebRoot
@@ -24,12 +25,13 @@ class MoviesHandler(WebRoot):
         query = self.get_body_argument('query', '')
         year = self.get_body_argument('year', '')
         language = self.get_body_argument('language', '')
+        adult = config.checkbox_to_value(self.get_body_argument('adult', False))
         search_results = []
         if query:
-            search_results = settings.movie_list.search_tmdb(query=query, year=year, language=language)
+            search_results = settings.movie_list.search_tmdb(query=query, year=year, language=language, adult=adult)
         t = PageTemplate(rh=self, filename="movies/search.mako")
         return t.render(title=_("Movies"), header=_("Movie Search"), topmenu="movies", controller="movies", action="search",
-                        search_results=search_results, movies=settings.movie_list, query=query, year=year, language=language)
+                        search_results=search_results, movies=settings.movie_list, query=query, year=year, language=language, adult=adult)
 
     def add(self):
         movie = None
