@@ -167,3 +167,24 @@ class MovieList:
 
     def by_slug(self, slug):
         return self.query.filter_by(slug=slug).first()
+
+    def search_providers(self, movie_object: movie.Movie):
+        strings = movie_object.search_strings()
+        for provider in settings.providerList:
+            if provider.movie_backlog_enabled:
+                results = provider.search(strings)
+                for result in results:
+                    result_object = movie.Result(
+                        name=result['title'], url=result['link'],
+                        seeders=result['seeders'], leechers=result['seeders'],
+                        size=result['size'], info_hash=result['hash'],
+                        provider=provider, year=movie_object.year
+                    )
+                    if result_object.ok:
+                        movie_object.results.append(result_object)
+
+            self.commit(movie_object)
+            # TODO: Check if we need to break out here and stop hitting providers if we found a good result
+
+    def search_thread(self):
+        pass

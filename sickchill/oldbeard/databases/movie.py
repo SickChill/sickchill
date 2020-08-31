@@ -34,9 +34,9 @@ class Movie(Base):
     language = Column(String)
 
     result = relationship("Result", uselist=False, backref="downloaded")
-    results = relationship("Result", backref="movie")
+    results: list = relationship("Result", backref="movie")
 
-    images = relationship("Images", backref="movie")
+    images: list = relationship("Images", backref="movie")
     indexer_data: list = relationship("IndexerData", backref="movie")
 
     def __init__(self, name: str, year: int):
@@ -110,6 +110,9 @@ class Movie(Base):
         if value and (not target.slug or value != old_value):
             target.slug = slugify(value)
 
+    def search_strings(self):
+        return {'Movie': [f"{self.name} {self.year}"]}
+
     def __repr__(self):
         return f"{self.name}"
 
@@ -128,8 +131,10 @@ class Result(Base):
     provider = Column(String)
     seeders = Column(Integer)
     leechers = Column(Integer)
+    info_hash = Column(String)
     group = Column(String)
     type = Column(String)
+    guess = Column(JSON)
     found = Column(DateTime, default=datetime.datetime.now)
     updated = Column(DateTime, onupdate=datetime.datetime.now)
 
@@ -137,7 +142,7 @@ class Result(Base):
 
     session = Session()
 
-    def __init__(self, name: str, url: str, seeders: int, leechers: int, size: int, type=None):
+    def __init__(self, name: str, url: str, seeders: int, leechers: int, size: int, provider, info_hash: str, year: int):
         guess = guessit.guessit(name)
         if not (guess and guess["type"] == "movie"):
             logging.debug(f"This is an episode, not a movie: {name}")
@@ -147,15 +152,7 @@ class Result(Base):
             logging.debug(f"This result does not match any of our movies")
             return
 
-        if not type:
-            if url.startswith('magnet') or url.endswith('.torrent'):
-                type = 'torrent'
-            elif url.endswith('.nzb'):
-                type = 'nzb'
-            else:
-                logging.debug(f"Cannot determine the type of download for {url}")
-                return
-
+        self.info_hash = info_hash
         self.url = url
         self.name = name
         self.title = guess["title"]
@@ -163,8 +160,14 @@ class Result(Base):
         self.seeders = seeders
         self.leechers = leechers
         self.size = size
-        self.year = guess["year"]
-        self.type = type
+        self.year = guess["year"] or year
+        self.type = provider.provider_type
+
+        self.provider = provider.get_id()
+
+        self.guess = guess
+
+        self.ok = True
 
     def __repr__(self):
         return f"{self.name}"
