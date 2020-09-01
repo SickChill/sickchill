@@ -58,7 +58,6 @@ class Provider(TorrentProvider):
 
         search_params = {
             "app_id": "sickchill",
-            "category": "tv",
             "min_seeders": try_int(self.minseed),
             "min_leechers": try_int(self.minleech),
             "limit": 100,
@@ -75,7 +74,6 @@ class Provider(TorrentProvider):
             ep_indexer = None
 
         for mode in search_strings:
-            search_params['category'] = ('tv', 'movies')[mode == 'Movie']
             items = []
             logger.debug(_(f"Search Mode: {mode}"))
             if mode == "RSS":
@@ -83,7 +81,12 @@ class Provider(TorrentProvider):
                 search_params["mode"] = "list"
                 search_params.pop("search_string", None)
                 search_params.pop("search_tvdb", None)
+                if 'Movie' in search_strings:
+                    search_params['category[]'] = ['17']
+                    if 'Season' in search_strings or 'Episode' in search_strings:
+                        search_params['category[]'].append('18')
             else:
+                search_params['category'] = ('tv', 'movies')[mode == 'Movie']
                 search_params["sort"] = self.sorting if self.sorting else "seeders"
                 search_params["mode"] = "search"
 
