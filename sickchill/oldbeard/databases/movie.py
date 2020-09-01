@@ -68,6 +68,13 @@ class Movie(Base):
         return ''
 
     @property
+    def tmdb_id(self):
+        data = self.__get_named_indexer_data('tmdb')
+        if data:
+            return data.pk
+        return ''
+
+    @property
     def imdb_genres(self):
         data = self.__get_named_indexer_data('imdb')
         if data:

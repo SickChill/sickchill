@@ -169,9 +169,11 @@ class MovieList:
         return self.query.filter_by(slug=slug).first()
 
     def search_providers(self, movie_object: movie.Movie):
+        # We should only need to support backlog for movies manually
+        # Movies should be returned in the existing RSS searches if we have movies in our list
         strings = movie_object.search_strings()
         for provider in settings.providerList:
-            if provider.movie_backlog_enabled:
+            if provider.can_backlog and provider.backlog_enabled and provider.supports_movies:
                 results = provider.search(strings)
                 for result in results:
                     result_object = movie.Result(
@@ -185,6 +187,9 @@ class MovieList:
 
             self.commit(movie_object)
             # TODO: Check if we need to break out here and stop hitting providers if we found a good result
+
+    def snatch_movie(self, result: movie.Result):
+        pass
 
     def search_thread(self):
         pass
