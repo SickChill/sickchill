@@ -81,10 +81,10 @@ class Provider(TorrentProvider):
                 search_params["mode"] = "list"
                 search_params.pop("search_string", None)
                 search_params.pop("search_tvdb", None)
-                if 'Movie' in search_strings:
-                    search_params['category[]'] = ['17']
-                    if 'Season' in search_strings or 'Episode' in search_strings:
-                        search_params['category[]'].append('18')
+                if settings.movie_list.query.count():
+                    search_params['category[]'] = ['17', '18']
+                else:
+                    search_params['category'] = ['tv']
             else:
                 search_params['category'] = ('tv', 'movies')[mode == 'Movie']
                 search_params["sort"] = self.sorting if self.sorting else "seeders"
