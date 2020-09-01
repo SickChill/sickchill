@@ -176,14 +176,7 @@ class MovieList:
             if provider.can_backlog and provider.backlog_enabled and provider.supports_movies:
                 results = provider.search(strings)
                 for result in results:
-                    result_object = movie.Result(
-                        name=result['title'], url=result['link'],
-                        seeders=result['seeders'], leechers=result['seeders'],
-                        size=result['size'], info_hash=result['hash'],
-                        provider=provider, year=movie_object.year
-                    )
-                    if result_object.ok:
-                        movie_object.results.append(result_object)
+                    movie.Result(result=result, provider=provider, movie=movie_object)
 
             self.commit(movie_object)
             # TODO: Check if we need to break out here and stop hitting providers if we found a good result

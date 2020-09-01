@@ -149,7 +149,8 @@ class Result(Base):
 
     session = Session()
 
-    def __init__(self, name: str, url: str, seeders: int, leechers: int, size: int, provider, info_hash: str, year: int):
+    def __init__(self, result: dict, movie: Movie, provider):
+        name = result['title']
         guess = guessit.guessit(name)
         if not (guess and guess["type"] == "movie"):
             logging.debug(f"This is an episode, not a movie: {name}")
@@ -159,22 +160,22 @@ class Result(Base):
             logging.debug(f"This result does not match any of our movies")
             return
 
-        self.info_hash = info_hash
-        self.url = url
+        self.info_hash = result['hash']
+        self.url = result['link']
         self.name = name
         self.title = guess["title"]
         self.group = guess["release_group"]
-        self.seeders = seeders
-        self.leechers = leechers
-        self.size = size
-        self.year = guess["year"] or year
+        self.seeders = result['seeders']
+        self.leechers = result['leechers']
+        self.size = result['size']
+        self.year = guess["year"] or movie.year
         self.type = provider.provider_type
 
         self.provider = provider.get_id()
 
         self.guess = guess
 
-        self.ok = True
+        self.movie = movie
 
     def __repr__(self):
         return f"{self.name}"

@@ -75,6 +75,7 @@ class Provider(TorrentProvider):
             ep_indexer = None
 
         for mode in search_strings:
+            search_params['category'] = ('tv', 'movies')[mode == 'Movie']
             items = []
             logger.debug(_(f"Search Mode: {mode}"))
             if mode == "RSS":
