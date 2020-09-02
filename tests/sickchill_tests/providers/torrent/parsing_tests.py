@@ -15,7 +15,7 @@ import validators
 from vcr_unittest import VCRTestCase
 
 import sickchill.oldbeard.providers
-from sickchill import settings
+from sickchill import movies, settings
 
 settings.CPU_PRESET = 'NORMAL'
 
@@ -69,6 +69,7 @@ class BaseParser(type):
 
             self.provider.username = self.username
             self.provider.password = self.password
+            settings.movie_list = movies.MovieList()
 
         @property
         def username(self):
@@ -84,7 +85,8 @@ class BaseParser(type):
             _search_strings = {
                 'RSS': [''],
                 'Episode': ['The 100 S07E08'],
-                'Season': ['Game of Thrones S08']
+                'Season': ['Game of Thrones S08'],
+                'Movie': ['Black Panther 2018']
             }
             _search_strings.update(self.provider.cache.search_params)
             _search_strings.update(test_string_overrides.get(self.provider.name, {}))
