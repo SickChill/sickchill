@@ -11,6 +11,7 @@ cache.db*
 config.ini*
 sickchill.db*
 failed.db*
+movies.db*
 autoProcessTV.cfg
 server.crt
 server.key
