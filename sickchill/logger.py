@@ -170,9 +170,14 @@ class Logger(object):
 
         level = DB if self.database_logging else DEBUG if self.debug_logging else INFO
         for logger in self.loggers:
-            logger.setLevel(level)
-            for handler in logger.handlers:
-                handler.setLevel(level)
+            if logger.name in ('subliminal', 'tornado.access', 'tornado.general'):
+                logger.setLevel('ERROR')
+                for handler in logger.handlers:
+                    handler.setLevel('ERROR')
+            else:
+                logger.setLevel(level)
+                for handler in logger.handlers:
+                    handler.setLevel(level)
 
     @staticmethod
     def shutdown():

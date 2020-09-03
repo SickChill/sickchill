@@ -36,7 +36,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="poster-container">
-                    <img class="movieImg" src="${static_url("images/poster.png")}" alt="${_('Poster for')} ${movie.name}"/>
+                    <img class="movieImg" src="${static_url("images/poster.png")}" data-src="${movie.imdb_data['base']['image']['url']}" alt="${_('Poster for')} ${movie.name}"/>
                 </div>
                 <div class="info-container">
                     <div class="row">

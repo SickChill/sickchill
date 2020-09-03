@@ -54,8 +54,11 @@
                         <div class="poster-container">
                             <div class="movie-container">
                                 <div class="movie-image">
-                                    <img src="${f'https://image.tmdb.org/t/p/w300_and_h450_bestv2{result["poster_path"]}'}" class="tvshowImg" alt="${_('Poster for')} ${result['title']} - ${result['release_date']}"
-                                         onerror="this.onerror=null;this.src='${static_url('images/poster.png')}';" />
+                                    <img
+                                            src="${static_url("images/poster.png")}"
+                                            data-src="${f'https://image.tmdb.org/t/p/w300_and_h450_bestv2{result["poster_path"]}'}"
+                                            class="tvshowImg" alt="${_('Poster for')} ${result['title']} - ${result['release_date']}"
+                                    />
                                 </div>
                                 <div class="movie-information">
                                     <div class="movie-title">
@@ -90,7 +93,11 @@
                         <div class="poster-container">
                             <div class="movie-container">
                                 <div class="movie-image">
-                                    <img src="${f'https://image.tmdb.org/t/p/w300_and_h450_bestv2{result["poster_path"]}'}" class="tvshowImg" alt="${_('Poster for')} ${result['title']} - ${result['release_date']}"/>
+                                    <img
+                                            src="${static_url("images/poster.png")}"
+                                            data-src="${f'https://image.tmdb.org/t/p/w300_and_h450_bestv2{result["poster_path"]}'}"
+                                            class="tvshowImg" alt="${_('Poster for')} ${result['title']} - ${result['release_date']}"
+                                    />
                                 </div>
                                 <div class="movie-information">
                                     <div class="movie-title">
@@ -123,7 +130,7 @@
                         <div class="poster-container">
                             <div class="movie-container">
                                 <div class="movie-image">
-                                    <img src="${result['image']['url']}" class="tvshowImg" alt="${_('Poster for')} ${result['title']} - ${result['year']}"/>
+                                    <img src="${static_url("images/poster.png")}" data-src="${result['image']['url'] if 'image' in result else static_url("images/poster.png")}" class="tvshowImg" alt="${_('Poster for')} ${result['title']} - ${result['year']}"/>
                                 </div>
                                 <div class="movie-information">
                                     <div class="movie-title">
