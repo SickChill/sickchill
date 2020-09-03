@@ -32,17 +32,11 @@ class Config(WebRoot):
     @addslash
     def index(self):
         t = PageTemplate(rh=self, filename="config.mako")
-
         try:
-            # noinspection PyUnresolvedReferences
-            import pwd
-            sc_user = pwd.getpwuid(os.getuid()).pw_name
-        except ImportError:
-            try:
-                import getpass
-                sc_user = getpass.getuser()
-            except Exception:
-                sc_user = 'Unknown'
+            import getpass
+            sc_user = getpass.getuser()
+        except Exception:
+            sc_user = os.getuid()
 
         try:
             import locale

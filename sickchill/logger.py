@@ -137,10 +137,10 @@ class Logger(object):
 
         # set minimum logging level allowed for loggers
         for logger in self.loggers:
-            logger.setLevel(log_level)
-
-        for logger in ('subliminal', 'tornado.access', 'tornado.general'):
-            logging.getLogger(logger).setLevel('CRITICAL')
+            if logger.name in ('subliminal', 'tornado.access', 'tornado.general'):
+                logger.setLevel('ERROR')
+            else:
+                logger.setLevel(log_level)
 
         log_format = '{asctime} {levelname} :: {threadName} :: {message}'
         # console log handler
