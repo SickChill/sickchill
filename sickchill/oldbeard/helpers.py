@@ -27,6 +27,8 @@ import ifaddr
 import rarfile
 import requests
 import urllib3.exceptions
+from urllib3 import disable_warnings
+
 from cachecontrol import CacheControl
 from cloudscraper.exceptions import CloudflareException
 from tornado._locale_data import LOCALE_NAMES
@@ -46,6 +48,8 @@ LOCALE_NAMES.update({
     "ar_SA": {"name_en": "Arabic (Saudi Arabia)", "name": "(العربية (المملكة العربية السعودية"},
     "no_NO": {"name_en": "Norwegian", "name": "Norsk"},
 })
+
+disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 opener = urllib.request.build_opener()
 opener.addheaders = [('User-agent', sickchill.oldbeard.common.USER_AGENT)]
