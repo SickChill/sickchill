@@ -27,12 +27,11 @@ import ifaddr
 import rarfile
 import requests
 import urllib3.exceptions
-from urllib3 import disable_warnings
-
 from cachecontrol import CacheControl
 from cloudscraper.exceptions import CloudflareException
 from tornado._locale_data import LOCALE_NAMES
 from unidecode import unidecode
+from urllib3 import disable_warnings
 
 import sickchill
 from sickchill import adba, logger, settings
