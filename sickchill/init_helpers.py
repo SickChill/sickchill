@@ -29,7 +29,7 @@ def setup_gettext(language=None):
 
 
 def check_installed():
-    for location in sysconfig.get_paths():
+    for location in sysconfig.get_paths().values():
         if sickchill_dir().startswith(location):
             return True
     return False
