@@ -138,7 +138,7 @@ class Logger(object):
         # set minimum logging level allowed for loggers
         for logger in self.loggers:
             if logger.name in ('subliminal', 'tornado.access', 'tornado.general'):
-                logger.setLevel('ERROR')
+                logger.setLevel('CRITICAL')
             else:
                 logger.setLevel(log_level)
 
@@ -171,9 +171,9 @@ class Logger(object):
         level = DB if self.database_logging else DEBUG if self.debug_logging else INFO
         for logger in self.loggers:
             if logger.name in ('subliminal', 'tornado.access', 'tornado.general'):
-                logger.setLevel('ERROR')
+                logger.setLevel('CRITICAL')
                 for handler in logger.handlers:
-                    handler.setLevel('ERROR')
+                    handler.setLevel('CRITICAL')
             else:
                 logger.setLevel(level)
                 for handler in logger.handlers:
