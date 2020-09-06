@@ -1,7 +1,7 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
     import datetime
-    import urllib
+    from urllib.parse import quote
     from sickchill import settings
     from sickchill.oldbeard import subtitles, notifiers, sbdatetime, network_timezones, helpers
 
@@ -538,7 +538,7 @@
                                                     for rootDir in settings.ROOT_DIRS.split('|'):
                                                         if rootDir.startswith('/'):
                                                             filename = filename.replace(rootDir, "")
-                                                    filename = settings.DOWNLOAD_URL + urllib.quote(filename)
+                                                    filename = settings.DOWNLOAD_URL + quote(filename)
                                                 %>
                                                 <a href="${filename}">${_('Download')}</a>
                                             % endif
