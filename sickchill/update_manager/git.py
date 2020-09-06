@@ -231,12 +231,12 @@ class GitUpdateManager(UpdateManagerBase):
             logger.warning(newest_text)
 
         elif self._num_commits_behind > 0:
-
-            base_url = 'https://github.com/' + settings.GIT_ORG + '/' + settings.GIT_REPO
             if self._newest_commit_hash:
-                url = base_url + '/compare/' + self._cur_commit_hash + '...' + self._newest_commit_hash
+                current = self._cur_commit_hash
+                newest = self._newest_commit_hash
+                url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/compare{current}...{newest}'
             else:
-                url = base_url + '/commits/'
+                url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/commits/'
 
             newest_tag = 'newer_version_available'
             commits_behind = self._num_commits_behind

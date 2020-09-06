@@ -2351,8 +2351,24 @@ span.Unknown {
     background-color: #999999;
 }
 
-span.Proper {
-    background-color: #3F7F00;
+span.Proper, [class^="pill-snatched"], [class*=" pill-snatched"] {
+    background-color: green;
+}
+
+span.pill-downloaded {
+    background-color: blue;
+}
+
+span.pill-wanted {
+    background-color: #BE2625;
+}
+
+span.pill-failed {
+    background-color: red;
+}
+
+span.pill-archived {
+    background-color: dimgrey;
 }
 
 span.false {
@@ -2362,6 +2378,16 @@ span.false {
 
 span.true {
     color: #669966;
+    /* green */
+}
+
+td.false {
+    background-color: #993333;
+    /* red */
+}
+
+td.true {
+    background-color: #669966;
     /* green */
 }
 

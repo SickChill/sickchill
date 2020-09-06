@@ -173,11 +173,7 @@
 
     <tr class="text-center">
         <td class="text-left">${schedulerName}</td>
-        % if service.is_alive():
-            <td style="background-color:green">${service.is_alive()}</td>
-        % else:
-            <td style="background-color:red">${service.is_alive()}</td>
-        % endif
+        <td class="${("false", "true")[service.is_alive()]}">${service.is_alive()}</td>
         <%
             try:
                 enabled = service.enable
@@ -192,18 +188,18 @@
         % if scheduler == 'backlogSearchScheduler':
             <% searchQueue = getattr(settings, 'searchQueueScheduler') %>
             % if searchQueue.action.is_backlog_paused():
-                <td style="background-color:red">${_('Paused')}</td>
+                <td class="false">${_('Paused')}</td>
             % else:
-                <td style="background-color:${('red', 'green')[enabled]}">${enabled}</td>
+                <td class="${("false", "true")[enabled]}">${enabled}</td>
             % endif
             % if searchQueue.action.is_backlog_in_progress():
-                <td style="background-color:green">${_('True')}</td>
+                <td class="true">${_('True')}</td>
             % else:
-                <td style="background-color:${('red', 'green')[active]}">${active}</td>
+                <td class="${("false", "true")[active]}">${active}</td>
             % endif
         % else:
-            <td style="background-color:${('red', 'green')[enabled]}">${enabled}</td>
-            <td style="background-color:${('red', 'green')[active]}">${active}</td>
+            <td class="${("false", "true")[enabled]}">${enabled}</td>
+            <td class="${("false", "true")[active]}">${active}</td>
         % endif
         % if service.start_time:
             <td>${service.start_time}</td>
@@ -218,7 +214,7 @@
             <td></td>
         % endif
         <td>${timeago.format(service.lastRun)}</td>
-        <td style="background-color:${('red', 'green')[service.silent]}">${service.silent}</td>
+        <td class="${("false", "true")[service.silent]}">${service.silent}</td>
     </tr>
 
     <% del service %>
@@ -242,7 +238,7 @@
                 <td></td>
             % endif
         % endtry
-        <td>${item.inProgress}</td>
+        <td class="${("false", "true")[item.inProgress]}">${item.inProgress}</td>
         % if item.priority == 10:
             <td>${_('LOW')}</td>
         % elif item.priority == 20:
@@ -276,6 +272,6 @@
         <td>${item.delete}</td>
         <td>${item.failed}</td>
         <td>${item.force}</td>
-        <td>${item.inProgress}</td>
+        <td class="${("false", "true")[item.inProgress]}">${item.inProgress}</td>
     </tr>
 </%def>

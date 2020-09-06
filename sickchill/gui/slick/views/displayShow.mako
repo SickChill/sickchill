@@ -21,6 +21,7 @@
 
 <%block name="content">
     <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
+    <%namespace file="/inc_defs.mako" import="renderStatusPill"/>
     <div class="show-header row">
         <div class="col-md-12">
 
@@ -565,9 +566,9 @@
                                         </td>
                                         <% curStatus, curQuality = Quality.splitCompositeStatus(int(epResult["status"])) %>
                                         % if curQuality != Quality.NONE:
-                                            <td class="col-status">${statusStrings[curStatus]} ${renderQualityPill(curQuality)}</td>
+                                            <td class="col-status">${renderStatusPill(curStatus)} ${renderQualityPill(curQuality)}</td>
                                         % else:
-                                            <td class="col-status">${statusStrings[curStatus]}</td>
+                                            <td class="col-status">${renderStatusPill(curStatus)}</td>
                                         % endif
                                         <td class="col-search">
                                             % if int(epResult["season"]) != 0:
