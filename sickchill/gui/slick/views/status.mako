@@ -252,7 +252,7 @@
         % else:
             <td>${item.priority}</td>
         % endif
-        <td>${timeago.format(item.added.strftime)}</td>
+        <td>${timeago.format(item.added)}</td>
         <td>${ShowQueueActions.names[item.action_id]}</td>
     </tr>
 </%def>
