@@ -177,8 +177,6 @@ class Logger(object):
         for logger in self.loggers:
             if logger.name in ('subliminal', 'tornado.access', 'tornado.general'):
                 logger.setLevel('CRITICAL')
-                for handler in logger.handlers:
-                    handler.setLevel('CRITICAL')
             else:
                 logger.setLevel(level)
                 for handler in logger.handlers:
