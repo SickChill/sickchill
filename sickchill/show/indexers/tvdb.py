@@ -104,7 +104,7 @@ class TVDB(Indexer):
         if re.match(r'^t?t?\d{7,8}$', str(name)) or re.match(r'^\d{6}$', name):
             try:
                 if re.match(r'^t?t?\d{7,8}$', str(name)):
-                    result = self._search(imdbId='tt{}'.format(name.strip('t')), language=language)
+                    result = self._search(imdbId=f'tt{name.strip("t")}', language=language)
                 elif re.match(r'^\d{6}$', str(name)):
                     series = self._series(name, language=language)
                     if series:
@@ -157,7 +157,7 @@ class TVDB(Indexer):
         location = location.strip()
         if not location:
             return location
-        return 'https://artworks.thetvdb.com/banners/{path}'.format(path=location)
+        return f'https://artworks.thetvdb.com/banners/{re.sub(r"^_cache/", "", location)}'
 
     @ExceptionDecorator(default_return='', catch=(HTTPError, KeyError), image_api=True)
     def __call_images_api(self, show, thumb, keyType, subKey=None, lang=None, multiple=False):
