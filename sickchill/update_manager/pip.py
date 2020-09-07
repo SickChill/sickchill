@@ -39,7 +39,7 @@ class PipUpdateManager(UpdateManagerBase):
             if self.get_newest_commit_hash():
                 current = self.get_current_commit_hash().base_version
                 newest = self.get_newest_commit_hash().base_version
-                url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/compare{current}...{newest}'
+                url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/compare/{current}...{newest}'
             else:
                 url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/commits/'
 

@@ -234,7 +234,7 @@ class GitUpdateManager(UpdateManagerBase):
             if self._newest_commit_hash:
                 current = self._cur_commit_hash
                 newest = self._newest_commit_hash
-                url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/compare{current}...{newest}'
+                url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/compare/{current}...{newest}'
             else:
                 url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/commits/'
 
