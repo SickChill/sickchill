@@ -47,7 +47,7 @@ class QueryList(ListResource):
         :param unicode language: The ISO language-country string that specifies the language used by the Query resources to read
         :param unicode model_build: The SID or unique name of the Model Build to be queried
         :param unicode status: The status of the resources to read
-        :param unicode dialogue_sid: The SID of the [Dialogue](https://www.twilio.com/docs/autopilot/api/dialogue).
+        :param unicode dialogue_sid: The SID of the `Dialogue <https://www.twilio.com/docs/autopilot/api/dialogue>`_.
         :param int limit: Upper limit for the number of records to return. stream()
                           guarantees to never return more than limit.  Default is no limit
         :param int page_size: Number of records to fetch per request, when not set will use
@@ -81,7 +81,7 @@ class QueryList(ListResource):
         :param unicode language: The ISO language-country string that specifies the language used by the Query resources to read
         :param unicode model_build: The SID or unique name of the Model Build to be queried
         :param unicode status: The status of the resources to read
-        :param unicode dialogue_sid: The SID of the [Dialogue](https://www.twilio.com/docs/autopilot/api/dialogue).
+        :param unicode dialogue_sid: The SID of the `Dialogue <https://www.twilio.com/docs/autopilot/api/dialogue>`_.
         :param int limit: Upper limit for the number of records to return. list() guarantees
                           never to return more than limit.  Default is no limit
         :param int page_size: Number of records to fetch per request, when not set will use
@@ -112,7 +112,7 @@ class QueryList(ListResource):
         :param unicode language: The ISO language-country string that specifies the language used by the Query resources to read
         :param unicode model_build: The SID or unique name of the Model Build to be queried
         :param unicode status: The status of the resources to read
-        :param unicode dialogue_sid: The SID of the [Dialogue](https://www.twilio.com/docs/autopilot/api/dialogue).
+        :param unicode dialogue_sid: The SID of the `Dialogue <https://www.twilio.com/docs/autopilot/api/dialogue>`_.
         :param str page_token: PageToken provided by the API
         :param int page_number: Page Number, this value is simply for client state
         :param int page_size: Number of records to return, defaults to 50
@@ -418,7 +418,7 @@ class QueryInstance(InstanceResource):
     @property
     def model_build_sid(self):
         """
-        :returns: The SID of the [Model Build](https://www.twilio.com/docs/autopilot/api/model-build) queried
+        :returns: The SID of the `Model Build <https://www.twilio.com/docs/autopilot/api/model-build>`_ queried
         :rtype: unicode
         """
         return self._properties['model_build_sid']
@@ -482,7 +482,7 @@ class QueryInstance(InstanceResource):
     @property
     def dialogue_sid(self):
         """
-        :returns: The SID of the [Dialogue](https://www.twilio.com/docs/autopilot/api/dialogue).
+        :returns: The SID of the `Dialogue <https://www.twilio.com/docs/autopilot/api/dialogue>`_.
         :rtype: unicode
         """
         return self._properties['dialogue_sid']

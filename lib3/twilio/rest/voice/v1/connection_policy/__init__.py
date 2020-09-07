@@ -16,7 +16,6 @@ from twilio.rest.voice.v1.connection_policy.connection_policy_target import Conn
 
 
 class ConnectionPolicyList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -158,7 +157,6 @@ class ConnectionPolicyList(ListResource):
 
 
 class ConnectionPolicyPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -197,7 +195,6 @@ class ConnectionPolicyPage(Page):
 
 
 class ConnectionPolicyContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -280,7 +277,6 @@ class ConnectionPolicyContext(InstanceContext):
 
 
 class ConnectionPolicyInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, sid=None):
         """

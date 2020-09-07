@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class CredentialList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -173,7 +172,6 @@ class CredentialList(ListResource):
 
 
 class CredentialPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -212,7 +210,6 @@ class CredentialPage(Page):
 
 
 class CredentialContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -291,7 +288,6 @@ class CredentialContext(InstanceContext):
 
 
 class CredentialInstance(InstanceResource):
-    """  """
 
     class PushService(object):
         GCM = "gcm"

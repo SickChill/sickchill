@@ -14,7 +14,6 @@ from twilio.base.page import Page
 
 
 class TokenList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -58,7 +57,6 @@ class TokenList(ListResource):
 
 
 class TokenPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -98,7 +96,6 @@ class TokenPage(Page):
 
 
 class TokenInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, account_sid):
         """

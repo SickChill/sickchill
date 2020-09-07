@@ -362,7 +362,7 @@ class DeliveryReceiptInstance(InstanceResource):
     @property
     def error_code(self):
         """
-        :returns: The message [delivery error code](https://www.twilio.com/docs/sms/api/message-resource#delivery-related-errors) for a `failed` status
+        :returns: The message `delivery error code <https://www.twilio.com/docs/sms/api/message-resource#delivery-related-errors>`_ for a `failed` status
         :rtype: unicode
         """
         return self._properties['error_code']

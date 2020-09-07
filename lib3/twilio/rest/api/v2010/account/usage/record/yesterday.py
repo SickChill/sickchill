@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class YesterdayList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -160,7 +159,6 @@ class YesterdayList(ListResource):
 
 
 class YesterdayPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -200,7 +198,6 @@ class YesterdayPage(Page):
 
 
 class YesterdayInstance(InstanceResource):
-    """  """
 
     class Category(object):
         AGENT_CONFERENCE = "agent-conference"

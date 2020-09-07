@@ -18,7 +18,6 @@ from twilio.rest.api.v2010.account.message.media import MediaList
 
 
 class MessageList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -245,7 +244,6 @@ class MessageList(ListResource):
 
 
 class MessagePage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -285,7 +283,6 @@ class MessagePage(Page):
 
 
 class MessageContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, sid):
         """
@@ -397,7 +394,6 @@ class MessageContext(InstanceContext):
 
 
 class MessageInstance(InstanceResource):
-    """  """
 
     class Status(object):
         QUEUED = "queued"

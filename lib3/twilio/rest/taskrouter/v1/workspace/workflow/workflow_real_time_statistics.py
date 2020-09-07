@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class WorkflowRealTimeStatisticsList(ListResource):
-    """  """
 
     def __init__(self, version, workspace_sid, workflow_sid):
         """
@@ -70,7 +69,6 @@ class WorkflowRealTimeStatisticsList(ListResource):
 
 
 class WorkflowRealTimeStatisticsPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -116,7 +114,6 @@ class WorkflowRealTimeStatisticsPage(Page):
 
 
 class WorkflowRealTimeStatisticsContext(InstanceContext):
-    """  """
 
     def __init__(self, version, workspace_sid, workflow_sid):
         """
@@ -167,7 +164,6 @@ class WorkflowRealTimeStatisticsContext(InstanceContext):
 
 
 class WorkflowRealTimeStatisticsInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, workspace_sid, workflow_sid):
         """

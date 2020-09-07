@@ -21,7 +21,6 @@ from twilio.rest.api.v2010.account.call.recording import RecordingList
 
 
 class CallList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -349,7 +348,6 @@ class CallList(ListResource):
 
 
 class CallPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -389,7 +387,6 @@ class CallPage(Page):
 
 
 class CallContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, sid):
         """
@@ -554,7 +551,6 @@ class CallContext(InstanceContext):
 
 
 class CallInstance(InstanceResource):
-    """  """
 
     class Event(object):
         INITIATED = "initiated"

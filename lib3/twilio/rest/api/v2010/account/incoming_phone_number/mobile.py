@@ -14,7 +14,6 @@ from twilio.base.page import Page
 
 
 class MobileList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -232,7 +231,6 @@ class MobileList(ListResource):
 
 
 class MobilePage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -272,7 +270,6 @@ class MobilePage(Page):
 
 
 class MobileInstance(InstanceResource):
-    """  """
 
     class AddressRequirement(object):
         NONE = "none"

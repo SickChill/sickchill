@@ -41,9 +41,9 @@ class SinkList(ListResource):
         """
         Create the SinkInstance
 
-        :param unicode description: The description
-        :param dict sink_configuration: The sink_configuration
-        :param SinkInstance.SinkType sink_type: The sink_type
+        :param unicode description: Sink Description
+        :param dict sink_configuration: JSON Sink configuration.
+        :param SinkInstance.SinkType sink_type: Sink type.
 
         :returns: The created SinkInstance
         :rtype: twilio.rest.events.v1.sink.SinkInstance
@@ -139,7 +139,7 @@ class SinkList(ListResource):
         """
         Constructs a SinkContext
 
-        :param sid: The sid
+        :param sid: A string that uniquely identifies this Sink.
 
         :returns: twilio.rest.events.v1.sink.SinkContext
         :rtype: twilio.rest.events.v1.sink.SinkContext
@@ -150,7 +150,7 @@ class SinkList(ListResource):
         """
         Constructs a SinkContext
 
-        :param sid: The sid
+        :param sid: A string that uniquely identifies this Sink.
 
         :returns: twilio.rest.events.v1.sink.SinkContext
         :rtype: twilio.rest.events.v1.sink.SinkContext
@@ -218,7 +218,7 @@ class SinkContext(InstanceContext):
         Initialize the SinkContext
 
         :param Version version: Version that contains the resource
-        :param sid: The sid
+        :param sid: A string that uniquely identifies this Sink.
 
         :returns: twilio.rest.events.v1.sink.SinkContext
         :rtype: twilio.rest.events.v1.sink.SinkContext
@@ -344,7 +344,7 @@ class SinkInstance(InstanceResource):
     @property
     def date_created(self):
         """
-        :returns: The date_created
+        :returns: The date this Sink was created
         :rtype: datetime
         """
         return self._properties['date_created']
@@ -352,7 +352,7 @@ class SinkInstance(InstanceResource):
     @property
     def date_updated(self):
         """
-        :returns: The date_updated
+        :returns: The date this Sink was updated
         :rtype: datetime
         """
         return self._properties['date_updated']
@@ -360,7 +360,7 @@ class SinkInstance(InstanceResource):
     @property
     def description(self):
         """
-        :returns: The description
+        :returns: Sink Description
         :rtype: unicode
         """
         return self._properties['description']
@@ -368,7 +368,7 @@ class SinkInstance(InstanceResource):
     @property
     def sid(self):
         """
-        :returns: The sid
+        :returns: A string that uniquely identifies this Sink.
         :rtype: unicode
         """
         return self._properties['sid']
@@ -376,7 +376,7 @@ class SinkInstance(InstanceResource):
     @property
     def sink_configuration(self):
         """
-        :returns: The sink_configuration
+        :returns: JSON Sink configuration.
         :rtype: dict
         """
         return self._properties['sink_configuration']
@@ -384,7 +384,7 @@ class SinkInstance(InstanceResource):
     @property
     def sink_type(self):
         """
-        :returns: The sink_type
+        :returns: Sink type.
         :rtype: SinkInstance.SinkType
         """
         return self._properties['sink_type']
@@ -392,7 +392,7 @@ class SinkInstance(InstanceResource):
     @property
     def status(self):
         """
-        :returns: The status
+        :returns: The Status of this Sink
         :rtype: SinkInstance.Status
         """
         return self._properties['status']
@@ -400,7 +400,7 @@ class SinkInstance(InstanceResource):
     @property
     def url(self):
         """
-        :returns: The url
+        :returns: The URL of this resource.
         :rtype: unicode
         """
         return self._properties['url']
@@ -408,7 +408,7 @@ class SinkInstance(InstanceResource):
     @property
     def links(self):
         """
-        :returns: The links
+        :returns: Nested resource URLs.
         :rtype: unicode
         """
         return self._properties['links']

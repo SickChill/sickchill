@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class SigningKeyList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -143,7 +142,6 @@ class SigningKeyList(ListResource):
 
 
 class SigningKeyPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -183,7 +181,6 @@ class SigningKeyPage(Page):
 
 
 class SigningKeyContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, sid):
         """
@@ -259,7 +256,6 @@ class SigningKeyContext(InstanceContext):
 
 
 class SigningKeyInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, account_sid, sid=None):
         """

@@ -14,7 +14,6 @@ from twilio.base.page import Page
 
 
 class StepContextList(ListResource):
-    """  """
 
     def __init__(self, version, flow_sid, engagement_sid, step_sid):
         """
@@ -72,7 +71,6 @@ class StepContextList(ListResource):
 
 
 class StepContextPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -120,7 +118,6 @@ class StepContextPage(Page):
 
 
 class StepContextContext(InstanceContext):
-    """  """
 
     def __init__(self, version, flow_sid, engagement_sid, step_sid):
         """
@@ -169,7 +166,6 @@ class StepContextContext(InstanceContext):
 
 
 class StepContextInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, flow_sid, engagement_sid, step_sid):
         """

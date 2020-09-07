@@ -14,7 +14,6 @@ from twilio.base.page import Page
 
 
 class CompositionSettingsList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -59,7 +58,6 @@ class CompositionSettingsList(ListResource):
 
 
 class CompositionSettingsPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -98,7 +96,6 @@ class CompositionSettingsPage(Page):
 
 
 class CompositionSettingsContext(InstanceContext):
-    """  """
 
     def __init__(self, version):
         """
@@ -167,7 +164,6 @@ class CompositionSettingsContext(InstanceContext):
 
 
 class CompositionSettingsInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload):
         """

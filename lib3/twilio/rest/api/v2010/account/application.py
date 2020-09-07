@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class ApplicationList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -203,7 +202,6 @@ class ApplicationList(ListResource):
 
 
 class ApplicationPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -243,7 +241,6 @@ class ApplicationPage(Page):
 
 
 class ApplicationContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, sid):
         """
@@ -356,7 +353,6 @@ class ApplicationContext(InstanceContext):
 
 
 class ApplicationInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, account_sid, sid=None):
         """

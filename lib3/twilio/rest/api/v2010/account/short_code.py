@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class ShortCodeList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -163,7 +162,6 @@ class ShortCodeList(ListResource):
 
 
 class ShortCodePage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -203,7 +201,6 @@ class ShortCodePage(Page):
 
 
 class ShortCodeContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, sid):
         """
@@ -284,7 +281,6 @@ class ShortCodeContext(InstanceContext):
 
 
 class ShortCodeInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, account_sid, sid=None):
         """

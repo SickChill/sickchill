@@ -16,7 +16,6 @@ from twilio.base.page import Page
 
 
 class MemberList(ListResource):
-    """  """
 
     def __init__(self, version, service_sid, channel_sid):
         """
@@ -203,7 +202,6 @@ class MemberList(ListResource):
 
 
 class MemberPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -249,7 +247,6 @@ class MemberPage(Page):
 
 
 class MemberContext(InstanceContext):
-    """  """
 
     def __init__(self, version, service_sid, channel_sid, sid):
         """
@@ -350,7 +347,6 @@ class MemberContext(InstanceContext):
 
 
 class MemberInstance(InstanceResource):
-    """  """
 
     class WebhookEnabledType(object):
         TRUE = "true"

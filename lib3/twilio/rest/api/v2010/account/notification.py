@@ -16,7 +16,6 @@ from twilio.base.page import Page
 
 
 class NotificationList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -183,7 +182,6 @@ class NotificationList(ListResource):
 
 
 class NotificationPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -223,7 +221,6 @@ class NotificationPage(Page):
 
 
 class NotificationContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, sid):
         """
@@ -270,7 +267,6 @@ class NotificationContext(InstanceContext):
 
 
 class NotificationInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, account_sid, sid=None):
         """

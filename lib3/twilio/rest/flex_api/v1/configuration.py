@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class ConfigurationList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -60,7 +59,6 @@ class ConfigurationList(ListResource):
 
 
 class ConfigurationPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -99,7 +97,6 @@ class ConfigurationPage(Page):
 
 
 class ConfigurationContext(InstanceContext):
-    """  """
 
     def __init__(self, version):
         """
@@ -165,7 +162,6 @@ class ConfigurationContext(InstanceContext):
 
 
 class ConfigurationInstance(InstanceResource):
-    """  """
 
     class Status(object):
         OK = "ok"

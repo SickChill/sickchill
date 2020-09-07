@@ -16,7 +16,6 @@ from twilio.rest.api.v2010.account.sip.credential_list.credential import Credent
 
 
 class CredentialListList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -159,7 +158,6 @@ class CredentialListList(ListResource):
 
 
 class CredentialListPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -199,7 +197,6 @@ class CredentialListPage(Page):
 
 
 class CredentialListContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, sid):
         """
@@ -294,7 +291,6 @@ class CredentialListContext(InstanceContext):
 
 
 class CredentialListInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, account_sid, sid=None):
         """

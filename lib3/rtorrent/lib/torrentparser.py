@@ -86,8 +86,8 @@ class TorrentParser(object):
 
     def _calc_info_hash(self):
         self.info_hash = None
-        if "info" in self._torrent_decoded:
-            info_encoded = bencodepy.encode(self._torrent_decoded["info"])
+        if b"info" in self._torrent_decoded:
+            info_encoded = bencodepy.encode(self._torrent_decoded[b"info"])
 
             if info_encoded:
                 self.info_hash = hashlib.sha1(info_encoded).hexdigest().upper()
@@ -96,7 +96,7 @@ class TorrentParser(object):
 
     def _parse_torrent(self):
         for k in self._torrent_decoded:
-            key = k.replace(" ", "_").lower()
-            setattr(self, key, self._torrent_decoded[k])
+            key = k.replace(b" ", b"_").lower()
+            setattr(self, str(key), self._torrent_decoded[k])
 
         self._calc_info_hash()

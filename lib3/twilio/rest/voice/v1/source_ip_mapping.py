@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class SourceIpMappingList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -158,7 +157,6 @@ class SourceIpMappingList(ListResource):
 
 
 class SourceIpMappingPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -197,7 +195,6 @@ class SourceIpMappingPage(Page):
 
 
 class SourceIpMappingContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -262,7 +259,6 @@ class SourceIpMappingContext(InstanceContext):
 
 
 class SourceIpMappingInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, sid=None):
         """

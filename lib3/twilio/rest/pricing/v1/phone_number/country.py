@@ -14,7 +14,6 @@ from twilio.base.page import Page
 
 
 class CountryList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -141,7 +140,6 @@ class CountryList(ListResource):
 
 
 class CountryPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -180,7 +178,6 @@ class CountryPage(Page):
 
 
 class CountryContext(InstanceContext):
-    """  """
 
     def __init__(self, version, iso_country):
         """
@@ -221,7 +218,6 @@ class CountryContext(InstanceContext):
 
 
 class CountryInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, iso_country=None):
         """

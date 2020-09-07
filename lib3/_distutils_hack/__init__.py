@@ -20,8 +20,8 @@ def warn_distutils_present():
         "also replaces the `distutils` module in `sys.modules`. This may lead "
         "to undesirable behaviors or errors. To avoid these issues, avoid "
         "using distutils directly, ensure that setuptools is installed in the "
-        "traditional way (e.g. not an editable install), and/or make sure that "
-        "setuptools is always imported before distutils.")
+        "traditional way (e.g. not an editable install), and/or make sure "
+        "that setuptools is always imported before distutils.")
 
 
 def clear_distutils():
@@ -66,23 +66,47 @@ def do_override():
 
 class DistutilsMetaFinder:
     def find_spec(self, fullname, path, target=None):
-        if path is not None or fullname != "distutils":
-            return None
+        if path is not None:
+            return
 
-        return self.get_distutils_spec()
+        method_name = 'spec_for_{fullname}'.format(**locals())
+        method = getattr(self, method_name, lambda: None)
+        return method()
 
-    def get_distutils_spec(self):
+    def spec_for_distutils(self):
+        import importlib.abc
         import importlib.util
 
-        class DistutilsLoader(importlib.util.abc.Loader):
+        class DistutilsLoader(importlib.abc.Loader):
 
             def create_module(self, spec):
-                return importlib.import_module('._distutils', 'setuptools')
+                return importlib.import_module('setuptools._distutils')
 
             def exec_module(self, module):
                 pass
 
         return importlib.util.spec_from_loader('distutils', DistutilsLoader())
+
+    def spec_for_pip(self):
+        """
+        Ensure stdlib distutils when running under pip.
+        See pypa/pip#8761 for rationale.
+        """
+        if self.pip_imported_during_build():
+            return
+        clear_distutils()
+        self.spec_for_distutils = lambda: None
+
+    @staticmethod
+    def pip_imported_during_build():
+        """
+        Detect if pip is being imported in a build script. Ref #2355.
+        """
+        import traceback
+        return any(
+            frame.f_globals['__file__'].endswith('setup.py')
+            for frame, line in traceback.walk_stack(None)
+        )
 
 
 DISTUTILS_FINDER = DistutilsMetaFinder()

@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class OriginationUrlList(ListResource):
-    """  """
 
     def __init__(self, version, trunk_sid):
         """
@@ -168,7 +167,6 @@ class OriginationUrlList(ListResource):
 
 
 class OriginationUrlPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -208,7 +206,6 @@ class OriginationUrlPage(Page):
 
 
 class OriginationUrlContext(InstanceContext):
-    """  """
 
     def __init__(self, version, trunk_sid, sid):
         """
@@ -296,7 +293,6 @@ class OriginationUrlContext(InstanceContext):
 
 
 class OriginationUrlInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, trunk_sid, sid=None):
         """

@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class IpRecordList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -39,7 +38,7 @@ class IpRecordList(ListResource):
 
         :param unicode ip_address: An IP address in dotted decimal notation, IPv4 only.
         :param unicode friendly_name: A string to describe the resource
-        :param unicode cidr_prefix_length: An integer representing the length of the [CIDR](https://tools.ietf.org/html/rfc4632) prefix to use with this IP address. By default the entire IP address is used, which for IPv4 is value 32.
+        :param unicode cidr_prefix_length: An integer representing the length of the `CIDR <https://tools.ietf.org/html/rfc4632>`_ prefix to use with this IP address. By default the entire IP address is used, which for IPv4 is value 32.
 
         :returns: The created IpRecordInstance
         :rtype: twilio.rest.voice.v1.ip_record.IpRecordInstance
@@ -164,7 +163,6 @@ class IpRecordList(ListResource):
 
 
 class IpRecordPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -203,7 +201,6 @@ class IpRecordPage(Page):
 
 
 class IpRecordContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -268,7 +265,6 @@ class IpRecordContext(InstanceContext):
 
 
 class IpRecordInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, sid=None):
         """
@@ -343,7 +339,7 @@ class IpRecordInstance(InstanceResource):
     @property
     def cidr_prefix_length(self):
         """
-        :returns: An integer representing the length of the [CIDR](https://tools.ietf.org/html/rfc4632) prefix to use with this IP address. By default the entire IP address is used, which for IPv4 is value 32.
+        :returns: An integer representing the length of the `CIDR <https://tools.ietf.org/html/rfc4632>`_ prefix to use with this IP address. By default the entire IP address is used, which for IPv4 is value 32.
         :rtype: unicode
         """
         return self._properties['cidr_prefix_length']

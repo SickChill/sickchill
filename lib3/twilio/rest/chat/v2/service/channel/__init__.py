@@ -20,7 +20,6 @@ from twilio.rest.chat.v2.service.channel.webhook import WebhookList
 
 
 class ChannelList(ListResource):
-    """  """
 
     def __init__(self, version, service_sid):
         """
@@ -190,7 +189,6 @@ class ChannelList(ListResource):
 
 
 class ChannelPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -230,7 +228,6 @@ class ChannelPage(Page):
 
 
 class ChannelContext(InstanceContext):
-    """  """
 
     def __init__(self, version, service_sid, sid):
         """
@@ -397,7 +394,6 @@ class ChannelContext(InstanceContext):
 
 
 class ChannelInstance(InstanceResource):
-    """  """
 
     class ChannelType(object):
         PUBLIC = "public"

@@ -16,7 +16,6 @@ from twilio.base.page import Page
 
 
 class RoomRecordingList(ListResource):
-    """  """
 
     def __init__(self, version, room_sid):
         """
@@ -183,7 +182,6 @@ class RoomRecordingList(ListResource):
 
 
 class RoomRecordingPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -223,7 +221,6 @@ class RoomRecordingPage(Page):
 
 
 class RoomRecordingContext(InstanceContext):
-    """  """
 
     def __init__(self, version, room_sid, sid):
         """
@@ -279,7 +276,6 @@ class RoomRecordingContext(InstanceContext):
 
 
 class RoomRecordingInstance(InstanceResource):
-    """  """
 
     class Status(object):
         PROCESSING = "processing"

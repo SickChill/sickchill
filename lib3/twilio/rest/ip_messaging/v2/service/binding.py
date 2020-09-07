@@ -16,7 +16,6 @@ from twilio.base.page import Page
 
 
 class BindingList(ListResource):
-    """  """
 
     def __init__(self, version, service_sid):
         """
@@ -164,7 +163,6 @@ class BindingList(ListResource):
 
 
 class BindingPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -204,7 +202,6 @@ class BindingPage(Page):
 
 
 class BindingContext(InstanceContext):
-    """  """
 
     def __init__(self, version, service_sid, sid):
         """
@@ -260,7 +257,6 @@ class BindingContext(InstanceContext):
 
 
 class BindingInstance(InstanceResource):
-    """  """
 
     class BindingType(object):
         GCM = "gcm"

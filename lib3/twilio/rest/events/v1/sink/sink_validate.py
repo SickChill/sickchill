@@ -22,7 +22,7 @@ class SinkValidateList(ListResource):
         Initialize the SinkValidateList
 
         :param Version version: Version that contains the resource
-        :param sid: The sid
+        :param sid: A string that uniquely identifies this Sink.
 
         :returns: twilio.rest.events.v1.sink.sink_validate.SinkValidateList
         :rtype: twilio.rest.events.v1.sink.sink_validate.SinkValidateList
@@ -37,7 +37,7 @@ class SinkValidateList(ListResource):
         """
         Create the SinkValidateInstance
 
-        :param unicode test_id: The test_id
+        :param unicode test_id: A string that uniquely identifies the test event for a Sink being validated.
 
         :returns: The created SinkValidateInstance
         :rtype: twilio.rest.events.v1.sink.sink_validate.SinkValidateInstance
@@ -69,7 +69,7 @@ class SinkValidatePage(Page):
 
         :param Version version: Version that contains the resource
         :param Response response: Response from the API
-        :param sid: The sid
+        :param sid: A string that uniquely identifies this Sink.
 
         :returns: twilio.rest.events.v1.sink.sink_validate.SinkValidatePage
         :rtype: twilio.rest.events.v1.sink.sink_validate.SinkValidatePage
@@ -124,7 +124,7 @@ class SinkValidateInstance(InstanceResource):
     @property
     def result(self):
         """
-        :returns: The result
+        :returns: Feedback indicating whether the given Sink was validated.
         :rtype: unicode
         """
         return self._properties['result']

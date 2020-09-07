@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class AuthCallsIpAccessControlListMappingList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid, domain_sid):
         """
@@ -174,7 +173,6 @@ class AuthCallsIpAccessControlListMappingList(ListResource):
 
 
 class AuthCallsIpAccessControlListMappingPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -220,7 +218,6 @@ class AuthCallsIpAccessControlListMappingPage(Page):
 
 
 class AuthCallsIpAccessControlListMappingContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, domain_sid, sid):
         """
@@ -278,7 +275,6 @@ class AuthCallsIpAccessControlListMappingContext(InstanceContext):
 
 
 class AuthCallsIpAccessControlListMappingInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, account_sid, domain_sid, sid=None):
         """

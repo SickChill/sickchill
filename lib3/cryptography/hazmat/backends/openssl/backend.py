@@ -42,6 +42,14 @@ from cryptography.hazmat.backends.openssl.ciphers import _CipherContext
 from cryptography.hazmat.backends.openssl.cmac import _CMACContext
 from cryptography.hazmat.backends.openssl.decode_asn1 import (
     _CRL_ENTRY_REASON_ENUM_TO_CODE,
+    _CRL_EXTENSION_HANDLERS,
+    _EXTENSION_HANDLERS_BASE,
+    _EXTENSION_HANDLERS_SCT,
+    _OCSP_BASICRESP_EXTENSION_HANDLERS,
+    _OCSP_REQ_EXTENSION_HANDLERS,
+    _OCSP_SINGLERESP_EXTENSION_HANDLERS_SCT,
+    _REVOKED_EXTENSION_HANDLERS,
+    _X509ExtensionParser,
 )
 from cryptography.hazmat.backends.openssl.dh import (
     _DHParameters,
@@ -219,6 +227,8 @@ class Backend(object):
 
         self._cipher_registry = {}
         self._register_default_ciphers()
+        self._register_x509_ext_parsers()
+        self._register_x509_encoders()
         if self._fips_enabled and self._lib.CRYPTOGRAPHY_NEEDS_OSRANDOM_ENGINE:
             warnings.warn(
                 "OpenSSL FIPS mode is enabled. Can't enable DRBG fork safety.",
@@ -230,8 +240,8 @@ class Backend(object):
         if self._lib.Cryptography_HAS_EVP_PKEY_DHX:
             self._dh_types.append(self._lib.EVP_PKEY_DHX)
 
-    def openssl_assert(self, ok):
-        return binding._openssl_assert(self._lib, ok)
+    def openssl_assert(self, ok, errors=None):
+        return binding._openssl_assert(self._lib, ok, errors=errors)
 
     def _is_fips_enabled(self):
         fips_mode = getattr(self._lib, "FIPS_mode", lambda: 0)
@@ -389,7 +399,8 @@ class Backend(object):
                 SEED, mode_cls, GetCipherByName("seed-{mode.name}")
             )
         for cipher_cls, mode_cls in itertools.product(
-            [CAST5, IDEA], [CBC, OFB, CFB, ECB],
+            [CAST5, IDEA],
+            [CBC, OFB, CFB, ECB],
         ):
             self.register_cipher_adapter(
                 cipher_cls,
@@ -403,6 +414,74 @@ class Backend(object):
             ChaCha20, type(None), GetCipherByName("chacha20")
         )
         self.register_cipher_adapter(AES, XTS, _get_xts_cipher)
+
+    def _register_x509_ext_parsers(self):
+        ext_handlers = _EXTENSION_HANDLERS_BASE.copy()
+        # All revoked extensions are valid single response extensions, see:
+        # https://tools.ietf.org/html/rfc6960#section-4.4.5
+        singleresp_handlers = _REVOKED_EXTENSION_HANDLERS.copy()
+
+        if self._lib.Cryptography_HAS_SCT:
+            ext_handlers.update(_EXTENSION_HANDLERS_SCT)
+            singleresp_handlers.update(_OCSP_SINGLERESP_EXTENSION_HANDLERS_SCT)
+
+        self._certificate_extension_parser = _X509ExtensionParser(
+            self,
+            ext_count=self._lib.X509_get_ext_count,
+            get_ext=self._lib.X509_get_ext,
+            handlers=ext_handlers,
+        )
+        self._csr_extension_parser = _X509ExtensionParser(
+            self,
+            ext_count=self._lib.sk_X509_EXTENSION_num,
+            get_ext=self._lib.sk_X509_EXTENSION_value,
+            handlers=ext_handlers,
+        )
+        self._revoked_cert_extension_parser = _X509ExtensionParser(
+            self,
+            ext_count=self._lib.X509_REVOKED_get_ext_count,
+            get_ext=self._lib.X509_REVOKED_get_ext,
+            handlers=_REVOKED_EXTENSION_HANDLERS,
+        )
+        self._crl_extension_parser = _X509ExtensionParser(
+            self,
+            ext_count=self._lib.X509_CRL_get_ext_count,
+            get_ext=self._lib.X509_CRL_get_ext,
+            handlers=_CRL_EXTENSION_HANDLERS,
+        )
+        self._ocsp_req_ext_parser = _X509ExtensionParser(
+            self,
+            ext_count=self._lib.OCSP_REQUEST_get_ext_count,
+            get_ext=self._lib.OCSP_REQUEST_get_ext,
+            handlers=_OCSP_REQ_EXTENSION_HANDLERS,
+        )
+        self._ocsp_basicresp_ext_parser = _X509ExtensionParser(
+            self,
+            ext_count=self._lib.OCSP_BASICRESP_get_ext_count,
+            get_ext=self._lib.OCSP_BASICRESP_get_ext,
+            handlers=_OCSP_BASICRESP_EXTENSION_HANDLERS,
+        )
+        self._ocsp_singleresp_ext_parser = _X509ExtensionParser(
+            self,
+            ext_count=self._lib.OCSP_SINGLERESP_get_ext_count,
+            get_ext=self._lib.OCSP_SINGLERESP_get_ext,
+            handlers=singleresp_handlers,
+        )
+
+    def _register_x509_encoders(self):
+        self._extension_encode_handlers = _EXTENSION_ENCODE_HANDLERS.copy()
+        self._crl_extension_encode_handlers = (
+            _CRL_EXTENSION_ENCODE_HANDLERS.copy()
+        )
+        self._crl_entry_extension_encode_handlers = (
+            _CRL_ENTRY_EXTENSION_ENCODE_HANDLERS.copy()
+        )
+        self._ocsp_request_extension_encode_handlers = (
+            _OCSP_REQUEST_EXTENSION_ENCODE_HANDLERS.copy()
+        )
+        self._ocsp_basicresp_extension_encode_handlers = (
+            _OCSP_BASICRESP_EXTENSION_ENCODE_HANDLERS.copy()
+        )
 
     def create_symmetric_encryption_ctx(self, cipher, mode):
         return _CipherContext(self, cipher, mode, _CipherContext._ENCRYPT)
@@ -434,6 +513,9 @@ class Backend(object):
 
     def _consume_errors(self):
         return binding._consume_errors(self._lib)
+
+    def _consume_errors_with_text(self):
+        return binding._consume_errors_with_text(self._lib)
 
     def _bn_to_int(self, bn):
         assert bn != self._ffi.NULL
@@ -906,7 +988,7 @@ class Backend(object):
         # sk_extensions and will be freed along with it.
         self._create_x509_extensions(
             extensions=builder._extensions,
-            handlers=_EXTENSION_ENCODE_HANDLERS,
+            handlers=self._extension_encode_handlers,
             x509_obj=sk_extension,
             add_func=self._lib.sk_X509_EXTENSION_insert,
             gc=False,
@@ -929,15 +1011,8 @@ class Backend(object):
         # Sign the request using the requester's private key.
         res = self._lib.X509_REQ_sign(x509_req, private_key._evp_pkey, evp_md)
         if res == 0:
-            errors = self._consume_errors()
-            self.openssl_assert(
-                errors[0]._lib_reason_match(
-                    self._lib.ERR_LIB_RSA,
-                    self._lib.RSA_R_DIGEST_TOO_BIG_FOR_RSA_KEY,
-                )
-            )
-
-            raise ValueError("Digest too big for RSA key")
+            errors = self._consume_errors_with_text()
+            raise ValueError("Signing failed", errors)
 
         return _CertificateSigningRequest(self, x509_req)
 
@@ -987,7 +1062,7 @@ class Backend(object):
         # Add extensions.
         self._create_x509_extensions(
             extensions=builder._extensions,
-            handlers=_EXTENSION_ENCODE_HANDLERS,
+            handlers=self._extension_encode_handlers,
             x509_obj=x509_cert,
             add_func=self._lib.X509_add_ext,
             gc=True,
@@ -1002,14 +1077,8 @@ class Backend(object):
         # Sign the certificate with the issuer's private key.
         res = self._lib.X509_sign(x509_cert, private_key._evp_pkey, evp_md)
         if res == 0:
-            errors = self._consume_errors()
-            self.openssl_assert(
-                errors[0]._lib_reason_match(
-                    self._lib.ERR_LIB_RSA,
-                    self._lib.RSA_R_DIGEST_TOO_BIG_FOR_RSA_KEY,
-                )
-            )
-            raise ValueError("Digest too big for RSA key")
+            errors = self._consume_errors_with_text()
+            raise ValueError("Signing failed", errors)
 
         return _Certificate(self, x509_cert)
 
@@ -1071,7 +1140,7 @@ class Backend(object):
         # Add extensions.
         self._create_x509_extensions(
             extensions=builder._extensions,
-            handlers=_CRL_EXTENSION_ENCODE_HANDLERS,
+            handlers=self._crl_extension_encode_handlers,
             x509_obj=x509_crl,
             add_func=self._lib.X509_CRL_add_ext,
             gc=True,
@@ -1088,14 +1157,8 @@ class Backend(object):
 
         res = self._lib.X509_CRL_sign(x509_crl, private_key._evp_pkey, evp_md)
         if res == 0:
-            errors = self._consume_errors()
-            self.openssl_assert(
-                errors[0]._lib_reason_match(
-                    self._lib.ERR_LIB_RSA,
-                    self._lib.RSA_R_DIGEST_TOO_BIG_FOR_RSA_KEY,
-                )
-            )
-            raise ValueError("Digest too big for RSA key")
+            errors = self._consume_errors_with_text()
+            raise ValueError("Signing failed", errors)
 
         return _CertificateRevocationList(self, x509_crl)
 
@@ -1171,7 +1234,7 @@ class Backend(object):
         # add CRL entry extensions
         self._create_x509_extensions(
             extensions=builder._extensions,
-            handlers=_CRL_ENTRY_EXTENSION_ENCODE_HANDLERS,
+            handlers=self._crl_entry_extension_encode_handlers,
             x509_obj=x509_revoked,
             add_func=self._lib.X509_REVOKED_add_ext,
             gc=True,
@@ -1473,18 +1536,7 @@ class Backend(object):
         group = self._lib.EC_GROUP_new_by_curve_name(curve_nid)
 
         if group == self._ffi.NULL:
-            errors = self._consume_errors()
-            self.openssl_assert(
-                curve_nid == self._lib.NID_undef
-                or errors[0]._lib_reason_match(
-                    self._lib.ERR_LIB_EC, self._lib.EC_R_UNKNOWN_GROUP
-                )
-                or
-                # This occurs in FIPS mode for unsupported curves on RHEL
-                errors[0]._lib_reason_match(
-                    self._lib.ERR_LIB_EC, self._lib.EC_R_NOT_A_NIST_PRIME
-                )
-            )
+            self._consume_errors()
             return False
         else:
             self.openssl_assert(curve_nid != self._lib.NID_undef)
@@ -1605,8 +1657,19 @@ class Backend(object):
 
     def _ec_key_new_by_curve(self, curve):
         curve_nid = self._elliptic_curve_to_nid(curve)
+        return self._ec_key_new_by_curve_nid(curve_nid)
+
+    def _ec_key_new_by_curve_nid(self, curve_nid):
         ec_cdata = self._lib.EC_KEY_new_by_curve_name(curve_nid)
         self.openssl_assert(ec_cdata != self._ffi.NULL)
+        # Setting the ASN.1 flag to OPENSSL_EC_NAMED_CURVE is
+        # only necessary on OpenSSL 1.0.2t/u. Once we drop support for 1.0.2
+        # we can remove this as it's done automatically when getting an EC_KEY
+        # from new_by_curve_name
+        # CRYPTOGRAPHY_OPENSSL_102U_OR_GREATER
+        self._lib.EC_KEY_set_asn1_flag(
+            ec_cdata, backend._lib.OPENSSL_EC_NAMED_CURVE
+        )
         return self._ffi.gc(ec_cdata, self._lib.EC_KEY_free)
 
     def load_der_ocsp_request(self, data):
@@ -1641,7 +1704,7 @@ class Backend(object):
         self.openssl_assert(onereq != self._ffi.NULL)
         self._create_x509_extensions(
             extensions=builder._extensions,
-            handlers=_OCSP_REQUEST_EXTENSION_ENCODE_HANDLERS,
+            handlers=self._ocsp_request_extension_encode_handlers,
             x509_obj=ocsp_req,
             add_func=self._lib.OCSP_REQUEST_add_ext,
             gc=True,
@@ -1709,7 +1772,7 @@ class Backend(object):
 
         self._create_x509_extensions(
             extensions=builder._extensions,
-            handlers=_OCSP_BASICRESP_EXTENSION_ENCODE_HANDLERS,
+            handlers=self._ocsp_basicresp_extension_encode_handlers,
             x509_obj=basic,
             add_func=self._lib.OCSP_BASICRESP_add_ext,
             gc=True,
@@ -1724,14 +1787,12 @@ class Backend(object):
             flags,
         )
         if res != 1:
-            errors = self._consume_errors()
-            self.openssl_assert(
-                errors[0]._lib_reason_match(
-                    self._lib.ERR_LIB_X509,
-                    self._lib.X509_R_KEY_VALUES_MISMATCH,
-                )
+            errors = self._consume_errors_with_text()
+            raise ValueError(
+                "Error while signing. responder_cert must be signed "
+                "by private_key",
+                errors,
             )
-            raise ValueError("responder_cert must be signed by private_key")
 
         return basic
 
@@ -2398,25 +2459,14 @@ class Backend(object):
             length,
         )
         if res != 1:
-            errors = self._consume_errors()
-            if not self._lib.CRYPTOGRAPHY_OPENSSL_LESS_THAN_111:
-                # This error is only added to the stack in 1.1.1+
-                self.openssl_assert(
-                    errors[0]._lib_reason_match(
-                        self._lib.ERR_LIB_EVP, self._lib.ERR_R_MALLOC_FAILURE
-                    )
-                    or errors[0]._lib_reason_match(
-                        self._lib.ERR_LIB_EVP,
-                        self._lib.EVP_R_MEMORY_LIMIT_EXCEEDED,
-                    )
-                )
-
+            errors = self._consume_errors_with_text()
             # memory required formula explained here:
             # https://blog.filippo.io/the-scrypt-parameters/
             min_memory = 128 * n * r // (1024 ** 2)
             raise MemoryError(
                 "Not enough memory to derive key. These parameters require"
-                " {} MB of memory.".format(min_memory)
+                " {} MB of memory.".format(min_memory),
+                errors,
             )
         return self._ffi.buffer(buf)[:]
 
@@ -2509,8 +2559,8 @@ class Backend(object):
             num = self._lib.sk_X509_num(sk_x509_ptr[0])
             for i in range(num):
                 x509 = self._lib.sk_X509_value(sk_x509, i)
-                x509 = self._ffi.gc(x509, self._lib.X509_free)
                 self.openssl_assert(x509 != self._ffi.NULL)
+                x509 = self._ffi.gc(x509, self._lib.X509_free)
                 additional_certificates.append(_Certificate(self, x509))
 
         return (key, cert, additional_certificates)
@@ -2590,6 +2640,55 @@ class Backend(object):
             raise ValueError("A poly1305 key is 32 bytes long")
 
         return _Poly1305Context(self, key)
+
+    def load_pem_pkcs7_certificates(self, data):
+        utils._check_bytes("data", data)
+        bio = self._bytes_to_bio(data)
+        p7 = self._lib.PEM_read_bio_PKCS7(
+            bio.bio, self._ffi.NULL, self._ffi.NULL, self._ffi.NULL
+        )
+        if p7 == self._ffi.NULL:
+            self._consume_errors()
+            raise ValueError("Unable to parse PKCS7 data")
+
+        p7 = self._ffi.gc(p7, self._lib.PKCS7_free)
+        return self._load_pkcs7_certificates(p7)
+
+    def load_der_pkcs7_certificates(self, data):
+        utils._check_bytes("data", data)
+        bio = self._bytes_to_bio(data)
+        p7 = self._lib.d2i_PKCS7_bio(bio.bio, self._ffi.NULL)
+        if p7 == self._ffi.NULL:
+            self._consume_errors()
+            raise ValueError("Unable to parse PKCS7 data")
+
+        p7 = self._ffi.gc(p7, self._lib.PKCS7_free)
+        return self._load_pkcs7_certificates(p7)
+
+    def _load_pkcs7_certificates(self, p7):
+        nid = self._lib.OBJ_obj2nid(p7.type)
+        self.openssl_assert(nid != self._lib.NID_undef)
+        if nid != self._lib.NID_pkcs7_signed:
+            raise UnsupportedAlgorithm(
+                "Only basic signed structures are currently supported. NID"
+                " for this data was {}".format(nid),
+                _Reasons.UNSUPPORTED_SERIALIZATION,
+            )
+
+        sk_x509 = p7.d.sign.cert
+        num = self._lib.sk_X509_num(sk_x509)
+        certs = []
+        for i in range(num):
+            x509 = self._lib.sk_X509_value(sk_x509, i)
+            self.openssl_assert(x509 != self._ffi.NULL)
+            res = self._lib.X509_up_ref(x509)
+            # When OpenSSL is less than 1.1.0 up_ref returns the current
+            # refcount. On 1.1.0+ it returns 1 for success.
+            self.openssl_assert(res >= 1)
+            x509 = self._ffi.gc(x509, self._lib.X509_free)
+            certs.append(_Certificate(self, x509))
+
+        return certs
 
 
 class GetCipherByName(object):

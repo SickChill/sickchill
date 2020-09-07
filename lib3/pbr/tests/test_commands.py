@@ -78,7 +78,7 @@ class TestCommands(base.BaseTestCase):
         stdout, stderr, return_code = self.run_pbr('freeze')
         self.assertEqual(0, return_code)
         pkgs = []
-        for l in stdout.split('\n'):
-            pkgs.append(l.split('==')[0].lower())
+        for line in stdout.split('\n'):
+            pkgs.append(line.split('==')[0].lower())
         pkgs_sort = sorted(pkgs[:])
         self.assertEqual(pkgs_sort, pkgs)

@@ -280,7 +280,7 @@ class AssistantContext(InstanceContext):
         :param unicode callback_url: Reserved
         :param unicode callback_events: Reserved
         :param dict style_sheet: A JSON string that defines the Assistant's style sheet
-        :param dict defaults: A JSON object that defines the Assistant's [default tasks](https://www.twilio.com/docs/autopilot/api/assistant/defaults) for various scenarios
+        :param dict defaults: A JSON object that defines the Assistant's `default tasks <https://www.twilio.com/docs/autopilot/api/assistant/defaults>`_ for various scenarios
         :param unicode development_stage: A string describing the state of the assistant.
 
         :returns: The updated AssistantInstance
@@ -600,7 +600,7 @@ class AssistantInstance(InstanceResource):
         :param unicode callback_url: Reserved
         :param unicode callback_events: Reserved
         :param dict style_sheet: A JSON string that defines the Assistant's style sheet
-        :param dict defaults: A JSON object that defines the Assistant's [default tasks](https://www.twilio.com/docs/autopilot/api/assistant/defaults) for various scenarios
+        :param dict defaults: A JSON object that defines the Assistant's `default tasks <https://www.twilio.com/docs/autopilot/api/assistant/defaults>`_ for various scenarios
         :param unicode development_stage: A string describing the state of the assistant.
 
         :returns: The updated AssistantInstance

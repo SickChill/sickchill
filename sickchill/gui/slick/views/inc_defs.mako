@@ -82,5 +82,5 @@
         cssClass = cssStatusStrings.get(status, 'archived')
         statusString = statusStrings[status]
     %>
-    <span class="quality pill-${cssClass}">${statusString}</span>
+    <span class="status pill-${cssClass}">${statusString}</span>
 </%def>

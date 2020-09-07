@@ -14,7 +14,6 @@ from twilio.base.page import Page
 
 
 class SharedCostList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid, country_code):
         """
@@ -266,7 +265,6 @@ class SharedCostList(ListResource):
 
 
 class SharedCostPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -312,7 +310,6 @@ class SharedCostPage(Page):
 
 
 class SharedCostInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, account_sid, country_code):
         """

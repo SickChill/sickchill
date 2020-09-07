@@ -25,7 +25,7 @@ class FieldList(ListResource):
 
         :param Version version: Version that contains the resource
         :param assistant_sid: The SID of the Assistant that is the parent of the Task associated with the resource
-        :param task_sid: The SID of the [Task](https://www.twilio.com/docs/autopilot/api/task) resource associated with this Field
+        :param task_sid: The SID of the `Task <https://www.twilio.com/docs/autopilot/api/task>`_ resource associated with this Field
 
         :returns: twilio.rest.autopilot.v1.assistant.task.field.FieldList
         :rtype: twilio.rest.autopilot.v1.assistant.task.field.FieldList
@@ -188,7 +188,7 @@ class FieldPage(Page):
         :param Version version: Version that contains the resource
         :param Response response: Response from the API
         :param assistant_sid: The SID of the Assistant that is the parent of the Task associated with the resource
-        :param task_sid: The SID of the [Task](https://www.twilio.com/docs/autopilot/api/task) resource associated with this Field
+        :param task_sid: The SID of the `Task <https://www.twilio.com/docs/autopilot/api/task>`_ resource associated with this Field
 
         :returns: twilio.rest.autopilot.v1.assistant.task.field.FieldPage
         :rtype: twilio.rest.autopilot.v1.assistant.task.field.FieldPage
@@ -235,7 +235,7 @@ class FieldContext(InstanceContext):
 
         :param Version version: Version that contains the resource
         :param assistant_sid: The SID of the Assistant that is the parent of the Task associated with the resource to fetch
-        :param task_sid: The SID of the [Task](https://www.twilio.com/docs/autopilot/api/task) resource associated with the Field resource to fetch
+        :param task_sid: The SID of the `Task <https://www.twilio.com/docs/autopilot/api/task>`_ resource associated with the Field resource to fetch
         :param sid: The unique string that identifies the resource
 
         :returns: twilio.rest.autopilot.v1.assistant.task.field.FieldContext
@@ -372,7 +372,7 @@ class FieldInstance(InstanceResource):
     @property
     def task_sid(self):
         """
-        :returns: The SID of the [Task](https://www.twilio.com/docs/autopilot/api/task) resource associated with this Field
+        :returns: The SID of the `Task <https://www.twilio.com/docs/autopilot/api/task>`_ resource associated with this Field
         :rtype: unicode
         """
         return self._properties['task_sid']

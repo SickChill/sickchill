@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class ItemAssignmentList(ListResource):
-    """  """
 
     def __init__(self, version, bundle_sid):
         """
@@ -158,7 +157,6 @@ class ItemAssignmentList(ListResource):
 
 
 class ItemAssignmentPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -198,7 +196,6 @@ class ItemAssignmentPage(Page):
 
 
 class ItemAssignmentContext(InstanceContext):
-    """  """
 
     def __init__(self, version, bundle_sid, sid):
         """
@@ -254,7 +251,6 @@ class ItemAssignmentContext(InstanceContext):
 
 
 class ItemAssignmentInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, bundle_sid, sid=None):
         """

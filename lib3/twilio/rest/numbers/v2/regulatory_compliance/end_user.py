@@ -16,7 +16,6 @@ from twilio.base.page import Page
 
 
 class EndUserList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -164,7 +163,6 @@ class EndUserList(ListResource):
 
 
 class EndUserPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -203,7 +201,6 @@ class EndUserPage(Page):
 
 
 class EndUserContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -248,6 +245,15 @@ class EndUserContext(InstanceContext):
 
         return EndUserInstance(self._version, payload, sid=self._solution['sid'], )
 
+    def delete(self):
+        """
+        Deletes the EndUserInstance
+
+        :returns: True if delete succeeds, False otherwise
+        :rtype: bool
+        """
+        return self._version.delete(method='DELETE', uri=self._uri, )
+
     def __repr__(self):
         """
         Provide a friendly representation
@@ -260,7 +266,6 @@ class EndUserContext(InstanceContext):
 
 
 class EndUserInstance(InstanceResource):
-    """  """
 
     class Type(object):
         INDIVIDUAL = "individual"
@@ -388,6 +393,15 @@ class EndUserInstance(InstanceResource):
         :rtype: twilio.rest.numbers.v2.regulatory_compliance.end_user.EndUserInstance
         """
         return self._proxy.update(friendly_name=friendly_name, attributes=attributes, )
+
+    def delete(self):
+        """
+        Deletes the EndUserInstance
+
+        :returns: True if delete succeeds, False otherwise
+        :rtype: bool
+        """
+        return self._proxy.delete()
 
     def __repr__(self):
         """

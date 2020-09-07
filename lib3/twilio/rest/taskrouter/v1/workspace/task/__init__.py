@@ -17,7 +17,6 @@ from twilio.rest.taskrouter.v1.workspace.task.reservation import ReservationList
 
 
 class TaskList(ListResource):
-    """  """
 
     def __init__(self, version, workspace_sid):
         """
@@ -247,7 +246,6 @@ class TaskList(ListResource):
 
 
 class TaskPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -287,7 +285,6 @@ class TaskPage(Page):
 
 
 class TaskContext(InstanceContext):
-    """  """
 
     def __init__(self, version, workspace_sid, sid):
         """
@@ -394,7 +391,6 @@ class TaskContext(InstanceContext):
 
 
 class TaskInstance(InstanceResource):
-    """  """
 
     class Status(object):
         PENDING = "pending"

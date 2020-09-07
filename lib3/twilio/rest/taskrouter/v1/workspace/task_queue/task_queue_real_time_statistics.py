@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class TaskQueueRealTimeStatisticsList(ListResource):
-    """  """
 
     def __init__(self, version, workspace_sid, task_queue_sid):
         """
@@ -70,7 +69,6 @@ class TaskQueueRealTimeStatisticsList(ListResource):
 
 
 class TaskQueueRealTimeStatisticsPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -116,7 +114,6 @@ class TaskQueueRealTimeStatisticsPage(Page):
 
 
 class TaskQueueRealTimeStatisticsContext(InstanceContext):
-    """  """
 
     def __init__(self, version, workspace_sid, task_queue_sid):
         """
@@ -167,7 +164,6 @@ class TaskQueueRealTimeStatisticsContext(InstanceContext):
 
 
 class TaskQueueRealTimeStatisticsInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, workspace_sid, task_queue_sid):
         """

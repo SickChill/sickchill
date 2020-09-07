@@ -63,12 +63,17 @@ class DispatchFormatter(logging.Formatter, object):
         # e.g. password and password_1 both get censored instead of getting ********_1
         censored.sort(key=len, reverse=True)
 
+        if not isinstance(msg, (str, bytes)):
+            msg = repr(msg)
+
         for item in censored:
             try:
                 # passwords that include ++ for example will error. Cannot escape or it wont match at all.
                 msg = re.sub(fr'\b({item})\b', '*' * 8, msg)
             except re.error:
                 msg = msg.replace(item, '*' * 8)
+            except TypeError:
+                print(msg)
 
         # Needed because Newznab apikey isn't stored as key=value in a section.
         msg = re.sub(r'([&?]r|[&?]apikey|[&?]jackett_apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)', r'\1=**********\2', msg, re.I)

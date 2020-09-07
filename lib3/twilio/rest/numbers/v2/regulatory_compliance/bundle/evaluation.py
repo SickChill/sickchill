@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class EvaluationList(ListResource):
-    """  """
 
     def __init__(self, version, bundle_sid):
         """
@@ -154,7 +153,6 @@ class EvaluationList(ListResource):
 
 
 class EvaluationPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -194,7 +192,6 @@ class EvaluationPage(Page):
 
 
 class EvaluationContext(InstanceContext):
-    """  """
 
     def __init__(self, version, bundle_sid, sid):
         """
@@ -241,7 +238,6 @@ class EvaluationContext(InstanceContext):
 
 
 class EvaluationInstance(InstanceResource):
-    """  """
 
     class Status(object):
         COMPLIANT = "compliant"

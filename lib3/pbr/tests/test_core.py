@@ -40,6 +40,7 @@
 
 import glob
 import os
+import sys
 import tarfile
 
 import fixtures
@@ -112,6 +113,12 @@ class TestCore(base.BaseTestCase):
 
     def test_console_script_develop(self):
         """Test that we develop a non-pkg-resources console script."""
+
+        if sys.version_info < (3, 0):
+            self.skipTest(
+                'Fails with recent virtualenv due to '
+                'https://github.com/pypa/virtualenv/issues/1638'
+            )
 
         if os.name == 'nt':
             self.skipTest('Windows support is passthrough')

@@ -22,7 +22,7 @@ class SinkTestList(ListResource):
         Initialize the SinkTestList
 
         :param Version version: Version that contains the resource
-        :param sid: The sid
+        :param sid: A string that uniquely identifies this Sink.
 
         :returns: twilio.rest.events.v1.sink.sink_test.SinkTestList
         :rtype: twilio.rest.events.v1.sink.sink_test.SinkTestList
@@ -65,7 +65,7 @@ class SinkTestPage(Page):
 
         :param Version version: Version that contains the resource
         :param Response response: Response from the API
-        :param sid: The sid
+        :param sid: A string that uniquely identifies this Sink.
 
         :returns: twilio.rest.events.v1.sink.sink_test.SinkTestPage
         :rtype: twilio.rest.events.v1.sink.sink_test.SinkTestPage
@@ -120,7 +120,7 @@ class SinkTestInstance(InstanceResource):
     @property
     def result(self):
         """
-        :returns: The result
+        :returns: Feedback indicating whether the test event was generated.
         :rtype: unicode
         """
         return self._properties['result']

@@ -18,7 +18,6 @@ from twilio.rest.studio.v1.flow.engagement.step import StepList
 
 
 class EngagementList(ListResource):
-    """  """
 
     def __init__(self, version, flow_sid):
         """
@@ -163,7 +162,6 @@ class EngagementList(ListResource):
 
 
 class EngagementPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -203,7 +201,6 @@ class EngagementPage(Page):
 
 
 class EngagementContext(InstanceContext):
-    """  """
 
     def __init__(self, version, flow_sid, sid):
         """
@@ -295,7 +292,6 @@ class EngagementContext(InstanceContext):
 
 
 class EngagementInstance(InstanceResource):
-    """  """
 
     class Status(object):
         ACTIVE = "active"

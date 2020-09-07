@@ -13,7 +13,6 @@ from twilio.rest.pricing.v1.messaging.country import CountryList
 
 
 class MessagingList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -55,7 +54,6 @@ class MessagingList(ListResource):
 
 
 class MessagingPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -94,7 +92,6 @@ class MessagingPage(Page):
 
 
 class MessagingInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload):
         """

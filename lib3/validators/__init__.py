@@ -32,4 +32,4 @@ __all__ = ('between', 'domain', 'email', 'Max', 'Min', 'md5', 'sha1', 'sha224',
            'card_number', 'visa', 'mastercard', 'amex', 'unionpay', 'diners',
            'jcb', 'discover', 'btc_address')
 
-__version__ = '0.18.0'
+__version__ = '0.18.1'

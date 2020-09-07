@@ -20,7 +20,6 @@ from twilio.rest.chat.v2.service.user import UserList
 
 
 class ServiceList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -162,7 +161,6 @@ class ServiceList(ListResource):
 
 
 class ServicePage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -201,7 +199,6 @@ class ServicePage(Page):
 
 
 class ServiceContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -409,7 +406,6 @@ class ServiceContext(InstanceContext):
 
 
 class ServiceInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, sid=None):
         """

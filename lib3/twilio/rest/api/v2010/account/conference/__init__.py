@@ -18,7 +18,6 @@ from twilio.rest.api.v2010.account.conference.recording import RecordingList
 
 
 class ConferenceList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -215,7 +214,6 @@ class ConferenceList(ListResource):
 
 
 class ConferencePage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -255,7 +253,6 @@ class ConferencePage(Page):
 
 
 class ConferenceContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, sid):
         """
@@ -361,7 +358,6 @@ class ConferenceContext(InstanceContext):
 
 
 class ConferenceInstance(InstanceResource):
-    """  """
 
     class Status(object):
         INIT = "init"

@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class WorkspaceStatisticsList(ListResource):
-    """  """
 
     def __init__(self, version, workspace_sid):
         """
@@ -61,7 +60,6 @@ class WorkspaceStatisticsList(ListResource):
 
 
 class WorkspaceStatisticsPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -105,7 +103,6 @@ class WorkspaceStatisticsPage(Page):
 
 
 class WorkspaceStatisticsContext(InstanceContext):
-    """  """
 
     def __init__(self, version, workspace_sid):
         """
@@ -166,7 +163,6 @@ class WorkspaceStatisticsContext(InstanceContext):
 
 
 class WorkspaceStatisticsInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, workspace_sid):
         """

@@ -14,7 +14,6 @@ from twilio.rest.api.v2010.account.sip.domain.auth_types.auth_registrations_mapp
 
 
 class AuthTypesList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid, domain_sid):
         """
@@ -79,7 +78,6 @@ class AuthTypesList(ListResource):
 
 
 class AuthTypesPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -125,7 +123,6 @@ class AuthTypesPage(Page):
 
 
 class AuthTypesInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, account_sid, domain_sid):
         """

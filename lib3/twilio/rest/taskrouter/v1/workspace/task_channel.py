@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class TaskChannelList(ListResource):
-    """  """
 
     def __init__(self, version, workspace_sid):
         """
@@ -165,7 +164,6 @@ class TaskChannelList(ListResource):
 
 
 class TaskChannelPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -205,7 +203,6 @@ class TaskChannelPage(Page):
 
 
 class TaskChannelContext(InstanceContext):
-    """  """
 
     def __init__(self, version, workspace_sid, sid):
         """
@@ -286,7 +283,6 @@ class TaskChannelContext(InstanceContext):
 
 
 class TaskChannelInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, workspace_sid, sid=None):
         """

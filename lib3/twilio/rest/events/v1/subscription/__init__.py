@@ -117,9 +117,9 @@ class SubscriptionList(ListResource):
         """
         Create the SubscriptionInstance
 
-        :param unicode description: The description
-        :param unicode sink_sid: The sink_sid
-        :param dict types: The types
+        :param unicode description: Subscription description
+        :param unicode sink_sid: Sink SID.
+        :param dict types: Nested resource URLs.
 
         :returns: The created SubscriptionInstance
         :rtype: twilio.rest.events.v1.subscription.SubscriptionInstance
@@ -138,7 +138,7 @@ class SubscriptionList(ListResource):
         """
         Constructs a SubscriptionContext
 
-        :param sid: The sid
+        :param sid: A string that uniquely identifies this Subscription.
 
         :returns: twilio.rest.events.v1.subscription.SubscriptionContext
         :rtype: twilio.rest.events.v1.subscription.SubscriptionContext
@@ -149,7 +149,7 @@ class SubscriptionList(ListResource):
         """
         Constructs a SubscriptionContext
 
-        :param sid: The sid
+        :param sid: A string that uniquely identifies this Subscription.
 
         :returns: twilio.rest.events.v1.subscription.SubscriptionContext
         :rtype: twilio.rest.events.v1.subscription.SubscriptionContext
@@ -217,7 +217,7 @@ class SubscriptionContext(InstanceContext):
         Initialize the SubscriptionContext
 
         :param Version version: Version that contains the resource
-        :param sid: The sid
+        :param sid: A string that uniquely identifies this Subscription.
 
         :returns: twilio.rest.events.v1.subscription.SubscriptionContext
         :rtype: twilio.rest.events.v1.subscription.SubscriptionContext
@@ -320,7 +320,7 @@ class SubscriptionInstance(InstanceResource):
     @property
     def account_sid(self):
         """
-        :returns: The account_sid
+        :returns: Account SID.
         :rtype: unicode
         """
         return self._properties['account_sid']
@@ -328,7 +328,7 @@ class SubscriptionInstance(InstanceResource):
     @property
     def sid(self):
         """
-        :returns: The sid
+        :returns: A string that uniquely identifies this Subscription.
         :rtype: unicode
         """
         return self._properties['sid']
@@ -336,7 +336,7 @@ class SubscriptionInstance(InstanceResource):
     @property
     def date_created(self):
         """
-        :returns: The date_created
+        :returns: The date this Subscription was created
         :rtype: datetime
         """
         return self._properties['date_created']
@@ -344,7 +344,7 @@ class SubscriptionInstance(InstanceResource):
     @property
     def date_updated(self):
         """
-        :returns: The date_updated
+        :returns: The date this Subscription was updated
         :rtype: datetime
         """
         return self._properties['date_updated']
@@ -352,7 +352,7 @@ class SubscriptionInstance(InstanceResource):
     @property
     def description(self):
         """
-        :returns: The description
+        :returns: Subscription description
         :rtype: unicode
         """
         return self._properties['description']
@@ -360,7 +360,7 @@ class SubscriptionInstance(InstanceResource):
     @property
     def sink_sid(self):
         """
-        :returns: The sink_sid
+        :returns: Sink SID.
         :rtype: unicode
         """
         return self._properties['sink_sid']
@@ -368,7 +368,7 @@ class SubscriptionInstance(InstanceResource):
     @property
     def url(self):
         """
-        :returns: The url
+        :returns: The URL of this resource.
         :rtype: unicode
         """
         return self._properties['url']
@@ -376,7 +376,7 @@ class SubscriptionInstance(InstanceResource):
     @property
     def links(self):
         """
-        :returns: The links
+        :returns: Nested resource URLs.
         :rtype: unicode
         """
         return self._properties['links']

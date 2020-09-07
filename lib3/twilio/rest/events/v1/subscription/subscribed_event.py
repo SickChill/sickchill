@@ -24,7 +24,7 @@ class SubscribedEventList(ListResource):
         Initialize the SubscribedEventList
 
         :param Version version: Version that contains the resource
-        :param subscription_sid: The subscription_sid
+        :param subscription_sid: Subscription SID.
 
         :returns: twilio.rest.events.v1.subscription.subscribed_event.SubscribedEventList
         :rtype: twilio.rest.events.v1.subscription.subscribed_event.SubscribedEventList
@@ -116,8 +116,8 @@ class SubscribedEventList(ListResource):
         """
         Create the SubscribedEventInstance
 
-        :param unicode type: The type
-        :param unicode version: The version
+        :param unicode type: Type of event being subscribed to.
+        :param unicode version: The schema version that the subscription should use.
 
         :returns: The created SubscribedEventInstance
         :rtype: twilio.rest.events.v1.subscription.subscribed_event.SubscribedEventInstance
@@ -136,7 +136,7 @@ class SubscribedEventList(ListResource):
         """
         Constructs a SubscribedEventContext
 
-        :param type: The type
+        :param type: Type of event being subscribed to.
 
         :returns: twilio.rest.events.v1.subscription.subscribed_event.SubscribedEventContext
         :rtype: twilio.rest.events.v1.subscription.subscribed_event.SubscribedEventContext
@@ -151,7 +151,7 @@ class SubscribedEventList(ListResource):
         """
         Constructs a SubscribedEventContext
 
-        :param type: The type
+        :param type: Type of event being subscribed to.
 
         :returns: twilio.rest.events.v1.subscription.subscribed_event.SubscribedEventContext
         :rtype: twilio.rest.events.v1.subscription.subscribed_event.SubscribedEventContext
@@ -183,7 +183,7 @@ class SubscribedEventPage(Page):
 
         :param Version version: Version that contains the resource
         :param Response response: Response from the API
-        :param subscription_sid: The subscription_sid
+        :param subscription_sid: Subscription SID.
 
         :returns: twilio.rest.events.v1.subscription.subscribed_event.SubscribedEventPage
         :rtype: twilio.rest.events.v1.subscription.subscribed_event.SubscribedEventPage
@@ -228,8 +228,8 @@ class SubscribedEventContext(InstanceContext):
         Initialize the SubscribedEventContext
 
         :param Version version: Version that contains the resource
-        :param subscription_sid: The subscription_sid
-        :param type: The type
+        :param subscription_sid: Subscription SID.
+        :param type: Type of event being subscribed to.
 
         :returns: twilio.rest.events.v1.subscription.subscribed_event.SubscribedEventContext
         :rtype: twilio.rest.events.v1.subscription.subscribed_event.SubscribedEventContext
@@ -244,7 +244,7 @@ class SubscribedEventContext(InstanceContext):
         """
         Update the SubscribedEventInstance
 
-        :param unicode version: The version
+        :param unicode version: The schema version that the subscription should use.
 
         :returns: The updated SubscribedEventInstance
         :rtype: twilio.rest.events.v1.subscription.subscribed_event.SubscribedEventInstance
@@ -327,7 +327,7 @@ class SubscribedEventInstance(InstanceResource):
     @property
     def account_sid(self):
         """
-        :returns: The account_sid
+        :returns: Account SID.
         :rtype: unicode
         """
         return self._properties['account_sid']
@@ -335,7 +335,7 @@ class SubscribedEventInstance(InstanceResource):
     @property
     def type(self):
         """
-        :returns: The type
+        :returns: Type of event being subscribed to.
         :rtype: unicode
         """
         return self._properties['type']
@@ -343,7 +343,7 @@ class SubscribedEventInstance(InstanceResource):
     @property
     def version(self):
         """
-        :returns: The version
+        :returns: The schema version that the subscription should use.
         :rtype: unicode
         """
         return self._properties['version']
@@ -351,7 +351,7 @@ class SubscribedEventInstance(InstanceResource):
     @property
     def subscription_sid(self):
         """
-        :returns: The subscription_sid
+        :returns: Subscription SID.
         :rtype: unicode
         """
         return self._properties['subscription_sid']
@@ -359,7 +359,7 @@ class SubscribedEventInstance(InstanceResource):
     @property
     def url(self):
         """
-        :returns: The url
+        :returns: The URL of this resource.
         :rtype: unicode
         """
         return self._properties['url']
@@ -368,7 +368,7 @@ class SubscribedEventInstance(InstanceResource):
         """
         Update the SubscribedEventInstance
 
-        :param unicode version: The version
+        :param unicode version: The schema version that the subscription should use.
 
         :returns: The updated SubscribedEventInstance
         :rtype: twilio.rest.events.v1.subscription.subscribed_event.SubscribedEventInstance

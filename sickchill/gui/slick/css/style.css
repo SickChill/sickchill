@@ -2265,7 +2265,7 @@ span.config-path-title {
     line-height: 18px;
 }
 
-span.quality {
+span.quality, span.status {
     font: 12px/13px "Open Sans", verdana, sans-serif;
     background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.25));
     background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.25));

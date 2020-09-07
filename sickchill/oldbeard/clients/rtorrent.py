@@ -1,3 +1,5 @@
+import traceback
+
 from rtorrent import RTorrent
 
 from sickchill import logger, settings
@@ -65,6 +67,7 @@ class Client(GenericClient):
             return True
 
         except Exception as error:
+            logger.info(traceback.format_exc())
             logger.warning(_(f'Error while sending torrent: {error}'))
             return False
 

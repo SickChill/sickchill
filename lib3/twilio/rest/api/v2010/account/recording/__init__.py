@@ -18,7 +18,6 @@ from twilio.rest.api.v2010.account.recording.transcription import TranscriptionL
 
 
 class RecordingList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -191,7 +190,6 @@ class RecordingList(ListResource):
 
 
 class RecordingPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -231,7 +229,6 @@ class RecordingPage(Page):
 
 
 class RecordingContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, sid):
         """
@@ -323,7 +320,6 @@ class RecordingContext(InstanceContext):
 
 
 class RecordingInstance(InstanceResource):
-    """  """
 
     class Status(object):
         IN_PROGRESS = "in-progress"

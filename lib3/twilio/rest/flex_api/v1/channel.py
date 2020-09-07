@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class ChannelList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -181,7 +180,6 @@ class ChannelList(ListResource):
 
 
 class ChannelPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -220,7 +218,6 @@ class ChannelPage(Page):
 
 
 class ChannelContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -270,7 +267,6 @@ class ChannelContext(InstanceContext):
 
 
 class ChannelInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, sid=None):
         """

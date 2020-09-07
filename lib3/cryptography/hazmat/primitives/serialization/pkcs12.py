@@ -5,12 +5,13 @@
 from __future__ import absolute_import, division, print_function
 
 from cryptography import x509
-from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.backends import _get_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import dsa, ec, rsa
 
 
-def load_key_and_certificates(data, password, backend):
+def load_key_and_certificates(data, password, backend=None):
+    backend = _get_backend(backend)
     return backend.load_key_and_certificates_from_pkcs12(data, password)
 
 
@@ -43,6 +44,7 @@ def serialize_key_and_certificates(name, key, cert, cas, encryption_algorithm):
     if key is None and cert is None and not cas:
         raise ValueError("You must supply at least one of key, cert, or cas")
 
-    return default_backend().serialize_key_and_certificates_to_pkcs12(
+    backend = _get_backend(None)
+    return backend.serialize_key_and_certificates_to_pkcs12(
         name, key, cert, cas, encryption_algorithm
     )

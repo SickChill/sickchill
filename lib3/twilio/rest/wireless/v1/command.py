@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class CommandList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -209,7 +208,6 @@ class CommandList(ListResource):
 
 
 class CommandPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -248,7 +246,6 @@ class CommandPage(Page):
 
 
 class CommandContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -298,7 +295,6 @@ class CommandContext(InstanceContext):
 
 
 class CommandInstance(InstanceResource):
-    """  """
 
     class Direction(object):
         FROM_SIM = "from_sim"

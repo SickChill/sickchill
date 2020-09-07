@@ -39,7 +39,6 @@ from twilio.rest.api.v2010.account.validation_request import ValidationRequestLi
 
 
 class AccountList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -201,7 +200,6 @@ class AccountList(ListResource):
 
 
 class AccountPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -240,7 +238,6 @@ class AccountPage(Page):
 
 
 class AccountContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -620,7 +617,6 @@ class AccountContext(InstanceContext):
 
 
 class AccountInstance(InstanceResource):
-    """  """
 
     class Status(object):
         ACTIVE = "active"
