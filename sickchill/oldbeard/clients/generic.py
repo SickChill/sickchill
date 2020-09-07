@@ -1,5 +1,6 @@
 import re
 import time
+import traceback
 from base64 import b16encode, b32decode
 from hashlib import sha1
 from typing import Dict, Iterable, Union
@@ -230,6 +231,7 @@ class GenericClient(object):
         except Exception as error:
             logger.exception('{0}: Failed Sending Torrent'.format(self.name))
             logger.debug('{0}: Exception raised when sending torrent: {1}. Error {2}'.format(self.name, result, error))
+            logger.debug(traceback.format_exc())
             return r_code
 
         return r_code

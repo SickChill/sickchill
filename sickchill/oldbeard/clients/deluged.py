@@ -56,7 +56,7 @@ class Client(GenericClient, DelugeBase):
             result.content = {}
             return None
 
-        remote_torrent = self.client.core.add_torrent_file(result.name + '.torrent', b64encode(result.content), self.make_options(result))
+        remote_torrent = self.client.core.add_torrent_file(result.name + '.torrent', b64encode(result.content).decode('ascii'), self.make_options(result))
         if not remote_torrent:
             return None
 

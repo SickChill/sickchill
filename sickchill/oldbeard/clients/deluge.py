@@ -92,7 +92,7 @@ class Client(GenericClient, DelugeBase):
 
     def _add_torrent_file(self, result):
         post_data = json.dumps({"method": "core.add_torrent_file",
-                                "params": [result.name + '.torrent', b64encode(result.content), self.make_options(result)],
+                                "params": [result.name + '.torrent', b64encode(result.content).decode('ascii'), self.make_options(result)],
                                 "id": 2})
 
         self._request(method='post', data=post_data)

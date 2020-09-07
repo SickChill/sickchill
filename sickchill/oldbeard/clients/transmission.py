@@ -46,7 +46,7 @@ class Client(GenericClient):
             'paused': int(settings.TORRENT_PAUSED)
         }
         if method == 'file':
-            arguments.update({'metainfo': b64encode(result.content)})
+            arguments.update({'metainfo': b64encode(result.content).decode('ascii')})
         else:
             arguments.update({'filename': result.url})
 
