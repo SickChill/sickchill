@@ -1,1 +1,1 @@
-__version__ = "2020.9.7.post4"
+__version__ = "2020.9.8.post1"
