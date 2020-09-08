@@ -70,23 +70,33 @@ class Client(GenericClient, DelugeBase):
         if result.show.is_anime:
             label = settings.TORRENT_LABEL_ANIME.lower()
         if ' ' in label:
-            logger.exception(self.name + ': Invalid label. Label must not contain a space')
+            logger.exception(f'{self.name}: Invalid label. Label must not contain a space')
             return False
 
         if label:
             try:
-                labels = self.client.label.get_labels()
+
+                if 'label' not in [x.decode().lower() for x in self.client.core.get_available_plugins()]:
+                    logger.debug(f'{self.name}: label plugin not detected')
+                    return False
+
+                self.client.core.enable_plugin('Label')
+                self.client.core.enable_plugin('label')
+
+                labels = [x.decode() for x in self.client.label.get_labels()]
                 if label not in labels:
-                    logger.debug(self.name + ': ' + label + " label does not exist in Deluge we must add it")
-                    self.client.labels.add(label)
-                    logger.debug(self.name + ': ' + label + " label added to Deluge")
+                    logger.debug(f'{self.name}: {label} label does not exist in Deluge we must add it')
+                    self.client.label.add(label)
+                    logger.debug(f'{self.name}: [{label}] label added to deluge')
 
                 self.client.label.set_torrent(result.hash, label)
-            except Exception:
-                logger.debug(self.name + ': ' + "label plugin not detected")
+            except Exception as error:
+                logger.info(f'{self.name}: Could not add label to torrent')
+                logger.debug(error)
+                # logger.debug(self.client.daemon.get_method_list())
                 return False
 
-        logger.debug(self.name + ': ' + label + " label added to torrent")
+        logger.debug(f'{self.name}: [{label}] label added to torrent')
         return True
 
     def testAuthentication(self):
